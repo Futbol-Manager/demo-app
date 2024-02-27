@@ -1,0 +1,32 @@
+.nb-layout {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.nb-layout-header, .nb-layout-footer {
+  flex: 0 0 auto;
+  background-color: lightblue;
+  padding: 10px;
+}
+
+.nb-layout-column {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  position: relative;
+}
+
+.colored-column-left {
+  background-color: #007d6c;
+  padding: 0px;
+}
+
+.colored-column-right {
+  background-color: #004a45;
+}
