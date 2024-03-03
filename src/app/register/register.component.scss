@@ -24,7 +24,7 @@
 
 .colored-column {
   background-color: #004a45;
-  justify-content: end;
+  justify-content: center;
   width: 100%;
   display: flex;
 }
@@ -33,4 +33,12 @@
   display: flex;
   width: 100%;
   justify-content: center;
+}
+
+.form-register{
+  padding: 2rem;
+}
+
+.input-register{
+  margin-bottom: 4%;
 }

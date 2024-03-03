@@ -1,20 +1,26 @@
 <nb-layout>
-  <nb-layout-header style="background-color: #004a45;"></nb-layout-header>
+  <nb-layout-header></nb-layout-header>
+
   <nb-layout-column class="colored-column">
     <div>
-      <div class="image-container">
-        <img src="../assets/images/training-home.png" alt="Training Home Image"/>
-      </div>
-      <div class="text-overlay">
-        <h1 style="color: white;">¡Bienvenido a MANAGER DE FUTBOL!</h1>
-        <h5 style="color: white;">
-          Tu herramienta esencial para gestionar con éxito tu equipo y alcanzar la gloria futbolística.
-          La gestión del fútbol nunca ha sido tan emocionante. Prepárate para tomar decisiones cruciales, construir un equipo imparable y alcanzar la grandeza.
-        </h5>
-        <button nbButton status="info" style="margin-right: 10%;"><nb-icon icon="log-in-outline"></nb-icon>Iniciar Sesión</button>
-        <button nbButton status="info"><nb-icon icon="edit-2-outline"></nb-icon>Registrarse</button>
-      </div>
+      <nb-card>
+        <nb-card-header class="textoCentrado">
+          <h1>Manager de Fútbol</h1>
+        </nb-card-header>
+        <nb-card-body>
+          <app-login></app-login>
+        </nb-card-body>
+        <nb-card-footer class="textoCentrado">
+          <a href="#">He olvidado mi contraseña</a>
+        </nb-card-footer>
+      </nb-card>
+      <nb-card>
+        <nb-card-body class="textoCentrado">
+          <p>¿No tienes una cuenta? <a href="/register">Regístrate</a></p>
+        </nb-card-body>
+      </nb-card>
     </div>
   </nb-layout-column>
-  <nb-layout-footer>Contact us</nb-layout-footer>
+
+  <nb-layout-footer>Contact us © 2024</nb-layout-footer>
 </nb-layout>
