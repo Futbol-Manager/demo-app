@@ -16,5 +16,6 @@ export interface ErrorModel{
 interface LoginResponseModel{
 	ok:         boolean;
 	tokenAcces: string;
+	tokenType:  string;
 	userDTO:    User;
 }
