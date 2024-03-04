@@ -61,36 +61,4 @@ export class LoginService {
     return this.usuarioAutenticado.asObservable();
   }
 
-  /*public setUser(usuario: User) {
-    this.usuario = usuario;
-    this.setUserLocalStorage(this.usuario)
-  }
-
-  public setUserLocalStorage(usuario: User) {
-    this.usuario = usuario;
-    this.currentUser.next(this.usuario);
-    this.usuario.password = '-';
-    this.localStorage.setItem(LOCALSTORAGESTRINGS.USER, JSON.stringify(this.usuario));
-  }
-
-  public validateUserLocalStorage() {
-    // Tengo que validar que la session este abierta - PENDIENTE
-    this.usuario = JSON.parse(this.localStorage.getItem(LOCALSTORAGESTRINGS.USER)) as User;
-    const token: string = this.localStorage.getItem(LOCALSTORAGESTRINGS.TOKEN)
-
-    if (token !== null) {
-      return true;
-    }
-
-    return false;
-  }
-
-  public setToken(tokeType: string, token: string): void{
-    this.localStorage.setItem(LOCALSTORAGESTRINGS.TOKEN, tokeType + ' ' + token)
-  }
-
-  public getToken(): string{
-    return this.localStorage.getItem(LOCALSTORAGESTRINGS.TOKEN) as string
-  }*/
-
 }

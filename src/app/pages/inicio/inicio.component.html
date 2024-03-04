@@ -1,9 +1,36 @@
+<!-- inicio.component.html -->
 <div class="homepage-container">
-    <h1>Bienvenido a la Página de Inicio</h1>
-    <p>¡Gracias por iniciar sesión!</p>
-    
-    <!-- Contenido adicional, como información del usuario o funciones específicas -->
-  
-    <button (click)="cerrarSesion()">Cerrar Sesión</button>
+  <!-- Encabezado con botones utilizando Bootstrap -->
+  <div class="d-flex justify-content-between">
+    <button class="btn btn-primary" (click)="verPerfil()">Ver Perfil</button>
+    <button class="btn btn-danger" (click)="cerrarSesion()">Cerrar Sesión</button>
   </div>
-  
+
+  <!-- Contenido principal con la tabla de equipos utilizando Bootstrap -->
+  <div class="mt-4">
+    <h2 class="text-white">Listado de Equipos de Fútbol</h2>
+    
+    <table class="table table-bordered table-light">
+      <thead>
+        <tr>
+          <th scope="col">Nombre</th>
+          <th scope="col">Categoría</th>
+          <th scope="col">Año</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Equipo 1</td>
+          <td>Categoría A</td>
+          <td>2022</td>
+        </tr>
+        <tr>
+          <td>Equipo 2</td>
+          <td>Categoría B</td>
+          <td>2021</td>
+        </tr>
+        <!-- Agrega más filas según sea necesario -->
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -6,3 +6,6 @@
   @include nb-theme-global();
 };
 /* You can add global styles to this file, and also import other style files */
+
+/* styles.scss o styles.css */
+@import '~bootstrap/dist/css/bootstrap.min.css';

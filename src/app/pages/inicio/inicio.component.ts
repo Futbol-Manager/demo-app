@@ -25,6 +25,10 @@ export class InicioComponent implements OnInit {
     this.loginService.cerrarSesion();
   }
 
+  verPerfil(){
+    
+  }
+
   
 
 }

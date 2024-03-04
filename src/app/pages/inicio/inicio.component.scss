@@ -1,0 +1,9 @@
+/* styles.scss */
+:host {
+    display: block;
+    background: linear-gradient(to right, #ffea00, #4caf50); /* Degradado amarillo a verde */
+    height: 100vh; /* Ajusta la altura según sea necesario */
+    margin: 0;
+    padding: 0;
+  }
+  

@@ -22,6 +22,7 @@
     "@nebular/eva-icons": "^9.0.3",
     "@nebular/theme": "^9.0.3",
     "@ngrx/store": "^17.1.1",
+    "bootstrap": "^5.3.3",
     "eva-icons": "^1.1.3",
     "rxjs": "~7.5.0",
     "tslib": "^2.3.0",
