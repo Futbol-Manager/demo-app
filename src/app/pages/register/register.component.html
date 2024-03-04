@@ -16,8 +16,8 @@
             <div style="display: flex;">
               <nb-select placeholder="Selecciona Rol" formControlName="rol" class="input-register" fullWidth
                 style="margin-right: 20px;">
-                <nb-option value="1">Entrenador</nb-option>
-                <nb-option value="2">Club</nb-option>
+                <nb-option value="1">Club</nb-option>
+                <nb-option value="2">Entrenador</nb-option>
               </nb-select>
               <input type="text" nbInput fullWidth status="basic" placeholder="Nombre del club" id="nameClub"
                 formControlName="nameClub" class="input-register">
@@ -32,8 +32,8 @@
 
             <div style="display: flex;">
               <input type="date" nbInput fullWidth status="basic" placeholder="Selecciona fecha de nacimiento" id="date"
-              formControlName="birthday" class="input-register" style="margin-right: 20px;">
-              <nb-select placeholder="Selecciona genero" formControlName="gender" class="input-register" fullWidth
+              formControlName="birthdate" class="input-register" style="margin-right: 20px;">
+              <nb-select placeholder="Selecciona genero" formControlName="genre" class="input-register" fullWidth
                 style="margin-right: 20px;">
                 <nb-option value="1">Masculino</nb-option>
                 <nb-option value="2">Femenino</nb-option>
@@ -49,7 +49,7 @@
             <div style="display: flex;">
               <input type="password" nbInput fullWidth status="basic" placeholder="Ingrese contraseña" id="password"
                 formControlName="password" class="input-register" style="margin-right: 20px;">
-              <input type="password" nbInput fullWidth status="basic" placeholder="Ingrese contraseña" id="password2"
+              <input type="password" nbInput fullWidth status="basic" placeholder="Repite la contraseña" id="password2"
                 formControlName="password2" class="input-register">
             </div>
 

@@ -20,8 +20,8 @@ export class RegisterComponent implements OnInit {
       nameClub: new FormControl('', [Validators.required]),
       name: new FormControl('', [Validators.required]),
       surname: new FormControl('', [Validators.required]),
-      birthday: new FormControl('', [Validators.required]),
-      gender: new FormControl('', [Validators.required]),
+      birthdate: new FormControl('', [Validators.required]),
+      genre: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required]),
       password2: new FormControl('', [Validators.required])
