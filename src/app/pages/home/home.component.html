@@ -1,26 +1,29 @@
-<nb-layout>
-  <nb-layout-header></nb-layout-header>
+<div class="background">
+  <video autoplay loop muted playsinline class="video-background">
+    <source src="assets/videos/campo.mp4" type="video/mp4">
+    Tu navegador no admite el elemento de video.
+  </video>
 
-  <nb-layout-column class="colored-column">
-    <div>
-      <nb-card>
-        <nb-card-header class="textoCentrado">
-          <h1>Manager de Fútbol</h1>
-        </nb-card-header>
-        <nb-card-body>
-          <app-login></app-login>
-        </nb-card-body>
-        <nb-card-footer class="textoCentrado">
-          <a href="#">He olvidado mi contraseña</a>
-        </nb-card-footer>
-      </nb-card>
-      <nb-card>
-        <nb-card-body class="textoCentrado">
-          <p>¿No tienes una cuenta? <a href="/register">Regístrate</a></p>
-        </nb-card-body>
-      </nb-card>
-    </div>
-  </nb-layout-column>
-
-  <nb-layout-footer>Contact us © 2024</nb-layout-footer>
-</nb-layout>
+  <nb-layout class="nb-layout">
+    <nb-layout-column class="colored-column">
+      <div>
+        <nb-card>
+          <nb-card-header class="textoCentrado">
+            <h1>Manager de Fútbol</h1>
+          </nb-card-header>
+          <nb-card-body>
+            <app-login></app-login>
+          </nb-card-body>
+          <nb-card-footer class="textoCentrado">
+            <a href="#">He olvidado mi contraseña</a>
+          </nb-card-footer>
+        </nb-card>
+        <nb-card>
+          <nb-card-body class="textoCentrado">
+            <p>¿No tienes una cuenta? <a href="/register">Regístrate</a></p>
+          </nb-card-body>
+        </nb-card>
+      </div>
+    </nb-layout-column>
+  </nb-layout>
+</div>

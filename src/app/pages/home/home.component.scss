@@ -1,35 +1,43 @@
 .nb-layout {
-  height: 100%;
-  margin: 0;
+  position: fixed;
+  height: calc(100% - 10em); /* Restar 10em al 100% para acomodar el margen en la parte superior e inferior */
+  margin: 5em;
   padding: 0;
   display: flex;
   flex-direction: column;
+  z-index: 1;
+  overflow: hidden;
+  width: 30%;
 }
 
-.nb-layout-header, .nb-layout-footer {
-  flex: 0 0 auto;
-  background-color: #004a45 !important;
-  padding: 10px;
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
 }
 
-.nb-layout-column {
-  flex: 1 1 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 24px;
-  position: relative;
+.video-background {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
 }
 
 .colored-column {
-  background-color: #004a45;
+  //background-color: #004a45;
   justify-content: end;
   width: 100%;
   display: flex;
 }
 
-.textoCentrado{
+.textoCentrado {
   display: flex;
   width: 100%;
   justify-content: center;
