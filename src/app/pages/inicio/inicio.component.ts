@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
-import { Team } from 'src/app/core/services/team/team.model';
+import { Team, TeamNew } from 'src/app/core/services/team/team.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Response } from 'src/app/core/services/models/response.model';
 
@@ -14,48 +14,99 @@ export class InicioComponent implements OnInit {
 
   usuarioActual!: User | null;
   listTeam: any[] = []; // Define una variable para almacenar el listado de equipos
-  
+  showModal = false;
+  teamNew: TeamNew = new TeamNew(); // Modelo para el nuevo equipo  
 
   constructor(private loginService: LoginService,
-              private teamService: TeamService) { }
+    private teamService: TeamService) { }
 
   ngOnInit(): void {
     // Suscríbete al observable del servicio para obtener el usuario actual
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
       // Carga el listado de equipos al inicializar el componente
-    this.cargarListadoEquipos(user!.userId.toString());
+      this.cargarListadoEquipos(user!.userId.toString());
     });
-    
+
   }
 
   // Método para cargar el listado de equipos
-cargarListadoEquipos(userId: string): void {
-  this.teamService.getTeams(userId).subscribe(
-    (response: Response) => {
-      // Verifica que la propiedad 'data' exista en la respuesta
-      if (response && response.data && Array.isArray(response.data)) {
-        // Mapea los datos bajo 'data' a instancias del modelo Team
-        this.listTeam = response.data.map((team: Team) => new Team(team));
-      } else {
-        console.error('La respuesta del servicio no tiene la estructura esperada', response);
+  cargarListadoEquipos(userId: string): void {
+    this.teamService.getTeams(userId).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response && response.data && Array.isArray(response.data)) {
+          // Mapea los datos bajo 'data' a instancias del modelo Team
+          this.listTeam = response.data.map((team: Team) => new Team(team));
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
       }
-    },
-    (error) => {
-      console.error('Error al cargar el listado de equipos', error);
-    }
-  );
-}
+    );
+  }
 
   cerrarSesion(): void {
     // Llama al método cerrarSesion del servicio
     this.loginService.cerrarSesion();
   }
 
-  verPerfil(){
-    
+  verPerfil() {
+
   }
 
-  
+  // Método para abrir el modal de creación de equipo
+  abrirModalCrearEquipo(): void {
+    this.showModal = true;
+  }
+
+  // Método para cerrar el modal de creación de equipo
+  cerrarModal(): void {
+    this.showModal = false;
+    // Limpiar los datos del nuevo equipo al cerrar el modal si es necesario
+    this.teamNew = new TeamNew();
+  }
+
+  // Método para crear un nuevo equipo
+  crearEquipo(): void {
+
+    // Recoge los campos del modal y asigna al objeto nuevoEquipo
+  this.teamNew = {
+    teamId: 0, // O el valor por defecto que desees para teamId
+    levelLeague: this.teamNew.levelLeague,
+    name: this.teamNew.name,
+    objectiveTeam: this.teamNew.objectiveTeam,
+    opinionTeam: this.teamNew.opinionTeam,
+    trainingDays: this.teamNew.trainingDays,
+    categoryType: {
+      categoryTypeId: this.teamNew.categoryType.categoryTypeId,
+      year: 0,
+      categoryName: ''
+    }
+  };
+
+    // Llamada al servicio para crear el equipo
+    this.teamService.createUpdateTeam(this.usuarioActual!.userId.toString(), this.teamNew,).subscribe(
+      (response) => {
+        // Manejar la respuesta según tus necesidades
+        console.log('Equipo creado con éxito:', response);
+
+        // Cargar nuevamente el listado de equipos después de la creación exitosa
+      this.cargarListadoEquipos(this.usuarioActual!!.userId.toString());
+
+      // Cerrar el modal después de crear el equipo
+      this.cerrarModal();
+
+        // Puedes volver a cargar el listado de equipos si es necesario
+        // this.cargarListadoEquipos(userId);
+      },
+      (error) => {
+        console.error('Error al crear el equipo:', error);
+        // Puedes manejar el error según tus necesidades
+      }
+    );
+  }
 
 }
