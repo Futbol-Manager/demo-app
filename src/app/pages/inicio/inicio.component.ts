@@ -25,14 +25,14 @@ export class InicioComponent implements OnInit {
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
       // Carga el listado de equipos al inicializar el componente
-      this.cargarListadoEquipos(user!.userId.toString());
+      this.cargarListadoEquipos();
     });
 
   }
 
   // Método para cargar el listado de equipos
-  cargarListadoEquipos(userId: string): void {
-    this.teamService.getTeams(userId).subscribe(
+  cargarListadoEquipos(): void {
+    this.teamService.getTeams(this.usuarioActual!!.userId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data && Array.isArray(response.data)) {
@@ -94,7 +94,7 @@ export class InicioComponent implements OnInit {
         console.log('Equipo creado con éxito:', response);
 
         // Cargar nuevamente el listado de equipos después de la creación exitosa
-      this.cargarListadoEquipos(this.usuarioActual!!.userId.toString());
+      this.cargarListadoEquipos();
 
       // Cerrar el modal después de crear el equipo
       this.cerrarModal();
@@ -104,6 +104,33 @@ export class InicioComponent implements OnInit {
       },
       (error) => {
         console.error('Error al crear el equipo:', error);
+        // Puedes manejar el error según tus necesidades
+      }
+    );
+  }
+
+  // Método para confirmar la eliminación del equipo
+  confirmarEliminarEquipo(teamId: number, name: string): void {
+    const confirmacion = confirm('¿Estás seguro de que deseas eliminar el equipo ' + name + ` con ID ${teamId}?`);
+    if (confirmacion) {
+      // Llama al método para eliminar el equipo
+      this.eliminarEquipo(teamId);
+    }
+  }
+
+  // Método para eliminar el equipo
+  eliminarEquipo(teamId: number): void {
+    // Lógica para eliminar el equipo llamando al servicio correspondiente
+    this.teamService.deleteTeam(teamId.toString()).subscribe(
+      (response) => {
+        // Manejar la respuesta según tus necesidades
+        console.log('Equipo eliminado con éxito:', response);
+
+        // Cargar nuevamente el listado de equipos después de la eliminación exitosa
+        this.cargarListadoEquipos();
+      },
+      (error) => {
+        console.error('Error al eliminar el equipo:', error);
         // Puedes manejar el error según tus necesidades
       }
     );

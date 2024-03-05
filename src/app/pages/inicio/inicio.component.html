@@ -16,6 +16,7 @@
           <th scope="col">Nombre</th>
           <th scope="col">Categoría</th>
           <th scope="col">Días</th>
+          <th scope="col">Acciones</th> <!-- Nueva columna para acciones -->
         </tr>
       </thead>
       <tbody>
@@ -25,6 +26,12 @@
           <td>{{ team.name }}</td>
           <td>{{ team.category }}</td>
           <td>{{ team.trainingDays }}</td>
+          <td>
+            <!-- Botón de papelera con evento de clic -->
+            <button class="btn btn-danger" (click)="confirmarEliminarEquipo(team.teamId, team.name)">
+              <i class="bi bi-trash"></i> Eliminar
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
