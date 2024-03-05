@@ -13,23 +13,20 @@
     <table class="table table-bordered table-light">
       <thead>
         <tr>
+          <th scope="col">ID</th>
           <th scope="col">Nombre</th>
           <th scope="col">Categoría</th>
-          <th scope="col">Año</th>
+          <th scope="col">Dias</th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Equipo 1</td>
-          <td>Categoría A</td>
-          <td>2022</td>
+        <!-- Itera sobre el listado de equipos y muestra la información -->
+        <tr *ngFor="let team of listTeam">
+          <td>{{ team.teamId }}</td>
+          <td>{{ team.name }}</td>
+          <td>{{ team.category }}</td>
+          <td>{{ team.trainingDays }}</td>
         </tr>
-        <tr>
-          <td>Equipo 2</td>
-          <td>Categoría B</td>
-          <td>2021</td>
-        </tr>
-        <!-- Agrega más filas según sea necesario -->
       </tbody>
     </table>
   </div>
