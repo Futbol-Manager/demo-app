@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { NbToastrService } from '@nebular/theme';
+import { GenreTypeModel, ProfileTypeModel, RegisterModel } from 'src/app/core/models/users/register.model';
+import { RegisterService } from 'src/app/core/services/register/register.service';
 
 @Component({
   selector: 'app-register',
@@ -13,7 +16,8 @@ export class RegisterComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private fb: FormBuilder,
+    private registerService: RegisterService,
+    private toastrService: NbToastrService,
   ) {
     this.registerForm = new FormGroup({
       rol: new FormControl('', [Validators.required]),
@@ -35,7 +39,37 @@ export class RegisterComponent implements OnInit {
   }
 
   register(){
-    if (this.registerForm.valid) {}
+    if (this.registerForm.valid) {
+      const fv = this.registerForm.value;
+      const genreType: GenreTypeModel = new GenreTypeModel(
+        fv.genre,
+        fv.genre == 1 ? 'Masculino' : fv.genre == 2 ? 'Femenino' : 'Otro',
+      )
+      const profileType: ProfileTypeModel = new ProfileTypeModel(
+        fv.rol,
+        fv.rol == 1 ? 'Club' : 'Entrenador',
+      )
+      const register: RegisterModel = new RegisterModel(
+        profileType,
+        fv.name,
+        fv.surname,
+        fv.birthdate,
+        genreType,
+        fv.email,
+        fv.password,
+        0
+      );
+      this.registerService.registerUser(register).pipe()
+      .subscribe(
+        (res) => {
+          if(res.data != null) {
+            this.toastrService.show('Inicia sesión para iniciar', 'Registro Exitoso', { status: 'success' });
+            this.router.navigate(['/home'])
+          } else{
+            this.toastrService.show('Intentalo de nuevo', 'Error en el registro', { status: 'error' });
+          }
+        })
+    }
   }
 
 }

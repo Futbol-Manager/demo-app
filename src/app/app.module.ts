@@ -6,7 +6,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './pages/home/home.component';
 import { LoginComponent } from './pages/login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NbThemeModule, NbLayoutModule, NbCardModule, NbButtonModule, NbIconModule, NbInputModule, NbStepperModule, NbRadioModule, NbSelectModule, NbDatepickerModule } from '@nebular/theme';
+import { NbThemeModule, NbLayoutModule, NbCardModule, NbButtonModule, NbIconModule, NbInputModule, NbStepperModule, NbRadioModule, NbSelectModule, NbDatepickerModule, NbToastrModule } from '@nebular/theme';
 import { NbEvaIconsModule } from '@nebular/eva-icons';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RegisterComponent } from './pages/register/register.component';
@@ -39,6 +39,7 @@ import { HttpClientModule } from '@angular/common/http';
     NbSelectModule,
     NbDatepickerModule,
     HttpClientModule,
+    NbToastrModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent]
