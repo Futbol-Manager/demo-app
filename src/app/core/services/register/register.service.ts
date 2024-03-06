@@ -15,5 +15,10 @@ export class RegisterService {
   registerUser(user: RegisterModel) {
     const url: string = environment.apiUrl + 'user/createupdateuser';
     return this.http.post<any>(url, user);
-}
+  }
+
+  validateMail(mail: String) {
+    const url: string = environment.apiUrl + 'user/validateMail';
+    return this.http.post<any>(url, mail);
+  }
 }

@@ -83,7 +83,7 @@ export class RegisterComponent implements OnInit {
       (fv.email as string).trim(),
       (fv.password as string).trim(),
     );
-    
+
     this.loginService.login(login).pipe()
       .subscribe(
         (res) => {

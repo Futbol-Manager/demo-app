@@ -1,8 +1,27 @@
-<form [formGroup]="loginForm" (ngSubmit)="login()" class="form-login">
-  <input type="mail" nbInput fullWidth status="basic" placeholder="Ingrese email" id="mail" formControlName="mail" class="input-login">
+<form [formGroup]="loginForm" (ngSubmit)="login()" class="form-login" #thisForm="ngForm">
 
-  <input type="password" nbInput fullWidth status="basic" placeholder="Ingrese contraseña" id="password"
-    formControlName="password" class="input-login">
+  <input type="mail" nbInput fullWidth status="basic" placeholder="Ingrese email" id="mail" formControlName="mail" class="input-login">
+  <div *ngFor="let validation of validationMessages.mail" class="mt-2">
+    <div class="error-message" *ngIf="mailControl?.hasError('required') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted) ">
+      Correo eletrónico requerido
+    </div>
+  </div>
+
+  <nb-form-field>
+    <input nbInput fullWidth status="basic" placeholder="Ingrese contraseña" id="password" formControlName="password"
+    class="input-login" [type]="hidePassword ? 'password' : 'text'">
+    <button nbSuffix nbButton ghost (click)="hidePassword = !hidePassword">
+      <nb-icon [icon]="!hidePassword ? 'eye-outline' : 'eye-off-2-outline'"
+               pack="eva"
+               [attr.aria-label]="!hidePassword ? 'hide password' : 'show password'">
+      </nb-icon>
+    </button>
+  </nb-form-field>
+  <div *ngFor="let validation of validationMessages.password" class="mt-2">
+    <div class="error-message" *ngIf="passwordControl?.hasError('required') && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted) ">
+      Contraseña requerida
+    </div>
+  </div>
 
   <button type="submit" nbButton status="primary" fullWidth>Iniciar sesión</button>
 </form>
