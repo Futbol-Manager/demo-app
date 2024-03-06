@@ -4,6 +4,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { Team, TeamNew } from 'src/app/core/services/team/team.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Response } from 'src/app/core/services/models/response.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-inicio',
@@ -18,6 +19,7 @@ export class InicioComponent implements OnInit {
   teamNew: TeamNew = new TeamNew(); // Modelo para el nuevo equipo  
 
   constructor(private loginService: LoginService,
+    private router: Router,
     private teamService: TeamService) { }
 
   ngOnInit(): void {
@@ -73,19 +75,19 @@ export class InicioComponent implements OnInit {
   crearEquipo(): void {
 
     // Recoge los campos del modal y asigna al objeto nuevoEquipo
-  this.teamNew = {
-    teamId: 0, // O el valor por defecto que desees para teamId
-    levelLeague: this.teamNew.levelLeague,
-    name: this.teamNew.name,
-    objectiveTeam: this.teamNew.objectiveTeam,
-    opinionTeam: this.teamNew.opinionTeam,
-    trainingDays: this.teamNew.trainingDays,
-    categoryType: {
-      categoryTypeId: this.teamNew.categoryType.categoryTypeId,
-      year: 0,
-      categoryName: ''
-    }
-  };
+    this.teamNew = {
+      teamId: 0, // O el valor por defecto que desees para teamId
+      levelLeague: this.teamNew.levelLeague,
+      name: this.teamNew.name,
+      objectiveTeam: this.teamNew.objectiveTeam,
+      opinionTeam: this.teamNew.opinionTeam,
+      trainingDays: this.teamNew.trainingDays,
+      categoryType: {
+        categoryTypeId: this.teamNew.categoryType.categoryTypeId,
+        year: 0,
+        categoryName: ''
+      }
+    };
 
     // Llamada al servicio para crear el equipo
     this.teamService.createUpdateTeam(this.usuarioActual!.userId.toString(), this.teamNew,).subscribe(
@@ -94,13 +96,10 @@ export class InicioComponent implements OnInit {
         console.log('Equipo creado con éxito:', response);
 
         // Cargar nuevamente el listado de equipos después de la creación exitosa
-      this.cargarListadoEquipos();
+        this.cargarListadoEquipos();
 
-      // Cerrar el modal después de crear el equipo
-      this.cerrarModal();
-
-        // Puedes volver a cargar el listado de equipos si es necesario
-        // this.cargarListadoEquipos(userId);
+        // Cerrar el modal después de crear el equipo
+        this.cerrarModal();
       },
       (error) => {
         console.error('Error al crear el equipo:', error);
@@ -134,6 +133,12 @@ export class InicioComponent implements OnInit {
         // Puedes manejar el error según tus necesidades
       }
     );
+  }
+
+  // Método para navegar a la pantalla de calendario
+  navegarACalendario(teamId: number): void {
+    // Puedes ajustar la ruta según tu estructura de rutas
+    this.router.navigate(['/calendario', teamId]);
   }
 
 }

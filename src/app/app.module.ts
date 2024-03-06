@@ -12,6 +12,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RegisterComponent } from './pages/register/register.component';
 import { InicioComponent } from './pages/inicio/inicio.component';
 import { HttpClientModule } from '@angular/common/http';
+import { CalendarioComponent } from './pages/calendario/calendario.component';
+import { PlayerComponent } from './pages/player/player.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +21,9 @@ import { HttpClientModule } from '@angular/common/http';
     HomeComponent,
     LoginComponent,
     RegisterComponent,
-    InicioComponent
+    InicioComponent,
+    CalendarioComponent,
+    PlayerComponent
   ],
   imports: [
     BrowserModule,

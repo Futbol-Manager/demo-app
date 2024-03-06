@@ -1,0 +1,154 @@
+<!-- Botón "Entrar" con evento de clic -->
+<button class="btn btn-primary" (click)="navegarACalendario()">
+    Volver
+</button>
+<!-- player-list.component.html -->
+<div class="container mt-4">
+    <h2 class="text-white">Lista de Jugadores</h2>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Nombre</th>
+                <th scope="col">Apellido</th>
+                <th scope="col">Fecha de Nacimiento</th>
+                <th scope="col">Posición</th>
+                <th scope="col">Acciones</th> <!-- Nueva columna para acciones -->
+                <!-- Agrega más encabezados según sea necesario -->
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Itera sobre la lista de jugadores y muestra la información -->
+            <tr *ngFor="let player of listPlayers">
+                <td>{{ player.playerId }}</td>
+                <td>{{ player.firstName }}</td>
+                <td>{{ player.secondName }}</td>
+                <td>{{ player.birthdate | date:'yyyy-MM-dd' }}</td>
+                <td>{{ player.position }}</td>
+                <td>
+                    <!-- Botón de papelera con evento de clic -->
+                    <button class="btn btn-danger"
+                        (click)="confirmarEliminarJugador(player.playerId, player.firstName, player.secondName)">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <button class="btn btn-success" (click)="abrirModalCrearJugdor()">Crear Jugador</button>
+</div>
+
+<!-- Modal para la creación de jugador -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Crear Jugador</h5>
+                <button type="button" class="close" (click)="cerrarModal()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para la creación de jugador -->
+                <form>
+                    <!-- Campos del formulario con ngModel y nombres asignados -->
+                    <div class="form-group">
+                        <label for="firstName">Nombre:</label>
+                        <input type="text" class="form-control" id="firstName" name="firstName"
+                            [(ngModel)]="player.firstName">
+                    </div>
+                    <div class="form-group">
+                        <label for="secondName">Apellido:</label>
+                        <input type="text" class="form-control" id="secondName" name="secondName"
+                            [(ngModel)]="player.secondName">
+                    </div>
+                    <div class="form-group">
+                        <label for="birthdate">Fecha de Nacimiento:</label>
+                        <input type="date" class="form-control" id="birthdate" name="birthdate"
+                            [(ngModel)]="player.birthdate">
+                    </div>
+                    <div class="form-group">
+                        <label for="position">Posición:</label>
+                        <input type="text" class="form-control" id="position" name="position"
+                            [(ngModel)]="player.position">
+                    </div>
+                    <div class="form-group">
+                        <label for="height">Altura:</label>
+                        <input type="text" class="form-control" id="height" name="height" [(ngModel)]="player.height">
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">Peso:</label>
+                        <input type="text" class="form-control" id="weight" name="weight" [(ngModel)]="player.weight">
+                    </div>
+                    <div class="form-group">
+                        <label for="ability">Habilidad:</label>
+                        <input type="number" class="form-control" id="ability" name="ability"
+                            [(ngModel)]="player.ability">
+                    </div>
+                    <div class="form-group">
+                        <label for="abilityFootBad">Habilidad con el pie malo:</label>
+                        <input type="number" class="form-control" id="abilityFootBad" name="abilityFootBad"
+                            [(ngModel)]="player.abilityFootBad">
+                    </div>
+                    <div class="form-group">
+                        <label for="dribbling">Regate:</label>
+                        <input type="number" class="form-control" id="dribbling" name="dribbling"
+                            [(ngModel)]="player.dribbling">
+                    </div>
+                    <div class="form-group">
+                        <label for="finishFoot">Finalización con pie:</label>
+                        <input type="number" class="form-control" id="finishFoot" name="finishFoot"
+                            [(ngModel)]="player.finishFoot">
+                    </div>
+                    <div class="form-group">
+                        <label for="finishHead">Finalización con cabeza:</label>
+                        <input type="number" class="form-control" id="finishHead" name="finishHead"
+                            [(ngModel)]="player.finishHead">
+                    </div>
+                    <div class="form-group">
+                        <label for="footNatural">Pie natural:</label>
+                        <input type="number" class="form-control" id="footNatural" name="footNatural"
+                            [(ngModel)]="player.footNatural">
+                    </div>
+                    <div class="form-group">
+                        <label for="forcePlayer">Fuerza:</label>
+                        <input type="number" class="form-control" id="forcePlayer" name="forcePlayer"
+                            [(ngModel)]="player.forcePlayer">
+                    </div>
+                    <div class="form-group">
+                        <label for="hit">Golpeo:</label>
+                        <input type="number" class="form-control" id="hit" name="hit" [(ngModel)]="player.hit">
+                    </div>
+                    <div class="form-group">
+                        <label for="jump">Salto:</label>
+                        <input type="number" class="form-control" id="jump" name="jump" [(ngModel)]="player.jump">
+                    </div>
+                    <div class="form-group">
+                        <label for="picturePlayer">Imagen del Jugador:</label>
+                        <input type="text" class="form-control" id="picturePlayer" name="picturePlayer"
+                            [(ngModel)]="player.picturePlayer">
+                    </div>
+                    <div class="form-group">
+                        <label for="resistance">Resistencia:</label>
+                        <input type="number" class="form-control" id="resistance" name="resistance"
+                            [(ngModel)]="player.resistance">
+                    </div>
+                    <div class="form-group">
+                        <label for="speed">Velocidad:</label>
+                        <input type="number" class="form-control" id="speed" name="speed" [(ngModel)]="player.speed">
+                    </div>
+                    <div class="form-group">
+                        <label for="opinion">Opinión:</label>
+                        <input type="text" class="form-control" id="opinion" name="opinion"
+                            [(ngModel)]="player.opinion">
+                    </div>
+                    <!-- Agrega más campos según sea necesario -->
+
+                    <!-- Botón para guardar el nuevo jugador -->
+                    <button type="button" class="btn btn-primary" (click)="crearJugador()">Guardar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

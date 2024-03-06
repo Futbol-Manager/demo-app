@@ -31,6 +31,10 @@
             <button class="btn btn-danger" (click)="confirmarEliminarEquipo(team.teamId, team.name)">
               <i class="bi bi-trash"></i> Eliminar
             </button>
+            <!-- Botón "Entrar" con evento de clic -->
+            <button class="btn btn-primary" (click)="navegarACalendario(team.teamId)">
+              Entrar
+            </button>
           </td>
         </tr>
       </tbody>
@@ -57,8 +61,7 @@
           <!-- Campo del formulario con ngModel y nombre asignado -->
           <div class="form-group">
             <label for="nombreEquipo">Nombre:</label>
-            <input type="text" class="form-control" id="nombreEquipo" name="nombreEquipo"
-              [(ngModel)]="teamNew.name">
+            <input type="text" class="form-control" id="nombreEquipo" name="nombreEquipo" [(ngModel)]="teamNew.name">
           </div>
           <div class="form-group">
             <label for="nivelLiga">Nivel de Liga:</label>
@@ -66,19 +69,23 @@
           </div>
           <div class="form-group">
             <label for="objetivoEquipo">Objetivo del Equipo:</label>
-            <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo" [(ngModel)]="teamNew.objectiveTeam">
+            <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo"
+              [(ngModel)]="teamNew.objectiveTeam">
           </div>
           <div class="form-group">
             <label for="opinionEquipo">Opinión del Equipo:</label>
-            <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo" [(ngModel)]="teamNew.opinionTeam">
+            <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo"
+              [(ngModel)]="teamNew.opinionTeam">
           </div>
           <div class="form-group">
             <label for="diasEntrenamiento">Días de Entrenamiento:</label>
-            <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento" [(ngModel)]="teamNew.trainingDays">
+            <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
+              [(ngModel)]="teamNew.trainingDays">
           </div>
           <div class="form-group">
             <label for="categoriaEquipo">Categoría del Equipo:</label>
-            <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" [(ngModel)]="teamNew.categoryType.categoryTypeId">
+            <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
+              [(ngModel)]="teamNew.categoryType.categoryTypeId">
               <!-- Puedes ajustar las opciones según tus necesidades -->
               <option value="1">Categoría 1</option>
               <option value="2">Categoría 2</option>
