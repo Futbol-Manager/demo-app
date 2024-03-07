@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-calendario',
@@ -10,14 +10,22 @@ export class CalendarioComponent implements OnInit {
 
   nombreEquipo: string = 'Arevalo';  // Puedes ajustar el nombre del equipo según necesites
   calendario: any[] = [];  // Aquí deberías tener la información de los días de la semana
-  teamId: number = 1;  // Ajusta el valor según el teamId del equipo actual
+  teamId!: number;  // Ajusta el valor según el teamId del equipo actual
 
   constructor(
-    private router: Router,) { }
+    private router: Router,
+    private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    // Lógica para obtener o generar la información del calendario
-    this.generarCalendario();
+    // Suscribirse a los cambios en los parámetros de la URL
+    this.route.params.subscribe(params => {
+      // Obtener el valor de teamId de los parámetros
+      this.teamId = +params['teamId'];  // El + convierte el valor a número
+      console.log('teamId:', this.teamId);
+      // Lógica para obtener o generar la información del calendario
+      this.generarCalendario();
+    });
+
   }
 
   private generarCalendario(): void {
