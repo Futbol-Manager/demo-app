@@ -1,27 +1,3 @@
-.nb-layout {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-.nb-layout-header, .nb-layout-footer {
-  flex: 0 0 auto;
-  background-color: #004a45 !important;
-  padding: 10px;
-}
-
-.nb-layout-column {
-  flex: 1 1 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 24px;
-  position: relative;
-}
-
 .colored-column {
   background-color: #004a45;
   justify-content: center;

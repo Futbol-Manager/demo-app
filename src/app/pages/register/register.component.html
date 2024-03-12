@@ -1,65 +1,65 @@
-<nb-layout>
+<div class="container-fluid">
 
-  <nb-layout-column class="colored-column">
-    <div>
-      <button nbButton status="info" style="margin-bottom: 5px;" shape="round" (click)="back()">
-        <nb-icon icon="chevron-left-outline" [options]="{ animation: { type: 'zoom' } }"></nb-icon>
-        <nb-icon icon="home"></nb-icon>
+  <div class="row justify-content-center">
+  
+    <div class="col-md-6 colored-column">
+      <button class="btn btn-info mb-3" style="border-radius: 50%;" (click)="back()">
+        <i class="bi bi-chevron-left"></i>
+        <i class="bi bi-house"></i>
       </button>
-      <nb-card>
-        <nb-card-header class="textoCentrado">
+      
+      <div class="card">
+        <div class="card-header textoCentrado">
           <h1>Registro</h1>
-        </nb-card-header>
-        <nb-card-body>
+        </div>
+
+        <div class="card-body">
           <form [formGroup]="registerForm" (ngSubmit)="register()" class="form-register">
 
-            <div style="display: flex;">
-              <nb-select placeholder="Selecciona Rol" formControlName="rol" class="input-register" fullWidth
-                style="margin-right: 20px;">
-                <nb-option value="1">Club</nb-option>
-                <nb-option value="2">Entrenador</nb-option>
-              </nb-select>
-              <input type="text" nbInput fullWidth status="basic" placeholder="Nombre del club" id="nameClub"
-                formControlName="nameClub" class="input-register">
+            <div class="mb-3 d-flex">
+              <select class="form-select input-register" formControlName="rol">
+                <option value="1">Club</option>
+                <option value="2">Entrenador</option>
+              </select>
+              <input type="text" class="form-control input-register" placeholder="Nombre del club" id="nameClub"
+                formControlName="nameClub">
             </div>
 
-            <div style="display: flex;">
-              <input type="text" nbInput fullWidth status="basic" placeholder="Ingrese su nombre" id="name"
-                formControlName="name" class="input-register" style="margin-right: 20px;">
-              <input type="text" nbInput fullWidth status="basic" placeholder="Ingrese su apellido" id="surname"
-                formControlName="surname" class="input-register">
+            <div class="mb-3 d-flex">
+              <input type="text" class="form-control input-register" placeholder="Ingrese su nombre" id="name"
+                formControlName="name">
+              <input type="text" class="form-control input-register" placeholder="Ingrese su apellido" id="surname"
+                formControlName="surname">
             </div>
 
-            <div style="display: flex;">
-              <input type="date" nbInput fullWidth status="basic" placeholder="Selecciona fecha de nacimiento" id="date"
-              formControlName="birthdate" class="input-register" style="margin-right: 20px;">
-              <nb-select placeholder="Selecciona genero" formControlName="genre" class="input-register" fullWidth
-                style="margin-right: 20px;">
-                <nb-option value="1">Masculino</nb-option>
-                <nb-option value="2">Femenino</nb-option>
-                <nb-option value="3">Otro</nb-option>
-              </nb-select>
+            <div class="mb-3 d-flex">
+              <input type="date" class="form-control input-register" placeholder="Selecciona fecha de nacimiento" id="date"
+                formControlName="birthdate">
+              <select class="form-select input-register" formControlName="genre">
+                <option value="1">Masculino</option>
+                <option value="2">Femenino</option>
+                <option value="3">Otro</option>
+              </select>
             </div>
 
-            <div style="display: flex;">
-              <input type="email" nbInput fullWidth status="basic" placeholder="Ingrese email" id="email"
-                formControlName="email" class="input-register" style="margin-right: 20px;">
+            <div class="mb-3 d-flex">
+              <input type="email" class="form-control input-register" placeholder="Ingrese email" id="email"
+                formControlName="email">
             </div>
 
-            <div style="display: flex;">
-              <input type="password" nbInput fullWidth status="basic" placeholder="Ingrese contraseña" id="password"
-                formControlName="password" class="input-register" style="margin-right: 20px;">
-              <input type="password" nbInput fullWidth status="basic" placeholder="Repite la contraseña" id="password2"
-                formControlName="password2" class="input-register">
+            <div class="mb-3 d-flex">
+              <input type="password" class="form-control input-register" placeholder="Ingrese contraseña" id="password"
+                formControlName="password">
+              <input type="password" class="form-control input-register" placeholder="Repite la contraseña" id="password2"
+                formControlName="password2">
             </div>
 
-            <button type="submit" nbButton status="primary" fullWidth>Registrar usuario</button>
+            <button type="submit" class="btn btn-primary btn-block">Registrar usuario</button>
           </form>
-
-
-        </nb-card-body>
-      </nb-card>
+        </div>
+      </div>
     </div>
-  </nb-layout-column>
 
-</nb-layout>
+  </div>
+
+</div>

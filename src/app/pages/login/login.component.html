@@ -1,27 +1,29 @@
-<form [formGroup]="loginForm" (ngSubmit)="login()" class="form-login" #thisForm="ngForm">
+<form [formGroup]="loginForm" class="form-login" #thisForm="ngForm">
 
-  <input type="mail" nbInput fullWidth status="basic" placeholder="Ingrese email" id="mail" formControlName="mail" class="input-login">
-  <div *ngFor="let validation of validationMessages.mail" class="mt-2">
-    <div class="error-message" *ngIf="mailControl?.hasError('required') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted) ">
-      Correo eletrónico requerido
+  <div class="mb-3">
+    <label for="mail" class="form-label">Ingrese email</label>
+    <input type="email" class="form-control input-login" id="mail" formControlName="mail">
+    <div *ngFor="let validation of validationMessages.mail" class="mt-2">
+      <div class="error-message" *ngIf="mailControl?.hasError('required') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)">
+        Correo electrónico requerido
+      </div>
     </div>
   </div>
 
-  <nb-form-field>
-    <input nbInput fullWidth status="basic" placeholder="Ingrese contraseña" id="password" formControlName="password"
-    class="input-login" [type]="hidePassword ? 'password' : 'text'">
-    <button nbSuffix nbButton ghost (click)="hidePassword = !hidePassword">
-      <nb-icon [icon]="!hidePassword ? 'eye-outline' : 'eye-off-2-outline'"
-               pack="eva"
-               [attr.aria-label]="!hidePassword ? 'hide password' : 'show password'">
-      </nb-icon>
-    </button>
-  </nb-form-field>
-  <div *ngFor="let validation of validationMessages.password" class="mt-2">
-    <div class="error-message" *ngIf="passwordControl?.hasError('required') && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted) ">
-      Contraseña requerida
+  <div class="mb-3">
+    <label for="password" class="form-label">Ingrese contraseña</label>
+    <div class="input-group">
+      <input type="password" class="form-control input-login" id="password" formControlName="password" [type]="hidePassword ? 'password' : 'text'">
+      <button class="btn btn-outline-secondary" type="button" (click)="hidePassword = !hidePassword">
+        <i class="fas" [class.fa-eye]="!hidePassword" [class.fa-eye-slash]="hidePassword"></i>
+      </button>
+    </div>
+    <div *ngFor="let validation of validationMessages.password" class="mt-2">
+      <div class="error-message" *ngIf="passwordControl?.hasError('required') && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)">
+        Contraseña requerida
+      </div>
     </div>
   </div>
 
-  <button type="submit" nbButton status="primary" fullWidth>Iniciar sesión</button>
+  <button type="submit" class="btn btn-primary btn-block">Iniciar sesión</button>
 </form>

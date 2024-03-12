@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NbToastrService } from '@nebular/theme';
-import { finalize } from 'rxjs';
 import { LoginModel } from 'src/app/core/models/users/login.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 
@@ -22,7 +20,6 @@ export class LoginComponent implements OnInit {
   constructor(
     private loginService: LoginService,
     private router: Router,
-    private toastrService: NbToastrService,
   ) {
     this.loginForm = new FormGroup({
       mail: new FormControl('', [Validators.required, Validators.email]),
@@ -47,7 +44,7 @@ export class LoginComponent implements OnInit {
           if (res.data != null) {
             this.router.navigate(['/inicio']);
           } else{
-            this.toastrService.show('El mail o la contraseña son incorrectos', 'Error al iniciar sesión', { status: 'error' });
+            //this.toastrService.show('El mail o la contraseña son incorrectos', 'Error al iniciar sesión', { status: 'error' });
           }
         })
     }

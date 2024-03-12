@@ -1,5 +1,3 @@
-import { profile } from "console";
-
 export class RegisterModel {
   profileType: ProfileTypeModel;
   firstName: string;

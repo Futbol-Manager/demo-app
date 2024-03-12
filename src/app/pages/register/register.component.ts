@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { NbToastrService } from '@nebular/theme';
 import { LoginModel } from 'src/app/core/models/users/login.model';
 import { GenreTypeModel, ProfileTypeModel, RegisterModel } from 'src/app/core/models/users/register.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -19,7 +18,6 @@ export class RegisterComponent implements OnInit {
   constructor(
     private router: Router,
     private registerService: RegisterService,
-    private toastrService: NbToastrService,
     private loginService: LoginService,
   ) {
     this.registerForm = new FormGroup({
@@ -66,11 +64,11 @@ export class RegisterComponent implements OnInit {
       .subscribe(
         (res) => {
           if(res.data != null) {
-            this.toastrService.show('Inicia sesión para iniciar', 'Registro Exitoso', { status: 'success' });
+            //this.toastrService.show('Inicia sesión para iniciar', 'Registro Exitoso', { status: 'success' });
             // Llamando al método login después de un registro exitoso
             this.login();
           } else{
-            this.toastrService.show('Intentalo de nuevo', 'Error en el registro', { status: 'error' });
+            //this.toastrService.show('Intentalo de nuevo', 'Error en el registro', { status: 'error' });
           }
         })
     }
