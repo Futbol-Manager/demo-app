@@ -1,15 +1,22 @@
+<!-- Botón para abrir el modal de creación de equipo -->
+<div class="mt-3">
+  <button class="btn btn-success ms-2" (click)="abrirModalCrearEquipo()">Crear Equipo</button>
+</div>
+
 <div class="homepage-container">
   <!-- Contenido principal con la tabla de equipos utilizando Bootstrap -->
   <div class="mt-4">
-    <h2 class="text-white">Listado de Equipos de Fútbol</h2>
 
     <div class="container">
+      <h2 class="text-dark mt-3">Listado de Equipos de Fútbol</h2>
       <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-content" type="button" role="tab" aria-controls="card-content" aria-selected="true">Vista de tarjetas</button>
+          <button class="nav-link active" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-content"
+            type="button" role="tab" aria-controls="card-content" aria-selected="true">Vista de tarjetas</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-content" type="button" role="tab" aria-controls="list-content" aria-selected="false">Vista de lista</button>
+          <button class="nav-link" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-content" type="button"
+            role="tab" aria-controls="list-content" aria-selected="false">Vista de lista</button>
         </li>
       </ul>
       <div class="tab-content" id="myTabContent">
@@ -25,10 +32,10 @@
                     <strong>Días:</strong> {{ team.trainingDays }}
                   </p>
                   <div class="d-flex justify-content-center">
-                    <button class="btn btn-primary me-2" (click)="navegarACalendario(team.teamId)">
+                    <button class="btn btn-primary btn-width me-2" (click)="navegarACalendario(team.teamId)">
                       Entrar
                     </button>
-                    <button class="btn btn-danger" (click)="confirmarEliminarEquipo(team.teamId, team.name)">
+                    <button class="btn btn-danger btn-width" (click)="confirmarEliminarEquipo(team.teamId, team.name)">
                       <i class="bi bi-trash"></i> Eliminar
                     </button>
                   </div>
@@ -51,10 +58,11 @@
                   </div>
                   <div class="col-auto">
                     <div class="d-flex flex-column justify-content-between h-100">
-                      <button class="btn btn-primary mb-2" (click)="navegarACalendario(team.teamId)">
+                      <button class="btn btn-primary mb-2 btn-width" (click)="navegarACalendario(team.teamId)">
                         Entrar
                       </button>
-                      <button class="btn btn-danger" (click)="confirmarEliminarEquipo(team.teamId, team.name)">
+                      <button class="btn btn-danger btn-width"
+                        (click)="confirmarEliminarEquipo(team.teamId, team.name)">
                         <i class="bi bi-trash"></i> Eliminar
                       </button>
                     </div>
@@ -66,11 +74,6 @@
         </div>
       </div>
     </div>
-    
-    
-
-    <!-- Botón para abrir el modal de creación de equipo -->
-    <button class="btn btn-success" (click)="abrirModalCrearEquipo()">Crear Equipo</button>
   </div>
 </div>
 
@@ -80,42 +83,36 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Crear Equipo</h5>
-        <button type="button" class="close" (click)="cerrarModal()">
-          <span aria-hidden="true">&times;</span>
-        </button>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
       </div>
       <div class="modal-body">
-        <!-- Formulario para la creación de equipo -->
+        <!-- Formulario para la creación de equipo con campos separados -->
         <form>
-          <!-- Campo del formulario con ngModel y nombre asignado -->
-          <div class="form-group">
-            <label for="nombreEquipo">Nombre:</label>
+          <div class="mb-3">
+            <label for="nombreEquipo" class="form-label">Nombre:</label>
             <input type="text" class="form-control" id="nombreEquipo" name="nombreEquipo" [(ngModel)]="teamNew.name">
           </div>
-          <div class="form-group">
-            <label for="nivelLiga">Nivel de Liga:</label>
+          <div class="mb-3">
+            <label for="nivelLiga" class="form-label">Nivel de Liga:</label>
             <input type="text" class="form-control" id="nivelLiga" name="nivelLiga" [(ngModel)]="teamNew.levelLeague">
           </div>
-          <div class="form-group">
-            <label for="objetivoEquipo">Objetivo del Equipo:</label>
-            <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo"
-              [(ngModel)]="teamNew.objectiveTeam">
+          <div class="mb-3">
+            <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
+            <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo" [(ngModel)]="teamNew.objectiveTeam">
           </div>
-          <div class="form-group">
-            <label for="opinionEquipo">Opinión del Equipo:</label>
-            <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo"
-              [(ngModel)]="teamNew.opinionTeam">
+          <div class="mb-3">
+            <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
+            <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo" [(ngModel)]="teamNew.opinionTeam">
           </div>
-          <div class="form-group">
-            <label for="diasEntrenamiento">Días de Entrenamiento:</label>
-            <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
-              [(ngModel)]="teamNew.trainingDays">
+          <div class="mb-3">
+            <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
+            <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento" [(ngModel)]="teamNew.trainingDays">
           </div>
-          <div class="form-group">
-            <label for="categoriaEquipo">Categoría del Equipo:</label>
-            <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
-              [(ngModel)]="teamNew.categoryType.categoryTypeId">
-              <!-- Puedes ajustar las opciones según tus necesidades -->
+          <div class="mb-3">
+            <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
+            <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" [(ngModel)]="teamNew.categoryType.categoryTypeId">
+              <!-- Opciones ajustadas según tus necesidades -->
               <option value="1">Categoría 1</option>
               <option value="2">Categoría 2</option>
               <option value="3">Categoría 3</option>
@@ -125,7 +122,7 @@
           </div>
 
           <!-- Botón para guardar el nuevo equipo -->
-          <button type="button" class="btn btn-primary" (click)="crearEquipo()">Guardar</button>
+          <button type="button" class="btn btn-primary float-end" (click)="crearEquipo()">Guardar</button>
         </form>
       </div>
     </div>
