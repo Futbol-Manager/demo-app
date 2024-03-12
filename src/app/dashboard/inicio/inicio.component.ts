@@ -139,7 +139,7 @@ export class InicioComponent implements OnInit {
   // Método para navegar a la pantalla de calendario
   navegarACalendario(teamId: number): void {
     // Puedes ajustar la ruta según tu estructura de rutas
-    this.router.navigate(['/calendario', teamId]);
+    this.router.navigate(['/dashboard/calendario', teamId]);
   }
 
 }

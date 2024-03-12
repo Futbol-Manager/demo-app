@@ -18,6 +18,7 @@ const appRoutes: Routes = [
     loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
     canActivate: [AuthGuard], // Agrega canActivate aquí
   },
+  { path: '**', redirectTo: '/404' }, // Manejo de rutas no encontradas
   
 ];
 

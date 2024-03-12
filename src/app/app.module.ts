@@ -13,6 +13,7 @@ import { CalendarioComponent } from './dashboard/calendario/calendario.component
 import { PlayerComponent } from './dashboard/player/player.component';
 import { HttpClientModule } from '@angular/common/http';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { DashboardModule } from './dashboard/dashboard.module';
     FormsModule,
 		ReactiveFormsModule,
     HttpClientModule,
-    DashboardModule
+    DashboardModule,
+    CommonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

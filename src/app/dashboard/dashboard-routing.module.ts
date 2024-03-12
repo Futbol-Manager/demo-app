@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Routes } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
 import { InicioComponent } from './inicio/inicio.component';
 import { CalendarioComponent } from './calendario/calendario.component';
@@ -8,7 +8,7 @@ import { PlayerComponent } from './player/player.component';
 
 const routes: Routes = [
   {
-    path: 'dashboard',
+    path: '',
     component: DashboardComponent,
     children: [
       { path: 'inicio', component: InicioComponent },
@@ -16,15 +16,15 @@ const routes: Routes = [
       { path: 'jugadores/:teamId', component: PlayerComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
-  },
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
-  { path: '**', redirectTo: '/dashboard' }
+  }
 ];
 
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule
-  ]
+    CommonModule,
+    RouterModule.forChild(routes)
+  ],
+  exports: [RouterModule]
 })
 export class DashboardRoutingModule { }

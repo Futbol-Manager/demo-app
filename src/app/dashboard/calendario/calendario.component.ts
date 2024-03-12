@@ -49,13 +49,13 @@ export class CalendarioComponent implements OnInit {
   // Método para redirigir a la pantalla de jugadores con el teamId
   irAPantallaJugadores(): void {
     // Ajusta la ruta según la configuración de tus rutas en el enrutador
-    this.router.navigate(['/jugadores', this.teamId]);
+    this.router.navigate(['/dashboard/jugadores', this.teamId]);
   }
 
   // Método para redirigir a la pantalla de jugadores con el teamId
   navegarAInicio(): void {
     // Ajusta la ruta según la configuración de tus rutas en el enrutador
-    this.router.navigate(['/inicio']);
+    this.router.navigate(['/dashboard/inicio']);
   }
 
 }

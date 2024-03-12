@@ -6,6 +6,7 @@ import { DashboardRoutingModule } from './dashboard-routing.module';
 import { InicioComponent } from './inicio/inicio.component';
 import { CalendarioComponent } from './calendario/calendario.component';
 import { PlayerComponent } from './player/player.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -19,7 +20,9 @@ import { PlayerComponent } from './player/player.component';
   ],
   imports: [
     CommonModule,
-    DashboardRoutingModule
+    DashboardRoutingModule,
+    FormsModule,
+		ReactiveFormsModule
   ]
 })
 export class DashboardModule { }
