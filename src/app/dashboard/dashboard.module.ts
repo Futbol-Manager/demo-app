@@ -7,6 +7,7 @@ import { InicioComponent } from './inicio/inicio.component';
 import { CalendarioComponent } from './calendario/calendario.component';
 import { PlayerComponent } from './player/player.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 
 
 
@@ -22,7 +23,8 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     CommonModule,
     DashboardRoutingModule,
     FormsModule,
-		ReactiveFormsModule
+		ReactiveFormsModule,
+    NgxDatatableModule
   ]
 })
 export class DashboardModule { }

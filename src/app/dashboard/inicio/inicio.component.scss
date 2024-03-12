@@ -1,44 +1,34 @@
 /* styles.scss */
-  .card {
-    border-radius: 10px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    width: 250px;
-  }
-  
-  .card-title {
-    font-weight: bold;
-  }
-  
-  .card-text {
-    font-size: 14px;
-  }
-  
-  .btn-danger {
-    margin-right: 10px;
-  }
+.card {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
 
-  .img-half-size {
-    width: 50%;
-    height: auto;
-  }
-  
-  .bg-light-green {
-    background-color: #d1e7dd; /* Color verde claro */
-  }
+.card-title {
+  font-weight: bold;
+}
 
-  .btn-width {
-    width: 100%;
-  }
+.card-text {
+  font-size: 14px;
+}
 
-  .modal-content {
-    background-color: #d1e7dd; /* Cambia el color a tu preferencia */
-  }
-  
-  
-  
-  
+.btn-danger {
+  margin-right: 10px;
+}
 
+.img-half-size {
+  width: 50%;
+  height: auto;
+}
 
-  
-  
-  
+.bg-light-green {
+  background-color: #d1e7dd; /* Color verde claro */
+}
+
+.btn-width {
+  width: 100%;
+}
+
+.modal-content {
+  background-color: #d1e7dd; /* Cambia el color a tu preferencia */
+}
