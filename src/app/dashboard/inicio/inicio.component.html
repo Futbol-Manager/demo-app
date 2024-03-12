@@ -1,44 +1,33 @@
 <div class="homepage-container">
-  <!-- Encabezado con botones utilizando Bootstrap -->
-  <div class="d-flex justify-content-between">
-    <button class="btn btn-primary" (click)="verPerfil()">Ver Perfil</button>
-    <button class="btn btn-danger" (click)="cerrarSesion()">Cerrar Sesión</button>
-  </div>
-
   <!-- Contenido principal con la tabla de equipos utilizando Bootstrap -->
   <div class="mt-4">
     <h2 class="text-white">Listado de Equipos de Fútbol</h2>
 
-    <table class="table table-bordered table-light">
-      <thead>
-        <tr>
-          <th scope="col">ID</th>
-          <th scope="col">Nombre</th>
-          <th scope="col">Categoría</th>
-          <th scope="col">Días</th>
-          <th scope="col">Acciones</th> <!-- Nueva columna para acciones -->
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Itera sobre el listado de equipos y muestra la información -->
-        <tr *ngFor="let team of listTeam">
-          <td>{{ team.teamId }}</td>
-          <td>{{ team.name }}</td>
-          <td>{{ team.category }}</td>
-          <td>{{ team.trainingDays }}</td>
-          <td>
-            <!-- Botón de papelera con evento de clic -->
-            <button class="btn btn-danger" (click)="confirmarEliminarEquipo(team.teamId, team.name)">
-              <i class="bi bi-trash"></i> Eliminar
-            </button>
-            <!-- Botón "Entrar" con evento de clic -->
-            <button class="btn btn-primary" (click)="navegarACalendario(team.teamId)">
-              Entrar
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="container">
+      <div class="row row-cols-4 flex-wrap">
+        <div class="col mx-10" *ngFor="let team of listTeam">
+          <div class="card mb-3">
+            <img src="assets/images/madrid.png" class="card-img-top" alt="Madrid">
+            <div class="card-body">
+              <h5 class="card-title">{{ team.name }}</h5>
+              <p class="card-text">
+                <strong>Categoría:</strong> {{ team.category }}<br>
+                <strong>Días:</strong> {{ team.trainingDays }}
+              </p>
+              <div class="d-flex justify-content-between">
+                <button class="btn btn-danger" (click)="confirmarEliminarEquipo(team.teamId, team.name)">
+                  <i class="bi bi-trash"></i> Eliminar
+                </button>
+                <button class="btn btn-primary" (click)="navegarACalendario(team.teamId)">
+                  Entrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
 
     <!-- Botón para abrir el modal de creación de equipo -->
     <button class="btn btn-success" (click)="abrirModalCrearEquipo()">Crear Equipo</button>

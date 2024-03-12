@@ -1,9 +1,23 @@
 /* styles.scss */
-:host {
-    display: block;
-    background: linear-gradient(to right, #ffea00, #4caf50); /* Degradado amarillo a verde */
-    height: 100vh; /* Ajusta la altura según sea necesario */
-    margin: 0;
-    padding: 0;
+  .card {
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    width: 250px;
   }
+  
+  .card-title {
+    font-weight: bold;
+  }
+  
+  .card-text {
+    font-size: 14px;
+  }
+  
+  .btn-danger {
+    margin-right: 10px;
+  }
+
+
+  
+  
   
