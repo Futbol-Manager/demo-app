@@ -11,6 +11,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { InicioComponent } from './pages/inicio/inicio.component';
 import { CalendarioComponent } from './pages/calendario/calendario.component';
 import { PlayerComponent } from './pages/player/player.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { PlayerComponent } from './pages/player/player.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     FormsModule,
-		ReactiveFormsModule
+		ReactiveFormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

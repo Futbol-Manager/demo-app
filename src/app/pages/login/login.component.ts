@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoginModel } from 'src/app/core/models/users/login.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -12,6 +12,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 export class LoginComponent implements OnInit {
   loginForm: FormGroup;
 	public hidePassword = true;
+
   validationMessages = {
 		mail: [],
 		password: [],
@@ -20,6 +21,7 @@ export class LoginComponent implements OnInit {
   constructor(
     private loginService: LoginService,
     private router: Router,
+    private fb: FormBuilder
   ) {
     this.loginForm = new FormGroup({
       mail: new FormControl('', [Validators.required, Validators.email]),
@@ -28,7 +30,8 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.resetForm();
+    //this.resetForm();
+    this.initLoginForm();
   }
 
   login() {
@@ -55,7 +58,14 @@ export class LoginComponent implements OnInit {
 		this.loginForm.value.keyWord = "";
 	}
 
-  get mailControl() {
+  initLoginForm(): void {
+    this.loginForm = this.fb.group({
+      mail: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
+    });
+  }
+
+  /*get mailControl() {
 		if (this.loginForm) {
 			return this.loginForm.get("mail");
 		} else {
@@ -69,6 +79,14 @@ export class LoginComponent implements OnInit {
 		} else {
 			return null;
 		}
-	}
+	}*/
+
+  get mailControl() {
+    return this.loginForm.get('mail');
+  }
+
+  get passwordControl() {
+    return this.loginForm.get('password');
+  }
 
 }
