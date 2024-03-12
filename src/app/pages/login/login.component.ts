@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
       .subscribe(
         (res) => {
           if (res.data != null) {
-            this.router.navigate(['/inicio']);
+            this.router.navigate(['/dashboard/inicio']);
           } else{
             //this.toastrService.show('El mail o la contraseña son incorrectos', 'Error al iniciar sesión', { status: 'error' });
           }
