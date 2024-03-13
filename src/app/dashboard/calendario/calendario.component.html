@@ -1,41 +1,36 @@
-<!-- Botón "Entrar" con evento de clic -->
-<button class="btn btn-primary" (click)="navegarAInicio()">
-  Volver
-</button>
+<!-- Botón para redirigir a la pantalla de jugadores -->
+<button class="btn btn-primary mt-3" (click)="irAPantallaJugadores()">Ir a Jugadores</button>
+
 <!-- calendario.component.html -->
 <div class="container mt-4">
-    <!-- Título del equipo -->
-    <h2 class="text-white">{{ nombreEquipo }}</h2>
-  
-    <!-- Tabla del calendario -->
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th scope="col">Lunes</th>
-          <th scope="col">Martes</th>
-          <th scope="col">Miércoles</th>
-          <th scope="col">Jueves</th>
-          <th scope="col">Viernes</th>
-          <th scope="col">Sábado</th>
-          <th scope="col">Domingo</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Filas de la tabla (puedes ajustar la cantidad según necesites) -->
-        <tr *ngFor="let semana of calendario">
-          <td>{{ semana.lunes }}</td>
-          <td>{{ semana.martes }}</td>
-          <td>{{ semana.miercoles }}</td>
-          <td>{{ semana.jueves }}</td>
-          <td>{{ semana.viernes }}</td>
-          <td>{{ semana.sabado }}</td>
-          <td>{{ semana.domingo }}</td>
-        </tr>
-      </tbody>
-    </table>
-    
-    <!-- Botón para redirigir a la pantalla de jugadores -->
-    <button class="btn btn-primary mt-3" (click)="irAPantallaJugadores()">Ir a Jugadores</button>
-  
-  </div>
-  
+  <!-- Título del equipo -->
+  <h2 class="text-white">{{ nombreEquipo }}</h2>
+
+  <!-- Tabla del calendario -->
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th scope="col">Lunes</th>
+        <th scope="col">Martes</th>
+        <th scope="col">Miércoles</th>
+        <th scope="col">Jueves</th>
+        <th scope="col">Viernes</th>
+        <th scope="col">Sábado</th>
+        <th scope="col">Domingo</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Filas de la tabla (puedes ajustar la cantidad según necesites) -->
+      <tr *ngFor="let semana of calendario">
+        <td>{{ semana.lunes }}</td>
+        <td>{{ semana.martes }}</td>
+        <td>{{ semana.miercoles }}</td>
+        <td>{{ semana.jueves }}</td>
+        <td>{{ semana.viernes }}</td>
+        <td>{{ semana.sabado }}</td>
+        <td>{{ semana.domingo }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

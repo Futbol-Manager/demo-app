@@ -29,14 +29,24 @@ export class PlayerComponent implements OnInit {
   teamId!: number;
   showModal = false;
   player: PlayerNEW = new PlayerNEW();
-  listPlayers: any[] = []; // Define una variable para almacenar el listado de equipos
-  players: Player1[] = [
+
+  players: any[] = []; // Define una variable para almacenar el listado de equipos
+  /*players: Player1[] = [
     { id: 1, nombre: 'Juan', apellido: 'Pérez', fechaNacimiento: '1990-05-15', posicion: 'Delantero' },
     { id: 2, nombre: 'María', apellido: 'Gómez', fechaNacimiento: '1988-10-20', posicion: 'Mediocampista' },
     { id: 3, nombre: 'Carlos', apellido: 'Martínez', fechaNacimiento: '1995-03-07', posicion: 'Defensor' },
     { id: 4, nombre: 'Laura', apellido: 'López', fechaNacimiento: '1992-07-12', posicion: 'Portero' },
-    { id: 5, nombre: 'Pedro', apellido: 'Sánchez', fechaNacimiento: '1987-12-30', posicion: 'Delantero' }
-  ];
+    { id: 5, nombre: 'Pedro', apellido: 'Sánchez', fechaNacimiento: '1987-12-30', posicion: 'Delantero' },
+    { id: 22, nombre: 'María', apellido: 'Gómez', fechaNacimiento: '1988-10-20', posicion: 'Mediocampista' },
+    { id: 32, nombre: 'Carlos', apellido: 'Martínez', fechaNacimiento: '1995-03-07', posicion: 'Defensor' },
+    { id: 42, nombre: 'Laura', apellido: 'López', fechaNacimiento: '1992-07-12', posicion: 'Portero' },
+    { id: 223, nombre: 'María', apellido: 'Gómez', fechaNacimiento: '1988-10-20', posicion: 'Mediocampista' },
+    { id: 33, nombre: 'Carlos', apellido: 'Martínez', fechaNacimiento: '1995-03-07', posicion: 'Defensor' },
+    { id: 43, nombre: 'Laura', apellido: 'López', fechaNacimiento: '1992-07-12', posicion: 'Portero' },
+    { id: 21, nombre: 'María', apellido: 'Gómez', fechaNacimiento: '1988-10-20', posicion: 'Mediocampista' },
+    { id: 31, nombre: 'Carlos', apellido: 'Martínez', fechaNacimiento: '1995-03-07', posicion: 'Defensor' },
+    { id: 41, nombre: 'Laura', apellido: 'López', fechaNacimiento: '1992-07-12', posicion: 'Portero' }
+  ];*/
 
   
 
@@ -45,13 +55,6 @@ export class PlayerComponent implements OnInit {
     private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    $(document).ready(() => {
-      $('#dataTable').DataTable({
-        paging: true,
-        searching: true,
-        ordering: true
-      });
-    });
     // Suscribirse a los cambios en los parámetros de la URL
     this.route.params.subscribe(params => {
       // Obtener el valor de teamId de los parámetros
@@ -69,7 +72,9 @@ export class PlayerComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data && Array.isArray(response.data)) {
           // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.listPlayers = response.data.map((player: Player) => new Player(player));
+          this.players = response.data.map((player: Player) => new Player(player));
+          // Inicializar el DataTable después de cargar los datos
+          this.inicializarDataTable();
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -78,6 +83,29 @@ export class PlayerComponent implements OnInit {
         console.error('Error al cargar el listado de jugadores', error);
       }
     );
+  }
+
+  // Método para inicializar el DataTable
+  inicializarDataTable(): void {
+    // Destruir el DataTable si ya existe
+    const $dataTable = $('#dataTable');
+    if ($dataTable.hasClass('dataTable')) {
+      $dataTable.DataTable().destroy();
+    }
+
+    $(document).ready(() => {
+      $('#dataTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true,
+        columnDefs: [
+            {
+                targets: [0], // El índice de la columna que deseas ocultar (en este caso, Player ID)
+                visible: false // Establecer visible como falso oculta la columna
+            }
+        ]
+      });
+    });
   }
 
   // Método para confirmar la eliminación del equipo
@@ -109,6 +137,7 @@ export class PlayerComponent implements OnInit {
 
   // Método para abrir el modal de creación de equipo
   abrirModalCrearJugdor(): void {
+    this.inicializePlayer();
     this.showModal = true;
   }
 
@@ -118,15 +147,14 @@ export class PlayerComponent implements OnInit {
   cerrarModal(): void {
     this.showModal = false;
     // Limpiar los datos del nuevo equipo al cerrar el modal si es necesario
-    this.player = new PlayerNEW();
+    this.inicializePlayer();
   }
 
   // Método para crear un nuevo equipo
   crearJugador(): void {
-
     // Crear una instancia de PlayerNEW y asignar los campos del modal
     this.player = {
-      playerId: 0, // O el valor por defecto que desees para playerId
+      playerId: this.player.playerId !== 0 ? this.player.playerId : 0,
       ability: this.player.ability,
       abilityFootBad: this.player.abilityFootBad,
       birthdate: new Date(), // O ajusta según tus necesidades
@@ -175,5 +203,39 @@ export class PlayerComponent implements OnInit {
     // Puedes ajustar la ruta según tu estructura de rutas
     this.router.navigate(['/dashboard/calendario', this.teamId]);
   }
+
+  inicializePlayer(){
+    this.player = {
+      playerId: 0, // O el valor por defecto que desees para playerId
+      ability: 50,
+      abilityFootBad: 50,
+      birthdate: new Date(), // O ajusta según tus necesidades
+      dateCreate: new Date(), // O ajusta según tus necesidades
+      dateEdit: new Date(), // O ajusta según tus necesidades
+      dribbling: 50,
+      finishFoot: 50,
+      finishHead: 50,
+      firstName: '', // Agrega el valor por defecto correspondiente
+      footNatural: 1, // Valor por defecto para el combo de pie natural
+      forcePlayer: 50,
+      height: '', // Valor por defecto para el campo de altura
+      hit: 50,
+      jump: 50,
+      picturePlayer: '', // Agrega el valor por defecto correspondiente
+      position: '', // Agrega el valor por defecto correspondiente
+      resistance: 50,
+      secondName: '', // Agrega el valor por defecto correspondiente
+      speed: 50,
+      weight: '', // Valor por defecto para el campo de peso
+      opinion: '' // Agrega el valor por defecto correspondiente
+    };
+  }
+
+  editarJugador(playerId: number): void {
+    const jugadorSeleccionado = this.players.find(player => player.playerId === playerId);
+    this.player = jugadorSeleccionado;
+    this.showModal = true; // Suponiendo que tienes una variable que controla la visibilidad del modal de edición
+}
+  
 
 }
