@@ -1,5 +1,5 @@
 <!-- Botón para abrir el modal de creación de equipo -->
-<div class="d-flex justify-content-end mt-3">
+<div class="d-flex mt-3">
   <button class="btn btn-success ms-2" (click)="abrirModalCrearEquipo()">Crear Equipo</button>
 </div>
 
@@ -11,40 +11,16 @@
       <h2 class="text-dark mt-3">Listado de Equipos de Fútbol</h2>
       <ul class="nav nav-tabs" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-          <button class="nav-link active" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-content"
-            type="button" role="tab" aria-controls="card-content" aria-selected="true">Vista de tarjetas</button>
+          <button class="nav-link active" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-content" type="button"
+            role="tab" aria-controls="list-content" aria-selected="true">Vista de lista</button>
         </li>
         <li class="nav-item" role="presentation">
-          <button class="nav-link" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-content" type="button"
-            role="tab" aria-controls="list-content" aria-selected="false">Vista de lista</button>
+          <button class="nav-link" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-content"
+            type="button" role="tab" aria-controls="card-content" aria-selected="false">Vista de tarjetas</button>
         </li>
       </ul>
       <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade show active" id="card-content" role="tabpanel" aria-labelledby="card-tab">
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
-            <div class="col mb-3" *ngFor="let team of listTeam">
-              <div class="card">
-                <img src="assets/images/madrid.png" class="card-img-top img-half-size mx-auto" alt="Madrid">
-                <div class="card-body text-center">
-                  <h5 class="card-title">{{ team.name }}</h5>
-                  <p class="card-text">
-                    <strong>Categoría:</strong> {{ team.category }}<br>
-                    <strong>Días:</strong> {{ team.trainingDays }}
-                  </p>
-                  <div class="d-flex justify-content-center">
-                    <button class="btn btn-primary btn-width me-2" (click)="navegarACalendario(team.teamId)">
-                      Entrar
-                    </button>
-                    <button class="btn btn-danger btn-width" (click)="confirmarEliminarEquipo(team.teamId, team.name)">
-                      <i class="bi bi-trash"></i> Eliminar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="list-content" role="tabpanel" aria-labelledby="list-tab">
+        <div class="tab-pane fade show active" id="list-content" role="tabpanel" aria-labelledby="list-tab">
           <div class="border p-3">
             <div class="row" *ngFor="let team of listTeam">
               <div class="col mb-3 border border-dark rounded bg-light-green p-2">
@@ -72,8 +48,33 @@
             </div>
           </div>
         </div>
+        <div class="tab-pane fade" id="card-content" role="tabpanel" aria-labelledby="card-tab">
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+            <div class="col mb-3" *ngFor="let team of listTeam">
+              <div class="card">
+                <img src="assets/images/madrid.png" class="card-img-top img-half-size mx-auto" alt="Madrid">
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ team.name }}</h5>
+                  <p class="card-text">
+                    <strong>Categoría:</strong> {{ team.category }}<br>
+                    <strong>Días:</strong> {{ team.trainingDays }}
+                  </p>
+                  <div class="d-flex justify-content-center">
+                    <button class="btn btn-primary btn-width me-2" (click)="navegarACalendario(team.teamId)">
+                      Entrar
+                    </button>
+                    <button class="btn btn-danger btn-width" (click)="confirmarEliminarEquipo(team.teamId, team.name)">
+                      <i class="bi bi-trash"></i> Eliminar
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
+    
   </div>
 </div>
 

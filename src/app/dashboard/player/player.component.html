@@ -9,7 +9,7 @@
     <h2 class="text-white">Lista de Jugadores</h2>
 
     <table id="dataTable" class="table table-bordered table-striped">
-        <thead>
+        <thead style="background-color: cornflowerblue;">
             <tr>
                 <th>Player ID</th>
                 <th>NOMBRE</th>
@@ -234,13 +234,15 @@
             </div>
             <div class="modal-body">
                 <div class="row h-50">
-                    <div class="col-md-6 h-50">
-                        <!-- Aquí mostramos la imagen del jugador -->
+                    <div class="col-md-6 h-50" style="text-align: center;">
+                        <!-- Aquí mostramos la imagen del jugador 
                         <img *ngIf="selectedPlayer.picturePlayer" [src]="selectedPlayer.picturePlayer" class="img-fluid"
-                            alt="Imagen del jugador">
-                        <ng-container *ngIf="!selectedPlayer.picturePlayer">
+                            alt="Imagen del jugador">-->
+                        <!--<ng-container *ngIf="!selectedPlayer.picturePlayer"> 
                             <span class="bi bi-person" style="font-size: 3rem;"></span>
-                        </ng-container>
+                        </ng-container> -->
+                        <img style="max-width: 15vw;" *ngIf="!selectedPlayer.picturePlayer" src="./../../../assets/images/jugador.png" class="img-fluid"
+                            alt="Imagen del jugador">
                         <h4>{{ selectedPlayer.firstName }} {{ selectedPlayer.secondName }}</h4>
                         <div *ngIf="mostrarEdad">
                             <p>Edad: {{ edadSeleccionada }} años</p>

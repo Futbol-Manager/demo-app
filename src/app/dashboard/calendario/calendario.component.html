@@ -7,30 +7,32 @@
   <h2 class="text-white">{{ nombreEquipo }}</h2>
 
   <!-- Tabla del calendario -->
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th scope="col">Lunes</th>
-        <th scope="col">Martes</th>
-        <th scope="col">Miércoles</th>
-        <th scope="col">Jueves</th>
-        <th scope="col">Viernes</th>
-        <th scope="col">Sábado</th>
-        <th scope="col">Domingo</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Filas de la tabla (puedes ajustar la cantidad según necesites) -->
-      <tr *ngFor="let semana of calendario">
-        <td>{{ semana.lunes }}</td>
-        <td>{{ semana.martes }}</td>
-        <td>{{ semana.miercoles }}</td>
-        <td>{{ semana.jueves }}</td>
-        <td>{{ semana.viernes }}</td>
-        <td>{{ semana.sabado }}</td>
-        <td>{{ semana.domingo }}</td>
-      </tr>
-    </tbody>
-  </table>
+<table class="table table-bordered">
+  <thead style="background-color: cornflowerblue;">
+    <tr>
+      <th scope="col">Lunes</th>
+      <th scope="col">Martes</th>
+      <th scope="col">Miércoles</th>
+      <th scope="col">Jueves</th>
+      <th scope="col">Viernes</th>
+      <th scope="col">Sábado</th>
+      <th scope="col">Domingo</th>
+    </tr>
+  </thead>
+  <tbody style="background-color: lightgoldenrodyellow;">
+    <!-- Filas de la tabla -->
+    <tr *ngFor="let semana of calendario">
+      <ng-container *ngFor="let dia of semana">
+        <td>
+          <ng-container *ngIf="dia !== ''">
+            {{ dia }}
+            <button class="btn btn-primary btn-sm" (click)="agregarEvento(dia)">Añadir</button>
+          </ng-container>
+        </td>
+      </ng-container>
+    </tr>
+  </tbody>
+</table>
+
 
 </div>
