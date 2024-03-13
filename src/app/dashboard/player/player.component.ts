@@ -6,6 +6,9 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { Player, PlayerNEW } from 'src/app/core/services/player/player.model';
 import * as $ from 'jquery';
 import 'datatables.net';
+import { Chart, registerables } from 'chart.js/auto';
+// Registra los complementos necesarios
+Chart.register(...registerables);
 
 
 // player.model.ts
@@ -28,7 +31,12 @@ export class PlayerComponent implements OnInit {
   usuarioActual!: User | null;
   teamId!: number;
   showModal = false;
+  mostrarModalInfoJugador = false;
+  selectedPlayer: PlayerNEW = new PlayerNEW();
   player: PlayerNEW = new PlayerNEW();
+  radarChart: Chart | null = null; // Inicializar la variable radarChart
+  mostrarEdad: boolean = false;
+  edadSeleccionada: number = 0;
 
   players: any[] = []; // Define una variable para almacenar el listado de equipos
   /*players: Player1[] = [
@@ -151,13 +159,13 @@ export class PlayerComponent implements OnInit {
   }
 
   // Método para crear un nuevo equipo
-  crearJugador(): void {
+  crearJugador(): void {    
     // Crear una instancia de PlayerNEW y asignar los campos del modal
     this.player = {
       playerId: this.player.playerId !== 0 ? this.player.playerId : 0,
       ability: this.player.ability,
       abilityFootBad: this.player.abilityFootBad,
-      birthdate: new Date(), // O ajusta según tus necesidades
+      birthdate: this.player.birthdate, // O ajusta según tus necesidades
       dateCreate: new Date(), // O ajusta según tus necesidades
       dateEdit: new Date(), // O ajusta según tus necesidades
       dribbling: this.player.dribbling,
@@ -209,7 +217,7 @@ export class PlayerComponent implements OnInit {
       playerId: 0, // O el valor por defecto que desees para playerId
       ability: 50,
       abilityFootBad: 50,
-      birthdate: new Date(), // O ajusta según tus necesidades
+      birthdate: '', // O ajusta según tus necesidades
       dateCreate: new Date(), // O ajusta según tus necesidades
       dateEdit: new Date(), // O ajusta según tus necesidades
       dribbling: 50,
@@ -235,7 +243,90 @@ export class PlayerComponent implements OnInit {
     const jugadorSeleccionado = this.players.find(player => player.playerId === playerId);
     this.player = jugadorSeleccionado;
     this.showModal = true; // Suponiendo que tienes una variable que controla la visibilidad del modal de edición
-}
+  }
   
+  verInfoJugador(player: Player): void {
+    this.selectedPlayer = player; // Almacena el jugador seleccionado en una propiedad del componente
+    this.edadSeleccionada = this.calcularEdad(player.birthdate);
+    this.mostrarEdad = true;
+    this.mostrarModalInfoJugador = true; // Activa el indicador para mostrar el modal
+
+    // Aquí llamamos a la función para cargar el gráfico de radar
+    this.cargarGraficoRadar();
+  }
+
+  // Método para cargar el gráfico de radar con los datos del jugador
+  cargarGraficoRadar() {
+    // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
+    if (this.radarChart) {
+      this.radarChart.destroy(); // Destruye el gráfico existente
+    }
+    const ctx = document.getElementById('radarChart') as HTMLCanvasElement;
+    this.radarChart = new Chart(ctx, {
+      type: 'radar',
+      data: {
+        labels: ['Resistencia', 'Regate', 'Finalización con Pie', 'Fuerza', 'Velocidad', 'Habilidad'],
+        datasets: [{
+          label: 'Atributos del Jugador',
+          data: [
+            this.selectedPlayer.resistance,
+            this.selectedPlayer.dribbling,
+            this.selectedPlayer.finishFoot,
+            this.selectedPlayer.forcePlayer,
+            this.selectedPlayer.speed,
+            this.selectedPlayer.ability
+          ],
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Gráfica del jugador'
+          }
+        },
+        scales: {
+          r: {
+            angleLines: {
+              display: true
+            },
+            pointLabels: {
+              font: {
+                size: 14
+              }
+            },
+            min: 0, // Establece el valor mínimo del eje radial
+            max: 100 // Establece el valor máximo del eje radial
+          }
+        }
+      }
+    });
+  }
+
+  // Método para cerrar el modal de información del jugador
+  cerrarModalInfoJugador() {
+    this.mostrarModalInfoJugador = false;
+  }
+
+  // Método para calcular la edad del jugador a partir de su fecha de nacimiento
+  calcularEdad(fechaNacimientoString: string): number {
+    // Convertimos la cadena de fecha de nacimiento a un objeto Date
+    const fechaNacimiento = new Date(fechaNacimientoString);
+
+    const hoy = new Date();
+    const cumpleanos = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - cumpleanos.getFullYear();
+    const mes = hoy.getMonth() - cumpleanos.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoy.getDate() < cumpleanos.getDate())) {
+      edad--;
+    }
+
+    return edad;
+  }
 
 }

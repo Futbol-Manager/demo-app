@@ -3,7 +3,7 @@ export class Player {
     playerId: number;
     ability: number;
     abilityFootBad: number;
-    birthdate: Date;
+    birthdate: string;
     dateCreate: Date;
     dateEdit: Date;
     dribbling: number;
@@ -27,7 +27,7 @@ export class Player {
       this.playerId = object.playerId || 0;
       this.ability = object.ability || 0;
       this.abilityFootBad = object.abilityFootBad || 0;
-      this.birthdate = new Date(object.birthdate) || null;
+      this.birthdate = object.birthdate || '';
       this.dateCreate = new Date(object.dateCreate) || null;
       this.dateEdit = new Date(object.dateEdit) || null;
       this.dribbling = object.dribbling || 0;
@@ -53,7 +53,7 @@ export class Player {
       playerId: number = 0;
       ability: number = 0;
       abilityFootBad: number = 0;
-      birthdate: Date = new Date();
+      birthdate: string = '';
       dateCreate: Date = new Date();
       dateEdit: Date = new Date();
       dribbling: number = 0;

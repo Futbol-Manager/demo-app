@@ -62,22 +62,23 @@
                 <td>{{ player.opinion }}</td>
                 <td>
                     <div class="d-flex justify-content-between">
-                        <button class="btn btn-danger" title="Eliminar" (click)="confirmarEliminarJugador(player.playerId, player.firstName, player.secondName)">
+                        <button class="btn btn-danger" title="Eliminar"
+                            (click)="confirmarEliminarJugador(player.playerId, player.firstName, player.secondName)">
                             <span class="bi bi-trash"></span>
                         </button>
                         <button class="btn btn-primary" title="Editar" (click)="editarJugador(player.playerId)">
                             <span class="bi bi-pencil"></span>
-                        </button>                    
-                        <button class="btn btn-info" title="Ver info">
+                        </button>
+                        <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
                             <span class="bi bi-person"></span>
                         </button>
                     </div>
-                </td>               
+                </td>
             </tr>
         </tbody>
-        
+
     </table>
-    
+
 
     <!-- <table id="dataTable" class="table table-bordered table-striped">
         <thead>
@@ -98,9 +99,9 @@
             <td>{{ player.posicion }}</td>
           </tr>
         </tbody>
-      </table>     --> 
-      
-      
+      </table>     -->
+
+
 </div>
 
 <!-- Modal para la creación de jugador -->
@@ -110,7 +111,7 @@
             <div class="modal-header">
                 <h5 class="modal-title">Crear Jugador</h5>
                 <!-- Botón de cerrar con un icono -->
-                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>                
+                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
             </div>
             <div class="modal-body">
                 <!-- Formulario para la creación de jugador -->
@@ -174,7 +175,8 @@
                     </div>
                     <div class="form-group">
                         <label for="footNatural">Pie natural:</label>
-                        <select class="form-control" id="footNatural" name="footNatural" [(ngModel)]="player.footNatural">
+                        <select class="form-control" id="footNatural" name="footNatural"
+                            [(ngModel)]="player.footNatural">
                             <option value="1">Derecha</option>
                             <option value="2">Izquierda</option>
                         </select>
@@ -219,6 +221,38 @@
                     <!-- Botón para guardar el nuevo jugador -->
                     <button type="button" class="btn btn-primary" (click)="crearJugador()">Guardar</button>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver información del jugador -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': mostrarModalInfoJugador}">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="min-height: 80vh;">
+            <div class="modal-header">
+                <h5 class="modal-title">Información del Jugador</h5>
+                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalInfoJugador()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row h-100">
+                    <div class="col-md-6 h-100">
+                        <!-- Aquí mostramos la imagen del jugador -->
+                        <img *ngIf="selectedPlayer.picturePlayer" [src]="selectedPlayer.picturePlayer" class="img-fluid"
+                            alt="Imagen del jugador">
+                        <ng-container *ngIf="!selectedPlayer.picturePlayer">
+                            <span class="bi bi-person" style="font-size: 3rem;"></span>
+                        </ng-container>
+                        <h4>{{ selectedPlayer.firstName }} {{ selectedPlayer.secondName }}</h4>
+                        <div *ngIf="mostrarEdad">
+                            <p>Edad: {{ edadSeleccionada }} años</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 h-100">
+                        <!-- Aquí mostramos el gráfico de radar -->
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

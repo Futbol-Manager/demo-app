@@ -1,3 +1,11 @@
 .modal-content {
-    background-color: #d1e7dd; /* Cambia el color a tu preferencia */
-  }
+    background-color: #d1e7dd;
+    /* Cambia el color a tu preferencia */
+}
+
+.modal-lg {
+    max-width: 70vw;
+    /* Establece el ancho máximo del modal */
+    max-height: 80vh;
+    /* Establece la altura máxima del modal */
+}
