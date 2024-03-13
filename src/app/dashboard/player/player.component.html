@@ -6,6 +6,30 @@
 <div class="container mt-4">
     <h2 class="text-white">Lista de Jugadores</h2>
 
+    <table id="dataTable" class="table table-bordered">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Fecha de Nacimiento</th>
+            <th>Posición</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Iterar sobre la lista de jugadores y mostrar la información -->
+          <tr *ngFor="let player of players">
+            <td>{{ player.id }}</td>
+            <td>{{ player.nombre }}</td>
+            <td>{{ player.apellido }}</td>
+            <td>{{ player.fechaNacimiento }}</td>
+            <td>{{ player.posicion }}</td>
+          </tr>
+        </tbody>
+      </table>
+      
+
+
     <table class="table table-bordered">
         <thead>
             <tr>

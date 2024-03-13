@@ -4,6 +4,19 @@ import { User } from 'src/app/core/models/users/user.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Player, PlayerNEW } from 'src/app/core/services/player/player.model';
+import * as $ from 'jquery';
+import 'datatables.net';
+
+
+// player.model.ts
+export interface Player1 {
+  id: number;
+  nombre: string;
+  apellido: string;
+  fechaNacimiento: string;
+  posicion: string;
+}
+
 
 @Component({
   selector: 'app-player',
@@ -17,12 +30,28 @@ export class PlayerComponent implements OnInit {
   showModal = false;
   player: PlayerNEW = new PlayerNEW();
   listPlayers: any[] = []; // Define una variable para almacenar el listado de equipos
+  players: Player1[] = [
+    { id: 1, nombre: 'Juan', apellido: 'Pérez', fechaNacimiento: '1990-05-15', posicion: 'Delantero' },
+    { id: 2, nombre: 'María', apellido: 'Gómez', fechaNacimiento: '1988-10-20', posicion: 'Mediocampista' },
+    { id: 3, nombre: 'Carlos', apellido: 'Martínez', fechaNacimiento: '1995-03-07', posicion: 'Defensor' },
+    { id: 4, nombre: 'Laura', apellido: 'López', fechaNacimiento: '1992-07-12', posicion: 'Portero' },
+    { id: 5, nombre: 'Pedro', apellido: 'Sánchez', fechaNacimiento: '1987-12-30', posicion: 'Delantero' }
+  ];
+
+  
 
   constructor(private playerservice: PlayerService,
     private router: Router,
     private route: ActivatedRoute) { }
 
   ngOnInit(): void {
+    $(document).ready(() => {
+      $('#dataTable').DataTable({
+        paging: true,
+        searching: true,
+        ordering: true
+      });
+    });
     // Suscribirse a los cambios en los parámetros de la URL
     this.route.params.subscribe(params => {
       // Obtener el valor de teamId de los parámetros
