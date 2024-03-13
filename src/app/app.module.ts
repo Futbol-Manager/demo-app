@@ -15,6 +15,7 @@ import { CommonModule } from '@angular/common';
 // Importa Popper.js
 import * as Popper from 'popper.js';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
     HttpClientModule,
     DashboardModule,
     CommonModule,
-    NgxDatatableModule
+    NgxDatatableModule,
+    MatSnackBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

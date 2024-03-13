@@ -4,6 +4,11 @@ import { Router } from '@angular/router';
 import { LoginModel } from 'src/app/core/models/users/login.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 
+import { MatSnackBar, MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import {MatButtonModule} from '@angular/material/button';
+import {MatSelectModule} from '@angular/material/select';
+import {MatFormFieldModule} from '@angular/material/form-field';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -13,6 +18,9 @@ export class LoginComponent implements OnInit {
   loginForm: FormGroup;
 	public hidePassword = true;
 
+  horizontalPosition: MatSnackBarHorizontalPosition = 'center';
+  verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+
   validationMessages = {
 		mail: [],
 		password: [],
@@ -21,7 +29,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private loginService: LoginService,
     private router: Router,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private snackBar: MatSnackBar,
   ) {
     this.loginForm = new FormGroup({
       mail: new FormControl('', [Validators.required, Validators.email]),
@@ -36,6 +45,7 @@ export class LoginComponent implements OnInit {
 
   login() {
     if (this.loginForm.valid) {
+      let snackbarOn = true;
       const fv = this.loginForm.value;
       const login: LoginModel = new LoginModel(
 				(fv.mail as string).trim(),
@@ -45,11 +55,18 @@ export class LoginComponent implements OnInit {
       .subscribe(
         (res) => {
           if (res.data != null) {
+            snackbarOn = false;
             this.router.navigate(['/dashboard/inicio']);
-          } else{
-            //this.toastrService.show('El mail o la contraseña son incorrectos', 'Error al iniciar sesión', { status: 'error' });
           }
-        })
+        },
+      )
+      if(snackbarOn){
+        const snackBarConfig = new MatSnackBarConfig();
+        snackBarConfig.duration = 5000;
+        snackBarConfig.horizontalPosition = 'center';
+        snackBarConfig.verticalPosition = 'bottom';
+        this.snackBar.open('Inicio de sesión fallido. Verifica tu correo electrónico y contraseña.', 'Cerrar', snackBarConfig);
+      }
     }
   }
 
