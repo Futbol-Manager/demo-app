@@ -12,8 +12,8 @@
         <thead>
             <tr>
                 <th>Player ID</th>
-                <th>First Name</th>
-                <th>Second Name</th>
+                <th>NOMBRE</th>
+                <th>APELLIDO</th>
                 <th>Ability</th>
                 <th>Ability Foot Bad</th>
                 <th>Birthdate</th>
@@ -32,7 +32,6 @@
                 <th>Resistance</th>
                 <th>Speed</th>
                 <th>Weight</th>
-                <th>Opinion</th>
                 <th scope="col">Acciones</th>
             </tr>
         </thead>
@@ -59,18 +58,17 @@
                 <td>{{ player.resistance }}</td>
                 <td>{{ player.speed }}</td>
                 <td>{{ player.weight }}</td>
-                <td>{{ player.opinion }}</td>
                 <td>
                     <div class="d-flex justify-content-between">
-                        <button class="btn btn-danger" title="Eliminar"
-                            (click)="confirmarEliminarJugador(player.playerId, player.firstName, player.secondName)">
-                            <span class="bi bi-trash"></span>
+                        <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
+                            <span class="bi bi-person"></span>
                         </button>
                         <button class="btn btn-primary" title="Editar" (click)="editarJugador(player.playerId)">
                             <span class="bi bi-pencil"></span>
                         </button>
-                        <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
-                            <span class="bi bi-person"></span>
+                        <button class="btn btn-danger" title="Eliminar"
+                            (click)="confirmarEliminarJugador(player.playerId, player.firstName, player.secondName)">
+                            <span class="bi bi-trash"></span>
                         </button>
                     </div>
                 </td>
@@ -235,8 +233,8 @@
                 <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalInfoJugador()"></button>
             </div>
             <div class="modal-body">
-                <div class="row h-100">
-                    <div class="col-md-6 h-100">
+                <div class="row h-50">
+                    <div class="col-md-6 h-50">
                         <!-- Aquí mostramos la imagen del jugador -->
                         <img *ngIf="selectedPlayer.picturePlayer" [src]="selectedPlayer.picturePlayer" class="img-fluid"
                             alt="Imagen del jugador">
@@ -247,8 +245,14 @@
                         <div *ngIf="mostrarEdad">
                             <p>Edad: {{ edadSeleccionada }} años</p>
                         </div>
+                        <div *ngIf="mostrarEdad">
+                            <p>Opinion Entrenador: {{ selectedPlayer.opinion }}</p>
+                        </div>
+                        <div *ngIf="mostrarEdad">
+                            <p>Análisis AI Chat GPT: Para plan premium</p>
+                        </div>
                     </div>
-                    <div class="col-md-6 h-100">
+                    <div class="col-md-6 h-50">
                         <!-- Aquí mostramos el gráfico de radar -->
                         <canvas id="radarChart"></canvas>
                     </div>
