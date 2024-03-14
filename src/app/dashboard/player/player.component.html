@@ -5,77 +5,80 @@
 
 <button class="btn btn-success" (click)="abrirModalCrearJugdor()">Crear Jugador</button>
 <!-- player-list.component.html -->
-<div class="container mt-4">
+<div class="container mt-2">
     <h2 class="text-white">Lista de Jugadores</h2>
+    <div style="overflow-x: auto;">
+        <table id="dataTable" class="table table-bordered table-striped">
+            <thead style="background-color: cornflowerblue;">
+                <tr>
+                    <th>Player ID</th>
+                    <th>NOMBRE</th>
+                    <th>APELLIDO</th>
+                    <th>Ability</th>
+                    <th>Ability Foot Bad</th>
+                    <th>Birthdate</th>
+                    <th>Date Create</th>
+                    <th>Date Edit</th>
+                    <th>Dribbling</th>
+                    <th>Finish Foot</th>
+                    <th>Finish Head</th>
+                    <th>Foot Natural</th>
+                    <th>Force Player</th>
+                    <th>Height</th>
+                    <th>Hit</th>
+                    <th>Jump</th>
+                    <th>Picture Player</th>
+                    <th>Position</th>
+                    <th>Resistance</th>
+                    <th>Speed</th>
+                    <th>Weight</th>
+                    <th scope="col">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let player of players; let i = index">
+                    <td>{{ player.playerId }}</td>
+                    <td>{{ player.firstName }}</td>
+                    <td>{{ player.secondName }}</td>
+                    <td>{{ player.ability }}</td>
+                    <td>{{ player.abilityFootBad }}</td>
+                    <td>{{ player.birthdate | date }}</td>
+                    <td>{{ player.dateCreate | date }}</td>
+                    <td>{{ player.dateEdit | date }}</td>
+                    <td>{{ player.dribbling }}</td>
+                    <td>{{ player.finishFoot }}</td>
+                    <td>{{ player.finishHead }}</td>
+                    <td>{{ player.footNatural }}</td>
+                    <td>{{ player.forcePlayer }}</td>
+                    <td>{{ player.height }}</td>
+                    <td>{{ player.hit }}</td>
+                    <td>{{ player.jump }}</td>
+                    <td>{{ player.picturePlayer }}</td>
+                    <td>{{ player.position }}</td>
+                    <td>{{ player.resistance }}</td>
+                    <td>{{ player.speed }}</td>
+                    <td>{{ player.weight }}</td>
+                    <td>
+                        <div class="d-flex justify-content-between">
+                            <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
+                                <span class="bi bi-person"></span>
+                            </button>
+                            <button class="btn btn-primary" title="Editar" (click)="editarJugador(player.playerId)">
+                                <span class="bi bi-pencil"></span>
+                            </button>
+                            <button class="btn btn-danger" title="Eliminar"
+                                (click)="confirmarEliminarJugador(player.playerId, player.firstName, player.secondName)">
+                                <span class="bi bi-trash"></span>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    
+    </div>
 
-    <table id="dataTable" class="table table-bordered table-striped">
-        <thead style="background-color: cornflowerblue;">
-            <tr>
-                <th>Player ID</th>
-                <th>NOMBRE</th>
-                <th>APELLIDO</th>
-                <th>Ability</th>
-                <th>Ability Foot Bad</th>
-                <th>Birthdate</th>
-                <th>Date Create</th>
-                <th>Date Edit</th>
-                <th>Dribbling</th>
-                <th>Finish Foot</th>
-                <th>Finish Head</th>
-                <th>Foot Natural</th>
-                <th>Force Player</th>
-                <th>Height</th>
-                <th>Hit</th>
-                <th>Jump</th>
-                <th>Picture Player</th>
-                <th>Position</th>
-                <th>Resistance</th>
-                <th>Speed</th>
-                <th>Weight</th>
-                <th scope="col">Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let player of players; let i = index">
-                <td>{{ player.playerId }}</td>
-                <td>{{ player.firstName }}</td>
-                <td>{{ player.secondName }}</td>
-                <td>{{ player.ability }}</td>
-                <td>{{ player.abilityFootBad }}</td>
-                <td>{{ player.birthdate | date }}</td>
-                <td>{{ player.dateCreate | date }}</td>
-                <td>{{ player.dateEdit | date }}</td>
-                <td>{{ player.dribbling }}</td>
-                <td>{{ player.finishFoot }}</td>
-                <td>{{ player.finishHead }}</td>
-                <td>{{ player.footNatural }}</td>
-                <td>{{ player.forcePlayer }}</td>
-                <td>{{ player.height }}</td>
-                <td>{{ player.hit }}</td>
-                <td>{{ player.jump }}</td>
-                <td>{{ player.picturePlayer }}</td>
-                <td>{{ player.position }}</td>
-                <td>{{ player.resistance }}</td>
-                <td>{{ player.speed }}</td>
-                <td>{{ player.weight }}</td>
-                <td>
-                    <div class="d-flex justify-content-between">
-                        <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
-                            <span class="bi bi-person"></span>
-                        </button>
-                        <button class="btn btn-primary" title="Editar" (click)="editarJugador(player.playerId)">
-                            <span class="bi bi-pencil"></span>
-                        </button>
-                        <button class="btn btn-danger" title="Eliminar"
-                            (click)="confirmarEliminarJugador(player.playerId, player.firstName, player.secondName)">
-                            <span class="bi bi-trash"></span>
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        </tbody>
-
-    </table>
+    
 
 
     <!-- <table id="dataTable" class="table table-bordered table-striped">
@@ -225,8 +228,8 @@
 </div>
 
 <!-- Modal para ver información del jugador -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': mostrarModalInfoJugador}">
-    <div class="modal-dialog modal-lg" role="document">
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalInfoJugador}" [style.display]="mostrarModalInfoJugador ? 'block' : 'none'">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content" style="min-height: 80vh;">
             <div class="modal-header">
                 <h5 class="modal-title">Información del Jugador</h5>
@@ -238,11 +241,11 @@
                         <!-- Aquí mostramos la imagen del jugador 
                         <img *ngIf="selectedPlayer.picturePlayer" [src]="selectedPlayer.picturePlayer" class="img-fluid"
                             alt="Imagen del jugador">-->
-                        <!--<ng-container *ngIf="!selectedPlayer.picturePlayer"> 
+                        <ng-container *ngIf="!selectedPlayer.picturePlayer"> 
                             <span class="bi bi-person" style="font-size: 3rem;"></span>
-                        </ng-container> -->
-                        <img style="max-width: 15vw;" *ngIf="!selectedPlayer.picturePlayer" src="./../../../assets/images/jugador.png" class="img-fluid"
-                            alt="Imagen del jugador">
+                        </ng-container> 
+                        <!--<img style="max-width: 15vw;" *ngIf="!selectedPlayer.picturePlayer" src="./../../../assets/images/jugador.png" class="img-fluid"
+                            alt="Imagen del jugador">-->
                         <h4>{{ selectedPlayer.firstName }} {{ selectedPlayer.secondName }}</h4>
                         <div *ngIf="mostrarEdad">
                             <p>Edad: {{ edadSeleccionada }} años</p>

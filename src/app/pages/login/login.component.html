@@ -1,7 +1,6 @@
 <form [formGroup]="loginForm" class="form-login" #thisForm="ngForm" (ngSubmit)="login()">
-
   <div class="mb-3">
-    <label for="mail" class="form-label">Ingrese email</label>
+    <label for="mail" class="form-label">Ingrese mail</label>
     <input type="email" class="form-control input-login" id="mail" formControlName="mail" [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)">
     <div *ngIf="mailControl?.hasError('required') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)" class="invalid-feedback">
       Correo electrónico requerido
@@ -20,7 +19,6 @@
           <i class="fas" [class.fa-eye]="!hidePassword" [class.fa-eye-slash]="hidePassword"></i>
         </button>
       </div>
-
       <div *ngIf="passwordControl?.hasError('required') && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)" class="invalid-feedback">
         Contraseña requerida
       </div>

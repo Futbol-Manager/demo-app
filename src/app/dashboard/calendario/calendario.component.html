@@ -1,5 +1,7 @@
 <!-- Botón para redirigir a la pantalla de jugadores -->
-<button class="btn btn-primary mt-3" (click)="irAPantallaJugadores()">Ir a Jugadores</button>
+<div class="container mt-3">
+  <button class="btn btn-primary" (click)="irAPantallaJugadores()">Ir a Jugadores</button>
+</div>
 
 <!-- calendario.component.html -->
 <div class="container mt-4">
@@ -7,32 +9,33 @@
   <h2 class="text-white">{{ nombreEquipo }}</h2>
 
   <!-- Tabla del calendario -->
-<table class="table table-bordered">
-  <thead style="background-color: cornflowerblue;">
-    <tr>
-      <th scope="col">Lunes</th>
-      <th scope="col">Martes</th>
-      <th scope="col">Miércoles</th>
-      <th scope="col">Jueves</th>
-      <th scope="col">Viernes</th>
-      <th scope="col">Sábado</th>
-      <th scope="col">Domingo</th>
-    </tr>
-  </thead>
-  <tbody style="background-color: lightgoldenrodyellow;">
-    <!-- Filas de la tabla -->
-    <tr *ngFor="let semana of calendario">
-      <ng-container *ngFor="let dia of semana">
-        <td>
-          <ng-container *ngIf="dia !== ''">
-            {{ dia }}
-            <button class="btn btn-primary btn-sm" (click)="agregarEvento(dia)">Añadir</button>
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead class="bg-primary text-white">
+        <tr>
+          <th scope="col">Lunes</th>
+          <th scope="col">Martes</th>
+          <th scope="col">Miércoles</th>
+          <th scope="col">Jueves</th>
+          <th scope="col">Viernes</th>
+          <th scope="col">Sábado</th>
+          <th scope="col">Domingo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Filas de la tabla -->
+        <tr *ngFor="let semana of calendario">
+          <ng-container *ngFor="let dia of semana">
+            <td *ngIf="dia !== ''">
+              <div class="d-flex align-items-center justify-content-between">
+                <span>{{ dia }}</span>
+                <button class="btn btn-primary btn-sm" (click)="agregarEvento(dia)">Añadir</button>
+              </div>
+            </td>
+            <td *ngIf="dia === ''"></td>
           </ng-container>
-        </td>
-      </ng-container>
-    </tr>
-  </tbody>
-</table>
-
-
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
