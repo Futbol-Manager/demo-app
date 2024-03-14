@@ -16,7 +16,7 @@ export class Player {
     hit: number;
     jump: number;
     picturePlayer: string;
-    position: string;
+    position: number;
     resistance: number;
     secondName: string;
     speed: number;
@@ -40,7 +40,7 @@ export class Player {
       this.hit = object.hit || 0;
       this.jump = object.jump || 0;
       this.picturePlayer = object.picturePlayer || '';
-      this.position = object.position || '';
+      this.position = object.position || 0;
       this.resistance = object.resistance || 0;
       this.secondName = object.secondName || '';
       this.speed = object.speed || 0;
@@ -66,7 +66,7 @@ export class Player {
       hit: number = 0;
       jump: number = 0;
       picturePlayer: string = '';
-      position: string = '';
+      position: number = 0;
       resistance: number = 0;
       secondName: string = '';
       speed: number = 0;

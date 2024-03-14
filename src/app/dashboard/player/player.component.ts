@@ -104,6 +104,7 @@ export class PlayerComponent implements OnInit {
     $(document).ready(() => {
       $('#dataTable').DataTable({
         paging: true,
+        pageLength: 25, // Establecer el número de resultados por página
         searching: true,
         ordering: true,
         columnDefs: [
@@ -230,7 +231,7 @@ export class PlayerComponent implements OnInit {
       hit: 50,
       jump: 50,
       picturePlayer: '', // Agrega el valor por defecto correspondiente
-      position: '', // Agrega el valor por defecto correspondiente
+      position: 4, // Agrega el valor por defecto correspondiente
       resistance: 50,
       secondName: '', // Agrega el valor por defecto correspondiente
       speed: 50,
@@ -327,6 +328,21 @@ export class PlayerComponent implements OnInit {
     }
 
     return edad;
+  }
+
+  getPositionText(position: string): string {
+    switch (position) {
+      case '1':
+        return 'Portero';
+      case '2':
+        return 'Defensa';
+      case '3':
+        return 'Centrocampista';
+      case '4':
+        return 'Delantero';
+      default:
+        return 'Desconocido';
+    }
   }
 
 }
