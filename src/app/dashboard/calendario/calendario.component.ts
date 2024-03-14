@@ -1,6 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 
+// Utilizaremos una interfaz para especificar las opciones de formato de fecha
+interface OpcionesFormatoFecha {
+  month: 'long';
+  year: 'numeric';
+}
+
 @Component({
   selector: 'app-calendario',
   templateUrl: './calendario.component.html',
@@ -12,6 +18,9 @@ export class CalendarioComponent implements OnInit {
   //calendario: any[] = [];  // Aquí deberías tener la información de los días de la semana
   teamId!: number;  // Ajusta el valor según el teamId del equipo actual
   calendario: any[][] = [];
+  mesActual: Date = new Date();
+  // Variable para almacenar el nombre del mes y el año actual
+  tituloMesAnio!: string;
 
   constructor(
     private router: Router,
@@ -24,7 +33,7 @@ export class CalendarioComponent implements OnInit {
       this.teamId = +params['teamId'];  // El + convierte el valor a número
       console.log('teamId:', this.teamId);
       // Lógica para obtener o generar la información del calendario
-      this.generarCalendarioV2();
+      this.generarCalendarioV2(new Date());
     });
 
   }
@@ -47,18 +56,20 @@ export class CalendarioComponent implements OnInit {
     }
   }*/
 
-  private generarCalendarioV2(): void {
-
-    // Obtener la fecha actual
-    const fechaActual = new Date();
-    // Obtener el primer día del mes actual
-    const primerDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), 1);
+  // Método para generar el calendario para el mes especificado
+  private generarCalendarioV2(mes: Date): void {
+    // Obtener el primer día del mes
+    const primerDiaMes = new Date(mes.getFullYear(), mes.getMonth(), 1);
     // Obtener el día de la semana en el que empieza el mes (0 para domingo, 1 para lunes, etc.)
-    const primerDiaSemana = primerDiaMes.getDay();
+    let primerDiaSemana = primerDiaMes.getDay();
+    // Ajustar primerDiaSemana para que sea 0 para domingo, 1 para lunes, etc.
+    primerDiaSemana = (primerDiaSemana === 0) ? 6 : primerDiaSemana - 1;
+
     // Obtener el número de días en el mes actual
-    const ultimoDiaMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0).getDate();
+    const ultimoDiaMes = new Date(mes.getFullYear(), mes.getMonth() + 1, 0).getDate();
 
     // Generar los datos del calendario
+    this.calendario = [];
     let dia = 1; // Inicializar el día en 1
     for (let i = 0; i < 6; i++) {
       // Crear una nueva fila en el calendario
@@ -75,6 +86,9 @@ export class CalendarioComponent implements OnInit {
       }
     }
 
+    // Actualizar el título del mes y el año
+    const opcionesFecha: OpcionesFormatoFecha = { month: 'long', year: 'numeric' };
+    this.tituloMesAnio = mes.toLocaleDateString('es-ES', opcionesFecha).toUpperCase();
   }
 
   // Método para redirigir a la pantalla de jugadores con el teamId
@@ -89,6 +103,16 @@ export class CalendarioComponent implements OnInit {
     this.router.navigate(['/dashboard/inicio']);
   }
 
-  agregarEvento(dia: number){}
+  agregarEvento(dia: number) { }
+
+  mesAnterior() {
+    this.mesActual.setMonth(this.mesActual.getMonth() - 1);
+    this.generarCalendarioV2(this.mesActual);
+  }
+
+  mesSiguiente() {
+    this.mesActual.setMonth(this.mesActual.getMonth() + 1);
+    this.generarCalendarioV2(this.mesActual);
+  }
 
 }

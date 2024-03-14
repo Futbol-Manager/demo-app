@@ -8,34 +8,49 @@
   <!-- Título del equipo -->
   <h2 class="text-white">{{ nombreEquipo }}</h2>
 
-  <!-- Tabla del calendario -->
-  <div class="table-responsive">
-    <table class="table table-bordered table-striped">
-      <thead class="bg-primary text-white">
-        <tr>
-          <th scope="col">Lunes</th>
-          <th scope="col">Martes</th>
-          <th scope="col">Miércoles</th>
-          <th scope="col">Jueves</th>
-          <th scope="col">Viernes</th>
-          <th scope="col">Sábado</th>
-          <th scope="col">Domingo</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Filas de la tabla -->
-        <tr *ngFor="let semana of calendario">
-          <ng-container *ngFor="let dia of semana">
-            <td *ngIf="dia !== ''">
-              <div class="d-flex align-items-center justify-content-between">
-                <span>{{ dia }}</span>
-                <button class="btn btn-primary btn-sm" (click)="agregarEvento(dia)">Añadir</button>
-              </div>
-            </td>
-            <td *ngIf="dia === ''"></td>
-          </ng-container>
-        </tr>
-      </tbody>
-    </table>
+  <div class="container">
+    <h2 class="text-center">{{ tituloMesAnio }}</h2>
+    <div class="d-flex justify-content-between">
+      <button class="btn btn-primary" (click)="mesAnterior()">
+        <i class="bi bi-arrow-left"></i> Mes Anterior
+      </button>
+      <button class="btn btn-primary" (click)="mesSiguiente()">
+        Mes Siguiente <i class="bi bi-arrow-right"></i>
+      </button>
+    </div>
+    
+    <!-- Tabla del calendario -->
+    <div class="table-responsive mt-3">
+      <table class="table table-bordered table-striped">
+        <!-- Encabezado de la tabla -->
+        <thead class="bg-primary text-white">
+          <tr>
+            <th scope="col">Lunes</th>
+            <th scope="col">Martes</th>
+            <th scope="col">Miércoles</th>
+            <th scope="col">Jueves</th>
+            <th scope="col">Viernes</th>
+            <th scope="col">Sábado</th>
+            <th scope="col">Domingo</th>
+          </tr>
+        </thead>
+        <!-- Cuerpo de la tabla -->
+        <tbody>
+          <!-- Filas de la tabla -->
+          <tr *ngFor="let semana of calendario">
+            <ng-container *ngFor="let dia of semana">
+              <td *ngIf="dia !== ''">
+                <div class="d-flex align-items-center justify-content-between">
+                  <span>{{ dia }}</span>
+                  <button class="btn btn-primary btn-sm" (click)="agregarEvento(dia)">Añadir</button>
+                </div>
+              </td>
+              <td *ngIf="dia === ''"></td>
+            </ng-container>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
+  
 </div>

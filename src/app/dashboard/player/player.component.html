@@ -6,101 +6,125 @@
 <button class="btn btn-success" (click)="abrirModalCrearJugdor()">Crear Jugador</button>
 <!-- player-list.component.html -->
 <div class="container mt-2">
-    <h2 class="text-white">Lista de Jugadores</h2>
-    <div style="overflow-x: auto;">
-        <table id="dataTable" class="table table-bordered table-striped">
-            <thead style="background-color: cornflowerblue;">
-                <tr>
-                    <th>Player ID</th>
-                    <th>NOMBRE</th>
-                    <th>APELLIDO</th>
-                    <th>Ability</th>
-                    <th>Ability Foot Bad</th>
-                    <th>Birthdate</th>
-                    <th>Date Create</th>
-                    <th>Date Edit</th>
-                    <th>Dribbling</th>
-                    <th>Finish Foot</th>
-                    <th>Finish Head</th>
-                    <th>Foot Natural</th>
-                    <th>Force Player</th>
-                    <th>Height</th>
-                    <th>Hit</th>
-                    <th>Jump</th>
-                    <th>Picture Player</th>
-                    <th>Position</th>
-                    <th>Resistance</th>
-                    <th>Speed</th>
-                    <th>Weight</th>
-                    <th scope="col">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let player of players; let i = index">
-                    <td>{{ player.playerId }}</td>
-                    <td>{{ player.firstName }}</td>
-                    <td>{{ player.secondName }}</td>
-                    <td>{{ player.ability }}</td>
-                    <td>{{ player.abilityFootBad }}</td>
-                    <td>{{ player.birthdate | date }}</td>
-                    <td>{{ player.dateCreate | date }}</td>
-                    <td>{{ player.dateEdit | date }}</td>
-                    <td>{{ player.dribbling }}</td>
-                    <td>{{ player.finishFoot }}</td>
-                    <td>{{ player.finishHead }}</td>
-                    <td>{{ player.footNatural }}</td>
-                    <td>{{ player.forcePlayer }}</td>
-                    <td>{{ player.height }}</td>
-                    <td>{{ player.hit }}</td>
-                    <td>{{ player.jump }}</td>
-                    <td>{{ player.picturePlayer }}</td>
-                    <td>{{ player.position }}</td>
-                    <td>{{ player.resistance }}</td>
-                    <td>{{ player.speed }}</td>
-                    <td>{{ player.weight }}</td>
-                    <td>
-                        <div class="d-flex justify-content-between">
+    <div class="container">
+        <h2 class="text-dark mt-3">Listado de Jugadores</h2>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-content" type="button"
+              role="tab" aria-controls="card-content" aria-selected="true">Vista de tarjetas</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="table-tab" data-bs-toggle="tab" data-bs-target="#table-content"
+              type="button" role="tab" aria-controls="table-content" aria-selected="false">Vista de tabla</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="card-content" role="tabpanel" aria-labelledby="card-tab">
+            <!-- Contenido para la pestaña de tarjetas -->
+            <div class="container-fluid" style="max-width: 1360px;">
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+                    <div class="col mb-3" *ngFor="let player of players">
+                      <div class="card gradient">
+                        <!-- Aquí puedes mostrar la imagen del jugador, si tienes -->
+                        <div class="card-body text-center">
+                        <ng-container *ngIf="!player.picturePlayer"> 
+                            <span class="bi bi-person" style="font-size: 3rem;"></span>
+                        </ng-container> 
+                          <h5 class="card-title">{{ player.firstName }} {{ player.secondName }}</h5>
+                          <p class="card-text">
+                            <strong>Posición:</strong> {{ player.position }}<br>
+                            <strong>Fecha de Nacimiento:</strong> {{ player.birthdate | date }}
+                          </p>
+                          <!-- Puedes agregar botones o acciones específicas para cada jugador aquí -->
+                          <div class="d-flex justify-content-between">
                             <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
                                 <span class="bi bi-person"></span>
                             </button>
                             <button class="btn btn-primary" title="Editar" (click)="editarJugador(player.playerId)">
                                 <span class="bi bi-pencil"></span>
                             </button>
-                            <button class="btn btn-danger" title="Eliminar"
-                                (click)="confirmarEliminarJugador(player.playerId, player.firstName, player.secondName)">
-                                <span class="bi bi-trash"></span>
-                            </button>
                         </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    
-    </div>
-
-    
-
-
-    <!-- <table id="dataTable" class="table table-bordered table-striped">
-        <thead>
-          <tr class="table-dark">
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Apellido</th>
-            <th>Fecha de Nacimiento</th>
-            <th>Posición</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let player of players; let i = index">
-            <td>{{ player.id }}</td>
-            <td>{{ player.nombre }}</td>
-            <td>{{ player.apellido }}</td>
-            <td>{{ player.fechaNacimiento }}</td>
-            <td>{{ player.posicion }}</td>
-          </tr>
-        </tbody>
-      </table>     -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>            
+          </div>
+          <div class="tab-pane fade" id="table-content" role="tabpanel" aria-labelledby="table-tab">
+            <!-- Contenido para la pestaña de tabla -->
+            <div style="overflow-x: auto;">
+                <table id="dataTable" class="table table-bordered table-striped">
+                    <thead style="background-color: cornflowerblue;">
+                        <tr>
+                            <th>Player ID</th>
+                            <th>NOMBRE</th>
+                            <th>APELLIDO</th>
+                            <th>Ability</th>
+                            <th>Ability Foot Bad</th>
+                            <th>Birthdate</th>
+                            <th>Date Create</th>
+                            <th>Date Edit</th>
+                            <th>Dribbling</th>
+                            <th>Finish Foot</th>
+                            <th>Finish Head</th>
+                            <th>Foot Natural</th>
+                            <th>Force Player</th>
+                            <th>Height</th>
+                            <th>Hit</th>
+                            <th>Jump</th>
+                            <th>Picture Player</th>
+                            <th>Position</th>
+                            <th>Resistance</th>
+                            <th>Speed</th>
+                            <th>Weight</th>
+                            <th scope="col">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let player of players; let i = index">
+                            <td>{{ player.playerId }}</td>
+                            <td>{{ player.firstName }}</td>
+                            <td>{{ player.secondName }}</td>
+                            <td>{{ player.ability }}</td>
+                            <td>{{ player.abilityFootBad }}</td>
+                            <td>{{ player.birthdate | date }}</td>
+                            <td>{{ player.dateCreate | date }}</td>
+                            <td>{{ player.dateEdit | date }}</td>
+                            <td>{{ player.dribbling }}</td>
+                            <td>{{ player.finishFoot }}</td>
+                            <td>{{ player.finishHead }}</td>
+                            <td>{{ player.footNatural }}</td>
+                            <td>{{ player.forcePlayer }}</td>
+                            <td>{{ player.height }}</td>
+                            <td>{{ player.hit }}</td>
+                            <td>{{ player.jump }}</td>
+                            <td>{{ player.picturePlayer }}</td>
+                            <td>{{ player.position }}</td>
+                            <td>{{ player.resistance }}</td>
+                            <td>{{ player.speed }}</td>
+                            <td>{{ player.weight }}</td>
+                            <td>
+                                <div class="d-flex justify-content-between">
+                                    <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
+                                        <span class="bi bi-person"></span>
+                                    </button>
+                                    <button class="btn btn-primary" title="Editar" (click)="editarJugador(player.playerId)">
+                                        <span class="bi bi-pencil"></span>
+                                    </button>
+                                    <button class="btn btn-danger" title="Eliminar"
+                                        (click)="confirmarEliminarJugador(player.playerId, player.firstName, player.secondName)">
+                                        <span class="bi bi-trash"></span>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>            
+            </div>
+          </div>
+        </div>
+      </div>
+      
 
 
 </div>
