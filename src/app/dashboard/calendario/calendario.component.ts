@@ -21,6 +21,7 @@ export class CalendarioComponent implements OnInit {
   mesActual: Date = new Date();
   // Variable para almacenar el nombre del mes y el año actual
   tituloMesAnio!: string;
+  showModal = false;
 
   constructor(
     private router: Router,
@@ -113,6 +114,16 @@ export class CalendarioComponent implements OnInit {
   mesSiguiente() {
     this.mesActual.setMonth(this.mesActual.getMonth() + 1);
     this.generarCalendarioV2(this.mesActual);
+  }
+
+  // Método para abrir el modal de creación de equipo
+  abrirModal(): void {
+    this.showModal = true;
+  }
+
+  // Método para cerrar el modal de creación de equipo
+  cerrarModal(): void {
+    this.showModal = false;
   }
 
 }

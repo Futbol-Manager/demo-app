@@ -18,7 +18,7 @@
         Mes Siguiente <i class="bi bi-arrow-right"></i>
       </button>
     </div>
-    
+
     <!-- Tabla del calendario -->
     <div class="table-responsive mt-3">
       <table class="table table-bordered table-striped">
@@ -42,7 +42,7 @@
               <td *ngIf="dia !== ''">
                 <div class="d-flex align-items-center justify-content-between">
                   <span>{{ dia }}</span>
-                  <button class="btn btn-primary btn-sm" (click)="agregarEvento(dia)">Añadir</button>
+                  <button class="btn btn-primary btn-sm" (click)="abrirModal()">Añadir</button>
                 </div>
               </td>
               <td *ngIf="dia === ''"></td>
@@ -52,5 +52,79 @@
       </table>
     </div>
   </div>
-  
+
+</div>
+
+
+<!-- Modal para la creación de un entrenamiento -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Crea un entrenamiento o un partido</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="entrenamiento-tab" data-bs-toggle="tab" data-bs-target="#entrenamiento" type="button" role="tab" aria-controls="entrenamiento" aria-selected="true">Entrenamiento</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="partido-tab" data-bs-toggle="tab" data-bs-target="#partido" type="button" role="tab" aria-controls="partido" aria-selected="false">Partido</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="entrenamiento" role="tabpanel" aria-labelledby="entrenamiento-tab">
+            <div class="mb-3">
+              <label for="objetivoEntrenamiento" class="form-label">Objetivo:</label>
+              <textarea class="form-control" id="objetivoEntrenamiento" rows="5"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="calentamiento" class="form-label">Calentamiento:</label>
+              <textarea class="form-control" id="calentamiento" rows="5"></textarea>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="partido" role="tabpanel" aria-labelledby="partido-tab">
+            <div class="mb-3">
+              <label for="nombreRival" class="form-label">Nombre del Rival:</label>
+              <input type="text" class="form-control" id="nombreRival">
+            </div>
+            <div class="mb-3">
+              <label for="informacionRival" class="form-label">Información del Rival:</label>
+              <textarea class="form-control" id="informacionRival" rows="5"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="nombreArbitro" class="form-label">Nombre del Árbitro:</label>
+              <input type="text" class="form-control" id="nombreArbitro">
+            </div>
+            <div class="mb-3">
+              <label for="alineacion" class="form-label">Alineación:</label>
+              <select class="form-control" id="alineacion">
+                <option value="1-4-4-2">1-4-4-2</option>
+                <option value="1-4-3-3">1-4-3-3</option>
+                <option value="1-4-1-4-1">1-4-1-4-1</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="tacticaGeneral" class="form-label">Táctica General:</label>
+              <textarea class="form-control" id="tacticaGeneral" rows="5"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="ABPs" class="form-label">ABPs:</label>
+              <textarea class="form-control" id="ABPs" rows="5"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="convocados" class="form-label">Convocados:</label>
+              <textarea class="form-control" id="convocados" rows="5"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
 </div>
