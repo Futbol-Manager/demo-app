@@ -1,0 +1,38 @@
+<form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="saveChanges()">
+ <!-- <div class="mb-3">
+    <img [src]="(usuarioActual?.pictureUser ?? './../../../assets/images/no-image.png')"
+    class="rounded-circle" alt="Foto de perfil" width="100" height="100">
+  </div> -->
+  <div class="mb-3">
+    <img [src]="'./../../../assets/images/no-image.png'"
+    class="rounded-circle" alt="Foto de perfil" width="100" height="100">
+  </div>
+  <div class="mb-3">
+    <label for="firstName" class="form-label">Nombre</label>
+    <input type="text" class="form-control input-login" id="firstName" formControlName="firstName">
+  </div>
+  <div class="mb-3">
+    <label for="secondName" class="form-label">Apellido</label>
+    <input type="text" class="form-control input-login" id="secondName" formControlName="secondName">
+  </div>
+  <div class="mb-3">
+    <label for="mail" class="form-label">Correo electrónico</label>
+    <input type="email" class="form-control input-login" id="mail" formControlName="mail">
+    <div *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
+      class="invalid-feedback">
+      Ingresa un correo electrónico válido
+    </div>
+  </div>
+  <div class="mb-3">
+    <label for="birthdate" class="form-label">Fecha de nacimiento</label>
+    <input type="date" class="form-control input-login" id="birthdate" formControlName="birthdate">
+  </div>
+  <div class="mb-3">
+    <label for="profile" class="form-label">Perfil</label>
+    <select class="form-control" id="profile" formControlName="profile">
+      <option value="admin">Admin</option>
+      <option value="user">Usuario</option>
+    </select>
+  </div>
+  <button type="submit" class="btn btn-primary btn-block textoCentrado">Guardar cambios</button>
+</form>

@@ -60,13 +60,15 @@ export class LoginComponent implements OnInit {
           }
         },
       )
-      if(snackbarOn){
-        const snackBarConfig = new MatSnackBarConfig();
-        snackBarConfig.duration = 5000;
-        snackBarConfig.horizontalPosition = 'center';
-        snackBarConfig.verticalPosition = 'bottom';
-        this.snackBar.open('Inicio de sesión fallido. Verifica tu correo electrónico y contraseña.', 'Cerrar', snackBarConfig);
-      }
+      setTimeout(() => {
+        if (snackbarOn) {
+          const snackBarConfig = new MatSnackBarConfig();
+          snackBarConfig.duration = 5000;
+          snackBarConfig.horizontalPosition = 'center';
+          snackBarConfig.verticalPosition = 'bottom';
+          this.snackBar.open('Inicio de sesión fallido. Verifica tu correo electrónico y contraseña.', 'Cerrar', snackBarConfig);
+        }
+      }, 1000);
     }
   }
 
