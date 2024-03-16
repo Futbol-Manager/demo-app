@@ -1,19 +1,19 @@
-// player.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
-import { Player } from './player.model';
+import { Training } from '../models/training.models';
+
 
 @Injectable({
     providedIn: 'root'
 })
-export class PlayerService {
+export class TrainingService {
 
     constructor(private http: HttpClient) { }
 
-    getPlayers(teamId: string): Observable<Response> {
+    getTrainingSessions(teamId: string): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -25,7 +25,7 @@ export class PlayerService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `player/playerlistbyteam/${teamId}`;
+            const url: string = environment.apiUrl + `training/listtrainingbyteam/${teamId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
@@ -36,7 +36,7 @@ export class PlayerService {
     }
 
     // Método para crear o actualizar un equipo
-    createUpdatePlayer(teamId: string, player: Player): Observable<Response> {
+    createUpdateTrainingSession(teamId: string, training: Training): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente
@@ -47,10 +47,10 @@ export class PlayerService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `player/createupdateplayer/${teamId}`;
+            const url: string = environment.apiUrl + `training/createupdatetrainingsession/${teamId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
-            return this.http.post<Response>(url, player, { headers });
+            return this.http.post<Response>(url, training, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
             return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
@@ -58,7 +58,7 @@ export class PlayerService {
 
     }
 
-    deletePlayer(playerId: string): Observable<Response> {
+    /*deletePlayer(playerId: string): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -78,6 +78,6 @@ export class PlayerService {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
             return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
-    }
+    }*/
 
 }

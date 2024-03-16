@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Training } from 'src/app/core/services/models/training.models';
+import { TrainingService } from 'src/app/core/services/training/training.service';
+import { Response } from 'src/app/core/services/models/response.model';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -22,10 +25,16 @@ export class CalendarioComponent implements OnInit {
   // Variable para almacenar el nombre del mes y el año actual
   tituloMesAnio!: string;
   showModal = false;
+  showModalEntrenamiento = false;
+  trainingSession: Training = new Training({});
+  daySession!: string;
+  listTraining: any[] = []; // Define una variable para almacenar el listado de equipos
+  trainingId: number | undefined;
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute) { }
+    private route: ActivatedRoute,
+    private trainingService: TrainingService) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -33,29 +42,9 @@ export class CalendarioComponent implements OnInit {
       // Obtener el valor de teamId de los parámetros
       this.teamId = +params['teamId'];  // El + convierte el valor a número
       console.log('teamId:', this.teamId);
-      // Lógica para obtener o generar la información del calendario
-      this.generarCalendarioV2(new Date());
     });
-
+    this.getListaEntrenamientos();
   }
-
-  /*private generarCalendario(): void {
-    // Aquí puedes implementar la lógica para generar la información del calendario
-    // Puedes usar librerías como 'date-fns' o 'moment' para facilitar el manejo de fechas
-    // Ejemplo básico para mostrar días del 1 al 30 en cada columna de la semana
-    for (let i = 1; i <= 30; i += 7) {
-      const semana = {
-        lunes: i,
-        martes: i + 1,
-        miercoles: i + 2,
-        jueves: i + 3,
-        viernes: i + 4,
-        sabado: i + 5,
-        domingo: i + 6
-      };
-      this.calendario.push(semana);
-    }
-  }*/
 
   // Método para generar el calendario para el mes especificado
   private generarCalendarioV2(mes: Date): void {
@@ -71,18 +60,23 @@ export class CalendarioComponent implements OnInit {
 
     // Generar los datos del calendario
     this.calendario = [];
-    let dia = 1; // Inicializar el día en 1
+    let dia = 1;
     for (let i = 0; i < 6; i++) {
-      // Crear una nueva fila en el calendario
       this.calendario[i] = [];
       for (let j = 0; j < 7; j++) {
-        // Si estamos en la primera fila y en una columna antes del primer día del mes,
-        // o si ya hemos alcanzado el último día del mes, dejar el espacio en blanco
         if ((i === 0 && j < primerDiaSemana) || dia > ultimoDiaMes) {
           this.calendario[i][j] = '';
         } else {
-          // Agregar el número del día al calendario
-          this.calendario[i][j] = dia++;
+          const fecha = new Date(mes.getFullYear(), mes.getMonth(), dia);
+          fecha.setDate(fecha.getDate() + 1); // Añadir 1 día para obtener el día correcto
+          const daysession = fecha.toISOString().split('T')[0];
+          const training = this.listTraining.find(training => training.daySession === daysession);
+          if (training) {
+            this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId };
+          } else {
+            this.calendario[i][j] = { numero: dia, daysession };
+          }
+          dia++;
         }
       }
     }
@@ -117,13 +111,67 @@ export class CalendarioComponent implements OnInit {
   }
 
   // Método para abrir el modal de creación de equipo
-  abrirModal(): void {
+  abrirModal(day: string): void {
+    this.daySession = day;
+    this.trainingSession = new Training({}); // Restablecer a un objeto vacío
     this.showModal = true;
   }
 
   // Método para cerrar el modal de creación de equipo
   cerrarModal(): void {
+    this.daySession = '';
     this.showModal = false;
+  }
+
+  crearEntrenamiento() {
+    this.trainingSession.daySession = this.daySession;
+    this.trainingService.createUpdateTrainingSession(this.teamId.toString(), this.trainingSession).subscribe(
+      (response) => {
+        console.log('Sesión de entrenamiento guardada con éxito:', response);
+        // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
+        this.getListaEntrenamientos();
+        // Cerrar el modal después de crear el equipo
+        this.cerrarModal();
+      },
+      (error) => {
+        console.error('Error al guardar la sesión de entrenamiento:', error);
+        // Aquí puedes manejar el error, si es necesario
+      }
+    );
+  }
+
+  getListaEntrenamientos() {
+    this.trainingService.getTrainingSessions(this.teamId.toString()).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response && response.data && Array.isArray(response.data)) {
+          // Mapea los datos bajo 'data' a instancias del modelo Team
+          this.listTraining = response.data.map((team: Training) => new Training(team));
+          // Lógica para obtener o generar la información del calendario
+          this.generarCalendarioV2(new Date());
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  openEntrenamiento(id: any) {
+    // Buscar el entrenamiento por su ID en la lista de entrenamientos
+    const entrenamientoSeleccionado = this.listTraining.find(training => training.trainingSessionId === id);
+    if (entrenamientoSeleccionado) {
+      // Asignar el entrenamiento seleccionado a la variable trainingSession
+      this.trainingSession = entrenamientoSeleccionado;
+      // Abrir el modal
+      this.showModalEntrenamiento = true;
+    }
+  }
+  // Método para cerrar el modal
+  cerrarModalEntrenamiento(): void {
+    this.showModalEntrenamiento = false;
   }
 
 }

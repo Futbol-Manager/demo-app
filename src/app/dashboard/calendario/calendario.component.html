@@ -41,8 +41,10 @@
             <ng-container *ngFor="let dia of semana">
               <td *ngIf="dia !== ''">
                 <div class="d-flex align-items-center justify-content-between">
-                  <span>{{ dia }}</span>
-                  <button class="btn btn-primary btn-sm" (click)="abrirModal()">Añadir</button>
+                  <span>{{ dia.numero }}</span>
+                  <!-- <span>{{ dia.daysession }}</span>  Mostrar directamente la variable daysession -->
+                  <button *ngIf="dia.trainingId" class="btn btn-success btn-sm" (click)="openEntrenamiento(dia.trainingId)">Entrenamiento</button>
+                  <button class="btn btn-primary btn-sm" (click)="abrirModal(dia.daysession)">Añadir</button>
                 </div>
               </td>
               <td *ngIf="dia === ''"></td>
@@ -77,12 +79,12 @@
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane fade show active" id="entrenamiento" role="tabpanel" aria-labelledby="entrenamiento-tab">
             <div class="mb-3">
-              <label for="objetivoEntrenamiento" class="form-label">Objetivo:</label>
-              <textarea class="form-control" id="objetivoEntrenamiento" rows="5"></textarea>
+              <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
+              <textarea class="form-control" id="objectiveSession" rows="5" [(ngModel)]="trainingSession.objectiveSession"></textarea>
             </div>
             <div class="mb-3">
-              <label for="calentamiento" class="form-label">Calentamiento:</label>
-              <textarea class="form-control" id="calentamiento" rows="5"></textarea>
+              <label for="warmUp" class="form-label">Calentamiento:</label>
+              <textarea class="form-control" id="warmUp" rows="5" [(ngModel)]="trainingSession.warmUp"></textarea>
             </div>
           </div>
           <div class="tab-pane fade" id="partido" role="tabpanel" aria-labelledby="partido-tab">
@@ -122,9 +124,35 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-        <button type="button" class="btn btn-primary">Guardar</button>
+        <!-- Botón para guardar el nuevo equipo -->
+        <button type="button" class="btn btn-primary float-end" (click)="crearEntrenamiento()">Guardar</button>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Modal para mostrar información del entrenamiento -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalEntrenamiento}">
+  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalles del Entrenamiento</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalEntrenamiento()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
+          <textarea class="form-control" id="objectiveSession" rows="5" [(ngModel)]="trainingSession.objectiveSession" [readonly]="true"></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="warmUp" class="form-label">Calentamiento:</label>
+          <textarea class="form-control" id="warmUp" rows="5" [(ngModel)]="trainingSession.warmUp" [readonly]="true"></textarea>
+        </div>
+        <!-- Agrega más campos del entrenamiento si es necesario -->
+      </div>
+    </div>
+  </div>
+</div>
+
