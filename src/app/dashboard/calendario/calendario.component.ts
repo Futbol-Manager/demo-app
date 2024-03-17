@@ -29,10 +29,10 @@ export class CalendarioComponent implements OnInit {
   trainingSession: Training = new Training({});
   daySession!: string;
   listTraining: any[] = []; // Define una variable para almacenar el listado de equipos
-  trainingId: number | undefined;
 
   nuevaTarea: Task = new Task();
   showAddTaskForm = false;
+  trainingId!: number;
 
   constructor(
     private router: Router,
@@ -163,14 +163,28 @@ export class CalendarioComponent implements OnInit {
   }
 
   openEntrenamiento(id: any) {
-    // Buscar el entrenamiento por su ID en la lista de entrenamientos
-    const entrenamientoSeleccionado = this.listTraining.find(training => training.trainingSessionId === id);
-    if (entrenamientoSeleccionado) {
-      // Asignar el entrenamiento seleccionado a la variable trainingSession
-      this.trainingSession = entrenamientoSeleccionado;
-      // Abrir el modal
-      this.showModalEntrenamiento = true;
-    }
+    this.trainingId = id;
+    this.trainingService.getTasksByTraining(id.toString()).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response && response.data && Array.isArray(response.data)) {
+          // Buscar el entrenamiento por su ID en la lista de entrenamientos
+          const entrenamientoSeleccionado = this.listTraining.find(training => training.trainingSessionId === id);
+          if (entrenamientoSeleccionado) {
+            // Asignar el entrenamiento seleccionado a la variable trainingSession
+            this.trainingSession = entrenamientoSeleccionado;
+            this.trainingSession.tasks = response.data;
+            // Abrir el modal
+            this.showModalEntrenamiento = true;
+          }
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
   }
   // Método para cerrar el modal
   cerrarModalEntrenamiento(): void {
@@ -178,16 +192,27 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearTarea(): void {
+
+    // Llamada al servicio para crear el equipo
+    this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea,).subscribe(
+      (response) => {
+        // Agregar la nueva tarea a la lista de tareas del entrenamiento
+        this.trainingSession.tasks.push(this.nuevaTarea);
+        // Limpiar el formulario de nueva tarea
+        this.nuevaTarea = new Task();
+        // Ocultar el formulario de nueva tarea
+        this.showAddTaskForm = false;
+      },
+      (error) => {
+        console.error('Error al crear el equipo:', error);
+        // Puedes manejar el error según tus necesidades
+      }
+    );
     // Verificar si trainingSession.tasks está inicializado
-    if (!this.trainingSession.tasks) {
+    /*if (!this.trainingSession.tasks) {
       this.trainingSession.tasks = [];
-    }
-    // Agregar la nueva tarea a la lista de tareas del entrenamiento
-    this.trainingSession.tasks.push(this.nuevaTarea);
-    // Limpiar el formulario de nueva tarea
-    this.nuevaTarea = new Task();
-    // Ocultar el formulario de nueva tarea
-    this.showAddTaskForm = false;
+    }*/
+
   }
 
   toggleAddTaskForm(): void {
@@ -197,7 +222,7 @@ export class CalendarioComponent implements OnInit {
   toggleTask(tarea: Task): void {
     // Cambiar el estado isOpen de la tarea seleccionada
     tarea.collapsed = !tarea.collapsed;
-  
+
     // Si la tarea se abre, cerrar el resto de las tareas
     if (tarea.collapsed) {
       this.trainingSession.tasks
