@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Training } from 'src/app/core/services/models/training.models';
+import { Task, Training } from 'src/app/core/services/models/training.models';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Response } from 'src/app/core/services/models/response.model';
 
@@ -30,6 +30,9 @@ export class CalendarioComponent implements OnInit {
   daySession!: string;
   listTraining: any[] = []; // Define una variable para almacenar el listado de equipos
   trainingId: number | undefined;
+
+  nuevaTarea: Task = new Task();
+  showAddTaskForm = false;
 
   constructor(
     private router: Router,
@@ -173,5 +176,35 @@ export class CalendarioComponent implements OnInit {
   cerrarModalEntrenamiento(): void {
     this.showModalEntrenamiento = false;
   }
+
+  crearTarea(): void {
+    // Verificar si trainingSession.tasks está inicializado
+    if (!this.trainingSession.tasks) {
+      this.trainingSession.tasks = [];
+    }
+    // Agregar la nueva tarea a la lista de tareas del entrenamiento
+    this.trainingSession.tasks.push(this.nuevaTarea);
+    // Limpiar el formulario de nueva tarea
+    this.nuevaTarea = new Task();
+    // Ocultar el formulario de nueva tarea
+    this.showAddTaskForm = false;
+  }
+
+  toggleAddTaskForm(): void {
+    this.showAddTaskForm = !this.showAddTaskForm;
+  }
+
+  toggleTask(tarea: Task): void {
+    // Cambiar el estado isOpen de la tarea seleccionada
+    tarea.collapsed = !tarea.collapsed;
+  
+    // Si la tarea se abre, cerrar el resto de las tareas
+    if (tarea.collapsed) {
+      this.trainingSession.tasks
+        .filter(t => t !== tarea) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+    }
+  }
+
 
 }

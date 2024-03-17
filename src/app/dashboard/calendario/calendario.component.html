@@ -43,7 +43,8 @@
                 <div class="d-flex align-items-center justify-content-between">
                   <span>{{ dia.numero }}</span>
                   <!-- <span>{{ dia.daysession }}</span>  Mostrar directamente la variable daysession -->
-                  <button *ngIf="dia.trainingId" class="btn btn-success btn-sm" (click)="openEntrenamiento(dia.trainingId)">Entrenamiento</button>
+                  <button *ngIf="dia.trainingId" class="btn btn-success btn-sm"
+                    (click)="openEntrenamiento(dia.trainingId)">Entrenamiento</button>
                   <button class="btn btn-primary btn-sm" (click)="abrirModal(dia.daysession)">Añadir</button>
                 </div>
               </td>
@@ -70,17 +71,20 @@
       <div class="modal-body">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
           <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="entrenamiento-tab" data-bs-toggle="tab" data-bs-target="#entrenamiento" type="button" role="tab" aria-controls="entrenamiento" aria-selected="true">Entrenamiento</button>
+            <button class="nav-link active" id="entrenamiento-tab" data-bs-toggle="tab" data-bs-target="#entrenamiento"
+              type="button" role="tab" aria-controls="entrenamiento" aria-selected="true">Entrenamiento</button>
           </li>
           <li class="nav-item" role="presentation">
-            <button class="nav-link" id="partido-tab" data-bs-toggle="tab" data-bs-target="#partido" type="button" role="tab" aria-controls="partido" aria-selected="false">Partido</button>
+            <button class="nav-link" id="partido-tab" data-bs-toggle="tab" data-bs-target="#partido" type="button"
+              role="tab" aria-controls="partido" aria-selected="false">Partido</button>
           </li>
         </ul>
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane fade show active" id="entrenamiento" role="tabpanel" aria-labelledby="entrenamiento-tab">
             <div class="mb-3">
               <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
-              <textarea class="form-control" id="objectiveSession" rows="5" [(ngModel)]="trainingSession.objectiveSession"></textarea>
+              <textarea class="form-control" id="objectiveSession" rows="5"
+                [(ngModel)]="trainingSession.objectiveSession"></textarea>
             </div>
             <div class="mb-3">
               <label for="warmUp" class="form-label">Calentamiento:</label>
@@ -130,29 +134,107 @@
     </div>
   </div>
 </div>
-
 <!-- Modal para mostrar información del entrenamiento -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalEntrenamiento}">
   <div class="modal-dialog modal-lg" role="document">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Detalles del Entrenamiento</h5>
-        <!-- Botón de cerrar con un icono -->
-        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalEntrenamiento()"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
-          <textarea class="form-control" id="objectiveSession" rows="5" [(ngModel)]="trainingSession.objectiveSession" [readonly]="true"></textarea>
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalles del Entrenamiento</h5>
+          <!-- Botón de cerrar con un icono -->
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalEntrenamiento()"></button>
         </div>
-        <div class="mb-3">
-          <label for="warmUp" class="form-label">Calentamiento:</label>
-          <textarea class="form-control" id="warmUp" rows="5" [(ngModel)]="trainingSession.warmUp" [readonly]="true"></textarea>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
+            <textarea class="form-control" id="objectiveSession" rows="5" [(ngModel)]="trainingSession.objectiveSession"
+              [readonly]="true"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="warmUp" class="form-label">Calentamiento:</label>
+            <textarea class="form-control" id="warmUp" rows="5" [(ngModel)]="trainingSession.warmUp"
+              [readonly]="true"></textarea>
+          </div>
+          <!-- Agrega más campos del entrenamiento si es necesario -->
+
+          <!-- Agregar formulario para crear tareas -->
+          <div *ngIf="showAddTaskForm">
+            <form (submit)="crearTarea()">
+              <div class="mb-3">
+                <label for="description" class="form-label">Descripción:</label>
+                <textarea class="form-control" id="description" rows="5" [(ngModel)]="nuevaTarea.description"
+                  name="description"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="rules" class="form-label">Reglas:</label>
+                <textarea class="form-control" id="rules" rows="5" [(ngModel)]="nuevaTarea.rules"
+                  name="rules"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="variants" class="form-label">Variantes:</label>
+                <textarea class="form-control" id="variants" rows="5" [(ngModel)]="nuevaTarea.variants"
+                  name="variants"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="slogans" class="form-label">Eslogan:</label>
+                <textarea class="form-control" id="slogans" rows="5" [(ngModel)]="nuevaTarea.slogans"
+                  name="slogans"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="worktime" class="form-label">Tiempo de Trabajo:</label>
+                <textarea class="form-control" id="worktime" rows="5" [(ngModel)]="nuevaTarea.worktime"
+                  name="worktime"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="space" class="form-label">Espacio:</label>
+                <textarea class="form-control" id="space" rows="5" [(ngModel)]="nuevaTarea.space"
+                  name="space"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="material" class="form-label">Material:</label>
+                <textarea class="form-control" id="material" rows="5" [(ngModel)]="nuevaTarea.material"
+                  name="material"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="work" class="form-label">Trabajo:</label>
+                <textarea class="form-control" id="work" rows="5" [(ngModel)]="nuevaTarea.work" name="work"></textarea>
+              </div>
+              <!-- Agregar más campos de tarea según sea necesario -->
+              <button type="submit" class="btn btn-primary">Crear Tarea</button>
+            </form>
+          </div>
+
+          <!-- Mostrar lista de tareas colapsada -->
+          <div class="accordion" *ngIf="trainingSession.tasks && trainingSession.tasks.length > 0">
+            <div class="accordion-item" *ngFor="let tarea of trainingSession.tasks; let i = index">
+              <h2 class="accordion-header">
+                <button class="accordion-button" type="button" (click)="toggleTask(tarea)">
+                  Tarea {{ i + 1 }}
+                </button>
+              </h2>
+              <div [id]="'tarea_' + i" class="accordion-collapse collapse" [ngClass]="{'show': tarea.collapsed}">
+                <div class="accordion-body">
+                  <!-- Contenido de la tarea -->
+                  <p>Descripción: {{ tarea.description }}</p>
+                  <p>Reglas: {{ tarea.rules }}</p>
+                  <p>Variantes: {{ tarea.variants }}</p>
+                  <p>Eslogan: {{ tarea.slogans }}</p>
+                  <p>Tiempo de Trabajo: {{ tarea.worktime }}</p>
+                  <p>Espacio: {{ tarea.space }}</p>
+                  <p>Material: {{ tarea.material }}</p>
+                  <p>Trabajo: {{ tarea.work }}</p>
+                  <!-- Agregar más campos de tarea según sea necesario -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <!-- Botón para agregar tarea -->
+          <button type="button" class="btn btn-primary mt-3" [disabled]="showAddTaskForm"
+            (click)="toggleAddTaskForm()">Agregar Tarea</button>
         </div>
-        <!-- Agrega más campos del entrenamiento si es necesario -->
       </div>
     </div>
   </div>
 </div>
-
