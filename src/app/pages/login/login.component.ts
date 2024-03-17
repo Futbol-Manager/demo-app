@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoginModel } from 'src/app/core/models/users/login.model';
@@ -58,17 +58,14 @@ export class LoginComponent implements OnInit {
             snackbarOn = false;
             this.router.navigate(['/dashboard/inicio']);
           }
-        },
-      )
-      setTimeout(() => {
-        if (snackbarOn) {
+        }, (err) => {
           const snackBarConfig = new MatSnackBarConfig();
           snackBarConfig.duration = 5000;
           snackBarConfig.horizontalPosition = 'center';
           snackBarConfig.verticalPosition = 'bottom';
           this.snackBar.open('Inicio de sesión fallido. Verifica tu correo electrónico y contraseña.', 'Cerrar', snackBarConfig);
         }
-      }, 1000);
+      );
     }
   }
 

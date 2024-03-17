@@ -7,10 +7,10 @@ export class RegisterModel {
   mail: string;
 	password: string;
   userId: number;
+  validationUser?: ValidationUserModel;
   pictureUser?: string;
-	dateCreate?: Date;
+	dateCreate?: string;
 	dateEdit?: Date;
-	validationUser?: ValidationUserModel;
 
   constructor(
     profileType: ProfileTypeModel,
@@ -21,10 +21,10 @@ export class RegisterModel {
     mail: string,
     password: string,
     userId: number,
-    pictureUser?: string,
-    dateCreate?: Date,
-    dateEdit?: Date,
     validationUser?: ValidationUserModel,
+    pictureUser?: string,
+    dateCreate?: string,
+    dateEdit?: Date,
   ) {
     this.userId = userId;
     this.birthdate = birthdate;

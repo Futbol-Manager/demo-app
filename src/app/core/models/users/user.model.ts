@@ -1,3 +1,5 @@
+import { GenreTypeModel, ProfileTypeModel } from "./register.model";
+
 export class User {
     userId: number;
     birthdate: number;
@@ -8,6 +10,8 @@ export class User {
     profile: string;
     idLanguageIso: string;
     pictureUser: string;
+    idGenre: number;
+    profileType: ProfileTypeModel;
 
 
     constructor( object: any){
@@ -20,5 +24,7 @@ export class User {
         this.birthdate = (object.birthdate) ? object.birthdate : null;
         this.idLanguageIso = (object.idLanguageIso) ? object.idLanguageIso : null;
         this.pictureUser = (object.pictureUser) ? object.pictureUser : null;
+        this.idGenre = (object.idGenre) ? object.idGenre : null;
+        this.profileType = (object.profileType) ? object.profileType : null;
     }
 }

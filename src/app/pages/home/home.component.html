@@ -4,7 +4,8 @@
     Tu navegador no admite el elemento de video.
   </video>
 
-  <div class="container">
+  <!--LOGIN-->
+  <div class="container" *ngIf="screen == 1">
     <div class="row justify-content-center" style="padding-top: 2%;">
       <div class="col-md-6">
         <div class="card">
@@ -22,7 +23,30 @@
             </div>
             <div class="row">
               <div class="col-md-12 col-sm-12 textoCentrado">
-                <p>¿No tienes una cuenta? <a href="/register">Regístrate</a></p>
+                <p>¿No tienes una cuenta? <a href="#" (click)="toRegister($event)">Regístrate</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--REGISTRO-->
+  <div class="container" *ngIf="screen == 2">
+    <div class="row justify-content-center" style="padding-top: 2%;">
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-header textoCentrado">
+            <h1>Registro de usuario</h1>
+          </div>
+          <div class="card-body textoCentrado">
+            <app-register></app-register>
+          </div>
+          <div class="card-footer textoCentrado" style="flex-direction: column;">
+            <div class="row">
+              <div class="col-md-12 col-sm-12 textoCentrado">
+                <p>¿Ya tienes una cuenta? <a href="#" (click)="toLogin($event)">Inicia sesión aquí</a></p>
               </div>
             </div>
           </div>

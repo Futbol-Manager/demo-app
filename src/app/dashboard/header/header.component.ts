@@ -14,7 +14,8 @@ export class HeaderComponent implements OnInit {
   constructor(
     private router: Router,
     private loginService: LoginService,
-    private dialog: MatDialog) { }
+    private dialog: MatDialog,
+  ) { }
 
   ngOnInit(): void {
   }
@@ -29,9 +30,9 @@ export class HeaderComponent implements OnInit {
   }
 
   profile(){
-    this.dialog.open(ProfileComponent, {
-
-    })
+    const dialogRef = this.dialog.open(ProfileComponent);
+    dialogRef.afterClosed().subscribe(result => {
+    });
   }
 
 }

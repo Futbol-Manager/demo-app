@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoginModel } from 'src/app/core/models/users/login.model';
@@ -29,7 +29,8 @@ export class RegisterComponent implements OnInit {
       genre: new FormControl('', [Validators.required]),
       email: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required]),
-      password2: new FormControl('', [Validators.required])
+      password2: new FormControl('', [Validators.required]),
+      terms: new FormControl(false, [Validators.requiredTrue]),
     });
   }
 
@@ -42,20 +43,12 @@ export class RegisterComponent implements OnInit {
   register(){
     if (this.registerForm.valid) {
       const fv = this.registerForm.value;
-      const genreType: GenreTypeModel = new GenreTypeModel(
-        fv.genre,
-        fv.genre == 1 ? 'Masculino' : fv.genre == 2 ? 'Femenino' : 'Otro',
-      )
-      const profileType: ProfileTypeModel = new ProfileTypeModel(
-        fv.rol,
-        fv.rol == 1 ? 'Club' : 'Entrenador',
-      )
       const register: RegisterModel = new RegisterModel(
-        profileType,
+        fv.rol,
         fv.name,
         fv.surname,
         fv.birthdate,
-        genreType,
+        fv.genre,
         fv.email,
         fv.password,
         0
