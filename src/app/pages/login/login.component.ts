@@ -59,11 +59,12 @@ export class LoginComponent implements OnInit {
             this.router.navigate(['/dashboard/inicio']);
           }
         }, (err) => {
-          const snackBarConfig = new MatSnackBarConfig();
+          console.log(err);
+          /*const snackBarConfig = new MatSnackBarConfig();
           snackBarConfig.duration = 5000;
           snackBarConfig.horizontalPosition = 'center';
           snackBarConfig.verticalPosition = 'bottom';
-          this.snackBar.open('Inicio de sesión fallido. Verifica tu correo electrónico y contraseña.', 'Cerrar', snackBarConfig);
+          this.snackBar.open('Inicio de sesión fallido. Verifica tu correo electrónico y contraseña.', 'Cerrar', snackBarConfig);*/
         }
       );
     }
