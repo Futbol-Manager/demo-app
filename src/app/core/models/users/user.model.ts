@@ -8,7 +8,6 @@ export class User {
     password: string;
     mail: string;
     profile: string;
-    idLanguageIso: string;
     pictureUser: string;
     idGenre: number;
     profileType: ProfileTypeModel;
@@ -22,7 +21,6 @@ export class User {
         this.mail = (object.mail) ? object.mail : null;
         this.profile = (object.profile) ? object.profile : null;
         this.birthdate = (object.birthdate) ? object.birthdate : null;
-        this.idLanguageIso = (object.idLanguageIso) ? object.idLanguageIso : null;
         this.pictureUser = (object.pictureUser) ? object.pictureUser : null;
         this.idGenre = (object.idGenre) ? object.idGenre : null;
         this.profileType = (object.profileType) ? object.profileType : null;
