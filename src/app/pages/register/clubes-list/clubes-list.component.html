@@ -3,11 +3,24 @@
 <!-- Input para filtrar -->
 <input type="text" [(ngModel)]="filtro" (input)="filtrarClubes()" placeholder="Filtrar clubes..." class="form-control mb-3">
 
+<!-- Lista de clubes completa -->
+<div #listaCompleta style="cursor: pointer;">
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let club of clubes" [class.selected]="club === clubSeleccionado" (click)="seleccionarClub(club)">
+      {{ club.name }}
+    </li>
+  </ul>
+</div>
+
 <!-- Lista de clubes filtrada -->
-<ul class="list-group">
-  <li class="list-group-item" *ngFor="let club of clubesFiltrados" [class.selected]="club === clubSeleccionado">
-    {{ club.nombre }}
-    <button *ngIf="club === clubSeleccionado" class="btn btn-success btn-sm ms-2" (click)="seleccionarClub()">Seleccionado</button>
-    <button *ngIf="club !== clubSeleccionado" class="btn btn-primary btn-sm ms-2" (click)="seleccionarClub(club)">Seleccionar</button>
-  </li>
-</ul>
+<div #listaFiltrada style="display: none; cursor: pointer;">
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let club of clubesFiltrados" [class.selected]="club === clubSeleccionado" (click)="seleccionarClub(club)">
+      {{ club.name }}
+    </li>
+  </ul>
+</div>
+
+
+
+
