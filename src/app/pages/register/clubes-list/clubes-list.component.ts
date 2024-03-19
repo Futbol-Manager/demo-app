@@ -26,35 +26,13 @@ export class ClubesListComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  /*filtrarClubes() {
-    this.clubesFiltrados = this.clubes.filter(club =>
-      club.name.toLowerCase().includes(this.filtro.toLowerCase())
-    );
-  }*/
-
   filtrarClub(): void {
-    // Lógica para filtrar los clubes según algún criterio
-    // Aquí solo agregamos un ejemplo simple de filtro
-    //this.clubesFiltrados = this.clubes.filter(club => /* Aquí va tu condición de filtro */);
-
     // Verificamos que los elementos existan antes de manipularlos
     if (this.listaCompletaRef && this.listaFiltradaRef) {
       this.listaCompletaRef.nativeElement.style.display = 'none';
       this.listaFiltradaRef.nativeElement.style.display = 'block';
     }
   }
-
-  /*seleccionarClub(club?: any) {
-    if (club === this.clubSeleccionado) {
-      // Si el club actual ya está seleccionado, lo deseleccionamos
-      this.clubSeleccionado = null;
-    } else {
-      // Si no está seleccionado, lo seleccionamos
-      this.clubSeleccionado = club;
-    }
-    // Emitimos el club seleccionado al componente padre
-    this.clubSeleccionadoChange.emit(this.clubSeleccionado);
-  }*/
 
   seleccionarClub(club?: any) {
     this.clubSeleccionadoChange.emit(club);

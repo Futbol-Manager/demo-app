@@ -99,14 +99,6 @@ export class RegisterComponent implements OnInit {
           data: { clubes: this.listaDeClubes } // Pasamos la lista de clubes como datos al componente hijo
         });
 
-        /*dialogRef.afterClosed().subscribe((result: any) => {
-          // Aquí puedes manejar cualquier lógica relacionada con el resultado devuelto por el componente hijo
-          if (result) {
-            console.log('Club seleccionado:', result);
-            // Puedes asignar el resultado a una variable, enviarlo a un servicio, etc.
-          }
-        });*/
-
         dialogRef.componentInstance.clubSeleccionadoChange.subscribe((clubSeleccionado: any) => {
           // Aquí puedes manejar cualquier lógica relacionada con el club seleccionado
           console.log('Club seleccionado:', clubSeleccionado);
