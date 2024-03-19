@@ -1,79 +1,124 @@
-<form [formGroup]="registerForm" (ngSubmit)="register()" class="form-register">
-
-  <div class="mb-3 d-flex">
-    <div class="col-6">
-      <label for="rol" class="form-label">Selecciona un perfil</label>
-      <select class="form-select input-register" formControlName="rol">
-        <option value="1">Club</option>
-        <option value="2">Entrenador</option>
-      </select>
-    </div>
-    <div class="col-6" style="margin-left: 10px;">
-      <label for="nameClub" class="form-label">Ingresa el Nombre del club</label>
-      <input type="text" class="form-control input-register" id="nameClub"
-      formControlName="nameClub">
-    </div>
+<div class="d-flex form-register py-0">
+  <div class="col-6">
+    <label class="form-label">Selecciona un perfil</label>
+    <select [(ngModel)]="selectedOption" (change)="onOptionChange($event)" class="form-select input-register">
+      <option value="1">Club</option>
+      <option value="2">Entrenador</option>
+    </select>
   </div>
+</div>
 
-  <div class="mb-3 d-flex">
-    <div class="col-6">
-      <label for="name" class="form-label">Ingresa tu nombre</label>
-      <input type="text" class="form-control input-register" id="name"
-      formControlName="name">
+<div *ngIf="selectedOption == 1">
+  <!-- Formulario para Club -->
+  <form [formGroup]="registerFormClub" (ngSubmit)="registerClub()" class="form-register">
+    <div class="mb-3 d-flex">
+      <div class="col-6">
+        <label for="name" class="form-label">Ingresa el nombre del club</label>
+        <input type="text" class="form-control input-register" id="name"
+        formControlName="name">
+      </div>
+      <div class="col-6" style="margin-left: 10px;">
+        <label for="name" class="form-label">O selecciona un club</label>
+        <button class="btn btn-outline-primary btn-block textoCentrado" (click)="selectClub()">Aquí</button>
+      </div>
     </div>
-    <div class="col-6" style="margin-left: 10px;">
-      <label for="surname" class="form-label">Ingresa tu apellido</label>
-      <input type="text" class="form-control input-register" id="surname"
-      formControlName="surname">
+    <div class="mb-3 d-flex">
+      <div class="col-6">
+        <label for="foundationDate" class="form-label">Selecciona fecha de fundación del club</label>
+        <input type="date" class="form-control input-register" id="date"
+        formControlName="foundationDate">
+      </div>
     </div>
-  </div>
+    <div class="mb-3 d-flex">
+      <div class="col-6">
+        <label for="email" class="form-label">Ingresa tu correo electrónico</label>
+        <input type="email" class="form-control input-register" id="email"
+          formControlName="email">
+      </div>
+    </div>
+    <div class="mb-3 d-flex">
+      <div class="col-6">
+        <label for="password" class="form-label">Ingresa tu contraseña</label>
+        <input type="password" class="form-control input-register" id="password" formControlName="password" (input)="checkPasswordMatchClub()">
+      </div>
+      <div class="col-6" style="margin-left: 10px;">
+        <label for="password2" class="form-label">Repite la contraseña</label>
+        <input type="password" class="form-control input-register" id="password2" formControlName="password2" (input)="checkPasswordMatchClub()">
+        <div *ngIf="passwordsDoNotMatch" class="text-danger">
+          Las contraseñas no coinciden.
+        </div>
+      </div>
+    </div>
+    <div class="mb-3 d-flex">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
+        <label class="form-check-label" for="termsCheckbox">
+          Acepto los términos y condiciones
+        </label>
+      </div>
+    </div>
+    <button type="submit" [disabled]="passwordsDoNotMatch" class="btn btn-primary btn-block textoCentrado">Registrar club</button>
+  </form>
+</div>
 
-  <div class="mb-3 d-flex">
-    <div class="col-6">
-      <label for="birthdate" class="form-label">Selecciona fecha de nacimiento</label>
-      <input type="date" class="form-control input-register" id="date"
-      formControlName="birthdate">
+<div *ngIf="selectedOption == 2">
+  <!-- Formulario para Entrenador -->
+  <form [formGroup]="registerFormEntrenador" (ngSubmit)="registerEntrenador()" class="form-register">
+    <div class="mb-3 d-flex">
+      <div class="col-6">
+        <label for="name" class="form-label">Ingresa tu nombre</label>
+        <input type="text" class="form-control input-register" id="name"
+        formControlName="name">
+      </div>
+      <div class="col-6" style="margin-left: 10px;">
+        <label for="surname" class="form-label">Ingresa tu apellido</label>
+        <input type="text" class="form-control input-register" id="surname"
+        formControlName="surname">
+      </div>
     </div>
-    <div class="col-6" style="margin-left: 10px;">
-      <label for="genre" class="form-label">Selecciona tu género</label>
-      <select class="form-select input-register" formControlName="genre">
-        <option value="1">Masculino</option>
-        <option value="2">Femenino</option>
-        <option value="3">Otro</option>
-      </select>
+    <div class="mb-3 d-flex">
+      <div class="col-6">
+        <label for="birthdate" class="form-label">Selecciona fecha de nacimiento</label>
+        <input type="date" class="form-control input-register" id="date"
+        formControlName="birthdate">
+      </div>
+      <div class="col-6" style="margin-left: 10px;">
+        <label for="genre" class="form-label">Selecciona tu género</label>
+        <select class="form-select input-register" formControlName="genre">
+          <option value="1">Masculino</option>
+          <option value="2">Femenino</option>
+          <option value="3">Otro</option>
+        </select>
+      </div>
     </div>
-  </div>
-
-  <div class="mb-3 d-flex">
-    <div class="col-6">
-      <label for="email" class="form-label">Ingresa tu correo electrónico</label>
-      <input type="email" class="form-control input-register" id="email"
-        formControlName="email">
+    <div class="mb-3 d-flex">
+      <div class="col-6">
+        <label for="email" class="form-label">Ingresa tu correo electrónico</label>
+        <input type="email" class="form-control input-register" id="email"
+          formControlName="email">
+      </div>
     </div>
-  </div>
-
-  <div class="mb-3 d-flex">
-    <div class="col-6">
-      <label for="password" class="form-label">Ingresa tu contraseña</label>
-      <input type="password" class="form-control input-register" id="password"
-      formControlName="password">
+    <div class="mb-3 d-flex">
+      <div class="col-6">
+        <label for="password" class="form-label">Ingresa tu contraseña</label>
+        <input type="password" class="form-control input-register" id="password" formControlName="password" (input)="checkPasswordMatchEntrenador()">
+      </div>
+      <div class="col-6" style="margin-left: 10px;">
+        <label for="password2" class="form-label">Repite la contraseña</label>
+        <input type="password" class="form-control input-register" id="password2" formControlName="password2" (input)="checkPasswordMatchEntrenador()">
+        <div *ngIf="passwordsDoNotMatch" class="text-danger">
+          Las contraseñas no coinciden.
+        </div>
+      </div>
     </div>
-    <div class="col-6" style="margin-left: 10px;">
-      <label for="password2" class="form-label">Repite la contraseña</label>
-      <input type="password" class="form-control input-register" id="password2"
-      formControlName="password2">
+    <div class="mb-3 d-flex">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
+        <label class="form-check-label" for="termsCheckbox">
+          Acepto los términos y condiciones
+        </label>
+      </div>
     </div>
-  </div>
-
-  <div class="mb-3 d-flex">
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
-      <label class="form-check-label" for="termsCheckbox">
-        Acepto los términos y condiciones
-      </label>
-    </div>
-  </div>
-
-
-  <button type="submit" class="btn btn-primary btn-block textoCentrado">Registrar usuario</button>
-</form>
+    <button type="submit" [disabled]="passwordsDoNotMatch" class="btn btn-primary btn-block textoCentrado">Registrar entrenador</button>
+  </form>
+</div>

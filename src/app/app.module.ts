@@ -19,6 +19,7 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { ClubesListComponent } from './pages/register/clubes-list/clubes-list.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     HomeComponent,
     LoginComponent,
     RegisterComponent,
-    ProfileComponent
+    ProfileComponent,
+    ClubesListComponent
   ],
   imports: [
     BrowserModule,
