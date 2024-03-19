@@ -45,6 +45,8 @@
                   <!-- <span>{{ dia.daysession }}</span>  Mostrar directamente la variable daysession -->
                   <button *ngIf="dia.trainingId" class="btn btn-success btn-sm"
                     (click)="openEntrenamiento(dia.trainingId)">Entrenamiento</button>
+                    <button *ngIf="dia.matchPreparationId" class="btn btn-warning btn-sm"
+                      (click)="openPartido(dia.matchPreparationId)">Partido</button>
                   <button class="btn btn-primary btn-sm" (click)="abrirModal(dia.daysession)">Añadir</button>
                 </div>
               </td>
@@ -134,6 +136,8 @@
     </div>
   </div>
 </div>
+
+
 <!-- Modal para mostrar información del entrenamiento -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalEntrenamiento}">
   <div class="modal-dialog modal-lg" role="document">
@@ -234,6 +238,57 @@
           <button type="button" class="btn btn-primary mt-3" [disabled]="showAddTaskForm"
             (click)="toggleAddTaskForm()">Agregar Tarea</button>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar información del partido -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPartido}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalles del Partido</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="nombreRival" class="form-label">Nombre del Rival:</label>
+          <input type="text" class="form-control" id="nombreRival" [(ngModel)]="match.rivalName">
+        </div>
+        <div class="mb-3">
+          <label for="informacionRival" class="form-label">Información del Rival:</label>
+          <textarea class="form-control" id="informacionRival" rows="5" [(ngModel)]="match.rivalInfo"></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="nombreArbitro" class="form-label">Nombre del Árbitro:</label>
+          <input type="text" class="form-control" id="nombreArbitro" [(ngModel)]="match.refereeName">
+        </div>
+        <div class="mb-3">
+          <label for="alineacion" class="form-label">Alineación:</label>
+          <select class="form-control" id="alineacion" [(ngModel)]="match.trainingPicture">
+            <option value="1">1-4-4-2</option>
+            <option value="2">1-4-3-3</option>
+            <option value="3">1-4-1-4-1</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="tacticaGeneral" class="form-label">Táctica General:</label>
+          <textarea class="form-control" id="tacticaGeneral" rows="5" [(ngModel)]="match.matchTactics"></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="ABPs" class="form-label">ABPs:</label>
+          <textarea class="form-control" id="ABPs" rows="5" [(ngModel)]="match.abp"></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="convocados" class="form-label">Convocados:</label>
+          <textarea class="form-control" id="convocados" rows="5" [(ngModel)]="match.summoned"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <!-- Botón para guardar el nuevo partido -->
+        <button type="button" class="btn btn-primary float-end" (click)="crearPartido()">Guardar</button>
       </div>
     </div>
   </div>

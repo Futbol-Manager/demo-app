@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Task, Training } from 'src/app/core/services/models/training.models';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Response } from 'src/app/core/services/models/response.model';
+import { MatchPreparation } from 'src/app/core/services/models/match.model';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -29,10 +30,16 @@ export class CalendarioComponent implements OnInit {
   trainingSession: Training = new Training({});
   daySession!: string;
   listTraining: any[] = []; // Define una variable para almacenar el listado de equipos
+  listMatchPreparation: any[] = [];
 
   nuevaTarea: Task = new Task();
   showAddTaskForm = false;
   trainingId!: number;
+  matchPreparationId!: number;
+
+  
+  showModalPartido: boolean = false;
+  match: MatchPreparation = new MatchPreparation({});
 
   constructor(
     private router: Router,
@@ -47,6 +54,7 @@ export class CalendarioComponent implements OnInit {
       console.log('teamId:', this.teamId);
     });
     this.getListaEntrenamientos();
+    this.getListaPrePartido();
   }
 
   // Método para generar el calendario para el mes especificado
@@ -74,11 +82,19 @@ export class CalendarioComponent implements OnInit {
           fecha.setDate(fecha.getDate() + 1); // Añadir 1 día para obtener el día correcto
           const daysession = fecha.toISOString().split('T')[0];
           const training = this.listTraining.find(training => training.daySession === daysession);
-          if (training) {
+          const matchPreparation = this.listMatchPreparation.find(match => match.matchDate === daysession);
+          
+          if (training && matchPreparation) {
+            // Si hay tanto entrenamiento como partido, se pueden asignar ambos al mismo día
+            this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId, matchPreparationId: matchPreparation.matchPreparationId };
+          } else if (training) {
             this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId };
+          } else if (matchPreparation) {
+            this.calendario[i][j] = { numero: dia, daysession, matchPreparationId: matchPreparation.matchPreparationId };
           } else {
             this.calendario[i][j] = { numero: dia, daysession };
           }
+          
           dia++;
         }
       }
@@ -151,6 +167,27 @@ export class CalendarioComponent implements OnInit {
           // Mapea los datos bajo 'data' a instancias del modelo Team
           this.listTraining = response.data.map((team: Training) => new Training(team));
           // Lógica para obtener o generar la información del calendario
+          this.getListaPrePartido();
+          //this.generarCalendarioV2(new Date());
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+
+  getListaPrePartido(){
+    this.trainingService.getListPrePartidoByTeam(this.teamId.toString()).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response && response.data && Array.isArray(response.data)) {
+          // Mapea los datos bajo 'data' a instancias del modelo Team
+          this.listMatchPreparation = response.data.map((match: MatchPreparation) => new MatchPreparation(match));
+          // Lógica para obtener o generar la información del calendario
           this.generarCalendarioV2(new Date());
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
@@ -186,6 +223,27 @@ export class CalendarioComponent implements OnInit {
       }
     );
   }
+
+  openPartido(id: any) {
+    // Obtener la información del partido por su ID
+    this.trainingService.getPrePartido(id).subscribe(
+      (response) => {
+        // Verificar si se obtuvo correctamente la información del partido
+        if (response.data) {
+          // Asignar los datos del partido al objeto 'partido'
+          this.match = response.data;
+          // Abrir el modal
+          this.showModalPartido = true;
+        } else {
+          console.error('Error al obtener la información del partido:', response.error.msg);
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
   // Método para cerrar el modal
   cerrarModalEntrenamiento(): void {
     this.showModalEntrenamiento = false;
@@ -229,6 +287,33 @@ export class CalendarioComponent implements OnInit {
         .filter(t => t !== tarea) // Filtrar todas las tareas que no sean la seleccionada
         .forEach(t => t.collapsed = false); // Cerrar cada tarea
     }
+  }
+
+  abrirModalPartido(): void {
+    this.showModal = true;
+  }
+
+  cerrarModalPartido(): void {
+    this.showModalPartido = false;
+    // Limpiar los campos del partido
+    this.match = new MatchPreparation({});
+  }
+
+  crearPartido(): void {
+    // Lógica para crear el partido usando this.partido y enviarlo al servicio
+    /*this.trainingService.crearPartido(this.partido).subscribe(
+      (response) => {
+        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
+        if (response.success) {
+          this.cerrarModal();
+        } else {
+          console.error('Error al crear el partido:', response.message);
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );*/
   }
 
 
