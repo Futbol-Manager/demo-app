@@ -212,9 +212,12 @@
           <!-- Mostrar lista de tareas colapsada -->
           <div class="accordion" *ngIf="trainingSession.tasks && trainingSession.tasks.length > 0">
             <div class="accordion-item" *ngFor="let tarea of trainingSession.tasks; let i = index">
-              <h2 class="accordion-header">
+              <h2 class="accordion-header d-flex">
                 <button class="accordion-button" type="button" (click)="toggleTask(tarea)">
                   Tarea {{ i + 1 }}
+                </button>
+                <button type="button" class="btn btn-danger" (click)="deleteTask(tarea)">
+                  Eliminar Tarea
                 </button>
               </h2>
               <div [id]="'tarea_' + i" class="accordion-collapse collapse" [ngClass]="{'show': tarea.collapsed}">
@@ -238,6 +241,7 @@
           <!-- Botón para agregar tarea -->
           <button type="button" class="btn btn-primary mt-3" [disabled]="showAddTaskForm"
             (click)="toggleAddTaskForm()">Agregar Tarea</button>
+            <button type="button" class="btn btn-danger float-end" (click)="eliminarEntrenamiento()">Eliminar</button>
           <button type="button" class="btn btn-primary float-end" (click)="crearEntrenamiento()">Guardar</button>
         </div>
       </div>
@@ -288,8 +292,9 @@
           <textarea class="form-control" id="convocados" rows="5" [(ngModel)]="match.summoned"></textarea>
         </div>
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer d-flex">
         <!-- Botón para guardar el nuevo partido -->
+        <button type="button" class="btn btn-danger float-end" (click)="eliminarPartido()">Eliminar</button>
         <button type="button" class="btn btn-primary float-end" (click)="crearPartido()">Guardar</button>
       </div>
     </div>

@@ -163,6 +163,27 @@ export class CalendarioComponent implements OnInit {
     );
   }
 
+  eliminarEntrenamiento() {
+    this.trainingSession.daySession = this.daySession;
+    this.trainingService.deleteTrainingSession(this.teamId.toString(), this.trainingSession).subscribe(
+      (response) => {
+        console.log('Sesión de entrenamiento eliminada con éxito:', response);
+        // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
+        this.getListaEntrenamientos();
+        // Cerrar el modal después de crear el equipo
+        if(this.trainingSession.trainingSessionId === 0)
+          this.cerrarModal();
+        else
+          this.cerrarModalEntrenamiento();
+
+      },
+      (error) => {
+        console.error('Error al eliminar la sesión de entrenamiento:', error);
+        // Aquí puedes manejar el error, si es necesario
+      }
+    );
+  }
+
   getListaEntrenamientos() {
     this.trainingService.getTrainingSessions(this.teamId.toString()).subscribe(
       (response: Response) => {
@@ -288,6 +309,23 @@ export class CalendarioComponent implements OnInit {
     }
   }
 
+  deleteTask(tarea: Task): void {
+    // Lógica para eliminar el equipo llamando al servicio correspondiente
+    this.trainingService.deleteTask(tarea.taskId.toString()).subscribe(
+      (response) => {
+        // Manejar la respuesta según tus necesidades
+        console.log('Tarea eliminada con éxito:', response);
+
+        // Cargar nuevamente el listado de equipos después de la eliminación exitosa
+        this.openEntrenamiento(this.trainingId, this.daySession);
+      },
+      (error) => {
+        console.error('Error al eliminar la tarea:', error);
+        // Puedes manejar el error según tus necesidades
+      }
+    );
+  }
+
   abrirModalPartido(): void {
     this.showModal = true;
   }
@@ -302,6 +340,30 @@ export class CalendarioComponent implements OnInit {
     this.match.matchDate = this.daySession;
     // Lógica para crear el partido usando this.partido y enviarlo al servicio
     this.trainingService.createUpdatePartido(this.teamId.toString(), this.match).subscribe(
+      (response) => {
+        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
+        if (response.data) {
+          // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
+          this.getListaPrePartido();
+          if(this.match.matchPreparationId === 0)
+            this.cerrarModal();
+          else
+            this.cerrarModalPartido();
+
+        } else {
+          console.error('Error al crear el partido:', response.error.msg);
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  eliminarPartido(): void {
+    this.match.matchDate = this.daySession;
+    // Lógica para crear el partido usando this.partido y enviarlo al servicio
+    this.trainingService.deletePartido(this.teamId.toString(), this.match).subscribe(
       (response) => {
         // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
         if (response.data) {
