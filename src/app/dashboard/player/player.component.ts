@@ -6,6 +6,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { Player, PlayerNEW } from 'src/app/core/services/player/player.model';
 import * as $ from 'jquery';
 import 'datatables.net';
+
 import { Chart, registerables } from 'chart.js/auto';
 // Registra los complementos necesarios
 Chart.register(...registerables);
@@ -32,31 +33,13 @@ export class PlayerComponent implements OnInit {
   teamId!: number;
   showModal = false;
   mostrarModalInfoJugador = false;
-  selectedPlayer: PlayerNEW = new PlayerNEW();
-  player: PlayerNEW = new PlayerNEW();
+  selectedPlayer: Player = new Player({});
+  player: Player = new Player({});
   radarChart: Chart | null = null; // Inicializar la variable radarChart
   mostrarEdad: boolean = false;
-  edadSeleccionada: number = 0;
+  edadSeleccionada!: string;
 
-  players: any[] = []; // Define una variable para almacenar el listado de equipos
-  /*players: Player1[] = [
-    { id: 1, nombre: 'Juan', apellido: 'Pérez', fechaNacimiento: '1990-05-15', posicion: 'Delantero' },
-    { id: 2, nombre: 'María', apellido: 'Gómez', fechaNacimiento: '1988-10-20', posicion: 'Mediocampista' },
-    { id: 3, nombre: 'Carlos', apellido: 'Martínez', fechaNacimiento: '1995-03-07', posicion: 'Defensor' },
-    { id: 4, nombre: 'Laura', apellido: 'López', fechaNacimiento: '1992-07-12', posicion: 'Portero' },
-    { id: 5, nombre: 'Pedro', apellido: 'Sánchez', fechaNacimiento: '1987-12-30', posicion: 'Delantero' },
-    { id: 22, nombre: 'María', apellido: 'Gómez', fechaNacimiento: '1988-10-20', posicion: 'Mediocampista' },
-    { id: 32, nombre: 'Carlos', apellido: 'Martínez', fechaNacimiento: '1995-03-07', posicion: 'Defensor' },
-    { id: 42, nombre: 'Laura', apellido: 'López', fechaNacimiento: '1992-07-12', posicion: 'Portero' },
-    { id: 223, nombre: 'María', apellido: 'Gómez', fechaNacimiento: '1988-10-20', posicion: 'Mediocampista' },
-    { id: 33, nombre: 'Carlos', apellido: 'Martínez', fechaNacimiento: '1995-03-07', posicion: 'Defensor' },
-    { id: 43, nombre: 'Laura', apellido: 'López', fechaNacimiento: '1992-07-12', posicion: 'Portero' },
-    { id: 21, nombre: 'María', apellido: 'Gómez', fechaNacimiento: '1988-10-20', posicion: 'Mediocampista' },
-    { id: 31, nombre: 'Carlos', apellido: 'Martínez', fechaNacimiento: '1995-03-07', posicion: 'Defensor' },
-    { id: 41, nombre: 'Laura', apellido: 'López', fechaNacimiento: '1992-07-12', posicion: 'Portero' }
-  ];*/
-
-  
+  players: any[] = []; 
 
   constructor(private playerservice: PlayerService,
     private router: Router,
@@ -108,10 +91,10 @@ export class PlayerComponent implements OnInit {
         searching: true,
         ordering: true,
         columnDefs: [
-            {
-                targets: [0], // El índice de la columna que deseas ocultar (en este caso, Player ID)
-                visible: false // Establecer visible como falso oculta la columna
-            }
+          {
+            targets: [0], // El índice de la columna que deseas ocultar (en este caso, Player ID)
+            visible: false // Establecer visible como falso oculta la columna
+          }
         ]
       });
     });
@@ -150,8 +133,6 @@ export class PlayerComponent implements OnInit {
     this.showModal = true;
   }
 
-
-
   // Método para cerrar el modal de creación de equipo
   cerrarModal(): void {
     this.showModal = false;
@@ -161,33 +142,6 @@ export class PlayerComponent implements OnInit {
 
   // Método para crear un nuevo equipo
   crearJugador(): void {    
-    // Crear una instancia de PlayerNEW y asignar los campos del modal
-    this.player = {
-      playerId: this.player.playerId !== 0 ? this.player.playerId : 0,
-      ability: this.player.ability,
-      abilityFootBad: this.player.abilityFootBad,
-      birthdate: this.player.birthdate, // O ajusta según tus necesidades
-      dateCreate: new Date(), // O ajusta según tus necesidades
-      dateEdit: new Date(), // O ajusta según tus necesidades
-      dribbling: this.player.dribbling,
-      finishFoot: this.player.finishFoot,
-      finishHead: this.player.finishHead,
-      firstName: this.player.firstName,
-      footNatural: this.player.footNatural,
-      forcePlayer: this.player.forcePlayer,
-      height: this.player.height,
-      hit: this.player.hit,
-      jump: this.player.jump,
-      picturePlayer: this.player.picturePlayer,
-      position: this.player.position,
-      resistance: this.player.resistance,
-      secondName: this.player.secondName,
-      speed: this.player.speed,
-      weight: this.player.weight,
-      opinion: this.player.opinion
-    }
-
-
     // Llamada al servicio para crear el jugador
     this.playerservice.createUpdatePlayer(this.teamId.toString(), this.player,).subscribe(
       (response) => {
@@ -213,30 +167,58 @@ export class PlayerComponent implements OnInit {
     this.router.navigate(['/dashboard/calendario', this.teamId]);
   }
 
-  inicializePlayer(){
+  inicializePlayer() {
     this.player = {
-      playerId: 0, // O el valor por defecto que desees para playerId
-      ability: 50,
-      abilityFootBad: 50,
-      birthdate: '', // O ajusta según tus necesidades
-      dateCreate: new Date(), // O ajusta según tus necesidades
-      dateEdit: new Date(), // O ajusta según tus necesidades
-      dribbling: 50,
-      finishFoot: 50,
-      finishHead: 50,
-      firstName: '', // Agrega el valor por defecto correspondiente
-      footNatural: 1, // Valor por defecto para el combo de pie natural
-      forcePlayer: 50,
-      height: '', // Valor por defecto para el campo de altura
-      hit: 50,
-      jump: 50,
-      picturePlayer: '', // Agrega el valor por defecto correspondiente
-      position: 4, // Agrega el valor por defecto correspondiente
-      resistance: 50,
-      secondName: '', // Agrega el valor por defecto correspondiente
-      speed: 50,
-      weight: '', // Valor por defecto para el campo de peso
-      opinion: '' // Agrega el valor por defecto correspondiente
+      playerId: 0,
+      nombre: '',
+      apellido: '',
+      posicion: '4',
+      fechaDeNacimiento: '',
+      altura: '',
+      peso: '',
+      piernaNatural: '1',
+      habilidadConBalon: '50',
+      habilidadConBalonControlDeBalon: '50',
+      habilidadConBalonRegate: '50',
+      pase: '50',
+      paseCorto: '50',
+      paseLargo: '50',
+      centros: '50',
+      tiro: '50',
+      tiroPotenciaDeTiro: '50',
+      tiroDefinicion: '50',
+      tiroTirosLejanos: '50',
+      tiroVoleas: '50',
+      tiroPrecisionFalta: '50',
+      tiroPenaltis: '50',
+      tiroCabezazo: '50',
+      defensa: '50',
+      defensaMarcaje: '50',
+      defensaEntradas: '50',
+      defensaRobos: '50',
+      fisico: '50',
+      fisicoAceleracion: '50',
+      fisicoVelocidad: '50',
+      fisicoAgilidad: '50',
+      fisicoResistencia: '50',
+      fisicoFuerza: '50',
+      fisicoEquilibrio: '50',
+      fisicoSalto: '50',
+      mentalidad: '50',
+      mentalidadAgresividad: '50',
+      mentalidadAnticipacion: '50',
+      mentalidadInterceptacion: '50',
+      mentalidadVision: '50',
+      mentalidadCompostura: '50',
+      portero: '50',
+      porteroColocacion: '50',
+      porteroEstirada: '50',
+      porteroParadas: '50',
+      porteroSaques: '50',
+      porteroReflejos: '50',
+      especialidades: '50',
+      opinionDelEntrenador: '',
+      picturePlayer: ''
     };
   }
 
@@ -245,10 +227,10 @@ export class PlayerComponent implements OnInit {
     this.player = jugadorSeleccionado;
     this.showModal = true; // Suponiendo que tienes una variable que controla la visibilidad del modal de edición
   }
-  
+
   verInfoJugador(player: Player): void {
     this.selectedPlayer = player; // Almacena el jugador seleccionado en una propiedad del componente
-    this.edadSeleccionada = this.calcularEdad(player.birthdate);
+    this.edadSeleccionada = this.fechaEnEspañol(this.selectedPlayer.fechaDeNacimiento) + ' (' + this.calcularEdad(player.fechaDeNacimiento) + ')';
     this.mostrarEdad = true;
     this.mostrarModalInfoJugador = true; // Activa el indicador para mostrar el modal
 
@@ -266,16 +248,16 @@ export class PlayerComponent implements OnInit {
     this.radarChart = new Chart(ctx, {
       type: 'radar',
       data: {
-        labels: ['Resistencia', 'Regate', 'Finalización con Pie', 'Fuerza', 'Velocidad', 'Habilidad'],
+        labels: ['Habilidad con balon', 'Pase', 'Tiro', 'Defensa', 'Físico', 'Mentalidad'],
         datasets: [{
           label: 'Atributos del Jugador',
           data: [
-            this.selectedPlayer.resistance,
-            this.selectedPlayer.dribbling,
-            this.selectedPlayer.finishFoot,
-            this.selectedPlayer.forcePlayer,
-            this.selectedPlayer.speed,
-            this.selectedPlayer.ability
+            parseInt(this.selectedPlayer.habilidadConBalon),
+            parseInt(this.selectedPlayer.pase),
+            parseInt(this.selectedPlayer.tiro),
+            parseInt(this.selectedPlayer.defensa),
+            parseInt(this.selectedPlayer.fisico),
+            parseInt(this.selectedPlayer.mentalidad)
           ],
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
           borderColor: 'rgba(255, 99, 132, 1)',
@@ -330,19 +312,18 @@ export class PlayerComponent implements OnInit {
     return edad;
   }
 
-  getPositionText(position: string): string {
-    switch (position) {
-      case '1':
-        return 'Portero';
-      case '2':
-        return 'Defensa';
-      case '3':
-        return 'Centrocampista';
-      case '4':
-        return 'Delantero';
-      default:
-        return 'Desconocido';
-    }
+  fechaEnEspañol(fecha: string): string {
+    const partes = fecha.split('-');
+    const fechaObj = new Date(parseInt(partes[0]), parseInt(partes[1]) - 1, parseInt(partes[2]));
+    
+    const dia = fechaObj.getDate();
+    const mes = fechaObj.getMonth() + 1;
+    const año = fechaObj.getFullYear();
+    
+    const diaStr = dia < 10 ? '0' + dia : dia.toString();
+    const mesStr = mes < 10 ? '0' + mes : mes.toString();
+    
+    return `${diaStr}/${mesStr}/${año}`;
   }
 
 }

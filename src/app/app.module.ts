@@ -42,7 +42,7 @@ import { ClubesListComponent } from './pages/register/clubes-list/clubes-list.co
     NgxDatatableModule,
     MatSnackBarModule,
     MatDialogModule,
-    MatFormFieldModule,
+    MatFormFieldModule
   ],
   providers: [],
   bootstrap: [AppComponent]

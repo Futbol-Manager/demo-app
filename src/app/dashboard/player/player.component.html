@@ -9,122 +9,113 @@
     <div class="container">
         <h2 class="text-dark mt-3">Listado de Jugadores</h2>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-content" type="button"
-              role="tab" aria-controls="card-content" aria-selected="true">Vista de tarjetas</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="table-tab" data-bs-toggle="tab" data-bs-target="#table-content"
-              type="button" role="tab" aria-controls="table-content" aria-selected="false">Vista de tabla</button>
-          </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-content"
+                    type="button" role="tab" aria-controls="card-content" aria-selected="true">Vista de
+                    tarjetas</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="table-tab" data-bs-toggle="tab" data-bs-target="#table-content"
+                    type="button" role="tab" aria-controls="table-content" aria-selected="false">Vista de tabla</button>
+            </li>
         </ul>
         <div class="tab-content" id="myTabContent">
-          <div class="tab-pane fade show active" id="card-content" role="tabpanel" aria-labelledby="card-tab">
-            <!-- Contenido para la pestaña de tarjetas -->
-            <div class="container-fluid" style="max-width: 1360px;">
-                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
-                    <div class="col mb-3" *ngFor="let player of players">
-                      <div class="card gradient">
-                        <!-- Aquí puedes mostrar la imagen del jugador, si tienes -->
-                        <div class="card-body text-center">
-                        <ng-container *ngIf="!player.picturePlayer"> 
-                            <span class="bi bi-person" style="font-size: 3rem;"></span>
-                        </ng-container> 
-                          <h5 class="card-title">{{ player.firstName }} {{ player.secondName }}</h5>
-                          <p class="card-text">
-                            <strong>Posición:</strong> {{ getPositionText(player.position) }}<br>
-                            <strong>Fecha de Nacimiento:</strong> {{ player.birthdate | date }}
-                          </p>
-                          <!-- Puedes agregar botones o acciones específicas para cada jugador aquí -->
-                          <div class="d-flex justify-content-between">
-                            <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
-                                <span class="bi bi-person"></span>
-                            </button>
-                            <button class="btn btn-primary" title="Editar" (click)="editarJugador(player.playerId)">
-                                <span class="bi bi-pencil"></span>
-                            </button>
-                        </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-            </div>            
-          </div>
-          <div class="tab-pane fade" id="table-content" role="tabpanel" aria-labelledby="table-tab">
-            <!-- Contenido para la pestaña de tabla -->
-            <div style="overflow-x: auto;">
-                <table id="dataTable" class="table table-bordered table-striped">
-                    <thead style="background-color: cornflowerblue;">
-                        <tr>
-                            <th>Player ID</th>
-                            <th>NOMBRE</th>
-                            <th>APELLIDO</th>
-                            <th>Ability</th>
-                            <th>Ability Foot Bad</th>
-                            <th>Birthdate</th>
-                            <th>Date Create</th>
-                            <th>Date Edit</th>
-                            <th>Dribbling</th>
-                            <th>Finish Foot</th>
-                            <th>Finish Head</th>
-                            <th>Foot Natural</th>
-                            <th>Force Player</th>
-                            <th>Height</th>
-                            <th>Hit</th>
-                            <th>Jump</th>
-                            <th>Picture Player</th>
-                            <th>Position</th>
-                            <th>Resistance</th>
-                            <th>Speed</th>
-                            <th>Weight</th>
-                            <th scope="col">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let player of players; let i = index">
-                            <td>{{ player.playerId }}</td>
-                            <td>{{ player.firstName }}</td>
-                            <td>{{ player.secondName }}</td>
-                            <td>{{ player.ability }}</td>
-                            <td>{{ player.abilityFootBad }}</td>
-                            <td>{{ player.birthdate | date }}</td>
-                            <td>{{ player.dateCreate | date }}</td>
-                            <td>{{ player.dateEdit | date }}</td>
-                            <td>{{ player.dribbling }}</td>
-                            <td>{{ player.finishFoot }}</td>
-                            <td>{{ player.finishHead }}</td>
-                            <td>{{ player.footNatural }}</td>
-                            <td>{{ player.forcePlayer }}</td>
-                            <td>{{ player.height }}</td>
-                            <td>{{ player.hit }}</td>
-                            <td>{{ player.jump }}</td>
-                            <td>{{ player.picturePlayer }}</td>
-                            <td>{{ player.position }}</td>
-                            <td>{{ player.resistance }}</td>
-                            <td>{{ player.speed }}</td>
-                            <td>{{ player.weight }}</td>
-                            <td>
-                                <div class="d-flex justify-content-between">
-                                    <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
-                                        <span class="bi bi-person"></span>
-                                    </button>
-                                    <button class="btn btn-primary" title="Editar" (click)="editarJugador(player.playerId)">
-                                        <span class="bi bi-pencil"></span>
-                                    </button>
-                                    <button class="btn btn-danger" title="Eliminar"
-                                        (click)="confirmarEliminarJugador(player.playerId, player.firstName, player.secondName)">
-                                        <span class="bi bi-trash"></span>
-                                    </button>
+            <div class="tab-pane fade show active" id="card-content" role="tabpanel" aria-labelledby="card-tab">
+                <!-- Contenido para la pestaña de tarjetas -->
+                <div class="container-fluid" style="max-width: 1360px;">
+                    <div class="row">
+                        <div class="col mb-3" *ngFor="let player of players">
+                            <div class="card gradient">
+                                <!-- Aquí puedes mostrar la imagen del jugador, si tienes -->
+                                <div class="card-body text-center">
+                                    <ng-container *ngIf="!player.picturePlayer">
+                                        <span class="bi bi-person" style="font-size: 3rem;"></span>
+                                    </ng-container>
+                                    <h5 class="card-title">{{ player.nombre }} {{ player.apellido }}</h5>
+                                    <p class="card-text">
+                                        <strong>Posición:</strong> {{ player.posicion }}<br>
+                                        <strong>Fecha de Nacimiento:</strong> {{ player.fechaDeNacimiento | date  }}
+
+                                    </p>
+                                    <!-- Puedes agregar botones o acciones específicas para cada jugador aquí -->
+                                    <div class="d-flex justify-content-between">
+                                        <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
+                                            <span class="bi bi-person"></span>
+                                        </button>
+                                        <button class="btn btn-primary" title="Editar"
+                                            (click)="editarJugador(player.playerId)">
+                                            <span class="bi bi-pencil"></span>
+                                        </button>
+                                    </div>
                                 </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>            
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
+            <div class="tab-pane fade" id="table-content" role="tabpanel" aria-labelledby="table-tab">
+                <!-- Contenido para la pestaña de tabla -->
+                <div style="overflow-x: auto;">
+                    <table id="dataTable" class="table table-bordered table-striped">
+                        <thead style="background-color: cornflowerblue;">
+                            <tr>
+                                <th>Player ID</th>
+                                <th>IMAGEN</th>
+                                <th>NOMBRE</th>
+                                <th>APELLIDO</th>
+                                <th>FECHA</th>
+                                <th>PIE</th>
+                                <th>POSICION</th>
+                                <th>HABILIDAD</th>
+                                <th>PASE</th>
+                                <th>TIRO</th>
+                                <th>DEFENSA</th>
+                                <th>FISICO</th>
+                                <th>MENTALIDAD</th>
+                                <th>PORTERO</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let player of players; let i = index">
+                                <td>{{ player.playerId }}</td>
+                                <td><span class="bi bi-person" style="font-size: 3rem;"></span></td>
+                                <!-- <td>{{ player.picturePlayer }}</td> -->
+                                <td>{{ player.nombre }}</td>
+                                <td>{{ player.apellido }}</td>
+                                <td>{{ player.fechaDeNacimiento | date }}</td>
+                                <td>{{ player.piernaNatural }}</td>
+                                <td>{{ player.posicion }}</td>
+                                <td>{{ player.habilidadConBalon }}</td>
+                                <td>{{ player.pase }}</td>
+                                <td>{{ player.tiro }}</td>
+                                <td>{{ player.defensa }}</td>
+                                <td>{{ player.fisico }}</td>
+                                <td>{{ player.mentalidad }}</td>
+                                <td>{{ player.portero }}</td>
+                                <td>
+                                    <div class="d-flex justify-content-between">
+                                        <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
+                                            <span class="bi bi-person"></span>
+                                        </button>
+                                        <button class="btn btn-primary" title="Editar"
+                                            (click)="editarJugador(player.playerId)">
+                                            <span class="bi bi-pencil"></span>
+                                        </button>
+                                        <button class="btn btn-danger" title="Eliminar"
+                                            (click)="confirmarEliminarJugador(player.playerId, player.nombre, player.apellido)">
+                                            <span class="bi bi-trash"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
-      </div>
-      
+    </div>
+
 
 
 </div>
@@ -143,109 +134,260 @@
                 <form>
                     <!-- Campos del formulario con ngModel y nombres asignados -->
                     <div class="form-group">
-                        <label for="firstName">Nombre:</label>
-                        <input type="text" class="form-control" id="firstName" name="firstName"
-                            [(ngModel)]="player.firstName" placeholder="Nombre">
+                        <label for="nombre">Nombre:</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" [(ngModel)]="player.nombre"
+                            placeholder="Nombre">
                     </div>
                     <div class="form-group">
-                        <label for="secondName">Apellido:</label>
-                        <input type="text" class="form-control" id="secondName" name="secondName"
-                            [(ngModel)]="player.secondName" placeholder="Apellido">
+                        <label for="apellido">Apellido:</label>
+                        <input type="text" class="form-control" id="apellido" name="apellido"
+                            [(ngModel)]="player.apellido" placeholder="Apellido">
                     </div>
                     <div class="form-group">
-                        <label for="birthdate">Fecha de Nacimiento:</label>
-                        <input type="date" class="form-control" id="birthdate" name="birthdate"
-                            [(ngModel)]="player.birthdate" placeholder="Fecha de Nacimiento">
+                        <label for="fechaDeNacimiento">Fecha de Nacimiento:</label>
+                        <input type="date" class="form-control" id="fechaDeNacimiento" name="fechaDeNacimiento"
+                            [(ngModel)]="player.fechaDeNacimiento" placeholder="Fecha de Nacimiento">
                     </div>
                     <div class="form-group">
-                        <label for="position">Posición:</label>
-                        <select class="form-control" id="position" name="position" [(ngModel)]="player.position">
-                            <option value="1">Portero</option>
-                            <option value="2">Defensa</option>
-                            <option value="3">Centrocampista</option>
-                            <option value="4">Delantero</option>
-                        </select>
-                    </div>                    
-                    <div class="form-group">
-                        <label for="height">Altura:</label>
-                        <input type="text" class="form-control" id="height" name="height" [(ngModel)]="player.height"
-                            placeholder="Poner altura en cm, ej: 175">
-                    </div>
-                    <div class="form-group">
-                        <label for="weight">Peso:</label>
-                        <input type="text" class="form-control" id="weight" name="weight" [(ngModel)]="player.weight"
-                            placeholder="Poner peso en Kg">
-                    </div>
-                    <div class="form-group">
-                        <label for="ability">Habilidad:</label>
-                        <input type="number" class="form-control" id="ability" name="ability"
-                            [(ngModel)]="player.ability" placeholder="Habilidad" min="1" max="100">
-                    </div>
-                    <div class="form-group">
-                        <label for="abilityFootBad">Habilidad con el pie malo:</label>
-                        <input type="number" class="form-control" id="abilityFootBad" name="abilityFootBad"
-                            [(ngModel)]="player.abilityFootBad" placeholder="Habilidad con el pie malo" min="1"
-                            max="100">
-                    </div>
-                    <div class="form-group">
-                        <label for="dribbling">Regate:</label>
-                        <input type="number" class="form-control" id="dribbling" name="dribbling"
-                            [(ngModel)]="player.dribbling" placeholder="Regate" min="1" max="100">
-                    </div>
-                    <div class="form-group">
-                        <label for="finishFoot">Finalización con pie:</label>
-                        <input type="number" class="form-control" id="finishFoot" name="finishFoot"
-                            [(ngModel)]="player.finishFoot" placeholder="Finalización con pie" min="1" max="100">
-                    </div>
-                    <div class="form-group">
-                        <label for="finishHead">Finalización con cabeza:</label>
-                        <input type="number" class="form-control" id="finishHead" name="finishHead"
-                            [(ngModel)]="player.finishHead" placeholder="Finalización con cabeza" min="1" max="100">
-                    </div>
-                    <div class="form-group">
-                        <label for="footNatural">Pie natural:</label>
-                        <select class="form-control" id="footNatural" name="footNatural"
-                            [(ngModel)]="player.footNatural">
-                            <option value="1">Derecha</option>
-                            <option value="2">Izquierda</option>
+                        <label for="posicion">Posición:</label>
+                        <select class="form-control" id="posicion" name="posicion" [(ngModel)]="player.posicion">
+                            <option value="Portero">Portero</option>
+                            <option value="Defensa">Defensa</option>
+                            <option value="Centrocampista">Centrocampista</option>
+                            <option value="Delantero">Delantero</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="forcePlayer">Fuerza:</label>
-                        <input type="number" class="form-control" id="forcePlayer" name="forcePlayer"
-                            [(ngModel)]="player.forcePlayer" placeholder="Fuerza" min="1" max="100">
+                        <label for="altura">Altura:</label>
+                        <input type="text" class="form-control" id="altura" name="altura" [(ngModel)]="player.altura"
+                            placeholder="Altura en cm, ej: 175">
                     </div>
                     <div class="form-group">
-                        <label for="hit">Golpeo:</label>
-                        <input type="number" class="form-control" id="hit" name="hit" [(ngModel)]="player.hit"
-                            placeholder="Golpeo" min="1" max="100">
+                        <label for="peso">Peso:</label>
+                        <input type="text" class="form-control" id="peso" name="peso" [(ngModel)]="player.peso"
+                            placeholder="Peso en Kg">
                     </div>
                     <div class="form-group">
-                        <label for="jump">Salto:</label>
-                        <input type="number" class="form-control" id="jump" name="jump" [(ngModel)]="player.jump"
-                            placeholder="Salto" min="1" max="100">
+                        <label for="piernaNatural">Pierna Natural:</label>
+                        <select class="form-control" id="piernaNatural" name="piernaNatural"
+                            [(ngModel)]="player.piernaNatural">
+                            <option value="Derecha">Derecha</option>
+                            <option value="Izquierda">Izquierda</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="picturePlayer">Imagen del Jugador:</label>
-                        <input type="text" class="form-control" id="picturePlayer" name="picturePlayer"
-                            [(ngModel)]="player.picturePlayer" placeholder="Imagen del Jugador">
+                        <label for="habilidadConBalon">Habilidad con Balón:</label>
+                        <input type="text" class="form-control" id="habilidadConBalon" name="habilidadConBalon"
+                            [(ngModel)]="player.habilidadConBalon" placeholder="Habilidad con Balón">
                     </div>
                     <div class="form-group">
-                        <label for="resistance">Resistencia:</label>
-                        <input type="number" class="form-control" id="resistance" name="resistance"
-                            [(ngModel)]="player.resistance" placeholder="Resistencia" min="1" max="100">
+                        <label for="habilidadConBalonControlDeBalon">Habilidad con Balón - Control de Balón:</label>
+                        <input type="text" class="form-control" id="habilidadConBalonControlDeBalon"
+                            name="habilidadConBalonControlDeBalon" [(ngModel)]="player.habilidadConBalonControlDeBalon"
+                            placeholder="Habilidad con Balón - Control de Balón">
                     </div>
                     <div class="form-group">
-                        <label for="speed">Velocidad:</label>
-                        <input type="number" class="form-control" id="speed" name="speed" [(ngModel)]="player.speed"
-                            placeholder="Velocidad" min="1" max="100">
+                        <label for="habilidadConBalonRegate">Habilidad con Balón - Regate:</label>
+                        <input type="text" class="form-control" id="habilidadConBalonRegate"
+                            name="habilidadConBalonRegate" [(ngModel)]="player.habilidadConBalonRegate"
+                            placeholder="Habilidad con Balón - Regate">
                     </div>
                     <div class="form-group">
-                        <label for="opinion">Opinión:</label>
-                        <textarea class="form-control" id="opinion" name="opinion" [(ngModel)]="player.opinion"
-                            placeholder="Opinión" rows="5"></textarea>
+                        <label for="pase">Pase Corto:</label>
+                        <input type="text" class="form-control" id="pase" name="pase" [(ngModel)]="player.pase"
+                            placeholder="Pase">
                     </div>
-                    <!-- Agrega más campos según sea necesario -->
+                    <div class="form-group">
+                        <label for="habilidadConBalonPaseCorto">Pase Corto:</label>
+                        <input type="text" class="form-control" id="habilidadConBalonPaseCorto"
+                            name="habilidadConBalonPaseCorto" [(ngModel)]="player.paseCorto"
+                            placeholder="Habilidad con Balón - Pase Corto">
+                    </div>
+                    <div class="form-group">
+                        <label for="habilidadConBalonPaseLargo">Pase Largo:</label>
+                        <input type="text" class="form-control" id="habilidadConBalonPaseLargo"
+                            name="habilidadConBalonPaseLargo" [(ngModel)]="player.paseLargo"
+                            placeholder="Habilidad con Balón - Pase Largo">
+                    </div>
+                    <div class="form-group">
+                        <label for="habilidadConBalonCentros">Centros:</label>
+                        <input type="text" class="form-control" id="habilidadConBalonCentros"
+                            name="habilidadConBalonCentros" [(ngModel)]="player.centros"
+                            placeholder="Habilidad con Balón - Centros">
+                    </div>
+                    <div class="form-group">
+                        <label for="tiro">Tiro:</label>
+                        <input type="text" class="form-control" id="tiro" name="tiro" [(ngModel)]="player.tiro"
+                            placeholder="Tiro">
+                    </div>
+                    <div class="form-group">
+                        <label for="tiroPotenciaDeTiro">Tiro - Potencia de Tiro:</label>
+                        <input type="text" class="form-control" id="tiroPotenciaDeTiro" name="tiroPotenciaDeTiro"
+                            [(ngModel)]="player.tiroPotenciaDeTiro" placeholder="Tiro - Potencia de Tiro">
+                    </div>
+                    <div class="form-group">
+                        <label for="tiroDefinicion">Tiro - Definición:</label>
+                        <input type="text" class="form-control" id="tiroDefinicion" name="tiroDefinicion"
+                            [(ngModel)]="player.tiroDefinicion" placeholder="Tiro - Definición">
+                    </div>
+                    <div class="form-group">
+                        <label for="tiroTirosLejanos">Tiro - Tiros Lejanos:</label>
+                        <input type="text" class="form-control" id="tiroTirosLejanos" name="tiroTirosLejanos"
+                            [(ngModel)]="player.tiroTirosLejanos" placeholder="Tiro - Tiros Lejanos">
+                    </div>
+                    <div class="form-group">
+                        <label for="tiroVoleas">Tiro - Voleas:</label>
+                        <input type="text" class="form-control" id="tiroVoleas" name="tiroVoleas"
+                            [(ngModel)]="player.tiroVoleas" placeholder="Tiro - Voleas">
+                    </div>
+                    <div class="form-group">
+                        <label for="tiroPrecisionFalta">Tiro - Precisión Falta:</label>
+                        <input type="text" class="form-control" id="tiroPrecisionFalta" name="tiroPrecisionFalta"
+                            [(ngModel)]="player.tiroPrecisionFalta" placeholder="Tiro - Precisión Falta">
+                    </div>
+                    <div class="form-group">
+                        <label for="tiroPenaltis">Tiro - Penaltis:</label>
+                        <input type="text" class="form-control" id="tiroPenaltis" name="tiroPenaltis"
+                            [(ngModel)]="player.tiroPenaltis" placeholder="Tiro - Penaltis">
+                    </div>
+                    <div class="form-group">
+                        <label for="tiroCabezazo">Tiro - Cabezazo:</label>
+                        <input type="text" class="form-control" id="tiroCabezazo" name="tiroCabezazo"
+                            [(ngModel)]="player.tiroCabezazo" placeholder="Tiro - Cabezazo">
+                    </div>
+                    <div class="form-group">
+                        <label for="defensa">Defensa:</label>
+                        <input type="text" class="form-control" id="defensa" name="defensa" [(ngModel)]="player.defensa"
+                            placeholder="Defensa">
+                    </div>
+                    <div class="form-group">
+                        <label for="defensaMarcaje">Defensa - Marcaje:</label>
+                        <input type="text" class="form-control" id="defensaMarcaje" name="defensaMarcaje"
+                            [(ngModel)]="player.defensaMarcaje" placeholder="Defensa - Marcaje">
+                    </div>
+                    <div class="form-group">
+                        <label for="defensaEntradas">Defensa - Entradas:</label>
+                        <input type="text" class="form-control" id="defensaEntradas" name="defensaEntradas"
+                            [(ngModel)]="player.defensaEntradas" placeholder="Defensa - Entradas">
+                    </div>
+                    <div class="form-group">
+                        <label for="defensaRobos">Defensa - Robos:</label>
+                        <input type="text" class="form-control" id="defensaRobos" name="defensaRobos"
+                            [(ngModel)]="player.defensaRobos" placeholder="Defensa - Robos">
+                    </div>
+                    <div class="form-group">
+                        <label for="fisico">Físico - Aceleración:</label>
+                        <input type="text" class="form-control" id="fisico" name="fisico" [(ngModel)]="player.fisico"
+                            placeholder="Físico">
+                    </div>
+                    <div class="form-group">
+                        <label for="fisicoAceleracion">Físico - Aceleración:</label>
+                        <input type="text" class="form-control" id="fisicoAceleracion" name="fisicoAceleracion"
+                            [(ngModel)]="player.fisicoAceleracion" placeholder="Físico - Aceleración">
+                    </div>
+                    <div class="form-group">
+                        <label for="fisicoVelocidad">Físico - Velocidad:</label>
+                        <input type="text" class="form-control" id="fisicoVelocidad" name="fisicoVelocidad"
+                            [(ngModel)]="player.fisicoVelocidad" placeholder="Físico - Velocidad">
+                    </div>
+                    <div class="form-group">
+                        <label for="fisicoAgilidad">Físico - Agilidad:</label>
+                        <input type="text" class="form-control" id="fisicoAgilidad" name="fisicoAgilidad"
+                            [(ngModel)]="player.fisicoAgilidad" placeholder="Físico - Agilidad">
+                    </div>
+                    <div class="form-group">
+                        <label for="fisicoResistencia">Físico - Resistencia:</label>
+                        <input type="text" class="form-control" id="fisicoResistencia" name="fisicoResistencia"
+                            [(ngModel)]="player.fisicoResistencia" placeholder="Físico - Resistencia">
+                    </div>
+                    <div class="form-group">
+                        <label for="fisicoFuerza">Físico - Fuerza:</label>
+                        <input type="text" class="form-control" id="fisicoFuerza" name="fisicoFuerza"
+                            [(ngModel)]="player.fisicoFuerza" placeholder="Físico - Fuerza">
+                    </div>
+                    <div class="form-group">
+                        <label for="fisicoEquilibrio">Físico - Equilibrio:</label>
+                        <input type="text" class="form-control" id="fisicoEquilibrio" name="fisicoEquilibrio"
+                            [(ngModel)]="player.fisicoEquilibrio" placeholder="Físico - Equilibrio">
+                    </div>
+                    <div class="form-group">
+                        <label for="fisicoSalto">Físico - Salto:</label>
+                        <input type="text" class="form-control" id="fisicoSalto" name="fisicoSalto"
+                            [(ngModel)]="player.fisicoSalto" placeholder="Físico - Salto">
+                    </div>
+                    <div class="form-group">
+                        <label for="mentalidad">Mentalidad - Agresividad:</label>
+                        <input type="text" class="form-control" id="mentalidad" name="mentalidad"
+                            [(ngModel)]="player.mentalidad" placeholder="Mentalidad">
+                    </div>
+                    <div class="form-group">
+                        <label for="mentalidadAgresividad">Mentalidad - Agresividad:</label>
+                        <input type="text" class="form-control" id="mentalidadAgresividad" name="mentalidadAgresividad"
+                            [(ngModel)]="player.mentalidadAgresividad" placeholder="Mentalidad - Agresividad">
+                    </div>
+                    <div class="form-group">
+                        <label for="mentalidadAnticipacion">Mentalidad - Anticipación:</label>
+                        <input type="text" class="form-control" id="mentalidadAnticipacion"
+                            name="mentalidadAnticipacion" [(ngModel)]="player.mentalidadAnticipacion"
+                            placeholder="Mentalidad - Anticipación">
+                    </div>
+                    <div class="form-group">
+                        <label for="mentalidadInterceptacion">Mentalidad - Interceptación:</label>
+                        <input type="text" class="form-control" id="mentalidadInterceptacion"
+                            name="mentalidadInterceptacion" [(ngModel)]="player.mentalidadInterceptacion"
+                            placeholder="Mentalidad - Interceptación">
+                    </div>
+                    <div class="form-group">
+                        <label for="mentalidadVision">Mentalidad - Visión:</label>
+                        <input type="text" class="form-control" id="mentalidadVision" name="mentalidadVision"
+                            [(ngModel)]="player.mentalidadVision" placeholder="Mentalidad - Visión">
+                    </div>
+                    <div class="form-group">
+                        <label for="mentalidadCompostura">Mentalidad - Compostura:</label>
+                        <input type="text" class="form-control" id="mentalidadCompostura" name="mentalidadCompostura"
+                            [(ngModel)]="player.mentalidadCompostura" placeholder="Mentalidad - Compostura">
+                    </div>
+                    <div class="form-group">
+                        <label for="portero">Portero - Colocación:</label>
+                        <input type="text" class="form-control" id="portero" name="portero" [(ngModel)]="player.portero"
+                            placeholder="Portero">
+                    </div>
+                    <div class="form-group">
+                        <label for="porteroColocacion">Portero - Colocación:</label>
+                        <input type="text" class="form-control" id="porteroColocacion" name="porteroColocacion"
+                            [(ngModel)]="player.porteroColocacion" placeholder="Portero - Colocación">
+                    </div>
+                    <div class="form-group">
+                        <label for="porteroEstirada">Portero - Estirada:</label>
+                        <input type="text" class="form-control" id="porteroEstirada" name="porteroEstirada"
+                            [(ngModel)]="player.porteroEstirada" placeholder="Portero - Estirada">
+                    </div>
+                    <div class="form-group">
+                        <label for="porteroParadas">Portero - Paradas:</label>
+                        <input type="text" class="form-control" id="porteroParadas" name="porteroParadas"
+                            [(ngModel)]="player.porteroParadas" placeholder="Portero - Paradas">
+                    </div>
+                    <div class="form-group">
+                        <label for="porteroSaques">Portero - Saques:</label>
+                        <input type="text" class="form-control" id="porteroSaques" name="porteroSaques"
+                            [(ngModel)]="player.porteroSaques" placeholder="Portero - Saques">
+                    </div>
+                    <div class="form-group">
+                        <label for="porteroReflejos">Portero - Reflejos:</label>
+                        <input type="text" class="form-control" id="porteroReflejos" name="porteroReflejos"
+                            [(ngModel)]="player.porteroReflejos" placeholder="Portero - Reflejos">
+                    </div>
+                    <div class="form-group">
+                        <label for="especialidades">Especialidades:</label>
+                        <input type="text" class="form-control" id="especialidades" name="especialidades"
+                            [(ngModel)]="player.especialidades" placeholder="Especialidades">
+                    </div>
+                    <div class="form-group">
+                        <label for="opinionDelEntrenador">Opinión del Entrenador:</label>
+                        <textarea class="form-control" id="opinionDelEntrenador" name="opinionDelEntrenador"
+                            [(ngModel)]="player.opinionDelEntrenador" placeholder="Opinión del Entrenador"
+                            rows="5"></textarea>
+                    </div>
 
                     <!-- Botón para guardar el nuevo jugador -->
                     <button type="button" class="btn btn-primary" (click)="crearJugador()">Guardar</button>
@@ -255,8 +397,10 @@
     </div>
 </div>
 
+
 <!-- Modal para ver información del jugador -->
-<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalInfoJugador}" [style.display]="mostrarModalInfoJugador ? 'block' : 'none'">
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalInfoJugador}"
+    [style.display]="mostrarModalInfoJugador ? 'block' : 'none'">
     <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content" style="min-height: 80vh;">
             <div class="modal-header">
@@ -269,20 +413,23 @@
                         <!-- Aquí mostramos la imagen del jugador 
                         <img *ngIf="selectedPlayer.picturePlayer" [src]="selectedPlayer.picturePlayer" class="img-fluid"
                             alt="Imagen del jugador">-->
-                        <ng-container *ngIf="!selectedPlayer.picturePlayer"> 
+                        <ng-container *ngIf="!selectedPlayer.picturePlayer">
                             <span class="bi bi-person" style="font-size: 3rem;"></span>
-                        </ng-container> 
+                        </ng-container>
                         <!--<img style="max-width: 15vw;" *ngIf="!selectedPlayer.picturePlayer" src="./../../../assets/images/jugador.png" class="img-fluid"
                             alt="Imagen del jugador">-->
-                        <h4>{{ selectedPlayer.firstName }} {{ selectedPlayer.secondName }}</h4>
-                        <div *ngIf="mostrarEdad">
+                        <h4>{{ selectedPlayer.nombre }} {{ selectedPlayer.apellido }}</h4>
+                        <div>
                             <p>Edad: {{ edadSeleccionada }} años</p>
                         </div>
-                        <div *ngIf="mostrarEdad">
-                            <p>Opinion Entrenador: {{ selectedPlayer.opinion }}</p>
+                        <div>
+                            <p>Posición: {{ selectedPlayer.posicion }}</p>
                         </div>
-                        <div *ngIf="mostrarEdad">
-                            <p>Análisis AI Chat GPT: Para plan premium</p>
+                        <div>
+                            <p>Pie natural: {{ selectedPlayer.piernaNatural }}</p>
+                        </div>
+                        <div>
+                            <p>Opinion Entrenador: {{ selectedPlayer.opinionDelEntrenador }}</p>
                         </div>
                     </div>
                     <div class="col-md-6 h-50">

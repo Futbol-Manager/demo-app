@@ -6,7 +6,7 @@ import {
 	localenvironment, prodenvironment
 } from "./environment-list";
 
-export const environment = prodenvironment;
+export const environment = localenvironment;
 
 /*
  * For easier debugging in development mode, you can import the following file
