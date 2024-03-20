@@ -37,7 +37,7 @@ export class CalendarioComponent implements OnInit {
   trainingId!: number;
   matchPreparationId!: number;
 
-  
+
   showModalPartido: boolean = false;
   match: MatchPreparation = new MatchPreparation({});
 
@@ -83,7 +83,7 @@ export class CalendarioComponent implements OnInit {
           const daysession = fecha.toISOString().split('T')[0];
           const training = this.listTraining.find(training => training.daySession === daysession);
           const matchPreparation = this.listMatchPreparation.find(match => match.matchDate === daysession);
-          
+
           if (training && matchPreparation) {
             // Si hay tanto entrenamiento como partido, se pueden asignar ambos al mismo día
             this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId, matchPreparationId: matchPreparation.matchPreparationId };
@@ -94,7 +94,7 @@ export class CalendarioComponent implements OnInit {
           } else {
             this.calendario[i][j] = { numero: dia, daysession };
           }
-          
+
           dia++;
         }
       }
@@ -150,7 +150,11 @@ export class CalendarioComponent implements OnInit {
         // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
         this.getListaEntrenamientos();
         // Cerrar el modal después de crear el equipo
-        this.cerrarModal();
+        if(this.trainingSession.trainingSessionId === 0)
+          this.cerrarModal();
+        else
+          this.cerrarModalEntrenamiento();
+
       },
       (error) => {
         console.error('Error al guardar la sesión de entrenamiento:', error);
@@ -180,7 +184,7 @@ export class CalendarioComponent implements OnInit {
   }
 
 
-  getListaPrePartido(){
+  getListaPrePartido() {
     this.trainingService.getListPrePartidoByTeam(this.teamId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
@@ -199,7 +203,8 @@ export class CalendarioComponent implements OnInit {
     );
   }
 
-  openEntrenamiento(id: any) {
+  openEntrenamiento(id: any, day: string): void {
+    this.daySession = day;
     this.trainingId = id;
     this.trainingService.getTasksByTraining(id.toString()).subscribe(
       (response: Response) => {
@@ -224,7 +229,8 @@ export class CalendarioComponent implements OnInit {
     );
   }
 
-  openPartido(id: any) {
+  openPartido(id: any, day: string): void {
+    this.daySession = day;
     // Obtener la información del partido por su ID
     this.trainingService.getPrePartido(id).subscribe(
       (response) => {
@@ -250,7 +256,6 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearTarea(): void {
-
     // Llamada al servicio para crear el equipo
     this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea,).subscribe(
       (response) => {
@@ -263,14 +268,8 @@ export class CalendarioComponent implements OnInit {
       },
       (error) => {
         console.error('Error al crear el equipo:', error);
-        // Puedes manejar el error según tus necesidades
       }
     );
-    // Verificar si trainingSession.tasks está inicializado
-    /*if (!this.trainingSession.tasks) {
-      this.trainingSession.tasks = [];
-    }*/
-
   }
 
   toggleAddTaskForm(): void {
@@ -300,20 +299,27 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearPartido(): void {
+    this.match.matchDate = this.daySession;
     // Lógica para crear el partido usando this.partido y enviarlo al servicio
-    /*this.trainingService.crearPartido(this.partido).subscribe(
+    this.trainingService.createUpdatePartido(this.teamId.toString(), this.match).subscribe(
       (response) => {
         // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
-        if (response.success) {
-          this.cerrarModal();
+        if (response.data) {
+          // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
+          this.getListaPrePartido();
+          if(this.match.matchPreparationId === 0)
+            this.cerrarModal();
+          else
+            this.cerrarModalPartido();
+
         } else {
-          console.error('Error al crear el partido:', response.message);
+          console.error('Error al crear el partido:', response.error.msg);
         }
       },
       (error) => {
         console.error('Error en la solicitud:', error);
       }
-    );*/
+    );
   }
 
 

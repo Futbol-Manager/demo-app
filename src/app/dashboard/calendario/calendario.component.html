@@ -44,9 +44,9 @@
                   <span>{{ dia.numero }}</span>
                   <!-- <span>{{ dia.daysession }}</span>  Mostrar directamente la variable daysession -->
                   <button *ngIf="dia.trainingId" class="btn btn-success btn-sm"
-                    (click)="openEntrenamiento(dia.trainingId)">Entrenamiento</button>
-                    <button *ngIf="dia.matchPreparationId" class="btn btn-warning btn-sm"
-                      (click)="openPartido(dia.matchPreparationId)">Partido</button>
+                    (click)="openEntrenamiento(dia.trainingId, dia.daysession)">Entrenamiento</button>
+                  <button *ngIf="dia.matchPreparationId" class="btn btn-warning btn-sm"
+                    (click)="openPartido(dia.matchPreparationId, dia.daysession)">Partido</button>
                   <button class="btn btn-primary btn-sm" (click)="abrirModal(dia.daysession)">Añadir</button>
                 </div>
               </td>
@@ -92,46 +92,48 @@
               <label for="warmUp" class="form-label">Calentamiento:</label>
               <textarea class="form-control" id="warmUp" rows="5" [(ngModel)]="trainingSession.warmUp"></textarea>
             </div>
+
+            <!-- Botón para guardar el nuevo entrenamiento -->
+            <button type="button" class="btn btn-primary float-end" (click)="crearEntrenamiento()">Guardar</button>
           </div>
           <div class="tab-pane fade" id="partido" role="tabpanel" aria-labelledby="partido-tab">
             <div class="mb-3">
               <label for="nombreRival" class="form-label">Nombre del Rival:</label>
-              <input type="text" class="form-control" id="nombreRival">
+              <input type="text" class="form-control" id="nombreRival" [(ngModel)]="match.rivalName">
             </div>
             <div class="mb-3">
               <label for="informacionRival" class="form-label">Información del Rival:</label>
-              <textarea class="form-control" id="informacionRival" rows="5"></textarea>
+              <textarea class="form-control" id="informacionRival" rows="5" [(ngModel)]="match.rivalInfo"></textarea>
             </div>
             <div class="mb-3">
               <label for="nombreArbitro" class="form-label">Nombre del Árbitro:</label>
-              <input type="text" class="form-control" id="nombreArbitro">
+              <input type="text" class="form-control" id="nombreArbitro" [(ngModel)]="match.refereeName">
             </div>
             <div class="mb-3">
               <label for="alineacion" class="form-label">Alineación:</label>
-              <select class="form-control" id="alineacion">
-                <option value="1-4-4-2">1-4-4-2</option>
-                <option value="1-4-3-3">1-4-3-3</option>
-                <option value="1-4-1-4-1">1-4-1-4-1</option>
+              <select class="form-control" id="alineacion" [(ngModel)]="match.trainingPicture">
+                <option value="1">1-4-4-2</option>
+                <option value="2">1-4-3-3</option>
+                <option value="3">1-4-1-4-1</option>
               </select>
             </div>
             <div class="mb-3">
               <label for="tacticaGeneral" class="form-label">Táctica General:</label>
-              <textarea class="form-control" id="tacticaGeneral" rows="5"></textarea>
+              <textarea class="form-control" id="tacticaGeneral" rows="5" [(ngModel)]="match.matchTactics"></textarea>
             </div>
             <div class="mb-3">
               <label for="ABPs" class="form-label">ABPs:</label>
-              <textarea class="form-control" id="ABPs" rows="5"></textarea>
+              <textarea class="form-control" id="ABPs" rows="5" [(ngModel)]="match.abp"></textarea>
             </div>
             <div class="mb-3">
               <label for="convocados" class="form-label">Convocados:</label>
-              <textarea class="form-control" id="convocados" rows="5"></textarea>
+              <textarea class="form-control" id="convocados" rows="5" [(ngModel)]="match.summoned"></textarea>
             </div>
+
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="button" class="btn btn-primary float-end" (click)="crearPartido()">Guardar</button>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <!-- Botón para guardar el nuevo equipo -->
-        <button type="button" class="btn btn-primary float-end" (click)="crearEntrenamiento()">Guardar</button>
       </div>
     </div>
   </div>
@@ -151,13 +153,12 @@
         <div class="modal-body">
           <div class="mb-3">
             <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
-            <textarea class="form-control" id="objectiveSession" rows="5" [(ngModel)]="trainingSession.objectiveSession"
-              [readonly]="true"></textarea>
+            <textarea class="form-control" id="objectiveSession" rows="5"
+              [(ngModel)]="trainingSession.objectiveSession"></textarea>
           </div>
           <div class="mb-3">
             <label for="warmUp" class="form-label">Calentamiento:</label>
-            <textarea class="form-control" id="warmUp" rows="5" [(ngModel)]="trainingSession.warmUp"
-              [readonly]="true"></textarea>
+            <textarea class="form-control" id="warmUp" rows="5" [(ngModel)]="trainingSession.warmUp"></textarea>
           </div>
           <!-- Agrega más campos del entrenamiento si es necesario -->
 
@@ -237,6 +238,7 @@
           <!-- Botón para agregar tarea -->
           <button type="button" class="btn btn-primary mt-3" [disabled]="showAddTaskForm"
             (click)="toggleAddTaskForm()">Agregar Tarea</button>
+          <button type="button" class="btn btn-primary float-end" (click)="crearEntrenamiento()">Guardar</button>
         </div>
       </div>
     </div>
