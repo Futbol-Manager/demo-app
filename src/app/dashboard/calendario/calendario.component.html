@@ -60,7 +60,6 @@
 
 </div>
 
-
 <!-- Modal para la creación de un entrenamiento -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
   <div class="modal-dialog modal-lg" role="document">
@@ -138,7 +137,6 @@
     </div>
   </div>
 </div>
-
 
 <!-- Modal para mostrar información del entrenamiento -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalEntrenamiento}">
@@ -239,10 +237,15 @@
 
 
           <!-- Botón para agregar tarea -->
-          <button type="button" class="btn btn-primary mt-3" [disabled]="showAddTaskForm"
-            (click)="toggleAddTaskForm()">Agregar Tarea</button>
-            <button type="button" class="btn btn-danger float-end" (click)="eliminarEntrenamiento()">Eliminar</button>
-          <button type="button" class="btn btn-primary float-end" (click)="crearEntrenamiento()">Guardar</button>
+          <button type="button" class="btn btn-primary mt-3" [disabled]="showAddTaskForm" (click)="toggleAddTaskForm()">Agregar
+            Tarea</button>
+          <button type="button" class="btn btn-primary mt-3" (click)="verTienda()" *ngIf="!viewShop">Ver Tienda</button>
+          <button type="button" class="btn btn-primary mt-3" (click)="cerrarTienda()" *ngIf="viewShop">Cerrar Tienda</button>
+          <button type="button" class="btn btn-danger float-end" (click)="eliminarEntrenamiento()">Eliminar Entrenamiento</button>
+          <button type="button" class="btn btn-primary float-end" (click)="crearEntrenamiento()">Guardar Entrenamiento</button>
+          <!-- Modal para abrir listado de tareas de la tienda-->
+          <app-shop [taskList]="taskList" [trainingId]="trainingId" (tareaDescargada)="tareaDescargada($event)" *ngIf="viewShop">
+          </app-shop>
         </div>
       </div>
     </div>
@@ -294,8 +297,8 @@
       </div>
       <div class="modal-footer d-flex">
         <!-- Botón para guardar el nuevo partido -->
-        <button type="button" class="btn btn-danger float-end" (click)="eliminarPartido()">Eliminar</button>
-        <button type="button" class="btn btn-primary float-end" (click)="crearPartido()">Guardar</button>
+        <button type="button" class="btn btn-danger float-end" (click)="eliminarPartido()">Eliminar Partido</button>
+        <button type="button" class="btn btn-primary float-end" (click)="crearPartido()">Guardar Partido</button>
       </div>
     </div>
   </div>

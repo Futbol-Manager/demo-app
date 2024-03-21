@@ -4,6 +4,8 @@ import { Task, Training } from 'src/app/core/services/models/training.models';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { MatchPreparation } from 'src/app/core/services/models/match.model';
+import { MatDialog } from '@angular/material/dialog';
+import { ShopComponent } from './shop/shop.component';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -41,10 +43,15 @@ export class CalendarioComponent implements OnInit {
   showModalPartido: boolean = false;
   match: MatchPreparation = new MatchPreparation({});
 
+  taskList: any[] = [];
+  viewShop: boolean = false;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private trainingService: TrainingService) { }
+    private trainingService: TrainingService,
+    private dialog: MatDialog,
+    ) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -384,5 +391,28 @@ export class CalendarioComponent implements OnInit {
     );
   }
 
+  verTienda() {
+    this.trainingService.getAllTaskShop().subscribe(
+      (response: any) => {
+        this.taskList = response.data;
+        this.viewShop = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de tareas', error);
+      }
+    );
+  }
+
+  cerrarTienda(){
+    this.viewShop = false;
+    this.taskList = [];
+  }
+
+  tareaDescargada(response: boolean) {
+    if (response) {
+      this.openEntrenamiento(this.trainingId, this.daySession);
+      this.cerrarTienda();
+    }
+  }
 
 }

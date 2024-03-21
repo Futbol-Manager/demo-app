@@ -1,0 +1,19 @@
+<div class="modal" role="dialog" class="d-block">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Selecciona una tarea para descargarla</h2>
+        <button type="button" class="btn btn-success mt-3" (click)="descargarTarea(selectedTask)" *ngIf="downloadTask">Descargar Tarea</button>
+      </div>
+      <div class="modal-body">
+        <div class="card" *ngFor="let tarea of taskList; let i = index" [class.selected]="tarea === selectedTask"
+          (click)="seleccionarTarea(tarea)">
+          <div class="card-body">
+            <h5 class="card-title">Descargar tarea {{ i + 1 }}</h5>
+            <p class="card-text">{{ tarea.description }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

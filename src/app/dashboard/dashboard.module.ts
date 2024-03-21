@@ -8,6 +8,7 @@ import { CalendarioComponent } from './calendario/calendario.component';
 import { PlayerComponent } from './player/player.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxDatatableModule } from '@swimlane/ngx-datatable';
+import { ShopComponent } from './calendario/shop/shop.component';
 
 
 
@@ -17,7 +18,8 @@ import { NgxDatatableModule } from '@swimlane/ngx-datatable';
     HeaderComponent,
     InicioComponent,
     CalendarioComponent,
-    PlayerComponent
+    PlayerComponent,
+    ShopComponent
   ],
   imports: [
     CommonModule,
