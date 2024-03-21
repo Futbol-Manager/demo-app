@@ -101,6 +101,13 @@
               <input type="text" class="form-control" id="nombreRival" [(ngModel)]="match.rivalName">
             </div>
             <div class="mb-3">
+              <label for="terreno" class="form-label">Terreno de juego:</label>
+              <select class="form-control" id="terreno" [(ngModel)]="match.terreno">
+                <option value="Local">Local</option>
+                <option value="Visitante">Visitante</option>
+              </select>
+            </div>
+            <div class="mb-3">
               <label for="informacionRival" class="form-label">Información del Rival:</label>
               <textarea class="form-control" id="informacionRival" rows="5" [(ngModel)]="match.rivalInfo"></textarea>
             </div>
@@ -294,6 +301,13 @@
         <div class="mb-3">
           <label for="nombreRival" class="form-label">Nombre del Rival:</label>
           <input type="text" class="form-control" id="nombreRival" [(ngModel)]="match.rivalName">
+        </div>
+        <div class="mb-3">
+          <label for="terreno" class="form-label">Terreno de juego:</label>
+          <select class="form-control" id="terreno" [(ngModel)]="match.terreno">
+            <option value="Local">Local</option>
+            <option value="Visitante">Visitante</option>
+          </select>
         </div>
         <div class="mb-3">
           <label for="informacionRival" class="form-label">Información del Rival:</label>

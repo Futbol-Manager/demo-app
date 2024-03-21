@@ -9,6 +9,7 @@ export class MatchPreparation {
     trainingText: string;
     refereeName: string;
     summoned: string;
+    terreno: string;
 
     constructor(object: any) {
         this.matchPreparationId = object.matchPreparationId || 0;
@@ -21,6 +22,7 @@ export class MatchPreparation {
         this.trainingText = object.trainingText || '';
         this.refereeName = object.refereeName || '';
         this.summoned = object.summoned || '';
+        this.terreno = object.terreno || '';
     }
 
 }
