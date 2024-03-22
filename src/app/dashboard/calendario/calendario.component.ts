@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Task, Training } from 'src/app/core/services/models/training.models';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import { MatchPreparation } from 'src/app/core/services/models/match.model';
+import { MatchPreparation, PostPartido } from 'src/app/core/services/models/match.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ShopComponent } from './shop/shop.component';
 
@@ -46,12 +46,15 @@ export class CalendarioComponent implements OnInit {
   taskList: any[] = [];
   viewShop: boolean = false;
 
+  showModalPostPartido: boolean = false;
+  postPartido: PostPartido = new PostPartido({});
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private trainingService: TrainingService,
     private dialog: MatDialog,
-    ) { }
+  ) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -157,7 +160,7 @@ export class CalendarioComponent implements OnInit {
         // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
         this.getListaEntrenamientos();
         // Cerrar el modal después de crear el equipo
-        if(this.trainingSession.trainingSessionId === 0)
+        if (this.trainingSession.trainingSessionId === 0)
           this.cerrarModal();
         else
           this.cerrarModalEntrenamiento();
@@ -178,7 +181,7 @@ export class CalendarioComponent implements OnInit {
         // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
         this.getListaEntrenamientos();
         // Cerrar el modal después de crear el equipo
-        if(this.trainingSession.trainingSessionId === 0)
+        if (this.trainingSession.trainingSessionId === 0)
           this.cerrarModal();
         else
           this.cerrarModalEntrenamiento();
@@ -352,7 +355,7 @@ export class CalendarioComponent implements OnInit {
         if (response.data) {
           // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
           this.getListaPrePartido();
-          if(this.match.matchPreparationId === 0)
+          if (this.match.matchPreparationId === 0)
             this.cerrarModal();
           else
             this.cerrarModalPartido();
@@ -376,7 +379,7 @@ export class CalendarioComponent implements OnInit {
         if (response.data) {
           // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
           this.getListaPrePartido();
-          if(this.match.matchPreparationId === 0)
+          if (this.match.matchPreparationId === 0)
             this.cerrarModal();
           else
             this.cerrarModalPartido();
@@ -403,7 +406,7 @@ export class CalendarioComponent implements OnInit {
     );
   }
 
-  cerrarTienda(){
+  cerrarTienda() {
     this.viewShop = false;
     this.taskList = [];
   }
@@ -413,6 +416,50 @@ export class CalendarioComponent implements OnInit {
       this.openEntrenamiento(this.trainingId, this.daySession);
       this.cerrarTienda();
     }
+  }
+
+  openPostPartido(id: any): void {
+    this.matchPreparationId = id;
+    // Obtener la información del partido por su ID
+    this.trainingService.getPostPartido(id).subscribe(
+      (response) => {
+        // Verificar si se obtuvo correctamente la información del partido
+        if (response.data) {
+          // Asignar los datos del partido al objeto 'partido'
+          this.postPartido = response.data;
+        }
+        // Abrir el modal
+        this.showModalPartido = false;
+        this.showModalPostPartido = true;
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  cerrarModalPostPartido() {
+    this.showModalPostPartido = false;
+    // Limpiar los campos del partido
+    this.match = new MatchPreparation({});
+    this.postPartido = new PostPartido({});
+  }
+
+  guardarPostPartido() {
+    this.postPartido.matchPreparation.matchPreparationId = this.matchPreparationId;
+    this.trainingService.createUpdatePostPartido(this.postPartido).subscribe(
+      (response) => {
+        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
+        if (response.data) {
+          this.cerrarModalPostPartido();
+        } else {
+          console.error('Error al crear el partido:', response.error.msg);
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
   }
 
 }

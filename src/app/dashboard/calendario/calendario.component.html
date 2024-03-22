@@ -135,7 +135,6 @@
               <label for="convocados" class="form-label">Convocados:</label>
               <textarea class="form-control" id="convocados" rows="5" [(ngModel)]="match.summoned"></textarea>
             </div>
-
             <!-- Botón para guardar el nuevo equipo -->
             <button type="button" class="btn btn-primary float-end" (click)="crearPartido()">Guardar</button>
           </div>
@@ -208,36 +207,36 @@
               <div class="form-group">
                 <label for="work">Tipo de Trabajo:</label>
                 <select class="form-control" id="work" name="work" [(ngModel)]="nuevaTarea.work">
-                    <option disabled selected>Selecciona un tipo de trabajo</option>
-                    <option value="Trabajo Físico">Trabajo Físico</option>
-                    <option value="Trabajo Táctico">Trabajo Táctico</option>
-                    <option value="Tecnificación">Tecnificación</option>
-                    <option value="ABP">ABP</option>
-                    <option value="Trabajo Preventivo">Trabajo Preventivo</option>
-                    <option disabled>──────────</option>
-                    <option value="Resistencia">Resistencia</option>
-                    <option value="Fuerza">Fuerza</option>
-                    <option value="Velocidad">Velocidad</option>
-                    <option disabled>──────────</option>
-                    <option value="Trabajo por posiciones">Trabajo por posiciones</option>
-                    <option value="Trabajo por líneas">Trabajo por líneas</option>
-                    <option value="Específicos">Específicos</option>
-                    <option disabled>──────────</option>
-                    <option value="Faltas laterales">Faltas laterales</option>
-                    <option value="Faltas frontales">Faltas frontales</option>
-                    <option value="Corners">Corners</option>
-                    <option disabled>──────────</option>
-                    <option value="Core">Core</option>
-                    <option value="Estabilización de rodilla">Estabilización de rodilla</option>
-                    <option value="Glúteos">Glúteos</option>
-                    <option value="Cuádriceps">Cuádriceps</option>
-                    <option value="Aductores">Aductores</option>
-                    <option value="Isquiotibiales">Isquiotibiales</option>
-                    <option value="Gemelos">Gemelos</option>
-                    <option value="Propiocepción">Propiocepción</option>
+                  <option disabled selected>Selecciona un tipo de trabajo</option>
+                  <option value="Trabajo Físico">Trabajo Físico</option>
+                  <option value="Trabajo Táctico">Trabajo Táctico</option>
+                  <option value="Tecnificación">Tecnificación</option>
+                  <option value="ABP">ABP</option>
+                  <option value="Trabajo Preventivo">Trabajo Preventivo</option>
+                  <option disabled>──────────</option>
+                  <option value="Resistencia">Resistencia</option>
+                  <option value="Fuerza">Fuerza</option>
+                  <option value="Velocidad">Velocidad</option>
+                  <option disabled>──────────</option>
+                  <option value="Trabajo por posiciones">Trabajo por posiciones</option>
+                  <option value="Trabajo por líneas">Trabajo por líneas</option>
+                  <option value="Específicos">Específicos</option>
+                  <option disabled>──────────</option>
+                  <option value="Faltas laterales">Faltas laterales</option>
+                  <option value="Faltas frontales">Faltas frontales</option>
+                  <option value="Corners">Corners</option>
+                  <option disabled>──────────</option>
+                  <option value="Core">Core</option>
+                  <option value="Estabilización de rodilla">Estabilización de rodilla</option>
+                  <option value="Glúteos">Glúteos</option>
+                  <option value="Cuádriceps">Cuádriceps</option>
+                  <option value="Aductores">Aductores</option>
+                  <option value="Isquiotibiales">Isquiotibiales</option>
+                  <option value="Gemelos">Gemelos</option>
+                  <option value="Propiocepción">Propiocepción</option>
                 </select>
-            </div>
-            
+              </div>
+
               <!-- Agregar más campos de tarea según sea necesario -->
               <button type="submit" class="btn btn-primary">Crear Tarea</button>
             </form>
@@ -273,14 +272,19 @@
 
 
           <!-- Botón para agregar tarea -->
-          <button type="button" class="btn btn-primary mt-3" [disabled]="showAddTaskForm" (click)="toggleAddTaskForm()">Agregar
+          <button type="button" class="btn btn-primary mt-3" [disabled]="showAddTaskForm"
+            (click)="toggleAddTaskForm()">Agregar
             Tarea</button>
           <button type="button" class="btn btn-primary mt-3" (click)="verTienda()" *ngIf="!viewShop">Ver Tienda</button>
-          <button type="button" class="btn btn-primary mt-3" (click)="cerrarTienda()" *ngIf="viewShop">Cerrar Tienda</button>
-          <button type="button" class="btn btn-danger float-end" (click)="eliminarEntrenamiento()">Eliminar Entrenamiento</button>
-          <button type="button" class="btn btn-primary float-end" (click)="crearEntrenamiento()">Guardar Entrenamiento</button>
+          <button type="button" class="btn btn-primary mt-3" (click)="cerrarTienda()" *ngIf="viewShop">Cerrar
+            Tienda</button>
+          <button type="button" class="btn btn-danger float-end" (click)="eliminarEntrenamiento()">Eliminar
+            Entrenamiento</button>
+          <button type="button" class="btn btn-primary float-end" (click)="crearEntrenamiento()">Guardar
+            Entrenamiento</button>
           <!-- Modal para abrir listado de tareas de la tienda-->
-          <app-shop [taskList]="taskList" [trainingId]="trainingId" (tareaDescargada)="tareaDescargada($event)" *ngIf="viewShop">
+          <app-shop [taskList]="taskList" [trainingId]="trainingId" (tareaDescargada)="tareaDescargada($event)"
+            *ngIf="viewShop">
           </app-shop>
         </div>
       </div>
@@ -294,6 +298,8 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Detalles del Partido</h5>
+        <button type="button" class="btn btn-success float-end" (click)="openPostPartido(match.matchPreparationId)">Post
+          Partido</button>
         <!-- Botón de cerrar con un icono -->
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
       </div>
@@ -342,6 +348,117 @@
         <!-- Botón para guardar el nuevo partido -->
         <button type="button" class="btn btn-danger float-end" (click)="eliminarPartido()">Eliminar Partido</button>
         <button type="button" class="btn btn-primary float-end" (click)="crearPartido()">Guardar Partido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- modal para guardar el post partido -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPostPartido}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Crear Partido</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPostPartido()"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="simple-tab" data-bs-toggle="tab" data-bs-target="#simple" type="button"
+              role="tab" aria-controls="simple" aria-selected="true">Simple</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="avanzada-tab" data-bs-toggle="tab" data-bs-target="#avanzada" type="button"
+              role="tab" aria-controls="avanzada" aria-selected="false">Avanzada</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade show active" id="simple" role="tabpanel" aria-labelledby="simple-tab">
+            <div class="mb-3">
+              <label for="golesAFavor" class="form-label">Goles a favor:</label>
+              <input type="number" class="form-control" id="golesAFavor" [(ngModel)]="postPartido.golesAFavor">
+            </div>
+            <div class="mb-3">
+              <label for="golesEnContra" class="form-label">Goles en contra:</label>
+              <input type="number" class="form-control" id="golesEnContra" [(ngModel)]="postPartido.golesEnContra">
+            </div>
+            <div class="mb-3">
+              <label for="disparosAFavor" class="form-label">Disparos a favor:</label>
+              <input type="number" class="form-control" id="disparosAFavor" [(ngModel)]="postPartido.disparosAFavor">
+            </div>
+            <div class="mb-3">
+              <label for="disparosEnContra" class="form-label">Disparos en contra:</label>
+              <input type="number" class="form-control" id="disparosEnContra"
+                [(ngModel)]="postPartido.disparosEnContra">
+            </div>
+            <div class="mb-3">
+              <label for="faltasCometidas" class="form-label">Faltas cometidas:</label>
+              <input type="number" class="form-control" id="faltasCometidas" [(ngModel)]="postPartido.faltasCometidas">
+            </div>
+            <div class="mb-3">
+              <label for="faltasRecibidas" class="form-label">Faltas recibidas:</label>
+              <input type="number" class="form-control" id="faltasRecibidas" [(ngModel)]="postPartido.faltasRecibidas">
+            </div>
+            <div class="mb-3">
+              <label for="cornersAFavor" class="form-label">Córneres a favor:</label>
+              <input type="number" class="form-control" id="cornersAFavor" [(ngModel)]="postPartido.cornersAFavor">
+            </div>
+            <div class="mb-3">
+              <label for="cornersEnContra" class="form-label">Córneres en contra:</label>
+              <input type="number" class="form-control" id="cornersEnContra" [(ngModel)]="postPartido.cornersEnContra">
+            </div>
+            <div class="mb-3">
+              <label for="penaltisAFavor" class="form-label">Penaltis a favor:</label>
+              <input type="number" class="form-control" id="penaltisAFavor" [(ngModel)]="postPartido.penaltisAFavor">
+            </div>
+            <div class="mb-3">
+              <label for="penaltisEnContra" class="form-label">Penaltis en contra:</label>
+              <input type="number" class="form-control" id="penaltisEnContra"
+                [(ngModel)]="postPartido.penaltisEnContra">
+            </div>
+            <div class="mb-3">
+              <label for="recuperaciones" class="form-label">Recuperaciones:</label>
+              <input type="number" class="form-control" id="recuperaciones" [(ngModel)]="postPartido.recuperaciones">
+            </div>
+            <div class="mb-3">
+              <label for="perdidas" class="form-label">Pérdidas:</label>
+              <input type="number" class="form-control" id="perdidas" [(ngModel)]="postPartido.perdidas">
+            </div>
+            <div class="mb-3">
+              <label for="paradasPortero" class="form-label">Paradas del portero:</label>
+              <input type="number" class="form-control" id="paradasPortero" [(ngModel)]="postPartido.paradasPortero">
+            </div>
+            <div class="mb-3">
+              <label for="tarjetasAmarillas" class="form-label">Tarjetas Amarillas:</label>
+              <input type="number" class="form-control" id="tarjetasAmarillas"
+                [(ngModel)]="postPartido.tarjetasAmarillas">
+            </div>
+            <div class="mb-3">
+              <label for="tarjetasRojas" class="form-label">Tarjetas Rojas:</label>
+              <input type="number" class="form-control" id="tarjetasRojas" [(ngModel)]="postPartido.tarjetasRojas">
+            </div>
+            <div class="mb-3">
+              <label for="llegadasPeligroAFavor" class="form-label">Llegadas con peligro a favor:</label>
+              <input type="number" class="form-control" id="llegadasPeligroAFavor"
+                [(ngModel)]="postPartido.llegadasPeligroAFavor">
+            </div>
+            <div class="mb-3">
+              <label for="llegadasPeligroEnContra" class="form-label">Llegadas con peligro en contra:</label>
+              <input type="number" class="form-control" id="llegadasPeligroEnContra"
+                [(ngModel)]="postPartido.llegadasPeligroEnContra">
+            </div>
+            <div class="mb-3">
+              <label for="anotaciones" class="form-label">Anotaciones:</label>
+              <textarea class="form-control" id="anotaciones" rows="5" [(ngModel)]="postPartido.anotaciones"></textarea>
+            </div>
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="button" class="btn btn-primary float-end" (click)="guardarPostPartido()">Guardar</button>
+          </div>
+
+          <div class="tab-pane fade" id="avanzada" role="tabpanel" aria-labelledby="avanzada-tab">
+            <!-- Campos avanzados -->
+          </div>
+        </div>
       </div>
     </div>
   </div>
