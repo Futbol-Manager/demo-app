@@ -395,15 +395,7 @@ export class CalendarioComponent implements OnInit {
   }
 
   verTienda() {
-    this.trainingService.getAllTaskShop().subscribe(
-      (response: any) => {
-        this.taskList = response.data;
-        this.viewShop = true;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de tareas', error);
-      }
-    );
+    this.viewShop = true;
   }
 
   cerrarTienda() {
