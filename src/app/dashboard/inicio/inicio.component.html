@@ -74,7 +74,7 @@
         </div>
       </div>
     </div>
-    
+
   </div>
 </div>
 
@@ -119,6 +119,12 @@
               <option value="3">Categoría 3</option>
               <option value="4">Categoría 4</option>
               <option value="5">Categoría 5</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="clubEquipo" class="form-label">Club del Equipo:</label>
+            <select class="form-control" id="clubEquipo" name="clubEquipo" [(ngModel)]="teamNew.clubId">
+              <option *ngFor="let club of clubList" [value]="club.clubId">{{ club.name }}</option>
             </select>
           </div>
           <!-- Botón para guardar el nuevo equipo -->

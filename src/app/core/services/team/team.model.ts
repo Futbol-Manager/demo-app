@@ -6,7 +6,7 @@ export class Team {
     name: string;
     trainingDays: string;
     category: string;
-  
+
     constructor(object: any) {
       this.teamId = (object.teamId) ? object.teamId : null;
       this.levelLeague = (object.levelLeague) ? object.levelLeague : null;
@@ -25,6 +25,7 @@ export class TeamNew {
   opinionTeam: string;
   trainingDays: string;
   categoryType: CategoryType;
+  clubId: number;
 
   constructor() {
     this.teamId = 0; // O el valor por defecto que desees para teamId
@@ -34,6 +35,7 @@ export class TeamNew {
     this.opinionTeam = '';
     this.trainingDays = '';
     this.categoryType = new CategoryType(null); // Inicializado con el constructor de CategoryType
+    this.clubId = 0;
   }
 }
 
@@ -52,4 +54,3 @@ export class CategoryType {
 }
 
 
-  

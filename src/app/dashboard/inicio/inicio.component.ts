@@ -6,6 +6,7 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Router } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { ClubService } from 'src/app/core/services/club/club.service';
 
 @Component({
   selector: 'app-inicio',
@@ -17,11 +18,14 @@ export class InicioComponent implements OnInit {
   usuarioActual!: User | null;
   listTeam: any[] = []; // Define una variable para almacenar el listado de equipos
   showModal = false;
-  teamNew: TeamNew = new TeamNew(); // Modelo para el nuevo equipo  
+  teamNew: TeamNew = new TeamNew(); // Modelo para el nuevo equipo
+  clubList: any[] = [];
 
   constructor(private loginService: LoginService,
     private router: Router,
-    private teamService: TeamService) { }
+    private teamService: TeamService,
+    private clubService: ClubService,
+    ) { }
 
   ngOnInit(): void {
     // Suscríbete al observable del servicio para obtener el usuario actual
@@ -29,6 +33,8 @@ export class InicioComponent implements OnInit {
       this.usuarioActual = user;
       // Carga el listado de equipos al inicializar el componente
       this.cargarListadoEquipos();
+      // Cargar listado de clubes disponibles
+      this.cargarListadoClubes();
     });
 
   }
@@ -47,6 +53,20 @@ export class InicioComponent implements OnInit {
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  // Método para cargar el listado de clubes
+  cargarListadoClubes(): void {
+    this.clubService.getAllClubsRegistered().subscribe(
+      (response: Response) => {
+        if(response.data.length > 0){
+          this.clubList = response.data;
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de clubes', error);
       }
     );
   }
@@ -87,7 +107,8 @@ export class InicioComponent implements OnInit {
         categoryTypeId: this.teamNew.categoryType.categoryTypeId,
         year: 0,
         categoryName: ''
-      }
+      },
+      clubId: this.teamNew.clubId
     };
 
     // Llamada al servicio para crear el equipo
