@@ -60,7 +60,7 @@
 
 </div>
 
-<!-- Modal para la creación de un entrenamiento -->
+<!-- Modal para la creación de un partido -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
@@ -101,10 +101,42 @@
               <input type="text" class="form-control" id="nombreRival" [(ngModel)]="match.rivalName">
             </div>
             <div class="mb-3">
-              <label for="terreno" class="form-label">Terreno de juego:</label>
+              <label for="terreno" class="form-label">Local o Visitante:</label>
               <select class="form-control" id="terreno" [(ngModel)]="match.terreno">
                 <option value="Local">Local</option>
                 <option value="Visitante">Visitante</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="lugar" class="form-label">Lugar:</label>
+              <textarea class="form-control" id="lugar" rows="5" [(ngModel)]="match.lugar"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="hora" class="form-label">hora:</label>
+              <select class="form-control" id="hora" [(ngModel)]="match.hora">
+                <option value="08">08</option>
+                <option value="09">09</option>
+                <option value="10">10</option>
+                <option value="11">11</option>
+                <option value="12">12</option>
+                <option value="13">13</option>
+                <option value="14">14</option>
+                <option value="15">15</option>
+                <option value="16">16</option>
+                <option value="17">17</option>
+                <option value="18">18</option>
+                <option value="19">19</option>
+                <option value="20">20</option>
+                <option value="21">21</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="minutos" class="form-label">minutos:</label>
+              <select class="form-control" id="minutos" [(ngModel)]="match.minutos">
+                <option value="00">00</option>
+                <option value="15">15</option>
+                <option value="30">30</option>
+                <option value="45">45</option>
               </select>
             </div>
             <div class="mb-3">
@@ -309,10 +341,42 @@
           <input type="text" class="form-control" id="nombreRival" [(ngModel)]="match.rivalName">
         </div>
         <div class="mb-3">
-          <label for="terreno" class="form-label">Terreno de juego:</label>
+          <label for="terreno" class="form-label">Local o Visitante:</label>
           <select class="form-control" id="terreno" [(ngModel)]="match.terreno">
             <option value="Local">Local</option>
             <option value="Visitante">Visitante</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="lugar" class="form-label">Lugar:</label>
+          <textarea class="form-control" id="lugar" rows="5" [(ngModel)]="match.lugar"></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="hora" class="form-label">hora:</label>
+          <select class="form-control" id="hora" [(ngModel)]="match.hora">
+            <option value="08">08</option>
+            <option value="09">09</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+            <option value="17">17</option>
+            <option value="18">18</option>
+            <option value="19">19</option>
+            <option value="20">20</option>
+            <option value="21">21</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="minutos" class="form-label">minutos:</label>
+          <select class="form-control" id="minutos" [(ngModel)]="match.minutos">
+            <option value="00">00</option>
+            <option value="15">15</option>
+            <option value="30">30</option>
+            <option value="45">45</option>
           </select>
         </div>
         <div class="mb-3">
@@ -381,6 +445,14 @@
             <div class="mb-3">
               <label for="golesEnContra" class="form-label">Goles en contra:</label>
               <input type="number" class="form-control" id="golesEnContra" [(ngModel)]="postPartido.golesEnContra">
+            </div>
+            <div class="mb-3">
+              <label for="resultado" class="form-label">Resultado:</label>
+              <select class="form-control" id="resultado" [(ngModel)]="postPartido.resultado">
+                <option value="V">Victoria</option>
+                <option value="E">Empate</option>
+                <option value="D">Derrota</option>
+              </select>
             </div>
             <div class="mb-3">
               <label for="disparosAFavor" class="form-label">Disparos a favor:</label>

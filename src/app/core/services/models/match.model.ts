@@ -10,6 +10,9 @@ export class MatchPreparation {
     refereeName: string;
     summoned: string;
     terreno: string;
+    lugar: string;
+    hora: string;
+    minutos: string;
 
     constructor(object: any) {
         this.matchPreparationId = object.matchPreparationId || 0;
@@ -23,6 +26,9 @@ export class MatchPreparation {
         this.refereeName = object.refereeName || '';
         this.summoned = object.summoned || '';
         this.terreno = object.terreno || '';
+        this.lugar = object.lugar || '';
+        this.hora = object.hora || '';
+        this.minutos = object.minutos || '';
     }
 }
 
@@ -47,6 +53,7 @@ export class PostPartido {
     llegadasPeligroAFavor: number = 0;
     llegadasPeligroEnContra: number = 0;
     anotaciones: string = '';
+    resultado: string;
 
     constructor(object: any) {
         this.posPartidoId = object.posPartidoId || 0;
@@ -69,5 +76,6 @@ export class PostPartido {
         this.llegadasPeligroAFavor = object.llegadasPeligroAFavor || 0;
         this.llegadasPeligroEnContra = object.llegadasPeligroEnContra || 0;
         this.anotaciones = object.anotaciones || '';
+        this.resultado = object.resultado || '';
     }
 }
