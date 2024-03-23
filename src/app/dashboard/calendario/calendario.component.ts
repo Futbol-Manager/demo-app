@@ -3,9 +3,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Task, Training } from 'src/app/core/services/models/training.models';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import { MatchPreparation, PostPartido } from 'src/app/core/services/models/match.model';
+import { MatchPreparation, PlayerPostPartido, PostPartido } from 'src/app/core/services/models/match.model';
 import { MatDialog } from '@angular/material/dialog';
 import { ShopComponent } from './shop/shop.component';
+import { PlayerService } from 'src/app/core/services/player/player.service';
+import { Player, PlayerId } from 'src/app/core/services/player/player.model';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -49,10 +51,15 @@ export class CalendarioComponent implements OnInit {
   showModalPostPartido: boolean = false;
   postPartido: PostPartido = new PostPartido({});
 
+  playerPostPartido: PlayerId[] = [];
+  playerInfoPostPartido: PlayerPostPartido = new PlayerPostPartido({});
+  postPartidoId: number = 0;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private trainingService: TrainingService,
+    private playerService: PlayerService,
     private dialog: MatDialog,
   ) { }
 
@@ -419,6 +426,20 @@ export class CalendarioComponent implements OnInit {
         if (response.data) {
           // Asignar los datos del partido al objeto 'partido'
           this.postPartido = response.data;
+          this.postPartidoId = response.data.postPartidoId;
+          this.playerService.getPlayersPostPartido(this.teamId.toString(), response.data.postPartidoId.toString()).subscribe(
+            (response) => {
+              // Verificar si se obtuvo correctamente la información del partido
+              if (response.data) {
+                // Asignar los datos del partido al objeto 'partido'
+                this.playerPostPartido = response.data;
+              }
+            },
+            (error) => {
+              console.error('Error en la solicitud:', error);
+            }
+          );
+
         }
         // Abrir el modal
         this.showModalPartido = false;
@@ -428,6 +449,8 @@ export class CalendarioComponent implements OnInit {
         console.error('Error en la solicitud:', error);
       }
     );
+
+
   }
 
   cerrarModalPostPartido() {
@@ -452,6 +475,49 @@ export class CalendarioComponent implements OnInit {
         console.error('Error en la solicitud:', error);
       }
     );
+  }
+
+  togglePlayer(player: PlayerId): void {
+    // Cambiar el estado isOpen de la tarea seleccionada
+    player.collapsed = !player.collapsed;
+
+    let playerInfo = this.playerPostPartido.find(jugador => jugador.playerId === player.playerId);
+    if(playerInfo?.info !== undefined && playerInfo?.info !== null){
+      this.playerInfoPostPartido = playerInfo.info;
+    } else {
+      this.playerInfoPostPartido = new PlayerPostPartido({});
+    }
+    //this.playerInfoPostPartido = playerResult!.info;
+
+    // Si la tarea se abre, cerrar el resto de las tareas
+    if (player.collapsed) {
+      this.playerPostPartido
+        .filter(t => t !== player) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+    }
+  }
+
+  guardarPostPartidoAvanzado(){
+
+  }
+
+  guardarInfoPlayerPostPartido(playerId: number){
+    this.playerInfoPostPartido.player.playerId = playerId;
+    this.playerInfoPostPartido.postPartido.postPartidoId = this.postPartidoId;
+    this.playerService.createUpdateInfoPlayerPostPartido(this.playerInfoPostPartido).subscribe(
+      (response) => {
+        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
+        if (response.data) {
+          this.cerrarModalPostPartido();
+        } else {
+          console.error('Error al crear el partido:', response.error.msg);
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+
   }
 
 }

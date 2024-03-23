@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Training, Task } from '../models/training.models';
-import { MatchPreparation, PostPartido } from '../models/match.model';
+import { MatchPreparation, PlayerPostPartido, PostPartido } from '../models/match.model';
 
 
 @Injectable({

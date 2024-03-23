@@ -1,3 +1,5 @@
+import { PlayerId } from "../player/player.model";
+
 export class MatchPreparation {
     matchPreparationId: number;
     abp: string;
@@ -54,6 +56,7 @@ export class PostPartido {
     llegadasPeligroEnContra: number = 0;
     anotaciones: string = '';
     resultado: string;
+    video: string;
 
     constructor(object: any) {
         this.posPartidoId = object.posPartidoId || 0;
@@ -77,5 +80,54 @@ export class PostPartido {
         this.llegadasPeligroEnContra = object.llegadasPeligroEnContra || 0;
         this.anotaciones = object.anotaciones || '';
         this.resultado = object.resultado || '';
+        this.video = object.video || '';
+    }
+}
+
+export class PlayerPostPartido {
+    playerPostPartidoId: number = 0;
+    postPartido: PostPartidoId;
+    player: PlayerId;
+    minutos: number = 0;
+    goles: number = 0;
+    golesPenalti: number = 0;
+    golesFalta: number = 0;
+    faltasCometidas: number = 0;
+    faltasRecibidas: number = 0;
+    recuperaciones: number = 0;
+    perdidas: number = 0;
+    tarjetasAmarillas: number = 0;
+    tarjetasRojas: number = 0;
+    disparosTotales: number = 0;
+    disparosPuerta: number = 0;
+    paradasPortero: number = 0;
+    anotaciones: string = '';
+
+    constructor(object: any) {
+        this.playerPostPartidoId = object.playerPostPartidoId || 0;
+        this.postPartido = object.postPartido || new PostPartidoId({});
+        this.player = object.player || new PlayerId({});
+        this.minutos = object.minutos || 0;
+        this.goles = object.goles || 0;
+        this.golesPenalti = object.golesPenalti || 0;
+        this.golesFalta = object.golesFalta || 0;
+        this.faltasCometidas = object.faltasCometidas || 0;
+        this.faltasRecibidas = object.faltasRecibidas || 0;
+        this.recuperaciones = object.recuperaciones || 0;
+        this.perdidas = object.perdidas || 0;
+        this.tarjetasAmarillas = object.tarjetasAmarillas || 0;
+        this.tarjetasRojas = object.tarjetasRojas || 0;
+        this.disparosTotales = object.disparosTotales || 0;
+        this.disparosPuerta = object.disparosPuerta || 0;
+        this.paradasPortero = object.paradasPortero || 0;
+        this.anotaciones = object.anotaciones || '';
+    }
+}
+
+export class PostPartidoId {
+    postPartidoId: number = 0;
+
+    constructor(object: any) {
+        this.postPartidoId = object.postPartidoId || 0;
     }
 }

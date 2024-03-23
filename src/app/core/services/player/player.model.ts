@@ -1,3 +1,5 @@
+import { PlayerPostPartido } from "../models/match.model";
+
 // player.model.ts
 export class Player2 {
   playerId: number;
@@ -177,5 +179,20 @@ export class Player {
       this.especialidades = object.especialidades || '';
       this.opinionDelEntrenador = object.opinionDelEntrenador || '';
       this.picturePlayer = object.picturePlayer || '';
+  }
+}
+
+export class PlayerId {
+  playerId: number;
+  nombre: string;
+  apellido: string;
+  info: PlayerPostPartido | undefined;
+  collapsed: boolean;
+
+  constructor(object: any) {
+    this.playerId = object.playerId || 0;
+      this.nombre = object.nombre || '';
+      this.apellido = object.apellido || '';
+      this.collapsed = false; // Inicialmente, la tarea está contraída
   }
 }
