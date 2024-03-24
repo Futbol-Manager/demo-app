@@ -1,6 +1,6 @@
 <!-- Botón para redirigir a la pantalla de jugadores -->
 <div class="container mt-3">
-  <button class="btn btn-primary" (click)="irAPantallaJugadores()">Ir a Jugadores</button>
+  <button class="btn btn-primary" (click)="irAPantallaJugadores()">Jugadores del equipo</button>
 </div>
 
 <!-- calendario.component.html -->
@@ -483,15 +483,17 @@
         </ul>
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane fade show active" id="simple" role="tabpanel" aria-labelledby="simple-tab">
-            <div class="mb-3">
-              <label for="golesAFavor" class="form-label">Goles a favor:</label>
-              <input type="number" class="form-control" id="golesAFavor" [(ngModel)]="postPartido.golesAFavor">
+            <div class="mb-3 d-flex">
+              <div class="col-6">
+                <label for="golesAFavor" class="form-label">Goles a favor:</label>
+                <input type="number" class="form-control" id="golesAFavor" [(ngModel)]="postPartido.golesAFavor">
+              </div>
+              <div class="col-6">
+                <label for="golesEnContra" class="form-label">Goles en contra:</label>
+                <input type="number" class="form-control" id="golesEnContra" [(ngModel)]="postPartido.golesEnContra">
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="golesEnContra" class="form-label">Goles en contra:</label>
-              <input type="number" class="form-control" id="golesEnContra" [(ngModel)]="postPartido.golesEnContra">
-            </div>
-            <div class="mb-3">
+            <div class="mb-3 col-6">
               <label for="resultado" class="form-label">Resultado:</label>
               <select class="form-control" id="resultado" [(ngModel)]="postPartido.resultado">
                 <option value="V">Victoria</option>
@@ -499,70 +501,84 @@
                 <option value="D">Derrota</option>
               </select>
             </div>
-            <div class="mb-3">
-              <label for="disparosAFavor" class="form-label">Disparos a favor:</label>
-              <input type="number" class="form-control" id="disparosAFavor" [(ngModel)]="postPartido.disparosAFavor">
+            <div class="mb-3 d-flex">
+              <div class="col-6">
+                <label for="disparosAFavor" class="form-label">Disparos a favor:</label>
+                <input type="number" class="form-control" id="disparosAFavor" [(ngModel)]="postPartido.disparosAFavor">
+              </div>
+              <div class="col-6">
+                <label for="disparosEnContra" class="form-label">Disparos en contra:</label>
+                <input type="number" class="form-control" id="disparosEnContra"
+                  [(ngModel)]="postPartido.disparosEnContra">
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="disparosEnContra" class="form-label">Disparos en contra:</label>
-              <input type="number" class="form-control" id="disparosEnContra"
-                [(ngModel)]="postPartido.disparosEnContra">
+            <div class="mb-3 d-flex">
+              <div class="col-6">
+                <label for="faltasCometidas" class="form-label">Faltas cometidas:</label>
+                <input type="number" class="form-control" id="faltasCometidas" [(ngModel)]="postPartido.faltasCometidas">
+              </div>
+              <div class="col-6">
+                <label for="faltasRecibidas" class="form-label">Faltas recibidas:</label>
+                <input type="number" class="form-control" id="faltasRecibidas" [(ngModel)]="postPartido.faltasRecibidas">
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="faltasCometidas" class="form-label">Faltas cometidas:</label>
-              <input type="number" class="form-control" id="faltasCometidas" [(ngModel)]="postPartido.faltasCometidas">
+            <div class="mb-3 d-flex">
+              <div class="col-6">
+                <label for="cornersAFavor" class="form-label">Córneres a favor:</label>
+                <input type="number" class="form-control" id="cornersAFavor" [(ngModel)]="postPartido.cornersAFavor">
+              </div>
+              <div class="col-6">
+                <label for="cornersEnContra" class="form-label">Córneres en contra:</label>
+                <input type="number" class="form-control" id="cornersEnContra" [(ngModel)]="postPartido.cornersEnContra">
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="faltasRecibidas" class="form-label">Faltas recibidas:</label>
-              <input type="number" class="form-control" id="faltasRecibidas" [(ngModel)]="postPartido.faltasRecibidas">
+            <div class="mb-3 d-flex">
+              <div class="col-6">
+                <label for="penaltisAFavor" class="form-label">Penaltis a favor:</label>
+                <input type="number" class="form-control" id="penaltisAFavor" [(ngModel)]="postPartido.penaltisAFavor">
+              </div>
+              <div class="col-6">
+                <label for="penaltisEnContra" class="form-label">Penaltis en contra:</label>
+                <input type="number" class="form-control" id="penaltisEnContra"
+                  [(ngModel)]="postPartido.penaltisEnContra">
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="cornersAFavor" class="form-label">Córneres a favor:</label>
-              <input type="number" class="form-control" id="cornersAFavor" [(ngModel)]="postPartido.cornersAFavor">
+            <div class="mb-3 d-flex">
+              <div class="col-6">
+                <label for="recuperaciones" class="form-label">Recuperaciones:</label>
+                <input type="number" class="form-control" id="recuperaciones" [(ngModel)]="postPartido.recuperaciones">
+              </div>
+              <div class="col-6">
+                <label for="perdidas" class="form-label">Pérdidas:</label>
+                <input type="number" class="form-control" id="perdidas" [(ngModel)]="postPartido.perdidas">
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="cornersEnContra" class="form-label">Córneres en contra:</label>
-              <input type="number" class="form-control" id="cornersEnContra" [(ngModel)]="postPartido.cornersEnContra">
-            </div>
-            <div class="mb-3">
-              <label for="penaltisAFavor" class="form-label">Penaltis a favor:</label>
-              <input type="number" class="form-control" id="penaltisAFavor" [(ngModel)]="postPartido.penaltisAFavor">
-            </div>
-            <div class="mb-3">
-              <label for="penaltisEnContra" class="form-label">Penaltis en contra:</label>
-              <input type="number" class="form-control" id="penaltisEnContra"
-                [(ngModel)]="postPartido.penaltisEnContra">
-            </div>
-            <div class="mb-3">
-              <label for="recuperaciones" class="form-label">Recuperaciones:</label>
-              <input type="number" class="form-control" id="recuperaciones" [(ngModel)]="postPartido.recuperaciones">
-            </div>
-            <div class="mb-3">
-              <label for="perdidas" class="form-label">Pérdidas:</label>
-              <input type="number" class="form-control" id="perdidas" [(ngModel)]="postPartido.perdidas">
-            </div>
-            <div class="mb-3">
+            <div class="mb-3 col-6">
               <label for="paradasPortero" class="form-label">Paradas del portero:</label>
               <input type="number" class="form-control" id="paradasPortero" [(ngModel)]="postPartido.paradasPortero">
             </div>
-            <div class="mb-3">
-              <label for="tarjetasAmarillas" class="form-label">Tarjetas Amarillas:</label>
-              <input type="number" class="form-control" id="tarjetasAmarillas"
-                [(ngModel)]="postPartido.tarjetasAmarillas">
+            <div class="mb-3 d-flex">
+              <div class="col-6">
+                <label for="tarjetasAmarillas" class="form-label">Tarjetas Amarillas:</label>
+                <input type="number" class="form-control" id="tarjetasAmarillas"
+                  [(ngModel)]="postPartido.tarjetasAmarillas">
+              </div>
+              <div class="col-6">
+                <label for="tarjetasRojas" class="form-label">Tarjetas Rojas:</label>
+                <input type="number" class="form-control" id="tarjetasRojas" [(ngModel)]="postPartido.tarjetasRojas">
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="tarjetasRojas" class="form-label">Tarjetas Rojas:</label>
-              <input type="number" class="form-control" id="tarjetasRojas" [(ngModel)]="postPartido.tarjetasRojas">
-            </div>
-            <div class="mb-3">
-              <label for="llegadasPeligroAFavor" class="form-label">Llegadas con peligro a favor:</label>
-              <input type="number" class="form-control" id="llegadasPeligroAFavor"
-                [(ngModel)]="postPartido.llegadasPeligroAFavor">
-            </div>
-            <div class="mb-3">
-              <label for="llegadasPeligroEnContra" class="form-label">Llegadas con peligro en contra:</label>
-              <input type="number" class="form-control" id="llegadasPeligroEnContra"
-                [(ngModel)]="postPartido.llegadasPeligroEnContra">
+            <div class="mb-3 d-flex">
+              <div class="col-6">
+                <label for="llegadasPeligroAFavor" class="form-label">Llegadas con peligro a favor:</label>
+                <input type="number" class="form-control" id="llegadasPeligroAFavor"
+                  [(ngModel)]="postPartido.llegadasPeligroAFavor">
+              </div>
+              <div class="col-6">
+                <label for="llegadasPeligroEnContra" class="form-label">Llegadas con peligro en contra:</label>
+                <input type="number" class="form-control" id="llegadasPeligroEnContra"
+                  [(ngModel)]="postPartido.llegadasPeligroEnContra">
+              </div>
             </div>
             <div class="mb-3">
               <label for="anotaciones" class="form-label">Anotaciones:</label>
@@ -574,21 +590,56 @@
 
           <div class="tab-pane fade" id="avanzada" role="tabpanel" aria-labelledby="avanzada-tab">
             <!-- Campos avanzados -->
-            <div class="mb-3">
-              <label for="golesAFavor" class="form-label">Goles a favor:</label>
-              <input type="number" class="form-control" id="golesAFavor" [(ngModel)]="postPartido.golesAFavor">
+            <div class="mb-3 d-flex">
+              <div class="col-6">
+                <label for="golesAFavor" class="form-label">Goles a favor:</label>
+                <input type="number" class="form-control" id="golesAFavor" [(ngModel)]="postPartido.golesAFavor">
+              </div>
+              <div class="col-6">
+                <label for="golesEnContra" class="form-label">Goles en contra:</label>
+                <input type="number" class="form-control" id="golesEnContra" [(ngModel)]="postPartido.golesEnContra">
+              </div>
             </div>
-            <div class="mb-3">
-              <label for="golesEnContra" class="form-label">Goles en contra:</label>
-              <input type="number" class="form-control" id="golesEnContra" [(ngModel)]="postPartido.golesEnContra">
-            </div>
-            <div class="mb-3">
+            <div class="mb-3 col-6">
               <label for="resultado" class="form-label">Resultado:</label>
               <select class="form-control" id="resultado" [(ngModel)]="postPartido.resultado">
                 <option value="V">Victoria</option>
                 <option value="E">Empate</option>
                 <option value="D">Derrota</option>
               </select>
+            </div>
+            <div class="mb-3 d-flex">
+              <div class="col-6">
+                <label for="disparosAFavor" class="form-label">Disparos a favor:</label>
+                <input type="number" class="form-control" id="disparosAFavor" [(ngModel)]="postPartido.disparosAFavor">
+              </div>
+              <div class="col-6">
+                <label for="disparosEnContra" class="form-label">Disparos en contra:</label>
+                <input type="number" class="form-control" id="disparosEnContra"
+                  [(ngModel)]="postPartido.disparosEnContra">
+              </div>
+            </div>
+            <div class="mb-3 d-flex">
+              <div class="col-6">
+                <label for="cornersAFavor" class="form-label">Córneres a favor:</label>
+                <input type="number" class="form-control" id="cornersAFavor" [(ngModel)]="postPartido.cornersAFavor">
+              </div>
+              <div class="col-6">
+                <label for="cornersEnContra" class="form-label">Córneres en contra:</label>
+                <input type="number" class="form-control" id="cornersEnContra" [(ngModel)]="postPartido.cornersEnContra">
+              </div>
+            </div>
+            <div class="mb-3 d-flex">
+              <div class="col-6">
+                <label for="llegadasPeligroAFavor" class="form-label">Llegadas con peligro a favor:</label>
+                <input type="number" class="form-control" id="llegadasPeligroAFavor"
+                  [(ngModel)]="postPartido.llegadasPeligroAFavor">
+              </div>
+              <div class="col-6">
+                <label for="llegadasPeligroEnContra" class="form-label">Llegadas con peligro en contra:</label>
+                <input type="number" class="form-control" id="llegadasPeligroEnContra"
+                  [(ngModel)]="postPartido.llegadasPeligroEnContra">
+              </div>
             </div>
             <div class="mb-3">
               <label for="anotaciones" class="form-label">Anotaciones:</label>
@@ -614,67 +665,89 @@
                   <div class="accordion-body">
                     <!-- Contenido de la tarea-->
                     <p>Estadísticas individuales:</p>
-                    <div class="mb-3">
+                    <div class="mb-3 col-4">
                       <label for="minutos" class="form-label">Minutos:</label>
                       <input type="number" class="form-control" id="minutos" [(ngModel)]="playerInfoPostPartido.minutos"
                         name="minutos">
                     </div>
-                    <div class="mb-3">
-                      <label for="goles" class="form-label">Goles:</label>
-                      <input type="number" class="form-control" id="goles" [(ngModel)]="playerInfoPostPartido.goles"
-                        name="goles">
+                    <div class="mb-3 d-flex">
+                      <div class="col-4">
+                        <label for="goles" class="form-label">Goles:</label>
+                        <input type="number" class="form-control" id="goles" [(ngModel)]="playerInfoPostPartido.goles"
+                          name="goles">
+                      </div>
+                      <div class="col-4">
+                        <label for="golesPenalti" class="form-label">Goles de penalti:</label>
+                        <input type="number" class="form-control" id="golesPenalti"
+                          [(ngModel)]="playerInfoPostPartido.golesPenalti" name="golesPenalti">
+                      </div>
+                      <div class="col-4">
+                        <label for="golesFalta" class="form-label">Goles de falta:</label>
+                        <input type="number" class="form-control" id="golesFalta"
+                          [(ngModel)]="playerInfoPostPartido.golesFalta" name="golesFalta">
+                      </div>
                     </div>
-                    <div class="mb-3">
-                      <label for="golesPenalti" class="form-label">Goles de penalti:</label>
-                      <input type="number" class="form-control" id="golesPenalti"
-                        [(ngModel)]="playerInfoPostPartido.golesPenalti" name="golesPenalti">
+                    <div class="mb-3 d-flex">
+                      <div class="col-4">
+                        <label for="faltasCometidas" class="form-label">Faltas cometidas:</label>
+                        <input type="number" class="form-control" id="faltasCometidas"
+                          [(ngModel)]="playerInfoPostPartido.faltasCometidas" name="faltasCometidas">
+                      </div>
+                      <div class="col-4">
+                        <label for="faltasRecibidas" class="form-label">Faltas recibidas:</label>
+                        <input type="number" class="form-control" id="faltasRecibidas"
+                          [(ngModel)]="playerInfoPostPartido.faltasRecibidas" name="faltasRecibidas">
+                      </div>
                     </div>
-                    <div class="mb-3">
-                      <label for="golesFalta" class="form-label">Goles de falta:</label>
-                      <input type="number" class="form-control" id="golesFalta"
-                        [(ngModel)]="playerInfoPostPartido.golesFalta" name="golesFalta">
+                    <div class="mb-3 d-flex">
+                      <div class="col-4">
+                        <label for="penaltisCometidos" class="form-label">Penaltis cometidos:</label>
+                        <input type="number" class="form-control" id="penaltisCometidos"
+                          [(ngModel)]="playerInfoPostPartido.penaltisCometidos" name="penaltisCometidos">
+                      </div>
+                      <div class="col-4">
+                        <label for="penaltisRecibidos" class="form-label">Penaltis recibidos:</label>
+                        <input type="number" class="form-control" id="penaltisRecibidos"
+                          [(ngModel)]="playerInfoPostPartido.penaltisRecibidos" name="penaltisRecibidos">
+                      </div>
                     </div>
-                    <div class="mb-3">
-                      <label for="faltasCometidas" class="form-label">Faltas cometidas:</label>
-                      <input type="number" class="form-control" id="faltasCometidas"
-                        [(ngModel)]="playerInfoPostPartido.faltasCometidas" name="faltasCometidas">
+                    <div class="mb-3 d-flex">
+                      <div class="col-4">
+                        <label for="recuperaciones" class="form-label">Recuperaciones:</label>
+                        <input type="number" class="form-control" id="recuperaciones"
+                          [(ngModel)]="playerInfoPostPartido.recuperaciones" name="recuperaciones">
+                      </div>
+                      <div class="col-4">
+                        <label for="perdidas" class="form-label">Perdidas:</label>
+                        <input type="number" class="form-control" id="perdidas"
+                          [(ngModel)]="playerInfoPostPartido.perdidas" name="perdidas">
+                      </div>
                     </div>
-                    <div class="mb-3">
-                      <label for="faltasRecibidas" class="form-label">Faltas recibidas:</label>
-                      <input type="number" class="form-control" id="faltasRecibidas"
-                        [(ngModel)]="playerInfoPostPartido.faltasRecibidas" name="faltasRecibidas">
+                    <div class="mb-3 d-flex">
+                      <div class="col-4">
+                        <label for="tarjetasAmarillas" class="form-label">Tarjetas amarillas:</label>
+                        <input type="number" class="form-control" id="tarjetasAmarillas"
+                          [(ngModel)]="playerInfoPostPartido.tarjetasAmarillas" name="tarjetasAmarillas">
+                      </div>
+                      <div class="col-4">
+                        <label for="tarjetasRojas" class="form-label">Tarjetas rojas:</label>
+                        <input type="number" class="form-control" id="tarjetasRojas"
+                          [(ngModel)]="playerInfoPostPartido.tarjetasRojas" name="tarjetasRojas">
+                      </div>
                     </div>
-                    <div class="mb-3">
-                      <label for="recuperaciones" class="form-label">Recuperaciones:</label>
-                      <input type="number" class="form-control" id="recuperaciones"
-                        [(ngModel)]="playerInfoPostPartido.recuperaciones" name="recuperaciones">
+                    <div class="mb-3 d-flex">
+                      <div class="col-4">
+                        <label for="disparosTotales" class="form-label">Disparos totales:</label>
+                        <input type="number" class="form-control" id="disparosTotales"
+                          [(ngModel)]="playerInfoPostPartido.disparosTotales" name="disparosTotales">
+                      </div>
+                      <div class="col-4">
+                        <label for="disparosPuerta" class="form-label">Disparos a puerta:</label>
+                        <input type="number" class="form-control" id="disparosPuerta"
+                          [(ngModel)]="playerInfoPostPartido.disparosPuerta" name="disparosPuerta">
+                      </div>
                     </div>
-                    <div class="mb-3">
-                      <label for="perdidas" class="form-label">Perdidas:</label>
-                      <input type="number" class="form-control" id="perdidas"
-                        [(ngModel)]="playerInfoPostPartido.perdidas" name="perdidas">
-                    </div>
-                    <div class="mb-3">
-                      <label for="tarjetasAmarillas" class="form-label">Tarjetas amarillas:</label>
-                      <input type="number" class="form-control" id="tarjetasAmarillas"
-                        [(ngModel)]="playerInfoPostPartido.tarjetasAmarillas" name="tarjetasAmarillas">
-                    </div>
-                    <div class="mb-3">
-                      <label for="tarjetasRojas" class="form-label">Tarjetas rojas:</label>
-                      <input type="number" class="form-control" id="tarjetasRojas"
-                        [(ngModel)]="playerInfoPostPartido.tarjetasRojas" name="tarjetasRojas">
-                    </div>
-                    <div class="mb-3">
-                      <label for="disparosTotales" class="form-label">Disparos totales:</label>
-                      <input type="number" class="form-control" id="disparosTotales"
-                        [(ngModel)]="playerInfoPostPartido.disparosTotales" name="disparosTotales">
-                    </div>
-                    <div class="mb-3">
-                      <label for="disparosPuerta" class="form-label">Disparos a puerta:</label>
-                      <input type="number" class="form-control" id="disparosPuerta"
-                        [(ngModel)]="playerInfoPostPartido.disparosPuerta" name="disparosPuerta">
-                    </div>
-                    <div class="mb-3">
+                    <div class="mb-3 col-4">
                       <label for="paradasPortero" class="form-label">Paradas portero:</label>
                       <input type="number" class="form-control" id="paradasPortero"
                         [(ngModel)]="playerInfoPostPartido.paradasPortero" name="paradasPortero">
