@@ -7,7 +7,10 @@
 @import "@fortawesome/fontawesome-free/css/all.css";
 
 
-html, body { height: 100%; }
+html, body {
+  height: 100%;
+  background-color: #f9fafd;
+}
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 .mat-snack-bar-container {
@@ -16,6 +19,3 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

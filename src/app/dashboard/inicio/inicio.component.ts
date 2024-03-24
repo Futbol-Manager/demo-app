@@ -132,7 +132,7 @@ export class InicioComponent implements OnInit {
 
   // Método para confirmar la eliminación del equipo
   confirmarEliminarEquipo(teamId: number, name: string): void {
-    const confirmacion = confirm('¿Estás seguro de que deseas eliminar el equipo ' + name + ` con ID ${teamId}?`);
+    const confirmacion = confirm('¿Estás seguro de que deseas eliminar el equipo con ID ${teamId}?');
     if (confirmacion) {
       // Llama al método para eliminar el equipo
       this.eliminarEquipo(teamId);
@@ -141,6 +141,18 @@ export class InicioComponent implements OnInit {
 
   // Método para eliminar el equipo
   eliminarEquipo(teamId: number): void {
+    //hacemos un borrado logico
+    this.teamService.deleteLogicTeam(teamId.toString()).subscribe(
+      (response) => {
+        console.log('Equipo eliminado con éxito:', response);
+        // Cargar nuevamente el listado de equipos después de la eliminación exitosa
+        this.cargarListadoEquipos();
+      },
+      (error) => {
+        console.error('Error al eliminar el equipo:', error);
+      }
+    );
+    /*
     // Lógica para eliminar el equipo llamando al servicio correspondiente
     this.teamService.deleteTeam(teamId.toString()).subscribe(
       (response) => {
@@ -155,6 +167,7 @@ export class InicioComponent implements OnInit {
         // Puedes manejar el error según tus necesidades
       }
     );
+    */
   }
 
   // Método para navegar a la pantalla de calendario

@@ -1,6 +1,6 @@
 <!-- Botón para abrir el modal de creación de equipo -->
 <div class="d-flex mt-3">
-  <button class="btn btn-success ms-2" (click)="abrirModalCrearEquipo()">Crear Equipo</button>
+  <button class="btn btn-success ms-2" (click)="abrirModalCrearEquipo()">Añadir Equipo</button>
 </div>
 
 <div class="homepage-container">
@@ -83,43 +83,49 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Crear Equipo</h5>
+        <!--<h5 class="modal-title">Añadir Equipo</h5>-->
+        <div class="mb-3">
+          <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
+          <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" [(ngModel)]="teamNew.categoryType.categoryTypeId">
+            <!-- Opciones ajustadas según tus necesidades -->
+            <option value="1">Categoría 1</option>
+            <option value="2">Categoría 2</option>
+            <option value="3">Categoría 3</option>
+            <option value="4">Categoría 4</option>
+            <option value="5">Categoría 5</option>
+          </select>
+        </div>
         <!-- Botón de cerrar con un icono -->
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
       </div>
       <div class="modal-body">
         <!-- Formulario para la creación de equipo con campos separados -->
         <form>
-          <div class="mb-3">
+          <!--<div class="mb-3">
             <label for="nombreEquipo" class="form-label">Nombre:</label>
             <input type="text" class="form-control" id="nombreEquipo" name="nombreEquipo" [(ngModel)]="teamNew.name">
-          </div>
+          </div>-->
           <div class="mb-3">
-            <label for="nivelLiga" class="form-label">Nivel de Liga:</label>
-            <input type="text" class="form-control" id="nivelLiga" name="nivelLiga" [(ngModel)]="teamNew.levelLeague">
+            <label for="nivelLiga" class="form-label">Nivel:</label>
+            <select class="form-control" id="nivelLiga" name="nivelLiga" [(ngModel)]="teamNew.levelLeague">
+              <!-- Opciones ajustadas según tus necesidades -->
+              <option value="División de Honor">División de Honor</option>
+              <option value="Liga Nacional">Liga Nacional</option>
+              <option value="Superliga">Superliga</option>
+              <option value="Autonómica">Autonómica</option>
+              <option value="Preferente">Preferente</option>
+              <option value="Primera">Primera</option>
+              <option value="Segunda">Segunda</option>
+              <option value="Tercera">Tercera</option>
+            </select>
           </div>
           <div class="mb-3">
             <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
             <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo" [(ngModel)]="teamNew.objectiveTeam">
           </div>
           <div class="mb-3">
-            <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
-            <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo" [(ngModel)]="teamNew.opinionTeam">
-          </div>
-          <div class="mb-3">
             <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
             <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento" [(ngModel)]="teamNew.trainingDays">
-          </div>
-          <div class="mb-3">
-            <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
-            <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" [(ngModel)]="teamNew.categoryType.categoryTypeId">
-              <!-- Opciones ajustadas según tus necesidades -->
-              <option value="1">Categoría 1</option>
-              <option value="2">Categoría 2</option>
-              <option value="3">Categoría 3</option>
-              <option value="4">Categoría 4</option>
-              <option value="5">Categoría 5</option>
-            </select>
           </div>
           <div class="mb-3">
             <label for="clubEquipo" class="form-label">Club del Equipo:</label>
@@ -127,8 +133,12 @@
               <option *ngFor="let club of clubList" [value]="club.clubId">{{ club.name }}</option>
             </select>
           </div>
+          <div class="mb-3">
+            <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
+            <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo" [(ngModel)]="teamNew.opinionTeam">
+          </div>
           <!-- Botón para guardar el nuevo equipo -->
-          <button type="button" class="btn btn-primary float-end" (click)="crearEquipo()">Guardar</button>
+          <button type="button" class="btn btn-success float-end" (click)="crearEquipo()">Guardar</button>
         </form>
       </div>
     </div>
