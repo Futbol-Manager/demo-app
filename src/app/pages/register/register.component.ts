@@ -142,10 +142,18 @@ export class RegisterComponent implements OnInit {
           (res) => {
             if (res.data != null) {
               const snackBarConfig = new MatSnackBarConfig();
-              snackBarConfig.duration = 5000;
               snackBarConfig.horizontalPosition = 'center';
-              snackBarConfig.verticalPosition = 'bottom';
-              this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
+              snackBarConfig.verticalPosition = 'top';
+
+              this.snackBar.open(
+                `¡Gracias por registrarte!\n\n
+                Hemos enviado un email de confirmación a la dirección de correo electrónico que nos proporcionaste.
+                Por favor, revisa tu bandeja de entrada y sigue las instrucciones contenidas en el correo para completar tu registro.\n\n
+                Si no encuentras el correo de confirmación, te recomendamos revisar tu carpeta de spam o correo no deseado, ya que a veces los mensajes pueden terminar allí por error.
+                Si aún así no encuentras el correo, por favor, contáctanos en info@sphairatech.com para que podamos asistirte.\n\n
+                ¡Esperamos verte pronto!`,
+                'Ok', snackBarConfig
+              );
               this.login(1);
             } else {
               const snackBarConfig = new MatSnackBarConfig();
