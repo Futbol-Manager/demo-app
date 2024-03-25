@@ -5,9 +5,8 @@ import { TrainingService } from 'src/app/core/services/training/training.service
 import { Response } from 'src/app/core/services/models/response.model';
 import { MatchPreparation, PlayerPostPartido, PostPartido } from 'src/app/core/services/models/match.model';
 import { MatDialog } from '@angular/material/dialog';
-import { ShopComponent } from './shop/shop.component';
 import { PlayerService } from 'src/app/core/services/player/player.service';
-import { Player, PlayerId } from 'src/app/core/services/player/player.model';
+import { PlayerId } from 'src/app/core/services/player/player.model';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -123,9 +122,16 @@ export class CalendarioComponent implements OnInit {
   }
 
   // Método para redirigir a la pantalla de jugadores con el teamId
-  irAPantallaJugadores(): void {
-    // Ajusta la ruta según la configuración de tus rutas en el enrutador
-    this.router.navigate(['/dashboard/jugadores', this.teamId]);
+  irAPantalla(id: number): void {
+    if (id === 1) {
+      this.router.navigate(['/dashboard/jugadores', this.teamId]);      
+    } else if (id === 2) {
+      this.router.navigate(['/dashboard/jugadores', this.teamId]);          
+    } else if (id === 3) {
+      this.router.navigate(['/dashboard/estadisticas_equipo', this.teamId]);          
+    } else if (id === 4) {
+      this.router.navigate(['/dashboard/estadisticas_jugadores', this.teamId]);          
+    }
   }
 
   // Método para redirigir a la pantalla de jugadores con el teamId
@@ -427,23 +433,22 @@ export class CalendarioComponent implements OnInit {
           // Asignar los datos del partido al objeto 'partido'
           this.postPartido = response.data;
           this.postPartidoId = response.data.postPartidoId;
-          this.playerService.getPlayersPostPartido(this.teamId.toString(), response.data.postPartidoId.toString()).subscribe(
-            (response) => {
-              // Verificar si se obtuvo correctamente la información del partido
-              if (response.data) {
-                // Asignar los datos del partido al objeto 'partido'
-                this.playerPostPartido = response.data;
-              }
-            },
-            (error) => {
-              console.error('Error en la solicitud:', error);
+        }        
+        this.playerService.getPlayersPostPartido(this.teamId.toString(), this.postPartidoId.toString()).subscribe(
+          (response) => {
+            // Verificar si se obtuvo correctamente la información del partido
+            if (response.data) {
+              // Asignar los datos del partido al objeto 'partido'
+              this.playerPostPartido = response.data;
+              // Abrir el modal
+              this.showModalPartido = false;
+              this.showModalPostPartido = true;
             }
-          );
-
-        }
-        // Abrir el modal
-        this.showModalPartido = false;
-        this.showModalPostPartido = true;
+          },
+          (error) => {
+            console.error('Error en la solicitud:', error);
+          }
+        );
       },
       (error) => {
         console.error('Error en la solicitud:', error);
@@ -502,7 +507,10 @@ export class CalendarioComponent implements OnInit {
   }
 
   guardarInfoPlayerPostPartido(playerId: number){
-    this.playerInfoPostPartido.player.playerId = playerId;
+    if(this.postPartidoId === 0){
+      //mostrar aqui un alert de que no se puede guardar un jugador sin antes haber guardado la info en el postpartido
+    } else {
+      this.playerInfoPostPartido.player.playerId = playerId;
     this.playerInfoPostPartido.postPartido.postPartidoId = this.postPartidoId;
     this.playerService.createUpdateInfoPlayerPostPartido(this.playerInfoPostPartido).subscribe(
       (response) => {
@@ -517,7 +525,6 @@ export class CalendarioComponent implements OnInit {
         console.error('Error en la solicitud:', error);
       }
     );
-
+    }
   }
-
 }

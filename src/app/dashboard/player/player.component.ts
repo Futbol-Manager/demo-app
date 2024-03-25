@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import { Player, PlayerNEW } from 'src/app/core/services/player/player.model';
+import { Player } from 'src/app/core/services/player/player.model';
 import * as $ from 'jquery';
 import 'datatables.net';
 

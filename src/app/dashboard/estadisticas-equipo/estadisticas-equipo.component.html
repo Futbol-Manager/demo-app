@@ -1,0 +1,52 @@
+<!-- Botón "Entrar" con evento de clic -->
+<button class="btn btn-primary" (click)="navegarACalendario()">
+    <i class="bi bi-calendar"></i> Calendario
+</button>
+
+<!-- Contenido para la pestaña de tabla -->
+<div style="overflow-x: auto;">
+    <table id="dataTable" class="table table-bordered table-striped">
+        <thead style="background-color: cornflowerblue;">
+            <tr>
+                <th>Partido ID</th>
+                <th>RIVAL</th>
+                <th>RESULTADO</th>
+                <th>DISPAROS A FAVOR</th>
+                <th>DISPAROS EN CONTRA</th>
+                <th>FALTAS COMETIDAS</th>
+                <th>FALTAS RECIBIDAS</th>
+                <th>CORNER A FAVOR</th>
+                <th>CORNER EN CONTRA</th>
+                <th>RECUPERACIONES</th>
+                <th>PERDIDAS</th>
+                <th>TARJETAS AMARILLAS</th>
+                <th>TARJETAS ROJAS</th>
+                <th>LLEGADAS CON PELIGRO A FAVOR</th>
+                <th>LLEGADAS CON PELIGRO EN CONTRA</th>
+                <th>PENALTIS A FAVOR</th>
+                <th>PENALTIS EN CONTRA</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let partido of partidos; let i = index">
+                <td>{{ partido.posPartidoId }}</td>
+                <td>{{ partido.matchPreparation.rivalName }}</td>
+                <td>{{ partido.resultado }}</td>
+                <td>{{ partido.apellido }}</td>
+                <td>{{ partido.disparosAFavor | date }}</td>
+                <td>{{ partido.disparosEnContra }}</td>
+                <td>{{ partido.faltasRecibidas }}</td>
+                <td>{{ partido.cornersAFavor }}</td>
+                <td>{{ partido.cornersEnContra }}</td>
+                <td>{{ partido.recuperaciones }}</td>
+                <td>{{ partido.perdidas }}</td>
+                <td>{{ partido.tarjetasAmarillas }}</td>
+                <td>{{ partido.tarjetasRojas }}</td>
+                <td>{{ partido.llegadasPeligroAFavor }}</td>
+                <td>{{ partido.llegadasPeligroEnContra }}</td>
+                <td>{{ partido.penaltisAFavor }}</td>
+                <td>{{ partido.penaltisEnContra }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>

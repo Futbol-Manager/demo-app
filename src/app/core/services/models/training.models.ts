@@ -24,6 +24,7 @@ export class Task {
     space: string;
     material: string;
     work: string;
+    video: string;
     collapsed: boolean;
   
     constructor() {
@@ -36,6 +37,7 @@ export class Task {
       this.space = '';
       this.material = '';
       this.work = '';
+      this.video = '';
       this.collapsed = false; // Inicialmente, la tarea está contraída
     }
   }
