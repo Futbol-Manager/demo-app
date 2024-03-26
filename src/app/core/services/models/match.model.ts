@@ -35,7 +35,7 @@ export class MatchPreparation {
 }
 
 export class PostPartido {
-    posPartidoId: number = 0;
+    postPartidoId: number = 0;
     matchPreparation: MatchPreparation;
     golesAFavor: number = 0;
     golesEnContra: number = 0;
@@ -59,7 +59,7 @@ export class PostPartido {
     video: string;
 
     constructor(object: any) {
-        this.posPartidoId = object.posPartidoId || 0;
+        this.postPartidoId = object.postPartidoId || 0;
         this.matchPreparation = object.matchPreparation || new MatchPreparation({});
         this.golesAFavor = object.golesAFavor || 0;
         this.golesEnContra = object.golesEnContra || 0;

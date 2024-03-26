@@ -54,6 +54,8 @@ export class CalendarioComponent implements OnInit {
   playerInfoPostPartido: PlayerPostPartido = new PlayerPostPartido({});
   postPartidoId: number = 0;
 
+  cerrarPlayer: PlayerId = new PlayerId({});
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -426,7 +428,7 @@ export class CalendarioComponent implements OnInit {
   openPostPartido(id: any): void {
     this.matchPreparationId = id;
     // Obtener la información del partido por su ID
-    this.trainingService.getPostPartido(id).subscribe(
+    this.trainingService.getPostPartidoByMatchPrepaId(id).subscribe(
       (response) => {
         // Verificar si se obtuvo correctamente la información del partido
         if (response.data) {
@@ -485,6 +487,7 @@ export class CalendarioComponent implements OnInit {
   togglePlayer(player: PlayerId): void {
     // Cambiar el estado isOpen de la tarea seleccionada
     player.collapsed = !player.collapsed;
+    this.cerrarPlayer = player;
 
     let playerInfo = this.playerPostPartido.find(jugador => jugador.playerId === player.playerId);
     if(playerInfo?.info !== undefined && playerInfo?.info !== null){
@@ -502,8 +505,14 @@ export class CalendarioComponent implements OnInit {
     }
   }
 
-  guardarPostPartidoAvanzado(){
-
+  cerrarTogglePlayer(player: PlayerId){
+    player.collapsed = !player.collapsed;
+    // Si la tarea se abre, cerrar el resto de las tareas
+    if (player.collapsed) {
+      this.playerPostPartido
+        .filter(t => t !== player) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+    }
   }
 
   guardarInfoPlayerPostPartido(playerId: number){
@@ -516,7 +525,9 @@ export class CalendarioComponent implements OnInit {
       (response) => {
         // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
         if (response.data) {
-          this.cerrarModalPostPartido();
+          //this.cerrarModalPostPartido();
+          //esto cerraria la pestaña de jugador para poder introducir los datos de otros
+          this.cerrarTogglePlayer(this.cerrarPlayer);
         } else {
           console.error('Error al crear el partido:', response.error.msg);
         }
