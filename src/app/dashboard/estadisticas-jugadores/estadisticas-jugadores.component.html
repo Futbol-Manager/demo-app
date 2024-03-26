@@ -1,4 +1,59 @@
-<!-- Botón "Entrar" con evento de clic -->
-<button class="btn btn-primary" (click)="navegarACalendario()">
-    <i class="bi bi-calendar"></i> Calendario
-</button>
+<div *ngIf="datosCargados">
+    <!-- Botón "Entrar" con evento de clic -->
+    <button class="btn btn-primary" (click)="navegarACalendario()">
+        <i class="bi bi-calendar"></i> Calendario
+    </button>
+
+    <!-- Contenido para el dataTable -->
+    <div class="container mt-4">
+        <h2>Jugadores</h2>
+        <div style="overflow-x: auto;">
+            <table id="dataTable" class="table table-bordered table-striped">
+                <thead style="background-color: cornflowerblue;">
+                    <tr>
+                        <th>ID</th>
+                        <th>NOMBRE</th>
+                        <th>POSICION</th>
+                        <th>FECHA DE NACIMIENTO</th>
+                        <th>PARTIDOS JUGADOS</th>
+                        <th>MINUTOS TOTALES</th>
+                        <th>MEDIA MINUTOS POR PARTIDO</th>
+                        <th>GOLES</th>
+                        <!-- <th>ASISTENCIA</th>
+                        <th>GOLES + ASISTENCIAS</th> -->
+                        <th>GOLES DE PENALTI</th>
+                        <th>GOLES DE FALTA</th>
+                        <th>PENALTIS FALLADOS</th>
+                        <th>TARJETAS AMARILLAS</th>
+                        <th>TARJETAS ROJAS</th>
+                        <th>MEDIA DE GOLES POR PARTIDO</th>
+                        <!-- <th>MEDIA DE ASISTENCIA POR PARTIDO</th>
+                        <th>MEDIA DE GOLES + ASISTENCIA POR PARTIDO</th> -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let player of players; let i = index">
+                        <td>{{ player.playerId }}</td>
+                        <td>{{ player.nombre }}</td>
+                        <td>{{ player.posicion }}</td>
+                        <td>{{ player.fecha }}</td>
+                        <td>{{ player.partidosJugados }}</td>
+                        <td>{{ player.minTotales }}</td>
+                        <td>{{ player.mediaMinPorPartido }}</td>
+                        <td>{{ player.goles }}</td>
+                        <!--<td>{{ player.asistencias }}</td>
+                        <td>{{ player.golesAsistencias }}</td>-->
+                        <td>{{ player.golesPenalti }}</td>
+                        <td>{{ player.golesFalta }}</td>
+                        <td>{{ player.penaltisFallados }}</td>
+                        <td>{{ player.tarAmarilla }}</td>
+                        <td>{{ player.tarRojas }}</td>
+                        <td>{{ player.mediaGolesPorPartido }}</td>
+                        <!-- <td>{{ player.MediaAsistPorPartido }}</td>
+                        <td>{{ player.MediaGolesAsistenciasPorPartido }}</td> -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

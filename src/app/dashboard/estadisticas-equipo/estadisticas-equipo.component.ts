@@ -3,11 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { PostPartido } from 'src/app/core/services/models/match.model';
-import * as $ from 'jquery';
-import 'datatables.net';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
-import { Team } from 'src/app/core/services/team/team.model';
+import * as $ from 'jquery';
+import 'datatables.net';
 
 @Component({
   selector: 'app-estadisticas-equipo',
@@ -109,7 +108,7 @@ export class EstadisticasEquipoComponent implements OnInit {
     $(document).ready(() => {
       $('#dataTable').DataTable({
         paging: true,
-        pageLength: 10, // Establecer el número de resultados por página
+        pageLength: 50, // Establecer el número de resultados por página
         searching: true,
         ordering: true,
         order: [[0, 'desc']], // Ordenar por la cuarta columna (índice 3) en orden ascendente
@@ -151,8 +150,11 @@ export class EstadisticasEquipoComponent implements OnInit {
     let gc = 0;
     let dg = 0;
     let pun = 0;
-    // Obtener los últimos 5 resultados
-    const ultimosResultados = this.partidos.slice(-5).map(partido => partido.resultado).reverse();
+    
+    // Obtener los primeros 5 resultados que realmente son los ultimos
+    const ultimosResultados = this.partidos.slice(0, 5).map(partido => partido.resultado).reverse();
+
+
 
     for (let partido of partidos) {
       // Aquí dentro del bucle, puedes acceder a cada elemento de la lista como "partido"

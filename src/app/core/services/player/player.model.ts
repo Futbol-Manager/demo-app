@@ -129,56 +129,56 @@ export class Player {
   picturePlayer: string;
 
   constructor(object: any) {
-      this.playerId = object.playerId || 0;
-      this.nombre = object.nombre || '';
-      this.apellido = object.apellido || '';
-      this.posicion = object.posicion || '';
-      this.fechaDeNacimiento = object.fechaDeNacimiento || '';
-      this.altura = object.altura || '';
-      this.peso = object.peso || '';
-      this.piernaNatural = object.piernaNatural || '';
-      this.habilidadConBalon = object.habilidadConBalon || '';
-      this.habilidadConBalonControlDeBalon = object.habilidadConBalonControlDeBalon || '';
-      this.habilidadConBalonRegate = object.habilidadConBalonRegate || '';
-      this.pase = object.pase || '';
-      this.paseCorto = object.paseCorto || '';
-      this.paseLargo = object.paseLargo || '';
-      this.centros = object.centros || '';
-      this.tiro = object.tiro || '';
-      this.tiroPotenciaDeTiro = object.tiroPotenciaDeTiro || '';
-      this.tiroDefinicion = object.tiroDefinicion || '';
-      this.tiroTirosLejanos = object.tiroTirosLejanos || '';
-      this.tiroVoleas = object.tiroVoleas || '';
-      this.tiroPrecisionFalta = object.tiroPrecisionFalta || '';
-      this.tiroPenaltis = object.tiroPenaltis || '';
-      this.tiroCabezazo = object.tiroCabezazo || '';
-      this.defensa = object.defensa || '';
-      this.defensaMarcaje = object.defensaMarcaje || '';
-      this.defensaEntradas = object.defensaEntradas || '';
-      this.defensaRobos = object.defensaRobos || '';
-      this.fisico = object.fisico || '';
-      this.fisicoAceleracion = object.fisicoAceleracion || '';
-      this.fisicoVelocidad = object.fisicoVelocidad || '';
-      this.fisicoAgilidad = object.fisicoAgilidad || '';
-      this.fisicoResistencia = object.fisicoResistencia || '';
-      this.fisicoFuerza = object.fisicoFuerza || '';
-      this.fisicoEquilibrio = object.fisicoEquilibrio || '';
-      this.fisicoSalto = object.fisicoSalto || '';
-      this.mentalidad = object.mentalidad || '';
-      this.mentalidadAgresividad = object.mentalidadAgresividad || '';
-      this.mentalidadAnticipacion = object.mentalidadAnticipacion || '';
-      this.mentalidadInterceptacion = object.mentalidadInterceptacion || '';
-      this.mentalidadVision = object.mentalidadVision || '';
-      this.mentalidadCompostura = object.mentalidadCompostura || '';
-      this.portero = object.portero || '';
-      this.porteroColocacion = object.porteroColocacion || '';
-      this.porteroEstirada = object.porteroEstirada || '';
-      this.porteroParadas = object.porteroParadas || '';
-      this.porteroSaques = object.porteroSaques || '';
-      this.porteroReflejos = object.porteroReflejos || '';
-      this.especialidades = object.especialidades || '';
-      this.opinionDelEntrenador = object.opinionDelEntrenador || '';
-      this.picturePlayer = object.picturePlayer || '';
+    this.playerId = object.playerId || 0;
+    this.nombre = object.nombre || '';
+    this.apellido = object.apellido || '';
+    this.posicion = object.posicion || '';
+    this.fechaDeNacimiento = object.fechaDeNacimiento || '';
+    this.altura = object.altura || '';
+    this.peso = object.peso || '';
+    this.piernaNatural = object.piernaNatural || '';
+    this.habilidadConBalon = object.habilidadConBalon || '';
+    this.habilidadConBalonControlDeBalon = object.habilidadConBalonControlDeBalon || '';
+    this.habilidadConBalonRegate = object.habilidadConBalonRegate || '';
+    this.pase = object.pase || '';
+    this.paseCorto = object.paseCorto || '';
+    this.paseLargo = object.paseLargo || '';
+    this.centros = object.centros || '';
+    this.tiro = object.tiro || '';
+    this.tiroPotenciaDeTiro = object.tiroPotenciaDeTiro || '';
+    this.tiroDefinicion = object.tiroDefinicion || '';
+    this.tiroTirosLejanos = object.tiroTirosLejanos || '';
+    this.tiroVoleas = object.tiroVoleas || '';
+    this.tiroPrecisionFalta = object.tiroPrecisionFalta || '';
+    this.tiroPenaltis = object.tiroPenaltis || '';
+    this.tiroCabezazo = object.tiroCabezazo || '';
+    this.defensa = object.defensa || '';
+    this.defensaMarcaje = object.defensaMarcaje || '';
+    this.defensaEntradas = object.defensaEntradas || '';
+    this.defensaRobos = object.defensaRobos || '';
+    this.fisico = object.fisico || '';
+    this.fisicoAceleracion = object.fisicoAceleracion || '';
+    this.fisicoVelocidad = object.fisicoVelocidad || '';
+    this.fisicoAgilidad = object.fisicoAgilidad || '';
+    this.fisicoResistencia = object.fisicoResistencia || '';
+    this.fisicoFuerza = object.fisicoFuerza || '';
+    this.fisicoEquilibrio = object.fisicoEquilibrio || '';
+    this.fisicoSalto = object.fisicoSalto || '';
+    this.mentalidad = object.mentalidad || '';
+    this.mentalidadAgresividad = object.mentalidadAgresividad || '';
+    this.mentalidadAnticipacion = object.mentalidadAnticipacion || '';
+    this.mentalidadInterceptacion = object.mentalidadInterceptacion || '';
+    this.mentalidadVision = object.mentalidadVision || '';
+    this.mentalidadCompostura = object.mentalidadCompostura || '';
+    this.portero = object.portero || '';
+    this.porteroColocacion = object.porteroColocacion || '';
+    this.porteroEstirada = object.porteroEstirada || '';
+    this.porteroParadas = object.porteroParadas || '';
+    this.porteroSaques = object.porteroSaques || '';
+    this.porteroReflejos = object.porteroReflejos || '';
+    this.especialidades = object.especialidades || '';
+    this.opinionDelEntrenador = object.opinionDelEntrenador || '';
+    this.picturePlayer = object.picturePlayer || '';
   }
 }
 
@@ -191,8 +191,50 @@ export class PlayerId {
 
   constructor(object: any) {
     this.playerId = object.playerId || 0;
-      this.nombre = object.nombre || '';
-      this.apellido = object.apellido || '';
-      this.collapsed = false; // Inicialmente, la tarea está contraída
+    this.nombre = object.nombre || '';
+    this.apellido = object.apellido || '';
+    this.collapsed = false; // Inicialmente, la tarea está contraída
+  }
+}
+
+export class PlayerEstadistica {
+  playerId: number;
+  nombre: string;
+  posicion: string;
+  fecha: string;
+  partidosJugados: string;
+  minTotales: string;
+  mediaMinPorPartido: string;
+  goles: string;
+  asistencias: string;
+  golesAsistencias: string;
+  golesPenalti: string;
+  golesFalta: string;
+  tarAmarilla: string;
+  tarRojas: string;
+  penaltisFallados: string;
+  mediaGolesPorPartido: string;
+  MediaAsistPorPartido: string;
+  MediaGolesAsistenciasPorPartido: string;
+
+  constructor(object: any) {
+    this.playerId = object.playerId || 0;
+    this.nombre = object.nombre || '';
+    this.posicion = object.posicion || '';
+    this.fecha = object.fecha || '';
+    this.partidosJugados = object.partidosJugados || '';
+    this.minTotales = object.minTotales || '';
+    this.mediaMinPorPartido = object.mediaMinPorPartido || '';
+    this.goles = object.goles || '';
+    this.asistencias = object.asistencias || '';
+    this.golesAsistencias = object.golesAsistencias || '';
+    this.golesPenalti = object.golesPenalti || '';
+    this.golesFalta = object.golesFalta || '';
+    this.tarAmarilla = object.tarAmarilla || '';
+    this.tarRojas = object.tarRojas || '';
+    this.penaltisFallados = object.penaltisFallados || '';
+    this.mediaGolesPorPartido = object.mediaGolesPorPartido || '';
+    this.MediaAsistPorPartido = object.MediaAsistPorPartido || '';
+    this.MediaGolesAsistenciasPorPartido = object.MediaGolesAsistenciasPorPartido || '';
   }
 }
