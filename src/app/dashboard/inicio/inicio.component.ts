@@ -14,7 +14,7 @@ import { ClubService } from 'src/app/core/services/club/club.service';
   styleUrls: ['./inicio.component.scss']
 })
 export class InicioComponent implements OnInit {
-
+  datosCargados: boolean = false;
   usuarioActual!: User | null;
   listTeam: any[] = []; // Define una variable para almacenar el listado de equipos
   showModal = false;
@@ -50,6 +50,7 @@ export class InicioComponent implements OnInit {
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
+        this.datosCargados = true;
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);

@@ -20,9 +20,7 @@ interface OpcionesFormatoFecha {
   styleUrls: ['./calendario.component.scss']
 })
 export class CalendarioComponent implements OnInit {
-
-  nombreEquipo: string = 'Arevalo';  // Puedes ajustar el nombre del equipo según necesites
-  //calendario: any[] = [];  // Aquí deberías tener la información de los días de la semana
+  datosCargados: boolean = false;
   teamId!: number;  // Ajusta el valor según el teamId del equipo actual
   calendario: any[][] = [];
   mesActual: Date = new Date();
@@ -242,6 +240,7 @@ export class CalendarioComponent implements OnInit {
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
+        this.datosCargados = true;
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);

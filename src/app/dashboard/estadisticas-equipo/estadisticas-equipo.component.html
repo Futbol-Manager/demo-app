@@ -1,94 +1,98 @@
-<!-- Botón "Entrar" con evento de clic -->
-<button class="btn btn-primary" (click)="navegarACalendario()">
-    <i class="bi bi-calendar"></i> Calendario
-</button>
+<div *ngIf="datosCargados">
+    <!-- Botón "Entrar" con evento de clic -->
+    <button class="btn btn-primary" (click)="navegarACalendario()">
+        <i class="bi bi-calendar"></i> Calendario
+    </button>
 
-<div class="container mt-4">
-    <h2>Tabla de Resumen</h2>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Equipo</th>
-                <th>Partidos</th>
-                <th>Victorias</th>
-                <th>Empates</th>
-                <th>Derrotas</th>
-                <th>GF</th>
-                <th>GC</th>
-                <th>DG</th>
-                <th>Puntos</th>
-                <th>5 Últimos</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{ resumentotales.equipo }}</td>
-                <td>{{ resumentotales.partidos }}</td>
-                <td>{{ resumentotales.victorias }}</td>
-                <td>{{ resumentotales.empates }}</td>
-                <td>{{ resumentotales.derrotas }}</td>
-                <td>{{ resumentotales.gf }}</td>
-                <td>{{ resumentotales.gc }}</td>
-                <td>{{ resumentotales.dg }}</td>
-                <td>{{ resumentotales.puntos }}</td>
-                <td>{{ resumentotales.ultimos | json }}</td>
-            </tr>
-        </tbody>
-    </table>
-</div>
-
-<!-- Contenido para la pestaña de tabla -->
-<div class="container mt-4">
-    <h2>Partidos</h2>
-    <div style="overflow-x: auto;">
-        <table id="dataTable" class="table table-bordered table-striped">
-            <thead style="background-color: cornflowerblue;">
+    <div class="container mt-4">
+        <h2>Tabla de Resumen</h2>
+        <table class="table table-bordered">
+            <thead>
                 <tr>
-                    <th>Partido ID</th>
-                    <th>RIVAL</th>
-                    <th>RESULTADO</th>
-                    <th>DISPAROS A FAVOR</th>
-                    <th>DISPAROS EN CONTRA</th>
-                    <th>FALTAS COMETIDAS</th>
-                    <th>FALTAS RECIBIDAS</th>
-                    <th>CORNER A FAVOR</th>
-                    <th>CORNER EN CONTRA</th>
-                    <th>RECUPERACIONES</th>
-                    <th>PERDIDAS</th>
-                    <th>TARJETAS AMARILLAS</th>
-                    <th>TARJETAS ROJAS</th>
-                    <th>LLEGADAS CON PELIGRO A FAVOR</th>
-                    <th>LLEGADAS CON PELIGRO EN CONTRA</th>
-                    <th>PENALTIS A FAVOR</th>
-                    <th>PENALTIS EN CONTRA</th>
+                    <th>Equipo</th>
+                    <th>Partidos</th>
+                    <th>Victorias</th>
+                    <th>Empates</th>
+                    <th>Derrotas</th>
+                    <th>GF</th>
+                    <th>GC</th>
+                    <th>DG</th>
+                    <th>Puntos</th>
+                    <th>5 Últimos</th>
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let partido of partidos; let i = index">
-                    <td>{{ partido.postPartidoId }}</td>
-                    <td>
-                        <div class="simular-enlace" (click)="openInfoPostPartido(partido.postPartidoId)">
-                            {{ partido.matchPreparation.rivalName }}
-                        </div>
-                    </td>
-                    <td>{{ partido.resultado }}</td>
-                    <td>{{ partido.apellido }}</td>
-                    <td>{{ partido.disparosAFavor }}</td>
-                    <td>{{ partido.disparosEnContra }}</td>
-                    <td>{{ partido.faltasRecibidas }}</td>
-                    <td>{{ partido.cornersAFavor }}</td>
-                    <td>{{ partido.cornersEnContra }}</td>
-                    <td>{{ partido.recuperaciones }}</td>
-                    <td>{{ partido.perdidas }}</td>
-                    <td>{{ partido.tarjetasAmarillas }}</td>
-                    <td>{{ partido.tarjetasRojas }}</td>
-                    <td>{{ partido.llegadasPeligroAFavor }}</td>
-                    <td>{{ partido.llegadasPeligroEnContra }}</td>
-                    <td>{{ partido.penaltisAFavor }}</td>
-                    <td>{{ partido.penaltisEnContra }}</td>
+                <tr>
+                    <td>{{ resumentotales.equipo }}</td>
+                    <td>{{ resumentotales.partidos }}</td>
+                    <td>{{ resumentotales.victorias }}</td>
+                    <td>{{ resumentotales.empates }}</td>
+                    <td>{{ resumentotales.derrotas }}</td>
+                    <td>{{ resumentotales.gf }}</td>
+                    <td>{{ resumentotales.gc }}</td>
+                    <td>{{ resumentotales.dg }}</td>
+                    <td>{{ resumentotales.puntos }}</td>
+                    <td>{{ resumentotales.ultimos | json }}</td>
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <!-- Contenido para la pestaña de tabla -->
+    <div class="container mt-4">
+        <h2>Partidos</h2>
+        <div style="overflow-x: auto;">
+            <table id="dataTable" class="table table-bordered table-striped">
+                <thead style="background-color: cornflowerblue;">
+                    <tr>
+                        <th>FECHA</th>
+                        <th>Partido ID</th>
+                        <th>RIVAL</th>
+                        <th>RESULTADO</th>
+                        <th>DISPAROS A FAVOR</th>
+                        <th>DISPAROS EN CONTRA</th>
+                        <th>FALTAS COMETIDAS</th>
+                        <th>FALTAS RECIBIDAS</th>
+                        <th>CORNER A FAVOR</th>
+                        <th>CORNER EN CONTRA</th>
+                        <th>RECUPERACIONES</th>
+                        <th>PERDIDAS</th>
+                        <th>TARJETAS AMARILLAS</th>
+                        <th>TARJETAS ROJAS</th>
+                        <th>LLEGADAS CON PELIGRO A FAVOR</th>
+                        <th>LLEGADAS CON PELIGRO EN CONTRA</th>
+                        <th>PENALTIS A FAVOR</th>
+                        <th>PENALTIS EN CONTRA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let partido of partidos; let i = index">
+                        <td>{{ partido.matchPreparation.matchDate }}</td>
+                        <td>{{ partido.postPartidoId }}</td>
+                        <td>
+                            <div class="simular-enlace" (click)="openInfoPostPartido(partido.postPartidoId)">
+                                {{ partido.matchPreparation.rivalName }}
+                            </div>
+                        </td>
+                        <td>{{ partido.resultado }}</td>
+                        <td>{{ partido.disparosAFavor }}</td>
+                        <td>{{ partido.disparosEnContra }}</td>
+                        <td>{{ partido.faltasCometidas }}</td>
+                        <td>{{ partido.faltasRecibidas }}</td>
+                        <td>{{ partido.cornersAFavor }}</td>
+                        <td>{{ partido.cornersEnContra }}</td>
+                        <td>{{ partido.recuperaciones }}</td>
+                        <td>{{ partido.perdidas }}</td>
+                        <td>{{ partido.tarjetasAmarillas }}</td>
+                        <td>{{ partido.tarjetasRojas }}</td>
+                        <td>{{ partido.llegadasPeligroAFavor }}</td>
+                        <td>{{ partido.llegadasPeligroEnContra }}</td>
+                        <td>{{ partido.penaltisAFavor }}</td>
+                        <td>{{ partido.penaltisEnContra }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
@@ -224,3 +228,7 @@
                     <button type="button" class="btn btn-primary float-end"
                         (click)="cerrarModalInfoPostPartido()">Cerrar</button>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>

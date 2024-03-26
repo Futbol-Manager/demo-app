@@ -6,6 +6,8 @@ import { PostPartido } from 'src/app/core/services/models/match.model';
 import * as $ from 'jquery';
 import 'datatables.net';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { TeamService } from 'src/app/core/services/team/team.service';
+import { Team } from 'src/app/core/services/team/team.model';
 
 @Component({
   selector: 'app-estadisticas-equipo',
@@ -13,6 +15,9 @@ import { TrainingService } from 'src/app/core/services/training/training.service
   styleUrls: ['./estadisticas-equipo.component.scss']
 })
 export class EstadisticasEquipoComponent implements OnInit {
+  datosCargados: boolean = false;
+  nombreEquipo: string = '';
+  team: any;
   teamId!: number;
   partidos: any[] = []; 
   showModalPostPartido: boolean = false;
@@ -35,7 +40,8 @@ export class EstadisticasEquipoComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private playerService: PlayerService,
-    private trainingService: TrainingService) { }
+    private trainingService: TrainingService,
+    private teamService: TeamService) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -44,7 +50,7 @@ export class EstadisticasEquipoComponent implements OnInit {
       this.teamId = +params['teamId'];  // El + convierte el valor a número
       console.log('teamId:', this.teamId);
     });
-    this.getListaPostpartidos();
+    this.cargarNombreEquipo();
   }
 
   // Método para navegar a la pantalla de calendario
@@ -53,16 +59,35 @@ export class EstadisticasEquipoComponent implements OnInit {
     this.router.navigate(['/dashboard/calendario', this.teamId]);
   }
 
+  cargarNombreEquipo(){
+    this.teamService.getTeamById(this.teamId.toString()).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if(response.data !== null){
+          this.team = response.data;
+          this.nombreEquipo = this.team.name;
+          this.getListaPostpartidos();
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
   getListaPostpartidos() {
     this.playerService.getListPostPartidoByTeam(this.teamId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data && Array.isArray(response.data)) {
           // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.partidos = response.data.map((post: PostPartido) => new PostPartido(post));
+          this.partidos = response.data; //.map((post: PostPartido) => new PostPartido(post));
           // Inicializar el DataTable después de cargar los datos
           this.inicializarDataTable();
           this.datosResumentTotales(this.partidos);
+          this.datosCargados = true;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -87,9 +112,10 @@ export class EstadisticasEquipoComponent implements OnInit {
         pageLength: 10, // Establecer el número de resultados por página
         searching: true,
         ordering: true,
+        order: [[0, 'desc']], // Ordenar por la cuarta columna (índice 3) en orden ascendente
         columnDefs: [
           {
-            targets: [0], // El índice de la columna que deseas ocultar (en este caso, ID)
+            targets: [0,1], // El índice de la columna que deseas ocultar (en este caso, ID)
             visible: false // Establecer visible como falso oculta la columna
           }
         ]
@@ -117,7 +143,7 @@ export class EstadisticasEquipoComponent implements OnInit {
     );
   } 
 
-  datosResumentTotales(pastidos: any[]){
+  datosResumentTotales(partidos: any[]){
     let vic = 0;
     let emp = 0;
     let der = 0;
@@ -125,8 +151,10 @@ export class EstadisticasEquipoComponent implements OnInit {
     let gc = 0;
     let dg = 0;
     let pun = 0;
+    // Obtener los últimos 5 resultados
+    const ultimosResultados = this.partidos.slice(-5).map(partido => partido.resultado).reverse();
 
-    for (let partido of this.partidos) {
+    for (let partido of partidos) {
       // Aquí dentro del bucle, puedes acceder a cada elemento de la lista como "partido"
       switch (partido.resultado) {
         case 'V':
@@ -149,7 +177,7 @@ export class EstadisticasEquipoComponent implements OnInit {
     
 
     this.resumentotales = {
-      equipo: 'Mi Equipo',
+      equipo: this.nombreEquipo,
       partidos: this.partidos.length,
       victorias: vic,
       empates: emp,
@@ -158,7 +186,7 @@ export class EstadisticasEquipoComponent implements OnInit {
       gc: gc,
       dg: dg,
       puntos: pun,
-      ultimos: ['Ganado', 'Empatado', 'Perdido', 'Ganado', 'Ganado']
+      ultimos: ultimosResultados //['Ganado', 'Empatado', 'Perdido', 'Ganado', 'Ganado']
     };
 
   }
