@@ -1,16 +1,43 @@
 .nav-link {
-    font-weight: bold;
-  }
-  
-  .dropdown-menu {
-    background-color: #343a40 !important;
-  }
-  
-  .dropdown-item {
-    color: #fff !important;
-  }
+  font-weight: bold;
+}
 
-  a {
-    cursor: pointer;
-  }
-  
+.header-custom {
+  background-color: #ffffff !important;
+  color: black;
+}
+
+.dropdown {
+  list-style: none;
+}
+
+.dropdown-menu {
+  background-color: #ffffff !important;
+  color: black;
+}
+
+.dropdown-item {
+  color: #fff !important;
+}
+
+a {
+  cursor: pointer;
+}
+
+.nav-link.dropdown-toggle.arrow-none.nav-user.px-2::after {
+  display: none;
+}
+
+.nav-link .d-lg-flex {
+  display: flex; /* Muestra los elementos en fila */
+  align-items: center; /* Alinea el contenido verticalmente */
+}
+
+span {
+  color: black;
+}
+
+
+
+
+
