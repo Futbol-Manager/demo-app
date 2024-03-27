@@ -39,7 +39,7 @@ export class PlayerComponent implements OnInit {
   mostrarEdad: boolean = false;
   edadSeleccionada!: string;
 
-  players: any[] = []; 
+  players: any[] = [];
 
   constructor(private playerservice: PlayerService,
     private router: Router,
@@ -141,7 +141,7 @@ export class PlayerComponent implements OnInit {
   }
 
   // Método para crear un nuevo equipo
-  crearJugador(): void {    
+  crearJugador(): void {
     // Llamada al servicio para crear el jugador
     this.playerservice.createUpdatePlayer(this.teamId.toString(), this.player,).subscribe(
       (response) => {
@@ -315,15 +315,88 @@ export class PlayerComponent implements OnInit {
   fechaEnEspañol(fecha: string): string {
     const partes = fecha.split('-');
     const fechaObj = new Date(parseInt(partes[0]), parseInt(partes[1]) - 1, parseInt(partes[2]));
-    
+
     const dia = fechaObj.getDate();
     const mes = fechaObj.getMonth() + 1;
     const año = fechaObj.getFullYear();
-    
+
     const diaStr = dia < 10 ? '0' + dia : dia.toString();
     const mesStr = mes < 10 ? '0' + mes : mes.toString();
-    
+
     return `${diaStr}/${mesStr}/${año}`;
+  }
+
+  promedioDefensa() {
+    const a = parseFloat(this.player.defensaMarcaje) || 0;
+    const b = parseFloat(this.player.defensaEntradas) || 0;
+    const c = parseFloat(this.player.defensaRobos) || 0;
+
+    const promedio = Math.round((a + b + c) / 3); // Redondear al entero más cercano
+    this.player.defensa = promedio.toString();
+  }
+
+  promedioHabilidad() {
+    const a = parseFloat(this.player.habilidadConBalonControlDeBalon) || 0;
+    const b = parseFloat(this.player.habilidadConBalonRegate) || 0;
+
+    const promedio = Math.round((a + b) / 2); // Redondear al entero más cercano
+    this.player.habilidadConBalon = promedio.toString();
+  }
+
+  promedioPase() {
+    const a = parseFloat(this.player.paseCorto) || 0;
+    const b = parseFloat(this.player.paseLargo) || 0;
+
+    const promedio = Math.round((a + b) / 2); // Redondear al entero más cercano
+    this.player.pase = promedio.toString();
+  }
+
+  promedioTiro() {
+    const a = parseFloat(this.player.tiroPotenciaDeTiro) || 0;
+    const b = parseFloat(this.player.tiroDefinicion) || 0;
+    const c = parseFloat(this.player.tiroTirosLejanos) || 0;
+    const d = parseFloat(this.player.tiroVoleas) || 0;
+    const e = parseFloat(this.player.tiroPrecisionFalta) || 0;
+    const f = parseFloat(this.player.tiroPenaltis) || 0;
+    const g = parseFloat(this.player.tiroCabezazo) || 0;
+
+    const promedio = Math.round((a + b + c + d + e + f + g) / 7); // Redondear al entero más cercano
+    this.player.tiro = promedio.toString();
+  }
+
+  promedioFisico() {
+    const a = parseFloat(this.player.fisicoAceleracion) || 0;
+    const b = parseFloat(this.player.fisicoVelocidad) || 0;
+    const c = parseFloat(this.player.fisicoAgilidad) || 0;
+    const d = parseFloat(this.player.fisicoResistencia) || 0;
+    const e = parseFloat(this.player.fisicoFuerza) || 0;
+    const f = parseFloat(this.player.fisicoEquilibrio) || 0;
+    const g = parseFloat(this.player.fisicoSalto) || 0;
+
+    const promedio = Math.round((a + b + c + d + e + f + g) / 7); // Redondear al entero más cercano
+    this.player.fisico = promedio.toString();
+  }
+
+  promedioMentalidad() {
+    const a = parseFloat(this.player.mentalidadAgresividad) || 0;
+    const b = parseFloat(this.player.mentalidadAnticipacion) || 0;
+    const c = parseFloat(this.player.mentalidadInterceptacion) || 0;
+    const d = parseFloat(this.player.mentalidadVision) || 0;
+    const e = parseFloat(this.player.mentalidadCompostura) || 0;
+
+    const promedio = Math.round((a + b + c + d + e) / 5); // Redondear al entero más cercano
+    this.player.mentalidad = promedio.toString();
+  }
+
+  promedioPortero() {
+    const a = parseFloat(this.player.porteroColocacion) || 0;
+    const b = parseFloat(this.player.porteroEstirada) || 0;
+    const c = parseFloat(this.player.porteroParadas) || 0;
+    const d = parseFloat(this.player.porteroSaques) || 0;
+    const e = parseFloat(this.player.porteroReflejos) || 0;
+
+    const promedio = Math.round((a + b + c + d + e) / 5); // Redondear al entero más cercano
+    this.player.portero = promedio.toString();
   }
 
 }
