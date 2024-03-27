@@ -320,7 +320,7 @@
             <div class="accordion-item" *ngFor="let tarea of trainingSession.tasks; let i = index">
               <h2 class="accordion-header d-flex">
                 <button class="accordion-button" type="button" (click)="toggleTask(tarea)">
-                  Tarea {{ i + 1 }}
+                  Tarea: {{ tarea.work }}
                 </button>
                 <button type="button" class="btn btn-danger" (click)="deleteTask(tarea)">
                   Eliminar Tarea
