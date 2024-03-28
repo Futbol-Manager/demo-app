@@ -248,7 +248,7 @@ export class PlayerComponent implements OnInit {
     this.radarChart = new Chart(ctx, {
       type: 'radar',
       data: {
-        labels: ['Habilidad con balon', 'Pase', 'Tiro', 'Defensa', 'Físico', 'Mentalidad'],
+        labels: ['Habilidad con balon', 'Pase', 'Tiro', 'Defensa', 'Físico', 'Mentalidad', 'Portero'],
         datasets: [{
           label: 'Atributos del Jugador',
           data: [
@@ -257,7 +257,8 @@ export class PlayerComponent implements OnInit {
             parseInt(this.selectedPlayer.tiro),
             parseInt(this.selectedPlayer.defensa),
             parseInt(this.selectedPlayer.fisico),
-            parseInt(this.selectedPlayer.mentalidad)
+            parseInt(this.selectedPlayer.mentalidad),
+            parseInt(this.selectedPlayer.portero)
           ],
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
           borderColor: 'rgba(255, 99, 132, 1)',
