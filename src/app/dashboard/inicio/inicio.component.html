@@ -1,14 +1,17 @@
-<div *ngIf="datosCargados">
+<div *ngIf="datosCargados" class="container">
   <!-- Botón para abrir el modal de creación de equipo -->
-  <div class="d-flex mt-3">
-    <button class="btn btn-success ms-2" (click)="abrirModalCrearEquipo()">Añadir Equipo</button>
+  <div class="btn-container">
+    <button class="btn btn-link text-success" (click)="abrirModalCrearEquipo()">
+      <i class="bi bi-plus-circle-fill"></i>
+    </button>
+    <div class="hint">Crear un equipo</div>
   </div>
 
-  <div class="homepage-container">
+  <div>
     <!-- Contenido principal con la tabla de equipos utilizando Bootstrap -->
     <div class="mt-4">
 
-      <div class="container">
+      <div>
         <h2 class="text-dark mt-3">Listado de Equipos de Fútbol</h2>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
           <li class="nav-item" role="presentation">
@@ -22,26 +25,44 @@
         </ul>
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane fade show active" id="list-content" role="tabpanel" aria-labelledby="list-tab">
-            <div class="border p-3">
+            <div class="p-3">
               <div class="row" *ngFor="let team of listTeam">
-                <div class="col mb-3 border border-dark rounded bg-light-green p-2">
+                <div class="col mb-3 rounded card" style="padding: 1.5em 2em 0.5em;">
                   <div class="row">
                     <div class="col">
                       <h5>{{ team.name }}</h5>
-                      <p>
-                        <strong>Categoría:</strong> {{ team.category }}<br>
-                        <strong>Días:</strong> {{ team.trainingDays }}
-                      </p>
+                      <div class="row">
+                        <div class="col">
+                          <p>
+                            <strong>-</strong> {{ team.category }} {{ team.levelLeague }}
+                          </p>
+                        </div>
+                        <div class="col">
+                          <p>
+                            {{ team.trainingDays }}
+                            <i class="bi bi-calendar-week ml-2"></i>
+                            -
+                            {{ team.jugadoresPorEquipo }}
+                            <i class="bi bi-people-fill"></i>
+                          </p>
+                        </div>
+                      </div>
                     </div>
                     <div class="col-auto">
                       <div class="d-flex flex-column justify-content-between h-100">
-                        <button class="btn btn-primary mb-2 btn-width" (click)="navegarACalendario(team.teamId)">
-                          Entrar
-                        </button>
-                        <button class="btn btn-danger btn-width"
-                          (click)="confirmarEliminarEquipo(team.teamId, team.name)">
-                          <i class="bi bi-trash"></i> Eliminar
-                        </button>
+                        <div class="btn-container">
+                          <button class="btn btn-link text-primary" (click)="navegarACalendario(team.teamId)">
+                            <i class="bi bi-arrow-right-circle-fill"></i>
+                          </button>
+                          <div class="hint">Entrar</div>
+                        </div>
+                        <div class="btn-container">
+                          <button class="btn btn-link text-danger"
+                            (click)="confirmarEliminarEquipo(team.teamId, team.name)">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                          <div class="hint">Borrar</div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -50,24 +71,44 @@
             </div>
           </div>
           <div class="tab-pane fade" id="card-content" role="tabpanel" aria-labelledby="card-tab">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 p-3">
               <div class="col mb-3" *ngFor="let team of listTeam">
-                <div class="card gradient">
-                  <img src="assets/images/madrid.png" class="card-img-top img-half-size mx-auto" alt="Madrid">
+                <div class="card">
                   <div class="card-body text-center">
+                    <div class="dropdown card-widgets" style="text-align: end;">
+                      <a href="#" data-bs-toggle="dropdown" aria-expanded="false" style="color: #565656;">
+                        <i class="bi bi-three-dots"></i>
+                      </a>
+                      <div class="dropdown-menu dropdown-menu-end">
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item"
+                          (click)="navegarACalendario(team.teamId)">Entrar <i
+                            class="bi bi-arrow-right-circle-fill icono-azul"></i></a>
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item"
+                          (click)="confirmarEliminarEquipo(team.teamId, team.name)">Borrar <i
+                            class="bi bi-trash icono-rojo"></i></a>
+                      </div>
+                    </div>
                     <h5 class="card-title">{{ team.name }}</h5>
-                    <p class="card-text">
-                      <strong>Categoría:</strong> {{ team.category }}<br>
-                      <strong>Días:</strong> {{ team.trainingDays }}
-                    </p>
-                    <div class="d-flex justify-content-center">
-                      <button class="btn btn-primary btn-width me-2" (click)="navegarACalendario(team.teamId)">
-                        Entrar
-                      </button>
-                      <button class="btn btn-danger btn-width"
-                        (click)="confirmarEliminarEquipo(team.teamId, team.name)">
-                        <i class="bi bi-trash"></i> Eliminar
-                      </button>
+
+                    <div class="row">
+                      <div class="col">
+                        <p class="card-text">
+                          {{ team.category }} {{ team.levelLeague }}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <p>
+                          {{ team.trainingDays }}
+                          <i class="bi bi-calendar-week ml-2"></i>
+                          -
+                          {{ team.jugadoresPorEquipo }}
+                          <i class="bi bi-people-fill"></i>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>

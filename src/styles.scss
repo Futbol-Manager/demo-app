@@ -9,7 +9,7 @@
 
 html, body {
   height: 100%;
-  background-color: #f9fafd;
+  background-color: #fafbfe;
 }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
@@ -18,4 +18,55 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   color: #fff;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: url('./assets/fonts/Lato-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.btn-container {
+  position: relative;
+}
+
+.hint {
+  display: none; /* Oculta el hint por defecto */
+  position: absolute;
+  background-color: #565656;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para resaltar */
+  z-index: 9999; /* Asegura que el hint esté por encima de otros elementos */
+  top: 50%;
+  left: calc(50px); /* Ajusta la posición a un lado del botón */
+  transform: translateY(-50%);
+}
+
+.hint::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  margin-top: -5px; /* Ajusta la posición vertical de la punta */
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent #565656 transparent transparent; /* Color de la punta */
+}
+
+.btn-container:hover .hint {
+  display: block; /* Muestra el hint cuando se pasa el cursor sobre el botón */
+}
+
+/* Estilos para el icono azul */
+.dropdown-menu .icono-azul {
+  color: #0d6efd; /* Establece el color azul para este icono */
+}
+
+/* Estilos para el icono rojo */
+.dropdown-menu .icono-rojo {
+  color: red; /* Establece el color rojo para este icono */
 }
