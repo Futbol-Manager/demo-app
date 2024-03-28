@@ -1,0 +1,87 @@
+<button class="btn btn-primary" (click)="navegarACalendario()">
+  <i class="bi bi-calendar"></i> Calendario
+</button>
+<div class="container mt-2">
+  <div class="container">
+    <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': true}">
+      <div class="modal-dialog" role="document" style="margin-top: 10%;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Añadir Equipo</h5>
+          </div>
+          <div class="modal-body">
+            <!-- Formulario para la creación de equipo con campos vinculados a propiedades del objeto team -->
+            <form>
+              <div class="mb-3">
+                <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
+                <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" [(ngModel)]="team.categoryType.categoryTypeId">
+                  <!-- Opciones ajustadas según tus necesidades -->
+                  <option value="1">LaLiga EA Sports</option>
+                  <option value="2">Liga F</option>
+                  <option value="3">LaLiga Hypermotion</option>
+                  <option value="4">Segunda RFEF Femenina</option>
+                  <option value="5">Primera RFEF</option>
+                  <option value="6">Segunda RFEF</option>
+                  <option value="7">Tercera RFEF</option>
+                  <option value="8">Tercera RFEF Femenina</option>
+                  <option value="9">Preferente Autonómica</option>
+                  <option value="10">Preferente Autonómica Femenina</option>
+                  <option value="11">Primera Autonómica</option>
+                  <option value="12">Primera Autonómica Femenina</option>
+                  <option value="13">Segunda Autonómica</option>
+                  <option value="14">Tercera Autonómica</option>
+                  <option value="15">Senior Amateur</option>
+                  <option value="16">Juvenil</option>
+                  <option value="17">Juvenil/Cadete Femenina</option>
+                  <option value="18">Cadete</option>
+                  <option value="19">Cadete/Infantil Femenina</option>
+                  <option value="20">Infantil</option>
+                  <option value="21">Infantil/Alevín Femenina</option>
+                  <option value="22">Alevín</option>
+                  <option value="23">Benjamín</option>
+                  <option value="24">Benjamín/Prebenjamín Femenina</option>
+                  <option value="25">Prebenjamín</option>
+                  <option value="26">Debutante</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="nivelLiga" class="form-label">Nivel:</label>
+                <select class="form-control" id="nivelLiga" name="nivelLiga" [(ngModel)]="team.levelLeague">
+                  <!-- Opciones ajustadas según tus necesidades -->
+                  <option value="División de Honor">División de Honor</option>
+                  <option value="Liga Nacional">Liga Nacional</option>
+                  <option value="Superliga">Superliga</option>
+                  <option value="Autonómica">Autonómica</option>
+                  <option value="Preferente">Preferente</option>
+                  <option value="Primera">Primera</option>
+                  <option value="Segunda">Segunda</option>
+                  <option value="Tercera">Tercera</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
+                <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo" [(ngModel)]="team.objectiveTeam">
+              </div>
+              <div class="mb-3">
+                <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
+                <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento" [(ngModel)]="team.trainingDays">
+              </div>
+              <div class="mb-3">
+                <label for="clubEquipo" class="form-label">Club del Equipo:</label>
+                <select class="form-control" id="clubEquipo" name="clubEquipo" [(ngModel)]="team.clubId">
+                  <option *ngFor="let club of clubList" [value]="club.clubId">{{ club.name }}</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
+                <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo" [(ngModel)]="team.opinionTeam">
+              </div>
+              <!-- Botón para guardar el nuevo equipo -->
+              <button type="button" class="btn btn-success float-end" (click)="guardarCambios()">Guardar</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

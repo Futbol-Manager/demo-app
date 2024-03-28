@@ -124,13 +124,13 @@ export class CalendarioComponent implements OnInit {
   // Método para redirigir a la pantalla de jugadores con el teamId
   irAPantalla(id: number): void {
     if (id === 1) {
-      this.router.navigate(['/dashboard/jugadores', this.teamId]);      
+      //this.router.navigate(['/dashboard/info_equipo', this.teamId]);
     } else if (id === 2) {
-      this.router.navigate(['/dashboard/jugadores', this.teamId]);          
+      this.router.navigate(['/dashboard/jugadores', this.teamId]);
     } else if (id === 3) {
-      this.router.navigate(['/dashboard/estadisticas_equipo', this.teamId]);          
+      this.router.navigate(['/dashboard/estadisticas_equipo', this.teamId]);
     } else if (id === 4) {
-      this.router.navigate(['/dashboard/estadisticas_jugadores', this.teamId]);          
+      this.router.navigate(['/dashboard/estadisticas_jugadores', this.teamId]);
     }
   }
 
@@ -434,7 +434,7 @@ export class CalendarioComponent implements OnInit {
           // Asignar los datos del partido al objeto 'partido'
           this.postPartido = response.data;
           this.postPartidoId = response.data.postPartidoId;
-        }        
+        }
         this.playerService.getPlayersPostPartido(this.teamId.toString(), this.postPartidoId.toString()).subscribe(
           (response) => {
             // Verificar si se obtuvo correctamente la información del partido
