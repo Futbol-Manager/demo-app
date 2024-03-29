@@ -7,11 +7,16 @@
 @import "@fortawesome/fontawesome-free/css/all.css";
 
 
-html, body {
+html,
+body {
   height: 100%;
   background-color: #fafbfe;
 }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
 
 .mat-snack-bar-container {
   background-color: #333;
@@ -32,17 +37,21 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 }
 
 .hint {
-  display: none; /* Oculta el hint por defecto */
+  display: none;
+  /* Oculta el hint por defecto */
   position: absolute;
   background-color: #565656;
   color: #fff;
   padding: 5px 10px;
   border-radius: 5px;
   font-size: 14px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para resaltar */
-  z-index: 9999; /* Asegura que el hint esté por encima de otros elementos */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  /* Sombra para resaltar */
+  z-index: 9999;
+  /* Asegura que el hint esté por encima de otros elementos */
   top: 50%;
-  left: calc(50px); /* Ajusta la posición a un lado del botón */
+  left: calc(50px);
+  /* Ajusta la posición a un lado del botón */
   transform: translateY(-50%);
 }
 
@@ -51,22 +60,41 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   position: absolute;
   top: 50%;
   right: 100%;
-  margin-top: -5px; /* Ajusta la posición vertical de la punta */
+  margin-top: -5px;
+  /* Ajusta la posición vertical de la punta */
   border-width: 5px;
   border-style: solid;
-  border-color: transparent #565656 transparent transparent; /* Color de la punta */
+  border-color: transparent #565656 transparent transparent;
+  /* Color de la punta */
 }
 
 .btn-container:hover .hint {
-  display: block; /* Muestra el hint cuando se pasa el cursor sobre el botón */
+  display: block;
+  /* Muestra el hint cuando se pasa el cursor sobre el botón */
 }
 
 /* Estilos para el icono azul */
 .dropdown-menu .icono-azul {
-  color: #0d6efd; /* Establece el color azul para este icono */
+  color: #0d6efd;
+  /* Establece el color azul para este icono */
 }
 
 /* Estilos para el icono rojo */
 .dropdown-menu .icono-rojo {
-  color: red; /* Establece el color rojo para este icono */
+  color: red;
+  /* Establece el color rojo para este icono */
+}
+
+.modal-header {
+  padding-bottom: 5px;
+  padding-top: 5px;
+  color: #565656;
+}
+
+/* Estilos personalizados para el botón de cierre */
+.btn-close {
+  font-size: 0.75rem; /* Tamaño de fuente más pequeño */
+  width: 1rem; /* Ancho más pequeño */
+  height: 1rem; /* Altura más pequeña */
+  padding: 0.15rem; /* Padding más pequeño */
 }
