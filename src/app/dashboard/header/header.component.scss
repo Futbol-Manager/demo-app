@@ -29,15 +29,17 @@ a {
 }
 
 .nav-link .d-lg-flex {
-  display: flex; /* Muestra los elementos en fila */
-  align-items: center; /* Alinea el contenido verticalmente */
+  display: flex;
+  /* Muestra los elementos en fila */
+  align-items: center;
+  /* Alinea el contenido verticalmente */
 }
 
 span {
   color: black;
 }
 
-
-
-
-
+.img-custom {
+  width: auto;
+  height: 10em;
+}

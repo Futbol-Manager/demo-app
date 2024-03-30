@@ -60,6 +60,14 @@
                       <div class="position-relative">
                         <span class="numero-dia">{{ dia.numero }}</span>
                         <div class="row">
+                          <div class="col" *ngIf="!dia.trainingId || !dia.matchPreparationId">
+                            <div class="btn-container">
+                              <button class="btn btn-link text-success" (click)="abrirModal(dia.daysession)">
+                                <i class="bi bi-plus-circle-fill"></i>
+                              </button>
+                              <div class="hint">Añadir</div>
+                            </div>
+                          </div>
                           <div class="col">
                             <button *ngIf="dia.trainingId" class="btn btn-success btn-sm btn-block"
                               (click)="openEntrenamiento(dia.trainingId, dia.daysession)">Entrenamiento</button>
@@ -67,9 +75,6 @@
                           <div class="col">
                             <button *ngIf="dia.matchPreparationId" class="btn btn-warning btn-sm btn-block"
                               (click)="openPartido(dia.matchPreparationId, dia.daysession)">Partido</button>
-                          </div>
-                          <div class="col" *ngIf="!dia.trainingId || !dia.matchPreparationId">
-                            <button class="btn btn-primary btn-sm btn-block" (click)="abrirModal(dia.daysession)">Añadir</button>
                           </div>
                         </div>
                       </div>
@@ -79,7 +84,7 @@
                 </tr>
               </ng-container>
             </ng-container>
-          </tbody>                    
+          </tbody>
         </table>
       </div>
     </div>
@@ -365,7 +370,8 @@
           <button type="button" class="btn btn-primary mt-3" [disabled]="showAddTaskForm"
             (click)="toggleAddTaskForm()">Agregar
             Tarea</button>
-          <button type="button" class="btn btn-primary mt-3" (click)="verTienda()" *ngIf="!viewShop">Nube de Tareas</button>
+          <button type="button" class="btn btn-primary mt-3" (click)="verTienda()" *ngIf="!viewShop">Nube de
+            Tareas</button>
           <button type="button" class="btn btn-primary mt-3" (click)="cerrarTienda()" *ngIf="viewShop">Cerrar
             Nube de Tareas</button>
           <button type="button" class="btn btn-danger float-end" (click)="eliminarEntrenamiento()">Eliminar

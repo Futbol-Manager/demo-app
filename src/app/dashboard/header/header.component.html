@@ -6,7 +6,8 @@
       </div>
       <div class="col-auto">
         <div class="dropdown">
-          <a class="nav-link dropdown-toggle arrow-none nav-user px-2" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
+          <a class="nav-link dropdown-toggle arrow-none nav-user px-2" data-bs-toggle="dropdown" href="#" role="button"
+            aria-haspopup="false" aria-expanded="false">
             <span class="d-lg-none">
               <span class="account-user-avatar">
                 <img src="https://github.com/mdo.png" alt="user-image" width="32" class="rounded-circle me-2">
@@ -19,7 +20,7 @@
               </span>
               <h5 class="my-0">Alejandro</h5>
             </span>
-          </a>          
+          </a>
           <div class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
             <!-- item-->
             <div class="dropdown-header noti-title">
@@ -43,3 +44,59 @@
     </div>
   </div>
 </header>
+
+<!-- Modal para crear equipo -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar perfil de usuario</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body">
+        <h6 class="mt-0">Instrucciones</h6>
+        <p>Introduce los datos de tu perfil que quieres modificar sin dejar ningún campo vacío.</p>
+        <hr>
+        <form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="saveChanges()">
+          <div class="mb-3" style="text-align: center;">
+            <img [src]="'./../../../assets/images/no-image.png'" class="rounded-circle img-custom" alt="Foto de perfil">
+          </div>
+          <div class="mb-3">
+            <label for="firstName" class="form-label">Nombre</label>
+            <input type="text" class="form-control input-login" id="firstName" formControlName="firstName">
+          </div>
+          <div class="mb-3">
+            <label for="secondName" class="form-label">Apellido</label>
+            <input type="text" class="form-control input-login" id="secondName" formControlName="secondName">
+          </div>
+          <div class="mb-3">
+            <label for="mail" class="form-label">Correo electrónico</label>
+            <input type="email" class="form-control input-login" id="mail" formControlName="mail">
+            <div
+              *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
+              class="invalid-feedback">
+              Ingresa un correo electrónico válido
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="birthdate" class="form-label">Fecha de nacimiento</label>
+            <input type="date" class="form-control input-login" id="birthdate" formControlName="birthdate">
+          </div>
+          <div class="mb-3">
+            <label for="genreType" class="form-label">Género</label>
+            <select class="form-control" id="genreType" formControlName="genreType">
+              <option value="1">Masculino</option>
+              <option value="2">Femenino</option>
+              <option value="3">Otro</option>
+            </select>
+          </div>
+          <div class="modal-footer">
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="button" class="btn btn-success float-end" (click)="saveChanges()">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
