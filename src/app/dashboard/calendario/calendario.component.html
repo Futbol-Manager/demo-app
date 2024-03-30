@@ -33,7 +33,7 @@
       </div>
 
       <!-- Tabla del calendario -->
-      <div class="table-responsive mt-3">
+      <div class="table-responsive mt-3" style="overflow-x: hidden;">
         <table class="table table-bordered table-striped">
           <!-- Encabezado de la tabla -->
           <thead class="bg-primary text-white">
@@ -50,23 +50,36 @@
           <!-- Cuerpo de la tabla -->
           <tbody>
             <!-- Filas de la tabla -->
-            <tr *ngFor="let semana of calendario">
-              <ng-container *ngFor="let dia of semana">
-                <td *ngIf="dia !== ''">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <span>{{ dia.numero }}</span>
-                    <!-- <span>{{ dia.daysession }}</span>  Mostrar directamente la variable daysession -->
-                    <button *ngIf="dia.trainingId" class="btn btn-success btn-sm"
-                      (click)="openEntrenamiento(dia.trainingId, dia.daysession)">Entrenamiento</button>
-                    <button *ngIf="dia.matchPreparationId" class="btn btn-warning btn-sm"
-                      (click)="openPartido(dia.matchPreparationId, dia.daysession)">Partido</button>
-                    <button class="btn btn-primary btn-sm" (click)="abrirModal(dia.daysession)">Añadir</button>
-                  </div>
-                </td>
-                <td *ngIf="dia === ''"></td>
+            <ng-container *ngFor="let semana of calendario">
+              <!-- Verificar si la semana tiene algún dato -->
+              <ng-container *ngIf="tieneDatosEnSemana(semana)">
+                <tr>
+                  <!-- Columnas de la fila -->
+                  <ng-container *ngFor="let dia of semana">
+                    <td *ngIf="dia !== ''" class="dia">
+                      <div class="position-relative">
+                        <span class="numero-dia">{{ dia.numero }}</span>
+                        <div class="row">
+                          <div class="col">
+                            <button *ngIf="dia.trainingId" class="btn btn-success btn-sm btn-block"
+                              (click)="openEntrenamiento(dia.trainingId, dia.daysession)">Entrenamiento</button>
+                          </div>
+                          <div class="col">
+                            <button *ngIf="dia.matchPreparationId" class="btn btn-warning btn-sm btn-block"
+                              (click)="openPartido(dia.matchPreparationId, dia.daysession)">Partido</button>
+                          </div>
+                          <div class="col" *ngIf="!dia.trainingId || !dia.matchPreparationId">
+                            <button class="btn btn-primary btn-sm btn-block" (click)="abrirModal(dia.daysession)">Añadir</button>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td *ngIf="dia === ''" class="dia"></td>
+                  </ng-container>
+                </tr>
               </ng-container>
-            </tr>
-          </tbody>
+            </ng-container>
+          </tbody>                    
         </table>
       </div>
     </div>
@@ -83,6 +96,9 @@
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
       </div>
       <div class="modal-body">
+        <h6 class="mt-0">Instruciones</h6>
+        <p>Escoge la pestaña deseada y decide si crear un entrenamiento o un pre partido</p>
+        <hr>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
           <li class="nav-item" role="presentation">
             <button class="nav-link active" id="entrenamiento-tab" data-bs-toggle="tab" data-bs-target="#entrenamiento"

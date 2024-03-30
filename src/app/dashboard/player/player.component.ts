@@ -28,7 +28,7 @@ export interface Player1 {
   styleUrls: ['./player.component.scss']
 })
 export class PlayerComponent implements OnInit {
-
+  datosCargados: boolean = false;
   usuarioActual!: User | null;
   teamId!: number;
   showModal = false;
@@ -69,6 +69,7 @@ export class PlayerComponent implements OnInit {
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
+        this.datosCargados = true;
       },
       (error) => {
         console.error('Error al cargar el listado de jugadores', error);

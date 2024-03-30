@@ -455,8 +455,11 @@ export class CalendarioComponent implements OnInit {
         console.error('Error en la solicitud:', error);
       }
     );
+  }
 
-
+  // Método para verificar si hay algún dato en la semana
+  tieneDatosEnSemana(semana: any[]): boolean {
+    return semana.some(dia => dia !== '');
   }
 
   cerrarModalPostPartido() {
