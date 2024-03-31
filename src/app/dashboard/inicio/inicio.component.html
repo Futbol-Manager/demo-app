@@ -1,7 +1,7 @@
 <div *ngIf="datosCargados" class="container">
   <!-- Botón para abrir el modal de creación de equipo -->
   <div class="btn-container">
-    <button class="btn btn-link text-success" (click)="abrirModalCrearEquipo()">
+    <button class="btn btn-link text-primary" (click)="abrirModalCrearEquipo()">
       <i class="bi bi-plus-circle-fill"></i>
     </button>
     <div class="hint">Crear un equipo</div>
@@ -51,7 +51,7 @@
                     <div class="col-auto">
                       <div class="d-flex flex-column justify-content-between h-100">
                         <div class="btn-container">
-                          <button class="btn btn-link text-primary" (click)="navegarACalendario(team.teamId)">
+                          <button class="btn btn-link text-success" (click)="navegarACalendario(team.teamId)">
                             <i class="bi bi-arrow-right-circle-fill"></i>
                           </button>
                           <div class="hint">Entrar</div>

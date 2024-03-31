@@ -1,12 +1,12 @@
 <div *ngIf="datosCargados" class="container">
     <div class="btn-container">
-        <button class="btn btn-primary" (click)="navegarACalendario()">
+        <button class="btn btn-custom" (click)="navegarACalendario()">
             <i class="bi bi-calendar"></i>
         </button>
         <div class="hint">Volver al calendario</div>
     </div>
 
-    <div style="margin-top: 3em;">
+    <div style="margin-top: 3em; overflow-x: auto;">
         <h2>Tabla de Resumen</h2>
         <table class="table table-centered mb-0">
             <thead class="table-dark">
@@ -43,7 +43,7 @@
     <!-- Contenido para el dataTable -->
     <div class="container mt-4">
         <h2>Partidos</h2>
-        <div>
+        <div style="overflow-x: auto;">
             <table id="dataTable" class="table table-bordered table-striped">
                 <thead style="background-color: cornflowerblue;">
                     <tr>
