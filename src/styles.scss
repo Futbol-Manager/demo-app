@@ -167,3 +167,64 @@ body {
   background-color: #818181;
   color: white;
 }
+
+/* Estilos para los botones de paginación en DataTables */
+.dt-paging-button {
+  padding: 0.375rem 0.75rem;
+  margin: 0 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #fff;
+  background-color: #3a444e;
+  border-color: #2a3036;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.dt-paging-button:hover {
+  color: #fff;
+  background-color: #2f373f;
+  border-color: #2d343b;
+}
+
+.dt-paging-button:disabled {
+  color: #6c757d;
+  background-color: #fff;
+  border-color: #dee2e6;
+}
+
+/* Estilos para el botón de página activa */
+.dt-paging-button.active {
+  color: #fff;
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+/* Estilos para el botón de página activa al pasar el ratón */
+.dt-paging-button.active:hover {
+  color: #fff;
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.dt-search {
+  float: right;
+}
+
+.dt-input {
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  font-family: sans-serif;
+  font-size: 14px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+}
+
+.div-headdatatable {
+  margin-bottom: 1.5em;
+}
+
+
+
+

@@ -144,6 +144,56 @@ export class EstadisticasEquipoComponent implements OnInit {
         });
       });
     });
+
+    this.moverElementosDataTable();
+  }
+
+
+  moverElementosDataTable(){
+    // **Move buttons outside the table after initialization**
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const layoutRowElements = this.elementRef.nativeElement.querySelectorAll('.dt-layout-row:not(.dt-layout-table)');
+        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#button_datatable');
+        
+        if (layoutRowElements.length >= 2 && buttonDatatableElement) {
+          const layoutRowElement = layoutRowElements[1]; // Obtener el segundo elemento
+          $(layoutRowElement).appendTo(buttonDatatableElement);
+          observer.disconnect(); // Detiene la observación después de encontrar los elementos
+        }
+      });
+    });
+
+    observer.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+
+
+    const length = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-length');
+        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-length');
+        
+        if (layoutRowElement && buttonDatatableElement) {
+          $(layoutRowElement).appendTo(buttonDatatableElement);
+          length.disconnect(); // Detiene la observación después de encontrar los elementos
+        }
+      });
+    });
+
+    length.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+
+    const search = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-search');
+        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-search');
+        
+        if (layoutRowElement && buttonDatatableElement) {
+          $(layoutRowElement).appendTo(buttonDatatableElement);
+          search.disconnect(); // Detiene la observación después de encontrar los elementos
+        }
+      });
+    });
+
+    search.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
   }
 
   cerrarModalInfoPostPartido() {
