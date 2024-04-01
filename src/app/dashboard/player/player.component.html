@@ -50,7 +50,8 @@
                                         <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
                                             <span class="bi bi-person"></span>
                                         </button>
-                                        <button class="btn btn-primary" title="Editar" (click)="editarJugador(player.playerId)">
+                                        <button class="btn btn-primary" title="Editar"
+                                            (click)="editarJugador(player.playerId)">
                                             <span class="bi bi-pencil"></span>
                                         </button>
                                     </div>
@@ -58,20 +59,25 @@
                             </div>
                         </div>
                     </div>
-                    
+
                 </div>
             </div>
             <div class="tab-pane fade" id="table-content" role="tabpanel" aria-labelledby="table-tab">
                 <div class="row" style="padding: 1.5em 2em 0.5em;">
-                    <!-- Contenido para la pestaña de tabla -->
+                    <div class="row justify-content-between div-headdatatable">
+                        <div class="col-md-auto mr-auto" id="dt-length">
+                            <!-- Contenido para el dt-length -->
+                        </div>
+                        <div class="col-md-auto ml-auto" id="dt-search">
+                        </div>
+                    </div>
                     <div style="overflow-x: auto;">
-                        <table id="dataTable" class="table table-bordered table-striped">
-                            <thead style="background-color: rgb(0, 0, 0); color: white;">
+                        <table id="dataTable" class="table table-bordered table-striped text-center">
+                            <thead style="background-color: #212529; color: white;">
                                 <tr>
                                     <th>Player ID</th>
                                     <th>IMAGEN</th>
                                     <th>NOMBRE</th>
-                                    <th>APELLIDO</th>
                                     <th>FECHA</th>
                                     <th>PIE</th>
                                     <th>POSICION</th>
@@ -90,8 +96,7 @@
                                     <td>{{ player.playerId }}</td>
                                     <td><span class="bi bi-person" style="font-size: 3rem;"></span></td>
                                     <!-- <td>{{ player.picturePlayer }}</td> -->
-                                    <td>{{ player.nombre }}</td>
-                                    <td>{{ player.apellido }}</td>
+                                    <td>{{ player.nombre }} {{ player.apellido }}</td>
                                     <td>{{ player.fechaDeNacimiento | date }}</td>
                                     <td>{{ player.piernaNatural }}</td>
                                     <td>{{ player.posicion }}</td>
@@ -123,6 +128,8 @@
                         </table>
                     </div>
                 </div>
+                <div id="button_datatable">
+                </div>
             </div>
         </div>
     </div>
@@ -139,7 +146,8 @@
             </div>
             <div class="modal-body">
                 <h6 class="mt-0">Instruciones</h6>
-                <p>Introduce los datos de tu jugador, los campos en gris serán la media de los campos que tienen seguidamente abajo, por lo que has de rellenar todos los datos.</p>
+                <p>Introduce los datos de tu jugador, los campos en gris serán la media de los campos que tienen
+                    seguidamente abajo, por lo que has de rellenar todos los datos.</p>
                 <hr>
                 <!-- Formulario para la creación de jugador -->
                 <form>
@@ -462,7 +470,8 @@
                     </div>
                     <div class="modal-footer">
                         <!-- Botón para guardar el nuevo equipo -->
-                        <button type="button" class="btn btn-success float-end" (click)="crearJugador()">Guardar</button>
+                        <button type="button" class="btn btn-success float-end"
+                            (click)="crearJugador()">Guardar</button>
                     </div>
                 </form>
             </div>

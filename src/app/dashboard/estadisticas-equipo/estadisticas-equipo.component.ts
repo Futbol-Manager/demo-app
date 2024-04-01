@@ -72,24 +72,6 @@ export class EstadisticasEquipoComponent implements OnInit {
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
-        /*setTimeout(() => {
-          // Obtener el elemento por su clase
-          const targetElement = this.elementRef.nativeElement.querySelector('.dt-layout-row.dt-layout-table');
-          if (targetElement) {
-            // Aplicar el estilo
-            targetElement.style.overflowX = 'auto';
-          }
-
-          const pagingButtons = this.elementRef.nativeElement.querySelectorAll('.dt-paging-button');
-          if (pagingButtons) {
-            // Aplicar el estilo a cada botón de paginación
-            pagingButtons.forEach((button: HTMLElement) => {
-              button.style.backgroundColor = 'blue';
-              button.style.color = 'white'; // Cambiar el color del texto si es necesario
-              button.style.borderRadius = '50%'; // Hacer el botón redondo
-            });
-          }
-        }, 1000);*/ // Ajusta este valor según sea necesario
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
@@ -135,6 +117,7 @@ export class EstadisticasEquipoComponent implements OnInit {
           ordering: true,
           order: [[0, 'desc']],
           columnDefs: [
+            { width: '150px', targets: 3 },
             {
               targets: [0, 1],
               visible: false
@@ -149,13 +132,13 @@ export class EstadisticasEquipoComponent implements OnInit {
   }
 
 
-  moverElementosDataTable(){
+  moverElementosDataTable() {
     // **Move buttons outside the table after initialization**
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         const layoutRowElements = this.elementRef.nativeElement.querySelectorAll('.dt-layout-row:not(.dt-layout-table)');
         const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#button_datatable');
-        
+
         if (layoutRowElements.length >= 2 && buttonDatatableElement) {
           const layoutRowElement = layoutRowElements[1]; // Obtener el segundo elemento
           $(layoutRowElement).appendTo(buttonDatatableElement);
@@ -166,12 +149,27 @@ export class EstadisticasEquipoComponent implements OnInit {
 
     observer.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
 
+    //esto es para agregar una clase
+    const textcenter = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const dataTableElement = document.querySelector('#dataTable');
 
+        if (dataTableElement) {
+          dataTableElement.classList.add('text-center');
+          textcenter.disconnect(); // Detiene la observación después de encontrar el elemento
+        }
+      });
+    });
+
+    textcenter.observe(document.body, { childList: true, subtree: true });
+
+
+    //esto es para la parte donde pones las filas a ver
     const length = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-length');
         const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-length');
-        
+
         if (layoutRowElement && buttonDatatableElement) {
           $(layoutRowElement).appendTo(buttonDatatableElement);
           length.disconnect(); // Detiene la observación después de encontrar los elementos
@@ -181,11 +179,12 @@ export class EstadisticasEquipoComponent implements OnInit {
 
     length.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
 
+    //esto es para el input del buscador
     const search = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
         const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-search');
         const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-search');
-        
+
         if (layoutRowElement && buttonDatatableElement) {
           $(layoutRowElement).appendTo(buttonDatatableElement);
           search.disconnect(); // Detiene la observación después de encontrar los elementos

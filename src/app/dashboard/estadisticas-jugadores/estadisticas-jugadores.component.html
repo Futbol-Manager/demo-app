@@ -9,9 +9,16 @@
     <!-- Contenido para el dataTable -->
     <div class="container mt-4">
         <h2>Jugadores</h2>
+        <div class="row justify-content-between div-headdatatable">
+            <div class="col-md-auto mr-auto" id="dt-length">
+                <!-- Contenido para el dt-length -->
+            </div>
+            <div class="col-md-auto ml-auto" id="dt-search">
+            </div>
+        </div>
         <div style="overflow-x: auto;">
-            <table id="dataTable" class="table table-bordered table-striped">
-                <thead style="background-color: rgb(0, 0, 0); color: white;">
+            <table id="dataTable" class="table table-bordered table-striped text-center">
+                <thead style="background-color: #212529; color: white;">
                     <tr>
                         <th>ID</th>
                         <th>NOMBRE</th>
@@ -57,5 +64,7 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <div id="button_datatable">
     </div>
 </div>
