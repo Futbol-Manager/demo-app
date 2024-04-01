@@ -6,6 +6,7 @@ import { PostPartido } from 'src/app/core/services/models/match.model';
 import { PlayerEstadistica } from 'src/app/core/services/player/player.model';
 import * as $ from 'jquery';
 import 'datatables.net';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-estadisticas-jugadores',
@@ -20,7 +21,8 @@ export class EstadisticasJugadoresComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private playerService: PlayerService) { }
+    private playerService: PlayerService,    
+    private http: HttpClient) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -67,19 +69,22 @@ export class EstadisticasJugadoresComponent implements OnInit {
       $dataTable.DataTable().destroy();
     }
 
-    $(document).ready(() => {
-      $('#dataTable').DataTable({
-        paging: true,
-        pageLength: 25, // Establecer el número de resultados por página
-        searching: true,
-        ordering: true,
-        order: [[1, 'asc']], // Ordenar por la cuarta columna (índice 3) en orden ascendente
-        columnDefs: [
-          {
-            targets: [0], // El índice de la columna que deseas ocultar (en este caso, ID)
-            visible: false // Establecer visible como falso oculta la columna
-          }
-        ]
+    this.http.get('assets/dataTable/Spanish.json').subscribe((translation) => {
+      $(document).ready(function () {
+        $('#dataTable').DataTable({
+          paging: true,
+          pageLength: 25,
+          searching: true,
+          ordering: true,
+          order: [[0, 'desc']],
+          columnDefs: [
+            {
+              targets: [0],
+              visible: false
+            }
+          ],
+          language: translation
+        });
       });
     });
   }

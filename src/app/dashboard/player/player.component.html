@@ -31,32 +31,34 @@
             <div class="tab-pane fade show active" id="card-content" role="tabpanel" aria-labelledby="card-tab">
                 <!-- Contenido para la pestaña de tarjetas -->
                 <div class="row" style="padding: 1.5em 2em 0.5em;">
-                    <div class="col mb-3" *ngFor="let player of players">
-                        <div class="card gradient">
-                            <!-- Aquí puedes mostrar la imagen del jugador, si tienes -->
-                            <div class="card-body text-center">
-                                <ng-container *ngIf="!player.picturePlayer">
-                                    <span class="bi bi-person" style="font-size: 3rem;"></span>
-                                </ng-container>
-                                <h5 class="card-title">{{ player.nombre }} {{ player.apellido }}</h5>
-                                <p class="card-text">
-                                    <strong>Posición:</strong> {{ player.posicion }}<br>
-                                    <strong>Fecha de Nacimiento:</strong> {{ player.fechaDeNacimiento | date }}
-
-                                </p>
-                                <!-- Puedes agregar botones o acciones específicas para cada jugador aquí -->
-                                <div class="d-flex justify-content-between">
-                                    <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
-                                        <span class="bi bi-person"></span>
-                                    </button>
-                                    <button class="btn btn-primary" title="Editar"
-                                        (click)="editarJugador(player.playerId)">
-                                        <span class="bi bi-pencil"></span>
-                                    </button>
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">
+                        <!-- Utilizamos ngFor para iterar sobre los jugadores -->
+                        <div class="col mb-3" *ngFor="let player of players">
+                            <div class="card gradient">
+                                <!-- Aquí puedes mostrar la imagen del jugador, si tienes -->
+                                <div class="card-body text-center">
+                                    <ng-container *ngIf="!player.picturePlayer">
+                                        <span class="bi bi-person" style="font-size: 3rem;"></span>
+                                    </ng-container>
+                                    <h5 class="card-title">{{ player.nombre }} {{ player.apellido }}</h5>
+                                    <p class="card-text">
+                                        <strong>Posición:</strong> {{ player.posicion }}<br>
+                                        <strong>Fecha de Nacimiento:</strong> {{ player.fechaDeNacimiento | date }}
+                                    </p>
+                                    <!-- Puedes agregar botones o acciones específicas para cada jugador aquí -->
+                                    <div class="d-flex justify-content-between">
+                                        <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
+                                            <span class="bi bi-person"></span>
+                                        </button>
+                                        <button class="btn btn-primary" title="Editar" (click)="editarJugador(player.playerId)">
+                                            <span class="bi bi-pencil"></span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    
                 </div>
             </div>
             <div class="tab-pane fade" id="table-content" role="tabpanel" aria-labelledby="table-tab">
@@ -64,7 +66,7 @@
                     <!-- Contenido para la pestaña de tabla -->
                     <div style="overflow-x: auto;">
                         <table id="dataTable" class="table table-bordered table-striped">
-                            <thead style="background-color: cornflowerblue;">
+                            <thead style="background-color: rgb(0, 0, 0); color: white;">
                                 <tr>
                                     <th>Player ID</th>
                                     <th>IMAGEN</th>

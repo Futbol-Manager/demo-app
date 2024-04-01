@@ -8,6 +8,7 @@ import * as $ from 'jquery';
 import 'datatables.net';
 
 import { Chart, registerables } from 'chart.js/auto';
+import { HttpClient } from '@angular/common/http';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -43,7 +44,8 @@ export class PlayerComponent implements OnInit {
 
   constructor(private playerservice: PlayerService,
     private router: Router,
-    private route: ActivatedRoute) { }
+    private route: ActivatedRoute,
+    private http: HttpClient) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -85,18 +87,22 @@ export class PlayerComponent implements OnInit {
       $dataTable.DataTable().destroy();
     }
 
-    $(document).ready(() => {
-      $('#dataTable').DataTable({
-        paging: true,
-        pageLength: 25, // Establecer el número de resultados por página
-        searching: true,
-        ordering: true,
-        columnDefs: [
-          {
-            targets: [0], // El índice de la columna que deseas ocultar (en este caso, Player ID)
-            visible: false // Establecer visible como falso oculta la columna
-          }
-        ]
+    this.http.get('assets/dataTable/Spanish.json').subscribe((translation) => {
+      $(document).ready(function () {
+        $('#dataTable').DataTable({
+          paging: true,
+          pageLength: 25,
+          searching: true,
+          ordering: true,
+          order: [[0, 'desc']],
+          columnDefs: [
+            {
+              targets: [0],
+              visible: false
+            }
+          ],
+          language: translation
+        });
       });
     });
   }
