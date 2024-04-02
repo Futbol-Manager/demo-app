@@ -7,6 +7,7 @@ import { CalendarioComponent } from './calendario/calendario.component';
 import { PlayerComponent } from './player/player.component';
 import { EstadisticasEquipoComponent } from './estadisticas-equipo/estadisticas-equipo.component';
 import { EstadisticasJugadoresComponent } from './estadisticas-jugadores/estadisticas-jugadores.component';
+import { InformacionEquipoComponent } from './informacion-equipo/informacion-equipo.component';
 
 const routes: Routes = [
   {
@@ -17,6 +18,7 @@ const routes: Routes = [
       { path: 'calendario/:teamId', component: CalendarioComponent },
       { path: 'jugadores/:teamId', component: PlayerComponent },
       { path: 'estadisticas_equipo/:teamId', component: EstadisticasEquipoComponent },
+      { path: 'informacion_equipo/:teamId', component: InformacionEquipoComponent },
       { path: 'estadisticas_jugadores/:teamId', component: EstadisticasJugadoresComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
