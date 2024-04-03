@@ -9,14 +9,14 @@ const appRoutes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent },
+  { path: 'registro', component: RegisterComponent },
   {
     path: 'dashboard',
     loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
     canActivate: [AuthGuard], // Agrega canActivate aquí
   },
   { path: '**', redirectTo: '/404' }, // Manejo de rutas no encontradas
-  
+
 ];
 
 @NgModule({

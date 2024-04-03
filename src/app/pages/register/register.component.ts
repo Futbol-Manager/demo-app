@@ -237,4 +237,9 @@ export class RegisterComponent implements OnInit {
     }
   }
 
+  toLogin(event: Event){
+    event.preventDefault();
+    this.router.navigate(['/home']);
+  }
+
 }
