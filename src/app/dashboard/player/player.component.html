@@ -1,12 +1,19 @@
-<!-- Botón "Entrar" con evento de clic -->
-<button class="btn btn-primary" (click)="navegarACalendario()">
-    <i class="bi bi-calendar"></i> Calendario
-</button>
+<div *ngIf="datosCargados" class="container">
+    <div class="btn-container">
+        <button class="btn btn-custom" (click)="navegarACalendario()">
+            <i class="bi bi-calendar"></i>
+        </button>
+        <div class="hint">Volver al calendario</div>
+    </div>
+    <div class="btn-container">
+        <button class="btn btn-link text-primary" (click)="abrirModalCrearJugdor()">
+            <i class="bi bi-plus-circle-fill"></i>
+        </button>
+        <div class="hint">Crear un jugador</div>
+    </div>
 
-<button class="btn btn-success" (click)="abrirModalCrearJugdor()">Crear Jugador</button>
-<!-- player-list.component.html -->
-<div class="container mt-2">
-    <div class="container">
+
+    <div>
         <h2 class="text-dark mt-3">Listado de Jugadores</h2>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
@@ -16,14 +23,16 @@
             </li>
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="table-tab" data-bs-toggle="tab" data-bs-target="#table-content"
-                    type="button" role="tab" aria-controls="table-content" aria-selected="false">Vista de tabla</button>
+                    type="button" role="tab" aria-controls="table-content" aria-selected="false">Vista de
+                    tabla</button>
             </li>
         </ul>
         <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="card-content" role="tabpanel" aria-labelledby="card-tab">
                 <!-- Contenido para la pestaña de tarjetas -->
-                <div class="container-fluid" style="max-width: 1360px;">
-                    <div class="row">
+                <div class="row" style="padding: 1.5em 2em 0.5em;">
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">
+                        <!-- Utilizamos ngFor para iterar sobre los jugadores -->
                         <div class="col mb-3" *ngFor="let player of players">
                             <div class="card gradient">
                                 <!-- Aquí puedes mostrar la imagen del jugador, si tienes -->
@@ -34,8 +43,7 @@
                                     <h5 class="card-title">{{ player.nombre }} {{ player.apellido }}</h5>
                                     <p class="card-text">
                                         <strong>Posición:</strong> {{ player.posicion }}<br>
-                                        <strong>Fecha de Nacimiento:</strong> {{ player.fechaDeNacimiento | date  }}
-
+                                        <strong>Fecha de Nacimiento:</strong> {{ player.fechaDeNacimiento | date }}
                                     </p>
                                     <!-- Puedes agregar botones o acciones específicas para cada jugador aquí -->
                                     <div class="d-flex justify-content-between">
@@ -51,73 +59,80 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
             <div class="tab-pane fade" id="table-content" role="tabpanel" aria-labelledby="table-tab">
-                <!-- Contenido para la pestaña de tabla -->
-                <div style="overflow-x: auto;">
-                    <table id="dataTable" class="table table-bordered table-striped">
-                        <thead style="background-color: cornflowerblue;">
-                            <tr>
-                                <th>Player ID</th>
-                                <th>IMAGEN</th>
-                                <th>NOMBRE</th>
-                                <th>APELLIDO</th>
-                                <th>FECHA</th>
-                                <th>PIE</th>
-                                <th>POSICION</th>
-                                <th>HABILIDAD</th>
-                                <th>PASE</th>
-                                <th>TIRO</th>
-                                <th>DEFENSA</th>
-                                <th>FISICO</th>
-                                <th>MENTALIDAD</th>
-                                <th>PORTERO</th>
-                                <th scope="col">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let player of players; let i = index">
-                                <td>{{ player.playerId }}</td>
-                                <td><span class="bi bi-person" style="font-size: 3rem;"></span></td>
-                                <!-- <td>{{ player.picturePlayer }}</td> -->
-                                <td>{{ player.nombre }}</td>
-                                <td>{{ player.apellido }}</td>
-                                <td>{{ player.fechaDeNacimiento | date }}</td>
-                                <td>{{ player.piernaNatural }}</td>
-                                <td>{{ player.posicion }}</td>
-                                <td>{{ player.habilidadConBalon }}</td>
-                                <td>{{ player.pase }}</td>
-                                <td>{{ player.tiro }}</td>
-                                <td>{{ player.defensa }}</td>
-                                <td>{{ player.fisico }}</td>
-                                <td>{{ player.mentalidad }}</td>
-                                <td>{{ player.portero }}</td>
-                                <td>
-                                    <div class="d-flex justify-content-between">
-                                        <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
-                                            <span class="bi bi-person"></span>
-                                        </button>
-                                        <button class="btn btn-primary" title="Editar"
-                                            (click)="editarJugador(player.playerId)">
-                                            <span class="bi bi-pencil"></span>
-                                        </button>
-                                        <button class="btn btn-danger" title="Eliminar"
-                                            (click)="confirmarEliminarJugador(player.playerId, player.nombre, player.apellido)">
-                                            <span class="bi bi-trash"></span>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="row" style="padding: 1.5em 2em 0.5em;">
+                    <div class="row justify-content-between div-headdatatable">
+                        <div class="col-md-auto mr-auto" id="dt-length">
+                            <!-- Contenido para el dt-length -->
+                        </div>
+                        <div class="col-md-auto ml-auto" id="dt-search">
+                        </div>
+                    </div>
+                    <div style="overflow-x: auto;">
+                        <table id="dataTable" class="table table-bordered table-striped text-center">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Player ID</th>
+                                    <th>IMAGEN</th>
+                                    <th>NOMBRE</th>
+                                    <th>FECHA</th>
+                                    <th>PIE</th>
+                                    <th>POSICION</th>
+                                    <th>HABILIDAD</th>
+                                    <th>PASE</th>
+                                    <th>TIRO</th>
+                                    <th>DEFENSA</th>
+                                    <th>FISICO</th>
+                                    <th>MENTALIDAD</th>
+                                    <th>PORTERO</th>
+                                    <th scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let player of players; let i = index">
+                                    <td>{{ player.playerId }}</td>
+                                    <td><span class="bi bi-person" style="font-size: 3rem;"></span></td>
+                                    <!-- <td>{{ player.picturePlayer }}</td> -->
+                                    <td>{{ player.nombre }} {{ player.apellido }}</td>
+                                    <td>{{ player.fechaDeNacimiento | date }}</td>
+                                    <td>{{ player.piernaNatural }}</td>
+                                    <td>{{ player.posicion }}</td>
+                                    <td>{{ player.habilidadConBalon }}</td>
+                                    <td>{{ player.pase }}</td>
+                                    <td>{{ player.tiro }}</td>
+                                    <td>{{ player.defensa }}</td>
+                                    <td>{{ player.fisico }}</td>
+                                    <td>{{ player.mentalidad }}</td>
+                                    <td>{{ player.portero }}</td>
+                                    <td>
+                                        <div class="d-flex justify-content-between">
+                                            <button class="btn btn-info" title="Ver info"
+                                                (click)="verInfoJugador(player)">
+                                                <span class="bi bi-person"></span>
+                                            </button>
+                                            <button class="btn btn-primary" title="Editar"
+                                                (click)="editarJugador(player.playerId)">
+                                                <span class="bi bi-pencil"></span>
+                                            </button>
+                                            <button class="btn btn-danger" title="Eliminar"
+                                                (click)="confirmarEliminarJugador(player.playerId, player.nombre, player.apellido)">
+                                                <span class="bi bi-trash"></span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div id="button_datatable">
                 </div>
             </div>
         </div>
     </div>
-
-
-
 </div>
 
 <!-- Modal para la creación de jugador -->
@@ -130,6 +145,10 @@
                 <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
             </div>
             <div class="modal-body">
+                <h6 class="mt-0">Instruciones</h6>
+                <p>Introduce los datos de tu jugador, los campos en gris serán la media de los campos que tienen
+                    seguidamente abajo, por lo que has de rellenar todos los datos.</p>
+                <hr>
                 <!-- Formulario para la creación de jugador -->
                 <form>
                     <!-- Campos del formulario con ngModel y nombres asignados -->
@@ -181,18 +200,19 @@
                             [(ngModel)]="player.habilidadConBalon" placeholder="Habilidad con Balón" disabled>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="habilidadConBalonControlDeBalon">Habilidad con Balón - Control de Balón:</label>
-                        <input type="text" class="form-control" id="habilidadConBalonControlDeBalon"
-                            name="habilidadConBalonControlDeBalon" [(ngModel)]="player.habilidadConBalonControlDeBalon"
-                            placeholder="Habilidad con Balón - Control de Balón" (change)="promedioHabilidad()">
-                      </div>
-                      <div class="col-6">
-                        <label for="habilidadConBalonRegate">Habilidad con Balón - Regate:</label>
-                        <input type="text" class="form-control" id="habilidadConBalonRegate"
-                            name="habilidadConBalonRegate" [(ngModel)]="player.habilidadConBalonRegate"
-                            placeholder="Habilidad con Balón - Regate" (change)="promedioHabilidad()">
-                      </div>
+                        <div class="col-6">
+                            <label for="habilidadConBalonControlDeBalon">Control de Balón:</label>
+                            <input type="text" class="form-control" id="habilidadConBalonControlDeBalon"
+                                name="habilidadConBalonControlDeBalon"
+                                [(ngModel)]="player.habilidadConBalonControlDeBalon" placeholder="Control de Balón"
+                                (change)="promedioHabilidad()">
+                        </div>
+                        <div class="col-6">
+                            <label for="habilidadConBalonRegate">Regate:</label>
+                            <input type="text" class="form-control" id="habilidadConBalonRegate"
+                                name="habilidadConBalonRegate" [(ngModel)]="player.habilidadConBalonRegate"
+                                placeholder="Regate" (change)="promedioHabilidad()">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="pase">Pase:</label>
@@ -200,18 +220,18 @@
                             placeholder="Pase">
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="habilidadConBalonPaseCorto">Pase Corto:</label>
-                        <input type="text" class="form-control" id="habilidadConBalonPaseCorto"
-                            name="habilidadConBalonPaseCorto" [(ngModel)]="player.paseCorto"
-                            placeholder="Habilidad con Balón - Pase Corto" (change)="promedioPase()">
-                      </div>
-                      <div class="col-6">
-                        <label for="habilidadConBalonPaseLargo">Pase Largo:</label>
-                        <input type="text" class="form-control" id="habilidadConBalonPaseLargo"
-                            name="habilidadConBalonPaseLargo" [(ngModel)]="player.paseLargo"
-                            placeholder="Habilidad con Balón - Pase Largo" (change)="promedioPase()">
-                      </div>
+                        <div class="col-6">
+                            <label for="habilidadConBalonPaseCorto">Pase Corto:</label>
+                            <input type="text" class="form-control" id="habilidadConBalonPaseCorto"
+                                name="habilidadConBalonPaseCorto" [(ngModel)]="player.paseCorto"
+                                placeholder="Habilidad con Balón - Pase Corto" (change)="promedioPase()">
+                        </div>
+                        <div class="col-6">
+                            <label for="habilidadConBalonPaseLargo">Pase Largo:</label>
+                            <input type="text" class="form-control" id="habilidadConBalonPaseLargo"
+                                name="habilidadConBalonPaseLargo" [(ngModel)]="player.paseLargo"
+                                placeholder="Habilidad con Balón - Pase Largo" (change)="promedioPase()">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="habilidadConBalonCentros">Centros:</label>
@@ -225,47 +245,53 @@
                             placeholder="Tiro" disabled>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="tiroPotenciaDeTiro">Tiro - Potencia de Tiro:</label>
-                        <input type="text" class="form-control" id="tiroPotenciaDeTiro" name="tiroPotenciaDeTiro"
-                            [(ngModel)]="player.tiroPotenciaDeTiro" placeholder="Tiro - Potencia de Tiro" (change)="promedioTiro()">
-                      </div>
-                      <div class="col-6">
-                        <label for="tiroDefinicion">Tiro - Definición:</label>
-                        <input type="text" class="form-control" id="tiroDefinicion" name="tiroDefinicion"
-                            [(ngModel)]="player.tiroDefinicion" placeholder="Tiro - Definición" (change)="promedioTiro()">
-                      </div>
+                        <div class="col-6">
+                            <label for="tiroPotenciaDeTiro">Tiro - Potencia de Tiro:</label>
+                            <input type="text" class="form-control" id="tiroPotenciaDeTiro" name="tiroPotenciaDeTiro"
+                                [(ngModel)]="player.tiroPotenciaDeTiro" placeholder="Tiro - Potencia de Tiro"
+                                (change)="promedioTiro()">
+                        </div>
+                        <div class="col-6">
+                            <label for="tiroDefinicion">Tiro - Definición:</label>
+                            <input type="text" class="form-control" id="tiroDefinicion" name="tiroDefinicion"
+                                [(ngModel)]="player.tiroDefinicion" placeholder="Tiro - Definición"
+                                (change)="promedioTiro()">
+                        </div>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="tiroTirosLejanos">Tiro - Tiros Lejanos:</label>
-                        <input type="text" class="form-control" id="tiroTirosLejanos" name="tiroTirosLejanos"
-                          [(ngModel)]="player.tiroTirosLejanos" placeholder="Tiro - Tiros Lejanos" (change)="promedioTiro()">
-                      </div>
-                      <div class="col-6">
-                        <label for="tiroVoleas">Tiro - Voleas:</label>
-                        <input type="text" class="form-control" id="tiroVoleas" name="tiroVoleas" [(ngModel)]="player.tiroVoleas"
-                          placeholder="Tiro - Voleas" (change)="promedioTiro()">
-                      </div>
+                        <div class="col-6">
+                            <label for="tiroTirosLejanos">Tiro - Tiros Lejanos:</label>
+                            <input type="text" class="form-control" id="tiroTirosLejanos" name="tiroTirosLejanos"
+                                [(ngModel)]="player.tiroTirosLejanos" placeholder="Tiro - Tiros Lejanos"
+                                (change)="promedioTiro()">
+                        </div>
+                        <div class="col-6">
+                            <label for="tiroVoleas">Tiro - Voleas:</label>
+                            <input type="text" class="form-control" id="tiroVoleas" name="tiroVoleas"
+                                [(ngModel)]="player.tiroVoleas" placeholder="Tiro - Voleas" (change)="promedioTiro()">
+                        </div>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="tiroPrecisionFalta">Tiro - Precisión Falta:</label>
-                        <input type="text" class="form-control" id="tiroPrecisionFalta" name="tiroPrecisionFalta"
-                            [(ngModel)]="player.tiroPrecisionFalta" placeholder="Tiro - Precisión Falta" (change)="promedioTiro()">
-                      </div>
-                      <div class="col-6">
-                        <label for="tiroPenaltis">Tiro - Penaltis:</label>
-                        <input type="text" class="form-control" id="tiroPenaltis" name="tiroPenaltis"
-                            [(ngModel)]="player.tiroPenaltis" placeholder="Tiro - Penaltis" (change)="promedioTiro()">
-                      </div>
+                        <div class="col-6">
+                            <label for="tiroPrecisionFalta">Tiro - Precisión Falta:</label>
+                            <input type="text" class="form-control" id="tiroPrecisionFalta" name="tiroPrecisionFalta"
+                                [(ngModel)]="player.tiroPrecisionFalta" placeholder="Tiro - Precisión Falta"
+                                (change)="promedioTiro()">
+                        </div>
+                        <div class="col-6">
+                            <label for="tiroPenaltis">Tiro - Penaltis:</label>
+                            <input type="text" class="form-control" id="tiroPenaltis" name="tiroPenaltis"
+                                [(ngModel)]="player.tiroPenaltis" placeholder="Tiro - Penaltis"
+                                (change)="promedioTiro()">
+                        </div>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="tiroCabezazo">Tiro - Cabezazo:</label>
-                        <input type="text" class="form-control" id="tiroCabezazo" name="tiroCabezazo"
-                            [(ngModel)]="player.tiroCabezazo" placeholder="Tiro - Cabezazo" (change)="promedioTiro()">
-                      </div>
+                        <div class="col-6">
+                            <label for="tiroCabezazo">Tiro - Cabezazo:</label>
+                            <input type="text" class="form-control" id="tiroCabezazo" name="tiroCabezazo"
+                                [(ngModel)]="player.tiroCabezazo" placeholder="Tiro - Cabezazo"
+                                (change)="promedioTiro()">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="defensa">Defensa:</label>
@@ -273,23 +299,26 @@
                             placeholder="Defensa" disabled>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="defensaMarcaje">Defensa - Marcaje:</label>
-                        <input type="text" class="form-control" id="defensaMarcaje" name="defensaMarcaje"
-                            [(ngModel)]="player.defensaMarcaje" placeholder="Defensa - Marcaje" (change)="promedioDefensa()">
-                      </div>
-                      <div class="col-6">
-                        <label for="defensaEntradas">Defensa - Entradas:</label>
-                        <input type="text" class="form-control" id="defensaEntradas" name="defensaEntradas"
-                            [(ngModel)]="player.defensaEntradas" placeholder="Defensa - Entradas" (change)="promedioDefensa()">
-                      </div>
+                        <div class="col-6">
+                            <label for="defensaMarcaje">Defensa - Marcaje:</label>
+                            <input type="text" class="form-control" id="defensaMarcaje" name="defensaMarcaje"
+                                [(ngModel)]="player.defensaMarcaje" placeholder="Defensa - Marcaje"
+                                (change)="promedioDefensa()">
+                        </div>
+                        <div class="col-6">
+                            <label for="defensaEntradas">Defensa - Entradas:</label>
+                            <input type="text" class="form-control" id="defensaEntradas" name="defensaEntradas"
+                                [(ngModel)]="player.defensaEntradas" placeholder="Defensa - Entradas"
+                                (change)="promedioDefensa()">
+                        </div>
                     </div>
                     <div class="form-group">
-                      <div class="col-6">
-                        <label for="defensaRobos">Defensa - Robos:</label>
-                        <input type="text" class="form-control" id="defensaRobos" name="defensaRobos"
-                            [(ngModel)]="player.defensaRobos" placeholder="Defensa - Robos" (change)="promedioDefensa()">
-                      </div>
+                        <div class="col-6">
+                            <label for="defensaRobos">Defensa - Robos:</label>
+                            <input type="text" class="form-control" id="defensaRobos" name="defensaRobos"
+                                [(ngModel)]="player.defensaRobos" placeholder="Defensa - Robos"
+                                (change)="promedioDefensa()">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="fisico">Físico:</label>
@@ -297,47 +326,54 @@
                             placeholder="Físico" disabled>
                     </div>
                     <div class="form-group">
-                      <div class="col-6">
-                        <label for="fisicoAceleracion">Físico - Aceleración:</label>
-                        <input type="text" class="form-control" id="fisicoAceleracion" name="fisicoAceleracion"
-                            [(ngModel)]="player.fisicoAceleracion" placeholder="Físico - Aceleración" (change)="promedioFisico()">
-                      </div>
-                      <div class="col-6">
-                        <label for="fisicoVelocidad">Físico - Velocidad:</label>
-                        <input type="text" class="form-control" id="fisicoVelocidad" name="fisicoVelocidad"
-                            [(ngModel)]="player.fisicoVelocidad" placeholder="Físico - Velocidad" (change)="promedioFisico()">
-                      </div>
+                        <div class="col-6">
+                            <label for="fisicoAceleracion">Físico - Aceleración:</label>
+                            <input type="text" class="form-control" id="fisicoAceleracion" name="fisicoAceleracion"
+                                [(ngModel)]="player.fisicoAceleracion" placeholder="Físico - Aceleración"
+                                (change)="promedioFisico()">
+                        </div>
+                        <div class="col-6">
+                            <label for="fisicoVelocidad">Físico - Velocidad:</label>
+                            <input type="text" class="form-control" id="fisicoVelocidad" name="fisicoVelocidad"
+                                [(ngModel)]="player.fisicoVelocidad" placeholder="Físico - Velocidad"
+                                (change)="promedioFisico()">
+                        </div>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="fisicoAgilidad">Físico - Agilidad:</label>
-                        <input type="text" class="form-control" id="fisicoAgilidad" name="fisicoAgilidad"
-                          [(ngModel)]="player.fisicoAgilidad" placeholder="Físico - Agilidad" (change)="promedioFisico()">
-                      </div>
-                      <div class="col-6">
-                        <label for="fisicoResistencia">Físico - Resistencia:</label>
-                        <input type="text" class="form-control" id="fisicoResistencia" name="fisicoResistencia"
-                          [(ngModel)]="player.fisicoResistencia" placeholder="Físico - Resistencia" (change)="promedioFisico()">
-                      </div>
+                        <div class="col-6">
+                            <label for="fisicoAgilidad">Físico - Agilidad:</label>
+                            <input type="text" class="form-control" id="fisicoAgilidad" name="fisicoAgilidad"
+                                [(ngModel)]="player.fisicoAgilidad" placeholder="Físico - Agilidad"
+                                (change)="promedioFisico()">
+                        </div>
+                        <div class="col-6">
+                            <label for="fisicoResistencia">Físico - Resistencia:</label>
+                            <input type="text" class="form-control" id="fisicoResistencia" name="fisicoResistencia"
+                                [(ngModel)]="player.fisicoResistencia" placeholder="Físico - Resistencia"
+                                (change)="promedioFisico()">
+                        </div>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="fisicoFuerza">Físico - Fuerza:</label>
-                        <input type="text" class="form-control" id="fisicoFuerza" name="fisicoFuerza"
-                            [(ngModel)]="player.fisicoFuerza" placeholder="Físico - Fuerza" (change)="promedioFisico()">
-                      </div>
-                      <div class="col-6">
-                        <label for="fisicoEquilibrio">Físico - Equilibrio:</label>
-                        <input type="text" class="form-control" id="fisicoEquilibrio" name="fisicoEquilibrio"
-                            [(ngModel)]="player.fisicoEquilibrio" placeholder="Físico - Equilibrio" (change)="promedioFisico()">
-                      </div>
+                        <div class="col-6">
+                            <label for="fisicoFuerza">Físico - Fuerza:</label>
+                            <input type="text" class="form-control" id="fisicoFuerza" name="fisicoFuerza"
+                                [(ngModel)]="player.fisicoFuerza" placeholder="Físico - Fuerza"
+                                (change)="promedioFisico()">
+                        </div>
+                        <div class="col-6">
+                            <label for="fisicoEquilibrio">Físico - Equilibrio:</label>
+                            <input type="text" class="form-control" id="fisicoEquilibrio" name="fisicoEquilibrio"
+                                [(ngModel)]="player.fisicoEquilibrio" placeholder="Físico - Equilibrio"
+                                (change)="promedioFisico()">
+                        </div>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="fisicoSalto">Físico - Salto:</label>
-                        <input type="text" class="form-control" id="fisicoSalto" name="fisicoSalto"
-                            [(ngModel)]="player.fisicoSalto" placeholder="Físico - Salto" (change)="promedioFisico()">
-                      </div>
+                        <div class="col-6">
+                            <label for="fisicoSalto">Físico - Salto:</label>
+                            <input type="text" class="form-control" id="fisicoSalto" name="fisicoSalto"
+                                [(ngModel)]="player.fisicoSalto" placeholder="Físico - Salto"
+                                (change)="promedioFisico()">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="mentalidad">Mentalidad:</label>
@@ -345,37 +381,40 @@
                             [(ngModel)]="player.mentalidad" placeholder="Mentalidad" disabled>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="mentalidadAgresividad">Mentalidad - Agresividad:</label>
-                        <input type="text" class="form-control" id="mentalidadAgresividad" name="mentalidadAgresividad"
-                            [(ngModel)]="player.mentalidadAgresividad" placeholder="Mentalidad - Agresividad" (change)="promedioMentalidad()">
-                      </div>
-                      <div class="col-6">
-                        <label for="mentalidadAnticipacion">Mentalidad - Anticipación:</label>
-                        <input type="text" class="form-control" id="mentalidadAnticipacion"
-                            name="mentalidadAnticipacion" [(ngModel)]="player.mentalidadAnticipacion"
-                            placeholder="Mentalidad - Anticipación" (change)="promedioMentalidad()">
-                      </div>
+                        <div class="col-6">
+                            <label for="mentalidadAgresividad">Mentalidad - Agresividad:</label>
+                            <input type="text" class="form-control" id="mentalidadAgresividad"
+                                name="mentalidadAgresividad" [(ngModel)]="player.mentalidadAgresividad"
+                                placeholder="Mentalidad - Agresividad" (change)="promedioMentalidad()">
+                        </div>
+                        <div class="col-6">
+                            <label for="mentalidadAnticipacion">Mentalidad - Anticipación:</label>
+                            <input type="text" class="form-control" id="mentalidadAnticipacion"
+                                name="mentalidadAnticipacion" [(ngModel)]="player.mentalidadAnticipacion"
+                                placeholder="Mentalidad - Anticipación" (change)="promedioMentalidad()">
+                        </div>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="mentalidadInterceptacion">Mentalidad - Interceptación:</label>
-                        <input type="text" class="form-control" id="mentalidadInterceptacion"
-                            name="mentalidadInterceptacion" [(ngModel)]="player.mentalidadInterceptacion"
-                            placeholder="Mentalidad - Interceptación" (change)="promedioMentalidad()">
-                      </div>
-                      <div class="col-6">
-                        <label for="mentalidadVision">Mentalidad - Visión:</label>
-                        <input type="text" class="form-control" id="mentalidadVision" name="mentalidadVision"
-                            [(ngModel)]="player.mentalidadVision" placeholder="Mentalidad - Visión" (change)="promedioMentalidad()">
-                      </div>
+                        <div class="col-6">
+                            <label for="mentalidadInterceptacion">Mentalidad - Interceptación:</label>
+                            <input type="text" class="form-control" id="mentalidadInterceptacion"
+                                name="mentalidadInterceptacion" [(ngModel)]="player.mentalidadInterceptacion"
+                                placeholder="Mentalidad - Interceptación" (change)="promedioMentalidad()">
+                        </div>
+                        <div class="col-6">
+                            <label for="mentalidadVision">Mentalidad - Visión:</label>
+                            <input type="text" class="form-control" id="mentalidadVision" name="mentalidadVision"
+                                [(ngModel)]="player.mentalidadVision" placeholder="Mentalidad - Visión"
+                                (change)="promedioMentalidad()">
+                        </div>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="mentalidadCompostura">Mentalidad - Compostura:</label>
-                        <input type="text" class="form-control" id="mentalidadCompostura" name="mentalidadCompostura"
-                            [(ngModel)]="player.mentalidadCompostura" placeholder="Mentalidad - Compostura" (change)="promedioMentalidad()">
-                      </div>
+                        <div class="col-6">
+                            <label for="mentalidadCompostura">Mentalidad - Compostura:</label>
+                            <input type="text" class="form-control" id="mentalidadCompostura"
+                                name="mentalidadCompostura" [(ngModel)]="player.mentalidadCompostura"
+                                placeholder="Mentalidad - Compostura" (change)="promedioMentalidad()">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="portero">Portero:</label>
@@ -383,35 +422,40 @@
                             placeholder="Portero" disabled>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="porteroColocacion">Portero - Colocación:</label>
-                        <input type="text" class="form-control" id="porteroColocacion" name="porteroColocacion"
-                            [(ngModel)]="player.porteroColocacion" placeholder="Portero - Colocación" (change)="promedioPortero()">
-                      </div>
-                      <div class="col-6">
-                        <label for="porteroEstirada">Portero - Estirada:</label>
-                        <input type="text" class="form-control" id="porteroEstirada" name="porteroEstirada"
-                            [(ngModel)]="player.porteroEstirada" placeholder="Portero - Estirada" (change)="promedioPortero()">
-                      </div>
+                        <div class="col-6">
+                            <label for="porteroColocacion">Portero - Colocación:</label>
+                            <input type="text" class="form-control" id="porteroColocacion" name="porteroColocacion"
+                                [(ngModel)]="player.porteroColocacion" placeholder="Portero - Colocación"
+                                (change)="promedioPortero()">
+                        </div>
+                        <div class="col-6">
+                            <label for="porteroEstirada">Portero - Estirada:</label>
+                            <input type="text" class="form-control" id="porteroEstirada" name="porteroEstirada"
+                                [(ngModel)]="player.porteroEstirada" placeholder="Portero - Estirada"
+                                (change)="promedioPortero()">
+                        </div>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="porteroParadas">Portero - Paradas:</label>
-                        <input type="text" class="form-control" id="porteroParadas" name="porteroParadas"
-                            [(ngModel)]="player.porteroParadas" placeholder="Portero - Paradas" (change)="promedioPortero()">
-                      </div>
-                      <div class="col-6">
-                        <label for="porteroSaques">Portero - Saques:</label>
-                        <input type="text" class="form-control" id="porteroSaques" name="porteroSaques"
-                            [(ngModel)]="player.porteroSaques" placeholder="Portero - Saques" (change)="promedioPortero()">
-                      </div>
+                        <div class="col-6">
+                            <label for="porteroParadas">Portero - Paradas:</label>
+                            <input type="text" class="form-control" id="porteroParadas" name="porteroParadas"
+                                [(ngModel)]="player.porteroParadas" placeholder="Portero - Paradas"
+                                (change)="promedioPortero()">
+                        </div>
+                        <div class="col-6">
+                            <label for="porteroSaques">Portero - Saques:</label>
+                            <input type="text" class="form-control" id="porteroSaques" name="porteroSaques"
+                                [(ngModel)]="player.porteroSaques" placeholder="Portero - Saques"
+                                (change)="promedioPortero()">
+                        </div>
                     </div>
                     <div class="form-group d-flex">
-                      <div class="col-6">
-                        <label for="porteroReflejos">Portero - Reflejos:</label>
-                        <input type="text" class="form-control" id="porteroReflejos" name="porteroReflejos"
-                            [(ngModel)]="player.porteroReflejos" placeholder="Portero - Reflejos" (change)="promedioPortero()">
-                      </div>
+                        <div class="col-6">
+                            <label for="porteroReflejos">Portero - Reflejos:</label>
+                            <input type="text" class="form-control" id="porteroReflejos" name="porteroReflejos"
+                                [(ngModel)]="player.porteroReflejos" placeholder="Portero - Reflejos"
+                                (change)="promedioPortero()">
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="especialidades">Especialidades:</label>
@@ -424,9 +468,11 @@
                             [(ngModel)]="player.opinionDelEntrenador" placeholder="Opinión del Entrenador"
                             rows="5"></textarea>
                     </div>
-
-                    <!-- Botón para guardar el nuevo jugador -->
-                    <button type="button" class="btn btn-primary" (click)="crearJugador()">Guardar</button>
+                    <div class="modal-footer">
+                        <!-- Botón para guardar el nuevo equipo -->
+                        <button type="button" class="btn btn-success float-end"
+                            (click)="crearJugador()">Guardar</button>
+                    </div>
                 </form>
             </div>
         </div>

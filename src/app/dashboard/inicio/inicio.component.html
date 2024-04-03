@@ -1,14 +1,17 @@
-<div *ngIf="datosCargados">
+<div *ngIf="datosCargados" class="container">
   <!-- Botón para abrir el modal de creación de equipo -->
-  <div class="d-flex mt-3">
-    <button class="btn btn-success ms-2" (click)="abrirModalCrearEquipo()">Añadir Equipo</button>
+  <div class="btn-container">
+    <button class="btn btn-link text-primary" (click)="abrirModalCrearEquipo()">
+      <i class="bi bi-plus-circle-fill"></i>
+    </button>
+    <div class="hint">Crear un equipo</div>
   </div>
 
-  <div class="homepage-container">
+  <div>
     <!-- Contenido principal con la tabla de equipos utilizando Bootstrap -->
     <div class="mt-4">
 
-      <div class="container">
+      <div>
         <h2 class="text-dark mt-3">Listado de Equipos de Fútbol</h2>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
           <li class="nav-item" role="presentation">
@@ -22,26 +25,44 @@
         </ul>
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane fade show active" id="list-content" role="tabpanel" aria-labelledby="list-tab">
-            <div class="border p-3">
+            <div class="p-3">
               <div class="row" *ngFor="let team of listTeam">
-                <div class="col mb-3 border border-dark rounded bg-light-green p-2">
+                <div class="col mb-3 rounded card" style="padding: 1.5em 2em 0.5em;">
                   <div class="row">
                     <div class="col">
                       <h5>{{ team.name }}</h5>
-                      <p>
-                        <strong>Categoría:</strong> {{ team.category }}<br>
-                        <strong>Días:</strong> {{ team.trainingDays }}
-                      </p>
+                      <div class="row">
+                        <div class="col">
+                          <p>
+                            <strong>-</strong> {{ team.category }} {{ team.levelLeague }}
+                          </p>
+                        </div>
+                        <div class="col">
+                          <p>
+                            {{ team.trainingDays }}
+                            <i class="bi bi-calendar-week ml-2"></i>
+                            -
+                            {{ team.jugadoresPorEquipo }}
+                            <i class="bi bi-people-fill"></i>
+                          </p>
+                        </div>
+                      </div>
                     </div>
                     <div class="col-auto">
                       <div class="d-flex flex-column justify-content-between h-100">
-                        <button class="btn btn-primary mb-2 btn-width" (click)="navegarACalendario(team.teamId)">
-                          Entrar
-                        </button>
-                        <button class="btn btn-danger btn-width"
-                          (click)="confirmarEliminarEquipo(team.teamId, team.name)">
-                          <i class="bi bi-trash"></i> Eliminar
-                        </button>
+                        <div class="btn-container">
+                          <button class="btn btn-link text-success" (click)="navegarACalendario(team.teamId)">
+                            <i class="bi bi-arrow-right-circle-fill"></i>
+                          </button>
+                          <div class="hint">Entrar</div>
+                        </div>
+                        <div class="btn-container">
+                          <button class="btn btn-link text-danger"
+                            (click)="confirmarEliminarEquipo(team.teamId, team.name)">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                          <div class="hint">Borrar</div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -50,24 +71,44 @@
             </div>
           </div>
           <div class="tab-pane fade" id="card-content" role="tabpanel" aria-labelledby="card-tab">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 p-3">
               <div class="col mb-3" *ngFor="let team of listTeam">
-                <div class="card gradient">
-                  <img src="assets/images/madrid.png" class="card-img-top img-half-size mx-auto" alt="Madrid">
+                <div class="card">
                   <div class="card-body text-center">
+                    <div class="dropdown card-widgets" style="text-align: end;">
+                      <a href="#" data-bs-toggle="dropdown" aria-expanded="false" style="color: #565656;">
+                        <i class="bi bi-three-dots"></i>
+                      </a>
+                      <div class="dropdown-menu dropdown-menu-end">
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item"
+                          (click)="navegarACalendario(team.teamId)">Entrar <i
+                            class="bi bi-arrow-right-circle-fill icono-azul"></i></a>
+                        <!-- item-->
+                        <a href="javascript:void(0);" class="dropdown-item"
+                          (click)="confirmarEliminarEquipo(team.teamId, team.name)">Borrar <i
+                            class="bi bi-trash icono-rojo"></i></a>
+                      </div>
+                    </div>
                     <h5 class="card-title">{{ team.name }}</h5>
-                    <p class="card-text">
-                      <strong>Categoría:</strong> {{ team.category }}<br>
-                      <strong>Días:</strong> {{ team.trainingDays }}
-                    </p>
-                    <div class="d-flex justify-content-center">
-                      <button class="btn btn-primary btn-width me-2" (click)="navegarACalendario(team.teamId)">
-                        Entrar
-                      </button>
-                      <button class="btn btn-danger btn-width"
-                        (click)="confirmarEliminarEquipo(team.teamId, team.name)">
-                        <i class="bi bi-trash"></i> Eliminar
-                      </button>
+
+                    <div class="row">
+                      <div class="col">
+                        <p class="card-text">
+                          {{ team.category }} {{ team.levelLeague }}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col">
+                        <p>
+                          {{ team.trainingDays }}
+                          <i class="bi bi-calendar-week ml-2"></i>
+                          -
+                          {{ team.jugadoresPorEquipo }}
+                          <i class="bi bi-people-fill"></i>
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -85,50 +126,49 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <!--<h5 class="modal-title">Añadir Equipo</h5>-->
-        <div class="mb-3">
-          <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
-          <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
-            [(ngModel)]="teamNew.categoryType.categoryTypeId">
-            <!-- Opciones ajustadas según tus necesidades -->
-            <option value="1">LaLiga EA Sports</option>
-            <option value="2">Liga F</option>
-            <option value="3">LaLiga Hypermotion</option>
-            <option value="4">Segunda RFEF Femenina</option>
-            <option value="5">Primera RFEF</option>
-            <option value="6">Segunda RFEF</option>
-            <option value="7">Tercera RFEF</option>
-            <option value="8">Tercera RFEF Femenina</option>
-            <option value="9">Preferente Autonómica</option>
-            <option value="10">Preferente Autonómica Femenina</option>
-            <option value="11">Primera Autonómica</option>
-            <option value="12">Primera Autonómica Femenina</option>
-            <option value="13">Segunda Autonómica</option>
-            <option value="14">Tercera Autonómica</option>
-            <option value="15">Senior Amateur</option>
-            <option value="16">Juvenil</option>
-            <option value="17">Juvenil/Cadete Femenina</option>
-            <option value="18">Cadete</option>
-            <option value="19">Cadete/Infantil Femenina</option>
-            <option value="20">Infantil</option>
-            <option value="21">Infantil/Alevín Femenina</option>
-            <option value="22">Alevín</option>
-            <option value="23">Benjamín</option>
-            <option value="24">Benjamín/Prebenjamín Femenina</option>
-            <option value="25">Prebenjamín</option>
-            <option value="26">Debutante</option>
-          </select>
-        </div>
+        <h5 class="modal-title" id="standard-modalLabel">Crea un equipo</h5>
         <!-- Botón de cerrar con un icono -->
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
       </div>
       <div class="modal-body">
+        <h6 class="mt-0">Instruciones</h6>
+        <p>Introduce los datos de tu equipo que quieres crear sin dejar ningun campo vacío.</p>
+        <hr>
         <!-- Formulario para la creación de equipo con campos separados -->
         <form>
-          <!--<div class="mb-3">
-            <label for="nombreEquipo" class="form-label">Nombre:</label>
-            <input type="text" class="form-control" id="nombreEquipo" name="nombreEquipo" [(ngModel)]="teamNew.name">
-          </div>-->
+          <div class="mb-3">
+            <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
+            <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
+              [(ngModel)]="teamNew.categoryType.categoryTypeId">
+              <!-- Opciones ajustadas según tus necesidades -->
+              <option value="1">LaLiga EA Sports</option>
+              <option value="2">Liga F</option>
+              <option value="3">LaLiga Hypermotion</option>
+              <option value="4">Segunda RFEF Femenina</option>
+              <option value="5">Primera RFEF</option>
+              <option value="6">Segunda RFEF</option>
+              <option value="7">Tercera RFEF</option>
+              <option value="8">Tercera RFEF Femenina</option>
+              <option value="9">Preferente Autonómica</option>
+              <option value="10">Preferente Autonómica Femenina</option>
+              <option value="11">Primera Autonómica</option>
+              <option value="12">Primera Autonómica Femenina</option>
+              <option value="13">Segunda Autonómica</option>
+              <option value="14">Tercera Autonómica</option>
+              <option value="15">Senior Amateur</option>
+              <option value="16">Juvenil</option>
+              <option value="17">Juvenil/Cadete Femenina</option>
+              <option value="18">Cadete</option>
+              <option value="19">Cadete/Infantil Femenina</option>
+              <option value="20">Infantil</option>
+              <option value="21">Infantil/Alevín Femenina</option>
+              <option value="22">Alevín</option>
+              <option value="23">Benjamín</option>
+              <option value="24">Benjamín/Prebenjamín Femenina</option>
+              <option value="25">Prebenjamín</option>
+              <option value="26">Debutante</option>
+            </select>
+          </div>
           <div class="mb-3">
             <label for="nivelLiga" class="form-label">Nivel:</label>
             <select class="form-control" id="nivelLiga" name="nivelLiga" [(ngModel)]="teamNew.levelLeague">
@@ -144,6 +184,10 @@
             </select>
           </div>
           <div class="mb-3">
+            <label for="nombreEquipo" class="form-label">Nombre del Club:</label>
+            <input type="text" class="form-control" id="nombreEquipo" name="nombreEquipo" [(ngModel)]="teamNew.name">
+          </div>
+          <div class="mb-3">
             <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
             <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo"
               [(ngModel)]="teamNew.objectiveTeam">
@@ -153,21 +197,47 @@
             <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
               [(ngModel)]="teamNew.trainingDays">
           </div>
-          <div class="mb-3">
+          <!-- <div class="mb-3">
             <label for="clubEquipo" class="form-label">Club del Equipo:</label>
             <select class="form-control" id="clubEquipo" name="clubEquipo" [(ngModel)]="teamNew.clubId">
               <option *ngFor="let club of clubList" [value]="club.clubId">{{ club.name }}</option>
             </select>
-          </div>
+          </div> -->
           <div class="mb-3">
             <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
             <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo"
               [(ngModel)]="teamNew.opinionTeam">
           </div>
-          <!-- Botón para guardar el nuevo equipo -->
-          <button type="button" class="btn btn-success float-end" (click)="crearEquipo()">Guardar</button>
+          <div class="modal-footer">
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="button" class="btn btn-success float-end" (click)="crearEquipo()">Guardar</button>
+          </div>
         </form>
       </div>
     </div>
   </div>
 </div>
+
+<!--<div id="standard-modal" class="modal fade show" tabindex="-1" aria-labelledby="standard-modalLabel" style="display: block; padding-left: 0px;" aria-modal="true" role="dialog">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h4 class="modal-title" id="standard-modalLabel">Modal Heading</h4>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <h6 class="mt-0">Text in a modal</h6>
+              <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
+              <hr>
+              <h6>Overflowing text to show scroll behavior</h6>
+              <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
+              <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
+              <p class="mb-0">Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+      </div>
+  </div>
+</div> -->

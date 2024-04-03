@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
@@ -7,6 +7,7 @@ import { TrainingService } from 'src/app/core/services/training/training.service
 import { TeamService } from 'src/app/core/services/team/team.service';
 import * as $ from 'jquery';
 import 'datatables.net';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-estadisticas-equipo',
@@ -18,7 +19,7 @@ export class EstadisticasEquipoComponent implements OnInit {
   nombreEquipo: string = '';
   team: any;
   teamId!: number;
-  partidos: any[] = []; 
+  partidos: any[] = [];
   showModalPostPartido: boolean = false;
   postPartido: PostPartido = new PostPartido({});
 
@@ -40,7 +41,9 @@ export class EstadisticasEquipoComponent implements OnInit {
     private route: ActivatedRoute,
     private playerService: PlayerService,
     private trainingService: TrainingService,
-    private teamService: TeamService) { }
+    private teamService: TeamService,
+    private http: HttpClient,
+    private elementRef: ElementRef) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -58,11 +61,11 @@ export class EstadisticasEquipoComponent implements OnInit {
     this.router.navigate(['/dashboard/calendario', this.teamId]);
   }
 
-  cargarNombreEquipo(){
+  cargarNombreEquipo() {
     this.teamService.getTeamById(this.teamId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
-        if(response.data !== null){
+        if (response.data !== null) {
           this.team = response.data;
           this.nombreEquipo = this.team.name;
           this.getListaPostpartidos();
@@ -105,44 +108,114 @@ export class EstadisticasEquipoComponent implements OnInit {
       $dataTable.DataTable().destroy();
     }
 
-    $(document).ready(() => {
-      $('#dataTable').DataTable({
-        paging: true,
-        pageLength: 50, // Establecer el número de resultados por página
-        searching: true,
-        ordering: true,
-        order: [[0, 'desc']], // Ordenar por la cuarta columna (índice 3) en orden ascendente
-        columnDefs: [
-          {
-            targets: [0,1], // El índice de la columna que deseas ocultar (en este caso, ID)
-            visible: false // Establecer visible como falso oculta la columna
-          }
-        ]
+    this.http.get('assets/dataTable/Spanish.json').subscribe((translation) => {
+      $(document).ready(function () {
+        $('#dataTable').DataTable({
+          paging: true,
+          pageLength: 50,
+          searching: true,
+          ordering: true,
+          order: [[0, 'desc']],
+          columnDefs: [
+            { width: '150px', targets: 3 },
+            {
+              targets: [0, 1],
+              visible: false
+            }
+          ],
+          language: translation
+        });
       });
     });
+
+    this.moverElementosDataTable();
   }
 
-  cerrarModalInfoPostPartido(){
+
+  moverElementosDataTable() {
+    // **Move buttons outside the table after initialization**
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const layoutRowElements = this.elementRef.nativeElement.querySelectorAll('.dt-layout-row:not(.dt-layout-table)');
+        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#button_datatable');
+
+        if (layoutRowElements.length >= 2 && buttonDatatableElement) {
+          const layoutRowElement = layoutRowElements[1]; // Obtener el segundo elemento
+          $(layoutRowElement).appendTo(buttonDatatableElement);
+          observer.disconnect(); // Detiene la observación después de encontrar los elementos
+        }
+      });
+    });
+
+    observer.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+
+    //esto es para agregar una clase
+    const textcenter = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const dataTableElement = document.querySelector('#dataTable');
+
+        if (dataTableElement) {
+          dataTableElement.classList.add('text-center');
+          textcenter.disconnect(); // Detiene la observación después de encontrar el elemento
+        }
+      });
+    });
+
+    textcenter.observe(document.body, { childList: true, subtree: true });
+
+
+    //esto es para la parte donde pones las filas a ver
+    const length = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-length');
+        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-length');
+
+        if (layoutRowElement && buttonDatatableElement) {
+          $(layoutRowElement).appendTo(buttonDatatableElement);
+          length.disconnect(); // Detiene la observación después de encontrar los elementos
+        }
+      });
+    });
+
+    length.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+
+    //esto es para el input del buscador
+    const search = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-search');
+        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-search');
+
+        if (layoutRowElement && buttonDatatableElement) {
+          $(layoutRowElement).appendTo(buttonDatatableElement);
+          search.disconnect(); // Detiene la observación después de encontrar los elementos
+        }
+      });
+    });
+
+    search.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+  }
+
+  cerrarModalInfoPostPartido() {
     this.showModalPostPartido = false;
   }
 
-  openInfoPostPartido(id: number){
+  openInfoPostPartido(id: number) {
     // Obtener la información del partido por su ID
     this.trainingService.getPostPartidoByPostPartido(id.toString()).subscribe(
       (response) => {
         if (response.data) {
           // Asignar los datos del partido al objeto 'partido'
-          this.postPartido = response.data;    
+          this.postPartido = response.data;
           this.showModalPostPartido = true;
-        } 
+        }
       },
       (error) => {
         console.error('Error en la solicitud:', error);
       }
     );
-  } 
+  }
 
-  datosResumentTotales(partidos: any[]){
+  datosResumentTotales(partidos: any[]) {
     let vic = 0;
     let emp = 0;
     let der = 0;
@@ -150,7 +223,7 @@ export class EstadisticasEquipoComponent implements OnInit {
     let gc = 0;
     let dg = 0;
     let pun = 0;
-    
+
     // Obtener los primeros 5 resultados que realmente son los ultimos
     const ultimosResultados = this.partidos.slice(0, 5).map(partido => partido.resultado).reverse();
 
@@ -171,12 +244,12 @@ export class EstadisticasEquipoComponent implements OnInit {
           der++;
           break;
       }
-      
+
       gf = gf + partido.golesAFavor;
-      gc = gc + partido.golesEnContra;   
+      gc = gc + partido.golesEnContra;
       dg = gf - gc;
     }
-    
+
 
     this.resumentotales = {
       equipo: this.nombreEquipo,

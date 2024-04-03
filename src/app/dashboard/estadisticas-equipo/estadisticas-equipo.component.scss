@@ -1,11 +1,15 @@
 .simular-enlace {
-    color: blue; /* Color azul */
-    text-decoration: underline; /* Subrayado */
-    cursor: pointer; /* Cambia el cursor al pasar por encima */
+    color: blue;
+    /* Color azul */
+    text-decoration: underline;
+    /* Subrayado */
+    cursor: pointer;
+    /* Cambia el cursor al pasar por encima */
 }
 
 .simular-enlace:hover {
-    color: darkblue; /* Cambia el color al pasar el ratón por encima */
+    color: darkblue;
+    /* Cambia el color al pasar el ratón por encima */
 }
 
 /* Ajustar el tamaño del modal al 70% del ancho de la pantalla */

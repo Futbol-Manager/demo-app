@@ -124,7 +124,7 @@ export class CalendarioComponent implements OnInit {
   // Método para redirigir a la pantalla de jugadores con el teamId
   irAPantalla(id: number): void {
     if (id === 1) {
-      //this.router.navigate(['/dashboard/info_equipo', this.teamId]);
+      this.router.navigate(['/dashboard/informacion_equipo', this.teamId]);
     } else if (id === 2) {
       this.router.navigate(['/dashboard/jugadores', this.teamId]);
     } else if (id === 3) {
@@ -455,8 +455,11 @@ export class CalendarioComponent implements OnInit {
         console.error('Error en la solicitud:', error);
       }
     );
+  }
 
-
+  // Método para verificar si hay algún dato en la semana
+  tieneDatosEnSemana(semana: any[]): boolean {
+    return semana.some(dia => dia !== '');
   }
 
   cerrarModalPostPartido() {

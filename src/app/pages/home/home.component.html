@@ -1,8 +1,8 @@
 <div class="background">
-  <video autoplay loop muted playsinline class="video-background">
+  <video autoplay loop muted playsinline preload="auto" class="video-background">
     <source src="assets/videos/jugando.mp4" type="video/mp4">
     Tu navegador no admite el elemento de video.
-  </video>
+  </video>  
 
   <!--LOGIN-->
   <div class="container" *ngIf="screen == 1">
@@ -10,7 +10,8 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-header textoCentrado">
-            <h1>Sphaira Tech</h1>
+            <img src="assets/images/logo_black.svg" alt="Logo"
+              style="cursor: pointer; width: 10em;">
           </div>
           <div class="card-body textoCentrado">
             <app-login></app-login>
@@ -40,7 +41,7 @@
           <div class="card-header d-flex justify-content-between align-items-center">
             <h1 class="m-0 textoCentrado flex-grow-1">Registro de usuario</h1>
             <button class="btn btn-close" (click)="toLogin($event)">
-                <!-- Aquí puedes añadir el icono de cierre -->
+              <!-- Aquí puedes añadir el icono de cierre -->
             </button>
           </div>
           <div class="card-body textoCentrado">

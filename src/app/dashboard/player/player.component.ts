@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
@@ -8,6 +8,7 @@ import * as $ from 'jquery';
 import 'datatables.net';
 
 import { Chart, registerables } from 'chart.js/auto';
+import { HttpClient } from '@angular/common/http';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -28,7 +29,7 @@ export interface Player1 {
   styleUrls: ['./player.component.scss']
 })
 export class PlayerComponent implements OnInit {
-
+  datosCargados: boolean = false;
   usuarioActual!: User | null;
   teamId!: number;
   showModal = false;
@@ -43,7 +44,9 @@ export class PlayerComponent implements OnInit {
 
   constructor(private playerservice: PlayerService,
     private router: Router,
-    private route: ActivatedRoute) { }
+    private route: ActivatedRoute,
+    private http: HttpClient,
+    private elementRef: ElementRef) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -69,6 +72,7 @@ export class PlayerComponent implements OnInit {
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
+        this.datosCargados = true;
       },
       (error) => {
         console.error('Error al cargar el listado de jugadores', error);
@@ -84,20 +88,90 @@ export class PlayerComponent implements OnInit {
       $dataTable.DataTable().destroy();
     }
 
-    $(document).ready(() => {
-      $('#dataTable').DataTable({
-        paging: true,
-        pageLength: 25, // Establecer el número de resultados por página
-        searching: true,
-        ordering: true,
-        columnDefs: [
-          {
-            targets: [0], // El índice de la columna que deseas ocultar (en este caso, Player ID)
-            visible: false // Establecer visible como falso oculta la columna
-          }
-        ]
+    this.http.get('assets/dataTable/Spanish.json').subscribe((translation) => {
+      $(document).ready(function () {
+        $('#dataTable').DataTable({
+          paging: true,
+          pageLength: 25,
+          searching: true,
+          ordering: true,
+          order: [[0, 'desc']],
+          columnDefs: [
+            {
+              targets: [0],
+              visible: false
+            }
+          ],
+          language: translation
+        });
       });
     });
+
+    this.moverElementosDataTable();
+  }
+
+
+  moverElementosDataTable() {
+    // **Move buttons outside the table after initialization**
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const layoutRowElements = this.elementRef.nativeElement.querySelectorAll('.dt-layout-row:not(.dt-layout-table)');
+        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#button_datatable');
+
+        if (layoutRowElements.length >= 2 && buttonDatatableElement) {
+          const layoutRowElement = layoutRowElements[1]; // Obtener el segundo elemento
+          $(layoutRowElement).appendTo(buttonDatatableElement);
+          observer.disconnect(); // Detiene la observación después de encontrar los elementos
+        }
+      });
+    });
+
+    observer.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+
+    //esto es para agregar una clase
+    const textcenter = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const dataTableElement = document.querySelector('#dataTable');
+
+        if (dataTableElement) {
+          dataTableElement.classList.add('text-center');
+          textcenter.disconnect(); // Detiene la observación después de encontrar el elemento
+        }
+      });
+    });
+
+    textcenter.observe(document.body, { childList: true, subtree: true });
+
+
+    //esto es para la parte donde pones las filas a ver
+    const length = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-length');
+        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-length');
+
+        if (layoutRowElement && buttonDatatableElement) {
+          $(layoutRowElement).appendTo(buttonDatatableElement);
+          length.disconnect(); // Detiene la observación después de encontrar los elementos
+        }
+      });
+    });
+
+    length.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+
+    //esto es para el input del buscador
+    const search = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-search');
+        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-search');
+
+        if (layoutRowElement && buttonDatatableElement) {
+          $(layoutRowElement).appendTo(buttonDatatableElement);
+          search.disconnect(); // Detiene la observación después de encontrar los elementos
+        }
+      });
+    });
+
+    search.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
   }
 
   // Método para confirmar la eliminación del equipo

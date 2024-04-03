@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
-import { Team, TeamNew } from 'src/app/core/services/team/team.model';
+import { Team, TeamConJugadores, TeamNew } from 'src/app/core/services/team/team.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Router } from '@angular/router';
@@ -46,7 +46,7 @@ export class InicioComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data && Array.isArray(response.data)) {
           // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.listTeam = response.data.map((team: Team) => new Team(team));
+          this.listTeam = response.data.map((team: TeamConJugadores) => new TeamConJugadores(team));
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }

@@ -3,18 +3,18 @@
   <div class="container mt-3">
     <div class="row">
       <div class="col">
-        <button class="btn btn-primary" (click)="irAPantalla(1)">Información del equipo</button>
+        <button class="btn btn-custom" (click)="irAPantalla(1)">Información del equipo</button>
       </div>
       <div class="col text-end">
-        <button class="btn btn-primary" (click)="irAPantalla(3)">Estadísticas del equipo</button>
+        <button class="btn btn-custom" (click)="irAPantalla(3)">Estadísticas del equipo</button>
       </div>
     </div>
     <div class="row mt-3">
       <div class="col">
-        <button class="btn btn-primary" (click)="irAPantalla(2)">Ver jugadores del equipo</button>
+        <button class="btn btn-custom" (click)="irAPantalla(2)">Ver jugadores del equipo</button>
       </div>
       <div class="col text-end">
-        <button class="btn btn-primary" (click)="irAPantalla(4)">Estadísticas por jugador</button>
+        <button class="btn btn-custom" (click)="irAPantalla(4)">Estadísticas por jugador</button>
       </div>
     </div>
   </div>
@@ -24,19 +24,20 @@
     <div class="container">
       <h2 class="text-center">{{ tituloMesAnio }}</h2>
       <div class="d-flex justify-content-between">
-        <button class="btn btn-primary" (click)="mesAnterior()">
+        <button class="btn btn-custom" (click)="mesAnterior()">
           <i class="bi bi-arrow-left"></i> Mes Anterior
         </button>
-        <button class="btn btn-primary" (click)="mesSiguiente()">
+        <h4>{{ tituloMesAnio }}</h4>
+        <button class="btn btn-custom" (click)="mesSiguiente()">
           Mes Siguiente <i class="bi bi-arrow-right"></i>
         </button>
       </div>
 
       <!-- Tabla del calendario -->
-      <div class="table-responsive mt-3">
-        <table class="table table-bordered table-striped">
+      <div class="table-responsive mt-3" style="overflow-x: auto;">
+        <table id="tableCalendar" class="table table-bordered table-striped">
           <!-- Encabezado de la tabla -->
-          <thead class="bg-primary text-white">
+          <thead  class="table-dark">
             <tr>
               <th scope="col">Lunes</th>
               <th scope="col">Martes</th>
@@ -50,22 +51,40 @@
           <!-- Cuerpo de la tabla -->
           <tbody>
             <!-- Filas de la tabla -->
-            <tr *ngFor="let semana of calendario">
-              <ng-container *ngFor="let dia of semana">
-                <td *ngIf="dia !== ''">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <span>{{ dia.numero }}</span>
-                    <!-- <span>{{ dia.daysession }}</span>  Mostrar directamente la variable daysession -->
-                    <button *ngIf="dia.trainingId" class="btn btn-success btn-sm"
-                      (click)="openEntrenamiento(dia.trainingId, dia.daysession)">Entrenamiento</button>
-                    <button *ngIf="dia.matchPreparationId" class="btn btn-warning btn-sm"
-                      (click)="openPartido(dia.matchPreparationId, dia.daysession)">Partido</button>
-                    <button class="btn btn-primary btn-sm" (click)="abrirModal(dia.daysession)">Añadir</button>
-                  </div>
-                </td>
-                <td *ngIf="dia === ''"></td>
+            <ng-container *ngFor="let semana of calendario">
+              <!-- Verificar si la semana tiene algún dato -->
+              <ng-container *ngIf="tieneDatosEnSemana(semana)">
+                <tr>
+                  <!-- Columnas de la fila -->
+                  <ng-container *ngFor="let dia of semana">
+                    <td *ngIf="dia !== ''" class="dia">
+                      <div class="position-relative">
+                        <span class="numero-dia">{{ dia.numero }}</span>
+                        <div class="row">
+                          <div class="col" *ngIf="!dia.trainingId || !dia.matchPreparationId">
+                            <div class="btn-container">
+                              <button class="btn btn-link text-primary" (click)="abrirModal(dia.daysession)">
+                                <i class="bi bi-plus-circle-fill"></i>
+                              </button>
+                              <div class="hint">Añadir</div>
+                            </div>
+                          </div>
+                          <div class="col">
+                            <button *ngIf="dia.trainingId" class="btn btn-success btn-sm btn-block"
+                              (click)="openEntrenamiento(dia.trainingId, dia.daysession)">Entrenamiento</button>
+                          </div>
+                          <div class="col">
+                            <button *ngIf="dia.matchPreparationId" class="btn btn-warning btn-sm btn-block"
+                              (click)="openPartido(dia.matchPreparationId, dia.daysession)">Partido</button>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td *ngIf="dia === ''" class="dia"></td>
+                  </ng-container>
+                </tr>
               </ng-container>
-            </tr>
+            </ng-container>
           </tbody>
         </table>
       </div>
@@ -83,6 +102,9 @@
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
       </div>
       <div class="modal-body">
+        <h6 class="mt-0">Instruciones</h6>
+        <p>Escoge la pestaña deseada y decide si crear un entrenamiento o un pre partido</p>
+        <hr>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
           <li class="nav-item" role="presentation">
             <button class="nav-link active" id="entrenamiento-tab" data-bs-toggle="tab" data-bs-target="#entrenamiento"
@@ -106,7 +128,7 @@
             </div>
 
             <!-- Botón para guardar el nuevo entrenamiento -->
-            <button type="button" class="btn btn-primary float-end" (click)="crearEntrenamiento()">Guardar</button>
+            <button type="button" class="btn btn-custom float-end" (click)="crearEntrenamiento()">Guardar</button>
           </div>
           <div class="tab-pane fade" id="partido" role="tabpanel" aria-labelledby="partido-tab">
             <div class="mb-3">
@@ -204,7 +226,7 @@
               <textarea class="form-control" id="convocados" rows="5" [(ngModel)]="match.summoned"></textarea>
             </div>
             <!-- Botón para guardar el nuevo equipo -->
-            <button type="button" class="btn btn-primary float-end" (click)="crearPartido()">Guardar</button>
+            <button type="button" class="btn btn-custom float-end" (click)="crearPartido()">Guardar</button>
           </div>
         </div>
       </div>
@@ -311,7 +333,7 @@
               </div>
 
               <!-- Agregar más campos de tarea según sea necesario -->
-              <button type="submit" class="btn btn-primary">Crear Tarea</button>
+              <button type="submit" class="btn btn-custom">Crear Tarea</button>
             </form>
           </div>
 
@@ -346,15 +368,16 @@
 
 
           <!-- Botón para agregar tarea -->
-          <button type="button" class="btn btn-primary mt-3" [disabled]="showAddTaskForm"
+          <button type="button" class="btn btn-custom mt-3" [disabled]="showAddTaskForm"
             (click)="toggleAddTaskForm()">Agregar
             Tarea</button>
-          <button type="button" class="btn btn-primary mt-3" (click)="verTienda()" *ngIf="!viewShop">Nube de Tareas</button>
-          <button type="button" class="btn btn-primary mt-3" (click)="cerrarTienda()" *ngIf="viewShop">Cerrar
+          <button type="button" class="btn btn-custom mt-3" (click)="verTienda()" *ngIf="!viewShop">Nube de
+            Tareas</button>
+          <button type="button" class="btn btn-custom mt-3" (click)="cerrarTienda()" *ngIf="viewShop">Cerrar
             Nube de Tareas</button>
           <button type="button" class="btn btn-danger float-end" (click)="eliminarEntrenamiento()">Eliminar
             Entrenamiento</button>
-          <button type="button" class="btn btn-primary float-end" (click)="crearEntrenamiento()">Guardar
+          <button type="button" class="btn btn-custom float-end" (click)="crearEntrenamiento()">Guardar
             Entrenamiento</button>
           <!-- Modal para abrir listado de tareas de la tienda-->
           <app-shop [trainingId]="trainingId" (tareaDescargada)="tareaDescargada($event)" *ngIf="viewShop">
@@ -475,7 +498,7 @@
       <div class="modal-footer d-flex">
         <!-- Botón para guardar el nuevo partido -->
         <button type="button" class="btn btn-danger float-end" (click)="eliminarPartido()">Eliminar Partido</button>
-        <button type="button" class="btn btn-primary float-end" (click)="crearPartido()">Guardar Partido</button>
+        <button type="button" class="btn btn-custom float-end" (click)="crearPartido()">Guardar Partido</button>
       </div>
     </div>
   </div>
@@ -613,7 +636,7 @@
               <textarea class="form-control" id="video" rows="3" [(ngModel)]="postPartido.video"></textarea>
             </div>
             <!-- Botón para guardar el nuevo equipo -->
-            <button type="button" class="btn btn-primary float-end" (click)="guardarPostPartido()">Guardar</button>
+            <button type="button" class="btn btn-custom float-end" (click)="guardarPostPartido()">Guardar</button>
           </div>
 
           <div class="tab-pane fade" id="avanzada" role="tabpanel" aria-labelledby="avanzada-tab">
@@ -679,7 +702,7 @@
               <textarea class="form-control" id="video" rows="3" [(ngModel)]="postPartido.video"></textarea>
             </div>
             <div class="mb-3">
-              <button type="button" class="btn btn-primary float-end" (click)="guardarPostPartido()">Guardar</button>
+              <button type="button" class="btn btn-custom float-end" (click)="guardarPostPartido()">Guardar</button>
             </div>
             <div class="mb-3" style="visibility: hidden;">
               <label for="anotaciones" class="form-label">Anotaciones del jugador:</label>
@@ -790,7 +813,7 @@
                         [(ngModel)]="playerInfoPostPartido.anotaciones" name="anotaciones"></textarea>
                     </div>
                     <div class="mb-3">
-                      <button type="button" class="btn btn-primary float-end"
+                      <button type="button" class="btn btn-custom float-end"
                         (click)="guardarInfoPlayerPostPartido(player.playerId)">Guardar</button>
                     </div>
                     <div class="mb-3" style="visibility: hidden;">

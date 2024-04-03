@@ -1,15 +1,24 @@
-<div *ngIf="datosCargados">
-    <!-- Botón "Entrar" con evento de clic -->
-    <button class="btn btn-primary" (click)="navegarACalendario()">
-        <i class="bi bi-calendar"></i> Calendario
-    </button>
+<div *ngIf="datosCargados" class="container">
+    <div class="btn-container">
+        <button class="btn btn-custom" (click)="navegarACalendario()">
+            <i class="bi bi-calendar"></i>
+        </button>
+        <div class="hint">Volver al calendario</div>
+    </div>
 
     <!-- Contenido para el dataTable -->
     <div class="container mt-4">
         <h2>Jugadores</h2>
+        <div class="row justify-content-between div-headdatatable">
+            <div class="col-md-auto mr-auto" id="dt-length">
+                <!-- Contenido para el dt-length -->
+            </div>
+            <div class="col-md-auto ml-auto" id="dt-search">
+            </div>
+        </div>
         <div style="overflow-x: auto;">
-            <table id="dataTable" class="table table-bordered table-striped">
-                <thead style="background-color: cornflowerblue;">
+            <table id="dataTable" class="table table-bordered table-striped text-center">
+                <thead class="table-dark">
                     <tr>
                         <th>ID</th>
                         <th>NOMBRE</th>
@@ -55,5 +64,7 @@
                 </tbody>
             </table>
         </div>
+    </div>
+    <div id="button_datatable">
     </div>
 </div>
