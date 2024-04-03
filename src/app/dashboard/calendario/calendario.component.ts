@@ -53,6 +53,11 @@ export class CalendarioComponent implements OnInit {
   postPartidoId: number = 0;
 
   cerrarPlayer: PlayerId = new PlayerId({});
+  selectedFile!: File;
+
+
+  showModalBoard: boolean = false;
+  iframeSrc: string = 'https://tacticalboard.sphairatech.com/';
 
   constructor(
     private router: Router,
@@ -492,7 +497,7 @@ export class CalendarioComponent implements OnInit {
     this.cerrarPlayer = player;
 
     let playerInfo = this.playerPostPartido.find(jugador => jugador.playerId === player.playerId);
-    if(playerInfo?.info !== undefined && playerInfo?.info !== null){
+    if (playerInfo?.info !== undefined && playerInfo?.info !== null) {
       this.playerInfoPostPartido = playerInfo.info;
     } else {
       this.playerInfoPostPartido = new PlayerPostPartido({});
@@ -507,7 +512,7 @@ export class CalendarioComponent implements OnInit {
     }
   }
 
-  cerrarTogglePlayer(player: PlayerId){
+  cerrarTogglePlayer(player: PlayerId) {
     player.collapsed = !player.collapsed;
     // Si la tarea se abre, cerrar el resto de las tareas
     if (player.collapsed) {
@@ -517,27 +522,99 @@ export class CalendarioComponent implements OnInit {
     }
   }
 
-  guardarInfoPlayerPostPartido(playerId: number){
-    if(this.postPartidoId === 0){
+  guardarInfoPlayerPostPartido(playerId: number) {
+    if (this.postPartidoId === 0) {
       //mostrar aqui un alert de que no se puede guardar un jugador sin antes haber guardado la info en el postpartido
     } else {
       this.playerInfoPostPartido.player.playerId = playerId;
-    this.playerInfoPostPartido.postPartido.postPartidoId = this.postPartidoId;
-    this.playerService.createUpdateInfoPlayerPostPartido(this.playerInfoPostPartido).subscribe(
-      (response) => {
-        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
-        if (response.data) {
-          //this.cerrarModalPostPartido();
-          //esto cerraria la pestaña de jugador para poder introducir los datos de otros
-          this.cerrarTogglePlayer(this.cerrarPlayer);
-        } else {
-          console.error('Error al crear el partido:', response.error.msg);
+      this.playerInfoPostPartido.postPartido.postPartidoId = this.postPartidoId;
+      this.playerService.createUpdateInfoPlayerPostPartido(this.playerInfoPostPartido).subscribe(
+        (response) => {
+          // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
+          if (response.data) {
+            //this.cerrarModalPostPartido();
+            //esto cerraria la pestaña de jugador para poder introducir los datos de otros
+            this.cerrarTogglePlayer(this.cerrarPlayer);
+          } else {
+            console.error('Error al crear el partido:', response.error.msg);
+          }
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
         }
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
+      );
     }
+  }
+
+  onSubmit(taskId: number) {
+    // Verifica si se ha seleccionado un archivo
+    if (this.selectedFile) {
+      console.log('Imagen seleccionada:', this.selectedFile);
+
+      // Llama al método createUpdateImgTask del servicio para subir la imagen
+      this.trainingService.createUpdateImgTask(taskId.toString(), this.selectedFile)
+        .subscribe(
+          (response) => {
+            // Construir el id completo de la imagen
+            const imageId = 'imagen_tarea_' + taskId;
+
+            // Obtener la imagen por su id
+            const imgElement = document.getElementById(imageId) as HTMLImageElement;
+
+            if (imgElement) {
+              // Asignar la nueva URL de la imagen al atributo src
+              imgElement.src = 'https://sphairatech.com/images/task-board/' + response.data;
+            } else {
+              console.error('No se encontró la imagen con el id:', imageId);
+
+              // Crear un nuevo elemento img
+              const newImgElement = document.createElement('img') as HTMLImageElement;
+              newImgElement.src = 'https://sphairatech.com/images/task-board/' + response.data;
+              newImgElement.alt = 'Imagen de la tarea';
+              newImgElement.className = 'imgBoard';
+              newImgElement.id = 'imagen_tarea_' + taskId;
+
+              // Obtener el div correspondiente y agregar el elemento img
+              const divElement = document.getElementById('div_tarea_' + taskId);
+              if (divElement) {
+                divElement.appendChild(newImgElement);
+              } else {
+                console.error('No se encontró el div con el id:', 'div_tarea_' + taskId);
+              }
+            }
+          },
+          error => {
+            console.error('Error al subir la imagen', error);
+            // Aquí puedes manejar el error si la subida de la imagen falla
+          }
+        );
+    } else {
+      console.log('Ninguna imagen seleccionada.');
+    }
+  }
+
+
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  onDragOver(event: any) {
+    event.preventDefault();
+  }
+
+  onDrop(event: any) {
+    event.preventDefault();
+    const files = event.dataTransfer.files;
+    if (files.length > 0) {
+      this.selectedFile = files[0];
+    }
+  }
+
+  openBoardModal() {
+    this.showModalBoard = true;
+  }
+
+  cerrarBoardModal() {
+    this.showModalBoard = false;
   }
 }

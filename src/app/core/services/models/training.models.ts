@@ -26,6 +26,7 @@ export class Task {
     work: string;
     video: string;
     collapsed: boolean;
+    imagenBoard: string;
   
     constructor() {
       this.taskId = 0;
@@ -38,6 +39,7 @@ export class Task {
       this.material = '';
       this.work = '';
       this.video = '';
+      this.imagenBoard = '';
       this.collapsed = false; // Inicialmente, la tarea está contraída
     }
   }
