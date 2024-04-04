@@ -7,6 +7,7 @@ import { MatchPreparation, PlayerPostPartido, PostPartido } from 'src/app/core/s
 import { MatDialog } from '@angular/material/dialog';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { PlayerId } from 'src/app/core/services/player/player.model';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -20,6 +21,13 @@ interface OpcionesFormatoFecha {
   styleUrls: ['./calendario.component.scss']
 })
 export class CalendarioComponent implements OnInit {
+  crearEntrenamientoForm: FormGroup;
+  crearPartidoForm: FormGroup;
+  crearTareaForm: FormGroup;
+  guardarPostPartidoSimpleForm: FormGroup;
+  guardarPostPartidoAvanzadoForm: FormGroup;
+  guardarInfoPlayerPostPartidoForm: FormGroup;
+
   datosCargados: boolean = false;
   teamId!: number;  // Ajusta el valor según el teamId del equipo actual
   calendario: any[][] = [];
@@ -65,7 +73,90 @@ export class CalendarioComponent implements OnInit {
     private trainingService: TrainingService,
     private playerService: PlayerService,
     private dialog: MatDialog,
-  ) { }
+    private fb: FormBuilder,
+  ) {
+    this.crearEntrenamientoForm = this.fb.group({
+      objectiveSession: ['', Validators.required],
+      warmUp: ['', Validators.required],
+    });
+    this.crearPartidoForm = this.fb.group({
+      rivalName: ['', Validators.required],
+      terreno: ['', Validators.required],
+      lugar: ['', Validators.required],
+      hora: ['', Validators.required],
+      minutos: ['', Validators.required],
+      rivalInfo: ['', Validators.required],
+      refereeName: ['', Validators.required],
+      trainingPicture: ['', Validators.required],
+      matchTactics: ['', Validators.required],
+      abp: ['', Validators.required],
+      summoned: ['', Validators.required],
+    });
+    this.crearTareaForm = this.fb.group({
+      description: ['', Validators.required],
+      rules: ['', Validators.required],
+      variants: ['', Validators.required],
+      slogans: ['', Validators.required],
+      worktime: ['', Validators.required],
+      space: ['', Validators.required],
+      material: ['', Validators.required],
+      video: ['', Validators.required],
+      work: ['', Validators.required],
+    });
+    this.guardarPostPartidoSimpleForm = this.fb.group({
+      golesAFavor: ['', Validators.required],
+      golesEnContra: ['', Validators.required],
+      resultado: ['', Validators.required],
+      paradasPortero: ['', Validators.required],
+      disparosAFavor: ['', Validators.required],
+      disparosEnContra: ['', Validators.required],
+      faltasCometidas: ['', Validators.required],
+      faltasRecibidas: ['', Validators.required],
+      cornersAFavor: ['', Validators.required],
+      cornersEnContra: ['', Validators.required],
+      penaltisAFavor: ['', Validators.required],
+      penaltisEnContra: ['', Validators.required],
+      recuperaciones: ['', Validators.required],
+      perdidas: ['', Validators.required],
+      tarjetasAmarillas: ['', Validators.required],
+      tarjetasRojas: ['', Validators.required],
+      llegadasPeligroAFavor: ['', Validators.required],
+      llegadasPeligroEnContra: ['', Validators.required],
+      anotaciones: ['', Validators.required],
+      video: ['', Validators.required],
+    });
+    this.guardarPostPartidoAvanzadoForm = this.fb.group({
+      golesAFavor: ['', Validators.required],
+      golesEnContra: ['', Validators.required],
+      resultado: ['', Validators.required],
+      disparosAFavor: ['', Validators.required],
+      disparosEnContra: ['', Validators.required],
+      cornersAFavor: ['', Validators.required],
+      cornersEnContra: ['', Validators.required],
+      llegadasPeligroAFavor: ['', Validators.required],
+      llegadasPeligroEnContra: ['', Validators.required],
+      anotaciones: ['', Validators.required],
+      video: ['', Validators.required],
+    });
+    this.guardarPostPartidoAvanzadoForm = this.fb.group({
+      minutos: ['', Validators.required],
+      goles: ['', Validators.required],
+      golesPenalti: ['', Validators.required],
+      golesFalta: ['', Validators.required],
+      faltasCometidas: ['', Validators.required],
+      faltasRecibidas: ['', Validators.required],
+      penaltisCometidos: ['', Validators.required],
+      penaltisRecibidos: ['', Validators.required],
+      recuperaciones: ['', Validators.required],
+      perdidas: ['', Validators.required],
+      tarjetasAmarillas: ['', Validators.required],
+      tarjetasRojas: ['', Validators.required],
+      disparosTotales: ['', Validators.required],
+      disparosPuerta: ['', Validators.required],
+      paradasPortero: ['', Validators.required],
+      anotaciones: ['', Validators.required],
+    });
+  }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL

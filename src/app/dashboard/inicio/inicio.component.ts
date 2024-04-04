@@ -14,6 +14,8 @@ import { ClubService } from 'src/app/core/services/club/club.service';
   styleUrls: ['./inicio.component.scss']
 })
 export class InicioComponent implements OnInit {
+  crearEquipoForm: FormGroup;
+
   datosCargados: boolean = false;
   usuarioActual!: User | null;
   listTeam: any[] = []; // Define una variable para almacenar el listado de equipos
@@ -25,7 +27,17 @@ export class InicioComponent implements OnInit {
     private router: Router,
     private teamService: TeamService,
     private clubService: ClubService,
-    ) { }
+    private fb: FormBuilder,
+    ) {
+      this.crearEquipoForm = this.fb.group({
+        categoryTypeId: ['', Validators.required],
+        levelLeague: ['', Validators.required],
+        name: ['', Validators.required],
+        objectiveTeam: ['', Validators.required],
+        trainingDays: ['', Validators.required],
+        opinionTeam: ['', Validators.required],
+      });
+    }
 
   ngOnInit(): void {
     // Suscríbete al observable del servicio para obtener el usuario actual

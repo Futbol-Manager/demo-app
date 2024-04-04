@@ -33,12 +33,12 @@ export class ProfileComponent implements OnInit {
 
       // Inicializa el formulario
       this.userForm = this.formBuilder.group({
-        pictureUser: [''],
-        firstName: [''],
-        secondName: [''],
-        mail: [''],
-        birthdate: [''],
-        genreType: [''],
+        pictureUser: ['', Validators.required],
+        firstName: ['', Validators.required],
+        secondName: ['', Validators.required],
+        mail: ['', Validators.required],
+        birthdate: ['', Validators.required],
+        genreType: ['', Validators.required],
       });
 
       // Actualiza el formulario con los datos del usuario actual

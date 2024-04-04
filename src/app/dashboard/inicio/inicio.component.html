@@ -135,11 +135,11 @@
         <p>Introduce los datos de tu equipo que quieres crear sin dejar ningun campo vacío.</p>
         <hr>
         <!-- Formulario para la creación de equipo con campos separados -->
-        <form>
+        <form [formGroup]="crearEquipoForm" (ngSubmit)="crearEquipo()">
           <div class="mb-3">
             <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
             <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
-              [(ngModel)]="teamNew.categoryType.categoryTypeId">
+              formControlName="categoryTypeId">
               <!-- Opciones ajustadas según tus necesidades -->
               <option value="1">LaLiga EA Sports</option>
               <option value="2">Liga F</option>
@@ -171,7 +171,7 @@
           </div>
           <div class="mb-3">
             <label for="nivelLiga" class="form-label">Nivel:</label>
-            <select class="form-control" id="nivelLiga" name="nivelLiga" [(ngModel)]="teamNew.levelLeague">
+            <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague">
               <!-- Opciones ajustadas según tus necesidades -->
               <option value="División de Honor">División de Honor</option>
               <option value="Liga Nacional">Liga Nacional</option>
@@ -185,32 +185,32 @@
           </div>
           <div class="mb-3">
             <label for="nombreEquipo" class="form-label">Nombre del Club:</label>
-            <input type="text" class="form-control" id="nombreEquipo" name="nombreEquipo" [(ngModel)]="teamNew.name">
+            <input type="text" class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
           </div>
           <div class="mb-3">
             <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
             <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo"
-              [(ngModel)]="teamNew.objectiveTeam">
+              formControlName="objectiveTeam">
           </div>
           <div class="mb-3">
             <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
             <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
-              [(ngModel)]="teamNew.trainingDays">
+              formControlName="trainingDays">
           </div>
           <!-- <div class="mb-3">
             <label for="clubEquipo" class="form-label">Club del Equipo:</label>
-            <select class="form-control" id="clubEquipo" name="clubEquipo" [(ngModel)]="teamNew.clubId">
+            <select class="form-control" id="clubEquipo" name="clubEquipo" formControlName="clubId">
               <option *ngFor="let club of clubList" [value]="club.clubId">{{ club.name }}</option>
             </select>
           </div> -->
           <div class="mb-3">
             <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
             <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo"
-              [(ngModel)]="teamNew.opinionTeam">
+              formControlName="opinionTeam">
           </div>
           <div class="modal-footer">
             <!-- Botón para guardar el nuevo equipo -->
-            <button type="button" class="btn btn-success float-end" (click)="crearEquipo()">Guardar</button>
+            <button type="submit" class="btn btn-success float-end">Guardar</button>
           </div>
         </form>
       </div>
