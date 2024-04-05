@@ -239,6 +239,123 @@
   </div>
 </div>
 
+<!-- Modal para mostrar información del partido -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPartido}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalles del Partido</h5>
+        <button type="button" class="btn btn-success float-end"
+          (click)="openPostPartido(match.matchPreparationId)">Post
+          Partido</button>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label for="nombreRival" class="form-label">Nombre del Rival:</label>
+          <input type="text" class="form-control" id="nombreRival" [(ngModel)]="match.rivalName">
+        </div>
+        <div class="mb-3">
+          <label for="terreno" class="form-label">Local o Visitante:</label>
+          <select class="form-control" id="terreno" [(ngModel)]="match.terreno">
+            <option value="Local">Local</option>
+            <option value="Visitante">Visitante</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="lugar" class="form-label">Lugar:</label>
+          <textarea class="form-control" id="lugar" rows="5" [(ngModel)]="match.lugar"></textarea>
+        </div>
+        <div class="mb-3 d-flex">
+          <div class="col-6">
+            <label for="hora" class="form-label">hora:</label>
+            <select class="form-control" id="hora" [(ngModel)]="match.hora">
+              <option value="08">08</option>
+              <option value="09">09</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
+              <option value="21">21</option>
+            </select>
+          </div>
+          <div class="col-6">
+            <label for="minutos" class="form-label">minutos:</label>
+            <select class="form-control" id="minutos" [(ngModel)]="match.minutos">
+              <option value="00">00</option>
+              <option value="15">15</option>
+              <option value="30">30</option>
+              <option value="45">45</option>
+            </select>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="informacionRival" class="form-label">Información del Rival:</label>
+          <textarea class="form-control" id="informacionRival" rows="5" [(ngModel)]="match.rivalInfo"></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="nombreArbitro" class="form-label">Nombre del Árbitro:</label>
+          <input type="text" class="form-control" id="nombreArbitro" [(ngModel)]="match.refereeName">
+        </div>
+        <div class="mb-3">
+          <label for="alineacion" class="form-label">Formación:</label>
+          <select class="form-control" id="alineacion" [(ngModel)]="match.trainingPicture">
+            <option value="1">1-3-2-1</option>
+            <option value="2">1-2-3-1</option>
+            <option value="3">1-3-1-2</option>
+            <option value="4">1-2-2-2</option>
+            <option value="5">1-2-1-3</option>
+            <option value="6">1-1-3-2</option>
+            <option value="7">1-3-3-0</option>
+            <option value="8">1-4-1-1</option>
+            <option disabled>──────────</option>
+            <option value="9">1-4-4-2</option>
+            <option value="10">1-4-3-3</option>
+            <option value="11">1-4-2-3-1</option>
+            <option value="12">1-4-1-4-1</option>
+            <option value="13">1-3-5-2</option>
+            <option value="14">1-3-4-3</option>
+            <option value="15">1-5-4-1</option>
+            <option value="16">1-4-5-1</option>
+            <option value="17">1-3-3-3-1</option>
+            <option value="18">1-3-1-4-2</option>
+            <option value="19">1-2-3-2-3</option>
+            <option value="20">1-4-2-1-3</option>
+            <option value="21">1-3-2-3-2</option>
+            <option value="22">1-5-3-2</option>
+            <option value="23">1-4-4-1-1</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="tacticaGeneral" class="form-label">Táctica General:</label>
+          <textarea class="form-control" id="tacticaGeneral" rows="5" [(ngModel)]="match.matchTactics"></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="ABPs" class="form-label">ABPs:</label>
+          <textarea class="form-control" id="ABPs" rows="5" [(ngModel)]="match.abp"></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="convocados" class="form-label">Convocados:</label>
+          <textarea class="form-control" id="convocados" rows="5" [(ngModel)]="match.summoned"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer d-flex">
+        <!-- Botón para guardar el nuevo partido -->
+        <button type="button" class="btn btn-danger float-end" (click)="eliminarPartido()">Eliminar Partido</button>
+        <button type="button" class="btn btn-custom float-end" (click)="crearPartido()">Guardar Partido</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal para mostrar información del entrenamiento -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalEntrenamiento}">
   <div class="modal-dialog modal-lg" role="document">
@@ -426,123 +543,6 @@
           <!-- Contenido del modal (en este caso, el iframe) -->
           <iframe width="100%" height="100%" id="urlIframe" scrolling="no" frameborder="0"
             src="https://tacticalboard.sphairatech.com"></iframe>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal para mostrar información del partido -->
-  <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPartido}">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Detalles del Partido</h5>
-          <button type="button" class="btn btn-success float-end"
-            (click)="openPostPartido(match.matchPreparationId)">Post
-            Partido</button>
-          <!-- Botón de cerrar con un icono -->
-          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="nombreRival" class="form-label">Nombre del Rival:</label>
-            <input type="text" class="form-control" id="nombreRival" [(ngModel)]="match.rivalName">
-          </div>
-          <div class="mb-3">
-            <label for="terreno" class="form-label">Local o Visitante:</label>
-            <select class="form-control" id="terreno" [(ngModel)]="match.terreno">
-              <option value="Local">Local</option>
-              <option value="Visitante">Visitante</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="lugar" class="form-label">Lugar:</label>
-            <textarea class="form-control" id="lugar" rows="5" [(ngModel)]="match.lugar"></textarea>
-          </div>
-          <div class="mb-3 d-flex">
-            <div class="col-6">
-              <label for="hora" class="form-label">hora:</label>
-              <select class="form-control" id="hora" [(ngModel)]="match.hora">
-                <option value="08">08</option>
-                <option value="09">09</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-                <option value="15">15</option>
-                <option value="16">16</option>
-                <option value="17">17</option>
-                <option value="18">18</option>
-                <option value="19">19</option>
-                <option value="20">20</option>
-                <option value="21">21</option>
-              </select>
-            </div>
-            <div class="col-6">
-              <label for="minutos" class="form-label">minutos:</label>
-              <select class="form-control" id="minutos" [(ngModel)]="match.minutos">
-                <option value="00">00</option>
-                <option value="15">15</option>
-                <option value="30">30</option>
-                <option value="45">45</option>
-              </select>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label for="informacionRival" class="form-label">Información del Rival:</label>
-            <textarea class="form-control" id="informacionRival" rows="5" [(ngModel)]="match.rivalInfo"></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="nombreArbitro" class="form-label">Nombre del Árbitro:</label>
-            <input type="text" class="form-control" id="nombreArbitro" [(ngModel)]="match.refereeName">
-          </div>
-          <div class="mb-3">
-            <label for="alineacion" class="form-label">Formación:</label>
-            <select class="form-control" id="alineacion" [(ngModel)]="match.trainingPicture">
-              <option value="1">1-3-2-1</option>
-              <option value="2">1-2-3-1</option>
-              <option value="3">1-3-1-2</option>
-              <option value="4">1-2-2-2</option>
-              <option value="5">1-2-1-3</option>
-              <option value="6">1-1-3-2</option>
-              <option value="7">1-3-3-0</option>
-              <option value="8">1-4-1-1</option>
-              <option disabled>──────────</option>
-              <option value="9">1-4-4-2</option>
-              <option value="10">1-4-3-3</option>
-              <option value="11">1-4-2-3-1</option>
-              <option value="12">1-4-1-4-1</option>
-              <option value="13">1-3-5-2</option>
-              <option value="14">1-3-4-3</option>
-              <option value="15">1-5-4-1</option>
-              <option value="16">1-4-5-1</option>
-              <option value="17">1-3-3-3-1</option>
-              <option value="18">1-3-1-4-2</option>
-              <option value="19">1-2-3-2-3</option>
-              <option value="20">1-4-2-1-3</option>
-              <option value="21">1-3-2-3-2</option>
-              <option value="22">1-5-3-2</option>
-              <option value="23">1-4-4-1-1</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="tacticaGeneral" class="form-label">Táctica General:</label>
-            <textarea class="form-control" id="tacticaGeneral" rows="5" [(ngModel)]="match.matchTactics"></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="ABPs" class="form-label">ABPs:</label>
-            <textarea class="form-control" id="ABPs" rows="5" [(ngModel)]="match.abp"></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="convocados" class="form-label">Convocados:</label>
-            <textarea class="form-control" id="convocados" rows="5" [(ngModel)]="match.summoned"></textarea>
-          </div>
-        </div>
-        <div class="modal-footer d-flex">
-          <!-- Botón para guardar el nuevo partido -->
-          <button type="button" class="btn btn-danger float-end" (click)="eliminarPartido()">Eliminar Partido</button>
-          <button type="button" class="btn btn-custom float-end" (click)="crearPartido()">Guardar Partido</button>
         </div>
       </div>
     </div>
