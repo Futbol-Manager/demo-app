@@ -107,40 +107,41 @@ export class InicioComponent implements OnInit {
 
   // Método para crear un nuevo equipo
   crearEquipo(): void {
+    if(this.crearEquipoForm.valid){
+      // Recoge los campos del modal y asigna al objeto nuevoEquipo
+      this.teamNew = {
+        teamId: 0, // O el valor por defecto que desees para teamId
+        levelLeague: this.crearEquipoForm.value.levelLeague || '',
+        name: this.crearEquipoForm.value.name || '',
+        objectiveTeam: this.crearEquipoForm.value.objectiveTeam || '',
+        opinionTeam: this.crearEquipoForm.value.opinionTeam || '',
+        trainingDays: this.crearEquipoForm.value.trainingDays || '',
+        categoryType: {
+          categoryTypeId: this.crearEquipoForm.value.categoryType.categoryTypeId,
+          year: 0,
+          categoryName: ''
+        },
+        clubId: this.crearEquipoForm.value.clubId || 0,
+      };
 
-    // Recoge los campos del modal y asigna al objeto nuevoEquipo
-    this.teamNew = {
-      teamId: 0, // O el valor por defecto que desees para teamId
-      levelLeague: this.teamNew.levelLeague,
-      name: this.teamNew.name,
-      objectiveTeam: this.teamNew.objectiveTeam,
-      opinionTeam: this.teamNew.opinionTeam,
-      trainingDays: this.teamNew.trainingDays,
-      categoryType: {
-        categoryTypeId: this.teamNew.categoryType.categoryTypeId,
-        year: 0,
-        categoryName: ''
-      },
-      clubId: this.teamNew.clubId
-    };
+      // Llamada al servicio para crear el equipo
+      this.teamService.createUpdateTeam(this.usuarioActual!.userId.toString(), this.teamNew,).subscribe(
+        (response) => {
+          // Manejar la respuesta según tus necesidades
+          console.log('Equipo creado con éxito:', response);
 
-    // Llamada al servicio para crear el equipo
-    this.teamService.createUpdateTeam(this.usuarioActual!.userId.toString(), this.teamNew,).subscribe(
-      (response) => {
-        // Manejar la respuesta según tus necesidades
-        console.log('Equipo creado con éxito:', response);
+          // Cargar nuevamente el listado de equipos después de la creación exitosa
+          this.cargarListadoEquipos();
 
-        // Cargar nuevamente el listado de equipos después de la creación exitosa
-        this.cargarListadoEquipos();
-
-        // Cerrar el modal después de crear el equipo
-        this.cerrarModal();
-      },
-      (error) => {
-        console.error('Error al crear el equipo:', error);
-        // Puedes manejar el error según tus necesidades
-      }
-    );
+          // Cerrar el modal después de crear el equipo
+          this.cerrarModal();
+        },
+        (error) => {
+          console.error('Error al crear el equipo:', error);
+          // Puedes manejar el error según tus necesidades
+        }
+      );
+    }
   }
 
   // Método para confirmar la eliminación del equipo

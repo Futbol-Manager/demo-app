@@ -569,7 +569,7 @@
           </ul>
           <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="simple" role="tabpanel" aria-labelledby="simple-tab">
-              <form [formGroup]="guardarPostPartidoSimpleForm" (ngSubmit)="guardarPostPartido()">
+              <form [formGroup]="guardarPostPartidoSimpleForm" (ngSubmit)="guardarPostPartidoSimple()">
                 <div class="mb-3 d-flex">
                   <div class="col-6">
                     <label for="golesAFavor" class="form-label">Goles a favor:</label>
@@ -681,7 +681,7 @@
 
             <div class="tab-pane fade" id="avanzada" role="tabpanel" aria-labelledby="avanzada-tab">
               <!-- Campos avanzados -->
-              <form [formGroup]="guardarPostPartidoAvanzadoForm" (ngSubmit)="guardarPostPartido()">
+              <form [formGroup]="guardarPostPartidoAvanzadoForm" (ngSubmit)="guardarPostPartidoAvanzado()">
                 <div class="mb-3 d-flex">
                   <div class="col-6">
                     <label for="golesAFavor" class="form-label">Goles a favor:</label>
