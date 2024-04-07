@@ -21,4 +21,9 @@ export class RegisterService {
     const url: string = environment.apiUrl + 'user/validateMail';
     return this.http.post<any>(url, mail);
   }
+
+  changePassByEmail(mail: String) {
+    const url: string = environment.apiUrl + 'user/changePassByEmail';
+    return this.http.post<any>(url, mail);
+  }
 }

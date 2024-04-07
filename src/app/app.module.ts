@@ -20,6 +20,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ProfileComponent } from './pages/profile/profile.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ClubesListComponent } from './pages/register/clubes-list/clubes-list.component';
+import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { ClubesListComponent } from './pages/register/clubes-list/clubes-list.co
     HomeComponent,
     LoginComponent,
     RegisterComponent,
+    ChangePasswordComponent,
     ProfileComponent,
     ClubesListComponent
   ],

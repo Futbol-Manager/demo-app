@@ -19,7 +19,7 @@
           <div class="card-footer textoCentrado" style="flex-direction: column;">
             <div class="row">
               <div class="col-md-12 col-sm-12 textoCentrado">
-                <p><a href="#">He olvidado mi contraseña</a></p>
+                <p><a href="#" (click)="toRemember($event)">He olvidado mi contraseña</a></p>
               </div>
             </div>
             <div class="row">
@@ -32,6 +32,40 @@
       </div>
     </div>
   </div>
+
+    <!--RECORDAR CONTRASEÑA-->
+    <div class="container" *ngIf="screen == 3">
+      <div class="row justify-content-center" style="padding-top: 2%;">
+        <div class="col-md-6">
+          <div class="card">
+            <div class="card-header textoCentrado">
+              <img src="assets/images/logo_black.svg" alt="Logo"
+                style="cursor: pointer; width: 10em;">
+            </div>
+            <div class="card-body textoCentrado">
+              <form [formGroup]="rememberForm" class="form-login" #thisForm="ngForm" (ngSubmit)="sendMail()">
+                <div class="mb-3">
+                  <label for="mail" class="form-label">Ingresa tu correo electrónico para cambiar la contraseña</label>
+                  <input type="email" placeholder="Correo electrónico" class="form-control input-login" id="mail" formControlName="mail" [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)">
+                  <div *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)" class="invalid-feedback">
+                    Ingresa un correo electrónico válido
+                  </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block textoCentrado">Enviar Mail</button>
+              </form>
+            </div>
+            <div class="card-footer textoCentrado" style="flex-direction: column;">
+              <div class="row">
+                <div class="col-md-12 col-sm-12 textoCentrado">
+                  <p>¿Recuerdas la contraseña? <a href="#" (click)="toLogin($event)">Inicia sesión aquí</a></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
   <!--REGISTRO-->
   <!--
