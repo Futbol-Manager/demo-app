@@ -2,7 +2,8 @@
   <div class="container-fluid">
     <div class="row align-items-center justify-content-between">
       <div class="col-auto">
-        <img [src]="isDarkMode ? 'assets/images/logo_white.svg' : 'assets/images/logo_black.svg'" alt="Logo" (click)="goInicio()" style="cursor: pointer; width: 10em;">
+        <img [src]="isDarkMode ? 'assets/images/logo_white.svg' : 'assets/images/logo_black.svg'" alt="Logo"
+          (click)="goInicio()" style="cursor: pointer; width: 10em;">
       </div>
       <div class="col-auto" style="cursor: pointer;">
         <div class="dropdown">
@@ -10,15 +11,29 @@
             aria-haspopup="false" aria-expanded="false">
             <span class="d-lg-none">
               <span class="account-user-avatar">
-                <img src="https://github.com/mdo.png" alt="user-image" width="32" class="rounded-circle me-2">
+                <ng-container *ngIf="imgUser">
+                  <img src="https://sphairatech.com/images/user/{{ imgUser }}" alt="user-image" width="32"
+                    class="rounded-circle me-2">
+                </ng-container>
+                <ng-container *ngIf="!imgUser">
+                  <img src="./../../../assets/images/no-image.png" class="rounded-circle img-custom"
+                    alt="Foto de perfil">
+                </ng-container>
               </span>
-              <h5 class="my-0">Alejandro</h5>
+              <h5 class="my-0">{{ nameUser }}</h5>
             </span>
             <span class="d-none d-lg-flex flex-column gap-1">
               <span class="account-user-avatar">
-                <img src="https://github.com/mdo.png" alt="user-image" width="32" class="rounded-circle me-2">
+                <ng-container *ngIf="imgUser">
+                  <img src="https://sphairatech.com/images/user/{{ imgUser }}" alt="user-image" width="32"
+                    class="rounded-circle me-2">
+                </ng-container>
+                <ng-container *ngIf="!imgUser">
+                  <img src="./../../../assets/images/no-image.png" class="rounded-circle img-custom"
+                    alt="Foto de perfil">
+                </ng-container>
               </span>
-              <h5 class="my-0">Alejandro</h5>
+              <h5 class="my-0">{{ nameUser }}</h5>
             </span>
           </a>
           <div id="submenu" class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
@@ -66,7 +81,32 @@
         <hr>
         <form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="saveChanges()">
           <div class="mb-3" style="text-align: center;">
-            <img [src]="'./../../../assets/images/no-image.png'" class="rounded-circle img-custom" alt="Foto de perfil">
+            <ng-container *ngIf="imgUser">
+              <img src="https://sphairatech.com/images/user/{{ imgUser }}" alt="user-image" width="32"
+                class="rounded-circle me-2">
+                <div class="container">
+                  <h4>Sube tu foto de perfil</h4>
+                  <form (submit)="onSubmit()" enctype="multipart/form-data">
+                    <div class="form-group">
+                      <label for="image">Seleccionar imagen:</label>
+                      <input type="file" id="image" (change)="onFileSelected($event)">
+                    </div>
+                    <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir imagen</button>
+                  </form>
+                </div>
+            </ng-container>
+            <ng-container *ngIf="!imgUser">
+              <div class="container">
+                <h4>Sube tu foto de perfil</h4>
+                <form (submit)="onSubmit()" enctype="multipart/form-data">
+                  <div class="form-group">
+                    <label for="image">Seleccionar imagen:</label>
+                    <input type="file" id="image" (change)="onFileSelected($event)">
+                  </div>
+                  <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir imagen</button>
+                </form>
+              </div>
+            </ng-container>
           </div>
           <div class="mb-3">
             <label for="firstName" class="form-label">Nombre</label>

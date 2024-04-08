@@ -8,6 +8,7 @@ import { GenreTypeModel, ProfileTypeModel, RegisterModel, ValidationUserModel } 
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { RegisterService } from 'src/app/core/services/register/register.service';
+import { TrainingService } from 'src/app/core/services/training/training.service';
 import { ProfileComponent } from 'src/app/pages/profile/profile.component';
 
 @Component({
@@ -30,6 +31,10 @@ export class HeaderComponent implements OnInit {
   // Variable para controlar la visibilidad del modal
   showModal: boolean = false;
 
+  nameUser: string = '';
+  imgUser: string = '';
+  selectedFile!: File;
+
   constructor(
     private router: Router,
     private loginService: LoginService,
@@ -37,12 +42,15 @@ export class HeaderComponent implements OnInit {
     private registerService: RegisterService,
     private formBuilder: FormBuilder,
     private renderer: Renderer2,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private trainingService: TrainingService,
   ) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe((user: User | null) => {
       this.usuarioActual = user;
+      this.nameUser = user !== null ? user.firstName : '';
+      this.imgUser = user !== null ? user.pictureUser : '';
       this.updateForm(); // Actualiza el formulario cuando cambia el usuario actual
     });
   }
@@ -193,6 +201,32 @@ export class HeaderComponent implements OnInit {
 
   get mailControl() {
     return this.userForm.get('mail');
+  }
+
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  onSubmit() {
+    // Verifica si se ha seleccionado un archivo
+    if (this.selectedFile) {
+      console.log('Imagen seleccionada:', this.selectedFile);
+
+      // Llama al método createUpdateImgTask del servicio para subir la imagen
+      const userId = this.usuarioActual?.userId.toString();
+      this.trainingService.createUpdateImgUser(userId!, this.selectedFile)
+        .subscribe(
+          (response) => {
+            this.cerrarModal();
+          },
+          error => {
+            console.error('Error al subir la imagen', error);
+            // Aquí puedes manejar el error si la subida de la imagen falla
+          }
+        );
+    } else {
+      console.log('Ninguna imagen seleccionada.');
+    }
   }
 
 }
