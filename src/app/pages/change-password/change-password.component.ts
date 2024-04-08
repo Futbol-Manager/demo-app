@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Club } from 'src/app/core/services/models/club.model';
 import { Response } from 'src/app/core/services/models/response.model';
+import { User } from 'src/app/core/models/users/user.model';
 
 @Component({
   selector: 'app-change-password',
@@ -19,7 +20,9 @@ import { Response } from 'src/app/core/services/models/response.model';
 export class ChangePasswordComponent implements OnInit {
 
   cambiarPassForm: FormGroup;
-  passwordsDoNotMatch: boolean = false;
+  passwordsDoNotMatch: boolean = true;
+  private userId: number = 0;
+  usuario!: User | null;
 
   constructor(
     private router: Router,
@@ -36,7 +39,16 @@ export class ChangePasswordComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.getQueryParams();
+  }
+
+  getQueryParams() {
+    this.activatedRoute.queryParams.subscribe(params => {
+      this.userId = +params['userId'] || 0;
+    });
+    console.log(this.userId);
+  }
 
   checkPasswordMatch() {
     const cambiarPassForm = this.cambiarPassForm;
@@ -44,14 +56,53 @@ export class ChangePasswordComponent implements OnInit {
       const passwordControl = cambiarPassForm.get('password');
       if (passwordControl) {
         const password = passwordControl.value;
-        const password2 = cambiarPassForm.get('password2')?.value; // Uso del operador de navegación segura (?)
+        const password2 = cambiarPassForm.get('password2')?.value;
         this.passwordsDoNotMatch = password !== password2;
       }
     }
   }
 
   cambiarPass() {
-    if (this.cambiarPassForm.valid) {}
+    if (this.cambiarPassForm.valid) {
+      this.registerService.getUserById(this.userId).subscribe(
+        res => {
+          if(res.data){
+            const register: RegisterModel = new RegisterModel(
+              res.data.profileType,
+              res.data.firstName,
+              res.data.secondName,
+              res.data.birthdate,
+              res.data.genreType,
+              res.data.mail,
+              this.cambiarPassForm.value.password,
+              res.data.userId,
+              res.data.validationUser,
+              res.data.pictureUser,
+              res.data.dateCreate,
+              res.data.dateEdit,
+            );
+            this.registerService.registerUser(register).pipe()
+            .subscribe(
+              (res) => {
+                if(res.data != null) {
+                  const snackBarConfig = new MatSnackBarConfig();
+                  snackBarConfig.duration = 5000;
+                  snackBarConfig.horizontalPosition = 'center';
+                  snackBarConfig.verticalPosition = 'bottom';
+                  this.snackBar.open('Actualización de datos exitosa.', 'Cerrar', snackBarConfig);
+                  this.dialog.closeAll();
+                } else{
+                  const snackBarConfig = new MatSnackBarConfig();
+                  snackBarConfig.duration = 5000;
+                  snackBarConfig.horizontalPosition = 'center';
+                  snackBarConfig.verticalPosition = 'bottom';
+                  this.snackBar.open('Error al modificar datos. Vuelve a intentarlo.', 'Cerrar', snackBarConfig);
+                }
+              })
+          }
+        }
+      )
+    }
   }
 
 }

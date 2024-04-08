@@ -46,13 +46,13 @@ export class HomeComponent implements OnInit {
             const snackBarConfig = new MatSnackBarConfig();
             snackBarConfig.duration = 5000;
             snackBarConfig.horizontalPosition = 'center';
-            snackBarConfig.verticalPosition = 'bottom';
+            snackBarConfig.verticalPosition = 'top';
             this.snackBar.open('Correo electrónico enviado con éxito.', 'Cerrar', snackBarConfig);
           } else{
             const snackBarConfig = new MatSnackBarConfig();
             snackBarConfig.duration = 5000;
             snackBarConfig.horizontalPosition = 'center';
-            snackBarConfig.verticalPosition = 'bottom';
+            snackBarConfig.verticalPosition = 'top';
             this.snackBar.open('Error en el envio del mail. Vuelve a intentarlo.', 'Cerrar', snackBarConfig);
           }
         }

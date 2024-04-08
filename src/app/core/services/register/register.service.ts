@@ -26,4 +26,9 @@ export class RegisterService {
     const url: string = environment.apiUrl + 'user/changePassByEmail';
     return this.http.post<any>(url, mail);
   }
+
+  getUserById(userId: number){
+    const url: string = environment.apiUrl + `user/getUserById/${userId}`;
+    return this.http.get<any>(url);
+  }
 }
