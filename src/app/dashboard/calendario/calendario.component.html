@@ -131,7 +131,6 @@
               <!-- Botón para guardar el nuevo entrenamiento -->
               <button type="submit" class="btn btn-custom float-end">Guardar</button>
             </form>
-
           </div>
           <div class="tab-pane fade" id="partido" role="tabpanel" aria-labelledby="partido-tab">
             <form [formGroup]="crearPartidoForm" (ngSubmit)="crearPartido()">
@@ -697,11 +696,17 @@
             <label for="warmUp" class="form-label">Calentamiento:</label>
             <textarea class="form-control" id="warmUp" rows="5" [(ngModel)]="trainingSession.warmUp"></textarea>
           </div>
+          <hr>
           <!-- Agrega más campos del entrenamiento si es necesario -->
 
           <!-- Agregar formulario para crear tareas -->
           <div *ngIf="showAddTaskForm">
             <form [formGroup]="crearTareaForm" (submit)="crearTarea()">
+              <div class="mb-3">
+                <label for="slogans" class="form-label">Título:</label>
+                <textarea class="form-control" id="slogans" rows="5" formControlName="slogans"
+                  name="slogans"></textarea>
+              </div>
               <div class="mb-3">
                 <label for="description" class="form-label">Descripción:</label>
                 <textarea class="form-control" id="description" rows="5" formControlName="description"
@@ -715,11 +720,6 @@
                 <label for="variants" class="form-label">Variantes:</label>
                 <textarea class="form-control" id="variants" rows="5" formControlName="variants"
                   name="variants"></textarea>
-              </div>
-              <div class="mb-3">
-                <label for="slogans" class="form-label">Eslogan:</label>
-                <textarea class="form-control" id="slogans" rows="5" formControlName="slogans"
-                  name="slogans"></textarea>
               </div>
               <div class="mb-3">
                 <label for="worktime" class="form-label">Tiempo de Trabajo:</label>
@@ -745,7 +745,7 @@
                 <div>
                   <label for="category">Categoría:</label>
                   <select class="form-control" id="category" [(ngModel)]="selectedCategory" (change)="onSelectCategory($event)">
-                    <option value="">Seleccionar categoría</option>
+                    <option value="">Pulsa para cargar las categorias</option>
                     <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
                   </select>
                 </div>
@@ -766,7 +766,7 @@
                 </div>
               </div>
 
-              <div class="form-group">
+              <!-- <div class="form-group">
                 <label for="work">Tipo de Trabajo:</label>
                 <select class="form-control" id="work" name="work" formControlName="work">
                   <option disabled selected>Selecciona un tipo de trabajo</option>
@@ -797,9 +797,10 @@
                   <option value="Gemelos">Gemelos</option>
                   <option value="Propiocepción">Propiocepción</option>
                 </select>
-              </div>
+              </div> -->
 
               <!-- Agregar más campos de tarea según sea necesario -->
+              <button (click)="toggleAddTaskForm()" class="btn btn-danger">Cancelar</button>
               <button type="submit" class="btn btn-custom">Crear Tarea</button>
             </form>
           </div>
@@ -809,7 +810,7 @@
             <div class="accordion-item" *ngFor="let tarea of trainingSession.tasks; let i = index">
               <h2 class="accordion-header d-flex">
                 <button class="accordion-button" type="button" (click)="toggleTask(tarea)">
-                  Tarea: {{ tarea.work }}
+                  Tarea: {{ tarea.slogans }}
                 </button>
                 <button type="button" class="btn btn-danger" (click)="deleteTask(tarea)">
                   Eliminar Tarea
@@ -822,7 +823,6 @@
                   <p>Descripción: {{ tarea.description }}</p>
                   <p>Reglas: {{ tarea.rules }}</p>
                   <p>Variantes: {{ tarea.variants }}</p>
-                  <p>Eslogan: {{ tarea.slogans }}</p>
                   <p>Tiempo de Trabajo: {{ tarea.worktime }}</p>
                   <p>Espacio: {{ tarea.space }}</p>
                   <p>Material: {{ tarea.material }}</p>

@@ -16,6 +16,14 @@ interface OpcionesFormatoFecha {
   year: 'numeric';
 }
 
+interface Category {
+  name: string;
+  subcategories: {
+    name: string;
+    options: string[];
+  }[];
+}
+
 @Component({
   selector: 'app-calendario',
   templateUrl: './calendario.component.html',
@@ -216,8 +224,8 @@ export class CalendarioComponent implements OnInit {
       worktime: ['', Validators.required],
       space: ['', Validators.required],
       material: ['', Validators.required],
-      video: ['', Validators.required],
-      work: ['', Validators.required],
+      //video: ['', Validators.required]
+      //work: ['', Validators.required],
     });
     this.guardarPostPartidoSimpleForm = this.fb.group({
       golesAFavor: ['', Validators.required],
@@ -530,10 +538,19 @@ export class CalendarioComponent implements OnInit {
   // Método para cerrar el modal
   cerrarModalEntrenamiento(): void {
     this.showModalEntrenamiento = false;
+    this.toggleAddTaskForm();
   }
 
   crearTarea(): void {
     if (this.crearTareaForm.valid) {
+      let work = this.selectedCategory;
+      if(this.selectedSubcategory !== '') {
+        work = work + ',' + this.selectedSubcategory
+      }
+      if(this.selectedOption !== '') {
+        work = work + ',' + this.selectedOption
+      }
+
       this.nuevaTarea = {
         taskId: 0,
         description: this.crearTareaForm.value.description || '',
@@ -543,7 +560,7 @@ export class CalendarioComponent implements OnInit {
         worktime: this.crearTareaForm.value.worktime || '',
         space: this.crearTareaForm.value.space || '',
         material: this.crearTareaForm.value.material || '',
-        work: this.crearTareaForm.value.work || '',
+        work: work || '',
         video: this.crearTareaForm.value.video || '',
         imagenBoard: '',
         collapsed: false,
@@ -552,7 +569,7 @@ export class CalendarioComponent implements OnInit {
       this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea,).subscribe(
         (response) => {
           // Agregar la nueva tarea a la lista de tareas del entrenamiento
-          this.trainingSession.tasks.push(this.nuevaTarea);
+          this.trainingSession.tasks.push(response.data);
           // Limpiar el formulario de nueva tarea
           this.nuevaTarea = new Task();
           // Ocultar el formulario de nueva tarea
