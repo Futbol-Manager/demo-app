@@ -150,6 +150,27 @@
                     seguidamente abajo, por lo que has de rellenar todos los datos.</p>
                 <hr>
                 <!-- Formulario para la creación de jugador -->
+                <div class="mb-3" style="text-align: center;">
+                    <ng-container *ngIf="player.playerId !== 0">
+                        <div class="form-group">
+                            <ng-container *ngIf="player.picturePlayer">
+                                <div class="container">
+                                    <img src="https://sphairatech.com/images/user/{{ player.picturePlayer }}"
+                                        alt="user-player" width="150" height="150" class="rounded-circle me-2">
+                                </div>
+                            </ng-container>
+                            <h4>Sube tu foto del jugador</h4>
+                            <form (submit)="onSubmit(player.playerId)" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="image">Seleccionar imagen:</label>
+                                    <input type="file" id="image" (change)="onFileSelected($event)">
+                                </div>
+                                <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir
+                                    imagen</button>
+                            </form>
+                        </div>
+                    </ng-container>
+                </div>
                 <form>
                     <!-- Campos del formulario con ngModel y nombres asignados -->
                     <div class="form-group">
@@ -497,6 +518,12 @@
                             alt="Imagen del jugador">-->
                         <ng-container *ngIf="!selectedPlayer.picturePlayer">
                             <span class="bi bi-person" style="font-size: 3rem;"></span>
+                        </ng-container>
+                        <ng-container *ngIf="selectedPlayer.picturePlayer">
+                            <div class="container">
+                                <img src="https://sphairatech.com/images/user/{{ selectedPlayer.picturePlayer }}"
+                                    alt="user-player" width="150" height="150" class="rounded-circle me-2">
+                            </div>
                         </ng-container>
                         <!--<img style="max-width: 15vw;" *ngIf="!selectedPlayer.picturePlayer" src="./../../../assets/images/jugador.png" class="img-fluid"
                             alt="Imagen del jugador">-->

@@ -9,6 +9,7 @@ import 'datatables.net';
 
 import { Chart, registerables } from 'chart.js/auto';
 import { HttpClient } from '@angular/common/http';
+import { TrainingService } from 'src/app/core/services/training/training.service';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -41,12 +42,15 @@ export class PlayerComponent implements OnInit {
   edadSeleccionada!: string;
 
   players: any[] = [];
+  imgPlayer: string = '';
+  selectedFile!: File;
 
   constructor(private playerservice: PlayerService,
     private router: Router,
     private route: ActivatedRoute,
     private http: HttpClient,
-    private elementRef: ElementRef) { }
+    private elementRef: ElementRef,
+    private trainingService: TrainingService) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -472,6 +476,30 @@ export class PlayerComponent implements OnInit {
 
     const promedio = Math.round((a + b + c + d + e) / 5); // Redondear al entero más cercano
     this.player.portero = promedio.toString();
+  }
+
+  onFileSelected(event: any) {
+    this.selectedFile = event.target.files[0];
+  }
+
+  onSubmit(playerId: number) {
+    // Verifica si se ha seleccionado un archivo
+    if (this.selectedFile) {
+      console.log('Imagen seleccionada:', this.selectedFile);
+
+      this.trainingService.createUpdateImgPlayer(playerId.toString(), this.selectedFile)
+        .subscribe(
+          (response) => {
+            this.cerrarModal();
+          },
+          error => {
+            console.error('Error al subir la imagen', error);
+            // Aquí puedes manejar el error si la subida de la imagen falla
+          }
+        );
+    } else {
+      console.log('Ninguna imagen seleccionada.');
+    }
   }
 
 }

@@ -82,18 +82,18 @@
         <form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="saveChanges()">
           <div class="mb-3" style="text-align: center;">
             <ng-container *ngIf="imgUser">
-              <img src="https://sphairatech.com/images/user/{{ imgUser }}" alt="user-image" width="32"
+              <img src="https://sphairatech.com/images/user/{{ imgUser }}" alt="user-image" width="150" height="150"
                 class="rounded-circle me-2">
-                <div class="container">
-                  <h4>Sube tu foto de perfil</h4>
-                  <form (submit)="onSubmit()" enctype="multipart/form-data">
-                    <div class="form-group">
-                      <label for="image">Seleccionar imagen:</label>
-                      <input type="file" id="image" (change)="onFileSelected($event)">
-                    </div>
-                    <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir imagen</button>
-                  </form>
-                </div>
+              <div class="container">
+                <h4>Sube tu foto de perfil</h4>
+                <form (submit)="onSubmit()" enctype="multipart/form-data">
+                  <div class="form-group">
+                    <label for="image">Seleccionar imagen:</label>
+                    <input type="file" id="image" (change)="onFileSelected($event)">
+                  </div>
+                  <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir imagen</button>
+                </form>
+              </div>
             </ng-container>
             <ng-container *ngIf="!imgUser">
               <div class="container">

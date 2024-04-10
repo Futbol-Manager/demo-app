@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Task, Training } from 'src/app/core/services/models/training.models';
 import { TrainingService } from 'src/app/core/services/training/training.service';
@@ -8,6 +8,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { PlayerId } from 'src/app/core/services/player/player.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { TeamService } from 'src/app/core/services/team/team.service';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -66,6 +67,119 @@ export class CalendarioComponent implements OnInit {
 
   showModalBoard: boolean = false;
   iframeSrc: string = 'https://tacticalboard.sphairatech.com/';
+  nombreEquipo: string = '';
+
+  categories = [
+    {
+      name: 'Trabajo Físico',
+      subcategories: [
+        {
+          name: 'Resistencia',
+          options: [
+            'Juegos de posesión',
+            'Juegos de posición',
+            'Ataque – Defensa',
+            'Partidos reducidos',
+            'Partidos condicionados',
+            'Acciones combinadas',
+            'Finalizaciones'
+          ]
+        },
+        {
+          name: 'Fuerza',
+          options: [
+            'Circuitos Físicos',
+            'Juego de Posesión',
+            'Ataque – Defensa',
+            'Finalizaciones'
+          ]
+        },
+        {
+          name: 'Velocidad',
+          options: []
+        }
+      ]
+    },
+    {
+      name: 'Trabajo Táctico',
+      subcategories: [
+        {
+          name: 'Trabajo por posiciones',
+          options: []
+        },
+        {
+          name: 'Trabajo por líneas',
+          options: []
+        },
+        {
+          name: 'Específicos',
+          options: []
+        }
+      ]
+    },
+    {
+      name: 'Tecnificación',
+      subcategories: []
+    },
+    {
+      name: 'ABP',
+      subcategories: [
+        {
+          name: 'Faltas laterales',
+          options: []
+        },
+        {
+          name: 'Faltas frontales',
+          options: []
+        },
+        {
+          name: 'Corners',
+          options: []
+        }
+      ]
+    },
+    {
+      name: 'Trabajo Preventivo',
+      subcategories: [
+        {
+          name: 'Core',
+          options: []
+        },
+        {
+          name: 'Estabilización de rodilla',
+          options: []
+        },
+        {
+          name: 'Glúteos',
+          options: []
+        },
+        {
+          name: 'Cuádriceps',
+          options: []
+        },
+        {
+          name: 'Aductores',
+          options: []
+        },
+        {
+          name: 'Isquiotibiales',
+          options: []
+        },
+        {
+          name: 'Gemelos',
+          options: []
+        },
+        {
+          name: 'Propiocepción',
+          options: []
+        }
+      ]
+    }
+  ];
+
+  selectedCategory: string = '';
+  selectedSubcategory: string = '';
+  selectedOption: string = '';
 
   constructor(
     private router: Router,
@@ -74,6 +188,8 @@ export class CalendarioComponent implements OnInit {
     private playerService: PlayerService,
     private dialog: MatDialog,
     private fb: FormBuilder,
+    private teamService: TeamService,
+    private cdr: ChangeDetectorRef
   ) {
     this.crearEntrenamientoForm = this.fb.group({
       objectiveSession: ['', Validators.required],
@@ -165,8 +281,21 @@ export class CalendarioComponent implements OnInit {
       this.teamId = +params['teamId'];  // El + convierte el valor a número
       console.log('teamId:', this.teamId);
     });
-    this.getListaEntrenamientos();
-    this.getListaPrePartido();
+    this.teamService.getTeamById(this.teamId.toString()).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.nombreEquipo = response.data.name;
+          this.getListaEntrenamientos();
+          this.getListaPrePartido();
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
   }
 
   // Método para generar el calendario para el mes especificado
@@ -262,7 +391,7 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearEntrenamiento() {
-    if(this.crearEntrenamientoForm.valid){
+    if (this.crearEntrenamientoForm.valid) {
       this.trainingSession = {
         trainingSessionId: 0,
         daySession: this.daySession,
@@ -404,7 +533,7 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearTarea(): void {
-    if(this.crearTareaForm.valid){
+    if (this.crearTareaForm.valid) {
       this.nuevaTarea = {
         taskId: 0,
         description: this.crearTareaForm.value.description || '',
@@ -480,7 +609,7 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearPartido(): void {
-    if(this.crearPartidoForm.valid){
+    if (this.crearPartidoForm.valid) {
       this.match = {
         matchPreparationId: 0,
         abp: this.crearPartidoForm.value.abp || '',
@@ -606,7 +735,7 @@ export class CalendarioComponent implements OnInit {
   }
 
   guardarPostPartidoSimple() {
-    if(this.guardarPostPartidoSimpleForm.valid){
+    if (this.guardarPostPartidoSimpleForm.valid) {
       this.postPartido = {
         postPartidoId: 0,
         matchPreparation: new MatchPreparation({}),
@@ -649,7 +778,7 @@ export class CalendarioComponent implements OnInit {
   }
 
   guardarPostPartidoAvanzado() {
-    if(this.guardarPostPartidoAvanzadoForm.valid){
+    if (this.guardarPostPartidoAvanzadoForm.valid) {
       this.postPartido = {
         postPartidoId: 0,
         matchPreparation: new MatchPreparation({}),
@@ -726,7 +855,7 @@ export class CalendarioComponent implements OnInit {
     if (this.postPartidoId === 0) {
       //mostrar aqui un alert de que no se puede guardar un jugador sin antes haber guardado la info en el postpartido
     } else {
-      if(this.guardarInfoPlayerPostPartidoForm.valid){
+      if (this.guardarInfoPlayerPostPartidoForm.valid) {
         this.playerInfoPostPartido = {
           playerPostPartidoId: 0,
           postPartido: new PostPartidoId({}),
@@ -840,4 +969,45 @@ export class CalendarioComponent implements OnInit {
   cerrarBoardModal() {
     this.showModalBoard = false;
   }
+
+  onSelectCategory(event: any): void {
+    if (event.target.value === 'Tecnificación') {
+      //no va haber nada mas
+      this.selectedCategory = '';
+      this.selectedSubcategory = '';
+      this.selectedOption = '';
+    } else {
+      this.selectedCategory = event.target.value;
+      this.selectedSubcategory = '';
+      this.selectedOption = '';
+    }
+    this.cdr.detectChanges(); // Forzar la detección de cambios
+  }
+
+  onSelectSubcategory(event: any): void {
+    if (event.target.value === 'Resistencia' || event.target.value === 'Fuerza') {
+      this.selectedSubcategory = event.target.value;
+      this.selectedOption = '';
+    } else {
+      this.selectedSubcategory = '';
+      this.selectedOption = '';
+    }
+    this.cdr.detectChanges(); // Forzar la detección de cambios
+  }
+
+  onSelectOptionSubcategory(event: any): void {
+    this.selectedOption = event.target.value;
+  }
+
+  getSubcategories(): any[] {
+    const selectedCategory = this.categories.find(cat => cat.name === this.selectedCategory);
+    return selectedCategory ? selectedCategory.subcategories : [];
+  }
+
+  getOptions(): string[] {
+    const selectedCategory = this.categories.find(cat => cat.name === this.selectedCategory);
+    const selectedSubcategory = selectedCategory?.subcategories.find(subcat => subcat.name === this.selectedSubcategory);
+    return selectedSubcategory ? selectedSubcategory.options : [];
+  }
+
 }

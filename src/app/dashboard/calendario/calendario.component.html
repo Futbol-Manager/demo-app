@@ -22,7 +22,7 @@
   <!-- calendario.component.html -->
   <div class="container mt-4">
     <div class="container">
-      <h2 class="text-center">{{ tituloMesAnio }}</h2>
+      <h2 class="text-center">{{ nombreEquipo }}</h2>
       <div class="d-flex justify-content-between">
         <button class="btn btn-custom" (click)="mesAnterior()">
           <i class="bi bi-arrow-left"></i> Mes Anterior
@@ -63,18 +63,18 @@
                         <div class="row">
                           <div class="col" *ngIf="!dia.trainingId || !dia.matchPreparationId">
                             <div class="btn-container">
-                              <button class="btn btn-link text-primary" (click)="abrirModal(dia.daysession)">
+                              <button class="btn btn-link text-danger" (click)="abrirModal(dia.daysession)">
                                 <i class="bi bi-plus-circle-fill"></i>
                               </button>
                               <div class="hint">Añadir</div>
                             </div>
                           </div>
                           <div class="col">
-                            <button *ngIf="dia.trainingId" class="btn btn-success btn-sm btn-block"
+                            <button *ngIf="dia.trainingId" class="btn btn-entrena btn-sm btn-block"
                               (click)="openEntrenamiento(dia.trainingId, dia.daysession)">Entrenamiento</button>
                           </div>
                           <div class="col">
-                            <button *ngIf="dia.matchPreparationId" class="btn btn-warning btn-sm btn-block"
+                            <button *ngIf="dia.matchPreparationId" class="btn btn-partido btn-sm btn-block"
                               (click)="openPartido(dia.matchPreparationId, dia.daysession)">Partido</button>
                           </div>
                         </div>
@@ -122,7 +122,7 @@
               <div class="mb-3">
                 <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
                 <textarea class="form-control" id="objectiveSession" rows="5"
-                formControlName="objectiveSession"></textarea>
+                  formControlName="objectiveSession"></textarea>
               </div>
               <div class="mb-3">
                 <label for="warmUp" class="form-label">Calentamiento:</label>
@@ -245,8 +245,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Detalles del Partido</h5>
-        <button type="button" class="btn btn-success float-end"
-          (click)="openPostPartido(match.matchPreparationId)">Post
+        <button type="button" class="btn btn-success float-end" (click)="openPostPartido(match.matchPreparationId)">Post
           Partido</button>
         <!-- Botón de cerrar con un icono -->
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
@@ -367,8 +366,8 @@
       <div class="modal-body">
         <ul class="nav nav-tabs" id="myTab" role="tablist">
           <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="simple-tab" data-bs-toggle="tab" data-bs-target="#simple"
-              type="button" role="tab" aria-controls="simple" aria-selected="true">Simple</button>
+            <button class="nav-link active" id="simple-tab" data-bs-toggle="tab" data-bs-target="#simple" type="button"
+              role="tab" aria-controls="simple" aria-selected="true">Simple</button>
           </li>
           <li class="nav-item" role="presentation">
             <button class="nav-link" id="avanzada-tab" data-bs-toggle="tab" data-bs-target="#avanzada" type="button"
@@ -531,11 +530,13 @@
               <div class="mb-3 d-flex">
                 <div class="col-6">
                   <label for="llegadasPeligroAFavor" class="form-label">Llegadas con peligro a favor:</label>
-                  <input type="number" class="form-control" id="llegadasPeligroAFavor" formControlName="llegadasPeligroAFavor">
+                  <input type="number" class="form-control" id="llegadasPeligroAFavor"
+                    formControlName="llegadasPeligroAFavor">
                 </div>
                 <div class="col-6">
                   <label for="llegadasPeligroEnContra" class="form-label">Llegadas con peligro en contra:</label>
-                  <input type="number" class="form-control" id="llegadasPeligroEnContra" formControlName="llegadasPeligroEnContra">
+                  <input type="number" class="form-control" id="llegadasPeligroEnContra"
+                    formControlName="llegadasPeligroEnContra">
                 </div>
               </div>
               <div class="mb-3">
@@ -566,7 +567,8 @@
                   <div class="accordion-body">
                     <!-- Contenido de la tarea-->
                     <p>Estadísticas individuales:</p>
-                    <form [formGroup]="guardarInfoPlayerPostPartidoForm" (ngSubmit)="guardarInfoPlayerPostPartido(player.playerId)">
+                    <form [formGroup]="guardarInfoPlayerPostPartidoForm"
+                      (ngSubmit)="guardarInfoPlayerPostPartido(player.playerId)">
                       <div class="mb-3 col-4">
                         <label for="minutos" class="form-label">Minutos:</label>
                         <input type="number" class="form-control" id="minutos" formControlName="minutos" name="minutos">
@@ -707,8 +709,7 @@
               </div>
               <div class="mb-3">
                 <label for="rules" class="form-label">Reglas:</label>
-                <textarea class="form-control" id="rules" rows="5" formControlName="rules"
-                  name="rules"></textarea>
+                <textarea class="form-control" id="rules" rows="5" formControlName="rules" name="rules"></textarea>
               </div>
               <div class="mb-3">
                 <label for="variants" class="form-label">Variantes:</label>
@@ -727,8 +728,7 @@
               </div>
               <div class="mb-3">
                 <label for="space" class="form-label">Espacio:</label>
-                <textarea class="form-control" id="space" rows="5" formControlName="space"
-                  name="space"></textarea>
+                <textarea class="form-control" id="space" rows="5" formControlName="space" name="space"></textarea>
               </div>
               <div class="mb-3">
                 <label for="material" class="form-label">Material:</label>
@@ -737,9 +737,35 @@
               </div>
               <div class="mb-3">
                 <label for="video" class="form-label">Video YouTube:</label>
-                <textarea class="form-control" id="video" rows="3" formControlName="video"
-                  name="video"></textarea>
+                <textarea class="form-control" id="video" rows="3" formControlName="video" name="video"></textarea>
               </div>
+
+              <div class="form-group">
+                <label for="work">Tipo de Trabajo:</label>
+                <div>
+                  <label for="category">Categoría:</label>
+                  <select class="form-control" id="category" [(ngModel)]="selectedCategory" (change)="onSelectCategory($event)">
+                    <option value="">Seleccionar categoría</option>
+                    <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
+                  </select>
+                </div>
+                <div *ngIf="selectedCategory">
+                  <label for="subcategory">Subcategoría:</label>
+                  <select class="form-control" id="subcategory" [(ngModel)]="selectedSubcategory" (change)="onSelectSubcategory($event)">
+                    <option value="">Seleccionar subcategoría</option>
+                    <option *ngFor="let subcategory of getSubcategories()" [value]="subcategory.name">{{
+                      subcategory.name }}</option>
+                  </select>
+                </div>
+                <div *ngIf="selectedSubcategory">
+                  <label for="option">Opción:</label>
+                  <select class="form-control" id="option" [(ngModel)]="selectedOption" (change)="onSelectOptionSubcategory($event)">
+                    <option value="">Seleccionar opción</option>
+                    <option *ngFor="let option of getOptions()" [value]="option">{{ option }}</option>
+                  </select>
+                </div>
+              </div>
+
               <div class="form-group">
                 <label for="work">Tipo de Trabajo:</label>
                 <select class="form-control" id="work" name="work" formControlName="work">
@@ -866,4 +892,3 @@
       </div>
     </div>
   </div>
-

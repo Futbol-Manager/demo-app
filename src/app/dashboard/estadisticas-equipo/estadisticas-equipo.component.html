@@ -58,6 +58,8 @@
                         <th>Partido ID</th>
                         <th>NOMBRE_RIVAL</th>
                         <th>RESULTADO</th>
+                        <th>GF</th>
+                        <th>GC</th>
                         <th>DISPAROS A FAVOR</th>
                         <th>DISPAROS EN CONTRA</th>
                         <th>FALTAS COMETIDAS</th>
@@ -84,6 +86,8 @@
                             </div>
                         </td>
                         <td>{{ partido.resultado }}</td>
+                        <td>{{ partido.golesAFavor }}</td>
+                        <td>{{ partido.golesEnContra }}</td>
                         <td>{{ partido.disparosAFavor }}</td>
                         <td>{{ partido.disparosEnContra }}</td>
                         <td>{{ partido.faltasCometidas }}</td>
