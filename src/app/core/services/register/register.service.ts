@@ -28,7 +28,7 @@ export class RegisterService {
   }
 
   getUserById(userId: number){
-    const url: string = environment.apiUrl + `user/getUserById/${userId}`;
+    const url: string = environment.apiUrl + `user/getuserbyid/${userId}`;
     return this.http.get<any>(url);
   }
 }
