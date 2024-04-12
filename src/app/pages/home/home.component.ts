@@ -48,6 +48,7 @@ export class HomeComponent implements OnInit {
             snackBarConfig.horizontalPosition = 'center';
             snackBarConfig.verticalPosition = 'top';
             this.snackBar.open('Correo electrónico enviado con éxito.', 'Cerrar', snackBarConfig);
+            this.screen = 1;
           } else{
             const snackBarConfig = new MatSnackBarConfig();
             snackBarConfig.duration = 5000;

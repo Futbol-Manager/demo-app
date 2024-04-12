@@ -11,6 +11,8 @@ export class User {
     pictureUser: string;
     idGenre: number;
     profileType: ProfileTypeModel;
+    idValidation: number;
+    dateCreate: number;
 
 
     constructor( object: any){
@@ -24,5 +26,7 @@ export class User {
         this.pictureUser = (object.pictureUser) ? object.pictureUser : null;
         this.idGenre = (object.idGenre) ? object.idGenre : null;
         this.profileType = (object.profileType) ? object.profileType : null;
+        this.idValidation = (object.idValidation) ? object.idValidation : null;
+        this.dateCreate = (object.dateCreate) ? object.dateCreate : null;
     }
 }

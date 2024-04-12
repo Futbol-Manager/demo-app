@@ -43,6 +43,11 @@ export class LoginService {
     );
   }
 
+  resendMailWelcome(login: LoginModel) {
+    const url: string = environment.apiUrl + `auth/resendMailWelcome`;
+    return this.http.post<any>(url, login);
+  }
+
   cerrarSesion(): void {
     // Elimina el usuario y el token del localStorage al cerrar sesión
     localStorage.removeItem('usuario');

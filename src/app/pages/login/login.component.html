@@ -26,4 +26,8 @@
   </div>
 
   <button type="submit" class="btn btn-custom btn-block textoCentrado">Iniciar sesión</button>
+  <div *ngIf="verificarCuenta" class="text-danger">
+    <p>Usuario bloqueado! Para desbloquearlo debes validarlo siguiendo el enlace recibido en tu correo electrónico.
+      <a href="#" (click)="enviarMail()">Haz click aquí para recibir un nuevo mail.</a></p>
+  </div>
 </form>
