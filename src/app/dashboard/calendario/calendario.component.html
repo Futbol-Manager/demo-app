@@ -696,6 +696,16 @@
             <label for="warmUp" class="form-label">Calentamiento:</label>
             <textarea class="form-control" id="warmUp" rows="5" [(ngModel)]="trainingSession.warmUp"></textarea>
           </div>
+
+          <div class="mb-3">
+            <button type="button" class="btn btn-danger float-end" (click)="eliminarEntrenamiento()">Eliminar
+              Entrenamiento</button>
+            <button type="button" class="btn btn-custom float-end" (click)="crearEntrenamiento()">Guardar
+              Entrenamiento</button>
+          </div>          
+          <div class="mb-3" style="visibility: hidden;">
+            <textarea class="form-control" rows="1"></textarea>
+          </div>
           <hr>
           <!-- Agrega más campos del entrenamiento si es necesario -->
 
@@ -740,18 +750,20 @@
                 <textarea class="form-control" id="video" rows="3" formControlName="video" name="video"></textarea>
               </div>
 
-              <div class="form-group">
+              <div class="mb-3">
                 <label for="work">Tipo de Trabajo:</label>
                 <div>
                   <label for="category">Categoría:</label>
-                  <select class="form-control" id="category" [(ngModel)]="selectedCategory" (change)="onSelectCategory($event)">
+                  <select class="form-control" id="category" [(ngModel)]="selectedCategory"
+                    (change)="onSelectCategory($event)">
                     <option value="">Pulsa para cargar las categorias</option>
                     <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
                   </select>
                 </div>
                 <div *ngIf="selectedCategory">
                   <label for="subcategory">Subcategoría:</label>
-                  <select class="form-control" id="subcategory" [(ngModel)]="selectedSubcategory" (change)="onSelectSubcategory($event)">
+                  <select class="form-control" id="subcategory" [(ngModel)]="selectedSubcategory"
+                    (change)="onSelectSubcategory($event)">
                     <option value="">Seleccionar subcategoría</option>
                     <option *ngFor="let subcategory of getSubcategories()" [value]="subcategory.name">{{
                       subcategory.name }}</option>
@@ -759,7 +771,8 @@
                 </div>
                 <div *ngIf="selectedSubcategory">
                   <label for="option">Opción:</label>
-                  <select class="form-control" id="option" [(ngModel)]="selectedOption" (change)="onSelectOptionSubcategory($event)">
+                  <select class="form-control" id="option" [(ngModel)]="selectedOption"
+                    (change)="onSelectOptionSubcategory($event)">
                     <option value="">Seleccionar opción</option>
                     <option *ngFor="let option of getOptions()" [value]="option">{{ option }}</option>
                   </select>
@@ -799,10 +812,13 @@
                 </select>
               </div> -->
 
-              <!-- Agregar más campos de tarea según sea necesario -->
-              <button (click)="toggleAddTaskForm()" class="btn btn-danger">Cancelar</button>
-              <button type="submit" class="btn btn-custom">Crear Tarea</button>
+              <div class="mb-3 text-end">
+                <!-- Agregar más campos de tarea según sea necesario -->
+                <button (click)="toggleAddTaskForm()" class="btn btn-danger">Cancelar</button>
+                <button type="submit" class="btn btn-custom">Crear Tarea</button>
+              </div>
             </form>
+            <hr>
           </div>
 
           <!-- Mostrar lista de tareas colapsada -->
@@ -863,10 +879,6 @@
             Tareas</button>
           <button type="button" class="btn btn-custom mt-3" (click)="cerrarTienda()" *ngIf="viewShop">Cerrar
             Nube de Tareas</button>
-          <button type="button" class="btn btn-danger float-end" (click)="eliminarEntrenamiento()">Eliminar
-            Entrenamiento</button>
-          <button type="button" class="btn btn-custom float-end" (click)="crearEntrenamiento()">Guardar
-            Entrenamiento</button>
           <!-- Modal para abrir listado de tareas de la tienda-->
           <app-shop [trainingId]="trainingId" (tareaDescargada)="tareaDescargada($event)" *ngIf="viewShop">
           </app-shop>

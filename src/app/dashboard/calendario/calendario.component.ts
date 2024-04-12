@@ -200,85 +200,85 @@ export class CalendarioComponent implements OnInit {
     private cdr: ChangeDetectorRef
   ) {
     this.crearEntrenamientoForm = this.fb.group({
-      objectiveSession: ['', Validators.required],
-      warmUp: ['', Validators.required],
+      objectiveSession: [''],  
+      warmUp: [''],
     });
     this.crearPartidoForm = this.fb.group({
-      rivalName: ['', Validators.required],
-      terreno: ['', Validators.required],
-      lugar: ['', Validators.required],
-      hora: ['', Validators.required],
-      minutos: ['', Validators.required],
-      rivalInfo: ['', Validators.required],
-      refereeName: ['', Validators.required],
-      trainingPicture: ['', Validators.required],
-      matchTactics: ['', Validators.required],
-      abp: ['', Validators.required],
-      summoned: ['', Validators.required],
+      rivalName: [''],
+      terreno: [''],
+      lugar: [''],
+      hora: [''],
+      minutos: [''],
+      rivalInfo: [''],
+      refereeName: [''],
+      trainingPicture: [''],
+      matchTactics: [''],
+      abp: [''],
+      summoned: [''],
     });
     this.crearTareaForm = this.fb.group({
-      description: ['', Validators.required],
-      rules: ['', Validators.required],
-      variants: ['', Validators.required],
-      slogans: ['', Validators.required],
-      worktime: ['', Validators.required],
-      space: ['', Validators.required],
-      material: ['', Validators.required],
-      //video: ['', Validators.required]
-      //work: ['', Validators.required],
+      description: [''],
+      rules: [''],
+      variants: [''],
+      slogans: ['', Validators.required], //esto pasa a usarse como titulo de la tarea
+      worktime: [''],
+      space: [''],
+      material: [''],
+      video: [''],
+      work: [''],
     });
     this.guardarPostPartidoSimpleForm = this.fb.group({
       golesAFavor: ['', Validators.required],
       golesEnContra: ['', Validators.required],
       resultado: ['', Validators.required],
-      paradasPortero: ['', Validators.required],
-      disparosAFavor: ['', Validators.required],
-      disparosEnContra: ['', Validators.required],
-      faltasCometidas: ['', Validators.required],
-      faltasRecibidas: ['', Validators.required],
-      cornersAFavor: ['', Validators.required],
-      cornersEnContra: ['', Validators.required],
-      penaltisAFavor: ['', Validators.required],
-      penaltisEnContra: ['', Validators.required],
-      recuperaciones: ['', Validators.required],
-      perdidas: ['', Validators.required],
-      tarjetasAmarillas: ['', Validators.required],
-      tarjetasRojas: ['', Validators.required],
-      llegadasPeligroAFavor: ['', Validators.required],
-      llegadasPeligroEnContra: ['', Validators.required],
-      anotaciones: ['', Validators.required],
-      video: ['', Validators.required],
+      paradasPortero: [''],
+      disparosAFavor: [''],
+      disparosEnContra: [''],
+      faltasCometidas: [''],
+      faltasRecibidas: [''],
+      cornersAFavor: [''],
+      cornersEnContra: [''],
+      penaltisAFavor: [''],
+      penaltisEnContra: [''],
+      recuperaciones: [''],
+      perdidas: [''],
+      tarjetasAmarillas: [''],
+      tarjetasRojas: [''],
+      llegadasPeligroAFavor: [''],
+      llegadasPeligroEnContra: [''],
+      anotaciones: [''],
+      video: [''],
     });
     this.guardarPostPartidoAvanzadoForm = this.fb.group({
       golesAFavor: ['', Validators.required],
       golesEnContra: ['', Validators.required],
       resultado: ['', Validators.required],
-      disparosAFavor: ['', Validators.required],
-      disparosEnContra: ['', Validators.required],
-      cornersAFavor: ['', Validators.required],
-      cornersEnContra: ['', Validators.required],
-      llegadasPeligroAFavor: ['', Validators.required],
-      llegadasPeligroEnContra: ['', Validators.required],
-      anotaciones: ['', Validators.required],
-      video: ['', Validators.required],
+      disparosAFavor: [''],
+      disparosEnContra: [''],
+      cornersAFavor: [''],
+      cornersEnContra: [''],
+      llegadasPeligroAFavor: [''],
+      llegadasPeligroEnContra: [''],
+      anotaciones: [''],
+      video: [''],
     });
     this.guardarInfoPlayerPostPartidoForm = this.fb.group({
       minutos: ['', Validators.required],
-      goles: ['', Validators.required],
-      golesPenalti: ['', Validators.required],
-      golesFalta: ['', Validators.required],
-      faltasCometidas: ['', Validators.required],
-      faltasRecibidas: ['', Validators.required],
-      penaltisCometidos: ['', Validators.required],
-      penaltisRecibidos: ['', Validators.required],
-      recuperaciones: ['', Validators.required],
-      perdidas: ['', Validators.required],
-      tarjetasAmarillas: ['', Validators.required],
-      tarjetasRojas: ['', Validators.required],
-      disparosTotales: ['', Validators.required],
-      disparosPuerta: ['', Validators.required],
-      paradasPortero: ['', Validators.required],
-      anotaciones: ['', Validators.required],
+      goles: [''],
+      golesPenalti: [''],
+      golesFalta: [''],
+      faltasCometidas: [''],
+      faltasRecibidas: [''],
+      penaltisCometidos: [''],
+      penaltisRecibidos: [''],
+      recuperaciones: [''],
+      perdidas: [''],
+      tarjetasAmarillas: [''],
+      tarjetasRojas: [''],
+      disparosTotales: [''],
+      disparosPuerta: [''],
+      paradasPortero: [''],
+      anotaciones: [''],
     });
   }
 
@@ -544,10 +544,10 @@ export class CalendarioComponent implements OnInit {
   crearTarea(): void {
     if (this.crearTareaForm.valid) {
       let work = this.selectedCategory;
-      if(this.selectedSubcategory !== '') {
+      if (this.selectedSubcategory !== '') {
         work = work + ',' + this.selectedSubcategory
       }
-      if(this.selectedOption !== '') {
+      if (this.selectedOption !== '') {
         work = work + ',' + this.selectedOption
       }
 
