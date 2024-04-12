@@ -30,12 +30,6 @@ interface Category {
   styleUrls: ['./calendario.component.scss']
 })
 export class CalendarioComponent implements OnInit {
-  crearEntrenamientoForm: FormGroup;
-  crearPartidoForm: FormGroup;
-  crearTareaForm: FormGroup;
-  guardarPostPartidoSimpleForm: FormGroup;
-  guardarPostPartidoAvanzadoForm: FormGroup;
-  guardarInfoPlayerPostPartidoForm: FormGroup;
 
   datosCargados: boolean = false;
   teamId!: number;  // Ajusta el valor según el teamId del equipo actual
@@ -199,87 +193,6 @@ export class CalendarioComponent implements OnInit {
     private teamService: TeamService,
     private cdr: ChangeDetectorRef
   ) {
-    this.crearEntrenamientoForm = this.fb.group({
-      objectiveSession: [''],  
-      warmUp: [''],
-    });
-    this.crearPartidoForm = this.fb.group({
-      rivalName: [''],
-      terreno: [''],
-      lugar: [''],
-      hora: [''],
-      minutos: [''],
-      rivalInfo: [''],
-      refereeName: [''],
-      trainingPicture: [''],
-      matchTactics: [''],
-      abp: [''],
-      summoned: [''],
-    });
-    this.crearTareaForm = this.fb.group({
-      description: [''],
-      rules: [''],
-      variants: [''],
-      slogans: ['', Validators.required], //esto pasa a usarse como titulo de la tarea
-      worktime: [''],
-      space: [''],
-      material: [''],
-      video: [''],
-      work: [''],
-    });
-    this.guardarPostPartidoSimpleForm = this.fb.group({
-      golesAFavor: ['', Validators.required],
-      golesEnContra: ['', Validators.required],
-      resultado: ['', Validators.required],
-      paradasPortero: [''],
-      disparosAFavor: [''],
-      disparosEnContra: [''],
-      faltasCometidas: [''],
-      faltasRecibidas: [''],
-      cornersAFavor: [''],
-      cornersEnContra: [''],
-      penaltisAFavor: [''],
-      penaltisEnContra: [''],
-      recuperaciones: [''],
-      perdidas: [''],
-      tarjetasAmarillas: [''],
-      tarjetasRojas: [''],
-      llegadasPeligroAFavor: [''],
-      llegadasPeligroEnContra: [''],
-      anotaciones: [''],
-      video: [''],
-    });
-    this.guardarPostPartidoAvanzadoForm = this.fb.group({
-      golesAFavor: ['', Validators.required],
-      golesEnContra: ['', Validators.required],
-      resultado: ['', Validators.required],
-      disparosAFavor: [''],
-      disparosEnContra: [''],
-      cornersAFavor: [''],
-      cornersEnContra: [''],
-      llegadasPeligroAFavor: [''],
-      llegadasPeligroEnContra: [''],
-      anotaciones: [''],
-      video: [''],
-    });
-    this.guardarInfoPlayerPostPartidoForm = this.fb.group({
-      minutos: ['', Validators.required],
-      goles: [''],
-      golesPenalti: [''],
-      golesFalta: [''],
-      faltasCometidas: [''],
-      faltasRecibidas: [''],
-      penaltisCometidos: [''],
-      penaltisRecibidos: [''],
-      recuperaciones: [''],
-      perdidas: [''],
-      tarjetasAmarillas: [''],
-      tarjetasRojas: [''],
-      disparosTotales: [''],
-      disparosPuerta: [''],
-      paradasPortero: [''],
-      anotaciones: [''],
-    });
   }
 
   ngOnInit(): void {
@@ -295,7 +208,6 @@ export class CalendarioComponent implements OnInit {
         if (response.data !== null) {
           this.nombreEquipo = response.data.name;
           this.getListaEntrenamientos();
-          this.getListaPrePartido();
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -399,31 +311,22 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearEntrenamiento() {
-    if (this.crearEntrenamientoForm.valid) {
-      this.trainingSession = {
-        trainingSessionId: 0,
-        daySession: this.daySession,
-        objectiveSession: this.crearEntrenamientoForm.value.objectiveSession || '',
-        warmUp: this.crearEntrenamientoForm.value.warmUp || '',
-        tasks: []
+    this.trainingService.createUpdateTrainingSession(this.teamId.toString(), this.trainingSession).subscribe(
+      (response) => {
+        console.log('Sesión de entrenamiento guardada con éxito:', response);
+        // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
+        this.getListaEntrenamientos();
+        // Cerrar el modal después de crear el equipo
+        if (this.trainingSession.trainingSessionId === 0)
+          this.cerrarModal();
+        else
+          this.cerrarModalEntrenamiento();
+      },
+      (error) => {
+        console.error('Error al guardar la sesión de entrenamiento:', error);
+        // Aquí puedes manejar el error, si es necesario
       }
-      this.trainingService.createUpdateTrainingSession(this.teamId.toString(), this.trainingSession).subscribe(
-        (response) => {
-          console.log('Sesión de entrenamiento guardada con éxito:', response);
-          // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
-          this.getListaEntrenamientos();
-          // Cerrar el modal después de crear el equipo
-          if (this.trainingSession.trainingSessionId === 0)
-            this.cerrarModal();
-          else
-            this.cerrarModalEntrenamiento();
-        },
-        (error) => {
-          console.error('Error al guardar la sesión de entrenamiento:', error);
-          // Aquí puedes manejar el error, si es necesario
-        }
-      );
-    }
+    );
   }
 
   eliminarEntrenamiento() {
@@ -542,28 +445,12 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearTarea(): void {
-    if (this.crearTareaForm.valid) {
-      let work = this.selectedCategory;
+    let work = this.selectedCategory;
       if (this.selectedSubcategory !== '') {
         work = work + ',' + this.selectedSubcategory
       }
       if (this.selectedOption !== '') {
         work = work + ',' + this.selectedOption
-      }
-
-      this.nuevaTarea = {
-        taskId: 0,
-        description: this.crearTareaForm.value.description || '',
-        rules: this.crearTareaForm.value.rules || '',
-        variants: this.crearTareaForm.value.variants || '',
-        slogans: this.crearTareaForm.value.slogans || '',
-        worktime: this.crearTareaForm.value.worktime || '',
-        space: this.crearTareaForm.value.space || '',
-        material: this.crearTareaForm.value.material || '',
-        work: work || '',
-        video: this.crearTareaForm.value.video || '',
-        imagenBoard: '',
-        collapsed: false,
       }
       // Llamada al servicio para crear el equipo
       this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea,).subscribe(
@@ -579,7 +466,6 @@ export class CalendarioComponent implements OnInit {
           console.error('Error al crear el equipo:', error);
         }
       );
-    }
   }
 
   toggleAddTaskForm(): void {
@@ -626,44 +512,26 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearPartido(): void {
-    if (this.crearPartidoForm.valid) {
-      this.match = {
-        matchPreparationId: 0,
-        abp: this.crearPartidoForm.value.abp || '',
-        matchDate: this.daySession || '',
-        matchTactics: this.crearPartidoForm.value.matchTactics || '',
-        rivalInfo: this.crearPartidoForm.value.rivalInfo || '',
-        rivalName: this.crearPartidoForm.value.rivalName || '',
-        trainingPicture: this.crearPartidoForm.value.trainingPicture || '',
-        trainingText: '',
-        refereeName: this.crearPartidoForm.value.refereeName || '',
-        summoned: this.crearPartidoForm.value.summoned || '',
-        terreno: this.crearPartidoForm.value.terreno || '',
-        lugar: this.crearPartidoForm.value.lugar || '',
-        hora: this.crearPartidoForm.value.hora || '',
-        minutos: this.crearPartidoForm.value.minutos || '',
-      }
-      // Lógica para crear el partido usando this.partido y enviarlo al servicio
-      this.trainingService.createUpdatePartido(this.teamId.toString(), this.match).subscribe(
-        (response) => {
-          // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
-          if (response.data) {
-            // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
-            this.getListaPrePartido();
-            if (this.match.matchPreparationId === 0)
-              this.cerrarModal();
-            else
-              this.cerrarModalPartido();
+    // Lógica para crear el partido usando this.partido y enviarlo al servicio
+    this.trainingService.createUpdatePartido(this.teamId.toString(), this.match).subscribe(
+      (response) => {
+        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
+        if (response.data) {
+          // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
+          this.getListaPrePartido();
+          if (this.match.matchPreparationId === 0)
+            this.cerrarModal();
+          else
+            this.cerrarModalPartido();
 
-          } else {
-            console.error('Error al crear el partido:', response.error.msg);
-          }
-        },
-        (error) => {
-          console.error('Error en la solicitud:', error);
+        } else {
+          console.error('Error al crear el partido:', response.error.msg);
         }
-      );
-    }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
   }
 
   eliminarPartido(): void {
@@ -752,89 +620,37 @@ export class CalendarioComponent implements OnInit {
   }
 
   guardarPostPartidoSimple() {
-    if (this.guardarPostPartidoSimpleForm.valid) {
-      this.postPartido = {
-        postPartidoId: 0,
-        matchPreparation: new MatchPreparation({}),
-        golesAFavor: this.guardarPostPartidoSimpleForm.value.golesAFavor || 0,
-        golesEnContra: this.guardarPostPartidoSimpleForm.value.golesEnContra || 0,
-        disparosAFavor: this.guardarPostPartidoSimpleForm.value.disparosAFavor || 0,
-        disparosEnContra: this.guardarPostPartidoSimpleForm.value.disparosEnContra || 0,
-        faltasCometidas: this.guardarPostPartidoSimpleForm.value.faltasCometidas || 0,
-        faltasRecibidas: this.guardarPostPartidoSimpleForm.value.faltasRecibidas || 0,
-        cornersAFavor: this.guardarPostPartidoSimpleForm.value.cornersAFavor || 0,
-        cornersEnContra: this.guardarPostPartidoSimpleForm.value.cornersEnContra || 0,
-        penaltisAFavor: this.guardarPostPartidoSimpleForm.value.penaltisAFavor || 0,
-        penaltisEnContra: this.guardarPostPartidoSimpleForm.value.penaltisEnContra || 0,
-        recuperaciones: this.guardarPostPartidoSimpleForm.value.recuperaciones || 0,
-        perdidas: this.guardarPostPartidoSimpleForm.value.perdidas || 0,
-        paradasPortero: this.guardarPostPartidoSimpleForm.value.paradasPortero || 0,
-        tarjetasAmarillas: this.guardarPostPartidoSimpleForm.value.tarjetasAmarillas || 0,
-        tarjetasRojas: this.guardarPostPartidoSimpleForm.value.tarjetasRojas || 0,
-        llegadasPeligroAFavor: this.guardarPostPartidoSimpleForm.value.llegadasPeligroAFavor || 0,
-        llegadasPeligroEnContra: this.guardarPostPartidoSimpleForm.value.llegadasPeligroEnContra || 0,
-        anotaciones: this.guardarPostPartidoSimpleForm.value.anotaciones || '',
-        resultado: this.guardarPostPartidoSimpleForm.value.resultado || '',
-        video: this.guardarPostPartidoSimpleForm.value.video || '',
-      }
-      this.postPartido.matchPreparation.matchPreparationId = this.matchPreparationId;
-      this.trainingService.createUpdatePostPartido(this.postPartido).subscribe(
-        (response) => {
-          // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
-          if (response.data) {
-            this.cerrarModalPostPartido();
-          } else {
-            console.error('Error al crear el partido:', response.error.msg);
-          }
-        },
-        (error) => {
-          console.error('Error en la solicitud:', error);
+    this.postPartido.matchPreparation.matchPreparationId = this.matchPreparationId;
+    this.trainingService.createUpdatePostPartido(this.postPartido).subscribe(
+      (response) => {
+        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
+        if (response.data) {
+          this.cerrarModalPostPartido();
+        } else {
+          console.error('Error al crear el partido:', response.error.msg);
         }
-      );
-    }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
   }
 
   guardarPostPartidoAvanzado() {
-    if (this.guardarPostPartidoAvanzadoForm.valid) {
-      this.postPartido = {
-        postPartidoId: 0,
-        matchPreparation: new MatchPreparation({}),
-        golesAFavor: this.guardarPostPartidoAvanzadoForm.value.golesAFavor || 0,
-        golesEnContra: this.guardarPostPartidoAvanzadoForm.value.golesEnContra || 0,
-        disparosAFavor: this.guardarPostPartidoAvanzadoForm.value.disparosAFavor || 0,
-        disparosEnContra: this.guardarPostPartidoAvanzadoForm.value.disparosEnContra || 0,
-        faltasCometidas: this.postPartido.faltasCometidas || 0,
-        faltasRecibidas: this.postPartido.faltasRecibidas || 0,
-        cornersAFavor: this.guardarPostPartidoAvanzadoForm.value.cornersAFavor || 0,
-        cornersEnContra: this.guardarPostPartidoAvanzadoForm.value.cornersEnContra || 0,
-        penaltisAFavor: this.postPartido.penaltisAFavor || 0,
-        penaltisEnContra: this.postPartido.penaltisEnContra || 0,
-        recuperaciones: this.postPartido.recuperaciones || 0,
-        perdidas: this.postPartido.perdidas || 0,
-        paradasPortero: this.postPartido.paradasPortero || 0,
-        tarjetasAmarillas: this.postPartido.tarjetasAmarillas || 0,
-        tarjetasRojas: this.postPartido.tarjetasRojas || 0,
-        llegadasPeligroAFavor: this.guardarPostPartidoAvanzadoForm.value.llegadasPeligroAFavor || 0,
-        llegadasPeligroEnContra: this.guardarPostPartidoAvanzadoForm.value.llegadasPeligroEnContra || 0,
-        anotaciones: this.guardarPostPartidoAvanzadoForm.value.anotaciones || '',
-        resultado: this.guardarPostPartidoAvanzadoForm.value.resultado || '',
-        video: this.guardarPostPartidoAvanzadoForm.value.video || '',
-      }
-      this.postPartido.matchPreparation.matchPreparationId = this.matchPreparationId;
-      this.trainingService.createUpdatePostPartido(this.postPartido).subscribe(
-        (response) => {
-          // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
-          if (response.data) {
-            this.cerrarModalPostPartido();
-          } else {
-            console.error('Error al crear el partido:', response.error.msg);
-          }
-        },
-        (error) => {
-          console.error('Error en la solicitud:', error);
+    this.postPartido.matchPreparation.matchPreparationId = this.matchPreparationId;
+    this.trainingService.createUpdatePostPartido(this.postPartido).subscribe(
+      (response) => {
+        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
+        if (response.data) {
+          this.cerrarModalPostPartido();
+        } else {
+          console.error('Error al crear el partido:', response.error.msg);
         }
-      );
-    }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
   }
 
   togglePlayer(player: PlayerId): void {
@@ -872,46 +688,23 @@ export class CalendarioComponent implements OnInit {
     if (this.postPartidoId === 0) {
       //mostrar aqui un alert de que no se puede guardar un jugador sin antes haber guardado la info en el postpartido
     } else {
-      if (this.guardarInfoPlayerPostPartidoForm.valid) {
-        this.playerInfoPostPartido = {
-          playerPostPartidoId: 0,
-          postPartido: new PostPartidoId({}),
-          player: new PlayerId({}),
-          minutos: this.guardarInfoPlayerPostPartidoForm.value.minutos || 0,
-          goles: this.guardarInfoPlayerPostPartidoForm.value.goles || 0,
-          golesPenalti: this.guardarInfoPlayerPostPartidoForm.value.golesPenalti || 0,
-          golesFalta: this.guardarInfoPlayerPostPartidoForm.value.golesFalta || 0,
-          faltasCometidas: this.guardarInfoPlayerPostPartidoForm.value.faltasCometidas || 0,
-          faltasRecibidas: this.guardarInfoPlayerPostPartidoForm.value.faltasRecibidas || 0,
-          recuperaciones: this.guardarInfoPlayerPostPartidoForm.value.recuperaciones || 0,
-          perdidas: this.guardarInfoPlayerPostPartidoForm.value.perdidas || 0,
-          tarjetasAmarillas: this.guardarInfoPlayerPostPartidoForm.value.tarjetasAmarillas || 0,
-          tarjetasRojas: this.guardarInfoPlayerPostPartidoForm.value.tarjetasRojas || 0,
-          disparosTotales: this.guardarInfoPlayerPostPartidoForm.value.disparosTotales || 0,
-          disparosPuerta: this.guardarInfoPlayerPostPartidoForm.value.disparosPuerta || 0,
-          paradasPortero: this.guardarInfoPlayerPostPartidoForm.value.paradasPortero || 0,
-          anotaciones: this.guardarInfoPlayerPostPartidoForm.value.anotaciones || '',
-          penaltisCometidos: this.guardarInfoPlayerPostPartidoForm.value.penaltisCometidos || 0,
-          penaltisRecibidos: this.guardarInfoPlayerPostPartidoForm.value.penaltisRecibidos || 0,
-        }
-        this.playerInfoPostPartido.player.playerId = playerId;
-        this.playerInfoPostPartido.postPartido.postPartidoId = this.postPartidoId;
-        this.playerService.createUpdateInfoPlayerPostPartido(this.playerInfoPostPartido).subscribe(
-          (response) => {
-            // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
-            if (response.data) {
-              //this.cerrarModalPostPartido();
-              //esto cerraria la pestaña de jugador para poder introducir los datos de otros
-              this.cerrarTogglePlayer(this.cerrarPlayer);
-            } else {
-              console.error('Error al crear el partido:', response.error.msg);
-            }
-          },
-          (error) => {
-            console.error('Error en la solicitud:', error);
+      this.playerInfoPostPartido.player.playerId = playerId;
+      this.playerInfoPostPartido.postPartido.postPartidoId = this.postPartidoId;
+      this.playerService.createUpdateInfoPlayerPostPartido(this.playerInfoPostPartido).subscribe(
+        (response) => {
+          // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
+          if (response.data) {
+            //this.cerrarModalPostPartido();
+            //esto cerraria la pestaña de jugador para poder introducir los datos de otros
+            this.cerrarTogglePlayer(this.cerrarPlayer);
+          } else {
+            console.error('Error al crear el partido:', response.error.msg);
           }
-        );
-      }
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        }
+      );
     }
   }
 
