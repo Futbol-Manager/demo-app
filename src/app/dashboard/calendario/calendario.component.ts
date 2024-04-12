@@ -694,9 +694,11 @@ export class CalendarioComponent implements OnInit {
         (response) => {
           // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
           if (response.data) {
-            //this.cerrarModalPostPartido();
+            // Encontrar el índice del elemento a actualizar
+            const index = this.playerPostPartido.findIndex(player => player.playerId === response.data.player.playerId);
+            this.playerPostPartido[index].info = response.data;
             //esto cerraria la pestaña de jugador para poder introducir los datos de otros
-            this.cerrarTogglePlayer(this.cerrarPlayer);
+            this.togglePlayer(this.cerrarPlayer);
           } else {
             console.error('Error al crear el partido:', response.error.msg);
           }
