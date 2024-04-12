@@ -311,6 +311,7 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearEntrenamiento() {
+    this.trainingSession.daySession = this.daySession;
     this.trainingService.createUpdateTrainingSession(this.teamId.toString(), this.trainingSession).subscribe(
       (response) => {
         console.log('Sesión de entrenamiento guardada con éxito:', response);
@@ -512,11 +513,13 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearPartido(): void {
+    this.match.matchDate = this.daySession;
     // Lógica para crear el partido usando this.partido y enviarlo al servicio
     this.trainingService.createUpdatePartido(this.teamId.toString(), this.match).subscribe(
       (response) => {
         // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
         if (response.data) {
+          this.match = new MatchPreparation({});
           // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
           this.getListaPrePartido();
           if (this.match.matchPreparationId === 0)
