@@ -66,4 +66,20 @@ export class LoginService {
     return this.usuarioAutenticado.asObservable();
   }
 
+  /*actualizarImagenUsuario(imgUser: string) {
+    const currentUser = this.usuarioAutenticado.value;
+    if (currentUser) {
+      const updatedUser = {
+        ...currentUser,
+        imgUser: imgUser
+      };
+
+      // Guardar el usuario actualizado en localStorage
+      localStorage.setItem('usuario', JSON.stringify(updatedUser));
+
+      // Emitir el usuario actualizado
+      this.usuarioAutenticado.next(updatedUser);
+    }
+  }*/
+
 }

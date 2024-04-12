@@ -490,6 +490,13 @@ export class PlayerComponent implements OnInit {
       this.trainingService.createUpdateImgPlayer(playerId.toString(), this.selectedFile)
         .subscribe(
           (response) => {
+            const updatedImgPlayer = response.data;
+
+            // Encuentra el jugador en el arreglo y actualiza su imgPlayer
+            const index = this.players.findIndex(player => player.playerId === playerId);
+            if (index !== -1) {
+                this.players[index].picturePlayer = updatedImgPlayer;
+            }
             this.cerrarModal();
           },
           error => {

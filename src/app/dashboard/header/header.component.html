@@ -12,7 +12,7 @@
             <span class="d-lg-none">
               <span class="account-user-avatar">
                 <ng-container *ngIf="imgUser">
-                  <img src="https://sphairatech.com/images/user/{{ imgUser }}" alt="user-image" width="32"
+                  <img src="https://sphairatech.com/images/user/{{ imgUser }}" alt="user-image" width="32" height="32"
                     class="rounded-circle me-2">
                 </ng-container>
                 <ng-container *ngIf="!imgUser">
@@ -25,7 +25,7 @@
             <span class="d-none d-lg-flex flex-column gap-1">
               <span class="account-user-avatar">
                 <ng-container *ngIf="imgUser">
-                  <img src="https://sphairatech.com/images/user/{{ imgUser }}" alt="user-image" width="32"
+                  <img src="https://sphairatech.com/images/user/{{ imgUser }}" alt="user-image" width="32" height="32"
                     class="rounded-circle me-2">
                 </ng-container>
                 <ng-container *ngIf="!imgUser">
@@ -82,19 +82,22 @@
         <form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="saveChanges()">
           <div class="mb-3" style="text-align: center;">
             <ng-container *ngIf="imgUser">
-              <img src="https://sphairatech.com/images/user/{{ imgUser }}" alt="user-image" width="150" height="150"
-                class="rounded-circle me-2">
+              <!-- Imagen principal que cambiará al subir una nueva imagen -->
+              <img src="https://sphairatech.com/images/user/{{ imgUser }}" alt="user-image" width="150" height="150" class="rounded-circle me-2">
               <div class="container">
-                <h4>Sube tu foto de perfil</h4>
-                <form (submit)="onSubmit()" enctype="multipart/form-data">
-                  <div class="form-group">
-                    <label for="image">Seleccionar imagen:</label>
-                    <input type="file" id="image" (change)="onFileSelected($event)">
-                  </div>
-                  <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir imagen</button>
-                </form>
+                  <h4>Sube tu foto de perfil</h4>
+                  <form (submit)="onSubmit()" enctype="multipart/form-data">
+                      <div class="form-group">
+                          <label for="image">Seleccionar imagen:</label>
+                          <input type="file" id="image" (change)="onFileSelected($event)">
+                          <!-- Vista previa de la imagen seleccionada, solo visible si showPreview es true -->
+                          <img *ngIf="showPreview" [src]="imagePreviewUrl" alt="Image Preview" width="150" height="150" class="rounded-circle me-2">
+                      </div>
+                      <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir imagen</button>
+                  </form>
               </div>
-            </ng-container>
+          </ng-container>
+                   
             <ng-container *ngIf="!imgUser">
               <div class="container">
                 <h4>Sube tu foto de perfil</h4>

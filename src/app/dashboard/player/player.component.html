@@ -38,7 +38,11 @@
                                 <!-- Aquí puedes mostrar la imagen del jugador, si tienes -->
                                 <div class="card-body text-center">
                                     <ng-container *ngIf="!player.picturePlayer">
-                                        <span class="bi bi-person" style="font-size: 3rem;"></span>
+                                        <span class="bi bi-person" style="font-size: 4rem;"></span>
+                                    </ng-container>
+                                    <ng-container *ngIf="player.picturePlayer">
+                                        <img src="https://sphairatech.com/images/user/{{ player.picturePlayer }}"
+                                        alt="user-player" width="100" height="100" class="rounded-circle me-2">
                                     </ng-container>
                                     <h5 class="card-title">{{ player.nombre }} {{ player.apellido }}</h5>
                                     <p class="card-text">

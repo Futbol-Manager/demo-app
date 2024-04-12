@@ -312,6 +312,7 @@ export class CalendarioComponent implements OnInit {
   cerrarModal(): void {
     this.daySession = '';
     this.showModal = false;
+    this.showAddTaskForm = false;
   }
 
   crearEntrenamiento() {
@@ -445,8 +446,9 @@ export class CalendarioComponent implements OnInit {
 
   // Método para cerrar el modal
   cerrarModalEntrenamiento(): void {
-    this.showModalEntrenamiento = false;
-    this.toggleAddTaskForm();
+    this.showModalEntrenamiento = false;    
+    this.showAddTaskForm = false;
+    //this.toggleAddTaskForm();
   }
 
   crearTarea(): void {
@@ -751,6 +753,7 @@ export class CalendarioComponent implements OnInit {
               newImgElement.alt = 'Imagen de la tarea';
               newImgElement.className = 'imgBoard';
               newImgElement.id = 'imagen_tarea_' + taskId;
+              newImgElement.style.width = '-webkit-fill-available';
 
               // Obtener el div correspondiente y agregar el elemento img
               const divElement = document.getElementById('div_tarea_' + taskId);

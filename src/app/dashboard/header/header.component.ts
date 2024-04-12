@@ -33,7 +33,10 @@ export class HeaderComponent implements OnInit {
 
   nameUser: string = '';
   imgUser: string = '';
-  selectedFile!: File;
+  selectedFile: File | null = null;
+  imagePreviewUrl: string | ArrayBuffer | null = null;
+  uploadedImageUrl: string | null = null; // Almacena la URL de la imagen subida
+  showPreview: boolean = false;
 
   constructor(
     private router: Router,
@@ -205,28 +208,39 @@ export class HeaderComponent implements OnInit {
 
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
-  }
-
-  onSubmit() {
-    // Verifica si se ha seleccionado un archivo
     if (this.selectedFile) {
+        const reader = new FileReader();        
+        reader.onload = (e: any) => {
+            this.imagePreviewUrl = e.target.result;
+            this.showPreview = true; // Mostrar vista previa
+        };
+        reader.readAsDataURL(this.selectedFile);
+    }
+}
+
+onSubmit() {
+  if (this.selectedFile) {
       console.log('Imagen seleccionada:', this.selectedFile);
 
-      // Llama al método createUpdateImgTask del servicio para subir la imagen
+      // Simulamos el envío de la imagen al servidor
       const userId = this.usuarioActual?.userId.toString();
       this.trainingService.createUpdateImgUser(userId!, this.selectedFile)
-        .subscribe(
-          (response) => {
-            this.cerrarModal();
-          },
-          error => {
-            console.error('Error al subir la imagen', error);
-            // Aquí puedes manejar el error si la subida de la imagen falla
-          }
-        );
-    } else {
+          .subscribe(
+              (response) => {
+                  this.imgUser = response.data;
+                  this.uploadedImageUrl = this.imagePreviewUrl as string; // Actualizar imagen principal
+                  this.showPreview = false; // Ocultar vista previa
+                  this.cerrarModal();
+              },
+              error => {
+                  console.error('Error al subir la imagen', error);
+                  // Aquí puedes manejar el error si la subida de la imagen falla
+                  this.showPreview = true; // Mantener la vista previa si la subida falla
+              }
+          );
+  } else {
       console.log('Ninguna imagen seleccionada.');
-    }
   }
+}
 
 }
