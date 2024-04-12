@@ -179,6 +179,10 @@ export class CalendarioComponent implements OnInit {
     }
   ];
 
+  cat1: string = '';
+  cat2: string = '';
+  cat3: string = '';
+
   selectedCategory: string = '';
   selectedSubcategory: string = '';
   selectedOption: string = '';
@@ -446,27 +450,33 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearTarea(): void {
-    let work = this.selectedCategory;
-      if (this.selectedSubcategory !== '') {
-        work = work + ',' + this.selectedSubcategory
+    let work = this.cat1;
+    if (this.cat1 !== '') {
+      work = work + ',' + this.cat2
+    }
+    if (this.cat3 !== '') {
+      work = work + ',' + this.cat3
+    }
+
+    this.nuevaTarea.work = work;
+    // Llamada al servicio para crear el equipo
+    this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea,).subscribe(
+      (response) => {
+        // Agregar la nueva tarea a la lista de tareas del entrenamiento
+        this.trainingSession.tasks.push(response.data);
+        // Limpiar el formulario de nueva tarea
+        this.nuevaTarea = new Task();
+        // Ocultar el formulario de nueva tarea
+        this.showAddTaskForm = false;
+        //dejamos limpio los combos work
+        this.selectedCategory = '';
+        this.selectedSubcategory = '';
+        this.selectedOption = '';
+      },
+      (error) => {
+        console.error('Error al crear el equipo:', error);
       }
-      if (this.selectedOption !== '') {
-        work = work + ',' + this.selectedOption
-      }
-      // Llamada al servicio para crear el equipo
-      this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea,).subscribe(
-        (response) => {
-          // Agregar la nueva tarea a la lista de tareas del entrenamiento
-          this.trainingSession.tasks.push(response.data);
-          // Limpiar el formulario de nueva tarea
-          this.nuevaTarea = new Task();
-          // Ocultar el formulario de nueva tarea
-          this.showAddTaskForm = false;
-        },
-        (error) => {
-          console.error('Error al crear el equipo:', error);
-        }
-      );
+    );
   }
 
   toggleAddTaskForm(): void {
@@ -520,7 +530,7 @@ export class CalendarioComponent implements OnInit {
       (response) => {
         // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
         if (response.data) {
-          if (id == 0 ) this.match = new MatchPreparation({});
+          if (id == 0) this.match = new MatchPreparation({});
           // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
           this.getListaPrePartido();
           if (this.match.matchPreparationId === 0)
@@ -796,7 +806,9 @@ export class CalendarioComponent implements OnInit {
       this.selectedCategory = event.target.value;
       this.selectedSubcategory = '';
       this.selectedOption = '';
+      this.cat2 = '';
     }
+    this.cat1 = event.target.value;
     this.cdr.detectChanges(); // Forzar la detección de cambios
   }
 
@@ -807,12 +819,15 @@ export class CalendarioComponent implements OnInit {
     } else {
       this.selectedSubcategory = '';
       this.selectedOption = '';
+      this.cat3 = '';
     }
+    this.cat2 = event.target.value;
     this.cdr.detectChanges(); // Forzar la detección de cambios
   }
 
   onSelectOptionSubcategory(event: any): void {
     this.selectedOption = event.target.value;
+    this.cat3 = event.target.value;
   }
 
   getSubcategories(): any[] {
