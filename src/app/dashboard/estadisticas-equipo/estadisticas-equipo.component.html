@@ -115,135 +115,118 @@
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Crear Post Partido</h5>
+                <h5 class="modal-title">Información Post Partido</h5>
                 <button type="button" class="btn-close" aria-label="Close"
                     (click)="cerrarModalInfoPostPartido()"></button>
             </div>
             <div class="modal-body">
+                <h6 class="mt-0">Instrucciones</h6>
+                <p>Aquí puedes ver toda la información del post partido.</p>
+                <hr>
                 <div class="mb-3 d-flex">
                     <div class="col-6">
-                        <label for="golesAFavor" class="form-label">Goles a favor:</label>
-                        <input type="number" class="form-control" id="golesAFavor"
-                            [(ngModel)]="postPartido.golesAFavor">
+                        <label class="form-label">Goles a favor:</label>
+                        <div class="form-control">{{ postPartido.golesAFavor }}</div>
                     </div>
                     <div class="col-6">
-                        <label for="golesEnContra" class="form-label">Goles en contra:</label>
-                        <input type="number" class="form-control" id="golesEnContra"
-                            [(ngModel)]="postPartido.golesEnContra">
+                        <label class="form-label">Goles en contra:</label>
+                        <div class="form-control">{{ postPartido.golesEnContra }}</div>
                     </div>
                 </div>
                 <div class="mb-3 d-flex">
                     <div class="col-6">
-                        <label for="resultado" class="form-label">Resultado:</label>
-                        <select class="form-control" id="resultado" [(ngModel)]="postPartido.resultado">
-                            <option value="V">Victoria</option>
-                            <option value="E">Empate</option>
-                            <option value="D">Derrota</option>
-                        </select>
+                        <label class="form-label">Resultado:</label>
+                        <div class="form-control">{{ postPartido.resultado }}</div>
                     </div>
                     <div class="col-6">
-                        <label for="paradasPortero" class="form-label">Paradas del portero:</label>
-                        <input type="number" class="form-control" id="paradasPortero"
-                            [(ngModel)]="postPartido.paradasPortero">
+                        <label class="form-label">Paradas del portero:</label>
+                        <div class="form-control">{{ postPartido.paradasPortero }}</div>
                     </div>
                 </div>
                 <div class="mb-3 d-flex">
                     <div class="col-6">
-                        <label for="disparosAFavor" class="form-label">Disparos a favor:</label>
-                        <input type="number" class="form-control" id="disparosAFavor"
-                            [(ngModel)]="postPartido.disparosAFavor">
+                        <label class="form-label">Disparos a favor:</label>
+                        <div class="form-control">{{ postPartido.disparosAFavor }}</div>
                     </div>
                     <div class="col-6">
-                        <label for="disparosEnContra" class="form-label">Disparos en contra:</label>
-                        <input type="number" class="form-control" id="disparosEnContra"
-                            [(ngModel)]="postPartido.disparosEnContra">
+                        <label class="form-label">Disparos en contra:</label>
+                        <div class="form-control">{{ postPartido.disparosEnContra }}</div>
                     </div>
                 </div>
                 <div class="mb-3 d-flex">
                     <div class="col-6">
-                        <label for="faltasCometidas" class="form-label">Faltas cometidas:</label>
-                        <input type="number" class="form-control" id="faltasCometidas"
-                            [(ngModel)]="postPartido.faltasCometidas">
+                        <label class="form-label">Faltas cometidas:</label>
+                        <div class="form-control">{{ postPartido.faltasCometidas }}</div>
                     </div>
                     <div class="col-6">
-                        <label for="faltasRecibidas" class="form-label">Faltas recibidas:</label>
-                        <input type="number" class="form-control" id="faltasRecibidas"
-                            [(ngModel)]="postPartido.faltasRecibidas">
+                        <label class="form-label">Faltas recibidas:</label>
+                        <div class="form-control">{{ postPartido.faltasRecibidas }}</div>
                     </div>
                 </div>
                 <div class="mb-3 d-flex">
                     <div class="col-6">
-                        <label for="cornersAFavor" class="form-label">Córneres a favor:</label>
-                        <input type="number" class="form-control" id="cornersAFavor"
-                            [(ngModel)]="postPartido.cornersAFavor">
+                        <label class="form-label">Córneres a favor:</label>
+                        <div class="form-control">{{ postPartido.cornersAFavor }}</div>
                     </div>
                     <div class="col-6">
-                        <label for="cornersEnContra" class="form-label">Córneres en contra:</label>
-                        <input type="number" class="form-control" id="cornersEnContra"
-                            [(ngModel)]="postPartido.cornersEnContra">
+                        <label class="form-label">Córneres en contra:</label>
+                        <div class="form-control">{{ postPartido.cornersEnContra }}</div>
                     </div>
                 </div>
                 <div class="mb-3 d-flex">
                     <div class="col-6">
-                        <label for="penaltisAFavor" class="form-label">Penaltis a favor:</label>
-                        <input type="number" class="form-control" id="penaltisAFavor"
-                            [(ngModel)]="postPartido.penaltisAFavor">
+                        <label class="form-label">Penaltis a favor:</label>
+                        <div class="form-control">{{ postPartido.penaltisAFavor }}</div>
                     </div>
                     <div class="col-6">
-                        <label for="penaltisEnContra" class="form-label">Penaltis en contra:</label>
-                        <input type="number" class="form-control" id="penaltisEnContra"
-                            [(ngModel)]="postPartido.penaltisEnContra">
+                        <label class="form-label">Penaltis en contra:</label>
+                        <div class="form-control">{{ postPartido.penaltisEnContra }}</div>
                     </div>
                 </div>
                 <div class="mb-3 d-flex">
                     <div class="col-6">
-                        <label for="recuperaciones" class="form-label">Recuperaciones:</label>
-                        <input type="number" class="form-control" id="recuperaciones"
-                            [(ngModel)]="postPartido.recuperaciones">
+                        <label class="form-label">Recuperaciones:</label>
+                        <div class="form-control">{{ postPartido.recuperaciones }}</div>
                     </div>
                     <div class="col-6">
-                        <label for="perdidas" class="form-label">Pérdidas:</label>
-                        <input type="number" class="form-control" id="perdidas" [(ngModel)]="postPartido.perdidas">
-                    </div>
-                </div>
-                <div class="mb-3 d-flex">
-                    <div class="col-6">
-                        <label for="tarjetasAmarillas" class="form-label">Tarjetas Amarillas:</label>
-                        <input type="number" class="form-control" id="tarjetasAmarillas"
-                            [(ngModel)]="postPartido.tarjetasAmarillas">
-                    </div>
-                    <div class="col-6">
-                        <label for="tarjetasRojas" class="form-label">Tarjetas Rojas:</label>
-                        <input type="number" class="form-control" id="tarjetasRojas"
-                            [(ngModel)]="postPartido.tarjetasRojas">
+                        <label class="form-label">Pérdidas:</label>
+                        <div class="form-control">{{ postPartido.perdidas }}</div>
                     </div>
                 </div>
                 <div class="mb-3 d-flex">
                     <div class="col-6">
-                        <label for="llegadasPeligroAFavor" class="form-label">Llegadas con peligro a favor:</label>
-                        <input type="number" class="form-control" id="llegadasPeligroAFavor"
-                            [(ngModel)]="postPartido.llegadasPeligroAFavor">
+                        <label class="form-label">Tarjetas Amarillas:</label>
+                        <div class="form-control">{{ postPartido.tarjetasAmarillas }}</div>
                     </div>
                     <div class="col-6">
-                        <label for="llegadasPeligroEnContra" class="form-label">Llegadas con peligro en contra:</label>
-                        <input type="number" class="form-control" id="llegadasPeligroEnContra"
-                            [(ngModel)]="postPartido.llegadasPeligroEnContra">
+                        <label class="form-label">Tarjetas Rojas:</label>
+                        <div class="form-control">{{ postPartido.tarjetasRojas }}</div>
+                    </div>
+                </div>
+                <div class="mb-3 d-flex">
+                    <div class="col-6">
+                        <label class="form-label">Llegadas con peligro a favor:</label>
+                        <div class="form-control">{{ postPartido.llegadasPeligroAFavor }}</div>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Llegadas con peligro en contra:</label>
+                        <div class="form-control">{{ postPartido.llegadasPeligroEnContra }}</div>
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="anotaciones" class="form-label">Anotaciones:</label>
-                    <textarea class="form-control" id="anotaciones" rows="5"
-                        [(ngModel)]="postPartido.anotaciones"></textarea>
+                    <label class="form-label">Anotaciones:</label>
+                    <textarea class="form-control" rows="5" readonly>{{ postPartido.anotaciones }}</textarea>
                 </div>
                 <div class="mb-3">
-                    <label for="video" class="form-label">Video YouTube:</label>
-                    <textarea class="form-control" id="video" rows="3" [(ngModel)]="postPartido.video"></textarea>
+                    <label class="form-label">Video YouTube:</label>
+                    <textarea class="form-control" rows="3" readonly>{{ postPartido.video }}</textarea>
                 </div>
                 <div class="mb-3">
                     <button type="button" class="btn btn-primary float-end"
                         (click)="cerrarModalInfoPostPartido()">Cerrar</button>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
