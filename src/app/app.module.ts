@@ -21,6 +21,7 @@ import { ProfileComponent } from './pages/profile/profile.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ClubesListComponent } from './pages/register/clubes-list/clubes-list.component';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
+import { ValidationUserComponent } from './pages/validation-user/validation-user.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { ChangePasswordComponent } from './pages/change-password/change-password
     LoginComponent,
     RegisterComponent,
     ChangePasswordComponent,
+    ValidationUserComponent,
     ProfileComponent,
     ClubesListComponent
   ],

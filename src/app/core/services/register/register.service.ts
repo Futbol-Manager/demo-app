@@ -31,4 +31,18 @@ export class RegisterService {
     const url: string = environment.apiUrl + `user/getuserbyid/${userId}`;
     return this.http.get<any>(url);
   }
+
+  updatePassUser(userId: number, pass: String) {
+    const body = {
+			userId: userId,
+			password: pass,
+		};
+    const url: string = environment.apiUrl + 'user/updatePassUser';
+    return this.http.post<any>(url, body);
+  }
+
+  validateUser(userId: number) {
+    const url: string = environment.apiUrl + 'user/validateUser';
+    return this.http.post<any>(url, userId);
+  }
 }

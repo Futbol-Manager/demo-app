@@ -22,7 +22,6 @@ export class ChangePasswordComponent implements OnInit {
   cambiarPassForm: FormGroup;
   passwordsDoNotMatch: boolean = true;
   private userId: number = 0;
-  usuario!: User | null;
 
   constructor(
     private router: Router,
@@ -64,41 +63,23 @@ export class ChangePasswordComponent implements OnInit {
 
   cambiarPass() {
     if (this.cambiarPassForm.valid) {
-      this.registerService.getUserById(this.userId).subscribe(
+      const fv = this.cambiarPassForm.value;
+      this.registerService.updatePassUser(this.userId, fv.password).subscribe(
         res => {
-          if(res.data){
-            const register: RegisterModel = new RegisterModel(
-              res.data.profileType,
-              res.data.firstName,
-              res.data.secondName,
-              res.data.birthdate,
-              res.data.genreType,
-              res.data.mail,
-              this.cambiarPassForm.value.password,
-              res.data.userId,
-              res.data.validationUser,
-              res.data.pictureUser,
-              res.data.dateCreate,
-              res.data.dateEdit,
-            );
-            this.registerService.registerUser(register).pipe()
-            .subscribe(
-              (res) => {
-                if(res.data != null) {
-                  const snackBarConfig = new MatSnackBarConfig();
-                  snackBarConfig.duration = 5000;
-                  snackBarConfig.horizontalPosition = 'center';
-                  snackBarConfig.verticalPosition = 'bottom';
-                  this.snackBar.open('Actualización de datos exitosa.', 'Cerrar', snackBarConfig);
-                  this.dialog.closeAll();
-                } else{
-                  const snackBarConfig = new MatSnackBarConfig();
-                  snackBarConfig.duration = 5000;
-                  snackBarConfig.horizontalPosition = 'center';
-                  snackBarConfig.verticalPosition = 'bottom';
-                  this.snackBar.open('Error al modificar datos. Vuelve a intentarlo.', 'Cerrar', snackBarConfig);
-                }
-              })
+          if(res.data) {
+            const snackBarConfig = new MatSnackBarConfig();
+            snackBarConfig.duration = 5000;
+            snackBarConfig.horizontalPosition = 'center';
+            snackBarConfig.verticalPosition = 'bottom';
+            this.snackBar.open('Se ha cambiado la contraseña correctamente, inicia sesión con tu nueva contraseña.', 'Cerrar', snackBarConfig);
+            this.dialog.closeAll();
+            this.router.navigate(['/home']);
+          } else{
+            const snackBarConfig = new MatSnackBarConfig();
+            snackBarConfig.duration = 5000;
+            snackBarConfig.horizontalPosition = 'center';
+            snackBarConfig.verticalPosition = 'bottom';
+            this.snackBar.open('Error al cambiar de contraseña. Vuelve a intentarlo.', 'Cerrar', snackBarConfig);
           }
         }
       )

@@ -5,6 +5,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { RegisterComponent } from './pages/register/register.component';
 import { AuthGuard } from './auth.guard';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
+import { ValidationUserComponent } from './pages/validation-user/validation-user.component';
 
 const appRoutes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -12,6 +13,7 @@ const appRoutes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegisterComponent },
   { path: 'change-password', component: ChangePasswordComponent },
+  { path: 'validationUser', component: ValidationUserComponent },
   {
     path: 'dashboard',
     loadChildren: () => import('./dashboard/dashboard.module').then(m => m.DashboardModule),
