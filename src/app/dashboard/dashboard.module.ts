@@ -12,6 +12,7 @@ import { ShopComponent } from './calendario/shop/shop.component';
 import { EstadisticasEquipoComponent } from './estadisticas-equipo/estadisticas-equipo.component';
 import { EstadisticasJugadoresComponent } from './estadisticas-jugadores/estadisticas-jugadores.component';
 import { InformacionEquipoComponent } from './informacion-equipo/informacion-equipo.component';
+import { TrainerComponent } from './trainer/trainer.component';
 
 
 
@@ -22,6 +23,7 @@ import { InformacionEquipoComponent } from './informacion-equipo/informacion-equ
     InicioComponent,
     CalendarioComponent,
     PlayerComponent,
+    TrainerComponent,
     ShopComponent,
     EstadisticasEquipoComponent,
     EstadisticasJugadoresComponent,

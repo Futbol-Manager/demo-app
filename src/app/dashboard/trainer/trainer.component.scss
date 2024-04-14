@@ -1,0 +1,50 @@
+/* styles.scss */
+.card {
+    position: relative;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    color: #6c757d;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0px solid #dee2e6;
+    border-radius: 0.25rem;box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
+  }
+  
+  .card-title {
+    font-weight: bold;
+  }
+  
+  .card-text {
+    font-size: 14px;
+  }
+  
+  .btn-danger {
+    margin-right: 10px;
+  }
+  
+  .img-half-size {
+    width: 50%;
+    height: auto;
+  }
+  
+  .bg-light-green {
+    background: linear-gradient(270deg, #5ae8c4, #33a7db);
+    background-size: 400% 400%;
+  }
+  
+  .btn-width {
+    width: 100%;
+  }
+  
+  .modal-content {
+    background-size: 400% 400%;
+  }
+
+  
+  
+  

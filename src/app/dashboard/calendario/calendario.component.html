@@ -3,18 +3,18 @@
   <div class="container mt-3">
     <div class="row">
       <div class="col">
-        <button class="btn btn-custom" (click)="irAPantalla(1)">Información del equipo</button>
+        <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Información del equipo</button>
       </div>
       <div class="col text-end">
-        <button class="btn btn-custom" (click)="irAPantalla(3)">Estadísticas del equipo</button>
+        <button class="btn btn-custom btn-sm" (click)="irAPantalla(3)">Estadísticas del equipo</button>
       </div>
     </div>
     <div class="row mt-3">
       <div class="col">
-        <button class="btn btn-custom" (click)="irAPantalla(2)">Ver jugadores del equipo</button>
+        <button class="btn btn-custom btn-sm" (click)="irAPantalla(2)">Ver jugadores del equipo</button>
       </div>
       <div class="col text-end">
-        <button class="btn btn-custom" (click)="irAPantalla(4)">Estadísticas por jugador</button>
+        <button class="btn btn-custom btn-sm" (click)="irAPantalla(4)">Estadísticas por jugador</button>
       </div>
     </div>
   </div>
@@ -25,11 +25,11 @@
       <h2 class="text-center">{{ nombreEquipo }}</h2>
       <div class="d-flex justify-content-between">
         <button class="btn btn-custom" (click)="mesAnterior()">
-          <i class="bi bi-arrow-left"></i> Mes Anterior
+          <i class="bi bi-arrow-left btn-sm"></i> Mes Anterior
         </button>
         <h4>{{ tituloMesAnio }}</h4>
         <button class="btn btn-custom" (click)="mesSiguiente()">
-          Mes Siguiente <i class="bi bi-arrow-right"></i>
+          Mes Siguiente <i class="bi bi-arrow-right btn-sm"></i>
         </button>
       </div>
 
@@ -701,7 +701,7 @@
               Entrenamiento</button>
             <button type="button" class="btn btn-custom float-end" (click)="crearEntrenamiento()">Guardar
               Entrenamiento</button>
-          </div>          
+          </div>
           <div class="mb-3" style="visibility: hidden;">
             <textarea class="form-control" rows="1"></textarea>
           </div>

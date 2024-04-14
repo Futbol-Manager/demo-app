@@ -446,7 +446,7 @@ export class CalendarioComponent implements OnInit {
 
   // Método para cerrar el modal
   cerrarModalEntrenamiento(): void {
-    this.showModalEntrenamiento = false;    
+    this.showModalEntrenamiento = false;
     this.showAddTaskForm = false;
     //this.toggleAddTaskForm();
   }

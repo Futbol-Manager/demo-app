@@ -8,6 +8,7 @@ import { PlayerComponent } from './player/player.component';
 import { EstadisticasEquipoComponent } from './estadisticas-equipo/estadisticas-equipo.component';
 import { EstadisticasJugadoresComponent } from './estadisticas-jugadores/estadisticas-jugadores.component';
 import { InformacionEquipoComponent } from './informacion-equipo/informacion-equipo.component';
+import { TrainerComponent } from './trainer/trainer.component';
 
 const routes: Routes = [
   {
@@ -20,6 +21,7 @@ const routes: Routes = [
       { path: 'estadisticas_equipo/:teamId', component: EstadisticasEquipoComponent },
       { path: 'informacion_equipo/:teamId', component: InformacionEquipoComponent },
       { path: 'estadisticas_jugadores/:teamId', component: EstadisticasJugadoresComponent },
+      { path: 'entrenadores/:teamId', component: TrainerComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
   }
