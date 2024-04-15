@@ -20,7 +20,7 @@ export class InformacionEquipoComponent implements OnInit {
   teamId!: number;
   team: TeamNew = new TeamNew();
   teamInfo: TeamNew = new TeamNew();
-  coaches: any;
+  coaches: any = [];
   usuarioActual!: User | null;
 
   userForm: FormGroup = this.fb.group({

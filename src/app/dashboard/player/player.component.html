@@ -42,7 +42,7 @@
                                     </ng-container>
                                     <ng-container *ngIf="player.picturePlayer">
                                         <img src="https://sphairatech.com/images/user/{{ player.picturePlayer }}"
-                                        alt="user-player" width="100" height="100" class="rounded-circle me-2">
+                                            alt="user-player" width="100" height="100" class="rounded-circle me-2">
                                     </ng-container>
                                     <h5 class="card-title">{{ player.nombre }} {{ player.apellido }}</h5>
                                     <p class="card-text">
@@ -98,7 +98,17 @@
                             <tbody>
                                 <tr *ngFor="let player of players; let i = index">
                                     <td>{{ player.playerId }}</td>
-                                    <td><span class="bi bi-person" style="font-size: 3rem;"></span></td>
+                                    <td *ngIf="player.picturePlayer">
+                                        <div class="container">
+                                            <img src="https://sphairatech.com/images/user/{{ player.picturePlayer }}"
+                                                alt="user-player" width="50" height="50" class="rounded-circle me-2">
+                                        </div>
+                                    </td>
+                                    <td *ngIf="!player.picturePlayer">
+                                        <div class="container">
+                                            <span class="bi bi-person" style="font-size: 3rem;"></span>
+                                        </div>
+                                    </td>
                                     <!-- <td>{{ player.picturePlayer }}</td> -->
                                     <td>{{ player.nombre }} {{ player.apellido }}</td>
                                     <td>{{ player.fechaDeNacimiento | date }}</td>

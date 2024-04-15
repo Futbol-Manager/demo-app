@@ -122,11 +122,12 @@
               <div class="mb-3">
                 <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
                 <textarea class="form-control" id="objectiveSession" rows="5" name="objectiveSession"
-                [(ngModel)]="trainingSession.objectiveSession"></textarea>
+                  [(ngModel)]="trainingSession.objectiveSession"></textarea>
               </div>
               <div class="mb-3">
                 <label for="warmUp" class="form-label">Calentamiento:</label>
-                <textarea class="form-control" id="warmUp" rows="5" name="warmUp" [(ngModel)]="trainingSession.warmUp"></textarea>
+                <textarea class="form-control" id="warmUp" rows="5" name="warmUp"
+                  [(ngModel)]="trainingSession.warmUp"></textarea>
               </div>
               <!-- Botón para guardar el nuevo entrenamiento -->
               <button type="submit" class="btn btn-custom float-end">Guardar</button>
@@ -181,15 +182,18 @@
               </div>
               <div class="mb-3">
                 <label for="rivalInfo" class="form-label">Información del Rival:</label>
-                <textarea class="form-control" id="rivalInfo" rows="5" name="rivalInfo" [(ngModel)]="match.rivalInfo"></textarea>
+                <textarea class="form-control" id="rivalInfo" rows="5" name="rivalInfo"
+                  [(ngModel)]="match.rivalInfo"></textarea>
               </div>
               <div class="mb-3">
                 <label for="refereeName" class="form-label">Nombre del Árbitro:</label>
-                <input type="text" class="form-control" id="refereeName" name="refereeName" [(ngModel)]="match.refereeName">
+                <input type="text" class="form-control" id="refereeName" name="refereeName"
+                  [(ngModel)]="match.refereeName">
               </div>
               <div class="mb-3">
                 <label for="trainingPicture" class="form-label">Formación:</label>
-                <select class="form-control" id="trainingPicture" name="trainingPicture" [(ngModel)]="match.trainingPicture">
+                <select class="form-control" id="trainingPicture" name="trainingPicture"
+                  [(ngModel)]="match.trainingPicture">
                   <option value="1">1-3-2-1</option>
                   <option value="2">1-2-3-1</option>
                   <option value="3">1-3-1-2</option>
@@ -218,7 +222,8 @@
               </div>
               <div class="mb-3">
                 <label for="matchTactics" class="form-label">Táctica General:</label>
-                <textarea class="form-control" id="matchTactics" rows="5" name="warmUp" [(ngModel)]="match.matchTactics"></textarea>
+                <textarea class="form-control" id="matchTactics" rows="5" name="warmUp"
+                  [(ngModel)]="match.matchTactics"></textarea>
               </div>
               <div class="mb-3">
                 <label for="abp" class="form-label">ABPs:</label>
@@ -226,7 +231,8 @@
               </div>
               <div class="mb-3">
                 <label for="summoned" class="form-label">Convocados:</label>
-                <textarea class="form-control" id="summoned" rows="5" name="summoned" [(ngModel)]="match.summoned"></textarea>
+                <textarea class="form-control" id="summoned" rows="5" name="summoned"
+                  [(ngModel)]="match.summoned"></textarea>
               </div>
               <!-- Botón para guardar el nuevo equipo -->
               <button type="submit" class="btn btn-custom float-end">Guardar</button>
@@ -297,11 +303,13 @@
         </div>
         <div class="mb-3">
           <label for="informacionRival" class="form-label">Información del Rival:</label>
-          <textarea class="form-control" id="informacionRival" rows="5" name="informacionRival" [(ngModel)]="match.rivalInfo"></textarea>
+          <textarea class="form-control" id="informacionRival" rows="5" name="informacionRival"
+            [(ngModel)]="match.rivalInfo"></textarea>
         </div>
         <div class="mb-3">
           <label for="nombreArbitro" class="form-label">Nombre del Árbitro:</label>
-          <input type="text" class="form-control" id="nombreArbitro" name="nombreArbitro" [(ngModel)]="match.refereeName">
+          <input type="text" class="form-control" id="nombreArbitro" name="nombreArbitro"
+            [(ngModel)]="match.refereeName">
         </div>
         <div class="mb-3">
           <label for="alineacion" class="form-label">Formación:</label>
@@ -334,7 +342,8 @@
         </div>
         <div class="mb-3">
           <label for="tacticaGeneral" class="form-label">Táctica General:</label>
-          <textarea class="form-control" id="tacticaGeneral" rows="5" name="tacticaGeneral" [(ngModel)]="match.matchTactics"></textarea>
+          <textarea class="form-control" id="tacticaGeneral" rows="5" name="tacticaGeneral"
+            [(ngModel)]="match.matchTactics"></textarea>
         </div>
         <div class="mb-3">
           <label for="ABPs" class="form-label">ABPs:</label>
@@ -342,7 +351,8 @@
         </div>
         <div class="mb-3">
           <label for="convocados" class="form-label">Convocados:</label>
-          <textarea class="form-control" id="convocados" rows="5" name="convocados" [(ngModel)]="match.summoned"></textarea>
+          <textarea class="form-control" id="convocados" rows="5" name="convocados"
+            [(ngModel)]="match.summoned"></textarea>
         </div>
       </div>
       <div class="modal-footer d-flex">
@@ -379,11 +389,13 @@
               <div class="mb-3 d-flex">
                 <div class="col-6">
                   <label for="golesAFavor" class="form-label">Goles a favor:</label>
-                  <input type="number" class="form-control" id="golesAFavor" name="golesAFavor" [(ngModel)]="postPartido.golesAFavor">
+                  <input type="number" class="form-control" id="golesAFavor" name="golesAFavor"
+                    [(ngModel)]="postPartido.golesAFavor">
                 </div>
                 <div class="col-6">
                   <label for="golesEnContra" class="form-label">Goles en contra:</label>
-                  <input type="number" class="form-control" id="golesEnContra" name="warmUp" [(ngModel)]="postPartido.golesEnContra">
+                  <input type="number" class="form-control" id="golesEnContra" name="warmUp"
+                    [(ngModel)]="postPartido.golesEnContra">
                 </div>
               </div>
               <div class="mb-3 d-flex">
@@ -397,88 +409,103 @@
                 </div>
                 <div class="col-6">
                   <label for="paradasPortero" class="form-label">Paradas del portero:</label>
-                  <input type="number" class="form-control" id="paradasPortero" name="paradasPortero" [(ngModel)]="postPartido.paradasPortero">
+                  <input type="number" class="form-control" id="paradasPortero" name="paradasPortero"
+                    [(ngModel)]="postPartido.paradasPortero">
                 </div>
               </div>
               <div class="mb-3 d-flex">
                 <div class="col-6">
                   <label for="disparosAFavor" class="form-label">Disparos a favor:</label>
-                  <input type="number" class="form-control" id="disparosAFavor" name="disparosAFavor" [(ngModel)]="postPartido.disparosAFavor">
+                  <input type="number" class="form-control" id="disparosAFavor" name="disparosAFavor"
+                    [(ngModel)]="postPartido.disparosAFavor">
                 </div>
                 <div class="col-6">
                   <label for="disparosEnContra" class="form-label">Disparos en contra:</label>
-                  <input type="number" class="form-control" id="disparosEnContra" name="disparosEnContra" [(ngModel)]="postPartido.disparosEnContra">
+                  <input type="number" class="form-control" id="disparosEnContra" name="disparosEnContra"
+                    [(ngModel)]="postPartido.disparosEnContra">
                 </div>
               </div>
               <div class="mb-3 d-flex">
                 <div class="col-6">
                   <label for="faltasCometidas" class="form-label">Faltas cometidas:</label>
-                  <input type="number" class="form-control" id="faltasCometidas" name="faltasCometidas" [(ngModel)]="postPartido.faltasCometidas">
+                  <input type="number" class="form-control" id="faltasCometidas" name="faltasCometidas"
+                    [(ngModel)]="postPartido.faltasCometidas">
                 </div>
                 <div class="col-6">
                   <label for="faltasRecibidas" class="form-label">Faltas recibidas:</label>
-                  <input type="number" class="form-control" id="faltasRecibidas" name="faltasRecibidas" [(ngModel)]="postPartido.faltasRecibidas">
+                  <input type="number" class="form-control" id="faltasRecibidas" name="faltasRecibidas"
+                    [(ngModel)]="postPartido.faltasRecibidas">
                 </div>
               </div>
               <div class="mb-3 d-flex">
                 <div class="col-6">
                   <label for="cornersAFavor" class="form-label">Córneres a favor:</label>
-                  <input type="number" class="form-control" id="cornersAFavor" name="cornersAFavor" [(ngModel)]="postPartido.cornersAFavor">
+                  <input type="number" class="form-control" id="cornersAFavor" name="cornersAFavor"
+                    [(ngModel)]="postPartido.cornersAFavor">
                 </div>
                 <div class="col-6">
                   <label for="cornersEnContra" class="form-label">Córneres en contra:</label>
-                  <input type="number" class="form-control" id="cornersEnContra" name="cornersEnContra" [(ngModel)]="postPartido.cornersEnContra">
+                  <input type="number" class="form-control" id="cornersEnContra" name="cornersEnContra"
+                    [(ngModel)]="postPartido.cornersEnContra">
                 </div>
               </div>
               <div class="mb-3 d-flex">
                 <div class="col-6">
                   <label for="penaltisAFavor" class="form-label">Penaltis a favor:</label>
-                  <input type="number" class="form-control" id="penaltisAFavor" name="penaltisAFavor" [(ngModel)]="postPartido.penaltisAFavor">
+                  <input type="number" class="form-control" id="penaltisAFavor" name="penaltisAFavor"
+                    [(ngModel)]="postPartido.penaltisAFavor">
                 </div>
                 <div class="col-6">
                   <label for="penaltisEnContra" class="form-label">Penaltis en contra:</label>
-                  <input type="number" class="form-control" id="penaltisEnContra" name="penaltisEnContra" [(ngModel)]="postPartido.penaltisEnContra">
+                  <input type="number" class="form-control" id="penaltisEnContra" name="penaltisEnContra"
+                    [(ngModel)]="postPartido.penaltisEnContra">
                 </div>
               </div>
               <div class="mb-3 d-flex">
                 <div class="col-6">
                   <label for="recuperaciones" class="form-label">Recuperaciones:</label>
-                  <input type="number" class="form-control" id="recuperaciones" name="recuperaciones" [(ngModel)]="postPartido.recuperaciones">
+                  <input type="number" class="form-control" id="recuperaciones" name="recuperaciones"
+                    [(ngModel)]="postPartido.recuperaciones">
                 </div>
                 <div class="col-6">
                   <label for="perdidas" class="form-label">Pérdidas:</label>
-                  <input type="number" class="form-control" id="perdidas" name="perdidas" [(ngModel)]="postPartido.perdidas">
+                  <input type="number" class="form-control" id="perdidas" name="perdidas"
+                    [(ngModel)]="postPartido.perdidas">
                 </div>
               </div>
               <div class="mb-3 d-flex">
                 <div class="col-6">
                   <label for="tarjetasAmarillas" class="form-label">Tarjetas Amarillas:</label>
-                  <input type="number" class="form-control" id="tarjetasAmarillas" name="tarjetasAmarillas" [(ngModel)]="postPartido.tarjetasAmarillas">
+                  <input type="number" class="form-control" id="tarjetasAmarillas" name="tarjetasAmarillas"
+                    [(ngModel)]="postPartido.tarjetasAmarillas">
                 </div>
                 <div class="col-6">
                   <label for="tarjetasRojas" class="form-label">Tarjetas Rojas:</label>
-                  <input type="number" class="form-control" id="tarjetasRojas" name="tarjetasRojas" [(ngModel)]="postPartido.tarjetasRojas">
+                  <input type="number" class="form-control" id="tarjetasRojas" name="tarjetasRojas"
+                    [(ngModel)]="postPartido.tarjetasRojas">
                 </div>
               </div>
               <div class="mb-3 d-flex">
                 <div class="col-6">
                   <label for="llegadasPeligroAFavor" class="form-label">Llegadas con peligro a favor:</label>
                   <input type="number" class="form-control" id="llegadasPeligroAFavor" name="llegadasPeligroAFavor"
-                  [(ngModel)]="postPartido.llegadasPeligroAFavor">
+                    [(ngModel)]="postPartido.llegadasPeligroAFavor">
                 </div>
                 <div class="col-6">
                   <label for="llegadasPeligroEnContra" class="form-label">Llegadas con peligro en contra:</label>
                   <input type="number" class="form-control" id="llegadasPeligroEnContra" name="llegadasPeligroEnContra"
-                  [(ngModel)]="postPartido.llegadasPeligroEnContra">
+                    [(ngModel)]="postPartido.llegadasPeligroEnContra">
                 </div>
               </div>
               <div class="mb-3">
                 <label for="anotaciones" class="form-label">Anotaciones:</label>
-                <textarea class="form-control" id="anotaciones" rows="5" name="anotaciones" [(ngModel)]="postPartido.anotaciones"></textarea>
+                <textarea class="form-control" id="anotaciones" rows="5" name="anotaciones"
+                  [(ngModel)]="postPartido.anotaciones"></textarea>
               </div>
               <div class="mb-3">
                 <label for="video" class="form-label">Video YouTube:</label>
-                <textarea class="form-control" id="video" rows="3" name="video" [(ngModel)]="postPartido.video"></textarea>
+                <textarea class="form-control" id="video" rows="3" name="video"
+                  [(ngModel)]="postPartido.video"></textarea>
               </div>
               <!-- Botón para guardar el nuevo equipo -->
               <button type="submit" class="btn btn-custom float-end">Guardar</button>
@@ -491,11 +518,13 @@
               <div class="mb-3 d-flex">
                 <div class="col-6">
                   <label for="golesAFavor" class="form-label">Goles a favor:</label>
-                  <input type="number" class="form-control" id="golesAFavor" name="golesAFavor" [(ngModel)]="postPartido.golesAFavor">
+                  <input type="number" class="form-control" id="golesAFavor" name="golesAFavor"
+                    [(ngModel)]="postPartido.golesAFavor">
                 </div>
                 <div class="col-6">
                   <label for="golesEnContra" class="form-label">Goles en contra:</label>
-                  <input type="number" class="form-control" id="golesEnContra" name="golesEnContra" [(ngModel)]="postPartido.golesEnContra">
+                  <input type="number" class="form-control" id="golesEnContra" name="golesEnContra"
+                    [(ngModel)]="postPartido.golesEnContra">
                 </div>
               </div>
               <div class="mb-3 col-6">
@@ -509,42 +538,48 @@
               <div class="mb-3 d-flex">
                 <div class="col-6">
                   <label for="disparosAFavor" class="form-label">Disparos a favor:</label>
-                  <input type="number" class="form-control" id="disparosAFavor" name="disparosAFavor" [(ngModel)]="postPartido.disparosAFavor">
+                  <input type="number" class="form-control" id="disparosAFavor" name="disparosAFavor"
+                    [(ngModel)]="postPartido.disparosAFavor">
                 </div>
                 <div class="col-6">
                   <label for="disparosEnContra" class="form-label">Disparos en contra:</label>
-                  <input type="number" class="form-control" id="disparosEnContra" name="disparosEnContra" [(ngModel)]="postPartido.disparosEnContra">
+                  <input type="number" class="form-control" id="disparosEnContra" name="disparosEnContra"
+                    [(ngModel)]="postPartido.disparosEnContra">
                 </div>
               </div>
               <div class="mb-3 d-flex">
                 <div class="col-6">
                   <label for="cornersAFavor" class="form-label">Córneres a favor:</label>
-                  <input type="number" class="form-control" id="cornersAFavor" name="cornersAFavor" [(ngModel)]="postPartido.cornersAFavor">
+                  <input type="number" class="form-control" id="cornersAFavor" name="cornersAFavor"
+                    [(ngModel)]="postPartido.cornersAFavor">
                 </div>
                 <div class="col-6">
                   <label for="cornersEnContra" class="form-label">Córneres en contra:</label>
-                  <input type="number" class="form-control" id="cornersEnContra" name="cornersEnContra" [(ngModel)]="postPartido.cornersEnContra">
+                  <input type="number" class="form-control" id="cornersEnContra" name="cornersEnContra"
+                    [(ngModel)]="postPartido.cornersEnContra">
                 </div>
               </div>
               <div class="mb-3 d-flex">
                 <div class="col-6">
                   <label for="llegadasPeligroAFavor" class="form-label">Llegadas con peligro a favor:</label>
                   <input type="number" class="form-control" id="llegadasPeligroAFavor" name="llegadasPeligroAFavor"
-                  [(ngModel)]="postPartido.llegadasPeligroAFavor">
+                    [(ngModel)]="postPartido.llegadasPeligroAFavor">
                 </div>
                 <div class="col-6">
                   <label for="llegadasPeligroEnContra" class="form-label">Llegadas con peligro en contra:</label>
                   <input type="number" class="form-control" id="llegadasPeligroEnContra" name="llegadasPeligroEnContra"
-                  [(ngModel)]="postPartido.llegadasPeligroEnContra">
+                    [(ngModel)]="postPartido.llegadasPeligroEnContra">
                 </div>
               </div>
               <div class="mb-3">
                 <label for="anotaciones" class="form-label">Anotaciones:</label>
-                <textarea class="form-control" id="anotaciones" rows="5" name="anotaciones" [(ngModel)]="postPartido.anotaciones"></textarea>
+                <textarea class="form-control" id="anotaciones" rows="5" name="anotaciones"
+                  [(ngModel)]="postPartido.anotaciones"></textarea>
               </div>
               <div class="mb-3">
                 <label for="video" class="form-label">Video YouTube:</label>
-                <textarea class="form-control" id="video" rows="3" name="video" [(ngModel)]="postPartido.video"></textarea>
+                <textarea class="form-control" id="video" rows="3" name="video"
+                  [(ngModel)]="postPartido.video"></textarea>
               </div>
               <div class="mb-3">
                 <button type="submit" class="btn btn-custom float-end">Guardar</button>
@@ -569,93 +604,95 @@
                     <form (ngSubmit)="guardarInfoPlayerPostPartido(player.playerId)">
                       <div class="mb-3 col-4">
                         <label for="minutos" class="form-label">Minutos:</label>
-                        <input type="number" class="form-control" id="minutos"  [(ngModel)]="playerInfoPostPartido.minutos" name="minutos">
+                        <input type="number" class="form-control" id="minutos"
+                          [(ngModel)]="playerInfoPostPartido.minutos" name="minutos">
                       </div>
                       <div class="mb-3 d-flex">
                         <div class="col-4">
                           <label for="goles" class="form-label">Goles:</label>
-                          <input type="number" class="form-control" id="goles" [(ngModel)]="playerInfoPostPartido.goles" name="goles">
+                          <input type="number" class="form-control" id="goles" [(ngModel)]="playerInfoPostPartido.goles"
+                            name="goles">
                         </div>
                         <div class="col-4">
                           <label for="golesPenalti" class="form-label">Goles de penalti:</label>
-                          <input type="number" class="form-control" id="golesPenalti" [(ngModel)]="playerInfoPostPartido.golesPenalti"
-                            name="golesPenalti">
+                          <input type="number" class="form-control" id="golesPenalti"
+                            [(ngModel)]="playerInfoPostPartido.golesPenalti" name="golesPenalti">
                         </div>
                         <div class="col-4">
                           <label for="golesFalta" class="form-label">Goles de falta:</label>
-                          <input type="number" class="form-control" id="golesFalta" [(ngModel)]="playerInfoPostPartido.golesFalta"
-                            name="golesFalta">
+                          <input type="number" class="form-control" id="golesFalta"
+                            [(ngModel)]="playerInfoPostPartido.golesFalta" name="golesFalta">
                         </div>
                       </div>
                       <div class="mb-3 d-flex">
                         <div class="col-4">
                           <label for="faltasCometidas" class="form-label">Faltas cometidas:</label>
                           <input type="number" class="form-control" id="faltasCometidas"
-                          [(ngModel)]="playerInfoPostPartido.faltasCometidas" name="faltasCometidas">
+                            [(ngModel)]="playerInfoPostPartido.faltasCometidas" name="faltasCometidas">
                         </div>
                         <div class="col-4">
                           <label for="faltasRecibidas" class="form-label">Faltas recibidas:</label>
                           <input type="number" class="form-control" id="faltasRecibidas"
-                          [(ngModel)]="playerInfoPostPartido.faltasRecibidas" name="faltasRecibidas">
+                            [(ngModel)]="playerInfoPostPartido.faltasRecibidas" name="faltasRecibidas">
                         </div>
                       </div>
                       <div class="mb-3 d-flex">
                         <div class="col-4">
                           <label for="penaltisCometidos" class="form-label">Penaltis cometidos:</label>
                           <input type="number" class="form-control" id="penaltisCometidos"
-                          [(ngModel)]="playerInfoPostPartido.penaltisCometidos" name="penaltisCometidos">
+                            [(ngModel)]="playerInfoPostPartido.penaltisCometidos" name="penaltisCometidos">
                         </div>
                         <div class="col-4">
                           <label for="penaltisRecibidos" class="form-label">Penaltis recibidos:</label>
                           <input type="number" class="form-control" id="penaltisRecibidos"
-                          [(ngModel)]="playerInfoPostPartido.penaltisRecibidos" name="penaltisRecibidos">
+                            [(ngModel)]="playerInfoPostPartido.penaltisRecibidos" name="penaltisRecibidos">
                         </div>
                       </div>
                       <div class="mb-3 d-flex">
                         <div class="col-4">
                           <label for="recuperaciones" class="form-label">Recuperaciones:</label>
-                          <input type="number" class="form-control" id="recuperaciones" [(ngModel)]="playerInfoPostPartido.recuperaciones"
-                            name="recuperaciones">
+                          <input type="number" class="form-control" id="recuperaciones"
+                            [(ngModel)]="playerInfoPostPartido.recuperaciones" name="recuperaciones">
                         </div>
                         <div class="col-4">
                           <label for="perdidas" class="form-label">Perdidas:</label>
-                          <input type="number" class="form-control" id="perdidas"  [(ngModel)]="playerInfoPostPartido.perdidas"
-                            name="perdidas">
+                          <input type="number" class="form-control" id="perdidas"
+                            [(ngModel)]="playerInfoPostPartido.perdidas" name="perdidas">
                         </div>
                       </div>
                       <div class="mb-3 d-flex">
                         <div class="col-4">
                           <label for="tarjetasAmarillas" class="form-label">Tarjetas amarillas:</label>
                           <input type="number" class="form-control" id="tarjetasAmarillas"
-                          [(ngModel)]="playerInfoPostPartido.tarjetasAmarillas" name="tarjetasAmarillas">
+                            [(ngModel)]="playerInfoPostPartido.tarjetasAmarillas" name="tarjetasAmarillas">
                         </div>
                         <div class="col-4">
                           <label for="tarjetasRojas" class="form-label">Tarjetas rojas:</label>
-                          <input type="number" class="form-control" id="tarjetasRojas" [(ngModel)]="playerInfoPostPartido.tarjetasRojas"
-                            name="tarjetasRojas">
+                          <input type="number" class="form-control" id="tarjetasRojas"
+                            [(ngModel)]="playerInfoPostPartido.tarjetasRojas" name="tarjetasRojas">
                         </div>
                       </div>
                       <div class="mb-3 d-flex">
                         <div class="col-4">
                           <label for="disparosTotales" class="form-label">Disparos totales:</label>
                           <input type="number" class="form-control" id="disparosTotales"
-                          [(ngModel)]="playerInfoPostPartido.disparosTotales" name="disparosTotales">
+                            [(ngModel)]="playerInfoPostPartido.disparosTotales" name="disparosTotales">
                         </div>
                         <div class="col-4">
                           <label for="disparosPuerta" class="form-label">Disparos a puerta:</label>
-                          <input type="number" class="form-control" id="disparosPuerta" [(ngModel)]="playerInfoPostPartido.disparosPuerta"
-                            name="disparosPuerta">
+                          <input type="number" class="form-control" id="disparosPuerta"
+                            [(ngModel)]="playerInfoPostPartido.disparosPuerta" name="disparosPuerta">
                         </div>
                       </div>
                       <div class="mb-3 col-4">
                         <label for="paradasPortero" class="form-label">Paradas portero:</label>
-                        <input type="number" class="form-control" id="paradasPortero" [(ngModel)]="playerInfoPostPartido.paradasPortero"
-                          name="paradasPortero">
+                        <input type="number" class="form-control" id="paradasPortero"
+                          [(ngModel)]="playerInfoPostPartido.paradasPortero" name="paradasPortero">
                       </div>
                       <div class="mb-3">
                         <label for="anotaciones" class="form-label">Anotaciones del jugador:</label>
-                        <textarea class="form-control" id="anotaciones" rows="5" [(ngModel)]="playerInfoPostPartido.anotaciones"
-                          name="anotaciones"></textarea>
+                        <textarea class="form-control" id="anotaciones" rows="5"
+                          [(ngModel)]="playerInfoPostPartido.anotaciones" name="anotaciones"></textarea>
                       </div>
                       <div class="mb-3">
                         <button type="submit" class="btn btn-custom float-end">Guardar</button>
@@ -693,7 +730,8 @@
           </div>
           <div class="mb-3">
             <label for="warmUp" class="form-label">Calentamiento:</label>
-            <textarea class="form-control" id="warmUp" rows="5" name="warmUp" [(ngModel)]="trainingSession.warmUp"></textarea>
+            <textarea class="form-control" id="warmUp" rows="5" name="warmUp"
+              [(ngModel)]="trainingSession.warmUp"></textarea>
           </div>
 
           <div class="mb-3">
@@ -715,6 +753,34 @@
                 <label for="slogans" class="form-label">Título:</label>
                 <textarea class="form-control" id="slogans" rows="5" [(ngModel)]="nuevaTarea.slogans"
                   name="slogans"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="work">Tipo de Trabajo:</label>
+                <div>
+                  <label for="category">Categoría:</label>
+                  <select class="form-control" id="category" [(ngModel)]="selectedCategory" name="category"
+                    (change)="onSelectCategory($event)">
+                    <option value="">Pulsa para cargar las categorias</option>
+                    <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
+                  </select>
+                </div>
+                <div *ngIf="selectedCategory">
+                  <label for="subcategory">Subcategoría:</label>
+                  <select class="form-control" id="subcategory" [(ngModel)]="selectedSubcategory" name="subcategory"
+                    (change)="onSelectSubcategory($event)">
+                    <option value="">Seleccionar subcategoría</option>
+                    <option *ngFor="let subcategory of getSubcategories()" [value]="subcategory.name">{{
+                      subcategory.name }}</option>
+                  </select>
+                </div>
+                <div *ngIf="selectedSubcategory">
+                  <label for="option">Opción:</label>
+                  <select class="form-control" id="option" [(ngModel)]="selectedOption" name="option"
+                    (change)="onSelectOptionSubcategory($event)">
+                    <option value="">Seleccionar opción</option>
+                    <option *ngFor="let option of getOptions()" [value]="option">{{ option }}</option>
+                  </select>
+                </div>
               </div>
               <div class="mb-3">
                 <label for="description" class="form-label">Descripción:</label>
@@ -751,69 +817,6 @@
                 <textarea class="form-control" id="video" rows="3" [(ngModel)]="nuevaTarea.video"
                   name="video"></textarea>
               </div>
-
-              <div class="mb-3">
-                <label for="work">Tipo de Trabajo:</label>
-                <div>
-                  <label for="category">Categoría:</label>
-                  <select class="form-control" id="category" [(ngModel)]="selectedCategory"  name="category"
-                    (change)="onSelectCategory($event)">
-                    <option value="">Pulsa para cargar las categorias</option>
-                    <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
-                  </select>
-                </div>
-                <div *ngIf="selectedCategory">
-                  <label for="subcategory">Subcategoría:</label>
-                  <select class="form-control" id="subcategory" [(ngModel)]="selectedSubcategory" name="subcategory"
-                    (change)="onSelectSubcategory($event)">
-                    <option value="">Seleccionar subcategoría</option>
-                    <option *ngFor="let subcategory of getSubcategories()" [value]="subcategory.name">{{
-                      subcategory.name }}</option>
-                  </select>
-                </div>
-                <div *ngIf="selectedSubcategory">
-                  <label for="option">Opción:</label>
-                  <select class="form-control" id="option" [(ngModel)]="selectedOption" name="option"
-                    (change)="onSelectOptionSubcategory($event)">
-                    <option value="">Seleccionar opción</option>
-                    <option *ngFor="let option of getOptions()" [value]="option">{{ option }}</option>
-                  </select>
-                </div>
-              </div>
-
-              <!-- <div class="form-group">
-                <label for="work">Tipo de Trabajo:</label>
-                <select class="form-control" id="work" name="work" formControlName="work">
-                  <option disabled selected>Selecciona un tipo de trabajo</option>
-                  <option value="Trabajo Físico">Trabajo Físico</option>
-                  <option value="Trabajo Táctico">Trabajo Táctico</option>
-                  <option value="Tecnificación">Tecnificación</option>
-                  <option value="ABP">ABP</option>
-                  <option value="Trabajo Preventivo">Trabajo Preventivo</option>
-                  <option disabled>──────────</option>
-                  <option value="Resistencia">Resistencia</option>
-                  <option value="Fuerza">Fuerza</option>
-                  <option value="Velocidad">Velocidad</option>
-                  <option disabled>──────────</option>
-                  <option value="Trabajo por posiciones">Trabajo por posiciones</option>
-                  <option value="Trabajo por líneas">Trabajo por líneas</option>
-                  <option value="Específicos">Específicos</option>
-                  <option disabled>──────────</option>
-                  <option value="Faltas laterales">Faltas laterales</option>
-                  <option value="Faltas frontales">Faltas frontales</option>
-                  <option value="Corners">Corners</option>
-                  <option disabled>──────────</option>
-                  <option value="Core">Core</option>
-                  <option value="Estabilización de rodilla">Estabilización de rodilla</option>
-                  <option value="Glúteos">Glúteos</option>
-                  <option value="Cuádriceps">Cuádriceps</option>
-                  <option value="Aductores">Aductores</option>
-                  <option value="Isquiotibiales">Isquiotibiales</option>
-                  <option value="Gemelos">Gemelos</option>
-                  <option value="Propiocepción">Propiocepción</option>
-                </select>
-              </div> -->
-
               <div class="mb-3 text-end">
                 <!-- Agregar más campos de tarea según sea necesario -->
                 <button (click)="toggleAddTaskForm()" class="btn btn-danger">Cancelar</button>
@@ -836,16 +839,16 @@
               </h2>
               <div [id]="'tarea_' + i" class="accordion-collapse collapse" [ngClass]="{'show': tarea.collapsed}">
                 <div class="accordion-body">
-                  <!-- Contenido de la tarea -->
-                  <p>ID: {{ tarea.taskId }}</p>
-                  <p>Descripción: {{ tarea.description }}</p>
-                  <p>Reglas: {{ tarea.rules }}</p>
-                  <p>Variantes: {{ tarea.variants }}</p>
-                  <p>Tiempo de Trabajo: {{ tarea.worktime }}</p>
-                  <p>Espacio: {{ tarea.space }}</p>
-                  <p>Material: {{ tarea.material }}</p>
-                  <p>Trabajo: {{ tarea.work }}</p>
-                  <p>Video YouTube: {{ tarea.video }}</p>
+                  <!-- Contenido de la tarea 
+                  <p>ID: {{ tarea.taskId }}</p> -->
+                  <p><b>Trabajo:</b> {{ tarea.work }}</p>
+                  <p><b>Descripción:</b>  {{ tarea.description }}</p>
+                  <p><b>Reglas:</b>  {{ tarea.rules }}</p>
+                  <p><b>Variantes:</b>  {{ tarea.variants }}</p>
+                  <p><b>Tiempo de Trabajo:</b>  {{ tarea.worktime }}</p>
+                  <p><b>Espacio:</b>  {{ tarea.space }}</p>
+                  <p><b>Material:</b>  {{ tarea.material }}</p>
+                  <p><b>Video YouTube:</b>  {{ tarea.video }}</p>
                   <br>
                   <h4>Puedes crear la tarea en una pizarra y subir despues la imagen</h4>
                   <!-- Botón para abrir el modal -->
