@@ -11,7 +11,6 @@
         <h5 class="modal-title" id="standard-modalLabel">Información del equipo</h5>
       </div>
       <div class="modal-body">
-        <hr>
         <!-- Formulario para la creación de equipo con campos separados -->
         <form [formGroup]="editarEquipoForm" (ngSubmit)="editarEquipo()">
           <div class="d-flex">
@@ -92,15 +91,17 @@
           </div>
         </form>
       </div>
+      <hr>
       <div class="modal-header" style="justify-content: flex-start;">
         <h5 class="modal-title" id="standard-modalLabel">Entrenadores del equipo</h5>
-        <button class="btn btn-link text-primary" (click)="invitarEntrenador()">
-          <i class="bi bi-plus-circle-fill"></i>
-        </button>
-        <div class="hint">Invitar a un nuevo Entrenador</div>
+        <div *ngIf="coaches.length < 3 && this.team.userId == this.usuarioActual!!.userId">
+          <button class="btn btn-link text-primary" (click)="abrirModalInvitarEntenador()">
+            <i class="bi bi-plus-circle-fill"></i>
+          </button>
+          <div class="hint">Invitar a un nuevo Entrenador</div>
+        </div>
       </div>
       <div class="modal-body">
-        <hr>
         <div class="row">
           <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">
             <div class="col mb-3" *ngFor="let coach of coaches">
@@ -114,8 +115,8 @@
                           alt="user-player" width="100" height="100" class="rounded-circle me-2">
                       </ng-container>
                       <h5 class="card-title">{{ coach.name }} {{ coach.surname }}</h5>
-                      <div class="d-flex justify-content-between">
-                          <button class="btn btn-danger" title="Eliminar">
+                      <div class="d-flex justify-content-between" *ngIf="this.team.userId == this.usuarioActual!!.userId && this.team.userId != coach.userId">
+                          <button class="btn btn-danger" title="Eliminar" (click)="deleteCoach(coach.userId)">
                               <span class="bi bi-trash3"></span>
                           </button>
                       </div>
@@ -124,6 +125,33 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para invitar un entrenador por mail -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Invitar Entrenador</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p>Introduce el correo electrónico del entrenador que quieres invitar. Por favor verifica que la cuenta de correo sea correcta.</p>
+        <form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="invitarEntrenador()">
+          <div class="mb-3" style="text-align: center;">
+            <div class="mb-3">
+              <label for="mail" class="form-label">Correo electrónico</label>
+              <input type="email" class="form-control input-login" id="mail" formControlName="mail">
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-success float-end">Invitar</button>
+            </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>

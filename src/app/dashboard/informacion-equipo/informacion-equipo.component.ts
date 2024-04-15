@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { User } from 'src/app/core/models/users/user.model';
+import { LoginService } from 'src/app/core/services/login/login.service';
 import { Response } from 'src/app/core/services/models/response.model';
+import { RegisterService } from 'src/app/core/services/register/register.service';
 import { TeamNew } from 'src/app/core/services/team/team.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 
@@ -18,6 +21,13 @@ export class InformacionEquipoComponent implements OnInit {
   team: TeamNew = new TeamNew();
   teamInfo: TeamNew = new TeamNew();
   coaches: any;
+  usuarioActual!: User | null;
+
+  userForm: FormGroup = this.fb.group({
+    mail: ['', Validators.email],
+  });;
+
+  showModal = false;
 
   constructor(
     private fb: FormBuilder,
@@ -25,6 +35,8 @@ export class InformacionEquipoComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private snackBar: MatSnackBar,
+    private registerService: RegisterService,
+    private loginService: LoginService,
   ) {
     this.editarEquipoForm = this.fb.group({
       teamId: ["", Validators.required],
@@ -38,6 +50,9 @@ export class InformacionEquipoComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.loginService.usuarioActual.subscribe(user => {
+      this.usuarioActual = user;
+    });
     this.route.params.subscribe(params => {
       // Obtener el valor de teamId de los parámetros
       this.teamId = +params['teamId'];  // El + convierte el valor a número
@@ -46,7 +61,9 @@ export class InformacionEquipoComponent implements OnInit {
     });
   }
 
-  invitarEntrenador(){}
+  abrirModalInvitarEntenador(){
+    this.showModal = true;
+  }
 
   cargarInfoEntrenadores(){
     this.teamService.getUserListByTeam(this.teamId.toString()).subscribe(
@@ -82,7 +99,8 @@ export class InformacionEquipoComponent implements OnInit {
               year: 0,
               categoryName: "",
             },
-            clubId: this.team.clubId
+            clubId: this.team.clubId,
+            userId: this.team.userId,
           };
           // Asignar los valores recuperados del equipo al formulario
           this.editarEquipoForm.patchValue({
@@ -120,6 +138,7 @@ export class InformacionEquipoComponent implements OnInit {
           categoryName: ''
         },
         clubId: fv.clubId || 0,
+        userId: 0,
       };
       // Llamada al servicio para editar el equipo
       // como estamos editando el equipo, podemos mandar userId = 0
@@ -142,6 +161,42 @@ export class InformacionEquipoComponent implements OnInit {
   navegarACalendario(): void {
     // Puedes ajustar la ruta según tu estructura de rutas
     this.router.navigate(['/dashboard/calendario', this.teamId]);
+  }
+
+  cerrarModal(): void {
+    this.showModal = false;
+  }
+
+  invitarEntrenador(){
+    if(this.userForm.valid){
+      this.registerService.inviteCoach(this.userForm.value.mail, this.teamId).pipe().subscribe(
+        res => {
+          if(res.data){
+            this.cargarInfoEntrenadores();
+          }
+          this.cerrarModal();
+          const snackBarConfig = new MatSnackBarConfig();
+          snackBarConfig.duration = 5000;
+          snackBarConfig.horizontalPosition = 'center';
+          snackBarConfig.verticalPosition = 'bottom';
+          this.snackBar.open('Entrenador invitado correctamente.', 'Cerrar', snackBarConfig);
+        })
+    }
+  }
+
+  deleteCoach(userId: number){
+    this.registerService.deleteCoach(this.teamId, userId).pipe().subscribe(
+      res => {
+        if(res.data){
+          this.cargarInfoEntrenadores();
+        }
+        this.cerrarModal();
+        const snackBarConfig = new MatSnackBarConfig();
+        snackBarConfig.duration = 5000;
+        snackBarConfig.horizontalPosition = 'center';
+        snackBarConfig.verticalPosition = 'bottom';
+        this.snackBar.open('Entrenador eliminado correctamente.', 'Cerrar', snackBarConfig);
+      })
   }
 
 }

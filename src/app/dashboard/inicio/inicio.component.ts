@@ -117,11 +117,12 @@ export class InicioComponent implements OnInit {
         opinionTeam: this.crearEquipoForm.value.opinionTeam || '',
         trainingDays: this.crearEquipoForm.value.trainingDays || '',
         categoryType: {
-          categoryTypeId: this.crearEquipoForm.value.categoryType.categoryTypeId,
+          categoryTypeId: this.crearEquipoForm.value.categoryTypeId,
           year: 0,
           categoryName: ''
         },
         clubId: this.crearEquipoForm.value.clubId || 0,
+        userId: 0,
       };
 
       // Llamada al servicio para crear el equipo

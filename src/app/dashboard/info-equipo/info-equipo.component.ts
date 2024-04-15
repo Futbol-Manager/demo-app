@@ -53,7 +53,8 @@ export class InfoEquipoComponent implements OnInit {
               year: 0,
               categoryName: ''
             },
-            clubId: this.team.clubId
+            clubId: this.team.clubId,
+            userId: this.team.userId,
           };
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);

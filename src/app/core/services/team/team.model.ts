@@ -23,6 +23,7 @@ export class TeamConJugadores {
   trainingDays: string;
   category: string;
   jugadoresPorEquipo: string;
+  userId: number;
 
   constructor(object: any) {
     this.teamId = (object.teamId) ? object.teamId : null;
@@ -31,6 +32,8 @@ export class TeamConJugadores {
     this.trainingDays = (object.trainingDays) ? object.trainingDays : null;
     this.category = (object.category) ? object.category : null;
     this.jugadoresPorEquipo = (object.jugadoresPorEquipo) ? object.jugadoresPorEquipo : null;
+    this.userId = (object.userId) ? object.userId : null;
+
   }
 }
 
@@ -44,6 +47,7 @@ export class TeamNew {
   trainingDays: string;
   categoryType: CategoryType;
   clubId: number;
+  userId: number;
 
   constructor() {
     this.teamId = 0; // O el valor por defecto que desees para teamId
@@ -54,6 +58,7 @@ export class TeamNew {
     this.trainingDays = '';
     this.categoryType = new CategoryType(null); // Inicializado con el constructor de CategoryType
     this.clubId = 0;
+    this.userId = 0;
   }
 }
 

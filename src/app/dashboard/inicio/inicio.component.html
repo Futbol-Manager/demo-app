@@ -56,7 +56,7 @@
                           </button>
                           <div class="hint">Entrar</div>
                         </div>
-                        <div class="btn-container">
+                        <div class="btn-container" *ngIf="team.userId == this.usuarioActual!!.userId">
                           <button class="btn btn-link text-danger"
                             (click)="confirmarEliminarEquipo(team.teamId, team.name)">
                             <i class="bi bi-trash"></i>
