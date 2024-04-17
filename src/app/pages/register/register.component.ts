@@ -24,6 +24,7 @@ export class RegisterComponent implements OnInit {
   selectedOption: number = 2;
   passwordsDoNotMatch: boolean = false;
   listaDeClubes: Club = new Club({});
+  msgAge: boolean = false;
 
   constructor(
     private router: Router,
@@ -137,6 +138,7 @@ export class RegisterComponent implements OnInit {
         0,
         validationUser
       );
+
       this.registerService.registerUser(register).pipe()
         .subscribe(
           (res) => {
@@ -166,6 +168,16 @@ export class RegisterComponent implements OnInit {
     }
   }
 
+  calculateAge(birthdate: Date): number {
+    const today = new Date();
+    let age = today.getFullYear() - birthdate.getFullYear();
+    const m = today.getMonth() - birthdate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthdate.getDate())) {
+      age--;
+    }
+    return age;
+  }
+
   registerEntrenador() {
     if (this.registerFormEntrenador.valid) {
       const profileType: ProfileTypeModel = new ProfileTypeModel(2, 'Entrenador');
@@ -186,6 +198,13 @@ export class RegisterComponent implements OnInit {
         0,
         validationUser
       );
+
+      const age = this.calculateAge(new Date(fv.birthdate));
+      if (age < 14) {
+        this.msgAge = true;
+        return;
+      }
+
       this.registerService.registerUser(register).pipe()
         .subscribe(
           (res) => {
@@ -237,7 +256,7 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  toLogin(event: Event){
+  toLogin(event: Event) {
     event.preventDefault();
     this.router.navigate(['/home']);
   }
