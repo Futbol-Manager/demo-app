@@ -29,15 +29,15 @@
                         <th>MEDIA MINUTOS POR PARTIDO</th>
                         <th>GOLES</th>
                         <th>MEDIA DE GOLES POR PARTIDO</th>
-                        <!-- <th>ASISTENCIA</th>
-                        <th>GOLES + ASISTENCIAS</th> -->
+                        <th>ASISTENCIA</th>
+                        <th>GOLES + ASISTENCIAS</th>
+                        <th>MEDIA DE ASISTENCIA POR PARTIDO</th>
+                        <th>MEDIA DE GOLES + ASISTENCIA POR PARTIDO</th>
                         <th>GOLES DE PENALTI</th>
                         <th>GOLES DE FALTA</th>
                         <th>PENALTIS FALLADOS</th>
                         <th>TARJETAS AMARILLAS</th>
                         <th>TARJETAS ROJAS</th>
-                        <!-- <th>MEDIA DE ASISTENCIA POR PARTIDO</th>
-                        <th>MEDIA DE GOLES + ASISTENCIA POR PARTIDO</th> -->
                     </tr>
                 </thead>
                 <tbody>
@@ -46,20 +46,20 @@
                         <td>{{ player.nombre }}</td>
                         <td>{{ player.posicion }}</td>
                         <td>{{ player.fecha }}</td>
-                        <td>{{ player.partidosJugados }}</td>
+                        <td>{{ player.partidosJugados }} / {{ totalMatchs }}</td>
                         <td>{{ player.minTotales }}</td>
                         <td>{{ player.mediaMinPorPartido }}</td>
                         <td>{{ player.goles }}</td>
                         <td>{{ player.mediaGolesPorPartido }}</td>
-                        <!--<td>{{ player.asistencias }}</td>
-                        <td>{{ player.golesAsistencias }}</td>-->
+                        <td>{{ player.asistencias }}</td>
+                        <td>{{ player.golesAsistencias }}</td>
+                        <td>{{ player.mediaAsistPorPartido }}</td>
+                        <td>{{ player.mediaGolesAsistenciasPorPartido }}</td>
                         <td>{{ player.golesPenalti }}</td>
                         <td>{{ player.golesFalta }}</td>
                         <td>{{ player.penaltisFallados }}</td>
                         <td>{{ player.tarAmarilla }}</td>
                         <td>{{ player.tarRojas }}</td>
-                        <!-- <td>{{ player.MediaAsistPorPartido }}</td>
-                        <td>{{ player.MediaGolesAsistenciasPorPartido }}</td> -->
                     </tr>
                 </tbody>
             </table>

@@ -194,30 +194,30 @@
                 <label for="trainingPicture" class="form-label">Formación:</label>
                 <select class="form-control" id="trainingPicture" name="trainingPicture"
                   [(ngModel)]="match.trainingPicture">
-                  <option value="1">1-3-2-1</option>
-                  <option value="2">1-2-3-1</option>
-                  <option value="3">1-3-1-2</option>
-                  <option value="4">1-2-2-2</option>
-                  <option value="5">1-2-1-3</option>
-                  <option value="6">1-1-3-2</option>
-                  <option value="7">1-3-3-0</option>
-                  <option value="8">1-4-1-1</option>
+                  <option value="1-3-2-1">1-3-2-1</option>
+                  <option value="1-2-3-1">1-2-3-1</option>
+                  <option value="1-3-1-2">1-3-1-2</option>
+                  <option value="1-2-2-2">1-2-2-2</option>
+                  <option value="1-2-1-3">1-2-1-3</option>
+                  <option value="1-1-3-2">1-1-3-2</option>
+                  <option value="1-3-3-0">1-3-3-0</option>
+                  <option value="1-4-1-1">1-4-1-1</option>
                   <option disabled>──────────</option>
-                  <option value="9">1-4-4-2</option>
-                  <option value="10">1-4-3-3</option>
-                  <option value="11">1-4-2-3-1</option>
-                  <option value="12">1-4-1-4-1</option>
-                  <option value="13">1-3-5-2</option>
-                  <option value="14">1-3-4-3</option>
-                  <option value="15">1-5-4-1</option>
-                  <option value="16">1-4-5-1</option>
-                  <option value="17">1-3-3-3-1</option>
-                  <option value="18">1-3-1-4-2</option>
-                  <option value="19">1-2-3-2-3</option>
-                  <option value="20">1-4-2-1-3</option>
-                  <option value="21">1-3-2-3-2</option>
-                  <option value="22">1-5-3-2</option>
-                  <option value="23">1-4-4-1-1</option>
+                  <option value="1-4-4-2">1-4-4-2</option>
+                  <option value="1-4-3-3">1-4-3-3</option>
+                  <option value="1-4-2-3-1">1-4-2-3-1</option>
+                  <option value="1-4-1-4-1">1-4-1-4-1</option>
+                  <option value="1-3-5-2">1-3-5-2</option>
+                  <option value="1-3-4-3">1-3-4-3</option>
+                  <option value="1-5-4-1">1-5-4-1</option>
+                  <option value="1-4-5-1">1-4-5-1</option>
+                  <option value="1-3-3-3-1">1-3-3-3-1</option>
+                  <option value="1-3-1-4-2">1-3-1-4-2</option>
+                  <option value="1-2-3-2-3">1-2-3-2-3</option>
+                  <option value="1-4-2-1-3">1-4-2-1-3</option>
+                  <option value="1-3-2-3-2">1-3-2-3-2</option>
+                  <option value="1-5-3-2">1-5-3-2</option>
+                  <option value="1-4-4-1-1">1-4-4-1-1</option>
                 </select>
               </div>
               <div class="mb-3">
@@ -252,6 +252,9 @@
         <h5 class="modal-title">Detalles del Partido</h5>
         <button type="button" class="btn btn-success float-end" (click)="openPostPartido(match.matchPreparationId)">Post
           Partido</button>
+        <button type="button" class="btn btn-secondary" (click)="printDivPostPartido('divPrePArtdo')">
+          Imprimir
+        </button>
         <!-- Botón de cerrar con un icono -->
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
       </div>
@@ -314,30 +317,30 @@
         <div class="mb-3">
           <label for="alineacion" class="form-label">Formación:</label>
           <select class="form-control" id="alineacion" name="alineacion" [(ngModel)]="match.trainingPicture">
-            <option value="1">1-3-2-1</option>
-            <option value="2">1-2-3-1</option>
-            <option value="3">1-3-1-2</option>
-            <option value="4">1-2-2-2</option>
-            <option value="5">1-2-1-3</option>
-            <option value="6">1-1-3-2</option>
-            <option value="7">1-3-3-0</option>
-            <option value="8">1-4-1-1</option>
+            <option value="1-3-2-1">1-3-2-1</option>
+            <option value="1-2-3-1">1-2-3-1</option>
+            <option value="1-3-1-2">1-3-1-2</option>
+            <option value="1-2-2-2">1-2-2-2</option>
+            <option value="1-2-1-3">1-2-1-3</option>
+            <option value="1-1-3-2">1-1-3-2</option>
+            <option value="1-3-3-0">1-3-3-0</option>
+            <option value="1-4-1-1">1-4-1-1</option>
             <option disabled>──────────</option>
-            <option value="9">1-4-4-2</option>
-            <option value="10">1-4-3-3</option>
-            <option value="11">1-4-2-3-1</option>
-            <option value="12">1-4-1-4-1</option>
-            <option value="13">1-3-5-2</option>
-            <option value="14">1-3-4-3</option>
-            <option value="15">1-5-4-1</option>
-            <option value="16">1-4-5-1</option>
-            <option value="17">1-3-3-3-1</option>
-            <option value="18">1-3-1-4-2</option>
-            <option value="19">1-2-3-2-3</option>
-            <option value="20">1-4-2-1-3</option>
-            <option value="21">1-3-2-3-2</option>
-            <option value="22">1-5-3-2</option>
-            <option value="23">1-4-4-1-1</option>
+            <option value="1-4-4-2">1-4-4-2</option>
+            <option value="1-4-3-3">1-4-3-3</option>
+            <option value="1-4-2-3-1">1-4-2-3-1</option>
+            <option value="1-4-1-4-1">1-4-1-4-1</option>
+            <option value="1-3-5-2">1-3-5-2</option>
+            <option value="1-3-4-3">1-3-4-3</option>
+            <option value="1-5-4-1">1-5-4-1</option>
+            <option value="1-4-5-1">1-4-5-1</option>
+            <option value="1-3-3-3-1">1-3-3-3-1</option>
+            <option value="1-3-1-4-2">1-3-1-4-2</option>
+            <option value="1-2-3-2-3">1-2-3-2-3</option>
+            <option value="1-4-2-1-3">1-4-2-1-3</option>
+            <option value="1-3-2-3-2">1-3-2-3-2</option>
+            <option value="1-5-3-2">1-5-3-2</option>
+            <option value="1-4-4-1-1">1-4-4-1-1</option>
           </select>
         </div>
         <div class="mb-3">
@@ -353,6 +356,50 @@
           <label for="convocados" class="form-label">Convocados:</label>
           <textarea class="form-control" id="convocados" rows="5" name="convocados"
             [(ngModel)]="match.summoned"></textarea>
+        </div>
+      </div>
+      <div id="divPrePArtdo" style="display: none;">
+        <div class="mb-3">
+          <label for="nombreRival" class="form-label">Nombre del Rivales:</label>
+          <p>{{ match.rivalName }}</p>
+        </div>
+        <div class="mb-3">
+          <label for="terreno" class="form-label">Local o Visitante:</label>
+          <p>{{ match.terreno }}</p>
+        </div>
+        <div class="mb-3">
+          <label for="lugar" class="form-label">Lugar:</label>
+          <p>{{ match.lugar }}</p>
+        </div>
+        <div class="mb-3 d-flex">
+          <div class="col-6">
+            <label for="hora" class="form-label">hora:</label>
+            <p>{{ match.hora }}:{{ match.minutos }}</p>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label for="informacionRival" class="form-label">Información del Rival:</label>
+          <p>{{ match.rivalInfo }}</p>
+        </div>
+        <div class="mb-3">
+          <label for="nombreArbitro" class="form-label">Nombre del Árbitro:</label>
+          <p>{{ match.refereeName }}</p>
+        </div>
+        <div class="mb-3">
+          <label for="alineacion" class="form-label">Formación:</label>
+          <p>{{ match.trainingPicture }}</p>
+        </div>
+        <div class="mb-3">
+          <label for="tacticaGeneral" class="form-label">Táctica General:</label>
+          <p>{{ match.matchTactics }}</p>
+        </div>
+        <div class="mb-3">
+          <label for="ABPs" class="form-label">ABPs:</label>
+          <p>{{ match.abp }}</p>
+        </div>
+        <div class="mb-3">
+          <label for="convocados" class="form-label">Convocados:</label>
+          <p>{{ match.summoned }}</p>
         </div>
       </div>
       <div class="modal-footer d-flex">
@@ -830,8 +877,11 @@
           <div class="accordion" *ngIf="trainingSession.tasks && trainingSession.tasks.length > 0">
             <div class="accordion-item" *ngFor="let tarea of trainingSession.tasks; let i = index">
               <h2 class="accordion-header d-flex">
-                <button class="accordion-button" type="button" (click)="toggleTask(tarea)">
+                <button type="button" class="accordion-button" (click)="toggleTask(tarea)">
                   Tarea: {{ tarea.slogans }}
+                </button>
+                <button type="button" class="btn btn-secondary" (click)="printDiv('PrintTarea_' + i)">
+                  Imprimir
                 </button>
                 <button type="button" class="btn btn-danger" (click)="deleteTask(tarea)">
                   Eliminar Tarea
@@ -841,26 +891,29 @@
                 <div class="accordion-body">
                   <!-- Contenido de la tarea 
                   <p>ID: {{ tarea.taskId }}</p> -->
-                  <p><b>Trabajo:</b> {{ tarea.work }}</p>
-                  <p><b>Descripción:</b>  {{ tarea.description }}</p>
-                  <p><b>Reglas:</b>  {{ tarea.rules }}</p>
-                  <p><b>Variantes:</b>  {{ tarea.variants }}</p>
-                  <p><b>Tiempo de Trabajo:</b>  {{ tarea.worktime }}</p>
-                  <p><b>Espacio:</b>  {{ tarea.space }}</p>
-                  <p><b>Material:</b>  {{ tarea.material }}</p>
-                  <p><b>Video YouTube:</b>  {{ tarea.video }}</p>
-                  <br>
+                  <div [id]="'PrintTarea_' + i">
+                    <p><b>Trabajo:</b> {{ tarea.work }}</p>
+                    <p><b>Descripción:</b> {{ tarea.description }}</p>
+                    <p><b>Reglas:</b> {{ tarea.rules }}</p>
+                    <p><b>Variantes:</b> {{ tarea.variants }}</p>
+                    <p><b>Tiempo de Trabajo:</b> {{ tarea.worktime }}</p>
+                    <p><b>Espacio:</b> {{ tarea.space }}</p>
+                    <p><b>Material:</b> {{ tarea.material }}</p>
+                    <p><b>Video YouTube:</b> {{ tarea.video }}</p>
+                    <br>
+                    <!-- Mostrar la imagen si tarea.imagenBoard tiene un valor -->
+                    <div [id]="'div_tarea_' + tarea.taskId">
+                      <img class="imgBoard" *ngIf="tarea.imagenBoard"
+                        [src]="'https://sphairatech.com/images/task-board/' + tarea.imagenBoard"
+                        alt="Imagen de la tarea" [id]="'imagen_tarea_' + tarea.taskId">
+                    </div>
+                  </div>
+                  <hr>
                   <h4>Puedes crear la tarea en una pizarra y subir despues la imagen</h4>
                   <!-- Botón para abrir el modal -->
                   <button class="btn btn-warning" (click)="openBoardModal()">Abrir pizarra</button> o también puedes
                   <!-- Botón para abrir enlace en una nueva pestaña -->
                   <a href="https://tacticalboard.sphairatech.com/" target="_blank"> ir a la aplicacion</a>
-                  <!-- Mostrar la imagen si tarea.imagenBoard tiene un valor -->
-                  <div [id]="'div_tarea_' + tarea.taskId">
-                    <img class="imgBoard" *ngIf="tarea.imagenBoard"
-                      [src]="'https://sphairatech.com/images/task-board/' + tarea.imagenBoard" alt="Imagen de la tarea"
-                      [id]="'imagen_tarea_' + tarea.taskId">
-                  </div>
                   <!-- Agregar más campos de tarea según sea necesario -->
                   <div class="container">
                     <h4>Sube ahora la imagen descargada de tu pizarra</h4>

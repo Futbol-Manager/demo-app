@@ -844,4 +844,49 @@ export class CalendarioComponent implements OnInit {
     return selectedSubcategory ? selectedSubcategory.options : [];
   }
 
+  printDiv(divId: string): void {
+    let printContents = document.getElementById(divId)?.innerHTML;
+    let originalTitle = document.title;
+    let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+  
+    popupWin?.document.open();
+    popupWin?.document.write(`
+      <html>
+        <head>
+          <title>Impresión</title>
+          <style>
+            // Aquí puedes añadir estilos específicos para la impresión si es necesario
+            body { font-family: 'Arial', sans-serif; }
+            .btn { display: none; } // Ocultar botones en la impresión
+          </style>
+        </head>
+        <body onload="window.print();window.close();">${printContents}</body>
+      </html>
+    `);
+    popupWin?.document.close();
+  }
+
+  printDivPostPartido(divId: string): void {
+    let printContents = document.getElementById(divId)?.innerHTML;
+    let originalTitle = document.title;
+    let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+  
+    popupWin?.document.open();
+    popupWin?.document.write(`
+      <html>
+        <head>
+          <title>Impresión</title>
+          <style>
+            // Aquí puedes añadir estilos específicos para la impresión si es necesario
+            body { font-family: 'Arial', sans-serif; }
+            .btn { display: none; } // Ocultar botones en la impresión
+          </style>
+        </head>
+        <body onload="window.print();window.close();">${printContents}</body>
+      </html>
+    `);
+    popupWin?.document.close();
+  }
+  
+
 }

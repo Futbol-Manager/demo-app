@@ -17,6 +17,7 @@ export class EstadisticasJugadoresComponent implements OnInit {
   datosCargados: boolean = false;
   teamId!: number;
   players: any[] = []; 
+  totalMatchs: number = 0;
 
   constructor(
     private router: Router,
@@ -48,6 +49,7 @@ export class EstadisticasJugadoresComponent implements OnInit {
         if (response && response.data && Array.isArray(response.data)) {
           // Mapea los datos bajo 'data' a instancias del modelo Team
           this.players = response.data; //.map((post: PostPartido) => new PostPartido(post));
+          this.totalMatchs = response.data.length;
           // Inicializar el DataTable después de cargar los datos
           this.inicializarDataTable();
           this.datosCargados = true;
