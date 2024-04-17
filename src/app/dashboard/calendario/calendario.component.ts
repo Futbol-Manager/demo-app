@@ -210,7 +210,7 @@ export class CalendarioComponent implements OnInit {
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
-          this.nombreEquipo = response.data.name;
+          this.nombreEquipo = response.data.categoryType.categoryName + ' ' + response.data.levelLeague;
           this.getListaEntrenamientos();
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);

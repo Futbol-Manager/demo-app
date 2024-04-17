@@ -1,133 +1,136 @@
-<div class="d-block m-3" tabindex="-1" role="dialog">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="btn-container">
-        <button class="btn btn-custom" (click)="navegarACalendario()">
+<div class="container mt-3">
+  <div class="d-block m-3" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="btn-container">
+          <button class="btn btn-custom" (click)="navegarACalendario()">
             <i class="bi bi-calendar"></i>
-        </button>
-        <div class="hint">Volver al calendario</div>
-    </div>
-      <div class="modal-header">
-        <h5 class="modal-title" id="standard-modalLabel">Información del equipo</h5>
-      </div>
-      <div class="modal-body">
-        <!-- Formulario para la creación de equipo con campos separados -->
-        <form [formGroup]="editarEquipoForm" (ngSubmit)="editarEquipo()">
-          <div class="d-flex">
-            <div class="m-3 col-5">
-              <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
-              <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
-                formControlName="categoryTypeId">
-                <!-- Opciones ajustadas según tus necesidades -->
-                <option value="1">LaLiga EA Sports</option>
-                <option value="2">Liga F</option>
-                <option value="3">LaLiga Hypermotion</option>
-                <option value="4">Segunda RFEF Femenina</option>
-                <option value="5">Primera RFEF</option>
-                <option value="6">Segunda RFEF</option>
-                <option value="7">Tercera RFEF</option>
-                <option value="8">Tercera RFEF Femenina</option>
-                <option value="9">Preferente Autonómica</option>
-                <option value="10">Preferente Autonómica Femenina</option>
-                <option value="11">Primera Autonómica</option>
-                <option value="12">Primera Autonómica Femenina</option>
-                <option value="13">Segunda Autonómica</option>
-                <option value="14">Tercera Autonómica</option>
-                <option value="15">Senior Amateur</option>
-                <option value="16">Juvenil</option>
-                <option value="17">Juvenil/Cadete Femenina</option>
-                <option value="18">Cadete</option>
-                <option value="19">Cadete/Infantil Femenina</option>
-                <option value="20">Infantil</option>
-                <option value="21">Infantil/Alevín Femenina</option>
-                <option value="22">Alevín</option>
-                <option value="23">Benjamín</option>
-                <option value="24">Benjamín/Prebenjamín Femenina</option>
-                <option value="25">Prebenjamín</option>
-                <option value="26">Debutante</option>
-              </select>
-            </div>
-            <div class="m-3 col-5">
-              <label for="nivelLiga" class="form-label">Nivel:</label>
-              <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague">
-                <!-- Opciones ajustadas según tus necesidades -->
-                <option value="División de Honor">División de Honor</option>
-                <option value="Liga Nacional">Liga Nacional</option>
-                <option value="Superliga">Superliga</option>
-                <option value="Autonómica">Autonómica</option>
-                <option value="Preferente">Preferente</option>
-                <option value="Primera">Primera</option>
-                <option value="Segunda">Segunda</option>
-                <option value="Tercera">Tercera</option>
-              </select>
-            </div>
-          </div>
-          <div class="d-flex">
-            <div class="m-3 col-5">
-              <label for="nombreEquipo" class="form-label">Nombre del Club:</label>
-              <input type="text" class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
-            </div>
-            <div class="m-3 col-5">
-              <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
-              <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo"
-                formControlName="objectiveTeam">
-            </div>
-          </div>
-          <div class="d-flex">
-            <div class="m-3 col-5">
-              <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
-              <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
-                formControlName="trainingDays">
-            </div>
-            <div class="m-3 col-5">
-              <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
-              <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo"
-                formControlName="opinionTeam">
-            </div>
-          </div>
-          <div class="modal-footer">
-            <!-- Botón para guardar el nuevo equipo -->
-            <button type="submit" class="btn btn-success">Guardar</button>
-          </div>
-        </form>
-      </div>
-      <hr>
-      <div class="modal-header" style="justify-content: flex-start;">
-        <h5 class="modal-title" id="standard-modalLabel">Entrenadores del equipo</h5>
-        <div *ngIf="coaches.length < 3 && this.team.userId == this.usuarioActual!!.userId">
-          <button class="btn btn-link text-primary" (click)="abrirModalInvitarEntenador()">
-            <i class="bi bi-plus-circle-fill"></i>
           </button>
-          <div class="hint">Invitar a un nuevo Entrenador</div>
+          <div class="hint">Volver al calendario</div>
         </div>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">
-            <div class="col mb-3" *ngFor="let coach of coaches">
-              <div class="card gradient">
+        <div class="modal-header">
+          <h5 class="modal-title" id="standard-modalLabel">Información del equipo</h5>
+        </div>
+        <div class="modal-body">
+          <!-- Formulario para la creación de equipo con campos separados -->
+          <form [formGroup]="editarEquipoForm" (ngSubmit)="editarEquipo()">
+            <div class="d-flex">
+              <div class="m-3 col-6">
+                <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
+                <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
+                  formControlName="categoryTypeId">
+                  <!-- Opciones ajustadas según tus necesidades -->
+                  <option value="1">LaLiga EA Sports</option>
+                  <option value="2">Liga F</option>
+                  <option value="3">LaLiga Hypermotion</option>
+                  <option value="4">Segunda RFEF Femenina</option>
+                  <option value="5">Primera RFEF</option>
+                  <option value="6">Segunda RFEF</option>
+                  <option value="7">Tercera RFEF</option>
+                  <option value="8">Tercera RFEF Femenina</option>
+                  <option value="9">Preferente Autonómica</option>
+                  <option value="10">Preferente Autonómica Femenina</option>
+                  <option value="11">Primera Autonómica</option>
+                  <option value="12">Primera Autonómica Femenina</option>
+                  <option value="13">Segunda Autonómica</option>
+                  <option value="14">Tercera Autonómica</option>
+                  <option value="15">Senior Amateur</option>
+                  <option value="16">Juvenil</option>
+                  <option value="17">Juvenil/Cadete Femenina</option>
+                  <option value="18">Cadete</option>
+                  <option value="19">Cadete/Infantil Femenina</option>
+                  <option value="20">Infantil</option>
+                  <option value="21">Infantil/Alevín Femenina</option>
+                  <option value="22">Alevín</option>
+                  <option value="23">Benjamín</option>
+                  <option value="24">Benjamín/Prebenjamín Femenina</option>
+                  <option value="25">Prebenjamín</option>
+                  <option value="26">Debutante</option>
+                </select>
+              </div>
+              <div class="m-3 col-6">
+                <label for="nivelLiga" class="form-label">Nivel:</label>
+                <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague">
+                  <!-- Opciones ajustadas según tus necesidades -->
+                  <option value="División de Honor">División de Honor</option>
+                  <option value="Liga Nacional">Liga Nacional</option>
+                  <option value="Superliga">Superliga</option>
+                  <option value="Autonómica">Autonómica</option>
+                  <option value="Preferente">Preferente</option>
+                  <option value="Primera">Primera</option>
+                  <option value="Segunda">Segunda</option>
+                  <option value="Tercera">Tercera</option>
+                </select>
+              </div>
+            </div>
+            <div class="d-flex">
+              <div class="m-3 col-6">
+                <label for="nombreEquipo" class="form-label">Nombre del Club:</label>
+                <input type="text" class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
+              </div>
+              <div class="m-3 col-6">
+                <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
+                <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
+                  formControlName="trainingDays">
+              </div>
+            </div>
+            <div class="d-flex">
+              <div class="m-3 col-6">
+                <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
+                <textarea class="form-control" rows="4" id="objetivoEquipo" name="objetivoEquipo"
+                  formControlName="objectiveTeam"></textarea>
+              </div>
+              <div class="m-3 col-6">
+                <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
+                <textarea class="form-control" rows="4" id="opinionEquipo" name="opinionEquipo"
+                  formControlName="opinionTeam"></textarea>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <!-- Botón para guardar el nuevo equipo -->
+              <button type="submit" class="btn btn-success">Guardar</button>
+            </div>
+          </form>
+        </div>
+        <hr>
+        <div class="modal-header" style="justify-content: flex-start;">
+          <h5 class="modal-title" id="standard-modalLabel">Entrenadores del equipo</h5>
+          <div *ngIf="coaches.length < 3 && this.team.userId == this.usuarioActual!!.userId">
+            <button class="btn btn-link text-primary" (click)="abrirModalInvitarEntenador()">
+              <i class="bi bi-plus-circle-fill"></i>
+            </button>
+            <div class="hint">Invitar a un nuevo Entrenador</div>
+          </div>
+        </div>
+        <div class="modal-body">
+          <div class="row">
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">
+              <div class="col mb-3" *ngFor="let coach of coaches">
+                <div class="card gradient">
                   <div class="card-body text-center">
-                      <ng-container *ngIf="!coach.picture">
-                          <span class="bi bi-person" style="font-size: 4rem;"></span>
-                      </ng-container>
-                      <ng-container *ngIf="coach.picture">
-                          <img src="https://sphairatech.com/images/user/{{ coach.picture }}"
-                          alt="user-player" width="100" height="100" class="rounded-circle me-2">
-                      </ng-container>
-                      <h5 class="card-title">{{ coach.name }} {{ coach.surname }}</h5>
-                      <div class="d-flex justify-content-between" *ngIf="this.team.userId == this.usuarioActual!!.userId && this.team.userId != coach.userId">
-                          <button class="btn btn-danger" title="Eliminar" (click)="deleteCoach(coach.userId)">
-                              <span class="bi bi-trash3"></span>
-                          </button>
-                      </div>
+                    <ng-container *ngIf="!coach.picture">
+                      <span class="bi bi-person" style="font-size: 4rem;"></span>
+                    </ng-container>
+                    <ng-container *ngIf="coach.picture">
+                      <img src="https://sphairatech.com/images/user/{{ coach.picture }}" alt="user-player" width="100"
+                        height="100" class="rounded-circle me-2">
+                    </ng-container>
+                    <h5 class="card-title">{{ coach.name }} {{ coach.surname }}</h5>
+                    <div class="d-flex justify-content-between"
+                      *ngIf="this.team.userId == this.usuarioActual!!.userId && this.team.userId != coach.userId">
+                      <button class="btn btn-danger" title="Eliminar" (click)="deleteCoach(coach.userId)">
+                        <span class="bi bi-trash3"></span>
+                      </button>
+                    </div>
                   </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </div>  
 </div>
 
 <!-- Modal para invitar un entrenador por mail -->
@@ -140,7 +143,8 @@
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
       </div>
       <div class="modal-body">
-        <p>Introduce el correo electrónico del entrenador que quieres invitar. Por favor verifica que la cuenta de correo sea correcta.</p>
+        <p>Introduce el correo electrónico del entrenador que quieres invitar. Por favor verifica que la cuenta de
+          correo sea correcta.</p>
         <form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="invitarEntrenador()">
           <div class="mb-3" style="text-align: center;">
             <div class="mb-3">
