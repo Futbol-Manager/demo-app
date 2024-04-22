@@ -46,10 +46,12 @@ export class EstadisticasJugadoresComponent implements OnInit {
     this.playerService.getListPlayersEstadisticsByTeam(this.teamId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
-        if (response && response.data && Array.isArray(response.data)) {
+        if (response && response.data && Array.isArray(response.data.listDto)) {
+          let resp = response;
+          let list = (resp.data as { listDto: PlayerEstadistica[] }).listDto;
           // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.players = response.data; //.map((post: PostPartido) => new PostPartido(post));
-          this.totalMatchs = response.data.length;
+          this.players = list; //.map((post: PostPartido) => new PostPartido(post));
+          this.totalMatchs = resp.data.matchs;
           // Inicializar el DataTable después de cargar los datos
           this.inicializarDataTable();
           this.datosCargados = true;

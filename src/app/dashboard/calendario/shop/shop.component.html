@@ -54,9 +54,8 @@
         <div class="card" *ngFor="let tarea of taskList; let i = index" [class.selected]="tarea === selectedTask"
           (click)="seleccionarTarea(tarea)">
           <div class="card-body">
-            <h5 class="card-title">Descargar tarea {{ i + 1 }}</h5>
+            <h5 class="card-title">{{ tarea.slogans }}</h5>
             <p class="card-text">{{ tarea.description }}</p>
-            <p class="card-text">{{ tarea.video }}</p>
           </div>
         </div>
       </div>
