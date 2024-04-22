@@ -661,6 +661,13 @@
                             name="goles">
                         </div>
                         <div class="col-4">
+                          <label for="asistencias" class="form-label">Asistencias:</label>
+                          <input type="number" class="form-control" id="asistencias" [(ngModel)]="playerInfoPostPartido.asistencias"
+                            name="asistencias">
+                        </div>
+                      </div>
+                      <div class="mb-3 d-flex">
+                        <div class="col-4">
                           <label for="golesPenalti" class="form-label">Goles de penalti:</label>
                           <input type="number" class="form-control" id="golesPenalti"
                             [(ngModel)]="playerInfoPostPartido.golesPenalti" name="golesPenalti">

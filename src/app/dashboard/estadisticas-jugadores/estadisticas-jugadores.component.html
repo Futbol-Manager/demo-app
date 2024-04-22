@@ -23,21 +23,21 @@
                         <th>ID</th>
                         <th>NOMBRE</th>
                         <th>POSICION</th>
-                        <th>FECHA DE NACIMIENTO</th>
-                        <th>PARTIDOS JUGADOS</th>
-                        <th>MINUTOS TOTALES</th>
-                        <th>MEDIA MINUTOS POR PARTIDO</th>
+                        <th>FECHA_NACIMIENTO</th>
+                        <th>PARTIDOS_JUGADOS</th>
+                        <th>MINUTOS_TOTALES</th>
+                        <th>MEDIA_MINUTOS_PARTIDO</th>
                         <th>GOLES</th>
-                        <th>MEDIA DE GOLES POR PARTIDO</th>
+                        <th>MEDIA_GOLES_PARTIDO</th>
                         <th>ASISTENCIA</th>
-                        <th>GOLES + ASISTENCIAS</th>
-                        <th>MEDIA DE ASISTENCIA POR PARTIDO</th>
-                        <th>MEDIA DE GOLES + ASISTENCIA POR PARTIDO</th>
-                        <th>GOLES DE PENALTI</th>
-                        <th>GOLES DE FALTA</th>
-                        <th>PENALTIS FALLADOS</th>
-                        <th>TARJETAS AMARILLAS</th>
-                        <th>TARJETAS ROJAS</th>
+                        <th>GOLES_ASISTENCIAS</th>
+                        <th>MEDIA_ASISTENCIA_PARTIDO</th>
+                        <th>MEDIA_GOLES_ASISTENCIA_PARTIDO</th>
+                        <th>GOLES_PENALTI</th>
+                        <th>GOLES_FALTA</th>
+                        <th>PENALTIS_FALLADOS</th>
+                        <th>TARJETAS_AMARILLAS</th>
+                        <th>TARJETAS_ROJAS</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,7 +46,7 @@
                         <td>{{ player.nombre }}</td>
                         <td>{{ player.posicion }}</td>
                         <td>{{ player.fecha }}</td>
-                        <td>{{ player.partidosJugados }} / {{ totalMatchs }}</td>
+                        <td>{{ player.partidosJugados }} de {{ totalMatchs }}</td>
                         <td>{{ player.minTotales }}</td>
                         <td>{{ player.mediaMinPorPartido }}</td>
                         <td>{{ player.goles }}</td>

@@ -104,6 +104,7 @@ export class PlayerPostPartido {
     anotaciones: string = '';
     penaltisCometidos: number = 0;
     penaltisRecibidos: number = 0;
+    asistencias: number = 0;
 
     constructor(object: any) {
         this.playerPostPartidoId = object.playerPostPartidoId || 0;
@@ -125,6 +126,7 @@ export class PlayerPostPartido {
         this.anotaciones = object.anotaciones || '';
         this.penaltisCometidos = object.penaltisCometidos || 0;
         this.penaltisRecibidos = object.penaltisRecibidos || 0;
+        this.asistencias = object.asistencias || 0;
     }
 }
 
