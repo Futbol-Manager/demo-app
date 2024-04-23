@@ -119,7 +119,7 @@ export class EstadisticasEquipoComponent implements OnInit {
           columnDefs: [
             { width: '150px', targets: 3 },
             {
-              targets: [0, 1],
+              targets: [],
               visible: false
             }
           ],

@@ -34,6 +34,7 @@ export class PlayerComponent implements OnInit {
   usuarioActual!: User | null;
   teamId!: number;
   showModal = false;
+  showModalInvitar = false;
   mostrarModalInfoJugador = false;
   selectedPlayer: Player = new Player({});
   player: Player = new Player({});
@@ -44,6 +45,9 @@ export class PlayerComponent implements OnInit {
   players: any[] = [];
   imgPlayer: string = '';
   selectedFile!: File;
+
+  nombreJugador: string = '';
+  isMenor: boolean = false;
 
   constructor(private playerservice: PlayerService,
     private router: Router,
@@ -296,7 +300,8 @@ export class PlayerComponent implements OnInit {
       porteroReflejos: '50',
       especialidades: '50',
       opinionDelEntrenador: '',
-      picturePlayer: ''
+      picturePlayer: '',
+      verify: 0
     };
   }
 
@@ -507,6 +512,41 @@ export class PlayerComponent implements OnInit {
     } else {
       console.log('Ninguna imagen seleccionada.');
     }
+  }
+
+  invitarJugador(playerId: number): void {
+    const jugadorSeleccionado = this.players.find(player => player.playerId === playerId);
+    
+    this.nombreJugador = jugadorSeleccionado.nombre;
+
+    // Calcular la fecha actual
+    const fechaActual = new Date();
+    
+    // Calcular la fecha de nacimiento del jugador
+    const fechaNacimiento = new Date(jugadorSeleccionado.fechaDeNacimiento);
+    
+    // Calcular la edad del jugador
+    let edad = fechaActual.getFullYear() - fechaNacimiento.getFullYear();
+    const mesActual = fechaActual.getMonth() + 1;
+    const mesNacimiento = fechaNacimiento.getMonth() + 1;
+    
+    // Si el mes actual es menor que el mes de nacimiento o si es el mismo mes pero el día actual es menor que el día de nacimiento,
+    // entonces el jugador no ha cumplido años todavía
+    if (mesActual < mesNacimiento || (mesActual === mesNacimiento && fechaActual.getDate() < fechaNacimiento.getDate())) {
+        edad--;
+    }
+    
+    // Comprobar si el jugador es menor de 14 años
+    this.isMenor = edad < 14;
+    this.showModalInvitar = true;
+  }
+
+  cerrarModalInvitar(){
+    this.showModalInvitar = false;
+  }
+
+  enviarMailJugador(){
+
   }
 
 }

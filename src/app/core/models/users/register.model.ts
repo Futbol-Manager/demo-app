@@ -1,3 +1,5 @@
+import { PlayerId } from "../../services/player/player.model";
+
 export class RegisterModel {
   profileType: ProfileTypeModel;
   firstName: string;
@@ -7,6 +9,8 @@ export class RegisterModel {
   mail: string;
 	password: string;
   userId: number;
+  nameSon: string;
+  playerId?: number;
   validationUser?: ValidationUserModel;
   pictureUser?: string;
 	dateCreate?: string;
@@ -21,6 +25,8 @@ export class RegisterModel {
     mail: string,
     password: string,
     userId: number,
+    playerId: number,
+    nameSon: string,
     validationUser?: ValidationUserModel,
     pictureUser?: string,
     dateCreate?: string,
@@ -38,6 +44,8 @@ export class RegisterModel {
     this.genreType = genreType;
     this.profileType = profileType;
     this.validationUser = validationUser;
+    this.nameSon = nameSon;
+    this.playerId = playerId;
   }
 }
 

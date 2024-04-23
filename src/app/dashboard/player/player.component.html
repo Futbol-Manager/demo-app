@@ -37,6 +37,19 @@
                             <div class="card gradient">
                                 <!-- Aquí puedes mostrar la imagen del jugador, si tienes -->
                                 <div class="card-body text-center">
+                                    <!-- Puedes agregar botones o acciones específicas para cada jugador aquí -->
+                                    <div *ngIf="player.verify === 0" class="d-flex justify-content-between">
+                                        <button class="btn btn-danger" title="Editar"
+                                            (click)="invitarJugador(player.playerId)">
+                                            <i class="bi bi-envelope"></i>
+                                        </button>
+                                    </div>
+                                    <div *ngIf="player.verify !== 0" class="d-flex justify-content-between">
+                                        <button style="visibility: hidden;" class="btn btn-danger" title="Editar"
+                                            (click)="invitarJugador(player.playerId)">
+                                            <i class="bi bi-envelope"></i>
+                                        </button>
+                                    </div>
                                     <ng-container *ngIf="!player.picturePlayer">
                                         <span class="bi bi-person" style="font-size: 4rem;"></span>
                                     </ng-container>
@@ -560,6 +573,37 @@
                         <canvas id="radarChart"></canvas>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para invitar un jugador por mail -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalInvitar}">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Invitar a {{ nombreJugador }}</h5>
+                <!-- Botón de cerrar con un icono -->
+                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalInvitar()"></button>
+            </div>
+            <div class="modal-body">
+                <p *ngIf="isMenor">Puesto que el jugador es menor de 14 años, has de invitar a un padre o tutor, introduce su correo
+                    electrónico de a quíen vas a invitar. Por favor verifica que la cuenta de
+                    correo sea correcta.</p>
+                <p *ngIf="!isMenor">Introduce el correo electrónico del jugador que quieres invitar. Por favor verifica que la cuenta de
+                    correo sea correcta.</p>
+                <form class="form-login" #thisForm="ngForm" (ngSubmit)="enviarMailJugador()">
+                    <div class="mb-3" style="text-align: center;">
+                        <div class="mb-3">
+                            <label for="mail" class="form-label">Correo electrónico</label>
+                            <input type="email" class="form-control input-login" id="mail">
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success float-end">Invitar</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

@@ -12,6 +12,7 @@ const appRoutes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'login', component: LoginComponent },
   { path: 'registro', component: RegisterComponent },
+  { path: 'registro/:playerId/:email/:isMenor', component: RegisterComponent },
   { path: 'change-password', component: ChangePasswordComponent },
   { path: 'validationUser', component: ValidationUserComponent },
   {

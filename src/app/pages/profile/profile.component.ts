@@ -8,6 +8,7 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { LoginModel } from 'src/app/core/models/users/login.model';
 import { MatDialog } from '@angular/material/dialog';
 import { BehaviorSubject } from 'rxjs';
+import { PlayerId } from 'src/app/core/services/player/player.model';
 
 @Component({
   selector: 'app-profile',
@@ -26,27 +27,27 @@ export class ProfileComponent implements OnInit {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
   ) {
-      this.loginService.usuarioActual.subscribe(user => {
-        this.usuarioActual = user;
-        this.updateForm(); // Actualiza el formulario cuando cambia el usuario actual
-      });
+    this.loginService.usuarioActual.subscribe(user => {
+      this.usuarioActual = user;
+      this.updateForm(); // Actualiza el formulario cuando cambia el usuario actual
+    });
 
-      // Inicializa el formulario
-      this.userForm = this.formBuilder.group({
-        pictureUser: ['', Validators.required],
-        firstName: ['', Validators.required],
-        secondName: ['', Validators.required],
-        mail: ['', Validators.required],
-        birthdate: ['', Validators.required],
-        genreType: ['', Validators.required],
-      });
+    // Inicializa el formulario
+    this.userForm = this.formBuilder.group({
+      pictureUser: ['', Validators.required],
+      firstName: ['', Validators.required],
+      secondName: ['', Validators.required],
+      mail: ['', Validators.required],
+      birthdate: ['', Validators.required],
+      genreType: ['', Validators.required],
+    });
 
-      // Actualiza el formulario con los datos del usuario actual
-      this.updateForm();
+    // Actualiza el formulario con los datos del usuario actual
+    this.updateForm();
   }
 
   ngOnInit(): void {
-    if(this.usuarioActual != null){
+    if (this.usuarioActual != null) {
 
     }
   }
@@ -68,8 +69,8 @@ export class ProfileComponent implements OnInit {
     return this.userForm.get('mail');
   }
 
-  saveChanges(){
-    if(this.userForm.valid){
+  saveChanges() {
+    if (this.userForm.valid) {
 
       const today: Date = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
       const isoString: string = today.toISOString();
@@ -77,7 +78,8 @@ export class ProfileComponent implements OnInit {
       const genreType: GenreTypeModel = new GenreTypeModel(
         this.userForm.value.genreType,
         this.userForm.value.genreType == 1 ? 'Masculino' : (this.userForm.value.genreType == 2 ? 'Femenino' : 'Otro')
-        );
+      );
+
       const profileType: ProfileTypeModel = new ProfileTypeModel(2, 'Entrenador') //hardcodeado
       const validationUser: ValidationUserModel = new ValidationUserModel(2, 'Validado por mail');//hardcodeado
       const register: RegisterModel = new RegisterModel(
@@ -89,28 +91,30 @@ export class ProfileComponent implements OnInit {
         this.userForm.value.mail,
         this.usuarioActual == null ? '' : this.usuarioActual.password,
         this.usuarioActual == null ? 0 : this.usuarioActual.userId,
+        this.usuarioActual == null ? 0 : this.usuarioActual.playerId,
+        this.usuarioActual == null ? '' : this.usuarioActual.nameSon,
         validationUser,
         this.usuarioActual == null ? '' : this.usuarioActual.pictureUser,
         dateOnlyString,
       );
       this.registerService.registerUser(register).pipe()
-      .subscribe(
-        (res) => {
-          if(res.data != null) {
-            const snackBarConfig = new MatSnackBarConfig();
-            snackBarConfig.duration = 5000;
-            snackBarConfig.horizontalPosition = 'center';
-            snackBarConfig.verticalPosition = 'bottom';
-            this.snackBar.open('Actualización de datos exitosa.', 'Cerrar', snackBarConfig);
-            this.dialog.closeAll();
-          } else{
-            const snackBarConfig = new MatSnackBarConfig();
-            snackBarConfig.duration = 5000;
-            snackBarConfig.horizontalPosition = 'center';
-            snackBarConfig.verticalPosition = 'bottom';
-            this.snackBar.open('Error al modificar datos. Vuelve a intentarlo.', 'Cerrar', snackBarConfig);
-          }
-        })
+        .subscribe(
+          (res) => {
+            if (res.data != null) {
+              const snackBarConfig = new MatSnackBarConfig();
+              snackBarConfig.duration = 5000;
+              snackBarConfig.horizontalPosition = 'center';
+              snackBarConfig.verticalPosition = 'bottom';
+              this.snackBar.open('Actualización de datos exitosa.', 'Cerrar', snackBarConfig);
+              this.dialog.closeAll();
+            } else {
+              const snackBarConfig = new MatSnackBarConfig();
+              snackBarConfig.duration = 5000;
+              snackBarConfig.horizontalPosition = 'center';
+              snackBarConfig.verticalPosition = 'bottom';
+              this.snackBar.open('Error al modificar datos. Vuelve a intentarlo.', 'Cerrar', snackBarConfig);
+            }
+          })
     }
   }
 

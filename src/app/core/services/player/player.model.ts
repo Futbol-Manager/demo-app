@@ -127,6 +127,7 @@ export class Player {
   especialidades: string;
   opinionDelEntrenador: string;
   picturePlayer: string;
+  verify: number;
 
   constructor(object: any) {
     this.playerId = object.playerId || 0;
@@ -179,6 +180,7 @@ export class Player {
     this.especialidades = object.especialidades || '';
     this.opinionDelEntrenador = object.opinionDelEntrenador || '';
     this.picturePlayer = object.picturePlayer || '';
+    this.verify = object.verify || 0;
   }
 }
 

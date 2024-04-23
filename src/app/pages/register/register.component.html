@@ -20,9 +20,8 @@
               <div class="col-6">
                 <!--<label class="form-label">Selecciona un perfil</label>-->
                 <select [(ngModel)]="selectedOption" (change)="onOptionChange($event)"
-                  class="form-select input-register">
-                  <option value="1">Club</option>
-                  <option value="2">Entrenador</option>
+                  class="form-select input-register" [disabled]="isReadOnly">
+                  <option *ngFor="let option of selectOptions" [value]="option.value">{{ option.label }}</option>
                 </select>
               </div>
             </div>
@@ -83,6 +82,147 @@
             </div>
 
             <div *ngIf="selectedOption == 2">
+              <!-- Formulario para Entrenador -->
+              <form [formGroup]="registerFormEntrenador" (ngSubmit)="registerEntrenador()" class="form-register">
+                <div class="mb-3 d-flex">
+                  <div class="col-6">
+                    <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
+                    <input type="text" class="form-control input-register" id="name" placeholder="Ingresa tu nombre"
+                      formControlName="name">
+                  </div>
+                  <div class="col-6" style="margin-left: 10px;">
+                    <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
+                    <input type="text" class="form-control input-register" id="surname"
+                      placeholder="Ingresa tu apellido" formControlName="surname">
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="col-6">
+                    <!--<label for="birthdate" class="form-label">Selecciona fecha de nacimiento</label>-->
+                    <input type="date" class="form-control input-register" id="date" formControlName="birthdate">
+                  </div>
+                  <div class="col-6" style="margin-left: 10px;">
+                    <!--<label for="genre" class="form-label">Selecciona tu género</label>-->
+                    <select class="form-select input-register" formControlName="genre">
+                      <option value="" disabled selected hidden>Selecciona tu género</option>
+                      <option value="1">Masculino</option>
+                      <option value="2">Femenino</option>
+                      <option value="3">Otro</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="col-6">
+                    <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
+                    <input type="email" class="form-control input-register" id="email"
+                      placeholder="Ingresa tu correo electrónico" formControlName="email">
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="col-6">
+                    <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
+                    <input type="password" class="form-control input-register" id="password" formControlName="password"
+                      placeholder="Ingresa tu contraseña" (input)="checkPasswordMatchEntrenador()">
+                  </div>
+                  <div class="col-6" style="margin-left: 10px;">
+                    <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
+                    <input type="password" class="form-control input-register" id="password2"
+                      formControlName="password2" placeholder="Repite la contraseña"
+                      (input)="checkPasswordMatchEntrenador()">
+                    <div *ngIf="passwordsDoNotMatch" class="text-danger">
+                      Las contraseñas no coinciden.
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
+                    <label class="form-check-label" for="termsCheckbox">
+                      Acepto los <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">términos y
+                        condiciones</a>
+                    </label>
+                  </div>
+                </div>
+                <button type="submit" [disabled]="passwordsDoNotMatch"
+                  class="btn btn-custom btn-block textoCentrado">Registrar entrenador</button>
+              </form>
+            </div>
+
+            <div *ngIf="selectedOption == 3">
+              <!-- Formulario para Entrenador -->
+              <form [formGroup]="registerFormEntrenador" (ngSubmit)="registerEntrenador()" class="form-register">
+                <div class="mb-3 d-flex">
+                  <div class="col-6">
+                    <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
+                    <input type="text" class="form-control input-register" id="nameSon" placeholder="Ingresa tu nombre completo"
+                      formControlName="nameSon">
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="col-6">
+                    <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
+                    <input type="text" class="form-control input-register" id="name" placeholder="Ingresa nombre del hij@"
+                      formControlName="name">
+                  </div>
+                  <div class="col-6" style="margin-left: 10px;">
+                    <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
+                    <input type="text" class="form-control input-register" id="surname"
+                      placeholder="Ingresa apellido del hij@" formControlName="surname">
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="col-6">
+                    <!--<label for="birthdate" class="form-label">Selecciona fecha de nacimiento</label>-->
+                    <input type="date" class="form-control input-register" id="date" formControlName="birthdate">
+                  </div>
+                  <div class="col-6" style="margin-left: 10px;">
+                    <!--<label for="genre" class="form-label">Selecciona tu género</label>-->
+                    <select class="form-select input-register" formControlName="genre">
+                      <option value="" disabled selected hidden>Selecciona tu género</option>
+                      <option value="1">Masculino</option>
+                      <option value="2">Femenino</option>
+                      <option value="3">Otro</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="col-6">
+                    <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
+                    <input type="email" class="form-control input-register" id="email"
+                      placeholder="Ingresa tu correo electrónico" formControlName="email">
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="col-6">
+                    <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
+                    <input type="password" class="form-control input-register" id="password" formControlName="password"
+                      placeholder="Ingresa tu contraseña" (input)="checkPasswordMatchEntrenador()">
+                  </div>
+                  <div class="col-6" style="margin-left: 10px;">
+                    <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
+                    <input type="password" class="form-control input-register" id="password2"
+                      formControlName="password2" placeholder="Repite la contraseña"
+                      (input)="checkPasswordMatchEntrenador()">
+                    <div *ngIf="passwordsDoNotMatch" class="text-danger">
+                      Las contraseñas no coinciden.
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
+                    <label class="form-check-label" for="termsCheckbox">
+                      Acepto los <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">términos y
+                        condiciones</a>
+                    </label>
+                  </div>
+                </div>
+                <button type="submit" [disabled]="passwordsDoNotMatch"
+                  class="btn btn-custom btn-block textoCentrado">Registrar entrenador</button>
+              </form>
+            </div>
+
+            <div *ngIf="selectedOption == 4">
               <!-- Formulario para Entrenador -->
               <form [formGroup]="registerFormEntrenador" (ngSubmit)="registerEntrenador()" class="form-register">
                 <div class="mb-3 d-flex">

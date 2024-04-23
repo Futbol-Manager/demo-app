@@ -1,3 +1,4 @@
+import { PlayerId } from "../../services/player/player.model";
 import { GenreTypeModel, ProfileTypeModel } from "./register.model";
 
 export class User {
@@ -13,6 +14,8 @@ export class User {
     profileType: ProfileTypeModel;
     idValidation: number;
     dateCreate: number;
+    nameSon: string;
+    playerId: number;
 
 
     constructor( object: any){
@@ -28,5 +31,7 @@ export class User {
         this.profileType = (object.profileType) ? object.profileType : null;
         this.idValidation = (object.idValidation) ? object.idValidation : null;
         this.dateCreate = (object.dateCreate) ? object.dateCreate : null;
+        this.nameSon = (object.nameSon) ? object.nameSon : null;
+        this.playerId = (object.playerId) ? object.playerId : null;
     }
 }

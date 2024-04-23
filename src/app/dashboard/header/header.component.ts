@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 import { GenreTypeModel, ProfileTypeModel, RegisterModel, ValidationUserModel } from 'src/app/core/models/users/register.model';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
+import { PlayerId } from 'src/app/core/services/player/player.model';
 import { RegisterService } from 'src/app/core/services/register/register.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { ProfileComponent } from 'src/app/pages/profile/profile.component';
@@ -151,6 +152,7 @@ export class HeaderComponent implements OnInit {
       );
       const profileType: ProfileTypeModel = new ProfileTypeModel(2, 'Entrenador') //hardcodeado
       const validationUser: ValidationUserModel = new ValidationUserModel(2, 'Validado por mail');//hardcodeado
+      
       const register: RegisterModel = new RegisterModel(
         profileType,
         this.userForm.value.firstName,
@@ -160,6 +162,8 @@ export class HeaderComponent implements OnInit {
         this.userForm.value.mail,
         this.usuarioActual == null ? '' : this.usuarioActual.password,
         this.usuarioActual == null ? 0 : this.usuarioActual.userId,
+        this.usuarioActual == null ? 0 : this.usuarioActual.playerId,
+        this.usuarioActual == null ? '' : this.usuarioActual.nameSon,
         validationUser,
         this.usuarioActual == null ? '' : this.usuarioActual.pictureUser,
         dateOnlyString,

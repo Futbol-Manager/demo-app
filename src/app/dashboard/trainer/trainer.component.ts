@@ -296,7 +296,8 @@ export class TrainerComponent implements OnInit {
       porteroReflejos: '50',
       especialidades: '50',
       opinionDelEntrenador: '',
-      picturePlayer: ''
+      picturePlayer: '',
+      verify: 0
     };
   }
 

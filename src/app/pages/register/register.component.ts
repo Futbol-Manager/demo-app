@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoginModel } from 'src/app/core/models/users/login.model';
 import { GenreTypeModel, ProfileTypeModel, RegisterModel, ValidationUserModel } from 'src/app/core/models/users/register.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -11,6 +11,7 @@ import { ClubesListComponent } from './clubes-list/clubes-list.component';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Club } from 'src/app/core/services/models/club.model';
 import { Response } from 'src/app/core/services/models/response.model';
+import { PlayerId } from 'src/app/core/services/player/player.model';
 
 @Component({
   selector: 'app-register',
@@ -25,6 +26,18 @@ export class RegisterComponent implements OnInit {
   passwordsDoNotMatch: boolean = false;
   listaDeClubes: Club = new Club({});
   msgAge: boolean = false;
+  playerID: number = 0;
+  emailParam: string = '';
+  isMenor!: number;
+  isReadOnly: boolean = false;
+
+  selectOptions = [
+    { value: "1", label: "Club" },
+    { value: "2", label: "Entrenador" },
+    // Opciones eliminadas
+    { value: "3", label: "Padre o tutor" },
+    { value: "4", label: "Jugador" }
+  ];
 
   constructor(
     private router: Router,
@@ -34,6 +47,7 @@ export class RegisterComponent implements OnInit {
     private snackBar: MatSnackBar,
     private dialog: MatDialog,
     private clubService: ClubService,
+    private route: ActivatedRoute,
   ) {
     this.registerFormClub = this.fb.group({
       name: ['', Validators.required],
@@ -53,10 +67,31 @@ export class RegisterComponent implements OnInit {
       password: ['', Validators.required],
       password2: ['', Validators.required],
       terms: [false, Validators.requiredTrue],
+      nameSon: [''],
     });
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.route.params.subscribe(params => {
+      // Obtener el valor de teamId de los parámetros
+      this.playerID = params['playerId'];
+      this.emailParam = params['email'];
+      this.isMenor = +params['isMenor'];
+      console.log('this.playerID =' + this.playerID + 'y this.emailParam =' + this.emailParam);
+    });
+
+    let option = 0;
+    if (this.isMenor !== undefined && !Number.isNaN(this.isMenor)) {
+      if (this.isMenor === 0) {
+        this.selectedOption = 4;
+      } else {
+        this.selectedOption = 3;
+      }
+      this.isReadOnly = true; // Para hacer el select readonly
+    } else {
+      this.selectOptions = this.selectOptions.filter(option => option.value !== "3" && option.value !== "4");
+    }
+  }
 
   onOptionChange(event: any) {
     this.selectedOption = event.target.value;
@@ -126,6 +161,7 @@ export class RegisterComponent implements OnInit {
         3,
         'Otro'
       );
+
       const fv = this.registerFormClub.value;
       const register: RegisterModel = new RegisterModel(
         profileType,
@@ -136,6 +172,8 @@ export class RegisterComponent implements OnInit {
         fv.email,
         fv.password,
         0,
+        this.playerID,
+        fv.nameSon,
         validationUser
       );
 
@@ -186,6 +224,7 @@ export class RegisterComponent implements OnInit {
         this.registerFormEntrenador.value.genre,
         this.registerFormEntrenador.value.genre == 1 ? 'Masculino' : (this.registerFormEntrenador.value.genre == 2 ? 'Femenino' : 'Otro')
       );
+
       const fv = this.registerFormEntrenador.value;
       const register: RegisterModel = new RegisterModel(
         profileType,
@@ -196,6 +235,8 @@ export class RegisterComponent implements OnInit {
         fv.email,
         fv.password,
         0,
+        this.playerID,
+        fv.nameSon,
         validationUser
       );
 
