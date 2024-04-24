@@ -10,8 +10,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { ClubesListComponent } from './clubes-list/clubes-list.component';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Club } from 'src/app/core/services/models/club.model';
-import { Response } from 'src/app/core/services/models/response.model';
-import { PlayerId } from 'src/app/core/services/player/player.model';
 
 @Component({
   selector: 'app-register',
@@ -30,6 +28,7 @@ export class RegisterComponent implements OnInit {
   emailParam: string = '';
   isMenor!: number;
   isReadOnly: boolean = false;
+  isReadOnlyMail: boolean = false;
 
   selectOptions = [
     { value: "1", label: "Club" },
@@ -77,7 +76,7 @@ export class RegisterComponent implements OnInit {
       this.playerID = params['playerId'];
       this.emailParam = params['email'];
       this.isMenor = +params['isMenor'];
-      console.log('this.playerID =' + this.playerID + 'y this.emailParam =' + this.emailParam);
+      //console.log('this.playerID =' + this.playerID + 'y this.emailParam =' + this.emailParam);
     });
 
     let option = 0;
@@ -87,7 +86,9 @@ export class RegisterComponent implements OnInit {
       } else {
         this.selectedOption = 3;
       }
-      this.isReadOnly = true; // Para hacer el select readonly
+      this.isReadOnly = true;
+      // Establecer valor predeterminado para el campo email
+      this.registerFormEntrenador.get('email')!.setValue(this.emailParam);
     } else {
       this.selectOptions = this.selectOptions.filter(option => option.value !== "3" && option.value !== "4");
     }
@@ -218,7 +219,7 @@ export class RegisterComponent implements OnInit {
 
   registerEntrenador() {
     if (this.registerFormEntrenador.valid) {
-      const profileType: ProfileTypeModel = new ProfileTypeModel(2, 'Entrenador');
+      const profileType: ProfileTypeModel = new ProfileTypeModel(this.selectedOption, 'Entrenador');
       const validationUser: ValidationUserModel = new ValidationUserModel(1, 'Pdte de validar mail');
       const genreType: GenreTypeModel = new GenreTypeModel(
         this.registerFormEntrenador.value.genre,

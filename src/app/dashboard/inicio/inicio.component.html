@@ -1,6 +1,6 @@
 <div *ngIf="datosCargados" class="container">
   <!-- Botón para abrir el modal de creación de equipo -->
-  <div class="btn-container">
+  <div class="btn-container" *ngIf="this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2">
     <button class="btn btn-link text-primary" (click)="abrirModalCrearEquipo()">
       <i class="bi bi-plus-circle-fill"></i>
     </button>

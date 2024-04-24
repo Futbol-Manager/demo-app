@@ -10,6 +10,9 @@ import 'datatables.net';
 import { Chart, registerables } from 'chart.js/auto';
 import { HttpClient } from '@angular/common/http';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { RegisterService } from 'src/app/core/services/register/register.service';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -48,20 +51,29 @@ export class PlayerComponent implements OnInit {
 
   nombreJugador: string = '';
   isMenor: boolean = false;
+  correoElectronico: string = '';
+  selectedPlayerId: number = 0;
+
+  userForm: FormGroup = this.fb.group({
+    mail: ['', Validators.email],
+  });;
 
   constructor(private playerservice: PlayerService,
     private router: Router,
     private route: ActivatedRoute,
     private http: HttpClient,
     private elementRef: ElementRef,
-    private trainingService: TrainingService) { }
+    private trainingService: TrainingService,
+    private registerService: RegisterService,
+    private snackBar: MatSnackBar,
+    private fb: FormBuilder) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
     this.route.params.subscribe(params => {
       // Obtener el valor de teamId de los parámetros
       this.teamId = +params['teamId'];  // El + convierte el valor a número
-      console.log('teamId:', this.teamId);
+      //console.log('teamId:', this.teamId);
       this.cargarListadoJugadores();
       // Luego puedes realizar acciones con el teamId según tus necesidades
     });
@@ -500,7 +512,7 @@ export class PlayerComponent implements OnInit {
             // Encuentra el jugador en el arreglo y actualiza su imgPlayer
             const index = this.players.findIndex(player => player.playerId === playerId);
             if (index !== -1) {
-                this.players[index].picturePlayer = updatedImgPlayer;
+              this.players[index].picturePlayer = updatedImgPlayer;
             }
             this.cerrarModal();
           },
@@ -515,38 +527,54 @@ export class PlayerComponent implements OnInit {
   }
 
   invitarJugador(playerId: number): void {
+    this.selectedPlayerId = playerId;
     const jugadorSeleccionado = this.players.find(player => player.playerId === playerId);
-    
+
     this.nombreJugador = jugadorSeleccionado.nombre;
 
     // Calcular la fecha actual
     const fechaActual = new Date();
-    
+
     // Calcular la fecha de nacimiento del jugador
     const fechaNacimiento = new Date(jugadorSeleccionado.fechaDeNacimiento);
-    
+
     // Calcular la edad del jugador
     let edad = fechaActual.getFullYear() - fechaNacimiento.getFullYear();
     const mesActual = fechaActual.getMonth() + 1;
     const mesNacimiento = fechaNacimiento.getMonth() + 1;
-    
+
     // Si el mes actual es menor que el mes de nacimiento o si es el mismo mes pero el día actual es menor que el día de nacimiento,
     // entonces el jugador no ha cumplido años todavía
     if (mesActual < mesNacimiento || (mesActual === mesNacimiento && fechaActual.getDate() < fechaNacimiento.getDate())) {
-        edad--;
+      edad--;
     }
-    
+
     // Comprobar si el jugador es menor de 14 años
     this.isMenor = edad < 14;
     this.showModalInvitar = true;
   }
 
-  cerrarModalInvitar(){
+  cerrarModalInvitar() {
     this.showModalInvitar = false;
   }
 
-  enviarMailJugador(){
-
+  enviarMailJugador() {
+    if (this.userForm.valid) {
+      let menor = 0;
+    if (this.isMenor) {
+      menor = 1;
+    }
+    this.registerService.invitePlayer(this.userForm.value.mail, this.selectedPlayerId, menor, this.teamId).pipe().subscribe(
+      res => {
+        this.cerrarModalInvitar();
+        const snackBarConfig = new MatSnackBarConfig();
+        snackBarConfig.duration = 5000;
+        snackBarConfig.horizontalPosition = 'center';
+        snackBarConfig.verticalPosition = 'bottom';
+        this.snackBar.open('Invitación enviada correctamente.', 'Cerrar', snackBarConfig);
+      }
+    )
+    }    
   }
 
 }

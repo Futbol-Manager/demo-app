@@ -593,11 +593,11 @@
                     correo sea correcta.</p>
                 <p *ngIf="!isMenor">Introduce el correo electrónico del jugador que quieres invitar. Por favor verifica que la cuenta de
                     correo sea correcta.</p>
-                <form class="form-login" #thisForm="ngForm" (ngSubmit)="enviarMailJugador()">
+                <form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="enviarMailJugador()">
                     <div class="mb-3" style="text-align: center;">
                         <div class="mb-3">
                             <label for="mail" class="form-label">Correo electrónico</label>
-                            <input type="email" class="form-control input-login" id="mail">
+                            <input type="email" class="form-control input-login" id="mail" formControlName="mail">
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-success float-end">Invitar</button>
