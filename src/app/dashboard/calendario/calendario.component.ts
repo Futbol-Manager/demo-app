@@ -191,6 +191,7 @@ export class CalendarioComponent implements OnInit {
   usuarioActual!: User | null;
 
   toggleVisible: number = 0;
+  togglePartidoVisible: number = 0;
 
   constructor(
     private router: Router,
@@ -445,6 +446,7 @@ export class CalendarioComponent implements OnInit {
         if (response.data) {
           // Asignar los datos del partido al objeto 'partido'
           this.match = response.data;
+          this.togglePartidoVisible = response.data.visible === 0 || !response.data.visible ? 0 : 1;
           // Abrir el modal
           this.showModalPartido = true;
         } else {
@@ -905,7 +907,7 @@ export class CalendarioComponent implements OnInit {
     this.toggleVisible = event.target.checked ? 1 : 0;
 
     // Método para cambiar la visibilidad de una sesión de entrenamiento
-    this.trainingService.putTrainingSessionVisibility(id, this.toggleVisible)
+    this.trainingService.getTrainingSessionVisibility(id, this.toggleVisible)
       .subscribe(
         response => {
           console.log('Visibilidad actualizada:', response);
@@ -918,6 +920,22 @@ export class CalendarioComponent implements OnInit {
               this.listTraining[index] = entrenamientoSeleccionado;
             }
           }
+        },
+        error => {
+          console.error('Error al actualizar la visibilidad:', error);
+          // Manejo de errores
+        }
+      );
+  }
+
+  onChangeTogglePartido(event: any, id: number){
+    this.togglePartidoVisible = event.target.checked ? 1 : 0;
+
+    // Método para cambiar la visibilidad de una sesión de entrenamiento
+    this.trainingService.getMatchVisibility(id, this.togglePartidoVisible)
+      .subscribe(
+        response => {
+          console.log('Visibilidad actualizada:', response);
         },
         error => {
           console.error('Error al actualizar la visibilidad:', error);

@@ -251,13 +251,19 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Detalles del Partido</h5>
-        <button type="button" class="btn btn-success float-end" (click)="openPostPartido(match.matchPreparationId)">Post
-          Partido</button>
-        <button type="button" class="btn btn-secondary" (click)="printDivPostPartido('divPrePArtdo')">
-          Imprimir
-        </button>
-        <!-- Botón de cerrar con un icono -->
-        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
+        <div class="ms-auto">
+          <button type="button" class="btn btn-success" (click)="openPostPartido(match.matchPreparationId)">Post
+            Partido</button>
+          <button type="button" class="btn btn-secondary ms-2"
+            (click)="printDivPostPartido('divPrePArtdo')">Imprimir</button>
+          <button type="button" class="btn btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="toggleVisible" [checked]="togglePartidoVisible === 1"
+              title="Si está no visible el jugador no lo verá"
+              (change)="onChangeTogglePartido($event, match.matchPreparationId)">
+            <label class="form-check-label">No visible / Visible</label>
+          </div>
+        </div>
       </div>
       <div class="modal-body">
         <div class="mb-3">
@@ -791,8 +797,9 @@
           <div class="mb-3 d-flex align-items-center justify-content-between">
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" id="toggleVisible" [checked]="toggleVisible === 1"
-                title="Si está no visible el jugador no lo verá" (change)="onChangeToggle($event,trainingSession.trainingSessionId )">
-                <label class="form-check-label">No visible / Visible</label>
+                title="Si está no visible el jugador no lo verá"
+                (change)="onChangeToggle($event,trainingSession.trainingSessionId)">
+              <label class="form-check-label">No visible / Visible</label>
             </div>
             <div>
               <button type="button" class="btn btn-danger me-2" (click)="eliminarEntrenamiento()">Eliminar
