@@ -1,6 +1,7 @@
 <div *ngIf="datosCargados">
   <!-- Botón para redirigir a la pantalla de jugadores -->
-  <div class="container mt-3">
+  <div class="container mt-3"
+    *ngIf="this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2">
     <div class="row">
       <div class="col">
         <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Información del equipo</button>
@@ -662,8 +663,8 @@
                         </div>
                         <div class="col-4">
                           <label for="asistencias" class="form-label">Asistencias:</label>
-                          <input type="number" class="form-control" id="asistencias" [(ngModel)]="playerInfoPostPartido.asistencias"
-                            name="asistencias">
+                          <input type="number" class="form-control" id="asistencias"
+                            [(ngModel)]="playerInfoPostPartido.asistencias" name="asistencias">
                         </div>
                       </div>
                       <div class="mb-3 d-flex">
@@ -787,12 +788,17 @@
             <textarea class="form-control" id="warmUp" rows="5" name="warmUp"
               [(ngModel)]="trainingSession.warmUp"></textarea>
           </div>
-
-          <div class="mb-3">
-            <button type="button" class="btn btn-danger float-end" (click)="eliminarEntrenamiento()">Eliminar
-              Entrenamiento</button>
-            <button type="button" class="btn btn-custom float-end" (click)="crearEntrenamiento()">Guardar
-              Entrenamiento</button>
+          <div class="mb-3 d-flex align-items-center justify-content-between">
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="toggleVisible" [checked]="toggleVisible === 1"
+                title="Si está no visible el jugador no lo verá" (change)="onChangeToggle($event,trainingSession.trainingSessionId )">
+                <label class="form-check-label">No visible / Visible</label>
+            </div>
+            <div>
+              <button type="button" class="btn btn-danger me-2" (click)="eliminarEntrenamiento()">Eliminar
+                Entrenamiento</button>
+              <button type="button" class="btn btn-custom" (click)="crearEntrenamiento()">Guardar Entrenamiento</button>
+            </div>
           </div>
           <div class="mb-3" style="visibility: hidden;">
             <textarea class="form-control" rows="1"></textarea>

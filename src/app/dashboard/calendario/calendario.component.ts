@@ -9,6 +9,8 @@ import { PlayerService } from 'src/app/core/services/player/player.service';
 import { PlayerId } from 'src/app/core/services/player/player.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamService } from 'src/app/core/services/team/team.service';
+import { LoginService } from 'src/app/core/services/login/login.service';
+import { User } from 'src/app/core/models/users/user.model';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -186,6 +188,9 @@ export class CalendarioComponent implements OnInit {
   selectedCategory: string = '';
   selectedSubcategory: string = '';
   selectedOption: string = '';
+  usuarioActual!: User | null;
+
+  toggleVisible: number = 0;
 
   constructor(
     private router: Router,
@@ -195,31 +200,37 @@ export class CalendarioComponent implements OnInit {
     private dialog: MatDialog,
     private fb: FormBuilder,
     private teamService: TeamService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private loginService: LoginService,
   ) {
   }
 
   ngOnInit(): void {
-    // Suscribirse a los cambios en los parámetros de la URL
-    this.route.params.subscribe(params => {
-      // Obtener el valor de teamId de los parámetros
-      this.teamId = +params['teamId'];  // El + convierte el valor a número
-      console.log('teamId:', this.teamId);
-    });
-    this.teamService.getTeamById(this.teamId.toString()).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.nombreEquipo = response.data.categoryType.categoryName + ' ' + response.data.levelLeague;
-          this.getListaEntrenamientos();
-        } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+
+    // Suscríbete al observable del servicio para obtener el usuario actual
+    this.loginService.usuarioActual.subscribe(user => {
+      this.usuarioActual = user;
+      // Suscribirse a los cambios en los parámetros de la URL
+      this.route.params.subscribe(params => {
+        // Obtener el valor de teamId de los parámetros
+        this.teamId = +params['teamId'];  // El + convierte el valor a número
+        console.log('teamId:', this.teamId);
+      });
+      this.teamService.getTeamById(this.teamId.toString()).subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.nombreEquipo = response.data.categoryType.categoryName + ' ' + response.data.levelLeague;
+            this.getListaEntrenamientos();
+          } else {
+            console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          }
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
+    });
   }
 
   // Método para generar el calendario para el mes especificado
@@ -413,6 +424,8 @@ export class CalendarioComponent implements OnInit {
             // Abrir el modal
             this.showModalEntrenamiento = true;
           }
+
+          this.toggleVisible = entrenamientoSeleccionado.visible === 0 || !entrenamientoSeleccionado.visible ? 0 : 1;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -848,7 +861,7 @@ export class CalendarioComponent implements OnInit {
     let printContents = document.getElementById(divId)?.innerHTML;
     let originalTitle = document.title;
     let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
-  
+
     popupWin?.document.open();
     popupWin?.document.write(`
       <html>
@@ -870,7 +883,7 @@ export class CalendarioComponent implements OnInit {
     let printContents = document.getElementById(divId)?.innerHTML;
     let originalTitle = document.title;
     let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
-  
+
     popupWin?.document.open();
     popupWin?.document.write(`
       <html>
@@ -887,6 +900,30 @@ export class CalendarioComponent implements OnInit {
     `);
     popupWin?.document.close();
   }
-  
+
+  onChangeToggle(event: any, id: number) {
+    this.toggleVisible = event.target.checked ? 1 : 0;
+
+    // Método para cambiar la visibilidad de una sesión de entrenamiento
+    this.trainingService.putTrainingSessionVisibility(id, this.toggleVisible)
+      .subscribe(
+        response => {
+          console.log('Visibilidad actualizada:', response);
+          const entrenamientoSeleccionado = this.listTraining.find(training => training.trainingSessionId === id);
+          if (entrenamientoSeleccionado) {
+            entrenamientoSeleccionado.visible = this.toggleVisible;
+            // Actualizar el elemento en this.listTraining
+            const index = this.listTraining.findIndex(training => training.trainingSessionId === id);
+            if (index !== -1) {
+              this.listTraining[index] = entrenamientoSeleccionado;
+            }
+          }
+        },
+        error => {
+          console.error('Error al actualizar la visibilidad:', error);
+          // Manejo de errores
+        }
+      );
+  }
 
 }

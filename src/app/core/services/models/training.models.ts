@@ -3,12 +3,14 @@ export class Training {
     daySession: string;
     objectiveSession: string;
     warmUp: string;
+    visible: number;
     tasks: Task[] = []; // Agrega la propiedad tareas de tipo array de Tarea
 
     constructor(object: any) {
         this.trainingSessionId = object.trainingSessionId || 0;
         this.daySession = object.daySession || '';
         this.objectiveSession = object.objectiveSession || '';
+        this.visible = object.visible || 0;
         this.warmUp = object.warmUp || '';
     }
 

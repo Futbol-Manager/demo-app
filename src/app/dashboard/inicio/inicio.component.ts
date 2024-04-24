@@ -28,25 +28,44 @@ export class InicioComponent implements OnInit {
     private teamService: TeamService,
     private clubService: ClubService,
     private fb: FormBuilder,
-    ) {
-      this.crearEquipoForm = this.fb.group({
-        categoryTypeId: ['', Validators.required],
-        levelLeague: ['', Validators.required],
-        name: ['', Validators.required],
-        objectiveTeam: ['', Validators.required],
-        trainingDays: ['', Validators.required],
-        opinionTeam: ['', Validators.required],
-      });
-    }
+  ) {
+    this.crearEquipoForm = this.fb.group({
+      categoryTypeId: ['', Validators.required],
+      levelLeague: ['', Validators.required],
+      name: ['', Validators.required],
+      objectiveTeam: ['', Validators.required],
+      trainingDays: ['', Validators.required],
+      opinionTeam: ['', Validators.required],
+    });
+  }
 
   ngOnInit(): void {
     // Suscríbete al observable del servicio para obtener el usuario actual
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
-      // Carga el listado de equipos al inicializar el componente
-      this.cargarListadoEquipos();
-      // Cargar listado de clubes disponibles
-      this.cargarListadoClubes();
+      let profileId = this.usuarioActual!.profileType.profileId;
+      let playerId = this.usuarioActual!.playerId;
+      if (profileId > 2) {
+        //ver a que equipo pertenece
+        this.teamService.getTeamByPlayer(playerId.toString()).subscribe(
+          (response: Response) => {
+            // Verifica que la propiedad 'data' exista en la respuesta
+            if (response.data !== null) {
+              this.router.navigate(['/dashboard/calendario', response.data]);
+            } else {
+              console.error('La respuesta del servicio no tiene la estructura esperada', response);
+            }
+          },
+          (error) => {
+            console.error('Error al cargar el listado de equipos', error);
+          }
+        );
+      } else {
+        // Carga el listado de equipos al inicializar el componente
+        this.cargarListadoEquipos();
+        // Cargar listado de clubes disponibles
+        this.cargarListadoClubes();
+      }
     });
 
   }
@@ -74,7 +93,7 @@ export class InicioComponent implements OnInit {
   cargarListadoClubes(): void {
     this.clubService.getAllClubsRegistered().subscribe(
       (response: Response) => {
-        if(response.data.length > 0){
+        if (response.data.length > 0) {
           this.clubList = response.data;
         }
       },
@@ -107,7 +126,7 @@ export class InicioComponent implements OnInit {
 
   // Método para crear un nuevo equipo
   crearEquipo(): void {
-    if(this.crearEquipoForm.valid){
+    if (this.crearEquipoForm.valid) {
       // Recoge los campos del modal y asigna al objeto nuevoEquipo
       this.teamNew = {
         teamId: 0, // O el valor por defecto que desees para teamId
