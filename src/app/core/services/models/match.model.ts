@@ -15,6 +15,7 @@ export class MatchPreparation {
     lugar: string;
     hora: string;
     minutos: string;
+    visible: number;
 
     constructor(object: any) {
         this.matchPreparationId = object.matchPreparationId || 0;
@@ -31,6 +32,7 @@ export class MatchPreparation {
         this.lugar = object.lugar || '';
         this.hora = object.hora || '';
         this.minutos = object.minutos || '';
+        this.visible = object.visible || 0;
     }
 }
 

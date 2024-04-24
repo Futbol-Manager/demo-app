@@ -63,18 +63,20 @@
                         <span class="numero-dia">{{ dia.numero }}</span>
                         <div class="row">
                           <div class="col" *ngIf="!dia.trainingId || !dia.matchPreparationId">
-                            <div class="btn-container">
+                            <div class="btn-container" *ngIf="this.usuarioActual!.profileType.profileId === 2">
                               <button class="btn btn-link text-danger" (click)="abrirModal(dia.daysession)">
                                 <i class="bi bi-plus-circle-fill"></i>
                               </button>
                               <div class="hint">Añadir</div>
                             </div>
                           </div>
-                          <div class="col">
+                          <div class="col"
+                          *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) || dia.traininVisible === 1">
                             <button *ngIf="dia.trainingId" class="btn btn-entrena btn-sm btn-block"
                               (click)="openEntrenamiento(dia.trainingId, dia.daysession)">Entrenamiento</button>
                           </div>
-                          <div class="col">
+                          <div class="col"
+                          *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) || dia.matchVisible === 1">
                             <button *ngIf="dia.matchPreparationId" class="btn btn-partido btn-sm btn-block"
                               (click)="openPartido(dia.matchPreparationId, dia.daysession)">Partido</button>
                           </div>
@@ -118,7 +120,6 @@
         </ul>
         <div class="tab-content" id="myTabContent">
           <div class="tab-pane fade show active" id="entrenamiento" role="tabpanel" aria-labelledby="entrenamiento-tab">
-
             <form (ngSubmit)="crearEntrenamiento()">
               <div class="mb-3">
                 <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
@@ -131,7 +132,7 @@
                   [(ngModel)]="trainingSession.warmUp"></textarea>
               </div>
               <!-- Botón para guardar el nuevo entrenamiento -->
-              <button type="submit" class="btn btn-custom float-end">Guardar</button>
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit" class="btn btn-custom float-end">Guardar</button>
             </form>
           </div>
           <div class="tab-pane fade" id="partido" role="tabpanel" aria-labelledby="partido-tab">
@@ -236,7 +237,7 @@
                   [(ngModel)]="match.summoned"></textarea>
               </div>
               <!-- Botón para guardar el nuevo equipo -->
-              <button type="submit" class="btn btn-custom float-end">Guardar</button>
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit" class="btn btn-custom float-end">Guardar</button>
             </form>
           </div>
         </div>
@@ -252,12 +253,12 @@
       <div class="modal-header">
         <h5 class="modal-title">Detalles del Partido</h5>
         <div class="ms-auto">
-          <button type="button" class="btn btn-success" (click)="openPostPartido(match.matchPreparationId)">Post
+          <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-success" (click)="openPostPartido(match.matchPreparationId)">Post
             Partido</button>
-          <button type="button" class="btn btn-secondary ms-2"
+          <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-secondary ms-2"
             (click)="printDivPostPartido('divPrePArtdo')">Imprimir</button>
           <button type="button" class="btn btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
-          <div class="form-check form-switch">
+          <div class="form-check form-switch" *ngIf="this.usuarioActual!.profileType.profileId === 2">
             <input class="form-check-input" type="checkbox" id="toggleVisible" [checked]="togglePartidoVisible === 1"
               title="Si está no visible el jugador no lo verá"
               (change)="onChangeTogglePartido($event, match.matchPreparationId)">
@@ -411,8 +412,8 @@
       </div>
       <div class="modal-footer d-flex">
         <!-- Botón para guardar el nuevo partido -->
-        <button type="button" class="btn btn-danger float-end" (click)="eliminarPartido()">Eliminar Partido</button>
-        <button type="button" class="btn btn-custom float-end" (click)="crearPartido()">Guardar Partido</button>
+        <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger float-end" (click)="eliminarPartido()">Eliminar Partido</button>
+        <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-custom float-end" (click)="crearPartido()">Guardar Partido</button>
       </div>
     </div>
   </div>
@@ -562,7 +563,7 @@
                   [(ngModel)]="postPartido.video"></textarea>
               </div>
               <!-- Botón para guardar el nuevo equipo -->
-              <button type="submit" class="btn btn-custom float-end">Guardar</button>
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit" class="btn btn-custom float-end">Guardar</button>
             </form>
           </div>
 
@@ -795,16 +796,16 @@
               [(ngModel)]="trainingSession.warmUp"></textarea>
           </div>
           <div class="mb-3 d-flex align-items-center justify-content-between">
-            <div class="form-check form-switch">
+            <div class="form-check form-switch" *ngIf="this.usuarioActual!.profileType.profileId === 2">
               <input class="form-check-input" type="checkbox" id="toggleVisible" [checked]="toggleVisible === 1"
                 title="Si está no visible el jugador no lo verá"
                 (change)="onChangeToggle($event,trainingSession.trainingSessionId)">
               <label class="form-check-label">No visible / Visible</label>
             </div>
             <div>
-              <button type="button" class="btn btn-danger me-2" (click)="eliminarEntrenamiento()">Eliminar
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger me-2" (click)="eliminarEntrenamiento()">Eliminar
                 Entrenamiento</button>
-              <button type="button" class="btn btn-custom" (click)="crearEntrenamiento()">Guardar Entrenamiento</button>
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-custom" (click)="crearEntrenamiento()">Guardar Entrenamiento</button>
             </div>
           </div>
           <div class="mb-3" style="visibility: hidden;">
@@ -886,8 +887,8 @@
               </div>
               <div class="mb-3 text-end">
                 <!-- Agregar más campos de tarea según sea necesario -->
-                <button (click)="toggleAddTaskForm()" class="btn btn-danger">Cancelar</button>
-                <button type="submit" class="btn btn-custom">Crear Tarea</button>
+                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" (click)="toggleAddTaskForm()" class="btn btn-danger">Cancelar</button>
+                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit" class="btn btn-custom">Crear Tarea</button>
               </div>
             </form>
             <hr>
@@ -900,10 +901,10 @@
                 <button type="button" class="accordion-button" (click)="toggleTask(tarea)">
                   Tarea: {{ tarea.slogans }}
                 </button>
-                <button type="button" class="btn btn-secondary" (click)="printDiv('PrintTarea_' + i)">
+                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-secondary" (click)="printDiv('PrintTarea_' + i)">
                   Imprimir
                 </button>
-                <button type="button" class="btn btn-danger" (click)="deleteTask(tarea)">
+                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger" (click)="deleteTask(tarea)">
                   Eliminar Tarea
                 </button>
               </h2>
@@ -929,33 +930,35 @@
                     </div>
                   </div>
                   <hr>
-                  <h4>Puedes crear la tarea en una pizarra y subir despues la imagen</h4>
-                  <!-- Botón para abrir el modal -->
-                  <button class="btn btn-warning" (click)="openBoardModal()">Abrir pizarra</button> o también puedes
-                  <!-- Botón para abrir enlace en una nueva pestaña -->
-                  <a href="https://tacticalboard.sphairatech.com/" target="_blank"> ir a la aplicacion</a>
-                  <!-- Agregar más campos de tarea según sea necesario -->
-                  <div class="container">
-                    <h4>Sube ahora la imagen descargada de tu pizarra</h4>
-                    <form (submit)="onSubmit(tarea.taskId)" enctype="multipart/form-data">
-                      <div class="form-group">
-                        <label for="image">Seleccionar imagen:</label>
-                        <input type="file" id="image" (change)="onFileSelected($event)">
-                      </div>
-                      <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir imagen</button>
-                    </form>
+                  <div *ngIf="this.usuarioActual!.profileType.profileId === 2">
+                    <h4>Puedes crear la tarea en una pizarra y subir despues la imagen</h4>
+                    <!-- Botón para abrir el modal -->
+                    <button class="btn btn-warning" (click)="openBoardModal()">Abrir pizarra</button> o también puedes
+                    <!-- Botón para abrir enlace en una nueva pestaña -->
+                    <a href="https://tacticalboard.sphairatech.com/" target="_blank"> ir a la aplicacion</a>
+                    <!-- Agregar más campos de tarea según sea necesario -->
+                    <div class="container">
+                      <h4>Sube ahora la imagen descargada de tu pizarra</h4>
+                      <form (submit)="onSubmit(tarea.taskId)" enctype="multipart/form-data">
+                        <div class="form-group">
+                          <label for="image">Seleccionar imagen:</label>
+                          <input type="file" id="image" (change)="onFileSelected($event)">
+                        </div>
+                        <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir imagen</button>
+                      </form>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
           <!-- Botón para agregar tarea -->
-          <button type="button" class="btn btn-custom mt-3" [disabled]="showAddTaskForm"
+          <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-custom mt-3" [disabled]="showAddTaskForm"
             (click)="toggleAddTaskForm()">Agregar
             Tarea</button>
-          <button type="button" class="btn btn-custom mt-3" (click)="verTienda()" *ngIf="!viewShop">Nube de
+          <button type="button" class="btn btn-custom mt-3" (click)="verTienda()" *ngIf="!viewShop && this.usuarioActual!.profileType.profileId === 2">Nube de
             Tareas</button>
-          <button type="button" class="btn btn-custom mt-3" (click)="cerrarTienda()" *ngIf="viewShop">Cerrar
+          <button type="button" class="btn btn-custom mt-3" (click)="cerrarTienda()" *ngIf="viewShop && this.usuarioActual!.profileType.profileId === 2">Cerrar
             Nube de Tareas</button>
           <!-- Modal para abrir listado de tareas de la tienda-->
           <app-shop [trainingId]="trainingId" (tareaDescargada)="tareaDescargada($event)" *ngIf="viewShop">

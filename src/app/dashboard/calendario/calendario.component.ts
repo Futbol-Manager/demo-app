@@ -263,11 +263,12 @@ export class CalendarioComponent implements OnInit {
 
           if (training && matchPreparation) {
             // Si hay tanto entrenamiento como partido, se pueden asignar ambos al mismo día
-            this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId, matchPreparationId: matchPreparation.matchPreparationId };
+            this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId, matchPreparationId: matchPreparation.matchPreparationId,
+            traininVisible: training.visible, matchVisible: matchPreparation.visible };
           } else if (training) {
-            this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId };
+            this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId, traininVisible: training.visible };
           } else if (matchPreparation) {
-            this.calendario[i][j] = { numero: dia, daysession, matchPreparationId: matchPreparation.matchPreparationId };
+            this.calendario[i][j] = { numero: dia, daysession, matchPreparationId: matchPreparation.matchPreparationId, matchVisible: matchPreparation.visible };
           } else {
             this.calendario[i][j] = { numero: dia, daysession };
           }
