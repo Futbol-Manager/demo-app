@@ -71,12 +71,12 @@
                             </div>
                           </div>
                           <div class="col"
-                          *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) || dia.traininVisible === 1">
+                            *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) || dia.traininVisible === 1">
                             <button *ngIf="dia.trainingId" class="btn btn-entrena btn-sm btn-block"
                               (click)="openEntrenamiento(dia.trainingId, dia.daysession)">Entrenamiento</button>
                           </div>
                           <div class="col"
-                          *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) || dia.matchVisible === 1">
+                            *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) || dia.matchVisible === 1">
                             <button *ngIf="dia.matchPreparationId" class="btn btn-partido btn-sm btn-block"
                               (click)="openPartido(dia.matchPreparationId, dia.daysession)">Partido</button>
                           </div>
@@ -132,7 +132,8 @@
                   [(ngModel)]="trainingSession.warmUp"></textarea>
               </div>
               <!-- Botón para guardar el nuevo entrenamiento -->
-              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit" class="btn btn-custom float-end">Guardar</button>
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
+                class="btn btn-custom float-end">Guardar</button>
             </form>
           </div>
           <div class="tab-pane fade" id="partido" role="tabpanel" aria-labelledby="partido-tab">
@@ -237,7 +238,8 @@
                   [(ngModel)]="match.summoned"></textarea>
               </div>
               <!-- Botón para guardar el nuevo equipo -->
-              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit" class="btn btn-custom float-end">Guardar</button>
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
+                class="btn btn-custom float-end">Guardar</button>
             </form>
           </div>
         </div>
@@ -253,7 +255,8 @@
       <div class="modal-header">
         <h5 class="modal-title">Detalles del Partido</h5>
         <div class="ms-auto">
-          <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-success" (click)="openPostPartido(match.matchPreparationId)">Post
+          <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-success"
+            (click)="openPostPartido(match.matchPreparationId)">Post
             Partido</button>
           <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-secondary ms-2"
             (click)="printDivPostPartido('divPrePArtdo')">Imprimir</button>
@@ -412,8 +415,10 @@
       </div>
       <div class="modal-footer d-flex">
         <!-- Botón para guardar el nuevo partido -->
-        <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger float-end" (click)="eliminarPartido()">Eliminar Partido</button>
-        <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-custom float-end" (click)="crearPartido()">Guardar Partido</button>
+        <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger float-end"
+          (click)="eliminarPartido()">Eliminar Partido</button>
+        <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-custom float-end"
+          (click)="crearPartido()">Guardar Partido</button>
       </div>
     </div>
   </div>
@@ -563,7 +568,8 @@
                   [(ngModel)]="postPartido.video"></textarea>
               </div>
               <!-- Botón para guardar el nuevo equipo -->
-              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit" class="btn btn-custom float-end">Guardar</button>
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
+                class="btn btn-custom float-end">Guardar</button>
             </form>
           </div>
 
@@ -781,6 +787,12 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Detalles del Entrenamiento</h5>
+          <div
+            *ngIf="this.usuarioActual!.profileType.profileId === 3 || this.usuarioActual!.profileType.profileId === 4">
+            <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-secondary"
+              (click)="openModalFormPreEntreno(trainingSession.trainingSessionId)">Pre-formulario</button>
+            <!-- <button type="button" class="btn btn-success">Post-formulario</button> -->
+          </div>
           <!-- Botón de cerrar con un icono -->
           <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalEntrenamiento()"></button>
         </div>
@@ -803,9 +815,11 @@
               <label class="form-check-label">No visible / Visible</label>
             </div>
             <div>
-              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger me-2" (click)="eliminarEntrenamiento()">Eliminar
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger me-2"
+                (click)="eliminarEntrenamiento()">Eliminar
                 Entrenamiento</button>
-              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-custom" (click)="crearEntrenamiento()">Guardar Entrenamiento</button>
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-custom"
+                (click)="crearEntrenamiento()">Guardar Entrenamiento</button>
             </div>
           </div>
           <div class="mb-3" style="visibility: hidden;">
@@ -887,8 +901,10 @@
               </div>
               <div class="mb-3 text-end">
                 <!-- Agregar más campos de tarea según sea necesario -->
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" (click)="toggleAddTaskForm()" class="btn btn-danger">Cancelar</button>
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit" class="btn btn-custom">Crear Tarea</button>
+                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" (click)="toggleAddTaskForm()"
+                  class="btn btn-danger">Cancelar</button>
+                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
+                  class="btn btn-custom">Crear Tarea</button>
               </div>
             </form>
             <hr>
@@ -901,10 +917,12 @@
                 <button type="button" class="accordion-button" (click)="toggleTask(tarea)">
                   Tarea: {{ tarea.slogans }}
                 </button>
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-secondary" (click)="printDiv('PrintTarea_' + i)">
+                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-secondary"
+                  (click)="printDiv('PrintTarea_' + i)">
                   Imprimir
                 </button>
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger" (click)="deleteTask(tarea)">
+                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger"
+                  (click)="deleteTask(tarea)">
                   Eliminar Tarea
                 </button>
               </h2>
@@ -953,12 +971,14 @@
             </div>
           </div>
           <!-- Botón para agregar tarea -->
-          <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-custom mt-3" [disabled]="showAddTaskForm"
-            (click)="toggleAddTaskForm()">Agregar
+          <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-custom mt-3"
+            [disabled]="showAddTaskForm" (click)="toggleAddTaskForm()">Agregar
             Tarea</button>
-          <button type="button" class="btn btn-custom mt-3" (click)="verTienda()" *ngIf="!viewShop && this.usuarioActual!.profileType.profileId === 2">Nube de
+          <button type="button" class="btn btn-custom mt-3" (click)="verTienda()"
+            *ngIf="!viewShop && this.usuarioActual!.profileType.profileId === 2">Nube de
             Tareas</button>
-          <button type="button" class="btn btn-custom mt-3" (click)="cerrarTienda()" *ngIf="viewShop && this.usuarioActual!.profileType.profileId === 2">Cerrar
+          <button type="button" class="btn btn-custom mt-3" (click)="cerrarTienda()"
+            *ngIf="viewShop && this.usuarioActual!.profileType.profileId === 2">Cerrar
             Nube de Tareas</button>
           <!-- Modal para abrir listado de tareas de la tienda-->
           <app-shop [trainingId]="trainingId" (tareaDescargada)="tareaDescargada($event)" *ngIf="viewShop">
@@ -981,6 +1001,164 @@
           <!-- Contenido del modal (en este caso, el iframe) -->
           <iframe width="100%" height="100%" id="urlIframe" scrolling="no" frameborder="0"
             src="https://tacticalboard.sphairatech.com"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para mostrar información del entrenamiento -->
+  <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalFormPreEntreno}">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Formulario Pre Entrenamiento</h5>
+            <!-- Botón de cerrar con un icono -->
+            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalFormPreEntreno()"></button>
+          </div>
+          <div class="modal-body">
+            <form id="formularioPreEntreno" class="modal-body">
+              <!-- Contenido del formulario -->
+              <h4>Energía y Fatiga</h4>
+              <div class="mb-3">
+                <label for="q1" class="form-label">¿Cómo calificarías tu nivel de energía hoy?</label>
+                <select class="form-control" id="q1" name="q1" [(ngModel)]="respPreEntreno.q1">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="q2" class="form-label">¿Sientes algún tipo de fatiga o cansancio?</label>
+                <select class="form-control" id="q2" name="q2" [(ngModel)]="respPreEntreno.q2">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
+              <h4>Dolores y Lesiones</h4>
+              <div class="mb-3">
+                <label for="q3" class="form-label">¿Hay alguna parte de tu cuerpo que te duela o te moleste hoy?
+                  (Descripción y calificación de 0 a 10)</label>
+                <textarea class="form-control" id="q3" rows="5" [(ngModel)]="respPreEntreno.q3" name="q3"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="q4" class="form-label">En caso de molestias, ¿afectan tu capacidad para entrenar o
+                  jugar?</label>
+                <select class="form-control" id="q4" name="q4" [(ngModel)]="respPreEntreno.q4">
+                  <option value="Si">Si</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+              <h4>Motivación</h4>
+              <div class="mb-3">
+                <label for="q5" class="form-label">¿Cómo de motivado te sientes hoy para entrenar?</label>
+                <select class="form-control" id="q5" name="q5" [(ngModel)]="respPreEntreno.q5">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
+              <h4>Concentración</h4>
+              <div class="mb-3">
+                <label for="q6" class="form-label">¿Cómo calificarías tu nivel de concentración hoy?</label>
+                <select class="form-control" id="q6" name="q6" [(ngModel)]="respPreEntreno.q6">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
+              <h4>Estado de Ánimo</h4>
+              <div class="mb-3">
+                <label for="q7" class="form-label">Describe tu estado de ánimo actual con palabras clave (ej. contento,
+                  ansioso, frustrado).</label>
+                <textarea class="form-control" id="q7" rows="5" [(ngModel)]="respPreEntreno.q7" name="q7"></textarea>
+              </div>
+              <h4>Calidad del Sueño</h4>
+              <div class="mb-3">
+                <label for="q8" class="form-label">¿Cómo calificarías la calidad de tu sueño anoche?</label>
+                <select class="form-control" id="q8" name="q8" [(ngModel)]="respPreEntreno.q8">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
+              <h4>Alimentación y Hidratación</h4>
+              <div class="mb-3">
+                <label for="q9" class="form-label">¿Cómo calificarías tu nivel de hidratación hoy?</label>
+                <select class="form-control" id="q9" name="q9" [(ngModel)]="respPreEntreno.q9">
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                  <option value="6">6</option>
+                  <option value="7">7</option>
+                  <option value="8">8</option>
+                  <option value="9">9</option>
+                  <option value="10">10</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="q10" class="form-label">¿Consideras que tu alimentación de hoy ha sido adecuada para tu
+                  actividad física?</label>
+                <select class="form-control" id="q10" name="q10" [(ngModel)]="respPreEntreno.q10">
+                  <option value="Si">Si</option>
+                  <option value="No">No</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="q11" class="form-label">Especifica qué alimentos has consumido hoy.</label>
+                <textarea class="form-control" id="q11" rows="5" [(ngModel)]="respPreEntreno.q11" name="q11"></textarea>
+              </div>
+              <h4>Espacio Abierto para Comentarios</h4>
+              <div class="mb-3">
+                <label for="q12" class="form-label">¿Hay algo más que quieras compartir sobre cómo te sientes física o
+                  mentalmente?</label>
+                <textarea class="form-control" id="q12" rows="5" [(ngModel)]="respPreEntreno.q12" name="q12"></textarea>
+              </div>
+              <div class="mb-3 text-end" style="margin-top: 1em;" *ngIf="respPreEntreno.respPreEntrenoId === 0">
+                <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-danger"
+                  (click)="cancelarFormPreEntreno()">Cancelar</button>
+                <button type="button" class="btn btn-success" (click)="crearFormPreEntreno()">Enviar</button>
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

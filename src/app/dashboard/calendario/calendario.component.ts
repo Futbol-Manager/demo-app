@@ -11,6 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
+import { RespPreEntreno } from 'src/app/core/services/player/respuestas.model';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -193,6 +194,13 @@ export class CalendarioComponent implements OnInit {
   toggleVisible: number = 0;
   togglePartidoVisible: number = 0;
 
+  showModalFormPreEntreno: boolean = false;
+  showModalFormPostEntreno: boolean = false;
+  showModalFormPrePartido: boolean = false;
+  showModalFormPostPartido: boolean = false;
+
+  respPreEntreno: RespPreEntreno = new RespPreEntreno({});
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -263,8 +271,10 @@ export class CalendarioComponent implements OnInit {
 
           if (training && matchPreparation) {
             // Si hay tanto entrenamiento como partido, se pueden asignar ambos al mismo día
-            this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId, matchPreparationId: matchPreparation.matchPreparationId,
-            traininVisible: training.visible, matchVisible: matchPreparation.visible };
+            this.calendario[i][j] = {
+              numero: dia, daysession, trainingId: training.trainingSessionId, matchPreparationId: matchPreparation.matchPreparationId,
+              traininVisible: training.visible, matchVisible: matchPreparation.visible
+            };
           } else if (training) {
             this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId, traininVisible: training.visible };
           } else if (matchPreparation) {
@@ -929,7 +939,7 @@ export class CalendarioComponent implements OnInit {
       );
   }
 
-  onChangeTogglePartido(event: any, id: number){
+  onChangeTogglePartido(event: any, id: number) {
     this.togglePartidoVisible = event.target.checked ? 1 : 0;
 
     // Método para cambiar la visibilidad de una sesión de entrenamiento
@@ -944,5 +954,65 @@ export class CalendarioComponent implements OnInit {
         }
       );
   }
+
+  openModalFormPreEntreno(trainingSessionId: number) {
+    this.trainingService.getFormPreTraining(trainingSessionId).subscribe(
+      (response) => {
+        if (response.data) {
+          this.respPreEntreno = response.data;
+          this.disableFormElements('formularioPreEntreno');
+        } else {
+          this.respPreEntreno = new RespPreEntreno({});
+          this.enableFormElements('formularioPreEntreno');
+        }
+        this.showModalFormPreEntreno = true;
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  cerrarModalFormPreEntreno() {
+    this.showModalFormPreEntreno = false;
+  }
+
+  cancelarFormPreEntreno() {
+    this.respPreEntreno = new RespPreEntreno({});
+    this.showModalFormPreEntreno = false;
+  }
+
+  crearFormPreEntreno() {
+    this.respPreEntreno.trainingSessionId = this.trainingId;
+    this.respPreEntreno.playerId = this.usuarioActual?.playerId != null ? this.usuarioActual?.playerId : 0;
+    this.trainingService.createFormPreEntreno(this.respPreEntreno).subscribe(
+      (response) => {
+        this.respPreEntreno = new RespPreEntreno({});
+        this.showModalFormPreEntreno = false;
+      },
+      (error) => {
+        console.error('Error al guardar la sesión de entrenamiento:', error);
+      }
+    );
+  }
+
+  disableFormElements(formId: string) {
+    const form = document.getElementById(formId) as HTMLFormElement;
+    const elements = form.elements;
+    for (let i = 0; i < elements.length; i++) {
+      const element = elements[i] as HTMLInputElement;
+      element.disabled = true;
+    }
+  }
+
+  enableFormElements(formId: string) {
+    const form = document.getElementById(formId) as HTMLFormElement;
+    const elements = form.elements;
+    for (let i = 0; i < elements.length; i++) {
+      const element = elements[i] as HTMLInputElement;
+      element.disabled = false;
+    }
+  }
+  
 
 }
