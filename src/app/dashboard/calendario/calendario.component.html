@@ -254,6 +254,12 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Detalles del Partido</h5>
+        <div *ngIf="this.usuarioActual!.profileType.profileId === 3 || this.usuarioActual!.profileType.profileId === 4">
+          <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-secondary"
+            (click)="openModalFormPrePartido(match.matchPreparationId)">Pre-formulario</button>
+          <button type="button" class="btn btn-success"
+            (click)="openModalFormPostPartido(match.matchPreparationId)">Post-formulario</button>
+        </div>
         <div class="ms-auto">
           <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-success"
             (click)="openPostPartido(match.matchPreparationId)">Post
@@ -791,7 +797,8 @@
             *ngIf="this.usuarioActual!.profileType.profileId === 3 || this.usuarioActual!.profileType.profileId === 4">
             <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-secondary"
               (click)="openModalFormPreEntreno(trainingSession.trainingSessionId)">Pre-formulario</button>
-            <!-- <button type="button" class="btn btn-success">Post-formulario</button> -->
+            <button type="button" class="btn btn-success"
+              (click)="openModalFormPostEntreno(trainingSession.trainingSessionId)">Post-formulario</button>
           </div>
           <!-- Botón de cerrar con un icono -->
           <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalEntrenamiento()"></button>
@@ -987,179 +994,559 @@
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Modal para ver la pizarra -->
-  <div class="modal modal-large" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalBoard}">
-    <div class="modal-dialog" role="document">
+<!-- Modal para ver la pizarra -->
+<div class="modal modal-large" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalBoard}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalles del Entrenamiento</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarBoardModal()"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Contenido del modal (en este caso, el iframe) -->
+        <iframe width="100%" height="100%" id="urlIframe" scrolling="no" frameborder="0"
+          src="https://tacticalboard.sphairatech.com"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- AQUI EMPIEZAN LOS FORMULARIOS -->
+
+<!-- Modal para mostrar información del entrenamiento -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalFormPreEntreno}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Detalles del Entrenamiento</h5>
+          <h5 class="modal-title">Formulario Pre Entrenamiento</h5>
           <!-- Botón de cerrar con un icono -->
-          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarBoardModal()"></button>
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalFormPreEntreno()"></button>
         </div>
         <div class="modal-body">
-          <!-- Contenido del modal (en este caso, el iframe) -->
-          <iframe width="100%" height="100%" id="urlIframe" scrolling="no" frameborder="0"
-            src="https://tacticalboard.sphairatech.com"></iframe>
+          <form id="formularioPreEntreno" class="modal-body">
+            <!-- Contenido del formulario -->
+            <h4>Energía y Fatiga</h4>
+            <div class="mb-3">
+              <label for="q1" class="form-label">¿Cómo calificarías tu nivel de energía hoy?</label>
+              <select class="form-control" id="q1" name="q1" [(ngModel)]="respPreEntreno.q1">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="q2" class="form-label">¿Sientes algún tipo de fatiga o cansancio?</label>
+              <select class="form-control" id="q2" name="q2" [(ngModel)]="respPreEntreno.q2">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <h4>Dolores y Lesiones</h4>
+            <div class="mb-3">
+              <label for="q3" class="form-label">¿Hay alguna parte de tu cuerpo que te duela o te moleste hoy?
+                (Descripción y calificación de 0 a 10)</label>
+              <textarea class="form-control" id="q3" rows="5" [(ngModel)]="respPreEntreno.q3" name="q3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="q4" class="form-label">En caso de molestias, ¿afectan tu capacidad para entrenar o
+                jugar?</label>
+              <select class="form-control" id="q4" name="q4" [(ngModel)]="respPreEntreno.q4">
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <h4>Motivación</h4>
+            <div class="mb-3">
+              <label for="q5" class="form-label">¿Cómo de motivado te sientes hoy para entrenar?</label>
+              <select class="form-control" id="q5" name="q5" [(ngModel)]="respPreEntreno.q5">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <h4>Concentración</h4>
+            <div class="mb-3">
+              <label for="q6" class="form-label">¿Cómo calificarías tu nivel de concentración hoy?</label>
+              <select class="form-control" id="q6" name="q6" [(ngModel)]="respPreEntreno.q6">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <h4>Estado de Ánimo</h4>
+            <div class="mb-3">
+              <label for="q7" class="form-label">Describe tu estado de ánimo actual con palabras clave (ej. contento,
+                ansioso, frustrado).</label>
+              <textarea class="form-control" id="q7" rows="5" [(ngModel)]="respPreEntreno.q7" name="q7"></textarea>
+            </div>
+            <h4>Calidad del Sueño</h4>
+            <div class="mb-3">
+              <label for="q8" class="form-label">¿Cómo calificarías la calidad de tu sueño anoche?</label>
+              <select class="form-control" id="q8" name="q8" [(ngModel)]="respPreEntreno.q8">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <h4>Alimentación y Hidratación</h4>
+            <div class="mb-3">
+              <label for="q9" class="form-label">¿Cómo calificarías tu nivel de hidratación hoy?</label>
+              <select class="form-control" id="q9" name="q9" [(ngModel)]="respPreEntreno.q9">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="q10" class="form-label">¿Consideras que tu alimentación de hoy ha sido adecuada para tu
+                actividad física?</label>
+              <select class="form-control" id="q10" name="q10" [(ngModel)]="respPreEntreno.q10">
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="q11" class="form-label">Especifica qué alimentos has consumido hoy.</label>
+              <textarea class="form-control" id="q11" rows="5" [(ngModel)]="respPreEntreno.q11" name="q11"></textarea>
+            </div>
+            <h4>Espacio Abierto para Comentarios</h4>
+            <div class="mb-3">
+              <label for="q12" class="form-label">¿Hay algo más que quieras compartir sobre cómo te sientes física o
+                mentalmente?</label>
+              <textarea class="form-control" id="q12" rows="5" [(ngModel)]="respPreEntreno.q12" name="q12"></textarea>
+            </div>
+            <div class="mb-3 text-end" style="margin-top: 1em;" *ngIf="respPreEntreno.respPreEntrenoId === 0">
+              <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-danger"
+                (click)="cancelarFormPreEntreno()">Cancelar</button>
+              <button type="button" class="btn btn-success" (click)="crearFormPreEntreno()">Enviar</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Modal para mostrar información del entrenamiento -->
-  <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalFormPreEntreno}">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">Formulario Pre Entrenamiento</h5>
-            <!-- Botón de cerrar con un icono -->
-            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalFormPreEntreno()"></button>
-          </div>
-          <div class="modal-body">
-            <form id="formularioPreEntreno" class="modal-body">
-              <!-- Contenido del formulario -->
-              <h4>Energía y Fatiga</h4>
-              <div class="mb-3">
-                <label for="q1" class="form-label">¿Cómo calificarías tu nivel de energía hoy?</label>
-                <select class="form-control" id="q1" name="q1" [(ngModel)]="respPreEntreno.q1">
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="q2" class="form-label">¿Sientes algún tipo de fatiga o cansancio?</label>
-                <select class="form-control" id="q2" name="q2" [(ngModel)]="respPreEntreno.q2">
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                </select>
-              </div>
-              <h4>Dolores y Lesiones</h4>
-              <div class="mb-3">
-                <label for="q3" class="form-label">¿Hay alguna parte de tu cuerpo que te duela o te moleste hoy?
-                  (Descripción y calificación de 0 a 10)</label>
-                <textarea class="form-control" id="q3" rows="5" [(ngModel)]="respPreEntreno.q3" name="q3"></textarea>
-              </div>
-              <div class="mb-3">
-                <label for="q4" class="form-label">En caso de molestias, ¿afectan tu capacidad para entrenar o
-                  jugar?</label>
-                <select class="form-control" id="q4" name="q4" [(ngModel)]="respPreEntreno.q4">
-                  <option value="Si">Si</option>
-                  <option value="No">No</option>
-                </select>
-              </div>
-              <h4>Motivación</h4>
-              <div class="mb-3">
-                <label for="q5" class="form-label">¿Cómo de motivado te sientes hoy para entrenar?</label>
-                <select class="form-control" id="q5" name="q5" [(ngModel)]="respPreEntreno.q5">
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                </select>
-              </div>
-              <h4>Concentración</h4>
-              <div class="mb-3">
-                <label for="q6" class="form-label">¿Cómo calificarías tu nivel de concentración hoy?</label>
-                <select class="form-control" id="q6" name="q6" [(ngModel)]="respPreEntreno.q6">
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                </select>
-              </div>
-              <h4>Estado de Ánimo</h4>
-              <div class="mb-3">
-                <label for="q7" class="form-label">Describe tu estado de ánimo actual con palabras clave (ej. contento,
-                  ansioso, frustrado).</label>
-                <textarea class="form-control" id="q7" rows="5" [(ngModel)]="respPreEntreno.q7" name="q7"></textarea>
-              </div>
-              <h4>Calidad del Sueño</h4>
-              <div class="mb-3">
-                <label for="q8" class="form-label">¿Cómo calificarías la calidad de tu sueño anoche?</label>
-                <select class="form-control" id="q8" name="q8" [(ngModel)]="respPreEntreno.q8">
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                </select>
-              </div>
-              <h4>Alimentación y Hidratación</h4>
-              <div class="mb-3">
-                <label for="q9" class="form-label">¿Cómo calificarías tu nivel de hidratación hoy?</label>
-                <select class="form-control" id="q9" name="q9" [(ngModel)]="respPreEntreno.q9">
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="q10" class="form-label">¿Consideras que tu alimentación de hoy ha sido adecuada para tu
-                  actividad física?</label>
-                <select class="form-control" id="q10" name="q10" [(ngModel)]="respPreEntreno.q10">
-                  <option value="Si">Si</option>
-                  <option value="No">No</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="q11" class="form-label">Especifica qué alimentos has consumido hoy.</label>
-                <textarea class="form-control" id="q11" rows="5" [(ngModel)]="respPreEntreno.q11" name="q11"></textarea>
-              </div>
-              <h4>Espacio Abierto para Comentarios</h4>
-              <div class="mb-3">
-                <label for="q12" class="form-label">¿Hay algo más que quieras compartir sobre cómo te sientes física o
-                  mentalmente?</label>
-                <textarea class="form-control" id="q12" rows="5" [(ngModel)]="respPreEntreno.q12" name="q12"></textarea>
-              </div>
-              <div class="mb-3 text-end" style="margin-top: 1em;" *ngIf="respPreEntreno.respPreEntrenoId === 0">
-                <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-danger"
-                  (click)="cancelarFormPreEntreno()">Cancelar</button>
-                <button type="button" class="btn btn-success" (click)="crearFormPreEntreno()">Enviar</button>
-              </div>
-            </form>
-          </div>
+<!-- Modal para mostrar información del entrenamiento -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalFormPostEntreno}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Formulario Post Entrenamiento</h5>
+          <!-- Botón de cerrar con un icono -->
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalFormPostEntreno()"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formularioPostEntreno" class="modal-body">
+            <!-- Contenido del formulario -->
+            <h4>Percepción del Entrenamiento</h4>
+            <div class="mb-3">
+              <label for="q1" class="form-label">¿Cómo describirías el entrenamiento de hoy?</label>
+              <select class="form-control" id="q1" name="q1" [(ngModel)]="respPostEntreno.q1">
+                <option value="Aburrido">Aburrido</option>
+                <option value="Demasiado intenso">Demasiado intenso</option>
+                <option value="Divertido">Divertido</option>
+                <option value="Duro">Duro</option>
+                <option value="Entretenido">Entretenido</option>
+                <option value="Fácil">Fácil</option>
+                <option value="Lento">Lento</option>
+                <option value="No se entendia">No se entendia</option>
+                <option value="Poco intenso">Poco intenso</option>
+              </select>
+            </div>
+            <h4>Objetivos</h4>
+            <div class="mb-3">
+              <label for="q2" class="form-label">¿Crees que el entrenamiento de hoy ha cumplido con sus
+                objetivos?</label>
+              <select class="form-control" id="q2" name="q2" [(ngModel)]="respPostEntreno.q2">
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="q3" class="form-label">En caso de respuesta negativa, ¿qué crees que ha faltado?</label>
+              <textarea class="form-control" id="q3" rows="5" [(ngModel)]="respPostEntreno.q3" name="q3"></textarea>
+            </div>
+            <h4>Nivel de Esfuerzo y Cansancio</h4>
+            <div class="mb-3">
+              <label for="q4" class="form-label">¿Qué nivel de cansancio sientes después del entrenamiento?</label>
+              <select class="form-control" id="q4" name="q4" [(ngModel)]="respPostEntreno.q4">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <h4>Intensidad Percibida</h4>
+            <div class="mb-3">
+              <label for="q5" class="form-label">¿Cómo calificarías la intensidad del entrenamiento de hoy?</label>
+              <select class="form-control" id="q5" name="q5" [(ngModel)]="respPostEntreno.q5">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <h4>Comprensión y Aprendizaje</h4>
+            <div class="mb-3">
+              <label for="q6" class="form-label">¿Has entendido el propósito de los ejercicios realizados hoy?</label>
+              <select class="form-control" id="q6" name="q6" [(ngModel)]="respPostEntreno.q6">
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <h4>Aplicación</h4>
+            <div class="mb-3">
+              <label for="q7" class="form-label">¿Sientes que puedes aplicar lo aprendido hoy en un contexto de
+                partido?</label>
+              <select class="form-control" id="q7" name="q7" [(ngModel)]="respPostEntreno.q7">
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <h4>Ejercicios Preferidos</h4>
+            <div class="mb-3">
+              <label for="q8" class="form-label">¿Cuál ha sido el ejercicio que más te ha gustado de hoy y por
+                qué?</label>
+              <textarea class="form-control" id="q8" rows="5" [(ngModel)]="respPostEntreno.q8" name="q8"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="q9" class="form-label">¿Cuál ha sido el ejercicio que menos te ha gustado de hoy y por
+                qué?</label>
+              <textarea class="form-control" id="q9" rows="5" [(ngModel)]="respPostEntreno.q9" name="q9"></textarea>
+            </div>
+            <h4>Ambiente de Trabajo</h4>
+            <div class="mb-3">
+              <label for="q10" class="form-label">¿Cómo describirías el ambiente durante el entrenamiento?</label>
+              <textarea placeholder="ej. motivador, estresante, colaborativo" class="form-control" id="q10" rows="5"
+                [(ngModel)]="respPostEntreno.q10" name="q10"></textarea>
+            </div>
+            <h4>Comunicación</h4>
+            <div class="mb-3">
+              <label for="q11" class="form-label">¿Cómo crees que ha sido la comunicación entre jugadores y
+                entrenadores durante el entrenamiento?</label>
+              <select class="form-control" id="q11" name="q11" [(ngModel)]="respPostEntreno.q11">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <h4>Espacio Abierto para Comentarios</h4>
+            <div class="mb-3">
+              <label for="q12" class="form-label">¿Hay algo más que quieras compartir sobre el entrenamiento de
+                hoy?</label>
+              <textarea class="form-control" id="q12" rows="5" [(ngModel)]="respPostEntreno.q12" name="q12"></textarea>
+            </div>
+            <div class="mb-3 text-end" style="margin-top: 1em;" *ngIf="respPostEntreno.respPostEntrenoId === 0">
+              <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-danger"
+                (click)="cancelarFormPostEntreno()">Cancelar</button>
+              <button type="button" class="btn btn-success" (click)="crearFormPostEntreno()">Enviar</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
+</div>
+
+<!-- Modal para mostrar información del entrenamiento -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalFormPrePartido}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Formulario Pre Partido</h5>
+          <!-- Botón de cerrar con un icono -->
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalFormPrePartido()"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formularioPrePartido" class="modal-body">
+            <!-- Contenido del formulario -->
+            <h4>Energía y Fatiga</h4>
+            <div class="mb-3">
+              <label for="q1" class="form-label">¿Cómo calificarías tu nivel de energía hoy?</label>
+              <select class="form-control" id="q1" name="q1" [(ngModel)]="respPrePartido.q1">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="q2" class="form-label">¿Sientes algún tipo de fatiga o cansancio?</label>
+              <select class="form-control" id="q2" name="q2" [(ngModel)]="respPrePartido.q2">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <h4>Dolores y Lesiones</h4>
+            <div class="mb-3">
+              <label for="q3" class="form-label">¿Hay alguna parte de tu cuerpo que te duela o te moleste hoy?
+                (Descripción y calificación de 0 a 10)</label>
+              <textarea class="form-control" id="q3" rows="5" [(ngModel)]="respPrePartido.q3" name="q3"></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="q4" class="form-label">En caso de molestias, ¿afectan tu capacidad para entrenar o
+                jugar?</label>
+              <select class="form-control" id="q4" name="q4" [(ngModel)]="respPrePartido.q4">
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <h4>Motivación</h4>
+            <div class="mb-3">
+              <label for="q5" class="form-label">¿Cómo de motivado te sientes hoy para jugar?</label>
+              <select class="form-control" id="q5" name="q5" [(ngModel)]="respPrePartido.q5">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <h4>Concentración</h4>
+            <div class="mb-3">
+              <label for="q6" class="form-label">¿Cómo calificarías tu nivel de concentración hoy?</label>
+              <select class="form-control" id="q6" name="q6" [(ngModel)]="respPrePartido.q6">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <h4>Estado de Ánimo</h4>
+            <div class="mb-3">
+              <label for="q7" class="form-label">Describe tu estado de ánimo actual con palabras clave.</label>
+              <textarea placeholder="(ej. contento, ansioso, frustrado)" class="form-control" id="q7" rows="5"
+                [(ngModel)]="respPrePartido.q7" name="q7"></textarea>
+            </div>
+            <h4>Calidad del Sueño</h4>
+            <div class="mb-3">
+              <label for="q8" class="form-label">¿Cómo calificarías la calidad de tu sueño anoche?</label>
+              <select class="form-control" id="q8" name="q8" [(ngModel)]="respPrePartido.q8">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <h4>Alimentación y Hidratación</h4>
+            <div class="mb-3">
+              <label for="q9" class="form-label">¿Cómo calificarías tu nivel de hidratación hoy?</label>
+              <select class="form-control" id="q9" name="q9" [(ngModel)]="respPrePartido.q9">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="q10" class="form-label">¿Consideras que tu alimentación de hoy ha sido adecuada para tu
+                actividad física?</label>
+              <select class="form-control" id="q10" name="q10" [(ngModel)]="respPrePartido.q10">
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="q11" class="form-label">Especifica qué alimentos has consumido hoy.</label>
+              <textarea class="form-control" id="q11" rows="5" [(ngModel)]="respPrePartido.q11" name="q11"></textarea>
+            </div>
+            <h4>Expectativas</h4>
+            <div class="mb-3">
+              <label for="q12" class="form-label">¿Qué expectativas tienes sobre el partido de hoy?</label>
+              <textarea placeholder=" (Breve descripción)" class="form-control" id="q12" rows="5"
+                [(ngModel)]="respPrePartido.q12" name="q12"></textarea>
+            </div>
+            <h4>Espacio Abierto para Comentarios</h4>
+            <div class="mb-3">
+              <label for="q13" class="form-label">¿Hay algo más que quieras compartir sobre cómo te sientes física o
+                mentalmente?</label>
+              <textarea class="form-control" id="q13" rows="5" [(ngModel)]="respPrePartido.q13" name="q13"></textarea>
+            </div>
+            <div class="mb-3 text-end" style="margin-top: 1em;" *ngIf="respPrePartido.respPrePartidoId === 0">
+              <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-danger"
+                (click)="cancelarFormPrePartido()">Cancelar</button>
+              <button type="button" class="btn btn-success" (click)="crearFormPrePartido()">Enviar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar información del entrenamiento -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalFormPostPartido}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Formulario Post Partido</h5>
+          <!-- Botón de cerrar con un icono -->
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalFormPostPartido()"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formularioPostPartido" class="modal-body">
+            <!-- Contenido del formulario -->
+            <h4>Físico</h4>
+            <div class="mb-3">
+              <label for="q1" class="form-label">¿Qué nivel de cansancio sientes después del partido?</label>
+              <select class="form-control" id="q1" name="q1" [(ngModel)]="respPostPartido.q1">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <h4>Contribución al Equipo</h4>
+            <div class="mb-3">
+              <label for="q2" class="form-label">¿Cómo calificarías tu contribución al equipo hoy?</label>
+              <select class="form-control" id="q2" name="q2" [(ngModel)]="respPostPartido.q2">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <h4>Realidad</h4>
+            <div class="mb-3">
+              <label for="q3" class="form-label">¿Crees que cumpliste con tus expectativas? ¿Por qué sí o por qué
+                no?</label>
+              <textarea class="form-control" id="q3" rows="5" [(ngModel)]="respPostPartido.q3" name="q3"></textarea>
+            </div>
+            <h4>Opinión del partido</h4>
+            <div class="mb-3">
+              <label for="q4" class="form-label">¿Qué opinas del partido en general? Haz una reflexión sobre lo que ha
+                ocurrido en el partido de hoy.</label>
+              <textarea class="form-control" id="q4" rows="5" [(ngModel)]="respPostPartido.q4" name="q4"></textarea>
+            </div>
+            <div class="mb-3 text-end" style="margin-top: 1em;" *ngIf="respPostPartido.respPostPartidoId === 0">
+              <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-danger"
+                (click)="cancelarFormPostPartido()">Cancelar</button>
+              <button type="button" class="btn btn-success" (click)="crearFormPostPartido()">Enviar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

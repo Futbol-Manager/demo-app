@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
-import { RespPreEntreno } from 'src/app/core/services/player/respuestas.model';
+import { RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from 'src/app/core/services/player/respuestas.model';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -200,6 +200,9 @@ export class CalendarioComponent implements OnInit {
   showModalFormPostPartido: boolean = false;
 
   respPreEntreno: RespPreEntreno = new RespPreEntreno({});
+  respPrePartido: RespPrePartido = new RespPrePartido({});
+  respPostEntreno: RespPostEntreno = new RespPostEntreno({});
+  respPostPartido: RespPostPartido = new RespPostPartido({});
 
   constructor(
     private router: Router,
@@ -955,6 +958,8 @@ export class CalendarioComponent implements OnInit {
       );
   }
 
+  // AQUI EMPIEZAN LOS FORMULARIOS
+
   openModalFormPreEntreno(trainingSessionId: number) {
     this.trainingService.getFormPreTraining(trainingSessionId).subscribe(
       (response) => {
@@ -1013,6 +1018,140 @@ export class CalendarioComponent implements OnInit {
       element.disabled = false;
     }
   }
+
+
+  //----------------------------------
+
+  openModalFormPostEntreno(trainingSessionId: number) {
+    this.trainingService.getFormPostTraining(trainingSessionId).subscribe(
+      (response) => {
+        if (response.data) {
+          this.respPostEntreno = response.data;
+          this.disableFormElements('formularioPostEntreno');
+        } else {
+          this.respPostEntreno = new RespPostEntreno({});
+          this.enableFormElements('formularioPostEntreno');
+        }
+        this.showModalFormPostEntreno = true;
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  cerrarModalFormPostEntreno() {
+    this.showModalFormPostEntreno = false;
+  }
+
+  cancelarFormPostEntreno() {
+    this.respPostEntreno = new RespPostEntreno({});
+    this.showModalFormPostEntreno = false;
+  }
+
+  crearFormPostEntreno() {
+    this.respPostEntreno.trainingSessionId = this.trainingId;
+    this.respPostEntreno.playerId = this.usuarioActual?.playerId != null ? this.usuarioActual?.playerId : 0;
+    this.trainingService.createFormPostEntreno(this.respPostEntreno).subscribe(
+      (response) => {
+        this.respPostEntreno = new RespPostEntreno({});
+        this.showModalFormPostEntreno = false;
+      },
+      (error) => {
+        console.error('Error al guardar la sesión de entrenamiento:', error);
+      }
+    );
+  }
+
+  //----------------------
+
+  openModalFormPrePartido(matchPreparationId: number) {
+    this.matchPreparationId = matchPreparationId;
+    this.trainingService.getFormPrePartido(matchPreparationId).subscribe(
+      (response) => {
+        if (response.data) {
+          this.respPrePartido = response.data;
+          this.disableFormElements('formularioPrePartido');
+        } else {
+          this.respPrePartido = new RespPrePartido({});
+          this.enableFormElements('formularioPrePartido');
+        }
+        this.showModalFormPrePartido = true;
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  cerrarModalFormPrePartido() {
+    this.showModalFormPrePartido = false;
+  }
+
+  cancelarFormPrePartido() {
+    this.respPrePartido = new RespPrePartido({});
+    this.showModalFormPrePartido = false;
+  }
+
+  crearFormPrePartido() {
+    this.respPrePartido.matchPreparationId = this.matchPreparationId;
+    this.respPrePartido.playerId = this.usuarioActual?.playerId != null ? this.usuarioActual?.playerId : 0;
+    this.trainingService.createFormPrePartido(this.respPrePartido).subscribe(
+      (response) => {
+        this.respPrePartido = new RespPrePartido({});
+        this.showModalFormPrePartido = false;
+      },
+      (error) => {
+        console.error('Error al guardar la sesión de entrenamiento:', error);
+      }
+    );
+  }
   
+  //-----------------------------
+
+  openModalFormPostPartido(matchPreparationId: number) {
+    this.matchPreparationId = matchPreparationId;
+    this.trainingService.getFormPostPartido(matchPreparationId).subscribe(
+      (response) => {
+        if (response.data) {
+          this.respPostPartido = response.data;
+          this.disableFormElements('formularioPostPartido');
+        } else {
+          this.respPostPartido = new RespPostPartido({});
+          this.enableFormElements('formularioPostPartido');
+        }
+        this.showModalFormPostPartido = true;
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  cerrarModalFormPostPartido() {
+    this.showModalFormPostPartido = false;
+  }
+
+  cancelarFormPostPartido() {
+    this.respPostPartido = new RespPostPartido({});
+    this.showModalFormPostPartido = false;
+  }
+
+  crearFormPostPartido() {
+    this.respPostPartido.matchPreparationId = this.matchPreparationId;
+    this.respPostPartido.playerId = this.usuarioActual?.playerId != null ? this.usuarioActual?.playerId : 0;
+    this.trainingService.createFormPostPartido(this.respPostPartido).subscribe(
+      (response) => {
+        this.respPostPartido = new RespPostPartido({});
+        this.showModalFormPostPartido = false;
+      },
+      (error) => {
+        console.error('Error al guardar la sesión de entrenamiento:', error);
+      }
+    );
+  }
+
+
+  // AQUI TERMINAN LOS FORMULARIOS
 
 }
