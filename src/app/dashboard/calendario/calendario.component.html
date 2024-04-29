@@ -669,99 +669,106 @@
                     <!-- Contenido de la tarea-->
                     <p>Estadísticas individuales:</p>
                     <form (ngSubmit)="guardarInfoPlayerPostPartido(player.playerId)">
-                      <div class="mb-3 col-4">
+                      <div class="mb-3 col-6">
                         <label for="minutos" class="form-label">Minutos:</label>
                         <input type="number" class="form-control" id="minutos"
                           [(ngModel)]="playerInfoPostPartido.minutos" name="minutos">
                       </div>
                       <div class="mb-3 d-flex">
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="goles" class="form-label">Goles:</label>
                           <input type="number" class="form-control" id="goles" [(ngModel)]="playerInfoPostPartido.goles"
                             name="goles">
                         </div>
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="asistencias" class="form-label">Asistencias:</label>
                           <input type="number" class="form-control" id="asistencias"
                             [(ngModel)]="playerInfoPostPartido.asistencias" name="asistencias">
                         </div>
                       </div>
                       <div class="mb-3 d-flex">
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="golesPenalti" class="form-label">Goles de penalti:</label>
                           <input type="number" class="form-control" id="golesPenalti"
                             [(ngModel)]="playerInfoPostPartido.golesPenalti" name="golesPenalti">
                         </div>
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="golesFalta" class="form-label">Goles de falta:</label>
                           <input type="number" class="form-control" id="golesFalta"
                             [(ngModel)]="playerInfoPostPartido.golesFalta" name="golesFalta">
                         </div>
                       </div>
                       <div class="mb-3 d-flex">
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="faltasCometidas" class="form-label">Faltas cometidas:</label>
                           <input type="number" class="form-control" id="faltasCometidas"
                             [(ngModel)]="playerInfoPostPartido.faltasCometidas" name="faltasCometidas">
                         </div>
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="faltasRecibidas" class="form-label">Faltas recibidas:</label>
                           <input type="number" class="form-control" id="faltasRecibidas"
                             [(ngModel)]="playerInfoPostPartido.faltasRecibidas" name="faltasRecibidas">
                         </div>
                       </div>
                       <div class="mb-3 d-flex">
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="penaltisCometidos" class="form-label">Penaltis cometidos:</label>
                           <input type="number" class="form-control" id="penaltisCometidos"
                             [(ngModel)]="playerInfoPostPartido.penaltisCometidos" name="penaltisCometidos">
                         </div>
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="penaltisRecibidos" class="form-label">Penaltis recibidos:</label>
                           <input type="number" class="form-control" id="penaltisRecibidos"
                             [(ngModel)]="playerInfoPostPartido.penaltisRecibidos" name="penaltisRecibidos">
                         </div>
                       </div>
                       <div class="mb-3 d-flex">
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="recuperaciones" class="form-label">Recuperaciones:</label>
                           <input type="number" class="form-control" id="recuperaciones"
                             [(ngModel)]="playerInfoPostPartido.recuperaciones" name="recuperaciones">
                         </div>
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="perdidas" class="form-label">Perdidas:</label>
                           <input type="number" class="form-control" id="perdidas"
                             [(ngModel)]="playerInfoPostPartido.perdidas" name="perdidas">
                         </div>
                       </div>
                       <div class="mb-3 d-flex">
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="tarjetasAmarillas" class="form-label">Tarjetas amarillas:</label>
                           <input type="number" class="form-control" id="tarjetasAmarillas"
                             [(ngModel)]="playerInfoPostPartido.tarjetasAmarillas" name="tarjetasAmarillas">
                         </div>
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="tarjetasRojas" class="form-label">Tarjetas rojas:</label>
                           <input type="number" class="form-control" id="tarjetasRojas"
                             [(ngModel)]="playerInfoPostPartido.tarjetasRojas" name="tarjetasRojas">
                         </div>
                       </div>
                       <div class="mb-3 d-flex">
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="disparosTotales" class="form-label">Disparos totales:</label>
                           <input type="number" class="form-control" id="disparosTotales"
                             [(ngModel)]="playerInfoPostPartido.disparosTotales" name="disparosTotales">
                         </div>
-                        <div class="col-4">
+                        <div class="col-6">
                           <label for="disparosPuerta" class="form-label">Disparos a puerta:</label>
                           <input type="number" class="form-control" id="disparosPuerta"
                             [(ngModel)]="playerInfoPostPartido.disparosPuerta" name="disparosPuerta">
                         </div>
                       </div>
-                      <div class="mb-3 col-4">
-                        <label for="paradasPortero" class="form-label">Paradas portero:</label>
-                        <input type="number" class="form-control" id="paradasPortero"
-                          [(ngModel)]="playerInfoPostPartido.paradasPortero" name="paradasPortero">
+                      <div class="mb-3 d-flex">
+                        <div class="col-6">
+                          <label for="penaltisFallados" class="form-label">Penaltis fallados:</label>
+                          <input type="number" class="form-control" id="penaltisFallados"
+                            [(ngModel)]="playerInfoPostPartido.penaltisFallados" name="penaltisFallados">
+                        </div>
+                        <div class="col-6">
+                          <label for="paradasPortero" class="form-label">Paradas portero:</label>
+                          <input type="number" class="form-control" id="paradasPortero"
+                            [(ngModel)]="playerInfoPostPartido.paradasPortero" name="paradasPortero">
+                        </div>
                       </div>
                       <div class="mb-3">
                         <label for="anotaciones" class="form-label">Anotaciones del jugador:</label>

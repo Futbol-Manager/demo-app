@@ -107,6 +107,7 @@ export class PlayerPostPartido {
     penaltisCometidos: number = 0;
     penaltisRecibidos: number = 0;
     asistencias: number = 0;
+    penaltisFallados:number = 0;
 
     constructor(object: any) {
         this.playerPostPartidoId = object.playerPostPartidoId || 0;
@@ -129,6 +130,7 @@ export class PlayerPostPartido {
         this.penaltisCometidos = object.penaltisCometidos || 0;
         this.penaltisRecibidos = object.penaltisRecibidos || 0;
         this.asistencias = object.asistencias || 0;
+        this.penaltisFallados = object.penaltisFallados || 0;
     }
 }
 
