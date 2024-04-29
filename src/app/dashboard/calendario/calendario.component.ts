@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
-import { RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from 'src/app/core/services/player/respuestas.model';
+import { ListPreEntreno, RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from 'src/app/core/services/player/respuestas.model';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -204,6 +204,13 @@ export class CalendarioComponent implements OnInit {
   respPostEntreno: RespPostEntreno = new RespPostEntreno({});
   respPostPartido: RespPostPartido = new RespPostPartido({});
 
+  showModalPreEntrenamiento: boolean = false;
+
+  playerIdUserActual: any = 0;
+
+  
+  respListPreEntreno: RespPreEntreno[] = [];
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -222,6 +229,7 @@ export class CalendarioComponent implements OnInit {
     // Suscríbete al observable del servicio para obtener el usuario actual
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
+      this.playerIdUserActual = user?.playerId;
       // Suscribirse a los cambios en los parámetros de la URL
       this.route.params.subscribe(params => {
         // Obtener el valor de teamId de los parámetros
@@ -961,7 +969,7 @@ export class CalendarioComponent implements OnInit {
   // AQUI EMPIEZAN LOS FORMULARIOS
 
   openModalFormPreEntreno(trainingSessionId: number) {
-    this.trainingService.getFormPreTraining(trainingSessionId).subscribe(
+    this.trainingService.getFormPreTraining(trainingSessionId, this.playerIdUserActual).subscribe(
       (response) => {
         if (response.data) {
           this.respPreEntreno = response.data;
@@ -1023,7 +1031,7 @@ export class CalendarioComponent implements OnInit {
   //----------------------------------
 
   openModalFormPostEntreno(trainingSessionId: number) {
-    this.trainingService.getFormPostTraining(trainingSessionId).subscribe(
+    this.trainingService.getFormPostTraining(trainingSessionId, this.playerIdUserActual).subscribe(
       (response) => {
         if (response.data) {
           this.respPostEntreno = response.data;
@@ -1067,7 +1075,7 @@ export class CalendarioComponent implements OnInit {
 
   openModalFormPrePartido(matchPreparationId: number) {
     this.matchPreparationId = matchPreparationId;
-    this.trainingService.getFormPrePartido(matchPreparationId).subscribe(
+    this.trainingService.getFormPrePartido(matchPreparationId, this.playerIdUserActual).subscribe(
       (response) => {
         if (response.data) {
           this.respPrePartido = response.data;
@@ -1111,7 +1119,7 @@ export class CalendarioComponent implements OnInit {
 
   openModalFormPostPartido(matchPreparationId: number) {
     this.matchPreparationId = matchPreparationId;
-    this.trainingService.getFormPostPartido(matchPreparationId).subscribe(
+    this.trainingService.getFormPostPartido(matchPreparationId, this.playerIdUserActual).subscribe(
       (response) => {
         if (response.data) {
           this.respPostPartido = response.data;
@@ -1153,5 +1161,37 @@ export class CalendarioComponent implements OnInit {
 
 
   // AQUI TERMINAN LOS FORMULARIOS
+
+  openModalPreEntrenamiento(id: number){    
+    this.trainingService.getListFormPreTraining(id).subscribe(
+      (response) => {
+        if (response.data) {
+          this.respListPreEntreno = response.data;
+          this.showModalPreEntrenamiento = true;
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  cerrarModalPreEntrenamiento(){
+    this.showModalPreEntrenamiento = false;
+  }
+
+  
+
+  toggleTaskPreEn(pre: RespPreEntreno): void {
+    // Cambiar el estado isOpen de la tarea seleccionada
+    pre.collapsed = !pre.collapsed;
+
+    // Si la tarea se abre, cerrar el resto de las tareas
+    if (pre.collapsed) {
+      this.respListPreEntreno
+        .filter(t => t !== pre) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+    }
+  }
 
 }

@@ -14,6 +14,8 @@ export class RespPreEntreno {
     q10: string;
     q11: string;
     q12: string;
+    collapsed: boolean;
+    name: string;
 
     constructor(object: any) {
         this.respPreEntrenoId = object.respPreEntrenoId || 0;
@@ -31,6 +33,8 @@ export class RespPreEntreno {
         this.q10 = object.q10 || '';
         this.q11 = object.q11 || '';
         this.q12 = object.q12 || '';
+        this.collapsed = false;
+        this.name = object.name || '';
     }
 }
 
@@ -142,4 +146,8 @@ export class RespPostPartido {
         this.q11 = object.q11 || '';
         this.q12 = object.q12 || '';
     }
+}
+
+export class ListPreEntreno {
+    respuestas: RespPreEntreno[] = [];
 }

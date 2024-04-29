@@ -547,7 +547,7 @@ export class TrainingService {
         }
     }
 
-    getFormPreTraining(trainingSessionId: number): Observable<Response> {
+    getFormPreTraining(trainingSessionId: number, playerId: number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -559,7 +559,7 @@ export class TrainingService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = `${environment.apiUrl}training/getformpretraining/${trainingSessionId}`;
+            const url: string = `${environment.apiUrl}training/getformpretraining/${trainingSessionId}/${playerId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
@@ -590,7 +590,7 @@ export class TrainingService {
         }
     }
 
-    getFormPostTraining(trainingSessionId: number): Observable<Response> {
+    getFormPostTraining(trainingSessionId: number, playerId: number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -602,7 +602,7 @@ export class TrainingService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = `${environment.apiUrl}training/getformposttraining/${trainingSessionId}`;
+            const url: string = `${environment.apiUrl}training/getformposttraining/${trainingSessionId}/${playerId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
@@ -633,7 +633,7 @@ export class TrainingService {
         }
     }
 
-    getFormPrePartido(matchPreparationId: number): Observable<Response> {
+    getFormPrePartido(matchPreparationId: number, playerId: number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -645,7 +645,7 @@ export class TrainingService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = `${environment.apiUrl}match/getformprepartidobymatch/${matchPreparationId}`;
+            const url: string = `${environment.apiUrl}match/getformprepartidobymatch/${matchPreparationId}/${playerId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
@@ -676,7 +676,7 @@ export class TrainingService {
         }
     }
 
-    getFormPostPartido(matchPreparationId: number): Observable<Response> {
+    getFormPostPartido(matchPreparationId: number, playerId: number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -688,7 +688,31 @@ export class TrainingService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = `${environment.apiUrl}match/getformpostpartidobymatch/${matchPreparationId}`;
+            const url: string = `${environment.apiUrl}match/getformpostpartidobymatch/${matchPreparationId}/${playerId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    
+
+    getListFormPreTraining(trainingSessionId: number): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = `${environment.apiUrl}training/getlistformpretraining/${trainingSessionId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
