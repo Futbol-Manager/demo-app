@@ -54,6 +54,8 @@ export class RespPostEntreno {
     q10: string;
     q11: string;
     q12: string;
+    collapsed: boolean;
+    name: string;
 
     constructor(object: any) {
         this.respPostEntrenoId = object.respPostEntrenoId || 0;
@@ -71,6 +73,8 @@ export class RespPostEntreno {
         this.q10 = object.q10 || '';
         this.q11 = object.q11 || '';
         this.q12 = object.q12 || '';
+        this.collapsed = false;
+        this.name = object.name || '';
     }
 }
 
@@ -91,6 +95,8 @@ export class RespPrePartido {
     q11: string;
     q12: string;
     q13: string;
+    collapsed: boolean;
+    name: string;
 
     constructor(object: any) {
         this.respPrePartidoId = object.respPrePartidoId || 0;
@@ -109,6 +115,8 @@ export class RespPrePartido {
         this.q11 = object.q11 || '';
         this.q12 = object.q12 || '';
         this.q13 = object.q13 || '';
+        this.collapsed = false;
+        this.name = object.name || '';
     }
 }
 
@@ -128,6 +136,8 @@ export class RespPostPartido {
     q10: string;
     q11: string;
     q12: string;
+    collapsed: boolean;
+    name: string;
 
     constructor(object: any) {
         this.respPostPartidoId = object.respPostPartidoId || 0;
@@ -145,9 +155,7 @@ export class RespPostPartido {
         this.q10 = object.q10 || '';
         this.q11 = object.q11 || '';
         this.q12 = object.q12 || '';
+        this.collapsed = false;
+        this.name = object.name || '';
     }
-}
-
-export class ListPreEntreno {
-    respuestas: RespPreEntreno[] = [];
 }

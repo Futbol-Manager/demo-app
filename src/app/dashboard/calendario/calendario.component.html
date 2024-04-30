@@ -254,6 +254,13 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Detalles del Partido</h5>
+        <div
+          *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) && match.matchPreparationId !== 0">
+          <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-secondary"
+            (click)="openModalPrePartido(match.matchPreparationId)">Pre-formulario</button>
+          <button type="button" class="btn btn-success"
+            (click)="openModalPostMatch(match.matchPreparationId)">Post-formulario</button>
+        </div>
         <div *ngIf="this.usuarioActual!.profileType.profileId === 3 || this.usuarioActual!.profileType.profileId === 4">
           <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-secondary"
             (click)="openModalFormPrePartido(match.matchPreparationId)">Pre-formulario</button>
@@ -805,7 +812,7 @@
             <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-secondary"
               (click)="openModalPreEntrenamiento(trainingSession.trainingSessionId)">Pre-formulario</button>
             <button type="button" class="btn btn-success"
-              (click)="openModalFormPostEntreno(trainingSession.trainingSessionId)">Post-formulario</button>
+              (click)="openModalPostEntrenamiento(trainingSession.trainingSessionId)">Post-formulario</button>
           </div>
           <div
             *ngIf="this.usuarioActual!.profileType.profileId === 3 || this.usuarioActual!.profileType.profileId === 4">
@@ -1601,6 +1608,138 @@
                     <p><b>Especifica qué alimentos has consumido hoy: </b> {{ pre.q11 }}</p>
                     <p><b>¿Hay algo más que quieras compartir sobre cómo te sientes física o mentalmente?: </b> {{ pre.q12 }}</p>
                     <br>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar post entrenamiento como perfil 1 y 2 -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPostEntrenamiento}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Formulario del Post Entrenamiento</h5>
+            <!-- Botón de cerrar con un icono -->
+            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPostEntrenamiento()"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Mostrar lista de formularios colapsada -->
+          <div class="accordion" *ngIf="respListPostEntreno && respListPostEntreno.length > 0">
+            <div class="accordion-item" *ngFor="let post of respListPostEntreno; let i = index">
+              <h2 class="accordion-header d-flex">
+                <button type="button" class="accordion-button" (click)="toggleTaskPostEn(post)">
+                  {{ post.name }}
+                </button>
+              </h2>
+              <div [id]="'post_' + i" class="accordion-collapse collapse" [ngClass]="{'show': post.collapsed}">
+                <div class="accordion-body">
+                  <!-- Contenido de la tarea -->
+                  <div>
+                    <p><b>¿Cómo describirías el entrenamiento de hoy?: </b> {{ post.q1 }}</p>
+                    <p><b>¿Crees que el entrenamiento de hoy ha cumplido con sus objetivos?: </b> {{ post.q2 }}</p>
+                    <p><b>En caso de respuesta negativa, ¿qué crees que ha faltado?: </b> {{ post.q3 }}</p>
+                    <p><b>¿Qué nivel de cansancio sientes después del entrenamiento?: </b> {{ post.q4 }} / 10</p>
+                    <p><b>¿Cómo calificarías la intensidad del entrenamiento de hoy?: </b> {{ post.q5 }} / 10</p>
+                    <p><b>¿Has entendido el propósito de los ejercicios realizados hoy?: </b> {{ post.q6 }}</p>
+                    <p><b>¿Sientes que puedes aplicar lo aprendido hoy en un contexto de partido?: </b> {{ post.q7 }}</p>
+                    <p><b>¿Cuál ha sido el ejercicio que más te ha gustado de hoy y por qué?: </b> {{ post.q8 }}</p>
+                    <p><b>¿Cuál ha sido el ejercicio que menos te ha gustado de hoy y por qué?: </b> {{ post.q9 }}</p>
+                    <p><b>¿Cómo describirías el ambiente durante el entrenamiento?: </b> {{ post.q10 }}</p>
+                    <p><b>¿Cómo crees que ha sido la comunicación entre jugadores y entrenadores durante el entrenamiento?: </b> {{ post.q11 }} / 10</p>
+                    <p><b>¿Hay algo más que quieras compartir sobre el entrenamiento de hoy?: </b> {{ post.q12 }}</p>
+                    <br>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar pre partido como perfil 1 y 2 -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPreMatch}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Formulario del Pre Partido</h5>
+            <!-- Botón de cerrar con un icono -->
+            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPrePartido()"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Mostrar lista de formularios colapsada -->
+          <div class="accordion" *ngIf="respListPreMatch && respListPreMatch.length > 0">
+            <div class="accordion-item" *ngFor="let pre of respListPreMatch; let i = index">
+              <h2 class="accordion-header d-flex">
+                <button type="button" class="accordion-button" (click)="toggleTaskPreMatch(pre)">
+                  {{ pre.name }}
+                </button>
+              </h2>
+              <div [id]="'pre2_' + i" class="accordion-collapse collapse" [ngClass]="{'show': pre.collapsed}">
+                <div class="accordion-body">
+                  <!-- Contenido de la tarea -->
+                  <div>
+                    <p><b>¿Cómo calificarías tu nivel de energía hoy?: </b> {{ pre.q1 }} / 10</p>
+                    <p><b>¿Sientes algún tipo de fatiga o cansancio?: </b> {{ pre.q2 }} / 10</p>
+                    <p><b>¿Hay alguna parte de tu cuerpo que te duela o te moleste hoy?: </b> {{ pre.q3 }} / 10</p>
+                    <p><b>En caso de molestias, ¿afectan tu capacidad para entrenar o jugar?: </b> {{ pre.q4 }}</p>
+                    <p><b>¿Cómo de motivado te sientes hoy para jugar?: </b> {{ pre.q5 }} / 10</p>
+                    <p><b>¿Cómo calificarías tu nivel de concentración hoy?: </b> {{ pre.q6 }} / 10</p>
+                    <p><b>Describe tu estado de ánimo actual con palabras clave (ej. contento, ansioso, frustrado): </b> {{ pre.q7 }}</p>
+                    <p><b>¿Cómo calificarías la calidad de tu sueño anoche?: </b> {{ pre.q8 }} / 10</p>
+                    <p><b>¿Cómo calificarías tu nivel de hidratación hoy?: </b> {{ pre.q9 }} / 10</p>
+                    <p><b>¿Consideras que tu alimentación de hoy ha sido adecuada para tu actividad física?: </b> {{ pre.q10 }}</p>
+                    <p><b>Especifica qué alimentos has consumido hoy.: </b> {{ pre.q11 }} / 10</p>
+                    <p><b>¿Qué expectativas tienes sobre el partido de hoy?: </b> {{ pre.q12 }}</p>
+                    <p><b>¿Hay algo más que quieras compartir sobre cómo te sientes física o mentalmente?: </b> {{ pre.q13 }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar pre partido como perfil 1 y 2 -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPostMatch}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Formulario del Post Partido</h5>
+            <!-- Botón de cerrar con un icono -->
+            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPostMatch()"></button>
+        </div>
+        <div class="modal-body">
+          <!-- Mostrar lista de formularios colapsada -->
+          <div class="accordion" *ngIf="respListPostMatch && respListPostMatch.length > 0">
+            <div class="accordion-item" *ngFor="let post of respListPostMatch; let i = index">
+              <h2 class="accordion-header d-flex">
+                <button type="button" class="accordion-button" (click)="toggleTaskPostPartido(post)">
+                  {{ post.name }}
+                </button>
+              </h2>
+              <div [id]="'post2_' + i" class="accordion-collapse collapse" [ngClass]="{'show': post.collapsed}">
+                <div class="accordion-body">
+                  <!-- Contenido de la tarea -->
+                  <div>
+                    <p><b>¿Qué nivel de cansancio sientes después del partido?: </b> {{ post.q1 }} / 10</p>
+                    <p><b>¿Cómo calificarías tu contribución al equipo hoy?: </b> {{ post.q2 }} / 10</p>
+                    <p><b>¿Crees que cumpliste con tus expectativas? ¿Por qué sí o por qué no?: </b> {{ post.q3 }}</p>
+                    <p><b>¿Qué opinas del partido en general?: </b> {{ post.q4 }}</p>
                   </div>
                 </div>
               </div>

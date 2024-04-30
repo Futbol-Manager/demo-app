@@ -11,7 +11,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
-import { ListPreEntreno, RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from 'src/app/core/services/player/respuestas.model';
+import { RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from 'src/app/core/services/player/respuestas.model';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -205,11 +205,17 @@ export class CalendarioComponent implements OnInit {
   respPostPartido: RespPostPartido = new RespPostPartido({});
 
   showModalPreEntrenamiento: boolean = false;
+  showModalPostEntrenamiento: boolean = false;
+  showModalPreMatch: boolean = false;
+  showModalPostMatch: boolean = false;
 
   playerIdUserActual: any = 0;
 
   
   respListPreEntreno: RespPreEntreno[] = [];
+  respListPostEntreno: RespPostEntreno[] = [];
+  respListPreMatch: RespPrePartido[] = [];
+  respListPostMatch: RespPostPartido[] = [];
 
   constructor(
     private router: Router,
@@ -1161,6 +1167,7 @@ export class CalendarioComponent implements OnInit {
 
 
   // AQUI TERMINAN LOS FORMULARIOS
+  // AQUI VER LOS FORMULARIOS COMO ENTRENADOR O CLUB
 
   openModalPreEntrenamiento(id: number){    
     this.trainingService.getListFormPreTraining(id).subscribe(
@@ -1190,6 +1197,102 @@ export class CalendarioComponent implements OnInit {
     if (pre.collapsed) {
       this.respListPreEntreno
         .filter(t => t !== pre) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+    }
+  }
+
+  //----------------------
+
+  openModalPostEntrenamiento(id: number){    
+    this.trainingService.getListFormPostTraining(id).subscribe(
+      (response) => {
+        if (response.data) {
+          this.respListPostEntreno = response.data;
+          this.showModalPostEntrenamiento = true;
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  cerrarModalPostEntrenamiento(){
+    this.showModalPostEntrenamiento = false;
+  }
+
+  toggleTaskPostEn(post: RespPostEntreno): void {
+    // Cambiar el estado isOpen de la tarea seleccionada
+    post.collapsed = !post.collapsed;
+
+    // Si la tarea se abre, cerrar el resto de las tareas
+    if (post.collapsed) {
+      this.respListPostEntreno
+        .filter(t => t !== post) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+    }
+  }
+
+  //----------------------
+
+  openModalPrePartido(id: number){    
+    this.trainingService.getListFormPreMatch(id).subscribe(
+      (response) => {
+        if (response.data) {
+          this.respListPreMatch = response.data;
+          this.showModalPreMatch = true;
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  cerrarModalPrePartido(){
+    this.showModalPreMatch = false;
+  }
+
+  toggleTaskPreMatch(pre: RespPrePartido): void {
+    // Cambiar el estado isOpen de la tarea seleccionada
+    pre.collapsed = !pre.collapsed;
+
+    // Si la tarea se abre, cerrar el resto de las tareas
+    if (pre.collapsed) {
+      this.respListPreMatch
+        .filter(t => t !== pre) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+    }
+  }
+
+  //----------------------
+
+  openModalPostMatch(id: number){    
+    this.trainingService.getListFormPostMatch(id).subscribe(
+      (response) => {
+        if (response.data) {
+          this.respListPostMatch = response.data;
+          this.showModalPostMatch = true;
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  cerrarModalPostMatch(){
+    this.showModalPostMatch = false;
+  }
+
+  toggleTaskPostPartido(post: RespPostPartido): void {
+    // Cambiar el estado isOpen de la tarea seleccionada
+    post.collapsed = !post.collapsed;
+
+    // Si la tarea se abre, cerrar el resto de las tareas
+    if (post.collapsed) {
+      this.respListPostMatch
+        .filter(t => t !== post) // Filtrar todas las tareas que no sean la seleccionada
         .forEach(t => t.collapsed = false); // Cerrar cada tarea
     }
   }
