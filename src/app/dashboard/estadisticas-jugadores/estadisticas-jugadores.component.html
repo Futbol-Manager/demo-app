@@ -1,14 +1,23 @@
 <div *ngIf="datosCargados" class="container">
     <div class="btn-container">
-        <button class="btn btn-custom" (click)="navegarACalendario()">
-            <i class="bi bi-calendar"></i>
-        </button>
-        <div class="hint">Volver al calendario</div>
+        <div class="row mt-3">
+            <div class="col">
+                <button class="btn btn-custom" (click)="navegarACalendario()">
+                    <i class="bi bi-calendar"></i>
+                </button>
+                <div class="hint">Volver al calendario</div>
+            </div>
+            <div class="col text-end">
+                <button class="btn btn-custom" (click)="verGraficaPlayers()">
+                    <i class="bi bi-bar-chart-line"></i>
+                </button>
+            </div>
+        </div>
     </div>
 
     <!-- Contenido para el dataTable -->
     <div class="container mt-4">
-        <h2>Jugadores</h2>
+        <h2>Tabla Jugadores</h2>
         <div class="row justify-content-between div-headdatatable">
             <div class="col-md-auto mr-auto" id="dt-length">
                 <!-- Contenido para el dt-length -->
@@ -66,5 +75,47 @@
         </div>
     </div>
     <div id="button_datatable">
+    </div>
+</div>
+
+
+
+<!-- aqui las graficas de los jugadores -->
+
+<div *ngIf="graficasPlayers" class="container">
+    <div class="btn-container">
+        <div class="row mt-3">
+            <div class="col">
+                <button class="btn btn-custom" (click)="navegarACalendario()">
+                    <i class="bi bi-calendar"></i>
+                </button>
+                <div class="hint">Volver al calendario</div>
+            </div>
+            <div class="col text-end">
+                <button class="btn btn-custom" (click)="verTablaPlayers()">
+                    <i class="bi bi-table"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido para el dataTable -->
+    <div class="container mt-4">
+        <h2>Gráfica Jugadores</h2>
+        <div class="row justify-content-between div-headdatatable">
+            <div class="col-md-auto mr-auto" id="dt-length">
+                <!-- Contenido para el dt-length -->
+            </div>
+            <div class="col-md-auto ml-auto" id="dt-search">
+            </div>
+        </div>
+        <div class="row">
+            <div style="width: 50em; height: 30em;" class="col-md-6 mb-4">
+                <canvas id="barrasChartMinutos"></canvas>
+            </div>
+            <div style="width: 50em; height: 30em;" class="col-md-6 mb-4">
+                <canvas id="barrasChartGoles"></canvas>
+            </div>
+        </div>
     </div>
 </div>

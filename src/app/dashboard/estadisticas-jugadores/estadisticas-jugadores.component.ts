@@ -7,6 +7,8 @@ import { PlayerEstadistica } from 'src/app/core/services/player/player.model';
 import * as $ from 'jquery';
 import 'datatables.net';
 import { HttpClient } from '@angular/common/http';
+import { Chart, registerables } from 'chart.js/auto';
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-estadisticas-jugadores',
@@ -15,14 +17,17 @@ import { HttpClient } from '@angular/common/http';
 })
 export class EstadisticasJugadoresComponent implements OnInit {
   datosCargados: boolean = false;
+  graficasPlayers: boolean = false;
   teamId!: number;
-  players: any[] = []; 
+  players: any[] = [];
   totalMatchs: number = 0;
+  barChartMinutos: Chart | null = null;
+  barChartGoles: Chart | null = null;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private playerService: PlayerService,    
+    private playerService: PlayerService,
     private http: HttpClient,
     private elementRef: ElementRef) { }
 
@@ -42,7 +47,7 @@ export class EstadisticasJugadoresComponent implements OnInit {
     this.router.navigate(['/dashboard/calendario', this.teamId]);
   }
 
-  cargarTablaJugadores(){
+  cargarTablaJugadores() {
     this.playerService.getListPlayersEstadisticsByTeam(this.teamId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
@@ -158,6 +163,181 @@ export class EstadisticasJugadoresComponent implements OnInit {
     });
 
     search.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+  }
+
+  verGraficaPlayers() {
+    setTimeout(() => {
+      this.cargarMinutosGraficoBarras();
+      this.cargarGolesGraficoBarras();
+    }, 100);
+    this.graficasPlayers = true;
+    this.datosCargados = false;
+  }
+
+  verTablaPlayers() {
+    this.graficasPlayers = false;
+    this.datosCargados = true;
+
+  }
+
+  cargarMinutosGraficoBarras() {
+    const canvas = document.getElementById('barrasChartMinutos') as HTMLCanvasElement;
+    if (!canvas) {
+      console.error('No se encontró el elemento canvas');
+      return;
+    }
+
+    // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
+    if (this.barChartMinutos) {
+      this.barChartMinutos.destroy(); // Destruye el gráfico existente
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.error('No se pudo obtener el contexto del elemento canvas');
+      return;
+    }
+
+    // Crear arrays de datos y etiquetas desde this.players
+    const data = this.players.map(player => player.minTotales);
+    const labels = this.players.map(player => player.nombre);
+
+    // Asignar colores consistentes basados en la posición en el array
+    const backgroundColors = this.players.map((player, index) => this.getPlayerColor(index, 0.2));
+    const borderColors = this.players.map((player, index) => this.getPlayerColor(index, 1));
+
+
+    this.barChartMinutos = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Juadores',
+          data: data,
+          backgroundColor: backgroundColors,
+          borderColor: borderColors,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Minutos totales de los jugadores'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  cargarGolesGraficoBarras() {
+    const canvas = document.getElementById('barrasChartGoles') as HTMLCanvasElement;
+    if (!canvas) {
+      console.error('No se encontró el elemento canvas');
+      return;
+    }
+
+    // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
+    if (this.barChartGoles) {
+      this.barChartGoles.destroy(); // Destruye el gráfico existente
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.error('No se pudo obtener el contexto del elemento canvas');
+      return;
+    }
+
+    // Crear arrays de datos y etiquetas desde this.players
+    const data = this.players.map(player => player.minTotales);
+    const labels = this.players.map(player => player.nombre);
+
+    // Asignar colores consistentes basados en la posición en el array
+    const backgroundColors = this.players.map((player, index) => this.getPlayerColor(index, 0.2));
+    const borderColors = this.players.map((player, index) => this.getPlayerColor(index, 1));
+
+
+    this.barChartGoles = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Juadores',
+          data: data,
+          backgroundColor: backgroundColors,
+          borderColor: borderColors,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Goles totales de los jugadores'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  generateColors(count: number, alpha: number): string[] {
+    const colors: string[] = [];
+    for (let i = 0; i < count; i++) {
+      const r = Math.floor(Math.random() * 256);
+      const g = Math.floor(Math.random() * 256);
+      const b = Math.floor(Math.random() * 256);
+      colors.push(`rgba(${r}, ${g}, ${b}, ${alpha})`);
+    }
+    return colors;
+  }
+
+  getPlayerColor(index: number, alpha: number): string {
+    // Aquí puedes implementar lógica para asignar colores basados en la posición en el array
+    // Por ejemplo, puedes mapear el índice a colores específicos
+    // Aquí hay un ejemplo simple utilizando un conjunto de colores predefinido:
+    const colorSet = [
+      'rgba(255, 99, 132, ' + alpha + ')',
+      'rgba(54, 162, 235, ' + alpha + ')',
+      'rgba(255, 206, 86, ' + alpha + ')',
+      'rgba(75, 192, 192, ' + alpha + ')',
+      'rgba(153, 102, 255, ' + alpha + ')',
+      'rgba(255, 159, 64, ' + alpha + ')',
+      'rgba(255, 99, 132, ' + alpha + ')',
+      'rgba(54, 162, 235, ' + alpha + ')',
+      'rgba(255, 206, 86, ' + alpha + ')',
+      'rgba(75, 192, 192, ' + alpha + ')',
+      'rgba(153, 102, 255, ' + alpha + ')',
+      'rgba(255, 159, 64, ' + alpha + ')',
+      'rgba(255, 99, 132, ' + alpha + ')',
+      'rgba(54, 162, 235, ' + alpha + ')',
+      'rgba(255, 206, 86, ' + alpha + ')',
+      'rgba(75, 192, 192, ' + alpha + ')',
+      'rgba(153, 102, 255, ' + alpha + ')',
+      'rgba(255, 159, 64, ' + alpha + ')',
+      'rgba(255, 99, 132, ' + alpha + ')',
+      'rgba(54, 162, 235, ' + alpha + ')',
+      'rgba(255, 206, 86, ' + alpha + ')',
+      'rgba(75, 192, 192, ' + alpha + ')',
+      'rgba(153, 102, 255, ' + alpha + ')',
+      'rgba(255, 159, 64, ' + alpha + ')'
+      // Añade más colores si es necesario
+    ];
+
+    // Usa el índice para seleccionar un color del conjunto
+    const colorIndex = index % colorSet.length;
+    return colorSet[colorIndex];
   }
 
 }
