@@ -23,6 +23,7 @@ export class EstadisticasJugadoresComponent implements OnInit {
   totalMatchs: number = 0;
   barChartMinutos: Chart | null = null;
   barChartGoles: Chart | null = null;
+  barChartUnica: Chart | null = null;
 
   constructor(
     private router: Router,
@@ -167,9 +168,13 @@ export class EstadisticasJugadoresComponent implements OnInit {
 
   verGraficaPlayers() {
     setTimeout(() => {
+      this.graficaUnica(this.players.map(player => player.minTotales), 'Minutos totales de los jugadores', 'Minutos');
+    }, 100);
+
+    /*setTimeout(() => {
       this.cargarMinutosGraficoBarras();
       this.cargarGolesGraficoBarras();
-    }, 100);
+    }, 100);*/
     this.graficasPlayers = true;
     this.datosCargados = false;
   }
@@ -212,7 +217,7 @@ export class EstadisticasJugadoresComponent implements OnInit {
       data: {
         labels: labels,
         datasets: [{
-          label: 'Juadores',
+          label: 'Nº de minutos',
           data: data,
           backgroundColor: backgroundColors,
           borderColor: borderColors,
@@ -255,7 +260,7 @@ export class EstadisticasJugadoresComponent implements OnInit {
     }
 
     // Crear arrays de datos y etiquetas desde this.players
-    const data = this.players.map(player => player.minTotales);
+    const data = this.players.map(player => player.goles);
     const labels = this.players.map(player => player.nombre);
 
     // Asignar colores consistentes basados en la posición en el array
@@ -268,7 +273,7 @@ export class EstadisticasJugadoresComponent implements OnInit {
       data: {
         labels: labels,
         datasets: [{
-          label: 'Juadores',
+          label: 'Nº de goles',
           data: data,
           backgroundColor: backgroundColors,
           borderColor: borderColors,
@@ -338,6 +343,114 @@ export class EstadisticasJugadoresComponent implements OnInit {
     // Usa el índice para seleccionar un color del conjunto
     const colorIndex = index % colorSet.length;
     return colorSet[colorIndex];
+  }
+
+  changeGrafic(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    let data = [];
+    let text = '';
+    let label = '';
+    switch (selectedValue) {
+      case "1":
+        data = this.players.map(player => player.minTotales);
+        text = 'Minutos totales de los jugadores';
+        label = 'Minutos';
+        break;
+      case "2":
+        data = this.players.map(player => player.goles);
+        text = 'Goles totales de los jugadores';
+        label = 'Goles';
+        break;
+      case "3":
+        data = this.players.map(player => player.asistencias);
+        text = 'Asistencias totales de los jugadores';
+        label = 'Asistencias';
+        break;
+      case "4":
+        data = this.players.map(player => player.partidosJugados);
+        text = 'Partidos jugados de los jugadores';
+        label = 'Nº de partidos';
+        break;
+      case "5":
+        data = this.players.map(player => player.golesPenalti);
+        text = 'Goles totales de penalti';
+        label = 'Goles de penalti';
+        break;
+      case "6":
+        data = this.players.map(player => player.penaltisFallados);
+        text = 'Penaltis fallados de los jugadores';
+        label = 'Nº de penaltis fallados';
+        break;
+      case "7":
+        data = this.players.map(player => player.tarAmarilla);
+        text = 'Tarjetas amarillas de los jugadores';
+        label = 'Nº de tarjetas amarillas';
+        break;
+      case "8":
+        data = this.players.map(player => player.tarRojas);
+        text = 'Tarjetas rojas de los jugadores';
+        label = 'Nº de tarjetas rojas';
+        break;
+      default:
+        console.log("Opción no reconocida");
+        break;
+    }
+
+    this.graficaUnica(data, text, label);
+  }
+
+  graficaUnica(data: any, text: string, label: string) {
+    const canvas = document.getElementById('barChartUnica') as HTMLCanvasElement;
+    if (!canvas) {
+      console.error('No se encontró el elemento canvas');
+      return;
+    }
+
+    // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
+    if (this.barChartUnica) {
+      this.barChartUnica.destroy(); // Destruye el gráfico existente
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.error('No se pudo obtener el contexto del elemento canvas');
+      return;
+    }
+
+    // Crear arrays de datos y etiquetas desde this.players
+    const labels = this.players.map(player => player.nombre);
+
+    // Asignar colores consistentes basados en el playerId
+    const backgroundColors = this.players.map(player => this.getPlayerColor(player.playerId, 0.2));
+    const borderColors = this.players.map(player => this.getPlayerColor(player.playerId, 1));
+
+    this.barChartUnica = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: label,
+          data: data,
+          backgroundColor: backgroundColors,
+          borderColor: borderColors,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: text
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
   }
 
 }
