@@ -8,6 +8,9 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import * as $ from 'jquery';
 import 'datatables.net';
 import { HttpClient } from '@angular/common/http';
+import { Chart, ChartType, registerables } from 'chart.js/auto';
+Chart.register(...registerables);
+
 
 @Component({
   selector: 'app-estadisticas-equipo',
@@ -35,6 +38,13 @@ export class EstadisticasEquipoComponent implements OnInit {
     puntos: 0,
     ultimos: []
   };
+
+
+  graficasEquipo: boolean = false;
+  barChartPrimera: Chart | null = null;
+  barChartSegunda: Chart | null = null;
+  barCharttercera: Chart | null = null;
+
 
   constructor(
     private router: Router,
@@ -264,6 +274,262 @@ export class EstadisticasEquipoComponent implements OnInit {
       ultimos: ultimosResultados //['Ganado', 'Empatado', 'Perdido', 'Ganado', 'Ganado']
     };
 
+  }
+
+  verGraficaEquipo() {
+    setTimeout(() => {
+      this.graficaUnica(this.partidos.map(partido => partido.golesAFavor), 'Goles a favor', 'Goles');
+      this.graficaPrimera();
+    }, 100);
+
+    /*setTimeout(() => {
+      this.cargarMinutosGraficoBarras();
+      this.cargarGolesGraficoBarras();
+    }, 100);*/
+    this.graficasEquipo = true;
+    this.datosCargados = false;
+  }
+
+  verTablaPlayers() {
+    this.graficasEquipo = false;
+    this.datosCargados = true;
+
+  }
+
+  changeGrafic(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    let data = [];
+    let text = '';
+    let label = '';
+    switch (selectedValue) {
+      case "1":
+        data = this.partidos.map(partido => partido.golesAFavor);
+        text = 'Goles a favor';
+        label = 'Goles';
+        break;
+      case "2":
+        data = this.partidos.map(partido => partido.golesEnContra);
+        text = 'Goles en contra';
+        label = 'Goles';
+        break;
+      case "3":
+        data = this.partidos.map(partido => partido.disparosAFavor);
+        text = 'Disparos a favor';
+        label = 'Nº de disparos';
+        break;
+      case "4":
+        data = this.partidos.map(partido => partido.disparosEnContra);
+        text = 'Disparos en contra';
+        label = 'Nº de disparos';
+        break;
+      case "5":
+        data = this.partidos.map(partido => partido.faltasRecibidas);
+        text = 'Faltas a favor';
+        label = 'Nº de faltas';
+        break;
+      case "6":
+        data = this.partidos.map(partido => partido.faltasCometidas);
+        text = 'Faltas en contra';
+        label = 'Nº de faltas';
+        break;
+      case "7":
+        data = this.partidos.map(partido => partido.cornersAFavor);
+        text = 'Corners a favor';
+        label = 'Nº de corners';
+        break;
+      case "8":
+        data = this.partidos.map(partido => partido.cornersEnContra);
+        text = 'Corners en contra';
+        label = 'Nº de corners';
+        break;
+      case "9":
+        data = this.partidos.map(partido => partido.llegadasPeligroAFavor);
+        text = 'Llegadas con peligro a favor';
+        label = 'Nº de llegadas con peligro';
+        break;
+      case "10":
+        data = this.partidos.map(partido => partido.llegadasPeligroEnContra);
+        text = 'Llegadas con peligro en contra';
+        label = 'Nº de llegadas con peligro';
+        break;
+      case "1":
+        data = this.partidos.map(partido => partido.penaltisAFavor);
+        text = 'Penaltis a favor';
+        label = 'Nº de penaltis';
+        break;
+      case "12":
+        data = this.partidos.map(partido => partido.penaltisEnContra);
+        text = 'Penaltis en contra';
+        label = 'Nº de penaltis';
+        break;
+      case "13":
+        data = this.partidos.map(partido => partido.tarjetasAmarillas);
+        text = 'Tarjetas amarillas';
+        label = 'Nº de tarjetas';
+        break;
+      case "14":
+        data = this.partidos.map(partido => partido.tarjetasRojas);
+        text = 'Tarjetas rojas';
+        label = 'Nº de tarjetas';
+        break;
+      default:
+        console.log("Opción no reconocida");
+        break;
+    }
+
+    this.graficaUnica(data, text, label);
+  }
+
+  graficaUnica(data: any, text: string, label: string) {
+    const canvas = document.getElementById('barChartSegunda') as HTMLCanvasElement;
+    if (!canvas) {
+      console.error('No se encontró el elemento canvas');
+      return;
+    }
+
+    // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
+    if (this.barChartSegunda) {
+      this.barChartSegunda.destroy(); // Destruye el gráfico existente
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.error('No se pudo obtener el contexto del elemento canvas');
+      return;
+    }
+
+    // Crear arrays de datos y etiquetas desde this.players
+    const labels = this.partidos.map(partido => partido.matchPreparation.rivalName);
+
+    // Asignar colores consistentes basados en el playerId
+    const backgroundColors = this.partidos.map(partido => this.getEquipoColor(partido.postPartidoId, 0.2));
+    const borderColors = this.partidos.map(partido => this.getEquipoColor(partido.postPartidoId, 1));
+
+    this.barChartSegunda = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: label,
+          data: data,
+          backgroundColor: backgroundColors,
+          borderColor: borderColors,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: text
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  graficaPrimera() {
+    const ctx = document.getElementById('pieChart') as HTMLCanvasElement;
+    const pieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Victorias', 'Derrotas', 'Empates'],
+        datasets: [{
+          label: 'Dataset',
+          data: [this.resumentotales.victorias, this.resumentotales.derrotas, this.resumentotales.empates],
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.5)',
+            'rgba(255, 99, 132, 0.5)',
+            'rgba(169, 169, 169, 0.5)'
+          ],
+          borderColor: [
+            'rgba(75, 192, 192, 1)',
+            'rgba(255, 99, 132, 1)',
+            'rgba(169, 169, 169, 1)'
+          ],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: 'Resultados de partidos'
+          }
+        }
+      }
+    });
+
+    // Agregar etiquetas de porcentaje
+    const pieChartData = pieChart.config.data.datasets[0].data;
+    const pieChartLabels = pieChart.config.data.labels;
+
+    pieChartData.forEach((value, index) => {
+      const percent = Math.round(value / pieChartData.reduce((a, b) => a + b, 0) * 100);
+      const label = `${pieChartLabels![index]}: ${percent}%`;
+
+      const div = document.createElement('div');
+      div.textContent = label;
+      const datasets = pieChart.config.data.datasets;
+      if (datasets.length > 0) {
+        const backgroundColor = datasets[0].backgroundColor as string[];
+        if (backgroundColor && backgroundColor[index]) {
+          div.style.color = backgroundColor[index];
+        }
+      }
+
+      div.style.marginBottom = '5px';
+
+      document.getElementById('chartLabels')!.appendChild(div);
+
+    });
+  }
+
+  getEquipoColor(index: number, alpha: number): string {
+    // Aquí puedes implementar lógica para asignar colores basados en la posición en el array
+    // Por ejemplo, puedes mapear el índice a colores específicos
+    // Aquí hay un ejemplo simple utilizando un conjunto de colores predefinido:
+    const colorSet = [
+      'rgba(255, 99, 132, ' + alpha + ')',
+      'rgba(54, 162, 235, ' + alpha + ')',
+      'rgba(255, 206, 86, ' + alpha + ')',
+      'rgba(75, 192, 192, ' + alpha + ')',
+      'rgba(153, 102, 255, ' + alpha + ')',
+      'rgba(255, 159, 64, ' + alpha + ')',
+      'rgba(255, 99, 132, ' + alpha + ')',
+      'rgba(54, 162, 235, ' + alpha + ')',
+      'rgba(255, 206, 86, ' + alpha + ')',
+      'rgba(75, 192, 192, ' + alpha + ')',
+      'rgba(153, 102, 255, ' + alpha + ')',
+      'rgba(255, 159, 64, ' + alpha + ')',
+      'rgba(255, 99, 132, ' + alpha + ')',
+      'rgba(54, 162, 235, ' + alpha + ')',
+      'rgba(255, 206, 86, ' + alpha + ')',
+      'rgba(75, 192, 192, ' + alpha + ')',
+      'rgba(153, 102, 255, ' + alpha + ')',
+      'rgba(255, 159, 64, ' + alpha + ')',
+      'rgba(255, 99, 132, ' + alpha + ')',
+      'rgba(54, 162, 235, ' + alpha + ')',
+      'rgba(255, 206, 86, ' + alpha + ')',
+      'rgba(75, 192, 192, ' + alpha + ')',
+      'rgba(153, 102, 255, ' + alpha + ')',
+      'rgba(255, 159, 64, ' + alpha + ')'
+      // Añade más colores si es necesario
+    ];
+
+    // Usa el índice para seleccionar un color del conjunto
+    const colorIndex = index % colorSet.length;
+    return colorSet[colorIndex];
   }
 
 }

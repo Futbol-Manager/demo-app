@@ -1,9 +1,22 @@
 <div *ngIf="datosCargados" class="container">
-    <div class="btn-container">
-        <button class="btn btn-custom" (click)="navegarACalendario()">
-            <i class="bi bi-calendar"></i>
-        </button>
-        <div class="hint">Volver al calendario</div>
+    <div class="btn-container mt-3">
+        <div class="row">
+            <div class="col"><button class="btn btn-custom" (click)="navegarACalendario()">
+                    <i class="bi bi-calendar"></i>
+                </button>
+                <div class="hint">Volver al calendario</div>
+            </div>
+        </div>
+    </div>
+    <div class="btn-container mt-3">
+        <div class="row mt-3">
+            <div class="col">
+                <button class="btn btn-custom" (click)="verGraficaEquipo()">
+                    <i class="bi bi-bar-chart-line"></i>
+                </button>
+                <div class="hint">Ver gráficas Equipo</div>
+            </div>
+        </div>
     </div>
 
     <div style="margin-top: 3em; overflow-x: auto; text-align: center;">
@@ -58,7 +71,7 @@
                         <th>Partido ID</th>
                         <th>NOMBRE_RIVAL</th>
                         <th>RESULTADO</th>
-                        <th>GGOLES_FAVOR</th>
+                        <th>GOLES_FAVOR</th>
                         <th>GOLES_CONTRA</th>
                         <th>DISPAROS_FAVOR</th>
                         <th>DISPAROS_CONTRA</th>
@@ -227,6 +240,75 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- aqui las graficas de los jugadores -->
+
+<div *ngIf="graficasEquipo" class="container">
+    <div class="btn-container mt-3">
+        <div class="row">
+            <div class="col"><button class="btn btn-custom" (click)="navegarACalendario()">
+                    <i class="bi bi-calendar"></i>
+                </button>
+                <div class="hint">Volver al calendario</div>
+            </div>
+        </div>
+    </div>
+    <div class="btn-container mt-3">
+        <div class="row mt-3">
+            <div class="col">
+                <button class="btn btn-custom" (click)="verTablaPlayers()">
+                    <i class="bi bi-table"></i>
+                </button>
+                <div class="hint">Ver tablas equipo</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenido para el dataTable -->
+    <div class="container mt-4">
+        <h2>Gráfica Equipo</h2>
+        
+        <div class="mb-3">
+            <div>
+                <div class="col-md-12" style="text-align: -webkit-center;">
+                    <div style="display: inline-block; vertical-align: top;">
+                        <canvas id="pieChart"></canvas>
+                      </div>
+                      <div id="chartLabels" style="display: inline-block; vertical-align: top; padding-left: 10px;"></div>                      
+                      
+                    <!-- <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;" height="200" id="barChartPrimera"></canvas> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="grafica" class="form-label">Selecciona el tipo de gráfica:</label>
+            <select class="form-control" id="selectGrafica" (change)="changeGrafic($event)">
+                <option value="1">Goles a favor</option>
+                <option value="2">Goles en contra</option>
+                <option value="3">Disparos a favor</option>
+                <option value="4">Disparos en contra</option>
+                <option value="5">Faltas a favor</option>
+                <option value="6">Faltas en contra</option>
+                <option value="7">Corners a favor</option>
+                <option value="8">Corners en contra</option>
+                <option value="9">Llegadas con peligro a favor</option>
+                <option value="10">Llegadas con peligro en contra</option>
+                <option value="11">Penaltis a favor</option>
+                <option value="12">Penaltis en contra</option>
+                <option value="13">Tarjetas amarillas</option>
+                <option value="14">Tarjetas rojas</option>
+            </select>
+        </div>
+        <div class="mb-3" id="segundo">
+            <div class="scroll: auto">
+                <div class="col-md-12">
+                    <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;" height="200" id="barChartSegunda"></canvas>
+                </div>
+            </div>
         </div>
     </div>
 </div>
