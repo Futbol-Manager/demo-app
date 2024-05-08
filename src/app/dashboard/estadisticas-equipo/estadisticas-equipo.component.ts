@@ -444,13 +444,13 @@ export class EstadisticasEquipoComponent implements OnInit {
           label: 'Dataset',
           data: [this.resumentotales.victorias, this.resumentotales.derrotas, this.resumentotales.empates],
           backgroundColor: [
-            'rgba(75, 192, 192, 0.5)',
-            'rgba(255, 99, 132, 0.5)',
+            'rgba(27, 255, 0, 0.5)',
+            'rgba(255, 45, 0, 0.5)',
             'rgba(169, 169, 169, 0.5)'
           ],
           borderColor: [
-            'rgba(75, 192, 192, 1)',
-            'rgba(255, 99, 132, 1)',
+            'rgba(27, 255, 0, 1)',
+            'rgba(255, 45, 0, 1)',
             'rgba(169, 169, 169, 1)'
           ],
           borderWidth: 1

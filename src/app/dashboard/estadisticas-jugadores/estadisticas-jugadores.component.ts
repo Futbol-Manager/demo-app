@@ -16,6 +16,7 @@ Chart.register(...registerables);
   styleUrls: ['./estadisticas-jugadores.component.scss']
 })
 export class EstadisticasJugadoresComponent implements OnInit {
+  
   datosCargados: boolean = false;
   graficasPlayers: boolean = false;
   teamId!: number;
