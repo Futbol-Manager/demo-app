@@ -476,8 +476,11 @@ export class CalendarioComponent implements OnInit {
   minutoGolAfavor: number = 0;
   minutoGolEnContra: number = 0;
 
-  golAvanzado: GolPostPartido = new GolPostPartido({});
-  golesAvanzado: GolPostPartido[] = [];
+  golAvanzadoAFavor: GolPostPartido = new GolPostPartido({});
+  golesAvanzadoAFavor: GolPostPartido[] = [];
+  
+  golAvanzadoEnContra: GolPostPartido = new GolPostPartido({});
+  golesAvanzadoEnContra: GolPostPartido[] = [];
 
   valueGoleador: number = 1;
 
@@ -923,21 +926,19 @@ export class CalendarioComponent implements OnInit {
             this.trainingService.getListGolesAvanzado(this.postPartidoId).subscribe(
               (resp) => {
                 if (resp.data) {
-                  this.golesAvanzado = resp.data;
-                  let afavor = 0;
-                  let encontra = 0;
-                  for (let index = 0; index < this.golesAvanzado.length; index++) {
-                    if (this.golesAvanzado[index].aFavor === 0)
-                      afavor++;
-                    else
-                      encontra++;
+                  this.golesAvanzadoAFavor = resp.data.golesAFavor;
+                  this.golesAvanzadoEnContra = resp.data.golesEnContra;
+                  let afavor = this.golesAvanzadoAFavor.length;
+                  let encontra = this.golesAvanzadoEnContra.length;
+
+                  if(this.golesAvanzadoAFavor.length !== 0) {
+                    this.postPartido.golesAFavor = afavor;
+                  }
+                  if(this.golesAvanzadoEnContra.length !== 0) {
+                    this.postPartido.golesEnContra = encontra;
                   }
 
-                  if(this.golesAvanzado.length !== 0) {
-                    this.postPartido.golesAFavor = afavor;
-                    this.postPartido.golesEnContra = encontra;
-                    this.toggleGolAvanzado(0);
-                  }
+                  if (this.golesAvanzadoAFavor.length !== 0 || this.golesAvanzadoEnContra.length !== 0) this.toggleGolAvanzado(true, 0);
                 }
               },
               (error) => {
@@ -1644,27 +1645,56 @@ export class CalendarioComponent implements OnInit {
     } else {
       collapseElement!.classList.add('show');
     }
+
+    if(id === 'collapseEnContra'){
+      this.toggleGolAvanzado(false, 0);
+    } else{
+      this.toggleGolAvanzado(true, 0);
+    }
   }
 
+  toggleGolAvanzado(isAFavor: boolean, index: number): void {
+    let access = false;
+    if(isAFavor){
+      if(index < this.golesAvanzadoAFavor.length){
+        this.golAvanzadoAFavor =  this.golesAvanzadoAFavor[index];
+        this.selectedGolTypes = this.golAvanzadoAFavor.category;
+  
+        this.selectedSubGolTypes = this.golAvanzadoAFavor.subCategory;
+        this.selectedOptionGolTypes = this.golAvanzadoAFavor.option;
+        this.selectedGolTypesCombi = this.golAvanzadoAFavor.combinado;
+        access = true;
+      } else {
+        this.golAvanzadoAFavor = new GolPostPartido({});
+      }
+    } else {
+      if(index < this.golesAvanzadoEnContra.length){
+        this.golAvanzadoEnContra =  this.golesAvanzadoEnContra[index];
+        this.selectedGolTypes = this.golAvanzadoEnContra.category;
+  
+        this.selectedSubGolTypes = this.golAvanzadoEnContra.subCategory;
+        this.selectedOptionGolTypes = this.golAvanzadoEnContra.option;
+        this.selectedGolTypesCombi = this.golAvanzadoEnContra.combinado;
+        access = true;
+      } else {
+        this.golAvanzadoEnContra = new GolPostPartido({});
+      }
+    }
 
-
-  toggleGolAvanzado(index: number): void {
-    this.golAvanzado =  this.golesAvanzado[index];
-    this.selectedGolTypes = this.golAvanzado.category;
-
-    if (this.selectedGolTypes === 'Jugada combinativa' || this.selectedGolTypes === 'Pérdida/Recuperación'
-      || this.selectedGolTypes === 'Penalti' || this.selectedGolTypes === 'Falta') {
-      this.showSelectedOptional = true;
+    if(access){
+      if (this.selectedGolTypes === 'Jugada combinativa' || this.selectedGolTypes === 'Pérdida/Recuperación'
+        || this.selectedGolTypes === 'Penalti' || this.selectedGolTypes === 'Falta') {
+        this.showSelectedOptional = true;
+      } else {
+        this.showSelectedOptional = false;
+      }  
     } else {
       this.showSelectedOptional = false;
+      this.selectedSubGolTypes = '';
+      this.selectedOptionGolTypes = '';
+      this.selectedGolTypesCombi = '';
     }
-    
-    this.selectedSubGolTypes = this.golAvanzado.subCategory;
-    this.selectedOptionGolTypes = this.golAvanzado.option;
-    this.selectedGolTypesCombi = this.golAvanzado.combinado;
-    this.valueGoleador = 1;
   }
-
 
   agregarGol(id: number) {
 

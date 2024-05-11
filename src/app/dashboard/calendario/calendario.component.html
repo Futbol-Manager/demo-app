@@ -617,7 +617,7 @@
                   <div class="accordion" id="accordionExample">
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingOne">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" (click)="toggleGolAvanzado(0)"
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" (click)="toggleGolAvanzado(true, 0)"
                           data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                           Descripcion gol 1
                         </button>
@@ -628,14 +628,15 @@
                           <div class="mb-3 d-flex">
                             <div class="col-6">
                               <label for="golesAFavor" class="form-label">Gol de:</label>
-                              <select class="form-control" [(ngModel)]="golAvanzado.playerId" name="golesAFavor">
-                                <option value="0">Gol en propia</option>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.playerId" name="golesAFavor">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="00">Gol en propia</option>
                                 <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
                               </select>                              
                             </div>
                             <div class="col-6">
                               <label for="golesEnContra" class="form-label">Asistencia de:</label>
-                              <select class="form-control" [(ngModel)]="golAvanzado.asistencia" name="golesEnContra">
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="golesEnContra">
                                 <option value="0">Sin asistencia</option>
                                 <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
                               </select>                              
@@ -645,7 +646,7 @@
                             <div class="col-6">
                               <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
                               <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
-                                [(ngModel)]="golAvanzado.minuto">
+                                [(ngModel)]="golAvanzadoAFavor.minuto">
                             </div>
                           </div>
                           <div class="mb-3 d-flex">
@@ -660,10 +661,10 @@
                             </div>
                             <div class="col-6" *ngIf="showSelectedOptional">
                               <label for="selectedGolTypesCombi">Opcional:</label>
-                              <select class="form-control" id="selectedGolTypesCombi" name="selectedGolTypesCombi"
+                              <select class="form-control" id="selectedGolTypesCombi" [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi"
                                 (change)="onSelectOpcional($event)">
-                                <option value="">Selecciona una opción</option>
-                                <option value="Centro al Área">Centro al Área</option>
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
                               </select>
                             </div>
                           </div>
@@ -699,7 +700,7 @@
                     </div>
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" (click)="toggleGolAvanzado(1)"
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" (click)="toggleGolAvanzado(true, 1)"
                           data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                           Descripcion gol 2
                         </button>
@@ -711,14 +712,15 @@
                             <div class="mb-3 d-flex">
                               <div class="col-6">
                                 <label for="golesAFavor" class="form-label">Gol de:</label>
-                                <select class="form-control" [(ngModel)]="golAvanzado.playerId" name="golesAFavor">
-                                  <option value="0">Gol en propia</option>
+                                <select class="form-control" [(ngModel)]="golAvanzadoAFavor.playerId" name="golesAFavor">
+                                  <option value="0">Selecciona una opción</option>
+                                  <option value="00">Gol en propia</option>
                                   <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
-                                </select>                              
+                                </select>                                
                               </div>
                               <div class="col-6">
-                                <label for="golesEnContra" class="form-label">Asistencia de:</label>
-                                <select class="form-control" [(ngModel)]="golAvanzado.asistencia" name="golesEnContra">
+                                <label for="asisGolesAFavor" class="form-label">Asistencia de:</label>
+                                <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="asisGolesAFavor">
                                   <option value="0">Sin asistencia</option>
                                   <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
                                 </select>                              
@@ -728,7 +730,7 @@
                               <div class="col-6">
                                 <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
                                 <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
-                                  [(ngModel)]="golAvanzado.minuto">
+                                  [(ngModel)]="golAvanzadoAFavor.minuto">
                               </div>
                             </div>
                             <div class="mb-3 d-flex">
@@ -743,10 +745,10 @@
                               </div>
                               <div class="col-6" *ngIf="showSelectedOptional">
                                 <label for="selectedGolTypesCombi">Opcional:</label>
-                                <select class="form-control" id="selectedGolTypesCombi" name="selectedGolTypesCombi"
+                                <select class="form-control" id="selectedGolTypesCombi" [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi"
                                   (change)="onSelectOpcional($event)">
-                                  <option value="">Selecciona una opción</option>
-                                  <option value="0">Centro al Área</option>
+                                  <option value="0">Selecciona una opción</option>
+                                  <option value="1">Centro al Área</option>
                                 </select>
                               </div>
                             </div>
@@ -806,7 +808,195 @@
               </div>
               <div class="collapse" id="collapseEnContra">
                 <div class="card card-body">
-                  <h2>Especifica los goles en contra</h2>
+                  <h2>Especifica los goles en contra</h2><div class="accordion" id="accordionExampleB">
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingOneB">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" (click)="toggleGolAvanzado(false, 0)"
+                          data-bs-target="#collapseOneB" aria-expanded="true" aria-controls="collapseOneB">
+                          Descripcion gol 1
+                        </button>
+                      </h2>
+                      <div id="collapseOneB" class="accordion-collapse collapse show" aria-labelledby="headingOneB"
+                        data-bs-parent="#accordionExampleB">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesEnContra" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId" name="golesEnContra">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="00">Gol en propia</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
+                              </select>                              
+                            </div>
+                            <div class="col-6">
+                              <label for="golesEnContra" class="form-label">Asistencia de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.asistencia" name="golesEnContra">
+                                <option value="0">Sin asistencia</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
+                              </select>                              
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolEnContra" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolEnContra" name="minutoGolEnContra"
+                                [(ngModel)]="golAvanzadoEnContra.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi" [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi"
+                                (change)="onSelectOpcional($event)">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button class="btn btn-primary" (click)="agregarGol(1)">Añadir</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingTwoB">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" (click)="toggleGolAvanzado(false, 1)"
+                          data-bs-target="#collapseTwoB" aria-expanded="false" aria-controls="collapseTwoB">
+                          Descripcion gol 2
+                        </button>
+                      </h2>
+                      <div id="collapseTwoB" class="accordion-collapse collapse" aria-labelledby="headingTwoB"
+                        data-bs-parent="#accordionExampleB">
+                        <div class="accordion-body">
+                          <div class="accordion-body">
+                            <div class="mb-3 d-flex">
+                              <div class="col-6">
+                                <label for="golesEnContra" class="form-label">Gol de:</label>
+                                <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId" name="golesEnContra">
+                                  <option value="0">Selecciona una opción</option>
+                                  <option value="00">Gol en propia</option>
+                                  <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
+                                </select>                              
+                              </div>
+                              <div class="col-6">
+                                <label for="golesEnContra" class="form-label">Asistencia de:</label>
+                                <select class="form-control" [(ngModel)]="golAvanzadoEnContra.asistencia" name="golesEnContra">
+                                  <option value="0">Sin asistencia</option>
+                                  <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
+                                </select>                              
+                              </div>
+                            </div>
+                            <div class="mb-3 d-flex">
+                              <div class="col-6">
+                                <label for="minutoGolEnContra" class="form-label">En el minuto:</label>
+                                <input type="number" class="form-control" id="minutoGolEnContra" name="minutoGolEnContra"
+                                  [(ngModel)]="golAvanzadoEnContra.minuto">
+                              </div>
+                            </div>
+                            <div class="mb-3 d-flex">
+                              <div class="col-6">
+                                <label for="categorygolTypes">Categoría:</label>
+                                <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                  name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                  <option value="">Pulsa para cargar las categorias</option>
+                                  <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                  </option>
+                                </select>
+                              </div>
+                              <div class="col-6" *ngIf="showSelectedOptional">
+                                <label for="selectedGolTypesCombi">Opcional:</label>
+                                <select class="form-control" id="selectedGolTypesCombi" [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi"
+                                  (change)="onSelectOpcional($event)">
+                                  <option value="0">Selecciona una opción</option>
+                                  <option value="1">Centro al Área</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                              <div class="col-6">
+                                <label for="subgolTypes">Subcategoría:</label>
+                                <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                  name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                  <option value="">Seleccionar subcategoría</option>
+                                  <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                    subcategory.name }}</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                              <div class="col-6">
+                                <label for="optiongolTypes">Opción:</label>
+                                <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                  name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                  <option value="">Seleccionar opción</option>
+                                  <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                  </option>
+                                </select>
+                              </div>
+                            </div>
+                            <div class="mb-3 d-flex">
+                              <div class="col-6">
+                                <button class="btn btn-primary" (click)="agregarGol(1)">Añadir</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThreeB">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          data-bs-target="#collapseThreeB" aria-expanded="false" aria-controls="collapseThreeB">
+                          Descripcion gol 3
+                        </button>
+                      </h2>
+                      <div id="collapseThreeB" class="accordion-collapse collapse" aria-labelledby="headingThreeB"
+                        data-bs-parent="#accordionExampleB">
+                        <div class="accordion-body">
+                          <strong>This is the third item's accordion body.</strong> It is hidden by default, until the
+                          collapse plugin adds the appropriate classes that we use to style each element. These classes
+                          control the overall appearance, as well as the showing and hiding via CSS transitions. You can
+                          modify any of this with custom CSS or overriding our default variables. It's also worth noting
+                          that just about any HTML can go within the <code>.accordion-body</code>, though the transition
+                          does limit overflow.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
 
