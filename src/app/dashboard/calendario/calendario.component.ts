@@ -12,6 +12,7 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from 'src/app/core/services/player/respuestas.model';
+import { GolPostPartido } from 'src/app/core/services/team/team.model';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -211,11 +212,274 @@ export class CalendarioComponent implements OnInit {
 
   playerIdUserActual: any = 0;
 
-  
+
   respListPreEntreno: RespPreEntreno[] = [];
   respListPostEntreno: RespPostEntreno[] = [];
   respListPreMatch: RespPrePartido[] = [];
   respListPostMatch: RespPostPartido[] = [];
+
+  golTypes = [
+    {
+      "name": "Jugada combinativa",
+      "subcategories": [
+        {
+          "name": "Banda Izquierda",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Banda Derecha",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Zona interior",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Dentro del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Fuera del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pérdida/Recuperación",
+      "subcategories": [
+        {
+          "name": "Banda izquierda",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Banda Izquierda",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Banda Derecha",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Zona interior",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Dentro del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Fuera del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Córner",
+      "subcategories": [
+        {
+          "name": "Izquierda",
+          "options": [
+            "Saque en corto",
+            "Primer palo",
+            "Punto de penalti",
+            "Segundo palo"
+          ]
+        },
+        {
+          "name": "Derecha",
+          "options": [
+            "Saque en corto",
+            "Primer palo",
+            "Punto de penalti",
+            "Segundo palo"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Falta disparo directo",
+      "subcategories": []
+    },
+    {
+      "name": "Falta",
+      "subcategories": [
+        {
+          "name": "Banda izquierda",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Banda Izquierda",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Banda Derecha",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Zona interior",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Dentro del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Fuera del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Saque de banda",
+      "subcategories": [
+        {
+          "name": "Banda izquierda",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Banda Izquierda",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Banda Derecha",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Zona interior",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Dentro del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Fuera del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Penalti",
+      "subcategories": []
+    }
+  ]
+
+  selectedGolTypes: string = '';
+  selectedSubGolTypes: string = '';
+  selectedOptionGolTypes: string = '';
+  selectedGolTypesCombi: string = '';
+
+
+  cat11: string = '';
+  cat22: string = '';
+  cat33: string = '';
+
+  showSelectedOptional: boolean = false;
+
+  isOpenGolesAvanzada: boolean = false;
+  campos: any[] = [];
+
+  selectedPlayerIdGolDe: number = 0;
+  selectedPlayerIdAsisDe: number = 0;
+  minutoGolAfavor: number = 0;
+  minutoGolEnContra: number = 0;
+
+  golAvanzado: GolPostPartido = new GolPostPartido({});
+  golesAvanzado: GolPostPartido[] = [];
+
+  valueGoleador: number = 1;
 
   constructor(
     private router: Router,
@@ -646,6 +910,7 @@ export class CalendarioComponent implements OnInit {
         }
         this.playerService.getPlayersPostPartido(this.teamId.toString(), this.postPartidoId.toString()).subscribe(
           (response) => {
+
             // Verificar si se obtuvo correctamente la información del partido
             if (response.data) {
               // Asignar los datos del partido al objeto 'partido'
@@ -654,6 +919,31 @@ export class CalendarioComponent implements OnInit {
               this.showModalPartido = false;
               this.showModalPostPartido = true;
             }
+
+            this.trainingService.getListGolesAvanzado(this.postPartidoId).subscribe(
+              (resp) => {
+                if (resp.data) {
+                  this.golesAvanzado = resp.data;
+                  let afavor = 0;
+                  let encontra = 0;
+                  for (let index = 0; index < this.golesAvanzado.length; index++) {
+                    if (this.golesAvanzado[index].aFavor === 0)
+                      afavor++;
+                    else
+                      encontra++;
+                  }
+
+                  if(this.golesAvanzado.length !== 0) {
+                    this.postPartido.golesAFavor = afavor;
+                    this.postPartido.golesEnContra = encontra;
+                    this.toggleGolAvanzado(0);
+                  }
+                }
+              },
+              (error) => {
+                console.error('Error en la solicitud:', error);
+              }
+            );
           },
           (error) => {
             console.error('Error en la solicitud:', error);
@@ -1120,7 +1410,7 @@ export class CalendarioComponent implements OnInit {
       }
     );
   }
-  
+
   //-----------------------------
 
   openModalFormPostPartido(matchPreparationId: number) {
@@ -1169,7 +1459,7 @@ export class CalendarioComponent implements OnInit {
   // AQUI TERMINAN LOS FORMULARIOS
   // AQUI VER LOS FORMULARIOS COMO ENTRENADOR O CLUB
 
-  openModalPreEntrenamiento(id: number){    
+  openModalPreEntrenamiento(id: number) {
     this.trainingService.getListFormPreTraining(id).subscribe(
       (response) => {
         if (response.data) {
@@ -1183,11 +1473,11 @@ export class CalendarioComponent implements OnInit {
     );
   }
 
-  cerrarModalPreEntrenamiento(){
+  cerrarModalPreEntrenamiento() {
     this.showModalPreEntrenamiento = false;
   }
 
-  
+
 
   toggleTaskPreEn(pre: RespPreEntreno): void {
     // Cambiar el estado isOpen de la tarea seleccionada
@@ -1203,7 +1493,7 @@ export class CalendarioComponent implements OnInit {
 
   //----------------------
 
-  openModalPostEntrenamiento(id: number){    
+  openModalPostEntrenamiento(id: number) {
     this.trainingService.getListFormPostTraining(id).subscribe(
       (response) => {
         if (response.data) {
@@ -1217,7 +1507,7 @@ export class CalendarioComponent implements OnInit {
     );
   }
 
-  cerrarModalPostEntrenamiento(){
+  cerrarModalPostEntrenamiento() {
     this.showModalPostEntrenamiento = false;
   }
 
@@ -1235,7 +1525,7 @@ export class CalendarioComponent implements OnInit {
 
   //----------------------
 
-  openModalPrePartido(id: number){    
+  openModalPrePartido(id: number) {
     this.trainingService.getListFormPreMatch(id).subscribe(
       (response) => {
         if (response.data) {
@@ -1249,7 +1539,7 @@ export class CalendarioComponent implements OnInit {
     );
   }
 
-  cerrarModalPrePartido(){
+  cerrarModalPrePartido() {
     this.showModalPreMatch = false;
   }
 
@@ -1267,7 +1557,7 @@ export class CalendarioComponent implements OnInit {
 
   //----------------------
 
-  openModalPostMatch(id: number){    
+  openModalPostMatch(id: number) {
     this.trainingService.getListFormPostMatch(id).subscribe(
       (response) => {
         if (response.data) {
@@ -1281,7 +1571,7 @@ export class CalendarioComponent implements OnInit {
     );
   }
 
-  cerrarModalPostMatch(){
+  cerrarModalPostMatch() {
     this.showModalPostMatch = false;
   }
 
@@ -1296,5 +1586,91 @@ export class CalendarioComponent implements OnInit {
         .forEach(t => t.collapsed = false); // Cerrar cada tarea
     }
   }
+
+  onSelectGolTypes(event: any): void {
+    if (event.target.value === 'Falta disparo directo' || event.target.value === 'Penalti') {
+      //no va haber nada mas
+      this.selectedGolTypes = '';
+      this.selectedSubGolTypes = '';
+      this.selectedOptionGolTypes = '';
+    } else {
+      this.selectedGolTypes = event.target.value;
+      this.selectedSubGolTypes = '';
+      this.selectedOptionGolTypes = '';
+      this.cat22 = '';
+    }
+
+    if (event.target.value === 'Jugada combinativa' || event.target.value === 'Pérdida/Recuperación'
+      || event.target.value === 'Penalti' || event.target.value === 'Falta') {
+      this.showSelectedOptional = true;
+    } else {
+      this.showSelectedOptional = false;
+    }
+    this.cat11 = event.target.value;
+    this.cdr.detectChanges(); // Forzar la detección de cambios
+  }
+
+  onSelectSubGolTypes(event: any): void {
+    this.selectedSubGolTypes = event.target.value;
+    this.selectedOptionGolTypes = '';
+    this.cat22 = event.target.value;
+    this.cdr.detectChanges(); // Forzar la detección de cambios
+  }
+
+  onSelectOptionSubGolTypes(event: any): void {
+    this.selectedOptionGolTypes = event.target.value;
+    this.cat33 = event.target.value;
+  }
+
+  getSubGolTypes(): any[] {
+    const selectedGolTypes = this.golTypes.find(cat => cat.name === this.selectedGolTypes);
+    return selectedGolTypes ? selectedGolTypes.subcategories : [];
+  }
+
+  getOptionsGolTypes(): string[] {
+    const selectedGolTypes = this.golTypes.find(cat => cat.name === this.selectedGolTypes);
+    const selectedSubGolTypes = selectedGolTypes?.subcategories.find(subcat => subcat.name === this.selectedSubGolTypes);
+    return selectedSubGolTypes ? selectedSubGolTypes.options : [];
+  }
+
+  onSelectOpcional(event: any): void {
+    this.cat11 = this.cat11 + event.target.value;
+  }
+
+  toggleCollapse(id: string) {
+    const collapseElement = document.getElementById(id);
+    if (collapseElement!.classList.contains('show')) {
+      collapseElement!.classList.remove('show');
+    } else {
+      collapseElement!.classList.add('show');
+    }
+  }
+
+
+
+  toggleGolAvanzado(index: number): void {
+    this.golAvanzado =  this.golesAvanzado[index];
+    this.selectedGolTypes = this.golAvanzado.category;
+
+    if (this.selectedGolTypes === 'Jugada combinativa' || this.selectedGolTypes === 'Pérdida/Recuperación'
+      || this.selectedGolTypes === 'Penalti' || this.selectedGolTypes === 'Falta') {
+      this.showSelectedOptional = true;
+    } else {
+      this.showSelectedOptional = false;
+    }
+    
+    this.selectedSubGolTypes = this.golAvanzado.subCategory;
+    this.selectedOptionGolTypes = this.golAvanzado.option;
+    this.selectedGolTypesCombi = this.golAvanzado.combinado;
+    this.valueGoleador = 1;
+  }
+
+
+  agregarGol(id: number) {
+
+  }
+
+
+
 
 }

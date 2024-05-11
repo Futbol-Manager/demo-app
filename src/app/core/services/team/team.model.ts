@@ -1,5 +1,7 @@
 // team.model.ts
 
+import { PostPartidoId } from "../models/match.model";
+
 export class Team {
   teamId: number;
   levelLeague: string;
@@ -74,6 +76,32 @@ export class CategoryType {
       this.categoryName = (object.categoryName) ? object.categoryName : null;
     }
   }
+}
+
+export class GolPostPartido {
+  golPostPartidoId: number;
+  info: PostPartidoId | undefined;
+  minuto: number;
+  playerId: number;
+  asistencia: number;
+  aFavor: number;
+  category: string;
+  subCategory: string;
+  option: string;
+  combinado: string;
+
+  constructor(object: any) {
+    this.golPostPartidoId = object.golPostPartidoId || 0;
+    this.minuto = object.minuto || 0;
+    this.playerId = object.playerId || 0;
+    this.asistencia = object.asistencia || 0;
+    this.aFavor = object.aFavor || 0;
+    this.category = object.category || '';
+    this.subCategory = object.subCategory || '';
+    this.option = object.option || '';
+    this.combinado = object.combinado || '';
+  }
+
 }
 
 

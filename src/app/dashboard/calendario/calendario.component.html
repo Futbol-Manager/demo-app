@@ -442,7 +442,7 @@
   <div class="modal-dialog modal-lg" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Crear Post Partido</h5>
+        <h5 class="modal-title">Post Partido</h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPostPartido()"></button>
       </div>
       <div class="modal-body">
@@ -601,6 +601,271 @@
                     [(ngModel)]="postPartido.golesEnContra">
                 </div>
               </div>
+              <div class="mb-3 d-flex">
+                <div class="col-6">
+                  <button class="btn btn-primary" type="button" (click)="toggleCollapse('collapseAFavor')">Goles a
+                    favor</button>
+                </div>
+                <div class="col-6">
+                  <button class="btn btn-primary" type="button" (click)="toggleCollapse('collapseEnContra')">Goles en
+                    contra</button>
+                </div>
+              </div>
+              <div class="collapse" id="collapseAFavor">
+                <div class="card card-body">
+                  <h2>Especifica los goles a favor</h2>
+                  <div class="accordion" id="accordionExample">
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" (click)="toggleGolAvanzado(0)"
+                          data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                          Descripcion gol 1
+                        </button>
+                      </h2>
+                      <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesAFavor" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzado.playerId" name="golesAFavor">
+                                <option value="0">Gol en propia</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
+                              </select>                              
+                            </div>
+                            <div class="col-6">
+                              <label for="golesEnContra" class="form-label">Asistencia de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzado.asistencia" name="golesEnContra">
+                                <option value="0">Sin asistencia</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
+                              </select>                              
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
+                                [(ngModel)]="golAvanzado.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi" name="selectedGolTypesCombi"
+                                (change)="onSelectOpcional($event)">
+                                <option value="">Selecciona una opción</option>
+                                <option value="Centro al Área">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button class="btn btn-primary" (click)="agregarGol(1)">Añadir</button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" (click)="toggleGolAvanzado(1)"
+                          data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                          Descripcion gol 2
+                        </button>
+                      </h2>
+                      <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <div class="accordion-body">
+                            <div class="mb-3 d-flex">
+                              <div class="col-6">
+                                <label for="golesAFavor" class="form-label">Gol de:</label>
+                                <select class="form-control" [(ngModel)]="golAvanzado.playerId" name="golesAFavor">
+                                  <option value="0">Gol en propia</option>
+                                  <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
+                                </select>                              
+                              </div>
+                              <div class="col-6">
+                                <label for="golesEnContra" class="form-label">Asistencia de:</label>
+                                <select class="form-control" [(ngModel)]="golAvanzado.asistencia" name="golesEnContra">
+                                  <option value="0">Sin asistencia</option>
+                                  <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
+                                </select>                              
+                              </div>
+                            </div>
+                            <div class="mb-3 d-flex">
+                              <div class="col-6">
+                                <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
+                                <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
+                                  [(ngModel)]="golAvanzado.minuto">
+                              </div>
+                            </div>
+                            <div class="mb-3 d-flex">
+                              <div class="col-6">
+                                <label for="categorygolTypes">Categoría:</label>
+                                <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                  name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                  <option value="">Pulsa para cargar las categorias</option>
+                                  <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                  </option>
+                                </select>
+                              </div>
+                              <div class="col-6" *ngIf="showSelectedOptional">
+                                <label for="selectedGolTypesCombi">Opcional:</label>
+                                <select class="form-control" id="selectedGolTypesCombi" name="selectedGolTypesCombi"
+                                  (change)="onSelectOpcional($event)">
+                                  <option value="">Selecciona una opción</option>
+                                  <option value="0">Centro al Área</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                              <div class="col-6">
+                                <label for="subgolTypes">Subcategoría:</label>
+                                <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                  name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                  <option value="">Seleccionar subcategoría</option>
+                                  <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                    subcategory.name }}</option>
+                                </select>
+                              </div>
+                            </div>
+                            <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                              <div class="col-6">
+                                <label for="optiongolTypes">Opción:</label>
+                                <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                  name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                  <option value="">Seleccionar opción</option>
+                                  <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                  </option>
+                                </select>
+                              </div>
+                            </div>
+                            <div class="mb-3 d-flex">
+                              <div class="col-6">
+                                <button class="btn btn-primary" (click)="agregarGol(1)">Añadir</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                          Descripcion gol 3
+                        </button>
+                      </h2>
+                      <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <strong>This is the third item's accordion body.</strong> It is hidden by default, until the
+                          collapse plugin adds the appropriate classes that we use to style each element. These classes
+                          control the overall appearance, as well as the showing and hiding via CSS transitions. You can
+                          modify any of this with custom CSS or overriding our default variables. It's also worth noting
+                          that just about any HTML can go within the <code>.accordion-body</code>, though the transition
+                          does limit overflow.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <div class="collapse" id="collapseEnContra">
+                <div class="card card-body">
+                  <h2>Especifica los goles en contra</h2>
+                </div>
+              </div>
+
+              <!-- 
+              <div class="mb-3 d-flex">
+                <label for="work">Tipos de goles:</label>
+              </div>
+              <div class="mb-3 d-flex">
+                <div class="col-6">
+                  <label for="categorygolTypes">Categoría:</label>
+                  <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                    name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                    <option value="">Pulsa para cargar las categorias</option>
+                    <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}</option>
+                  </select>
+                </div>
+                <div class="col-6" *ngIf="showSelectedOptional">
+                  <label for="categorygolTypes">Opcional:</label>
+                  <select class="form-control" id="categoryGolTypes"
+                    name="categoryGolTypes" (change)="onSelectOpcional($event)">
+                    <option value="">Selecciona una opción</option>
+                    <option value="Centro al Área">Centro al Área</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                <div class="col-6">
+                  <label for="subgolTypes">Subcategoría:</label>
+                  <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes" name="subgolTypes"
+                    (change)="onSelectSubGolTypes($event)">
+                    <option value="">Seleccionar subcategoría</option>
+                    <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                      subcategory.name }}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                <div class="col-6">
+                  <label for="optiongolTypes">Opción:</label>
+                  <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                    name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                    <option value="">Seleccionar opción</option>
+                    <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}</option>
+                  </select>
+                </div>
+              </div> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
               <div class="mb-3 col-6">
                 <label for="resultado" class="form-label">Resultado:</label>
                 <select class="form-control" id="resultado" name="resultado" [(ngModel)]="postPartido.resultado">
@@ -1579,8 +1844,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Formulario del Pre Entrenamiento</h5>
-            <!-- Botón de cerrar con un icono -->
-            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPreEntrenamiento()"></button>
+          <!-- Botón de cerrar con un icono -->
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPreEntrenamiento()"></button>
         </div>
         <div class="modal-body">
           <!-- Mostrar lista de formularios colapsada -->
@@ -1601,12 +1866,15 @@
                     <p><b>En caso de molestias, ¿afectan tu capacidad para entrenar o jugar?: </b> {{ pre.q4 }}</p>
                     <p><b>¿Cómo de motivado te sientes hoy para entrenar?: </b> {{ pre.q5 }} / 10</p>
                     <p><b>¿Cómo calificarías tu nivel de concentración hoy?: </b> {{ pre.q6 }} / 10</p>
-                    <p><b>Describe tu estado de ánimo actual con palabras clave (ej. contento, ansioso, frustrado): </b> {{ pre.q7 }}</p>
+                    <p><b>Describe tu estado de ánimo actual con palabras clave (ej. contento, ansioso, frustrado): </b>
+                      {{ pre.q7 }}</p>
                     <p><b>¿Cómo calificarías la calidad de tu sueño anoche?: </b> {{ pre.q8 }} / 10</p>
                     <p><b>¿Cómo calificarías tu nivel de hidratación hoy?: </b> {{ pre.q9 }} / 10</p>
-                    <p><b>¿Consideras que tu alimentación de hoy ha sido adecuada para tu actividad física?: </b> {{ pre.q10 }}</p>
+                    <p><b>¿Consideras que tu alimentación de hoy ha sido adecuada para tu actividad física?: </b> {{
+                      pre.q10 }}</p>
                     <p><b>Especifica qué alimentos has consumido hoy: </b> {{ pre.q11 }}</p>
-                    <p><b>¿Hay algo más que quieras compartir sobre cómo te sientes física o mentalmente?: </b> {{ pre.q12 }}</p>
+                    <p><b>¿Hay algo más que quieras compartir sobre cómo te sientes física o mentalmente?: </b> {{
+                      pre.q12 }}</p>
                     <br>
                   </div>
                 </div>
@@ -1626,8 +1894,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Formulario del Post Entrenamiento</h5>
-            <!-- Botón de cerrar con un icono -->
-            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPostEntrenamiento()"></button>
+          <!-- Botón de cerrar con un icono -->
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPostEntrenamiento()"></button>
         </div>
         <div class="modal-body">
           <!-- Mostrar lista de formularios colapsada -->
@@ -1648,11 +1916,13 @@
                     <p><b>¿Qué nivel de cansancio sientes después del entrenamiento?: </b> {{ post.q4 }} / 10</p>
                     <p><b>¿Cómo calificarías la intensidad del entrenamiento de hoy?: </b> {{ post.q5 }} / 10</p>
                     <p><b>¿Has entendido el propósito de los ejercicios realizados hoy?: </b> {{ post.q6 }}</p>
-                    <p><b>¿Sientes que puedes aplicar lo aprendido hoy en un contexto de partido?: </b> {{ post.q7 }}</p>
+                    <p><b>¿Sientes que puedes aplicar lo aprendido hoy en un contexto de partido?: </b> {{ post.q7 }}
+                    </p>
                     <p><b>¿Cuál ha sido el ejercicio que más te ha gustado de hoy y por qué?: </b> {{ post.q8 }}</p>
                     <p><b>¿Cuál ha sido el ejercicio que menos te ha gustado de hoy y por qué?: </b> {{ post.q9 }}</p>
                     <p><b>¿Cómo describirías el ambiente durante el entrenamiento?: </b> {{ post.q10 }}</p>
-                    <p><b>¿Cómo crees que ha sido la comunicación entre jugadores y entrenadores durante el entrenamiento?: </b> {{ post.q11 }} / 10</p>
+                    <p><b>¿Cómo crees que ha sido la comunicación entre jugadores y entrenadores durante el
+                        entrenamiento?: </b> {{ post.q11 }} / 10</p>
                     <p><b>¿Hay algo más que quieras compartir sobre el entrenamiento de hoy?: </b> {{ post.q12 }}</p>
                     <br>
                   </div>
@@ -1673,8 +1943,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Formulario del Pre Partido</h5>
-            <!-- Botón de cerrar con un icono -->
-            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPrePartido()"></button>
+          <!-- Botón de cerrar con un icono -->
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPrePartido()"></button>
         </div>
         <div class="modal-body">
           <!-- Mostrar lista de formularios colapsada -->
@@ -1695,13 +1965,16 @@
                     <p><b>En caso de molestias, ¿afectan tu capacidad para entrenar o jugar?: </b> {{ pre.q4 }}</p>
                     <p><b>¿Cómo de motivado te sientes hoy para jugar?: </b> {{ pre.q5 }} / 10</p>
                     <p><b>¿Cómo calificarías tu nivel de concentración hoy?: </b> {{ pre.q6 }} / 10</p>
-                    <p><b>Describe tu estado de ánimo actual con palabras clave (ej. contento, ansioso, frustrado): </b> {{ pre.q7 }}</p>
+                    <p><b>Describe tu estado de ánimo actual con palabras clave (ej. contento, ansioso, frustrado): </b>
+                      {{ pre.q7 }}</p>
                     <p><b>¿Cómo calificarías la calidad de tu sueño anoche?: </b> {{ pre.q8 }} / 10</p>
                     <p><b>¿Cómo calificarías tu nivel de hidratación hoy?: </b> {{ pre.q9 }} / 10</p>
-                    <p><b>¿Consideras que tu alimentación de hoy ha sido adecuada para tu actividad física?: </b> {{ pre.q10 }}</p>
+                    <p><b>¿Consideras que tu alimentación de hoy ha sido adecuada para tu actividad física?: </b> {{
+                      pre.q10 }}</p>
                     <p><b>Especifica qué alimentos has consumido hoy.: </b> {{ pre.q11 }} / 10</p>
                     <p><b>¿Qué expectativas tienes sobre el partido de hoy?: </b> {{ pre.q12 }}</p>
-                    <p><b>¿Hay algo más que quieras compartir sobre cómo te sientes física o mentalmente?: </b> {{ pre.q13 }}</p>
+                    <p><b>¿Hay algo más que quieras compartir sobre cómo te sientes física o mentalmente?: </b> {{
+                      pre.q13 }}</p>
                   </div>
                 </div>
               </div>
@@ -1720,8 +1993,8 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Formulario del Post Partido</h5>
-            <!-- Botón de cerrar con un icono -->
-            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPostMatch()"></button>
+          <!-- Botón de cerrar con un icono -->
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPostMatch()"></button>
         </div>
         <div class="modal-body">
           <!-- Mostrar lista de formularios colapsada -->
