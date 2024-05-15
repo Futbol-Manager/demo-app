@@ -80,7 +80,6 @@ export class CategoryType {
 
 export class GolPostPartido {
   golPostPartidoId: number;
-  info: PostPartidoId | undefined;
   minuto: number;
   playerId: number;
   asistencia: number;

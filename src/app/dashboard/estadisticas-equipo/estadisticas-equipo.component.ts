@@ -45,6 +45,9 @@ export class EstadisticasEquipoComponent implements OnInit {
   barChartSegunda: Chart | null = null;
   barCharttercera: Chart | null = null;
 
+  totalGoals: number = 20;
+  nameRivals: string[] = ['Rival 1', 'Rival 2', 'Rival 3', 'Rival 4', 'Rival 5'];
+  goalsData: number[] = [5, 10, 15, 7, 12];
 
   constructor(
     private router: Router,
@@ -280,6 +283,7 @@ export class EstadisticasEquipoComponent implements OnInit {
     setTimeout(() => {
       this.graficaUnica(this.partidos.map(partido => partido.golesAFavor), 'Goles a favor', 'Goles');
       this.graficaPrimera();
+      this.createChart();
     }, 100);
 
     /*setTimeout(() => {
@@ -530,6 +534,48 @@ export class EstadisticasEquipoComponent implements OnInit {
     // Usa el índice para seleccionar un color del conjunto
     const colorIndex = index % colorSet.length;
     return colorSet[colorIndex];
+  }
+
+  createChart() {
+    let labels: any = [];
+    let points: any = [];
+    let sum = 0;
+    for (let index = 0; index < this.partidos.length; index++) {
+      labels.push(this.partidos[index].matchPreparation.rivalName);   
+
+      if(this.partidos[index].resultado === 'V'){
+        sum = sum + 3;
+      } else if(this.partidos[index].resultado === 'E') {
+        sum = sum + 1;
+      }
+
+      points.push(sum); 
+    }
+
+    const data = {
+      labels: labels,
+      datasets: [{
+        label: 'Puntos por partido',
+        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        borderColor: 'rgb(54, 162, 235)',
+        borderWidth: 1,
+        data: points,
+      }]
+    };
+    const ctx = document.getElementById('myChart') as HTMLCanvasElement;
+    new Chart(ctx, {
+      type: 'line',
+      data,
+      options: {
+        scales: {
+          x: {
+            border: {
+              color: 'red'
+            }
+          }
+        }
+      }
+    });
   }
 
 }

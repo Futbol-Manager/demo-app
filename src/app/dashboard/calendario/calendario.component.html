@@ -467,7 +467,7 @@
                 </div>
                 <div class="col-6">
                   <label for="golesEnContra" class="form-label">Goles en contra:</label>
-                  <input type="number" class="form-control" id="golesEnContra" name="warmUp"
+                  <input type="number" class="form-control" id="golesEnContra" name="golesEnContra"
                     [(ngModel)]="postPartido.golesEnContra">
                 </div>
               </div>
@@ -591,34 +591,38 @@
             <form (ngSubmit)="guardarPostPartidoAvanzado()">
               <div class="mb-3 d-flex">
                 <div class="col-6">
-                  <label for="golesAFavor" class="form-label">Goles a favor:</label>
-                  <input type="number" class="form-control" id="golesAFavor" name="golesAFavor"
+                  <label for="golesAFavorAvanz" class="form-label">Goles a favor:</label>
+                  <input type="number" class="form-control" id="golesAFavorAvanz" name="golesAFavorAvanz"
                     [(ngModel)]="postPartido.golesAFavor">
                 </div>
                 <div class="col-6">
-                  <label for="golesEnContra" class="form-label">Goles en contra:</label>
-                  <input type="number" class="form-control" id="golesEnContra" name="golesEnContra"
+                  <label for="golesEnContraAvanz" class="form-label">Goles en contra:</label>
+                  <input type="number" class="form-control" id="golesEnContraAvanz" name="golesEnContraAvanz"
                     [(ngModel)]="postPartido.golesEnContra">
                 </div>
               </div>
               <div class="mb-3 d-flex">
                 <div class="col-6">
-                  <button class="btn btn-primary" type="button" (click)="toggleCollapse('collapseAFavor')">Goles a
+                  <button class="btn btn-primary" type="button"
+                    (click)="toggleCollapse('collapseAFavor'); toggleGolAvanzado(true, 0)">Goles a
                     favor</button>
                 </div>
                 <div class="col-6">
-                  <button class="btn btn-primary" type="button" (click)="toggleCollapse('collapseEnContra')">Goles en
+                  <button class="btn btn-primary" type="button"
+                    (click)="toggleCollapse('collapseEnContra'); toggleGolAvanzado(false, 0)">Goles en
                     contra</button>
                 </div>
               </div>
+              <!-- GOLES EN CONTRA AVANZ -->
               <div class="collapse" id="collapseAFavor">
                 <div class="card card-body">
                   <h2>Especifica los goles a favor</h2>
                   <div class="accordion" id="accordionExample">
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingOne">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" (click)="toggleGolAvanzado(true, 0)"
-                          data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(true, 0)" data-bs-target="#collapseOne" aria-expanded="true"
+                          aria-controls="collapseOne">
                           Descripcion gol 1
                         </button>
                       </h2>
@@ -630,16 +634,17 @@
                               <label for="golesAFavor" class="form-label">Gol de:</label>
                               <select class="form-control" [(ngModel)]="golAvanzadoAFavor.playerId" name="golesAFavor">
                                 <option value="0">Selecciona una opción</option>
-                                <option value="00">Gol en propia</option>
-                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
-                              </select>                              
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
                             </div>
                             <div class="col-6">
-                              <label for="golesEnContra" class="form-label">Asistencia de:</label>
-                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="golesEnContra">
+                              <label for="asisAFavor" class="form-label">Asistencia de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="asisAFavor">
                                 <option value="0">Sin asistencia</option>
-                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
-                              </select>                              
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
                             </div>
                           </div>
                           <div class="mb-3 d-flex">
@@ -661,8 +666,8 @@
                             </div>
                             <div class="col-6" *ngIf="showSelectedOptional">
                               <label for="selectedGolTypesCombi">Opcional:</label>
-                              <select class="form-control" id="selectedGolTypesCombi" [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi"
-                                (change)="onSelectOpcional($event)">
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
                                 <option value="0">Selecciona una opción</option>
                                 <option value="1">Centro al Área</option>
                               </select>
@@ -692,7 +697,19 @@
                           </div>
                           <div class="mb-3 d-flex">
                             <div class="col-6">
-                              <button class="btn btn-primary" (click)="agregarGol(1)">Añadir</button>
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(0)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
                             </div>
                           </div>
                         </div>
@@ -700,84 +717,97 @@
                     </div>
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingTwo">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" (click)="toggleGolAvanzado(true, 1)"
-                          data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(true, 1)" data-bs-target="#collapseTwo" aria-expanded="false"
+                          aria-controls="collapseTwo">
                           Descripcion gol 2
                         </button>
                       </h2>
                       <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
                         data-bs-parent="#accordionExample">
                         <div class="accordion-body">
-                          <div class="accordion-body">
-                            <div class="mb-3 d-flex">
-                              <div class="col-6">
-                                <label for="golesAFavor" class="form-label">Gol de:</label>
-                                <select class="form-control" [(ngModel)]="golAvanzadoAFavor.playerId" name="golesAFavor">
-                                  <option value="0">Selecciona una opción</option>
-                                  <option value="00">Gol en propia</option>
-                                  <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
-                                </select>                                
-                              </div>
-                              <div class="col-6">
-                                <label for="asisGolesAFavor" class="form-label">Asistencia de:</label>
-                                <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="asisGolesAFavor">
-                                  <option value="0">Sin asistencia</option>
-                                  <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
-                                </select>                              
-                              </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesAFavor" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.playerId" name="golesAFavor">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
                             </div>
-                            <div class="mb-3 d-flex">
-                              <div class="col-6">
-                                <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
-                                <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
-                                  [(ngModel)]="golAvanzadoAFavor.minuto">
-                              </div>
+                            <div class="col-6">
+                              <label for="asisAFavor" class="form-label">Asistencia de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="asisAFavor">
+                                <option value="0">Sin asistencia</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
                             </div>
-                            <div class="mb-3 d-flex">
-                              <div class="col-6">
-                                <label for="categorygolTypes">Categoría:</label>
-                                <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
-                                  name="categoryGolTypes" (change)="onSelectGolTypes($event)">
-                                  <option value="">Pulsa para cargar las categorias</option>
-                                  <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
-                                  </option>
-                                </select>
-                              </div>
-                              <div class="col-6" *ngIf="showSelectedOptional">
-                                <label for="selectedGolTypesCombi">Opcional:</label>
-                                <select class="form-control" id="selectedGolTypesCombi" [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi"
-                                  (change)="onSelectOpcional($event)">
-                                  <option value="0">Selecciona una opción</option>
-                                  <option value="1">Centro al Área</option>
-                                </select>
-                              </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
+                                [(ngModel)]="golAvanzadoAFavor.minuto">
                             </div>
-                            <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
-                              <div class="col-6">
-                                <label for="subgolTypes">Subcategoría:</label>
-                                <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
-                                  name="subgolTypes" (change)="onSelectSubGolTypes($event)">
-                                  <option value="">Seleccionar subcategoría</option>
-                                  <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
-                                    subcategory.name }}</option>
-                                </select>
-                              </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                </option>
+                              </select>
                             </div>
-                            <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
-                              <div class="col-6">
-                                <label for="optiongolTypes">Opción:</label>
-                                <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
-                                  name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
-                                  <option value="">Seleccionar opción</option>
-                                  <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
-                                  </option>
-                                </select>
-                              </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
                             </div>
-                            <div class="mb-3 d-flex">
-                              <div class="col-6">
-                                <button class="btn btn-primary" (click)="agregarGol(1)">Añadir</button>
-                              </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(0)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
+                            </div>
+                          </div>
+                          
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
                             </div>
                           </div>
                         </div>
@@ -786,33 +816,801 @@
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingThree">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                          data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                          (click)="toggleGolAvanzado(true, 2)" data-bs-target="#collapseThree" aria-expanded="false"
+                          aria-controls="collapseThree">
                           Descripcion gol 3
                         </button>
                       </h2>
                       <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
                         data-bs-parent="#accordionExample">
                         <div class="accordion-body">
-                          <strong>This is the third item's accordion body.</strong> It is hidden by default, until the
-                          collapse plugin adds the appropriate classes that we use to style each element. These classes
-                          control the overall appearance, as well as the showing and hiding via CSS transitions. You can
-                          modify any of this with custom CSS or overriding our default variables. It's also worth noting
-                          that just about any HTML can go within the <code>.accordion-body</code>, though the transition
-                          does limit overflow.
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesAFavor" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.playerId" name="golesAFavor">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                            <div class="col-6">
+                              <label for="asisAFavor" class="form-label">Asistencia de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="asisAFavor">
+                                <option value="0">Sin asistencia</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
+                                [(ngModel)]="golAvanzadoAFavor.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(0)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
+                            </div>
+                          </div>
+                          
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(true, 3)" data-bs-target="#collapseCuatro" aria-expanded="false"
+                          aria-controls="collapseCuatro">
+                          Descripcion gol 4
+                        </button>
+                      </h2>
+                      <div id="collapseCuatro" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesAFavor" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.playerId" name="golesAFavor">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                            <div class="col-6">
+                              <label for="asisAFavor" class="form-label">Asistencia de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="asisAFavor">
+                                <option value="0">Sin asistencia</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
+                                [(ngModel)]="golAvanzadoAFavor.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(0)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
+                            </div>
+                          </div>
+                          
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(true, 4)" data-bs-target="#collapseCinco" aria-expanded="false"
+                          aria-controls="collapseCinco">
+                          Descripcion gol 5
+                        </button>
+                      </h2>
+                      <div id="collapseCinco" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesAFavor" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.playerId" name="golesAFavor">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                            <div class="col-6">
+                              <label for="asisAFavor" class="form-label">Asistencia de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="asisAFavor">
+                                <option value="0">Sin asistencia</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
+                                [(ngModel)]="golAvanzadoAFavor.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(0)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
+                            </div>
+                          </div>
+                          
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(true, 5)" data-bs-target="#collapseSeis" aria-expanded="false"
+                          aria-controls="collapseSeis">
+                          Descripcion gol 6
+                        </button>
+                      </h2>
+                      <div id="collapseSeis" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesAFavor" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.playerId" name="golesAFavor">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                            <div class="col-6">
+                              <label for="asisAFavor" class="form-label">Asistencia de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="asisAFavor">
+                                <option value="0">Sin asistencia</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
+                                [(ngModel)]="golAvanzadoAFavor.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(0)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
+                            </div>
+                          </div>
+                          
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(true, 6)" data-bs-target="#collapseSiete" aria-expanded="false"
+                          aria-controls="collapseSiete">
+                          Descripcion gol 7
+                        </button>
+                      </h2>
+                      <div id="collapseSiete" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesAFavor" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.playerId" name="golesAFavor">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                            <div class="col-6">
+                              <label for="asisAFavor" class="form-label">Asistencia de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="asisAFavor">
+                                <option value="0">Sin asistencia</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
+                                [(ngModel)]="golAvanzadoAFavor.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(0)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
+                            </div>
+                          </div>
+                          
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(true, 7)" data-bs-target="#collapseOcho" aria-expanded="false"
+                          aria-controls="collapseOcho">
+                          Descripcion gol 8
+                        </button>
+                      </h2>
+                      <div id="collapseOcho" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesAFavor" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.playerId" name="golesAFavor">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                            <div class="col-6">
+                              <label for="asisAFavor" class="form-label">Asistencia de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="asisAFavor">
+                                <option value="0">Sin asistencia</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
+                                [(ngModel)]="golAvanzadoAFavor.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(0)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
+                            </div>
+                          </div>
+                          
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(true, 8)" data-bs-target="#collapseNueve" aria-expanded="false"
+                          aria-controls="collapseNueve">
+                          Descripcion gol 9
+                        </button>
+                      </h2>
+                      <div id="collapseNueve" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesAFavor" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.playerId" name="golesAFavor">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                            <div class="col-6">
+                              <label for="asisAFavor" class="form-label">Asistencia de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="asisAFavor">
+                                <option value="0">Sin asistencia</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
+                                [(ngModel)]="golAvanzadoAFavor.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(0)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
+                            </div>
+                          </div>
+                          
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(true, 9)" data-bs-target="#collapseDiez" aria-expanded="false"
+                          aria-controls="collapseDiez">
+                          Descripcion gol 10
+                        </button>
+                      </h2>
+                      <div id="collapseDiez" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                        data-bs-parent="#accordionExample">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesAFavor" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.playerId" name="golesAFavor">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                            <div class="col-6">
+                              <label for="asisAFavor" class="form-label">Asistencia de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoAFavor.asistencia" name="asisAFavor">
+                                <option value="0">Sin asistencia</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolAfavor" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolAfavor" name="minutoGolAfavor"
+                                [(ngModel)]="golAvanzadoAFavor.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(0)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
+                            </div>
+                          </div>
+                          
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
+
+              <!-- GOLES EN CONTRA AVANZ -->
               <div class="collapse" id="collapseEnContra">
                 <div class="card card-body">
-                  <h2>Especifica los goles en contra</h2><div class="accordion" id="accordionExampleB">
+                  <h2>Especifica los goles en contra</h2>
+                  <div class="accordion" id="accordionExampleB">
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingOneB">
-                        <button class="accordion-button" type="button" data-bs-toggle="collapse" (click)="toggleGolAvanzado(false, 0)"
-                          data-bs-target="#collapseOneB" aria-expanded="true" aria-controls="collapseOneB">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(false, 0)" data-bs-target="#collapseOneB" aria-expanded="true"
+                          aria-controls="collapseOneB">
                           Descripcion gol 1
                         </button>
                       </h2>
@@ -822,18 +1620,12 @@
                           <div class="mb-3 d-flex">
                             <div class="col-6">
                               <label for="golesEnContra" class="form-label">Gol de:</label>
-                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId" name="golesEnContra">
+                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId"
+                                name="golesEnContra" [disabled]="isSelectDisabled">
                                 <option value="0">Selecciona una opción</option>
-                                <option value="00">Gol en propia</option>
-                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
-                              </select>                              
-                            </div>
-                            <div class="col-6">
-                              <label for="golesEnContra" class="form-label">Asistencia de:</label>
-                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.asistencia" name="golesEnContra">
-                                <option value="0">Sin asistencia</option>
-                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
-                              </select>                              
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
                             </div>
                           </div>
                           <div class="mb-3 d-flex">
@@ -855,8 +1647,8 @@
                             </div>
                             <div class="col-6" *ngIf="showSelectedOptional">
                               <label for="selectedGolTypesCombi">Opcional:</label>
-                              <select class="form-control" id="selectedGolTypesCombi" [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi"
-                                (change)="onSelectOpcional($event)">
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
                                 <option value="0">Selecciona una opción</option>
                                 <option value="1">Centro al Área</option>
                               </select>
@@ -886,7 +1678,19 @@
                           </div>
                           <div class="mb-3 d-flex">
                             <div class="col-6">
-                              <button class="btn btn-primary" (click)="agregarGol(1)">Añadir</button>
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(1)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(1)">Borrar</button>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
                             </div>
                           </div>
                         </div>
@@ -894,84 +1698,89 @@
                     </div>
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingTwoB">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" (click)="toggleGolAvanzado(false, 1)"
-                          data-bs-target="#collapseTwoB" aria-expanded="false" aria-controls="collapseTwoB">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(false, 1)" data-bs-target="#collapseTwoB" aria-expanded="false"
+                          aria-controls="collapseTwoB">
                           Descripcion gol 2
                         </button>
                       </h2>
                       <div id="collapseTwoB" class="accordion-collapse collapse" aria-labelledby="headingTwoB"
                         data-bs-parent="#accordionExampleB">
                         <div class="accordion-body">
-                          <div class="accordion-body">
-                            <div class="mb-3 d-flex">
-                              <div class="col-6">
-                                <label for="golesEnContra" class="form-label">Gol de:</label>
-                                <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId" name="golesEnContra">
-                                  <option value="0">Selecciona una opción</option>
-                                  <option value="00">Gol en propia</option>
-                                  <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
-                                </select>                              
-                              </div>
-                              <div class="col-6">
-                                <label for="golesEnContra" class="form-label">Asistencia de:</label>
-                                <select class="form-control" [(ngModel)]="golAvanzadoEnContra.asistencia" name="golesEnContra">
-                                  <option value="0">Sin asistencia</option>
-                                  <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{ player.nombre }}</option>
-                                </select>                              
-                              </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesEnContra" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId"
+                                name="golesEnContra" [disabled]="isSelectDisabled">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
                             </div>
-                            <div class="mb-3 d-flex">
-                              <div class="col-6">
-                                <label for="minutoGolEnContra" class="form-label">En el minuto:</label>
-                                <input type="number" class="form-control" id="minutoGolEnContra" name="minutoGolEnContra"
-                                  [(ngModel)]="golAvanzadoEnContra.minuto">
-                              </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolEnContra" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolEnContra" name="minutoGolEnContra"
+                                [(ngModel)]="golAvanzadoEnContra.minuto">
                             </div>
-                            <div class="mb-3 d-flex">
-                              <div class="col-6">
-                                <label for="categorygolTypes">Categoría:</label>
-                                <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
-                                  name="categoryGolTypes" (change)="onSelectGolTypes($event)">
-                                  <option value="">Pulsa para cargar las categorias</option>
-                                  <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
-                                  </option>
-                                </select>
-                              </div>
-                              <div class="col-6" *ngIf="showSelectedOptional">
-                                <label for="selectedGolTypesCombi">Opcional:</label>
-                                <select class="form-control" id="selectedGolTypesCombi" [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi"
-                                  (change)="onSelectOpcional($event)">
-                                  <option value="0">Selecciona una opción</option>
-                                  <option value="1">Centro al Área</option>
-                                </select>
-                              </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                                </option>
+                              </select>
                             </div>
-                            <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
-                              <div class="col-6">
-                                <label for="subgolTypes">Subcategoría:</label>
-                                <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
-                                  name="subgolTypes" (change)="onSelectSubGolTypes($event)">
-                                  <option value="">Seleccionar subcategoría</option>
-                                  <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
-                                    subcategory.name }}</option>
-                                </select>
-                              </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
                             </div>
-                            <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
-                              <div class="col-6">
-                                <label for="optiongolTypes">Opción:</label>
-                                <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
-                                  name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
-                                  <option value="">Seleccionar opción</option>
-                                  <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
-                                  </option>
-                                </select>
-                              </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
                             </div>
-                            <div class="mb-3 d-flex">
-                              <div class="col-6">
-                                <button class="btn btn-primary" (click)="agregarGol(1)">Añadir</button>
-                              </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(1)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(1)">Borrar</button>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
                             </div>
                           </div>
                         </div>
@@ -980,19 +1789,728 @@
                     <div class="accordion-item">
                       <h2 class="accordion-header" id="headingThreeB">
                         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                          data-bs-target="#collapseThreeB" aria-expanded="false" aria-controls="collapseThreeB">
+                          (click)="toggleGolAvanzado(false, 2)" data-bs-target="#collapseThreeB" aria-expanded="false"
+                          aria-controls="collapseThreeB">
                           Descripcion gol 3
                         </button>
                       </h2>
                       <div id="collapseThreeB" class="accordion-collapse collapse" aria-labelledby="headingThreeB"
                         data-bs-parent="#accordionExampleB">
                         <div class="accordion-body">
-                          <strong>This is the third item's accordion body.</strong> It is hidden by default, until the
-                          collapse plugin adds the appropriate classes that we use to style each element. These classes
-                          control the overall appearance, as well as the showing and hiding via CSS transitions. You can
-                          modify any of this with custom CSS or overriding our default variables. It's also worth noting
-                          that just about any HTML can go within the <code>.accordion-body</code>, though the transition
-                          does limit overflow.
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesEnContra" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId"
+                                name="golesEnContra" [disabled]="isSelectDisabled">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolEnContra" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolEnContra" name="minutoGolEnContra"
+                                [(ngModel)]="golAvanzadoEnContra.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name
+                                  }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(1)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(1)">Borrar</button>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingCuatroB">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(false, 3)" data-bs-target="#collapseCuatroB" aria-expanded="false"
+                          aria-controls="collapseCuatroB">
+                          Descripcion gol 4
+                        </button>
+                      </h2>
+                      <div id="collapseCuatroB" class="accordion-collapse collapse" aria-labelledby="headingCuatroB"
+                        data-bs-parent="#accordionExampleB">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesEnContra" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId"
+                                name="golesEnContra" [disabled]="isSelectDisabled">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolEnContra" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolEnContra" name="minutoGolEnContra"
+                                [(ngModel)]="golAvanzadoEnContra.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name
+                                  }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(1)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(1)">Borrar</button>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingCincoB">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(false, 4)" data-bs-target="#collapseCincoB" aria-expanded="false"
+                          aria-controls="collapseCincoB">
+                          Descripcion gol 5
+                        </button>
+                      </h2>
+                      <div id="collapseCincoB" class="accordion-collapse collapse" aria-labelledby="headingCincoB"
+                        data-bs-parent="#accordionExampleB">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesEnContra" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId"
+                                name="golesEnContra" [disabled]="isSelectDisabled">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolEnContra" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolEnContra" name="minutoGolEnContra"
+                                [(ngModel)]="golAvanzadoEnContra.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name
+                                  }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(1)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(1)">Borrar</button>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingSeisB">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(false, 5)" data-bs-target="#collapseSeisB" aria-expanded="false"
+                          aria-controls="collapseSeisB">
+                          Descripcion gol 6
+                        </button>
+                      </h2>
+                      <div id="collapseSeisB" class="accordion-collapse collapse" aria-labelledby="headingSeisB"
+                        data-bs-parent="#accordionExampleB">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesEnContra" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId"
+                                name="golesEnContra" [disabled]="isSelectDisabled">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolEnContra" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolEnContra" name="minutoGolEnContra"
+                                [(ngModel)]="golAvanzadoEnContra.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name
+                                  }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(1)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(1)">Borrar</button>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingSieteB">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(false, 6)" data-bs-target="#collapseSieteB" aria-expanded="false"
+                          aria-controls="collapseSieteB">
+                          Descripcion gol 7
+                        </button>
+                      </h2>
+                      <div id="collapseSieteB" class="accordion-collapse collapse" aria-labelledby="headingSieteB"
+                        data-bs-parent="#accordionExampleB">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesEnContra" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId"
+                                name="golesEnContra" [disabled]="isSelectDisabled">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolEnContra" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolEnContra" name="minutoGolEnContra"
+                                [(ngModel)]="golAvanzadoEnContra.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name
+                                  }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(1)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(1)">Borrar</button>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingOchoB">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(false, 7)" data-bs-target="#collapseOchoB" aria-expanded="false"
+                          aria-controls="collapseOchoB">
+                          Descripcion gol 8
+                        </button>
+                      </h2>
+                      <div id="collapseOchoB" class="accordion-collapse collapse" aria-labelledby="headingOchoB"
+                        data-bs-parent="#accordionExampleB">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesEnContra" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId"
+                                name="golesEnContra" [disabled]="isSelectDisabled">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolEnContra" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolEnContra" name="minutoGolEnContra"
+                                [(ngModel)]="golAvanzadoEnContra.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name
+                                  }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(1)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(1)">Borrar</button>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingNueveB">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(false, 8)" data-bs-target="#collapseNueveB" aria-expanded="false"
+                          aria-controls="collapseNueveB">
+                          Descripcion gol 9
+                        </button>
+                      </h2>
+                      <div id="collapseNueveB" class="accordion-collapse collapse" aria-labelledby="headingNueveB"
+                        data-bs-parent="#accordionExampleB">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesEnContra" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId"
+                                name="golesEnContra" [disabled]="isSelectDisabled">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolEnContra" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolEnContra" name="minutoGolEnContra"
+                                [(ngModel)]="golAvanzadoEnContra.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name
+                                  }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(1)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(1)">Borrar</button>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="accordion-item">
+                      <h2 class="accordion-header" id="headingDiezB">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                          (click)="toggleGolAvanzado(false, 9)" data-bs-target="#collapseTdiezB" aria-expanded="false"
+                          aria-controls="collapseTdiezB">
+                          Descripcion gol 10
+                        </button>
+                      </h2>
+                      <div id="collapseTdiezB" class="accordion-collapse collapse" aria-labelledby="headingDiezB"
+                        data-bs-parent="#accordionExampleB">
+                        <div class="accordion-body">
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="golesEnContra" class="form-label">Gol de:</label>
+                              <select class="form-control" [(ngModel)]="golAvanzadoEnContra.playerId"
+                                name="golesEnContra" [disabled]="isSelectDisabled">
+                                <option value="0">Selecciona una opción</option>
+                                <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
+                                  player.nombre }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="minutoGolEnContra" class="form-label">En el minuto:</label>
+                              <input type="number" class="form-control" id="minutoGolEnContra" name="minutoGolEnContra"
+                                [(ngModel)]="golAvanzadoEnContra.minuto">
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <label for="categorygolTypes">Categoría:</label>
+                              <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                                name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                                <option value="">Pulsa para cargar las categorias</option>
+                                <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name
+                                  }}
+                                </option>
+                              </select>
+                            </div>
+                            <div class="col-6" *ngIf="showSelectedOptional">
+                              <label for="selectedGolTypesCombi">Opcional:</label>
+                              <select class="form-control" id="selectedGolTypesCombi"
+                                [(ngModel)]="selectedGolTypesCombi" name="selectedGolTypesCombi">
+                                <option value="0">Selecciona una opción</option>
+                                <option value="1">Centro al Área</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedGolTypes">
+                            <div class="col-6">
+                              <label for="subgolTypes">Subcategoría:</label>
+                              <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes"
+                                name="subgolTypes" (change)="onSelectSubGolTypes($event)">
+                                <option value="">Seleccionar subcategoría</option>
+                                <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                                  subcategory.name }}</option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex" *ngIf="selectedSubGolTypes">
+                            <div class="col-6">
+                              <label for="optiongolTypes">Opción:</label>
+                              <select class="form-control" id="optiongolTypes" [(ngModel)]="selectedOptionGolTypes"
+                                name="optiongolTypes" (change)="onSelectOptionSubGolTypes($event)">
+                                <option value="">Seleccionar opción</option>
+                                <option *ngFor="let option of getOptionsGolTypes()" [value]="option">{{ option }}
+                                </option>
+                              </select>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div class="col-6">
+                              <button type="button" class="btn btn-primary" style="margin-right: 1em;"
+                                (click)="agregarGol(1)">Guardar</button>
+                              <button type="button" class="btn btn-danger" (click)="borrarGol(1)">Borrar</button>
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+                              Guardado correctamente
+                            </div>
+                          </div>
+                          <div class="mb-3 d-flex">
+                            <div *ngIf="showAlert2" class="col-6 alert alert-success mt-3" role="alert">
+                              Eliminado correctamente
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1016,7 +2534,7 @@
                 <div class="col-6" *ngIf="showSelectedOptional">
                   <label for="categorygolTypes">Opcional:</label>
                   <select class="form-control" id="categoryGolTypes"
-                    name="categoryGolTypes" (change)="onSelectOpcional($event)">
+                    name="categoryGolTypes">
                     <option value="">Selecciona una opción</option>
                     <option value="Centro al Área">Centro al Área</option>
                   </select>

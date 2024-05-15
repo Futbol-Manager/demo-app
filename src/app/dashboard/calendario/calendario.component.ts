@@ -220,6 +220,10 @@ export class CalendarioComponent implements OnInit {
 
   golTypes = [
     {
+      "name": "En propia",
+      "subcategories": []
+    },
+    {
       "name": "Jugada combinativa",
       "subcategories": [
         {
@@ -267,14 +271,6 @@ export class CalendarioComponent implements OnInit {
     {
       "name": "Pérdida/Recuperación",
       "subcategories": [
-        {
-          "name": "Banda izquierda",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
-        },
         {
           "name": "Banda Izquierda",
           "options": [
@@ -348,14 +344,6 @@ export class CalendarioComponent implements OnInit {
       "name": "Falta",
       "subcategories": [
         {
-          "name": "Banda izquierda",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
-        },
-        {
           "name": "Banda Izquierda",
           "options": [
             "Tiro a portería",
@@ -372,7 +360,7 @@ export class CalendarioComponent implements OnInit {
           ]
         },
         {
-          "name": "Zona interior",
+          "name": "Zona Interior",
           "options": [
             "Tiro a portería",
             "Remate de cabeza",
@@ -400,14 +388,6 @@ export class CalendarioComponent implements OnInit {
     {
       "name": "Saque de banda",
       "subcategories": [
-        {
-          "name": "Banda izquierda",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
-        },
         {
           "name": "Banda Izquierda",
           "options": [
@@ -478,11 +458,16 @@ export class CalendarioComponent implements OnInit {
 
   golAvanzadoAFavor: GolPostPartido = new GolPostPartido({});
   golesAvanzadoAFavor: GolPostPartido[] = [];
-  
+
   golAvanzadoEnContra: GolPostPartido = new GolPostPartido({});
   golesAvanzadoEnContra: GolPostPartido[] = [];
 
   valueGoleador: number = 1;
+  indexGolAvanza: number = 0;
+  isSelectDisabled: boolean = true;
+
+  showAlert: boolean = false;
+  showAlert2: boolean = false;
 
   constructor(
     private router: Router,
@@ -931,14 +916,19 @@ export class CalendarioComponent implements OnInit {
                   let afavor = this.golesAvanzadoAFavor.length;
                   let encontra = this.golesAvanzadoEnContra.length;
 
-                  if(this.golesAvanzadoAFavor.length !== 0) {
+                  if (this.golesAvanzadoAFavor.length !== 0) {
                     this.postPartido.golesAFavor = afavor;
                   }
-                  if(this.golesAvanzadoEnContra.length !== 0) {
+                  if (this.golesAvanzadoEnContra.length !== 0) {
                     this.postPartido.golesEnContra = encontra;
                   }
 
-                  if (this.golesAvanzadoAFavor.length !== 0 || this.golesAvanzadoEnContra.length !== 0) this.toggleGolAvanzado(true, 0);
+                  if (this.golesAvanzadoAFavor.length !== 0 || this.golesAvanzadoEnContra.length !== 0) {
+                    setTimeout(() => {
+                      const i = this.indexGolAvanza !== 0 ? this.indexGolAvanza : 0;
+                      this.toggleGolAvanzado(true, i);
+                    }, 1000);
+                  }
                 }
               },
               (error) => {
@@ -1609,6 +1599,12 @@ export class CalendarioComponent implements OnInit {
     }
     this.cat11 = event.target.value;
     this.cdr.detectChanges(); // Forzar la detección de cambios
+
+    if (event.target.value === 'En propia')
+      this.isSelectDisabled = false;
+    else
+      this.isSelectDisabled = true;
+
   }
 
   onSelectSubGolTypes(event: any): void {
@@ -1634,9 +1630,10 @@ export class CalendarioComponent implements OnInit {
     return selectedSubGolTypes ? selectedSubGolTypes.options : [];
   }
 
-  onSelectOpcional(event: any): void {
-    this.cat11 = this.cat11 + event.target.value;
-  }
+  /*onSelectOpcional(event: any): void {
+    if (event.target.value !== 0)
+      this.cat11 = this.cat11 + event.target.value;
+  }*/
 
   toggleCollapse(id: string) {
     const collapseElement = document.getElementById(id);
@@ -1646,20 +1643,21 @@ export class CalendarioComponent implements OnInit {
       collapseElement!.classList.add('show');
     }
 
-    if(id === 'collapseEnContra'){
+    if (id === 'collapseEnContra') {
       this.toggleGolAvanzado(false, 0);
-    } else{
+    } else {
       this.toggleGolAvanzado(true, 0);
     }
   }
 
   toggleGolAvanzado(isAFavor: boolean, index: number): void {
+    this.indexGolAvanza = index;
     let access = false;
-    if(isAFavor){
-      if(index < this.golesAvanzadoAFavor.length){
-        this.golAvanzadoAFavor =  this.golesAvanzadoAFavor[index];
+    if (isAFavor) {
+      if (index < this.golesAvanzadoAFavor.length) {
+        this.golAvanzadoAFavor = this.golesAvanzadoAFavor[index];
         this.selectedGolTypes = this.golAvanzadoAFavor.category;
-  
+
         this.selectedSubGolTypes = this.golAvanzadoAFavor.subCategory;
         this.selectedOptionGolTypes = this.golAvanzadoAFavor.option;
         this.selectedGolTypesCombi = this.golAvanzadoAFavor.combinado;
@@ -1668,39 +1666,126 @@ export class CalendarioComponent implements OnInit {
         this.golAvanzadoAFavor = new GolPostPartido({});
       }
     } else {
-      if(index < this.golesAvanzadoEnContra.length){
-        this.golAvanzadoEnContra =  this.golesAvanzadoEnContra[index];
+      if (index < this.golesAvanzadoEnContra.length) {
+        this.golAvanzadoEnContra = this.golesAvanzadoEnContra[index];
         this.selectedGolTypes = this.golAvanzadoEnContra.category;
-  
+
         this.selectedSubGolTypes = this.golAvanzadoEnContra.subCategory;
         this.selectedOptionGolTypes = this.golAvanzadoEnContra.option;
         this.selectedGolTypesCombi = this.golAvanzadoEnContra.combinado;
         access = true;
+        if (this.selectedGolTypes === 'En propia')
+          this.isSelectDisabled = false;
+        else
+          this.isSelectDisabled = true;
       } else {
         this.golAvanzadoEnContra = new GolPostPartido({});
       }
     }
 
-    if(access){
+    if (access) {
       if (this.selectedGolTypes === 'Jugada combinativa' || this.selectedGolTypes === 'Pérdida/Recuperación'
         || this.selectedGolTypes === 'Penalti' || this.selectedGolTypes === 'Falta') {
         this.showSelectedOptional = true;
       } else {
         this.showSelectedOptional = false;
-      }  
+      }
     } else {
       this.showSelectedOptional = false;
+      this.selectedGolTypes = '';
       this.selectedSubGolTypes = '';
       this.selectedOptionGolTypes = '';
       this.selectedGolTypesCombi = '';
     }
   }
 
-  agregarGol(id: number) {
+  agregarGol(isAFavor: number) {
+    let gol = new GolPostPartido({});
 
+    if (isAFavor === 0) {
+      gol = this.golAvanzadoAFavor;
+    } else {
+      gol = this.golAvanzadoEnContra;
+    }
+
+    gol.aFavor = isAFavor;
+    gol.category = this.cat11 === '' ? gol.category : this.cat11;
+    gol.subCategory = this.cat22 === '' ? gol.subCategory : this.cat22;
+    gol.option = this.cat33 === '' ? gol.option : this.cat33;
+    gol.combinado = this.selectedGolTypesCombi === '' ? '0' : this.selectedGolTypesCombi;
+
+    this.trainingService.createUpdateGolPostPartidoAvanzado(gol, this.postPartidoId).subscribe(
+      (resp) => {
+        if (resp.data) {
+          this.golesAvanzadoAFavor = resp.data.golesAFavor;
+          this.golesAvanzadoEnContra = resp.data.golesEnContra;
+          let afavor = this.golesAvanzadoAFavor.length;
+          let encontra = this.golesAvanzadoEnContra.length;
+
+          if (this.golesAvanzadoAFavor.length !== 0) {
+            this.postPartido.golesAFavor = afavor;
+          }
+          if (this.golesAvanzadoEnContra.length !== 0) {
+            this.postPartido.golesEnContra = encontra;
+          }
+
+          this.guardar();
+
+          //if (this.golesAvanzadoAFavor.length !== 0 || this.golesAvanzadoEnContra.length !== 0) this.toggleGolAvanzado(true, 0);
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
   }
 
+  borrarGol(isAFavor: number) {
+    let gol = new GolPostPartido({});
 
+    if (isAFavor === 0) {
+      gol = this.golAvanzadoAFavor;
+      this.golAvanzadoAFavor = new GolPostPartido({});
+    } else {
+      gol = this.golAvanzadoEnContra;
+      this.golAvanzadoEnContra = new GolPostPartido({});
+    }
+    this.selectedGolTypes = '';
+    this.selectedSubGolTypes = '';
+    this.selectedOptionGolTypes = '';
+    this.selectedGolTypesCombi = '';
 
+    this.trainingService.deleteGolPostPartidoAvanzado(gol.golPostPartidoId, this.postPartidoId).subscribe(
+      (resp) => {
+        if (resp.data) {
+          this.golesAvanzadoAFavor = resp.data.golesAFavor;
+          this.golesAvanzadoEnContra = resp.data.golesEnContra;
+          this.postPartido.golesAFavor = this.golesAvanzadoAFavor.length;
+          this.postPartido.golesEnContra = this.golesAvanzadoEnContra.length;
+          
+          this.borrar();
+
+          //if (this.golesAvanzadoAFavor.length !== 0 || this.golesAvanzadoEnContra.length !== 0) this.toggleGolAvanzado(true, 0);
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  // Método para mostrar el alert y ocultarlo después de 2 segundos
+  guardar() {
+    this.showAlert = true;
+    setTimeout(() => {
+      this.showAlert = false;
+    }, 2000);
+  }
+  borrar() {
+    this.showAlert2 = true;
+    setTimeout(() => {
+      this.showAlert2 = false;
+    }, 2000);
+  }
 
 }

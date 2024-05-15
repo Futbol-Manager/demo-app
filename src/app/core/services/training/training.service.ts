@@ -6,6 +6,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { Training, Task } from '../models/training.models';
 import { MatchPreparation, PlayerPostPartido, PostPartido } from '../models/match.model';
 import { RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from '../player/respuestas.model';
+import { GolPostPartido } from '../team/team.model';
 
 
 @Injectable({
@@ -801,6 +802,49 @@ export class TrainingService {
 
             // Construye la URL para la solicitud
             const url: string = `${environment.apiUrl}match/getlistgolesavanzado/${postPartidoId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+    
+    createUpdateGolPostPartidoAvanzado(golPostPartido: GolPostPartido, postPartidoId: number): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `match/createupdategolpostpartidoavanzado/${postPartidoId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.post<Response>(url, golPostPartido, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    deleteGolPostPartidoAvanzado(golPostPartidoId: number, postPartidoId: number): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = `${environment.apiUrl}match/deletegolpostpartidoavanzado/${golPostPartidoId}/${postPartidoId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
