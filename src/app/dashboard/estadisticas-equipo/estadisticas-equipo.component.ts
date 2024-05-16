@@ -9,7 +9,14 @@ import * as $ from 'jquery';
 import 'datatables.net';
 import { HttpClient } from '@angular/common/http';
 import { Chart, ChartType, registerables } from 'chart.js/auto';
+import { GolPostPartido } from 'src/app/core/services/team/team.model';
 Chart.register(...registerables);
+
+interface DatasetIF {
+  label: string;
+  data: number[];
+  backgroundColor: string;
+}
 
 
 @Component({
@@ -23,6 +30,7 @@ export class EstadisticasEquipoComponent implements OnInit {
   team: any;
   teamId!: number;
   partidos: any[] = [];
+  partidosReverse: any[] = [];
   showModalPostPartido: boolean = false;
   postPartido: PostPartido = new PostPartido({});
 
@@ -44,10 +52,245 @@ export class EstadisticasEquipoComponent implements OnInit {
   barChartPrimera: Chart | null = null;
   barChartSegunda: Chart | null = null;
   barCharttercera: Chart | null = null;
+  barChartCuarta: Chart | null = null;
+  barChartQuinta: Chart | null = null;
+  barChartSexta: Chart | null = null;
+  barChartSeptima: Chart | null = null;
 
   totalGoals: number = 20;
   nameRivals: string[] = ['Rival 1', 'Rival 2', 'Rival 3', 'Rival 4', 'Rival 5'];
   goalsData: number[] = [5, 10, 15, 7, 12];
+
+  golTypes = [
+    {
+      "name": "En propia",
+      "subcategories": []
+    },
+    {
+      "name": "Jugada combinativa",
+      "subcategories": [
+        {
+          "name": "Banda Izquierda",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Banda Derecha",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Zona interior",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Dentro del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Fuera del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pérdida/Recuperación",
+      "subcategories": [
+        {
+          "name": "Banda Izquierda",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Banda Derecha",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Zona interior",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Dentro del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Fuera del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Córner",
+      "subcategories": [
+        {
+          "name": "Izquierda",
+          "options": [
+            "Saque en corto",
+            "Primer palo",
+            "Punto de penalti",
+            "Segundo palo"
+          ]
+        },
+        {
+          "name": "Derecha",
+          "options": [
+            "Saque en corto",
+            "Primer palo",
+            "Punto de penalti",
+            "Segundo palo"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Falta disparo directo",
+      "subcategories": []
+    },
+    {
+      "name": "Falta",
+      "subcategories": [
+        {
+          "name": "Banda Izquierda",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Banda Derecha",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Zona Interior",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Dentro del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Fuera del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Saque de banda",
+      "subcategories": [
+        {
+          "name": "Banda Izquierda",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Banda Derecha",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Zona interior",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Dentro del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        },
+        {
+          "name": "Fuera del área",
+          "options": [
+            "Tiro a portería",
+            "Remate de cabeza",
+            "Otra parte del cuerpo"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Penalti",
+      "subcategories": []
+    }
+  ]
+
+  selectedGolTypes: string = '';
+  selectedSubGolTypes: string = '';
+  listSub: any[] = [];
+  listLabels: any[] = [];
+
+  golAvanzadoAFavor: GolPostPartido = new GolPostPartido({});
+  golesAvanzadoAFavor: GolPostPartido[] = [];
+
+  golAvanzadoEnContra: GolPostPartido = new GolPostPartido({});
+  golesAvanzadoEnContra: GolPostPartido[] = [];
+
+  datasets: DatasetIF[] = [];
 
   constructor(
     private router: Router,
@@ -99,6 +342,7 @@ export class EstadisticasEquipoComponent implements OnInit {
         if (response && response.data && Array.isArray(response.data)) {
           // Mapea los datos bajo 'data' a instancias del modelo Team
           this.partidos = response.data; //.map((post: PostPartido) => new PostPartido(post));
+          this.partidosReverse = this.partidos.slice().reverse();
           // Inicializar el DataTable después de cargar los datos
           this.inicializarDataTable();
           this.datosResumentTotales(this.partidos);
@@ -280,18 +524,28 @@ export class EstadisticasEquipoComponent implements OnInit {
   }
 
   verGraficaEquipo() {
-    setTimeout(() => {
-      this.graficaUnica(this.partidos.map(partido => partido.golesAFavor), 'Goles a favor', 'Goles');
-      this.graficaPrimera();
-      this.createChart();
-    }, 100);
-
-    /*setTimeout(() => {
-      this.cargarMinutosGraficoBarras();
-      this.cargarGolesGraficoBarras();
-    }, 100);*/
     this.graficasEquipo = true;
     this.datosCargados = false;
+
+    this.trainingService.getListGolesAvanzadoByTeamId(this.teamId).subscribe(
+      (resp) => {
+        if (resp.data) {
+          this.golesAvanzadoAFavor = resp.data.golesAFavor;
+          this.golesAvanzadoEnContra = resp.data.golesEnContra;
+        }
+
+        setTimeout(() => {
+          this.graficaUnica(this.partidos.map(partido => partido.golesAFavor), 'Goles a favor', 'Goles');
+          this.graficaPrimera();
+          this.createChart();
+          this.createChartCategoryEnContra00();
+          this.createChartCategoryEnContra01();
+        }, 100);
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
   }
 
   verTablaPlayers() {
@@ -403,11 +657,11 @@ export class EstadisticasEquipoComponent implements OnInit {
     }
 
     // Crear arrays de datos y etiquetas desde this.players
-    const labels = this.partidos.map(partido => partido.matchPreparation.rivalName);
+    const labels = this.partidosReverse.map(partido => partido.matchPreparation.rivalName);
 
     // Asignar colores consistentes basados en el playerId
-    const backgroundColors = this.partidos.map(partido => this.getEquipoColor(partido.postPartidoId, 0.2));
-    const borderColors = this.partidos.map(partido => this.getEquipoColor(partido.postPartidoId, 1));
+    const backgroundColors = this.partidosReverse.map(partido => this.getEquipoColor(partido.postPartidoId, 0.2));
+    const borderColors = this.partidosReverse.map(partido => this.getEquipoColor(partido.postPartidoId, 1));
 
     this.barChartSegunda = new Chart(ctx, {
       type: 'bar',
@@ -540,16 +794,17 @@ export class EstadisticasEquipoComponent implements OnInit {
     let labels: any = [];
     let points: any = [];
     let sum = 0;
-    for (let index = 0; index < this.partidos.length; index++) {
-      labels.push(this.partidos[index].matchPreparation.rivalName);   
+    //for (let index = 0; index < this.partidos.length; index++) {
+    for (let index = this.partidos.length - 1; index >= 0; index--) {
+      labels.push(this.partidos[index].matchPreparation.rivalName);
 
-      if(this.partidos[index].resultado === 'V'){
+      if (this.partidos[index].resultado === 'V') {
         sum = sum + 3;
-      } else if(this.partidos[index].resultado === 'E') {
+      } else if (this.partidos[index].resultado === 'E') {
         sum = sum + 1;
       }
 
-      points.push(sum); 
+      points.push(sum);
     }
 
     const data = {
@@ -572,6 +827,352 @@ export class EstadisticasEquipoComponent implements OnInit {
             border: {
               color: 'red'
             }
+          }
+        }
+      }
+    });
+  }
+
+  onSelectGolTypes(event: any): void {
+    if (event.target.value === 'Falta disparo directo' || event.target.value === 'Penalti') {
+      //no va haber nada mas
+      this.selectedGolTypes = '';
+      this.selectedSubGolTypes = '';
+    } else {
+      this.selectedGolTypes = event.target.value;
+      this.selectedSubGolTypes = '';
+      this.createChartCategoryAFavor();
+      this.createChartCategoryEnContra();
+    }
+
+  }
+
+  onSelectSubGolTypes(event: any): void {
+    this.selectedSubGolTypes = event.target.value;
+  }
+
+  getSubGolTypes(): any[] {
+    const selectedGolTypes = this.golTypes.find(cat => cat.name === this.selectedGolTypes);
+    this.listSub = selectedGolTypes!.subcategories;
+    return selectedGolTypes ? selectedGolTypes.subcategories : [];
+  }
+
+  createChartCategoryAFavor() {
+    // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
+    if (this.barChartCuarta) {
+      this.barChartCuarta.destroy(); // Destruye el gráfico existente
+    }
+
+    const selectedGolTypes = this.golTypes.find(cat => cat.name === this.selectedGolTypes);
+    this.listSub = selectedGolTypes!.subcategories;
+    this.listLabels = [];
+    for (let a = 0; a < this.listSub.length; a++) {
+      this.listLabels.push(this.listSub[a].name);
+    }
+
+    let uno: number = 0;
+    let dos: number = 0;
+    let tres: number = 0;
+    let unoA: any = [];
+    let dosA: any = [];
+    let tresA: any = [];
+    //necesito saber la categoria, la subcategoria y luego defiir el resultado a la opcion correcta
+
+    for (let e = 0; e < this.listLabels.length; e++) { //5
+      for (let f = 0; f < this.golesAvanzadoAFavor.length; f++) { //5
+        if (this.golesAvanzadoAFavor[f].category === this.selectedGolTypes) { //3 
+          if (this.golesAvanzadoAFavor[f].subCategory === this.listLabels[e]) {
+            switch (this.golesAvanzadoAFavor[f].option) {
+              case 'Tiro a portería':
+                uno++;
+                break;
+              case 'Remate de cabeza':
+                dos++;
+                break;
+              case 'Otra parte del cuerpo':
+                tres++;
+                break;
+
+              default:
+                break;
+            }
+          }
+        }
+
+      }
+      unoA.push(uno);
+      dosA.push(dos);
+      tresA.push(tres);
+
+      uno = 0;
+      dos = 0;
+      tres = 0;
+    }
+
+    const data = {
+      labels: this.listLabels,
+      datasets: [
+        {
+          label: 'Tiro a portería',
+          data: unoA,
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        },
+        {
+          label: 'Remate de cabeza',
+          data: dosA,
+          backgroundColor: 'rgba(250, 0, 25, 0.5)',
+        },
+        {
+          label: 'Otra parte del cuerpo',
+          data: tresA,
+          backgroundColor: 'rgba(62, 14, 235, 0.5)',
+        },
+      ]
+    };
+
+    const ctx = document.getElementById('barChartCategoria') as HTMLCanvasElement;
+    this.barChartCuarta = new Chart(ctx, {
+      type: 'bar',
+      data: data,
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: 'Goles a favor'
+          },
+        },
+        responsive: true,
+        scales: {
+          x: {
+            stacked: true,
+          },
+          y: {
+            stacked: true
+          }
+        }
+      }
+    });
+  }
+
+  createChartCategoryEnContra() {
+    // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
+    if (this.barChartQuinta) {
+      this.barChartQuinta.destroy(); // Destruye el gráfico existente
+    }
+
+    const selectedGolTypes = this.golTypes.find(cat => cat.name === this.selectedGolTypes);
+    this.listSub = selectedGolTypes!.subcategories;
+    this.listLabels = [];
+    for (let a = 0; a < this.listSub.length; a++) {
+      this.listLabels.push(this.listSub[a].name);
+    }
+
+    let uno: number = 0;
+    let dos: number = 0;
+    let tres: number = 0;
+    let unoA: any = [];
+    let dosA: any = [];
+    let tresA: any = [];
+    //necesito saber la categoria, la subcategoria y luego defiir el resultado a la opcion correcta
+
+    for (let e = 0; e < this.listLabels.length; e++) { //5
+      for (let f = 0; f < this.golesAvanzadoEnContra.length; f++) { //5
+        if (this.golesAvanzadoEnContra[f].category === this.selectedGolTypes) { //3 
+          if (this.golesAvanzadoEnContra[f].subCategory === this.listLabels[e]) {
+            switch (this.golesAvanzadoEnContra[f].option) {
+              case 'Tiro a portería':
+                uno++;
+                break;
+              case 'Remate de cabeza':
+                dos++;
+                break;
+              case 'Otra parte del cuerpo':
+                tres++;
+                break;
+
+              default:
+                break;
+            }
+          }
+        }
+
+      }
+      unoA.push(uno);
+      dosA.push(dos);
+      tresA.push(tres);
+
+      uno = 0;
+      dos = 0;
+      tres = 0;
+    }
+
+    const data = {
+      labels: this.listLabels,
+      datasets: [
+        {
+          label: 'Tiro a portería',
+          data: unoA,
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+        },
+        {
+          label: 'Remate de cabeza',
+          data: dosA,
+          backgroundColor: 'rgba(250, 0, 25, 0.5)',
+        },
+        {
+          label: 'Otra parte del cuerpo',
+          data: tresA,
+          backgroundColor: 'rgba(62, 14, 235, 0.5)',
+        },
+      ]
+    };
+
+    const ctx = document.getElementById('barChartCategoria2') as HTMLCanvasElement;
+    this.barChartQuinta = new Chart(ctx, {
+      type: 'bar',
+      data: data,
+      options: {
+        plugins: {
+          title: {
+            display: true,
+            text: 'Goles en contra'
+          },
+        },
+        responsive: true,
+        scales: {
+          x: {
+            stacked: true,
+          },
+          y: {
+            stacked: true
+          }
+        }
+      }
+    });
+  }
+
+  createChartCategoryEnContra00() {
+    const canvas = document.getElementById('barChartCategoria00') as HTMLCanvasElement;
+    if (!canvas) {
+      console.error('No se encontró el elemento canvas');
+      return;
+    }
+
+    // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
+    if (this.barChartSexta) {
+      this.barChartSexta.destroy(); // Destruye el gráfico existente
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.error('No se pudo obtener el contexto del elemento canvas');
+      return;
+    }
+
+    // Crear arrays de datos y etiquetas desde this.players
+    const labels = this.golTypes.map(partido => partido.name);
+    let gol = 0;
+    let goles: any[] = [];
+    for (let i = 0; i < this.golTypes.length; i++) {
+      gol = 0;
+      for (let a = 0; a < this.golesAvanzadoAFavor.length; a++) {
+        if (this.golesAvanzadoAFavor[a].category === this.golTypes[i].name)
+          gol++;
+      }
+      goles.push(gol);
+    }
+
+    // Asignar colores consistentes basados en el playerId
+    const backgroundColors = this.golesAvanzadoAFavor.map(partido => this.getEquipoColor(partido.golPostPartidoId, 0.2));
+    const borderColors = this.golesAvanzadoAFavor.map(partido => this.getEquipoColor(partido.golPostPartidoId, 1));
+
+    this.barChartSexta = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Nº de goles',
+          data: goles,
+          backgroundColor: backgroundColors,
+          borderColor: borderColors,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Goles a Favor'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  }
+
+  createChartCategoryEnContra01() {
+    const canvas = document.getElementById('barChartCategoria01') as HTMLCanvasElement;
+    if (!canvas) {
+      console.error('No se encontró el elemento canvas');
+      return;
+    }
+
+    // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
+    if (this.barChartSeptima) {
+      this.barChartSeptima.destroy(); // Destruye el gráfico existente
+    }
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      console.error('No se pudo obtener el contexto del elemento canvas');
+      return;
+    }
+
+    // Crear arrays de datos y etiquetas desde this.players
+    const labels = this.golTypes.map(partido => partido.name);
+    let gol = 0;
+    let goles: any[] = [];
+    for (let i = 0; i < this.golTypes.length; i++) {
+      gol = 0;
+      for (let a = 0; a < this.golesAvanzadoEnContra.length; a++) {
+        if (this.golesAvanzadoEnContra[a].category === this.golTypes[i].name)
+          gol++;
+      }
+      goles.push(gol);
+    }
+
+    // Asignar colores consistentes basados en el playerId
+    const backgroundColors = this.golesAvanzadoEnContra.map(partido => this.getEquipoColor(partido.golPostPartidoId, 0.2));
+    const borderColors = this.golesAvanzadoEnContra.map(partido => this.getEquipoColor(partido.golPostPartidoId, 1));
+
+    this.barChartSeptima = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Nº de goles',
+          data: goles,
+          backgroundColor: backgroundColors,
+          borderColor: borderColors,
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Goles en Contra'
+          }
+        },
+        scales: {
+          y: {
+            beginAtZero: true
           }
         }
       }

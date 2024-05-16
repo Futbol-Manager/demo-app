@@ -1713,6 +1713,7 @@ export class CalendarioComponent implements OnInit {
     gol.subCategory = this.cat22 === '' ? gol.subCategory : this.cat22;
     gol.option = this.cat33 === '' ? gol.option : this.cat33;
     gol.combinado = this.selectedGolTypesCombi === '' ? '0' : this.selectedGolTypesCombi;
+    gol.teamId = this.teamId;
 
     this.trainingService.createUpdateGolPostPartidoAvanzado(gol, this.postPartidoId).subscribe(
       (resp) => {

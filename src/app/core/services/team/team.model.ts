@@ -88,6 +88,7 @@ export class GolPostPartido {
   subCategory: string;
   option: string;
   combinado: string;
+  teamId: number;
 
   constructor(object: any) {
     this.golPostPartidoId = object.golPostPartidoId || 0;
@@ -99,6 +100,7 @@ export class GolPostPartido {
     this.subCategory = object.subCategory || '';
     this.option = object.option || '';
     this.combinado = object.combinado || '';
+    this.teamId = object.teamId || 0;
   }
 
 }

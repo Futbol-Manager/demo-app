@@ -269,24 +269,24 @@
 
     <!-- Contenido para el dataTable -->
     <div class="container mt-4">
-        <h2>Gráfica Equipo</h2>
+        <h2>Gráfica resultados</h2>
 
         <div class="row mb-3">
             <div class="col-12 col-md-6" style="text-align: -webkit-center;">
-              <div style="display: inline-block; vertical-align: top;">
-                <canvas id="pieChart"></canvas>
-              </div>
-              <div id="chartLabels" style="display: inline-block; vertical-align: top; padding-left: 10px;"></div>
+                <div style="display: inline-block; vertical-align: top;">
+                    <canvas id="pieChart"></canvas>
+                </div>
+                <div id="chartLabels" style="display: inline-block; vertical-align: top; padding-left: 10px;"></div>
             </div>
             <div class="col-12 col-md-6" style="text-align: -webkit-center;">
-              <div style="width: 100%; max-width: 600px; margin: auto;">
-                <canvas id="myChart"></canvas>
-              </div>
+                <div style="width: 100%; max-width: 600px; margin: auto;">
+                    <canvas id="myChart"></canvas>
+                </div>
             </div>
-          </div>
-          
+        </div>
 
-        <div class="mb-3">
+        <h2>Gráfica estadísticas</h2>
+        <div class="row mb-3">
             <label for="grafica" class="form-label">Selecciona el tipo de gráfica:</label>
             <select class="form-control" id="selectGrafica" (change)="changeGrafic($event)">
                 <option value="1">Goles a favor</option>
@@ -305,13 +305,63 @@
                 <option value="14">Tarjetas rojas</option>
             </select>
         </div>
-        <div class="mb-3" id="segundo">
+        <div class="row mb-3" id="segundo">
             <div class="scroll: auto">
                 <div class="col-md-12">
                     <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;"
                         height="200" id="barChartSegunda"></canvas>
                 </div>
             </div>
+        </div>
+
+        
+        <h2>Gráfica goles Categoría</h2>
+        
+        <div class="row mb-3">
+            <div class="col-12 col-md-6" style="text-align: center;">
+                <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;"
+                    height="200" id="barChartCategoria00"></canvas>
+            </div>
+            <div class="col-12 col-md-6" style="text-align: center;">
+                <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;"
+                    height="200" id="barChartCategoria01"></canvas>
+            </div>
+        </div>
+
+
+        <h2>Gráfica goles Sub Categoría</h2>
+        <div class="row mb-3">
+            <div class="col-12">
+                <label for="categorygolTypes">Categoría:</label>
+                <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+                    name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+                    <option value="">Pulsa para cargar las categorias</option>
+                    <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
+                    </option>
+                </select>
+            </div>
+            <!-- <div class="col-6" *ngIf="selectedGolTypes">
+                <label for="subgolTypes">Subcategoría:</label>
+                <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes" name="subgolTypes"
+                    (change)="onSelectSubGolTypes($event)">
+                    <option value="">Seleccionar subcategoría</option>
+                    <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
+                        subcategory.name }}</option>
+                </select>
+            </div> -->
+        </div>
+        <div class="row mb-3">
+            <div class="col-12 col-md-6" style="text-align: center;">
+                <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;"
+                    height="200" id="barChartCategoria"></canvas>
+            </div>
+            <div class="col-12 col-md-6" style="text-align: center;">
+                <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;"
+                    height="200" id="barChartCategoria2"></canvas>
+            </div>
+        </div>
+        <div class="row mb-3" style="margin-bottom: 5em; margin-top: 5em;">
+            final
         </div>
     </div>
 </div>
