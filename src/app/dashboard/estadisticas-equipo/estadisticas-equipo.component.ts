@@ -535,7 +535,7 @@ export class EstadisticasEquipoComponent implements OnInit {
         }
 
         setTimeout(() => {
-          this.graficaUnica(this.partidos.map(partido => partido.golesAFavor), 'Goles a favor', 'Goles');
+          this.graficaUnica(this.partidosReverse.map(partido => partido.golesAFavor), 'Goles a favor', 'Goles');
           this.graficaPrimera();
           this.createChart();
           this.createChartCategoryEnContra00();
@@ -561,72 +561,72 @@ export class EstadisticasEquipoComponent implements OnInit {
     let label = '';
     switch (selectedValue) {
       case "1":
-        data = this.partidos.map(partido => partido.golesAFavor);
+        data = this.partidosReverse.map(partido => partido.golesAFavor);
         text = 'Goles a favor';
         label = 'Goles';
         break;
       case "2":
-        data = this.partidos.map(partido => partido.golesEnContra);
+        data = this.partidosReverse.map(partido => partido.golesEnContra);
         text = 'Goles en contra';
         label = 'Goles';
         break;
       case "3":
-        data = this.partidos.map(partido => partido.disparosAFavor);
+        data = this.partidosReverse.map(partido => partido.disparosAFavor);
         text = 'Disparos a favor';
         label = 'Nº de disparos';
         break;
       case "4":
-        data = this.partidos.map(partido => partido.disparosEnContra);
+        data = this.partidosReverse.map(partido => partido.disparosEnContra);
         text = 'Disparos en contra';
         label = 'Nº de disparos';
         break;
       case "5":
-        data = this.partidos.map(partido => partido.faltasRecibidas);
+        data = this.partidosReverse.map(partido => partido.faltasRecibidas);
         text = 'Faltas a favor';
         label = 'Nº de faltas';
         break;
       case "6":
-        data = this.partidos.map(partido => partido.faltasCometidas);
+        data = this.partidosReverse.map(partido => partido.faltasCometidas);
         text = 'Faltas en contra';
         label = 'Nº de faltas';
         break;
       case "7":
-        data = this.partidos.map(partido => partido.cornersAFavor);
+        data = this.partidosReverse.map(partido => partido.cornersAFavor);
         text = 'Corners a favor';
         label = 'Nº de corners';
         break;
       case "8":
-        data = this.partidos.map(partido => partido.cornersEnContra);
+        data = this.partidosReverse.map(partido => partido.cornersEnContra);
         text = 'Corners en contra';
         label = 'Nº de corners';
         break;
       case "9":
-        data = this.partidos.map(partido => partido.llegadasPeligroAFavor);
+        data = this.partidosReverse.map(partido => partido.llegadasPeligroAFavor);
         text = 'Llegadas con peligro a favor';
         label = 'Nº de llegadas con peligro';
         break;
       case "10":
-        data = this.partidos.map(partido => partido.llegadasPeligroEnContra);
+        data = this.partidosReverse.map(partido => partido.llegadasPeligroEnContra);
         text = 'Llegadas con peligro en contra';
         label = 'Nº de llegadas con peligro';
         break;
       case "1":
-        data = this.partidos.map(partido => partido.penaltisAFavor);
+        data = this.partidosReverse.map(partido => partido.penaltisAFavor);
         text = 'Penaltis a favor';
         label = 'Nº de penaltis';
         break;
       case "12":
-        data = this.partidos.map(partido => partido.penaltisEnContra);
+        data = this.partidosReverse.map(partido => partido.penaltisEnContra);
         text = 'Penaltis en contra';
         label = 'Nº de penaltis';
         break;
       case "13":
-        data = this.partidos.map(partido => partido.tarjetasAmarillas);
+        data = this.partidosReverse.map(partido => partido.tarjetasAmarillas);
         text = 'Tarjetas amarillas';
         label = 'Nº de tarjetas';
         break;
       case "14":
-        data = this.partidos.map(partido => partido.tarjetasRojas);
+        data = this.partidosReverse.map(partido => partido.tarjetasRojas);
         text = 'Tarjetas rojas';
         label = 'Nº de tarjetas';
         break;
