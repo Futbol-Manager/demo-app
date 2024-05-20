@@ -106,11 +106,11 @@ export class EstadisticasJugadoresComponent implements OnInit {
       });
     });
 
-    this.moverElementosDataTable();
+    this.moverElementosDataTable('dataTable');
   }
 
 
-  moverElementosDataTable() {
+  moverElementosDataTable(name: string) {
     // **Move buttons outside the table after initialization**
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
@@ -130,7 +130,7 @@ export class EstadisticasJugadoresComponent implements OnInit {
     //esto es para agregar una clase
     const textcenter = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        const dataTableElement = document.querySelector('#dataTable');
+        const dataTableElement = document.querySelector('#' + name);
 
         if (dataTableElement) {
           dataTableElement.classList.add('text-center');
@@ -188,6 +188,7 @@ export class EstadisticasJugadoresComponent implements OnInit {
   }
 
   verTablaPlayers() {
+    this.inicializarDataTable();
     this.graficasPlayers = false;
     this.datosCargados = true;
 
@@ -508,6 +509,7 @@ export class EstadisticasJugadoresComponent implements OnInit {
           language: translation,
           data: this.golesAvanzadoAFavor,
           columns: [
+            { data: null, render: (data, type, row, meta) => meta.row + 1 },
             { data: 'nombreGoleador' },
             { data: 'nombreAsistente' },
             { data: 'postPartido.matchPreparation.rivalName' },
@@ -520,24 +522,9 @@ export class EstadisticasJugadoresComponent implements OnInit {
         });
       });
     });
-  }
 
-  initializeDataTable(): void {
-    if ($.fn.dataTable.isDataTable('#dataTableGoles')) {
-      $('#dataTableGoles').DataTable().clear().destroy();
-    }
-
-    this.http.get('assets/dataTable/Spanish.json').subscribe((translation: any) => {
-      $(document).ready(() => {
-        $('#dataTableGoles').DataTable({
-          paging: true,
-          pageLength: 10,
-          searching: true,
-          ordering: true,
-          language: translation
-        });
-      });
-    });
+    
+    this.moverElementosDataTable('dataTableGoles');
   }
 
   showNamePlayer(playerId: number): string {

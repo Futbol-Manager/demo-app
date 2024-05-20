@@ -140,10 +140,19 @@
                 </option>
             </select>
         </div>
+
+        <div class="row justify-content-between div-headdatatable">
+            <div class="col-md-auto mr-auto" id="dt-length">
+                <!-- Contenido para el dt-length -->
+            </div>
+            <div class="col-md-auto ml-auto" id="dt-search">
+            </div>
+        </div>
         <div class=" row mb-3" style="overflow-x: auto;">
             <table id="dataTableGoles" class="table table-bordered table-striped text-center">
                 <thead class="table-dark">
                     <tr>
+                        <th>Nº_DE_GOL</th>
                         <th>GOL_DE</th>
                         <th>ASISTENCIA_DE</th>
                         <th>RIVAL</th>
@@ -155,7 +164,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                   <tr *ngFor="let player of golesAvanzadoAFavor; let i = index">
+                    <tr *ngFor="let player of golesAvanzadoAFavor; let i = index">
+                        <td>{{ i+1 }}</td>
                         <td>{{ player.nombreGoleador }}</td>
                         <td>{{ player.nombreAsistente }}</td>
                         <td>{{ player.postPartido.matchPreparation.rivalName }}</td>
@@ -163,10 +173,12 @@
                         <td>{{ player.postPartido.matchPreparation.matchDate }}</td>
                         <td>{{ player.category }}</td>
                         <td>{{ player.subCategory }}</td>
-                        <td>{{ player.option  }}</td>
+                        <td>{{ player.option }}</td>
                     </tr>
                 </tbody>
             </table>
+        </div>
+        <div id="button_datatable">
         </div>
 
 
