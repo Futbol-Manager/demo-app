@@ -8,6 +8,8 @@ import * as $ from 'jquery';
 import 'datatables.net';
 import { HttpClient } from '@angular/common/http';
 import { Chart, registerables } from 'chart.js/auto';
+import { GolPostPartido } from 'src/app/core/services/team/team.model';
+import { TrainingService } from 'src/app/core/services/training/training.service';
 Chart.register(...registerables);
 
 @Component({
@@ -16,7 +18,7 @@ Chart.register(...registerables);
   styleUrls: ['./estadisticas-jugadores.component.scss']
 })
 export class EstadisticasJugadoresComponent implements OnInit {
-  
+
   datosCargados: boolean = false;
   graficasPlayers: boolean = false;
   teamId!: number;
@@ -26,11 +28,15 @@ export class EstadisticasJugadoresComponent implements OnInit {
   barChartGoles: Chart | null = null;
   barChartUnica: Chart | null = null;
 
+  golesTodosAvanzadoAFavor: any[] = [];
+  golesAvanzadoAFavor: any[] = [];
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private playerService: PlayerService,
     private http: HttpClient,
+    private trainingService: TrainingService,
     private elementRef: ElementRef) { }
 
   ngOnInit(): void {
@@ -178,6 +184,7 @@ export class EstadisticasJugadoresComponent implements OnInit {
     }, 100);*/
     this.graficasPlayers = true;
     this.datosCargados = false;
+    this.showGolesForPlayer();
   }
 
   verTablaPlayers() {
@@ -452,6 +459,90 @@ export class EstadisticasJugadoresComponent implements OnInit {
         }
       }
     });
+  }
+
+  showGolesForPlayer() {
+    this.trainingService.getListGolesAvanzadoByTeamId(this.teamId).subscribe(
+      (resp) => {
+        if (resp.data) {
+          this.golesTodosAvanzadoAFavor = resp.data.golesAFavor;
+          for (let index = 0; index < this.golesTodosAvanzadoAFavor.length; index++) {
+            this.golesTodosAvanzadoAFavor[index].nombreGoleador = this.showNamePlayer(this.golesTodosAvanzadoAFavor[index].playerId);
+            this.golesTodosAvanzadoAFavor[index].nombreAsistente = this.showNamePlayer(this.golesTodosAvanzadoAFavor[index].asistencia);
+            
+          }
+          this.golesAvanzadoAFavor = this.golesTodosAvanzadoAFavor;
+          this.updateDataTable();
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  seleccionarIndices(event: any): void {
+    let playerId = event !== 0 ? event.target.value : "0";
+    if (playerId === "0") {
+      this.golesAvanzadoAFavor = this.golesTodosAvanzadoAFavor;
+    } else {
+      this.golesAvanzadoAFavor = this.golesTodosAvanzadoAFavor.filter(gol => gol.playerId.toString() === playerId);
+    }
+
+    this.updateDataTable();
+  } 
+  
+  updateDataTable(): void {
+    const table = $('#dataTableGoles').DataTable();
+    if (table) {
+      table.clear().destroy();
+    }
+
+    this.http.get('assets/dataTable/Spanish.json').subscribe((translation: any) => {
+      $(document).ready(() => {
+        $('#dataTableGoles').DataTable({
+          paging: true,
+          pageLength: 10,
+          searching: true,
+          ordering: true,
+          language: translation,
+          data: this.golesAvanzadoAFavor,
+          columns: [
+            { data: 'nombreGoleador' },
+            { data: 'nombreAsistente' },
+            { data: 'postPartido.matchPreparation.rivalName' },
+            { data: 'minuto' },
+            { data: 'postPartido.matchPreparation.matchDate' },
+            { data: 'category' },
+            { data: 'subCategory' },
+            { data: 'option' }
+          ]
+        });
+      });
+    });
+  }
+
+  initializeDataTable(): void {
+    if ($.fn.dataTable.isDataTable('#dataTableGoles')) {
+      $('#dataTableGoles').DataTable().clear().destroy();
+    }
+
+    this.http.get('assets/dataTable/Spanish.json').subscribe((translation: any) => {
+      $(document).ready(() => {
+        $('#dataTableGoles').DataTable({
+          paging: true,
+          pageLength: 10,
+          searching: true,
+          ordering: true,
+          language: translation
+        });
+      });
+    });
+  }
+
+  showNamePlayer(playerId: number): string {
+    const player = this.players.find(p => p.playerId === playerId);
+    return player ? player.nombre : '';
   }
 
 }

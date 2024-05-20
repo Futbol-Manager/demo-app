@@ -111,7 +111,7 @@
     <div class="container mt-4">
         <h2>Gráfica Jugadores</h2>
 
-        <div class="mb-3">
+        <div class="row mb-3">
             <label for="grafica" class="form-label">Selecciona el tipo de gráfica:</label>
             <select class="form-control" id="selectGrafica" (change)="changeGrafic($event)">
                 <option value="1">Minutos totales</option>
@@ -124,14 +124,53 @@
                 <option value="8">Tarjetas rojas</option>
             </select>
         </div>
-        <div class="mb-3">
+        <div class="row mb-3">
             <div class="scroll: auto">
                 <div class="col-md-12">
-                    <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;" height="200" id="barChartUnica"></canvas>
+                    <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;"
+                        height="200" id="barChartUnica"></canvas>
                 </div>
             </div>
         </div>
-        
+        <div class=" row mb-3">
+            <label for="grafica" class="form-label">Selecciona el tipo de gráfica:</label>
+            <select class="form-control" id="selectGrafica" (change)="seleccionarIndices($event)">
+                <option value="0">Ver todos</option>
+                <option *ngFor="let player of players" [value]="player.playerId">{{ player.nombre }}
+                </option>
+            </select>
+        </div>
+        <div class=" row mb-3" style="overflow-x: auto;">
+            <table id="dataTableGoles" class="table table-bordered table-striped text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>GOL_DE</th>
+                        <th>ASISTENCIA_DE</th>
+                        <th>RIVAL</th>
+                        <th>MINUTO</th>
+                        <th>FECHA</th>
+                        <th>CATEGORIA</th>
+                        <th>SUB_CATEGORIA</th>
+                        <th>OPCION</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   <tr *ngFor="let player of golesAvanzadoAFavor; let i = index">
+                        <td>{{ player.nombreGoleador }}</td>
+                        <td>{{ player.nombreAsistente }}</td>
+                        <td>{{ player.postPartido.matchPreparation.rivalName }}</td>
+                        <td>{{ player.minuto }}</td>
+                        <td>{{ player.postPartido.matchPreparation.matchDate }}</td>
+                        <td>{{ player.category }}</td>
+                        <td>{{ player.subCategory }}</td>
+                        <td>{{ player.option  }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <!-- de momento no se usa-->
         <div class="row">
             <div style="width: 50em; height: 30em;" class="col-md-12 mb-4">
                 <canvas id="barrasChartMinutos"></canvas>
