@@ -7,6 +7,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { HttpClient } from '@angular/common/http';
 import * as $ from 'jquery';
 import 'datatables.net';
+import { CuotasClub } from 'src/app/core/services/models/club.model';
 
 @Component({
   selector: 'app-contabilidad',
@@ -19,10 +20,12 @@ export class ContabilidadComponent implements OnInit {
   userId!: number;
 
   players: any[] = [];
+  cuota: CuotasClub = new CuotasClub({});
   
   datosCargados: boolean = false;
 
   showModal: boolean = false;
+  isFraccionado: boolean = false;
 
   constructor(
     private loginService: LoginService,
@@ -169,6 +172,11 @@ export class ContabilidadComponent implements OnInit {
 
   createUpdateSettings(){
     //nada 
+    console.log(this.cuota);
+  }
+
+  selecFraccionado(){
+    this.isFraccionado = this.cuota.fraccionado.toString() === "0"  ? false : true;
   }
 
 }

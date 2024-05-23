@@ -14,3 +14,34 @@ export class Club {
     }
 
 }
+
+export class CuotasClub {
+    cuotasClubId: number;
+    clubId: number;
+    cuotaConRopa: string;
+    cuotaSinRopa: string;
+    fraccionado: number;
+    pagoConUno: string;
+    pagoConDos: string;
+    pagoConTres: string;
+    pagoSinUno: string;
+    pagoSinDos: string;
+    pagoSinTres: string;
+    banco: string;
+
+    constructor(object: any) {
+        this.cuotasClubId = object.cuotasClubId || 0;
+        this.clubId = object.clubId || 0;
+        this.cuotaConRopa = object.cuotaConRopa || '';
+        this.cuotaSinRopa = object.cuotaSinRopa || '';
+        this.fraccionado = object.fraccionado || 0;
+        this.pagoConUno = object.pagoConUno || '';
+        this.pagoConDos = object.pagoConDos || '';
+        this.pagoConTres = object.pagoConTres || '';
+        this.pagoSinUno = object.pagoSinUno || '';
+        this.pagoSinDos = object.pagoSinDos || '';
+        this.pagoSinTres = object.pagoSinTres || '';
+        this.banco = object.banco || '';
+    }
+
+}

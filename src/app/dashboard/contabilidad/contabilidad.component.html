@@ -79,19 +79,49 @@
         <div class="modal-body">
           <form (ngSubmit)="createUpdateSettings()">
             <div class="mb-3">
-              <label for="precioCuota" class="form-label">Precio de la Cuota:</label>
-              <input type="number" class="form-control" id="precioCuota" name="precioCuota" formControlName="feePrice">
+              <label for="cuotaConRopa" class="form-label">Precio de la cuota con ropa:</label>
+              <input type="text" class="form-control" id="cuotaConRopa" name="cuotaConRopa" [(ngModel)]="cuota.cuotaConRopa">
             </div>
             <div class="mb-3">
-              <label for="permitirCuotaFraccionada" class="form-label">Permitir Cuota Fraccionada:</label>
-              <select class="form-control" id="permitirCuotaFraccionada" name="permitirCuotaFraccionada" formControlName="allowFractionedFee">
-                <option value="true">Sí</option>
-                <option value="false">No</option>
+              <label for="cuotaSinRopa" class="form-label">Precio de la cuota sin ropa:</label>
+              <input type="text" class="form-control" id="cuotaSinRopa" name="cuotaSinRopa" [(ngModel)]="cuota.cuotaSinRopa">
+            </div>
+            <div class="mb-3">
+              <label for="fraccionado" class="form-label">Permitir Cuota Fraccionada:</label>
+              <select class="form-control" id="fraccionado" name="fraccionado" [(ngModel)]="cuota.fraccionado" (click)="selecFraccionado()">
+                <option value="0">No</option>
+                <option value="1">Sí</option>
               </select>
+            </div>
+            <h2>Repartición de las cuotas</h2>
+            <p>Puedes establecer el precio de cada cuota hasta un máximo de 3, en caso de ser pago único, rellenar solo la cuota uno con y sin ropa</p>
+            <div class="mb-3">
+              <label for="pagoConUno" class="form-label">Cuota 1 con ropa:</label>
+              <input type="text" class="form-control" id="pagoConUno" name="pagoConUno" [(ngModel)]="cuota.pagoConUno">
+            </div>
+            <div class="mb-3" *ngIf="isFraccionado">
+              <label for="pagoConDos" class="form-label">Cuota 2 con ropa:</label>
+              <input type="text" class="form-control" id="pagoConDos" name="pagoConDos" [(ngModel)]="cuota.pagoConDos">
+            </div>
+            <div class="mb-3" *ngIf="isFraccionado">
+              <label for="pagoConTres" class="form-label">Cuota 3 con ropa:</label>
+              <input type="text" class="form-control" id="pagoConTres" name="pagoConTres" [(ngModel)]="cuota.pagoConTres">
+            </div>
+            <div class="mb-3">
+              <label for="pagoSinUno" class="form-label">Cuota 1 sin ropa:</label>
+              <input type="text" class="form-control" id="pagoSinUno" name="pagoSinUno" [(ngModel)]="cuota.pagoSinUno">
+            </div>
+            <div class="mb-3" *ngIf="isFraccionado">
+              <label for="pagoSinDos" class="form-label">Cuota 2 sin ropa:</label>
+              <input type="text" class="form-control" id="pagoSinDos" name="pagoSinDos" [(ngModel)]="cuota.pagoSinDos">
+            </div>
+            <div class="mb-3" *ngIf="isFraccionado">
+              <label for="pagoSinTres" class="form-label">Cuota 3 sin ropa:</label>
+              <input type="text" class="form-control" id="pagoSinTres" name="pagoSinTres" [(ngModel)]="cuota.pagoSinTres">
             </div>
             <div class="mb-3">
               <label for="numeroCuentaBanco" class="form-label">Número de Cuenta del Banco:</label>
-              <input type="text" class="form-control" id="numeroCuentaBanco" name="numeroCuentaBanco" formControlName="bankAccountNumber">
+              <input type="text" class="form-control" id="numeroCuentaBanco" name="numeroCuentaBanco" [(ngModel)]="cuota.cuotaSinRopa">
             </div>
             <div class="modal-footer">
               <!-- Botón para guardar el nuevo equipo -->
