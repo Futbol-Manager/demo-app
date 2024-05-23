@@ -1,0 +1,105 @@
+<div *ngIf="datosCargados">
+
+    <div class="container mt-3"
+        *ngIf="this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2">
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Inicio</button>
+            </div>
+            <div class="col">
+                <button class="btn btn-custom btn-sm" (click)="abrirModal()">Ajustes</button>
+            </div>
+        </div>
+
+        <!-- Contenido para el dataTable -->
+        <div class="container mt-4">
+            <h2>Tabla Jugadores</h2>
+            <div class="row justify-content-between div-headdatatable">
+                <div class="col-md-auto mr-auto" id="dt-length">
+                    <!-- Contenido para el dt-length -->
+                </div>
+                <div class="col-md-auto ml-auto" id="dt-search">
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="dataTable" class="table table-bordered table-striped text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>IMAGEN</th>
+                            <th>NOMBRE</th>
+                            <th>APELLIDOS</th>
+                            <th>EQUIPO</th>
+                            <th>ESTADO_PAGO</th>
+                            <th>IMPORTE_PAGADO</th>
+                            <th>IMPORTE_TOTAL</th>
+                            <th>VERIFICADO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let player of players; let i = index">
+                            <td>{{ player.playerId }}</td>                            
+                            <td *ngIf="player.picturePlayer">
+                                <div class="container">
+                                    <img src="https://sphairatech.com/images/user/{{ player.picturePlayer }}"
+                                        alt="user-player" width="50" height="50" class="rounded-circle me-2">
+                                </div>
+                            </td>
+                            <td *ngIf="!player.picturePlayer">
+                                <div class="container">
+                                    <span class="bi bi-person" style="font-size: 3rem;"></span>
+                                </div>
+                            </td>
+                            <td>{{ player.nombre }}</td>
+                            <td>{{ player.apellido }}</td>
+                            <td>{{ player.nameTeam }}</td>
+                            <td>PDTE</td>
+                            <td>250</td>
+                            <td>400</td>
+                            <td>{{ player.verify }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="button_datatable">
+        </div>
+    </div>
+</div>
+
+<!-- Modal para la creación de equipo con información adicional -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="standard-modalLabel">Crea un equipo</h5>
+          <!-- Botón de cerrar con un icono -->
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="createUpdateSettings()">
+            <div class="mb-3">
+              <label for="precioCuota" class="form-label">Precio de la Cuota:</label>
+              <input type="number" class="form-control" id="precioCuota" name="precioCuota" formControlName="feePrice">
+            </div>
+            <div class="mb-3">
+              <label for="permitirCuotaFraccionada" class="form-label">Permitir Cuota Fraccionada:</label>
+              <select class="form-control" id="permitirCuotaFraccionada" name="permitirCuotaFraccionada" formControlName="allowFractionedFee">
+                <option value="true">Sí</option>
+                <option value="false">No</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="numeroCuentaBanco" class="form-label">Número de Cuenta del Banco:</label>
+              <input type="text" class="form-control" id="numeroCuentaBanco" name="numeroCuentaBanco" formControlName="bankAccountNumber">
+            </div>
+            <div class="modal-footer">
+              <!-- Botón para guardar el nuevo equipo -->
+              <button type="submit" class="btn btn-success float-end">Guardar</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  

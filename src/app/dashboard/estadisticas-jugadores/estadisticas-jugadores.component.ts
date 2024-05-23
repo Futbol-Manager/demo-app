@@ -8,7 +8,6 @@ import * as $ from 'jquery';
 import 'datatables.net';
 import { HttpClient } from '@angular/common/http';
 import { Chart, registerables } from 'chart.js/auto';
-import { GolPostPartido } from 'src/app/core/services/team/team.model';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 Chart.register(...registerables);
 
@@ -490,7 +489,8 @@ export class EstadisticasJugadoresComponent implements OnInit {
       this.golesAvanzadoAFavor = this.golesTodosAvanzadoAFavor.filter(gol => gol.playerId.toString() === playerId);
     }
 
-    this.updateDataTable();
+    if(this.graficasPlayers)
+      this.updateDataTable();
   } 
   
   updateDataTable(): void {

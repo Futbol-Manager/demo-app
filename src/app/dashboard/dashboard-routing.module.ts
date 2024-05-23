@@ -9,6 +9,7 @@ import { EstadisticasEquipoComponent } from './estadisticas-equipo/estadisticas-
 import { EstadisticasJugadoresComponent } from './estadisticas-jugadores/estadisticas-jugadores.component';
 import { InformacionEquipoComponent } from './informacion-equipo/informacion-equipo.component';
 import { TrainerComponent } from './trainer/trainer.component';
+import { ContabilidadComponent } from './contabilidad/contabilidad.component';
 
 const routes: Routes = [
   {
@@ -22,6 +23,7 @@ const routes: Routes = [
       { path: 'informacion_equipo/:teamId', component: InformacionEquipoComponent },
       { path: 'estadisticas_jugadores/:teamId', component: EstadisticasJugadoresComponent },
       { path: 'entrenadores/:teamId', component: TrainerComponent },
+      { path: 'contabilidad/:clubId', component: ContabilidadComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
   }

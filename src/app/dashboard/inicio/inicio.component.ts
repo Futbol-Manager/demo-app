@@ -22,6 +22,7 @@ export class InicioComponent implements OnInit {
   showModal = false;
   teamNew: TeamNew = new TeamNew(); // Modelo para el nuevo equipo
   clubList: any[] = [];
+  clubId: number = 0;
 
   constructor(private loginService: LoginService,
     private router: Router,
@@ -44,10 +45,36 @@ export class InicioComponent implements OnInit {
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
       let profileId = this.usuarioActual!.profileType.profileId;
-      let playerId = this.usuarioActual!.playerId;
-      if (profileId > 2) {
+      let playerId = this.usuarioActual!.playerId;      
+      let userId = this.usuarioActual!.userId;
+
+      if (profileId === 1) {
         //ver a que equipo pertenece
-        this.teamService.getTeamByPlayer(playerId.toString()).subscribe(
+        this.teamService.getTeamByClub(userId.toString()).subscribe(
+          (response: Response) => {
+            // Verifica que la propiedad 'data' exista en la respuesta
+            if (response.data !== null) {
+              this.clubId = response.data.club.clubId;
+              this.listTeam = response.data.teams.map((team: TeamConJugadores) => new TeamConJugadores(team));
+            } else {
+              console.error('La respuesta del servicio no tiene la estructura esperada', response);
+            }
+          },
+          (error) => {
+            console.error('Error al cargar el listado de equipos', error);
+          }
+        );
+      } 
+      
+      if (profileId < 3) {
+        // Carga el listado de equipos al inicializar el componente
+        this.cargarListadoEquipos();
+        // Cargar listado de clubes disponibles
+        this.cargarListadoClubes();
+      }
+      
+      if (profileId > 2 ) {
+        this.teamService.getTeamByClub(userId.toString()).subscribe(
           (response: Response) => {
             // Verifica que la propiedad 'data' exista en la respuesta
             if (response.data !== null) {
@@ -60,11 +87,6 @@ export class InicioComponent implements OnInit {
             console.error('Error al cargar el listado de equipos', error);
           }
         );
-      } else {
-        // Carga el listado de equipos al inicializar el componente
-        this.cargarListadoEquipos();
-        // Cargar listado de clubes disponibles
-        this.cargarListadoClubes();
       }
     });
 
@@ -208,6 +230,12 @@ export class InicioComponent implements OnInit {
   navegarACalendario(teamId: number): void {
     // Puedes ajustar la ruta según tu estructura de rutas
     this.router.navigate(['/dashboard/calendario', teamId]);
+  }
+
+  irAPantalla(id: number): void {
+    if (id === 1) {
+      this.router.navigate(['/dashboard/contabilidad', this.clubId]);
+    }
   }
 
 }

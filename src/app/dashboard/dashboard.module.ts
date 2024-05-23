@@ -13,6 +13,7 @@ import { EstadisticasEquipoComponent } from './estadisticas-equipo/estadisticas-
 import { EstadisticasJugadoresComponent } from './estadisticas-jugadores/estadisticas-jugadores.component';
 import { InformacionEquipoComponent } from './informacion-equipo/informacion-equipo.component';
 import { TrainerComponent } from './trainer/trainer.component';
+import { ContabilidadComponent } from './contabilidad/contabilidad.component';
 
 
 
@@ -27,7 +28,8 @@ import { TrainerComponent } from './trainer/trainer.component';
     ShopComponent,
     EstadisticasEquipoComponent,
     EstadisticasJugadoresComponent,
-    InformacionEquipoComponent
+    InformacionEquipoComponent,
+    ContabilidadComponent
   ],
   imports: [
     CommonModule,

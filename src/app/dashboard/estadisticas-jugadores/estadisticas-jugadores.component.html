@@ -132,8 +132,10 @@
                 </div>
             </div>
         </div>
+
+        <h2>Goles Jugadores</h2>
         <div class=" row mb-3">
-            <label for="grafica" class="form-label">Selecciona el tipo de gráfica:</label>
+            <label for="grafica" class="form-label">Selecciona un jugador:</label>
             <select class="form-control" id="selectGrafica" (change)="seleccionarIndices($event)">
                 <option value="0">Ver todos</option>
                 <option *ngFor="let player of players" [value]="player.playerId">{{ player.nombre }}
