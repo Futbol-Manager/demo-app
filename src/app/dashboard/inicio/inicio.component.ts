@@ -74,7 +74,7 @@ export class InicioComponent implements OnInit {
       }
       
       if (profileId > 2 ) {
-        this.teamService.getTeamByClub(userId.toString()).subscribe(
+        this.teamService.getTeamByPlayer(playerId.toString()).subscribe(
           (response: Response) => {
             // Verifica que la propiedad 'data' exista en la respuesta
             if (response.data !== null) {

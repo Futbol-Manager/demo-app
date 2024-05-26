@@ -14,6 +14,7 @@ import { EstadisticasJugadoresComponent } from './estadisticas-jugadores/estadis
 import { InformacionEquipoComponent } from './informacion-equipo/informacion-equipo.component';
 import { TrainerComponent } from './trainer/trainer.component';
 import { ContabilidadComponent } from './contabilidad/contabilidad.component';
+import { CuotasComponent } from './cuotas/cuotas.component';
 
 
 
@@ -29,7 +30,8 @@ import { ContabilidadComponent } from './contabilidad/contabilidad.component';
     EstadisticasEquipoComponent,
     EstadisticasJugadoresComponent,
     InformacionEquipoComponent,
-    ContabilidadComponent
+    ContabilidadComponent,
+    CuotasComponent
   ],
   imports: [
     CommonModule,

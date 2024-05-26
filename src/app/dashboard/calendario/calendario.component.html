@@ -20,6 +20,14 @@
     </div>
   </div>
 
+  <div class="container mt-3"
+    *ngIf="this.usuarioActual!.profileType.profileId > 2">
+    <div class="row">
+      <div class="col">
+        <button class="btn btn-custom btn-sm" (click)="irAPantalla(5)">Cuotas</button>
+      </div>
+  </div>
+
   <!-- calendario.component.html -->
   <div class="container mt-4">
     <div class="container">

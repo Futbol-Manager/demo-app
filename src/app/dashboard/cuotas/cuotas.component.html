@@ -1,0 +1,33 @@
+<div *ngIf="datosCargados" class="container">
+    <div class="btn-container mt-3">
+        <div class="row">
+            <div class="col"><button class="btn btn-custom" (click)="navegarACalendario()">
+                    <i class="bi bi-calendar"></i>
+                </button>
+                <div class="hint">Volver al calendario</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">            
+            <label for="asunto" class="form-label">Asunto o concepto pago de la cuota</label>
+            <input type="text" class="form-control" id="asunto" name="asunto" [(ngModel)]="cuota.asunto" disabled>
+        </div>
+        <div class="col-md-6">
+            <label for="banco" class="form-label">Número del banco del Club</label>
+            <input type="text" class="form-control" id="banco" name="banco" [(ngModel)]="cuota.banco" disabled>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">            
+            <label for="cuota" class="form-label">Precio de la cuota del Club:</label>
+            <input type="text" class="form-control" id="cuota" name="cuota" [(ngModel)]="cuota.cuota" disabled>
+        </div>
+        <div class="col-md-6">
+            <label for="cuotaRopa" class="form-label">Precio de la cuota de la ropa:</label>
+            <input type="text" class="form-control" id="cuotaRopa" name="cuotaRopa" [(ngModel)]="cuota.cuotaRopa" disabled>
+        </div>
+    </div>
+</div>

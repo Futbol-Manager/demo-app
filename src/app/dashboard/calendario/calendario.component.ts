@@ -572,6 +572,8 @@ export class CalendarioComponent implements OnInit {
       this.router.navigate(['/dashboard/estadisticas_equipo', this.teamId]);
     } else if (id === 4) {
       this.router.navigate(['/dashboard/estadisticas_jugadores', this.teamId]);
+    } else if (id === 5) {
+      this.router.navigate(['/dashboard/cuotas', this.teamId]);
     }
   }
 
@@ -1782,6 +1784,7 @@ export class CalendarioComponent implements OnInit {
       this.showAlert = false;
     }, 2000);
   }
+  
   borrar() {
     this.showAlert2 = true;
     setTimeout(() => {

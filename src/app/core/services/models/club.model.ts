@@ -28,6 +28,10 @@ export class CuotasClub {
     pagoSinDos: string;
     pagoSinTres: string;
     banco: string;
+    asunto: string;
+    estado: string;
+    teamId: number;
+    restante: string;
 
     constructor(object: any) {
         this.cuotasClubId = object.cuotasClubId || 0;
@@ -42,6 +46,10 @@ export class CuotasClub {
         this.pagoSinDos = object.pagoSinDos || '';
         this.pagoSinTres = object.pagoSinTres || '';
         this.banco = object.banco || '';
+        this.asunto = object.asunto || '';
+        this.estado = object.estado || '';
+        this.teamId = object.teamId || 0;
+        this.restante = object.restante || '';
     }
 
 }

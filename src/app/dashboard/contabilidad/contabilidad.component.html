@@ -1,135 +1,233 @@
 <div *ngIf="datosCargados">
 
-    <div class="container mt-3"
-        *ngIf="this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2">
-        <div class="row">
-            <div class="col">
-                <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Inicio</button>
-            </div>
-            <div class="col">
-                <button class="btn btn-custom btn-sm" (click)="abrirModal()">Ajustes</button>
-            </div>
-        </div>
-
-        <!-- Contenido para el dataTable -->
-        <div class="container mt-4">
-            <h2>Tabla Jugadores</h2>
-            <div class="row justify-content-between div-headdatatable">
-                <div class="col-md-auto mr-auto" id="dt-length">
-                    <!-- Contenido para el dt-length -->
-                </div>
-                <div class="col-md-auto ml-auto" id="dt-search">
-                </div>
-            </div>
-            <div style="overflow-x: auto;">
-                <table id="dataTable" class="table table-bordered table-striped text-center">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>IMAGEN</th>
-                            <th>NOMBRE</th>
-                            <th>APELLIDOS</th>
-                            <th>EQUIPO</th>
-                            <th>ESTADO_PAGO</th>
-                            <th>IMPORTE_PAGADO</th>
-                            <th>IMPORTE_TOTAL</th>
-                            <th>VERIFICADO</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let player of players; let i = index">
-                            <td>{{ player.playerId }}</td>                            
-                            <td *ngIf="player.picturePlayer">
-                                <div class="container">
-                                    <img src="https://sphairatech.com/images/user/{{ player.picturePlayer }}"
-                                        alt="user-player" width="50" height="50" class="rounded-circle me-2">
-                                </div>
-                            </td>
-                            <td *ngIf="!player.picturePlayer">
-                                <div class="container">
-                                    <span class="bi bi-person" style="font-size: 3rem;"></span>
-                                </div>
-                            </td>
-                            <td>{{ player.nombre }}</td>
-                            <td>{{ player.apellido }}</td>
-                            <td>{{ player.nameTeam }}</td>
-                            <td>PDTE</td>
-                            <td>250</td>
-                            <td>400</td>
-                            <td>{{ player.verify }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div id="button_datatable">
-        </div>
+  <div class="container mt-3"
+    *ngIf="this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2">
+    <div class="row">
+      <div class="col">
+        <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Inicio</button>
+      </div>
+      <div class="col">
+        <button class="btn btn-custom btn-sm" (click)="abrirModal()">Ajustes</button>
+      </div>
     </div>
+
+    <!-- Contenido para el dataTable -->
+    <div class="container mt-4">
+      <h2>Tabla Jugadores</h2>
+      <div class="row justify-content-between div-headdatatable">
+        <div class="col-md-auto mr-auto" id="dt-length">
+          <!-- Contenido para el dt-length -->
+        </div>
+        <div class="col-md-auto ml-auto" id="dt-search">
+        </div>
+      </div>
+      <div style="overflow-x: auto;">
+        <table id="dataTable" class="table table-bordered table-striped text-center">
+          <thead class="table-dark">
+            <tr>
+              <th>ID</th>
+              <th>IMAGEN</th>
+              <th>NOMBRE</th>
+              <th>APELLIDOS</th>
+              <th>EQUIPO</th>
+              <th>ESTADO_PAGO</th>
+              <th>ROPA</th>
+              <th>PAGADO</th>
+              <th>PRESTANTE</th>
+              <th>CUOTA_CLUB</th>
+              <th>CUOTA_ROPA</th>
+              <th>VERIFICADO</th>
+              <th>EDITAR</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let player of players; let i = index">
+              <td>{{ player.playerId }}</td>
+              <td *ngIf="player.picturePlayer">
+                <div class="container">
+                  <img src="https://sphairatech.com/images/user/{{ player.picturePlayer }}" alt="user-player" width="50"
+                    height="50" class="rounded-circle me-2">
+                </div>
+              </td>
+              <td *ngIf="!player.picturePlayer">
+                <div class="container">
+                  <span class="bi bi-person" style="font-size: 3rem;"></span>
+                </div>
+              </td>
+              <td>{{ player.nombre }}</td>
+              <td>{{ player.apellido }}</td>
+              <td>{{ player.nameTeam }}</td>
+              <td>{{ player.estado }}</td>
+              <td>{{ player.ropa }}</td>
+              <td>{{ player.pagado }}</td>
+              <td>{{ player.restante }}</td>
+              <td>{{ player.cuota }}</td>
+              <td>{{ player.cuotaSinRopa }}</td>
+              <td>
+                <ng-container *ngIf="player.verify === 0">
+                  <i class="bi bi-x-circle text-danger" style="cursor: pointer;" (click)="invitarJugador(player.playerId, player.teamId)"></i>
+                  <i class="bi bi-envelope text-danger ms-2" style="cursor: pointer;" (click)="invitarJugador(player.playerId, player.teamId)"></i>
+                </ng-container>
+                <ng-container *ngIf="player.verify === 1">
+                  <i class="bi bi-check-circle text-success"></i>
+                </ng-container>
+              </td>      
+              <td>
+                <i class="bi bi-pencil" style="cursor: pointer;" (click)="openModalEditar(player.playerId)"></i>
+              </td>        
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div id="button_datatable">
+    </div>
+  </div>
 </div>
 
 <!-- Modal para la creación de equipo con información adicional -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="standard-modalLabel">Crea un equipo</h5>
-          <!-- Botón de cerrar con un icono -->
-          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
-        </div>
-        <div class="modal-body">
-          <form (ngSubmit)="createUpdateSettings()">
-            <div class="mb-3">
-              <label for="cuotaConRopa" class="form-label">Precio de la cuota con ropa:</label>
-              <input type="text" class="form-control" id="cuotaConRopa" name="cuotaConRopa" [(ngModel)]="cuota.cuotaConRopa">
-            </div>
-            <div class="mb-3">
-              <label for="cuotaSinRopa" class="form-label">Precio de la cuota sin ropa:</label>
-              <input type="text" class="form-control" id="cuotaSinRopa" name="cuotaSinRopa" [(ngModel)]="cuota.cuotaSinRopa">
-            </div>
-            <div class="mb-3">
-              <label for="fraccionado" class="form-label">Permitir Cuota Fraccionada:</label>
-              <select class="form-control" id="fraccionado" name="fraccionado" [(ngModel)]="cuota.fraccionado" (click)="selecFraccionado()">
-                <option value="0">No</option>
-                <option value="1">Sí</option>
-              </select>
-            </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="standard-modalLabel">Cuota del club</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="createUpdateSettings()">
+          <div class="mb-3">
+            <label for="cuotaConRopa" class="form-label">Precio de la cuota del club:</label>
+            <input type="text" class="form-control" id="cuotaConRopa" name="cuotaConRopa"
+              [(ngModel)]="cuota.cuotaConRopa">
+          </div>
+          <div class="mb-3">
+            <label for="cuotaSinRopa" class="form-label">Precio de la cuota de la ropa:</label>
+            <input type="text" class="form-control" id="cuotaSinRopa" name="cuotaSinRopa"
+              [(ngModel)]="cuota.cuotaSinRopa">
+          </div>
+          <div class="mb-3">
+            <label for="fraccionado" class="form-label">Permitir Cuota Fraccionada:</label>
+            <select class="form-control" id="fraccionado" name="fraccionado" [(ngModel)]="cuota.fraccionado"
+              (click)="selecFraccionado()">
+              <option value="0">No</option>
+              <option value="1">Sí</option>
+            </select>
+          </div>
+          <div class="mb-3">
             <h2>Repartición de las cuotas</h2>
-            <p>Puedes establecer el precio de cada cuota hasta un máximo de 3, en caso de ser pago único, rellenar solo la cuota uno con y sin ropa</p>
-            <div class="mb-3">
-              <label for="pagoConUno" class="form-label">Cuota 1 con ropa:</label>
-              <input type="text" class="form-control" id="pagoConUno" name="pagoConUno" [(ngModel)]="cuota.pagoConUno">
-            </div>
-            <div class="mb-3" *ngIf="isFraccionado">
-              <label for="pagoConDos" class="form-label">Cuota 2 con ropa:</label>
-              <input type="text" class="form-control" id="pagoConDos" name="pagoConDos" [(ngModel)]="cuota.pagoConDos">
-            </div>
-            <div class="mb-3" *ngIf="isFraccionado">
-              <label for="pagoConTres" class="form-label">Cuota 3 con ropa:</label>
-              <input type="text" class="form-control" id="pagoConTres" name="pagoConTres" [(ngModel)]="cuota.pagoConTres">
-            </div>
-            <div class="mb-3">
-              <label for="pagoSinUno" class="form-label">Cuota 1 sin ropa:</label>
-              <input type="text" class="form-control" id="pagoSinUno" name="pagoSinUno" [(ngModel)]="cuota.pagoSinUno">
-            </div>
-            <div class="mb-3" *ngIf="isFraccionado">
-              <label for="pagoSinDos" class="form-label">Cuota 2 sin ropa:</label>
-              <input type="text" class="form-control" id="pagoSinDos" name="pagoSinDos" [(ngModel)]="cuota.pagoSinDos">
-            </div>
-            <div class="mb-3" *ngIf="isFraccionado">
-              <label for="pagoSinTres" class="form-label">Cuota 3 sin ropa:</label>
-              <input type="text" class="form-control" id="pagoSinTres" name="pagoSinTres" [(ngModel)]="cuota.pagoSinTres">
-            </div>
-            <div class="mb-3">
-              <label for="numeroCuentaBanco" class="form-label">Número de Cuenta del Banco:</label>
-              <input type="text" class="form-control" id="numeroCuentaBanco" name="numeroCuentaBanco" [(ngModel)]="cuota.cuotaSinRopa">
-            </div>
-            <div class="modal-footer">
-              <!-- Botón para guardar el nuevo equipo -->
-              <button type="submit" class="btn btn-success float-end">Guardar</button>
-            </div>
-          </form>
-        </div>
+            <p>Puedes establecer el precio de cada cuota hasta un máximo de 3, en caso de ser pago único, rellenar solo
+              la cuota uno con y sin ropa</p>
+          </div>
+          <div class="mb-3">
+            <label for="pagoConUno" class="form-label">Cuota club 1:</label>
+            <input type="text" class="form-control" id="pagoConUno" name="pagoConUno" [(ngModel)]="cuota.pagoConUno">
+          </div>
+          <div class="mb-3" *ngIf="isFraccionado">
+            <label for="pagoConDos" class="form-label">Cuota club 2:</label>
+            <input type="text" class="form-control" id="pagoConDos" name="pagoConDos" [(ngModel)]="cuota.pagoConDos">
+          </div>
+          <div class="mb-3" *ngIf="isFraccionado">
+            <label for="pagoConTres" class="form-label">Cuota club 3:</label>
+            <input type="text" class="form-control" id="pagoConTres" name="pagoConTres" [(ngModel)]="cuota.pagoConTres">
+          </div>
+          <div class="mb-3">
+            <label for="pagoSinUno" class="form-label">Cuota ropa 1:</label>
+            <input type="text" class="form-control" id="pagoSinUno" name="pagoSinUno" [(ngModel)]="cuota.pagoSinUno">
+          </div>
+          <div class="mb-3" *ngIf="isFraccionado">
+            <label for="pagoSinDos" class="form-label">Cuota ropa 2:</label>
+            <input type="text" class="form-control" id="pagoSinDos" name="pagoSinDos" [(ngModel)]="cuota.pagoSinDos">
+          </div>
+          <div class="mb-3" *ngIf="isFraccionado">
+            <label for="pagoSinTres" class="form-label">Cuota ropa 3:</label>
+            <input type="text" class="form-control" id="pagoSinTres" name="pagoSinTres" [(ngModel)]="cuota.pagoSinTres">
+          </div>
+          <div class="mb-3">
+            <label for="banco" class="form-label">Número de Cuenta del Banco:</label>
+            <input type="text" class="form-control" id="banco" name="banco" [(ngModel)]="cuota.banco">
+          </div>
+          <div class="mb-3">
+            <label for="asunto" class="form-label">Explicación para el asunto:</label>
+            <textarea class="form-control" id="asunto" rows="5" name="asunto"
+              placeholder="Ejemplo: Al realizar la transferencia, ponga nombre + DNI + Equipo (Alevin B)"
+              [(ngModel)]="cuota.asunto"></textarea>
+          </div>
+          <div class="modal-footer">
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="submit" class="btn btn-success float-end">Guardar</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
-  
+</div>
+
+<!-- Modal para invitar un jugador por mail -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalInvitar}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Invitar a {{ nombreJugador }}</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalInvitar()"></button>
+      </div>
+      <div class="modal-body">
+        <p *ngIf="isMenor">Puesto que el jugador es menor de 14 años, has de invitar a un padre o tutor, introduce su
+          correo
+          electrónico de a quíen vas a invitar. Por favor verifica que la cuenta de
+          correo sea correcta.</p>
+        <p *ngIf="!isMenor">Introduce el correo electrónico del jugador que quieres invitar. Por favor verifica que la
+          cuenta de
+          correo sea correcta.</p>
+        <form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="enviarMailJugador()">
+          <div class="mb-3" style="text-align: center;">
+            <div class="mb-3">
+              <label for="mail" class="form-label">Correo electrónico</label>
+              <input type="email" class="form-control input-login" id="mail" formControlName="mail">
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-success float-end">Invitar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para editar la cuota de un jugdor -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalJugador}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="standard-modalLabel">Couta del jugador</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalJugador()"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="createUpdateCuotaJugador()">
+          <div class="mb-3">
+            <label for="cuota" class="form-label">Precio de la cuota del club:</label>
+            <input type="text" class="form-control" id="cuota" name="cuota"
+              [(ngModel)]="jugador.cuota">
+          </div>
+          <div class="mb-3">
+            <label for="cuotaSinRopa" class="form-label">Precio de la cuota de la ropa:</label>
+            <input type="text" class="form-control" id="cuotaSinRopa" name="cuotaSinRopa"
+              [(ngModel)]="jugador.cuotaSinRopa">
+          </div>          
+          <div class="mb-3 d-flex">
+            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+              Guardado correctamente
+            </div>
+          </div>
+          <div class="modal-footer">
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="submit" class="btn btn-success float-end">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

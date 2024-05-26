@@ -8,6 +8,9 @@ import { HttpClient } from '@angular/common/http';
 import * as $ from 'jquery';
 import 'datatables.net';
 import { CuotasClub } from 'src/app/core/services/models/club.model';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { RegisterService } from 'src/app/core/services/register/register.service';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-contabilidad',
@@ -20,12 +23,28 @@ export class ContabilidadComponent implements OnInit {
   userId!: number;
 
   players: any[] = [];
+  jugador: any =
+    { playerId: 0, picturePlayer: '', nombre: 'Nombre1', apellido: 'Apellido1', nameTeam: 'Equipo1', verify: 0, cuota: 0, cuotaSinRopa: 0, teamId:  0};
   cuota: CuotasClub = new CuotasClub({});
-  
+
   datosCargados: boolean = false;
 
   showModal: boolean = false;
+  showModalJugador: boolean = false;
   isFraccionado: boolean = false;
+  showModalInvitar = false;
+
+  nombreJugador: string = '';
+  isMenor: boolean = false;
+  correoElectronico: string = '';
+  selectedPlayerId: number = 0;
+  selectedTeamId: number = 0;
+
+  userForm: FormGroup = this.fb.group({
+    mail: ['', Validators.email],
+  });
+
+  showAlert: boolean = false;
 
   constructor(
     private loginService: LoginService,
@@ -33,11 +52,14 @@ export class ContabilidadComponent implements OnInit {
     private route: ActivatedRoute,
     private teamService: TeamService,
     private elementRef: ElementRef,
-    private http: HttpClient) { }
+    private http: HttpClient,
+    private registerService: RegisterService,
+    private snackBar: MatSnackBar,
+    private fb: FormBuilder) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
-      this.usuarioActual = user; 
+      this.usuarioActual = user;
       this.userId = this.usuarioActual!.userId;
       // Suscribirse a los cambios en los parámetros de la URL
       this.route.params.subscribe(params => {
@@ -53,7 +75,9 @@ export class ContabilidadComponent implements OnInit {
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
-          this.players = response.data.players;
+          this.players = response.data.players !== null ? response.data.players : [];
+          this.cuota = response.data.cuotas !== null ? response.data.cuotas : new CuotasClub({});
+          this.isFraccionado = this.cuota.fraccionado === 1 ? true : false;
           setTimeout(() => {
             this.inicializarDataTable();
             this.datosCargados = true;
@@ -170,13 +194,109 @@ export class ContabilidadComponent implements OnInit {
     this.showModal = true;
   }
 
-  createUpdateSettings(){
-    //nada 
-    console.log(this.cuota);
+  createUpdateSettings() {
+    this.cuota.clubId = this.clubId;
+    this.teamService.createUpdateCuotaClub(this.cuota,).subscribe(
+      (response) => {
+        this.cuota = response.data;
+        // Cerrar el modal después de crear el equipo
+        this.cerrarModal();
+      },
+      (error) => {
+        console.error('Error al crear el equipo:', error);
+        // Puedes manejar el error según tus necesidades
+      }
+    );
   }
 
-  selecFraccionado(){
-    this.isFraccionado = this.cuota.fraccionado.toString() === "0"  ? false : true;
+  selecFraccionado() {
+    this.isFraccionado = this.cuota.fraccionado.toString() === "0" ? false : true;
+  }
+
+
+
+  invitarJugador(playerId: number, teamId: number): void {
+    this.selectedPlayerId = playerId;
+    this.selectedTeamId = teamId;
+    const jugadorSeleccionado = this.players.find(player => player.playerId === playerId);
+
+    this.nombreJugador = jugadorSeleccionado.nombre;
+
+    // Calcular la fecha actual
+    const fechaActual = new Date();
+
+    // Calcular la fecha de nacimiento del jugador
+    const fechaNacimiento = new Date(jugadorSeleccionado.fechaDeNacimiento);
+
+    // Calcular la edad del jugador
+    let edad = fechaActual.getFullYear() - fechaNacimiento.getFullYear();
+    const mesActual = fechaActual.getMonth() + 1;
+    const mesNacimiento = fechaNacimiento.getMonth() + 1;
+
+    // Si el mes actual es menor que el mes de nacimiento o si es el mismo mes pero el día actual es menor que el día de nacimiento,
+    // entonces el jugador no ha cumplido años todavía
+    if (mesActual < mesNacimiento || (mesActual === mesNacimiento && fechaActual.getDate() < fechaNacimiento.getDate())) {
+      edad--;
+    }
+
+    // Comprobar si el jugador es menor de 14 años
+    this.isMenor = edad < 14;
+    this.showModalInvitar = true;
+  }
+
+  cerrarModalInvitar() {
+    this.showModalInvitar = false;
+  }
+
+  enviarMailJugador() {
+    if (this.userForm.valid) {
+      let menor = 0;
+      if (this.isMenor) {
+        menor = 1;
+      }
+      this.registerService.invitePlayer(this.userForm.value.mail, this.selectedPlayerId, menor, this.selectedTeamId).pipe().subscribe(
+        res => {
+          this.cerrarModalInvitar();
+          const snackBarConfig = new MatSnackBarConfig();
+          snackBarConfig.duration = 5000;
+          snackBarConfig.horizontalPosition = 'center';
+          snackBarConfig.verticalPosition = 'bottom';
+          this.snackBar.open('Invitación enviada correctamente.', 'Cerrar', snackBarConfig);
+        }
+      )
+    }
+  }
+
+  openModalEditar(playerId: any) {
+    this.jugador = this.players.find(player => player.playerId === playerId);
+    this.showModalJugador = true;
+  }
+
+  cerrarModalJugador() {
+    this.showModalJugador = false;
+  }
+
+  createUpdateCuotaJugador() {
+    this.teamService.createUpdateCuotaPlayer(this.jugador.playerId.toString(), this.jugador.cuota, this.jugador.cuotaSinRopa).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.guardar();
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  guardar() {
+    this.showAlert = true;
+    setTimeout(() => {
+      this.showAlert = false;
+    }, 2000);
   }
 
 }
