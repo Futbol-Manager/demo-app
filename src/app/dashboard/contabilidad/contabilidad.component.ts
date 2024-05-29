@@ -7,7 +7,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { HttpClient } from '@angular/common/http';
 import * as $ from 'jquery';
 import 'datatables.net';
-import { CuotasClub } from 'src/app/core/services/models/club.model';
+import { CuotasClub, HistoryCuotasClub } from 'src/app/core/services/models/club.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RegisterService } from 'src/app/core/services/register/register.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
@@ -23,8 +23,9 @@ export class ContabilidadComponent implements OnInit {
   userId!: number;
 
   players: any[] = [];
+  playerSelected: any;
   jugador: any =
-    { playerId: 0, picturePlayer: '', nombre: 'Nombre1', apellido: 'Apellido1', nameTeam: 'Equipo1', verify: 0, cuota: 0, cuotaSinRopa: 0, teamId:  0};
+    { playerId: 0, picturePlayer: '', nombre: 'Nombre1', apellido: 'Apellido1', nameTeam: 'Equipo1', verify: 0, cuota: 0, cuotaSinRopa: 0, teamId: 0 };
   cuota: CuotasClub = new CuotasClub({});
 
   datosCargados: boolean = false;
@@ -33,6 +34,7 @@ export class ContabilidadComponent implements OnInit {
   showModalJugador: boolean = false;
   isFraccionado: boolean = false;
   showModalInvitar = false;
+  showModalAgregarPago = false;
 
   nombreJugador: string = '';
   isMenor: boolean = false;
@@ -45,6 +47,9 @@ export class ContabilidadComponent implements OnInit {
   });
 
   showAlert: boolean = false;
+  showAlertHistory: boolean = false;
+
+  historyPlayer: HistoryCuotasClub = new HistoryCuotasClub({});
 
   constructor(
     private loginService: LoginService,
@@ -297,6 +302,72 @@ export class ContabilidadComponent implements OnInit {
     setTimeout(() => {
       this.showAlert = false;
     }, 2000);
+  }
+
+  openModalPago(player: any) {
+    this.playerSelected = player;
+    this.teamService.getHistoryCuotaClubByPlayer(player.playerId.toString()).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.historyPlayer = response.data;
+        } else {
+          this.historyPlayer = new HistoryCuotasClub({});
+        }
+        this.showModalAgregarPago = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  cerrarModalAgregarPago() {
+    this.showModalAgregarPago = false;
+  }
+
+  createUpdateHistoryCuotaJugador() {
+    this.historyPlayer.clubId = this.clubId;
+    this.historyPlayer.teamId = this.playerSelected.teamId;
+    this.historyPlayer.playerId = this.playerSelected.playerId;
+    let p1 = 0;
+    let p2 = 0;
+    let p3 = 0;
+    p1 = this.historyPlayer.pagoUno !== null ? parseInt(this.historyPlayer.pagoUno) : 0;
+    p2 = this.historyPlayer.pagoDos !== null ? parseInt(this.historyPlayer.pagoDos) : 0;
+    p3 = this.historyPlayer.pagoTres !== null ? parseInt(this.historyPlayer.pagoTres) : 0;
+    let total = p1 +  p2 + p3;
+    this.historyPlayer.totalPagado = total.toString();
+    if(this.historyPlayer.estado === null) {
+      this.historyPlayer.estado = 'No ha pagado nada';
+    }
+    this.teamService.createUpdateHistoryCuotasClub(this.historyPlayer).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.historyPlayer = response.data;
+          if(this.historyPlayer.datePagoUno !== undefined && this.historyPlayer.datePagoUno.length > 10){
+            this.historyPlayer.datePagoUno = response.data.datePagoUno.substring(0, 10)
+          }
+          if(this.historyPlayer.datePagoDos !== null && this.historyPlayer.datePagoDos !== undefined && this.historyPlayer.datePagoDos.length > 10){
+            this.historyPlayer.datePagoDos = response.data.datePagoDos.substring(0, 10)
+          }
+          if(this.historyPlayer.datePagoTres !== null && this.historyPlayer.datePagoTres !== undefined && this.historyPlayer.datePagoTres.length > 10){
+            this.historyPlayer.datePagoTres = response.data.datePagoTres.substring(0, 10)
+          }
+          //TODO recuperar el player de la tabla y modificar su restante y demas, de paso echarle un ojo para corregir esa parte
+          this.showAlertHistory = true;
+          setTimeout(() => {
+            this.showAlertHistory = false;
+          }, 2000);
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
   }
 
 }

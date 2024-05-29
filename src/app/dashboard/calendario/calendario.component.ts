@@ -1725,6 +1725,8 @@ export class CalendarioComponent implements OnInit {
           let afavor = this.golesAvanzadoAFavor.length;
           let encontra = this.golesAvanzadoEnContra.length;
 
+          this.playerInfoPostPartido = resp.data.info;
+
           if (this.golesAvanzadoAFavor.length !== 0) {
             this.postPartido.golesAFavor = afavor;
           }
@@ -1765,7 +1767,7 @@ export class CalendarioComponent implements OnInit {
           this.golesAvanzadoEnContra = resp.data.golesEnContra;
           this.postPartido.golesAFavor = this.golesAvanzadoAFavor.length;
           this.postPartido.golesEnContra = this.golesAvanzadoEnContra.length;
-          
+
           this.borrar();
 
           //if (this.golesAvanzadoAFavor.length !== 0 || this.golesAvanzadoEnContra.length !== 0) this.toggleGolAvanzado(true, 0);
@@ -1784,7 +1786,7 @@ export class CalendarioComponent implements OnInit {
       this.showAlert = false;
     }, 2000);
   }
-  
+
   borrar() {
     this.showAlert2 = true;
     setTimeout(() => {

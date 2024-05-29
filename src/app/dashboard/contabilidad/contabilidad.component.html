@@ -37,7 +37,7 @@
               <th>CUOTA_CLUB</th>
               <th>CUOTA_ROPA</th>
               <th>VERIFICADO</th>
-              <th>EDITAR</th>
+              <th>ACCIONES</th>
             </tr>
           </thead>
           <tbody>
@@ -65,16 +65,21 @@
               <td>{{ player.cuotaSinRopa }}</td>
               <td>
                 <ng-container *ngIf="player.verify === 0">
-                  <i class="bi bi-x-circle text-danger" style="cursor: pointer;" (click)="invitarJugador(player.playerId, player.teamId)"></i>
-                  <i class="bi bi-envelope text-danger ms-2" style="cursor: pointer;" (click)="invitarJugador(player.playerId, player.teamId)"></i>
+                  <i class="bi bi-x-circle text-danger" style="cursor: pointer;"
+                    (click)="invitarJugador(player.playerId, player.teamId)"></i>
+                  <i class="bi bi-envelope text-danger ms-2" style="cursor: pointer;"
+                    (click)="invitarJugador(player.playerId, player.teamId)"></i>
                 </ng-container>
                 <ng-container *ngIf="player.verify === 1">
                   <i class="bi bi-check-circle text-success"></i>
                 </ng-container>
-              </td>      
+              </td>
               <td>
-                <i class="bi bi-pencil" style="cursor: pointer;" (click)="openModalEditar(player.playerId)"></i>
-              </td>        
+                <i class="bi bi-pencil" style="cursor: pointer;" (click)="openModalEditar(player.playerId)"
+                  title="Editar cuota del jugador"></i>
+                <i class="bi bi-wallet2 ms-2" style="cursor: pointer;" (click)="openModalPago(player)"
+                  title="Pagos del jugador"></i>
+              </td>
             </tr>
           </tbody>
         </table>
@@ -209,16 +214,104 @@
         <form (ngSubmit)="createUpdateCuotaJugador()">
           <div class="mb-3">
             <label for="cuota" class="form-label">Precio de la cuota del club:</label>
-            <input type="text" class="form-control" id="cuota" name="cuota"
-              [(ngModel)]="jugador.cuota">
+            <input type="text" class="form-control" id="cuota" name="cuota" [(ngModel)]="jugador.cuota">
           </div>
           <div class="mb-3">
             <label for="cuotaSinRopa" class="form-label">Precio de la cuota de la ropa:</label>
             <input type="text" class="form-control" id="cuotaSinRopa" name="cuotaSinRopa"
               [(ngModel)]="jugador.cuotaSinRopa">
-          </div>          
+          </div>
           <div class="mb-3 d-flex">
             <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+              Guardado correctamente
+            </div>
+          </div>
+          <div class="modal-footer">
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="submit" class="btn btn-success float-end">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para pagar la cuota de un jugdor -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalAgregarPago}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="standard-modalLabel">Pago del jugador</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalAgregarPago()"></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="createUpdateHistoryCuotaJugador()">
+          <div class="row mb-3">
+            <div class="col-6">
+              <label for="totalCuota" class="form-label">Total cuota:</label>
+              <input type="text" class="form-control" id="totalCuota" name="totalCuota"
+                [(ngModel)]="historyPlayer.totalCuota" disabled>
+            </div>
+            <div class="col-6">
+              <label for="totalPagado" class="form-label">Total pagado:</label>
+              <input type="text" class="form-control" id="totalPagado" name="totalPagado"
+                [(ngModel)]="historyPlayer.totalPagado" disabled>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-6">
+              <label for="pagoConRopa" class="form-label">Pago con ropa:</label>
+              <select class="form-control" id="pagoConRopa" name="pagoConRopa" [(ngModel)]="historyPlayer.pagoConRopa">
+                <option value="0">No</option>
+                <option value="1">Sí</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label for="estado" class="form-label">Estado:</label>
+              <select class="form-control" id="estado" name="estado" [(ngModel)]="historyPlayer.estado">
+                <option value="No ha pagado nada">No ha pagado nada</option>
+                <option value="Al corriente">Al corriente</option>
+                <option value="Pago completado">Pago completado</option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-6">
+              <label for="pagoUno" class="form-label">Primer pago:</label>
+              <input type="text" class="form-control" id="pagoUno" name="pagoUno" [(ngModel)]="historyPlayer.pagoUno">
+            </div>
+            <div class="col-6">
+              <label for="datePagoUno" class="form-label">Fecha pago:</label>
+              <input type="text" class="form-control" id="datePagoUno" name="datePagoUno"
+                [(ngModel)]="historyPlayer.datePagoUno">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="historyPlayer.fraccionado">
+            <div class="col-6">
+              <label for="pagoDos" class="form-label">Segundo pago:</label>
+              <input type="text" class="form-control" id="pagoDos" name="pagoDos" [(ngModel)]="historyPlayer.pagoDos">
+            </div>
+            <div class="col-6">
+              <label for="datePagoDos" class="form-label">Fecha pago:</label>
+              <input type="text" class="form-control" id="datePagoDos" name="datePagoDos"
+                [(ngModel)]="historyPlayer.datePagoDos">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="historyPlayer.fraccionado">
+            <div class="col-6">
+              <label for="pagoTres" class="form-label">Tercer pago:</label>
+              <input type="text" class="form-control" id="pagoTres" name="pagoTres"
+                [(ngModel)]="historyPlayer.pagoTres">
+            </div>
+            <div class="col-6">
+              <label for="datePagoTres" class="form-label">Fecha pago:</label>
+              <input type="text" class="form-control" id="datePagoTres" name="datePagoTres"
+                [(ngModel)]="historyPlayer.datePagoTres">
+            </div>
+          </div>
+          <div class="mb-3 d-flex">
+            <div *ngIf="showAlertHistory" class="col-6 alert alert-success mt-3" role="alert">
               Guardado correctamente
             </div>
           </div>

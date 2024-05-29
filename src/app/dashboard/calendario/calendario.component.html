@@ -20,12 +20,12 @@
     </div>
   </div>
 
-  <div class="container mt-3"
-    *ngIf="this.usuarioActual!.profileType.profileId > 2">
+  <div class="container mt-3" *ngIf="this.usuarioActual!.profileType.profileId > 2">
     <div class="row">
       <div class="col">
         <button class="btn btn-custom btn-sm" (click)="irAPantalla(5)">Cuotas</button>
       </div>
+    </div>
   </div>
 
   <!-- calendario.component.html -->
@@ -601,12 +601,12 @@
                 <div class="col-6">
                   <label for="golesAFavorAvanz" class="form-label">Goles a favor:</label>
                   <input type="number" class="form-control" id="golesAFavorAvanz" name="golesAFavorAvanz"
-                    [(ngModel)]="postPartido.golesAFavor">
+                    [(ngModel)]="postPartido.golesAFavor" disabled>
                 </div>
                 <div class="col-6">
                   <label for="golesEnContraAvanz" class="form-label">Goles en contra:</label>
                   <input type="number" class="form-control" id="golesEnContraAvanz" name="golesEnContraAvanz"
-                    [(ngModel)]="postPartido.golesEnContra">
+                    [(ngModel)]="postPartido.golesEnContra" disabled>
                 </div>
               </div>
               <div class="mb-3 d-flex">
@@ -807,7 +807,7 @@
                               <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
                             </div>
                           </div>
-                          
+
                           <div class="mb-3 d-flex">
                             <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
                               Guardado correctamente
@@ -905,7 +905,7 @@
                               <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
                             </div>
                           </div>
-                          
+
                           <div class="mb-3 d-flex">
                             <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
                               Guardado correctamente
@@ -1003,7 +1003,7 @@
                               <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
                             </div>
                           </div>
-                          
+
                           <div class="mb-3 d-flex">
                             <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
                               Guardado correctamente
@@ -1101,7 +1101,7 @@
                               <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
                             </div>
                           </div>
-                          
+
                           <div class="mb-3 d-flex">
                             <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
                               Guardado correctamente
@@ -1199,7 +1199,7 @@
                               <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
                             </div>
                           </div>
-                          
+
                           <div class="mb-3 d-flex">
                             <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
                               Guardado correctamente
@@ -1297,7 +1297,7 @@
                               <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
                             </div>
                           </div>
-                          
+
                           <div class="mb-3 d-flex">
                             <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
                               Guardado correctamente
@@ -1395,7 +1395,7 @@
                               <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
                             </div>
                           </div>
-                          
+
                           <div class="mb-3 d-flex">
                             <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
                               Guardado correctamente
@@ -1493,7 +1493,7 @@
                               <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
                             </div>
                           </div>
-                          
+
                           <div class="mb-3 d-flex">
                             <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
                               Guardado correctamente
@@ -1591,7 +1591,7 @@
                               <button type="button" class="btn btn-danger" (click)="borrarGol(0)">Borrar</button>
                             </div>
                           </div>
-                          
+
                           <div class="mb-3 d-flex">
                             <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
                               Guardado correctamente
@@ -2666,12 +2666,12 @@
                         <div class="col-6">
                           <label for="goles" class="form-label">Goles:</label>
                           <input type="number" class="form-control" id="goles" [(ngModel)]="playerInfoPostPartido.goles"
-                            name="goles">
+                            name="goles" disabled>
                         </div>
                         <div class="col-6">
                           <label for="asistencias" class="form-label">Asistencias:</label>
                           <input type="number" class="form-control" id="asistencias"
-                            [(ngModel)]="playerInfoPostPartido.asistencias" name="asistencias">
+                            [(ngModel)]="playerInfoPostPartido.asistencias" name="asistencias" disabled>
                         </div>
                       </div>
                       <div class="mb-3 d-flex">
@@ -3582,7 +3582,8 @@
                     <p><b>En caso de molestias, ¿afectan tu capacidad para entrenar o jugar?: </b> {{ pre.q4 }}</p>
                     <p><b>¿Cómo de motivado te sientes hoy para entrenar?: </b> {{ pre.q5 }} / 10</p>
                     <p><b>¿Cómo calificarías tu nivel de concentración hoy?: </b> {{ pre.q6 }} / 10</p>
-                    <p><b>Describe tu estado de ánimo actual con palabras clave (ej. contento, ansioso, frustrado): </b>
+                    <p><b>Describe tu estado de ánimo actual con palabras clave (ej. contento, ansioso, frustrado):
+                      </b>
                       {{ pre.q7 }}</p>
                     <p><b>¿Cómo calificarías la calidad de tu sueño anoche?: </b> {{ pre.q8 }} / 10</p>
                     <p><b>¿Cómo calificarías tu nivel de hidratación hoy?: </b> {{ pre.q9 }} / 10</p>
@@ -3681,7 +3682,8 @@
                     <p><b>En caso de molestias, ¿afectan tu capacidad para entrenar o jugar?: </b> {{ pre.q4 }}</p>
                     <p><b>¿Cómo de motivado te sientes hoy para jugar?: </b> {{ pre.q5 }} / 10</p>
                     <p><b>¿Cómo calificarías tu nivel de concentración hoy?: </b> {{ pre.q6 }} / 10</p>
-                    <p><b>Describe tu estado de ánimo actual con palabras clave (ej. contento, ansioso, frustrado): </b>
+                    <p><b>Describe tu estado de ánimo actual con palabras clave (ej. contento, ansioso, frustrado):
+                      </b>
                       {{ pre.q7 }}</p>
                     <p><b>¿Cómo calificarías la calidad de tu sueño anoche?: </b> {{ pre.q8 }} / 10</p>
                     <p><b>¿Cómo calificarías tu nivel de hidratación hoy?: </b> {{ pre.q9 }} / 10</p>

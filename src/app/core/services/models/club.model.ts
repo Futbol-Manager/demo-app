@@ -32,6 +32,9 @@ export class CuotasClub {
     estado: string;
     teamId: number;
     restante: string;
+    datePagoUno: string;
+    datePagoDos: string;
+    datePagoTres: string;
 
     constructor(object: any) {
         this.cuotasClubId = object.cuotasClubId || 0;
@@ -50,6 +53,48 @@ export class CuotasClub {
         this.estado = object.estado || '';
         this.teamId = object.teamId || 0;
         this.restante = object.restante || '';
+        this.datePagoUno = object.datePagoUno || '';
+        this.datePagoDos = object.datePagoDos || '';
+        this.datePagoTres = object.datePagoTres || '';
+    }
+
+}
+
+export class HistoryCuotasClub {
+    historyCuotasClubId: number;
+    clubId: number;
+    teamId: string;
+    playerId: string;
+    temporada: string;
+    estado: string;
+    fraccionado: string;
+    pagoConRopa: string;
+    pagoUno: string;
+    datePagoUno: string;
+    pagoDos: string;
+    datePagoDos: string;
+    pagoTres: string;
+    datePagoTres: string;
+    totalPagado: string;
+    totalCuota: string;
+
+    constructor(object: any) {
+        this.historyCuotasClubId = object.historyCuotasClubId || 0;
+        this.clubId = object.clubId || 0;
+        this.teamId = object.teamId || 0;
+        this.playerId = object.playerId || 0;
+        this.temporada = object.temporada || '';
+        this.estado = object.estado || '';
+        this.fraccionado = object.fraccionado || 0;
+        this.pagoConRopa = object.pagoConRopa || 0;
+        this.pagoUno = object.pagoUno || '';
+        this.datePagoUno = object.datePagoUno || '';
+        this.pagoDos = object.pagoDos || '';
+        this.datePagoDos = object.datePagoDos || '';
+        this.pagoTres = object.pagoTres || '';
+        this.totalPagado = object.totalPagado || '';
+        this.datePagoTres = object.datePagoTres || '';
+        this.totalCuota = object.totalCuota || '';
     }
 
 }
