@@ -48,6 +48,7 @@ export class ContabilidadComponent implements OnInit {
 
   showAlert: boolean = false;
   showAlertHistory: boolean = false;
+  isFraccionadoPlayer: boolean = false;
 
   historyPlayer: HistoryCuotasClub = new HistoryCuotasClub({});
 
@@ -218,7 +219,9 @@ export class ContabilidadComponent implements OnInit {
     this.isFraccionado = this.cuota.fraccionado.toString() === "0" ? false : true;
   }
 
-
+  selecFraccionadoPlayer() {
+    this.isFraccionadoPlayer = this.historyPlayer.fraccionado.toString() === "0" ? false : true;
+  }
 
   invitarJugador(playerId: number, teamId: number): void {
     this.selectedPlayerId = playerId;
@@ -311,6 +314,7 @@ export class ContabilidadComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.historyPlayer = response.data;
+          this.isFraccionadoPlayer = this.historyPlayer.fraccionado === '1' ? true : false;
         } else {
           this.historyPlayer = new HistoryCuotasClub({});
         }
@@ -336,23 +340,27 @@ export class ContabilidadComponent implements OnInit {
     p1 = this.historyPlayer.pagoUno !== null ? parseInt(this.historyPlayer.pagoUno) : 0;
     p2 = this.historyPlayer.pagoDos !== null ? parseInt(this.historyPlayer.pagoDos) : 0;
     p3 = this.historyPlayer.pagoTres !== null ? parseInt(this.historyPlayer.pagoTres) : 0;
-    let total = p1 +  p2 + p3;
+    let total = p1 + p2 + p3;
     this.historyPlayer.totalPagado = total.toString();
-    if(this.historyPlayer.estado === null) {
+    if (this.historyPlayer.estado === null) {
       this.historyPlayer.estado = 'No ha pagado nada';
+    }
+
+    if(this.historyPlayer.pagoConRopa === '0'){
+      this.historyPlayer.totalCuota = this.playerSelected.cuota;
     }
     this.teamService.createUpdateHistoryCuotasClub(this.historyPlayer).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.historyPlayer = response.data;
-          if(this.historyPlayer.datePagoUno !== undefined && this.historyPlayer.datePagoUno.length > 10){
+          if (this.historyPlayer.datePagoUno !== null && this.historyPlayer.datePagoUno !== undefined && this.historyPlayer.datePagoUno.length > 10) {
             this.historyPlayer.datePagoUno = response.data.datePagoUno.substring(0, 10)
           }
-          if(this.historyPlayer.datePagoDos !== null && this.historyPlayer.datePagoDos !== undefined && this.historyPlayer.datePagoDos.length > 10){
+          if (this.historyPlayer.datePagoDos !== null && this.historyPlayer.datePagoDos !== undefined && this.historyPlayer.datePagoDos.length > 10) {
             this.historyPlayer.datePagoDos = response.data.datePagoDos.substring(0, 10)
           }
-          if(this.historyPlayer.datePagoTres !== null && this.historyPlayer.datePagoTres !== undefined && this.historyPlayer.datePagoTres.length > 10){
+          if (this.historyPlayer.datePagoTres !== null && this.historyPlayer.datePagoTres !== undefined && this.historyPlayer.datePagoTres.length > 10) {
             this.historyPlayer.datePagoTres = response.data.datePagoTres.substring(0, 10)
           }
           //TODO recuperar el player de la tabla y modificar su restante y demas, de paso echarle un ojo para corregir esa parte
@@ -368,6 +376,25 @@ export class ContabilidadComponent implements OnInit {
         console.error('Error al cargar el listado de equipos', error);
       }
     );
+  }
+
+  estadoPago(estado: string): number {
+    let resp = 0;
+    switch (estado) {
+      case 'No ha pagado nada':
+        resp = 0;
+        break;
+      case 'Al corriente':
+        resp = 3;
+        break;
+      case 'Pago completado':
+        resp = 2;
+        break;
+      case 'PDTE':
+        resp = 1;
+        break;
+    }
+    return resp;
   }
 
 }

@@ -1725,7 +1725,7 @@ export class CalendarioComponent implements OnInit {
           let afavor = this.golesAvanzadoAFavor.length;
           let encontra = this.golesAvanzadoEnContra.length;
 
-          this.playerInfoPostPartido = resp.data.info;
+          //this.playerInfoPostPartido = resp.data.info;
 
           if (this.golesAvanzadoAFavor.length !== 0) {
             this.postPartido.golesAFavor = afavor;

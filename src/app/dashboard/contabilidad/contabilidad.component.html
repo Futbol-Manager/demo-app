@@ -57,7 +57,20 @@
               <td>{{ player.nombre }}</td>
               <td>{{ player.apellido }}</td>
               <td>{{ player.nameTeam }}</td>
-              <td>{{ player.estado }}</td>
+              <td>
+                <ng-container *ngIf="estadoPago(player.estado) === 0">
+                  <i class="bi bi-x-circle text-danger" title="{{ player.estado }}"></i>
+                </ng-container>
+                <ng-container *ngIf="estadoPago(player.estado) === 1">
+                  <i class="bi bi-exclamation-triangle text-warning" title="{{ player.estado }}"></i>
+                </ng-container>
+                <ng-container *ngIf="estadoPago(player.estado) === 2">
+                  <i class="bi bi-check-circle text-success" title="{{ player.estado }}"></i>
+                </ng-container>
+                <ng-container *ngIf="estadoPago(player.estado) === 3">
+                  <i class="bi bi-check-circle text-success" title="{{ player.estado }}"></i>
+                </ng-container>
+              </td>
               <td>{{ player.ropa }}</td>
               <td>{{ player.pagado }}</td>
               <td>{{ player.restante }}</td>
@@ -287,7 +300,16 @@
                 [(ngModel)]="historyPlayer.datePagoUno">
             </div>
           </div>
-          <div class="row mb-3" *ngIf="historyPlayer.fraccionado">
+          <div class="row mb-3">
+            <div class="col-12">
+              <label for="fraccionado" class="form-label">Permitir pago fraccionado:</label>
+              <select class="form-control" id="fraccionado" name="fraccionado" [(ngModel)]="historyPlayer.fraccionado" (click)="selecFraccionadoPlayer()">
+                <option value="0">No</option>
+                <option value="1">Sí</option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="isFraccionadoPlayer">
             <div class="col-6">
               <label for="pagoDos" class="form-label">Segundo pago:</label>
               <input type="text" class="form-control" id="pagoDos" name="pagoDos" [(ngModel)]="historyPlayer.pagoDos">
@@ -298,7 +320,7 @@
                 [(ngModel)]="historyPlayer.datePagoDos">
             </div>
           </div>
-          <div class="row mb-3" *ngIf="historyPlayer.fraccionado">
+          <div class="row mb-3" *ngIf="isFraccionadoPlayer">
             <div class="col-6">
               <label for="pagoTres" class="form-label">Tercer pago:</label>
               <input type="text" class="form-control" id="pagoTres" name="pagoTres"
