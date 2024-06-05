@@ -24,7 +24,7 @@ export class CuotasClub {
     pagoConUno: string;
     pagoConDos: string;
     pagoConTres: string;
-    pagoSinUno: string;
+    pagoSinUno: string; //aqui iria el pago o cuota de la ropa
     pagoSinDos: string;
     pagoSinTres: string;
     banco: string;
@@ -35,6 +35,7 @@ export class CuotasClub {
     datePagoUno: string;
     datePagoDos: string;
     datePagoTres: string;
+	datePagoRopa: string;
 
     constructor(object: any) {
         this.cuotasClubId = object.cuotasClubId || 0;
@@ -56,6 +57,7 @@ export class CuotasClub {
         this.datePagoUno = object.datePagoUno || '';
         this.datePagoDos = object.datePagoDos || '';
         this.datePagoTres = object.datePagoTres || '';
+        this.datePagoRopa = object.datePagoRopa || '';
     }
 
 }
@@ -79,6 +81,8 @@ export class HistoryCuotasClub {
     totalCuota: string;
     stripeId: string;
     urlStripe: string;
+    pagoRopa: string;
+	datePagoRopa: string;
 
     constructor(object: any) {
         this.historyCuotasClubId = object.historyCuotasClubId || 0;
@@ -99,6 +103,8 @@ export class HistoryCuotasClub {
         this.totalCuota = object.totalCuota || '';
         this.stripeId = object.stripeId || '';
         this.urlStripe = object.urlStripe || '';
+        this.pagoRopa = object.pagoRopa || '';
+        this.datePagoRopa = object.datePagoRopa || '';
     }
 }
 

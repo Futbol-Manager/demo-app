@@ -45,7 +45,7 @@ export class InicioComponent implements OnInit {
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
       let profileId = this.usuarioActual!.profileType.profileId;
-      let playerId = this.usuarioActual!.playerId;      
+      let playerId = this.usuarioActual!.playerId;
       let userId = this.usuarioActual!.userId;
 
       if (profileId === 1) {
@@ -64,16 +64,18 @@ export class InicioComponent implements OnInit {
             console.error('Error al cargar el listado de equipos', error);
           }
         );
-      } 
-      
-      if (profileId < 3) {
+      }
+
+      // Cargar listado de clubes disponibles
+      this.cargarListadoClubes();
+
+      if (profileId === 2) {
         // Carga el listado de equipos al inicializar el componente
         this.cargarListadoEquipos();
-        // Cargar listado de clubes disponibles
-        this.cargarListadoClubes();
-      }
-      
-      if (profileId > 2 ) {
+      } else if (profileId === 1) {
+        // Carga el listado de equipos al inicializar el componente
+        this.cargarListadoEquiposForClub();
+      } else if (profileId > 2) {
         this.teamService.getTeamByPlayer(playerId.toString()).subscribe(
           (response: Response) => {
             // Verifica que la propiedad 'data' exista en la respuesta
@@ -95,6 +97,24 @@ export class InicioComponent implements OnInit {
   // Método para cargar el listado de equipos
   cargarListadoEquipos(): void {
     this.teamService.getTeams(this.usuarioActual!!.userId.toString()).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response && response.data && Array.isArray(response.data)) {
+          // Mapea los datos bajo 'data' a instancias del modelo Team
+          this.listTeam = response.data.map((team: TeamConJugadores) => new TeamConJugadores(team));
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+        this.datosCargados = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  cargarListadoEquiposForClub(): void {
+    this.teamService.getTeamByClub(this.usuarioActual!!.userId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data && Array.isArray(response.data)) {

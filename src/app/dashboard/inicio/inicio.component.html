@@ -5,7 +5,8 @@
       <div class="col">
         <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Contabilidad</button>
       </div>
-      <div class="col"*ngIf="this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2">
+      <div class="col"
+        *ngIf="this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2">
         <button class="btn btn-custom btn-sm" (click)="abrirModalCrearEquipo()">
           Crear un equipo
         </button>
@@ -35,13 +36,15 @@
               <div class="row" *ngFor="let team of listTeam">
                 <div class="col mb-3 rounded card" style="padding: 1.5em 2em 0.5em;">
                   <div class="row">
-                    <div class="col">
-                      <h5>{{ team.name }}</h5>
-                      <div class="row">
+                    <div class="col">                      
+                      <h5>{{ team.category }} {{ team.name }}</h5>
+                      <div class="row">                        
                         <div class="col">
                           <p>
-                            <strong>-</strong> {{ team.category }} {{ team.levelLeague }}
+                            <strong>-</strong> {{ team.levelLeague }}
                           </p>
+                        </div>
+                        <div class="col">
                         </div>
                         <div class="col">
                           <p>
@@ -62,7 +65,7 @@
                           </button>
                           <div class="hint">Entrar</div>
                         </div>
-                        <div class="btn-container" *ngIf="team.userId == this.usuarioActual!!.userId">
+                        <div class="btn-container"><!-- *ngIf="team.userId == this.usuarioActual!!.userId">--> 
                           <button class="btn btn-link text-danger"
                             (click)="confirmarEliminarEquipo(team.teamId, team.name)">
                             <i class="bi bi-trash"></i>
@@ -96,12 +99,12 @@
                             class="bi bi-trash icono-rojo"></i></a>
                       </div>
                     </div>
-                    <h5 class="card-title">{{ team.name }}</h5>
+                    <h5 class="card-title">{{ team.category }} {{ team.name }}</h5>
 
                     <div class="row">
                       <div class="col">
                         <p class="card-text">
-                          {{ team.category }} {{ team.levelLeague }}
+                           {{ team.levelLeague }}
                         </p>
                       </div>
                     </div>
@@ -144,8 +147,7 @@
         <form [formGroup]="crearEquipoForm" (ngSubmit)="crearEquipo()">
           <div class="mb-3">
             <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
-            <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
-              formControlName="categoryTypeId">
+            <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" formControlName="categoryTypeId">
               <!-- Opciones ajustadas según tus necesidades -->
               <option value="15">Senior</option>
               <option value="16">Juvenil</option>
@@ -190,8 +192,22 @@
             </select>
           </div>
           <div class="mb-3">
-            <label for="nombreEquipo" class="form-label">Nombre del Club:</label>
-            <input type="text" class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
+            <label for="nombreEquipo" class="form-label">Letra del equipo:</label>
+            <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="E">E</option>
+              <option value="F">F</option>
+              <option value="G">G</option>
+              <option value="H">H</option>
+              <option value="I">I</option>
+              <option value="J">J</option>
+              <option value="K">K</option>
+              <option value="L">L</option>
+              <option value="M">M</option>
+            </select>
           </div>
           <div class="mb-3">
             <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>

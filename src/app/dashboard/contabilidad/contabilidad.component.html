@@ -143,30 +143,59 @@
             <p>Puedes establecer el precio de cada cuota hasta un máximo de 3, en caso de ser pago único, rellenar solo
               la cuota uno con y sin ropa</p>
           </div>
-          <div class="mb-3">
-            <label for="pagoConUno" class="form-label">Cuota club 1:</label>
-            <input type="text" class="form-control" id="pagoConUno" name="pagoConUno" [(ngModel)]="cuota.pagoConUno">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="pagoConUno" class="form-label">Cuota club 1:</label>
+              <input type="text" class="form-control" id="pagoConUno" name="pagoConUno" [(ngModel)]="cuota.pagoConUno">
+            </div>
+            <div class="col-md-6">
+              <label for="datePagoUno" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="datePagoUno" name="datePagoUno"
+                [(ngModel)]="cuota.datePagoUno">
+            </div>
           </div>
-          <div class="mb-3" *ngIf="isFraccionado">
-            <label for="pagoConDos" class="form-label">Cuota club 2:</label>
-            <input type="text" class="form-control" id="pagoConDos" name="pagoConDos" [(ngModel)]="cuota.pagoConDos">
+          <div class="row mb-3" *ngIf="isFraccionado">
+            <div class="col-md-6">
+              <label for="pagoConDos" class="form-label">Cuota club 2:</label>
+              <input type="text" class="form-control" id="pagoConDos" name="pagoConDos" [(ngModel)]="cuota.pagoConDos">
+            </div>
+            <div class="col-md-6">
+              <label for="datePagoDos" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="datePagoDos" name="datePagoDos"
+                [(ngModel)]="cuota.datePagoDos">
+            </div>
           </div>
-          <div class="mb-3" *ngIf="isFraccionado">
-            <label for="pagoConTres" class="form-label">Cuota club 3:</label>
-            <input type="text" class="form-control" id="pagoConTres" name="pagoConTres" [(ngModel)]="cuota.pagoConTres">
+          <div class="row mb-3" *ngIf="isFraccionado">
+            <div class="col-md-6">
+              <label for="pagoConTres" class="form-label">Cuota club 3:</label>
+              <input type="text" class="form-control" id="pagoConTres" name="pagoConTres"
+                [(ngModel)]="cuota.pagoConTres">
+            </div>
+            <div class="col-md-6">
+              <label for="datePagoTres" class="form-label">Cuota club 1:</label>
+              <input type="date" class="form-control" id="datePagoTres" name="datePagoTres"
+                [(ngModel)]="cuota.datePagoTres">
+            </div>
           </div>
-          <div class="mb-3">
-            <label for="pagoSinUno" class="form-label">Cuota ropa 1:</label>
-            <input type="text" class="form-control" id="pagoSinUno" name="pagoSinUno" [(ngModel)]="cuota.pagoSinUno">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="pagoSinUno" class="form-label">Cuota ropa:</label>
+              <input type="text" class="form-control" id="pagoSinUno" name="pagoSinUno" [(ngModel)]="cuota.pagoSinUno">
+            </div>
+            <div class="col-md-6">
+              <label for="datePagoRopa" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="datePagoRopa" name="datePagoRopa"
+                [(ngModel)]="cuota.datePagoRopa">
+            </div>
           </div>
-          <div class="mb-3" *ngIf="isFraccionado">
+          <!--<div class="mb-3" *ngIf="isFraccionado">
             <label for="pagoSinDos" class="form-label">Cuota ropa 2:</label>
             <input type="text" class="form-control" id="pagoSinDos" name="pagoSinDos" [(ngModel)]="cuota.pagoSinDos">
           </div>
           <div class="mb-3" *ngIf="isFraccionado">
             <label for="pagoSinTres" class="form-label">Cuota ropa 3:</label>
             <input type="text" class="form-control" id="pagoSinTres" name="pagoSinTres" [(ngModel)]="cuota.pagoSinTres">
-          </div>
+          </div> -->
           <div class="mb-3">
             <label for="banco" class="form-label">Número de Cuenta del Banco:</label>
             <input type="text" class="form-control" id="banco" name="banco" [(ngModel)]="cuota.banco">

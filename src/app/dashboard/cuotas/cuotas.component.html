@@ -1,21 +1,20 @@
 <div *ngIf="datosCargados" class="container">
     <div class="btn-container mt-3">
         <div class="row">
-            <div class="col"><button class="btn btn-custom" (click)="navegarACalendario()">
+            <div class="col-6"><button class="btn btn-custom" (click)="navegarACalendario()">
                     <i class="bi bi-calendar"></i>
                 </button>
-                <div class="hint">Volver al calendario</div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <button class="btn btn-custom btn-sm" (click)="openModalStripe()">Stripe<i
+            <div class="col-6 text-end">
+                <button class="btn btn-custom btn-sm" (click)="openModalStripe()">Pagar con tarjeta<i
                         class="bi bi-stripe ms-2"></i></button>
-                <div class="hint">Pagar con Stripe</div>
             </div>
         </div>
     </div>
 
+    <h2 style="margin-top: 2em;">Puedes pagar por transferencia</h2>
+    <p>Puedes pagar por transferencia a la cuenta indicada poniendo el asunto o concepto y pulsando en mago manual para
+        avisar de ello.</p>
     <div class="row mb-3">
         <div class="col-md-6">
             <label for="asunto" class="form-label">Asunto o concepto pago de la cuota</label>
@@ -38,6 +37,90 @@
                 disabled>
         </div>
     </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <button class="btn btn-custom btn-sm">Pago manual</button>
+        </div>
+    </div>
+
+    <!-- Contenido para el dataTable -->
+    <div class="container mt-4">
+        <h2>Pagos temporada {{ temporada }}</h2>
+        <div class="row justify-content-between div-headdatatable">
+            <div class="col-md-auto mr-auto" id="dt-length">
+                <!-- Contenido para el dt-length -->
+            </div>
+            <div class="col-md-auto ml-auto" id="dt-search">
+            </div>
+        </div>
+        <div style="overflow-x: auto;">
+            <table id="dataTable" class="table table-bordered table-striped text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <!-- <th>EQUIPO_ID</th>-->
+                        <th>ESTADO</th>
+                        <!-- <th>FRACCIONADO</th>-->
+                        <th>ROPA</th>
+                        <th>CUOTA_1º</th>
+                        <th>FECHA_PAGO</th>
+                        <th>CUOTA_2º</th>
+                        <th>FECHA_PAGO</th>
+                        <th>CUOTA_3º</th>
+                        <th>FECHA_PAGO</th>
+                        <th>CUOTA_ROPA</th>
+                        <th>FECHA_PAGO</th>
+                        <th>PAGADO</th>
+                        <th>RESTANTE</th>
+                        <!-- <th>PRESTANTE</th>-->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let player of historyCuotasPlayer; let i = index">
+                        <td>{{ player.playerId }}</td>
+                        <!-- <td>{{ player.teamId }}</td> -->
+                        <td>
+                            <ng-container *ngIf="estadoPago(player.estado) === 0">
+                                <i class="bi bi-x-circle text-danger" title="No ha pagado nada"></i>
+                            </ng-container>
+                            <ng-container *ngIf="estadoPago(player.estado) === 1">
+                                <i class="bi bi-exclamation-triangle text-warning" title="{{ player.estado }}"></i>
+                            </ng-container>
+                            <ng-container *ngIf="estadoPago(player.estado) === 2">
+                                <i class="bi bi-check-circle text-success" title="{{ player.estado }}"></i>
+                            </ng-container>
+                            <ng-container *ngIf="estadoPago(player.estado) === 3">
+                                <i class="bi bi-check-circle text-success" title="{{ player.estado }}"></i>
+                            </ng-container>
+                        </td>
+                        <!-- <td>
+                            <ng-container *ngIf="estadoPago(player.fraccionado) === 0">
+                                No
+                            </ng-container>
+                            <ng-container *ngIf="estadoPago(player.fraccionado) === 1">
+                                Si
+                            </ng-container>
+                        </td>-->
+                        <td>{{ conRopa }}</td>
+                        <td>{{ player.pagoUno }}€</td>
+                        <td>{{ player.datePagoUno }}</td>
+                        <td>{{ player.pagoDos }}€</td>
+                        <td>{{ player.datePagoDos }}</td>
+                        <td>{{ player.pagoTres }}€</td>
+                        <td>{{ player.datePagoTres }}</td>
+                        <td>{{ player.pagoRopa }}€</td>
+                        <td>{{ player.datePagoRopa }}</td>
+                        <td>{{ player.totalPagado }}€</td>
+                        <td>{{ restante }}</td>
+                        <!-- <td>{{ player.restante }}</td> -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="button_datatable">
+    </div>
 </div>
 
 <!-- Modal para editar stripe -->
@@ -51,11 +134,38 @@
                 </div>
                 <div class="modal-body">
                     <form (ngSubmit)="makePayment()">
-                        <div class="mb-3">
+                        <!-- <div class="row mb-3">
                             <label for="amount" class="form-label">Cantidad a Pagar:</label>
-                            <input type="number" class="form-control" id="amount" [(ngModel)]="amount" name="amount" required>
+                            <input type="number" class="form-control" id="amount" [(ngModel)]="amount" name="amount"
+                                required>
+                        </div> -->
+                        <div class="row mb-3">
+                            <select class="form-control" id="amount" [(ngModel)]="amount" name="amount"
+                                (change)="onAmountChange($event)" required>
+                                <option [value]="99">
+                                    Selecciona una opcion
+                                </option>
+                                <option *ngIf="combo.cuotaUno !== ''" [value]="combo.cuotaUno">
+                                    1. Cuota uno - {{ combo.cuotaUno }} €
+                                </option>
+                                <option *ngIf="combo.cuotaDos !== ''" [value]="combo.cuotaDos">
+                                    2. Cuota dos - {{ combo.cuotaDos }} €
+                                </option>
+                                <option *ngIf="combo.cuotaTres !== ''" [value]="combo.cuotaTres">
+                                    3. Cuota tres - {{ combo.cuotaTres }} €
+                                </option>
+                                <option *ngIf="combo.cuotaRopa !== ''" [value]="combo.cuotaRopa">
+                                    4. Cuota ropa - {{ combo.cuotaRopa }} €
+                                </option>
+                                <option *ngIf="combo.cuotaTotalSinRopa !== ''" [value]="combo.cuotaTotalSinRopa">
+                                    5. Cuota total sin ropa - {{ combo.cuotaTotalSinRopa }} €
+                                </option>
+                                <option *ngIf="combo.cuotaTotalConRopa !== ''" [value]="combo.cuotaTotalConRopa">
+                                    6. Cuota total con ropa - {{ combo.cuotaTotalConRopa }} €
+                                </option>
+                            </select>
                         </div>
-                        <div class="mb-3">
+                        <div class="row mb-3">
                             <div id="card-element"></div>
                         </div>
                         <button type="submit" class="btn btn-success">Pagar</button>

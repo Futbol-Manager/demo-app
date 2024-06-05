@@ -1,0 +1,20 @@
+table {
+    width: 100%;
+    /* Ajusta según sea necesario */
+    border-collapse: collapse;
+    /* Para eliminar espacios entre celdas */
+}
+
+th,
+td {
+    border: 1px solid black;
+    /* Opcional: para añadir bordes a las celdas */
+    text-align: center;
+    /* Centra horizontalmente */
+    vertical-align: middle;
+    /* Centra verticalmente */
+    padding: 10px;
+    /* Opcional: añade un poco de espacio alrededor del contenido */
+    height: 50px;
+    /* Ajusta la altura según sea necesario */
+}
