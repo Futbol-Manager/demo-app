@@ -77,6 +77,8 @@ export class HistoryCuotasClub {
     datePagoTres: string;
     totalPagado: string;
     totalCuota: string;
+    stripeId: string;
+    urlStripe: string;
 
     constructor(object: any) {
         this.historyCuotasClubId = object.historyCuotasClubId || 0;
@@ -95,6 +97,19 @@ export class HistoryCuotasClub {
         this.totalPagado = object.totalPagado || '';
         this.datePagoTres = object.datePagoTres || '';
         this.totalCuota = object.totalCuota || '';
+        this.stripeId = object.stripeId || '';
+        this.urlStripe = object.urlStripe || '';
+    }
+}
+
+
+export class PaymentRequest {
+    amount: number;
+    paymentMethodId: string;
+
+    constructor(object: any) {
+        this.paymentMethodId = object.paymentMethodId || '';
+        this.amount = object.amount || 0;
     }
 
 }

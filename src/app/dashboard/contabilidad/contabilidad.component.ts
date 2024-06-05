@@ -51,6 +51,9 @@ export class ContabilidadComponent implements OnInit {
   isFraccionadoPlayer: boolean = false;
 
   historyPlayer: HistoryCuotasClub = new HistoryCuotasClub({});
+  showModalStripe = false;
+  
+  email: string = '';
 
   constructor(
     private loginService: LoginService,
@@ -395,6 +398,31 @@ export class ContabilidadComponent implements OnInit {
         break;
     }
     return resp;
+  }
+
+  openModalStripe(){
+    this.showModalStripe = true;
+  }
+
+  cerrarModalStripe(){
+    this.showModalStripe = false;
+  }
+
+  onSubmit() {
+    if (this.email) {
+      this.teamService.createAccountStripe(this.email, this.clubId).subscribe(
+        (response: any) => {
+          if (response.data) {
+            window.open(response.data.url, '_blank');
+          } else {
+            alert('Error: ' + response.error);
+          }
+        },
+        (error) => {
+          alert('An error occurred: ' + error.message);
+        }
+      );
+    }
   }
 
 }

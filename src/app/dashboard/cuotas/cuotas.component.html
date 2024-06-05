@@ -7,10 +7,17 @@
                 <div class="hint">Volver al calendario</div>
             </div>
         </div>
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-custom btn-sm" (click)="openModalStripe()">Stripe<i
+                        class="bi bi-stripe ms-2"></i></button>
+                <div class="hint">Pagar con Stripe</div>
+            </div>
+        </div>
     </div>
 
     <div class="row mb-3">
-        <div class="col-md-6">            
+        <div class="col-md-6">
             <label for="asunto" class="form-label">Asunto o concepto pago de la cuota</label>
             <input type="text" class="form-control" id="asunto" name="asunto" [(ngModel)]="cuota.asunto" disabled>
         </div>
@@ -21,13 +28,40 @@
     </div>
 
     <div class="row mb-3">
-        <div class="col-md-6">            
+        <div class="col-md-6">
             <label for="cuota" class="form-label">Precio de la cuota del Club:</label>
             <input type="text" class="form-control" id="cuota" name="cuota" [(ngModel)]="cuota.cuota" disabled>
         </div>
         <div class="col-md-6">
             <label for="cuotaRopa" class="form-label">Precio de la cuota de la ropa:</label>
-            <input type="text" class="form-control" id="cuotaRopa" name="cuotaRopa" [(ngModel)]="cuota.cuotaRopa" disabled>
+            <input type="text" class="form-control" id="cuotaRopa" name="cuotaRopa" [(ngModel)]="cuota.cuotaRopa"
+                disabled>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar stripe -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalStripe}">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Realizar Pago</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <form (ngSubmit)="makePayment()">
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Cantidad a Pagar:</label>
+                            <input type="number" class="form-control" id="amount" [(ngModel)]="amount" name="amount" required>
+                        </div>
+                        <div class="mb-3">
+                            <div id="card-element"></div>
+                        </div>
+                        <button type="submit" class="btn btn-success">Pagar</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -6,8 +6,14 @@
       <div class="col">
         <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Inicio</button>
       </div>
-      <div class="col">
+      <div class="col text-end">
         <button class="btn btn-custom btn-sm" (click)="abrirModal()">Ajustes</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 2em;">
+      <div class="col">
+        <button class="btn btn-custom btn-sm" (click)="openModalStripe()">Stripe<i
+            class="bi bi-stripe ms-2"></i></button>
       </div>
     </div>
 
@@ -303,7 +309,8 @@
           <div class="row mb-3">
             <div class="col-12">
               <label for="fraccionado" class="form-label">Permitir pago fraccionado:</label>
-              <select class="form-control" id="fraccionado" name="fraccionado" [(ngModel)]="historyPlayer.fraccionado" (click)="selecFraccionadoPlayer()">
+              <select class="form-control" id="fraccionado" name="fraccionado" [(ngModel)]="historyPlayer.fraccionado"
+                (click)="selecFraccionadoPlayer()">
                 <option value="0">No</option>
                 <option value="1">Sí</option>
               </select>
@@ -342,6 +349,30 @@
             <button type="submit" class="btn btn-success float-end">Guardar</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para editar stripe -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalStripe}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="stripeModalLabel">Configurar Stripe</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalStripe()"></button>
+        </div>
+        <div class="modal-body">
+          <form (ngSubmit)="onSubmit()" #stripeForm="ngForm">
+            <div class="mb-3">
+              <label for="email" class="form-label">Correo Electrónico</label>
+              <input type="email" class="form-control" id="email" name="email" [(ngModel)]="email" required>
+            </div>
+            <button type="submit" class="btn btn-primary" [disabled]="!stripeForm.form.valid">Crear Cuenta en
+              Stripe</button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
