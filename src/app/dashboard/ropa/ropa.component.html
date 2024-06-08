@@ -1,0 +1,74 @@
+<div *ngIf="datosCargados">
+
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col">
+                <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Inicio</button>
+            </div>
+        </div>
+
+        <!-- Contenido para el dataTable -->
+        <div class="container mt-4">
+            <h2>Ropa Jugadores</h2>
+            <div class="row justify-content-between div-headdatatable">
+                <div class="col-md-auto mr-auto" id="dt-length">
+                    <!-- Contenido para el dt-length -->
+                </div>
+                <div class="col-md-auto ml-auto" id="dt-search">
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <table id="dataTable" class="table table-bordered table-striped text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>IMAGEN</th>
+                            <th>NOMBRE</th>
+                            <th>APELLIDOS</th>
+                            <th>EQUIPO</th>
+                            <th>ABRIGO</th>
+                            <th>ESTADO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let ropa of ropaPlayers; let i = index">
+                            <td>{{ ropa.player.playerId }}</td>
+                            <td *ngIf="ropa.player.picturePlayer">
+                                <div class="container">
+                                    <img src="https://sphairatech.com/images/user/{{ ropa.player.picturePlayer }}"
+                                        alt="user-player" width="50" height="50" class="rounded-circle me-2">
+                                </div>
+                            </td>
+                            <td *ngIf="!ropa.player.picturePlayer">
+                                <div class="container">
+                                    <span class="bi bi-person" style="font-size: 3rem;"></span>
+                                </div>
+                            </td>
+                            <td>{{ ropa.player.nombre }}</td>
+                            <td>{{ ropa.player.apellido }}</td>
+                            <td>{{ ropa.team.category }} {{ ropa.team.name }}</td>
+                            <td>
+                                <div class="d-flex align-items-center" style="width: 100%;">
+                                  <select class="form-control me-2" [(ngModel)]="ropa.abrigo" (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
+                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+                                  </select>
+                                  <div class="d-flex">
+                                    <button *ngIf="ropa.abrigoOk === 0" class="btn btn-danger me-1" (click)="toggleAbrigoOk(ropa)">
+                                      <i class="bi bi-hand-thumbs-down"></i>
+                                    </button>
+                                    <button *ngIf="ropa.abrigoOk === 1" class="btn btn-success" (click)="toggleAbrigoOk(ropa)">
+                                      <i class="bi bi-hand-thumbs-up"></i>
+                                    </button>
+                                  </div>
+                                </div>
+                              </td>                              
+                            <td>{{ ropa.estado }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="button_datatable">
+        </div>
+    </div>
+</div>

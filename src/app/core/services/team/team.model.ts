@@ -1,7 +1,5 @@
 // team.model.ts
 
-import { PostPartidoId } from "../models/match.model";
-
 export class Team {
   teamId: number;
   levelLeague: string;

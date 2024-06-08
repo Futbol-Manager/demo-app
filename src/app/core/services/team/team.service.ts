@@ -81,7 +81,7 @@ export class TeamService {
     }
 
     // Método para crear o actualizar un equipo
-    createUpdateTeam(userId: string, team: TeamNew): Observable<Response> {
+    createUpdateTeam(userId: number, team: TeamNew): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente

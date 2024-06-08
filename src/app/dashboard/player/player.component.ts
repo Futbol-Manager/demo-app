@@ -56,7 +56,9 @@ export class PlayerComponent implements OnInit {
 
   userForm: FormGroup = this.fb.group({
     mail: ['', Validators.email],
-  });;
+  });
+
+  showPorteroOptions = false;
 
   constructor(private playerservice: PlayerService,
     private router: Router,
@@ -320,6 +322,14 @@ export class PlayerComponent implements OnInit {
   editarJugador(playerId: number): void {
     const jugadorSeleccionado = this.players.find(player => player.playerId === playerId);
     this.player = jugadorSeleccionado;
+    this.showPortero(this.player.posicion);
+    this.promedioPase();
+    this.promedioDefensa();
+    this.promedioFisico();
+    this.promedioHabilidad();
+    this.promedioMentalidad();
+    this.promedioTiro();
+    this.promedioPortero();
     this.showModal = true; // Suponiendo que tienes una variable que controla la visibilidad del modal de edición
   }
 
@@ -340,21 +350,37 @@ export class PlayerComponent implements OnInit {
       this.radarChart.destroy(); // Destruye el gráfico existente
     }
     const ctx = document.getElementById('radarChart') as HTMLCanvasElement;
+
+    let labels = ['Habilidad con balon', 'Pase', 'Tiro', 'Defensa', 'Físico', 'Mentalidad'];
+    let data = [
+      parseInt(this.selectedPlayer.habilidadConBalon),
+      parseInt(this.selectedPlayer.pase),
+      parseInt(this.selectedPlayer.tiro),
+      parseInt(this.selectedPlayer.defensa),
+      parseInt(this.selectedPlayer.fisico),
+      parseInt(this.selectedPlayer.mentalidad)
+    ];
+
+    if(this.selectedPlayer.posicion === 'Portero'){
+      labels = ['Habilidad con balon', 'Pase', 'Tiro', 'Defensa', 'Físico', 'Mentalidad', 'Portero'];
+      data = [
+        parseInt(this.selectedPlayer.habilidadConBalon),
+        parseInt(this.selectedPlayer.pase),
+        parseInt(this.selectedPlayer.tiro),
+        parseInt(this.selectedPlayer.defensa),
+        parseInt(this.selectedPlayer.fisico),
+        parseInt(this.selectedPlayer.mentalidad),
+        parseInt(this.selectedPlayer.portero)
+      ];
+    }
+    
     this.radarChart = new Chart(ctx, {
       type: 'radar',
       data: {
-        labels: ['Habilidad con balon', 'Pase', 'Tiro', 'Defensa', 'Físico', 'Mentalidad', 'Portero'],
+        labels: labels,
         datasets: [{
           label: 'Atributos del Jugador',
-          data: [
-            parseInt(this.selectedPlayer.habilidadConBalon),
-            parseInt(this.selectedPlayer.pase),
-            parseInt(this.selectedPlayer.tiro),
-            parseInt(this.selectedPlayer.defensa),
-            parseInt(this.selectedPlayer.fisico),
-            parseInt(this.selectedPlayer.mentalidad),
-            parseInt(this.selectedPlayer.portero)
-          ],
+          data: data,
           backgroundColor: 'rgba(255, 99, 132, 0.2)',
           borderColor: 'rgba(255, 99, 132, 1)',
           borderWidth: 1
@@ -442,8 +468,9 @@ export class PlayerComponent implements OnInit {
   promedioPase() {
     const a = parseFloat(this.player.paseCorto) || 0;
     const b = parseFloat(this.player.paseLargo) || 0;
+    const c = parseFloat(this.player.centros) || 0;
 
-    const promedio = Math.round((a + b) / 2); // Redondear al entero más cercano
+    const promedio = Math.round((a + b + c) / 3); // Redondear al entero más cercano
     this.player.pase = promedio.toString();
   }
 
@@ -575,6 +602,13 @@ export class PlayerComponent implements OnInit {
       }
     )
     }    
+  }
+
+  showPortero(value: string){
+    if(value === 'Portero')
+      this.showPorteroOptions = true;
+    else       
+      this.showPorteroOptions = false;
   }
 
 }

@@ -5,6 +5,13 @@
       <div class="col">
         <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Contabilidad</button>
       </div>
+      <div class="col">
+        <button class="btn btn-custom btn-sm" (click)="irAPantalla(2)">
+          Ropa
+        </button>
+      </div>
+    </div>
+    <div class="row" style="margin-top: 2em;">
       <div class="col"
         *ngIf="this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2">
         <button class="btn btn-custom btn-sm" (click)="abrirModalCrearEquipo()">
@@ -44,9 +51,7 @@
                             <strong>-</strong> {{ team.levelLeague }}
                           </p>
                         </div>
-                        <div class="col">
-                        </div>
-                        <div class="col">
+                        <div class="col text-end">
                           <p>
                             {{ team.trainingDays }}
                             <i class="bi bi-calendar-week ml-2"></i>

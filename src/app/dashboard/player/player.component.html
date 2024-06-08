@@ -217,7 +217,7 @@
                     </div>
                     <div class="form-group">
                         <label for="posicion">Posición:</label>
-                        <select class="form-control" id="posicion" name="posicion" [(ngModel)]="player.posicion">
+                        <select class="form-control" id="posicion" name="posicion" [(ngModel)]="player.posicion" (click)="showPortero(player.posicion)">
                             <option value="Portero">Portero</option>
                             <option value="Defensa">Defensa</option>
                             <option value="Centrocampista">Centrocampista</option>
@@ -265,7 +265,7 @@
                     <div class="form-group">
                         <label for="pase">Pase:</label>
                         <input type="text" class="form-control" id="pase" name="pase" [(ngModel)]="player.pase"
-                            placeholder="Pase">
+                            placeholder="Pase" disabled>
                     </div>
                     <div class="form-group d-flex">
                         <div class="col-6">
@@ -464,45 +464,47 @@
                                 placeholder="Mentalidad - Compostura" (change)="promedioMentalidad()">
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="portero">Portero:</label>
-                        <input type="text" class="form-control" id="portero" name="portero" [(ngModel)]="player.portero"
-                            placeholder="Portero" disabled>
-                    </div>
-                    <div class="form-group d-flex">
-                        <div class="col-6">
-                            <label for="porteroColocacion">Portero - Colocación:</label>
-                            <input type="text" class="form-control" id="porteroColocacion" name="porteroColocacion"
-                                [(ngModel)]="player.porteroColocacion" placeholder="Portero - Colocación"
-                                (change)="promedioPortero()">
+                    <div *ngIf="showPorteroOptions">
+                        <div class="form-group">
+                            <label for="portero">Portero:</label>
+                            <input type="text" class="form-control" id="portero" name="portero" [(ngModel)]="player.portero"
+                                placeholder="Portero" disabled>
                         </div>
-                        <div class="col-6">
-                            <label for="porteroEstirada">Portero - Estirada:</label>
-                            <input type="text" class="form-control" id="porteroEstirada" name="porteroEstirada"
-                                [(ngModel)]="player.porteroEstirada" placeholder="Portero - Estirada"
-                                (change)="promedioPortero()">
+                        <div class="form-group d-flex">
+                            <div class="col-6">
+                                <label for="porteroColocacion">Portero - Colocación:</label>
+                                <input type="text" class="form-control" id="porteroColocacion" name="porteroColocacion"
+                                    [(ngModel)]="player.porteroColocacion" placeholder="Portero - Colocación"
+                                    (change)="promedioPortero()">
+                            </div>
+                            <div class="col-6">
+                                <label for="porteroEstirada">Portero - Estirada:</label>
+                                <input type="text" class="form-control" id="porteroEstirada" name="porteroEstirada"
+                                    [(ngModel)]="player.porteroEstirada" placeholder="Portero - Estirada"
+                                    (change)="promedioPortero()">
+                            </div>
                         </div>
-                    </div>
-                    <div class="form-group d-flex">
-                        <div class="col-6">
-                            <label for="porteroParadas">Portero - Paradas:</label>
-                            <input type="text" class="form-control" id="porteroParadas" name="porteroParadas"
-                                [(ngModel)]="player.porteroParadas" placeholder="Portero - Paradas"
-                                (change)="promedioPortero()">
+                        <div class="form-group d-flex">
+                            <div class="col-6">
+                                <label for="porteroParadas">Portero - Paradas:</label>
+                                <input type="text" class="form-control" id="porteroParadas" name="porteroParadas"
+                                    [(ngModel)]="player.porteroParadas" placeholder="Portero - Paradas"
+                                    (change)="promedioPortero()">
+                            </div>
+                            <div class="col-6">
+                                <label for="porteroSaques">Portero - Saques:</label>
+                                <input type="text" class="form-control" id="porteroSaques" name="porteroSaques"
+                                    [(ngModel)]="player.porteroSaques" placeholder="Portero - Saques"
+                                    (change)="promedioPortero()">
+                            </div>
                         </div>
-                        <div class="col-6">
-                            <label for="porteroSaques">Portero - Saques:</label>
-                            <input type="text" class="form-control" id="porteroSaques" name="porteroSaques"
-                                [(ngModel)]="player.porteroSaques" placeholder="Portero - Saques"
-                                (change)="promedioPortero()">
-                        </div>
-                    </div>
-                    <div class="form-group d-flex">
-                        <div class="col-6">
-                            <label for="porteroReflejos">Portero - Reflejos:</label>
-                            <input type="text" class="form-control" id="porteroReflejos" name="porteroReflejos"
-                                [(ngModel)]="player.porteroReflejos" placeholder="Portero - Reflejos"
-                                (change)="promedioPortero()">
+                        <div class="form-group d-flex">
+                            <div class="col-6">
+                                <label for="porteroReflejos">Portero - Reflejos:</label>
+                                <input type="text" class="form-control" id="porteroReflejos" name="porteroReflejos"
+                                    [(ngModel)]="player.porteroReflejos" placeholder="Portero - Reflejos"
+                                    (change)="promedioPortero()">
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">

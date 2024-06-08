@@ -66,8 +66,22 @@
             </div>
             <div class="d-flex">
               <div class="m-3 col-6">
-                <label for="nombreEquipo" class="form-label">Nombre del Club:</label>
-                <input type="text" class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
+                <label for="nombreEquipo" class="form-label">Letra del equipo:</label>
+                <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                  <option value="E">E</option>
+                  <option value="F">F</option>
+                  <option value="G">G</option>
+                  <option value="H">H</option>
+                  <option value="I">I</option>
+                  <option value="J">J</option>
+                  <option value="K">K</option>
+                  <option value="L">L</option>
+                  <option value="M">M</option>
+                </select>
               </div>
               <div class="m-3 col-6">
                 <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
@@ -107,7 +121,7 @@
           <div class="row">
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">
               <div class="col mb-3" *ngFor="let coach of coaches">
-                <div class="card gradient">
+                <div class="card gradient" *ngIf="profileId !== 1">
                   <div class="card-body text-center">
                     <ng-container *ngIf="!coach.picture">
                       <span class="bi bi-person" style="font-size: 4rem;"></span>

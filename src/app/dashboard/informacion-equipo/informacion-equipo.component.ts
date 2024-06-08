@@ -28,6 +28,7 @@ export class InformacionEquipoComponent implements OnInit {
   });;
 
   showModal = false;
+  profileId = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -45,13 +46,14 @@ export class InformacionEquipoComponent implements OnInit {
       name: ["", Validators.required],
       objectiveTeam: ["", Validators.required],
       trainingDays: ["", Validators.required],
-      opinionTeam: ["", Validators.required],
+      opinionTeam: [""],
     });
   }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
-      this.usuarioActual = user;
+      this.usuarioActual = user;      
+      this.profileId = Number(this.usuarioActual!.profile);
     });
     this.route.params.subscribe(params => {
       // Obtener el valor de teamId de los parámetros
@@ -142,7 +144,7 @@ export class InformacionEquipoComponent implements OnInit {
       };
       // Llamada al servicio para editar el equipo
       // como estamos editando el equipo, podemos mandar userId = 0
-      this.teamService.createUpdateTeam('0', this.teamNew,).subscribe(
+      this.teamService.createUpdateTeam(this.usuarioActual!.userId, this.teamNew,).subscribe(
         (response) => {
           this.cargarInfoEquipo();
           const snackBarConfig = new MatSnackBarConfig();

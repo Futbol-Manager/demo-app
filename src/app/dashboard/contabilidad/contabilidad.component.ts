@@ -113,10 +113,16 @@ export class ContabilidadComponent implements OnInit {
       $(document).ready(function () {
         $('#dataTable').DataTable({
           paging: true,
-          pageLength: 25,
+          pageLength: 100,
           searching: true,
           ordering: true,
           order: [[0, 'desc']],
+          columnDefs: [
+            {
+              targets: [0],
+              visible: false
+            }
+          ],
           language: translation
         });
       });

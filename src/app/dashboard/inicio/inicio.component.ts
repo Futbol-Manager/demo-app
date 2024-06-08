@@ -96,7 +96,7 @@ export class InicioComponent implements OnInit {
 
   // Método para cargar el listado de equipos
   cargarListadoEquipos(): void {
-    this.teamService.getTeams(this.usuarioActual!!.userId.toString()).subscribe(
+    this.teamService.getTeams(this.usuarioActual!.userId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data && Array.isArray(response.data)) {
@@ -114,7 +114,7 @@ export class InicioComponent implements OnInit {
   }
 
   cargarListadoEquiposForClub(): void {
-    this.teamService.getTeamByClub(this.usuarioActual!!.userId.toString()).subscribe(
+    this.teamService.getTeamByClub(this.usuarioActual!.userId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data && Array.isArray(response.data)) {
@@ -187,7 +187,7 @@ export class InicioComponent implements OnInit {
       };
 
       // Llamada al servicio para crear el equipo
-      this.teamService.createUpdateTeam(this.usuarioActual!.userId.toString(), this.teamNew,).subscribe(
+      this.teamService.createUpdateTeam(this.usuarioActual!.userId, this.teamNew,).subscribe(
         (response) => {
           // Manejar la respuesta según tus necesidades
           console.log('Equipo creado con éxito:', response);
@@ -253,8 +253,13 @@ export class InicioComponent implements OnInit {
   }
 
   irAPantalla(id: number): void {
-    if (id === 1) {
-      this.router.navigate(['/dashboard/contabilidad', this.clubId]);
+    switch (id) {
+      case 1:
+        this.router.navigate(['/dashboard/contabilidad', this.clubId]);
+        break;
+      case 2:
+        this.router.navigate(['/dashboard/ropa', this.clubId]);
+        break;
     }
   }
 

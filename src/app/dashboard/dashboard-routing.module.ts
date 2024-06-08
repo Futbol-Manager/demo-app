@@ -11,6 +11,7 @@ import { InformacionEquipoComponent } from './informacion-equipo/informacion-equ
 import { TrainerComponent } from './trainer/trainer.component';
 import { ContabilidadComponent } from './contabilidad/contabilidad.component';
 import { CuotasComponent } from './cuotas/cuotas.component';
+import { RopaComponent } from './ropa/ropa.component';
 
 const routes: Routes = [
   {
@@ -25,6 +26,7 @@ const routes: Routes = [
       { path: 'estadisticas_jugadores/:teamId', component: EstadisticasJugadoresComponent },
       { path: 'entrenadores/:teamId', component: TrainerComponent },
       { path: 'contabilidad/:clubId', component: ContabilidadComponent },
+      { path: 'ropa/:clubId', component: RopaComponent },
       { path: 'cuotas/:teamId', component: CuotasComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
