@@ -46,7 +46,7 @@ export class RopaComponent implements OnInit {
       });
     });
 
-    this.clubService.getRopaJugadoresByClubForTemp(this.clubId.toString(),'2023').subscribe(
+    this.clubService.getRopaJugadoresByClubForTemp(this.clubId.toString(), '2023').subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
@@ -165,7 +165,7 @@ export class RopaComponent implements OnInit {
     search.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
   }
 
-  updateRopaJugador(ropa: RopaJugador){
+  updateRopaJugador(ropa: RopaJugador) {
     this.clubService.updateRopaJugadorByPk(ropa).subscribe(
       (response) => {
         //todo ok
@@ -177,8 +177,58 @@ export class RopaComponent implements OnInit {
     );
   }
 
-  toggleAbrigoOk(ropa: any): void {
-    ropa.abrigoOk = ropa.abrigoOk === 0 ? 1 : 0;
+  togglePrendaOk(ropa: any, key: number): void {
+    switch (key) {
+      case 1:
+        ropa.abrigoOk = ropa.abrigoOk === 0 ? 1 : 0;
+        break;
+      case 2:
+        ropa.camisetaJuegoOk = ropa.camisetaJuegoOk === 0 ? 1 : 0;
+        break;
+      case 3:
+        ropa.pantalonJuegoOk = ropa.pantalonJuegoOk === 0 ? 1 : 0;
+        break;
+      case 4:
+        ropa.camisetaEntrenoOk = ropa.camisetaEntrenoOk === 0 ? 1 : 0;
+        break;
+      case 5:
+        ropa.pantalonEntrenoOk = ropa.pantalonEntrenoOk === 0 ? 1 : 0;
+        break;
+      case 6:
+        ropa.sudaderaEntrenoOk = ropa.sudaderaEntrenoOk === 0 ? 1 : 0;
+        break;
+      case 7:
+        ropa.chaquetaChandalOk = ropa.chaquetaChandalOk === 0 ? 1 : 0;
+        break;
+      case 8:
+        ropa.pantalonChandalOk = ropa.pantalonChandalOk === 0 ? 1 : 0;
+        break;
+      case 9:
+        ropa.poloPaseoOk = ropa.poloPaseoOk === 0 ? 1 : 0;
+        break;
+      case 10:
+        ropa.pantalonPaseoOk = ropa.pantalonPaseoOk === 0 ? 1 : 0;
+        break;
+      case 11:
+        ropa.mediasOk = ropa.mediasOk === 0 ? 1 : 0;
+        break;
+      case 12:
+        ropa.chubasqueroOk = ropa.chubasqueroOk === 0 ? 1 : 0;
+        break;
+      case 13:
+        ropa.mochilaOk = ropa.mochilaOk === 0 ? 1 : 0;
+        break;
+    }
+
+    if (ropa.abrigoOk === 1 && ropa.camisetaEntrenoOk === 1 && ropa.camisetaJuegoOk === 1 && ropa.chaquetaChandalOk === 1 &&
+      ropa.chubasqueroOk === 1 && ropa.mediasOk === 1 && ropa.mochilaOk === 1 && ropa.pantalonChandalOk === 1 &&
+      ropa.pantalonEntrenoOk === 1 && ropa.pantalonJuegoOk === 1 && ropa.pantalonPaseoOk === 1 && ropa.poloPaseoOk === 1 &&
+      ropa.sudaderaEntrenoOk === 1) {      
+      ropa.estado = "1";
+  } else{      
+    ropa.estado = "0";
+  }
+  
     this.updateRopaJugador(ropa);
   }
 

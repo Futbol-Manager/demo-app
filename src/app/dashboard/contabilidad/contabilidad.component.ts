@@ -426,6 +426,7 @@ export class ContabilidadComponent implements OnInit {
         },
         (error) => {
           alert('An error occurred: ' + error.message);
+          console.log(error);
         }
       );
     }
