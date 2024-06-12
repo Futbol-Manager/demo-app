@@ -218,18 +218,46 @@ export class RopaComponent implements OnInit {
       case 13:
         ropa.mochilaOk = ropa.mochilaOk === 0 ? 1 : 0;
         break;
+      case 14:
+        ropa.camisetaJuegoDosOk = ropa.camisetaJuegoDosOk === 0 ? 1 : 0;
+        break;
+      case 15:
+        ropa.pantalonJuegoDosOk = ropa.pantalonJuegoDosOk === 0 ? 1 : 0;
+        break;
+      case 16:
+        ropa.mediasDosOk = ropa.mediasDosOk === 0 ? 1 : 0;
+        break;
     }
 
     if (ropa.abrigoOk === 1 && ropa.camisetaEntrenoOk === 1 && ropa.camisetaJuegoOk === 1 && ropa.chaquetaChandalOk === 1 &&
       ropa.chubasqueroOk === 1 && ropa.mediasOk === 1 && ropa.mochilaOk === 1 && ropa.pantalonChandalOk === 1 &&
       ropa.pantalonEntrenoOk === 1 && ropa.pantalonJuegoOk === 1 && ropa.pantalonPaseoOk === 1 && ropa.poloPaseoOk === 1 &&
-      ropa.sudaderaEntrenoOk === 1) {      
+      ropa.sudaderaEntrenoOk === 1 && ropa.camisetaJuegoDosOk === 1 && ropa.pantalonJuegoDosOk === 1 && ropa.mediasOk) {
       ropa.estado = "1";
-  } else{      
-    ropa.estado = "0";
-  }
-  
+    } else {
+      ropa.estado = "0";
+    }
+
     this.updateRopaJugador(ropa);
   }
+
+  exportTableToExcel(): void {
+    const table = document.getElementById('dataTable');
+    const tableHtml = table?.outerHTML.replace(/ /g, '%20');
+
+    const filename = 'ropa_jugadores.xls';
+
+    const dataType = 'application/vnd.ms-excel';
+    const downloadLink = document.createElement('a');
+
+    document.body.appendChild(downloadLink);
+
+    if (tableHtml) {
+      downloadLink.href = 'data:' + dataType + ', ' + tableHtml;
+      downloadLink.download = filename;
+      downloadLink.click();
+    }
+  }
+
 
 }
