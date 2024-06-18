@@ -6,6 +6,7 @@ import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Team, TeamNew } from './team.model';
 import { CuotasClub, HistoryCuotasClub } from '../models/club.model';
+import { RopaClub } from './club.model';
 
 @Injectable({
     providedIn: 'root'

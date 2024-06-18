@@ -67,3 +67,49 @@ export class RopaJugador {
         this.estado = object.estado ? object.estado : null;
     }
 }
+
+export class RopaClub {
+    ropaclubId: number;
+    clubId: number;
+    temporada: string;
+    camisetaJuego: string;
+    pantalonJuego: string;
+    medias: string;
+    camisetaJuegoDos: string;
+    pantalonJuegoDos: string;
+    mediasDos: string;
+    camisetaEntreno: string;
+    pantalonEntreno: string;
+    mediastres: string;
+    sudaderaEntreno: string;
+    chaquetaChandal: string;
+    pantalonChandal: string;
+    poloPaseo: string;
+    pantalonPaseo: string;
+    abrigo: string;
+    chubasquero: string;
+    mochila: string;
+
+    constructor(object: any) {
+        this.ropaclubId = object.ropaclubId ? object.ropaclubId : null;
+        this.clubId = object.clubId ? object.clubId : null;
+        this.temporada = object.temporada ? object.temporada : null;
+        this.camisetaJuego = object.camisetaJuego ? object.camisetaJuego : null;
+        this.pantalonJuego = object.pantalonJuego ? object.pantalonJuego : null;
+        this.camisetaEntreno = object.camisetaEntreno ? object.camisetaEntreno : null;
+        this.pantalonEntreno = object.pantalonEntreno ? object.pantalonEntreno : null;
+        this.sudaderaEntreno = object.sudaderaEntreno ? object.sudaderaEntreno : null;
+        this.chaquetaChandal = object.chaquetaChandal ? object.chaquetaChandal : null;
+        this.pantalonChandal = object.pantalonChandal ? object.pantalonChandal : null;
+        this.poloPaseo = object.poloPaseo ? object.poloPaseo : null;
+        this.pantalonPaseo = object.pantalonPaseo ? object.pantalonPaseo : null;
+        this.medias = object.medias ? object.medias : null;
+        this.abrigo = object.abrigo ? object.abrigo : null;
+        this.chubasquero = object.chubasquero ? object.chubasquero : null;
+        this.mochila = object.mochila ? object.mochila : null;
+        this.camisetaJuegoDos = object.camisetaJuegoDos ? object.camisetaJuegoDos : null;
+        this.pantalonJuegoDos = object.pantalonJuegoDos ? object.pantalonJuegoDos : null;
+        this.mediasDos = object.mediasDos ? object.mediasDos : null;
+        this.mediastres = object.mediastres ? object.mediastres : null;
+    }
+}

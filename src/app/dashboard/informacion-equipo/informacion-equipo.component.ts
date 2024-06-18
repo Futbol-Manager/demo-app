@@ -43,7 +43,7 @@ export class InformacionEquipoComponent implements OnInit {
       teamId: ["", Validators.required],
       categoryTypeId: ["", Validators.required],
       levelLeague: ["", Validators.required],
-      name: ["", Validators.required],
+      name: [""],
       objectiveTeam: ["", Validators.required],
       trainingDays: ["", Validators.required],
       opinionTeam: [""],
