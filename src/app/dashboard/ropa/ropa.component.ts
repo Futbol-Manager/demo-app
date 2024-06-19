@@ -27,7 +27,7 @@ export class RopaComponent implements OnInit {
   ropaPlayers: any[] = [];
   datosCargados = false;
 
-  abrigoSizes: string[] = ['', '4', '6', '8', '10', '12', '14', '16', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+  abrigoSizes: string[] = ['', '4', '6', '8', '10', '12', '14', '16','2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
   abrigoSizesMedias: string[] = ['', 'XS', 'S', 'M', 'L'];
   private abrigoSubject = new Subject<RopaJugador>();
   showModal = false;
