@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
-import { RopaClub, RopaJugador } from '../team/club.model';
+import { ClubCuotas, RopaClub, RopaJugador } from '../team/club.model';
 
 @Injectable({
   providedIn: 'root'
@@ -92,50 +92,91 @@ export class ClubService {
 
   }
 
-  
-
   getRopaClub(clubId: string, temp: string): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
     // Verifica si el token está presente
     if (token) {
-        // Configura las cabeceras con el token para la solicitud HTTP
-        const headers = new HttpHeaders({
-            'Authorization': `Bearer ${token}`
-        });
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
 
-        // Construye la URL para la solicitud
-        const url: string = environment.apiUrl + `club/getropaclub/${clubId}/${temp}`;
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/getropaclub/${clubId}/${temp}`;
 
-        // Realiza la solicitud HTTP con las cabeceras configuradas
-        return this.http.get<Response>(url, { headers });
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
     } else {
-        // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-        return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
-}
+  }
 
-// Método para crear o actualizar un equipo
-updateRopaClub(ropaClub: RopaClub): Observable<Response> {
+  // Método para crear o actualizar un equipo
+  updateRopaClub(ropaClub: RopaClub): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
-        // Configura las cabeceras con el token para la solicitud HTTP
-        const headers = new HttpHeaders({
-            'Authorization': `Bearer ${token}`
-        });
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
 
-        // Construye la URL para la solicitud
-        const url: string = environment.apiUrl + `club/updateropaclub`;
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/updateropaclub`;
 
-        // Realiza la solicitud HTTP con las cabeceras configuradas
-        return this.http.post<Response>(url,ropaClub, { headers });
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.post<Response>(url, ropaClub, { headers });
     } else {
-        // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-        return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
-}
+  }
+  getClubCuota(clubId: string, temp: string): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/getclubcuotas/${clubId}/${temp}`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  // Método para crear o actualizar un equipo
+  updateclubCuotas(clubCuota: ClubCuotas): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/updateclubcuotas`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.post<Response>(url, clubCuota, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
 
 }

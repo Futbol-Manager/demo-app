@@ -11,6 +11,8 @@ import { CuotasClub, HistoryCuotasClub } from 'src/app/core/services/models/club
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RegisterService } from 'src/app/core/services/register/register.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { ClubService } from 'src/app/core/services/club/club.service';
+import { ClubCuotas } from 'src/app/core/services/team/club.model';
 
 @Component({
   selector: 'app-contabilidad',
@@ -55,11 +57,14 @@ export class ContabilidadComponent implements OnInit {
   
   email: string = '';
 
+  clubCuotas: ClubCuotas = new ClubCuotas({});
+
   constructor(
     private loginService: LoginService,
     private router: Router,
     private route: ActivatedRoute,
     private teamService: TeamService,
+    private clubService: ClubService,
     private elementRef: ElementRef,
     private http: HttpClient,
     private registerService: RegisterService,
@@ -206,14 +211,42 @@ export class ContabilidadComponent implements OnInit {
   }
 
   abrirModal() {
-    this.showModal = true;
+    let temporada = this.clubCuotas.temporada;
+    this.clubService.getClubCuota(this.clubId.toString(), temporada === null ? '2024' : temporada).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.clubCuotas = response.data;
+          if (this.clubCuotas.numCuotas === 0) this.clubCuotas.numCuotas = 1;
+          this.clubCuotas.temporada = response.data.temporada === null ? temporada : response.data.temporada;
+        } else {
+          this.clubCuotas = new ClubCuotas({});
+          this.clubCuotas.numCuotas = 1;
+        }
+        this.showModal = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
   }
 
   createUpdateSettings() {
     this.cuota.clubId = this.clubId;
-    this.teamService.createUpdateCuotaClub(this.cuota,).subscribe(
+    if (this.clubCuotas.clubId === 0) this.clubCuotas.clubId = this.clubId;
+
+    this.teamService.createUpdateCuotaClub(this.cuota).subscribe(
       (response) => {
         this.cuota = response.data;
+      },
+      (error) => {
+        console.error('Error al crear el equipo:', error);
+        // Puedes manejar el error según tus necesidades
+      }
+    );
+    this.clubService.updateclubCuotas(this.clubCuotas,).subscribe(
+      (response) => {
+        this.clubCuotas = response.data;
         // Cerrar el modal después de crear el equipo
         this.cerrarModal();
       },

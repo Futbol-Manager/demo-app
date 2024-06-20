@@ -121,82 +121,6 @@
       <div class="modal-body">
         <form (ngSubmit)="createUpdateSettings()">
           <div class="mb-3">
-            <label for="cuotaConRopa" class="form-label">Precio de la cuota del club:</label>
-            <input type="text" class="form-control" id="cuotaConRopa" name="cuotaConRopa"
-              [(ngModel)]="cuota.cuotaConRopa">
-          </div>
-          <div class="mb-3">
-            <label for="cuotaSinRopa" class="form-label">Precio de la cuota de la ropa:</label>
-            <input type="text" class="form-control" id="cuotaSinRopa" name="cuotaSinRopa"
-              [(ngModel)]="cuota.cuotaSinRopa">
-          </div>
-          <div class="mb-3">
-            <label for="fraccionado" class="form-label">Permitir Cuota Fraccionada:</label>
-            <select class="form-control" id="fraccionado" name="fraccionado" [(ngModel)]="cuota.fraccionado"
-              (click)="selecFraccionado()">
-              <option value="0">No</option>
-              <option value="1">Sí</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <h2>Repartición de las cuotas</h2>
-            <p>Puedes establecer el precio de cada cuota hasta un máximo de 3, en caso de ser pago único, rellenar solo
-              la cuota uno con y sin ropa</p>
-          </div>
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label for="pagoConUno" class="form-label">Cuota club 1:</label>
-              <input type="text" class="form-control" id="pagoConUno" name="pagoConUno" [(ngModel)]="cuota.pagoConUno">
-            </div>
-            <div class="col-md-6">
-              <label for="datePagoUno" class="form-label">Fecha de pago:</label>
-              <input type="date" class="form-control" id="datePagoUno" name="datePagoUno"
-                [(ngModel)]="cuota.datePagoUno">
-            </div>
-          </div>
-          <div class="row mb-3" *ngIf="isFraccionado">
-            <div class="col-md-6">
-              <label for="pagoConDos" class="form-label">Cuota club 2:</label>
-              <input type="text" class="form-control" id="pagoConDos" name="pagoConDos" [(ngModel)]="cuota.pagoConDos">
-            </div>
-            <div class="col-md-6">
-              <label for="datePagoDos" class="form-label">Fecha de pago:</label>
-              <input type="date" class="form-control" id="datePagoDos" name="datePagoDos"
-                [(ngModel)]="cuota.datePagoDos">
-            </div>
-          </div>
-          <div class="row mb-3" *ngIf="isFraccionado">
-            <div class="col-md-6">
-              <label for="pagoConTres" class="form-label">Cuota club 3:</label>
-              <input type="text" class="form-control" id="pagoConTres" name="pagoConTres"
-                [(ngModel)]="cuota.pagoConTres">
-            </div>
-            <div class="col-md-6">
-              <label for="datePagoTres" class="form-label">Cuota club 1:</label>
-              <input type="date" class="form-control" id="datePagoTres" name="datePagoTres"
-                [(ngModel)]="cuota.datePagoTres">
-            </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-md-6">
-              <label for="pagoSinUno" class="form-label">Cuota ropa:</label>
-              <input type="text" class="form-control" id="pagoSinUno" name="pagoSinUno" [(ngModel)]="cuota.pagoSinUno">
-            </div>
-            <div class="col-md-6">
-              <label for="datePagoRopa" class="form-label">Fecha de pago:</label>
-              <input type="date" class="form-control" id="datePagoRopa" name="datePagoRopa"
-                [(ngModel)]="cuota.datePagoRopa">
-            </div>
-          </div>
-          <!--<div class="mb-3" *ngIf="isFraccionado">
-            <label for="pagoSinDos" class="form-label">Cuota ropa 2:</label>
-            <input type="text" class="form-control" id="pagoSinDos" name="pagoSinDos" [(ngModel)]="cuota.pagoSinDos">
-          </div>
-          <div class="mb-3" *ngIf="isFraccionado">
-            <label for="pagoSinTres" class="form-label">Cuota ropa 3:</label>
-            <input type="text" class="form-control" id="pagoSinTres" name="pagoSinTres" [(ngModel)]="cuota.pagoSinTres">
-          </div> -->
-          <div class="mb-3">
             <label for="banco" class="form-label">Número de Cuenta del Banco:</label>
             <input type="text" class="form-control" id="banco" name="banco" [(ngModel)]="cuota.banco">
           </div>
@@ -205,6 +129,194 @@
             <textarea class="form-control" id="asunto" rows="5" name="asunto"
               placeholder="Ejemplo: Al realizar la transferencia, ponga nombre + DNI + Equipo (Alevin B)"
               [(ngModel)]="cuota.asunto"></textarea>
+          </div>          
+          <div class="mb-3">
+            <label for="temporada" class="form-label">Temporada:</label>
+            <select class="form-control" id="temporada" name="temporada" [(ngModel)]="clubCuotas.temporada" (change)="abrirModal()">
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="totalCuota" class="form-label">Precio de la cuota del club:</label>
+            <input type="text" class="form-control" id="totalCuota" name="totalCuota"
+              [(ngModel)]="clubCuotas.totalCuota" disabled>
+          </div>
+          <div class="row mb-3" *ngIf="isFraccionado">
+            <div class="col-md-6">
+              <label for="cuotaRopa" class="form-label">Precio de la cuota de la ropa:</label>
+              <input type="text" class="form-control" id="cuotaRopa" name="cuotaRopa"
+                [(ngModel)]="clubCuotas.cuotaRopa">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaRopaDate" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaRopaDate" name="cuotaRopaDate"
+                [(ngModel)]="clubCuotas.cuotaRopaDate">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="numCuotas" class="form-label">Selecciona el número total de pagos o cuotas:</label>
+            <select class="form-control" id="numCuotas" name="numCuotas" [(ngModel)]="clubCuotas.numCuotas">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <h2>Repartición de las cuotas</h2>
+            <p>Segun el número total de pagos o cuotas que se haya seleccionado, ir rellenando cantidad y fecha de pago.
+            </p>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="cuotaUno" class="form-label">Cuota 1:</label>
+              <input type="text" class="form-control" id="cuotaUno" name="cuotaUno" [(ngModel)]="clubCuotas.cuotaUno">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaUnoDate" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaUnoDate" name="cuotaUnoDate"
+                [(ngModel)]="clubCuotas.cuotaUnoDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 1">
+            <div class="col-md-6">
+              <label for="cuotaDos" class="form-label">Cuota 2:</label>
+              <input type="text" class="form-control" id="cuotaDos" name="cuotaDos" [(ngModel)]="clubCuotas.cuotaDos">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaDosDate" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaDosDate" name="cuotaDosDate"
+                [(ngModel)]="clubCuotas.cuotaDosDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 2">
+            <div class="col-md-6">
+              <label for="cuotaTres" class="form-label">Cuota 3:</label>
+              <input type="text" class="form-control" id="cuotaTres" name="cuotaTres"
+                [(ngModel)]="clubCuotas.cuotaTres">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaTresDate" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaTresDate" name="cuotaTresDate"
+                [(ngModel)]="clubCuotas.cuotaTresDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 3">
+            <div class="col-md-6">
+              <label for="cuotaCuatro" class="form-label">Cuota 4:</label>
+              <input type="text" class="form-control" id="cuotaCuatro" name="cuotaCuatro"
+                [(ngModel)]="clubCuotas.cuotaCuatro">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaCuatroDate" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaCuatroDate" name="cuotaCuatroDate"
+                [(ngModel)]="clubCuotas.cuotaCuatroDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 4">
+            <div class="col-md-6">
+              <label for="cuotaCinco" class="form-label">Cuota 5:</label>
+              <input type="text" class="form-control" id="cuotaCinco" name="cuotaCinco"
+                [(ngModel)]="clubCuotas.cuotaCinco">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaCincoDate" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaCincoDate" name="cuotaCincoDate"
+                [(ngModel)]="clubCuotas.cuotaCincoDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 5">
+            <div class="col-md-6">
+              <label for="cuotaSeis" class="form-label">Cuota 6:</label>
+              <input type="text" class="form-control" id="cuotaSeis" name="cuotaSeis"
+                [(ngModel)]="clubCuotas.cuotaSeis">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaSeisDate" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaSeisDate" name="cuotaSeisDate"
+                [(ngModel)]="clubCuotas.cuotaSeisDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 6">
+            <div class="col-md-6">
+              <label for="cuotaSiete" class="form-label">Cuota 7:</label>
+              <input type="text" class="form-control" id="cuotaSiete" name="cuotaSiete"
+                [(ngModel)]="clubCuotas.cuotaSiete">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaSieteDate" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaSieteDate" name="cuotaSieteDate"
+                [(ngModel)]="clubCuotas.cuotaSieteDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 7">
+            <div class="col-md-6">
+              <label for="cuotaOcho" class="form-label">Cuota 8:</label>
+              <input type="text" class="form-control" id="cuotaOcho" name="cuotaOcho"
+                [(ngModel)]="clubCuotas.cuotaOcho">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaOchoDate" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaOchoDate" name="cuotaOchoDate"
+                [(ngModel)]="clubCuotas.cuotaOchoDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 8">
+            <div class="col-md-6">
+              <label for="cuotaNueve" class="form-label">Cuota 9:</label>
+              <input type="text" class="form-control" id="cuotaNueve" name="cuotaNueve"
+                [(ngModel)]="clubCuotas.cuotaNueve">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaNueveDate" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaNueveDate" name="cuotaNueveDate"
+                [(ngModel)]="clubCuotas.cuotaNueveDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 9">
+            <div class="col-md-6">
+              <label for="cuotaDiez" class="form-label">Cuota 10:</label>
+              <input type="text" class="form-control" id="cuotaDiez" name="cuotaDiez"
+                [(ngModel)]="clubCuotas.cuotaDiez">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaDiezDate" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaDiezDate" name="cuotaDiezDate"
+                [(ngModel)]="clubCuotas.cuotaDiezDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 10">
+            <div class="col-md-6">
+              <label for="cuotaOnce" class="form-label">Cuota 11:</label>
+              <input type="text" class="form-control" id="cuotaOnce" name="cuotaOnce"
+                [(ngModel)]="clubCuotas.cuotaOnce">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaOnceDate" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaOnceDate" name="cuotaOnceDate"
+                [(ngModel)]="clubCuotas.cuotaOnceDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 11">
+            <div class="col-md-6">
+              <label for="cuotaDoce" class="form-label">Cuota 12:</label>
+              <input type="text" class="form-control" id="cuotaDoce" name="cuotaDoce"
+                [(ngModel)]="clubCuotas.cuotaDoce">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaDoceDate" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaDoceDate" name="cuotaDoceDate"
+                [(ngModel)]="clubCuotas.cuotaDoceDate">
+            </div>
           </div>
           <div class="modal-footer">
             <!-- Botón para guardar el nuevo equipo -->

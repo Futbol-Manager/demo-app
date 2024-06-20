@@ -113,3 +113,72 @@ export class RopaClub {
         this.mediastres = object.mediastres ? object.mediastres : null;
     }
 }
+
+
+export class ClubCuotas {
+    clubCuotasId: number;
+    clubId: number;
+    cuotaRopa: string;
+    cuotaRopaDate: string;
+    numCuotas: number;
+    cuotaUno: string;
+    cuotaDos: string;
+    cuotaTres: string;
+    cuotaCuatro: string;
+    cuotaCinco: string;
+    cuotaSeis: string;
+    cuotaSiete: string;
+    cuotaOcho: string;
+    cuotaNueve: string;
+    cuotaDiez: string;
+    cuotaOnce: string;
+    cuotaDoce: string;
+    totalCuota: string;
+    cuotaUnoDate: string;
+    cuotaDosDate: string;
+    cuotaTresDate: string;
+    cuotaCuatroDate: string;
+    cuotaCincoDate: string;
+    cuotaSeisDate: string;
+    cuotaSieteDate: string;
+    cuotaOchoDate: string;
+    cuotaNueveDate: string;
+    cuotaDiezDate: string;
+    cuotaOnceDate: string;
+    cuotaDoceDate: string;
+    temporada: string;
+
+    constructor(object: any) {
+        this.clubCuotasId = object.clubCuotasId ? object.clubCuotasId : null;
+        this.clubId = object.clubId ? object.clubId : null;this.cuotaRopa = object.cuotaRopa ? object.cuotaRopa : null;
+        this.cuotaRopa = object.cuotaRopa ? object.cuotaRopa : null;
+        this.cuotaRopaDate = object.cuotaRopaDate ? object.cuotaRopaDate : null;
+        this.numCuotas = object.numCuotas ? object.numCuotas : 0;
+        this.cuotaUno = object.cuotaUno ? object.cuotaUno : null;
+        this.cuotaDos = object.cuotaDos ? object.cuotaDos : null;
+        this.cuotaTres = object.cuotaTres ? object.cuotaTres : null;
+        this.cuotaCuatro = object.cuotaCuatro ? object.cuotaCuatro : null;
+        this.cuotaCinco = object.cuotaCinco ? object.cuotaCinco : null;
+        this.cuotaSeis = object.cuotaSeis ? object.cuotaSeis : null;
+        this.cuotaSiete = object.cuotaSiete ? object.cuotaSiete : null;
+        this.cuotaOcho = object.cuotaOcho ? object.cuotaOcho : null;
+        this.cuotaNueve = object.cuotaNueve ? object.cuotaNueve : null;
+        this.cuotaDiez = object.cuotaDiez ? object.cuotaDiez : null;
+        this.cuotaOnce = object.cuotaOnce ? object.cuotaOnce : null;
+        this.cuotaDoce = object.cuotaDoce ? object.cuotaDoce : null;
+        this.totalCuota = object.totalCuota ? object.totalCuota : null;
+        this.cuotaUnoDate = object.cuotaUnoDate ? object.cuotaUnoDate : null;
+        this.cuotaDosDate = object.cuotaDosDate ? object.cuotaDosDate : null;
+        this.cuotaTresDate = object.cuotaTresDate ? object.cuotaTresDate : null;
+        this.cuotaCuatroDate = object.cuotaCuatroDate ? object.cuotaCuatroDate : null;
+        this.cuotaCincoDate = object.cuotaCincoDate ? object.cuotaCincoDate : null;
+        this.cuotaSeisDate = object.cuotaSeisDate ? object.cuotaSeisDate : null;
+        this.cuotaSieteDate = object.cuotaSieteDate ? object.cuotaSieteDate : null;
+        this.cuotaOchoDate = object.cuotaOchoDate ? object.cuotaOchoDate : null;
+        this.cuotaNueveDate = object.cuotaNueveDate ? object.cuotaNueveDate : null;
+        this.cuotaDiezDate = object.cuotaDiezDate ? object.cuotaDiezDate : null;
+        this.cuotaOnceDate = object.cuotaOnceDate ? object.cuotaOnceDate : null;
+        this.cuotaDoceDate = object.cuotaDoceDate ? object.cuotaDoceDate : null;
+        this.temporada = object.temporada ? object.temporada : null;
+    }
+}
