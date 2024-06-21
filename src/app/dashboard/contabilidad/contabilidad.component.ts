@@ -66,6 +66,7 @@ export class ContabilidadComponent implements OnInit {
   infoClub: CuotasClub = new CuotasClub({});
   agregarPagoPlayer: HostoryPagosPlayer = new HostoryPagosPlayer({});
   textoInfoTitlePagoPlayer: string = '';
+  indexPlayerSelected: number = 0;
 
   constructor(
     private loginService: LoginService,
@@ -365,7 +366,8 @@ export class ContabilidadComponent implements OnInit {
     }, 2000);
   }
 
-  openModalPago(player: any) {
+  openModalPago(player: any, index: number) {
+    this.indexPlayerSelected = index;
     this.agregarPagoPlayer = new HostoryPagosPlayer({});
     this.agregarPagoPlayer.clubId = this.clubId;
     this.agregarPagoPlayer.playerId = player.playerId;
@@ -402,11 +404,14 @@ export class ContabilidadComponent implements OnInit {
   }
 
   createUpdateHistoryCuotaJugador() {
-    this.agregarPagoPlayer;
     this.clubService.updatehistorypagosplayer(this.agregarPagoPlayer).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
+          //actualizamos los campos de pagado y restante
+          this.listHCP[this.indexPlayerSelected].pagado = (Number(this.listHCP[this.indexPlayerSelected].pagado) + Number(this.agregarPagoPlayer.cantidad));
+          this.listHCP[this.indexPlayerSelected].restante = (Number(this.listHCP[this.indexPlayerSelected].cuotaClub) + 
+          Number(this.listHCP[this.indexPlayerSelected].cuotaRopa) - Number(this.listHCP[this.indexPlayerSelected].pagado));
           this.agregarPagoPlayer = new HostoryPagosPlayer({});
           this.guardar();
         } else {
