@@ -7,12 +7,12 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { HttpClient } from '@angular/common/http';
 import * as $ from 'jquery';
 import 'datatables.net';
-import { CuotasClub, HistoryCuotasClub } from 'src/app/core/services/models/club.model';
+import { CuotasClub, HistorialPagosPlayer, HistoryCuotasClub } from 'src/app/core/services/models/club.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RegisterService } from 'src/app/core/services/register/register.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { ClubService } from 'src/app/core/services/club/club.service';
-import { ClubCuotas } from 'src/app/core/services/team/club.model';
+import { ClubCuotas, HostoryPagosPlayer, PlayerCuotas } from 'src/app/core/services/team/club.model';
 
 @Component({
   selector: 'app-contabilidad',
@@ -52,12 +52,20 @@ export class ContabilidadComponent implements OnInit {
   showAlertHistory: boolean = false;
   isFraccionadoPlayer: boolean = false;
 
-  historyPlayer: HistoryCuotasClub = new HistoryCuotasClub({});
+  historyPlayer: any;
   showModalStripe = false;
-  
+
   email: string = '';
 
   clubCuotas: ClubCuotas = new ClubCuotas({});
+
+  listHCP: any[] = []; //lista historial cuotas de los jugadores
+  showModalVerHistorialPagosPlayer = false;
+  historyPagosPlayer: any[] = [];
+  playerCuotas: PlayerCuotas = new PlayerCuotas({});
+  infoClub: CuotasClub = new CuotasClub({});
+  agregarPagoPlayer: HostoryPagosPlayer = new HostoryPagosPlayer({});
+  textoInfoTitlePagoPlayer: string = '';
 
   constructor(
     private loginService: LoginService,
@@ -85,13 +93,14 @@ export class ContabilidadComponent implements OnInit {
 
     //cargar aqui todos los jugadores que pertenezcan al equipo que pertyenezca a ese club
 
-    this.teamService.GetPlayersByTeamByClub(this.clubId.toString()).subscribe(
+    this.teamService.GetPlayersByTeamByClub(this.clubId.toString(), '2024').subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
-          this.players = response.data.players !== null ? response.data.players : [];
+          this.listHCP = response.data;
+          /*this.players = response.data.players !== null ? response.data.players : [];
           this.cuota = response.data.cuotas !== null ? response.data.cuotas : new CuotasClub({});
-          this.isFraccionado = this.cuota.fraccionado === 1 ? true : false;
+          this.isFraccionado = this.cuota.fraccionado === 1 ? true : false;*/
           setTimeout(() => {
             this.inicializarDataTable();
             this.datosCargados = true;
@@ -211,17 +220,16 @@ export class ContabilidadComponent implements OnInit {
   }
 
   abrirModal() {
-    let temporada = this.clubCuotas.temporada;
+    let temporada = this.infoClub.temporada === '' ? '2024' : this.infoClub.temporada;
     this.clubService.getClubCuota(this.clubId.toString(), temporada === null ? '2024' : temporada).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
-          this.clubCuotas = response.data;
-          if (this.clubCuotas.numCuotas === 0) this.clubCuotas.numCuotas = 1;
-          this.clubCuotas.temporada = response.data.temporada === null ? temporada : response.data.temporada;
+          this.infoClub = response.data.infoClub;
+          this.clubCuotas = response.data.cuotaClub;
+          //this.clubCuotas.temporada = response.data.temporada === null ? temporada : response.data.temporada;
         } else {
           this.clubCuotas = new ClubCuotas({});
-          this.clubCuotas.numCuotas = 1;
         }
         this.showModal = true;
       },
@@ -232,12 +240,10 @@ export class ContabilidadComponent implements OnInit {
   }
 
   createUpdateSettings() {
-    this.cuota.clubId = this.clubId;
-    if (this.clubCuotas.clubId === 0) this.clubCuotas.clubId = this.clubId;
-
-    this.teamService.createUpdateCuotaClub(this.cuota).subscribe(
+    this.teamService.createUpdateCuotaClub(this.infoClub).subscribe(
       (response) => {
-        this.cuota = response.data;
+        this.infoClub = response.data;
+        this.guardar();
       },
       (error) => {
         console.error('Error al crear el equipo:', error);
@@ -248,7 +254,7 @@ export class ContabilidadComponent implements OnInit {
       (response) => {
         this.clubCuotas = response.data;
         // Cerrar el modal después de crear el equipo
-        this.cerrarModal();
+        this.guardar();
       },
       (error) => {
         console.error('Error al crear el equipo:', error);
@@ -258,25 +264,23 @@ export class ContabilidadComponent implements OnInit {
   }
 
   selecFraccionado() {
-    this.isFraccionado = this.cuota.fraccionado.toString() === "0" ? false : true;
+    //this.isFraccionado = this.cuota.fraccionado.toString() === "0" ? false : true;
   }
 
   selecFraccionadoPlayer() {
-    this.isFraccionadoPlayer = this.historyPlayer.fraccionado.toString() === "0" ? false : true;
+    //this.isFraccionadoPlayer = this.historyPlayer.fraccionado.toString() === "0" ? false : true;
   }
 
-  invitarJugador(playerId: number, teamId: number): void {
-    this.selectedPlayerId = playerId;
-    this.selectedTeamId = teamId;
-    const jugadorSeleccionado = this.players.find(player => player.playerId === playerId);
-
-    this.nombreJugador = jugadorSeleccionado.nombre;
+  invitarJugador(player: any): void {
+    this.selectedPlayerId = player.playerId;
+    this.selectedTeamId = player.teamId;
+    this.nombreJugador = player.nombre + ' ' + player.apellido;
 
     // Calcular la fecha actual
     const fechaActual = new Date();
 
     // Calcular la fecha de nacimiento del jugador
-    const fechaNacimiento = new Date(jugadorSeleccionado.fechaDeNacimiento);
+    const fechaNacimiento = new Date(player.fechaDeNacimiento);
 
     // Calcular la edad del jugador
     let edad = fechaActual.getFullYear() - fechaNacimiento.getFullYear();
@@ -317,8 +321,20 @@ export class ContabilidadComponent implements OnInit {
     }
   }
 
-  openModalEditar(playerId: any) {
-    this.jugador = this.players.find(player => player.playerId === playerId);
+  openModalEditar(player: any) {
+    this.clubService.getPlayerCuota(this.clubId, player.playerId, player.temporada).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.playerCuotas = response.data;
+        } else {
+          this.historyPlayer = new HistoryCuotasClub({});
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
     this.showModalJugador = true;
   }
 
@@ -327,7 +343,7 @@ export class ContabilidadComponent implements OnInit {
   }
 
   createUpdateCuotaJugador() {
-    this.teamService.createUpdateCuotaPlayer(this.jugador.playerId.toString(), this.jugador.cuota, this.jugador.cuotaSinRopa).subscribe(
+    this.clubService.updatePlayerCuotas(this.playerCuotas).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
@@ -350,17 +366,30 @@ export class ContabilidadComponent implements OnInit {
   }
 
   openModalPago(player: any) {
-    this.playerSelected = player;
-    this.teamService.getHistoryCuotaClubByPlayer(player.playerId.toString()).subscribe(
+    this.agregarPagoPlayer = new HostoryPagosPlayer({});
+    this.agregarPagoPlayer.clubId = this.clubId;
+    this.agregarPagoPlayer.playerId = player.playerId;
+    this.textoInfoTitlePagoPlayer = player.nombre + ' ' + player.apellido;
+    this.showModalAgregarPago = true;
+  }
+
+  cerrarModalAgregarPago() {
+    this.showModalAgregarPago = false;
+  }
+
+  openModalVerPagosPlayer(player: any) {
+    //this.playerSelected = player;
+    this.clubService.getHistoryPagosPlayer(this.clubId, player.playerId, player.temporada).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.historyPlayer = response.data;
-          this.isFraccionadoPlayer = this.historyPlayer.fraccionado === '1' ? true : false;
+        if (response.data !== null && response.data.length > 0) {
+          this.historyPagosPlayer = response.data;
+          /*this.historyPlayer = response.data;
+          this.isFraccionadoPlayer = this.historyPlayer.fraccionado === '1' ? true : false;*/
         } else {
-          this.historyPlayer = new HistoryCuotasClub({});
+          this.historyPlayer = new HistorialPagosPlayer({});
         }
-        this.showModalAgregarPago = true;
+        this.showModalVerHistorialPagosPlayer = true;
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
@@ -368,48 +397,18 @@ export class ContabilidadComponent implements OnInit {
     );
   }
 
-  cerrarModalAgregarPago() {
-    this.showModalAgregarPago = false;
+  cerrarModalVerPagosPlayer() {
+    this.showModalVerHistorialPagosPlayer = false;
   }
 
   createUpdateHistoryCuotaJugador() {
-    this.historyPlayer.clubId = this.clubId;
-    this.historyPlayer.teamId = this.playerSelected.teamId;
-    this.historyPlayer.playerId = this.playerSelected.playerId;
-    let p1 = 0;
-    let p2 = 0;
-    let p3 = 0;
-    p1 = this.historyPlayer.pagoUno !== null ? parseInt(this.historyPlayer.pagoUno) : 0;
-    p2 = this.historyPlayer.pagoDos !== null ? parseInt(this.historyPlayer.pagoDos) : 0;
-    p3 = this.historyPlayer.pagoTres !== null ? parseInt(this.historyPlayer.pagoTres) : 0;
-    let total = p1 + p2 + p3;
-    this.historyPlayer.totalPagado = total.toString();
-    if (this.historyPlayer.estado === null) {
-      this.historyPlayer.estado = 'No ha pagado nada';
-    }
-
-    if(this.historyPlayer.pagoConRopa === '0'){
-      this.historyPlayer.totalCuota = this.playerSelected.cuota;
-    }
-    this.teamService.createUpdateHistoryCuotasClub(this.historyPlayer).subscribe(
+    this.agregarPagoPlayer;
+    this.clubService.updatehistorypagosplayer(this.agregarPagoPlayer).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
-          this.historyPlayer = response.data;
-          if (this.historyPlayer.datePagoUno !== null && this.historyPlayer.datePagoUno !== undefined && this.historyPlayer.datePagoUno.length > 10) {
-            this.historyPlayer.datePagoUno = response.data.datePagoUno.substring(0, 10)
-          }
-          if (this.historyPlayer.datePagoDos !== null && this.historyPlayer.datePagoDos !== undefined && this.historyPlayer.datePagoDos.length > 10) {
-            this.historyPlayer.datePagoDos = response.data.datePagoDos.substring(0, 10)
-          }
-          if (this.historyPlayer.datePagoTres !== null && this.historyPlayer.datePagoTres !== undefined && this.historyPlayer.datePagoTres.length > 10) {
-            this.historyPlayer.datePagoTres = response.data.datePagoTres.substring(0, 10)
-          }
-          //TODO recuperar el player de la tabla y modificar su restante y demas, de paso echarle un ojo para corregir esa parte
-          this.showAlertHistory = true;
-          setTimeout(() => {
-            this.showAlertHistory = false;
-          }, 2000);
+          this.agregarPagoPlayer = new HostoryPagosPlayer({});
+          this.guardar();
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -439,11 +438,11 @@ export class ContabilidadComponent implements OnInit {
     return resp;
   }
 
-  openModalStripe(){
+  openModalStripe() {
     this.showModalStripe = true;
   }
 
-  cerrarModalStripe(){
+  cerrarModalStripe() {
     this.showModalStripe = false;
   }
 

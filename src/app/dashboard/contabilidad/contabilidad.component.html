@@ -37,17 +37,15 @@
               <th>APELLIDOS</th>
               <th>EQUIPO</th>
               <th>ESTADO_PAGO</th>
-              <th>ROPA</th>
+              <th>CUOTA</th>
               <th>PAGADO</th>
               <th>RESTANTE</th>
-              <th>CUOTA_CLUB</th>
-              <th>CUOTA_ROPA</th>
               <th>VERIFICADO</th>
               <th>ACCIONES</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let player of players; let i = index">
+            <tr *ngFor="let player of listHCP; let i = index">
               <td>{{ player.playerId }}</td>
               <td *ngIf="player.picturePlayer">
                 <div class="container">
@@ -62,42 +60,41 @@
               </td>
               <td>{{ player.nombre }}</td>
               <td>{{ player.apellido }}</td>
-              <td>{{ player.nameTeam }}</td>
+              <td>{{ player.teamName }}</td>
               <td>
                 <ng-container *ngIf="estadoPago(player.estado) === 0">
-                  <i class="bi bi-x-circle text-danger" title="{{ player.estado }}"></i>
+                  <i class="bi bi-x-circle text-danger" title="Ningún pago"></i>
                 </ng-container>
                 <ng-container *ngIf="estadoPago(player.estado) === 1">
-                  <i class="bi bi-exclamation-triangle text-warning" title="{{ player.estado }}"></i>
+                  <i class="bi bi-exclamation-triangle text-warning" title="Algun pago hecho"></i>
                 </ng-container>
                 <ng-container *ngIf="estadoPago(player.estado) === 2">
-                  <i class="bi bi-check-circle text-success" title="{{ player.estado }}"></i>
+                  <i class="bi bi-check-circle text-success" title="Al corriente"></i>
                 </ng-container>
                 <ng-container *ngIf="estadoPago(player.estado) === 3">
-                  <i class="bi bi-check-circle text-success" title="{{ player.estado }}"></i>
+                  <i class="bi bi-check-circle text-success" title="Completado"></i>
                 </ng-container>
               </td>
-              <td>{{ player.ropa }}</td>
+              <td>{{ player.cuotaClub }}</td>
               <td>{{ player.pagado }}</td>
               <td>{{ player.restante }}</td>
-              <td>{{ player.cuota }}</td>
-              <td>{{ player.cuotaSinRopa }}</td>
               <td>
                 <ng-container *ngIf="player.verify === 0">
-                  <i class="bi bi-x-circle text-danger" style="cursor: pointer;"
-                    (click)="invitarJugador(player.playerId, player.teamId)"></i>
+                  <i class="bi bi-x-circle text-danger" style="cursor: pointer;" (click)="invitarJugador(player)"></i>
                   <i class="bi bi-envelope text-danger ms-2" style="cursor: pointer;"
-                    (click)="invitarJugador(player.playerId, player.teamId)"></i>
+                    (click)="invitarJugador(player)"></i>
                 </ng-container>
                 <ng-container *ngIf="player.verify === 1">
                   <i class="bi bi-check-circle text-success"></i>
                 </ng-container>
               </td>
               <td>
-                <i class="bi bi-pencil" style="cursor: pointer;" (click)="openModalEditar(player.playerId)"
+                <i class="bi bi-pencil" style="cursor: pointer;" (click)="openModalEditar(player)"
                   title="Editar cuota del jugador"></i>
                 <i class="bi bi-wallet2 ms-2" style="cursor: pointer;" (click)="openModalPago(player)"
-                  title="Pagos del jugador"></i>
+                  title="Introducir un pago"></i>
+                <i class="bi bi-clock-history ms-2" style="cursor: pointer;" (click)="openModalVerPagosPlayer(player)"
+                  title="Ver histoial de pagos"></i>
               </td>
             </tr>
           </tbody>
@@ -121,28 +118,35 @@
       <div class="modal-body">
         <form (ngSubmit)="createUpdateSettings()">
           <div class="mb-3">
+            <label for="temporada" class="form-label">Temporada:</label>
+            <select class="form-control" id="temporada" name="temporada" [(ngModel)]="infoClub.temporada"
+              (change)="abrirModal()">
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="bizum" class="form-label">Bizum:</label>
+            <input type="text" class="form-control" id="bizum" name="bizum" [(ngModel)]="infoClub.bizum">
+          </div>
+          <div class="mb-3">
             <label for="banco" class="form-label">Número de Cuenta del Banco:</label>
-            <input type="text" class="form-control" id="banco" name="banco" [(ngModel)]="cuota.banco">
+            <input type="text" class="form-control" id="banco" name="banco" [(ngModel)]="infoClub.banco">
           </div>
           <div class="mb-3">
             <label for="asunto" class="form-label">Explicación para el asunto:</label>
             <textarea class="form-control" id="asunto" rows="5" name="asunto"
-              placeholder="Ejemplo: Al realizar la transferencia, ponga nombre + DNI + Equipo (Alevin B)"
-              [(ngModel)]="cuota.asunto"></textarea>
-          </div>          
-          <div class="mb-3">
-            <label for="temporada" class="form-label">Temporada:</label>
-            <select class="form-control" id="temporada" name="temporada" [(ngModel)]="clubCuotas.temporada" (change)="abrirModal()">
-              <option value="2023">2023</option>
-              <option value="2024">2024</option>
-            </select>
+              placeholder="Ejemplo: Al realizar la transferencia o Bizum, ponga nombre + DNI + Equipo (Alevin B)"
+              [(ngModel)]="infoClub.asunto"></textarea>
           </div>
           <div class="mb-3">
             <label for="totalCuota" class="form-label">Precio de la cuota del club:</label>
             <input type="text" class="form-control" id="totalCuota" name="totalCuota"
               [(ngModel)]="clubCuotas.totalCuota" disabled>
           </div>
-          <div class="row mb-3" *ngIf="isFraccionado">
+          <div class="row mb-3">
             <div class="col-md-6">
               <label for="cuotaRopa" class="form-label">Precio de la cuota de la ropa:</label>
               <input type="text" class="form-control" id="cuotaRopa" name="cuotaRopa"
@@ -322,6 +326,11 @@
             <!-- Botón para guardar el nuevo equipo -->
             <button type="submit" class="btn btn-success float-end">Guardar</button>
           </div>
+          <div class="mb-3 d-flex">
+            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+              Guardado correctamente
+            </div>
+          </div>
         </form>
       </div>
     </div>
@@ -373,22 +382,196 @@
       <div class="modal-body">
         <form (ngSubmit)="createUpdateCuotaJugador()">
           <div class="mb-3">
-            <label for="cuota" class="form-label">Precio de la cuota del club:</label>
-            <input type="text" class="form-control" id="cuota" name="cuota" [(ngModel)]="jugador.cuota">
+            <label for="totalCuota2" class="form-label">Precio de la cuota del club:</label>
+            <input type="text" class="form-control" id="totalCuota2" name="totalCuota2"
+              [(ngModel)]="playerCuotas.totalCuota" disabled>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="cuotaRopa2" class="form-label">Precio de la cuota de la ropa:</label>
+              <input type="text" class="form-control" id="cuotaRopa2" name="cuotaRopa2"
+                [(ngModel)]="playerCuotas.cuotaRopa">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaRopaDate2" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaRopaDate2" name="cuotaRopaDate2"
+                [(ngModel)]="playerCuotas.cuotaRopaDate">
+            </div>
           </div>
           <div class="mb-3">
-            <label for="cuotaSinRopa" class="form-label">Precio de la cuota de la ropa:</label>
-            <input type="text" class="form-control" id="cuotaSinRopa" name="cuotaSinRopa"
-              [(ngModel)]="jugador.cuotaSinRopa">
+            <label for="numCuotas2" class="form-label">Selecciona el número total de pagos o cuotas:</label>
+            <select class="form-control" id="numCuotas2" name="numCuotas2" [(ngModel)]="playerCuotas.numCuotas">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+            </select>
           </div>
-          <div class="mb-3 d-flex">
-            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
-              Guardado correctamente
+          <div class="mb-3">
+            <h2>Repartición de las cuotas</h2>
+            <p>Segun el número total de pagos o cuotas que se haya seleccionado, ir rellenando cantidad y fecha de pago.
+            </p>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="cuotaUno2" class="form-label">Cuota 1:</label>
+              <input type="text" class="form-control" id="cuotaUno2" name="cuotaUno2"
+                [(ngModel)]="playerCuotas.cuotaUno">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaUnoDate2" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaUnoDate2" name="cuotaUnoDate2"
+                [(ngModel)]="playerCuotas.cuotaUnoDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 1">
+            <div class="col-md-6">
+              <label for="cuotaDos2" class="form-label">Cuota 2:</label>
+              <input type="text" class="form-control" id="cuotaDos2" name="cuotaDos2"
+                [(ngModel)]="playerCuotas.cuotaDos">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaDosDate2" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaDosDate2" name="cuotaDosDate2"
+                [(ngModel)]="playerCuotas.cuotaDosDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 2">
+            <div class="col-md-6">
+              <label for="cuotaTres2" class="form-label">Cuota 3:</label>
+              <input type="text" class="form-control" id="cuotaTres2" name="cuotaTres2"
+                [(ngModel)]="playerCuotas.cuotaTres">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaTresDate2" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaTresDate2" name="cuotaTresDate2"
+                [(ngModel)]="playerCuotas.cuotaTresDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 3">
+            <div class="col-md-6">
+              <label for="cuotaCuatro2" class="form-label">Cuota 4:</label>
+              <input type="text" class="form-control" id="cuotaCuatro2" name="cuotaCuatro2"
+                [(ngModel)]="playerCuotas.cuotaCuatro">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaCuatroDate2" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaCuatroDate2" name="cuotaCuatroDate2"
+                [(ngModel)]="playerCuotas.cuotaCuatroDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 4">
+            <div class="col-md-6">
+              <label for="cuotaCinco2" class="form-label">Cuota 5:</label>
+              <input type="text" class="form-control" id="cuotaCinco2" name="cuotaCinco2"
+                [(ngModel)]="playerCuotas.cuotaCinco">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaCincoDate2" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaCincoDate2" name="cuotaCincoDate2"
+                [(ngModel)]="playerCuotas.cuotaCincoDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 5">
+            <div class="col-md-6">
+              <label for="cuotaSeis2" class="form-label">Cuota 6:</label>
+              <input type="text" class="form-control" id="cuotaSeis2" name="cuotaSeis2"
+                [(ngModel)]="playerCuotas.cuotaSeis">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaSeisDate2" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaSeisDate2" name="cuotaSeisDate2"
+                [(ngModel)]="playerCuotas.cuotaSeisDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 6">
+            <div class="col-md-6">
+              <label for="cuotaSiete2" class="form-label">Cuota 7:</label>
+              <input type="text" class="form-control" id="cuotaSiete2" name="cuotaSiete2"
+                [(ngModel)]="playerCuotas.cuotaSiete">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaSieteDate2" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaSieteDate2" name="cuotaSieteDate2"
+                [(ngModel)]="playerCuotas.cuotaSieteDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 7">
+            <div class="col-md-6">
+              <label for="cuotaOcho2" class="form-label">Cuota 8:</label>
+              <input type="text" class="form-control" id="cuotaOcho2" name="cuotaOcho2"
+                [(ngModel)]="playerCuotas.cuotaOcho">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaOchoDate2" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaOchoDate2" name="cuotaOchoDate2"
+                [(ngModel)]="playerCuotas.cuotaOchoDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 8">
+            <div class="col-md-6">
+              <label for="cuotaNueve2" class="form-label">Cuota 9:</label>
+              <input type="text" class="form-control" id="cuotaNueve2" name="cuotaNueve2"
+                [(ngModel)]="playerCuotas.cuotaNueve">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaNueveDate2" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaNueveDate2" name="cuotaNueveDate2"
+                [(ngModel)]="playerCuotas.cuotaNueveDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 9">
+            <div class="col-md-6">
+              <label for="cuotaDiez2" class="form-label">Cuota 10:</label>
+              <input type="text" class="form-control" id="cuotaDiez2" name="cuotaDiez2"
+                [(ngModel)]="playerCuotas.cuotaDiez">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaDiezDate2" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaDiezDate2" name="cuotaDiezDate2"
+                [(ngModel)]="playerCuotas.cuotaDiezDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 10">
+            <div class="col-md-6">
+              <label for="cuotaOnce2" class="form-label">Cuota 11:</label>
+              <input type="text" class="form-control" id="cuotaOnce2" name="cuotaOnce2"
+                [(ngModel)]="playerCuotas.cuotaOnce">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaOnceDate2" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaOnceDate2" name="cuotaOnceDate2"
+                [(ngModel)]="playerCuotas.cuotaOnceDate">
+            </div>
+          </div>
+          <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 11">
+            <div class="col-md-6">
+              <label for="cuotaDoce2" class="form-label">Cuota 12:</label>
+              <input type="text" class="form-control" id="cuotaDoce2" name="cuotaDoce2"
+                [(ngModel)]="playerCuotas.cuotaDoce">
+            </div>
+            <div class="col-md-6">
+              <label for="cuotaDoceDate2" class="form-label">Fecha de pago:</label>
+              <input type="date" class="form-control" id="cuotaDoceDate2" name="cuotaDoceDate2"
+                [(ngModel)]="playerCuotas.cuotaDoceDate">
             </div>
           </div>
           <div class="modal-footer">
             <!-- Botón para guardar el nuevo equipo -->
             <button type="submit" class="btn btn-success float-end">Guardar</button>
+          </div>
+          <div class="mb-3 d-flex">
+            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+              Guardado correctamente
+            </div>
           </div>
         </form>
       </div>
@@ -401,93 +584,57 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="standard-modalLabel">Pago del jugador</h5>
+        <h5 class="modal-title" id="standard-modalLabel">Agregar pago del jugador</h5>
         <!-- Botón de cerrar con un icono -->
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalAgregarPago()"></button>
       </div>
       <div class="modal-body">
+        <p>Vas a agregar un pago al jugador <b>{{ textoInfoTitlePagoPlayer }}</b></p>
         <form (ngSubmit)="createUpdateHistoryCuotaJugador()">
           <div class="row mb-3">
             <div class="col-6">
-              <label for="totalCuota" class="form-label">Total cuota:</label>
-              <input type="text" class="form-control" id="totalCuota" name="totalCuota"
-                [(ngModel)]="historyPlayer.totalCuota" disabled>
+              <label for="cantidad" class="form-label">Cantidad:</label>
+              <input type="number" class="form-control" id="cantidad" name="cantidad"
+                [(ngModel)]="agregarPagoPlayer.cantidad">
             </div>
             <div class="col-6">
-              <label for="totalPagado" class="form-label">Total pagado:</label>
-              <input type="text" class="form-control" id="totalPagado" name="totalPagado"
-                [(ngModel)]="historyPlayer.totalPagado" disabled>
+              <label for="fecha" class="form-label">Fecha:</label>
+              <input type="date" class="form-control" id="fecha" name="fecha" [(ngModel)]="agregarPagoPlayer.fecha">
             </div>
           </div>
           <div class="row mb-3">
             <div class="col-6">
-              <label for="pagoConRopa" class="form-label">Pago con ropa:</label>
-              <select class="form-control" id="pagoConRopa" name="pagoConRopa" [(ngModel)]="historyPlayer.pagoConRopa">
-                <option value="0">No</option>
-                <option value="1">Sí</option>
+              <label for="metodo" class="form-label">Metodo de pago:</label>
+              <select class="form-control" id="metodo" name="metodo" [(ngModel)]="agregarPagoPlayer.metodo">
+                <option value="Tarjeta">Tarjeta</option>
+                <option value="Efectivo">Efectivo</option>
+                <option value="Transferencia">Transferencia</option>
+                <option value="Bizum">Bizum</option>
+                <option value="Otro">Otro</option>
               </select>
             </div>
             <div class="col-6">
-              <label for="estado" class="form-label">Estado:</label>
-              <select class="form-control" id="estado" name="estado" [(ngModel)]="historyPlayer.estado">
-                <option value="No ha pagado nada">No ha pagado nada</option>
-                <option value="Al corriente">Al corriente</option>
-                <option value="Pago completado">Pago completado</option>
+              <label for="temporada" class="form-label">Temporada:</label>
+              <select class="form-control" id="temporada" name="temporada" [(ngModel)]="agregarPagoPlayer.temporada">
+                <option value="2023">2023</option>
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
               </select>
             </div>
-          </div>
-          <div class="row mb-3">
-            <div class="col-6">
-              <label for="pagoUno" class="form-label">Primer pago:</label>
-              <input type="text" class="form-control" id="pagoUno" name="pagoUno" [(ngModel)]="historyPlayer.pagoUno">
-            </div>
-            <div class="col-6">
-              <label for="datePagoUno" class="form-label">Fecha pago:</label>
-              <input type="text" class="form-control" id="datePagoUno" name="datePagoUno"
-                [(ngModel)]="historyPlayer.datePagoUno">
-            </div>
-          </div>
-          <div class="row mb-3">
             <div class="col-12">
-              <label for="fraccionado" class="form-label">Permitir pago fraccionado:</label>
-              <select class="form-control" id="fraccionado" name="fraccionado" [(ngModel)]="historyPlayer.fraccionado"
-                (click)="selecFraccionadoPlayer()">
-                <option value="0">No</option>
-                <option value="1">Sí</option>
-              </select>
-            </div>
-          </div>
-          <div class="row mb-3" *ngIf="isFraccionadoPlayer">
-            <div class="col-6">
-              <label for="pagoDos" class="form-label">Segundo pago:</label>
-              <input type="text" class="form-control" id="pagoDos" name="pagoDos" [(ngModel)]="historyPlayer.pagoDos">
-            </div>
-            <div class="col-6">
-              <label for="datePagoDos" class="form-label">Fecha pago:</label>
-              <input type="text" class="form-control" id="datePagoDos" name="datePagoDos"
-                [(ngModel)]="historyPlayer.datePagoDos">
-            </div>
-          </div>
-          <div class="row mb-3" *ngIf="isFraccionadoPlayer">
-            <div class="col-6">
-              <label for="pagoTres" class="form-label">Tercer pago:</label>
-              <input type="text" class="form-control" id="pagoTres" name="pagoTres"
-                [(ngModel)]="historyPlayer.pagoTres">
-            </div>
-            <div class="col-6">
-              <label for="datePagoTres" class="form-label">Fecha pago:</label>
-              <input type="text" class="form-control" id="datePagoTres" name="datePagoTres"
-                [(ngModel)]="historyPlayer.datePagoTres">
-            </div>
-          </div>
-          <div class="mb-3 d-flex">
-            <div *ngIf="showAlertHistory" class="col-6 alert alert-success mt-3" role="alert">
-              Guardado correctamente
+              <label for="comentario" class="form-label">comentario:</label>
+              <textarea class="form-control" id="comentario" name="comentario"
+                [(ngModel)]="agregarPagoPlayer.comentario" rows="5"></textarea>
             </div>
           </div>
           <div class="modal-footer">
             <!-- Botón para guardar el nuevo equipo -->
             <button type="submit" class="btn btn-success float-end">Guardar</button>
+          </div>
+          <div class="mb-3 d-flex">
+            <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
+              Guardado correctamente
+            </div>
           </div>
         </form>
       </div>
@@ -513,6 +660,48 @@
             <button type="submit" class="btn btn-primary" [disabled]="!stripeForm.form.valid">Crear Cuenta en
               Stripe</button>
           </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para ver el historial de pagos de los jugadores -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalVerHistorialPagosPlayer}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="stripeModalLabel">Historial de pagos de los jugadores</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalVerPagosPlayer()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Cantidad</th>
+                  <th>Fecha</th>
+                  <th>Método</th>
+                  <th>Comentario</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let pago of historyPagosPlayer">
+                  <td>{{ pago.cantidad }}</td>
+                  <td>{{ pago.fecha }}</td>
+                  <td>{{ pago.metodo }}</td>
+                  <td>{{ pago.comentario }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+          <div class="modal-footer">
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="submit" class="btn btn-success float-end"
+              (click)="cerrarModalVerPagosPlayer()">Cerrar</button>
+          </div>
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
-import { ClubCuotas, RopaClub, RopaJugador } from '../team/club.model';
+import { ClubCuotas, HostoryPagosPlayer, PlayerCuotas, RopaClub, RopaJugador } from '../team/club.model';
 
 @Injectable({
   providedIn: 'root'
@@ -173,6 +173,92 @@ export class ClubService {
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.post<Response>(url, clubCuota, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  getHistoryPagosPlayer(clubId: number, playerId: number, temporada: string): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/gethistorypagosplayer/${clubId}/${playerId}/${temporada}`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  getPlayerCuota(clubId: number, playerId: number, temporada: string): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/getplayercuota/${clubId}/${playerId}/${temporada}`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  updatePlayerCuotas(playerCuota: PlayerCuotas): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/updateplayercuotas`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.post<Response>(url, playerCuota, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  updatehistorypagosplayer(historyPagos: HostoryPagosPlayer): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/updatehistorypagosplayer`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.post<Response>(url, historyPagos, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
       return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera

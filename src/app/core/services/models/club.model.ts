@@ -18,46 +18,22 @@ export class Club {
 export class CuotasClub {
     cuotasClubId: number;
     clubId: number;
-    cuotaConRopa: string;
-    cuotaSinRopa: string;
-    fraccionado: number;
-    pagoConUno: string;
-    pagoConDos: string;
-    pagoConTres: string;
-    pagoSinUno: string; //aqui iria el pago o cuota de la ropa
-    pagoSinDos: string;
-    pagoSinTres: string;
     banco: string;
     asunto: string;
-    estado: string;
-    teamId: number;
-    restante: string;
-    datePagoUno: string;
-    datePagoDos: string;
-    datePagoTres: string;
-	datePagoRopa: string;
+    temporada: string;
+    bizum: string;
+    stripeId: string
+    urlStripe: string
 
     constructor(object: any) {
         this.cuotasClubId = object.cuotasClubId || 0;
         this.clubId = object.clubId || 0;
-        this.cuotaConRopa = object.cuotaConRopa || '';
-        this.cuotaSinRopa = object.cuotaSinRopa || '';
-        this.fraccionado = object.fraccionado || 0;
-        this.pagoConUno = object.pagoConUno || '';
-        this.pagoConDos = object.pagoConDos || '';
-        this.pagoConTres = object.pagoConTres || '';
-        this.pagoSinUno = object.pagoSinUno || '';
-        this.pagoSinDos = object.pagoSinDos || '';
-        this.pagoSinTres = object.pagoSinTres || '';
         this.banco = object.banco || '';
         this.asunto = object.asunto || '';
-        this.estado = object.estado || '';
-        this.teamId = object.teamId || 0;
-        this.restante = object.restante || '';
-        this.datePagoUno = object.datePagoUno || '';
-        this.datePagoDos = object.datePagoDos || '';
-        this.datePagoTres = object.datePagoTres || '';
-        this.datePagoRopa = object.datePagoRopa || '';
+        this.temporada = object.temporada || '';
+        this.bizum = object.bizum || '';
+        this.stripeId = object.stripeId || '';
+        this.urlStripe = object.urlStripe || '';
     }
 
 }
@@ -116,6 +92,28 @@ export class PaymentRequest {
     constructor(object: any) {
         this.paymentMethodId = object.paymentMethodId || '';
         this.amount = object.amount || 0;
+    }
+}
+
+export class HistorialPagosPlayer {
+    historyPagosPlayerId: number;
+    clubId: number;
+    teamId: number;
+    temporada: string;
+    cantidad: string;
+    fecha: string;
+    metodo: string;
+    comentario: string;
+
+    constructor(object: any) {
+        this.historyPagosPlayerId = object.historyPagosPlayerId ? object.historyPagosPlayerId : 0;
+        this.clubId = object.clubId ? object.clubId : 0;
+        this.teamId = object.teamId ? object.teamId : 0;
+        this.temporada = object.temporada ? object.temporada : '';
+        this.cantidad = object.cantidad ? object.cantidad : '';
+        this.fecha = object.fecha ? object.fecha : '';
+        this.metodo = object.metodo ? object.metodo : '';
+        this.comentario = object.comentario ? object.comentario : '';
     }
 
 }
