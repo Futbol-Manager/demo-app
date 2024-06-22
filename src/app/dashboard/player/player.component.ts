@@ -315,7 +315,12 @@ export class PlayerComponent implements OnInit {
       especialidades: '50',
       opinionDelEntrenador: '',
       picturePlayer: '',
-      verify: 0
+      verify: 0,
+      telefono: '',
+      telefonoPadre: '',
+      telefonoMadre: '',
+      mailPadre: '',
+      mailMadre: ''
     };
   }
 
