@@ -216,6 +216,31 @@
                             [(ngModel)]="player.fechaDeNacimiento" placeholder="Fecha de Nacimiento">
                     </div>
                     <div class="form-group">
+                        <label for="telefono">Teléfono:</label>
+                        <input type="text" class="form-control" id="telefono" name="telefono"
+                            [(ngModel)]="player.telefono" placeholder="Teléfono">
+                    </div>
+                    <div class="form-group">
+                        <label for="telefonoPadre">Teléfono del padre:</label>
+                        <input type="text" class="form-control" id="telefonoPadre" name="telefonoPadre"
+                            [(ngModel)]="player.telefonoPadre" placeholder="Teléfono del padre">
+                    </div>
+                    <div class="form-group">
+                        <label for="telefonoMadre">Teléfono de la madre:</label>
+                        <input type="text" class="form-control" id="telefonoMadre" name="telefonoMadre"
+                            [(ngModel)]="player.telefonoMadre" placeholder="Teléfono de la madre">
+                    </div>
+                    <div class="form-group">
+                        <label for="emailPadre">Correo electrónico del padre:</label>
+                        <input type="text" class="form-control" id="emailPadre" name="emailPadre"
+                            [(ngModel)]="player.emailPadre" placeholder="Email del padre">
+                    </div>
+                    <div class="form-group">
+                        <label for="emailMadre">Correo electrónico de la madre:</label>
+                        <input type="text" class="form-control" id="emailMadre" name="emailMadre"
+                            [(ngModel)]="player.emailMadre" placeholder="Email de la madre">
+                    </div>
+                    <div class="form-group">
                         <label for="posicion">Posición:</label>
                         <select class="form-control" id="posicion" name="posicion" [(ngModel)]="player.posicion" (click)="showPortero(player.posicion)">
                             <option value="Portero">Portero</option>
