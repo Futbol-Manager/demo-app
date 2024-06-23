@@ -173,15 +173,18 @@ export class InformacionEquipoComponent implements OnInit {
     if(this.userForm.valid){
       this.registerService.inviteCoach(this.userForm.value.mail, this.teamId).pipe().subscribe(
         res => {
-          if(res.data){
+          let msg = 'Entrenador invitado correctamente.';
+          if(res.data != null){
             this.cargarInfoEntrenadores();
+          } else{
+            msg = 'El email introducido no es váildo.';
           }
           this.cerrarModal();
           const snackBarConfig = new MatSnackBarConfig();
           snackBarConfig.duration = 5000;
           snackBarConfig.horizontalPosition = 'center';
           snackBarConfig.verticalPosition = 'bottom';
-          this.snackBar.open('Entrenador invitado correctamente.', 'Cerrar', snackBarConfig);
+          this.snackBar.open(msg, 'Cerrar', snackBarConfig);
         })
     }
   }
