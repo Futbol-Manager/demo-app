@@ -67,6 +67,7 @@ export class ContabilidadComponent implements OnInit {
   agregarPagoPlayer: HostoryPagosPlayer = new HostoryPagosPlayer({});
   textoInfoTitlePagoPlayer: string = '';
   indexPlayerSelected: number = 0;
+  optionSelected: number = 0;
 
   constructor(
     private loginService: LoginService,
@@ -240,7 +241,24 @@ export class ContabilidadComponent implements OnInit {
     );
   }
 
+  getInfoClub(){
+    let temporada = '2024';
+    this.clubService.getClubCuota(this.clubId.toString(), temporada).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.infoClub = response.data.infoClub;
+          this.showModalStripe = true;
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
   createUpdateSettings() {
+    //esto actualiza la info del club, el IBAN, etc
     this.teamService.createUpdateCuotaClub(this.infoClub).subscribe(
       (response) => {
         this.infoClub = response.data;
@@ -251,7 +269,9 @@ export class ContabilidadComponent implements OnInit {
         // Puedes manejar el error según tus necesidades
       }
     );
-    this.clubService.updateclubCuotas(this.clubCuotas,).subscribe(
+    //esto actualiza las cuotas asignadas al club
+    
+    this.clubService.updateclubCuotas(this.clubCuotas, this.optionSelected).subscribe(
       (response) => {
         this.clubCuotas = response.data;
         // Cerrar el modal después de crear el equipo
@@ -322,7 +342,8 @@ export class ContabilidadComponent implements OnInit {
     }
   }
 
-  openModalEditar(player: any) {
+  openModalEditar(player: any, index: number) {    
+    this.indexPlayerSelected = index;
     this.clubService.getPlayerCuota(this.clubId, player.playerId, player.temporada).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
@@ -344,10 +365,15 @@ export class ContabilidadComponent implements OnInit {
   }
 
   createUpdateCuotaJugador() {
-    this.clubService.updatePlayerCuotas(this.playerCuotas).subscribe(
+    this.clubService.updatePlayerCuotas(this.playerCuotas, this.clubId).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
+          //actualizamos los campos de pagado y restante
+          this.listHCP[this.indexPlayerSelected].cuotaClub = response.data.cuotaClub;
+          this.listHCP[this.indexPlayerSelected].cuotaRopa = response.data.cuotaRopa;
+          this.listHCP[this.indexPlayerSelected].restante = response.data.cuotaClub;
+          this.agregarPagoPlayer = new HostoryPagosPlayer({});
           this.guardar();
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
@@ -410,8 +436,7 @@ export class ContabilidadComponent implements OnInit {
         if (response.data !== null) {
           //actualizamos los campos de pagado y restante
           this.listHCP[this.indexPlayerSelected].pagado = (Number(this.listHCP[this.indexPlayerSelected].pagado) + Number(this.agregarPagoPlayer.cantidad));
-          this.listHCP[this.indexPlayerSelected].restante = (Number(this.listHCP[this.indexPlayerSelected].cuotaClub) + 
-          Number(this.listHCP[this.indexPlayerSelected].cuotaRopa) - Number(this.listHCP[this.indexPlayerSelected].pagado));
+          this.listHCP[this.indexPlayerSelected].restante = (Number(this.listHCP[this.indexPlayerSelected].cuotaClub) - Number(this.listHCP[this.indexPlayerSelected].pagado));
           this.agregarPagoPlayer = new HostoryPagosPlayer({});
           this.guardar();
         } else {
@@ -444,7 +469,7 @@ export class ContabilidadComponent implements OnInit {
   }
 
   openModalStripe() {
-    this.showModalStripe = true;
+    this.getInfoClub();
   }
 
   cerrarModalStripe() {
@@ -467,6 +492,10 @@ export class ContabilidadComponent implements OnInit {
         }
       );
     }
+  }
+
+  goStripeURL(){
+    window.open('https://connect.stripe.com/login', '_blank');
   }
 
 }

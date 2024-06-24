@@ -91,7 +91,7 @@
                 </ng-container>
               </td>
               <td>
-                <i class="bi bi-pencil" style="cursor: pointer;" (click)="openModalEditar(player)"
+                <i class="bi bi-pencil" style="cursor: pointer;" (click)="openModalEditar(player, i)"
                   title="Editar cuota del jugador"></i>
                 <i class="bi bi-wallet2 ms-2" style="cursor: pointer;" (click)="openModalPago(player, i)"
                   title="Introducir un pago"></i>
@@ -655,7 +655,10 @@
           <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalStripe()"></button>
         </div>
         <div class="modal-body">
-          <form (ngSubmit)="onSubmit()" #stripeForm="ngForm">
+          <div class="mb-3 text-center" *ngIf="infoClub.urlStripe != null">
+            <button (click)="goStripeURL()" class="btn btn-primary">Acceder a Stripe</button>
+          </div>
+          <form (ngSubmit)="onSubmit()" #stripeForm="ngForm" *ngIf="infoClub.urlStripe === null">
             <div class="mb-3">
               <label for="email" class="form-label">Correo Electrónico</label>
               <input type="email" class="form-control" id="email" name="email" [(ngModel)]="email" required>
