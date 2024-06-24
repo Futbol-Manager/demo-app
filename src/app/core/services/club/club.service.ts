@@ -158,7 +158,7 @@ export class ClubService {
   }
 
   // Método para crear o actualizar un equipo
-  updateclubCuotas(clubCuota: ClubCuotas): Observable<Response> {
+  updateclubCuotas(clubCuota: ClubCuotas, option: number): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -169,7 +169,7 @@ export class ClubService {
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/updateclubcuotas`;
+      const url: string = environment.apiUrl + `club/updateclubcuotas/${option}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.post<Response>(url, clubCuota, { headers });
@@ -223,7 +223,7 @@ export class ClubService {
     }
   }
 
-  updatePlayerCuotas(playerCuota: PlayerCuotas): Observable<Response> {
+  updatePlayerCuotas(playerCuota: PlayerCuotas, clubId: number): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -234,7 +234,7 @@ export class ClubService {
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/updateplayercuotas`;
+      const url: string = environment.apiUrl + `club/updateplayercuotas/${clubId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.post<Response>(url, playerCuota, { headers });
