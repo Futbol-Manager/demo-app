@@ -131,8 +131,8 @@ export class Player {
   telefono: string;
   telefonoPadre: string;
   telefonoMadre: string;
-  mailPadre: string;
-  mailMadre: string;
+  emailPadre: string;
+  emailMadre: string;
 
   constructor(object: any) {
     this.playerId = object.playerId || 0;
@@ -189,8 +189,8 @@ export class Player {
     this.telefono = object.telefono || '';
     this.telefonoPadre = object.telefonoPadre || '';
     this.telefonoMadre = object.telefonoMadre || '';
-    this.mailPadre = object.mailPadre || '';
-    this.mailMadre = object.mailMadre || '';
+    this.emailPadre = object.emailPadre || '';
+    this.emailMadre = object.emailMadre || '';
   }
 }
 
