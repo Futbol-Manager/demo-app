@@ -301,8 +301,8 @@ export class TrainerComponent implements OnInit {
       telefono: '',
       telefonoPadre: '',
       telefonoMadre: '',
-      mailPadre: '',
-      mailMadre: ''
+      emailPadre: '',
+      emailMadre: ''
       
     };
   }
