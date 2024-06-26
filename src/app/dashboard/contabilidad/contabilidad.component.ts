@@ -69,6 +69,13 @@ export class ContabilidadComponent implements OnInit {
   indexPlayerSelected: number = 0;
   optionSelected: number = 0;
 
+  selectedComboTitle: number = 0;
+  comboTitle: string = 'Equipos';
+  listTeamsForCombo: any[] = [];
+
+  teamSelected: number = 0;
+  categorySelected: number = 0;
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -107,6 +114,20 @@ export class ContabilidadComponent implements OnInit {
             this.inicializarDataTable();
             this.datosCargados = true;
           }, 1000);
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+
+    this.teamService.getTeamsByClubForCombo(this.clubId, '2024').subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.listTeamsForCombo = response.data;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -258,30 +279,52 @@ export class ContabilidadComponent implements OnInit {
   }
 
   createUpdateSettings() {
+    let option = this.selectedComboTitle;
+    let value = option === 0 ? this.teamSelected : this.categorySelected;
     //esto actualiza la info del club, el IBAN, etc
-    this.teamService.createUpdateCuotaClub(this.infoClub).subscribe(
+    this.teamService.createUpdateCuotaClub(this.infoClub, option, value).subscribe(
       (response) => {
         this.infoClub = response.data;
-        this.guardar();
+        this.clubService.updateclubCuotas(this.clubCuotas, option, value).subscribe(
+          (response) => {
+            this.clubCuotas = response.data;
+            this.teamService.GetPlayersByTeamByClub(this.clubId.toString(), '2024').subscribe(
+              (response: Response) => {
+                // Verifica que la propiedad 'data' exista en la respuesta
+                if (response.data !== null) {
+                  this.updateCuotaClub(response.data);
+                  this.guardar();
+                } else {
+                  console.error('La respuesta del servicio no tiene la estructura esperada', response);
+                }
+              },
+              (error) => {
+                console.error('Error al cargar el listado de equipos', error);
+              }
+            );
+          },
+          (error) => {
+            console.error('Error al crear el equipo:', error);
+            // Puedes manejar el error según tus necesidades
+          }
+        );
       },
       (error) => {
         console.error('Error al crear el equipo:', error);
         // Puedes manejar el error según tus necesidades
       }
     );
-    //esto actualiza las cuotas asignadas al club
-    
-    this.clubService.updateclubCuotas(this.clubCuotas, this.optionSelected).subscribe(
-      (response) => {
-        this.clubCuotas = response.data;
-        // Cerrar el modal después de crear el equipo
-        this.guardar();
-      },
-      (error) => {
-        console.error('Error al crear el equipo:', error);
-        // Puedes manejar el error según tus necesidades
+  }
+
+  updateCuotaClub(responseData: any[]): void {
+    responseData.forEach((responsePlayer: any) => {
+      const index = this.listHCP.findIndex((hcpPlayer: any) => hcpPlayer.playerId === responsePlayer.playerId);
+      if (index !== -1) {
+        this.listHCP[index].cuotaClub = responsePlayer.cuotaClub;
+        this.listHCP[index].cuotaRopa = responsePlayer.cuotaRopa;
+        this.listHCP[index].restante = responsePlayer.restante;
       }
-    );
+    });
   }
 
   selecFraccionado() {
@@ -415,7 +458,7 @@ export class ContabilidadComponent implements OnInit {
           /*this.historyPlayer = response.data;
           this.isFraccionadoPlayer = this.historyPlayer.fraccionado === '1' ? true : false;*/
         } else {
-          this.historyPlayer = new HistorialPagosPlayer({});
+          this.historyPagosPlayer = [];
         }
         this.showModalVerHistorialPagosPlayer = true;
       },
@@ -496,6 +539,32 @@ export class ContabilidadComponent implements OnInit {
 
   goStripeURL(){
     window.open('https://connect.stripe.com/login', '_blank');
+  }
+
+  toggleComboTitle(){
+    this.selectedComboTitle = this.selectedComboTitle == 0 ? 1 : 0;
+    this.comboTitle = this.selectedComboTitle == 0 ? 'Equipos' : 'Categorias';
+  }
+
+  loadCuotaClub(){
+    let temporada = this.infoClub.temporada === '' ? '2024' : this.infoClub.temporada;
+    this.clubService.getClubCuotaForLoadTeam(this.clubId, temporada, this.teamSelected).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.infoClub = response.data.infoClub;
+          this.clubCuotas = response.data.cuotaClub;
+          //this.clubCuotas.temporada = response.data.temporada === null ? temporada : response.data.temporada;
+        } else {
+          this.clubCuotas = new ClubCuotas({});
+        }
+        this.showModal = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+
   }
 
 }

@@ -37,7 +37,7 @@
               <th>APELLIDOS</th>
               <th>EQUIPO</th>
               <th>ESTADO_PAGO</th>
-              <th>CUOTA_CLUB</th>
+              <th>CUOTA_+_ROPA</th>
               <th>CUOTA_ROPA</th>
               <th>PAGADO</th>
               <th>RESTANTE</th>
@@ -63,16 +63,16 @@
               <td>{{ player.apellido }}</td>
               <td>{{ player.teamName }}</td>
               <td>
-                <ng-container *ngIf="estadoPago(player.estado) === 0">
+                <ng-container *ngIf="player.estado === 0">
                   <i class="bi bi-x-circle text-danger" title="Ningún pago"></i>
                 </ng-container>
-                <ng-container *ngIf="estadoPago(player.estado) === 1">
-                  <i class="bi bi-exclamation-triangle text-warning" title="Algun pago hecho"></i>
+                <ng-container *ngIf="player.estado === 1">
+                  <i class="bi bi-exclamation-triangle text-warning" title="Con retraso"></i>
                 </ng-container>
-                <ng-container *ngIf="estadoPago(player.estado) === 2">
+                <ng-container *ngIf="player.estado === 2">
                   <i class="bi bi-check-circle text-success" title="Al corriente"></i>
                 </ng-container>
-                <ng-container *ngIf="estadoPago(player.estado) === 3">
+                <ng-container *ngIf="player.estado === 3">
                   <i class="bi bi-check-circle text-success" title="Completado"></i>
                 </ng-container>
               </td>
@@ -129,6 +129,49 @@
               <option value="2025">2025/2026</option>
             </select>
           </div>
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <p style="color: red;">¡Importante! Este cambio afectará a los jugadores de un equipo, de una
+                categoria o a todos, selecciona la opción deseada.</p>
+                <p style="color: red;">Si un equipo no dispone de jugadores, no se aplicará la cuota, es necesario mínimo un jugador.</p>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-3">
+              <span>{{ comboTitle }}</span>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="combo" [checked]="selectedComboTitle === 0"
+                  (change)="toggleComboTitle()">
+              </div>
+            </div>
+            <div class="col-md-9" *ngIf="selectedComboTitle == 0">
+              <label for="teamSelected" class="form-label">Selecciona un equipo</label>
+              <select class="form-control me-2" id="teamSelected" name="teamSelected" [(ngModel)]="teamSelected" (change)="loadCuotaClub()">
+                <option value="0">Todos los equipos</option>
+                <option *ngFor="let team of listTeamsForCombo" [value]="team.value">{{ team.name }}</option>
+              </select>
+            </div>
+            <div class="col-md-9" *ngIf="selectedComboTitle == 1">
+              <label for="categorySelected" class="form-label">Selecciona la categoria</label>
+              <select class="form-control" id="categorySelected" name="categorySelected" [(ngModel)]="categorySelected">
+                <!-- Opciones ajustadas según tus necesidades -->
+                <option value="0">Todas las categorias</option>
+                <option value="15">Senior</option>
+                <option value="16">Juvenil</option>
+                <option value="17">Juvenil/Cadete Femenina</option>
+                <option value="18">Cadete</option>
+                <option value="19">Cadete/Infantil Femenina</option>
+                <option value="20">Infantil</option>
+                <option value="21">Infantil/Alevín Femenina</option>
+                <option value="22">Alevín</option>
+                <option value="23">Benjamín</option>
+                <option value="24">Benjamín/Prebenjamín Femenina</option>
+                <option value="25">Prebenjamín</option>
+                <option value="26">Debutante</option>
+              </select>
+            </div>
+          </div>
+          <hr>
           <div class="mb-3">
             <label for="bizum" class="form-label">Bizum:</label>
             <input type="text" class="form-control" id="bizum" name="bizum" [(ngModel)]="infoClub.bizum">
@@ -177,10 +220,15 @@
               <option value="12">12</option>
             </select>
           </div>
-          <div class="mb-3">
-            <h2>Repartición de las cuotas</h2>
-            <p>Segun el número total de pagos o cuotas que se haya seleccionado, ir rellenando cantidad y fecha de pago.
-            </p>
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <h2>Repartición de las cuotas</h2>
+            </div>
+            <div class="col-md-12">
+              <p>Segun el número de cuotas o pagos que se haya seleccionado, se debe ir rellenando cantidad y fecha de
+                pago en cada una de las cuotas.
+              </p>
+            </div>
           </div>
           <div class="row mb-3">
             <div class="col-md-6">
@@ -377,7 +425,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="standard-modalLabel">Couta del jugador</h5>
+        <h5 class="modal-title" id="standard-modalLabel">Cuota del jugador</h5>
         <!-- Botón de cerrar con un icono -->
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalJugador()"></button>
       </div>

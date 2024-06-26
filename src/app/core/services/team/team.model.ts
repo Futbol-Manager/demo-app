@@ -48,6 +48,7 @@ export class TeamNew {
   categoryType: CategoryType;
   clubId: number;
   userId: number;
+  temporada: string;
 
   constructor() {
     this.teamId = 0; // O el valor por defecto que desees para teamId
@@ -59,6 +60,7 @@ export class TeamNew {
     this.categoryType = new CategoryType(null); // Inicializado con el constructor de CategoryType
     this.clubId = 0;
     this.userId = 0;
+    this.temporada = '';
   }
 }
 

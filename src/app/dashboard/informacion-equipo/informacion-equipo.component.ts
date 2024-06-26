@@ -103,6 +103,7 @@ export class InformacionEquipoComponent implements OnInit {
             },
             clubId: this.team.clubId,
             userId: this.team.userId,
+            temporada: this.team.temporada
           };
           // Asignar los valores recuperados del equipo al formulario
           this.editarEquipoForm.patchValue({
@@ -141,6 +142,7 @@ export class InformacionEquipoComponent implements OnInit {
         },
         clubId: fv.clubId || 0,
         userId: 0,
+        temporada: this.team.temporada
       };
       // Llamada al servicio para editar el equipo
       // como estamos editando el equipo, podemos mandar userId = 0

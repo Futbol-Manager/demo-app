@@ -184,6 +184,7 @@ export class InicioComponent implements OnInit {
         },
         clubId: this.crearEquipoForm.value.clubId || 0,
         userId: 0,
+        temporada: '2024' //TODO aqui debe de coger el año de la temporada actual
       };
 
       // Llamada al servicio para crear el equipo
