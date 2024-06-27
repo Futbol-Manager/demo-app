@@ -133,7 +133,8 @@
             <div class="col-md-12">
               <p style="color: red;">¡Importante! Este cambio afectará a los jugadores de un equipo, de una
                 categoria o a todos, selecciona la opción deseada.</p>
-                <p style="color: red;">Si un equipo no dispone de jugadores, no se aplicará la cuota, es necesario mínimo un jugador.</p>
+              <p style="color: red;">Si un equipo no dispone de jugadores, no se aplicará la cuota, es necesario mínimo
+                un jugador.</p>
             </div>
           </div>
           <div class="row mb-3">
@@ -146,7 +147,8 @@
             </div>
             <div class="col-md-9" *ngIf="selectedComboTitle == 0">
               <label for="teamSelected" class="form-label">Selecciona un equipo</label>
-              <select class="form-control me-2" id="teamSelected" name="teamSelected" [(ngModel)]="teamSelected" (change)="loadCuotaClub()">
+              <select class="form-control me-2" id="teamSelected" name="teamSelected" [(ngModel)]="teamSelected"
+                (change)="loadCuotaClub()">
                 <option value="0">Todos los equipos</option>
                 <option *ngFor="let team of listTeamsForCombo" [value]="team.value">{{ team.name }}</option>
               </select>
@@ -707,12 +709,62 @@
             <button (click)="goStripeURL()" class="btn btn-primary">Acceder a Stripe</button>
           </div>
           <form (ngSubmit)="onSubmit()" #stripeForm="ngForm" *ngIf="infoClub.urlStripe === null">
-            <div class="mb-3">
-              <label for="email" class="form-label">Correo Electrónico</label>
-              <input type="email" class="form-control" id="email" name="email" [(ngModel)]="email" required>
+            <div class="mb-3" style="height: 20em; overflow-y: scroll; padding: 1em;">
+              <p><strong>¿Qué es Stripe?</strong></p>
+              <p>Stripe es una plataforma de pagos en línea que permite a empresas y organizaciones recibir pagos de
+                manera segura y eficiente. Con Stripe, puedes gestionar todas tus transacciones de forma sencilla,
+                asegurando que los pagos se procesen rápidamente y con total seguridad. Además, Stripe ofrece
+                herramientas
+                para automatizar y simplificar la contabilidad y la gestión financiera de tu club. Para facilitar esta
+                gestión, la hemos integrado directamente en SphairaTech.</p>
+
+              <p><strong>¿Cómo puedo activar Stripe en Sphaira para automatizar el pago de las cuotas de los padres y no
+                  tener que preocuparme?</strong></p>
+
+              <p><strong>1. Registro en Stripe:</strong></p>
+              <p>Primero, date de alta en Stripe usando el botón proporcionado.</p>
+
+              <p><strong>2. Introduce las cuotas:</strong></p>
+              <p>Introduce la cantidad que los padres deberán pagar para inscribir a sus hijos en tu club, pudiendo
+                dividirlo en hasta 12 cuotas. Puedes incluir el coste de la ropa en estas cuotas o establecer una cuota
+                separada para la ropa.</p>
+
+              <p><strong>3. Recibir Pagos:</strong></p>
+              <p>Los padres podrán acceder a través de una invitación del entrenador o del club. Una vez registrados,
+                podrán realizar los pagos para cubrir las cuotas anuales o la cuota de la ropa en las fechas fijadas por
+                el club. Recibirás estos pagos automáticamente en tu cuenta de Stripe.</p>
+
+              <p><strong>4. Actualización Automática:</strong></p>
+              <p>La tabla de pagos se actualizará automáticamente. Solo tendrás que revisarla, sin necesidad de hacer
+                cambios manuales.</p>
+
+              <p><strong>5. Comisión:</strong></p>
+              <p>Hay una comisión del 1,8% en cada pago. Aun así, recibirás el importe total que establezcas como cuota,
+                ya que la comisión no se te repercutirá.</p>
+
+              <p><strong>6. Importancia del Registro:</strong></p>
+              <p>Si decides no darte de alta en Stripe, no podrás recibir pagos por parte de los padres a través de
+                Sphaira y tendrás que llevar un registro manual.</p>
             </div>
-            <button type="submit" class="btn btn-primary" [disabled]="!stripeForm.form.valid">Crear Cuenta en
-              Stripe</button>
+            <div class="mb-3 d-flex align-items-center" style="margin-top: 2em;">
+              <input type="checkbox" id="stripeAgreement" name="stripeAgreement" [(ngModel)]="aceptStripe" class="me-2">
+              <label for="stripeAgreement" class="mb-0">He leído y estoy de acuerdo con el funcionamiento de Stripe a
+                través de SphairaTech.</label>
+            </div>
+            <div class="mb-3 d-flex">
+              <div class="col-12">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="tuemail@mail.com"
+                  [(ngModel)]="email" required>
+              </div>
+            </div>
+            <div class="mb-3 d-flex" *ngIf="aceptStripe">
+              <div class="col-12">
+                <button style="
+                width: -webkit-fill-available;" type=" submit" class="btn btn-primary">Crear Cuenta en
+                  Stripe</button>
+              </div>
+            </div>
           </form>
         </div>
       </div>

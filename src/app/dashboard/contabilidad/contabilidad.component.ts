@@ -75,6 +75,7 @@ export class ContabilidadComponent implements OnInit {
 
   teamSelected: number = 0;
   categorySelected: number = 0;
+  aceptStripe = false;
 
   constructor(
     private loginService: LoginService,

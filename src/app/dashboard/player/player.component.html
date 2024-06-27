@@ -242,21 +242,19 @@
                     </div>
                     <div class="form-group">
                         <label for="posicion">Posición:</label>
-                        <select class="form-control" id="posicion" name="posicion" [(ngModel)]="player.posicion" (click)="showPortero(player.posicion)">
-                            <option value="Portero">Portero</option>
-                            <option value="Defensa">Defensa</option>
-                            <option value="Centrocampista">Centrocampista</option>
-                            <option value="Delantero">Delantero</option>
-                        </select>
-                        <!-- <select class="form-control" id="posicion" name="posicion" [(ngModel)]="player.posicion" (click)="showPortero(player.posicion)">
+                        <select class="form-control" id="posicion" name="posicion" [(ngModel)]="player.posicion"
+                            (click)="showPortero(player.posicion)">
                             <option value="Portero">Portero</option>
                             <option value="Defensa Central">Defensa Central</option>
                             <option value="Defensa Lateral">Defensa Lateral</option>
+                            <option value="Carrilero">Carrilero</option>
+                            <option value="Centrocampista">Centrocampista</option>
                             <option value="Centrocampista Defensivo">Centrocampista Defensivo</option>
                             <option value="Centrocampista Ofensivo">Centrocampista Ofensivo</option>
+                            <option value="Mediapunta">Mediapunta</option>
                             <option value="Extremo">Extremo</option>
                             <option value="Delantero Centro">Delantero Centro</option>
-                        </select>-->
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="altura">Altura:</label>
@@ -501,8 +499,8 @@
                     <div *ngIf="showPorteroOptions">
                         <div class="form-group">
                             <label for="portero">Portero:</label>
-                            <input type="text" class="form-control" id="portero" name="portero" [(ngModel)]="player.portero"
-                                placeholder="Portero" disabled>
+                            <input type="text" class="form-control" id="portero" name="portero"
+                                [(ngModel)]="player.portero" placeholder="Portero" disabled>
                         </div>
                         <div class="form-group d-flex">
                             <div class="col-6">
@@ -624,10 +622,12 @@
                 <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalInvitar()"></button>
             </div>
             <div class="modal-body">
-                <p *ngIf="isMenor">Puesto que el jugador es menor de 14 años, has de invitar a un padre o tutor, introduce su correo
+                <p *ngIf="isMenor">Puesto que el jugador es menor de 14 años, has de invitar a un padre o tutor,
+                    introduce su correo
                     electrónico de a quíen vas a invitar. Por favor verifica que la cuenta de
                     correo sea correcta.</p>
-                <p *ngIf="!isMenor">Introduce el correo electrónico del jugador que quieres invitar. Por favor verifica que la cuenta de
+                <p *ngIf="!isMenor">Introduce el correo electrónico del jugador que quieres invitar. Por favor verifica
+                    que la cuenta de
                     correo sea correcta.</p>
                 <form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="enviarMailJugador()">
                     <div class="mb-3" style="text-align: center;">

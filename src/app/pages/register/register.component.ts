@@ -20,7 +20,7 @@ export class RegisterComponent implements OnInit {
 
   registerFormClub: FormGroup;
   registerFormEntrenador: FormGroup;
-  selectedOption: number = 2;
+  selectedOption: number = 0;
   passwordsDoNotMatch: boolean = false;
   listaDeClubes: Club = new Club({});
   msgAge: boolean = false;
@@ -31,6 +31,7 @@ export class RegisterComponent implements OnInit {
   isReadOnlyMail: boolean = false;
 
   selectOptions = [
+    { value: "0", label: "Selecciona una opción" },
     { value: "1", label: "Club" },
     { value: "2", label: "Entrenador" },
     // Opciones eliminadas

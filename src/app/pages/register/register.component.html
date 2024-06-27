@@ -17,7 +17,7 @@
           </div>
           <div class="card-body textoCentrado">
             <div class="d-flex form-register py-0">
-              <div class="col-6">
+              <div class="col-12">
                 <!--<label class="form-label">Selecciona un perfil</label>-->
                 <select [(ngModel)]="selectedOption" (change)="onOptionChange($event)"
                   class="form-select input-register" [disabled]="isReadOnly">
@@ -76,8 +76,12 @@
                     </label>
                   </div>
                 </div>
-                <button type="submit" [disabled]="passwordsDoNotMatch"
-                  class="btn btn-primary btn-block textoCentrado">Registrarse</button>
+                <div class="mb-3 d-flex">
+                  <div class="col-12">
+                    <button type="submit" [disabled]="passwordsDoNotMatch"
+                      class="btn btn-primary btn-block textoCentrado">Registrarse</button>
+                  </div>
+                </div>
               </form>
             </div>
 
@@ -143,8 +147,12 @@
                     </label>
                   </div>
                 </div>
-                <button type="submit" [disabled]="passwordsDoNotMatch"
-                  class="btn btn-custom btn-block textoCentrado">Registrarse</button>
+                <div class="mb-3 d-flex">
+                  <div class="col-12">
+                    <button type="submit" [disabled]="passwordsDoNotMatch"
+                      class="btn btn-primary btn-block textoCentrado">Registrarse</button>
+                  </div>
+                </div>
               </form>
             </div>
 
@@ -154,15 +162,15 @@
                 <div class="mb-3 d-flex">
                   <div class="col-6">
                     <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                    <input type="text" class="form-control input-register" id="nameSon" placeholder="Ingresa tu nombre completo"
-                      formControlName="nameSon">
+                    <input type="text" class="form-control input-register" id="nameSon"
+                      placeholder="Ingresa tu nombre completo" formControlName="nameSon">
                   </div>
                 </div>
                 <div class="mb-3 d-flex">
                   <div class="col-6">
                     <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                    <input type="text" class="form-control input-register" id="name" placeholder="Ingresa nombre del hij@"
-                      formControlName="name">
+                    <input type="text" class="form-control input-register" id="name"
+                      placeholder="Ingresa nombre del hij@" formControlName="name">
                   </div>
                   <div class="col-6" style="margin-left: 10px;">
                     <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
@@ -217,8 +225,12 @@
                     </label>
                   </div>
                 </div>
-                <button type="submit" [disabled]="passwordsDoNotMatch"
-                  class="btn btn-custom btn-block textoCentrado">Registrarse</button>
+                <div class="mb-3 d-flex">
+                  <div class="col-12">
+                    <button type="submit" [disabled]="passwordsDoNotMatch"
+                      class="btn btn-primary btn-block textoCentrado">Registrarse</button>
+                  </div>
+                </div>
               </form>
             </div>
 
@@ -256,7 +268,7 @@
                   <div class="col-6">
                     <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
                     <input type="email" class="form-control input-register" id="email"
-                      placeholder="Ingresa tu correo electrónico"  formControlName="email" [attr.disabled]="true">
+                      placeholder="Ingresa tu correo electrónico" formControlName="email" [attr.disabled]="true">
                   </div>
                 </div>
                 <div class="mb-3 d-flex">
@@ -284,8 +296,12 @@
                     </label>
                   </div>
                 </div>
-                <button type="submit" [disabled]="passwordsDoNotMatch"
-                  class="btn btn-custom btn-block textoCentrado">Registrarse</button>
+                <div class="mb-3 d-flex">
+                  <div class="col-12">
+                    <button type="submit" [disabled]="passwordsDoNotMatch"
+                      class="btn btn-primary btn-block textoCentrado">Registrarse</button>
+                  </div>
+                </div>
               </form>
             </div>
           </div>
@@ -293,8 +309,8 @@
             <p>Lo sentimos, pero si eres menor de 14 años, han de darse de alta uno de tus padres o tutores.</p>
           </div>
           <div class="card-footer textoCentrado" style="flex-direction: column;">
-            <div class="row">
-              <div class="col-md-12 col-sm-12 textoCentrado">
+            <div class="row text-center">
+              <div class="col-md-12">
                 <p>¿Ya tienes una cuenta? <a href="#" (click)="toLogin($event)">Inicia sesión aquí</a></p>
               </div>
             </div>
