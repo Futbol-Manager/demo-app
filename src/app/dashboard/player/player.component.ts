@@ -88,7 +88,7 @@ export class PlayerComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data && Array.isArray(response.data)) {
           // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.players = response.data.map((player: Player) => new Player(player));
+          this.players = response.data; //.map((player: Player) => new Player(player));
           // Inicializar el DataTable después de cargar los datos
           this.inicializarDataTable();
         } else {
@@ -197,24 +197,22 @@ export class PlayerComponent implements OnInit {
   }
 
   // Método para confirmar la eliminación del equipo
-  confirmarEliminarJugador(playerId: number, name: string, surname: string): void {
+  confirmarEliminarJugador(playerId: number, name: string, surname: string, index: number): void {
     const confirmacion = confirm('¿Estás seguro de que deseas eliminar el jugador ' + name + ' ' + surname + ` con ID ${playerId}?`);
     if (confirmacion) {
       // Llama al método para eliminar el equipo
-      this.eliminarJugador(playerId);
+      this.eliminarJugador(playerId, index);
     }
   }
 
   // Método para eliminar el equipo
-  eliminarJugador(playerId: number): void {
+  eliminarJugador(playerId: number, index: number): void {
     // Lógica para eliminar el equipo llamando al servicio correspondiente
     this.playerservice.deletePlayer(playerId.toString()).subscribe(
       (response) => {
         // Manejar la respuesta según tus necesidades
-        console.log('Jugador eliminado con éxito:', response);
-
-        // Cargar nuevamente el listado de equipos después de la eliminación exitosa
-        this.cargarListadoJugadores();
+        //console.log('Jugador eliminado con éxito:', response);
+        this.players.splice(index, 1);
       },
       (error) => {
         console.error('Error al eliminar el jugador:', error);
@@ -241,12 +239,9 @@ export class PlayerComponent implements OnInit {
     // Llamada al servicio para crear el jugador
     this.playerservice.createUpdatePlayer(this.teamId.toString(), this.player,).subscribe(
       (response) => {
+        this.players.push(response.data);
         // Manejar la respuesta según tus necesidades
-        console.log('Jugador creado con éxito:', response);
-
-        // Cargar nuevamente el listado de jugadores después de la creación exitosa
-        this.cargarListadoJugadores();
-
+        //console.log('Jugador creado con éxito:', response);
         // Cerrar el modal después de crear el jugador
         this.cerrarModal();
       },

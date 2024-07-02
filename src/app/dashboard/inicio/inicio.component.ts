@@ -23,6 +23,8 @@ export class InicioComponent implements OnInit {
   teamNew: TeamNew = new TeamNew(); // Modelo para el nuevo equipo
   clubList: any[] = [];
   clubId: number = 0;
+  pictureClub = '';
+  noPicture = false;
 
   constructor(private loginService: LoginService,
     private router: Router,
@@ -48,14 +50,15 @@ export class InicioComponent implements OnInit {
       let playerId = this.usuarioActual!.playerId;
       let userId = this.usuarioActual!.userId;
 
-      if (profileId === 1) {
+      /*if (profileId === 1) {
         //ver a que equipo pertenece
         this.teamService.getTeamByClub(userId.toString()).subscribe(
           (response: Response) => {
             // Verifica que la propiedad 'data' exista en la respuesta
             if (response.data !== null) {
               this.clubId = response.data.club.clubId;
-              this.listTeam = response.data.teams.map((team: TeamConJugadores) => new TeamConJugadores(team));
+              this.pictureClub = response.data.club.picture;
+              this.listTeam = response.data.teams; //.map((team: TeamConJugadores) => new TeamConJugadores(team));
             } else {
               console.error('La respuesta del servicio no tiene la estructura esperada', response);
             }
@@ -64,10 +67,10 @@ export class InicioComponent implements OnInit {
             console.error('Error al cargar el listado de equipos', error);
           }
         );
-      }
+      }*/
 
       // Cargar listado de clubes disponibles
-      this.cargarListadoClubes();
+      //this.cargarListadoClubes();
 
       if (profileId === 2) {
         // Carga el listado de equipos al inicializar el componente
@@ -91,7 +94,6 @@ export class InicioComponent implements OnInit {
         );
       }
     });
-
   }
 
   // Método para cargar el listado de equipos
@@ -99,9 +101,14 @@ export class InicioComponent implements OnInit {
     this.teamService.getTeams(this.usuarioActual!.userId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
-        if (response && response.data && Array.isArray(response.data)) {
+        if (response && response.data) {
+          if(response.data.picture != null) {
+            this.pictureClub = response.data.picture;
+          } else {
+            this.noPicture = true;
+          }
           // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.listTeam = response.data.map((team: TeamConJugadores) => new TeamConJugadores(team));
+          this.listTeam = response.data.teams; //.map((team: TeamConJugadores) => new TeamConJugadores(team));
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -117,9 +124,11 @@ export class InicioComponent implements OnInit {
     this.teamService.getTeamByClub(this.usuarioActual!.userId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
-        if (response && response.data && Array.isArray(response.data)) {
+        if (response && response.data) {
+          this.clubId = response.data.club.clubId;
+          this.pictureClub = response.data.club.picture;
           // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.listTeam = response.data.map((team: TeamConJugadores) => new TeamConJugadores(team));
+          this.listTeam = response.data.teams; //.map((team: TeamConJugadores) => new TeamConJugadores(team));
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -191,10 +200,11 @@ export class InicioComponent implements OnInit {
       this.teamService.createUpdateTeam(this.usuarioActual!.userId, this.teamNew,).subscribe(
         (response) => {
           // Manejar la respuesta según tus necesidades
-          console.log('Equipo creado con éxito:', response);
+          //console.log('Equipo creado con éxito:', response);
 
           // Cargar nuevamente el listado de equipos después de la creación exitosa
-          this.cargarListadoEquipos();
+          //this.cargarListadoEquipos();
+          this.listTeam.push(response.data);
 
           // Cerrar el modal después de crear el equipo
           this.cerrarModal();
@@ -208,22 +218,25 @@ export class InicioComponent implements OnInit {
   }
 
   // Método para confirmar la eliminación del equipo
-  confirmarEliminarEquipo(teamId: number, name: string): void {
-    const confirmacion = confirm('¿Estás seguro de que deseas eliminar el equipo con ID ${teamId}?');
+  confirmarEliminarEquipo(team: any, index: number): void {
+    let name = team.category + ' ' + team.name;
+    name = name.trim() + ' ' + team.levelLeague;
+    const confirmacion = confirm('¿Estás seguro de que deseas eliminar el equipo ' + name);
     if (confirmacion) {
       // Llama al método para eliminar el equipo
-      this.eliminarEquipo(teamId);
+      this.eliminarEquipo(team.teamId, index);
     }
   }
 
   // Método para eliminar el equipo
-  eliminarEquipo(teamId: number): void {
+  eliminarEquipo(teamId: number, index: number): void {
     //hacemos un borrado logico
     this.teamService.deleteLogicTeam(teamId.toString()).subscribe(
       (response) => {
         console.log('Equipo eliminado con éxito:', response);
         // Cargar nuevamente el listado de equipos después de la eliminación exitosa
-        this.cargarListadoEquipos();
+        this.listTeam.splice(index, 1);
+        //this.cargarListadoEquipos();
       },
       (error) => {
         console.error('Error al eliminar el equipo:', error);

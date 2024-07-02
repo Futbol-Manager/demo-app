@@ -1,7 +1,11 @@
-<button class="btn btn-primary" (click)="navegarACalendario()">
-  <i class="bi bi-calendar"></i> Calendario
-</button>
-<div class="container mt-2">
+<div class="container text-center">
+  <div class="row">
+    <div class="col-2">
+      <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">Calendario</a>
+    </div>
+  </div>
+</div>
+<div class="container mt-2" style="margin-top: 3em;">
   <div class="container">
     <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': true}">
       <div class="modal-dialog" role="document" style="margin-top: 10%;">
@@ -14,7 +18,8 @@
             <form>
               <div class="mb-3">
                 <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
-                <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" [(ngModel)]="team.categoryType.categoryTypeId">
+                <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
+                  [(ngModel)]="team.categoryType.categoryTypeId">
                   <!-- Opciones ajustadas según tus necesidades -->
                   <option value="1">LaLiga EA Sports</option>
                   <option value="2">Liga F</option>
@@ -60,11 +65,13 @@
               </div>
               <div class="mb-3">
                 <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
-                <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo" [(ngModel)]="team.objectiveTeam">
+                <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo"
+                  [(ngModel)]="team.objectiveTeam">
               </div>
               <div class="mb-3">
                 <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
-                <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento" [(ngModel)]="team.trainingDays">
+                <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
+                  [(ngModel)]="team.trainingDays">
               </div>
               <div class="mb-3">
                 <label for="clubEquipo" class="form-label">Club del Equipo:</label>
@@ -74,7 +81,8 @@
               </div>
               <div class="mb-3">
                 <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
-                <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo" [(ngModel)]="team.opinionTeam">
+                <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo"
+                  [(ngModel)]="team.opinionTeam">
               </div>
               <!-- Botón para guardar el nuevo equipo -->
               <button type="button" class="btn btn-success float-end" (click)="guardarCambios()">Guardar</button>

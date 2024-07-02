@@ -224,7 +224,7 @@ export class HeaderComponent implements OnInit {
 
 onSubmit() {
   if (this.selectedFile) {
-      console.log('Imagen seleccionada:', this.selectedFile);
+      //console.log('Imagen seleccionada:', this.selectedFile);
 
       // Simulamos el envío de la imagen al servidor
       const userId = this.usuarioActual?.userId.toString();

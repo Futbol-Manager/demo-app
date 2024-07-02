@@ -31,7 +31,7 @@ export class RegisterComponent implements OnInit {
   isReadOnlyMail: boolean = false;
 
   selectOptions = [
-    { value: "0", label: "Selecciona una opción" },
+    { value: "0", label: "¿Eres un club o un entrenador?" },
     { value: "1", label: "Club" },
     { value: "2", label: "Entrenador" },
     // Opciones eliminadas

@@ -12,7 +12,8 @@
   background-color: #fff;
   background-clip: border-box;
   border: 0px solid #dee2e6;
-  border-radius: 0.25rem;box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
+  border-radius: 0.25rem;
+  box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
 }
 
 .card-title {
@@ -45,4 +46,7 @@
   background-size: 400% 400%;
 }
 
-
+.submenu {
+  text-align: -webkit-center;
+  padding-block: inherit;
+}

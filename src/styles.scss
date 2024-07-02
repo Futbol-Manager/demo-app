@@ -239,6 +239,19 @@ body {
   background-color: #22bf63 !important;
 }
 
+.p {
+  text-align: justify;
+}
+
+.no-underline {
+  text-decoration: none;
+  color: inherit; /* Optional: keeps the color of the link the same as the surrounding text */
+}
+
+.no-underline:hover {
+  text-decoration: underline;
+  color: blue;
+}
 
 
 

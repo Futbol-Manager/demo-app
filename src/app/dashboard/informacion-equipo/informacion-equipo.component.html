@@ -1,24 +1,26 @@
 <div class="container mt-3">
-  <div class="d-block m-3" tabindex="-1" role="dialog">
+  <div class="container text-center">
+      <div class="row">
+          <div class="col-2">
+              <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">Calendario</a>
+          </div>
+      </div>
+  </div>
+  <div class="d-block m-3" tabindex="-1" role="dialog" style="margin-top: 3em;">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
-        <div class="btn-container">
-          <button class="btn btn-custom" (click)="navegarACalendario()">
-            <i class="bi bi-calendar"></i>
-          </button>
-          <div class="hint">Volver al calendario</div>
-        </div>
-        <div class="modal-header">
+        <div class="modal-header" style="margin-top: 3em;">
           <h5 class="modal-title" id="standard-modalLabel">Información del equipo</h5>
         </div>
         <div class="modal-body">
-          <!-- Formulario para la creación de equipo con campos separados -->
+          <!-- Formulario para la creación de equipo con campos separados 
+          TODO hacer que si es entrenador suelto, si pueda editar esa info-->
           <form [formGroup]="editarEquipoForm" (ngSubmit)="editarEquipo()">
             <div class="d-flex">
               <div class="m-3 col-6">
                 <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
                 <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
-                  formControlName="categoryTypeId">
+                  formControlName="categoryTypeId" [attr.disabled]="profileId === 2 ? true : null">
                   <!-- Opciones ajustadas según tus necesidades -->
                   <option value="15">Senior</option>
                   <option value="16">Juvenil</option>
@@ -36,7 +38,7 @@
               </div>
               <div class="m-3 col-6">
                 <label for="nivelLiga" class="form-label">Nivel:</label>
-                <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague">
+                <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague" [attr.disabled]="profileId === 2 ? true : null">
                   <!-- Opciones ajustadas según tus necesidades -->
                   <option value="LaLiga EA Sports">LaLiga EA Sports</option>
                   <option value="Liga F">Liga F</option>
@@ -67,7 +69,7 @@
             <div class="d-flex">
               <div class="m-3 col-6">
                 <label for="nombreEquipo" class="form-label">Letra del equipo:</label>
-                <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
+                <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name" [attr.disabled]="profileId === 2 ? true : null">
                   <option value="">Sin letra</option>
                   <option value="A">A</option>
                   <option value="B">B</option>
@@ -87,7 +89,7 @@
               <div class="m-3 col-6">
                 <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
                 <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
-                  formControlName="trainingDays">
+                  formControlName="trainingDays" [attr.disabled]="profileId === 2 ? true : null">
               </div>
             </div>
             <div class="d-flex">
@@ -122,7 +124,7 @@
           <div class="row">
             <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">
               <div class="col mb-3" *ngFor="let coach of coaches">
-                <div class="card gradient" *ngIf="profileId !== 1">
+                <div class="card gradient">
                   <div class="card-body text-center">
                     <ng-container *ngIf="!coach.picture">
                       <span class="bi bi-person" style="font-size: 4rem;"></span>

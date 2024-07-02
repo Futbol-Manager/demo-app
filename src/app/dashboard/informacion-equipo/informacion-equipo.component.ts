@@ -29,6 +29,7 @@ export class InformacionEquipoComponent implements OnInit {
 
   showModal = false;
   profileId = 0;
+  userId = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -53,7 +54,8 @@ export class InformacionEquipoComponent implements OnInit {
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;      
-      this.profileId = Number(this.usuarioActual!.profile);
+      this.profileId = Number(this.usuarioActual!.profileType.profileId);
+      this.userId = Number(this.usuarioActual!.userId);
     });
     this.route.params.subscribe(params => {
       // Obtener el valor de teamId de los parámetros
@@ -173,7 +175,7 @@ export class InformacionEquipoComponent implements OnInit {
 
   invitarEntrenador(){
     if(this.userForm.valid){
-      this.registerService.inviteCoach(this.userForm.value.mail, this.teamId).pipe().subscribe(
+      this.registerService.inviteCoach(this.userForm.value.mail, this.teamId, this.userId).pipe().subscribe(
         res => {
           let msg = 'Entrenador invitado correctamente.';
           if(res.data != null){

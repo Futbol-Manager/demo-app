@@ -1,104 +1,93 @@
 <div *ngIf="datosCargados">
-  <!-- Botón para redirigir a la pantalla de jugadores -->
-  <div class="container mt-3"
-    *ngIf="this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2">
+  <div class="container text-center">
     <div class="row">
-      <div class="col">
-        <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Información del equipo</button>
+      <div class="col-3" *ngIf="this.usuarioActual!.profileType.profileId < 3">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">Información del equipo</a>
       </div>
-      <div class="col text-end">
-        <button class="btn btn-custom btn-sm" (click)="irAPantalla(3)">Estadísticas del equipo</button>
+      <div class="col-3" *ngIf="this.usuarioActual!.profileType.profileId < 3">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">Ver jugadores del equipo</a>
       </div>
-    </div>
-    <div class="row" style="margin-top: 2em;">
-      <div class="col">
-        <button class="btn btn-custom btn-sm" (click)="irAPantalla(2)">Ver jugadores del equipo</button>
+      <div class="col-2" *ngIf="this.usuarioActual!.profileType.profileId > 2">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">Cuotas</a>
       </div>
-      <div class="col text-end">
-        <button class="btn btn-custom btn-sm" (click)="irAPantalla(4)">Estadísticas por jugador</button>
+      <div class="col-3" *ngIf="this.usuarioActual!.profileType.profileId < 3">
+        <a class="no-underline" (click)="irAPantalla(3)">Estadísticas del equipo</a>
       </div>
-    </div>
-  </div>
-
-  <div class="container" *ngIf="this.usuarioActual!.profileType.profileId > 2">
-    <div class="row">
-      <div class="col">
-        <button class="btn btn-custom btn-sm" (click)="irAPantalla(5)">Cuotas</button>
+      <div class="col-3" *ngIf="this.usuarioActual!.profileType.profileId < 3">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(4)">Estadísticas por jugador</a>
       </div>
     </div>
   </div>
 
   <!-- calendario.component.html -->
-  <div>
-    <div class="container">
-      <h2 class="text-center">{{ nombreEquipo }}</h2>
-      <div class="d-flex justify-content-between">
-        <button class="btn btn-custom" (click)="mesAnterior()">
-          <i class="bi bi-arrow-left btn-sm"></i> Mes Anterior
-        </button>
-        <h4>{{ tituloMesAnio }}</h4>
-        <button class="btn btn-custom" (click)="mesSiguiente()">
-          Mes Siguiente <i class="bi bi-arrow-right btn-sm"></i>
-        </button>
-      </div>
+  <div class="container" style="margin-top: 3em;">
+    <h2 class="text-center">{{ nombreEquipo }}</h2>
+    <div class="d-flex justify-content-between">
+      <button class="btn btn-custom" (click)="mesAnterior()">
+        <i class="bi bi-arrow-left btn-sm"></i> Mes Anterior
+      </button>
+      <h4>{{ tituloMesAnio }}</h4>
+      <button class="btn btn-custom" (click)="mesSiguiente()">
+        Mes Siguiente <i class="bi bi-arrow-right btn-sm"></i>
+      </button>
+    </div>
 
-      <!-- Tabla del calendario -->
-      <div class="table-responsive mt-3" style="overflow-x: auto;">
-        <table id="tableCalendar" class="table table-bordered table-striped">
-          <!-- Encabezado de la tabla -->
-          <thead class="table-custom">
-            <tr>
-              <th scope="col">Lunes</th>
-              <th scope="col">Martes</th>
-              <th scope="col">Miércoles</th>
-              <th scope="col">Jueves</th>
-              <th scope="col">Viernes</th>
-              <th scope="col">Sábado</th>
-              <th scope="col">Domingo</th>
-            </tr>
-          </thead>
-          <!-- Cuerpo de la tabla -->
-          <tbody>
-            <!-- Filas de la tabla -->
-            <ng-container *ngFor="let semana of calendario">
-              <!-- Verificar si la semana tiene algún dato -->
-              <ng-container *ngIf="tieneDatosEnSemana(semana)">
-                <tr>
-                  <!-- Columnas de la fila -->
-                  <ng-container *ngFor="let dia of semana">
-                    <td *ngIf="dia !== ''" class="dia">
-                      <div class="position-relative">
-                        <span class="numero-dia">{{ dia.numero }}</span>
-                        <div class="row">
-                          <div class="col" *ngIf="!dia.trainingId || !dia.matchPreparationId">
-                            <div class="btn-container" *ngIf="this.usuarioActual!.profileType.profileId === 2">
-                              <button class="btn btn-link text-danger" (click)="abrirModal(dia.daysession)">
-                                <i class="bi bi-plus-circle-fill"></i>
-                              </button>
-                              <div class="hint">Añadir</div>
-                            </div>
-                          </div>
-                          <div class="col"
-                            *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) || dia.traininVisible === 1">
-                            <button *ngIf="dia.trainingId" class="btn btn-entrena btn-sm btn-block"
-                              (click)="openEntrenamiento(dia.trainingId, dia.daysession)">Entrenamiento</button>
-                          </div>
-                          <div class="col"
-                            *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) || dia.matchVisible === 1">
-                            <button *ngIf="dia.matchPreparationId" class="btn btn-partido btn-sm btn-block"
-                              (click)="openPartido(dia.matchPreparationId, dia.daysession)">Partido</button>
+    <!-- Tabla del calendario -->
+    <div class="table-responsive mt-3" style="overflow-x: auto;">
+      <table id="tableCalendar" class="table table-bordered table-striped">
+        <!-- Encabezado de la tabla -->
+        <thead class="table-custom">
+          <tr>
+            <th scope="col">Lunes</th>
+            <th scope="col">Martes</th>
+            <th scope="col">Miércoles</th>
+            <th scope="col">Jueves</th>
+            <th scope="col">Viernes</th>
+            <th scope="col">Sábado</th>
+            <th scope="col">Domingo</th>
+          </tr>
+        </thead>
+        <!-- Cuerpo de la tabla -->
+        <tbody>
+          <!-- Filas de la tabla -->
+          <ng-container *ngFor="let semana of calendario">
+            <!-- Verificar si la semana tiene algún dato -->
+            <ng-container *ngIf="tieneDatosEnSemana(semana)">
+              <tr>
+                <!-- Columnas de la fila -->
+                <ng-container *ngFor="let dia of semana">
+                  <td *ngIf="dia !== ''" class="dia">
+                    <div class="position-relative">
+                      <span class="numero-dia">{{ dia.numero }}</span>
+                      <div class="row">
+                        <div class="col" *ngIf="!dia.trainingId || !dia.matchPreparationId">
+                          <div class="btn-container" *ngIf="this.usuarioActual!.profileType.profileId === 2">
+                            <button class="btn btn-link text-danger" (click)="abrirModal(dia.daysession)">
+                              <i class="bi bi-plus-circle-fill"></i>
+                            </button>
+                            <div class="hint">Añadir</div>
                           </div>
                         </div>
+                        <div class="col"
+                          *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) || dia.traininVisible === 1">
+                          <button *ngIf="dia.trainingId" class="btn btn-entrena btn-sm btn-block"
+                            (click)="openEntrenamiento(dia.trainingId, dia.daysession)">Entrenamiento</button>
+                        </div>
+                        <div class="col"
+                          *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) || dia.matchVisible === 1">
+                          <button *ngIf="dia.matchPreparationId" class="btn btn-partido btn-sm btn-block"
+                            (click)="openPartido(dia.matchPreparationId, dia.daysession)">Partido</button>
+                        </div>
                       </div>
-                    </td>
-                    <td *ngIf="dia === ''" class="dia"></td>
-                  </ng-container>
-                </tr>
-              </ng-container>
+                    </div>
+                  </td>
+                  <td *ngIf="dia === ''" class="dia"></td>
+                </ng-container>
+              </tr>
             </ng-container>
-          </tbody>
-        </table>
-      </div>
+          </ng-container>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

@@ -1,17 +1,11 @@
 <div *ngIf="datosCargados" class="container">
-    <div class="btn-container mt-3">
+    <div class="container text-center">
         <div class="row">
-            <div class="col-6"><button class="btn btn-custom" (click)="navegarACalendario()">
-                    <i class="bi bi-calendar"></i>
-                </button>
-            </div>
-            <div class="col-6 text-end">
-                <button class="btn btn-custom btn-sm" (click)="openModalStripe()">Pagar con tarjeta<i
-                        class="bi bi-stripe ms-2"></i></button>
+            <div class="col-2">
+                <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">Calendario</a>
             </div>
         </div>
     </div>
-
     <h2 style="margin-top: 2em;">Puedes pagar por transferencia</h2>
     <p>Puedes pagar por transferencia a la cuenta indicada poniendo el asunto o concepto y pulsando en mago manual para
         avisar de ello.</p>
@@ -41,6 +35,10 @@
     <div class="row mb-3">
         <div class="col-md-6">
             <button class="btn btn-custom btn-sm">Pago manual</button>
+        </div>
+        <div class="col-md-6">
+            <button class="btn btn-custom btn-sm" (click)="openModalStripe()">Pagar con tarjeta<i
+                    class="bi bi-stripe ms-2"></i></button>
         </div>
     </div>
 
@@ -133,12 +131,6 @@
                     <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
                 </div>
                 <div class="modal-body">
-                    <h6 style="color: red;">**Información Importante para los Padres**</h6>
-                    <h6 style="color: red;">Cuando realices el pago de las cuotas del club o de la ropa mediante tarjeta
-                        de débito o
-                        crédito, se aplicará un pequeño coste adicional por "gastos de gestión". Este coste es necesario
-                        para cubrir los gastos administrativos asociados al procesamiento de pagos. Agradecemos tu
-                        comprensión y colaboración para facilitar esta gestión.</h6>
                     <form (ngSubmit)="makePayment()">
                         <!-- <div class="row mb-3">
                             <label for="amount" class="form-label">Cantidad a Pagar:</label>
@@ -174,7 +166,22 @@
                         <div class="row mb-3">
                             <div id="card-element"></div>
                         </div>
-                        <button type="submit" class="btn btn-success">Pagar</button>
+                        <div class="row mb-3">
+                            <button type="submit" class="btn btn-success">Pagar</button>
+                        </div>
+                        <div class="row mb-3">
+                            <div id="card-element"></div>
+                        </div>
+                        <div class="row mb-3">
+                            <p style="color: rgb(172, 172, 172);">Cuando realices el pago de las cuotas del club o de la
+                                ropa mediante tarjeta
+                                de débito o
+                                crédito, se aplicará un pequeño coste adicional por "gastos de gestión". Este coste es
+                                necesario
+                                para cubrir los gastos administrativos asociados al procesamiento de pagos. Agradecemos
+                                tu
+                                comprensión y colaboración para facilitar esta gestión.</p>
+                        </div>
                     </form>
                 </div>
             </div>
