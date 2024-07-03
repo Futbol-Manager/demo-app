@@ -1,11 +1,12 @@
-<div *ngIf="datosCargados" class="container">
-    <div class="container text-center">
-        <div class="row">
-            <div class="col-2">
-                <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">Calendario</a>
-            </div>
+<div class="subMenu">
+    <div class="row">
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">Calendario <i class="bi bi-calendar"></i></a>
         </div>
     </div>
+</div>
+
+<div *ngIf="datosCargados" class="container">
     <h2 style="margin-top: 2em;">Puedes pagar por transferencia</h2>
     <p>Puedes pagar por transferencia a la cuenta indicada poniendo el asunto o concepto y pulsando en mago manual para
         avisar de ello.</p>

@@ -1,16 +1,15 @@
-<div *ngIf="datosCargados" class="container">
-    <div class="container text-center">
-        <div class="row">
-            <div class="col-2">
-                <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">Calendario</a>
-            </div>
-            <div class="col-2">
-                <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearJugdor()">Crear un
-                    jugador</a>
-            </div>
+<div class="subMenu">
+    <div class="row">
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">Calendario <i class="bi bi-calendar"></i></a>
+        </div>
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearJugdor()">Crear un
+                jugador<i class="bi bi-plus-circle"></i></a>
         </div>
     </div>
-
+</div>
+<div *ngIf="datosCargados" class="container">
     <div style="margin-top: 3em;">
         <h2 class="text-dark mt-3">Listado de Jugadores</h2>
         <ul class="nav nav-tabs" id="myTab" role="tablist">

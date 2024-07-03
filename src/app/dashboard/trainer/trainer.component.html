@@ -1,18 +1,14 @@
+<div class="subMenu">
+    <div class="row">
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">Calendario <i class="bi bi-calendar"></i></a>
+        </div>
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearJugdor()">Invitar Entrenador <i class="bi bi-envelope"></i></a>
+        </div>
+    </div>
+</div>
 <div *ngIf="datosCargados" class="container">
-    <div class="btn-container">
-        <button class="btn btn-custom" (click)="navegarACalendario()">
-            <i class="bi bi-calendar"></i>
-        </button>
-        <div class="hint">Volver al calendario</div>
-    </div>
-    <div class="btn-container">
-        <button class="btn btn-link text-primary" (click)="abrirModalCrearJugdor()">
-            <i class="bi bi-plus-circle-fill"></i>
-        </button>
-        <div class="hint">Invitar Entrenador</div>
-    </div>
-
-
     <div>
         <h2 class="text-dark mt-3">Listado de Entrenadores</h2>
         <div class="tab-content" id="myTabContent">

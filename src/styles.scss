@@ -18,7 +18,7 @@ body {
 
 // Estilos para tema claro
 .theme-header {
-  background-color: #fff;
+  background-color: #22bf63;
   color: #333; // Color de texto habitual para el tema claro
 }
 
@@ -38,7 +38,7 @@ body {
 // Estilos para tema oscuro
 .dark-theme-body {
   background-color: #3a444e;
-  color: #fff; // Color de texto habitual para el tema oscuro
+  color: #2e1f1f; // Color de texto habitual para el tema oscuro
   height: -webkit-fill-available;
 }
 
@@ -138,10 +138,14 @@ body {
 
 /* Estilos personalizados para el botón de cierre */
 .btn-close {
-  font-size: 0.75rem; /* Tamaño de fuente más pequeño */
-  width: 1rem; /* Ancho más pequeño */
-  height: 1rem; /* Altura más pequeña */
-  padding: 0.15rem; /* Padding más pequeño */
+  font-size: 0.75rem;
+  /* Tamaño de fuente más pequeño */
+  width: 1rem;
+  /* Ancho más pequeño */
+  height: 1rem;
+  /* Altura más pequeña */
+  padding: 0.15rem;
+  /* Padding más pequeño */
 }
 
 .btn-custom {
@@ -163,17 +167,18 @@ body {
   background-color: #505050;
   color: white;
 }
+
 .btn-custom-green {
   background-color: #063009;
   color: white;
 }
 
-.nav-tabs .nav-link.active {  
+.nav-tabs .nav-link.active {
   background-color: #3a444e;
   color: white;
 }
 
-.nav-tabs .nav-link {  
+.nav-tabs .nav-link {
   background-color: #818181;
   color: white;
 }
@@ -245,7 +250,8 @@ body {
 
 .no-underline {
   text-decoration: none;
-  color: inherit; /* Optional: keeps the color of the link the same as the surrounding text */
+  color: inherit;
+  /* Optional: keeps the color of the link the same as the surrounding text */
 }
 
 .no-underline:hover {
@@ -253,5 +259,11 @@ body {
   color: blue;
 }
 
-
-
+.subMenu {
+  background: #333131;
+  color: white;
+  height: 2.5em;
+  font-size: 1.4em;
+  align-content: center;
+  text-align: center;
+}

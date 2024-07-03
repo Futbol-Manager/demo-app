@@ -142,7 +142,7 @@ export class InformacionEquipoComponent implements OnInit {
           year: 0,
           categoryName: ''
         },
-        clubId: fv.clubId || 0,
+        clubId: this.team.clubId || 0,
         userId: 0,
         temporada: this.team.temporada
       };

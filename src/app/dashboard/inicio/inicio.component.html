@@ -1,307 +1,175 @@
-<div *ngIf="datosCargados" class="container">
+<div class="subMenu">
+  <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
+    <div class="col">
+      <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearEquipo()">Crear un equipo <i class="bi bi-plus-circle"></i></a>
+    </div>
+    <div class="col">
+      <a class="no-underline" href="javascript:void(0);">Cuadro Mando Deportivo <i class="bi bi-clipboard2-data"></i></a>
+    </div>
+    <div class="col">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">Cuotas <i class="bi bi-bank"></i></a>
+    </div>
+    <div class="col">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">Ropa <i class="bi bi-backpack3"></i></a>
+    </div>
+    <div class="col">
+      <a class="no-underline" href="javascript:void(0);">Patrocinadores <i class="bi bi-collection"></i></a>
+    </div>
+    <div class="col">
+      <a class="no-underline" href="javascript:void(0);">Notificaciones <i class="bi bi-bell"></i></a>
+    </div>
+  </div>
+</div>
+<div *ngIf="datosCargados">
   <!-- Botón para abrir el modal de creación de equipo -->
-  
-  <div class="container text-center">
-    <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
-      <div class="col-2">
-        <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearEquipo()">Crear un equipo</a>
-      </div>
-      <div class="col-3">
-        <a class="no-underline" href="javascript:void(0);">Cuadro de Mando Deportivo</a>
-      </div>
-      <div class="col-2">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">Cuotas</a>
-      </div>
-      <div class="col-2">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">Ropa</a>
-      </div>
-      <div class="col-3">
-        <a class="no-underline" href="javascript:void(0);">Patrocinadores</a>
+  <div class="container">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
+      <div class="col mb-3" *ngFor="let team of listTeam; let i = index">
+        <div class="card" style="cursor: pointer; min-height: 15.5em; max-height: 15.5em; border: 1px solid black;"
+          (click)="navegarACalendario(team.teamId)">
+          <div class="card-body text-center">
+            <div class="row">
+              <div class="col" *ngIf="!noPicture">
+                <img src="https://sphairatech.com/images/user/{{ pictureClub }}" alt="user-image" width="90"
+                  height="90">
+              </div>
+            </div>
+            <h5 class="card-title" style="color: black;">{{ team.category }} {{ team.name }}</h5>
+            <div class="row">
+              <div class="col">
+                <p class="card-text">
+                  {{ team.levelLeague }}
+                </p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                {{ team.trainingDays }}
+                <i class="bi bi-calendar-week ml-2"></i>
+                -
+                {{ team.jugadoresPorEquipo }}
+                <i class="bi bi-people-fill"></i>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col" style="color: black;">
+                <b>Cuerpo técnico: </b> {{ team.nombreEntrenador }}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
-    <div class="col mb-3" *ngFor="let team of listTeam; let i = index">
-      <div class="card" style="cursor: pointer; min-height: 15.5em; max-height:  15.5em;" (click)="navegarACalendario(team.teamId)">
-        <div class="card-body text-center">
-          <div class="row">
-            <div class="col" *ngIf="!noPicture">
-              <img src="https://sphairatech.com/images/user/{{ pictureClub }}" alt="user-image" width="90" height="90">
-            </div>
-          </div>
-          <h5 class="card-title">{{ team.category }} {{ team.name }}</h5>
-          <div class="row">
-            <div class="col">
-              <p class="card-text">
-                {{ team.levelLeague }}
-              </p>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              {{ team.trainingDays }}
-              <i class="bi bi-calendar-week ml-2"></i>
-              -
-              {{ team.jugadoresPorEquipo }}
-              <i class="bi bi-people-fill"></i>
-            </div>
-          </div>          
-          <div class="row">
-            <div class="col">
-              <b>Cuerpo técnico: </b> {{ team.nombreEntrenador }}
-            </div>
-          </div>
-        </div>
+<!-- Modal para la creación de equipo -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="standard-modalLabel">Crea un equipo</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
       </div>
-    </div>
-
-    <div>
-      <!-- Contenido principal con la tabla de equipos utilizando Bootstrap
-    <div class="mt-4">
-
-      <div>
-        <h2 class="text-dark mt-3">Listado de Equipos de Fútbol</h2>
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-content"
-              type="button" role="tab" aria-controls="list-content" aria-selected="true">Vista de lista</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-content" type="button"
-              role="tab" aria-controls="card-content" aria-selected="false">Vista de tarjetas</button>
-          </li>
-        </ul>
-        <div class="tab-content" id="myTabContent">
-          <div class="tab-pane fade show active" id="list-content" role="tabpanel" aria-labelledby="list-tab">
-            <div class="p-3">
-              <div class="row" *ngFor="let team of listTeam; let i = index">
-                <div class="col mb-3 rounded card" style="padding: 1.5em 2em 0.5em;">
-                  <div class="row">
-                    <div class="col-md-1 text-center" *ngIf="!noPicture">
-                      <img src="https://sphairatech.com/images/user/{{ pictureClub }}" alt="user-image" width="64" height="64">
-                    </div>
-                    <div class="col">                      
-                      <h5>{{ team.category }} {{ team.name }}</h5>
-                      <div class="row">                        
-                        <div class="col">
-                          <p>
-                            <strong>-</strong> {{ team.levelLeague }}
-                          </p>
-                        </div>
-                        <div class="col text-end">
-                          <p>
-                            {{ team.trainingDays }}
-                            <i class="bi bi-calendar-week ml-2"></i>
-                            -
-                            {{ team.jugadoresPorEquipo }}
-                            <i class="bi bi-people-fill"></i>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-auto">
-                      <div class="d-flex flex-column justify-content-between h-100">
-                        <div class="btn-container">
-                          <button class="btn btn-link text-success" (click)="navegarACalendario(team.teamId)">
-                            <i class="bi bi-arrow-right-circle-fill"></i>
-                          </button>
-                          <div class="hint">Entrar</div>
-                        </div>
-                        <div class="btn-container">
-                          <button class="btn btn-link text-danger"
-                            (click)="confirmarEliminarEquipo(team, i)">
-                            <i class="bi bi-trash"></i>
-                          </button>
-                          <div class="hint">Borrar</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+      <div class="modal-body">
+        <h6 class="mt-0">Instrucciones</h6>
+        <p>Introduce los datos de tu equipo que quieres crear sin dejar ningun campo vacío.</p>
+        <hr>
+        <!-- Formulario para la creación de equipo con campos separados -->
+        <form [formGroup]="crearEquipoForm" (ngSubmit)="crearEquipo()">
+          <div class="mb-3">
+            <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
+            <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" formControlName="categoryTypeId">
+              <!-- Opciones ajustadas según tus necesidades -->
+              <option value="15">Senior</option>
+              <option value="16">Juvenil</option>
+              <option value="17">Juvenil/Cadete Femenina</option>
+              <option value="18">Cadete</option>
+              <option value="19">Cadete/Infantil Femenina</option>
+              <option value="20">Infantil</option>
+              <option value="21">Infantil/Alevín Femenina</option>
+              <option value="22">Alevín</option>
+              <option value="23">Benjamín</option>
+              <option value="24">Benjamín/Prebenjamín Femenina</option>
+              <option value="25">Prebenjamín</option>
+              <option value="26">Debutante</option>
+            </select>
           </div>
-          <div class="tab-pane fade" id="card-content" role="tabpanel" aria-labelledby="card-tab">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-5 p-3">
-              <div class="col mb-3" *ngFor="let team of listTeam; let i = index">
-                <div class="card">
-                  <div class="card-body text-center">
-                    <div class="dropdown card-widgets" style="text-align: end;">
-                      <a href="#" data-bs-toggle="dropdown" aria-expanded="false" style="color: #565656;">
-                        <i class="bi bi-three-dots"></i>
-                      </a>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <a href="javascript:void(0);" class="dropdown-item"
-                          (click)="navegarACalendario(team.teamId)">Entrar <i
-                            class="bi bi-arrow-right-circle-fill icono-azul"></i></a>
-                        <a href="javascript:void(0);" class="dropdown-item"
-                          (click)="confirmarEliminarEquipo(team, i)">Borrar <i
-                            class="bi bi-trash icono-rojo"></i></a>
-                      </div>
-                    </div>        
-                    <h5 class="card-title">{{ team.category }} {{ team.name }}</h5>
-                    <div class="row">
-                      <div class="col">
-                        <p class="card-text">
-                           {{ team.levelLeague }}
-                        </p>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col">
-                        <p>
-                          {{ team.trainingDays }}
-                          <i class="bi bi-calendar-week ml-2"></i>
-                          -
-                          {{ team.jugadoresPorEquipo }}
-                          <i class="bi bi-people-fill"></i>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="mb-3">
+            <label for="nivelLiga" class="form-label">Nivel:</label>
+            <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague">
+              <!-- Opciones ajustadas según tus necesidades -->
+              <option value="LaLiga EA Sports">LaLiga EA Sports</option>
+              <option value="Liga F">Liga F</option>
+              <option value="LaLiga Hypermotion">LaLiga Hypermotion</option>
+              <option value="Segunda RFEF Femenina">Segunda RFEF Femenina</option>
+              <option value="Primera RFEF">Primera RFEF</option>
+              <option value="Segunda RFEF">Segunda RFEF</option>
+              <option value="Tercera RFEF">Tercera RFEF</option>
+              <option value="Tercera RFEF Femenina">Tercera RFEF Femenina</option>
+              <option value="Preferente Autonómica">Preferente Autonómica</option>
+              <option value="Preferente Autonómica Femenina">Preferente Autonómica Femenina</option>
+              <option value="Primera Autonómica">Primera Autonómica</option>
+              <option value="Primera Autonómica Femenina">Primera Autonómica Femenina</option>
+              <option value="Segunda Autonómica">Segunda Autonómica</option>
+              <option value="Tercera Autonómica">Tercera Autonómica</option>
+              <option value="División de Honor">División de Honor</option>
+              <option value="Liga Nacional">Liga Nacional</option>
+              <option value="Superliga">Superliga</option>
+              <option value="Autonómica">Autonómica</option>
+              <option value="Preferente">Preferente</option>
+              <option value="Primera">Primera</option>
+              <option value="Segunda">Segunda</option>
+              <option value="Tercera">Tercera</option>
+            </select>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>  -->
-    </div>
-
-    <!-- Modal para la creación de equipo -->
-    <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="standard-modalLabel">Crea un equipo</h5>
-            <!-- Botón de cerrar con un icono -->
-            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
+          <div class="mb-3">
+            <label for="nombreEquipo" class="form-label">Letra del equipo:</label>
+            <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
+              <option value="">Sin letra</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="E">E</option>
+              <option value="F">F</option>
+              <option value="G">G</option>
+              <option value="H">H</option>
+              <option value="I">I</option>
+              <option value="J">J</option>
+              <option value="K">K</option>
+              <option value="L">L</option>
+              <option value="M">M</option>
+            </select>
           </div>
-          <div class="modal-body">
-            <h6 class="mt-0">Instrucciones</h6>
-            <p>Introduce los datos de tu equipo que quieres crear sin dejar ningun campo vacío.</p>
-            <hr>
-            <!-- Formulario para la creación de equipo con campos separados -->
-            <form [formGroup]="crearEquipoForm" (ngSubmit)="crearEquipo()">
-              <div class="mb-3">
-                <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
-                <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
-                  formControlName="categoryTypeId">
-                  <!-- Opciones ajustadas según tus necesidades -->
-                  <option value="15">Senior</option>
-                  <option value="16">Juvenil</option>
-                  <option value="17">Juvenil/Cadete Femenina</option>
-                  <option value="18">Cadete</option>
-                  <option value="19">Cadete/Infantil Femenina</option>
-                  <option value="20">Infantil</option>
-                  <option value="21">Infantil/Alevín Femenina</option>
-                  <option value="22">Alevín</option>
-                  <option value="23">Benjamín</option>
-                  <option value="24">Benjamín/Prebenjamín Femenina</option>
-                  <option value="25">Prebenjamín</option>
-                  <option value="26">Debutante</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="nivelLiga" class="form-label">Nivel:</label>
-                <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague">
-                  <!-- Opciones ajustadas según tus necesidades -->
-                  <option value="LaLiga EA Sports">LaLiga EA Sports</option>
-                  <option value="Liga F">Liga F</option>
-                  <option value="LaLiga Hypermotion">LaLiga Hypermotion</option>
-                  <option value="Segunda RFEF Femenina">Segunda RFEF Femenina</option>
-                  <option value="Primera RFEF">Primera RFEF</option>
-                  <option value="Segunda RFEF">Segunda RFEF</option>
-                  <option value="Tercera RFEF">Tercera RFEF</option>
-                  <option value="Tercera RFEF Femenina">Tercera RFEF Femenina</option>
-                  <option value="Preferente Autonómica">Preferente Autonómica</option>
-                  <option value="Preferente Autonómica Femenina">Preferente Autonómica Femenina</option>
-                  <option value="Primera Autonómica">Primera Autonómica</option>
-                  <option value="Primera Autonómica Femenina">Primera Autonómica Femenina</option>
-                  <option value="Segunda Autonómica">Segunda Autonómica</option>
-                  <option value="Tercera Autonómica">Tercera Autonómica</option>
-                  <option value="División de Honor">División de Honor</option>
-                  <option value="Liga Nacional">Liga Nacional</option>
-                  <option value="Superliga">Superliga</option>
-                  <option value="Autonómica">Autonómica</option>
-                  <option value="Preferente">Preferente</option>
-                  <option value="Primera">Primera</option>
-                  <option value="Segunda">Segunda</option>
-                  <option value="Tercera">Tercera</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="nombreEquipo" class="form-label">Letra del equipo:</label>
-                <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
-                  <option value="">Sin letra</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="E">E</option>
-                  <option value="F">F</option>
-                  <option value="G">G</option>
-                  <option value="H">H</option>
-                  <option value="I">I</option>
-                  <option value="J">J</option>
-                  <option value="K">K</option>
-                  <option value="L">L</option>
-                  <option value="M">M</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
-                <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo"
-                  formControlName="objectiveTeam">
-              </div>
-              <div class="mb-3">
-                <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
-                <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
-                  formControlName="trainingDays">
-              </div>
-              <!-- <div class="mb-3">
+          <div class="mb-3">
+            <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
+            <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo"
+              formControlName="objectiveTeam">
+          </div>
+          <div class="mb-3">
+            <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
+            <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
+              formControlName="trainingDays">
+          </div>
+          <!-- <div class="mb-3">
             <label for="clubEquipo" class="form-label">Club del Equipo:</label>
             <select class="form-control" id="clubEquipo" name="clubEquipo" formControlName="clubId">
               <option *ngFor="let club of clubList" [value]="club.clubId">{{ club.name }}</option>
             </select>
           </div> -->
-              <div class="mb-3">
-                <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
-                <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo"
-                  formControlName="opinionTeam">
-              </div>
-              <div class="modal-footer">
-                <!-- Botón para guardar el nuevo equipo -->
-                <button type="submit" class="btn btn-success float-end">Guardar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!--<div id="standard-modal" class="modal fade show" tabindex="-1" aria-labelledby="standard-modalLabel" style="display: block; padding-left: 0px;" aria-modal="true" role="dialog">
-  <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h4 class="modal-title" id="standard-modalLabel">Modal Heading</h4>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              <h6 class="mt-0">Text in a modal</h6>
-              <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
-              <hr>
-              <h6>Overflowing text to show scroll behavior</h6>
-              <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-              <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
-              <p class="mb-0">Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+          <div class="mb-3">
+            <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
+            <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo"
+              formControlName="opinionTeam">
           </div>
           <div class="modal-footer">
-              <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="submit" class="btn btn-success float-end">Guardar</button>
           </div>
+        </form>
       </div>
+    </div>
   </div>
-</div> -->
+</div>

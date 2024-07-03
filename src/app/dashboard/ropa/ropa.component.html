@@ -1,18 +1,14 @@
-<div *ngIf="datosCargados">
-    <div class="container mt-3">
-        <div class="row">
-            <div class="col">
-                <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Inicio</button>
-            </div>
+<div class="subMenu">
+    <div class="row">
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">Calendario <i class="bi bi-calendar"></i></a>
         </div>
-        <div class="row" style="margin-top: 2em;">
-            <div class="col">
-                <button class="btn btn-custom btn-sm" (click)="abrirModal()">
-                    Personalizar
-                </button>
-            </div>
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="abrirModal()">Personalizar <i class="bi bi-pencil"></i></a>
         </div>
     </div>
+</div>
+<div *ngIf="datosCargados">    
     <!-- Contenido para el dataTable -->
     <div style="margin: 1em 1em 1em; text-align: center;">
         <h2>Ropa Jugadores</h2>

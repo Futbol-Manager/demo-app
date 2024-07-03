@@ -1,20 +1,20 @@
 <div *ngIf="datosCargados">
-  <div class="container text-center">
+  <div class="subMenu">
     <div class="row">
-      <div class="col-3" *ngIf="this.usuarioActual!.profileType.profileId < 3">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">Información del equipo</a>
+      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">Información del equipo <i class="bi bi-info-circle"></i></a>
       </div>
-      <div class="col-3" *ngIf="this.usuarioActual!.profileType.profileId < 3">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">Ver jugadores del equipo</a>
+      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">Ver jugadores del equipo <i class="bi bi-people-fill"></i></a>
       </div>
-      <div class="col-2" *ngIf="this.usuarioActual!.profileType.profileId > 2">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">Cuotas</a>
+      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">Cuotas <i class="bi bi-bank"></i></a>
       </div>
-      <div class="col-3" *ngIf="this.usuarioActual!.profileType.profileId < 3">
-        <a class="no-underline" (click)="irAPantalla(3)">Estadísticas del equipo</a>
+      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3">
+        <a class="no-underline" (click)="irAPantalla(3)">Estadísticas del equipo <i class="bi bi-bar-chart-line"></i></a>
       </div>
-      <div class="col-3" *ngIf="this.usuarioActual!.profileType.profileId < 3">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(4)">Estadísticas por jugador</a>
+      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(4)">Estadísticas por jugador <i class="bi bi-bar-chart-line"></i></a>
       </div>
     </div>
   </div>
