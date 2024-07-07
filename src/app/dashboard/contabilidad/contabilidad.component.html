@@ -1,11 +1,13 @@
 <div *ngIf="datosCargados">
-  <div  class="subMenu">
+  <div class="subMenu">
     <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
       <div class="col">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">Inicio <i class="bi bi-house"></i></a>
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">Inicio <i
+            class="bi bi-house"></i></a>
       </div>
       <div class="col">
-        <a class="no-underline" href="javascript:void(0);" (click)="openModalStripe()">Stripe <i class="bi bi-stripe"></i></a>
+        <a class="no-underline" href="javascript:void(0);" (click)="openModalStripe()">Stripe <i
+            class="bi bi-stripe"></i></a>
       </div>
       <div class="col">
         <a class="no-underline" href="javascript:void(0);" (click)="abrirModal()">Ajustes <i class="bi bi-gear"></i></a>
@@ -15,7 +17,29 @@
 
   <div class="container mt-3">
     <!-- Contenido para el dataTable -->
-    <div class="container mt-4">
+    <div class="row">
+      <div class="col-3">
+        <label for="cuotaClub" class="form-label">Total de la cuota del Club con la ropa</label>
+        <input type="text" class="form-control" id="cuotaClub" name="cuotaClub" [(ngModel)]="totales.cuotaClub"
+          disabled>
+      </div>
+      <div class="col-3">
+        <label for="cuotaRopa" class="form-label">Total de la cuota solo de la ropa</label>
+        <input type="text" class="form-control" id="cuotaRopa" name="cuotaRopa" [(ngModel)]="totales.cuotaRopa"
+          disabled>
+      </div>
+      <div class="col-3">
+        <label for="pagado" class="form-label">Total pagado de todos los jugadores</label>
+        <input type="text" class="form-control" id="pagado" name="pagado" [(ngModel)]="totales.pagado"
+          disabled>
+      </div>
+      <div class="col-3">
+        <label for="restante" class="form-label">Restante y pendiente por pagar</label>
+        <input type="text" class="form-control" id="restante" name="restante" [(ngModel)]="totales.restante"
+          disabled>
+      </div>
+    </div>
+    <div style="margin-top: 2em;">
       <h2>Tabla Jugadores</h2>
       <div class="row justify-content-between div-headdatatable">
         <div class="col-md-auto mr-auto" id="dt-length">
@@ -193,7 +217,7 @@
           <div class="row mb-3">
             <div class="col-md-6">
               <label for="cuotaRopa" class="form-label">Precio de la cuota de la ropa:</label>
-              <input type="text" class="form-control" id="cuotaRopa" name="cuotaRopa"
+              <input type="number" class="form-control" id="cuotaRopa" name="cuotaRopa"
                 [(ngModel)]="clubCuotas.cuotaRopa">
             </div>
             <div class="col-md-6">
@@ -227,12 +251,14 @@
               <p>Segun el número de cuotas o pagos que se haya seleccionado, se debe ir rellenando cantidad y fecha de
                 pago en cada una de las cuotas.
               </p>
+              <p style="color: red;">(Solo se permiten números enteros, sin "comas" ni "puntos")</p>
             </div>
           </div>
           <div class="row mb-3">
             <div class="col-md-6">
               <label for="cuotaUno" class="form-label">Cuota 1:</label>
-              <input type="text" class="form-control" id="cuotaUno" name="cuotaUno" [(ngModel)]="clubCuotas.cuotaUno">
+              <input type="number" class="form-control" id="cuotaUno" name="cuotaUno" [(ngModel)]="clubCuotas.cuotaUno"
+                (input)="validateNumber($event, 1)">
             </div>
             <div class="col-md-6">
               <label for="cuotaUnoDate" class="form-label">Fecha de pago:</label>
@@ -243,7 +269,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 1">
             <div class="col-md-6">
               <label for="cuotaDos" class="form-label">Cuota 2:</label>
-              <input type="text" class="form-control" id="cuotaDos" name="cuotaDos" [(ngModel)]="clubCuotas.cuotaDos">
+              <input type="number" class="form-control" id="cuotaDos" name="cuotaDos" [(ngModel)]="clubCuotas.cuotaDos"
+                (input)="validateNumber($event, 2)">
             </div>
             <div class="col-md-6">
               <label for="cuotaDosDate" class="form-label">Fecha de pago:</label>
@@ -254,8 +281,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 2">
             <div class="col-md-6">
               <label for="cuotaTres" class="form-label">Cuota 3:</label>
-              <input type="text" class="form-control" id="cuotaTres" name="cuotaTres"
-                [(ngModel)]="clubCuotas.cuotaTres">
+              <input type="number" class="form-control" id="cuotaTres" name="cuotaTres"
+                [(ngModel)]="clubCuotas.cuotaTres" (input)="validateNumber($event, 3)">
             </div>
             <div class="col-md-6">
               <label for="cuotaTresDate" class="form-label">Fecha de pago:</label>
@@ -266,8 +293,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 3">
             <div class="col-md-6">
               <label for="cuotaCuatro" class="form-label">Cuota 4:</label>
-              <input type="text" class="form-control" id="cuotaCuatro" name="cuotaCuatro"
-                [(ngModel)]="clubCuotas.cuotaCuatro">
+              <input type="number" class="form-control" id="cuotaCuatro" name="cuotaCuatro"
+                [(ngModel)]="clubCuotas.cuotaCuatro" (input)="validateNumber($event, 4)">
             </div>
             <div class="col-md-6">
               <label for="cuotaCuatroDate" class="form-label">Fecha de pago:</label>
@@ -278,8 +305,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 4">
             <div class="col-md-6">
               <label for="cuotaCinco" class="form-label">Cuota 5:</label>
-              <input type="text" class="form-control" id="cuotaCinco" name="cuotaCinco"
-                [(ngModel)]="clubCuotas.cuotaCinco">
+              <input type="number" class="form-control" id="cuotaCinco" name="cuotaCinco"
+                [(ngModel)]="clubCuotas.cuotaCinco" (input)="validateNumber($event, 5)">
             </div>
             <div class="col-md-6">
               <label for="cuotaCincoDate" class="form-label">Fecha de pago:</label>
@@ -290,8 +317,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 5">
             <div class="col-md-6">
               <label for="cuotaSeis" class="form-label">Cuota 6:</label>
-              <input type="text" class="form-control" id="cuotaSeis" name="cuotaSeis"
-                [(ngModel)]="clubCuotas.cuotaSeis">
+              <input type="number" class="form-control" id="cuotaSeis" name="cuotaSeis"
+                [(ngModel)]="clubCuotas.cuotaSeis" (input)="validateNumber($event, 6)">
             </div>
             <div class="col-md-6">
               <label for="cuotaSeisDate" class="form-label">Fecha de pago:</label>
@@ -302,8 +329,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 6">
             <div class="col-md-6">
               <label for="cuotaSiete" class="form-label">Cuota 7:</label>
-              <input type="text" class="form-control" id="cuotaSiete" name="cuotaSiete"
-                [(ngModel)]="clubCuotas.cuotaSiete">
+              <input type="number" class="form-control" id="cuotaSiete" name="cuotaSiete"
+                [(ngModel)]="clubCuotas.cuotaSiete" (input)="validateNumber($event, 7)">
             </div>
             <div class="col-md-6">
               <label for="cuotaSieteDate" class="form-label">Fecha de pago:</label>
@@ -314,8 +341,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 7">
             <div class="col-md-6">
               <label for="cuotaOcho" class="form-label">Cuota 8:</label>
-              <input type="text" class="form-control" id="cuotaOcho" name="cuotaOcho"
-                [(ngModel)]="clubCuotas.cuotaOcho">
+              <input type="number" class="form-control" id="cuotaOcho" name="cuotaOcho"
+                [(ngModel)]="clubCuotas.cuotaOcho" (input)="validateNumber($event, 8)">
             </div>
             <div class="col-md-6">
               <label for="cuotaOchoDate" class="form-label">Fecha de pago:</label>
@@ -326,8 +353,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 8">
             <div class="col-md-6">
               <label for="cuotaNueve" class="form-label">Cuota 9:</label>
-              <input type="text" class="form-control" id="cuotaNueve" name="cuotaNueve"
-                [(ngModel)]="clubCuotas.cuotaNueve">
+              <input type="number" class="form-control" id="cuotaNueve" name="cuotaNueve"
+                [(ngModel)]="clubCuotas.cuotaNueve" (input)="validateNumber($event, 9)">
             </div>
             <div class="col-md-6">
               <label for="cuotaNueveDate" class="form-label">Fecha de pago:</label>
@@ -338,8 +365,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 9">
             <div class="col-md-6">
               <label for="cuotaDiez" class="form-label">Cuota 10:</label>
-              <input type="text" class="form-control" id="cuotaDiez" name="cuotaDiez"
-                [(ngModel)]="clubCuotas.cuotaDiez">
+              <input type="number" class="form-control" id="cuotaDiez" name="cuotaDiez"
+                [(ngModel)]="clubCuotas.cuotaDiez" (input)="validateNumber($event, 10)">
             </div>
             <div class="col-md-6">
               <label for="cuotaDiezDate" class="form-label">Fecha de pago:</label>
@@ -350,8 +377,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 10">
             <div class="col-md-6">
               <label for="cuotaOnce" class="form-label">Cuota 11:</label>
-              <input type="text" class="form-control" id="cuotaOnce" name="cuotaOnce"
-                [(ngModel)]="clubCuotas.cuotaOnce">
+              <input type="number" class="form-control" id="cuotaOnce" name="cuotaOnce"
+                [(ngModel)]="clubCuotas.cuotaOnce" (input)="validateNumber($event, 11)">
             </div>
             <div class="col-md-6">
               <label for="cuotaOnceDate" class="form-label">Fecha de pago:</label>
@@ -362,8 +389,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 11">
             <div class="col-md-6">
               <label for="cuotaDoce" class="form-label">Cuota 12:</label>
-              <input type="text" class="form-control" id="cuotaDoce" name="cuotaDoce"
-                [(ngModel)]="clubCuotas.cuotaDoce">
+              <input type="number" class="form-control" id="cuotaDoce" name="cuotaDoce"
+                [(ngModel)]="clubCuotas.cuotaDoce" (input)="validateNumber($event, 12)">
             </div>
             <div class="col-md-6">
               <label for="cuotaDoceDate" class="form-label">Fecha de pago:</label>
@@ -641,10 +668,15 @@
         <p>Vas a agregar un pago al jugador <b>{{ textoInfoTitlePagoPlayer }}</b></p>
         <form (ngSubmit)="createUpdateHistoryCuotaJugador()">
           <div class="row mb-3">
+            <div class="col">
+              <p style="color: red;">(En la cantidad, solo se permiten números enteros, sin "comas" ni "puntos")</p>
+            </div>
+          </div>
+          <div class="row mb-3">
             <div class="col-6">
               <label for="cantidad" class="form-label">Cantidad:</label>
               <input type="number" class="form-control" id="cantidad" name="cantidad"
-                [(ngModel)]="agregarPagoPlayer.cantidad">
+                [(ngModel)]="agregarPagoPlayer.cantidad" (input)="validateNumber($event, 20)">
             </div>
             <div class="col-6">
               <label for="fecha" class="form-label">Fecha:</label>
@@ -653,7 +685,7 @@
           </div>
           <div class="row mb-3">
             <div class="col-6">
-              <label for="metodo" class="form-label">Metodo de pago:</label>
+              <label for="metodo" class="form-label">Método de pago:</label>
               <select class="form-control" id="metodo" name="metodo" [(ngModel)]="agregarPagoPlayer.metodo">
                 <option value="Tarjeta">Tarjeta</option>
                 <option value="Efectivo">Efectivo</option>

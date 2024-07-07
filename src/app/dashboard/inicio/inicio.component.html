@@ -1,26 +1,27 @@
-<div class="subMenu">
-  <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
-    <div class="col">
-      <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearEquipo()">Crear un equipo <i class="bi bi-plus-circle"></i></a>
-    </div>
-    <div class="col">
-      <a class="no-underline" href="javascript:void(0);">Cuadro Mando Deportivo <i class="bi bi-clipboard2-data"></i></a>
-    </div>
-    <div class="col">
-      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">Cuotas <i class="bi bi-bank"></i></a>
-    </div>
-    <div class="col">
-      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">Ropa <i class="bi bi-backpack3"></i></a>
-    </div>
-    <div class="col">
-      <a class="no-underline" href="javascript:void(0);">Patrocinadores <i class="bi bi-collection"></i></a>
-    </div>
-    <div class="col">
-      <a class="no-underline" href="javascript:void(0);">Notificaciones <i class="bi bi-bell"></i></a>
+
+<div [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
+  <div class="subMenu">
+    <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
+      <div class="col">
+        <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearEquipo()">Crear un equipo <i class="bi bi-plus-circle"></i></a>
+      </div>
+      <div class="col">
+        <a class="no-underline" href="javascript:void(0);">Cuadro Mando Deportivo <i class="bi bi-clipboard2-data"></i></a>
+      </div>
+      <div class="col">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">Cuotas <i class="bi bi-bank"></i></a>
+      </div>
+      <div class="col">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">Ropa <i class="bi bi-backpack3"></i></a>
+      </div>
+      <div class="col">
+        <a class="no-underline" href="javascript:void(0);">Patrocinadores <i class="bi bi-collection"></i></a>
+      </div>
+      <div class="col">
+        <a class="no-underline" href="javascript:void(0);">Notificaciones <i class="bi bi-envelope"></i></a>
+      </div>
     </div>
   </div>
-</div>
-<div *ngIf="datosCargados">
   <!-- Botón para abrir el modal de creación de equipo -->
   <div class="container">
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">

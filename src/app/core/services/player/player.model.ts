@@ -133,6 +133,8 @@ export class Player {
   telefonoMadre: string;
   emailPadre: string;
   emailMadre: string;
+  nick: string;
+  numero: string;
 
   constructor(object: any) {
     this.playerId = object.playerId || 0;
@@ -191,6 +193,8 @@ export class Player {
     this.telefonoMadre = object.telefonoMadre || '';
     this.emailPadre = object.emailPadre || '';
     this.emailMadre = object.emailMadre || '';
+    this.nick = object.nick || '';
+    this.numero = object.numero || '';
   }
 }
 

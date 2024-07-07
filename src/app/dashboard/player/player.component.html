@@ -5,7 +5,7 @@
         </div>
         <div class="col">
             <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearJugdor()">Crear un
-                jugador<i class="bi bi-plus-circle"></i></a>
+                jugador <i class="bi bi-plus-circle"></i></a>
         </div>
     </div>
 </div>
@@ -211,6 +211,16 @@
                         <label for="fechaDeNacimiento">Fecha de Nacimiento:</label>
                         <input type="date" class="form-control" id="fechaDeNacimiento" name="fechaDeNacimiento"
                             [(ngModel)]="player.fechaDeNacimiento" placeholder="Fecha de Nacimiento">
+                    </div>
+                    <div class="form-group">
+                        <label for="nick">Nombre para la camiseta:</label>
+                        <input type="text" class="form-control" id="nick" name="nick"
+                            [(ngModel)]="player.nick" placeholder="Carlos Jr">
+                    </div>
+                    <div class="form-group">
+                        <label for="numero">Número de camiseta:</label>
+                        <input type="number" class="form-control" id="numero" name="numero"
+                            [(ngModel)]="player.numero">
                     </div>
                     <div class="form-group">
                         <label for="telefono">Teléfono:</label>

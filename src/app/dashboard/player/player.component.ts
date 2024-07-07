@@ -315,7 +315,9 @@ export class PlayerComponent implements OnInit {
       telefonoPadre: '',
       telefonoMadre: '',
       emailPadre: '',
-      emailMadre: ''
+      emailMadre: '',
+      nick: '',
+      numero: ''
     };
   }
 
