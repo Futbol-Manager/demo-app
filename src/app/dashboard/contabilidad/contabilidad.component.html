@@ -17,14 +17,20 @@
 
   <div class="container mt-3">
     <!-- Contenido para el dataTable -->
-    <div class="row">
+    <div class="row" *ngIf="recalcular">
+      <div class="col">
+        <label for="cuotaClub" class="form-label">Es necesario recalcular los totales, vuelve a entrar para verlos.</label>
+      </div>
+    </div>
+    <div class="row" *ngIf="!recalcular">
       <div class="col-3">
-        <label for="cuotaClub" class="form-label">Total de la cuota del Club con la ropa</label>
+        <label for="cuotaClub" class="form-label" *ngIf="!hayRopa">Total de la Cuota</label>
+        <label for="cuotaClub" class="form-label" *ngIf="hayRopa">Total de la Cuota + Ropa</label>
         <input type="text" class="form-control" id="cuotaClub" name="cuotaClub" [(ngModel)]="totales.cuotaClub"
           disabled>
       </div>
-      <div class="col-3">
-        <label for="cuotaRopa" class="form-label">Total de la cuota solo de la ropa</label>
+      <div class="col-3" *ngIf="hayRopa">
+        <label for="cuotaRopa" class="form-label">Total de la ropa</label>
         <input type="text" class="form-control" id="cuotaRopa" name="cuotaRopa" [(ngModel)]="totales.cuotaRopa"
           disabled>
       </div>

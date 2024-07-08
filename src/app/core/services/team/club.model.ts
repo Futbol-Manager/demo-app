@@ -276,3 +276,17 @@ export class HostoryPagosPlayer {
         this.estado = object.estado ? object.estado : 0;
     }
 }
+
+export class TotalesCuotas {
+    cuotaClub: string;
+    cuotaRopa: string;
+    pagado: string;
+    restante: string;
+
+    constructor(object: any) {
+        this.cuotaClub = object.cuotaClub ? object.cuotaClub : '';
+        this.cuotaRopa = object.cuotaRopa ? object.cuotaRopa : '';
+        this.pagado = object.pagado ? object.pagado : '';
+        this.restante = object.restante ? object.restante : '';
+    }
+}

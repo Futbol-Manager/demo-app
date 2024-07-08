@@ -236,13 +236,11 @@ export class PlayerComponent implements OnInit {
 
   // Método para crear un nuevo equipo
   crearJugador(): void {
+    let id = this.player.playerId;
     // Llamada al servicio para crear el jugador
     this.playerservice.createUpdatePlayer(this.teamId.toString(), this.player,).subscribe(
       (response) => {
-        this.players.push(response.data);
-        // Manejar la respuesta según tus necesidades
-        //console.log('Jugador creado con éxito:', response);
-        // Cerrar el modal después de crear el jugador
+        if(id === 0) this.players.push(response.data);
         this.cerrarModal();
       },
       (error) => {
@@ -263,7 +261,7 @@ export class PlayerComponent implements OnInit {
       playerId: 0,
       nombre: '',
       apellido: '',
-      posicion: '4',
+      posicion: 'Sin definir',
       fechaDeNacimiento: '',
       altura: '',
       peso: '',

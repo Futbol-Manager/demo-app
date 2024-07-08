@@ -56,7 +56,7 @@ export class RopaComponent implements OnInit {
     { label: 'Mochila', property: 'mochila', index: 21 }
   ];
 
-  prendasOcultar: number[] = [0];
+  prendasOcultar: number[] = [];
 
   ropaPrendas: RopaClub = new RopaClub({});
 

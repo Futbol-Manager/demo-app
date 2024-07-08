@@ -140,7 +140,7 @@ export class Player {
     this.playerId = object.playerId || 0;
     this.nombre = object.nombre || '';
     this.apellido = object.apellido || '';
-    this.posicion = object.posicion || '';
+    this.posicion = object.posicion || 'Sin definir';
     this.fechaDeNacimiento = object.fechaDeNacimiento || '';
     this.altura = object.altura || '';
     this.peso = object.peso || '';

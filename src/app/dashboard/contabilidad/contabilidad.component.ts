@@ -12,7 +12,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RegisterService } from 'src/app/core/services/register/register.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { ClubService } from 'src/app/core/services/club/club.service';
-import { ClubCuotas, HostoryPagosPlayer, PlayerCuotas } from 'src/app/core/services/team/club.model';
+import { ClubCuotas, HostoryPagosPlayer, PlayerCuotas, TotalesCuotas } from 'src/app/core/services/team/club.model';
 
 @Component({
   selector: 'app-contabilidad',
@@ -76,7 +76,9 @@ export class ContabilidadComponent implements OnInit {
   teamSelected: number = 0;
   categorySelected: number = 0;
   aceptStripe = false;
-  totales: any;
+  totales: TotalesCuotas = new TotalesCuotas({});;
+  hayRopa = false;
+  recalcular = false;
 
   constructor(
     private loginService: LoginService,
@@ -110,6 +112,7 @@ export class ContabilidadComponent implements OnInit {
         if (response.data !== null) {
           this.listHCP = response.data.list;
           this.totales = response.data.totales;
+          if (this.totales.cuotaRopa != '0€') this.hayRopa = true;
           /*this.players = response.data.players !== null ? response.data.players : [];
           this.cuota = response.data.cuotas !== null ? response.data.cuotas : new CuotasClub({});
           this.isFraccionado = this.cuota.fraccionado === 1 ? true : false;*/
@@ -291,11 +294,19 @@ export class ContabilidadComponent implements OnInit {
         this.clubService.updateclubCuotas(this.clubCuotas, option, value).subscribe(
           (response) => {
             this.clubCuotas = response.data;
+            this.recalcular = true;
+            /*this.hayRopa = this.clubCuotas.cuotaRopa != '0€' ? true : false;
+            
+            this.totales.cuotaRopa = this.clubCuotas.cuotaRopa;
+            this.totales.cuotaClub = this.clubCuotas.cuotaClub;
+            this.totales.restante = this.clubCuotas.restante;
+            this.totales.pagado = this.clubCuotas.pagado;*/
+
             this.teamService.GetPlayersByTeamByClub(this.clubId.toString(), '2024').subscribe(
               (response: Response) => {
                 // Verifica que la propiedad 'data' exista en la respuesta
                 if (response.data !== null) {
-                  this.updateCuotaClub(response.data);
+                  this.updateCuotaClub(response.data.list);
                   this.guardar();
                 } else {
                   console.error('La respuesta del servicio no tiene la estructura esperada', response);

@@ -251,6 +251,7 @@
                         <label for="posicion">Posición:</label>
                         <select class="form-control" id="posicion" name="posicion" [(ngModel)]="player.posicion"
                             (click)="showPortero(player.posicion)">
+                            <option value="Sin definir">Sin definir</option>
                             <option value="Portero">Portero</option>
                             <option value="Defensa Central">Defensa Central</option>
                             <option value="Defensa Lateral">Defensa Lateral</option>
