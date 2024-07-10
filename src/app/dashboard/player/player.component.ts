@@ -59,6 +59,9 @@ export class PlayerComponent implements OnInit {
   });
 
   showPorteroOptions = false;
+  showbtnupimg = false;
+  imagePreviewUrl: string | ArrayBuffer | null = null;
+  showPreview: boolean = false;
 
   constructor(private playerservice: PlayerService,
     private router: Router,
@@ -222,7 +225,7 @@ export class PlayerComponent implements OnInit {
   }
 
   // Método para abrir el modal de creación de equipo
-  abrirModalCrearJugdor(): void {
+  abrirModalCrearJugador(): void {
     this.inicializePlayer();
     this.showModal = true;
   }
@@ -240,7 +243,7 @@ export class PlayerComponent implements OnInit {
     // Llamada al servicio para crear el jugador
     this.playerservice.createUpdatePlayer(this.teamId.toString(), this.player,).subscribe(
       (response) => {
-        if(id === 0) this.players.push(response.data);
+        if (id === 0) this.players.push(response.data);
         this.cerrarModal();
       },
       (error) => {
@@ -361,7 +364,7 @@ export class PlayerComponent implements OnInit {
       parseInt(this.selectedPlayer.mentalidad)
     ];
 
-    if(this.selectedPlayer.posicion === 'Portero'){
+    if (this.selectedPlayer.posicion === 'Portero') {
       labels = ['Habilidad con balon', 'Pase', 'Tiro', 'Defensa', 'Físico', 'Mentalidad', 'Portero'];
       data = [
         parseInt(this.selectedPlayer.habilidadConBalon),
@@ -373,7 +376,7 @@ export class PlayerComponent implements OnInit {
         parseInt(this.selectedPlayer.portero)
       ];
     }
-    
+
     this.radarChart = new Chart(ctx, {
       type: 'radar',
       data: {
@@ -523,7 +526,20 @@ export class PlayerComponent implements OnInit {
   }
 
   onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
+    if (event.target.files[0].type === 'image/png' || event.target.files[0].type === 'image/jpeg') {
+      this.selectedFile = event.target.files[0];
+      this.showbtnupimg = true;
+      if (this.selectedFile) {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.imagePreviewUrl = e.target.result;
+          this.showPreview = true; // Mostrar vista previa
+        };
+        reader.readAsDataURL(this.selectedFile);
+      }
+    } else {
+      this.showbtnupimg = false;
+    }
   }
 
   onSubmit(playerId: number) {
@@ -588,26 +604,26 @@ export class PlayerComponent implements OnInit {
   enviarMailJugador() {
     if (this.userForm.valid) {
       let menor = 0;
-    if (this.isMenor) {
-      menor = 1;
-    }
-    this.registerService.invitePlayer(this.userForm.value.mail, this.selectedPlayerId, menor, this.teamId).pipe().subscribe(
-      res => {
-        this.cerrarModalInvitar();
-        const snackBarConfig = new MatSnackBarConfig();
-        snackBarConfig.duration = 5000;
-        snackBarConfig.horizontalPosition = 'center';
-        snackBarConfig.verticalPosition = 'bottom';
-        this.snackBar.open('Invitación enviada correctamente.', 'Cerrar', snackBarConfig);
+      if (this.isMenor) {
+        menor = 1;
       }
-    )
-    }    
+      this.registerService.invitePlayer(this.userForm.value.mail, this.selectedPlayerId, menor, this.teamId).pipe().subscribe(
+        res => {
+          this.cerrarModalInvitar();
+          const snackBarConfig = new MatSnackBarConfig();
+          snackBarConfig.duration = 5000;
+          snackBarConfig.horizontalPosition = 'center';
+          snackBarConfig.verticalPosition = 'bottom';
+          this.snackBar.open('Invitación enviada correctamente.', 'Cerrar', snackBarConfig);
+        }
+      )
+    }
   }
 
-  showPortero(value: string){
-    if(value === 'Portero')
+  showPortero(value: string) {
+    if (value === 'Portero')
       this.showPorteroOptions = true;
-    else       
+    else
       this.showPorteroOptions = false;
   }
 

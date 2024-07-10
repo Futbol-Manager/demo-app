@@ -1,16 +1,23 @@
 <div *ngIf="datosCargados">
-  <div class="subMenu">
+  <div class="submenu">
     <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
-      <div class="col">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">Inicio <i
-            class="bi bi-house"></i></a>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
+          <i class="bi bi-house"></i>
+          <span class="d-none d-md-inline">Inicio</span>
+        </a>
       </div>
-      <div class="col">
-        <a class="no-underline" href="javascript:void(0);" (click)="openModalStripe()">Stripe <i
-            class="bi bi-stripe"></i></a>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="openModalStripe()">
+          <i class="bi bi-stripe"></i>
+          <span class="d-none d-md-inline">Stripe</span>
+        </a>
       </div>
-      <div class="col">
-        <a class="no-underline" href="javascript:void(0);" (click)="abrirModal()">Ajustes <i class="bi bi-gear"></i></a>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="abrirModal()">
+          <i class="bi bi-gear"></i>
+          <span class="d-none d-md-inline">Ajustes</span>
+        </a>
       </div>
     </div>
   </div>
@@ -19,7 +26,8 @@
     <!-- Contenido para el dataTable -->
     <div class="row" *ngIf="recalcular">
       <div class="col">
-        <label for="cuotaClub" class="form-label">Es necesario recalcular los totales, vuelve a entrar para verlos.</label>
+        <label for="cuotaClub" class="form-label">Es necesario recalcular los totales, vuelve a entrar para
+          verlos.</label>
       </div>
     </div>
     <div class="row" *ngIf="!recalcular">
@@ -36,17 +44,19 @@
       </div>
       <div class="col-3">
         <label for="pagado" class="form-label">Total pagado de todos los jugadores</label>
-        <input type="text" class="form-control" id="pagado" name="pagado" [(ngModel)]="totales.pagado"
-          disabled>
+        <input type="text" class="form-control" id="pagado" name="pagado" [(ngModel)]="totales.pagado" disabled>
       </div>
       <div class="col-3">
         <label for="restante" class="form-label">Restante y pendiente por pagar</label>
-        <input type="text" class="form-control" id="restante" name="restante" [(ngModel)]="totales.restante"
-          disabled>
+        <input type="text" class="form-control" id="restante" name="restante" [(ngModel)]="totales.restante" disabled>
       </div>
     </div>
     <div style="margin-top: 2em;">
-      <h2>Tabla Jugadores</h2>
+      <h2>Tabla Cuota Jugadores</h2>
+      <!-- Botón para exportar a Excel-->
+      <button class="btn btn-success" style="margin-bottom: 2em;" (click)="exportTableToExcel()">
+        <i class="bi bi-file-earmark-spreadsheet-fill"></i> Descargar Excel
+      </button>
       <div class="row justify-content-between div-headdatatable">
         <div class="col-md-auto mr-auto" id="dt-length">
           <!-- Contenido para el dt-length -->
@@ -133,6 +143,49 @@
     <div id="button_datatable">
     </div>
   </div>
+</div>
+
+<!-- tabla para imprimir en excel -->
+<div style="display: none;">
+  <table id="tablaExcel" class="table table-bordered table-striped text-center" #table1>
+    <thead class="table-custom">
+      <tr>
+        <th>NOMBRE</th>
+        <th>APELLIDOS</th>
+        <th>EQUIPO</th>
+        <th>ESTADO_PAGO</th>
+        <th>CUOTA_+_ROPA</th>
+        <th>CUOTA_ROPA</th>
+        <th>PAGADO</th>
+        <th>RESTANTE</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let player of listHCP; let i = index">
+        <td>{{ player.nombre }}</td>
+        <td>{{ player.apellido }}</td>
+        <td>{{ player.teamName }}</td>
+        <td>
+          <ng-container *ngIf="player.estado === 0">
+            Ningún pago
+          </ng-container>
+          <ng-container *ngIf="player.estado === 1">
+            Con retraso
+          </ng-container>
+          <ng-container *ngIf="player.estado === 2">
+            Al corriente
+          </ng-container>
+          <ng-container *ngIf="player.estado === 3">
+            Completado
+          </ng-container>
+        </td>
+        <td>{{ player.cuotaClub }}</td>
+        <td>{{ player.cuotaRopa }}</td>
+        <td>{{ player.pagado }}</td>
+        <td>{{ player.restante }}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <!-- Modal para la creación de equipo con información adicional -->

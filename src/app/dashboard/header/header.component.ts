@@ -39,6 +39,8 @@ export class HeaderComponent implements OnInit {
   uploadedImageUrl: string | null = null; // Almacena la URL de la imagen subida
   showPreview: boolean = false;
 
+  showbtnupimg = false;
+
   constructor(
     private router: Router,
     private loginService: LoginService,
@@ -111,7 +113,7 @@ export class HeaderComponent implements OnInit {
         calendar.style.backgroundColor = 'white';
       }
     }
-    
+
     const numDia = document.querySelectorAll('.numero-dia');
     numDia.forEach((dia) => {
       this.renderer.setStyle(dia, 'color', this.isDarkMode ? 'white' : 'black');
@@ -152,7 +154,7 @@ export class HeaderComponent implements OnInit {
       );
       const profileType: ProfileTypeModel = new ProfileTypeModel(2, 'Entrenador') //hardcodeado
       const validationUser: ValidationUserModel = new ValidationUserModel(2, 'Validado por mail');//hardcodeado
-      
+
       const register: RegisterModel = new RegisterModel(
         profileType,
         this.userForm.value.firstName,
@@ -211,40 +213,45 @@ export class HeaderComponent implements OnInit {
   }
 
   onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
-    if (this.selectedFile) {
-        const reader = new FileReader();        
+    if (event.target.files[0].type === 'image/png' || event.target.files[0].type === 'image/jpeg') {
+      this.selectedFile = event.target.files[0];
+      this.showbtnupimg = true;
+      if (this.selectedFile) {
+        const reader = new FileReader();
         reader.onload = (e: any) => {
-            this.imagePreviewUrl = e.target.result;
-            this.showPreview = true; // Mostrar vista previa
+          this.imagePreviewUrl = e.target.result;
+          this.showPreview = true; // Mostrar vista previa
         };
         reader.readAsDataURL(this.selectedFile);
+      }
+    } else {
+      this.showbtnupimg = false;
     }
-}
+  }
 
-onSubmit() {
-  if (this.selectedFile) {
+  onSubmit() {
+    if (this.selectedFile) {
       //console.log('Imagen seleccionada:', this.selectedFile);
 
       // Simulamos el envío de la imagen al servidor
       const userId = this.usuarioActual?.userId.toString();
       this.trainingService.createUpdateImgUser(userId!, this.selectedFile)
-          .subscribe(
-              (response) => {
-                  this.imgUser = response.data;
-                  this.uploadedImageUrl = this.imagePreviewUrl as string; // Actualizar imagen principal
-                  this.showPreview = false; // Ocultar vista previa
-                  this.cerrarModal();
-              },
-              error => {
-                  console.error('Error al subir la imagen', error);
-                  // Aquí puedes manejar el error si la subida de la imagen falla
-                  this.showPreview = true; // Mantener la vista previa si la subida falla
-              }
-          );
-  } else {
+        .subscribe(
+          (response) => {
+            this.imgUser = response.data;
+            this.uploadedImageUrl = this.imagePreviewUrl as string; // Actualizar imagen principal
+            this.showPreview = false; // Ocultar vista previa
+            this.cerrarModal();
+          },
+          error => {
+            console.error('Error al subir la imagen', error);
+            // Aquí puedes manejar el error si la subida de la imagen falla
+            this.showPreview = true; // Mantener la vista previa si la subida falla
+          }
+        );
+    } else {
       console.log('Ninguna imagen seleccionada.');
+    }
   }
-}
 
 }

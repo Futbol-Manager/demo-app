@@ -13,7 +13,6 @@ import 'datatables.net';
 import { RopaClub, RopaJugador } from 'src/app/core/services/team/club.model';
 import * as XLSX from "xlsx";
 import { Subject, debounceTime } from 'rxjs';
-import { TeamNew } from 'src/app/core/services/team/team.model';
 
 
 @Component({
@@ -33,7 +32,7 @@ export class RopaComponent implements OnInit {
   private abrigoSubject = new Subject<RopaJugador>();
   showModal = false;
   ropaClub: any;
- 
+
   reloadPage = false;
 
   prendas = [
@@ -56,7 +55,7 @@ export class RopaComponent implements OnInit {
     { label: 'Mochila', property: 'mochila', index: 21 }
   ];
 
-  prendasOcultar: number[] = [];
+  prendasOcultar: number[] = [0];
 
   ropaPrendas: RopaClub = new RopaClub({});
 
@@ -425,7 +424,7 @@ export class RopaComponent implements OnInit {
   // Método para cerrar el modal de creación de equipo
   cerrarModal(): void {
     this.showModal = false;
-    if(this.reloadPage) this.router.navigate(['/dashboard/inicio']);
+    if (this.reloadPage) this.router.navigate(['/dashboard/inicio']);
   }
 
   togglePrendaOkDesactivar(property: string, value: number) {

@@ -1,62 +1,74 @@
-
 <div [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
-  <div class="subMenu">
+  <div class="submenu">
     <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
-      <div class="col">
-        <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearEquipo()">Crear un equipo <i class="bi bi-plus-circle"></i></a>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearEquipo()">
+          <i class="bi bi-plus-circle"></i>
+          <span class="d-none d-md-inline">Crear un equipo</span>
+        </a>
       </div>
-      <div class="col">
-        <a class="no-underline" href="javascript:void(0);">Cuadro Mando Deportivo <i class="bi bi-clipboard2-data"></i></a>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);">
+          <i class="bi bi-clipboard2-data"></i>
+          <span class="d-none d-md-inline">Cuadro Mando Deportivo</span>
+        </a>
       </div>
-      <div class="col">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">Cuotas <i class="bi bi-bank"></i></a>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
+          <i class="bi bi-bank"></i>
+          <span class="d-none d-md-inline">Cuotas</span>
+        </a>
       </div>
-      <div class="col">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">Ropa <i class="bi bi-backpack3"></i></a>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
+          <i class="bi bi-backpack3"></i>
+          <span class="d-none d-md-inline">Ropa</span>
+        </a>
       </div>
-      <div class="col">
-        <a class="no-underline" href="javascript:void(0);">Patrocinadores <i class="bi bi-collection"></i></a>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);">
+          <i class="bi bi-collection"></i>
+          <span class="d-none d-md-inline">Patrocinadores</span>
+        </a>
       </div>
-      <div class="col">
-        <a class="no-underline" href="javascript:void(0);">Notificaciones <i class="bi bi-envelope"></i></a>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);">
+          <i class="bi bi-envelope"></i>
+          <span class="d-none d-md-inline">Notificaciones</span>
+        </a>
       </div>
     </div>
   </div>
+
   <!-- Botón para abrir el modal de creación de equipo -->
   <div class="container">
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
-      <div class="col mb-3" *ngFor="let team of listTeam; let i = index">
-        <div class="card" style="cursor: pointer; min-height: 15.5em; max-height: 15.5em; border: 1px solid black;"
-          (click)="navegarACalendario(team.teamId)">
+      <div class="col mb-3" *ngFor="let team of listTeam; let i = index" style="cursor: pointer;"
+        (click)="navegarACalendario(team.teamId)">
+        <div class="card h-100" style="border: 1px solid black;">
           <div class="card-body text-center">
-            <div class="row">
-              <div class="col" *ngIf="!noPicture">
-                <img src="https://sphairatech.com/images/user/{{ pictureClub }}" alt="user-image" width="90"
-                  height="90">
-              </div>
-            </div>
-            <h5 class="card-title" style="color: black;">{{ team.category }} {{ team.name }}</h5>
-            <div class="row">
+            <div class="row mb-2">
               <div class="col">
-                <p class="card-text">
-                  {{ team.levelLeague }}
-                </p>
+                <img *ngIf="!noPicture" src="https://sphairatech.com/images/user/{{ pictureClub }}" alt="user-image"
+                  width="90" height="90" style="max-width: 100%;">
               </div>
             </div>
-            <div class="row">
-              <div class="col">
-                {{ team.trainingDays }}
-                <i class="bi bi-calendar-week ml-2"></i>
-                -
-                {{ team.jugadoresPorEquipo }}
-                <i class="bi bi-people-fill"></i>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col" style="color: black;">
-                <b>Cuerpo técnico: </b> {{ team.nombreEntrenador }}
-              </div>
-            </div>
+            <h5 class="card-title"
+              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ team.category }}
+              {{ team.name }}</h5>
+            <p class="card-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              {{ team.levelLeague }}
+            </p>
+            <p class="card-text">
+              {{ team.trainingDays }}
+              <i class="bi bi-calendar-week ml-2"></i>
+              -
+              {{ team.jugadoresPorEquipo }}
+              <i class="bi bi-people-fill"></i>
+            </p>
+            <p class="card-text" style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              <b>Cuerpo técnico: </b> {{ team.nombreEntrenador }}
+            </p>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -13,6 +13,7 @@ import { RegisterService } from 'src/app/core/services/register/register.service
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { ClubCuotas, HostoryPagosPlayer, PlayerCuotas, TotalesCuotas } from 'src/app/core/services/team/club.model';
+import * as XLSX from "xlsx";
 
 @Component({
   selector: 'app-contabilidad',
@@ -432,6 +433,7 @@ export class ContabilidadComponent implements OnInit {
           this.listHCP[this.indexPlayerSelected].restante = response.data.cuotaClub;
           this.agregarPagoPlayer = new HostoryPagosPlayer({});
           this.guardar();
+          this.recalcular = true;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -496,6 +498,7 @@ export class ContabilidadComponent implements OnInit {
           this.listHCP[this.indexPlayerSelected].restante = (Number(this.listHCP[this.indexPlayerSelected].cuotaClub) - Number(this.listHCP[this.indexPlayerSelected].pagado));
           this.agregarPagoPlayer = new HostoryPagosPlayer({});
           this.guardar();
+          this.recalcular = true;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -642,4 +645,31 @@ export class ContabilidadComponent implements OnInit {
         break;
     }
   }
+
+  @ViewChild("table1") table: ElementRef | undefined;
+  exportTableToExcel(): void {
+    // Comprobar si el elemento existe antes de usar su ID
+    const tableElement = document.getElementById('tablaExcel');
+
+    if (tableElement) {
+      const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(tableElement);
+
+      // Resto del código (asegurar formato de cadena, ancho de columnas, etc.)
+      // ... (puedes copiar y pegar el código de la respuesta anterior)
+
+      // Crear y guardar libro de trabajo
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+      // Personalizar nombre de archivo y opciones de guardado (opcional)
+      const fileName = "tabla_exportada.xlsx"; // Ajustar según tus necesidades
+      XLSX.writeFile(wb, fileName, { bookType: 'xlsx' });
+    } else {
+      console.error("¡Elemento 'tablaExcel' no encontrado!");
+      // Manejar el error de forma adecuada (opcional)
+      // Por ejemplo, mostrar un mensaje de alerta al usuario
+    }
+  }
 }
+
+

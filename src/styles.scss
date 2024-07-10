@@ -259,11 +259,75 @@ body {
   color: blue;
 }
 
-.subMenu {
-  background: #333131;
-  color: white;
-  height: 2.5em;
-  font-size: 1.4em;
-  align-content: center;
+.submenu {
+  text-align: -webkit-center;
+  padding-block: inherit;
+  background-color: #333131;
+}
+
+.submenu .row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.submenu .col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+.submenu a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  color: white;
+  text-decoration: none !important; /* Quita el subrayado por defecto */
+  position: relative; /* Necesario para el subrayado personalizado */
+}
+
+.submenu a:link,
+.submenu a:visited,
+.submenu a:hover,
+.submenu a:active {
+  text-decoration: none !important; /* Asegura que no haya subrayado en ningún estado del enlace */
+  color: white; /* Asegura que el color del texto sea blanco en todos los estados */
+}
+
+.submenu a::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px; /* Grosor del subrayado */
+  background-color: #22BF63; /* Color del subrayado */
+  bottom: -2px; /* Posición del subrayado */
+  left: 0;
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.submenu a:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+.submenu i {
+  font-size: 1.5em;
+  color: white;
+}
+
+.submenu span {
+  margin-top: 5px;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .submenu span {
+    display: none;
+  }
 }
