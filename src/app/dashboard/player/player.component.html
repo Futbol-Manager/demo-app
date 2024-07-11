@@ -35,19 +35,19 @@
                 <div class="row" style="padding: 1.5em 2em 0.5em;">
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3">
                         <!-- Utilizamos ngFor para iterar sobre los jugadores -->
-                        <div class="col mb-3" *ngFor="let player of players">
+                        <div class="col mb-3" *ngFor="let player of players; let a = index">
                             <div class="card gradient">
                                 <!-- Aquí puedes mostrar la imagen del jugador, si tienes -->
                                 <div class="card-body text-center">
                                     <!-- Puedes agregar botones o acciones específicas para cada jugador aquí -->
                                     <div *ngIf="player.verify === 0" class="d-flex justify-content-between">
-                                        <button class="btn btn-danger" title="Editar"
+                                        <button class="btn btn-danger" title="Invitar"
                                             (click)="invitarJugador(player.playerId)">
                                             <i class="bi bi-envelope"></i>
                                         </button>
                                     </div>
                                     <div *ngIf="player.verify !== 0" class="d-flex justify-content-between">
-                                        <button style="visibility: hidden;" class="btn btn-danger" title="Editar"
+                                        <button style="visibility: hidden;" class="btn btn-danger" title="Invitar"
                                             (click)="invitarJugador(player.playerId)">
                                             <i class="bi bi-envelope"></i>
                                         </button>
@@ -72,6 +72,10 @@
                                         <button class="btn btn-primary" title="Editar"
                                             (click)="editarJugador(player.playerId)">
                                             <span class="bi bi-pencil"></span>
+                                        </button>
+                                        <button class="btn btn-warning" title="Mover"
+                                            (click)="openShowModalMover(player.playerId, a)">
+                                            <span class="bi bi-folder-symlink"></span>
                                         </button>
                                     </div>
                                 </div>
@@ -652,6 +656,40 @@
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-success float-end">Invitar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para invitar un jugador por mail -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalMover}">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Vas a mover de equipo a {{ nombreJugador }}</h5>
+                <!-- Botón de cerrar con un icono -->
+                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalMover()"></button>
+            </div>
+            <div class="modal-body">
+                <p>Selecciona del combo el equipo al que quieres mover el jugador y pulsa aceptar.</p>
+                <form class="form-login" (ngSubmit)="moverJugador()">
+                    <div class="mb-3" style="text-align: center;">
+                        <div class="col">
+                            <label for="teamSelected" class="form-label">Selecciona el equipo:</label>
+                            <select class="form-control" id="teamSelected" name="teamSelected"
+                                [(ngModel)]="teamSelected">
+                                <ng-container *ngFor="let team of listTeamsForCombo">
+                                    <option *ngIf="team.value !== teamId" [value]="team.value">
+                                        {{ team.name }}
+                                    </option>
+                                </ng-container>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary float-end">Aceptar</button>
                         </div>
                     </div>
                 </form>

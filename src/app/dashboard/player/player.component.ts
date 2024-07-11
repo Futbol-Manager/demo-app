@@ -13,6 +13,7 @@ import { TrainingService } from 'src/app/core/services/training/training.service
 import { RegisterService } from 'src/app/core/services/register/register.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { TeamService } from 'src/app/core/services/team/team.service';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -63,6 +64,15 @@ export class PlayerComponent implements OnInit {
   imagePreviewUrl: string | ArrayBuffer | null = null;
   showPreview: boolean = false;
 
+  showModalMover = false;
+  playerIdSelected = 0;
+
+  teamSelected: number = 0;
+  listTeamsForCombo: any[] = [];
+  clubId = 0;
+  categoryTypeIdActual = 0;
+  indexSelected = 0;
+
   constructor(private playerservice: PlayerService,
     private router: Router,
     private route: ActivatedRoute,
@@ -71,7 +81,8 @@ export class PlayerComponent implements OnInit {
     private trainingService: TrainingService,
     private registerService: RegisterService,
     private snackBar: MatSnackBar,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder,
+    private teamService: TeamService) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -89,9 +100,10 @@ export class PlayerComponent implements OnInit {
     this.playerservice.getPlayers(this.teamId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
-        if (response && response.data && Array.isArray(response.data)) {
+        if (response && response.data) {
           // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.players = response.data; //.map((player: Player) => new Player(player));
+          this.players = response.data.players; //.map((player: Player) => new Player(player));
+          this.clubId = response.data.clubId;
           // Inicializar el DataTable después de cargar los datos
           this.inicializarDataTable();
         } else {
@@ -599,6 +611,50 @@ export class PlayerComponent implements OnInit {
 
   cerrarModalInvitar() {
     this.showModalInvitar = false;
+  }
+
+  openShowModalMover(playerId: number, index: number): void {
+    const jugadorSeleccionado = this.players.find(player => player.playerId === playerId);
+    this.nombreJugador = jugadorSeleccionado.nombre + ' ' + jugadorSeleccionado.apellido;
+    this.playerIdSelected = playerId;
+
+    this.teamService.getTeamsByClubForCombo(this.clubId, '2024').subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.listTeamsForCombo = response.data;
+          this.showModalMover = true;
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  moverJugador(): void {
+    this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.players.splice(this.indexSelected, 1);
+          this.showModalMover = false;
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+
+  }
+
+
+  cerrarModalMover() {
+    this.showModalMover = false;
   }
 
   enviarMailJugador() {

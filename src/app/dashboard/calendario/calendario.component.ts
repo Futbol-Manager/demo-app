@@ -468,6 +468,7 @@ export class CalendarioComponent implements OnInit {
 
   showAlert: boolean = false;
   showAlert2: boolean = false;
+  categoryTeam = 0;
 
   constructor(
     private router: Router,
@@ -499,6 +500,8 @@ export class CalendarioComponent implements OnInit {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
             this.nombreEquipo = response.data.categoryType.categoryName + ' ' + response.data.levelLeague;
+            this.categoryTeam = response.data.categoryTypeId;
+            if (this.categoryTeam === 14) this.irAPantalla(2);
             this.getListaEntrenamientos();
           } else {
             console.error('La respuesta del servicio no tiene la estructura esperada', response);

@@ -66,7 +66,7 @@
               {{ team.jugadoresPorEquipo }}
               <i class="bi bi-people-fill"></i>
             </p>
-            <p class="card-text" style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            <p *ngIf="team.nombreEntrenador" class="card-text" style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               <b>Cuerpo técnico: </b> {{ team.nombreEntrenador }}
             </p>
           </div>
@@ -95,6 +95,7 @@
             <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
             <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" formControlName="categoryTypeId">
               <!-- Opciones ajustadas según tus necesidades -->
+              <option value="14">Sin equipo</option>
               <option value="15">Senior</option>
               <option value="16">Juvenil</option>
               <option value="17">Juvenil/Cadete Femenina</option>
