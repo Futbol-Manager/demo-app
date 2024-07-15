@@ -14,6 +14,7 @@ import { RegisterService } from 'src/app/core/services/register/register.service
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamService } from 'src/app/core/services/team/team.service';
+import { LoginService } from 'src/app/core/services/login/login.service';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -72,6 +73,7 @@ export class PlayerComponent implements OnInit {
   clubId = 0;
   categoryTypeIdActual = 0;
   indexSelected = 0;
+  profileId = 0;
 
   constructor(private playerservice: PlayerService,
     private router: Router,
@@ -82,7 +84,8 @@ export class PlayerComponent implements OnInit {
     private registerService: RegisterService,
     private snackBar: MatSnackBar,
     private fb: FormBuilder,
-    private teamService: TeamService) { }
+    private teamService: TeamService,
+    private loginService: LoginService) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -92,6 +95,11 @@ export class PlayerComponent implements OnInit {
       //console.log('teamId:', this.teamId);
       this.cargarListadoJugadores();
       // Luego puedes realizar acciones con el teamId según tus necesidades
+    });
+
+    this.loginService.usuarioActual.subscribe(user => {
+      this.usuarioActual = user;
+      this.profileId = this.usuarioActual!.profileType.profileId;
     });
   }
 
@@ -330,7 +338,12 @@ export class PlayerComponent implements OnInit {
       emailPadre: '',
       emailMadre: '',
       nick: '',
-      numero: ''
+      numero: '', 
+      dni: '', 
+      nombrePadre: '', 
+      dniPadre: '', 
+      nombreMadre: '', 
+      dniMadre: ''
     };
   }
 

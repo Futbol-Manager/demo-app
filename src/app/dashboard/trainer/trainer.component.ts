@@ -304,7 +304,12 @@ export class TrainerComponent implements OnInit {
       emailPadre: '',
       emailMadre: '',
       nick: '',
-      numero: ''
+      numero: '',
+      dni: '', 
+      nombrePadre: '', 
+      dniPadre: '', 
+      nombreMadre: '', 
+      dniMadre: ''
     };
   }
 

@@ -1,12 +1,11 @@
-
 <div class="submenu">
   <div class="row">
-      <div class="col">
-          <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">
-              <i class="bi bi-calendar"></i>
-              <span class="d-none d-md-inline">Calendario</span>
-          </a>
-      </div>
+    <div class="col">
+      <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">
+        <i class="bi bi-calendar"></i>
+        <span class="d-none d-md-inline">Calendario</span>
+      </a>
+    </div>
   </div>
 </div>
 <div class="container">
@@ -21,7 +20,7 @@
           TODO hacer que si es entrenador suelto, si pueda editar esa info-->
           <form [formGroup]="editarEquipoForm" (ngSubmit)="editarEquipo()">
             <div class="d-flex">
-              <div class="m-3 col-6">
+              <div class="col-6">
                 <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
                 <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
                   formControlName="categoryTypeId" [attr.disabled]="profileId === 2 ? true : null">
@@ -40,9 +39,10 @@
                   <option value="26">Debutante</option>
                 </select>
               </div>
-              <div class="m-3 col-6">
+              <div class="col-6">
                 <label for="nivelLiga" class="form-label">Nivel:</label>
-                <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague" [attr.disabled]="profileId === 2 ? true : null">
+                <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague"
+                  [attr.disabled]="profileId === 2 ? true : null">
                   <!-- Opciones ajustadas según tus necesidades -->
                   <option value="LaLiga EA Sports">LaLiga EA Sports</option>
                   <option value="Liga F">Liga F</option>
@@ -71,9 +71,10 @@
               </div>
             </div>
             <div class="d-flex">
-              <div class="m-3 col-6">
+              <div class="col-6">
                 <label for="nombreEquipo" class="form-label">Letra del equipo:</label>
-                <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name" [attr.disabled]="profileId === 2 ? true : null">
+                <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name"
+                  [attr.disabled]="profileId === 2 ? true : null">
                   <option value="">Sin letra</option>
                   <option value="A">A</option>
                   <option value="B">B</option>
@@ -90,34 +91,40 @@
                   <option value="M">M</option>
                 </select>
               </div>
-              <div class="m-3 col-6">
+              <div class="col-6">
                 <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
                 <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
                   formControlName="trainingDays" [attr.disabled]="profileId === 2 ? true : null">
               </div>
             </div>
             <div class="d-flex">
-              <div class="m-3 col-6">
+              <div class="col-6">
                 <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
                 <textarea class="form-control" rows="4" id="objetivoEquipo" name="objetivoEquipo"
                   formControlName="objectiveTeam"></textarea>
               </div>
-              <div class="m-3 col-6">
+              <div class="col-6">
                 <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
                 <textarea class="form-control" rows="4" id="opinionEquipo" name="opinionEquipo"
                   formControlName="opinionTeam"></textarea>
               </div>
             </div>
-            <div class="modal-footer">
-              <!-- Botón para guardar el nuevo equipo -->
-              <button type="submit" class="btn btn-success">Guardar</button>
+            <div class="modal-footer" style="margin-top: 2em;">
+              <div class="col-6">
+                <!-- Botón para guardar el nuevo equipo -->
+                <button type="submit" class="btn btn-success">Guardar</button>
+              </div>
+              <div class="col-6 text-end">
+                <button type="button" class="btn btn-danger" (click)="confirmarEliminarEquipo();">Eliminar</button>
+              </div>
             </div>
           </form>
         </div>
         <hr>
         <div class="modal-header" style="justify-content: flex-start;">
           <h5 class="modal-title" id="standard-modalLabel">Entrenadores del equipo</h5>
-          <div *ngIf="coaches.length < 3 && this.team.userId == this.usuarioActual!!.userId || coaches.length < 3 && this.usuarioActual!!.profileType.profileId == 1">
+          <div
+            *ngIf="coaches.length < 3 && this.team.userId == this.usuarioActual!!.userId || coaches.length < 3 && this.usuarioActual!!.profileType.profileId == 1">
             <button class="btn btn-link text-primary" (click)="abrirModalInvitarEntenador()">
               <i class="bi bi-plus-circle-fill"></i>
             </button>

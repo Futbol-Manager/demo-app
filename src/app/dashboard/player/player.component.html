@@ -73,7 +73,7 @@
                                             (click)="editarJugador(player.playerId)">
                                             <span class="bi bi-pencil"></span>
                                         </button>
-                                        <button class="btn btn-warning" title="Mover"
+                                        <button *ngIf="profileId === 1" class="btn btn-warning" title="Mover"
                                             (click)="openShowModalMover(player.playerId, a)">
                                             <span class="bi bi-folder-symlink"></span>
                                         </button>
@@ -239,19 +239,44 @@
                             [(ngModel)]="player.telefono" placeholder="Teléfono">
                     </div>
                     <div class="form-group">
+                        <label for="dni">DNI/NIE/PASAPORTE:</label>
+                        <input type="text" class="form-control" id="dni" name="dni"
+                            [(ngModel)]="player.dni" placeholder="DNI/NIE/PASAPORTE">
+                    </div>
+                    <div class="form-group">
+                        <label for="nombrePadre">Nombre del padre:</label>
+                        <input type="text" class="form-control" id="nombrePadre" name="nombrePadre"
+                            [(ngModel)]="player.nombrePadre" placeholder="Nombre del padre">
+                    </div>
+                    <div class="form-group">
+                        <label for="dniPadre">DNI/NIE del padre:</label>
+                        <input type="text" class="form-control" id="dniPadre" name="dniPadre"
+                            [(ngModel)]="player.dniPadre" placeholder="DNI/NIE del padre">
+                    </div>
+                    <div class="form-group">
                         <label for="telefonoPadre">Teléfono del padre:</label>
                         <input type="text" class="form-control" id="telefonoPadre" name="telefonoPadre"
                             [(ngModel)]="player.telefonoPadre" placeholder="Teléfono del padre">
                     </div>
                     <div class="form-group">
-                        <label for="telefonoMadre">Teléfono de la madre:</label>
-                        <input type="text" class="form-control" id="telefonoMadre" name="telefonoMadre"
-                            [(ngModel)]="player.telefonoMadre" placeholder="Teléfono de la madre">
-                    </div>
-                    <div class="form-group">
                         <label for="emailPadre">Correo electrónico del padre:</label>
                         <input type="text" class="form-control" id="emailPadre" name="emailPadre"
                             [(ngModel)]="player.emailPadre" placeholder="Email del padre">
+                    </div>
+                    <div class="form-group">
+                        <label for="nombreMadre">Nombre de la madre:</label>
+                        <input type="text" class="form-control" id="nombreMadre" name="nombreMadre"
+                            [(ngModel)]="player.nombreMadre" placeholder="Nombre de la madre">
+                    </div>
+                    <div class="form-group">
+                        <label for="dniMadre">DNI/NIE de la madre:</label>
+                        <input type="text" class="form-control" id="dniMadre" name="dniMadre"
+                            [(ngModel)]="player.dniMadre" placeholder="DNI/NIE de la madre">
+                    </div>
+                    <div class="form-group">
+                        <label for="telefonoMadre">Teléfono de la madre:</label>
+                        <input type="text" class="form-control" id="telefonoMadre" name="telefonoMadre"
+                            [(ngModel)]="player.telefonoMadre" placeholder="Teléfono de la madre">
                     </div>
                     <div class="form-group">
                         <label for="emailMadre">Correo electrónico de la madre:</label>

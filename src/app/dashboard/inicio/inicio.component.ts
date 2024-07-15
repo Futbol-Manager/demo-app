@@ -25,6 +25,11 @@ export class InicioComponent implements OnInit {
   clubId: number = 0;
   pictureClub = '';
   noPicture = false;
+  showModalSubirJugadores = false;
+  excelForm: FormGroup;
+  fileName: string | null = null;
+  showUploadButton: boolean = false;
+  selectedFile: File | null = null;
 
   constructor(private loginService: LoginService,
     private router: Router,
@@ -32,6 +37,9 @@ export class InicioComponent implements OnInit {
     private clubService: ClubService,
     private fb: FormBuilder,
   ) {
+    this.excelForm = this.fb.group({
+      excelFile: [null]
+    });
     this.crearEquipoForm = this.fb.group({
       categoryTypeId: ['', Validators.required],
       levelLeague: ['',],
@@ -48,29 +56,6 @@ export class InicioComponent implements OnInit {
       this.usuarioActual = user;
       let profileId = this.usuarioActual!.profileType.profileId;
       let playerId = this.usuarioActual!.playerId;
-      let userId = this.usuarioActual!.userId;
-
-      /*if (profileId === 1) {
-        //ver a que equipo pertenece
-        this.teamService.getTeamByClub(userId.toString()).subscribe(
-          (response: Response) => {
-            // Verifica que la propiedad 'data' exista en la respuesta
-            if (response.data !== null) {
-              this.clubId = response.data.club.clubId;
-              this.pictureClub = response.data.club.picture;
-              this.listTeam = response.data.teams; //.map((team: TeamConJugadores) => new TeamConJugadores(team));
-            } else {
-              console.error('La respuesta del servicio no tiene la estructura esperada', response);
-            }
-          },
-          (error) => {
-            console.error('Error al cargar el listado de equipos', error);
-          }
-        );
-      }*/
-
-      // Cargar listado de clubes disponibles
-      //this.cargarListadoClubes();
 
       if (profileId === 2) {
         // Carga el listado de equipos al inicializar el componente
@@ -102,7 +87,7 @@ export class InicioComponent implements OnInit {
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data) {
-          if(response.data.picture != null) {
+          if (response.data.picture != null) {
             this.pictureClub = response.data.picture;
           } else {
             this.noPicture = true;
@@ -242,22 +227,6 @@ export class InicioComponent implements OnInit {
         console.error('Error al eliminar el equipo:', error);
       }
     );
-    /*
-    // Lógica para eliminar el equipo llamando al servicio correspondiente
-    this.teamService.deleteTeam(teamId.toString()).subscribe(
-      (response) => {
-        // Manejar la respuesta según tus necesidades
-        console.log('Equipo eliminado con éxito:', response);
-
-        // Cargar nuevamente el listado de equipos después de la eliminación exitosa
-        this.cargarListadoEquipos();
-      },
-      (error) => {
-        console.error('Error al eliminar el equipo:', error);
-        // Puedes manejar el error según tus necesidades
-      }
-    );
-    */
   }
 
   // Método para navegar a la pantalla de calendario
@@ -274,7 +243,61 @@ export class InicioComponent implements OnInit {
       case 2:
         this.router.navigate(['/dashboard/ropa', this.clubId]);
         break;
+      case 3:
+        this.router.navigate(['/dashboard/cuadro', this.clubId]);
+        break;
     }
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      if (file.name.endsWith('.xlsx')) {
+        this.fileName = file.name;
+        this.selectedFile = file;
+        this.showUploadButton = true;
+        this.excelForm.patchValue({
+          excelFile: file
+        });
+      } else {
+        this.fileName = null;
+        this.selectedFile = null;
+        this.showUploadButton = false;
+        alert('Por favor selecciona un archivo en formato .xlsx');
+      }
+    }
+  }
+
+  uploadExcel(): void {
+    if (this.excelForm.valid && this.selectedFile) {
+      const formData = new FormData();
+      formData.append('excelFile', this.selectedFile);
+
+      this.clubService.uploadExcel(this.clubId, this.selectedFile).subscribe(
+        (response: Response) => {
+          console.log('Archivo subido con éxito', response);
+          // Aquí puedes manejar la respuesta del servidor
+          this.showModalSubirJugadores = false;
+        },
+        (error) => {
+          console.error('Error al subir el archivo', error);
+          // Aquí puedes manejar el error
+        }
+      );
+
+      console.log('Archivo cargado:', this.selectedFile);
+    } else {
+      console.error('Formulario inválido o archivo no seleccionado');
+    }
+  }
+
+  openModalSubirJugadores() {
+    this.showModalSubirJugadores = true;
+  }
+
+  cerrarModalSubirJugadores() {
+    this.showModalSubirJugadores = false;
   }
 
 }

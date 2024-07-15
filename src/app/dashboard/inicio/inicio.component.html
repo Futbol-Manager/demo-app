@@ -8,7 +8,7 @@
         </a>
       </div>
       <div class="col text-center">
-        <a class="no-underline" href="javascript:void(0);">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(3)">
           <i class="bi bi-clipboard2-data"></i>
           <span class="d-none d-md-inline">Cuadro Mando Deportivo</span>
         </a>
@@ -42,11 +42,28 @@
 
   <!-- Botón para abrir el modal de creación de equipo -->
   <div class="container">
+    <div class="row">
+      <div class="col text-center">
+        <h2 class="text-dark mt-3">Listado de Jugadores</h2>
+      </div>
+    </div>
+    <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
+      <div class="col">
+        <button class="btn btn-success" (click)="openModalSubirJugadores()">
+          Cargar jugadores desde plantilla Excel <i class="bi bi-file-earmark-spreadsheet"></i>
+        </button>
+      </div>
+    </div>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
       <div class="col mb-3" *ngFor="let team of listTeam; let i = index" style="cursor: pointer;"
         (click)="navegarACalendario(team.teamId)">
         <div class="card h-100" style="border: 1px solid black;">
           <div class="card-body text-center">
+            <div class="row mb-2">
+              <div class="col text-start" style="font-size: 0.8em;">
+                ID: {{ team.teamId }}
+              </div>
+            </div>
             <div class="row mb-2">
               <div class="col">
                 <img *ngIf="!noPicture" src="https://sphairatech.com/images/user/{{ pictureClub }}" alt="user-image"
@@ -66,7 +83,8 @@
               {{ team.jugadoresPorEquipo }}
               <i class="bi bi-people-fill"></i>
             </p>
-            <p *ngIf="team.nombreEntrenador" class="card-text" style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            <p *ngIf="team.nombreEntrenador" class="card-text"
+              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               <b>Cuerpo técnico: </b> {{ team.nombreEntrenador }}
             </p>
           </div>
@@ -95,7 +113,7 @@
             <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
             <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" formControlName="categoryTypeId">
               <!-- Opciones ajustadas según tus necesidades -->
-              <option value="14">Sin equipo</option>
+              <option value="27">Sin equipo</option>
               <option value="15">Senior</option>
               <option value="16">Juvenil</option>
               <option value="17">Juvenil/Cadete Femenina</option>
@@ -183,6 +201,47 @@
             <button type="submit" class="btn btn-success float-end">Guardar</button>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para subir jugadores desde plantilla -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalSubirJugadores}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="stripeModalLabel">Sube la plantilla para cargar los jugadores</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSubirJugadores()"></button>
+        </div>
+        <div class="modal-body">
+          <p>Solo es obligatorio rellenar el nombre, el resto de campos se podrían dejar vacíos. Descarga la plantilla
+            para poder rellenar los jugadores. Pulsa en <a href="https://sphairatech.com/images/docs/Plantilla.xlsx"
+              download="Plantilla.xlsx">
+              descargar plantilla.
+            </a></p>
+          <div class="mb-3">
+            <form [formGroup]="excelForm" class="form-upload" (ngSubmit)="uploadExcel()" enctype="multipart/form-data">
+              <div class="mb-3" style="text-align: center;">
+                <h4>Sube tu archivo Excel</h4>
+                <div class="form-group">
+                  <label for="excelFile">Seleccionar archivo en formato XLSX:</label>
+                  <input type="file" id="excelFile" accept=".xlsx" (change)="onFileSelected($event)"
+                    class="form-control-file">
+                  <div *ngIf="fileName" class="mt-2">Archivo seleccionado: {{ fileName }}</div>
+                </div>
+                <button *ngIf="showUploadButton" style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir
+                  archivo</button>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="submit" class="btn btn-success float-end"
+              (click)="cerrarModalSubirJugadores()">Cerrar</button>
+          </div>
+        </div>
       </div>
     </div>
   </div>

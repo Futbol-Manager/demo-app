@@ -289,4 +289,21 @@ export class ClubService {
     }
   }
 
+  uploadExcel(clubId: number, file: File): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      const formData: FormData = new FormData();
+      formData.append('file', file, file.name);
+
+      const url: string = environment.apiUrl + `club/uploadExcel/${clubId}`;
+      return this.http.post<Response>(url, formData, { headers });
+    } else {
+      return new Observable();
+    }
+  }
+
 }

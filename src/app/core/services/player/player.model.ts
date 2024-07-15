@@ -135,6 +135,11 @@ export class Player {
   emailMadre: string;
   nick: string;
   numero: string;
+  dni: string;
+  nombrePadre: string;
+  dniPadre: string;
+  nombreMadre: string;
+  dniMadre: string;
 
   constructor(object: any) {
     this.playerId = object.playerId || 0;
@@ -195,6 +200,11 @@ export class Player {
     this.emailMadre = object.emailMadre || '';
     this.nick = object.nick || '';
     this.numero = object.numero || '';
+    this.dni = object.dni || '';
+    this.nombrePadre = object.nombrePadre || '';
+    this.dniPadre = object.dniPadre || '';
+    this.nombreMadre = object.nombreMadre || '';
+    this.dniMadre = object.dniMadre || '';
   }
 }
 

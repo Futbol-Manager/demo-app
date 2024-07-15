@@ -208,4 +208,26 @@ export class InformacionEquipoComponent implements OnInit {
       })
   }
 
+  // Método para confirmar la eliminación del equipo
+  confirmarEliminarEquipo(): void {
+    const confirmacion = confirm('¿Estás seguro de que deseas eliminar el equipo?');
+    if (confirmacion) {
+      // Llama al método para eliminar el equipo
+      this.eliminarEquipo();
+    }
+  }
+
+  // Método para eliminar el equipo
+  eliminarEquipo(): void {
+    //hacemos un borrado logico
+    this.teamService.deleteLogicTeam(this.teamId.toString()).subscribe(
+      (response) => {
+        this.router.navigate(['/dashboard/inicio']);
+      },
+      (error) => {
+        console.error('Error al eliminar el equipo:', error);
+      }
+    );
+  }
+
 }

@@ -12,6 +12,8 @@ import { TrainerComponent } from './trainer/trainer.component';
 import { ContabilidadComponent } from './contabilidad/contabilidad.component';
 import { CuotasComponent } from './cuotas/cuotas.component';
 import { RopaComponent } from './ropa/ropa.component';
+import { CuadroComponent } from './cuadro/cuadro.component';
+import { InfoJugadoresComponent } from './info-jugadores/info-jugadores.component';
 
 const routes: Routes = [
   {
@@ -28,6 +30,8 @@ const routes: Routes = [
       { path: 'contabilidad/:clubId', component: ContabilidadComponent },
       { path: 'ropa/:clubId', component: RopaComponent },
       { path: 'cuotas/:teamId', component: CuotasComponent },
+      { path: 'cuadro/:teamId', component: CuadroComponent },
+      { path: 'info-jugadores/:teamId', component: InfoJugadoresComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
   }
