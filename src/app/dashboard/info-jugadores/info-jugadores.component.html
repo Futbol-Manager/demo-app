@@ -32,10 +32,9 @@
                 </div>
             </div>
             <div style="overflow-x: auto;">
-                <!-- <table id="dataTable" class="table table-bordered table-striped text-center">
+                <table id="dataTable" class="table table-bordered table-striped text-center">
                     <thead class="table-custom">
                         <tr>
-                            <th>Player ID</th>
                             <th>IMAGEN</th>
                             <th>NOMBRE</th>
                             <th>EQUIPO</th>
@@ -54,7 +53,6 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let player of players; let i = index">
-                            <td>{{ player.playerId }}</td>
                             <td *ngIf="player.picturePlayer">
                                 <div class="container">
                                     <img src="https://sphairatech.com/images/user/{{ player.picturePlayer }}"
@@ -79,21 +77,6 @@
                             <td>{{ player.dniMadre }}</td>
                             <td>{{ player.telefonoMadre }}</td>
                             <td>{{ player.emailMadre }}</td>
-                        </tr>
-                    </tbody>
-                </table> -->
-                <table id="dataTable" class="display">
-                    <thead>
-                        <tr>
-                            <th>Player ID</th>
-                            <th>NOMBRE</th>
-                            <!-- Otros encabezados de columnas -->
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let player of players">
-                            <td>{{ player.playerId }}</td>
-                            <td>{{ player.nombre }} {{ player.apellido }}</td>
                         </tr>
                     </tbody>
                 </table>
