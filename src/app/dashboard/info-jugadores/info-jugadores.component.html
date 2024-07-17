@@ -13,13 +13,21 @@
     <div style="margin-top: 3em;">
         <h2 class="text-dark mt-3">Listado de Jugadores</h2>
         <div class="row">
-            <div class="col-4">
+            <div class="col-3">
                 <label for="teamSelected" class="form-label">Selecciona un equipo</label>
                 <select class="form-control me-2" id="teamSelected" name="teamSelected" [(ngModel)]="teamSelected"
                     (change)="loadPlayersOfTeam()">
                     <option value="-1">Todos los equipos</option>
                     <option *ngFor="let team of teams; let i = index" [value]="i">{{ team.nameTeam }}</option>
                 </select>
+            </div>
+            <div class="col-3">
+            </div>
+            <div class="col-3">
+            </div>
+            <div class="col-3">
+              <label for="playerSearch" class="form-label">Buscar cualquier campo</label>
+              <input type="text" class="form-control" id="playerSearch" [(ngModel)]="playerSearch" (input)="applyFilter()" placeholder="Buscar...">
             </div>
         </div>
 
@@ -31,7 +39,7 @@
                 <div class="col-md-auto ml-auto" id="dt-search">
                 </div>
             </div>
-            <div style="overflow-x: auto;">
+            <div style="overflow-x: auto; overflow-y: scroll; height: 30em;">
                 <table id="dataTable" class="table table-bordered table-striped text-center">
                     <thead class="table-custom">
                         <tr>
@@ -52,7 +60,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let player of players; let i = index">
+                        <tr *ngFor="let player of filteredPlayers; let i = index">
                             <td *ngIf="player.picturePlayer">
                                 <div class="container">
                                     <img src="https://sphairatech.com/images/user/{{ player.picturePlayer }}"
@@ -81,8 +89,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
-        <div id="button_datatable">
         </div>
     </div>
 </div>

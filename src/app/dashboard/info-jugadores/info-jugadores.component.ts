@@ -4,8 +4,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import * as $ from 'jquery';
-import 'datatables.net';
 import { HttpClient } from '@angular/common/http';
 
 @Component({
@@ -13,7 +11,7 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './info-jugadores.component.html',
   styleUrls: ['./info-jugadores.component.scss']
 })
-export class InfoJugadoresComponent implements OnInit, AfterViewInit, OnDestroy {
+export class InfoJugadoresComponent implements OnInit {
 
   @ViewChild('dataTable', { static: false })
   table!: ElementRef;
@@ -23,7 +21,11 @@ export class InfoJugadoresComponent implements OnInit, AfterViewInit, OnDestroy 
   teams: any[] = [];
   players: any[] = [];
   teamSelected: number = -1;
-  dataTable: any; // Variable para almacenar la referencia a la tabla DataTable
+  // Propiedades existentes
+  playerNameFilter: string = '';
+  filteredPlayers: any[] = [];
+  playerDniFilter: string = '';
+  playerSearch: string = '';
 
   constructor(
     private router: Router,
@@ -44,16 +46,6 @@ export class InfoJugadoresComponent implements OnInit, AfterViewInit, OnDestroy 
     this.cargarListadoJugadores();
   }
 
-  ngAfterViewInit(): void {
-    this.inicializarDataTable();
-  }
-
-  ngOnDestroy(): void {
-    if (this.dataTable) {
-      this.dataTable.destroy();
-    }
-  }
-
   // Método para redirigir a la pantalla de jugadores con el teamId
   irAPantalla(id: number): void {
     switch (id) {
@@ -69,11 +61,12 @@ export class InfoJugadoresComponent implements OnInit, AfterViewInit, OnDestroy 
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data) {
           // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.teams = response.data.teams; 
+          this.teams = response.data.teams;
           for (let i = 0; i < this.teams.length; i++) {
             for (let a = 0; a < this.teams[i].players.length; a++) {
-              this.players.push(this.teams[i].players[a]);              
-            }            
+              this.filteredPlayers.push(this.teams[i].players[a]);
+              this.players.push(this.teams[i].players[a]);
+            }
           }
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
@@ -85,88 +78,6 @@ export class InfoJugadoresComponent implements OnInit, AfterViewInit, OnDestroy 
       }
     );
   }
-  
-  // Método para inicializar el DataTable
-  inicializarDataTable(): void {
-    const table: any = $(this.table.nativeElement);
-    this.dataTable = table.DataTable({
-      paging: true,
-      pageLength: 100,
-      searching: true,
-      ordering: true,
-      order: [[0, 'asc']], // Ordenar por la primera columna
-      language: {
-        url: 'assets/dataTable/Spanish.json' // URL del archivo de traducción
-      }
-    });
-
-    this.moverElementosDataTable();
-    this.datosCargados = true;
-  }
-
-
-  moverElementosDataTable() {
-    // **Move buttons outside the table after initialization**
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElements = this.elementRef.nativeElement.querySelectorAll('.dt-layout-row:not(.dt-layout-table)');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#button_datatable');
-
-        if (layoutRowElements.length >= 2 && buttonDatatableElement) {
-          const layoutRowElement = layoutRowElements[1]; // Obtener el segundo elemento
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          observer.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
-    });
-
-    observer.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
-
-    //esto es para agregar una clase
-    const textcenter = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const dataTableElement = document.querySelector('#dataTable');
-
-        if (dataTableElement) {
-          dataTableElement.classList.add('text-center');
-          textcenter.disconnect(); // Detiene la observación después de encontrar el elemento
-        }
-      });
-    });
-
-    textcenter.observe(document.body, { childList: true, subtree: true });
-
-
-    //esto es para la parte donde pones las filas a ver
-    const length = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-length');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-length');
-
-        if (layoutRowElement && buttonDatatableElement) {
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          length.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
-    });
-
-    length.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
-
-    //esto es para el input del buscador
-    const search = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-search');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-search');
-
-        if (layoutRowElement && buttonDatatableElement) {
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          search.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
-    });
-
-    search.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
-  }
 
   loadPlayersOfTeam(): void {
     if (this.teamSelected < 0) {
@@ -174,14 +85,69 @@ export class InfoJugadoresComponent implements OnInit, AfterViewInit, OnDestroy 
     } else {
       this.players = this.teams[this.teamSelected].players; // Mostrar jugadores del equipo seleccionado
     }
-    this.actualizarTabla();
+
+    this.applyNameFilter();
+  }
+  normalizeText(text: string): string {
+    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   }
 
-  actualizarTabla(): void {
-    if (this.dataTable) {
-      this.dataTable.clear();
-      this.dataTable.rows.add(this.players);
-      this.dataTable.draw();
+  applyFilter(): void {
+    const filter = this.normalizeText(this.playerSearch);
+    this.filteredPlayers = this.players.filter(player => {
+      return (
+        (player.nombre && this.normalizeText(player.nombre).includes(filter)) ||
+        (player.apellido && this.normalizeText(player.apellido).includes(filter)) ||
+        (player.nameTeam && this.normalizeText(player.nameTeam).includes(filter)) ||
+        (player.telefono && this.normalizeText(player.telefono).includes(filter)) ||
+        (player.dni && this.normalizeText(player.dni).includes(filter)) ||
+        (player.nombrePadre && this.normalizeText(player.nombrePadre).includes(filter)) ||
+        (player.dniPadre && this.normalizeText(player.dniPadre).includes(filter)) ||
+        (player.telefonoPadre && this.normalizeText(player.telefonoPadre).includes(filter)) ||
+        (player.emailPadre && this.normalizeText(player.emailPadre).includes(filter)) ||
+        (player.nombreMadre && this.normalizeText(player.nombreMadre).includes(filter)) ||
+        (player.dniMadre && this.normalizeText(player.dniMadre).includes(filter)) ||
+        (player.telefonoMadre && this.normalizeText(player.telefonoMadre).includes(filter)) ||
+        (player.emailMadre && this.normalizeText(player.emailMadre).includes(filter))
+      );
+    });
+  }
+
+  // Método para filtrar jugadores por nombre
+  filterPlayers(key: number): void {
+    switch (key) {
+      case 0:
+        this.applyNameFilter();
+        break;
+      case 1:
+        this.applyDniFilter();
+        break;
+    }
+  }
+
+  // Aplicar filtro por nombre a los jugadores
+  applyNameFilter(): void {
+    if (!this.playerNameFilter) {
+      // Si el filtro está vacío, mostrar todos los jugadores
+      this.filteredPlayers = this.players;
+    } else {
+      // Filtrar jugadores por nombre que coincida parcialmente
+      this.filteredPlayers = this.players.filter(player =>
+        player.nombre && player.nombre.toLowerCase().includes(this.playerNameFilter.toLowerCase())
+      );
+    }
+  }
+
+  // Aplicar filtro por nombre a los jugadores
+  applyDniFilter(): void {
+    if (!this.playerDniFilter) {
+      // Si el filtro está vacío, mostrar todos los jugadores
+      this.filteredPlayers = this.players;
+    } else {
+      // Filtrar jugadores por DNI que coincida parcialmente, y manejar los valores null
+      this.filteredPlayers = this.players.filter(player =>
+        player.dni && player.dni.toLowerCase().includes(this.playerDniFilter.toLowerCase())
+    );
     }
   }
 

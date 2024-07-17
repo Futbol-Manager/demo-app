@@ -25,3 +25,19 @@ a {
   width: auto;
   height: 3em;
 }
+
+/* Estilos para móvil */
+@media (max-width: 767px) {
+  .logo-image {
+    width: 8em;
+    /* Ancho de la imagen en móvil */
+  }
+}
+
+/* Estilos para PC */
+@media (min-width: 768px) {
+  .logo-image {
+    width: 19em;
+    /* Ancho de la imagen en PC */
+  }
+}
