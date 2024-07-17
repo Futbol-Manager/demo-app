@@ -30,8 +30,8 @@ const routes: Routes = [
       { path: 'contabilidad/:clubId', component: ContabilidadComponent },
       { path: 'ropa/:clubId', component: RopaComponent },
       { path: 'cuotas/:teamId', component: CuotasComponent },
-      { path: 'cuadro/:teamId', component: CuadroComponent },
-      { path: 'info-jugadores/:teamId', component: InfoJugadoresComponent },
+      { path: 'cuadro/:clubId', component: CuadroComponent },
+      { path: 'info-jugadores/:clubId', component: InfoJugadoresComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
   }

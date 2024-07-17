@@ -14,7 +14,7 @@ import { TrainingService } from 'src/app/core/services/training/training.service
 })
 export class CuadroComponent implements OnInit {
 
-  teamId = 0;
+  clubId = 0;
 
   constructor(
     private router: Router,
@@ -31,8 +31,8 @@ export class CuadroComponent implements OnInit {
       // Suscribirse a los cambios en los parámetros de la URL
       this.route.params.subscribe(params => {
         // Obtener el valor de teamId de los parámetros
-        this.teamId = +params['teamId'];  // El + convierte el valor a número
-        console.log('teamId:', this.teamId);
+        this.clubId = +params['clubId'];  // El + convierte el valor a número
+        console.log('clubId:', this.clubId);
       });
   }
 
@@ -40,10 +40,10 @@ export class CuadroComponent implements OnInit {
   irAPantalla(id: number): void {
     switch (id) {
       case 0:
-        this.router.navigate(['/dashboard/inicio', this.teamId]);
+        this.router.navigate(['/dashboard/inicio']);
         break;
       case 1:
-        this.router.navigate(['/dashboard/info-jugadores', this.teamId]);
+        this.router.navigate(['/dashboard/info-jugadores', this.clubId]);
         break;
     }
   }

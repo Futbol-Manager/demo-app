@@ -8,4 +8,98 @@
         </div>
     </div>
 </div>
-<p>info-jugadores works!</p>
+
+<div *ngIf="datosCargados" class="container">
+    <div style="margin-top: 3em;">
+        <h2 class="text-dark mt-3">Listado de Jugadores</h2>
+        <div class="row">
+            <div class="col-4">
+                <label for="teamSelected" class="form-label">Selecciona un equipo</label>
+                <select class="form-control me-2" id="teamSelected" name="teamSelected" [(ngModel)]="teamSelected"
+                    (change)="loadPlayersOfTeam()">
+                    <option value="-1">Todos los equipos</option>
+                    <option *ngFor="let team of teams; let i = index" [value]="i">{{ team.nameTeam }}</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row" style="margin-top: 3em;">
+            <div class="row justify-content-between div-headdatatable">
+                <div class="col-md-auto mr-auto" id="dt-length">
+                    <!-- Contenido para el dt-length -->
+                </div>
+                <div class="col-md-auto ml-auto" id="dt-search">
+                </div>
+            </div>
+            <div style="overflow-x: auto;">
+                <!-- <table id="dataTable" class="table table-bordered table-striped text-center">
+                    <thead class="table-custom">
+                        <tr>
+                            <th>Player ID</th>
+                            <th>IMAGEN</th>
+                            <th>NOMBRE</th>
+                            <th>EQUIPO</th>
+                            <th>FECHA</th>
+                            <th>TELEFONO</th>
+                            <th>DNI</th>
+                            <th>PADRE</th>
+                            <th>DNI/NIE</th>
+                            <th>TELEFONO</th>
+                            <th>EMAIL</th>
+                            <th>MADRE</th>
+                            <th>DNI/NIE</th>
+                            <th>TELEFONO</th>
+                            <th>EMAIL</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let player of players; let i = index">
+                            <td>{{ player.playerId }}</td>
+                            <td *ngIf="player.picturePlayer">
+                                <div class="container">
+                                    <img src="https://sphairatech.com/images/user/{{ player.picturePlayer }}"
+                                        alt="user-player" width="50" height="50" class="rounded-circle me-2">
+                                </div>
+                            </td>
+                            <td *ngIf="!player.picturePlayer">
+                                <div class="container">
+                                    <span class="bi bi-person" style="font-size: 3rem;"></span>
+                                </div>
+                            </td>
+                            <td>{{ player.nombre }} {{ player.apellido }}</td>
+                            <td>{{ player.nameTeam }}</td>
+                            <td>{{ player.fechaDeNacimiento | date }}</td>
+                            <td>{{ player.telefono }}</td>
+                            <td>{{ player.dni }}</td>
+                            <td>{{ player.nombrePadre }}</td>
+                            <td>{{ player.dniPadre }}</td>
+                            <td>{{ player.telefonoPadre }}</td>
+                            <td>{{ player.emailPadre }}</td>
+                            <td>{{ player.nombreMadre }}</td>
+                            <td>{{ player.dniMadre }}</td>
+                            <td>{{ player.telefonoMadre }}</td>
+                            <td>{{ player.emailMadre }}</td>
+                        </tr>
+                    </tbody>
+                </table> -->
+                <table id="dataTable" class="display">
+                    <thead>
+                        <tr>
+                            <th>Player ID</th>
+                            <th>NOMBRE</th>
+                            <!-- Otros encabezados de columnas -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let player of players">
+                            <td>{{ player.playerId }}</td>
+                            <td>{{ player.nombre }} {{ player.apellido }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div id="button_datatable">
+        </div>
+    </div>
+</div>
