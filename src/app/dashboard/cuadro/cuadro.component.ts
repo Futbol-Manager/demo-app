@@ -6,6 +6,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { Response } from 'src/app/core/services/models/response.model';
 
 @Component({
   selector: 'app-cuadro',
@@ -15,6 +16,11 @@ import { TrainingService } from 'src/app/core/services/training/training.service
 export class CuadroComponent implements OnInit {
 
   clubId = 0;
+  diasSemana = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+  horario: { hora: string, dias: any[], isCurrentHour: boolean }[] = [];
+  horarios: any[] = [/* tu listado de horarios JSON aquí */];
+  coloresEquipos: { [teamId: number]: string } = {};
+  datosCargados = false;
 
   constructor(
     private router: Router,
@@ -28,12 +34,92 @@ export class CuadroComponent implements OnInit {
     private loginService: LoginService,) { }
 
   ngOnInit(): void {
-      // Suscribirse a los cambios en los parámetros de la URL
-      this.route.params.subscribe(params => {
-        // Obtener el valor de teamId de los parámetros
-        this.clubId = +params['clubId'];  // El + convierte el valor a número
-        console.log('clubId:', this.clubId);
+    // Suscribirse a los cambios en los parámetros de la URL
+    this.route.params.subscribe(params => {
+      // Obtener el valor de teamId de los parámetros
+      this.clubId = +params['clubId'];  // El + convierte el valor a número
+      console.log('clubId:', this.clubId);
+    });
+
+
+    this.cargarHorariosEquipos();
+  }
+
+  private generarHorario(): void {
+    const horas = [];
+    let horaActual = new Date();
+    horaActual.setHours(23, 0, 0, 0); // Empezar a las 23:00 PM
+
+    for (let i = 0; i <= (14 * 2); i++) { // 14 horas por 2 (media hora cada)
+      const hora = horaActual.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      const isCurrentHour = this.isCurrentHour(hora);
+      const fila = { hora, dias: Array(7).fill(null), isCurrentHour }; // Añadir isCurrentHour para resaltar la fila
+      horas.push(fila);
+      horaActual.setMinutes(horaActual.getMinutes() - 30);
+    }
+
+    this.horario = horas;
+  }
+
+  private isCurrentHour(hora: string): boolean {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const [horaHour, horaMinute] = hora.split(':').map(Number);
+
+    return currentHour === horaHour && currentMinute >= horaMinute;
+  }
+
+  private llenarHorario(): void {
+    this.horarios.forEach(horario => {
+      this.diasSemana.forEach((dia, index) => {
+        const diaProp = dia.toLowerCase();
+        if (horario[diaProp] === 1) {
+          const inicio = this.parsearHora(horario[`${diaProp}Inicio`]);
+          const fin = this.parsearHora(horario[`${diaProp}Fin`]);
+
+          this.horario.forEach(intervalo => {
+            const hora = this.parsearHora(intervalo.hora);
+            if (hora >= inicio && hora < fin) {
+              const teamInfo = `${horario.team.categoryType.categoryName} ${horario.team.name} ${horario.team.levelLeague}`;
+              if (intervalo.dias[index]) {
+                // Si ya hay un equipo en esta celda, concatenar el teamInfo
+                intervalo.dias[index].teamInfos.push(teamInfo);
+              } else {
+                // Si la celda está vacía, inicializarla con el teamInfo
+                intervalo.dias[index] = {
+                  teamInfos: [teamInfo]
+                };
+              }
+            }
+          });
+        }
       });
+    });
+  }
+
+  private parsearHora(hora: string): number {
+    const [horas, minutos] = hora.split(':').map(Number);
+    return horas * 60 + minutos; // Convertir la hora a minutos
+  }
+
+  cargarHorariosEquipos() {
+    this.teamService.getHorariosTeamByClub(this.clubId).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.horarios = response.data;
+          this.generarHorario();
+          this.llenarHorario();
+          this.datosCargados = true;
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
   }
 
   // Método para redirigir a la pantalla de jugadores con el teamId

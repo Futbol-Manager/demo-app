@@ -6,7 +6,7 @@ import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { RegisterService } from 'src/app/core/services/register/register.service';
-import { TeamNew } from 'src/app/core/services/team/team.model';
+import { HorarioTeam, TeamNew } from 'src/app/core/services/team/team.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 
 @Component({
@@ -30,6 +30,88 @@ export class InformacionEquipoComponent implements OnInit {
   showModal = false;
   profileId = 0;
   userId = 0;
+  showModalHorario = false;
+
+  dias = [
+    { label: 'Lunes', property: 'lunes', index: 1 },
+    { label: 'Martes', property: 'martes', index: 2 },
+    { label: 'Miércoles', property: 'miercoles', index: 3 },
+    { label: 'Jueves', property: 'jueves', index: 4 },
+    { label: 'Vierenes', property: 'viernes', index: 5 },
+    { label: 'Sábado', property: 'sabado', index: 6 },
+    { label: 'Domingo', property: 'domingo', index: 7 }
+  ];
+
+  horarioTeam: HorarioTeam = new HorarioTeam({});
+  diasTeam: any;
+
+  timeOptions: string[] = [
+    '08:00', '08:15', '08:30', '08:45', '09:00', '09:15', '09:30', '09:45',
+    '10:00', '10:15', '10:30', '10:45', '11:00', '11:15', '11:30', '11:45',
+    '12:00', '12:15', '12:30', '12:45', '13:00', '13:15', '13:30', '13:45',
+    '14:00', '14:15', '14:30', '14:45', '15:00', '15:15', '15:30', '15:45',
+    '16:00', '16:15', '16:30', '16:45', '17:00', '17:15', '17:30', '17:45',
+    '18:00', '18:15', '18:30', '18:45', '19:00', '19:15', '19:30', '19:45',
+    '20:00', '20:15', '20:30', '20:45', '21:00', '21:15', '21:30', '21:45',
+    '22:00', '22:15', '22:30', '22:45'
+  ];
+
+  categoryOptions: { value: string, label: string }[] = [
+    { value: '15', label: 'Senior' },
+    { value: '16', label: 'Juvenil' },
+    { value: '17', label: 'Juvenil/Cadete Femenina' },
+    { value: '18', label: 'Cadete' },
+    { value: '19', label: 'Cadete/Infantil Femenina' },
+    { value: '20', label: 'Infantil' },
+    { value: '21', label: 'Infantil/Alevín Femenina' },
+    { value: '22', label: 'Alevín' },
+    { value: '23', label: 'Benjamín' },
+    { value: '24', label: 'Benjamín/Prebenjamín Femenina' },
+    { value: '25', label: 'Prebenjamín' },
+    { value: '26', label: 'Debutante' }
+  ];
+
+  levelOptions: { value: string, label: string }[] = [
+    { value: 'LaLiga EA Sports', label: 'LaLiga EA Sports' },
+    { value: 'Liga F', label: 'Liga F' },
+    { value: 'LaLiga Hypermotion', label: 'LaLiga Hypermotion' },
+    { value: 'Segunda RFEF Femenina', label: 'Segunda RFEF Femenina' },
+    { value: 'Primera RFEF', label: 'Primera RFEF' },
+    { value: 'Segunda RFEF', label: 'Segunda RFEF' },
+    { value: 'Tercera RFEF', label: 'Tercera RFEF' },
+    { value: 'Tercera RFEF Femenina', label: 'Tercera RFEF Femenina' },
+    { value: 'Preferente Autonómica', label: 'Preferente Autonómica' },
+    { value: 'Preferente Autonómica Femenina', label: 'Preferente Autonómica Femenina' },
+    { value: 'Primera Autonómica', label: 'Primera Autonómica' },
+    { value: 'Primera Autonómica Femenina', label: 'Primera Autonómica Femenina' },
+    { value: 'Segunda Autonómica', label: 'Segunda Autonómica' },
+    { value: 'Tercera Autonómica', label: 'Tercera Autonómica' },
+    { value: 'División de Honor', label: 'División de Honor' },
+    { value: 'Liga Nacional', label: 'Liga Nacional' },
+    { value: 'Superliga', label: 'Superliga' },
+    { value: 'Autonómica', label: 'Autonómica' },
+    { value: 'Preferente', label: 'Preferente' },
+    { value: 'Primera', label: 'Primera' },
+    { value: 'Segunda', label: 'Segunda' },
+    { value: 'Tercera', label: 'Tercera' }
+  ];
+
+  nameOptions: { value: string, label: string }[] = [
+    { value: '', label: 'Sin letra' },
+    { value: 'A', label: 'A' },
+    { value: 'B', label: 'B' },
+    { value: 'C', label: 'C' },
+    { value: 'D', label: 'D' },
+    { value: 'E', label: 'E' },
+    { value: 'F', label: 'F' },
+    { value: 'G', label: 'G' },
+    { value: 'H', label: 'H' },
+    { value: 'I', label: 'I' },
+    { value: 'J', label: 'J' },
+    { value: 'K', label: 'K' },
+    { value: 'L', label: 'L' },
+    { value: 'M', label: 'M' }
+  ];
 
   constructor(
     private fb: FormBuilder,
@@ -52,8 +134,19 @@ export class InformacionEquipoComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Inicialización del objeto diasTeam
+    this.diasTeam = {
+      lunes: { inicio: '', fin: '', activo: 0 },
+      martes: { inicio: '', fin: '', activo: 0 },
+      miercoles: { inicio: '', fin: '', activo: 0 },
+      jueves: { inicio: '', fin: '', activo: 0 },
+      viernes: { inicio: '', fin: '', activo: 0 },
+      sabado: { inicio: '', fin: '', activo: 0 },
+      domingo: { inicio: '', fin: '', activo: 0 }
+    };
+    
     this.loginService.usuarioActual.subscribe(user => {
-      this.usuarioActual = user;      
+      this.usuarioActual = user;
       this.profileId = Number(this.usuarioActual!.profileType.profileId);
       this.userId = Number(this.usuarioActual!.userId);
     });
@@ -65,15 +158,15 @@ export class InformacionEquipoComponent implements OnInit {
     });
   }
 
-  abrirModalInvitarEntenador(){
+  abrirModalInvitarEntenador() {
     this.showModal = true;
   }
 
-  cargarInfoEntrenadores(){
+  cargarInfoEntrenadores() {
     this.teamService.getUserListByTeam(this.teamId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
-        if(response.data !== null){
+        if (response.data !== null) {
           this.coaches = response.data;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
@@ -85,11 +178,11 @@ export class InformacionEquipoComponent implements OnInit {
     );
   }
 
-  cargarInfoEquipo(){
+  cargarInfoEquipo() {
     this.teamService.getTeamById(this.teamId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
-        if(response.data !== null){
+        if (response.data !== null) {
           this.team = response.data;
           this.teamInfo = {
             teamId: this.team.teamId,
@@ -128,7 +221,7 @@ export class InformacionEquipoComponent implements OnInit {
   }
 
   editarEquipo(): void {
-    if(this.editarEquipoForm.valid){
+    if (this.editarEquipoForm.valid) {
       const fv = this.editarEquipoForm.value;
       this.teamNew = {
         teamId: fv.teamId,
@@ -173,14 +266,14 @@ export class InformacionEquipoComponent implements OnInit {
     this.showModal = false;
   }
 
-  invitarEntrenador(){
-    if(this.userForm.valid){
+  invitarEntrenador() {
+    if (this.userForm.valid) {
       this.registerService.inviteCoach(this.userForm.value.mail, this.teamId, this.userId).pipe().subscribe(
         res => {
           let msg = 'Entrenador invitado correctamente.';
-          if(res.data != null){
+          if (res.data != null) {
             this.cargarInfoEntrenadores();
-          } else{
+          } else {
             msg = 'El email introducido no es váildo.';
           }
           this.cerrarModal();
@@ -193,10 +286,10 @@ export class InformacionEquipoComponent implements OnInit {
     }
   }
 
-  deleteCoach(userId: number){
+  deleteCoach(userId: number) {
     this.registerService.deleteCoach(this.teamId, userId).pipe().subscribe(
       res => {
-        if(res.data){
+        if (res.data) {
           this.cargarInfoEntrenadores();
         }
         this.cerrarModal();
@@ -228,6 +321,51 @@ export class InformacionEquipoComponent implements OnInit {
         console.error('Error al eliminar el equipo:', error);
       }
     );
+  } guardarCambios() { }
+
+
+  toggleDiaOkDesactivar(property: string, value: number) {
+    this.diasTeam[property] = value === 0 ? 1 : 0;
+    this.updateHorarioTeam(this.diasTeam);
+    // Aquí puedes añadir cualquier otra lógica necesaria
+    //console.log(`${property} actualizada a ${value}`);
+  }
+
+  changeHora(){
+    this.updateHorarioTeam(this.diasTeam);
+  }
+
+  updateHorarioTeam(horario: HorarioTeam) {
+    this.teamService.createUpdateHorarioTeam(horario).subscribe(
+      (response) => {
+        //todo ok
+      },
+      (error) => {
+        console.error('Error al crear el equipo:', error);
+        // Puedes manejar el error según tus necesidades
+      }
+    );
+  }
+
+  openModalHorario(): void {
+    this.teamService.gethorariobyteam(this.teamId, this.team.clubId).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.diasTeam = response.data;
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+        this.showModalHorario = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  cerrarModalHorario() {
+    this.showModalHorario = false;
   }
 
 }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import { TeamNew } from 'src/app/core/services/team/team.model';
+import { HorarioTeam, TeamNew } from 'src/app/core/services/team/team.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 
 @Component({
@@ -16,6 +16,20 @@ export class InfoEquipoComponent implements OnInit {
   team: TeamNew = new TeamNew();
   clubList: any[] = [];
   teamInfo: TeamNew = new TeamNew();
+  showModalHorario = false;
+
+  dias = [
+    { label: 'Lunes', property: 'lunes', index: 1 },
+    { label: 'Martes', property: 'martes', index: 2 },
+    { label: 'Miércoles', property: 'miercoles', index: 3 },
+    { label: 'Jueves', property: 'jueves', index: 4 },
+    { label: 'Vierenes', property: 'viernes', index: 5 },
+    { label: 'Sábado', property: 'sabado', index: 6 },
+    { label: 'Domingo', property: 'domingo', index: 7 }
+  ];
+  
+  horarioTeam: HorarioTeam = new HorarioTeam({});
+  diasTeam: any;
 
   constructor(
     private teamService: TeamService,
@@ -55,6 +69,7 @@ export class InfoEquipoComponent implements OnInit {
             },
             clubId: this.team.clubId,
             userId: this.team.userId,
+            temporada: '2024'
           };
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
@@ -86,5 +101,34 @@ export class InfoEquipoComponent implements OnInit {
   }
 
   guardarCambios(){}
+
+
+  toggleDiaOkDesactivar(property: string, value: number) {
+    this.diasTeam[property] = value === 0 ? 1 : 0;
+    //this.updateRopaClub(this.diasTeam);
+    // Aquí puedes añadir cualquier otra lógica necesaria
+    console.log(`${property} actualizada a ${value}`);
+  }
+
+  openModalHorario(): void {
+    this.teamService.gethorariobyteam(this.teamId, 0).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.diasTeam = response.data;
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+        this.showModalHorario = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  cerrarModalHorario(){
+    this.showModalHorario = false;
+  }
 
 }

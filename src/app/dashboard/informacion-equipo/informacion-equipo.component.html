@@ -19,102 +19,55 @@
           <!-- Formulario para la creación de equipo con campos separados 
           TODO hacer que si es entrenador suelto, si pueda editar esa info-->
           <form [formGroup]="editarEquipoForm" (ngSubmit)="editarEquipo()">
-            <div class="d-flex">
-              <div class="col-6">
+            <div class="row">
+              <div class="col-md-6 mb-3">
                 <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
                 <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
                   formControlName="categoryTypeId" [attr.disabled]="profileId === 2 ? true : null">
-                  <!-- Opciones ajustadas según tus necesidades -->
-                  <option value="15">Senior</option>
-                  <option value="16">Juvenil</option>
-                  <option value="17">Juvenil/Cadete Femenina</option>
-                  <option value="18">Cadete</option>
-                  <option value="19">Cadete/Infantil Femenina</option>
-                  <option value="20">Infantil</option>
-                  <option value="21">Infantil/Alevín Femenina</option>
-                  <option value="22">Alevín</option>
-                  <option value="23">Benjamín</option>
-                  <option value="24">Benjamín/Prebenjamín Femenina</option>
-                  <option value="25">Prebenjamín</option>
-                  <option value="26">Debutante</option>
+                  <option *ngFor="let option of categoryOptions" [value]="option.value">{{ option.label }}</option>
                 </select>
               </div>
-              <div class="col-6">
+              <div class="col-md-6 mb-3">
                 <label for="nivelLiga" class="form-label">Nivel:</label>
                 <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague"
                   [attr.disabled]="profileId === 2 ? true : null">
-                  <!-- Opciones ajustadas según tus necesidades -->
-                  <option value="LaLiga EA Sports">LaLiga EA Sports</option>
-                  <option value="Liga F">Liga F</option>
-                  <option value="LaLiga Hypermotion">LaLiga Hypermotion</option>
-                  <option value="Segunda RFEF Femenina">Segunda RFEF Femenina</option>
-                  <option value="Primera RFEF">Primera RFEF</option>
-                  <option value="Segunda RFEF">Segunda RFEF</option>
-                  <option value="Tercera RFEF">Tercera RFEF</option>
-                  <option value="Tercera RFEF Femenina">Tercera RFEF Femenina</option>
-                  <option value="Preferente Autonómica">Preferente Autonómica</option>
-                  <option value="Preferente Autonómica Femenina">Preferente Autonómica Femenina</option>
-                  <option value="Primera Autonómica">Primera Autonómica</option>
-                  <option value="Primera Autonómica Femenina">Primera Autonómica Femenina</option>
-                  <option value="Segunda Autonómica">Segunda Autonómica</option>
-                  <option value="Tercera Autonómica">Tercera Autonómica</option>
-                  <option value="División de Honor">División de Honor</option>
-                  <option value="División de Honor">División de Honor</option>
-                  <option value="Liga Nacional">Liga Nacional</option>
-                  <option value="Superliga">Superliga</option>
-                  <option value="Autonómica">Autonómica</option>
-                  <option value="Preferente">Preferente</option>
-                  <option value="Primera">Primera</option>
-                  <option value="Segunda">Segunda</option>
-                  <option value="Tercera">Tercera</option>
+                  <option *ngFor="let option of levelOptions" [value]="option.value">{{ option.label }}</option>
                 </select>
               </div>
             </div>
-            <div class="d-flex">
-              <div class="col-6">
+            <div class="row">
+              <div class="col-md-6 mb-3">
                 <label for="nombreEquipo" class="form-label">Letra del equipo:</label>
                 <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name"
                   [attr.disabled]="profileId === 2 ? true : null">
-                  <option value="">Sin letra</option>
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                  <option value="E">E</option>
-                  <option value="F">F</option>
-                  <option value="G">G</option>
-                  <option value="H">H</option>
-                  <option value="I">I</option>
-                  <option value="J">J</option>
-                  <option value="K">K</option>
-                  <option value="L">L</option>
-                  <option value="M">M</option>
+                  <option *ngFor="let option of nameOptions" [value]="option.value">{{ option.label }}</option>
                 </select>
               </div>
-              <div class="col-6">
+              <div class="col-md-6 mb-3">
                 <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
-                <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
-                  formControlName="trainingDays" [attr.disabled]="profileId === 2 ? true : null">
+                <div class="d-flex align-items-end">
+                  <button type="button" class="form-control btn btn-primary" (click)="openModalHorario()">Pulsa para poner el horario</button>
+                </div>
               </div>
             </div>
-            <div class="d-flex">
-              <div class="col-6">
+            <div class="row">
+              <div class="col-md-6 mb-3">
                 <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
                 <textarea class="form-control" rows="4" id="objetivoEquipo" name="objetivoEquipo"
                   formControlName="objectiveTeam"></textarea>
               </div>
-              <div class="col-6">
+              <div class="col-md-6 mb-3">
                 <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
                 <textarea class="form-control" rows="4" id="opinionEquipo" name="opinionEquipo"
                   formControlName="opinionTeam"></textarea>
               </div>
             </div>
             <div class="modal-footer" style="margin-top: 2em;">
-              <div class="col-6">
+              <div class="col-md-6">
                 <!-- Botón para guardar el nuevo equipo -->
                 <button type="submit" class="btn btn-success">Guardar</button>
               </div>
-              <div class="col-6 text-end">
+              <div class="col-md-6 text-end">
                 <button type="button" class="btn btn-danger" (click)="confirmarEliminarEquipo();">Eliminar</button>
               </div>
             </div>
@@ -185,6 +138,54 @@
             </div>
           </div>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para modificar el horario de un equipo -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalHorario}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="standard-modalLabel">Horario del equipo</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalHorario()"></button>
+      </div>
+      <div class="modal-body">
+        <p>Habilita o deshabilita aquellos días que haya entrenamiento y asigna una hora de inicio y de fin.
+        </p>
+        <div *ngFor="let dia of dias">
+          <!-- Sección del día con el interruptor -->
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <span><strong><u>{{ dia.label }}</u></strong></span>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="{{dia.property}}"
+                [checked]="diasTeam[dia.property] === 1"
+                (change)="toggleDiaOkDesactivar(dia.property, diasTeam[dia.property])">
+            </div>
+          </div>         
+          <!-- Sección de selectores de hora -->
+          <div class="row mb-3" *ngIf="diasTeam[dia.property] === 1">
+            <div class="col-4">
+              <label for="{{dia.property}}Inicio" class="form-label">Inicio:</label>
+              <select class="form-control" id="{{dia.property}}Inicio" name="{{dia.property}}Inicio"
+                [(ngModel)]="diasTeam[dia.property + 'Inicio']" (change)="changeHora()">
+                <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <label for="{{dia.property}}Fin" class="form-label">Fin:</label>
+              <select class="form-control" id="{{dia.property}}Fin" name="{{dia.property}}Fin"
+                [(ngModel)]="diasTeam[dia.property + 'Fin']" (change)="changeHora()">
+                <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalHorario()">Cerrar</button>
       </div>
     </div>
   </div>

@@ -70,8 +70,7 @@
               </div>
               <div class="mb-3">
                 <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
-                <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
-                  [(ngModel)]="team.trainingDays">
+                <button type="button" class="btn btn-success float-end" (click)="openModalHorario()">Abrir</button>
               </div>
               <div class="mb-3">
                 <label for="clubEquipo" class="form-label">Club del Equipo:</label>
@@ -91,5 +90,35 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Modal para la creación de equipo -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalHorario}">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="standard-modalLabel">Horario del equipo</h5>
+              <!-- Botón de cerrar con un icono -->
+              <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalHorario()"></button>
+          </div>
+          <div class="modal-body">
+              <p>Habilita o deshabilita aquellos días que haya entrenamiento y asigna una hora de inicio y de fin.
+              </p>
+              <div *ngFor="let dia of dias">
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                      <span>{{ dia.label }}</span>
+                      <div class="form-check form-switch">
+                          <input class="form-check-input" type="checkbox" id="{{dia.property}}"
+                              [checked]="HorarioTeam[dia.property] === 0"
+                              (change)="toggleDiaOkDesactivar(dia.property, HorarioTeam[dia.property])">
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="cerrarModalHorario()">Cerrar</button>
+          </div>
+      </div>
   </div>
 </div>

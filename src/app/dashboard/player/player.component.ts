@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
@@ -35,6 +35,9 @@ export interface Player1 {
   styleUrls: ['./player.component.scss']
 })
 export class PlayerComponent implements OnInit {
+
+  @ViewChild('primerCampo', { static: false }) primerCampo!: ElementRef;
+
   datosCargados: boolean = false;
   usuarioActual!: User | null;
   teamId!: number;
@@ -248,6 +251,10 @@ export class PlayerComponent implements OnInit {
   abrirModalCrearJugador(): void {
     this.inicializePlayer();
     this.showModal = true;
+
+    setTimeout(() => {
+      this.enfocarPrimerCampo();
+    }, 500);
   }
 
   // Método para cerrar el modal de creación de equipo
@@ -338,11 +345,11 @@ export class PlayerComponent implements OnInit {
       emailPadre: '',
       emailMadre: '',
       nick: '',
-      numero: '', 
-      dni: '', 
-      nombrePadre: '', 
-      dniPadre: '', 
-      nombreMadre: '', 
+      numero: '',
+      dni: '',
+      nombrePadre: '',
+      dniPadre: '',
+      nombreMadre: '',
       dniMadre: ''
     };
   }
@@ -359,6 +366,16 @@ export class PlayerComponent implements OnInit {
     this.promedioTiro();
     this.promedioPortero();
     this.showModal = true; // Suponiendo que tienes una variable que controla la visibilidad del modal de edición
+
+    setTimeout(() => {
+      this.enfocarPrimerCampo();
+    }, 500);
+  }
+
+  private enfocarPrimerCampo() {
+    if (this.primerCampo) {
+      this.primerCampo.nativeElement.focus();
+    }
   }
 
   verInfoJugador(player: Player): void {
@@ -617,8 +634,8 @@ export class PlayerComponent implements OnInit {
       edad--;
     }
 
-    // Comprobar si el jugador es menor de 14 años
-    this.isMenor = edad < 14;
+    // Comprobar si el jugador es menor de 18 años
+    this.isMenor = edad < 18;
     this.showModalInvitar = true;
   }
 

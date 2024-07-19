@@ -5,6 +5,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { HttpClient } from '@angular/common/http';
+import * as XLSX from "xlsx";
+import { Player } from 'src/app/core/services/player/player.model';
 
 @Component({
   selector: 'app-info-jugadores',
@@ -12,7 +14,6 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./info-jugadores.component.scss']
 })
 export class InfoJugadoresComponent implements OnInit {
-
   @ViewChild('dataTable', { static: false })
   table!: ElementRef;
 
@@ -26,6 +27,7 @@ export class InfoJugadoresComponent implements OnInit {
   filteredPlayers: any[] = [];
   playerDniFilter: string = '';
   playerSearch: string = '';
+  mostrarModalInfoJugador = false;
 
   constructor(
     private router: Router,
@@ -149,6 +151,76 @@ export class InfoJugadoresComponent implements OnInit {
         player.dni && player.dni.toLowerCase().includes(this.playerDniFilter.toLowerCase())
     );
     }
+  }
+
+  exportTableToExcel(): void {
+    // Comprobar si el elemento existe antes de usar su ID
+    const tableElement = document.getElementById('dataTable');
+
+    if (tableElement) {
+      const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(tableElement);
+
+      // Resto del código (asegurar formato de cadena, ancho de columnas, etc.)
+      // ... (puedes copiar y pegar el código de la respuesta anterior)
+
+      // Crear y guardar libro de trabajo
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+      // Personalizar nombre de archivo y opciones de guardado (opcional)
+      const fileName = "tabla_exportada.xlsx"; // Ajustar según tus necesidades
+      XLSX.writeFile(wb, fileName, { bookType: 'xlsx' });
+    } else {
+      console.error("¡Elemento 'dataTable' no encontrado!");
+      // Manejar el error de forma adecuada (opcional)
+      // Por ejemplo, mostrar un mensaje de alerta al usuario
+    }
+  }
+
+  /*verInfoJugador(player: Player): void {
+    this.selectedPlayer = player; // Almacena el jugador seleccionado en una propiedad del componente
+    this.edadSeleccionada = this.fechaEnEspañol(this.selectedPlayer.fechaDeNacimiento) + ' (' + this.calcularEdad(player.fechaDeNacimiento) + ')';
+    this.mostrarEdad = true;
+    this.mostrarModalInfoJugador = true; // Activa el indicador para mostrar el modal
+
+    // Aquí llamamos a la función para cargar el gráfico de radar
+    this.cargarGraficoRadar();
+  }*/
+  
+  // Método para cerrar el modal de información del jugador
+  cerrarModalInfoJugador() {
+    this.mostrarModalInfoJugador = false;
+  }
+
+  fechaEnEspañol(fecha: string): string {
+    const partes = fecha.split('-');
+    const fechaObj = new Date(parseInt(partes[0]), parseInt(partes[1]) - 1, parseInt(partes[2]));
+
+    const dia = fechaObj.getDate();
+    const mes = fechaObj.getMonth() + 1;
+    const año = fechaObj.getFullYear();
+
+    const diaStr = dia < 10 ? '0' + dia : dia.toString();
+    const mesStr = mes < 10 ? '0' + mes : mes.toString();
+
+    return `${diaStr}/${mesStr}/${año}`;
+  }
+
+  // Método para calcular la edad del jugador a partir de su fecha de nacimiento
+  calcularEdad(fechaNacimientoString: string): number {
+    // Convertimos la cadena de fecha de nacimiento a un objeto Date
+    const fechaNacimiento = new Date(fechaNacimientoString);
+
+    const hoy = new Date();
+    const cumpleanos = new Date(fechaNacimiento);
+    let edad = hoy.getFullYear() - cumpleanos.getFullYear();
+    const mes = hoy.getMonth() - cumpleanos.getMonth();
+
+    if (mes < 0 || (mes === 0 && hoy.getDate() < cumpleanos.getDate())) {
+      edad--;
+    }
+
+    return edad;
   }
 
 }

@@ -431,7 +431,7 @@ export class RopaComponent implements OnInit {
     this.ropaClub[property] = value === 0 ? 1 : 0;
     this.updateRopaClub(this.ropaClub);
     // Aquí puedes añadir cualquier otra lógica necesaria
-    console.log(`${property} actualizada a ${value}`);
+    //console.log(`${property} actualizada a ${value}`);
   }
 
   updateRopaClub(ropa: RopaClub) {

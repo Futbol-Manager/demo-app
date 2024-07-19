@@ -12,6 +12,10 @@
 <div *ngIf="datosCargados" class="container">
     <div style="margin-top: 3em;">
         <h2 class="text-dark mt-3">Listado de Jugadores</h2>
+        <!-- Botón para exportar a Excel-->
+        <button class="btn btn-success" style="margin-bottom: 2em;" (click)="exportTableToExcel()">
+            <i class="bi bi-file-earmark-spreadsheet-fill"></i> Descargar Excel
+        </button>
         <div class="row">
             <div class="col-3">
                 <label for="teamSelected" class="form-label">Selecciona un equipo</label>
@@ -32,28 +36,21 @@
         </div>
 
         <div class="row" style="margin-top: 3em;">
-            <div class="row justify-content-between div-headdatatable">
-                <div class="col-md-auto mr-auto" id="dt-length">
-                    <!-- Contenido para el dt-length -->
-                </div>
-                <div class="col-md-auto ml-auto" id="dt-search">
-                </div>
-            </div>
             <div style="overflow-x: auto; overflow-y: scroll; height: 30em;">
                 <table id="dataTable" class="table table-bordered table-striped text-center">
                     <thead class="table-custom">
-                        <tr>
-                            <th>IMAGEN</th>
+                        <tr style="border-top: 4px solid black;">
+                            <th class="borde-izquierdo-gordo">IMAGEN</th>
                             <th>NOMBRE</th>
                             <th>EQUIPO</th>
                             <th>FECHA</th>
                             <th>TELEFONO</th>
                             <th>DNI</th>
-                            <th>PADRE</th>
+                            <th class="borde-izquierdo-gordo">PADRE</th>
                             <th>DNI/NIE</th>
                             <th>TELEFONO</th>
                             <th>EMAIL</th>
-                            <th>MADRE</th>
+                            <th class="borde-izquierdo-gordo">MADRE</th>
                             <th>DNI/NIE</th>
                             <th>TELEFONO</th>
                             <th>EMAIL</th>
@@ -61,13 +58,13 @@
                     </thead>
                     <tbody>
                         <tr *ngFor="let player of filteredPlayers; let i = index">
-                            <td *ngIf="player.picturePlayer">
+                            <td class="borde-izquierdo-gordo" *ngIf="player.picturePlayer">
                                 <div class="container">
                                     <img src="https://sphairatech.com/images/user/{{ player.picturePlayer }}"
                                         alt="user-player" width="50" height="50" class="rounded-circle me-2">
                                 </div>
                             </td>
-                            <td *ngIf="!player.picturePlayer">
+                            <td class="borde-izquierdo-gordo" *ngIf="!player.picturePlayer">
                                 <div class="container">
                                     <span class="bi bi-person" style="font-size: 3rem;"></span>
                                 </div>
@@ -77,11 +74,11 @@
                             <td>{{ player.fechaDeNacimiento | date }}</td>
                             <td>{{ player.telefono }}</td>
                             <td>{{ player.dni }}</td>
-                            <td>{{ player.nombrePadre }}</td>
+                            <td class="borde-izquierdo-gordo">{{ player.nombrePadre }}</td>
                             <td>{{ player.dniPadre }}</td>
                             <td>{{ player.telefonoPadre }}</td>
                             <td>{{ player.emailPadre }}</td>
-                            <td>{{ player.nombreMadre }}</td>
+                            <td class="borde-izquierdo-gordo">{{ player.nombreMadre }}</td>
                             <td>{{ player.dniMadre }}</td>
                             <td>{{ player.telefonoMadre }}</td>
                             <td>{{ player.emailMadre }}</td>
@@ -92,3 +89,47 @@
         </div>
     </div>
 </div>
+
+<!-- Modal para ver información del jugador
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalInfoJugador}"
+    [style.display]="mostrarModalInfoJugador ? 'block' : 'none'">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content" style="min-height: 80vh;">
+            <div class="modal-header">
+                <h5 class="modal-title">Información del Jugador</h5>
+                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalInfoJugador()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row h-50">
+                    <div class="col-md-6 h-50" style="text-align: center;">
+                        <ng-container *ngIf="!selectedPlayer.picturePlayer">
+                            <span class="bi bi-person" style="font-size: 3rem;"></span>
+                        </ng-container>
+                        <ng-container *ngIf="selectedPlayer.picturePlayer">
+                            <div class="container">
+                                <img src="https://sphairatech.com/images/user/{{ selectedPlayer.picturePlayer }}"
+                                    alt="user-player" width="150" height="150" class="rounded-circle me-2">
+                            </div>
+                        </ng-container>
+                        <h4>{{ selectedPlayer.nombre }} {{ selectedPlayer.apellido }}</h4>
+                        <div>
+                            <p>Edad: {{ edadSeleccionada }} años</p>
+                        </div>
+                        <div>
+                            <p>Posición: {{ selectedPlayer.posicion }}</p>
+                        </div>
+                        <div>
+                            <p>Pie natural: {{ selectedPlayer.piernaNatural }}</p>
+                        </div>
+                        <div>
+                            <p>Opinion Entrenador: {{ selectedPlayer.opinionDelEntrenador }}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 h-50">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
