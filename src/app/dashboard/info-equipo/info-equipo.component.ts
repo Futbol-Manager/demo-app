@@ -23,7 +23,7 @@ export class InfoEquipoComponent implements OnInit {
     { label: 'Martes', property: 'martes', index: 2 },
     { label: 'Miércoles', property: 'miercoles', index: 3 },
     { label: 'Jueves', property: 'jueves', index: 4 },
-    { label: 'Vierenes', property: 'viernes', index: 5 },
+    { label: 'Viernes', property: 'viernes', index: 5 },
     { label: 'Sábado', property: 'sabado', index: 6 },
     { label: 'Domingo', property: 'domingo', index: 7 }
   ];
