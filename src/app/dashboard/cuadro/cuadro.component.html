@@ -62,10 +62,8 @@
       <tbody>
         <tr *ngFor="let intervalo of horario" [ngClass]="{'current-hour': intervalo.isCurrentHour}">
           <td class="hora">{{ intervalo.hora }}</td>
-          <td *ngFor="let dia of intervalo.dias" class="dia">
-            <div *ngIf="dia">
-              <div *ngFor="let teamInfo of dia.teamInfos">{{ teamInfo }}</div>
-            </div>
+          <td *ngFor="let dia of intervalo.dias">
+            <div *ngIf="dia">{{ dia }}</div>
           </td>
         </tr>
       </tbody>

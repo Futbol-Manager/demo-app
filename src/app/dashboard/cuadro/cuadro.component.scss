@@ -22,9 +22,10 @@ td {
 table thead {
     position: sticky;
     top: 0;
-    z-index: 100; /* Asegurar que el encabezado se superponga a las filas */
+    z-index: 100;
+    /* Asegurar que el encabezado se superponga a las filas */
 }
-  
+
 
 table thead .columna-nombre {
     position: sticky;
@@ -58,5 +59,10 @@ tbody .fila-completa .columna-nombre {
 
 .current-hour {
     background-color: #22bf63 !important;
-  }
-  
+}
+
+.equipo-info {
+    background-color: #f0f0f0;
+    /* Puedes cambiar el color de fondo de las celdas de equipo aquí */
+    text-align: center;
+}

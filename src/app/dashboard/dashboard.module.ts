@@ -18,6 +18,9 @@ import { CuotasComponent } from './cuotas/cuotas.component';
 import { RopaComponent } from './ropa/ropa.component';
 import { CuadroComponent } from './cuadro/cuadro.component';
 import { InfoJugadoresComponent } from './info-jugadores/info-jugadores.component';
+import { EstadisticasJugadoresClubComponent } from './estadisticas-jugadores-club/estadisticas-jugadores-club.component';
+import { EstadisticasEquiposClubComponent } from './estadisticas-equipos-club/estadisticas-equipos-club.component';
+import { EstadisticasEntrenadoresClubComponent } from './estadisticas-entrenadores-club/estadisticas-entrenadores-club.component';
 
 
 
@@ -37,7 +40,10 @@ import { InfoJugadoresComponent } from './info-jugadores/info-jugadores.componen
     CuotasComponent,
     RopaComponent,
     CuadroComponent,
-    InfoJugadoresComponent
+    InfoJugadoresComponent,
+    EstadisticasJugadoresClubComponent,
+    EstadisticasEquiposClubComponent,
+    EstadisticasEntrenadoresClubComponent
   ],
   imports: [
     CommonModule,

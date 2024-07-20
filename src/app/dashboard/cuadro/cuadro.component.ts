@@ -50,12 +50,12 @@ export class CuadroComponent implements OnInit {
     let horaActual = new Date();
     horaActual.setHours(23, 0, 0, 0); // Empezar a las 23:00 PM
 
-    for (let i = 0; i <= (14 * 2); i++) { // 14 horas por 2 (media hora cada)
+    while (horaActual.getHours() !== 8 || horaActual.getMinutes() !== 45) { // Cambiado a 8:45 AM para incluir 9:00 AM en la tabla
       const hora = horaActual.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
       const isCurrentHour = this.isCurrentHour(hora);
       const fila = { hora, dias: Array(7).fill(null), isCurrentHour }; // Añadir isCurrentHour para resaltar la fila
       horas.push(fila);
-      horaActual.setMinutes(horaActual.getMinutes() - 30);
+      horaActual.setMinutes(horaActual.getMinutes() - 15);
     }
 
     this.horario = horas;
@@ -67,7 +67,7 @@ export class CuadroComponent implements OnInit {
     const currentMinute = now.getMinutes();
     const [horaHour, horaMinute] = hora.split(':').map(Number);
 
-    return currentHour === horaHour && currentMinute >= horaMinute;
+    return currentHour === horaHour && currentMinute >= horaMinute && currentMinute < horaMinute + 15;
   }
 
   private llenarHorario(): void {
@@ -78,21 +78,20 @@ export class CuadroComponent implements OnInit {
           const inicio = this.parsearHora(horario[`${diaProp}Inicio`]);
           const fin = this.parsearHora(horario[`${diaProp}Fin`]);
 
-          this.horario.forEach(intervalo => {
+          for (let i = 0; i < this.horario.length; i++) {
+            const intervalo = this.horario[i];
             const hora = this.parsearHora(intervalo.hora);
-            if (hora >= inicio && hora < fin) {
+            if (hora >= inicio && hora < fin + 15) {  // Cambiado de 'fin' a 'fin + 15'
               const teamInfo = `${horario.team.categoryType.categoryName} ${horario.team.name} ${horario.team.levelLeague}`;
               if (intervalo.dias[index]) {
                 // Si ya hay un equipo en esta celda, concatenar el teamInfo
-                intervalo.dias[index].teamInfos.push(teamInfo);
+                intervalo.dias[index] += `, ${teamInfo}`;
               } else {
                 // Si la celda está vacía, inicializarla con el teamInfo
-                intervalo.dias[index] = {
-                  teamInfos: [teamInfo]
-                };
+                intervalo.dias[index] = teamInfo;
               }
             }
-          });
+          }
         }
       });
     });
@@ -130,6 +129,15 @@ export class CuadroComponent implements OnInit {
         break;
       case 1:
         this.router.navigate(['/dashboard/info-jugadores', this.clubId]);
+        break;
+      case 2:
+        this.router.navigate(['/dashboard/estadisticas-entrenadores-club', this.clubId]);
+        break;
+      case 3:
+        this.router.navigate(['/dashboard/estadisticas-equipos-club', this.clubId]);
+        break;
+      case 4:
+        this.router.navigate(['/dashboard/estadisticas-jugadores-club', this.clubId]);
         break;
     }
   }
