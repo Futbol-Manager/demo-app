@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { PlayerEstadistica } from 'src/app/core/services/player/player.model';
+import * as $ from 'jquery';
 
 @Component({
   selector: 'app-estadisticas-jugadores-club',
@@ -60,7 +61,7 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
           let list = (resp.data as { listDto: PlayerEstadistica[] }).listDto;
           // Mapea los datos bajo 'data' a instancias del modelo Team
           this.players = list; //.map((post: PostPartido) => new PostPartido(post));
-          this.totalMatchs = resp.data.matchs;
+          //this.totalMatchs = resp.data.matchs;
           // Inicializar el DataTable después de cargar los datos
           this.inicializarDataTable();
           this.datosCargados = true;

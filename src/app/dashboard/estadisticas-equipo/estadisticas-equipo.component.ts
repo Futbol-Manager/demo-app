@@ -484,8 +484,6 @@ export class EstadisticasEquipoComponent implements OnInit {
     // Obtener los primeros 5 resultados que realmente son los ultimos
     const ultimosResultados = this.partidos.slice(0, 5).map(partido => partido.resultado).reverse();
 
-
-
     for (let partido of partidos) {
       // Aquí dentro del bucle, puedes acceder a cada elemento de la lista como "partido"
       switch (partido.resultado) {

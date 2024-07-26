@@ -75,7 +75,6 @@ export class EstadisticasJugadoresComponent implements OnInit {
         console.error('Error al cargar el listado de equipos', error);
       }
     );
-
   }
 
   // Método para inicializar el DataTable
