@@ -46,7 +46,7 @@
               <div class="col-md-6 mb-3">
                 <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
                 <div class="d-flex align-items-end">
-                  <button type="button" class="form-control btn btn-primary" (click)="openModalHorario()">Pulsa para poner el horario</button>
+                  <button [attr.disabled]="profileId === 2 ? true : null" type="button" class="form-control btn btn-primary" (click)="openModalHorario()">Pulsa para poner el horario</button>
                 </div>
               </div>
             </div>

@@ -309,7 +309,8 @@ export class TrainerComponent implements OnInit {
       nombrePadre: '', 
       dniPadre: '', 
       nombreMadre: '', 
-      dniMadre: ''
+      dniMadre: '',
+      posicionDos: ''
     };
   }
 

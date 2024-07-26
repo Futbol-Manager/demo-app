@@ -90,9 +90,6 @@ export class InfoJugadoresComponent implements OnInit {
 
     this.applyNameFilter();
   }
-  normalizeText(text: string): string {
-    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  }
 
   applyFilter(): void {
     const filter = this.normalizeText(this.playerSearch);
@@ -113,6 +110,10 @@ export class InfoJugadoresComponent implements OnInit {
         (player.emailMadre && this.normalizeText(player.emailMadre).includes(filter))
       );
     });
+  }  
+  
+  normalizeText(text: string): string {
+    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   }
 
   // Método para filtrar jugadores por nombre

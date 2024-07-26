@@ -350,7 +350,8 @@ export class PlayerComponent implements OnInit {
       nombrePadre: '',
       dniPadre: '',
       nombreMadre: '',
-      dniMadre: ''
+      dniMadre: '',
+      posicionDos: ''
     };
   }
 

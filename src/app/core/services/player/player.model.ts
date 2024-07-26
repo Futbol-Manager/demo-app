@@ -140,6 +140,7 @@ export class Player {
   dniPadre: string;
   nombreMadre: string;
   dniMadre: string;
+  posicionDos: string;
 
   constructor(object: any) {
     this.playerId = object.playerId || 0;
@@ -205,6 +206,7 @@ export class Player {
     this.dniPadre = object.dniPadre || '';
     this.nombreMadre = object.nombreMadre || '';
     this.dniMadre = object.dniMadre || '';
+    this.posicionDos = object.posicionDos || '';
   }
 }
 
