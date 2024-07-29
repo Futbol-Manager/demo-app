@@ -13,6 +13,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from 'src/app/core/services/player/respuestas.model';
 import { GolPostPartido } from 'src/app/core/services/team/team.model';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
@@ -469,6 +470,7 @@ export class CalendarioComponent implements OnInit {
   showAlert: boolean = false;
   showAlert2: boolean = false;
   categoryTeam = 0;
+  subirTarea = 0;
 
   constructor(
     private router: Router,
@@ -480,6 +482,7 @@ export class CalendarioComponent implements OnInit {
     private teamService: TeamService,
     private cdr: ChangeDetectorRef,
     private loginService: LoginService,
+    private snackBar: MatSnackBar,
   ) {
   }
 
@@ -762,7 +765,7 @@ export class CalendarioComponent implements OnInit {
 
     this.nuevaTarea.work = work;
     // Llamada al servicio para crear el equipo
-    this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea,).subscribe(
+    this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea, this.subirTarea).subscribe(
       (response) => {
         // Agregar la nueva tarea a la lista de tareas del entrenamiento
         this.trainingSession.tasks.push(response.data);
@@ -1796,5 +1799,22 @@ export class CalendarioComponent implements OnInit {
       this.showAlert2 = false;
     }, 2000);
   }
+
+  toggleChangeSubirTarea(actualValue: number) {
+    const nuevoValor = actualValue === 0 ? 1 : 0;  
+    const confirmacion = confirm('AVISO: Al activar esta opción, su tarea de entrenamiento será pública y visible para otros entrenadores. ' +
+      'Cualquier dato ingresado será accesible. No está permitido publicar información, datos o imágenes con derechos de autor sin el permiso del autor. ' +
+      'Cualquier contenido que infrinja esta norma será eliminado. ¿Estás seguro?');
+  
+    if (confirmacion) {
+      this.subirTarea = nuevoValor;
+    } else {
+      // Si el usuario cancela, restablece el valor original del switch
+      setTimeout(() => {
+        (document.getElementById('subirTarea') as HTMLInputElement).checked = actualValue === 1;
+      }, 0);
+    }
+  }
+  
 
 }

@@ -132,7 +132,7 @@
                   title="Editar cuota del jugador"></i>
                 <i class="bi bi-wallet2 ms-2" style="cursor: pointer;" (click)="openModalPago(player, i)"
                   title="Introducir un pago"></i>
-                <i class="bi bi-clock-history ms-2" style="cursor: pointer;" (click)="openModalVerPagosPlayer(player)"
+                <i class="bi bi-clock-history ms-2" style="cursor: pointer;" (click)="openModalVerPagosPlayer(player, i)"
                   title="Ver histoial de pagos"></i>
               </td>
             </tr>
@@ -878,6 +878,7 @@
                   <th>Fecha</th>
                   <th>Método</th>
                   <th>Comentario</th>
+                  <th>Devolver</th>
                 </tr>
               </thead>
               <tbody>
@@ -886,6 +887,12 @@
                   <td>{{ pago.fecha }}</td>
                   <td>{{ pago.metodo }}</td>
                   <td>{{ pago.comentario }}</td>
+                  <td>
+                    <button *ngIf="!pago.cantidad.includes('-')" class="btn btn-warning" title="Devolver pago"
+                        (click)="confirmReturnPay(pago)">
+                        <span class="bi bi-arrow-counterclockwise btn-danger"></span>
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>

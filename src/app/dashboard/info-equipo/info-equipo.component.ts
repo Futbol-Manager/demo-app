@@ -105,9 +105,7 @@ export class InfoEquipoComponent implements OnInit {
 
   toggleDiaOkDesactivar(property: string, value: number) {
     this.diasTeam[property] = value === 0 ? 1 : 0;
-    //this.updateRopaClub(this.diasTeam);
-    // Aquí puedes añadir cualquier otra lógica necesaria
-    console.log(`${property} actualizada a ${value}`);
+    //console.log(`${property} actualizada a ${value}`);
   }
 
   openModalHorario(): void {

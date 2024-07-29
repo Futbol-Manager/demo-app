@@ -464,7 +464,8 @@ export class ContabilidadComponent implements OnInit {
     this.showModalAgregarPago = false;
   }
 
-  openModalVerPagosPlayer(player: any) {
+  openModalVerPagosPlayer(player: any, index: number) {
+    this.indexPlayerSelected = index;
     //this.playerSelected = player;
     this.clubService.getHistoryPagosPlayer(this.clubId, player.playerId, player.temporada).subscribe(
       (response: Response) => {
@@ -496,7 +497,7 @@ export class ContabilidadComponent implements OnInit {
           //actualizamos los campos de pagado y restante
           this.listHCP[this.indexPlayerSelected].pagado = (Number(this.listHCP[this.indexPlayerSelected].pagado) + Number(this.agregarPagoPlayer.cantidad));
           this.listHCP[this.indexPlayerSelected].restante = (Number(this.listHCP[this.indexPlayerSelected].cuotaClub) - Number(this.listHCP[this.indexPlayerSelected].pagado));
-          this.agregarPagoPlayer = new HostoryPagosPlayer({});
+          //this.agregarPagoPlayer = new HostoryPagosPlayer({});
           this.guardar();
           this.recalcular = true;
         } else {
@@ -669,6 +670,35 @@ export class ContabilidadComponent implements OnInit {
       // Manejar el error de forma adecuada (opcional)
       // Por ejemplo, mostrar un mensaje de alerta al usuario
     }
+  }
+
+  confirmReturnPay(pago: any) {
+    console.log(pago);
+    const confirmacion = confirm('Se creará un registro para restar esta cantidad con la fecha de hoy. ¿Estás seguro?');
+
+    if (confirmacion) {
+      this.returnPay(pago);
+    }
+  }
+
+  returnPay(pago: any) {
+    this.clubService.devolverHistoryPagosPlayer(pago).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          setTimeout(() => {
+            this.listHCP[this.indexPlayerSelected].pagado = response.data.pagado;
+            this.listHCP[this.indexPlayerSelected].restante = response.data.restante;
+          }, 1000);
+          this.showModalVerHistorialPagosPlayer = false;
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
   }
 }
 

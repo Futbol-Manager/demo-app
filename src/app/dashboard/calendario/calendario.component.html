@@ -2920,12 +2920,19 @@
                 <textarea class="form-control" id="video" rows="3" [(ngModel)]="nuevaTarea.video"
                   name="video"></textarea>
               </div>
-              <div class="mb-3 text-end">
-                <!-- Agregar más campos de tarea según sea necesario -->
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" (click)="toggleAddTaskForm()"
-                  class="btn btn-danger">Cancelar</button>
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
-                  class="btn btn-custom">Crear Tarea</button>
+              <div class="mb-3 d-flex align-items-center justify-content-between">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="subirTarea" [checked]="subirTarea === 1"
+                    (change)="toggleChangeSubirTarea(subirTarea)">
+                  <label class="form-check-label">Subir tarea a la nube</label>
+                </div>
+                <div>
+                  <!-- Agregar más campos de tarea según sea necesario -->
+                  <button *ngIf="this.usuarioActual!.profileType.profileId === 2" (click)="toggleAddTaskForm()"
+                    class="btn btn-danger">Cancelar</button>
+                  <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
+                    class="btn btn-custom">Crear Tarea</button>
+                </div>
               </div>
             </form>
             <hr>

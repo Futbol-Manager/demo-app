@@ -106,7 +106,7 @@ export class TrainingService {
     }
 
     // Método para crear o actualizar un equipo
-    createUpdateTask(trainingId: string, task: Task): Observable<Response> {
+    createUpdateTask(trainingId: string, task: Task, subirTarea : number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente
@@ -117,7 +117,7 @@ export class TrainingService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `training/createupdatetask/${trainingId}`;
+            const url: string = environment.apiUrl + `training/createupdatetask/${trainingId}/${subirTarea}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.post<Response>(url, task, { headers });
