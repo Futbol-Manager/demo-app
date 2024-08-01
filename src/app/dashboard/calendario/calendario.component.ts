@@ -619,7 +619,7 @@ export class CalendarioComponent implements OnInit {
     this.trainingSession.daySession = this.daySession;
     this.trainingService.createUpdateTrainingSession(this.teamId.toString(), this.trainingSession).subscribe(
       (response) => {
-        console.log('Sesión de entrenamiento guardada con éxito:', response);
+        //console.log('Sesión de entrenamiento guardada con éxito:', response);
         // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
         this.getListaEntrenamientos();
         // Cerrar el modal después de crear el equipo
@@ -685,7 +685,7 @@ export class CalendarioComponent implements OnInit {
           // Mapea los datos bajo 'data' a instancias del modelo Team
           this.listMatchPreparation = response.data.map((match: MatchPreparation) => new MatchPreparation(match));
           // Lógica para obtener o generar la información del calendario
-          this.generarCalendarioV2(new Date());
+          this.generarCalendarioV2(this.mesActual);
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }

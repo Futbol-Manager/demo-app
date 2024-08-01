@@ -310,7 +310,11 @@ export class TrainerComponent implements OnInit {
       dniPadre: '', 
       nombreMadre: '', 
       dniMadre: '',
-      posicionDos: ''
+      posicionDos: 'Sin definir',
+      email: '',
+      nacionalidad: '',
+      direccion: '',
+      municipio: ''
     };
   }
 

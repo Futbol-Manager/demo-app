@@ -291,25 +291,32 @@ body {
   justify-content: center;
   text-align: center;
   color: white;
-  text-decoration: none !important; /* Quita el subrayado por defecto */
-  position: relative; /* Necesario para el subrayado personalizado */
+  text-decoration: none !important;
+  /* Quita el subrayado por defecto */
+  position: relative;
+  /* Necesario para el subrayado personalizado */
 }
 
 .submenu a:link,
 .submenu a:visited,
 .submenu a:hover,
 .submenu a:active {
-  text-decoration: none !important; /* Asegura que no haya subrayado en ningún estado del enlace */
-  color: white; /* Asegura que el color del texto sea blanco en todos los estados */
+  text-decoration: none !important;
+  /* Asegura que no haya subrayado en ningún estado del enlace */
+  color: white;
+  /* Asegura que el color del texto sea blanco en todos los estados */
 }
 
 .submenu a::after {
   content: "";
   position: absolute;
   width: 100%;
-  height: 2px; /* Grosor del subrayado */
-  background-color: #22BF63; /* Color del subrayado */
-  bottom: -2px; /* Posición del subrayado */
+  height: 2px;
+  /* Grosor del subrayado */
+  background-color: #22BF63;
+  /* Color del subrayado */
+  bottom: -2px;
+  /* Posición del subrayado */
   left: 0;
   transform: scaleX(0);
   transform-origin: bottom right;
@@ -335,4 +342,26 @@ body {
   .submenu span {
     display: none;
   }
+}
+
+/* Estilo por defecto para los inputs */
+.custom-input {
+  border: 2px solid #22bf63;
+  /* Color verde para los bordes */
+  border-radius: 4px;
+  /* Bordes redondeados */
+  padding: 8px;
+  /* Relleno interno */
+  transition: border-color 0.3s;
+  /* Transición suave para el cambio de borde */
+}
+
+/* Estilo para los inputs cuando están en foco */
+.custom-input:focus {
+  border-color: #145724;
+  /* Verde oscuro cuando está enfocado */
+  outline: none;
+  /* Elimina el borde de enfoque predeterminado */
+  box-shadow: 0 0 5px rgba(30, 126, 52, 0.5);
+  /* Sombra para un efecto visual */
 }

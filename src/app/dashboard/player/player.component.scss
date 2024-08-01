@@ -1,71 +1,91 @@
 /* styles.scss */
 .card {
-    position: relative;
-    display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    -ms-flex-direction: column;
-    flex-direction: column;
-    min-width: 0;
-    color: #6c757d;
-    word-wrap: break-word;
-    background-color: #fff;
-    background-clip: border-box;
-    border: 0px solid #dee2e6;
-    border-radius: 0.25rem;box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
-  }
-  
-  .card-title {
-    font-weight: bold;
-  }
-  
-  .card-text {
-    font-size: 14px;
-  }
-  
-  .btn-danger {
-    margin-right: 10px;
-  }
-  
-  .img-half-size {
-    width: 50%;
-    height: auto;
-  }
-  
-  .bg-light-green {
-    background: linear-gradient(270deg, #5ae8c4, #33a7db);
-    background-size: 400% 400%;
-  }
-  
-  .btn-width {
-    width: 100%;
-  }
-  
-  .modal-content {
-    background-size: 400% 400%;
-  }
+  position: relative;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  min-width: 0;
+  color: #6c757d;
+  word-wrap: break-word;
+  background-color: #fff;
+  background-clip: border-box;
+  border: 0px solid #dee2e6;
+  border-radius: 0.25rem;
+  box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
+}
 
-  table {
-    width: 100%;
-    /* Ajusta según sea necesario */
-    border-collapse: collapse;
-    /* Para eliminar espacios entre celdas */
+.card-title {
+  font-weight: bold;
+}
+
+.card-text {
+  font-size: 14px;
+}
+
+.btn-danger {
+  margin-right: 10px;
+}
+
+.img-half-size {
+  width: 50%;
+  height: auto;
+}
+
+.bg-light-green {
+  background: linear-gradient(270deg, #5ae8c4, #33a7db);
+  background-size: 400% 400%;
+}
+
+.btn-width {
+  width: 100%;
+}
+
+.modal-content {
+  background-size: 400% 400%;
+}
+
+table {
+  width: 100%;
+  /* Ajusta según sea necesario */
+  border-collapse: collapse;
+  /* Para eliminar espacios entre celdas */
 }
 
 th,
 td {
-    border: 1px solid black;
-    /* Opcional: para añadir bordes a las celdas */
-    text-align: center;
-    /* Centra horizontalmente */
-    vertical-align: middle;
-    /* Centra verticalmente */
-    padding: 10px;
-    /* Opcional: añade un poco de espacio alrededor del contenido */
-    height: 50px;
-    /* Ajusta la altura según sea necesario */
+  border: 1px solid black;
+  /* Opcional: para añadir bordes a las celdas */
+  text-align: center;
+  /* Centra horizontalmente */
+  vertical-align: middle;
+  /* Centra verticalmente */
+  padding: 10px;
+  /* Opcional: añade un poco de espacio alrededor del contenido */
+  height: 50px;
+  /* Ajusta la altura según sea necesario */
 }
 
-  
-  
-  
+/* Estilo básico para el input file */
+input#file-upload-button {
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+  background-color: #28a745;
+  /* Color de fondo verde */
+  color: white;
+  /* Color del texto */
+  border: 2px solid #28a745;
+  /* Borde del mismo color que el fondo */
+  border-radius: 4px;
+  /* Bordes redondeados */
+  font-size: 14px;
+  /* Tamaño de fuente */
+}
+
+/* Cambiar el fondo al pasar el mouse */
+input#file-upload-button:hover {
+  background-color: #218838;
+  border-color: #218838;
+}

@@ -141,6 +141,10 @@ export class Player {
   nombreMadre: string;
   dniMadre: string;
   posicionDos: string;
+  email: string;
+  nacionalidad: string;
+  direccion: string;
+  municipio: string;
 
   constructor(object: any) {
     this.playerId = object.playerId || 0;
@@ -207,6 +211,10 @@ export class Player {
     this.nombreMadre = object.nombreMadre || '';
     this.dniMadre = object.dniMadre || '';
     this.posicionDos = object.posicionDos || '';
+    this.email = object.email || '';
+    this.nacionalidad = object.nacionalidad || '';
+    this.direccion = object.direccion || '';
+    this.municipio = object.municipio || '';
   }
 }
 

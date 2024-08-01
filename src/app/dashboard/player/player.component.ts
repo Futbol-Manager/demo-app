@@ -250,6 +250,9 @@ export class PlayerComponent implements OnInit {
   // Método para abrir el modal de creación de equipo
   abrirModalCrearJugador(): void {
     this.inicializePlayer();
+
+    //reiniciar la img
+    this.showPreview = false;
     this.showModal = true;
 
     setTimeout(() => {
@@ -335,7 +338,7 @@ export class PlayerComponent implements OnInit {
       porteroParadas: '50',
       porteroSaques: '50',
       porteroReflejos: '50',
-      especialidades: '50',
+      especialidades: '',
       opinionDelEntrenador: '',
       picturePlayer: '',
       verify: 0,
@@ -351,7 +354,11 @@ export class PlayerComponent implements OnInit {
       dniPadre: '',
       nombreMadre: '',
       dniMadre: '',
-      posicionDos: ''
+      posicionDos: 'Sin definir',
+      email: '',
+      nacionalidad: '',
+      direccion: '',
+      municipio: ''
     };
   }
 
@@ -366,6 +373,7 @@ export class PlayerComponent implements OnInit {
     this.promedioMentalidad();
     this.promedioTiro();
     this.promedioPortero();
+    this.showPreview = false;
     this.showModal = true; // Suponiendo que tienes una variable que controla la visibilidad del modal de edición
 
     setTimeout(() => {
@@ -588,7 +596,7 @@ export class PlayerComponent implements OnInit {
   onSubmit(playerId: number) {
     // Verifica si se ha seleccionado un archivo
     if (this.selectedFile) {
-      console.log('Imagen seleccionada:', this.selectedFile);
+      //console.log('Imagen seleccionada:', this.selectedFile);
 
       this.trainingService.createUpdateImgPlayer(playerId.toString(), this.selectedFile)
         .subscribe(
