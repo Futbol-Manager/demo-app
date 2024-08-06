@@ -115,9 +115,9 @@
   </div>
 </div>
 
-<!-- Modal para la creación de un partido -->
+<!-- Modal para la creación de un entrenamiento o partido -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Crea un entrenamiento o un partido</h5>
@@ -138,24 +138,48 @@
               role="tab" aria-controls="partido" aria-selected="false">Partido</button>
           </li>
         </ul>
+
+
+
         <div class="tab-content" id="myTabContent">
+          <!-- Primera columna principal 
+          <div class="row text-center">
+            <div class="col-12 col-md-4 mt-3">
+              <div class="row mt-3">
+                <div class="col-12 col-md-12">
+                  <label><strong>Datos del Jugador:</strong></label>
+                </div>
+              </div>
+            </div>
+          </div>-->
+
+
+
           <div class="tab-pane fade show active" id="entrenamiento" role="tabpanel" aria-labelledby="entrenamiento-tab">
             <form (ngSubmit)="crearEntrenamiento()">
-              <div class="mb-3">
-                <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
-                <textarea class="form-control" id="objectiveSession" rows="5" name="objectiveSession"
-                  [(ngModel)]="trainingSession.objectiveSession"></textarea>
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-6 mt-3">
+                  <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
+                  <textarea class="form-control custom-input" id="objectiveSession" rows="5" name="objectiveSession"
+                    [(ngModel)]="trainingSession.objectiveSession"></textarea>
+                </div>
+                <div class="col-12 col-md-6 mt-3">
+                  <label for="warmUp" class="form-label">Calentamiento:</label>
+                  <textarea class="form-control custom-input" id="warmUp" rows="5" name="warmUp"
+                    [(ngModel)]="trainingSession.warmUp"></textarea>
+                </div>
               </div>
-              <div class="mb-3">
-                <label for="warmUp" class="form-label">Calentamiento:</label>
-                <textarea class="form-control" id="warmUp" rows="5" name="warmUp"
-                  [(ngModel)]="trainingSession.warmUp"></textarea>
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-12 text-end">
+                  <!-- Botón para guardar el nuevo entrenamiento -->
+                  <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
+                    class="btn btn-custom float-end">Guardar</button>
+                </div>
               </div>
-              <!-- Botón para guardar el nuevo entrenamiento -->
-              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
-                class="btn btn-custom float-end">Guardar</button>
             </form>
           </div>
+
+          <!-- pestaña crear un partido -->
           <div class="tab-pane fade" id="partido" role="tabpanel" aria-labelledby="partido-tab">
             <form (ngSubmit)="crearPartido()">
               <div class="mb-3">
@@ -295,8 +319,8 @@
             (click)="printDivPostPartido('divPrePArtdo')">Imprimir</button>
           <button type="button" class="btn btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
           <div class="form-check form-switch" *ngIf="this.usuarioActual!.profileType.profileId === 2">
-            <input class="form-check-input" type="checkbox" id="toggleVisible" [checked]="togglePartidoVisible === 1"
-              title="Si está no visible el jugador no lo verá"
+            <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
+              [checked]="togglePartidoVisible === 1" title="Si está no visible el jugador no lo verá"
               (change)="onChangeTogglePartido($event, match.matchPreparationId)">
             <label class="form-check-label">No visible / Visible</label>
           </div>
@@ -2795,7 +2819,7 @@
 
 <!-- Modal para mostrar información del entrenamiento -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalEntrenamiento}">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-xl" role="document">
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
@@ -2818,118 +2842,119 @@
           <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalEntrenamiento()"></button>
         </div>
         <div class="modal-body">
-          <div class="mb-3">
-            <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
-            <textarea class="form-control" id="objectiveSession" rows="5" name="objectiveSession"
-              [(ngModel)]="trainingSession.objectiveSession"></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="warmUp" class="form-label">Calentamiento:</label>
-            <textarea class="form-control" id="warmUp" rows="5" name="warmUp"
-              [(ngModel)]="trainingSession.warmUp"></textarea>
-          </div>
-          <div class="mb-3 d-flex align-items-center justify-content-between">
-            <div class="form-check form-switch" *ngIf="this.usuarioActual!.profileType.profileId === 2">
-              <input class="form-check-input" type="checkbox" id="toggleVisible" [checked]="toggleVisible === 1"
-                title="Si está no visible el jugador no lo verá"
-                (change)="onChangeToggle($event,trainingSession.trainingSessionId)">
-              <label class="form-check-label">No visible / Visible</label>
+
+
+          <!-- modal modificar entrenamiento -->
+          <div class="row text-center mt-3">
+            <div class="col-12 col-md-6 mt-3">
+              <textarea class="form-control custom-input" id="objectiveSession" rows="5" name="objectiveSession"
+                [(ngModel)]="trainingSession.objectiveSession"></textarea>
             </div>
-            <div>
+            <div class="col-12 col-md-6 mt-3 ">
+              <textarea class="form-control custom-input" id="warmUp" rows="5" name="warmUp"
+                [(ngModel)]="trainingSession.warmUp"></textarea>
+            </div>
+          </div>
+          <div class="row text-center align-items-center mt-3">
+            <div class="col-12 col-md-6 mt-3 text-start">
+              <div class="form-check form-switch" *ngIf="this.usuarioActual!.profileType.profileId === 2">
+                <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
+                  [checked]="toggleVisible === 1" title="Si está no visible el jugador no lo verá"
+                  (change)="onChangeToggle($event,trainingSession.trainingSessionId)">
+                <label class="form-check-label">No visible / Visible</label>
+              </div>
+            </div>
+            <div class="col-12 col-md-3 mt-3">
               <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger me-2"
                 (click)="eliminarEntrenamiento()">Eliminar
                 Entrenamiento</button>
+            </div>
+            <div class="col-12 col-md-3 mt-3">
               <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-custom"
                 (click)="crearEntrenamiento()">Guardar Entrenamiento</button>
             </div>
           </div>
-          <div class="mb-3" style="visibility: hidden;">
-            <textarea class="form-control" rows="1"></textarea>
-          </div>
+
           <hr>
-          <!-- Agrega más campos del entrenamiento si es necesario -->
 
           <!-- Agregar formulario para crear tareas -->
           <div *ngIf="showAddTaskForm">
             <form (submit)="crearTarea()">
-              <div class="mb-3">
-                <label for="slogans" class="form-label">Título:</label>
-                <textarea class="form-control" id="slogans" rows="5" [(ngModel)]="nuevaTarea.slogans"
-                  name="slogans"></textarea>
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <input class="form-control custom-input" id="slogans" rows="5" [(ngModel)]="nuevaTarea.slogans"
+                    name="slogans" placeholder="Título" />
+                </div>
+                <div class="col-12 col-md-2 mt-3 ">
+                  <input class="form-control custom-input" id="worktime" rows="5" [(ngModel)]="nuevaTarea.worktime"
+                    name="worktime" placeholder="Tiempo" />
+                </div>
+                <div class="col-12 col-md-2 mt-3 ">
+                  <input class="form-control custom-input" id="space" rows="5" [(ngModel)]="nuevaTarea.space"
+                    name="space" placeholder="Espacio" />
+                </div>
               </div>
-              <div class="mb-3">
-                <label for="work">Tipo de Trabajo:</label>
-                <div>
-                  <label for="category">Categoría:</label>
-                  <select class="form-control" id="category" [(ngModel)]="selectedCategory" name="category"
-                    (change)="onSelectCategory($event)">
-                    <option value="">Pulsa para cargar las categorias</option>
-                    <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="description" rows="5"
+                    [(ngModel)]="nuevaTarea.description" name="description" placeholder="Descripción"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3 ">
+                  <textarea class="form-control custom-input" id="rules" rows="5" [(ngModel)]="nuevaTarea.rules"
+                    name="rules" placeholder="Reglas"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3 ">
+                  <textarea class="form-control custom-input" id="variants" rows="5" [(ngModel)]="nuevaTarea.variants"
+                    name="variants" placeholder="Variantes"></textarea>
+                </div>
+              </div>
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <input class="form-control custom-input" id="material" [(ngModel)]="nuevaTarea.material"
+                    name="material" placeholder="Material" />
+                </div>
+                <div class="col-12 col-md-4 mt-3 ">
+                  <select class="form-control custom-input" id="estrategia" [(ngModel)]="nuevaTarea.estrategia"
+                    name="estrategia">
+                    <option value="-">Selecciona estrategía...</option>
+                    <option *ngFor="let estrategia of estrategias" [value]="estrategia">{{ estrategia }}</option>
                   </select>
                 </div>
-                <div *ngIf="selectedCategory">
-                  <label for="subcategory">Subcategoría:</label>
-                  <select class="form-control" id="subcategory" [(ngModel)]="selectedSubcategory" name="subcategory"
-                    (change)="onSelectSubcategory($event)">
-                    <option value="">Seleccionar subcategoría</option>
-                    <option *ngFor="let subcategory of getSubcategories()" [value]="subcategory.name">{{
-                      subcategory.name }}</option>
-                  </select>
-                </div>
-                <div *ngIf="selectedSubcategory">
-                  <label for="option">Opción:</label>
-                  <select class="form-control" id="option" [(ngModel)]="selectedOption" name="option"
-                    (change)="onSelectOptionSubcategory($event)">
-                    <option value="">Seleccionar opción</option>
-                    <option *ngFor="let option of getOptions()" [value]="option">{{ option }}</option>
+                <div class="col-12 col-md-4 mt-3 ">
+                  <select class="form-control custom-input" id="intencion" [(ngModel)]="nuevaTarea.intencion"
+                    name="intencion">
+                    <option value="-">Selecciona intención...</option>
+                    <option *ngFor="let intencion of intenciones" [value]="intencion">{{ intencion }}</option>
                   </select>
                 </div>
               </div>
-              <div class="mb-3">
-                <label for="description" class="form-label">Descripción:</label>
-                <textarea class="form-control" id="description" rows="5" [(ngModel)]="nuevaTarea.description"
-                  name="description"></textarea>
-              </div>
-              <div class="mb-3">
-                <label for="rules" class="form-label">Reglas:</label>
-                <textarea class="form-control" id="rules" rows="5" [(ngModel)]="nuevaTarea.rules"
-                  name="rules"></textarea>
-              </div>
-              <div class="mb-3">
-                <label for="variants" class="form-label">Variantes:</label>
-                <textarea class="form-control" id="variants" rows="5" [(ngModel)]="nuevaTarea.variants"
-                  name="variants"></textarea>
-              </div>
-              <div class="mb-3">
-                <label for="worktime" class="form-label">Tiempo de Trabajo:</label>
-                <textarea class="form-control" id="worktime" rows="5" [(ngModel)]="nuevaTarea.worktime"
-                  name="worktime"></textarea>
-              </div>
-              <div class="mb-3">
-                <label for="space" class="form-label">Espacio:</label>
-                <textarea class="form-control" id="space" rows="5" [(ngModel)]="nuevaTarea.space"
-                  name="space"></textarea>
-              </div>
-              <div class="mb-3">
-                <label for="material" class="form-label">Material:</label>
-                <textarea class="form-control" id="material" rows="5" [(ngModel)]="nuevaTarea.material"
-                  name="material"></textarea>
-              </div>
-              <div class="mb-3">
-                <label for="video" class="form-label">Video YouTube:</label>
-                <textarea class="form-control" id="video" rows="3" [(ngModel)]="nuevaTarea.video"
-                  name="video"></textarea>
-              </div>
-              <div class="mb-3 d-flex align-items-center justify-content-between">
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" id="subirTarea" [checked]="subirTarea === 1"
-                    (change)="toggleChangeSubirTarea(subirTarea)">
-                  <label class="form-check-label">Subir tarea a la nube</label>
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="video" rows="3" [(ngModel)]="nuevaTarea.video"
+                    name="video" placeholder="Video YouTube"></textarea>
                 </div>
-                <div>
-                  <!-- Agregar más campos de tarea según sea necesario -->
+                <div class="col-12 col-md-4 mt-3 ">
+                </div>
+                <div class="col-12 col-md-4 mt-3 ">
+                </div>
+              </div>
+
+              <div class="row text-center align-items-center mt-3">
+                <div class="col-12 col-md-6 mt-3 text-start">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input custom-input" type="checkbox" id="subirTarea"
+                      [checked]="subirTarea === 1" (change)="toggleChangeSubirTarea(subirTarea)">
+                    <label class="form-check-label">Subir tarea a la nube</label>
+                  </div>
+                </div>
+                <div class="col-12 col-md-3 mt-3 text-start">
                   <button *ngIf="this.usuarioActual!.profileType.profileId === 2" (click)="toggleAddTaskForm()"
                     class="btn btn-danger">Cancelar</button>
+                </div>
+                <div class="col-12 col-md-3 mt-3 text-end">
                   <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
                     class="btn btn-custom">Crear Tarea</button>
                 </div>
@@ -2959,7 +2984,8 @@
                   <!-- Contenido de la tarea 
                   <p>ID: {{ tarea.taskId }}</p> -->
                   <div [id]="'PrintTarea_' + i">
-                    <p><b>Trabajo:</b> {{ tarea.work }}</p>
+                    <p><b>Estrategia:</b> {{ tarea.estrategia }}</p>
+                    <p><b>Intención:</b> {{ tarea.intencion }}</p>
                     <p><b>Descripción:</b> {{ tarea.description }}</p>
                     <p><b>Reglas:</b> {{ tarea.rules }}</p>
                     <p><b>Variantes:</b> {{ tarea.variants }}</p>
@@ -2998,16 +3024,24 @@
               </div>
             </div>
           </div>
+
+          <div class="row text-center align-items-center mt-3">
+            <div class="col-12 col-md-6 mt-3 text-start">
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
+                class="form-control btn btn-custom mt-3" [disabled]="showAddTaskForm"
+                (click)="toggleAddTaskForm()">Agregar
+                Tarea</button>
+            </div>
+            <div class="col-12 col-md-6 mt-3 text-start">
+              <button type="button" class="form-control btn btn-custom mt-3" (click)="verTienda()"
+                *ngIf="!viewShop && this.usuarioActual!.profileType.profileId === 2">Nube de
+                Tareas</button>
+              <button type="button" class="form-control btn btn-danger mt-3" (click)="cerrarTienda()"
+                *ngIf="viewShop && this.usuarioActual!.profileType.profileId === 2">Cerrar
+                Nube de Tareas</button>
+            </div>
+          </div>
           <!-- Botón para agregar tarea -->
-          <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-custom mt-3"
-            [disabled]="showAddTaskForm" (click)="toggleAddTaskForm()">Agregar
-            Tarea</button>
-          <button type="button" class="btn btn-custom mt-3" (click)="verTienda()"
-            *ngIf="!viewShop && this.usuarioActual!.profileType.profileId === 2">Nube de
-            Tareas</button>
-          <button type="button" class="btn btn-custom mt-3" (click)="cerrarTienda()"
-            *ngIf="viewShop && this.usuarioActual!.profileType.profileId === 2">Cerrar
-            Nube de Tareas</button>
           <!-- Modal para abrir listado de tareas de la tienda-->
           <app-shop [trainingId]="trainingId" (tareaDescargada)="tareaDescargada($event)" *ngIf="viewShop">
           </app-shop>

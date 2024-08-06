@@ -29,6 +29,8 @@ export class Task {
     video: string;
     collapsed: boolean;
     imagenBoard: string;
+    estrategia: string;
+    intencion: string;
   
     constructor() {
       this.taskId = 0;
@@ -43,6 +45,8 @@ export class Task {
       this.video = '';
       this.imagenBoard = '';
       this.collapsed = false; // Inicialmente, la tarea está contraída
+      this.estrategia = '';
+      this.intencion = '';
     }
   }
   

@@ -472,6 +472,20 @@ export class CalendarioComponent implements OnInit {
   categoryTeam = 0;
   subirTarea = 0;
 
+  estrategias: string[] = [
+    'Acciones a Balón Barado', 'Acciones Combinadas', 'Circuito', 'Conservación', 'Juego Adaptado al Fútbol', 'Juego de Posición',
+    'Juego de Posición Específico', 'Oleadas', 'Partidos', 'Posesión', 'Rueda de Pases', 'Situaciones Reducidas', 'Trabajo de Líneas'
+  ];
+
+  intenciones: string[] = [
+    '1 vs 1', '2 vs 1', '2 vs 2', '3 vs 3', '4 vs 4', 'ABP Defensiva', 'ABP Ofensiva', 'Amplitud', 'Apoyos', 'Ataque Organizado',
+    'Cobertura', 'Conservar', 'Contraataque', 'Defensa Inicio de Juego', 'Defensa de Juego Directo', 'Defensa Organizada',
+    'Desmarques', 'Dividir', 'Evitar Progresión', 'Fase Defensiva', 'Fase Ofensiva', 'Fijar', 'Finalizar', 'Inicio de Juego',
+    'Juego Directo', 'Mantener', 'Marcaje', 'Orientar', 'Permuta', 'Presionar', 'Primer Atacante', 'Primer Defensor',
+    'Profundidad', 'Progresar', 'Proteger Portería', 'Recuperar', 'Reinicio de Juego', 'Replegar', 'Segundo Atacante',
+    'Segundo Defensor', 'Temporizar', 'Tercer Atacante', 'Tercer Defensor'
+  ];
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -755,15 +769,7 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearTarea(): void {
-    let work = this.cat1;
-    if (this.cat1 !== '') {
-      work = work + ',' + this.cat2
-    }
-    if (this.cat3 !== '') {
-      work = work + ',' + this.cat3
-    }
-
-    this.nuevaTarea.work = work;
+    this.nuevaTarea.work = '';
     // Llamada al servicio para crear el equipo
     this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea, this.subirTarea).subscribe(
       (response) => {
@@ -786,6 +792,10 @@ export class CalendarioComponent implements OnInit {
 
   toggleAddTaskForm(): void {
     this.showAddTaskForm = !this.showAddTaskForm;
+    if (this.showAddTaskForm) {
+      this.nuevaTarea.estrategia = '-';
+      this.nuevaTarea.intencion = '-';
+    }
   }
 
   toggleTask(tarea: Task): void {
@@ -1801,11 +1811,11 @@ export class CalendarioComponent implements OnInit {
   }
 
   toggleChangeSubirTarea(actualValue: number) {
-    const nuevoValor = actualValue === 0 ? 1 : 0;  
+    const nuevoValor = actualValue === 0 ? 1 : 0;
     const confirmacion = confirm('AVISO: Al activar esta opción, su tarea de entrenamiento será pública y visible para otros entrenadores. ' +
       'Cualquier dato ingresado será accesible. No está permitido publicar información, datos o imágenes con derechos de autor sin el permiso del autor. ' +
       'Cualquier contenido que infrinja esta norma será eliminado. ¿Estás seguro?');
-  
+
     if (confirmacion) {
       this.subirTarea = nuevoValor;
     } else {
@@ -1815,6 +1825,6 @@ export class CalendarioComponent implements OnInit {
       }, 0);
     }
   }
-  
+
 
 }
