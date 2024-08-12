@@ -474,7 +474,7 @@
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <span>{{ prenda.label }}</span>
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="{{prenda.property}}"
+                            <input class="form-check-input custom-input" type="checkbox" id="{{prenda.property}}"
                                 [checked]="ropaClub[prenda.property] === 0"
                                 (change)="togglePrendaOkDesactivar(prenda.property, ropaClub[prenda.property])">
                         </div>

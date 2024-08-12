@@ -47,13 +47,13 @@
               <div class="card h-100">
                 <div *ngIf="tarea.imagenBoard">
                   <img [src]="'https://sphairatech.com/images/task-board/' + tarea.imagenBoard" class="card-img-top"
-                    onerror="this.src='https://sphairatech.com/images/task-board/8374140-board.png'" alt="...">
+                    onerror="this.src='https://sphairatech.com/images/task-board/blank.png'" alt="...">
                 </div>
                 <div *ngIf="!tarea.imagenBoard">
-                  <img [src]="'https://sphairatech.com/images/task-board/8374140-board.png'" class="card-img-top"
-                    alt="...">
+                  <img [src]="'https://sphairatech.com/images/task-board/blank.png'" class="card-img-top">
                 </div>
                 <div class="card-body custom-card-body">
+                  <h6 class="card-title">ID: {{ tarea.tasksShopId }}</h6>
                   <h5 class="card-title">{{ tarea.slogans }}</h5>
                   <div class="tags-container">
                     <span class="badge badge-secondary">{{ tarea.estrategia }}</span>

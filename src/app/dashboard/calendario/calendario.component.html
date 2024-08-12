@@ -2918,7 +2918,7 @@
                 <div class="col-12 col-md-4 mt-3 ">
                   <select class="form-control custom-input" id="estrategia" [(ngModel)]="nuevaTarea.estrategia"
                     name="estrategia">
-                    <option value="-">Selecciona estrategía...</option>
+                    <option value="-">Selecciona estrategia...</option>
                     <option *ngFor="let estrategia of estrategias" [value]="estrategia">{{ estrategia }}</option>
                   </select>
                 </div>
@@ -2984,6 +2984,7 @@
                   <!-- Contenido de la tarea 
                   <p>ID: {{ tarea.taskId }}</p> -->
                   <div [id]="'PrintTarea_' + i">
+                    <p>ID: {{ tarea.taskId }}</p>
                     <p><b>Estrategia:</b> {{ tarea.estrategia }}</p>
                     <p><b>Intención:</b> {{ tarea.intencion }}</p>
                     <p><b>Descripción:</b> {{ tarea.description }}</p>
@@ -3003,7 +3004,7 @@
                   </div>
                   <hr>
                   <div *ngIf="this.usuarioActual!.profileType.profileId === 2">
-                    <h4>Puedes crear la tarea en una pizarra y subir despues la imagen</h4>
+                    <h4>Puedes crear la tarea en una pizarra y subir después la imagen</h4>
                     <!-- Botón para abrir el modal -->
                     <button class="btn btn-warning" (click)="openBoardModal()">Abrir pizarra</button> o también puedes
                     <!-- Botón para abrir enlace en una nueva pestaña -->
@@ -3011,7 +3012,7 @@
                     <!-- Agregar más campos de tarea según sea necesario -->
                     <div class="container">
                       <h4>Sube ahora la imagen descargada de tu pizarra</h4>
-                      <form (submit)="onSubmit(tarea.taskId)" enctype="multipart/form-data">
+                      <form (submit)="onSubmit(tarea)" enctype="multipart/form-data">
                         <div class="form-group">
                           <label for="image">Seleccionar imagen:</label>
                           <input type="file" id="image" (change)="onFileSelected($event)">

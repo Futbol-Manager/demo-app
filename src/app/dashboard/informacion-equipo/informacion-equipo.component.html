@@ -160,7 +160,7 @@
           <div class="d-flex align-items-center justify-content-between mb-3">
             <span><strong><u>{{ dia.label }}</u></strong></span>
             <div class="form-check form-switch">
-              <input class="form-check-input" type="checkbox" id="{{dia.property}}"
+              <input class="form-check-input custom-input" type="checkbox" id="{{dia.property}}"
                 [checked]="diasTeam[dia.property] === 1"
                 (change)="toggleDiaOkDesactivar(dia.property, diasTeam[dia.property])">
             </div>

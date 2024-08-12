@@ -106,7 +106,7 @@ export class TrainingService {
     }
 
     // Método para crear o actualizar un equipo
-    createUpdateTask(trainingId: string, task: Task, subirTarea: number): Observable<Response> {
+    createUpdateTask(trainingId: string, task: Task, subirTarea: number, userId: number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente
@@ -117,7 +117,7 @@ export class TrainingService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `training/createupdatetask/${trainingId}/${subirTarea}`;
+            const url: string = environment.apiUrl + `training/createupdatetask/${trainingId}/${subirTarea}/${userId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.post<Response>(url, task, { headers });
@@ -127,7 +127,7 @@ export class TrainingService {
         }
     }
 
-    createUpdateImgTask(taskId: string, file: File): Observable<Response> {
+    createUpdateImgTask(tasksShopId: number, taskId: number, file: File, userId: number): Observable<Response> {
         // Verifica si el archivo está presente
         if (file) {
             // Obtén el token almacenado en localStorage
@@ -144,7 +144,7 @@ export class TrainingService {
                 formData.append('files', file, file.name);
 
                 // Construye la URL para la solicitud
-                const url: string = environment.apiUrl + `training/createupdateimgtask/${taskId}`;
+                const url: string = environment.apiUrl + `training/createupdateimgtask/${tasksShopId}/${taskId}/${userId}`;
 
                 // Realiza la solicitud HTTP con las cabeceras y el cuerpo configurados
                 return this.http.post<Response>(url, formData, { headers });

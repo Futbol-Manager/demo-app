@@ -473,18 +473,21 @@ export class CalendarioComponent implements OnInit {
   subirTarea = 0;
 
   estrategias: string[] = [
-    'Acciones a Balón Barado', 'Acciones Combinadas', 'Circuito', 'Conservación', 'Juego Adaptado al Fútbol', 'Juego de Posición',
+    'Acciones a Balón Parado', 'Acciones Combinadas', 'Circuito', 'Conservación', 'Juego Adaptado al Fútbol', 'Juego de Posición',
     'Juego de Posición Específico', 'Oleadas', 'Partidos', 'Posesión', 'Rueda de Pases', 'Situaciones Reducidas', 'Trabajo de Líneas'
   ];
 
   intenciones: string[] = [
-    '1 vs 1', '2 vs 1', '2 vs 2', '3 vs 3', '4 vs 4', 'ABP Defensiva', 'ABP Ofensiva', 'Amplitud', 'Apoyos', 'Ataque Organizado',
+    '1 vs 1', '2 vs 1', '2 vs 2', '3 vs 3', '4 vs 4', 'ABP Defensiva', 'ABP Ofensiva', 'Amplitud', 'Apoyos', 'Ataque Organizado', 'Ataque-Defensa',
     'Cobertura', 'Conservar', 'Contraataque', 'Defensa Inicio de Juego', 'Defensa de Juego Directo', 'Defensa Organizada',
     'Desmarques', 'Dividir', 'Evitar Progresión', 'Fase Defensiva', 'Fase Ofensiva', 'Fijar', 'Finalizar', 'Inicio de Juego',
     'Juego Directo', 'Mantener', 'Marcaje', 'Orientar', 'Permuta', 'Presionar', 'Primer Atacante', 'Primer Defensor',
     'Profundidad', 'Progresar', 'Proteger Portería', 'Recuperar', 'Reinicio de Juego', 'Replegar', 'Segundo Atacante',
-    'Segundo Defensor', 'Temporizar', 'Tercer Atacante', 'Tercer Defensor'
+    'Segundo Defensor', 'Temporizar', 'Tercer Atacante', 'Tercer Defensor', 
+    'Transición Defensiva','Transición Ofensiva','Transiciones',
   ];
+
+  userId: any = 0;
 
   constructor(
     private router: Router,
@@ -505,6 +508,7 @@ export class CalendarioComponent implements OnInit {
     // Suscríbete al observable del servicio para obtener el usuario actual
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
+      this.userId = user?.userId;
       this.playerIdUserActual = user?.playerId;
       // Suscribirse a los cambios en los parámetros de la URL
       this.route.params.subscribe(params => {
@@ -771,7 +775,7 @@ export class CalendarioComponent implements OnInit {
   crearTarea(): void {
     this.nuevaTarea.work = '';
     // Llamada al servicio para crear el equipo
-    this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea, this.subirTarea).subscribe(
+    this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea, this.subirTarea, this.userId).subscribe(
       (response) => {
         // Agregar la nueva tarea a la lista de tareas del entrenamiento
         this.trainingSession.tasks.push(response.data);
@@ -1068,13 +1072,14 @@ export class CalendarioComponent implements OnInit {
     }
   }
 
-  onSubmit(taskId: number) {
+  onSubmit(task: any) {
+    let taskId = task.taskId;
     // Verifica si se ha seleccionado un archivo
     if (this.selectedFile) {
-      console.log('Imagen seleccionada:', this.selectedFile);
+      //console.log('Imagen seleccionada:', this.selectedFile);
 
       // Llama al método createUpdateImgTask del servicio para subir la imagen
-      this.trainingService.createUpdateImgTask(taskId.toString(), this.selectedFile)
+      this.trainingService.createUpdateImgTask(task.tasksShopId, taskId, this.selectedFile, this.userId)
         .subscribe(
           (response) => {
             // Construir el id completo de la imagen

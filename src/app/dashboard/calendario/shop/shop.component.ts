@@ -14,22 +14,23 @@ export class ShopComponent implements OnInit {
   downloadTask: boolean = false;
 
   estrategias: string[] = [
-    'Acciones a Balón Barado', 'Acciones Combinadas', 'Circuito', 'Conservación', 'Juego Adaptado al Fútbol', 'Juego de Posición',
+    'Acciones a Balón Parado', 'Acciones Combinadas', 'Circuito', 'Conservación', 'Juego Adaptado al Fútbol', 'Juego de Posición',
     'Juego de Posición Específico', 'Oleadas', 'Partidos', 'Posesión', 'Rueda de Pases', 'Situaciones Reducidas', 'Trabajo de Líneas'
   ];
 
   intenciones: string[] = [
-    '1 vs 1', '2 vs 1', '2 vs 2', '3 vs 3', '4 vs 4', 'ABP Defensiva', 'ABP Ofensiva', 'Amplitud', 'Apoyos', 'Ataque Organizado',
+    '1 vs 1', '2 vs 1', '2 vs 2', '3 vs 3', '4 vs 4', 'ABP Defensiva', 'ABP Ofensiva', 'Amplitud', 'Apoyos', 'Ataque Organizado', 'Ataque-Defensa',
     'Cobertura', 'Conservar', 'Contraataque', 'Defensa Inicio de Juego', 'Defensa de Juego Directo', 'Defensa Organizada',
     'Desmarques', 'Dividir', 'Evitar Progresión', 'Fase Defensiva', 'Fase Ofensiva', 'Fijar', 'Finalizar', 'Inicio de Juego',
     'Juego Directo', 'Mantener', 'Marcaje', 'Orientar', 'Permuta', 'Presionar', 'Primer Atacante', 'Primer Defensor',
     'Profundidad', 'Progresar', 'Proteger Portería', 'Recuperar', 'Reinicio de Juego', 'Replegar', 'Segundo Atacante',
-    'Segundo Defensor', 'Temporizar', 'Tercer Atacante', 'Tercer Defensor'
+    'Segundo Defensor', 'Temporizar', 'Tercer Atacante', 'Tercer Defensor', 
+    'Transición Defensiva','Transición Ofensiva','Transiciones',
   ];
 
   estrategia = "-";
   intencion = '-';
-  textSearch = '';;
+  textSearch = '';
 
   constructor(
     private trainingService: TrainingService,

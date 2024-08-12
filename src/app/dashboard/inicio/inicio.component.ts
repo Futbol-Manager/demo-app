@@ -42,11 +42,11 @@ export class InicioComponent implements OnInit {
     });
     this.crearEquipoForm = this.fb.group({
       categoryTypeId: ['', Validators.required],
-      levelLeague: ['',],
+      levelLeague: [''],
       name: [''],
-      objectiveTeam: ['',],
-      trainingDays: ['',],
-      opinionTeam: ['',],
+      objectiveTeam: [''],
+      trainingDays: [''],
+      opinionTeam: [''],
     });
   }
 

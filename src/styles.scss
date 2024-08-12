@@ -366,6 +366,19 @@ body {
   /* Sombra para un efecto visual */
 }
 
+/* Estilo para el switch */
+.form-check-input:checked {
+  background-color: #22bf63;
+  /* Cambia el color de fondo cuando está marcado */
+  border-color: #22bf63;
+  /* Cambia el color del borde cuando está marcado */
+}
+
+.form-check-input:checked:focus {
+  box-shadow: 0 0 5px rgba(30, 126, 52, 0.5);
+  /* Sombra para un efecto visual cuando está enfocado y marcado */
+}
+
 .modal-content {
   border-color: black;
 }
