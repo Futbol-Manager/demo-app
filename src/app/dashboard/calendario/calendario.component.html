@@ -2842,8 +2842,6 @@
           <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalEntrenamiento()"></button>
         </div>
         <div class="modal-body">
-
-
           <!-- modal modificar entrenamiento -->
           <div class="row text-center mt-3">
             <div class="col-12 col-md-6 mt-3">
@@ -2964,62 +2962,46 @@
           </div>
 
           <!-- Mostrar lista de tareas colapsada -->
-          <div class="accordion" *ngIf="trainingSession.tasks && trainingSession.tasks.length > 0">
-            <div class="accordion-item" *ngFor="let tarea of trainingSession.tasks; let i = index">
-              <h2 class="accordion-header d-flex">
-                <button type="button" class="accordion-button" (click)="toggleTask(tarea)">
-                  Tarea: {{ tarea.slogans }}
-                </button>
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-secondary"
-                  (click)="printDiv('PrintTarea_' + i)">
-                  Imprimir
-                </button>
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger"
-                  (click)="deleteTask(tarea)">
-                  Eliminar Tarea
-                </button>
-              </h2>
-              <div [id]="'tarea_' + i" class="accordion-collapse collapse" [ngClass]="{'show': tarea.collapsed}">
-                <div class="accordion-body">
-                  <!-- Contenido de la tarea 
-                  <p>ID: {{ tarea.taskId }}</p> -->
-                  <div [id]="'PrintTarea_' + i">
-                    <p>ID: {{ tarea.taskId }}</p>
-                    <p><b>Estrategia:</b> {{ tarea.estrategia }}</p>
-                    <p><b>Intención:</b> {{ tarea.intencion }}</p>
-                    <p><b>Descripción:</b> {{ tarea.description }}</p>
-                    <p><b>Reglas:</b> {{ tarea.rules }}</p>
-                    <p><b>Variantes:</b> {{ tarea.variants }}</p>
-                    <p><b>Tiempo de Trabajo:</b> {{ tarea.worktime }}</p>
-                    <p><b>Espacio:</b> {{ tarea.space }}</p>
-                    <p><b>Material:</b> {{ tarea.material }}</p>
-                    <p><b>Video YouTube:</b> {{ tarea.video }}</p>
-                    <br>
-                    <!-- Mostrar la imagen si tarea.imagenBoard tiene un valor -->
-                    <div [id]="'div_tarea_' + tarea.taskId">
-                      <img class="imgBoard" *ngIf="tarea.imagenBoard"
-                        [src]="'https://sphairatech.com/images/task-board/' + tarea.imagenBoard"
-                        alt="Imagen de la tarea" [id]="'imagen_tarea_' + tarea.taskId">
-                    </div>
+          <div class="row mt-3" *ngIf="trainingSession.tasks && trainingSession.tasks.length > 0">
+            <div class="col-12 col-md-4 mb-4" *ngFor="let tarea of trainingSession.tasks; let i = index">
+              <div class="card h-100">
+                <!-- Imagen de la tarea -->
+                <div *ngIf="tarea.imagenBoard">
+                  <img [src]="'https://sphairatech.com/images/task-board/' + tarea.imagenBoard" class="card-img-top"
+                    onerror="this.src='https://sphairatech.com/images/task-board/blank.png'" alt="Imagen de la tarea">
+                </div>
+                <div *ngIf="!tarea.imagenBoard">
+                  <img [src]="'https://sphairatech.com/images/task-board/blank.png'" class="card-img-top"
+                    alt="Imagen por defecto">
+                </div>
+
+                <!-- Contenido de la tarjeta -->
+                <div class="card-body custom-card-body">
+                  <h6 class="card-title">ID: {{ tarea.taskId }}</h6>
+                  <h5 class="card-title" style="max-height: 2em; min-height: 2em;">{{ tarea.slogans }}</h5>
+                  <div class="tags-container">
+                    <span class="badge badge-secondary">{{ tarea.estrategia }}</span>
+                    <span class="badge badge-primary">{{ tarea.intencion }}</span>
                   </div>
-                  <hr>
-                  <div *ngIf="this.usuarioActual!.profileType.profileId === 2">
-                    <h4>Puedes crear la tarea en una pizarra y subir después la imagen</h4>
-                    <!-- Botón para abrir el modal -->
-                    <button class="btn btn-warning" (click)="openBoardModal()">Abrir pizarra</button> o también puedes
-                    <!-- Botón para abrir enlace en una nueva pestaña -->
-                    <a href="https://tacticalboard.sphairatech.com/" target="_blank"> ir a la aplicacion</a>
-                    <!-- Agregar más campos de tarea según sea necesario -->
-                    <div class="container">
-                      <h4>Sube ahora la imagen descargada de tu pizarra</h4>
-                      <form (submit)="onSubmit(tarea)" enctype="multipart/form-data">
-                        <div class="form-group">
-                          <label for="image">Seleccionar imagen:</label>
-                          <input type="file" id="image" (change)="onFileSelected($event)">
-                        </div>
-                        <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir imagen</button>
-                      </form>
-                    </div>
+                  <!-- Limitar la altura del texto -->
+                  <p class="card-text" style="color: #aeaeae; max-height: 4em; min-height: 4em; overflow-y: auto;">
+                    Descripción: {{ tarea.description
+                    }}</p>
+
+                  <!-- Botones de acción -->
+                  <div class="d-flex justify-content-between">
+                    <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
+                      class="btn btn-secondary" (click)="printDiv(tarea)">
+                      <i class="bi bi-printer"></i> Imprimir
+                    </button>
+                    <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
+                      class="btn btn-primary" (click)="openTaskModal(tarea)">
+                      <i class="bi bi-eye"></i> Ver
+                    </button>
+                    <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger"
+                      (click)="deleteTask(tarea)">
+                      <i class="bi bi-trash"></i> Eliminar
+                    </button>
                   </div>
                 </div>
               </div>
@@ -3046,6 +3028,9 @@
           <!-- Modal para abrir listado de tareas de la tienda-->
           <app-shop [trainingId]="trainingId" (tareaDescargada)="tareaDescargada($event)" *ngIf="viewShop">
           </app-shop>
+
+          <!-- Contenido del modal -->
+          <div #endOfModal></div>
         </div>
       </div>
     </div>
@@ -3790,6 +3775,40 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para ver los detalles de la tarea -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalTask}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Detalles de la Tarea</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="closeTaskModal()"></button>
+        </div>
+        <div class="modal-body">
+          <h1>Tarea: {{ tareaSeleccionada?.slogans }}</h1>
+          <p>ID: {{ tareaSeleccionada?.taskId }}</p>
+          <p><b>Estrategia:</b> {{ tareaSeleccionada?.estrategia }}</p>
+          <p><b>Intención:</b> {{ tareaSeleccionada?.intencion }}</p>
+          <p><b>Descripción:</b> {{ tareaSeleccionada?.description }}</p>
+          <p><b>Reglas:</b> {{ tareaSeleccionada?.rules }}</p>
+          <p><b>Variantes:</b> {{ tareaSeleccionada?.variants }}</p>
+          <p><b>Tiempo de Trabajo:</b> {{ tareaSeleccionada?.worktime }}</p>
+          <p><b>Espacio:</b> {{ tareaSeleccionada?.space }}</p>
+          <p><b>Material:</b> {{ tareaSeleccionada?.material }}</p>
+          <p><b>Video YouTube:</b> {{ tareaSeleccionada?.video }}</p>
+          <br>
+          <img *ngIf="tareaSeleccionada?.imagenBoard"
+            [src]="'https://sphairatech.com/images/task-board/' + tareaSeleccionada.imagenBoard"
+            alt="Imagen de la tarea" class="img-fluid">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeTaskModal()">Cerrar</button>
         </div>
       </div>
     </div>

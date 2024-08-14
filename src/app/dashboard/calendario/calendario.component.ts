@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Task, Training } from 'src/app/core/services/models/training.models';
 import { TrainingService } from 'src/app/core/services/training/training.service';
@@ -35,6 +35,8 @@ interface Category {
   styleUrls: ['./calendario.component.scss']
 })
 export class CalendarioComponent implements OnInit {
+
+  @ViewChild('endOfModal', { static: false }) endOfModal!: ElementRef;
 
   datosCargados: boolean = false;
   teamId!: number;  // Ajusta el valor según el teamId del equipo actual
@@ -483,11 +485,14 @@ export class CalendarioComponent implements OnInit {
     'Desmarques', 'Dividir', 'Evitar Progresión', 'Fase Defensiva', 'Fase Ofensiva', 'Fijar', 'Finalizar', 'Inicio de Juego',
     'Juego Directo', 'Mantener', 'Marcaje', 'Orientar', 'Permuta', 'Presionar', 'Primer Atacante', 'Primer Defensor',
     'Profundidad', 'Progresar', 'Proteger Portería', 'Recuperar', 'Reinicio de Juego', 'Replegar', 'Segundo Atacante',
-    'Segundo Defensor', 'Temporizar', 'Tercer Atacante', 'Tercer Defensor', 
-    'Transición Defensiva','Transición Ofensiva','Transiciones',
+    'Segundo Defensor', 'Temporizar', 'Tercer Atacante', 'Tercer Defensor',
+    'Transición Defensiva', 'Transición Ofensiva', 'Transiciones',
   ];
 
   userId: any = 0;
+
+  showModalTask: boolean = false;  // Controla la visibilidad del modal
+  tareaSeleccionada: any;  // Almacena la tarea seleccionada
 
   constructor(
     private router: Router,
@@ -499,7 +504,7 @@ export class CalendarioComponent implements OnInit {
     private teamService: TeamService,
     private cdr: ChangeDetectorRef,
     private loginService: LoginService,
-    private snackBar: MatSnackBar,
+    private snackBar: MatSnackBar
   ) {
   }
 
@@ -893,6 +898,13 @@ export class CalendarioComponent implements OnInit {
 
   verTienda() {
     this.viewShop = true;
+    this.scrollToEnd();
+  }
+
+  scrollToEnd() {
+    if (this.endOfModal) {
+      this.endOfModal.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   cerrarTienda() {
@@ -1191,26 +1203,52 @@ export class CalendarioComponent implements OnInit {
     return selectedSubcategory ? selectedSubcategory.options : [];
   }
 
-  printDiv(divId: string): void {
-    let printContents = document.getElementById(divId)?.innerHTML;
-    let originalTitle = document.title;
-    let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+  printDiv(tarea: any): void {
+    const printContents = `
+        <div>
+            <h1>Tarea: ${tarea.slogans}</h1>
+            <p>ID: ${tarea.taskId}</p>
+            <p><b>Estrategia:</b> ${tarea.estrategia}</p>
+            <p><b>Intención:</b> ${tarea.intencion}</p>
+            <p><b>Descripción:</b> ${tarea.description}</p>
+            <p><b>Reglas:</b> ${tarea.rules}</p>
+            <p><b>Variantes:</b> ${tarea.variants}</p>
+            <p><b>Tiempo de Trabajo:</b> ${tarea.worktime}</p>
+            <p><b>Espacio:</b> ${tarea.space}</p>
+            <p><b>Material:</b> ${tarea.material}</p>
+            <p><b>Video YouTube:</b> ${tarea.video}</p>
+            <br>
+            ${tarea.imagenBoard ? `<img src="https://sphairatech.com/images/task-board/${tarea.imagenBoard}" alt="Imagen de la tarea">` : ''}
+        </div>
+    `;
 
-    popupWin?.document.open();
-    popupWin?.document.write(`
-      <html>
-        <head>
-          <title>Impresión</title>
-          <style>
-            // Aquí puedes añadir estilos específicos para la impresión si es necesario
-            body { font-family: 'Arial', sans-serif; }
-            .btn { display: none; } // Ocultar botones en la impresión
-          </style>
-        </head>
-        <body onload="window.print();window.close();">${printContents}</body>
-      </html>
-    `);
-    popupWin?.document.close();
+    const popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+
+    if (popupWin) {
+      popupWin.document.open();
+      popupWin.document.write(`
+            <html>
+                <head>
+                    <title>Impresión</title>
+                    <style>
+                        body { font-family: 'Arial', sans-serif; }
+                        .btn { display: none; } /* Ocultar botones en la impresión */
+                    </style>
+                </head>
+                <body onload="window.print();window.close();">${printContents}</body>
+            </html>
+        `);
+      popupWin.document.close();
+    }
+  }
+
+  openTaskModal(tarea: any): void {
+    this.tareaSeleccionada = tarea;  // Almacena la tarea seleccionada
+    this.showModalTask = true;  // Muestra el modal
+  }
+
+  closeTaskModal(): void {
+    this.showModalTask = false;  // Oculta el modal
   }
 
   printDivPostPartido(divId: string): void {

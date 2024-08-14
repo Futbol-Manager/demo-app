@@ -13,7 +13,7 @@
           <div class="row text-center mt-3 align-items-center">
             <div class="col-12 col-md-6 mt-3">
               <input type="text" class="form-control custom-input" id="textSearch" [(ngModel)]="textSearch"
-                placeholder="Buscar por título...">
+                placeholder="Buscar por título..." (keydown.enter)="filterSearch()">
             </div>
             <div class="col-12 col-md-3 mt-3">
               <select class="form-control custom-input" id="estrategia" [(ngModel)]="estrategia" name="estrategia">

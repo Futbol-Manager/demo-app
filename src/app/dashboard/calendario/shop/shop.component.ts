@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 
 @Component({
@@ -7,6 +7,7 @@ import { TrainingService } from 'src/app/core/services/training/training.service
   styleUrls: ['./shop.component.scss']
 })
 export class ShopComponent implements OnInit {
+  
   @Input() trainingId: number = 0;
   @Output() tareaDescargada: EventEmitter<any> = new EventEmitter<any>();
   taskList: any[] = [];

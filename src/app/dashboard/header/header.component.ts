@@ -142,9 +142,7 @@ export class HeaderComponent implements OnInit {
   }
 
   saveChanges() {
-
     if (this.userForm.valid) {
-
       const today: Date = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
       const isoString: string = today.toISOString();
       const dateOnlyString: string = isoString.split('T')[0];
@@ -174,7 +172,7 @@ export class HeaderComponent implements OnInit {
         .subscribe(
           (res: { data: null; }) => {
             if (res.data != null) {
-              console.log('Guardado con éxito.');
+              //console.log('Guardado con éxito.');
               this.showModal = false;
             }
           })
