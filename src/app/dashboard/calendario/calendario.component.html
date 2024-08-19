@@ -2828,8 +2828,10 @@
             *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) && trainingSession.trainingSessionId !== 0">
             <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-secondary"
               (click)="openModalPreEntrenamiento(trainingSession.trainingSessionId)">Pre-formulario</button>
-            <button type="button" class="btn btn-success"
+            <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-success"
               (click)="openModalPostEntrenamiento(trainingSession.trainingSessionId)">Post-formulario</button>
+            <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-primary"
+              (click)="openModalAsistencia(trainingSession.trainingSessionId)">Asistencia</button>
           </div>
           <div
             *ngIf="this.usuarioActual!.profileType.profileId === 3 || this.usuarioActual!.profileType.profileId === 4">
@@ -3772,6 +3774,56 @@
                     <p><b>¿Qué opinas del partido en general?: </b> {{ post.q4 }}</p>
                   </div>
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para mostrar pre partido como perfil 1 y 2 -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalAsistencia}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Asistencia jugadores</h5>
+          <!-- Botón de cerrar con un icono -->
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalAsistencia()"></button>
+        </div>
+        <div class="modal-body">
+          <p>Modifica cualquier campo del jugador para actualizar su información. Puedes seleccionar la cantidad de la
+            multa económica y describir el motivo.</p>
+          <div *ngFor="let jugador of listAsistencia; let i = index">
+            <div class="row mt-3">
+              <div class="col-12 col-md-2 mt-3">
+                <span>{{ jugador.player.nombre }} {{ jugador.player.apellido }}</span>
+              </div>
+              <div class="col-12 col-md-2 mt-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input custom-input" type="checkbox" id="asistencia"
+                    [checked]="jugador.asistencia === 1" (change)="toggleAsistencia(i, jugador.asistencia)">
+                  <span>Asistencia</span>
+                </div>
+              </div>
+              <div class="col-12 col-md-2 mt-3">
+                <div class="form-check form-switch">
+                  <input class="form-check-input custom-input" type="checkbox" id="retraso"
+                    [checked]="jugador.retraso === 1" (change)="toggleRetraso(i, jugador.retraso)">
+                  <span>Retraso</span>
+                </div>
+              </div>
+              <div class="col-12 col-md-2 mt-3">
+                <select id="cantidadMulta" class="form-control" [(ngModel)]="jugador.cantidadMulta"
+                  (change)="comboMulta(i)">
+                  <option *ngFor="let numero of numeros" [value]="numero">{{ numero }} €</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-4 mt-3">
+                <textarea class="form-control custom-input" id="motivo" rows="2" name="motivo"
+                  [(ngModel)]="jugador.motivo" (blur)="motivoMulta(i)"></textarea>
               </div>
             </div>
           </div>

@@ -17,6 +17,7 @@ import { InfoJugadoresComponent } from './info-jugadores/info-jugadores.componen
 import { EstadisticasJugadoresClubComponent } from './estadisticas-jugadores-club/estadisticas-jugadores-club.component';
 import { EstadisticasEquiposClubComponent } from './estadisticas-equipos-club/estadisticas-equipos-club.component';
 import { EstadisticasEntrenadoresClubComponent } from './estadisticas-entrenadores-club/estadisticas-entrenadores-club.component';
+import { AsistenciaComponent } from './asistencia/asistencia.component';
 
 const routes: Routes = [
   {
@@ -38,6 +39,7 @@ const routes: Routes = [
       { path: 'estadisticas-jugadores-club/:clubId', component: EstadisticasJugadoresClubComponent },
       { path: 'estadisticas-equipos-club/:clubId', component: EstadisticasEquiposClubComponent },
       { path: 'estadisticas-entrenadores-club/:clubId', component: EstadisticasEntrenadoresClubComponent },
+      { path: 'informacion_equipo/asistencia/:teamId', component: AsistenciaComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
   }

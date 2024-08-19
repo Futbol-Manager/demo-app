@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Task, Training } from 'src/app/core/services/models/training.models';
+import { AsistenciaTraining, Task, Training } from 'src/app/core/services/models/training.models';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { MatchPreparation, PlayerPostPartido, PostPartido, PostPartidoId } from 'src/app/core/services/models/match.model';
@@ -212,6 +212,7 @@ export class CalendarioComponent implements OnInit {
   showModalPostEntrenamiento: boolean = false;
   showModalPreMatch: boolean = false;
   showModalPostMatch: boolean = false;
+  showModalAsistencia: boolean = false;
 
   playerIdUserActual: any = 0;
 
@@ -220,6 +221,7 @@ export class CalendarioComponent implements OnInit {
   respListPostEntreno: RespPostEntreno[] = [];
   respListPreMatch: RespPrePartido[] = [];
   respListPostMatch: RespPostPartido[] = [];
+  listAsistencia: AsistenciaTraining[] = [];
 
   golTypes = [
     {
@@ -493,6 +495,12 @@ export class CalendarioComponent implements OnInit {
 
   showModalTask: boolean = false;  // Controla la visibilidad del modal
   tareaSeleccionada: any;  // Almacena la tarea seleccionada
+
+  // Genera un array con los números del 0 al 1000
+  numeros: number[] = [0, ...Array.from({ length: 1000 }, (_, i) => i + 1)];
+
+  selectedNumber: number = 0; // Por defecto, seleccionamos 0
+  trainingSessionIdSelected = 0;
 
   constructor(
     private router: Router,
@@ -1625,6 +1633,57 @@ export class CalendarioComponent implements OnInit {
 
   cerrarModalPostMatch() {
     this.showModalPostMatch = false;
+  }
+
+  //-----------------------
+
+  openModalAsistencia(id: number) {
+    this.trainingSessionIdSelected = id;
+    this.trainingService.getListAsistenciaByTraining(id, this.teamId).subscribe(
+      (response) => {
+        if (response.data) {
+          this.listAsistencia = response.data;
+          this.showModalAsistencia = true;
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  cerrarModalAsistencia() {
+    this.showModalAsistencia = false;
+  }
+
+  toggleAsistencia(index: number, value: number) {
+    this.listAsistencia[index].asistencia = value === 0 ? 1 : 0;
+    this.updateRopaClub(this.listAsistencia[index]);
+  }
+
+  toggleRetraso(index: number, value: number) {
+    this.listAsistencia[index].retraso = value === 0 ? 1 : 0;
+    this.updateRopaClub(this.listAsistencia[index]);
+  }
+
+  comboMulta(index: number) {
+    this.updateRopaClub(this.listAsistencia[index]);
+  }
+
+  motivoMulta(index: number) {
+    this.updateRopaClub(this.listAsistencia[index]);
+  }
+
+  updateRopaClub(asis: AsistenciaTraining) {
+    this.trainingService.updateAsistenciaByAsistencia(asis).subscribe(
+      (response) => {
+        //todo ok
+      },
+      (error) => {
+        console.error('Error al crear el equipo:', error);
+        // Puedes manejar el error según tus necesidades
+      }
+    );
   }
 
   toggleTaskPostPartido(post: RespPostPartido): void {

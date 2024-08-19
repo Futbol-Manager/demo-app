@@ -262,6 +262,11 @@ export class InformacionEquipoComponent implements OnInit {
     this.router.navigate(['/dashboard/calendario', this.teamId]);
   }
 
+  navegarAAsistencia(): void {
+    // Puedes ajustar la ruta según tu estructura de rutas
+    this.router.navigate(['/dashboard/informacion_equipo/asistencia', this.teamId]);
+  }
+
   cerrarModal(): void {
     this.showModal = false;
   }

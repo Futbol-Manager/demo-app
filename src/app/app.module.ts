@@ -22,6 +22,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { ClubesListComponent } from './pages/register/clubes-list/clubes-list.component';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { ValidationUserComponent } from './pages/validation-user/validation-user.component';
+import { AsistenciaComponent } from './dashboard/asistencia/asistencia.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,8 @@ import { ValidationUserComponent } from './pages/validation-user/validation-user
     ChangePasswordComponent,
     ValidationUserComponent,
     ProfileComponent,
-    ClubesListComponent
+    ClubesListComponent,
+    AsistenciaComponent
   ],
   imports: [
     BrowserModule,
