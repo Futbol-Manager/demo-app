@@ -145,6 +145,12 @@ export class Player {
   nacionalidad: string;
   direccion: string;
   municipio: string;
+  imgDniUno: string;
+  imgDniDos: string;
+  dniPadre1: string;
+  dniPadre2: string;
+  dniMadre1: string;
+  dniMadre2: string;
 
   constructor(object: any) {
     this.playerId = object.playerId || 0;
@@ -215,6 +221,12 @@ export class Player {
     this.nacionalidad = object.nacionalidad || '';
     this.direccion = object.direccion || '';
     this.municipio = object.municipio || '';
+    this.imgDniUno = object.imgDniUno || '';
+    this.imgDniDos = object.imgDniDos || '';
+    this.dniPadre1 = object.dniPadre1 || '';
+    this.dniPadre2 = object.dniPadre2 || '';
+    this.dniMadre1 = object.dniMadre1 || '';
+    this.dniMadre2 = object.dniMadre2 || '';
   }
 }
 

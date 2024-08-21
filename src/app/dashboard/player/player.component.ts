@@ -383,7 +383,13 @@ export class PlayerComponent implements OnInit {
       email: '',
       nacionalidad: 'España',
       direccion: '',
-      municipio: ''
+      municipio: '',
+      imgDniUno: '',
+      imgDniDos: '',
+      dniPadre1: '',
+      dniPadre2: '',
+      dniMadre1: '',
+      dniMadre2: ''
     };
   }
 

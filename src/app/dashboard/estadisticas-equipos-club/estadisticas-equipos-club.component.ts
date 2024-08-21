@@ -42,7 +42,7 @@ export class EstadisticasEquiposClubComponent implements OnInit {
   irAPantalla(id: number): void {
     switch (id) {
       case 0:
-        this.router.navigate(['/dashboard/cuadro', this.clubId]);
+        this.router.navigate(['/dashboard/cuadro-de-mandos', this.clubId]);
         break;
     }
   }

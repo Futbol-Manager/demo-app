@@ -314,7 +314,13 @@ export class TrainerComponent implements OnInit {
       email: '',
       nacionalidad: '',
       direccion: '',
-      municipio: ''
+      municipio: '',
+      imgDniUno: '',
+      imgDniDos: '',
+      dniPadre1: '',
+      dniPadre2: '',
+      dniMadre1: '',
+      dniMadre2: ''
     };
   }
 

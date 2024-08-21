@@ -244,7 +244,7 @@ export class InicioComponent implements OnInit {
         this.router.navigate(['/dashboard/ropa', this.clubId]);
         break;
       case 3:
-        this.router.navigate(['/dashboard/cuadro', this.clubId]);
+        this.router.navigate(['/dashboard/cuadro-de-mandos', this.clubId]);
         break;
     }
   }

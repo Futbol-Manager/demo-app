@@ -7,6 +7,8 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { HttpClient } from '@angular/common/http';
 import * as XLSX from "xlsx";
 import { Player } from 'src/app/core/services/player/player.model';
+import { PlayerService } from 'src/app/core/services/player/player.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-info-jugadores',
@@ -29,14 +31,35 @@ export class InfoJugadoresComponent implements OnInit {
   playerSearch: string = '';
   mostrarModalInfoJugador = false;
 
+  playerIdSelected = 0;
+  selectedPlayer: any; // Define selectedPlayer para mantener la información del jugador seleccionado
+
+
+  //para subir las caras de los dnis
+  mostrarModalDniJugador: boolean = false;
+  dniCara1: string | ArrayBuffer | null | undefined = null;
+  dniCara2: string | ArrayBuffer | null | undefined = null;
+  selectedFileCara1: File | null = null;
+  selectedFileCara2: File | null = null;
+  //estas son las caras del padre o tutor 1
+  dniCara3: string | ArrayBuffer | null | undefined = null;
+  dniCara4: string | ArrayBuffer | null | undefined = null;
+  selectedFileCara3: File | null = null;
+  selectedFileCara4: File | null = null;
+  //estas son  las caras de la madre o tutor 2
+  dniCara5: string | ArrayBuffer | null | undefined = null;
+  dniCara6: string | ArrayBuffer | null | undefined = null;
+  selectedFileCara5: File | null = null;
+  selectedFileCara6: File | null = null;
+
+  indexSelected = 0;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private elementRef: ElementRef,
-    private dialog: MatDialog,
-    private fb: FormBuilder,
+    private snackBar: MatSnackBar,
     private clubService: ClubService,
-    private http: HttpClient,) { }
+    private playerService: PlayerService,) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -52,7 +75,7 @@ export class InfoJugadoresComponent implements OnInit {
   irAPantalla(id: number): void {
     switch (id) {
       case 0:
-        this.router.navigate(['/dashboard/cuadro', this.clubId]);
+        this.router.navigate(['/dashboard/cuadro-de-mandos', this.clubId]);
         break;
     }
   }
@@ -110,8 +133,8 @@ export class InfoJugadoresComponent implements OnInit {
         (player.emailMadre && this.normalizeText(player.emailMadre).includes(filter))
       );
     });
-  }  
-  
+  }
+
   normalizeText(text: string): string {
     return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   }
@@ -150,7 +173,7 @@ export class InfoJugadoresComponent implements OnInit {
       // Filtrar jugadores por DNI que coincida parcialmente, y manejar los valores null
       this.filteredPlayers = this.players.filter(player =>
         player.dni && player.dni.toLowerCase().includes(this.playerDniFilter.toLowerCase())
-    );
+      );
     }
   }
 
@@ -187,7 +210,7 @@ export class InfoJugadoresComponent implements OnInit {
     // Aquí llamamos a la función para cargar el gráfico de radar
     this.cargarGraficoRadar();
   }*/
-  
+
   // Método para cerrar el modal de información del jugador
   cerrarModalInfoJugador() {
     this.mostrarModalInfoJugador = false;
@@ -223,5 +246,151 @@ export class InfoJugadoresComponent implements OnInit {
 
     return edad;
   }
+
+  abrirModalDniJugador(player: any, index: number) {
+    this.indexSelected = index;
+    this.playerIdSelected = player.playerId;
+    this.selectedPlayer = player;
+    this.mostrarModalDniJugador = true;
+  }
+
+  cerrarModalDniJugador() {
+    this.dniCara1 = null;
+    this.dniCara2 = null;
+    this.dniCara3 = null;
+    this.dniCara4 = null;
+    this.dniCara5 = null;
+    this.dniCara6 = null;
+    this.mostrarModalDniJugador = false;
+  }
+
+  onFileChange(event: any, cara: string) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        switch (cara) {
+          case 'cara1':
+            this.dniCara1 = e.target?.result;
+            this.selectedFileCara1 = file;
+            break;
+          case 'cara2':
+            this.dniCara2 = e.target?.result;
+            this.selectedFileCara2 = file;
+            break;
+          case 'cara3':
+            this.dniCara3 = e.target?.result;
+            this.selectedFileCara3 = file;
+            break;
+          case 'cara4':
+            this.dniCara4 = e.target?.result;
+            this.selectedFileCara4 = file;
+            break;
+          case 'cara5':
+            this.dniCara5 = e.target?.result;
+            this.selectedFileCara5 = file;
+            break;
+          case 'cara6':
+            this.dniCara6 = e.target?.result;
+            this.selectedFileCara6 = file;
+            break;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  subirCaraDni(cara: string) {
+    let fileToUpload = null;
+    let caraOption = 0;
+
+    switch (cara) {
+      case 'cara1':
+        fileToUpload = this.selectedFileCara1;
+        break;
+      case 'cara2':
+        caraOption = 1;
+        fileToUpload = this.selectedFileCara2;
+        break;
+      case 'cara3':
+        caraOption = 2;
+        fileToUpload = this.selectedFileCara3;
+        break;
+      case 'cara4':
+        caraOption = 3;
+        fileToUpload = this.selectedFileCara4;
+        break;
+      case 'cara5':
+        caraOption = 4;
+        fileToUpload = this.selectedFileCara5;
+        break;
+      case 'cara6':
+        caraOption = 5;
+        fileToUpload = this.selectedFileCara6;
+        break;
+    }
+
+    if (fileToUpload) {
+      const formData = new FormData();
+      formData.append('file', fileToUpload);
+
+      // Simulamos el envío de la imagen al servidor
+      this.playerService.createUpdateImgDniPlayer(this.playerIdSelected, caraOption, fileToUpload)
+        .subscribe(
+          (response) => {
+            switch (caraOption) {
+              case 0:
+                this.filteredPlayers[this.indexSelected].imgDniUno = response.data;
+                break;
+              case 1:
+                this.filteredPlayers[this.indexSelected].imgDniDos = response.data;
+                break;
+              case 2:
+                this.filteredPlayers[this.indexSelected].dniPadre1 = response.data;
+                break;
+              case 3:
+                this.filteredPlayers[this.indexSelected].dniPadre2 = response.data;
+                break;
+              case 4:
+                this.filteredPlayers[this.indexSelected].dniMadre1 = response.data;
+                break;
+              case 5:
+                this.filteredPlayers[this.indexSelected].dniMadre2 = response.data;
+                break;
+            }
+
+            this.snackBar.open('Imagen subida correctamente.', 'Cerrar', {
+              duration: 3000,
+            });
+          },
+          error => {
+            console.error('Error al subir la imagen', error);
+          }
+        );
+
+      // Aquí se realiza la llamada al backend
+      // Puedes usar HttpClient para realizar la solicitud
+      // Ejemplo: this.http.post(endpoint, formData).subscribe(...)
+      //console.log(`Subiendo ${cara}:`, fileToUpload.name);
+      // Realiza la llamada a tu servicio o API aquí
+    }
+  }
+
+  descargarImagen(url: string, nombreArchivo: string) {
+    fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        const a = document.createElement('a');
+        const url = window.URL.createObjectURL(blob);
+        a.href = url;
+        a.download = nombreArchivo;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      })
+      .catch(() => alert('Error descargando la imagen'));
+  }
+
 
 }

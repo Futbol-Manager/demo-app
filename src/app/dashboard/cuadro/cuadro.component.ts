@@ -128,16 +128,16 @@ export class CuadroComponent implements OnInit {
         this.router.navigate(['/dashboard/inicio']);
         break;
       case 1:
-        this.router.navigate(['/dashboard/info-jugadores', this.clubId]);
+        this.router.navigate(['/dashboard/cuadro-de-mandos/info-jugadores', this.clubId]);
         break;
       case 2:
-        this.router.navigate(['/dashboard/estadisticas-entrenadores-club', this.clubId]);
+        this.router.navigate(['/dashboard/cuadro-de-mandos/estadisticas-entrenadores-club', this.clubId]);
         break;
       case 3:
-        this.router.navigate(['/dashboard/estadisticas-equipos-club', this.clubId]);
+        this.router.navigate(['/dashboard/cuadro-de-mandos/estadisticas-equipos-club', this.clubId]);
         break;
       case 4:
-        this.router.navigate(['/dashboard/estadisticas-jugadores-club', this.clubId]);
+        this.router.navigate(['/dashboard/cuadro-de-mandos/estadisticas-jugadores-club', this.clubId]);
         break;
     }
   }
