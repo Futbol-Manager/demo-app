@@ -43,8 +43,11 @@
   <!-- Botón para abrir el modal de creación de equipo -->
   <div class="container">
     <div class="row">
-      <div class="col text-center">
+      <div class="col text-center" *ngIf="this.usuarioActual!.profileType.profileId < 3">
         <h2 class="text-dark mt-3">Listado de Equipos</h2>
+      </div>
+      <div class="col text-center" *ngIf="this.usuarioActual!.profileType.profileId > 2">
+        <h2 class="text-dark mt-3">Listado de jugadores</h2>
       </div>
     </div>
     <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
@@ -54,7 +57,8 @@
         </button>
       </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
+      *ngIf="this.usuarioActual!.profileType.profileId < 3">
       <div class="col mb-3" *ngFor="let team of listTeam; let i = index" style="cursor: pointer;"
         (click)="navegarACalendario(team.teamId)">
         <div class="card h-100" style="border: 1px solid black;">
@@ -87,6 +91,50 @@
               style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               <b>Cuerpo técnico: </b> {{ team.nombreEntrenador }}
             </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
+      *ngIf="this.usuarioActual!.profileType.profileId > 2">
+      <div class="col mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
+        (click)="navegarACalendario(hijo.teamId)">
+        <div class="card h-100" style="border: 1px solid black;">
+          <div class="card-body text-center">
+            <div class="row mb-2">
+            </div>
+            <div class="row mb-2">
+              <div class="col d-flex justify-content-center align-items-center" *ngIf="hijo.picturePlayer">
+                <img src="https://sphairatech.com/images/user/{{ hijo.picturePlayer }}"
+                  alt="user-image" width="90" height="90" style="max-width: 100%;">  
+              </div>
+              <div class="col d-flex justify-content-center align-items-center" *ngIf="!hijo.picturePlayer">               
+                  <ng-container>
+                    <span class="bi bi-person" style="font-size: 4rem;"></span>
+                </ng-container>
+              </div>
+            </div>
+            <h5 class="card-title"
+              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              {{ hijo.nombre }} {{ hijo.apellido }}</h5>
+          </div>
+        </div>
+      </div>
+
+      <div class="col mb-3" style="cursor: not-allowed; opacity: 0.5;">
+        <div class="card h-100" style="border: 1px solid black;">
+          <div class="card-body text-center">
+            <div class="row mb-2"></div>
+            <div class="row mb-2">
+              <div class="col d-flex justify-content-center align-items-center">
+                <i class="bi bi-camera-reels" style="font-size: 90px; color: gray;"></i>
+              </div>
+            </div>
+            <h5 class="card-title" style="color: gray; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              Scouting
+            </h5>
           </div>
         </div>
       </div>
@@ -182,7 +230,8 @@
           </div>-->
           <div class="mb-3">
             <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
-            <p>Para introducir un horario, una vez creado el equipo, pulsa en él y después accede al menú "información del equipo".</p>
+            <p>Para introducir un horario, una vez creado el equipo, pulsa en él y después accede al menú "información
+              del equipo".</p>
           </div>
           <div class="modal-footer">
             <!-- Botón para guardar el nuevo equipo -->

@@ -9,6 +9,7 @@ import * as XLSX from "xlsx";
 import { Player } from 'src/app/core/services/player/player.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-info-jugadores',
@@ -266,37 +267,50 @@ export class InfoJugadoresComponent implements OnInit {
 
   onFileChange(event: any, cara: string) {
     const file = event.target.files[0];
+
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        switch (cara) {
-          case 'cara1':
-            this.dniCara1 = e.target?.result;
-            this.selectedFileCara1 = file;
-            break;
-          case 'cara2':
-            this.dniCara2 = e.target?.result;
-            this.selectedFileCara2 = file;
-            break;
-          case 'cara3':
-            this.dniCara3 = e.target?.result;
-            this.selectedFileCara3 = file;
-            break;
-          case 'cara4':
-            this.dniCara4 = e.target?.result;
-            this.selectedFileCara4 = file;
-            break;
-          case 'cara5':
-            this.dniCara5 = e.target?.result;
-            this.selectedFileCara5 = file;
-            break;
-          case 'cara6':
-            this.dniCara6 = e.target?.result;
-            this.selectedFileCara6 = file;
-            break;
-        }
-      };
-      reader.readAsDataURL(file);
+      const fileType = file.type;
+
+      // Verifica si el tipo de archivo es PNG o JPEG
+      if (fileType === 'image/png' || fileType === 'image/jpeg') {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          switch (cara) {
+            case 'cara1':
+              this.dniCara1 = e.target?.result;
+              this.selectedFileCara1 = file;
+              break;
+            case 'cara2':
+              this.dniCara2 = e.target?.result;
+              this.selectedFileCara2 = file;
+              break;
+            case 'cara3':
+              this.dniCara3 = e.target?.result;
+              this.selectedFileCara3 = file;
+              break;
+            case 'cara4':
+              this.dniCara4 = e.target?.result;
+              this.selectedFileCara4 = file;
+              break;
+            case 'cara5':
+              this.dniCara5 = e.target?.result;
+              this.selectedFileCara5 = file;
+              break;
+            case 'cara6':
+              this.dniCara6 = e.target?.result;
+              this.selectedFileCara6 = file;
+              break;
+          }
+        };
+        reader.readAsDataURL(file);
+
+        setTimeout(() => {
+          this.subirCaraDni(cara);
+        }, 1000);
+      } else {
+        // Muestra un mensaje de error si el archivo no es PNG o JPEG
+        alert('Formato de archivo no válido. Por favor, sube una imagen en formato PNG o JPEG.');
+      }
     }
   }
 
@@ -377,19 +391,28 @@ export class InfoJugadoresComponent implements OnInit {
   }
 
   descargarImagen(url: string, nombreArchivo: string) {
-    fetch(url)
+    //const urlImagen = 'https://sphairatech.com/images/user/277699-imguser.png';
+    const urlEnvi = environment.apiUrl;
+    //console.log(urlEnvi);
+    const urlBackend = urlEnvi + `commons/download-image?url=${encodeURIComponent(url)}`;
+
+    fetch(urlBackend)
       .then(response => response.blob())
       .then(blob => {
         const a = document.createElement('a');
-        const url = window.URL.createObjectURL(blob);
-        a.href = url;
+        const objectUrl = window.URL.createObjectURL(blob);
+        a.href = objectUrl;
         a.download = nombreArchivo;
         document.body.appendChild(a);
         a.click();
-        window.URL.revokeObjectURL(url);
+        window.URL.revokeObjectURL(objectUrl);
         document.body.removeChild(a);
       })
-      .catch(() => alert('Error descargando la imagen'));
+      .catch(error => {
+        window.open(url, '_blank');
+        //console.error('Error descargando la imagen:', error);
+        //alert('No se pudo descargar la imagen. Por favor, intente de nuevo más tarde.');
+      });
   }
 
 

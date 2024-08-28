@@ -1,6 +1,7 @@
 import { PlayerId } from "../../services/player/player.model";
 
 export class RegisterModel {
+  comunicaciones?: number;
   profileType: ProfileTypeModel;
   firstName: string;
   secondName: string;
@@ -17,6 +18,7 @@ export class RegisterModel {
 	dateEdit?: Date;
 
   constructor(
+    comunicaciones: number,
     profileType: ProfileTypeModel,
     firstName: string,
     secondName: string,
@@ -32,6 +34,7 @@ export class RegisterModel {
     dateCreate?: string,
     dateEdit?: Date,
   ) {
+    this.comunicaciones = comunicaciones;
     this.userId = userId;
     this.birthdate = birthdate;
     this.dateCreate = dateCreate;

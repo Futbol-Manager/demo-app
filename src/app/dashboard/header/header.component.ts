@@ -154,6 +154,7 @@ export class HeaderComponent implements OnInit {
       const validationUser: ValidationUserModel = new ValidationUserModel(2, 'Validado por mail');//hardcodeado
 
       const register: RegisterModel = new RegisterModel(
+        this.userForm.value.comunicaciones,
         profileType,
         this.userForm.value.firstName,
         this.userForm.value.secondName,

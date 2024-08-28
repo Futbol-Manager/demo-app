@@ -35,9 +35,10 @@ export class RegisterComponent implements OnInit {
     { value: "1", label: "Club" },
     { value: "2", label: "Entrenador" },
     // Opciones eliminadas
-    { value: "3", label: "Padre o tutor" },
+    { value: "3", label: "Jugador" },
     { value: "4", label: "Jugador" }
   ];
+  msgForm = false;
 
   constructor(
     private router: Router,
@@ -50,6 +51,7 @@ export class RegisterComponent implements OnInit {
     private route: ActivatedRoute,
   ) {
     this.registerFormClub = this.fb.group({
+      comunicaciones: [false],
       name: ['', Validators.required],
       foundationDate: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -59,6 +61,7 @@ export class RegisterComponent implements OnInit {
     });
 
     this.registerFormEntrenador = this.fb.group({
+      comunicaciones: [false],
       name: [''],
       surname: ['', Validators.required],
       birthdate: ['', Validators.required],
@@ -166,6 +169,7 @@ export class RegisterComponent implements OnInit {
 
       const fv = this.registerFormClub.value;
       const register: RegisterModel = new RegisterModel(
+        fv.comunicaciones ? 1 : 0,
         profileType,
         fv.name,
         '',
@@ -227,8 +231,11 @@ export class RegisterComponent implements OnInit {
         this.registerFormEntrenador.value.genre == 1 ? 'Masculino' : (this.registerFormEntrenador.value.genre == 2 ? 'Femenino' : 'Otro')
       );
 
+      
+      this.msgForm = false;
       const fv = this.registerFormEntrenador.value;
       const register: RegisterModel = new RegisterModel(
+        fv.comunicaciones ? 1 : 0,
         profileType,
         fv.name,
         fv.surname,
@@ -243,7 +250,7 @@ export class RegisterComponent implements OnInit {
       );
 
       const age = this.calculateAge(new Date(fv.birthdate));
-      if (age < 14) {
+      if (age < 18) {
         this.msgAge = true;
         return;
       }
@@ -266,7 +273,8 @@ export class RegisterComponent implements OnInit {
               this.snackBar.open('Ese email ya está dado de alta, prueba a iniciar sesión o date de alta con un email diferente.', 'Cerrar', snackBarConfig);
             }
           })
-    }
+    } else
+      this.msgForm = true;
   }
 
   login(profile: number) {

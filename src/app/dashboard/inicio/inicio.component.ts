@@ -7,6 +7,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { Router } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ClubService } from 'src/app/core/services/club/club.service';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'app-inicio',
@@ -19,6 +20,7 @@ export class InicioComponent implements OnInit {
   datosCargados: boolean = false;
   usuarioActual!: User | null;
   listTeam: any[] = []; // Define una variable para almacenar el listado de equipos
+  listHijos: any[] = []; // Define una variable para almacenar el listado de hijos
   showModal = false;
   teamNew: TeamNew = new TeamNew(); // Modelo para el nuevo equipo
   clubList: any[] = [];
@@ -30,6 +32,7 @@ export class InicioComponent implements OnInit {
   fileName: string | null = null;
   showUploadButton: boolean = false;
   selectedFile: File | null = null;
+  userId = 0;
 
   constructor(private loginService: LoginService,
     private router: Router,
@@ -51,39 +54,39 @@ export class InicioComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Suscríbete al observable del servicio para obtener el usuario actual
-    this.loginService.usuarioActual.subscribe(user => {
-      this.usuarioActual = user;
-      let profileId = this.usuarioActual!.profileType.profileId;
-      let playerId = this.usuarioActual!.playerId;
-
-      if (profileId === 2) {
-        // Carga el listado de equipos al inicializar el componente
-        this.cargarListadoEquipos();
-      } else if (profileId === 1) {
-        // Carga el listado de equipos al inicializar el componente
-        this.cargarListadoEquiposForClub();
-      } else if (profileId > 2) {
-        this.teamService.getTeamByPlayer(playerId.toString()).subscribe(
-          (response: Response) => {
-            // Verifica que la propiedad 'data' exista en la respuesta
-            if (response.data !== null) {
-              this.router.navigate(['/dashboard/calendario', response.data]);
-            } else {
-              console.error('La respuesta del servicio no tiene la estructura esperada', response);
+    this.loginService.usuarioActual
+      .pipe(distinctUntilChanged())
+      .subscribe(user => {
+        this.usuarioActual = user;
+        let profileId = this.usuarioActual!.profileType.profileId;
+        //let playerId = this.usuarioActual!.playerId;
+        this.userId = this.usuarioActual!.userId;
+  
+        if (profileId === 2) {
+          this.cargarListadoEquipos();
+        } else if (profileId === 1) {
+          this.cargarListadoEquiposForClub();
+        } else if (profileId > 2) {
+          this.teamService.getTeamByPlayer(this.userId.toString()).subscribe(
+            (response: Response) => {
+              if (response.data !== null) {
+                this.listHijos = response.data;
+                this.datosCargados = true;
+              } else {
+                console.error('La respuesta del servicio no tiene la estructura esperada', response);
+              }
+            },
+            (error) => {
+              console.error('Error al cargar el listado de equipos', error);
             }
-          },
-          (error) => {
-            console.error('Error al cargar el listado de equipos', error);
-          }
-        );
-      }
-    });
+          );
+        }
+      });
   }
 
   // Método para cargar el listado de equipos
   cargarListadoEquipos(): void {
-    this.teamService.getTeams(this.usuarioActual!.userId.toString()).subscribe(
+    this.teamService.getTeams(this.userId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data) {
@@ -298,6 +301,10 @@ export class InicioComponent implements OnInit {
 
   cerrarModalSubirJugadores() {
     this.showModalSubirJugadores = false;
+  }
+
+  goToCalendarPlayer(teamId: number){
+    this.router.navigate(['/dashboard/calendario', teamId]);
   }
 
 }

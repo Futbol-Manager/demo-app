@@ -132,8 +132,8 @@
                   title="Editar cuota del jugador"></i>
                 <i class="bi bi-wallet2 ms-2" style="cursor: pointer;" (click)="openModalPago(player, i)"
                   title="Introducir un pago"></i>
-                <i class="bi bi-clock-history ms-2" style="cursor: pointer;" (click)="openModalVerPagosPlayer(player, i)"
-                  title="Ver histoial de pagos"></i>
+                <i class="bi bi-clock-history ms-2" style="cursor: pointer;"
+                  (click)="openModalVerPagosPlayer(player, i)" title="Ver histoial de pagos"></i>
               </td>
             </tr>
           </tbody>
@@ -221,8 +221,8 @@
             <div class="col-md-3">
               <span>{{ comboTitle }}</span>
               <div class="form-check form-switch">
-                <input class="form-check-input custom-input" type="checkbox" id="combo" [checked]="selectedComboTitle === 0"
-                  (change)="toggleComboTitle()">
+                <input class="form-check-input custom-input" type="checkbox" id="combo"
+                  [checked]="selectedComboTitle === 0" (change)="toggleComboTitle()">
               </div>
             </div>
             <div class="col-md-9" *ngIf="selectedComboTitle == 0">
@@ -482,13 +482,12 @@
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalInvitar()"></button>
       </div>
       <div class="modal-body">
-        <p *ngIf="isMenor">Puesto que el jugador es menor de 14 años, has de invitar a un padre o tutor, introduce su
-          correo
-          electrónico de a quíen vas a invitar. Por favor verifica que la cuenta de
-          correo sea correcta.</p>
-        <p *ngIf="!isMenor">Introduce el correo electrónico del jugador que quieres invitar. Por favor verifica que la
-          cuenta de
-          correo sea correcta.</p>
+        <!-- <p *ngIf="isMenor">Puesto que el jugador es menor de 18 años, has de invitar a un padre o tutor,
+                    introduce su correo
+                    electrónico de a quíen vas a invitar. Por favor verifica que la cuenta de
+                    correo sea correcta.</p>-->
+        <p>Introduce el correo electrónico del jugador que quieres invitar. Por favor verifica
+          que la cuenta de correo sea correcta.</p>
         <form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="enviarMailJugador()">
           <div class="mb-3" style="text-align: center;">
             <div class="mb-3">
@@ -889,8 +888,8 @@
                   <td>{{ pago.comentario }}</td>
                   <td>
                     <button *ngIf="!pago.cantidad.includes('-')" class="btn btn-warning" title="Devolver pago"
-                        (click)="confirmReturnPay(pago)">
-                        <span class="bi bi-arrow-counterclockwise btn-danger"></span>
+                      (click)="confirmReturnPay(pago)">
+                      <span class="bi bi-arrow-counterclockwise btn-danger"></span>
                     </button>
                   </td>
                 </tr>

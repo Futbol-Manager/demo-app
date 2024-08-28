@@ -10,12 +10,17 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h1 class="m-0 textoCentrado flex-grow-1">Registro de usuario</h1>
+            <h3 class="m-0 textoCentrado flex-grow-1">Registro de usuario</h3>
             <button class="btn btn-close" (click)="toLogin($event)">
               <!-- Aquí puedes añadir el icono de cierre -->
             </button>
           </div>
           <div class="card-body textoCentrado">
+            <div class="d-flex form-register py-0">
+              <div class="col-12">
+                <p style="color: red;">Si eres un JUGADOR, espera a que tu entrenador / club te invite.</p>
+              </div>
+            </div>
             <div class="d-flex form-register py-0">
               <div class="col-12">
                 <!--<label class="form-label">Selecciona un perfil</label>-->
@@ -72,8 +77,19 @@
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
                     <label class="form-check-label" for="termsCheckbox">
-                      Acepto los <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">términos y
-                        condiciones</a>
+                      Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
+                        privacidad</a> y las
+                      <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                        condiciones de contratación</a>
+                    </label>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="comunCheckbox" formControlName="comunicaciones">
+                    <label class="form-check-label" for="comunCheckbox">
+                      Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
+                        target="_blank">comunicaciones comerciales</a>
                     </label>
                   </div>
                 </div>
@@ -143,8 +159,19 @@
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
                     <label class="form-check-label" for="termsCheckbox">
-                      Acepto los <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">términos y
-                        condiciones</a>
+                      Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
+                        privacidad</a> y las
+                      <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                        condiciones de contratación</a>
+                    </label>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="comunCheckbox" formControlName="comunicaciones">
+                    <label class="form-check-label" for="comunCheckbox">
+                      Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
+                        target="_blank">comunicaciones comerciales</a>
                     </label>
                   </div>
                 </div>
@@ -160,23 +187,23 @@
             <div *ngIf="selectedOption == 3">
               <!-- Formulario para Entrenador -->
               <form [formGroup]="registerFormEntrenador" (ngSubmit)="registerEntrenador()" class="form-register">
-                <div class="mb-3 d-flex">
+                <!--<div class="mb-3 d-flex">
                   <div class="col-6">
-                    <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
+                    <label for="name" class="form-label">Ingresa tu nombre</label>
                     <input type="text" class="form-control input-register" id="nameSon"
                       placeholder="Ingresa tu nombre completo" formControlName="nameSon">
                   </div>
-                </div>
+                </div>-->
                 <div class="mb-3 d-flex">
                   <div class="col-6">
                     <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                    <input type="text" class="form-control input-register" id="name"
-                      placeholder="Ingresa nombre del hij@" formControlName="name">
+                    <input type="text" class="form-control input-register" id="name" placeholder="Ingresa nombre"
+                      formControlName="name">
                   </div>
                   <div class="col-6" style="margin-left: 10px;">
                     <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
-                    <input type="text" class="form-control input-register" id="surname"
-                      placeholder="Ingresa apellido del hij@" formControlName="surname">
+                    <input type="text" class="form-control input-register" id="surname" placeholder="Ingresa apellidos"
+                      formControlName="surname">
                   </div>
                 </div>
                 <div class="mb-3 d-flex">
@@ -221,8 +248,19 @@
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
                     <label class="form-check-label" for="termsCheckbox">
-                      Acepto los <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">términos y
-                        condiciones</a>
+                      Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
+                        privacidad</a> y las
+                      <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                        condiciones de contratación</a>
+                    </label>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="comunCheckbox" formControlName="comunicaciones">
+                    <label class="form-check-label" for="comunCheckbox">
+                      Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
+                        target="_blank">comunicaciones comerciales</a>
                     </label>
                   </div>
                 </div>
@@ -292,8 +330,19 @@
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
                     <label class="form-check-label" for="termsCheckbox">
-                      Acepto los <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">términos y
-                        condiciones</a>
+                      Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
+                        privacidad</a> y las
+                      <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                        condiciones de contratación</a>
+                    </label>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="comunCheckbox" formControlName="comunicaciones">
+                    <label class="form-check-label" for="comunCheckbox">
+                      Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
+                        target="_blank">comunicaciones comerciales</a>
                     </label>
                   </div>
                 </div>
@@ -307,7 +356,10 @@
             </div>
           </div>
           <div class="form-control" *ngIf="msgAge" style="display: block; color: red;">
-            <p>Lo sentimos, pero si eres menor de 14 años, han de darse de alta uno de tus padres o tutores.</p>
+            <p>Lo sentimos, pero si eres menor de 18 años, ha de darse de alta uno de tus padres o tutores.</p>
+          </div>
+          <div class="form-control" *ngIf="msgForm" style="display: block; color: red;">
+            <p>Revisa los campos que te falten por rellenar y acepta política de privacidad.</p>
           </div>
           <div class="card-footer textoCentrado" style="flex-direction: column;">
             <div class="row text-center">

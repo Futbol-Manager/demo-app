@@ -15,6 +15,7 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
+import { environment } from 'src/environments/environment';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -79,29 +80,50 @@ export class PlayerComponent implements OnInit {
   profileId = 0;
 
   countries: string[] = [
-    'Afganistán', 'Albania', 'Alemania', 'Andorra', 'Angola', 'Antigua y Barbuda', 'Arabia Saudita', 
-    'Argelia', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaiyán', 'Bahamas', 'Bangladés', 'Barbados', 
-    'Baréin', 'Bélgica', 'Belice', 'Benín', 'Bielorrusia', 'Birmania', 'Bolivia', 'Bosnia y Herzegovina', 'Botsuana', 
-    'Brasil', 'Brunéi', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Bután', 'Cabo Verde', 'Camboya', 'Camerún', 'Canadá', 
-    'Catar', 'Chad', 'Chile', 'China', 'Chipre', 'Ciudad del Vaticano', 'Colombia', 'Comoras', 'Corea del Norte', 
-    'Corea del Sur', 'Costa de Marfil', 'Costa Rica', 'Croacia', 'Cuba', 'Dinamarca', 'Dominica', 'Ecuador', 'Egipto', 
-    'El Salvador', 'Emiratos Árabes Unidos', 'Eritrea', 'Eslovaquia', 'Eslovenia', 'Estados Unidos', 
-    'Estonia', 'Etiopía', 'Filipinas', 'Finlandia', 'Fiyi', 'Francia', 'Gabón', 'Gambia', 'Georgia', 'Ghana', 'Granada', 
-    'Grecia', 'Guatemala', 'Guinea', 'Guinea-Bisáu', 'Guinea Ecuatorial', 'Guyana', 'Haití', 'Honduras', 'Hungría', 
-    'India', 'Indonesia', 'Irak', 'Irán', 'Irlanda', 'Islandia', 'Islas Marshall', 'Islas Salomón', 'Israel', 'Italia', 
-    'Jamaica', 'Japón', 'Jordania', 'Kazajistán', 'Kenia', 'Kirguistán', 'Kiribati', 'Kuwait', 'Laos', 'Lesoto', 
-    'Letonia', 'Líbano', 'Liberia', 'Libia', 'Liechtenstein', 'Lituania', 'Luxemburgo', 'Madagascar', 'Malasia', 
-    'Malaui', 'Maldivas', 'Malí', 'Malta', 'Marruecos', 'Mauricio', 'Mauritania', 'México', 'Micronesia', 'Moldavia', 
-    'Mónaco', 'Mongolia', 'Montenegro', 'Mozambique', 'Namibia', 'Nauru', 'Nepal', 'Nicaragua', 'Níger', 'Nigeria', 
-    'Noruega', 'Nueva Zelanda', 'Omán', 'Países Bajos', 'Pakistán', 'Palaos', 'Panamá', 'Papúa Nueva Guinea', 'Paraguay', 
-    'Perú', 'Polonia', 'Portugal', 'Reino Unido', 'República Centroafricana', 'República Checa', 'República de Macedonia', 
-    'República del Congo', 'República Democrática del Congo', 'República Dominicana', 'Ruanda', 'Rumania', 'Rusia', 
-    'Samoa', 'San Cristóbal y Nieves', 'San Marino', 'San Vicente y las Granadinas', 'Santa Lucía', 'Santo Tomé y Príncipe', 
-    'Senegal', 'Serbia', 'Seychelles', 'Sierra Leona', 'Singapur', 'Siria', 'Somalia', 'Sri Lanka', 'Suazilandia', 'Sudáfrica', 
-    'Sudán', 'Sudán del Sur', 'Suecia', 'Suiza', 'Surinam', 'Tailandia', 'Tanzania', 'Tayikistán', 'Timor Oriental', 'Togo', 
-    'Tonga', 'Trinidad y Tobago', 'Túnez', 'Turkmenistán', 'Turquía', 'Tuvalu', 'Ucrania', 'Uganda', 'Uruguay', 'Uzbekistán', 
+    'Afganistán', 'Albania', 'Alemania', 'Andorra', 'Angola', 'Antigua y Barbuda', 'Arabia Saudita',
+    'Argelia', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaiyán', 'Bahamas', 'Bangladés', 'Barbados',
+    'Baréin', 'Bélgica', 'Belice', 'Benín', 'Bielorrusia', 'Birmania', 'Bolivia', 'Bosnia y Herzegovina', 'Botsuana',
+    'Brasil', 'Brunéi', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Bután', 'Cabo Verde', 'Camboya', 'Camerún', 'Canadá',
+    'Catar', 'Chad', 'Chile', 'China', 'Chipre', 'Ciudad del Vaticano', 'Colombia', 'Comoras', 'Corea del Norte',
+    'Corea del Sur', 'Costa de Marfil', 'Costa Rica', 'Croacia', 'Cuba', 'Dinamarca', 'Dominica', 'Ecuador', 'Egipto',
+    'El Salvador', 'Emiratos Árabes Unidos', 'Eritrea', 'Eslovaquia', 'Eslovenia', 'Estados Unidos',
+    'Estonia', 'Etiopía', 'Filipinas', 'Finlandia', 'Fiyi', 'Francia', 'Gabón', 'Gambia', 'Georgia', 'Ghana', 'Granada',
+    'Grecia', 'Guatemala', 'Guinea', 'Guinea-Bisáu', 'Guinea Ecuatorial', 'Guyana', 'Haití', 'Honduras', 'Hungría',
+    'India', 'Indonesia', 'Irak', 'Irán', 'Irlanda', 'Islandia', 'Islas Marshall', 'Islas Salomón', 'Israel', 'Italia',
+    'Jamaica', 'Japón', 'Jordania', 'Kazajistán', 'Kenia', 'Kirguistán', 'Kiribati', 'Kuwait', 'Laos', 'Lesoto',
+    'Letonia', 'Líbano', 'Liberia', 'Libia', 'Liechtenstein', 'Lituania', 'Luxemburgo', 'Madagascar', 'Malasia',
+    'Malaui', 'Maldivas', 'Malí', 'Malta', 'Marruecos', 'Mauricio', 'Mauritania', 'México', 'Micronesia', 'Moldavia',
+    'Mónaco', 'Mongolia', 'Montenegro', 'Mozambique', 'Namibia', 'Nauru', 'Nepal', 'Nicaragua', 'Níger', 'Nigeria',
+    'Noruega', 'Nueva Zelanda', 'Omán', 'Países Bajos', 'Pakistán', 'Palaos', 'Panamá', 'Papúa Nueva Guinea', 'Paraguay',
+    'Perú', 'Polonia', 'Portugal', 'Reino Unido', 'República Centroafricana', 'República Checa', 'República de Macedonia',
+    'República del Congo', 'República Democrática del Congo', 'República Dominicana', 'Ruanda', 'Rumania', 'Rusia',
+    'Samoa', 'San Cristóbal y Nieves', 'San Marino', 'San Vicente y las Granadinas', 'Santa Lucía', 'Santo Tomé y Príncipe',
+    'Senegal', 'Serbia', 'Seychelles', 'Sierra Leona', 'Singapur', 'Siria', 'Somalia', 'Sri Lanka', 'Suazilandia', 'Sudáfrica',
+    'Sudán', 'Sudán del Sur', 'Suecia', 'Suiza', 'Surinam', 'Tailandia', 'Tanzania', 'Tayikistán', 'Timor Oriental', 'Togo',
+    'Tonga', 'Trinidad y Tobago', 'Túnez', 'Turkmenistán', 'Turquía', 'Tuvalu', 'Ucrania', 'Uganda', 'Uruguay', 'Uzbekistán',
     'Vanuatu', 'Venezuela', 'Vietnam', 'Yemen', 'Yibuti', 'Zambia', 'Zimbabue'
   ];
+
+  playerIdsList: any[] = [];
+
+  //para subir las caras de los dnis
+  mostrarModalDniJugador: boolean = false;
+  dniCara1: string | ArrayBuffer | null | undefined = null;
+  dniCara2: string | ArrayBuffer | null | undefined = null;
+  selectedFileCara1: File | null = null;
+  selectedFileCara2: File | null = null;
+  //estas son las caras del padre o tutor 1
+  dniCara3: string | ArrayBuffer | null | undefined = null;
+  dniCara4: string | ArrayBuffer | null | undefined = null;
+  selectedFileCara3: File | null = null;
+  selectedFileCara4: File | null = null;
+  //estas son  las caras de la madre o tutor 2
+  dniCara5: string | ArrayBuffer | null | undefined = null;
+  dniCara6: string | ArrayBuffer | null | undefined = null;
+  selectedFileCara5: File | null = null;
+  selectedFileCara6: File | null = null;
+
+  indexSelectedDni = 0;
 
   constructor(private playerservice: PlayerService,
     private router: Router,
@@ -113,7 +135,8 @@ export class PlayerComponent implements OnInit {
     private snackBar: MatSnackBar,
     private fb: FormBuilder,
     private teamService: TeamService,
-    private loginService: LoginService) { }
+    private loginService: LoginService,
+    private playerService: PlayerService,) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -128,6 +151,7 @@ export class PlayerComponent implements OnInit {
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
       this.profileId = this.usuarioActual!.profileType.profileId;
+      //this.playerIdsList = this.usuarioActual!.playerIds;
     });
   }
 
@@ -140,6 +164,13 @@ export class PlayerComponent implements OnInit {
           // Mapea los datos bajo 'data' a instancias del modelo Team
           this.players = response.data.players; //.map((player: Player) => new Player(player));
           this.clubId = response.data.clubId;
+
+          // Si el perfil es > 2, filtra los jugadores según los playerIds del usuario actual
+          if (this.profileId > 2 && this.usuarioActual && this.usuarioActual!.playerIds) {
+            this.players = this.players.filter(player =>
+              this.usuarioActual!.playerIds.includes(player.playerId)
+            );
+          }
           // Inicializar el DataTable después de cargar los datos
           this.inicializarDataTable();
         } else {
@@ -675,7 +706,7 @@ export class PlayerComponent implements OnInit {
     }
 
     // Comprobar si el jugador es menor de 18 años
-    this.isMenor = edad < 18;
+    this.isMenor = edad < 180;
     this.showModalInvitar = true;
   }
 
@@ -729,12 +760,15 @@ export class PlayerComponent implements OnInit {
 
   enviarMailJugador() {
     if (this.userForm.valid) {
-      let menor = 0;
-      if (this.isMenor) {
+      let menor = 1;
+      /*if (this.isMenor) {
         menor = 1;
-      }
+      }*/
       this.registerService.invitePlayer(this.userForm.value.mail, this.selectedPlayerId, menor, this.teamId).pipe().subscribe(
         res => {
+          if (res.data) {
+            //ocultar sobre TODO
+          }
           this.cerrarModalInvitar();
           const snackBarConfig = new MatSnackBarConfig();
           snackBarConfig.duration = 5000;
@@ -751,6 +785,169 @@ export class PlayerComponent implements OnInit {
       this.showPorteroOptions = true;
     else
       this.showPorteroOptions = false;
+  }
+
+  abrirModalDniJugador(player: any) {
+    this.playerIdSelected = player.playerId;
+    this.selectedPlayer = player;
+    this.mostrarModalDniJugador = true;
+  }
+
+  cerrarModalDniJugador() {
+    this.dniCara1 = null;
+    this.dniCara2 = null;
+    this.dniCara3 = null;
+    this.dniCara4 = null;
+    this.dniCara5 = null;
+    this.dniCara6 = null;
+    this.mostrarModalDniJugador = false;
+  }
+
+  onFileChange(event: any, cara: string) {
+    const file = event.target.files[0];
+
+    if (file) {
+      const fileType = file.type;
+
+      // Verifica si el tipo de archivo es PNG o JPEG
+      if (fileType === 'image/png' || fileType === 'image/jpeg') {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          switch (cara) {
+            case 'cara1':
+              this.dniCara1 = e.target?.result;
+              this.selectedFileCara1 = file;
+              break;
+            case 'cara2':
+              this.dniCara2 = e.target?.result;
+              this.selectedFileCara2 = file;
+              break;
+            case 'cara3':
+              this.dniCara3 = e.target?.result;
+              this.selectedFileCara3 = file;
+              break;
+            case 'cara4':
+              this.dniCara4 = e.target?.result;
+              this.selectedFileCara4 = file;
+              break;
+            case 'cara5':
+              this.dniCara5 = e.target?.result;
+              this.selectedFileCara5 = file;
+              break;
+            case 'cara6':
+              this.dniCara6 = e.target?.result;
+              this.selectedFileCara6 = file;
+              break;
+          }
+        };
+        reader.readAsDataURL(file);
+
+        setTimeout(() => {
+          this.subirCaraDni(cara);
+        }, 1000);
+      } else {
+        // Muestra un mensaje de error si el archivo no es PNG o JPEG
+        alert('Formato de archivo no válido. Por favor, sube una imagen en formato PNG o JPEG.');
+      }
+    }
+  }
+
+  subirCaraDni(cara: string) {
+    let fileToUpload = null;
+    let caraOption = 0;
+
+    switch (cara) {
+      case 'cara1':
+        fileToUpload = this.selectedFileCara1;
+        break;
+      case 'cara2':
+        caraOption = 1;
+        fileToUpload = this.selectedFileCara2;
+        break;
+      case 'cara3':
+        caraOption = 2;
+        fileToUpload = this.selectedFileCara3;
+        break;
+      case 'cara4':
+        caraOption = 3;
+        fileToUpload = this.selectedFileCara4;
+        break;
+      case 'cara5':
+        caraOption = 4;
+        fileToUpload = this.selectedFileCara5;
+        break;
+      case 'cara6':
+        caraOption = 5;
+        fileToUpload = this.selectedFileCara6;
+        break;
+    }
+
+    if (fileToUpload) {
+      const formData = new FormData();
+      formData.append('file', fileToUpload);
+
+      // Simulamos el envío de la imagen al servidor
+      this.playerService.createUpdateImgDniPlayer(this.playerIdSelected, caraOption, fileToUpload)
+        .subscribe(
+          (response) => {
+            switch (caraOption) {
+              case 0:
+                this.player.imgDniUno = response.data;
+                break;
+              case 1:
+                this.player.imgDniDos = response.data;
+                break;
+              case 2:
+                this.player.dniPadre1 = response.data;
+                break;
+              case 3:
+                this.player.dniPadre2 = response.data;
+                break;
+              case 4:
+                this.player.dniMadre1 = response.data;
+                break;
+              case 5:
+                this.player.dniMadre2 = response.data;
+                break;
+            }
+
+            this.snackBar.open('Imagen subida correctamente.', 'Cerrar', {
+              duration: 3000,
+            });
+          },
+          error => {
+            console.error('Error al subir la imagen', error);
+          }
+        );
+
+      // Aquí se realiza la llamada al backend
+      // Puedes usar HttpClient para realizar la solicitud
+      // Ejemplo: this.http.post(endpoint, formData).subscribe(...)
+      //console.log(`Subiendo ${cara}:`, fileToUpload.name);
+      // Realiza la llamada a tu servicio o API aquí
+    }
+  }
+
+  descargarImagen(url: string, nombreArchivo: string) {
+    const urlBackend = environment.apiUrl + `commons/download-image?url=${encodeURIComponent(url)}`;
+
+    fetch(urlBackend)
+      .then(response => response.blob())
+      .then(blob => {
+        const a = document.createElement('a');
+        const objectUrl = window.URL.createObjectURL(blob);
+        a.href = objectUrl;
+        a.download = nombreArchivo;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(objectUrl);
+        document.body.removeChild(a);
+      })
+      .catch(error => {
+        window.open(url, '_blank');
+        //console.error('Error descargando la imagen:', error);
+        //alert('No se pudo descargar la imagen. Por favor, intente de nuevo más tarde.');
+      });
   }
 
 }

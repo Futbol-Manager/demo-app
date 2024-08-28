@@ -383,10 +383,10 @@ export class ContabilidadComponent implements OnInit {
 
   enviarMailJugador() {
     if (this.userForm.valid) {
-      let menor = 0;
-      if (this.isMenor) {
+      let menor = 1;
+      /*if (this.isMenor) {
         menor = 1;
-      }
+      }*/
       this.registerService.invitePlayer(this.userForm.value.mail, this.selectedPlayerId, menor, this.selectedTeamId).pipe().subscribe(
         res => {
           this.cerrarModalInvitar();

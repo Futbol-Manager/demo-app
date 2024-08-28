@@ -12,6 +12,12 @@
           <i class="bi bi-people-fill"></i>
           <span class="d-none d-md-inline">Ver jugadores del equipo</span>
         </a>
+      </div>      
+      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
+          <i class="bi bi-people-fill"></i>
+          <span class="d-none d-md-inline">Ver Información</span>
+        </a>
       </div>
       <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2 && categoryTeam < 27">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">
@@ -3039,26 +3045,6 @@
   </div>
 </div>
 
-<!-- Modal para ver la pizarra -->
-<div class="modal modal-large" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalBoard}">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Detalles del Entrenamiento</h5>
-        <!-- Botón de cerrar con un icono -->
-        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarBoardModal()"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Contenido del modal (en este caso, el iframe) -->
-        <iframe width="100%" height="100%" id="urlIframe" scrolling="no" frameborder="0"
-          src="https://tacticalboard.sphairatech.com"></iframe>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
 <!-- AQUI EMPIEZAN LOS FORMULARIOS -->
 
 <!-- Modal para mostrar información del entrenamiento -->
@@ -3855,13 +3841,57 @@
           <p><b>Material:</b> {{ tareaSeleccionada?.material }}</p>
           <p><b>Video YouTube:</b> {{ tareaSeleccionada?.video }}</p>
           <br>
-          <img *ngIf="tareaSeleccionada?.imagenBoard"
+          <!-- <img *ngIf="tareaSeleccionada?.imagenBoard"
             [src]="'https://sphairatech.com/images/task-board/' + tareaSeleccionada.imagenBoard"
             alt="Imagen de la tarea" class="img-fluid">
+           Mostrar la imagen si tarea.imagenBoard tiene un valor -->
+          <div [id]="'div_tarea_' + tareaSeleccionada?.taskId">
+            <img class="imgBoard" *ngIf="tareaSeleccionada?.imagenBoard"
+              [src]="'https://sphairatech.com/images/task-board/' + tareaSeleccionada?.imagenBoard"
+              alt="Imagen de la tarea" [id]="'imagen_tarea_' + tareaSeleccionada?.taskId"
+              onerror="this.src='https://sphairatech.com/images/task-board/blank.png'">
+          </div>
+          <hr>
+          <div *ngIf="this.usuarioActual!.profileType.profileId === 2">
+            <h4>Puedes crear la tarea en una pizarra y subir después la imagen</h4>
+            <!-- Botón para abrir el modal -->
+            <button class="btn btn-warning" (click)="openBoardModal()">Abrir pizarra</button> o también puedes
+            <!-- Botón para abrir enlace en una nueva pestaña -->
+            <a href="https://tacticalboard.sphairatech.com/" target="_blank"> ir a la aplicacion</a>
+            <!-- Agregar más campos de tarea según sea necesario -->
+            <div class="container">
+              <h4>Sube ahora la imagen descargada de tu pizarra</h4>
+              <form (submit)="onSubmit(tareaSeleccionada)" enctype="multipart/form-data">
+                <div class="form-group">
+                  <label for="image">Seleccionar imagen:</label>
+                  <input type="file" id="image" (change)="onFileSelected($event)">
+                </div>
+                <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir imagen</button>
+              </form>
+            </div>
+          </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" (click)="closeTaskModal()">Cerrar</button>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para ver la pizarra -->
+<div class="modal modal-large" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalBoard}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Detalles del Entrenamiento</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarBoardModal()"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Contenido del modal (en este caso, el iframe) -->
+        <iframe width="100%" height="100%" id="urlIframe" scrolling="no" frameborder="0"
+          src="https://tacticalboard.sphairatech.com"></iframe>
       </div>
     </div>
   </div>
