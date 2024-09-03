@@ -12,7 +12,7 @@
           <i class="bi bi-people-fill"></i>
           <span class="d-none d-md-inline">Ver jugadores del equipo</span>
         </a>
-      </div>      
+      </div>
       <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
           <i class="bi bi-people-fill"></i>
@@ -188,25 +188,40 @@
           <!-- pestaña crear un partido -->
           <div class="tab-pane fade" id="partido" role="tabpanel" aria-labelledby="partido-tab">
             <form (ngSubmit)="crearPartido()">
-              <div class="mb-3">
-                <label for="rivalName" class="form-label">Nombre del Rival:</label>
-                <input type="text" class="form-control" id="rivalName" name="rivalName" [(ngModel)]="match.rivalName">
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-12">
+                  <!-- Contenido de la subcolumna -->
+                  <label><strong>Información general del partido:</strong></label>
+                </div>
               </div>
-              <div class="mb-3">
-                <label for="terreno" class="form-label">Local o Visitante:</label>
-                <select class="form-control" id="terreno" name="terreno" [(ngModel)]="match.terreno">
-                  <option value="Local">Local</option>
-                  <option value="Visitante">Visitante</option>
-                </select>
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-6 mt-3">
+                  <label for="tipoPartido" class="form-label">Tipo de partido:</label>
+                  <select class="form-control custom-input" id="tipoPartido" name="tipoPartido"
+                    [(ngModel)]="match.tipoPartido">
+                    <option value="Amistoso">Amistoso</option>
+                    <option value="Liga">Liga</option>
+                    <option value="Torneo">Torneo</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-6 mt-3">
+                  <label for="rivalName" class="form-label">Nombre del Rival:</label>
+                  <input class="form-control custom-input" id="rivalName" name="rivalName"
+                    [(ngModel)]="match.rivalName" />
+                </div>
               </div>
-              <div class="mb-3">
-                <label for="lugar" class="form-label">Lugar:</label>
-                <textarea class="form-control" id="lugar" rows="5" name="lugar" [(ngModel)]="match.lugar"></textarea>
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-12 mt-3">
+                  <label for="lugar" class="form-label">Lugar:</label>
+                  <textarea class="form-control custom-input" id="lugar" rows="2" name="lugar"
+                    [(ngModel)]="match.lugar"></textarea>
+                </div>
               </div>
-              <div class="mb-3 d-flex">
-                <div class="col-6">
-                  <label for="hora" class="form-label">hora:</label>
-                  <select class="form-control" id="hora" name="hora" [(ngModel)]="match.hora">
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-1 mt-3">
+                  <label for="hora" class="form-label">Hora de</label>
+                  <select class="form-control custom-input" id="hora" name="hora" [(ngModel)]="match.hora"
+                    aria-placeholder="08">
                     <option value="08">08</option>
                     <option value="09">09</option>
                     <option value="10">10</option>
@@ -223,71 +238,215 @@
                     <option value="21">21</option>
                   </select>
                 </div>
-                <div class="col-6">
-                  <label for="minutos" class="form-label">minutos:</label>
-                  <select class="form-control" id="minutos" name="minuts" [(ngModel)]="match.minutos">
+                <div class="col-12 col-md-1 mt-3">
+                  <label for="minutos" class="form-label">quedada:</label>
+                  <select class="form-control custom-input" id="minutos" name="minutos" [(ngModel)]="match.minutos">
                     <option value="00">00</option>
                     <option value="15">15</option>
                     <option value="30">30</option>
                     <option value="45">45</option>
                   </select>
                 </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <label for="terreno" class="form-label">Local o Visitante:</label>
+                  <select class="form-control custom-input" id="terreno" name="terreno" [(ngModel)]="match.terreno">
+                    <option value="Local">Local</option>
+                    <option value="Visitante">Visitante</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-1 mt-3">
+                  <label for="horaEmpieza" class="form-label">Hora del</label>
+                  <select class="form-control custom-input" id="horaEmpieza" name="horaEmpieza"
+                    [(ngModel)]="match.horaEmpieza">
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-1 mt-3">
+                  <label for="minutosEmpieza" class="form-label">partido:</label>
+                  <select class="form-control custom-input" id="minutosEmpieza" name="minutosEmpieza"
+                    [(ngModel)]="match.minutosEmpieza">
+                    <option value="00">00</option>
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="45">45</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <label for="refereeName" class="form-label">Nombre del Árbitro:</label>
+                  <input type="text" class="form-control custom-input" id="refereeName" name="refereeName"
+                    [(ngModel)]="match.refereeName">
+                </div>
               </div>
-              <div class="mb-3">
-                <label for="rivalInfo" class="form-label">Información del Rival:</label>
-                <textarea class="form-control" id="rivalInfo" rows="5" name="rivalInfo"
-                  [(ngModel)]="match.rivalInfo"></textarea>
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-12">
+                  <!-- Contenido de la subcolumna -->
+                  <label><strong>Información del Rival:</strong></label>
+                </div>
               </div>
-              <div class="mb-3">
-                <label for="refereeName" class="form-label">Nombre del Árbitro:</label>
-                <input type="text" class="form-control" id="refereeName" name="refereeName"
-                  [(ngModel)]="match.refereeName">
+
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="puntosFuertesRival" rows="2" name="puntosFuertesRival"
+                    [(ngModel)]="match.puntosFuertesRival" placeholder="Puntos fuertes"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="puntosDebilesRival" rows="2" name="puntosDebilesRival"
+                    [(ngModel)]="match.puntosDebilesRival" placeholder="Puntos débiles"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="jugadoresClaveRival" rows="2"
+                    name="jugadoresClaveRival" [(ngModel)]="match.jugadoresClaveRival"
+                    placeholder="Jugadores clave (Nombre, Posición, Dorsal, Comentarios, etc)"></textarea>
+                </div>
               </div>
-              <div class="mb-3">
-                <label for="trainingPicture" class="form-label">Formación:</label>
-                <select class="form-control" id="trainingPicture" name="trainingPicture"
-                  [(ngModel)]="match.trainingPicture">
-                  <option value="1-3-2-1">1-3-2-1</option>
-                  <option value="1-2-3-1">1-2-3-1</option>
-                  <option value="1-3-1-2">1-3-1-2</option>
-                  <option value="1-2-2-2">1-2-2-2</option>
-                  <option value="1-2-1-3">1-2-1-3</option>
-                  <option value="1-1-3-2">1-1-3-2</option>
-                  <option value="1-3-3-0">1-3-3-0</option>
-                  <option value="1-4-1-1">1-4-1-1</option>
-                  <option disabled>──────────</option>
-                  <option value="1-4-4-2">1-4-4-2</option>
-                  <option value="1-4-3-3">1-4-3-3</option>
-                  <option value="1-4-2-3-1">1-4-2-3-1</option>
-                  <option value="1-4-1-4-1">1-4-1-4-1</option>
-                  <option value="1-3-5-2">1-3-5-2</option>
-                  <option value="1-3-4-3">1-3-4-3</option>
-                  <option value="1-5-4-1">1-5-4-1</option>
-                  <option value="1-4-5-1">1-4-5-1</option>
-                  <option value="1-3-3-3-1">1-3-3-3-1</option>
-                  <option value="1-3-1-4-2">1-3-1-4-2</option>
-                  <option value="1-2-3-2-3">1-2-3-2-3</option>
-                  <option value="1-4-2-1-3">1-4-2-1-3</option>
-                  <option value="1-3-2-3-2">1-3-2-3-2</option>
-                  <option value="1-5-3-2">1-5-3-2</option>
-                  <option value="1-4-4-1-1">1-4-4-1-1</option>
-                </select>
+
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="estiloJuegoRival" rows="2" name="estiloJuegoRival"
+                    [(ngModel)]="match.estiloJuegoRival"
+                    placeholder="Estilo de juego (Posición, transición, presión, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="ultimosResultadosRival" rows="2"
+                    name="ultimosResultadosRival" [(ngModel)]="match.ultimosResultadosRival"
+                    placeholder="Últimos resultados (Fecha, rival, resultado)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="formacionesRecientesRival" rows="2"
+                    name="formacionesRecientesRival" [(ngModel)]="match.formacionesRecientesRival"
+                    placeholder="Formaciones recientes (4-3-3, 4-4-2, etc)"></textarea>
+                </div>
               </div>
-              <div class="mb-3">
-                <label for="matchTactics" class="form-label">Táctica General:</label>
-                <textarea class="form-control" id="matchTactics" rows="5" name="warmUp"
-                  [(ngModel)]="match.matchTactics"></textarea>
+
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="patronesOfensivosRival" rows="2"
+                    name="patronesOfensivosRival" [(ngModel)]="match.patronesOfensivosRival"
+                    placeholder="Patrones Ofensivos (Ataque por bandas, Atauqe por centro, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="patronesDefensivosRival" rows="2"
+                    name="patronesDefensivosRival" [(ngModel)]="match.patronesDefensivosRival"
+                    placeholder="Patrones Defensivos (Bloqueo bajo, medio, alto, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="estadisticasRival" rows="2" name="estadisticasRival"
+                    [(ngModel)]="match.estadisticasRival"
+                    placeholder="Estadisticas (goles a favor, en contra, goles por partido, encajados por partido, etc)"></textarea>
+                </div>
               </div>
-              <div class="mb-3">
-                <label for="abp" class="form-label">ABPs:</label>
-                <textarea class="form-control" id="abp" rows="5" name="abp" [(ngModel)]="match.abp"></textarea>
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="tendenciasTacticasRival" rows="2"
+                    name="tendenciasTacticasRival" [(ngModel)]="match.tendenciasTacticasRival"
+                    placeholder="Tendencias Tácticas (Cambios de formación durante el partido, sustituciones habituales, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="datosIndividualesRival" rows="2"
+                    name="datosIndividualesRival" [(ngModel)]="match.datosIndividualesRival"
+                    placeholder="Datos Individuales Importantes (Portero, Defenas, Centrocampista, Delanteros)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="abpsRival" rows="2" name="abpsRival"
+                    [(ngModel)]="match.abpsRival" placeholder="ABPs (Córners, Faltas, Banda, etc)"></textarea>
+                </div>
               </div>
-              <div class="mb-3">
+
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-12">
+                  <!-- Contenido de la subcolumna -->
+                  <label><strong>Información de mi equipo:</strong></label>
+                </div>
+              </div>
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                </div>
+              </div>
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="formacionInicial" rows="2" name="formacionInicial"
+                    [(ngModel)]="match.formacionInicial" placeholder="Formación Inicial (4-4-2, 4-3-3, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="planJuegoAtaque" rows="2" name="planJuegoAtaque"
+                    [(ngModel)]="match.planJuegoAtaque"
+                    placeholder="Plan de Juego en Ataque (subida por bandas, balones largos, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="planJuegoDefensa" rows="2" name="planJuegoDefensa"
+                    [(ngModel)]="match.planJuegoDefensa"
+                    placeholder="Plan de Juego en Defensa (Bloque bajo, medio, alto, presión tras pérdida, etc)"></textarea>
+                </div>
+              </div>
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="transicionesOfensivas" rows="2"
+                    name="transicionesOfensivas" [(ngModel)]="match.transicionesOfensivas"
+                    placeholder="Transiciones Ofensivas (rapidez con balón largo, reinicio de juego, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="transicionesDefensivas" rows="2"
+                    name="transicionesDefensivas" [(ngModel)]="match.transicionesDefensivas"
+                    placeholder="Transiciones Defensivas (Presión tras pérdida, repliegue rápido, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="abpsOfensivas" rows="2" name="abpsOfensivas"
+                    [(ngModel)]="match.abpsOfensivas"
+                    placeholder="ABPs Ofensivas (Jugadas ensayadas, centros al área, etc)"></textarea>
+                </div>
+              </div>
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="abpsDefensivas" rows="2" name="abpsDefensivas"
+                    [(ngModel)]="match.abpsDefensivas"
+                    placeholder="ABPs Defensivas (Marcaje al hombre, en zona, quién libra, rechace, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="rolesEspecificos" rows="2" name="rolesEspecificos"
+                    [(ngModel)]="match.rolesEspecificos"
+                    placeholder="Roles Específicos (Capitán, lanzador de faltas, de penaltis, corners, jugadores de barrera, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="ajustesTacticos" rows="2" name="ajustesTacticos"
+                    [(ngModel)]="match.ajustesTacticos"
+                    placeholder="Ajustes Tácticos (Cambio de formación, adaptaciones durante el partido, cambios según situaciones del partido, etc)"></textarea>
+                </div>
+              </div>
+
+
+
+              <!-- <div class="mb-3">
                 <label for="summoned" class="form-label">Convocados:</label>
                 <textarea class="form-control" id="summoned" rows="5" name="summoned"
                   [(ngModel)]="match.summoned"></textarea>
               </div>
-              <!-- Botón para guardar el nuevo equipo -->
+              Botón para guardar el nuevo equipo -->
               <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
                 class="btn btn-custom float-end">Guardar</button>
             </form>
@@ -300,58 +459,101 @@
 
 <!-- Modal para mostrar información del partido -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPartido}">
-  <div class="modal-dialog modal-lg" role="document">
+  <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
-      <div class="modal-header">
+      <div class="modal-header flex-wrap">
         <h5 class="modal-title">Detalles del Partido</h5>
-        <div
-          *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) && match.matchPreparationId !== 0">
-          <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-secondary"
-            (click)="openModalPrePartido(match.matchPreparationId)">Pre-formulario</button>
-          <button type="button" class="btn btn-success"
-            (click)="openModalPostMatch(match.matchPreparationId)">Post-formulario</button>
-        </div>
-        <div *ngIf="this.usuarioActual!.profileType.profileId === 3 || this.usuarioActual!.profileType.profileId === 4">
-          <button style="margin-right: 1em; margin-left: 1em;" type="button" class="btn btn-secondary"
-            (click)="openModalFormPrePartido(match.matchPreparationId)">Pre-formulario</button>
-          <button type="button" class="btn btn-success"
-            (click)="openModalFormPostPartido(match.matchPreparationId)">Post-formulario</button>
-        </div>
-        <div class="ms-auto">
-          <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-success"
-            (click)="openPostPartido(match.matchPreparationId)">Post
-            Partido</button>
-          <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-secondary ms-2"
-            (click)="printDivPostPartido('divPrePArtdo')">Imprimir</button>
-          <button type="button" class="btn btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
-          <div class="form-check form-switch" *ngIf="this.usuarioActual!.profileType.profileId === 2">
-            <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
-              [checked]="togglePartidoVisible === 1" title="Si está no visible el jugador no lo verá"
-              (change)="onChangeTogglePartido($event, match.matchPreparationId)">
-            <label class="form-check-label">No visible / Visible</label>
+
+        <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center ms-sm-auto">
+          <div
+            *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) && match.matchPreparationId !== 0"
+            class="d-flex flex-column flex-sm-row mb-2 mb-sm-0">
+            <button class="btn btn-secondary mb-2 mb-sm-0 me-sm-2"
+              (click)="openModalPrePartido(match.matchPreparationId)">Pre-formulario</button>
+            <button class="btn btn-success"
+              (click)="openModalPostMatch(match.matchPreparationId)">Post-formulario</button>
+          </div>
+
+          <div
+            *ngIf="this.usuarioActual!.profileType.profileId === 3 || this.usuarioActual!.profileType.profileId === 4"
+            class="d-flex flex-column flex-sm-row mb-2 mb-sm-0">
+            <button class="btn btn-secondary mb-2 mb-sm-0 me-sm-2"
+              (click)="openModalFormPrePartido(match.matchPreparationId)">Pre-formulario</button>
+            <button class="btn btn-success"
+              (click)="openModalFormPostPartido(match.matchPreparationId)">Post-formulario</button>
+          </div>
+
+          <div class="d-flex flex-column flex-sm-row align-items-center ms-sm-3">
+            <div class="d-flex flex-column flex-sm-row">
+              <button type="button" class="btn btn-primary" (click)="abrirModalConvocatoria()">Convocatoria</button>
+            </div>
+          </div>
+
+          <div class="d-flex flex-column flex-sm-row align-items-center ms-sm-3">
+            <div class="d-flex flex-column flex-sm-row">
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2"
+                class="btn btn-success mb-2 mb-sm-0 me-sm-2" (click)="openPostPartido(match.matchPreparationId)">Post
+                Partido</button>
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2"
+                class="btn btn-secondary ms-sm-2 mb-2 mb-sm-0"
+                (click)="printDivPostPartido('divPrePArtdo')">Imprimir</button>
+            </div>
+
+            <div class="form-check form-switch ms-sm-3 mt-2 mt-sm-0"
+              *ngIf="this.usuarioActual!.profileType.profileId === 2">
+              <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
+                [checked]="togglePartidoVisible === 1" title="Si está no visible el jugador no lo verá"
+                (change)="onChangeTogglePartido($event, match.matchPreparationId)">
+              <label class="form-check-label">No visible / Visible</label>
+            </div>
+
+            <button type="button" class="btn btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
           </div>
         </div>
       </div>
       <div class="modal-body">
-        <div class="mb-3">
-          <label for="nombreRival" class="form-label">Nombre del Rival:</label>
-          <input type="text" class="form-control" id="nombreRival" name="nombreRival" [(ngModel)]="match.rivalName">
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-12">
+            <!-- Contenido de la subcolumna -->
+            <label><strong>Información general del partido:</strong></label>
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="terreno" class="form-label">Local o Visitante:</label>
-          <select class="form-control" id="terreno" name="terreno" [(ngModel)]="match.terreno">
-            <option value="Local">Local</option>
-            <option value="Visitante">Visitante</option>
-          </select>
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-6 mt-3">
+            <label for="tipoPartido" class="form-label">Tipo de partido:</label>
+            <select class="form-control custom-input" id="tipoPartido" name="tipoPartido"
+              [(ngModel)]="match.tipoPartido">
+              <option value="Amistoso">Amistoso</option>
+              <option value="Liga">Liga</option>
+              <option value="Torneo">Torneo</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-6 mt-3">
+            <label for="rivalName" class="form-label">Nombre del Rival:</label>
+            <input class="form-control custom-input" id="rivalName" name="rivalName" [(ngModel)]="match.rivalName" />
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="lugar" class="form-label">Lugar:</label>
-          <textarea class="form-control" id="lugar" rows="5" name="lugar" [(ngModel)]="match.lugar"></textarea>
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-12 mt-3">
+            <label for="lugar" class="form-label">Lugar:</label>
+            <textarea class="form-control custom-input" id="lugar" rows="2" name="lugar"
+              [(ngModel)]="match.lugar"></textarea>
+          </div>
+          <!-- Botón para abrir en Google Maps -->
+          <div class="row mt-3" *ngIf="match.lugar && match.lugar.trim()">
+            <div class="col-12 col-md-12">
+              <button class="btn btn-primary" (click)="openInGoogleMaps()">
+                Abrir en Google Maps
+                <i class="bi bi-map"></i>
+              </button>
+            </div>
+          </div>
         </div>
-        <div class="mb-3 d-flex">
-          <div class="col-6">
-            <label for="hora" class="form-label">hora:</label>
-            <select class="form-control" id="hora" name="hora" [(ngModel)]="match.hora">
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-1 mt-3">
+            <label for="hora" class="form-label">Hora de</label>
+            <select class="form-control custom-input" id="hora" name="hora" [(ngModel)]="match.hora"
+              aria-placeholder="08">
               <option value="08">08</option>
               <option value="09">09</option>
               <option value="10">10</option>
@@ -368,9 +570,51 @@
               <option value="21">21</option>
             </select>
           </div>
-          <div class="col-6">
-            <label for="minutos" class="form-label">minutos:</label>
-            <select class="form-control" id="minutos" name="minutos" [(ngModel)]="match.minutos">
+          <div class="col-12 col-md-1 mt-3">
+            <label for="minutos" class="form-label">quedada:</label>
+            <select class="form-control custom-input" id="minutos" name="minutos" [(ngModel)]="match.minutos">
+              <option value="00">00</option>
+              <option value="15">15</option>
+              <option value="30">30</option>
+              <option value="45">45</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <label for="terreno" class="form-label">Local o Visitante:</label>
+            <select class="form-control custom-input" id="terreno" name="terreno" [(ngModel)]="match.terreno">
+              <option value="Local">Local</option>
+              <option value="Visitante">Visitante</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <label for="refereeName" class="form-label">Nombre del Árbitro:</label>
+            <input type="text" class="form-control custom-input" id="refereeName" name="refereeName"
+              [(ngModel)]="match.refereeName">
+          </div>
+          <div class="col-12 col-md-1 mt-3">
+            <label for="horaEmpieza" class="form-label">Hora del</label>
+            <select class="form-control custom-input" id="horaEmpieza" name="horaEmpieza"
+              [(ngModel)]="match.horaEmpieza">
+              <option value="08">08</option>
+              <option value="09">09</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
+              <option value="21">21</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-1 mt-3">
+            <label for="minutosEmpieza" class="form-label">partido:</label>
+            <select class="form-control custom-input" id="minutosEmpieza" name="minutosEmpieza"
+              [(ngModel)]="match.minutosEmpieza">
               <option value="00">00</option>
               <option value="15">15</option>
               <option value="30">30</option>
@@ -378,105 +622,145 @@
             </select>
           </div>
         </div>
-        <div class="mb-3">
-          <label for="informacionRival" class="form-label">Información del Rival:</label>
-          <textarea class="form-control" id="informacionRival" rows="5" name="informacionRival"
-            [(ngModel)]="match.rivalInfo"></textarea>
-        </div>
-        <div class="mb-3">
-          <label for="nombreArbitro" class="form-label">Nombre del Árbitro:</label>
-          <input type="text" class="form-control" id="nombreArbitro" name="nombreArbitro"
-            [(ngModel)]="match.refereeName">
-        </div>
-        <div class="mb-3">
-          <label for="alineacion" class="form-label">Formación:</label>
-          <select class="form-control" id="alineacion" name="alineacion" [(ngModel)]="match.trainingPicture">
-            <option value="1-3-2-1">1-3-2-1</option>
-            <option value="1-2-3-1">1-2-3-1</option>
-            <option value="1-3-1-2">1-3-1-2</option>
-            <option value="1-2-2-2">1-2-2-2</option>
-            <option value="1-2-1-3">1-2-1-3</option>
-            <option value="1-1-3-2">1-1-3-2</option>
-            <option value="1-3-3-0">1-3-3-0</option>
-            <option value="1-4-1-1">1-4-1-1</option>
-            <option disabled>──────────</option>
-            <option value="1-4-4-2">1-4-4-2</option>
-            <option value="1-4-3-3">1-4-3-3</option>
-            <option value="1-4-2-3-1">1-4-2-3-1</option>
-            <option value="1-4-1-4-1">1-4-1-4-1</option>
-            <option value="1-3-5-2">1-3-5-2</option>
-            <option value="1-3-4-3">1-3-4-3</option>
-            <option value="1-5-4-1">1-5-4-1</option>
-            <option value="1-4-5-1">1-4-5-1</option>
-            <option value="1-3-3-3-1">1-3-3-3-1</option>
-            <option value="1-3-1-4-2">1-3-1-4-2</option>
-            <option value="1-2-3-2-3">1-2-3-2-3</option>
-            <option value="1-4-2-1-3">1-4-2-1-3</option>
-            <option value="1-3-2-3-2">1-3-2-3-2</option>
-            <option value="1-5-3-2">1-5-3-2</option>
-            <option value="1-4-4-1-1">1-4-4-1-1</option>
-          </select>
-        </div>
-        <div class="mb-3">
-          <label for="tacticaGeneral" class="form-label">Táctica General:</label>
-          <textarea class="form-control" id="tacticaGeneral" rows="5" name="tacticaGeneral"
-            [(ngModel)]="match.matchTactics"></textarea>
-        </div>
-        <div class="mb-3">
-          <label for="ABPs" class="form-label">ABPs:</label>
-          <textarea class="form-control" id="ABPs" rows="5" name="ABPs" [(ngModel)]="match.abp"></textarea>
-        </div>
-        <div class="mb-3">
-          <label for="convocados" class="form-label">Convocados:</label>
-          <textarea class="form-control" id="convocados" rows="5" name="convocados"
-            [(ngModel)]="match.summoned"></textarea>
-        </div>
-      </div>
-      <div id="divPrePArtdo" style="display: none;">
-        <div class="mb-3">
-          <label for="nombreRival" class="form-label">Nombre del Rivales:</label>
-          <p>{{ match.rivalName }}</p>
-        </div>
-        <div class="mb-3">
-          <label for="terreno" class="form-label">Local o Visitante:</label>
-          <p>{{ match.terreno }}</p>
-        </div>
-        <div class="mb-3">
-          <label for="lugar" class="form-label">Lugar:</label>
-          <p>{{ match.lugar }}</p>
-        </div>
-        <div class="mb-3 d-flex">
-          <div class="col-6">
-            <label for="hora" class="form-label">hora:</label>
-            <p>{{ match.hora }}:{{ match.minutos }}</p>
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-12">
+            <!-- Contenido de la subcolumna -->
+            <label><strong>Información del Rival:</strong></label>
           </div>
         </div>
-        <div class="mb-3">
-          <label for="informacionRival" class="form-label">Información del Rival:</label>
-          <p>{{ match.rivalInfo }}</p>
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="puntosFuertesRival" rows="2" name="puntosFuertesRival"
+              [(ngModel)]="match.puntosFuertesRival" placeholder="Puntos fuertes"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="puntosDebilesRival" rows="2" name="puntosDebilesRival"
+              [(ngModel)]="match.puntosDebilesRival" placeholder="Puntos débiles"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="jugadoresClaveRival" rows="2" name="jugadoresClaveRival"
+              [(ngModel)]="match.jugadoresClaveRival"
+              placeholder="Jugadores clave (Nombre, Posición, Dorsal, Comentarios, etc)"></textarea>
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="nombreArbitro" class="form-label">Nombre del Árbitro:</label>
-          <p>{{ match.refereeName }}</p>
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="estiloJuegoRival" rows="2" name="estiloJuegoRival"
+              [(ngModel)]="match.estiloJuegoRival"
+              placeholder="Estilo de juego (Posición, transición, presión, etc)"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="ultimosResultadosRival" rows="2"
+              name="ultimosResultadosRival" [(ngModel)]="match.ultimosResultadosRival"
+              placeholder="Últimos resultados (Fecha, rival, resultado)"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="formacionesRecientesRival" rows="2"
+              name="formacionesRecientesRival" [(ngModel)]="match.formacionesRecientesRival"
+              placeholder="Formaciones recientes (4-3-3, 4-4-2, etc)"></textarea>
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="alineacion" class="form-label">Formación:</label>
-          <p>{{ match.trainingPicture }}</p>
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="patronesOfensivosRival" rows="2"
+              name="patronesOfensivosRival" [(ngModel)]="match.patronesOfensivosRival"
+              placeholder="Patrones Ofensivos (Ataque por bandas, Atauqe por centro, etc)"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="patronesDefensivosRival" rows="2"
+              name="patronesDefensivosRival" [(ngModel)]="match.patronesDefensivosRival"
+              placeholder="Patrones Defensivos (Bloqueo bajo, medio, alto, etc)"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="estadisticasRival" rows="2" name="estadisticasRival"
+              [(ngModel)]="match.estadisticasRival"
+              placeholder="Estadisticas (goles a favor, en contra, goles por partido, encajados por partido, etc)"></textarea>
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="tacticaGeneral" class="form-label">Táctica General:</label>
-          <p>{{ match.matchTactics }}</p>
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="tendenciasTacticasRival" rows="2"
+              name="tendenciasTacticasRival" [(ngModel)]="match.tendenciasTacticasRival"
+              placeholder="Tendencias Tácticas (Cambios de formación durante el partido, sustituciones habituales, etc)"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="datosIndividualesRival" rows="2"
+              name="datosIndividualesRival" [(ngModel)]="match.datosIndividualesRival"
+              placeholder="Datos Individuales Importantes (Portero, Defenas, Centrocampista, Delanteros)"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="abpsRival" rows="2" name="abpsRival"
+              [(ngModel)]="match.abpsRival" placeholder="ABPs (Córners, Faltas, Banda, etc)"></textarea>
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="ABPs" class="form-label">ABPs:</label>
-          <p>{{ match.abp }}</p>
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-12">
+            <!-- Contenido de la subcolumna -->
+            <label><strong>Información de mi equipo:</strong></label>
+          </div>
         </div>
-        <div class="mb-3">
-          <label for="convocados" class="form-label">Convocados:</label>
-          <p>{{ match.summoned }}</p>
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-4 mt-3">
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+          </div>
+        </div>
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="formacionInicial" rows="2" name="formacionInicial"
+              [(ngModel)]="match.formacionInicial" placeholder="Formación Inicial (4-4-2, 4-3-3, etc)"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="planJuegoAtaque" rows="2" name="planJuegoAtaque"
+              [(ngModel)]="match.planJuegoAtaque"
+              placeholder="Plan de Juegfo en Ataque (subida por bandas, balones largos, etc)"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="planJuegoDefensa" rows="2" name="planJuegoDefensa"
+              [(ngModel)]="match.planJuegoDefensa"
+              placeholder="Plan de Juego en Defensa (Bloque bajo, medio, alto, presión tras pérdida, etc)"></textarea>
+          </div>
+        </div>
+
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="transicionesOfensivas" rows="2" name="transicionesOfensivas"
+              [(ngModel)]="match.transicionesOfensivas"
+              placeholder="Transiciones Ofensivas (rapidez con balón largo, reinicio de juego, etc)"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="transicionesDefensivas" rows="2"
+              name="transicionesDefensivas" [(ngModel)]="match.transicionesDefensivas"
+              placeholder="Transiciones Defensivas (Presión tras pérdida, repliegue rápido, etc)"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="abpsOfensivas" rows="2" name="abpsOfensivas"
+              [(ngModel)]="match.abpsOfensivas"
+              placeholder="ABPs Ofensivs (Jugadas ensayadas, centros al área, etc)"></textarea>
+          </div>
+        </div>
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="abpsDefensivas" rows="2" name="abpsDefensivas"
+              [(ngModel)]="match.abpsDefensivas"
+              placeholder="ABPs Defensivas (Marcaje al hombre, en zona, quién libra, rechace, etc)"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="rolesEspecificos" rows="2" name="rolesEspecificos"
+              [(ngModel)]="match.rolesEspecificos"
+              placeholder="Roles Específicos (Capitán, lanzador de faltas, de penaltis, corners, jugadores de barrera, etc)"></textarea>
+          </div>
+          <div class="col-12 col-md-4 mt-3">
+            <textarea class="form-control custom-input" id="ajustesTacticos" rows="2" name="ajustesTacticos"
+              [(ngModel)]="match.ajustesTacticos"
+              placeholder="Ajustes Tácticos (Cambio de formación, adaptaciones durante el partido, cambios según situaciones del partido, etc)"></textarea>
+          </div>
         </div>
       </div>
       <div class="modal-footer d-flex">
+        <button type="button" class="btn btn-primary" (click)="abrirModalConvocatoria()">Convocatoria</button>
         <!-- Botón para guardar el nuevo partido -->
         <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger float-end"
           (click)="eliminarPartido()">Eliminar Partido</button>
@@ -3892,6 +4176,72 @@
         <!-- Contenido del modal (en este caso, el iframe) -->
         <iframe width="100%" height="100%" id="urlIframe" scrolling="no" frameborder="0"
           src="https://tacticalboard.sphairatech.com"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para gestionar la convocatoria -->
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalConvocatoria}"
+  [style.display]="mostrarModalConvocatoria ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content" style="min-height: 60vh; max-height: 80vh; overflow-y: auto;">
+      <div class="modal-header">
+        <h5 class="modal-title">Gestión de Convocatoria</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalConvocatoria()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mt-3">
+          <!-- No Convocados -->
+          <div class="col-6">
+            <h5>No Convocados</h5>
+            <div class="list-group" style="min-height: 20vh; max-height: 20vh; overflow-y: auto; border: 2px dashed #ec270d; padding: 10px;" (drop)="onDrop2($event, 'no_convocado')"
+              (dragover)="allowDrop($event)">
+              <div *ngFor="let jugador of jugadoresNoConvocados" class="list-group-item" draggable="true"
+                (dragstart)="onDragStart($event, jugador)">
+                {{ jugador.nombre }}
+              </div>
+            </div>
+          </div>
+          <!-- Suplentes -->
+          <div class="col-6">
+            <h5>Suplentes</h5>
+            <div class="list-group suplentes"
+              style="min-height: 20vh; max-height: 20vh; overflow-y: auto; border: 2px dashed #007bff; padding: 10px;"
+              (drop)="onDrop2($event, 'suplente')" (dragover)="allowDrop($event)">
+              <div *ngFor="let jugador of jugadoresSuplentes" class="list-group-item" draggable="true"
+                (dragstart)="onDragStart($event, jugador)">
+                {{ jugador.nombre }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <!-- Titulares -->
+          <div class="col-12">
+            <h5>Titulares</h5>
+            <div class="field" (drop)="onDrop2($event, 'titular')" (dragover)="allowDrop($event)">
+              <div *ngFor="let jugador of jugadoresTitulares" class="player"
+                [ngStyle]="{'left.px': jugador.posicion_x, 'top.px': jugador.posicion_y}" draggable="true"
+                (dragstart)="onDragStart($event, jugador)">
+
+                <!-- Mostrar icono si img es null -->
+                <i *ngIf="!jugador.img" class="bi bi-person-circle"></i>
+
+                <!-- Mostrar imagen de fondo si img tiene un valor -->
+                <div *ngIf="jugador.img" [ngStyle]="{'background-image': 'url(' + jugador.img + ')'}"
+                  class="player-img">
+                </div>
+
+                <span class="player-name">{{ jugador.nombre }}</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="guardarConvocatoria()">Guardar</button>
       </div>
     </div>
   </div>

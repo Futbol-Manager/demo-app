@@ -209,7 +209,8 @@
                 <div class="mb-3 d-flex">
                   <div class="col-6">
                     <!--<label for="birthdate" class="form-label">Selecciona fecha de nacimiento</label>-->
-                    <input type="date" class="form-control input-register" id="date" formControlName="birthdate">
+                    <input type="text" class="form-control input-register" id="date" formControlName="birthdate"
+                      placeholder="Fecha de nacimiento" onfocus="(this.type='date')" onblur="(this.type='text')" />
                   </div>
                   <div class="col-6" style="margin-left: 10px;">
                     <!--<label for="genre" class="form-label">Selecciona tu género</label>-->

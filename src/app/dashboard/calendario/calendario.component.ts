@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AsistenciaTraining, Task, Training } from 'src/app/core/services/models/training.models';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import { MatchPreparation, PlayerPostPartido, PostPartido, PostPartidoId } from 'src/app/core/services/models/match.model';
+import { ConvocatoriaUI, MatchPreparation, PlayerPostPartido, PostPartido, PostPartidoId } from 'src/app/core/services/models/match.model';
 import { MatDialog } from '@angular/material/dialog';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { PlayerId } from 'src/app/core/services/player/player.model';
@@ -19,6 +19,11 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 interface OpcionesFormatoFecha {
   month: 'long';
   year: 'numeric';
+}
+
+interface Match {
+  lugar: string;
+  // Otras propiedades de MatchPreparation
 }
 
 interface Category {
@@ -502,6 +507,17 @@ export class CalendarioComponent implements OnInit {
   selectedNumber: number = 0; // Por defecto, seleccionamos 0
   trainingSessionIdSelected = 0;
 
+  match1: Match = {
+    lugar: ''
+    // Asegúrate de inicializar otras propiedades de MatchPreparation si las tiene
+  };
+
+  jugadoresNoConvocados: ConvocatoriaUI[] = [];
+  jugadoresSuplentes: ConvocatoriaUI[] = [];
+  jugadoresTitulares: ConvocatoriaUI[] = [];
+
+  mostrarModalConvocatoria = false;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -635,7 +651,15 @@ export class CalendarioComponent implements OnInit {
   // Método para abrir el modal de creación de equipo
   abrirModal(day: string): void {
     this.daySession = day;
-    this.trainingSession = new Training({}); // Restablecer a un objeto vacío
+    this.trainingSession = new Training({}); // Restablecer a un objeto vacío  
+    
+    this.match = new MatchPreparation({});
+
+    this.match.hora = this.match.hora != '' ? this.match.hora : '08';
+    this.match.minutos = this.match.minutos != '' ? this.match.minutos : '15';
+
+    this.match.horaEmpieza = this.match.horaEmpieza != '' ? this.match.horaEmpieza : '09';
+    this.match.minutosEmpieza = this.match.minutosEmpieza != '' ? this.match.minutosEmpieza : '15';
     this.showModal = true;
   }
 
@@ -757,6 +781,12 @@ export class CalendarioComponent implements OnInit {
   }
 
   openPartido(id: any, day: string): void {
+    //se vacia para reiniciarla
+    this.jugadoresNoConvocados = [];
+    this.jugadoresSuplentes = [];
+    this.jugadoresTitulares = [];
+
+    this.matchPreparationId = id;
     this.daySession = day;
     // Obtener la información del partido por su ID
     this.trainingService.getPrePartido(id).subscribe(
@@ -766,6 +796,32 @@ export class CalendarioComponent implements OnInit {
           // Asignar los datos del partido al objeto 'partido'
           this.match = response.data;
           this.togglePartidoVisible = response.data.visible === 0 || !response.data.visible ? 0 : 1;
+
+          if (this.match.convocatoria != null && this.match.convocatoria != '') {
+            //se carga el json y se distribuye
+            // Convertir la cadena JSON a un objeto JavaScript
+            const convocatoria = JSON.parse(this.match.convocatoria);
+            this.jugadoresNoConvocados = convocatoria.noConvocados;
+            this.jugadoresSuplentes = convocatoria.suplentes;    // Inicializa con los datos del backend
+            this.jugadoresTitulares = convocatoria.titulares;
+          } else {
+            //se coge todo de la lista de jugadores y se pone en no convocados
+            // Supongamos que response.data.players es la lista de jugadores
+            const players = response.data.players;
+
+            // Asignar a jugadoresNoConvocados mapeando cada jugador a una instancia de ConvocatoriaUI
+            let i = 0;
+            this.jugadoresNoConvocados = players.map((player: any, index: number) => new ConvocatoriaUI({
+              id: index, // Asignar el índice como ID,
+              playerId: player.playerId, // Asegúrate de que este campo esté presente en la respuesta
+              nombre: player.nombre + ' ' + (player.numero != null ? player.numero : ''),
+              img: player.picturePlayer != null && player.picturePlayer != '' ? 'https://sphairatech.com/images/user/' + player.picturePlayer : '', // Puedes asignar una imagen si está disponible o usar un valor por defecto
+              posicion_x: player.posicion_x || null, // O asignar null si no tiene coordenadas
+              posicion_y: player.posicion_y || null  // O asignar null si no tiene coordenadas
+            }));
+
+            //console.log(this.jugadoresNoConvocados);
+          }
           // Abrir el modal
           this.showModalPartido = true;
         } else {
@@ -1926,6 +1982,104 @@ export class CalendarioComponent implements OnInit {
         (document.getElementById('subirTarea') as HTMLInputElement).checked = actualValue === 1;
       }, 0);
     }
+  }
+
+  // Método para abrir Google Maps con la dirección
+  openInGoogleMaps(): void {
+    if (this.match.lugar && this.match.lugar.trim()) {
+      const address = encodeURIComponent(this.match.lugar.trim());
+      const url = `https://www.google.com/maps/search/?api=1&query=${address}`;
+      window.open(url, '_blank');
+    }
+  }
+
+  onDragStart(event: DragEvent, jugador: any) {
+    event.dataTransfer?.setData('jugador', JSON.stringify(jugador));
+  }
+
+  allowDrop(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  onDrop2(event: DragEvent, estado: string) {
+    event.preventDefault();
+    const jugadorData = event.dataTransfer?.getData('jugador');
+    if (jugadorData) {
+      const jugador = JSON.parse(jugadorData);
+
+      // Actualiza el estado del jugador
+      this.actualizarEstadoJugador(jugador, estado);
+
+      // Si se suelta en titulares, actualizamos las coordenadas del jugador
+      if (estado === 'titular') {
+        const fieldRect = (event.target as HTMLElement).getBoundingClientRect();
+        jugador.posicion_x = event.clientX - fieldRect.left;
+        jugador.posicion_y = event.clientY - fieldRect.top;
+      }
+
+      // Mueve al jugador a la nueva lista
+      this.moverJugador(jugador, estado);
+    }
+  }
+
+  actualizarEstadoJugador(jugador: any, estado: string) {
+    jugador.estado = estado;
+  }
+
+  moverJugador(player: any, estado: string) {
+    this.removeJugador(player);
+
+    switch (estado) {
+      case 'no_convocado':
+        this.jugadoresNoConvocados.push(player);
+        break;
+      case 'suplente':
+        this.jugadoresSuplentes.push(player);
+        break;
+      case 'titular':
+        this.jugadoresTitulares.push(player);
+        break;
+    }
+  }
+
+  removeJugador(jugador: any) {
+    this.jugadoresNoConvocados = this.jugadoresNoConvocados.filter(j => j.id !== jugador.id);
+    this.jugadoresSuplentes = this.jugadoresSuplentes.filter(j => j.id !== jugador.id);
+    this.jugadoresTitulares = this.jugadoresTitulares.filter(j => j.id !== jugador.id);
+  }
+
+  guardarConvocatoria() {
+    const convocatoria = {
+      noConvocados: this.jugadoresNoConvocados,
+      suplentes: this.jugadoresSuplentes,
+      titulares: this.jugadoresTitulares.map(j => ({
+        id: j.id,
+        playerId: j.playerId,
+        nombre: j.nombre,
+        img: j.img,
+        posicion_x: j.posicion_x,
+        posicion_y: j.posicion_y
+      }))
+    };
+
+    // Convertir la convocatoria a una cadena JSON
+    const convocatoriaJSON = JSON.stringify(convocatoria);
+    //console.log(convocatoria);
+    //console.log(convocatoriaJSON);
+
+    this.matchPreparationId
+    // Llamada al API para guardar la convocatoria
+    this.playerService.updateConvocatoria(convocatoriaJSON, this.matchPreparationId).subscribe(response => {
+      alert('Convocatoria guardada con éxito.');
+    });
+  }
+
+  abrirModalConvocatoria() {
+    this.mostrarModalConvocatoria = true;
+  }
+
+  cerrarModalConvocatoria() {
+    this.mostrarModalConvocatoria = false;
   }
 
 

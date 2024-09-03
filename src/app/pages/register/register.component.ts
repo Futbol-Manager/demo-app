@@ -35,7 +35,7 @@ export class RegisterComponent implements OnInit {
     { value: "1", label: "Club" },
     { value: "2", label: "Entrenador" },
     // Opciones eliminadas
-    { value: "3", label: "Jugador" },
+    { value: "3", label: "Jugador/Padre" },
     { value: "4", label: "Jugador" }
   ];
   msgForm = false;

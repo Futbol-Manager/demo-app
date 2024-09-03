@@ -16,6 +16,35 @@ export class MatchPreparation {
     hora: string;
     minutos: string;
     visible: number;
+    horaEmpieza: string;
+    minutosEmpieza: string;
+
+    // Nuevas propiedades (de la primera solicitud)
+    tipoPartido: string;
+    puntosFuertesRival: string;
+    puntosDebilesRival: string;
+    jugadoresClaveRival: string;
+    estiloJuegoRival: string;
+    ultimosResultadosRival: string;
+    formacionesRecientesRival: string;
+    patronesOfensivosRival: string;
+    patronesDefensivosRival: string;
+    estadisticasRival: string;
+    tendenciasTacticasRival: string;
+    datosIndividualesRival: string;
+    abpsRival: string;
+
+    // Nuevas propiedades (de la segunda solicitud)
+    formacionInicial: string;
+    planJuegoAtaque: string;
+    planJuegoDefensa: string;
+    transicionesOfensivas: string;
+    transicionesDefensivas: string;
+    abpsOfensivas: string;
+    abpsDefensivas: string;
+    rolesEspecificos: string;
+    ajustesTacticos: string;
+    convocatoria: string;
 
     constructor(object: any) {
         this.matchPreparationId = object.matchPreparationId || 0;
@@ -33,6 +62,35 @@ export class MatchPreparation {
         this.hora = object.hora || '';
         this.minutos = object.minutos || '';
         this.visible = object.visible || 0;
+        this.horaEmpieza = object.horaEmpieza || '';
+        this.minutosEmpieza = object.minutosEmpieza || '';
+
+        // Nuevas propiedades (de la primera solicitud)
+        this.tipoPartido = object.tipoPartido || '';
+        this.puntosFuertesRival = object.puntosFuertesRival || '';
+        this.puntosDebilesRival = object.puntosDebilesRival || '';
+        this.jugadoresClaveRival = object.jugadoresClaveRival || '';
+        this.estiloJuegoRival = object.estiloJuegoRival || '';
+        this.ultimosResultadosRival = object.ultimosResultadosRival || '';
+        this.formacionesRecientesRival = object.formacionesRecientesRival || '';
+        this.patronesOfensivosRival = object.patronesOfensivosRival || '';
+        this.patronesDefensivosRival = object.patronesDefensivosRival || '';
+        this.estadisticasRival = object.estadisticasRival || '';
+        this.tendenciasTacticasRival = object.tendenciasTacticasRival || '';
+        this.datosIndividualesRival = object.datosIndividualesRival || '';
+        this.abpsRival = object.abpsRival || '';
+
+        // Nuevas propiedades (de la segunda solicitud)
+        this.formacionInicial = object.formacionInicial || '';
+        this.planJuegoAtaque = object.planJuegoAtaque || '';
+        this.planJuegoDefensa = object.planJuegoDefensa || '';
+        this.transicionesOfensivas = object.transicionesOfensivas || '';
+        this.transicionesDefensivas = object.transicionesDefensivas || '';
+        this.abpsOfensivas = object.abpsOfensivas || '';
+        this.abpsDefensivas = object.abpsDefensivas || '';
+        this.rolesEspecificos = object.rolesEspecificos || '';
+        this.ajustesTacticos = object.ajustesTacticos || '';
+        this.convocatoria = object.convocatoria || '';
     }
 }
 
@@ -107,7 +165,7 @@ export class PlayerPostPartido {
     penaltisCometidos: number = 0;
     penaltisRecibidos: number = 0;
     asistencias: number = 0;
-    penaltisFallados:number = 0;
+    penaltisFallados: number = 0;
 
     constructor(object: any) {
         this.playerPostPartidoId = object.playerPostPartidoId || 0;
@@ -139,5 +197,23 @@ export class PostPartidoId {
 
     constructor(object: any) {
         this.postPartidoId = object.postPartidoId || 0;
+    }
+}
+
+export class ConvocatoriaUI {
+    id: number;
+    playerId: number;
+    nombre: string;
+    img: string;
+    posicion_x: any;
+    posicion_y: any;
+
+    constructor(object: any) {
+        this.id = object.id || 0;
+        this.playerId = object.playerId || 0;
+        this.nombre = object.nombre || '';
+        this.img = object.img || '';
+        this.posicion_x = object.posicion_x || null;
+        this.posicion_y = object.posicion_y || null;
     }
 }
