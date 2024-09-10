@@ -6,7 +6,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { ConvocatoriaUI, MatchPreparation, PlayerPostPartido, PostPartido, PostPartidoId } from 'src/app/core/services/models/match.model';
 import { MatDialog } from '@angular/material/dialog';
 import { PlayerService } from 'src/app/core/services/player/player.service';
-import { PlayerId } from 'src/app/core/services/player/player.model';
+import { NotificatePlayerUI, PlayerId } from 'src/app/core/services/player/player.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -517,6 +517,19 @@ export class CalendarioComponent implements OnInit {
   jugadoresTitulares: ConvocatoriaUI[] = [];
 
   mostrarModalConvocatoria = false;
+  mostrarModalConvocatoriaLista = false;
+  showNotificar = false;
+
+  playersConvo: any[] = [];
+
+
+  showConvocados: any = [];
+  showNoConvocados: any = [];
+
+  // Variables para el control táctil
+  touchJugador: any;
+  startX: number = 0;
+  startY: number = 0;
 
   constructor(
     private router: Router,
@@ -652,7 +665,7 @@ export class CalendarioComponent implements OnInit {
   abrirModal(day: string): void {
     this.daySession = day;
     this.trainingSession = new Training({}); // Restablecer a un objeto vacío  
-    
+
     this.match = new MatchPreparation({});
 
     this.match.hora = this.match.hora != '' ? this.match.hora : '08';
@@ -796,6 +809,7 @@ export class CalendarioComponent implements OnInit {
           // Asignar los datos del partido al objeto 'partido'
           this.match = response.data;
           this.togglePartidoVisible = response.data.visible === 0 || !response.data.visible ? 0 : 1;
+          this.playersConvo = response.data.players;
 
           if (this.match.convocatoria != null && this.match.convocatoria != '') {
             //se carga el json y se distribuye
@@ -804,17 +818,18 @@ export class CalendarioComponent implements OnInit {
             this.jugadoresNoConvocados = convocatoria.noConvocados;
             this.jugadoresSuplentes = convocatoria.suplentes;    // Inicializa con los datos del backend
             this.jugadoresTitulares = convocatoria.titulares;
+            this.showNotificar = true;
           } else {
+            this.showNotificar = false;
             //se coge todo de la lista de jugadores y se pone en no convocados
             // Supongamos que response.data.players es la lista de jugadores
-            const players = response.data.players;
 
             // Asignar a jugadoresNoConvocados mapeando cada jugador a una instancia de ConvocatoriaUI
             let i = 0;
-            this.jugadoresNoConvocados = players.map((player: any, index: number) => new ConvocatoriaUI({
+            this.jugadoresNoConvocados = this.playersConvo.map((player: any, index: number) => new ConvocatoriaUI({
               id: index, // Asignar el índice como ID,
               playerId: player.playerId, // Asegúrate de que este campo esté presente en la respuesta
-              nombre: player.nombre + ' ' + (player.numero != null ? player.numero : ''),
+              nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
               img: player.picturePlayer != null && player.picturePlayer != '' ? 'https://sphairatech.com/images/user/' + player.picturePlayer : '', // Puedes asignar una imagen si está disponible o usar un valor por defecto
               posicion_x: player.posicion_x || null, // O asignar null si no tiene coordenadas
               posicion_y: player.posicion_y || null  // O asignar null si no tiene coordenadas
@@ -1993,14 +2008,17 @@ export class CalendarioComponent implements OnInit {
     }
   }
 
+  // Evento para arrastrar con ratón (PC)
   onDragStart(event: DragEvent, jugador: any) {
     event.dataTransfer?.setData('jugador', JSON.stringify(jugador));
   }
 
+  // Permitir el arrastre
   allowDrop(event: DragEvent) {
     event.preventDefault();
   }
 
+  // Evento para soltar en la zona correspondiente con el ratón (PC)
   onDrop2(event: DragEvent, estado: string) {
     event.preventDefault();
     const jugadorData = event.dataTransfer?.getData('jugador');
@@ -2019,6 +2037,48 @@ export class CalendarioComponent implements OnInit {
 
       // Mueve al jugador a la nueva lista
       this.moverJugador(jugador, estado);
+    }
+  }
+
+  // Eventos táctiles para soportar arrastrar con el dedo (móviles y tablets)
+  onTouchStart(event: TouchEvent, jugador: any): void {
+    this.touchJugador = jugador;
+    this.startX = event.touches[0].clientX;
+    this.startY = event.touches[0].clientY;
+    event.preventDefault(); // Prevenir acciones no deseadas como el scroll
+  }
+
+  onTouchMove(event: TouchEvent): void {
+    if (this.touchJugador) {
+      const touch = event.touches[0];
+      const fieldRect = (document.querySelector('.field') as HTMLElement).getBoundingClientRect();
+      this.touchJugador.posicion_x = touch.clientX - fieldRect.left;
+      this.touchJugador.posicion_y = touch.clientY - fieldRect.top;
+
+      // Actualiza la posición del jugador en el DOM
+      const playerElement = document.querySelector(`.player[data-id="${this.touchJugador.id}"]`) as HTMLElement;
+      if (playerElement) {
+        playerElement.style.left = `${this.touchJugador.posicion_x}px`;
+        playerElement.style.top = `${this.touchJugador.posicion_y}px`;
+      }
+
+      event.preventDefault(); // Evitar el desplazamiento de la página mientras se arrastra
+    }
+  }
+
+  onTouchEnd(event: TouchEvent, estado: string): void {
+    if (this.touchJugador) {
+      const fieldRect = (document.querySelector('.field') as HTMLElement).getBoundingClientRect();
+
+      // Ajustar las coordenadas si se suelta en titulares
+      if (estado === 'titular') {
+        this.touchJugador.posicion_x = this.touchJugador.posicion_x - fieldRect.left;
+        this.touchJugador.posicion_y = this.touchJugador.posicion_y - fieldRect.top;
+      }
+
+      this.actualizarEstadoJugador(this.touchJugador, estado);
+      this.moverJugador(this.touchJugador, estado);
+      this.touchJugador = null; // Resetear variable
     }
   }
 
@@ -2064,13 +2124,10 @@ export class CalendarioComponent implements OnInit {
 
     // Convertir la convocatoria a una cadena JSON
     const convocatoriaJSON = JSON.stringify(convocatoria);
-    //console.log(convocatoria);
-    //console.log(convocatoriaJSON);
 
-    this.matchPreparationId
-    // Llamada al API para guardar la convocatoria
     this.playerService.updateConvocatoria(convocatoriaJSON, this.matchPreparationId).subscribe(response => {
       alert('Convocatoria guardada con éxito.');
+      this.showNotificar = true;
     });
   }
 
@@ -2082,5 +2139,57 @@ export class CalendarioComponent implements OnInit {
     this.mostrarModalConvocatoria = false;
   }
 
+  abrirModalConvocatoriaLista() {
+    let ui = new NotificatePlayerUI({});
+    ui.players = this.playersConvo;
+    // Asignar los nombres de jugadores no convocados
+    ui.noConvocados = this.jugadoresNoConvocados.map((jugador: ConvocatoriaUI) => jugador.nombre);
+
+    // Asignar los nombres de jugadores suplentes y titulares a convocados
+    ui.convocados = [
+      ...this.jugadoresSuplentes.map((jugador: ConvocatoriaUI) => jugador.nombre),
+      ...this.jugadoresTitulares.map((jugador: ConvocatoriaUI) => jugador.nombre)
+    ];
+
+    this.showConvocados = ui.convocados;
+    this.showNoConvocados = ui.noConvocados;
+    this.mostrarModalConvocatoriaLista = true;
+  }
+
+  cerrarModalConvocatoriaLista() {
+    this.mostrarModalConvocatoriaLista = false;
+  }
+
+  enviarConvocatoria() {
+    let partido = this.match;
+    //crear el objeto para enviarlo
+    let ui = new NotificatePlayerUI({});
+    ui.players = this.playersConvo;
+
+    ui.local = partido.terreno == 'Local' ? 0 : 1;
+    ui.lugar = partido.lugar;
+    ui.rival = partido.rivalName;
+    ui.tipoPartido = partido.tipoPartido;
+
+    //esta es la hora de partido
+    ui.horaPartido = partido.horaEmpieza + ':' + partido.minutosEmpieza;
+    ui.horaQuedada = partido.hora + ':' + partido.minutos;
+    ui.fechaPartido = partido.matchDate;
+
+    // Asignar los nombres de jugadores no convocados
+    ui.noConvocados = this.jugadoresNoConvocados.map((jugador: ConvocatoriaUI) => jugador.nombre);
+
+    // Asignar los nombres de jugadores suplentes y titulares a convocados
+    ui.convocados = [
+      ...this.jugadoresSuplentes.map((jugador: ConvocatoriaUI) => jugador.nombre),
+      ...this.jugadoresTitulares.map((jugador: ConvocatoriaUI) => jugador.nombre)
+    ];
+
+    console.log(ui);
+
+    this.playerService.notificateMatchPlayer(ui, this.teamId).subscribe(response => {
+      alert('Notificados con éxito.');
+    });
+  }
 
 }

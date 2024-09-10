@@ -18,6 +18,17 @@
                 <div class="hint">Ver gráficas jugadores</div>
             </div>
         </div>
+        <div class="row mt-3">
+            <div class="col-2">
+                <label for="tipoPartidoSelected" class="form-label">Selecciona un equipo</label>
+                <select class="form-control me-2" id="tipoPartidoSelected" name="tipoPartidoSelected"
+                    [(ngModel)]="tipoPartidoSelected" (change)="selectedTipoPartido()">
+                    <option value="Liga">Liga</option>
+                    <option value="Amistoso">Amistoso</option>
+                    <option value="Torneo">Torneo</option>
+                </select>
+            </div>
+        </div>
     </div>
 
     <!-- Contenido para el dataTable -->

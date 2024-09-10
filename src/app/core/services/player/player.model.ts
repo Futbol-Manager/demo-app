@@ -286,3 +286,30 @@ export class PlayerEstadistica {
     this.MediaGolesAsistenciasPorPartido = object.MediaGolesAsistenciasPorPartido || '';
   }
 }
+
+export class NotificatePlayerUI {
+  players: Player[] = [];
+  rival: string = '';
+  noConvocados: string[] = [];
+  convocados: string[] = [];
+  lugar: string = '';
+  fechaPartido: string = '';
+  horaQuedada: string = '';
+  horaPartido: string = '';
+  tipoPartido: string = '';
+  local: number = 0; // 0 para local, 1 para visitante
+
+  constructor(object: any) {
+    this.players = object.players || [];
+    this.rival = object.rival || '';
+    this.noConvocados = object.noConvocados || [];
+    this.convocados = object.convocados || [];
+    this.lugar = object.lugar || '';
+    this.fechaPartido = object.fechaPartido || '';
+    this.horaQuedada = object.horaQuedada || '';
+    this.horaPartido = object.horaPartido || '';
+    this.tipoPartido = object.tipoPartido || '';
+    this.local = object.local || 0;
+  }
+}
+

@@ -92,7 +92,6 @@ export class InicioComponent implements OnInit {
         if (response && response.data) {
           if (response.data.picture != null) {
             this.pictureClub = response.data.picture;
-          } else {
             this.noPicture = true;
           }
           // Mapea los datos bajo 'data' a instancias del modelo Team
@@ -114,7 +113,11 @@ export class InicioComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data) {
           this.clubId = response.data.club.clubId;
-          this.pictureClub = response.data.club.picture;
+          
+          if (response.data.club.picture != null) {
+            this.pictureClub = response.data.club.picture;
+            this.noPicture = true;
+          }
           // Mapea los datos bajo 'data' a instancias del modelo Team
           this.listTeam = response.data.teams; //.map((team: TeamConJugadores) => new TeamConJugadores(team));
         } else {

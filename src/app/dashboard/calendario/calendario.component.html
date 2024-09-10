@@ -343,12 +343,12 @@
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="patronesDefensivosRival" rows="2"
                     name="patronesDefensivosRival" [(ngModel)]="match.patronesDefensivosRival"
-                    placeholder="Patrones Defensivos (Bloqueo bajo, medio, alto, etc)"></textarea>
+                    placeholder="Patrones Defensivos (Bloque bajo, medio, alto, etc)"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="estadisticasRival" rows="2" name="estadisticasRival"
                     [(ngModel)]="match.estadisticasRival"
-                    placeholder="Estadisticas (goles a favor, en contra, goles por partido, encajados por partido, etc)"></textarea>
+                    placeholder="Estadísticas (goles a favor, en contra, goles por partido, encajados por partido, etc)"></textarea>
                 </div>
               </div>
 
@@ -365,7 +365,7 @@
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="abpsRival" rows="2" name="abpsRival"
-                    [(ngModel)]="match.abpsRival" placeholder="ABPs (Córners, Faltas, Banda, etc)"></textarea>
+                    [(ngModel)]="match.abpsRival" placeholder="ABPs (Corners, Faltas, Banda, etc)"></textarea>
                 </div>
               </div>
 
@@ -464,33 +464,40 @@
       <div class="modal-header flex-wrap">
         <h5 class="modal-title">Detalles del Partido</h5>
 
-        <div class="d-flex flex-column flex-sm-row align-items-start align-items-sm-center ms-sm-auto">
+        <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center ms-lg-auto">
+          <!-- Sección para usuarios con profileId 1 o 2 -->
           <div
             *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) && match.matchPreparationId !== 0"
-            class="d-flex flex-column flex-sm-row mb-2 mb-sm-0">
+            class="d-flex flex-column flex-sm-row mb-2 mb-sm-0 flex-wrap">
             <button class="btn btn-secondary mb-2 mb-sm-0 me-sm-2"
               (click)="openModalPrePartido(match.matchPreparationId)">Pre-formulario</button>
             <button class="btn btn-success"
               (click)="openModalPostMatch(match.matchPreparationId)">Post-formulario</button>
           </div>
 
+          <!-- Sección para usuarios con profileId 3 o 4 -->
           <div
             *ngIf="this.usuarioActual!.profileType.profileId === 3 || this.usuarioActual!.profileType.profileId === 4"
-            class="d-flex flex-column flex-sm-row mb-2 mb-sm-0">
+            class="d-flex flex-column flex-sm-row mb-2 mb-sm-0 flex-wrap">
             <button class="btn btn-secondary mb-2 mb-sm-0 me-sm-2"
               (click)="openModalFormPrePartido(match.matchPreparationId)">Pre-formulario</button>
             <button class="btn btn-success"
               (click)="openModalFormPostPartido(match.matchPreparationId)">Post-formulario</button>
           </div>
 
-          <div class="d-flex flex-column flex-sm-row align-items-center ms-sm-3">
-            <div class="d-flex flex-column flex-sm-row">
-              <button type="button" class="btn btn-primary" (click)="abrirModalConvocatoria()">Convocatoria</button>
+          <!-- Botones para Convocatoria -->
+          <div class="mt-2 mt-lg-0">
+            <div class="d-flex flex-column flex-sm-row flex-wrap">
+              <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
+                class="btn btn-primary mb-2 mb-sm-0" (click)="abrirModalConvocatoria()">Convocatoria</button>
+              <button *ngIf="this.usuarioActual!.profileType.profileId != 2" type="button"
+                class="btn btn-secondary mb-2 mb-sm-0" (click)="abrirModalConvocatoriaLista()">Convocatoria</button>
             </div>
           </div>
 
-          <div class="d-flex flex-column flex-sm-row align-items-center ms-sm-3">
-            <div class="d-flex flex-column flex-sm-row">
+          <!-- Sección para post-partido y opciones de impresión -->
+          <div class="d-flex flex-column flex-lg-row align-items-center ms-lg-3 mt-2 mt-lg-0 flex-wrap">
+            <div class="d-flex flex-column flex-sm-row flex-wrap">
               <button *ngIf="this.usuarioActual!.profileType.profileId === 2"
                 class="btn btn-success mb-2 mb-sm-0 me-sm-2" (click)="openPostPartido(match.matchPreparationId)">Post
                 Partido</button>
@@ -499,6 +506,7 @@
                 (click)="printDivPostPartido('divPrePArtdo')">Imprimir</button>
             </div>
 
+            <!-- Toggle de visibilidad del partido -->
             <div class="form-check form-switch ms-sm-3 mt-2 mt-sm-0"
               *ngIf="this.usuarioActual!.profileType.profileId === 2">
               <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
@@ -507,7 +515,9 @@
               <label class="form-check-label">No visible / Visible</label>
             </div>
 
-            <button type="button" class="btn btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
+            <!-- Botón de cierre del modal -->
+            <button type="button" class="btn btn-close ms-sm-3 mt-2 mt-sm-0" aria-label="Close"
+              (click)="cerrarModalPartido()"></button>
           </div>
         </div>
       </div>
@@ -550,76 +560,97 @@
           </div>
         </div>
         <div class="row text-center mt-3">
-          <div class="col-12 col-md-1 mt-3">
-            <label for="hora" class="form-label">Hora de</label>
-            <select class="form-control custom-input" id="hora" name="hora" [(ngModel)]="match.hora"
-              aria-placeholder="08">
-              <option value="08">08</option>
-              <option value="09">09</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-              <option value="13">13</option>
-              <option value="14">14</option>
-              <option value="15">15</option>
-              <option value="16">16</option>
-              <option value="17">17</option>
-              <option value="18">18</option>
-              <option value="19">19</option>
-              <option value="20">20</option>
-              <option value="21">21</option>
-            </select>
+          <!-- Primera fila: 6 elementos divididos en dos grupos -->
+          <div class="col-12 col-md-6 mt-3">
+            <div class="row">
+              <div class="col-12 col-md-6 mt-3">
+                <label for="hora" class="form-label">Hora de</label>
+                <select class="form-control custom-input" id="hora" name="hora" [(ngModel)]="match.hora"
+                  aria-placeholder="08">
+                  <option value="08">08</option>
+                  <option value="09">09</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  <option value="14">14</option>
+                  <option value="15">15</option>
+                  <option value="16">16</option>
+                  <option value="17">17</option>
+                  <option value="18">18</option>
+                  <option value="19">19</option>
+                  <option value="20">20</option>
+                  <option value="21">21</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6 mt-3">
+                <label for="minutos" class="form-label">Quedada:</label>
+                <select class="form-control custom-input" id="minutos" name="minutos" [(ngModel)]="match.minutos">
+                  <option value="00">00</option>
+                  <option value="15">15</option>
+                  <option value="30">30</option>
+                  <option value="45">45</option>
+                </select>
+              </div>
+            </div>
           </div>
-          <div class="col-12 col-md-1 mt-3">
-            <label for="minutos" class="form-label">quedada:</label>
-            <select class="form-control custom-input" id="minutos" name="minutos" [(ngModel)]="match.minutos">
-              <option value="00">00</option>
-              <option value="15">15</option>
-              <option value="30">30</option>
-              <option value="45">45</option>
-            </select>
+
+          <div class="col-12 col-md-6 mt-3">
+            <div class="row">
+              <div class="col-12 col-md-12 mt-3">
+                <label for="terreno" class="form-label">Local o Visitante:</label>
+                <select class="form-control custom-input" id="terreno" name="terreno" [(ngModel)]="match.terreno">
+                  <option value="Local">Local</option>
+                  <option value="Visitante">Visitante</option>
+                </select>
+              </div>
+            </div>
           </div>
-          <div class="col-12 col-md-4 mt-3">
-            <label for="terreno" class="form-label">Local o Visitante:</label>
-            <select class="form-control custom-input" id="terreno" name="terreno" [(ngModel)]="match.terreno">
-              <option value="Local">Local</option>
-              <option value="Visitante">Visitante</option>
-            </select>
+
+          <!-- Segunda fila: Otros 6 elementos distribuidos igual -->
+          <div class="col-12 col-md-6 mt-3">
+            <div class="row">
+              <div class="col-12 col-md-6 mt-3">
+                <label for="horaEmpieza" class="form-label">Hora del</label>
+                <select class="form-control custom-input" id="horaEmpieza" name="horaEmpieza"
+                  [(ngModel)]="match.horaEmpieza">
+                  <option value="08">08</option>
+                  <option value="09">09</option>
+                  <option value="10">10</option>
+                  <option value="11">11</option>
+                  <option value="12">12</option>
+                  <option value="13">13</option>
+                  <option value="14">14</option>
+                  <option value="15">15</option>
+                  <option value="16">16</option>
+                  <option value="17">17</option>
+                  <option value="18">18</option>
+                  <option value="19">19</option>
+                  <option value="20">20</option>
+                  <option value="21">21</option>
+                </select>
+              </div>
+              <div class="col-12 col-md-6 mt-3">
+                <label for="minutosEmpieza" class="form-label">Partido:</label>
+                <select class="form-control custom-input" id="minutosEmpieza" name="minutosEmpieza"
+                  [(ngModel)]="match.minutosEmpieza">
+                  <option value="00">00</option>
+                  <option value="15">15</option>
+                  <option value="30">30</option>
+                  <option value="45">45</option>
+                </select>
+              </div>
+            </div>
           </div>
-          <div class="col-12 col-md-4 mt-3">
-            <label for="refereeName" class="form-label">Nombre del Árbitro:</label>
-            <input type="text" class="form-control custom-input" id="refereeName" name="refereeName"
-              [(ngModel)]="match.refereeName">
-          </div>
-          <div class="col-12 col-md-1 mt-3">
-            <label for="horaEmpieza" class="form-label">Hora del</label>
-            <select class="form-control custom-input" id="horaEmpieza" name="horaEmpieza"
-              [(ngModel)]="match.horaEmpieza">
-              <option value="08">08</option>
-              <option value="09">09</option>
-              <option value="10">10</option>
-              <option value="11">11</option>
-              <option value="12">12</option>
-              <option value="13">13</option>
-              <option value="14">14</option>
-              <option value="15">15</option>
-              <option value="16">16</option>
-              <option value="17">17</option>
-              <option value="18">18</option>
-              <option value="19">19</option>
-              <option value="20">20</option>
-              <option value="21">21</option>
-            </select>
-          </div>
-          <div class="col-12 col-md-1 mt-3">
-            <label for="minutosEmpieza" class="form-label">partido:</label>
-            <select class="form-control custom-input" id="minutosEmpieza" name="minutosEmpieza"
-              [(ngModel)]="match.minutosEmpieza">
-              <option value="00">00</option>
-              <option value="15">15</option>
-              <option value="30">30</option>
-              <option value="45">45</option>
-            </select>
+
+          <div class="col-12 col-md-6 mt-3">
+            <div class="row">
+              <div class="col-12 col-md-12 mt-3">
+                <label for="refereeName" class="form-label">Nombre del Árbitro:</label>
+                <input type="text" class="form-control custom-input" id="refereeName" name="refereeName"
+                  [(ngModel)]="match.refereeName">
+              </div>
+            </div>
           </div>
         </div>
         <div class="row text-center mt-3">
@@ -669,12 +700,12 @@
           <div class="col-12 col-md-4 mt-3">
             <textarea class="form-control custom-input" id="patronesDefensivosRival" rows="2"
               name="patronesDefensivosRival" [(ngModel)]="match.patronesDefensivosRival"
-              placeholder="Patrones Defensivos (Bloqueo bajo, medio, alto, etc)"></textarea>
+              placeholder="Patrones Defensivos (Bloque bajo, medio, alto, etc)"></textarea>
           </div>
           <div class="col-12 col-md-4 mt-3">
             <textarea class="form-control custom-input" id="estadisticasRival" rows="2" name="estadisticasRival"
               [(ngModel)]="match.estadisticasRival"
-              placeholder="Estadisticas (goles a favor, en contra, goles por partido, encajados por partido, etc)"></textarea>
+              placeholder="Estadísticas (goles a favor, en contra, goles por partido, encajados por partido, etc)"></textarea>
           </div>
         </div>
         <div class="row text-center mt-3">
@@ -690,7 +721,7 @@
           </div>
           <div class="col-12 col-md-4 mt-3">
             <textarea class="form-control custom-input" id="abpsRival" rows="2" name="abpsRival"
-              [(ngModel)]="match.abpsRival" placeholder="ABPs (Córners, Faltas, Banda, etc)"></textarea>
+              [(ngModel)]="match.abpsRival" placeholder="ABPs (Corners, Faltas, Banda, etc)"></textarea>
           </div>
         </div>
         <div class="row text-center mt-3">
@@ -715,7 +746,7 @@
           <div class="col-12 col-md-4 mt-3">
             <textarea class="form-control custom-input" id="planJuegoAtaque" rows="2" name="planJuegoAtaque"
               [(ngModel)]="match.planJuegoAtaque"
-              placeholder="Plan de Juegfo en Ataque (subida por bandas, balones largos, etc)"></textarea>
+              placeholder="Plan de Juego en Ataque (subida por bandas, balones largos, etc)"></textarea>
           </div>
           <div class="col-12 col-md-4 mt-3">
             <textarea class="form-control custom-input" id="planJuegoDefensa" rows="2" name="planJuegoDefensa"
@@ -738,7 +769,7 @@
           <div class="col-12 col-md-4 mt-3">
             <textarea class="form-control custom-input" id="abpsOfensivas" rows="2" name="abpsOfensivas"
               [(ngModel)]="match.abpsOfensivas"
-              placeholder="ABPs Ofensivs (Jugadas ensayadas, centros al área, etc)"></textarea>
+              placeholder="ABPs Ofensivos (Jugadas ensayadas, centros al área, etc)"></textarea>
           </div>
         </div>
         <div class="row text-center mt-3">
@@ -760,7 +791,10 @@
         </div>
       </div>
       <div class="modal-footer d-flex">
-        <button type="button" class="btn btn-primary" (click)="abrirModalConvocatoria()">Convocatoria</button>
+        <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-primary"
+          (click)="abrirModalConvocatoria()">Convocatoria</button>
+        <button *ngIf="this.usuarioActual!.profileType.profileId != 2" type="button" class="btn btn-secondary"
+          (click)="abrirModalConvocatoriaLista()">Convocatoria</button>
         <!-- Botón para guardar el nuevo partido -->
         <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger float-end"
           (click)="eliminarPartido()">Eliminar Partido</button>
@@ -846,12 +880,12 @@
               </div>
               <div class="mb-3 d-flex">
                 <div class="col-6">
-                  <label for="cornersAFavor" class="form-label">Córneres a favor:</label>
+                  <label for="cornersAFavor" class="form-label">Corners a favor:</label>
                   <input type="number" class="form-control" id="cornersAFavor" name="cornersAFavor"
                     [(ngModel)]="postPartido.cornersAFavor">
                 </div>
                 <div class="col-6">
-                  <label for="cornersEnContra" class="form-label">Córneres en contra:</label>
+                  <label for="cornersEnContra" class="form-label">Corners en contra:</label>
                   <input type="number" class="form-control" id="cornersEnContra" name="cornersEnContra"
                     [(ngModel)]="postPartido.cornersEnContra">
                 </div>
@@ -2930,12 +2964,12 @@
               </div>
               <div class="mb-3 d-flex">
                 <div class="col-6">
-                  <label for="cornersAFavor" class="form-label">Córneres a favor:</label>
+                  <label for="cornersAFavor" class="form-label">Corners a favor:</label>
                   <input type="number" class="form-control" id="cornersAFavor" name="cornersAFavor"
                     [(ngModel)]="postPartido.cornersAFavor">
                 </div>
                 <div class="col-6">
-                  <label for="cornersEnContra" class="form-label">Córneres en contra:</label>
+                  <label for="cornersEnContra" class="form-label">Corners en contra:</label>
                   <input type="number" class="form-control" id="cornersEnContra" name="cornersEnContra"
                     [(ngModel)]="postPartido.cornersEnContra">
                 </div>
@@ -4163,29 +4197,11 @@
   </div>
 </div>
 
-<!-- Modal para ver la pizarra -->
-<div class="modal modal-large" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalBoard}">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Detalles del Entrenamiento</h5>
-        <!-- Botón de cerrar con un icono -->
-        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarBoardModal()"></button>
-      </div>
-      <div class="modal-body">
-        <!-- Contenido del modal (en este caso, el iframe) -->
-        <iframe width="100%" height="100%" id="urlIframe" scrolling="no" frameborder="0"
-          src="https://tacticalboard.sphairatech.com"></iframe>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal para gestionar la convocatoria -->
-<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalConvocatoria}"
-  [style.display]="mostrarModalConvocatoria ? 'block' : 'none'">
-  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
-    <div class="modal-content" style="min-height: 60vh; max-height: 80vh; overflow-y: auto;">
+<!-- Modal para ver la convocatoria -->
+<div id="convocatoriaModal" class="modal fade" tabindex="-1" role="dialog"
+  [ngClass]="{'show': mostrarModalConvocatoria}" [style.display]="mostrarModalConvocatoria ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-sm" role="document">
+    <div class="modal-content" style="height: auto; max-height: 90vh; overflow-y: auto;">
       <div class="modal-header">
         <h5 class="modal-title">Gestión de Convocatoria</h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalConvocatoria()"></button>
@@ -4193,24 +4209,29 @@
       <div class="modal-body">
         <div class="row mt-3">
           <!-- No Convocados -->
-          <div class="col-6">
+          <div class="col-12 col-md-6 mb-3 mb-md-0">
             <h5>No Convocados</h5>
-            <div class="list-group" style="min-height: 20vh; max-height: 20vh; overflow-y: auto; border: 2px dashed #ec270d; padding: 10px;" (drop)="onDrop2($event, 'no_convocado')"
-              (dragover)="allowDrop($event)">
-              <div *ngFor="let jugador of jugadoresNoConvocados" class="list-group-item" draggable="true"
-                (dragstart)="onDragStart($event, jugador)">
+            <div class="list-group"
+              style="min-height: 15vh; max-height: 30vh; overflow-y: auto; border: 2px dashed #ec270d; padding: 5px;"
+              (drop)="onDrop2($event, 'no_convocado')" (dragover)="allowDrop($event)">
+              <div *ngFor="let jugador of jugadoresNoConvocados" class="list-group-item draggable" draggable="true"
+                (dragstart)="onDragStart($event, jugador)" (touchstart)="onTouchStart($event, jugador)"
+                (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd($event, 'no_convocado')"
+                [attr.data-id]="jugador.id">
                 {{ jugador.nombre }}
               </div>
             </div>
           </div>
           <!-- Suplentes -->
-          <div class="col-6">
-            <h5>Suplentes</h5>
+          <div class="col-12 col-md-6">
+            <h5>Los suplentes</h5>
             <div class="list-group suplentes"
-              style="min-height: 20vh; max-height: 20vh; overflow-y: auto; border: 2px dashed #007bff; padding: 10px;"
+              style="min-height: 15vh; max-height: 30vh; overflow-y: auto; border: 2px dashed #007bff; padding: 5px;"
               (drop)="onDrop2($event, 'suplente')" (dragover)="allowDrop($event)">
-              <div *ngFor="let jugador of jugadoresSuplentes" class="list-group-item" draggable="true"
-                (dragstart)="onDragStart($event, jugador)">
+              <div *ngFor="let jugador of jugadoresSuplentes" class="list-group-item draggable" draggable="true"
+                (dragstart)="onDragStart($event, jugador)" (touchstart)="onTouchStart($event, jugador)"
+                (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd($event, 'suplente')"
+                [attr.data-id]="jugador.id">
                 {{ jugador.nombre }}
               </div>
             </div>
@@ -4219,29 +4240,79 @@
         <div class="row mt-3">
           <!-- Titulares -->
           <div class="col-12">
-            <h5>Titulares</h5>
-            <div class="field" (drop)="onDrop2($event, 'titular')" (dragover)="allowDrop($event)">
+            <h5>Los titulares</h5>
+            <div class="field"
+              style="border: 2px dashed green; padding: 5px; position: relative; min-height: 30vh; width: 100%;"
+              (drop)="onDrop2($event, 'titular')" (dragover)="allowDrop($event)">
               <div *ngFor="let jugador of jugadoresTitulares" class="player"
                 [ngStyle]="{'left.px': jugador.posicion_x, 'top.px': jugador.posicion_y}" draggable="true"
-                (dragstart)="onDragStart($event, jugador)">
-
-                <!-- Mostrar icono si img es null -->
+                (dragstart)="onDragStart($event, jugador)" (touchstart)="onTouchStart($event, jugador)"
+                (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd($event, 'titular')"
+                [attr.data-id]="jugador.id">
                 <i *ngIf="!jugador.img" class="bi bi-person-circle"></i>
-
-                <!-- Mostrar imagen de fondo si img tiene un valor -->
                 <div *ngIf="jugador.img" [ngStyle]="{'background-image': 'url(' + jugador.img + ')'}"
-                  class="player-img">
-                </div>
-
+                  class="player-img"></div>
                 <span class="player-name">{{ jugador.nombre }}</span>
               </div>
-
             </div>
           </div>
         </div>
       </div>
       <div class="modal-footer">
+        <button *ngIf="showNotificar" type="button" class="btn btn-primary pr-2"
+          (click)="enviarConvocatoria()">Notificar</button>
         <button type="button" class="btn btn-primary" (click)="guardarConvocatoria()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal para ver la convocatoria como jugador -->
+<div class="modal modal-small" tabindex="-1" role="dialog" [ngClass]="{'d-block': mostrarModalConvocatoriaLista}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Gestión de Convocatoria</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalConvocatoriaLista()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mt-3">
+          <div class="col-12">
+            <div style="overflow-x: auto;">
+              <table id="dataTable" class="table table-bordered table-striped text-center">
+                <thead class="table-custom">
+                  <tr>
+                    <th>CONVOCADOS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let nombre of showConvocados; let i = index">
+                    <td>{{ nombre }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="row mt-3">
+          <div class="col-12">
+            <div style="overflow-x: auto;">
+              <table id="dataTable" class="table table-bordered table-striped text-center">
+                <thead class="table-custom">
+                  <tr>
+                    <th>NO CONVOCADOS</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let nombre of showNoConvocados; let i = index">
+                    <td>{{ nombre }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

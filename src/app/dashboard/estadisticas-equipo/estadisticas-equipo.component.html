@@ -18,6 +18,17 @@
                 <div class="hint">Ver gráficas Equipo</div>
             </div>
         </div>
+        <div class="row mt-3">
+            <div class="col-2">
+                <label for="tipoPartidoSelected" class="form-label">Selecciona un equipo</label>
+                <select class="form-control me-2" id="tipoPartidoSelected" name="tipoPartidoSelected"
+                    [(ngModel)]="tipoPartidoSelected" (change)="selectedTipoPartido()">
+                    <option value="Liga">Liga</option>
+                    <option value="Amistoso">Amistoso</option>
+                    <option value="Torneo">Torneo</option>
+                </select>
+            </div>
+        </div>
     </div>
 
     <div style="margin-top: 3em; overflow-x: auto; text-align: center;">
@@ -69,7 +80,7 @@
                 <thead class="table-custom">
                     <tr>
                         <th>FECHA</th>
-                        <th>Partido ID</th>
+                        <!--  <th>Partido ID</th> -->
                         <th>NOMBRE_RIVAL</th>
                         <th>RESULTADO</th>
                         <th>GOLES_FAVOR</th>
@@ -93,7 +104,7 @@
                 <tbody>
                     <tr *ngFor="let partido of partidos; let i = index">
                         <td>{{ partido.matchPreparation.matchDate }}</td>
-                        <td>{{ partido.postPartidoId }}</td>
+                        <!-- <td>{{ partido.postPartidoId }}</td> -->
                         <td>
                             <div class="simular-enlace" (click)="openInfoPostPartido(partido.postPartidoId)">
                                 {{ partido.matchPreparation.rivalName }}
