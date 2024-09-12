@@ -451,6 +451,58 @@
                 class="btn btn-custom float-end">Guardar</button>
             </form>
           </div>
+          <div id="divPrePArtdo" style="display: none;">
+            <div class="mb-3">
+              <label for="nombreRival" class="form-label">Nombre del Rivales:</label>
+              <p>{{ match.rivalName }}</p>
+            </div>
+            <div class="mb-3">
+              <label for="terreno" class="form-label">Local o Visitante:</label>
+              <p>{{ match.terreno }}</p>
+            </div>
+            <div class="mb-3">
+              <label for="lugar" class="form-label">Lugar:</label>
+              <p>{{ match.lugar }}</p>
+            </div>
+            <div class="mb-3 d-flex">
+              <div class="col-6">
+                <label for="hora" class="form-label">Hora del partido:</label>
+                <p>{{ match.horaEmpieza }}:{{ match.minutosEmpieza }}</p>
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="informacionRival" class="form-label">Información del Rival:</label>
+              <p>{{ match.rivalInfo }}</p>
+            </div>
+            <div class="mb-3">
+              <label for="nombreArbitro" class="form-label">Nombre del Árbitro:</label>
+              <p>{{ match.refereeName }}</p>
+            </div>
+            <div class="mb-3">
+              <label for="tacticaGeneral" class="form-label">Táctica General:</label>
+              <p>{{ match.matchTactics }}</p>
+            </div>
+            <div class="mb-3">
+              <label for="ABPs" class="form-label">ABPs Ofensivas:</label>
+              <p>{{ match.abpsOfensivas }}</p>
+            </div>
+            <div class="mb-3">
+              <label for="ABPs" class="form-label">ABPs Defensivas:</label>
+              <p>{{ match.abpsDefensivas }}</p>
+            </div>
+            <div class="mb-3">
+              <label for="ABPs" class="form-label">Titulares:</label>
+              <p *ngFor="let player of jugadoresTitulares; let i = index">{{ i + 1 }}. {{ player.nombre }}</p>
+            </div>
+            <div class="mb-3">
+              <label for="ABPs" class="form-label">Suplentes:</label>
+              <p *ngFor="let player of jugadoresSuplentes; let a = index">{{ a + 12 }}. {{ player.nombre }}</p>
+            </div>
+            <!-- <div class="mb-3">
+              <label for="convocados" class="form-label">Convocados:</label>
+              <p>{{ match.summoned }}</p>
+            </div>-->
+          </div>
         </div>
       </div>
     </div>

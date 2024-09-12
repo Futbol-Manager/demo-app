@@ -824,16 +824,18 @@ export class CalendarioComponent implements OnInit {
             //se coge todo de la lista de jugadores y se pone en no convocados
             // Supongamos que response.data.players es la lista de jugadores
 
-            // Asignar a jugadoresNoConvocados mapeando cada jugador a una instancia de ConvocatoriaUI
-            let i = 0;
-            this.jugadoresNoConvocados = this.playersConvo.map((player: any, index: number) => new ConvocatoriaUI({
-              id: index, // Asignar el índice como ID,
-              playerId: player.playerId, // Asegúrate de que este campo esté presente en la respuesta
-              nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
-              img: player.picturePlayer != null && player.picturePlayer != '' ? 'https://sphairatech.com/images/user/' + player.picturePlayer : '', // Puedes asignar una imagen si está disponible o usar un valor por defecto
-              posicion_x: player.posicion_x || null, // O asignar null si no tiene coordenadas
-              posicion_y: player.posicion_y || null  // O asignar null si no tiene coordenadas
-            }));
+            if (this.playersConvo) {
+              // Asignar a jugadoresNoConvocados mapeando cada jugador a una instancia de ConvocatoriaUI
+              let i = 0;
+              this.jugadoresNoConvocados = this.playersConvo.map((player: any, index: number) => new ConvocatoriaUI({
+                id: index, // Asignar el índice como ID,
+                playerId: player.playerId, // Asegúrate de que este campo esté presente en la respuesta
+                nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
+                img: player.picturePlayer != null && player.picturePlayer != '' ? 'https://sphairatech.com/images/user/' + player.picturePlayer : '', // Puedes asignar una imagen si está disponible o usar un valor por defecto
+                posicion_x: player.posicion_x || null, // O asignar null si no tiene coordenadas
+                posicion_y: player.posicion_y || null  // O asignar null si no tiene coordenadas
+              }));
+            }
 
             //console.log(this.jugadoresNoConvocados);
           }
