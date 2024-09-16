@@ -2206,9 +2206,9 @@ export class CalendarioComponent implements OnInit {
   }
 
   match2 = {
-    rivalName: 'Equipo Rival',
-    terreno: 'Estadio XYZ',
-    imgClub: 'path/to/club-image.png',
+    rivalName: 'Atlético de Madrid',
+    terreno: 'Estadio Santiago Bernabeu',
+    imgClub: 'https://sphairatech.com/images/user/2108952-imguser.png',
   };
 
   generatePDF() {

@@ -576,10 +576,11 @@
       <div class="modal-body">
         <div id="pdf-content">
           <h1>Informe del Partido</h1>
+          <img [src]="{{ match2.imgClub }}" alt="Club Image" />
           <h2>Nombre del rival</h2>
-          <p>{{ match.rivalName }}</p>
+          <p>{{ match2.rivalName }}</p>
           <h2>Terreno</h2>
-          <p>{{ match.terreno }}</p>
+          <p>{{ match2.terreno }}</p>
         </div>
         
         <button (click)="generatePDF()">Generar PDF</button>
