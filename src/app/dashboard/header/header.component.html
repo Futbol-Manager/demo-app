@@ -4,7 +4,7 @@
       <div class="col-auto">
         <img [src]="isDarkMode ? 'assets/images/Logo_SphairaTech6.svg' : 'assets/images/Logo_SphairaTech3.svg'"
           alt="Logo" (click)="goInicio()" class="logo-image">
-      </div>      
+      </div>
       <div class="col-auto d-none d-md-block">
         <img src="assets/images/beta.png" alt="Beta" style="width: 10em;">
       </div>
@@ -146,6 +146,12 @@
               <option value="2">Femenino</option>
               <option value="3">Otro</option>
             </select>
+          </div>
+          <div class="mb-3">
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="button" class="btn btn-warning form-control" (click)="goSuscripcion()">Suscripción</button>
+          </div>
+          <div class="mb-3">
           </div>
           <div class="modal-footer">
             <!-- Botón para guardar el nuevo equipo -->

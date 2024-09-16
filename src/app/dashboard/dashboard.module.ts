@@ -21,6 +21,7 @@ import { InfoJugadoresComponent } from './info-jugadores/info-jugadores.componen
 import { EstadisticasJugadoresClubComponent } from './estadisticas-jugadores-club/estadisticas-jugadores-club.component';
 import { EstadisticasEquiposClubComponent } from './estadisticas-equipos-club/estadisticas-equipos-club.component';
 import { EstadisticasEntrenadoresClubComponent } from './estadisticas-entrenadores-club/estadisticas-entrenadores-club.component';
+import { SuscripcionComponent } from './suscripcion/suscripcion.component';
 
 
 
@@ -43,7 +44,8 @@ import { EstadisticasEntrenadoresClubComponent } from './estadisticas-entrenador
     InfoJugadoresComponent,
     EstadisticasJugadoresClubComponent,
     EstadisticasEquiposClubComponent,
-    EstadisticasEntrenadoresClubComponent
+    EstadisticasEntrenadoresClubComponent,
+    SuscripcionComponent
   ],
   imports: [
     CommonModule,

@@ -112,7 +112,7 @@ export class CuotasComponent implements OnInit {
   // Método para navegar a la pantalla de calendario
   navegarACalendario(): void {
     // Puedes ajustar la ruta según tu estructura de rutas
-    this.router.navigate(['/dashboard/calendario', this.teamId]);
+    this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
   }
 
   openModalStripe(): void {

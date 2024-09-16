@@ -1,5 +1,5 @@
 <div class="background">
-  
+
   <img src="assets/videos/video.gif" alt="GIF de jugando" class="video-background">
 
   <!--REGISTRO-->
@@ -14,7 +14,7 @@
             </button>
           </div>
           <div class="card-body textoCentrado">
-            <div class="d-flex form-register py-0">
+            <div class="d-flex form-register py-0" *ngIf="showPPlayer">
               <div class="col-12">
                 <p style="color: red;">Si eres un JUGADOR, espera a que tu entrenador / club te invite.</p>
               </div>
@@ -31,7 +31,7 @@
 
             <div *ngIf="selectedOption == 1">
               <!-- Formulario para Club -->
-              <form [formGroup]="registerFormClub" (ngSubmit)="registerClub()" class="form-register">
+              <form [formGroup]="registerFormClub" (ngSubmit)="openModal(1)" class="form-register">
                 <div class="mb-3 d-flex">
                   <div class="col-6">
                     <!--<label for="name" class="form-label">Ingresa el nombre del club</label>-->
@@ -76,9 +76,9 @@
                     <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
                     <label class="form-check-label" for="termsCheckbox">
                       Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
-                        privacidad</a> y las
-                      <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
-                        condiciones de contratación</a>
+                        privacidad</a>
+                      <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                        condiciones de contratación</a> -->
                     </label>
                   </div>
                 </div>
@@ -100,9 +100,9 @@
               </form>
             </div>
 
-            <div *ngIf="selectedOption == 2">
+            <div *ngIf="selectedOption == 2 || selectedOption == 5">
               <!-- Formulario para Entrenador -->
-              <form [formGroup]="registerFormEntrenador" (ngSubmit)="registerEntrenador()" class="form-register">
+              <form [formGroup]="registerFormEntrenador" (ngSubmit)="openModal(2)" class="form-register">
                 <div class="mb-3 d-flex">
                   <div class="col-6">
                     <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
@@ -158,9 +158,9 @@
                     <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
                     <label class="form-check-label" for="termsCheckbox">
                       Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
-                        privacidad</a> y las
-                      <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
-                        condiciones de contratación</a>
+                        privacidad</a>
+                      <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                        condiciones de contratación</a> -->
                     </label>
                   </div>
                 </div>
@@ -184,7 +184,7 @@
 
             <div *ngIf="selectedOption == 3">
               <!-- Formulario para Entrenador -->
-              <form [formGroup]="registerFormEntrenador" (ngSubmit)="registerEntrenador()" class="form-register">
+              <form [formGroup]="registerFormEntrenador" (ngSubmit)="openModal(2)" class="form-register">
                 <!--<div class="mb-3 d-flex">
                   <div class="col-6">
                     <label for="name" class="form-label">Ingresa tu nombre</label>
@@ -224,7 +224,7 @@
                   <div class="col-6">
                     <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
                     <input type="email" class="form-control input-register" id="email"
-                      placeholder="Ingresa tu correo electrónico" formControlName="email" [attr.disabled]="true">
+                      placeholder="Ingresa tu correo electrónico" formControlName="email">
                   </div>
                 </div>
                 <div class="mb-3 d-flex">
@@ -248,9 +248,9 @@
                     <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
                     <label class="form-check-label" for="termsCheckbox">
                       Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
-                        privacidad</a> y las
-                      <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
-                        condiciones de contratación</a>
+                        privacidad</a>
+                      <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                        condiciones de contratación</a> -->
                     </label>
                   </div>
                 </div>
@@ -274,7 +274,7 @@
 
             <div *ngIf="selectedOption == 4">
               <!-- Formulario para Entrenador -->
-              <form [formGroup]="registerFormEntrenador" (ngSubmit)="registerEntrenador()" class="form-register">
+              <form [formGroup]="registerFormEntrenador" (ngSubmit)="openModal(2)" class="form-register">
                 <div class="mb-3 d-flex">
                   <div class="col-6">
                     <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
@@ -330,9 +330,9 @@
                     <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
                     <label class="form-check-label" for="termsCheckbox">
                       Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
-                        privacidad</a> y las
-                      <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
-                        condiciones de contratación</a>
+                        privacidad</a>
+                      <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                        condiciones de contratación</a> -->
                     </label>
                   </div>
                 </div>
@@ -355,7 +355,7 @@
             </div>
           </div>
           <div class="form-control" *ngIf="msgAge" style="display: block; color: red;">
-            <p>Lo sentimos, pero si eres menor de 18 años, ha de darse de alta uno de tus padres o tutores.</p>
+            <p>Lo sentimos, pero si eres menor de 14 años, ha de darse de alta uno de tus padres o tutores.</p>
           </div>
           <div class="form-control" *ngIf="msgForm" style="display: block; color: red;">
             <p>Revisa los campos que te falten por rellenar y acepta política de privacidad.</p>
@@ -367,6 +367,46 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal para la creación de equipo -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <!-- Sphaira Club HTML Structure -->
+        <div class="pricing-card">
+          <div class="discount-banner">
+            50% DESCUENTO
+          </div>
+          <h2>REGISTRO COMPLETADO</h2>
+          <p>Maximiza la eficiencia y el rendimiento de tu club de fútbol.</p>
+          <p>pruébalo durante 7 días y despues:</p>
+          <div class="price">
+            <span class="old-price">9,99€</span>
+            <span class="current-price">4,99€</span>
+            <span class="monthly">Mensual</span>
+          </div>
+          <ul class="features">
+            <li>✔ Ahorra más de un 30% con este plan</li>
+            <li>✔ Compromiso de 1 año</li>
+            <li>✔ Control Total</li>
+            <li>✔ Funcionalidades Completas</li>
+            <li>✔ Colaboración Ampliada</li>
+          </ul>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="termsCheckbox2" checked disabled>
+            <label class="form-check-label" for="termsCheckbox2">
+              Acepto las <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                condiciones de contratación</a>
+            </label>
+          </div>
+          <button class="cta-button" (click)="goLogin()">Empezar semana gratis</button>
         </div>
       </div>
     </div>

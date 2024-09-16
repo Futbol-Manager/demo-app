@@ -60,7 +60,7 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
       *ngIf="this.usuarioActual!.profileType.profileId < 3">
       <div class="col mb-3" *ngFor="let team of listTeam; let i = index" style="cursor: pointer;"
-        (click)="navegarACalendario(team.teamId)">
+        (click)="navegarACalendario(team.teamId, 0)">
         <div class="card h-100" style="border: 1px solid black;">
           <div class="card-body text-center">
             <div class="row mb-2">
@@ -100,7 +100,7 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
       *ngIf="this.usuarioActual!.profileType.profileId > 2">
       <div class="col mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
-        (click)="navegarACalendario(hijo.teamId)">
+        (click)="navegarACalendario(hijo.teamId, hijo.playerId)">
         <div class="card h-100" style="border: 1px solid black;">
           <div class="card-body text-center">
             <div class="row mb-2">

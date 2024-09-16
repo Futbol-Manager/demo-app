@@ -624,7 +624,7 @@ export class TrainingService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = `${environment.apiUrl}training/getformposttraining/${trainingSessionId}/${playerId}`;
+            const url: string = environment.apiUrl + `training/getformposttraining/${trainingSessionId}/${playerId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });

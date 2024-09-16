@@ -36,9 +36,13 @@ export class RegisterComponent implements OnInit {
     { value: "2", label: "Entrenador" },
     // Opciones eliminadas
     { value: "3", label: "Jugador/Padre" },
-    { value: "4", label: "Jugador" }
+    { value: "4", label: "Jugador" },
+    { value: "5", label: "Scouter" }
   ];
   msgForm = false;
+  showPPlayer = false;
+  showModal = false;
+  optionSelected = 0;
 
   constructor(
     private router: Router,
@@ -83,18 +87,36 @@ export class RegisterComponent implements OnInit {
       //console.log('this.playerID =' + this.playerID + 'y this.emailParam =' + this.emailParam);
     });
 
-    let option = 0;
+    //let option = 0;
     if (this.isMenor !== undefined && !Number.isNaN(this.isMenor)) {
       if (this.isMenor === 0) {
         this.selectedOption = 4;
-      } else {
+        this.showPPlayer = true;
+      } else if (this.isMenor === 1) {
         this.selectedOption = 3;
+        this.showPPlayer = true;
+      } else if (this.isMenor === 2) { //este es club
+        this.selectedOption = 1;
+        this.emailParam = '';
+        this.playerID = 0;
+      } else if (this.isMenor === 3) { //este es entrenador 
+        this.selectedOption = 2;
+        this.emailParam = '';
+        this.playerID = 0;
+      } else if (this.isMenor === 4) { //este es scouter 
+        this.selectedOption = 5;
+        this.emailParam = '';
+        this.playerID = 0;
       }
       this.isReadOnly = true;
       // Establecer valor predeterminado para el campo email
       this.registerFormEntrenador.get('email')!.setValue(this.emailParam);
+
+      if(this.emailParam !== '')
+        this.registerFormEntrenador.get('email')?.disable(); // Deshabilita el campo
     } else {
-      this.selectOptions = this.selectOptions.filter(option => option.value !== "3" && option.value !== "4");
+      this.selectOptions = this.selectOptions.filter(option => option.value !== "4");
+      this.registerFormEntrenador.get('email')?.enable(); // Habilita el campo
     }
   }
 
@@ -199,8 +221,8 @@ export class RegisterComponent implements OnInit {
                 Si aún así no encuentras el correo, por favor, contáctanos en info@sphairatech.com para que podamos asistirte.\n\n
                 ¡Esperamos verte pronto!`,
                 'Ok', snackBarConfig
-              );
-              this.login(1);
+              );         
+              //this.login(1);
             } else {
               const snackBarConfig = new MatSnackBarConfig();
               snackBarConfig.duration = 5000;
@@ -231,7 +253,7 @@ export class RegisterComponent implements OnInit {
         this.registerFormEntrenador.value.genre == 1 ? 'Masculino' : (this.registerFormEntrenador.value.genre == 2 ? 'Femenino' : 'Otro')
       );
 
-      
+
       this.msgForm = false;
       const fv = this.registerFormEntrenador.value;
       const register: RegisterModel = new RegisterModel(
@@ -250,7 +272,7 @@ export class RegisterComponent implements OnInit {
       );
 
       const age = this.calculateAge(new Date(fv.birthdate));
-      if (age < 18) {
+      if (age < 14) {
         this.msgAge = true;
         return;
       }
@@ -263,8 +285,8 @@ export class RegisterComponent implements OnInit {
               snackBarConfig.duration = 5000;
               snackBarConfig.horizontalPosition = 'center';
               snackBarConfig.verticalPosition = 'bottom';
-              this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
-              this.login(2);
+              this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);     
+              //this.login(2);
             } else {
               const snackBarConfig = new MatSnackBarConfig();
               snackBarConfig.duration = 5000;
@@ -310,6 +332,28 @@ export class RegisterComponent implements OnInit {
   toLogin(event: Event) {
     event.preventDefault();
     this.router.navigate(['/home']);
+  }
+
+  openModal(option: number) {
+    switch (option) {
+      case 1:
+        this.registerClub();             
+        this.optionSelected = 1;
+        break;
+      case 2:
+        this.registerEntrenador();             
+        this.optionSelected = 2;
+        break;
+    }
+    this.showModal = true;
+  }
+
+  cerrarModal() {
+    this.showModal = false;
+  }
+
+  goLogin() {
+    this.login(this.optionSelected);
   }
 
 }

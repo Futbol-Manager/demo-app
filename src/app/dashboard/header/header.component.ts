@@ -40,6 +40,7 @@ export class HeaderComponent implements OnInit {
   showPreview: boolean = false;
 
   showbtnupimg = false;
+  userId: number = 0;
 
   constructor(
     private router: Router,
@@ -56,6 +57,7 @@ export class HeaderComponent implements OnInit {
     this.loginService.usuarioActual.subscribe((user: User | null) => {
       this.usuarioActual = user;
       this.nameUser = user !== null ? user.firstName : '';
+      this.userId = user !== null ? user.userId : 0;
       this.imgUser = user !== null ? user.pictureUser : '';
       this.updateForm(); // Actualiza el formulario cuando cambia el usuario actual
     });
@@ -251,6 +253,11 @@ export class HeaderComponent implements OnInit {
     } else {
       console.log('Ninguna imagen seleccionada.');
     }
+  }
+
+  goSuscripcion(){
+    this.showModal = false;
+    this.router.navigate(['/dashboard/suscripcion', this.userId]);
   }
 
 }

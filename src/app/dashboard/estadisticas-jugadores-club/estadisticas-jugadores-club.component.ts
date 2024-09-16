@@ -49,7 +49,7 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
   // Método para navegar a la pantalla de calendario
   navegarACalendario(): void {
     // Puedes ajustar la ruta según tu estructura de rutas
-    this.router.navigate(['/dashboard/calendario', this.clubId]);
+    this.router.navigate(['/dashboard/calendario', this.clubId, 0]);
   }
 
   cargarTablaJugadores() {

@@ -236,9 +236,9 @@ export class InicioComponent implements OnInit {
   }
 
   // Método para navegar a la pantalla de calendario
-  navegarACalendario(teamId: number): void {
+  navegarACalendario(teamId: number, playerId: number): void {
     // Puedes ajustar la ruta según tu estructura de rutas
-    this.router.navigate(['/dashboard/calendario', teamId]);
+    this.router.navigate(['/dashboard/calendario', teamId, playerId]);
   }
 
   irAPantalla(id: number): void {
@@ -304,10 +304,6 @@ export class InicioComponent implements OnInit {
 
   cerrarModalSubirJugadores() {
     this.showModalSubirJugadores = false;
-  }
-
-  goToCalendarPlayer(teamId: number){
-    this.router.navigate(['/dashboard/calendario', teamId]);
   }
 
 }

@@ -18,6 +18,7 @@ import { EstadisticasJugadoresClubComponent } from './estadisticas-jugadores-clu
 import { EstadisticasEquiposClubComponent } from './estadisticas-equipos-club/estadisticas-equipos-club.component';
 import { EstadisticasEntrenadoresClubComponent } from './estadisticas-entrenadores-club/estadisticas-entrenadores-club.component';
 import { AsistenciaComponent } from './asistencia/asistencia.component';
+import { SuscripcionComponent } from './suscripcion/suscripcion.component';
 
 const routes: Routes = [
   {
@@ -25,7 +26,7 @@ const routes: Routes = [
     component: DashboardComponent,
     children: [
       { path: 'inicio', component: InicioComponent },
-      { path: 'calendario/:teamId', component: CalendarioComponent },
+      { path: 'calendario/:teamId/:playerId', component: CalendarioComponent },
       { path: 'jugadores/:teamId', component: PlayerComponent },
       { path: 'estadisticas_equipo/:teamId', component: EstadisticasEquipoComponent },
       { path: 'informacion_equipo/:teamId', component: InformacionEquipoComponent },
@@ -40,6 +41,7 @@ const routes: Routes = [
       { path: 'cuadro-de-mandos/estadisticas-equipos-club/:clubId', component: EstadisticasEquiposClubComponent },
       { path: 'cuadro-de-mandos/estadisticas-entrenadores-club/:clubId', component: EstadisticasEntrenadoresClubComponent },
       { path: 'informacion_equipo/asistencia/:teamId', component: AsistenciaComponent },
+      { path: 'suscripcion/:userId', component: SuscripcionComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
   }

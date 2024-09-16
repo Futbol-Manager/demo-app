@@ -342,7 +342,7 @@ export class PlayerComponent implements OnInit {
   // Método para navegar a la pantalla de calendario
   navegarACalendario(): void {
     // Puedes ajustar la ruta según tu estructura de rutas
-    this.router.navigate(['/dashboard/calendario', this.teamId]);
+    this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
   }
 
   inicializePlayer() {
@@ -705,8 +705,8 @@ export class PlayerComponent implements OnInit {
       edad--;
     }
 
-    // Comprobar si el jugador es menor de 18 años
-    this.isMenor = edad < 180;
+    // Comprobar si el jugador es menor de 14 años
+    this.isMenor = edad < 14;
     this.showModalInvitar = true;
   }
 

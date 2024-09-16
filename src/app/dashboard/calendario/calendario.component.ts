@@ -15,6 +15,8 @@ import { RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from
 import { GolPostPartido } from 'src/app/core/services/team/team.model';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 
+declare var html2pdf: any;
+
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
   month: 'long';
@@ -531,6 +533,9 @@ export class CalendarioComponent implements OnInit {
   startX: number = 0;
   startY: number = 0;
 
+  playerId = 0;  
+
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -556,7 +561,8 @@ export class CalendarioComponent implements OnInit {
       this.route.params.subscribe(params => {
         // Obtener el valor de teamId de los parámetros
         this.teamId = +params['teamId'];  // El + convierte el valor a número
-        console.log('teamId:', this.teamId);
+        this.playerId = +params['playerId'];  // El + convierte el valor a número
+        //console.log('teamId:', this.teamId);
       });
       this.teamService.getTeamById(this.teamId.toString()).subscribe(
         (response: Response) => {
@@ -1576,11 +1582,16 @@ export class CalendarioComponent implements OnInit {
 
   crearFormPostPartido() {
     this.respPostPartido.matchPreparationId = this.matchPreparationId;
-    this.respPostPartido.playerId = this.usuarioActual?.playerId != null ? this.usuarioActual?.playerId : 0;
+    this.respPostPartido.playerId = this.playerId;
     this.trainingService.createFormPostPartido(this.respPostPartido).subscribe(
       (response) => {
         this.respPostPartido = new RespPostPartido({});
         this.showModalFormPostPartido = false;
+        if(!response.data){
+          alert('No se han enviado las respuestas porque ya se rellenó anteriormente y solo se puede una vez por partido.');
+        } else {          
+          alert('Respuestas enviadas correctamente.');
+        }
       },
       (error) => {
         console.error('Error al guardar la sesión de entrenamiento:', error);
@@ -2194,4 +2205,24 @@ export class CalendarioComponent implements OnInit {
     });
   }
 
+  match2 = {
+    rivalName: 'Equipo Rival',
+    terreno: 'Estadio XYZ',
+    imgClub: 'path/to/club-image.png',
+  };
+
+  generatePDF() {
+    const element = document.getElementById('pdf-content');
+    const options = {
+      margin:       1,
+      filename:     'informe-partido.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().from(element).set(options).save();
+
+    
+  }
 }
+

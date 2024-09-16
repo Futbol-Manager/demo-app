@@ -453,49 +453,49 @@
           </div>
           <div id="divPrePArtdo" style="display: none;">
             <div class="mb-3">
-              <label for="nombreRival" class="form-label">Nombre del Rivales:</label>
+              <label style="font-weight: bold;" style="font-weight: bold;" for="nombreRival" class="form-label">Nombre del Rivales:</label>
               <p>{{ match.rivalName }}</p>
             </div>
             <div class="mb-3">
-              <label for="terreno" class="form-label">Local o Visitante:</label>
+              <label style="font-weight: bold;" for="terreno" class="form-label">Local o Visitante:</label>
               <p>{{ match.terreno }}</p>
             </div>
             <div class="mb-3">
-              <label for="lugar" class="form-label">Lugar:</label>
+              <label style="font-weight: bold;" for="lugar" class="form-label">Lugar:</label>
               <p>{{ match.lugar }}</p>
             </div>
             <div class="mb-3 d-flex">
               <div class="col-6">
-                <label for="hora" class="form-label">Hora del partido:</label>
+                <label style="font-weight: bold;" for="hora" class="form-label">Hora del partido:</label>
                 <p>{{ match.horaEmpieza }}:{{ match.minutosEmpieza }}</p>
               </div>
             </div>
             <div class="mb-3">
-              <label for="informacionRival" class="form-label">Información del Rival:</label>
+              <label style="font-weight: bold;" for="informacionRival" class="form-label">Información del Rival:</label>
               <p>{{ match.rivalInfo }}</p>
             </div>
             <div class="mb-3">
-              <label for="nombreArbitro" class="form-label">Nombre del Árbitro:</label>
+              <label style="font-weight: bold;" for="nombreArbitro" class="form-label">Nombre del Árbitro:</label>
               <p>{{ match.refereeName }}</p>
             </div>
             <div class="mb-3">
-              <label for="tacticaGeneral" class="form-label">Táctica General:</label>
+              <label style="font-weight: bold;" for="tacticaGeneral" class="form-label">Táctica General:</label>
               <p>{{ match.matchTactics }}</p>
             </div>
             <div class="mb-3">
-              <label for="ABPs" class="form-label">ABPs Ofensivas:</label>
+              <label style="font-weight: bold;" for="ABPs" class="form-label">ABPs Ofensivas:</label>
               <p>{{ match.abpsOfensivas }}</p>
             </div>
             <div class="mb-3">
-              <label for="ABPs" class="form-label">ABPs Defensivas:</label>
+              <label style="font-weight: bold;" for="ABPs" class="form-label">ABPs Defensivas:</label>
               <p>{{ match.abpsDefensivas }}</p>
             </div>
             <div class="mb-3">
-              <label for="ABPs" class="form-label">Titulares:</label>
+              <label style="font-weight: bold;" for="ABPs" class="form-label">Titulares:</label>
               <p *ngFor="let player of jugadoresTitulares; let i = index">{{ i + 1 }}. {{ player.nombre }}</p>
             </div>
             <div class="mb-3">
-              <label for="ABPs" class="form-label">Suplentes:</label>
+              <label style="font-weight: bold;" for="ABPs" class="form-label">Suplentes:</label>
               <p *ngFor="let player of jugadoresSuplentes; let a = index">{{ a + 12 }}. {{ player.nombre }}</p>
             </div>
             <!-- <div class="mb-3">
@@ -574,6 +574,16 @@
         </div>
       </div>
       <div class="modal-body">
+        <div id="pdf-content">
+          <h1>Informe del Partido</h1>
+          <h2>Nombre del rival</h2>
+          <p>{{ match.rivalName }}</p>
+          <h2>Terreno</h2>
+          <p>{{ match.terreno }}</p>
+        </div>
+        
+        <button (click)="generatePDF()">Generar PDF</button>
+        
         <div class="row text-center mt-3">
           <div class="col-12 col-md-12">
             <!-- Contenido de la subcolumna -->
