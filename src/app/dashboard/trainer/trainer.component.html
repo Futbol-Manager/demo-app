@@ -1,18 +1,14 @@
+<div class="subMenu">
+    <div class="row">
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">Calendario <i class="bi bi-calendar"></i></a>
+        </div>
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearJugdor()">Invitar Entrenador <i class="bi bi-envelope"></i></a>
+        </div>
+    </div>
+</div>
 <div *ngIf="datosCargados" class="container">
-    <div class="btn-container">
-        <button class="btn btn-custom" (click)="navegarACalendario()">
-            <i class="bi bi-calendar"></i>
-        </button>
-        <div class="hint">Volver al calendario</div>
-    </div>
-    <div class="btn-container">
-        <button class="btn btn-link text-primary" (click)="abrirModalCrearJugdor()">
-            <i class="bi bi-plus-circle-fill"></i>
-        </button>
-        <div class="hint">Invitar Entrenador</div>
-    </div>
-
-
     <div>
         <h2 class="text-dark mt-3">Listado de Entrenadores</h2>
         <div class="tab-content" id="myTabContent">
@@ -30,7 +26,7 @@
                                     </ng-container>
                                     <ng-container *ngIf="player.picturePlayer">
                                         <img src="https://sphairatech.com/images/user/{{ player.picturePlayer }}"
-                                        alt="user-player" width="100" height="100" class="rounded-circle me-2">
+                                            alt="user-player" width="100" height="100" class="rounded-circle me-2">
                                     </ng-container>
                                     <h5 class="card-title">{{ player.nombre }} {{ player.apellido }}</h5>
                                     <p class="card-text">
@@ -140,9 +136,15 @@
                         <label for="posicion">Posición:</label>
                         <select class="form-control" id="posicion" name="posicion" [(ngModel)]="player.posicion">
                             <option value="Portero">Portero</option>
-                            <option value="Defensa">Defensa</option>
+                            <option value="Defensa Central">Defensa Central</option>
+                            <option value="Defensa Lateral">Defensa Lateral</option>
+                            <option value="Carrilero">Carrilero</option>
                             <option value="Centrocampista">Centrocampista</option>
-                            <option value="Delantero">Delantero</option>
+                            <option value="Centrocampista Defensivo">Centrocampista Defensivo</option>
+                            <option value="Centrocampista Ofensivo">Centrocampista Ofensivo</option>
+                            <option value="Mediapunta">Mediapunta</option>
+                            <option value="Extremo">Extremo</option>
+                            <option value="Delantero Centro"> Centro</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -161,6 +163,7 @@
                             [(ngModel)]="player.piernaNatural">
                             <option value="Derecha">Derecha</option>
                             <option value="Izquierda">Izquierda</option>
+                            <option value="Ambidiestro">Ambidiestro</option>
                         </select>
                     </div>
                     <div class="form-group">

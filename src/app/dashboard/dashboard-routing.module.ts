@@ -12,6 +12,13 @@ import { TrainerComponent } from './trainer/trainer.component';
 import { ContabilidadComponent } from './contabilidad/contabilidad.component';
 import { CuotasComponent } from './cuotas/cuotas.component';
 import { RopaComponent } from './ropa/ropa.component';
+import { CuadroComponent } from './cuadro/cuadro.component';
+import { InfoJugadoresComponent } from './info-jugadores/info-jugadores.component';
+import { EstadisticasJugadoresClubComponent } from './estadisticas-jugadores-club/estadisticas-jugadores-club.component';
+import { EstadisticasEquiposClubComponent } from './estadisticas-equipos-club/estadisticas-equipos-club.component';
+import { EstadisticasEntrenadoresClubComponent } from './estadisticas-entrenadores-club/estadisticas-entrenadores-club.component';
+import { AsistenciaComponent } from './asistencia/asistencia.component';
+import { SuscripcionComponent } from './suscripcion/suscripcion.component';
 
 const routes: Routes = [
   {
@@ -19,7 +26,7 @@ const routes: Routes = [
     component: DashboardComponent,
     children: [
       { path: 'inicio', component: InicioComponent },
-      { path: 'calendario/:teamId', component: CalendarioComponent },
+      { path: 'calendario/:teamId/:playerId', component: CalendarioComponent },
       { path: 'jugadores/:teamId', component: PlayerComponent },
       { path: 'estadisticas_equipo/:teamId', component: EstadisticasEquipoComponent },
       { path: 'informacion_equipo/:teamId', component: InformacionEquipoComponent },
@@ -28,6 +35,13 @@ const routes: Routes = [
       { path: 'contabilidad/:clubId', component: ContabilidadComponent },
       { path: 'ropa/:clubId', component: RopaComponent },
       { path: 'cuotas/:teamId', component: CuotasComponent },
+      { path: 'cuadro-de-mandos/:clubId', component: CuadroComponent },
+      { path: 'cuadro-de-mandos/info-jugadores/:clubId', component: InfoJugadoresComponent },
+      { path: 'cuadro-de-mandos/estadisticas-jugadores-club/:clubId', component: EstadisticasJugadoresClubComponent },
+      { path: 'cuadro-de-mandos/estadisticas-equipos-club/:clubId', component: EstadisticasEquiposClubComponent },
+      { path: 'cuadro-de-mandos/estadisticas-entrenadores-club/:clubId', component: EstadisticasEntrenadoresClubComponent },
+      { path: 'informacion_equipo/asistencia/:teamId', component: AsistenciaComponent },
+      { path: 'suscripcion/:userId', component: SuscripcionComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
   }

@@ -1,12 +1,14 @@
-<header class="p-3 mb-3 border-bottom theme-header">
+<header class="border-bottom theme-header">
   <div class="container-fluid">
     <div class="row align-items-center justify-content-between">
       <div class="col-auto">
-        <img [src]="isDarkMode ? 'assets/images/logo_white.svg' : 'assets/images/logo_black.svg'" alt="Logo"
-          (click)="goInicio()" style="cursor: pointer; width: 10em;">
-          <img src="assets/images/beta.png" alt="Beta" style="width: 10em;">
+        <img [src]="isDarkMode ? 'assets/images/Logo_SphairaTech6.svg' : 'assets/images/Logo_SphairaTech3.svg'"
+          alt="Logo" (click)="goInicio()" class="logo-image">
       </div>
-      <div class="col-auto" style="cursor: pointer;">
+      <div class="col-auto d-none d-md-block">
+        <img src="assets/images/beta.png" alt="Beta" style="width: 10em;">
+      </div>
+      <div class="col-auto" style="cursor: pointer; text-align: center;">
         <div class="dropdown">
           <a class="nav-link dropdown-toggle arrow-none nav-user px-2" data-bs-toggle="dropdown" href="#" role="button"
             aria-haspopup="false" aria-expanded="false">
@@ -84,30 +86,34 @@
           <div class="mb-3" style="text-align: center;">
             <ng-container *ngIf="imgUser">
               <!-- Imagen principal que cambiará al subir una nueva imagen -->
-              <img src="https://sphairatech.com/images/user/{{ imgUser }}" alt="user-image" width="150" height="150" class="rounded-circle me-2">
+              <img src="https://sphairatech.com/images/user/{{ imgUser }}" alt="user-image" width="150" height="150"
+                class="rounded-circle me-2">
               <div class="container">
-                  <h4>Sube tu foto de perfil</h4>
-                  <form (submit)="onSubmit()" enctype="multipart/form-data">
-                      <div class="form-group">
-                          <label for="image">Seleccionar imagen:</label>
-                          <input type="file" id="image" (change)="onFileSelected($event)">
-                          <!-- Vista previa de la imagen seleccionada, solo visible si showPreview es true -->
-                          <img *ngIf="showPreview" [src]="imagePreviewUrl" alt="Image Preview" width="150" height="150" class="rounded-circle me-2">
-                      </div>
-                      <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir imagen</button>
-                  </form>
+                <h4>Sube tu foto de perfil</h4>
+                <form (submit)="onSubmit()" enctype="multipart/form-data">
+                  <div class="form-group">
+                    <label for="image">Seleccionar imagen en formato JPG o PNG:</label>
+                    <input type="file" id="image" (change)="onFileSelected($event)">
+                    <!-- Vista previa de la imagen seleccionada, solo visible si showPreview es true -->
+                    <img *ngIf="showPreview" [src]="imagePreviewUrl" alt="Image Preview" width="150" height="150"
+                      class="rounded-circle me-2">
+                  </div>
+                  <button *ngIf="showbtnupimg" style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir
+                    imagen</button>
+                </form>
               </div>
-          </ng-container>
-                   
+            </ng-container>
+
             <ng-container *ngIf="!imgUser">
               <div class="container">
                 <h4>Sube tu foto de perfil</h4>
                 <form (submit)="onSubmit()" enctype="multipart/form-data">
                   <div class="form-group">
-                    <label for="image">Seleccionar imagen:</label>
+                    <label for="image">Seleccionar imagen en formato JPG o PNG:</label>
                     <input type="file" id="image" (change)="onFileSelected($event)">
                   </div>
-                  <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir imagen</button>
+                  <button *ngIf="showbtnupimg" style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir
+                    imagen</button>
                 </form>
               </div>
             </ng-container>
@@ -140,6 +146,12 @@
               <option value="2">Femenino</option>
               <option value="3">Otro</option>
             </select>
+          </div>
+          <div class="mb-3">
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="button" class="btn btn-warning form-control" (click)="goSuscripcion()">Suscripción</button>
+          </div>
+          <div class="mb-3">
           </div>
           <div class="modal-footer">
             <!-- Botón para guardar el nuevo equipo -->

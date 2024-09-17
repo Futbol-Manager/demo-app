@@ -1,10 +1,6 @@
-/* styles.scss */
 .card {
   position: relative;
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
   flex-direction: column;
   min-width: 0;
   color: #6c757d;
@@ -12,7 +8,16 @@
   background-color: #fff;
   background-clip: border-box;
   border: 0px solid #dee2e6;
-  border-radius: 0.25rem;box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
+  border-radius: 0.25rem;
+  box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
+  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  border-color: #22BF63;
+  background-color: #22BF63;
+  box-shadow: 0px 0px 35px 0px rgba(34, 191, 99, 0.5);
 }
 
 .card-title {
@@ -44,5 +49,3 @@
 .modal-content {
   background-size: 400% 400%;
 }
-
-

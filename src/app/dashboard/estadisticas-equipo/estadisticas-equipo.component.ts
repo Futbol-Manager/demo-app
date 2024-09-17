@@ -292,6 +292,8 @@ export class EstadisticasEquipoComponent implements OnInit {
 
   datasets: DatasetIF[] = [];
 
+  tipoPartidoSelected: string = 'Liga';
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -314,7 +316,7 @@ export class EstadisticasEquipoComponent implements OnInit {
   // Método para navegar a la pantalla de calendario
   navegarACalendario(): void {
     // Puedes ajustar la ruta según tu estructura de rutas
-    this.router.navigate(['/dashboard/calendario', this.teamId]);
+    this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
   }
 
   cargarNombreEquipo() {
@@ -323,8 +325,8 @@ export class EstadisticasEquipoComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.team = response.data;
-          this.nombreEquipo = this.team.name;
-          this.getListaPostpartidos();
+          this.nombreEquipo = this.team.nameCompleteTeam;
+          this.getListaPostpartidos('Liga');
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -335,8 +337,12 @@ export class EstadisticasEquipoComponent implements OnInit {
     );
   }
 
-  getListaPostpartidos() {
-    this.playerService.getListPostPartidoByTeam(this.teamId.toString()).subscribe(
+  selectedTipoPartido(){
+    this.getListaPostpartidos(this.tipoPartidoSelected);
+  }
+
+  getListaPostpartidos(tipoPartido: string) {
+    this.playerService.getListPostPartidoByTeam(this.teamId, tipoPartido).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data && Array.isArray(response.data)) {
@@ -344,7 +350,7 @@ export class EstadisticasEquipoComponent implements OnInit {
           this.partidos = response.data; //.map((post: PostPartido) => new PostPartido(post));
           this.partidosReverse = this.partidos.slice().reverse();
           // Inicializar el DataTable después de cargar los datos
-          this.inicializarDataTable();
+          //this.inicializarDataTable();
           this.datosResumentTotales(this.partidos);
           this.datosCargados = true;
         } else {
@@ -483,8 +489,6 @@ export class EstadisticasEquipoComponent implements OnInit {
 
     // Obtener los primeros 5 resultados que realmente son los ultimos
     const ultimosResultados = this.partidos.slice(0, 5).map(partido => partido.resultado).reverse();
-
-
 
     for (let partido of partidos) {
       // Aquí dentro del bucle, puedes acceder a cada elemento de la lista como "partido"

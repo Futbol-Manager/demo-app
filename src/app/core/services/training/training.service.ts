@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
-import { Training, Task } from '../models/training.models';
+import { Training, Task, AsistenciaTraining } from '../models/training.models';
 import { MatchPreparation, PlayerPostPartido, PostPartido } from '../models/match.model';
 import { RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from '../player/respuestas.model';
 import { GolPostPartido } from '../team/team.model';
@@ -106,7 +106,7 @@ export class TrainingService {
     }
 
     // Método para crear o actualizar un equipo
-    createUpdateTask(trainingId: string, task: Task): Observable<Response> {
+    createUpdateTask(trainingId: string, task: Task, subirTarea: number, userId: number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente
@@ -117,7 +117,7 @@ export class TrainingService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `training/createupdatetask/${trainingId}`;
+            const url: string = environment.apiUrl + `training/createupdatetask/${trainingId}/${subirTarea}/${userId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.post<Response>(url, task, { headers });
@@ -127,7 +127,7 @@ export class TrainingService {
         }
     }
 
-    createUpdateImgTask(taskId: string, file: File): Observable<Response> {
+    createUpdateImgTask(tasksShopId: number, taskId: number, file: File, userId: number): Observable<Response> {
         // Verifica si el archivo está presente
         if (file) {
             // Obtén el token almacenado en localStorage
@@ -144,7 +144,7 @@ export class TrainingService {
                 formData.append('files', file, file.name);
 
                 // Construye la URL para la solicitud
-                const url: string = environment.apiUrl + `training/createupdateimgtask/${taskId}`;
+                const url: string = environment.apiUrl + `training/createupdateimgtask/${tasksShopId}/${taskId}/${userId}`;
 
                 // Realiza la solicitud HTTP con las cabeceras y el cuerpo configurados
                 return this.http.post<Response>(url, formData, { headers });
@@ -395,6 +395,27 @@ export class TrainingService {
         }
     }
 
+    filterTaskShopByOptions(filterTaskShop: any): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `training/filterTaskShopByoptions`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.post<Response>(url, filterTaskShop, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
     downloadTaskShop(trainingId: string, taskShop: any): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
@@ -603,7 +624,7 @@ export class TrainingService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = `${environment.apiUrl}training/getformposttraining/${trainingSessionId}/${playerId}`;
+            const url: string = environment.apiUrl + `training/getformposttraining/${trainingSessionId}/${playerId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
@@ -832,7 +853,7 @@ export class TrainingService {
             return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
-    
+
     createUpdateGolPostPartidoAvanzado(golPostPartido: GolPostPartido, postPartidoId: number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
@@ -867,6 +888,93 @@ export class TrainingService {
 
             // Construye la URL para la solicitud
             const url: string = `${environment.apiUrl}match/deletegolpostpartidoavanzado/${golPostPartidoId}/${postPartidoId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    getListAsistenciaByTraining(trainingSessionId: number, teamId: number): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `training/getlistasistenciabytraining/${trainingSessionId}/${teamId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    updateAsistenciaByAsistencia(asis: AsistenciaTraining): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `training/updateasistenciajugadoresbytrainig`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.post<Response>(url, asis, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    getListsAsistenciaByTeam(teamId: number): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `training/getlistasasistenciabyteam/${teamId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    updateMultaStatus(idsPk: number, pagoStatus: number): Observable<Response> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `training/updatepagomultaasistenciabypk/${idsPk}/${pagoStatus}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });

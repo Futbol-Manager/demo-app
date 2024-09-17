@@ -1,15 +1,17 @@
-<div *ngIf="datosCargados">
-    <div class="container mt-3">
+<div [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
+    <div class="submenu">
         <div class="row">
             <div class="col">
-                <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Inicio</button>
+                <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
+                    <i class="bi bi-house"></i>
+                    <span class="d-none d-md-inline">Inicio</span>
+                </a>
             </div>
-        </div>
-        <div class="row" style="margin-top: 2em;">
             <div class="col">
-                <button class="btn btn-custom btn-sm" (click)="abrirModal()">
-                    Personalizar
-                </button>
+                <a class="no-underline" href="javascript:void(0);" (click)="abrirModal()">
+                    <i class="bi bi-pencil"></i>
+                    <span class="d-none d-md-inline">Personalizar</span>
+                </a>
             </div>
         </div>
     </div>
@@ -34,7 +36,7 @@
                         <th>ID</th>
                         <!-- <th>IMAGEN</th> -->
                         <th class="columna-nombre">NOMBRE</th>
-                        <th>SEUDONIMO</th>
+                        <th>NOMBRE_CAMISETA</th>
                         <th>NUMERO</th>
                         <th>EQUIPO</th>
                         <th>CAMISETA_JUEGO</th>
@@ -61,16 +63,16 @@
                     <tr *ngFor="let ropa of ropaPlayers; let i = index">
                         <td>{{ ropa.player.playerId }}</td>
                         <!-- <td *ngIf="ropa.player.picturePlayer">
-                                <div class="container">
-                                    <img src="https://sphairatech.com/images/user/{{ ropa.player.picturePlayer }}"
-                                        alt="user-player" width="50" height="50" class="rounded-circle me-2">
-                                </div>
-                            </td>
-                            <td *ngIf="!ropa.player.picturePlayer">
-                                <div class="container">
-                                    <span class="bi bi-person" style="font-size: 3rem;"></span>
-                                </div>
-                            </td> -->
+                                    <div class="container">
+                                        <img src="https://sphairatech.com/images/user/{{ ropa.player.picturePlayer }}"
+                                            alt="user-player" width="50" height="50" class="rounded-circle me-2">
+                                    </div>
+                                </td>
+                                <td *ngIf="!ropa.player.picturePlayer">
+                                    <div class="container">
+                                        <span class="bi bi-person" style="font-size: 3rem;"></span>
+                                    </div>
+                                </td> -->
                         <td class="fila-completa">{{ ropa.player.nombre }} {{ ropa.player.apellido }}</td>
                         <td>
                             <div class="d-flex align-items-center">
@@ -396,69 +398,64 @@
     </div>
     <div id="button_datatable">
     </div>
+</div>
 
-
-    <!-- tabla para imprimir en excel -->
-    <div style="display: none;">
-        <table id="tablaExcel" class="table table-bordered table-striped text-center" #table1>
-            <thead class="table-custom">
-                <tr>
-                    <th>NOMBRE</th>
-                    <th>APELLIDO</th>
-                    <th>NICK</th>
-                    <th>NUMERO</th>
-                    <th>EQUIPO</th>
-                    <th>CATEGORIA</th>
-                    <th>NOMBRE CAMISETA</th>
-                    <th>NUMERO CAMISETA</th>
-                    <th>ABRIGO</th>
-                    <th>CAMISETA JUEGO</th>
-                    <th>CAMISETA 2 JUEGO</th>
-                    <th>PANTALON JUEGO</th>
-                    <th>PANTALON 2 JUEGO</th>
-                    <th>MEDIAS JUEGO</th>
-                    <th>MEDIAS 2 JUEGO</th>
-                    <th>CAMISETA ENTRENO</th>
-                    <th>PANTALON ENTRENO</th>
-                    <th>SUDADERA ENTRENO</th>
-                    <th>CHAQUETA CHANDAL</th>
-                    <th>PANTALON CHANDAL</th>
-                    <th>POLO PASEO</th>
-                    <th>PANTALON PASEO</th>
-                    <th>CHUBASQUERO</th>
-                    <th>ESTADO</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let ropa of ropaPlayers; let i = index">
-                    <td>{{ ropa.player.nombre }}</td>
-                    <td>{{ ropa.player.apellido }}</td>
-                    <td>{{ ropa.nick }}</td>
-                    <td>{{ ropa.numero }}</td>
-                    <td>{{ ropa.team.category }} {{ ropa.team.name }}</td>
-                    <td>{{ ropa.team.levelLeague }}</td>
-                    <td>{{ ropa.alias }}</td>
-                    <td>{{ ropa.numero }}</td>
-                    <td>{{ ropa.abrigo }}</td>
-                    <td>{{ ropa.camisetaJuego }}</td>
-                    <td>{{ ropa.camisetaJuegoDos }}</td>
-                    <td>{{ ropa.pantalonJuego }}</td>
-                    <td>{{ ropa.pantalonJuegoDos }}</td>
-                    <td>{{ ropa.medias }}</td>
-                    <td>{{ ropa.mediasDos }}</td>
-                    <td>{{ ropa.camisetaEntreno }}</td>
-                    <td>{{ ropa.pantalonEntreno }}</td>
-                    <td>{{ ropa.sudaderaEntreno }}</td>
-                    <td>{{ ropa.chaquetaChandal }}</td>
-                    <td>{{ ropa.pantalonChandal }}</td>
-                    <td>{{ ropa.poloPaseo }}</td>
-                    <td>{{ ropa.pantalonPaseo }}</td>
-                    <td>{{ ropa.chubasquero }}</td>
-                    <td>{{ ropa.estado }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+<!-- tabla para imprimir en excel -->
+<div style="display: none;">
+    <table id="tablaExcel" class="table table-bordered table-striped text-center" #table1>
+        <thead class="table-custom">
+            <tr>
+                <th>NOMBRE</th>
+                <th>APELLIDO</th>
+                <th>NOMBRE CAMISETA</th>
+                <th>NUMERO</th>
+                <th>EQUIPO</th>
+                <th>CATEGORIA</th>
+                <th>ABRIGO</th>
+                <th>CAMISETA JUEGO</th>
+                <th>CAMISETA 2 JUEGO</th>
+                <th>PANTALON JUEGO</th>
+                <th>PANTALON 2 JUEGO</th>
+                <th>MEDIAS JUEGO</th>
+                <th>MEDIAS 2 JUEGO</th>
+                <th>CAMISETA ENTRENO</th>
+                <th>PANTALON ENTRENO</th>
+                <th>SUDADERA ENTRENO</th>
+                <th>CHAQUETA CHANDAL</th>
+                <th>PANTALON CHANDAL</th>
+                <th>POLO PASEO</th>
+                <th>PANTALON PASEO</th>
+                <th>CHUBASQUERO</th>
+                <th>ESTADO</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let ropa of ropaPlayers; let i = index">
+                <td>{{ ropa.player.nombre }}</td>
+                <td>{{ ropa.player.apellido }}</td>
+                <td>{{ ropa.nick }}</td>
+                <td>{{ ropa.numero }}</td>
+                <td>{{ ropa.team.category }} {{ ropa.team.name }}</td>
+                <td>{{ ropa.team.levelLeague }}</td>
+                <td>{{ ropa.abrigo }}</td>
+                <td>{{ ropa.camisetaJuego }}</td>
+                <td>{{ ropa.camisetaJuegoDos }}</td>
+                <td>{{ ropa.pantalonJuego }}</td>
+                <td>{{ ropa.pantalonJuegoDos }}</td>
+                <td>{{ ropa.medias }}</td>
+                <td>{{ ropa.mediasDos }}</td>
+                <td>{{ ropa.camisetaEntreno }}</td>
+                <td>{{ ropa.pantalonEntreno }}</td>
+                <td>{{ ropa.sudaderaEntreno }}</td>
+                <td>{{ ropa.chaquetaChandal }}</td>
+                <td>{{ ropa.pantalonChandal }}</td>
+                <td>{{ ropa.poloPaseo }}</td>
+                <td>{{ ropa.pantalonPaseo }}</td>
+                <td>{{ ropa.chubasquero }}</td>
+                <td>{{ ropa.estado }}</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <!-- Modal para la creación de equipo -->
@@ -477,24 +474,10 @@
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <span>{{ prenda.label }}</span>
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="{{prenda.property}}"
-                                [checked]="ropaClub[prenda.property] === 0" (change)="togglePrendaOkDesactivar(prenda.property, ropaClub[prenda.property])">
+                            <input class="form-check-input custom-input" type="checkbox" id="{{prenda.property}}"
+                                [checked]="ropaClub[prenda.property] === 0"
+                                (change)="togglePrendaOkDesactivar(prenda.property, ropaClub[prenda.property])">
                         </div>
-                        <!--<span>{{ prenda.label }}</span>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox">
-                            <label class="form-check-label">
-                                <i class="bi"></i>
-                            </label>
-                        </div>
-                         <button *ngIf="ropaClub[prenda.property] === 0" class="btn btn-danger me-1"
-                            (click)="togglePrendaOkDesactivar(ropaClub, prenda.property, 1)">
-                            <i class="bi bi-hand-thumbs-down"></i>
-                        </button>
-                        <button *ngIf="ropaClub[prenda.property] === 1" class="btn btn-success me-1"
-                            (click)="togglePrendaOkDesactivar(ropaClub, prenda.property, 0)">
-                            <i class="bi bi-hand-thumbs-up"></i>
-                        </button> -->
                     </div>
                 </div>
             </div>

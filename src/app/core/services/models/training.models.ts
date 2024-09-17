@@ -1,3 +1,6 @@
+import { Player } from "../player/player.model";
+import { Team } from "../team/team.model";
+
 export class Training {
     trainingSessionId: number;
     daySession: string;
@@ -29,6 +32,8 @@ export class Task {
     video: string;
     collapsed: boolean;
     imagenBoard: string;
+    estrategia: string;
+    intencion: string;
   
     constructor() {
       this.taskId = 0;
@@ -43,6 +48,30 @@ export class Task {
       this.video = '';
       this.imagenBoard = '';
       this.collapsed = false; // Inicialmente, la tarea está contraída
+      this.estrategia = '';
+      this.intencion = '';
+    }
+  }
+
+  export class AsistenciaTraining {
+    asistenciaTrainingId: number;
+    player: Player;
+    team: Team;
+    trainingSessionId: number;
+    asistencia: number;
+    retraso: number;
+    cantidadMulta: number;
+    motivo: string;
+    
+    constructor(object: any) {
+      this.asistenciaTrainingId = object.asistenciaTrainingId || 0;
+      this.player = object.player || new Player({});
+      this.team = object.team || new Team({});
+      this.trainingSessionId = object.trainingSessionId || 0;
+      this.asistencia = object.asistencia || 0;
+      this.retraso = object.retraso || 0;
+      this.cantidadMulta = object.cantidadMulta || 0;
+      this.motivo = object.motivo || '';
     }
   }
   

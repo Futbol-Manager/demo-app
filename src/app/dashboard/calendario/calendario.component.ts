@@ -1,23 +1,31 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Task, Training } from 'src/app/core/services/models/training.models';
+import { AsistenciaTraining, Task, Training } from 'src/app/core/services/models/training.models';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import { MatchPreparation, PlayerPostPartido, PostPartido, PostPartidoId } from 'src/app/core/services/models/match.model';
+import { ConvocatoriaUI, MatchPreparation, PlayerPostPartido, PostPartido, PostPartidoId } from 'src/app/core/services/models/match.model';
 import { MatDialog } from '@angular/material/dialog';
 import { PlayerService } from 'src/app/core/services/player/player.service';
-import { PlayerId } from 'src/app/core/services/player/player.model';
+import { NotificatePlayerUI, PlayerId } from 'src/app/core/services/player/player.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from 'src/app/core/services/player/respuestas.model';
 import { GolPostPartido } from 'src/app/core/services/team/team.model';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+
+declare var html2pdf: any;
 
 // Utilizaremos una interfaz para especificar las opciones de formato de fecha
 interface OpcionesFormatoFecha {
   month: 'long';
   year: 'numeric';
+}
+
+interface Match {
+  lugar: string;
+  // Otras propiedades de MatchPreparation
 }
 
 interface Category {
@@ -34,6 +42,8 @@ interface Category {
   styleUrls: ['./calendario.component.scss']
 })
 export class CalendarioComponent implements OnInit {
+
+  @ViewChild('endOfModal', { static: false }) endOfModal!: ElementRef;
 
   datosCargados: boolean = false;
   teamId!: number;  // Ajusta el valor según el teamId del equipo actual
@@ -209,6 +219,7 @@ export class CalendarioComponent implements OnInit {
   showModalPostEntrenamiento: boolean = false;
   showModalPreMatch: boolean = false;
   showModalPostMatch: boolean = false;
+  showModalAsistencia: boolean = false;
 
   playerIdUserActual: any = 0;
 
@@ -217,6 +228,7 @@ export class CalendarioComponent implements OnInit {
   respListPostEntreno: RespPostEntreno[] = [];
   respListPreMatch: RespPrePartido[] = [];
   respListPostMatch: RespPostPartido[] = [];
+  listAsistencia: AsistenciaTraining[] = [];
 
   golTypes = [
     {
@@ -468,6 +480,61 @@ export class CalendarioComponent implements OnInit {
 
   showAlert: boolean = false;
   showAlert2: boolean = false;
+  categoryTeam = 0;
+  subirTarea = 0;
+
+  estrategias: string[] = [
+    'Acciones a Balón Parado', 'Acciones Combinadas', 'Circuito', 'Conservación', 'Juego Adaptado al Fútbol', 'Juego de Posición',
+    'Juego de Posición Específico', 'Oleadas', 'Partidos', 'Posesión', 'Rueda de Pases', 'Situaciones Reducidas', 'Trabajo de Líneas'
+  ];
+
+  intenciones: string[] = [
+    '1 vs 1', '2 vs 1', '2 vs 2', '3 vs 3', '4 vs 4', 'ABP Defensiva', 'ABP Ofensiva', 'Amplitud', 'Apoyos', 'Ataque Organizado', 'Ataque-Defensa',
+    'Cobertura', 'Conservar', 'Contraataque', 'Defensa Inicio de Juego', 'Defensa de Juego Directo', 'Defensa Organizada',
+    'Desmarques', 'Dividir', 'Evitar Progresión', 'Fase Defensiva', 'Fase Ofensiva', 'Fijar', 'Finalizar', 'Inicio de Juego',
+    'Juego Directo', 'Mantener', 'Marcaje', 'Orientar', 'Permuta', 'Presionar', 'Primer Atacante', 'Primer Defensor',
+    'Profundidad', 'Progresar', 'Proteger Portería', 'Recuperar', 'Reinicio de Juego', 'Replegar', 'Segundo Atacante',
+    'Segundo Defensor', 'Temporizar', 'Tercer Atacante', 'Tercer Defensor',
+    'Transición Defensiva', 'Transición Ofensiva', 'Transiciones',
+  ];
+
+  userId: any = 0;
+
+  showModalTask: boolean = false;  // Controla la visibilidad del modal
+  tareaSeleccionada: any;  // Almacena la tarea seleccionada
+
+  // Genera un array con los números del 0 al 1000
+  numeros: number[] = [0, ...Array.from({ length: 1000 }, (_, i) => i + 1)];
+
+  selectedNumber: number = 0; // Por defecto, seleccionamos 0
+  trainingSessionIdSelected = 0;
+
+  match1: Match = {
+    lugar: ''
+    // Asegúrate de inicializar otras propiedades de MatchPreparation si las tiene
+  };
+
+  jugadoresNoConvocados: ConvocatoriaUI[] = [];
+  jugadoresSuplentes: ConvocatoriaUI[] = [];
+  jugadoresTitulares: ConvocatoriaUI[] = [];
+
+  mostrarModalConvocatoria = false;
+  mostrarModalConvocatoriaLista = false;
+  showNotificar = false;
+
+  playersConvo: any[] = [];
+
+
+  showConvocados: any = [];
+  showNoConvocados: any = [];
+
+  // Variables para el control táctil
+  touchJugador: any;
+  startX: number = 0;
+  startY: number = 0;
+
+  playerId = 0;  
+
 
   constructor(
     private router: Router,
@@ -479,6 +546,7 @@ export class CalendarioComponent implements OnInit {
     private teamService: TeamService,
     private cdr: ChangeDetectorRef,
     private loginService: LoginService,
+    private snackBar: MatSnackBar
   ) {
   }
 
@@ -487,18 +555,22 @@ export class CalendarioComponent implements OnInit {
     // Suscríbete al observable del servicio para obtener el usuario actual
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
+      this.userId = user?.userId;
       this.playerIdUserActual = user?.playerId;
       // Suscribirse a los cambios en los parámetros de la URL
       this.route.params.subscribe(params => {
         // Obtener el valor de teamId de los parámetros
         this.teamId = +params['teamId'];  // El + convierte el valor a número
-        console.log('teamId:', this.teamId);
+        this.playerId = +params['playerId'];  // El + convierte el valor a número
+        //console.log('teamId:', this.teamId);
       });
       this.teamService.getTeamById(this.teamId.toString()).subscribe(
         (response: Response) => {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
             this.nombreEquipo = response.data.categoryType.categoryName + ' ' + response.data.levelLeague;
+            this.categoryTeam = response.data.categoryTypeId;
+            if (this.categoryTeam === 14) this.irAPantalla(2);
             this.getListaEntrenamientos();
           } else {
             console.error('La respuesta del servicio no tiene la estructura esperada', response);
@@ -598,7 +670,15 @@ export class CalendarioComponent implements OnInit {
   // Método para abrir el modal de creación de equipo
   abrirModal(day: string): void {
     this.daySession = day;
-    this.trainingSession = new Training({}); // Restablecer a un objeto vacío
+    this.trainingSession = new Training({}); // Restablecer a un objeto vacío  
+
+    this.match = new MatchPreparation({});
+
+    this.match.hora = this.match.hora != '' ? this.match.hora : '08';
+    this.match.minutos = this.match.minutos != '' ? this.match.minutos : '15';
+
+    this.match.horaEmpieza = this.match.horaEmpieza != '' ? this.match.horaEmpieza : '09';
+    this.match.minutosEmpieza = this.match.minutosEmpieza != '' ? this.match.minutosEmpieza : '15';
     this.showModal = true;
   }
 
@@ -613,7 +693,7 @@ export class CalendarioComponent implements OnInit {
     this.trainingSession.daySession = this.daySession;
     this.trainingService.createUpdateTrainingSession(this.teamId.toString(), this.trainingSession).subscribe(
       (response) => {
-        console.log('Sesión de entrenamiento guardada con éxito:', response);
+        //console.log('Sesión de entrenamiento guardada con éxito:', response);
         // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
         this.getListaEntrenamientos();
         // Cerrar el modal después de crear el equipo
@@ -679,7 +759,7 @@ export class CalendarioComponent implements OnInit {
           // Mapea los datos bajo 'data' a instancias del modelo Team
           this.listMatchPreparation = response.data.map((match: MatchPreparation) => new MatchPreparation(match));
           // Lógica para obtener o generar la información del calendario
-          this.generarCalendarioV2(new Date());
+          this.generarCalendarioV2(this.mesActual);
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -720,6 +800,12 @@ export class CalendarioComponent implements OnInit {
   }
 
   openPartido(id: any, day: string): void {
+    //se vacia para reiniciarla
+    this.jugadoresNoConvocados = [];
+    this.jugadoresSuplentes = [];
+    this.jugadoresTitulares = [];
+
+    this.matchPreparationId = id;
     this.daySession = day;
     // Obtener la información del partido por su ID
     this.trainingService.getPrePartido(id).subscribe(
@@ -729,6 +815,36 @@ export class CalendarioComponent implements OnInit {
           // Asignar los datos del partido al objeto 'partido'
           this.match = response.data;
           this.togglePartidoVisible = response.data.visible === 0 || !response.data.visible ? 0 : 1;
+          this.playersConvo = response.data.players;
+
+          if (this.match.convocatoria != null && this.match.convocatoria != '') {
+            //se carga el json y se distribuye
+            // Convertir la cadena JSON a un objeto JavaScript
+            const convocatoria = JSON.parse(this.match.convocatoria);
+            this.jugadoresNoConvocados = convocatoria.noConvocados;
+            this.jugadoresSuplentes = convocatoria.suplentes;    // Inicializa con los datos del backend
+            this.jugadoresTitulares = convocatoria.titulares;
+            this.showNotificar = true;
+          } else {
+            this.showNotificar = false;
+            //se coge todo de la lista de jugadores y se pone en no convocados
+            // Supongamos que response.data.players es la lista de jugadores
+
+            if (this.playersConvo) {
+              // Asignar a jugadoresNoConvocados mapeando cada jugador a una instancia de ConvocatoriaUI
+              let i = 0;
+              this.jugadoresNoConvocados = this.playersConvo.map((player: any, index: number) => new ConvocatoriaUI({
+                id: index, // Asignar el índice como ID,
+                playerId: player.playerId, // Asegúrate de que este campo esté presente en la respuesta
+                nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
+                img: player.picturePlayer != null && player.picturePlayer != '' ? 'https://sphairatech.com/images/user/' + player.picturePlayer : '', // Puedes asignar una imagen si está disponible o usar un valor por defecto
+                posicion_x: player.posicion_x || null, // O asignar null si no tiene coordenadas
+                posicion_y: player.posicion_y || null  // O asignar null si no tiene coordenadas
+              }));
+            }
+
+            //console.log(this.jugadoresNoConvocados);
+          }
           // Abrir el modal
           this.showModalPartido = true;
         } else {
@@ -749,17 +865,9 @@ export class CalendarioComponent implements OnInit {
   }
 
   crearTarea(): void {
-    let work = this.cat1;
-    if (this.cat1 !== '') {
-      work = work + ',' + this.cat2
-    }
-    if (this.cat3 !== '') {
-      work = work + ',' + this.cat3
-    }
-
-    this.nuevaTarea.work = work;
+    this.nuevaTarea.work = '';
     // Llamada al servicio para crear el equipo
-    this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea,).subscribe(
+    this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea, this.subirTarea, this.userId).subscribe(
       (response) => {
         // Agregar la nueva tarea a la lista de tareas del entrenamiento
         this.trainingSession.tasks.push(response.data);
@@ -780,6 +888,10 @@ export class CalendarioComponent implements OnInit {
 
   toggleAddTaskForm(): void {
     this.showAddTaskForm = !this.showAddTaskForm;
+    if (this.showAddTaskForm) {
+      this.nuevaTarea.estrategia = '-';
+      this.nuevaTarea.intencion = '-';
+    }
   }
 
   toggleTask(tarea: Task): void {
@@ -873,6 +985,13 @@ export class CalendarioComponent implements OnInit {
 
   verTienda() {
     this.viewShop = true;
+    this.scrollToEnd();
+  }
+
+  scrollToEnd() {
+    if (this.endOfModal) {
+      this.endOfModal.nativeElement.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 
   cerrarTienda() {
@@ -1052,13 +1171,14 @@ export class CalendarioComponent implements OnInit {
     }
   }
 
-  onSubmit(taskId: number) {
+  onSubmit(task: any) {
+    let taskId = task.taskId;
     // Verifica si se ha seleccionado un archivo
     if (this.selectedFile) {
-      console.log('Imagen seleccionada:', this.selectedFile);
+      //console.log('Imagen seleccionada:', this.selectedFile);
 
       // Llama al método createUpdateImgTask del servicio para subir la imagen
-      this.trainingService.createUpdateImgTask(taskId.toString(), this.selectedFile)
+      this.trainingService.createUpdateImgTask(task.tasksShopId, taskId, this.selectedFile, this.userId)
         .subscribe(
           (response) => {
             // Construir el id completo de la imagen
@@ -1170,26 +1290,52 @@ export class CalendarioComponent implements OnInit {
     return selectedSubcategory ? selectedSubcategory.options : [];
   }
 
-  printDiv(divId: string): void {
-    let printContents = document.getElementById(divId)?.innerHTML;
-    let originalTitle = document.title;
-    let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+  printDiv(tarea: any): void {
+    const printContents = `
+        <div>
+            <h1>Tarea: ${tarea.slogans}</h1>
+            <p>ID: ${tarea.taskId}</p>
+            <p><b>Estrategia:</b> ${tarea.estrategia}</p>
+            <p><b>Intención:</b> ${tarea.intencion}</p>
+            <p><b>Descripción:</b> ${tarea.description}</p>
+            <p><b>Reglas:</b> ${tarea.rules}</p>
+            <p><b>Variantes:</b> ${tarea.variants}</p>
+            <p><b>Tiempo de Trabajo:</b> ${tarea.worktime}</p>
+            <p><b>Espacio:</b> ${tarea.space}</p>
+            <p><b>Material:</b> ${tarea.material}</p>
+            <p><b>Video YouTube:</b> ${tarea.video}</p>
+            <br>
+            ${tarea.imagenBoard ? `<img src="https://sphairatech.com/images/task-board/${tarea.imagenBoard}" alt="Imagen de la tarea">` : ''}
+        </div>
+    `;
 
-    popupWin?.document.open();
-    popupWin?.document.write(`
-      <html>
-        <head>
-          <title>Impresión</title>
-          <style>
-            // Aquí puedes añadir estilos específicos para la impresión si es necesario
-            body { font-family: 'Arial', sans-serif; }
-            .btn { display: none; } // Ocultar botones en la impresión
-          </style>
-        </head>
-        <body onload="window.print();window.close();">${printContents}</body>
-      </html>
-    `);
-    popupWin?.document.close();
+    const popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+
+    if (popupWin) {
+      popupWin.document.open();
+      popupWin.document.write(`
+            <html>
+                <head>
+                    <title>Impresión</title>
+                    <style>
+                        body { font-family: 'Arial', sans-serif; }
+                        .btn { display: none; } /* Ocultar botones en la impresión */
+                    </style>
+                </head>
+                <body onload="window.print();window.close();">${printContents}</body>
+            </html>
+        `);
+      popupWin.document.close();
+    }
+  }
+
+  openTaskModal(tarea: any): void {
+    this.tareaSeleccionada = tarea;  // Almacena la tarea seleccionada
+    this.showModalTask = true;  // Muestra el modal
+  }
+
+  closeTaskModal(): void {
+    this.showModalTask = false;  // Oculta el modal
   }
 
   printDivPostPartido(divId: string): void {
@@ -1436,11 +1582,16 @@ export class CalendarioComponent implements OnInit {
 
   crearFormPostPartido() {
     this.respPostPartido.matchPreparationId = this.matchPreparationId;
-    this.respPostPartido.playerId = this.usuarioActual?.playerId != null ? this.usuarioActual?.playerId : 0;
+    this.respPostPartido.playerId = this.playerId;
     this.trainingService.createFormPostPartido(this.respPostPartido).subscribe(
       (response) => {
         this.respPostPartido = new RespPostPartido({});
         this.showModalFormPostPartido = false;
+        if(!response.data){
+          alert('No se han enviado las respuestas porque ya se rellenó anteriormente y solo se puede una vez por partido.');
+        } else {          
+          alert('Respuestas enviadas correctamente.');
+        }
       },
       (error) => {
         console.error('Error al guardar la sesión de entrenamiento:', error);
@@ -1566,6 +1717,57 @@ export class CalendarioComponent implements OnInit {
 
   cerrarModalPostMatch() {
     this.showModalPostMatch = false;
+  }
+
+  //-----------------------
+
+  openModalAsistencia(id: number) {
+    this.trainingSessionIdSelected = id;
+    this.trainingService.getListAsistenciaByTraining(id, this.teamId).subscribe(
+      (response) => {
+        if (response.data) {
+          this.listAsistencia = response.data;
+          this.showModalAsistencia = true;
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  cerrarModalAsistencia() {
+    this.showModalAsistencia = false;
+  }
+
+  toggleAsistencia(index: number, value: number) {
+    this.listAsistencia[index].asistencia = value === 0 ? 1 : 0;
+    this.updateRopaClub(this.listAsistencia[index]);
+  }
+
+  toggleRetraso(index: number, value: number) {
+    this.listAsistencia[index].retraso = value === 0 ? 1 : 0;
+    this.updateRopaClub(this.listAsistencia[index]);
+  }
+
+  comboMulta(index: number) {
+    this.updateRopaClub(this.listAsistencia[index]);
+  }
+
+  motivoMulta(index: number) {
+    this.updateRopaClub(this.listAsistencia[index]);
+  }
+
+  updateRopaClub(asis: AsistenciaTraining) {
+    this.trainingService.updateAsistenciaByAsistencia(asis).subscribe(
+      (response) => {
+        //todo ok
+      },
+      (error) => {
+        console.error('Error al crear el equipo:', error);
+        // Puedes manejar el error según tus necesidades
+      }
+    );
   }
 
   toggleTaskPostPartido(post: RespPostPartido): void {
@@ -1794,4 +1996,233 @@ export class CalendarioComponent implements OnInit {
     }, 2000);
   }
 
+  toggleChangeSubirTarea(actualValue: number) {
+    const nuevoValor = actualValue === 0 ? 1 : 0;
+    const confirmacion = confirm('AVISO: Al activar esta opción, su tarea de entrenamiento será pública y visible para otros entrenadores. ' +
+      'Cualquier dato ingresado será accesible. No está permitido publicar información, datos o imágenes con derechos de autor sin el permiso del autor. ' +
+      'Cualquier contenido que infrinja esta norma será eliminado. ¿Estás seguro?');
+
+    if (confirmacion) {
+      this.subirTarea = nuevoValor;
+    } else {
+      // Si el usuario cancela, restablece el valor original del switch
+      setTimeout(() => {
+        (document.getElementById('subirTarea') as HTMLInputElement).checked = actualValue === 1;
+      }, 0);
+    }
+  }
+
+  // Método para abrir Google Maps con la dirección
+  openInGoogleMaps(): void {
+    if (this.match.lugar && this.match.lugar.trim()) {
+      const address = encodeURIComponent(this.match.lugar.trim());
+      const url = `https://www.google.com/maps/search/?api=1&query=${address}`;
+      window.open(url, '_blank');
+    }
+  }
+
+  // Evento para arrastrar con ratón (PC)
+  onDragStart(event: DragEvent, jugador: any) {
+    event.dataTransfer?.setData('jugador', JSON.stringify(jugador));
+  }
+
+  // Permitir el arrastre
+  allowDrop(event: DragEvent) {
+    event.preventDefault();
+  }
+
+  // Evento para soltar en la zona correspondiente con el ratón (PC)
+  onDrop2(event: DragEvent, estado: string) {
+    event.preventDefault();
+    const jugadorData = event.dataTransfer?.getData('jugador');
+    if (jugadorData) {
+      const jugador = JSON.parse(jugadorData);
+
+      // Actualiza el estado del jugador
+      this.actualizarEstadoJugador(jugador, estado);
+
+      // Si se suelta en titulares, actualizamos las coordenadas del jugador
+      if (estado === 'titular') {
+        const fieldRect = (event.target as HTMLElement).getBoundingClientRect();
+        jugador.posicion_x = event.clientX - fieldRect.left;
+        jugador.posicion_y = event.clientY - fieldRect.top;
+      }
+
+      // Mueve al jugador a la nueva lista
+      this.moverJugador(jugador, estado);
+    }
+  }
+
+  // Eventos táctiles para soportar arrastrar con el dedo (móviles y tablets)
+  onTouchStart(event: TouchEvent, jugador: any): void {
+    this.touchJugador = jugador;
+    this.startX = event.touches[0].clientX;
+    this.startY = event.touches[0].clientY;
+    event.preventDefault(); // Prevenir acciones no deseadas como el scroll
+  }
+
+  onTouchMove(event: TouchEvent): void {
+    if (this.touchJugador) {
+      const touch = event.touches[0];
+      const fieldRect = (document.querySelector('.field') as HTMLElement).getBoundingClientRect();
+      this.touchJugador.posicion_x = touch.clientX - fieldRect.left;
+      this.touchJugador.posicion_y = touch.clientY - fieldRect.top;
+
+      // Actualiza la posición del jugador en el DOM
+      const playerElement = document.querySelector(`.player[data-id="${this.touchJugador.id}"]`) as HTMLElement;
+      if (playerElement) {
+        playerElement.style.left = `${this.touchJugador.posicion_x}px`;
+        playerElement.style.top = `${this.touchJugador.posicion_y}px`;
+      }
+
+      event.preventDefault(); // Evitar el desplazamiento de la página mientras se arrastra
+    }
+  }
+
+  onTouchEnd(event: TouchEvent, estado: string): void {
+    if (this.touchJugador) {
+      const fieldRect = (document.querySelector('.field') as HTMLElement).getBoundingClientRect();
+
+      // Ajustar las coordenadas si se suelta en titulares
+      if (estado === 'titular') {
+        this.touchJugador.posicion_x = this.touchJugador.posicion_x - fieldRect.left;
+        this.touchJugador.posicion_y = this.touchJugador.posicion_y - fieldRect.top;
+      }
+
+      this.actualizarEstadoJugador(this.touchJugador, estado);
+      this.moverJugador(this.touchJugador, estado);
+      this.touchJugador = null; // Resetear variable
+    }
+  }
+
+  actualizarEstadoJugador(jugador: any, estado: string) {
+    jugador.estado = estado;
+  }
+
+  moverJugador(player: any, estado: string) {
+    this.removeJugador(player);
+
+    switch (estado) {
+      case 'no_convocado':
+        this.jugadoresNoConvocados.push(player);
+        break;
+      case 'suplente':
+        this.jugadoresSuplentes.push(player);
+        break;
+      case 'titular':
+        this.jugadoresTitulares.push(player);
+        break;
+    }
+  }
+
+  removeJugador(jugador: any) {
+    this.jugadoresNoConvocados = this.jugadoresNoConvocados.filter(j => j.id !== jugador.id);
+    this.jugadoresSuplentes = this.jugadoresSuplentes.filter(j => j.id !== jugador.id);
+    this.jugadoresTitulares = this.jugadoresTitulares.filter(j => j.id !== jugador.id);
+  }
+
+  guardarConvocatoria() {
+    const convocatoria = {
+      noConvocados: this.jugadoresNoConvocados,
+      suplentes: this.jugadoresSuplentes,
+      titulares: this.jugadoresTitulares.map(j => ({
+        id: j.id,
+        playerId: j.playerId,
+        nombre: j.nombre,
+        img: j.img,
+        posicion_x: j.posicion_x,
+        posicion_y: j.posicion_y
+      }))
+    };
+
+    // Convertir la convocatoria a una cadena JSON
+    const convocatoriaJSON = JSON.stringify(convocatoria);
+
+    this.playerService.updateConvocatoria(convocatoriaJSON, this.matchPreparationId).subscribe(response => {
+      alert('Convocatoria guardada con éxito.');
+      this.showNotificar = true;
+    });
+  }
+
+  abrirModalConvocatoria() {
+    this.mostrarModalConvocatoria = true;
+  }
+
+  cerrarModalConvocatoria() {
+    this.mostrarModalConvocatoria = false;
+  }
+
+  abrirModalConvocatoriaLista() {
+    let ui = new NotificatePlayerUI({});
+    ui.players = this.playersConvo;
+    // Asignar los nombres de jugadores no convocados
+    ui.noConvocados = this.jugadoresNoConvocados.map((jugador: ConvocatoriaUI) => jugador.nombre);
+
+    // Asignar los nombres de jugadores suplentes y titulares a convocados
+    ui.convocados = [
+      ...this.jugadoresSuplentes.map((jugador: ConvocatoriaUI) => jugador.nombre),
+      ...this.jugadoresTitulares.map((jugador: ConvocatoriaUI) => jugador.nombre)
+    ];
+
+    this.showConvocados = ui.convocados;
+    this.showNoConvocados = ui.noConvocados;
+    this.mostrarModalConvocatoriaLista = true;
+  }
+
+  cerrarModalConvocatoriaLista() {
+    this.mostrarModalConvocatoriaLista = false;
+  }
+
+  enviarConvocatoria() {
+    let partido = this.match;
+    //crear el objeto para enviarlo
+    let ui = new NotificatePlayerUI({});
+    ui.players = this.playersConvo;
+
+    ui.local = partido.terreno == 'Local' ? 0 : 1;
+    ui.lugar = partido.lugar;
+    ui.rival = partido.rivalName;
+    ui.tipoPartido = partido.tipoPartido;
+
+    //esta es la hora de partido
+    ui.horaPartido = partido.horaEmpieza + ':' + partido.minutosEmpieza;
+    ui.horaQuedada = partido.hora + ':' + partido.minutos;
+    ui.fechaPartido = partido.matchDate;
+
+    // Asignar los nombres de jugadores no convocados
+    ui.noConvocados = this.jugadoresNoConvocados.map((jugador: ConvocatoriaUI) => jugador.nombre);
+
+    // Asignar los nombres de jugadores suplentes y titulares a convocados
+    ui.convocados = [
+      ...this.jugadoresSuplentes.map((jugador: ConvocatoriaUI) => jugador.nombre),
+      ...this.jugadoresTitulares.map((jugador: ConvocatoriaUI) => jugador.nombre)
+    ];
+
+    console.log(ui);
+
+    this.playerService.notificateMatchPlayer(ui, this.teamId).subscribe(response => {
+      alert('Notificados con éxito.');
+    });
+  }
+
+  match2 = {
+    rivalName: 'Atlético de Madrid',
+    terreno: 'Estadio Santiago Bernabeu',
+    imgClub: 'https://sphairatech.com/images/user/2108952-imguser.png',
+  };
+
+  generatePDF() {
+    const element = document.getElementById('pdf-content');
+    const options = {
+      margin:       1,
+      filename:     'informe-partido.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().from(element).set(options).save();
+
+    
+  }
 }
+

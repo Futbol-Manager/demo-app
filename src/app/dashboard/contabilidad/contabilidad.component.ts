@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -12,7 +12,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RegisterService } from 'src/app/core/services/register/register.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { ClubService } from 'src/app/core/services/club/club.service';
-import { ClubCuotas, HostoryPagosPlayer, PlayerCuotas } from 'src/app/core/services/team/club.model';
+import { ClubCuotas, HostoryPagosPlayer, PlayerCuotas, TotalesCuotas } from 'src/app/core/services/team/club.model';
+import * as XLSX from "xlsx";
 
 @Component({
   selector: 'app-contabilidad',
@@ -69,6 +70,17 @@ export class ContabilidadComponent implements OnInit {
   indexPlayerSelected: number = 0;
   optionSelected: number = 0;
 
+  selectedComboTitle: number = 0;
+  comboTitle: string = 'Equipos';
+  listTeamsForCombo: any[] = [];
+
+  teamSelected: number = 0;
+  categorySelected: number = 0;
+  aceptStripe = false;
+  totales: TotalesCuotas = new TotalesCuotas({});;
+  hayRopa = false;
+  recalcular = false;
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -99,7 +111,9 @@ export class ContabilidadComponent implements OnInit {
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
-          this.listHCP = response.data;
+          this.listHCP = response.data.list;
+          this.totales = response.data.totales;
+          if (this.totales.cuotaRopa != '0€') this.hayRopa = true;
           /*this.players = response.data.players !== null ? response.data.players : [];
           this.cuota = response.data.cuotas !== null ? response.data.cuotas : new CuotasClub({});
           this.isFraccionado = this.cuota.fraccionado === 1 ? true : false;*/
@@ -107,6 +121,20 @@ export class ContabilidadComponent implements OnInit {
             this.inicializarDataTable();
             this.datosCargados = true;
           }, 1000);
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+
+    this.teamService.getTeamsByClubForCombo(this.clubId, '2024').subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.listTeamsForCombo = response.data;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -241,7 +269,7 @@ export class ContabilidadComponent implements OnInit {
     );
   }
 
-  getInfoClub(){
+  getInfoClub() {
     let temporada = '2024';
     this.clubService.getClubCuota(this.clubId.toString(), temporada).subscribe(
       (response: Response) => {
@@ -258,30 +286,60 @@ export class ContabilidadComponent implements OnInit {
   }
 
   createUpdateSettings() {
+    let option = this.selectedComboTitle;
+    let value = option === 0 ? this.teamSelected : this.categorySelected;
     //esto actualiza la info del club, el IBAN, etc
-    this.teamService.createUpdateCuotaClub(this.infoClub).subscribe(
+    this.teamService.createUpdateCuotaClub(this.infoClub, option, value).subscribe(
       (response) => {
         this.infoClub = response.data;
-        this.guardar();
+        this.clubService.updateclubCuotas(this.clubCuotas, option, value).subscribe(
+          (response) => {
+            this.clubCuotas = response.data;
+            this.recalcular = true;
+            /*this.hayRopa = this.clubCuotas.cuotaRopa != '0€' ? true : false;
+            
+            this.totales.cuotaRopa = this.clubCuotas.cuotaRopa;
+            this.totales.cuotaClub = this.clubCuotas.cuotaClub;
+            this.totales.restante = this.clubCuotas.restante;
+            this.totales.pagado = this.clubCuotas.pagado;*/
+
+            this.teamService.GetPlayersByTeamByClub(this.clubId.toString(), '2024').subscribe(
+              (response: Response) => {
+                // Verifica que la propiedad 'data' exista en la respuesta
+                if (response.data !== null) {
+                  this.updateCuotaClub(response.data.list);
+                  this.guardar();
+                } else {
+                  console.error('La respuesta del servicio no tiene la estructura esperada', response);
+                }
+              },
+              (error) => {
+                console.error('Error al cargar el listado de equipos', error);
+              }
+            );
+          },
+          (error) => {
+            console.error('Error al crear el equipo:', error);
+            // Puedes manejar el error según tus necesidades
+          }
+        );
       },
       (error) => {
         console.error('Error al crear el equipo:', error);
         // Puedes manejar el error según tus necesidades
       }
     );
-    //esto actualiza las cuotas asignadas al club
-    
-    this.clubService.updateclubCuotas(this.clubCuotas, this.optionSelected).subscribe(
-      (response) => {
-        this.clubCuotas = response.data;
-        // Cerrar el modal después de crear el equipo
-        this.guardar();
-      },
-      (error) => {
-        console.error('Error al crear el equipo:', error);
-        // Puedes manejar el error según tus necesidades
+  }
+
+  updateCuotaClub(responseData: any[]): void {
+    responseData.forEach((responsePlayer: any) => {
+      const index = this.listHCP.findIndex((hcpPlayer: any) => hcpPlayer.playerId === responsePlayer.playerId);
+      if (index !== -1) {
+        this.listHCP[index].cuotaClub = responsePlayer.cuotaClub;
+        this.listHCP[index].cuotaRopa = responsePlayer.cuotaRopa;
+        this.listHCP[index].restante = responsePlayer.restante;
       }
-    );
+    });
   }
 
   selecFraccionado() {
@@ -325,10 +383,10 @@ export class ContabilidadComponent implements OnInit {
 
   enviarMailJugador() {
     if (this.userForm.valid) {
-      let menor = 0;
-      if (this.isMenor) {
+      let menor = 1;
+      /*if (this.isMenor) {
         menor = 1;
-      }
+      }*/
       this.registerService.invitePlayer(this.userForm.value.mail, this.selectedPlayerId, menor, this.selectedTeamId).pipe().subscribe(
         res => {
           this.cerrarModalInvitar();
@@ -342,7 +400,7 @@ export class ContabilidadComponent implements OnInit {
     }
   }
 
-  openModalEditar(player: any, index: number) {    
+  openModalEditar(player: any, index: number) {
     this.indexPlayerSelected = index;
     this.clubService.getPlayerCuota(this.clubId, player.playerId, player.temporada).subscribe(
       (response: Response) => {
@@ -375,6 +433,7 @@ export class ContabilidadComponent implements OnInit {
           this.listHCP[this.indexPlayerSelected].restante = response.data.cuotaClub;
           this.agregarPagoPlayer = new HostoryPagosPlayer({});
           this.guardar();
+          this.recalcular = true;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -405,7 +464,8 @@ export class ContabilidadComponent implements OnInit {
     this.showModalAgregarPago = false;
   }
 
-  openModalVerPagosPlayer(player: any) {
+  openModalVerPagosPlayer(player: any, index: number) {
+    this.indexPlayerSelected = index;
     //this.playerSelected = player;
     this.clubService.getHistoryPagosPlayer(this.clubId, player.playerId, player.temporada).subscribe(
       (response: Response) => {
@@ -415,7 +475,7 @@ export class ContabilidadComponent implements OnInit {
           /*this.historyPlayer = response.data;
           this.isFraccionadoPlayer = this.historyPlayer.fraccionado === '1' ? true : false;*/
         } else {
-          this.historyPlayer = new HistorialPagosPlayer({});
+          this.historyPagosPlayer = [];
         }
         this.showModalVerHistorialPagosPlayer = true;
       },
@@ -437,8 +497,9 @@ export class ContabilidadComponent implements OnInit {
           //actualizamos los campos de pagado y restante
           this.listHCP[this.indexPlayerSelected].pagado = (Number(this.listHCP[this.indexPlayerSelected].pagado) + Number(this.agregarPagoPlayer.cantidad));
           this.listHCP[this.indexPlayerSelected].restante = (Number(this.listHCP[this.indexPlayerSelected].cuotaClub) - Number(this.listHCP[this.indexPlayerSelected].pagado));
-          this.agregarPagoPlayer = new HostoryPagosPlayer({});
+          //this.agregarPagoPlayer = new HostoryPagosPlayer({});
           this.guardar();
+          this.recalcular = true;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -494,8 +555,151 @@ export class ContabilidadComponent implements OnInit {
     }
   }
 
-  goStripeURL(){
+  goStripeURL() {
     window.open('https://connect.stripe.com/login', '_blank');
   }
 
+  toggleComboTitle() {
+    this.selectedComboTitle = this.selectedComboTitle == 0 ? 1 : 0;
+    this.comboTitle = this.selectedComboTitle == 0 ? 'Equipos' : 'Categorias';
+  }
+
+  loadCuotaClub() {
+    let temporada = this.infoClub.temporada === '' ? '2024' : this.infoClub.temporada;
+    this.clubService.getClubCuotaForLoadTeam(this.clubId, temporada, this.teamSelected).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.infoClub = response.data.infoClub;
+          this.clubCuotas = response.data.cuotaClub;
+          //this.clubCuotas.temporada = response.data.temporada === null ? temporada : response.data.temporada;
+        } else {
+          this.clubCuotas = new ClubCuotas({});
+        }
+        this.showModal = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  validateNumber(event: any, key: number): void {
+    // Obtener el valor actual del input
+    const value = event.target.value;
+
+    // Reemplazar cualquier carácter que no sea un dígito
+    event.target.value = value.replace(/[^0-9]/g, '');
+
+    switch (key) {
+      case 1:
+        // Actualizar el valor del ngModel
+        this.clubCuotas.cuotaUno = event.target.value;
+        break;
+      case 2:
+        // Actualizar el valor del ngModel
+        this.clubCuotas.cuotaDos = event.target.value;
+        break;
+      case 3:
+        // Actualizar el valor del ngModel
+        this.clubCuotas.cuotaTres = event.target.value;
+        break;
+      case 4:
+        // Actualizar el valor del ngModel
+        this.clubCuotas.cuotaCuatro = event.target.value;
+        break;
+      case 5:
+        // Actualizar el valor del ngModel
+        this.clubCuotas.cuotaCinco = event.target.value;
+        break;
+      case 6:
+        // Actualizar el valor del ngModel
+        this.clubCuotas.cuotaSeis = event.target.value;
+        break;
+      case 7:
+        // Actualizar el valor del ngModel
+        this.clubCuotas.cuotaSiete = event.target.value;
+        break;
+      case 8:
+        // Actualizar el valor del ngModel
+        this.clubCuotas.cuotaOcho = event.target.value;
+        break;
+      case 9:
+        // Actualizar el valor del ngModel
+        this.clubCuotas.cuotaNueve = event.target.value;
+        break;
+      case 10:
+        // Actualizar el valor del ngModel
+        this.clubCuotas.cuotaDiez = event.target.value;
+        break;
+      case 11:
+        // Actualizar el valor del ngModel
+        this.clubCuotas.cuotaOnce = event.target.value;
+        break;
+      case 12:
+        // Actualizar el valor del ngModel
+        this.clubCuotas.cuotaDoce = event.target.value;
+        break;
+      case 20:
+        // Actualizar el valor del ngModel
+        this.agregarPagoPlayer.cantidad = event.target.value;
+        break;
+    }
+  }
+
+  @ViewChild("table1") table: ElementRef | undefined;
+  exportTableToExcel(): void {
+    // Comprobar si el elemento existe antes de usar su ID
+    const tableElement = document.getElementById('tablaExcel');
+
+    if (tableElement) {
+      const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(tableElement);
+
+      // Resto del código (asegurar formato de cadena, ancho de columnas, etc.)
+      // ... (puedes copiar y pegar el código de la respuesta anterior)
+
+      // Crear y guardar libro de trabajo
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+      // Personalizar nombre de archivo y opciones de guardado (opcional)
+      const fileName = "tabla_exportada.xlsx"; // Ajustar según tus necesidades
+      XLSX.writeFile(wb, fileName, { bookType: 'xlsx' });
+    } else {
+      console.error("¡Elemento 'tablaExcel' no encontrado!");
+      // Manejar el error de forma adecuada (opcional)
+      // Por ejemplo, mostrar un mensaje de alerta al usuario
+    }
+  }
+
+  confirmReturnPay(pago: any) {
+    console.log(pago);
+    const confirmacion = confirm('Se creará un registro para restar esta cantidad con la fecha de hoy. ¿Estás seguro?');
+
+    if (confirmacion) {
+      this.returnPay(pago);
+    }
+  }
+
+  returnPay(pago: any) {
+    this.clubService.devolverHistoryPagosPlayer(pago).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          setTimeout(() => {
+            this.listHCP[this.indexPlayerSelected].pagado = response.data.pagado;
+            this.listHCP[this.indexPlayerSelected].restante = response.data.restante;
+          }, 1000);
+          this.showModalVerHistorialPagosPlayer = false;
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
 }
+
+

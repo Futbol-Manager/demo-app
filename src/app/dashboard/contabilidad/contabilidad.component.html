@@ -1,25 +1,62 @@
 <div *ngIf="datosCargados">
-
-  <div class="container mt-3"
-    *ngIf="this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2">
-    <div class="row">
-      <div class="col">
-        <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Inicio</button>
+  <div class="submenu">
+    <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
+          <i class="bi bi-house"></i>
+          <span class="d-none d-md-inline">Inicio</span>
+        </a>
       </div>
-      <div class="col text-end">
-        <button class="btn btn-custom btn-sm" (click)="abrirModal()">Ajustes</button>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="openModalStripe()">
+          <i class="bi bi-stripe"></i>
+          <span class="d-none d-md-inline">Stripe</span>
+        </a>
+      </div>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="abrirModal()">
+          <i class="bi bi-gear"></i>
+          <span class="d-none d-md-inline">Ajustes</span>
+        </a>
       </div>
     </div>
-    <div class="row" style="margin-top: 2em;">
-      <div class="col">
-        <button class="btn btn-custom btn-sm" (click)="openModalStripe()">Stripe<i
-            class="bi bi-stripe ms-2"></i></button>
-      </div>
-    </div>
+  </div>
 
+  <div class="container mt-3">
     <!-- Contenido para el dataTable -->
-    <div class="container mt-4">
-      <h2>Tabla Jugadores</h2>
+    <div class="row" *ngIf="recalcular">
+      <div class="col">
+        <label for="cuotaClub" class="form-label">Es necesario recalcular los totales, vuelve a entrar para
+          verlos.</label>
+      </div>
+    </div>
+    <div class="row" *ngIf="!recalcular">
+      <div class="col-3">
+        <label for="cuotaClub" class="form-label" *ngIf="!hayRopa">Total de la Cuota</label>
+        <label for="cuotaClub" class="form-label" *ngIf="hayRopa">Total de la Cuota + Ropa</label>
+        <input type="text" class="form-control" id="cuotaClub" name="cuotaClub" [(ngModel)]="totales.cuotaClub"
+          disabled>
+      </div>
+      <div class="col-3" *ngIf="hayRopa">
+        <label for="cuotaRopa" class="form-label">Total de la ropa</label>
+        <input type="text" class="form-control" id="cuotaRopa" name="cuotaRopa" [(ngModel)]="totales.cuotaRopa"
+          disabled>
+      </div>
+      <div class="col-3">
+        <label for="pagado" class="form-label">Total pagado de todos los jugadores</label>
+        <input type="text" class="form-control" id="pagado" name="pagado" [(ngModel)]="totales.pagado" disabled>
+      </div>
+      <div class="col-3">
+        <label for="restante" class="form-label">Restante y pendiente por pagar</label>
+        <input type="text" class="form-control" id="restante" name="restante" [(ngModel)]="totales.restante" disabled>
+      </div>
+    </div>
+    <div style="margin-top: 2em;">
+      <h2>Tabla Cuota Jugadores</h2>
+      <!-- Botón para exportar a Excel-->
+      <button class="btn btn-success" style="margin-bottom: 2em;" (click)="exportTableToExcel()">
+        <i class="bi bi-file-earmark-spreadsheet-fill"></i> Descargar Excel
+      </button>
       <div class="row justify-content-between div-headdatatable">
         <div class="col-md-auto mr-auto" id="dt-length">
           <!-- Contenido para el dt-length -->
@@ -37,7 +74,7 @@
               <th>APELLIDOS</th>
               <th>EQUIPO</th>
               <th>ESTADO_PAGO</th>
-              <th>CUOTA_CLUB</th>
+              <th>CUOTA_+_ROPA</th>
               <th>CUOTA_ROPA</th>
               <th>PAGADO</th>
               <th>RESTANTE</th>
@@ -63,16 +100,16 @@
               <td>{{ player.apellido }}</td>
               <td>{{ player.teamName }}</td>
               <td>
-                <ng-container *ngIf="estadoPago(player.estado) === 0">
+                <ng-container *ngIf="player.estado === 0">
                   <i class="bi bi-x-circle text-danger" title="Ningún pago"></i>
                 </ng-container>
-                <ng-container *ngIf="estadoPago(player.estado) === 1">
-                  <i class="bi bi-exclamation-triangle text-warning" title="Algun pago hecho"></i>
+                <ng-container *ngIf="player.estado === 1">
+                  <i class="bi bi-exclamation-triangle text-warning" title="Con retraso"></i>
                 </ng-container>
-                <ng-container *ngIf="estadoPago(player.estado) === 2">
+                <ng-container *ngIf="player.estado === 2">
                   <i class="bi bi-check-circle text-success" title="Al corriente"></i>
                 </ng-container>
-                <ng-container *ngIf="estadoPago(player.estado) === 3">
+                <ng-container *ngIf="player.estado === 3">
                   <i class="bi bi-check-circle text-success" title="Completado"></i>
                 </ng-container>
               </td>
@@ -95,8 +132,8 @@
                   title="Editar cuota del jugador"></i>
                 <i class="bi bi-wallet2 ms-2" style="cursor: pointer;" (click)="openModalPago(player, i)"
                   title="Introducir un pago"></i>
-                <i class="bi bi-clock-history ms-2" style="cursor: pointer;" (click)="openModalVerPagosPlayer(player)"
-                  title="Ver histoial de pagos"></i>
+                <i class="bi bi-clock-history ms-2" style="cursor: pointer;"
+                  (click)="openModalVerPagosPlayer(player, i)" title="Ver histoial de pagos"></i>
               </td>
             </tr>
           </tbody>
@@ -106,6 +143,49 @@
     <div id="button_datatable">
     </div>
   </div>
+</div>
+
+<!-- tabla para imprimir en excel -->
+<div style="display: none;">
+  <table id="tablaExcel" class="table table-bordered table-striped text-center" #table1>
+    <thead class="table-custom">
+      <tr>
+        <th>NOMBRE</th>
+        <th>APELLIDOS</th>
+        <th>EQUIPO</th>
+        <th>ESTADO_PAGO</th>
+        <th>CUOTA_+_ROPA</th>
+        <th>CUOTA_ROPA</th>
+        <th>PAGADO</th>
+        <th>RESTANTE</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let player of listHCP; let i = index">
+        <td>{{ player.nombre }}</td>
+        <td>{{ player.apellido }}</td>
+        <td>{{ player.teamName }}</td>
+        <td>
+          <ng-container *ngIf="player.estado === 0">
+            Ningún pago
+          </ng-container>
+          <ng-container *ngIf="player.estado === 1">
+            Con retraso
+          </ng-container>
+          <ng-container *ngIf="player.estado === 2">
+            Al corriente
+          </ng-container>
+          <ng-container *ngIf="player.estado === 3">
+            Completado
+          </ng-container>
+        </td>
+        <td>{{ player.cuotaClub }}</td>
+        <td>{{ player.cuotaRopa }}</td>
+        <td>{{ player.pagado }}</td>
+        <td>{{ player.restante }}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <!-- Modal para la creación de equipo con información adicional -->
@@ -129,6 +209,51 @@
               <option value="2025">2025/2026</option>
             </select>
           </div>
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <p style="color: red;">¡Importante! Este cambio afectará a los jugadores de un equipo, de una
+                categoria o a todos, selecciona la opción deseada.</p>
+              <p style="color: red;">Si un equipo no dispone de jugadores, no se aplicará la cuota, es necesario mínimo
+                un jugador.</p>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-3">
+              <span>{{ comboTitle }}</span>
+              <div class="form-check form-switch">
+                <input class="form-check-input custom-input" type="checkbox" id="combo"
+                  [checked]="selectedComboTitle === 0" (change)="toggleComboTitle()">
+              </div>
+            </div>
+            <div class="col-md-9" *ngIf="selectedComboTitle == 0">
+              <label for="teamSelected" class="form-label">Selecciona un equipo</label>
+              <select class="form-control me-2" id="teamSelected" name="teamSelected" [(ngModel)]="teamSelected"
+                (change)="loadCuotaClub()">
+                <option value="0">Todos los equipos</option>
+                <option *ngFor="let team of listTeamsForCombo" [value]="team.value">{{ team.name }}</option>
+              </select>
+            </div>
+            <div class="col-md-9" *ngIf="selectedComboTitle == 1">
+              <label for="categorySelected" class="form-label">Selecciona la categoria</label>
+              <select class="form-control" id="categorySelected" name="categorySelected" [(ngModel)]="categorySelected">
+                <!-- Opciones ajustadas según tus necesidades -->
+                <option value="0">Todas las categorias</option>
+                <option value="15">Senior</option>
+                <option value="16">Juvenil</option>
+                <option value="17">Juvenil/Cadete Femenina</option>
+                <option value="18">Cadete</option>
+                <option value="19">Cadete/Infantil Femenina</option>
+                <option value="20">Infantil</option>
+                <option value="21">Infantil/Alevín Femenina</option>
+                <option value="22">Alevín</option>
+                <option value="23">Benjamín</option>
+                <option value="24">Benjamín/Prebenjamín Femenina</option>
+                <option value="25">Prebenjamín</option>
+                <option value="26">Debutante</option>
+              </select>
+            </div>
+          </div>
+          <hr>
           <div class="mb-3">
             <label for="bizum" class="form-label">Bizum:</label>
             <input type="text" class="form-control" id="bizum" name="bizum" [(ngModel)]="infoClub.bizum">
@@ -151,7 +276,7 @@
           <div class="row mb-3">
             <div class="col-md-6">
               <label for="cuotaRopa" class="form-label">Precio de la cuota de la ropa:</label>
-              <input type="text" class="form-control" id="cuotaRopa" name="cuotaRopa"
+              <input type="number" class="form-control" id="cuotaRopa" name="cuotaRopa"
                 [(ngModel)]="clubCuotas.cuotaRopa">
             </div>
             <div class="col-md-6">
@@ -177,15 +302,22 @@
               <option value="12">12</option>
             </select>
           </div>
-          <div class="mb-3">
-            <h2>Repartición de las cuotas</h2>
-            <p>Segun el número total de pagos o cuotas que se haya seleccionado, ir rellenando cantidad y fecha de pago.
-            </p>
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <h2>Repartición de las cuotas</h2>
+            </div>
+            <div class="col-md-12">
+              <p>Segun el número de cuotas o pagos que se haya seleccionado, se debe ir rellenando cantidad y fecha de
+                pago en cada una de las cuotas.
+              </p>
+              <p style="color: red;">(Solo se permiten números enteros, sin "comas" ni "puntos")</p>
+            </div>
           </div>
           <div class="row mb-3">
             <div class="col-md-6">
               <label for="cuotaUno" class="form-label">Cuota 1:</label>
-              <input type="text" class="form-control" id="cuotaUno" name="cuotaUno" [(ngModel)]="clubCuotas.cuotaUno">
+              <input type="number" class="form-control" id="cuotaUno" name="cuotaUno" [(ngModel)]="clubCuotas.cuotaUno"
+                (input)="validateNumber($event, 1)">
             </div>
             <div class="col-md-6">
               <label for="cuotaUnoDate" class="form-label">Fecha de pago:</label>
@@ -196,7 +328,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 1">
             <div class="col-md-6">
               <label for="cuotaDos" class="form-label">Cuota 2:</label>
-              <input type="text" class="form-control" id="cuotaDos" name="cuotaDos" [(ngModel)]="clubCuotas.cuotaDos">
+              <input type="number" class="form-control" id="cuotaDos" name="cuotaDos" [(ngModel)]="clubCuotas.cuotaDos"
+                (input)="validateNumber($event, 2)">
             </div>
             <div class="col-md-6">
               <label for="cuotaDosDate" class="form-label">Fecha de pago:</label>
@@ -207,8 +340,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 2">
             <div class="col-md-6">
               <label for="cuotaTres" class="form-label">Cuota 3:</label>
-              <input type="text" class="form-control" id="cuotaTres" name="cuotaTres"
-                [(ngModel)]="clubCuotas.cuotaTres">
+              <input type="number" class="form-control" id="cuotaTres" name="cuotaTres"
+                [(ngModel)]="clubCuotas.cuotaTres" (input)="validateNumber($event, 3)">
             </div>
             <div class="col-md-6">
               <label for="cuotaTresDate" class="form-label">Fecha de pago:</label>
@@ -219,8 +352,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 3">
             <div class="col-md-6">
               <label for="cuotaCuatro" class="form-label">Cuota 4:</label>
-              <input type="text" class="form-control" id="cuotaCuatro" name="cuotaCuatro"
-                [(ngModel)]="clubCuotas.cuotaCuatro">
+              <input type="number" class="form-control" id="cuotaCuatro" name="cuotaCuatro"
+                [(ngModel)]="clubCuotas.cuotaCuatro" (input)="validateNumber($event, 4)">
             </div>
             <div class="col-md-6">
               <label for="cuotaCuatroDate" class="form-label">Fecha de pago:</label>
@@ -231,8 +364,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 4">
             <div class="col-md-6">
               <label for="cuotaCinco" class="form-label">Cuota 5:</label>
-              <input type="text" class="form-control" id="cuotaCinco" name="cuotaCinco"
-                [(ngModel)]="clubCuotas.cuotaCinco">
+              <input type="number" class="form-control" id="cuotaCinco" name="cuotaCinco"
+                [(ngModel)]="clubCuotas.cuotaCinco" (input)="validateNumber($event, 5)">
             </div>
             <div class="col-md-6">
               <label for="cuotaCincoDate" class="form-label">Fecha de pago:</label>
@@ -243,8 +376,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 5">
             <div class="col-md-6">
               <label for="cuotaSeis" class="form-label">Cuota 6:</label>
-              <input type="text" class="form-control" id="cuotaSeis" name="cuotaSeis"
-                [(ngModel)]="clubCuotas.cuotaSeis">
+              <input type="number" class="form-control" id="cuotaSeis" name="cuotaSeis"
+                [(ngModel)]="clubCuotas.cuotaSeis" (input)="validateNumber($event, 6)">
             </div>
             <div class="col-md-6">
               <label for="cuotaSeisDate" class="form-label">Fecha de pago:</label>
@@ -255,8 +388,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 6">
             <div class="col-md-6">
               <label for="cuotaSiete" class="form-label">Cuota 7:</label>
-              <input type="text" class="form-control" id="cuotaSiete" name="cuotaSiete"
-                [(ngModel)]="clubCuotas.cuotaSiete">
+              <input type="number" class="form-control" id="cuotaSiete" name="cuotaSiete"
+                [(ngModel)]="clubCuotas.cuotaSiete" (input)="validateNumber($event, 7)">
             </div>
             <div class="col-md-6">
               <label for="cuotaSieteDate" class="form-label">Fecha de pago:</label>
@@ -267,8 +400,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 7">
             <div class="col-md-6">
               <label for="cuotaOcho" class="form-label">Cuota 8:</label>
-              <input type="text" class="form-control" id="cuotaOcho" name="cuotaOcho"
-                [(ngModel)]="clubCuotas.cuotaOcho">
+              <input type="number" class="form-control" id="cuotaOcho" name="cuotaOcho"
+                [(ngModel)]="clubCuotas.cuotaOcho" (input)="validateNumber($event, 8)">
             </div>
             <div class="col-md-6">
               <label for="cuotaOchoDate" class="form-label">Fecha de pago:</label>
@@ -279,8 +412,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 8">
             <div class="col-md-6">
               <label for="cuotaNueve" class="form-label">Cuota 9:</label>
-              <input type="text" class="form-control" id="cuotaNueve" name="cuotaNueve"
-                [(ngModel)]="clubCuotas.cuotaNueve">
+              <input type="number" class="form-control" id="cuotaNueve" name="cuotaNueve"
+                [(ngModel)]="clubCuotas.cuotaNueve" (input)="validateNumber($event, 9)">
             </div>
             <div class="col-md-6">
               <label for="cuotaNueveDate" class="form-label">Fecha de pago:</label>
@@ -291,8 +424,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 9">
             <div class="col-md-6">
               <label for="cuotaDiez" class="form-label">Cuota 10:</label>
-              <input type="text" class="form-control" id="cuotaDiez" name="cuotaDiez"
-                [(ngModel)]="clubCuotas.cuotaDiez">
+              <input type="number" class="form-control" id="cuotaDiez" name="cuotaDiez"
+                [(ngModel)]="clubCuotas.cuotaDiez" (input)="validateNumber($event, 10)">
             </div>
             <div class="col-md-6">
               <label for="cuotaDiezDate" class="form-label">Fecha de pago:</label>
@@ -303,8 +436,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 10">
             <div class="col-md-6">
               <label for="cuotaOnce" class="form-label">Cuota 11:</label>
-              <input type="text" class="form-control" id="cuotaOnce" name="cuotaOnce"
-                [(ngModel)]="clubCuotas.cuotaOnce">
+              <input type="number" class="form-control" id="cuotaOnce" name="cuotaOnce"
+                [(ngModel)]="clubCuotas.cuotaOnce" (input)="validateNumber($event, 11)">
             </div>
             <div class="col-md-6">
               <label for="cuotaOnceDate" class="form-label">Fecha de pago:</label>
@@ -315,8 +448,8 @@
           <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 11">
             <div class="col-md-6">
               <label for="cuotaDoce" class="form-label">Cuota 12:</label>
-              <input type="text" class="form-control" id="cuotaDoce" name="cuotaDoce"
-                [(ngModel)]="clubCuotas.cuotaDoce">
+              <input type="number" class="form-control" id="cuotaDoce" name="cuotaDoce"
+                [(ngModel)]="clubCuotas.cuotaDoce" (input)="validateNumber($event, 12)">
             </div>
             <div class="col-md-6">
               <label for="cuotaDoceDate" class="form-label">Fecha de pago:</label>
@@ -349,13 +482,12 @@
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalInvitar()"></button>
       </div>
       <div class="modal-body">
-        <p *ngIf="isMenor">Puesto que el jugador es menor de 14 años, has de invitar a un padre o tutor, introduce su
-          correo
-          electrónico de a quíen vas a invitar. Por favor verifica que la cuenta de
-          correo sea correcta.</p>
-        <p *ngIf="!isMenor">Introduce el correo electrónico del jugador que quieres invitar. Por favor verifica que la
-          cuenta de
-          correo sea correcta.</p>
+        <!-- <p *ngIf="isMenor">Puesto que el jugador es menor de 18 años, has de invitar a un padre o tutor,
+                    introduce su correo
+                    electrónico de a quíen vas a invitar. Por favor verifica que la cuenta de
+                    correo sea correcta.</p>-->
+        <p>Introduce el correo electrónico del jugador que quieres invitar. Por favor verifica
+          que la cuenta de correo sea correcta.</p>
         <form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="enviarMailJugador()">
           <div class="mb-3" style="text-align: center;">
             <div class="mb-3">
@@ -377,7 +509,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="standard-modalLabel">Couta del jugador</h5>
+        <h5 class="modal-title" id="standard-modalLabel">Cuota del jugador</h5>
         <!-- Botón de cerrar con un icono -->
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalJugador()"></button>
       </div>
@@ -594,10 +726,15 @@
         <p>Vas a agregar un pago al jugador <b>{{ textoInfoTitlePagoPlayer }}</b></p>
         <form (ngSubmit)="createUpdateHistoryCuotaJugador()">
           <div class="row mb-3">
+            <div class="col">
+              <p style="color: red;">(En la cantidad, solo se permiten números enteros, sin "comas" ni "puntos")</p>
+            </div>
+          </div>
+          <div class="row mb-3">
             <div class="col-6">
               <label for="cantidad" class="form-label">Cantidad:</label>
               <input type="number" class="form-control" id="cantidad" name="cantidad"
-                [(ngModel)]="agregarPagoPlayer.cantidad">
+                [(ngModel)]="agregarPagoPlayer.cantidad" (input)="validateNumber($event, 20)">
             </div>
             <div class="col-6">
               <label for="fecha" class="form-label">Fecha:</label>
@@ -606,7 +743,7 @@
           </div>
           <div class="row mb-3">
             <div class="col-6">
-              <label for="metodo" class="form-label">Metodo de pago:</label>
+              <label for="metodo" class="form-label">Método de pago:</label>
               <select class="form-control" id="metodo" name="metodo" [(ngModel)]="agregarPagoPlayer.metodo">
                 <option value="Tarjeta">Tarjeta</option>
                 <option value="Efectivo">Efectivo</option>
@@ -659,12 +796,62 @@
             <button (click)="goStripeURL()" class="btn btn-primary">Acceder a Stripe</button>
           </div>
           <form (ngSubmit)="onSubmit()" #stripeForm="ngForm" *ngIf="infoClub.urlStripe === null">
-            <div class="mb-3">
-              <label for="email" class="form-label">Correo Electrónico</label>
-              <input type="email" class="form-control" id="email" name="email" [(ngModel)]="email" required>
+            <div class="mb-3" style="height: 20em; overflow-y: scroll; padding: 1em;">
+              <p><strong>¿Qué es Stripe?</strong></p>
+              <p>Stripe es una plataforma de pagos en línea que permite a empresas y organizaciones recibir pagos de
+                manera segura y eficiente. Con Stripe, puedes gestionar todas tus transacciones de forma sencilla,
+                asegurando que los pagos se procesen rápidamente y con total seguridad. Además, Stripe ofrece
+                herramientas
+                para automatizar y simplificar la contabilidad y la gestión financiera de tu club. Para facilitar esta
+                gestión, la hemos integrado directamente en SphairaTech.</p>
+
+              <p><strong>¿Cómo puedo activar Stripe en Sphaira para automatizar el pago de las cuotas de los padres y no
+                  tener que preocuparme?</strong></p>
+
+              <p><strong>1. Registro en Stripe:</strong></p>
+              <p>Primero, date de alta en Stripe usando el botón proporcionado.</p>
+
+              <p><strong>2. Introduce las cuotas:</strong></p>
+              <p>Introduce la cantidad que los padres deberán pagar para inscribir a sus hijos en tu club, pudiendo
+                dividirlo en hasta 12 cuotas. Puedes incluir el coste de la ropa en estas cuotas o establecer una cuota
+                separada para la ropa.</p>
+
+              <p><strong>3. Recibir Pagos:</strong></p>
+              <p>Los padres podrán acceder a través de una invitación del entrenador o del club. Una vez registrados,
+                podrán realizar los pagos para cubrir las cuotas anuales o la cuota de la ropa en las fechas fijadas por
+                el club. Recibirás estos pagos automáticamente en tu cuenta de Stripe.</p>
+
+              <p><strong>4. Actualización Automática:</strong></p>
+              <p>La tabla de pagos se actualizará automáticamente. Solo tendrás que revisarla, sin necesidad de hacer
+                cambios manuales.</p>
+
+              <p><strong>5. Comisión:</strong></p>
+              <p>Hay una comisión del 1,8% en cada pago. Aun así, recibirás el importe total que establezcas como cuota,
+                ya que la comisión no se te repercutirá.</p>
+
+              <p><strong>6. Importancia del Registro:</strong></p>
+              <p>Si decides no darte de alta en Stripe, no podrás recibir pagos por parte de los padres a través de
+                Sphaira y tendrás que llevar un registro manual.</p>
             </div>
-            <button type="submit" class="btn btn-primary" [disabled]="!stripeForm.form.valid">Crear Cuenta en
-              Stripe</button>
+            <div class="mb-3 d-flex align-items-center" style="margin-top: 2em;">
+              <input type="checkbox" id="stripeAgreement" name="stripeAgreement" [(ngModel)]="aceptStripe" class="me-2">
+              <label for="stripeAgreement" class="mb-0">He leído y estoy de acuerdo con el funcionamiento de Stripe a
+                través de SphairaTech.</label>
+            </div>
+            <div class="mb-3 d-flex">
+              <div class="col-12">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="tuemail@mail.com"
+                  [(ngModel)]="email" required>
+              </div>
+            </div>
+            <div class="mb-3 d-flex" *ngIf="aceptStripe">
+              <div class="col-12">
+                <button style="
+                width: -webkit-fill-available;" type=" submit" class="btn btn-primary">Crear Cuenta en
+                  Stripe</button>
+              </div>
+            </div>
           </form>
         </div>
       </div>
@@ -690,6 +877,7 @@
                   <th>Fecha</th>
                   <th>Método</th>
                   <th>Comentario</th>
+                  <th>Devolver</th>
                 </tr>
               </thead>
               <tbody>
@@ -698,6 +886,12 @@
                   <td>{{ pago.fecha }}</td>
                   <td>{{ pago.metodo }}</td>
                   <td>{{ pago.comentario }}</td>
+                  <td>
+                    <button *ngIf="!pago.cantidad.includes('-')" class="btn btn-warning" title="Devolver pago"
+                      (click)="confirmReturnPay(pago)">
+                      <span class="bi bi-arrow-counterclockwise btn-danger"></span>
+                    </button>
+                  </td>
                 </tr>
               </tbody>
             </table>

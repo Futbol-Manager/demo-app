@@ -1,8 +1,6 @@
 <div class="background">
-  <video autoplay loop muted playsinline preload="auto" class="video-background">
-    <source src="assets/videos/jugando.mp4" type="video/mp4">
-    Tu navegador no admite el elemento de video.
-  </video>
+
+  <img src="assets/videos/video.gif" alt="GIF de jugando" class="video-background">
 
   <!--REGISTRO-->
   <div class="container">
@@ -10,14 +8,19 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h1 class="m-0 textoCentrado flex-grow-1">Registro de usuario</h1>
+            <h3 class="m-0 textoCentrado flex-grow-1">Registro de usuario</h3>
             <button class="btn btn-close" (click)="toLogin($event)">
               <!-- Aquí puedes añadir el icono de cierre -->
             </button>
           </div>
           <div class="card-body textoCentrado">
+            <div class="d-flex form-register py-0" *ngIf="showPPlayer">
+              <div class="col-12">
+                <p style="color: red;">Si eres un JUGADOR, espera a que tu entrenador / club te invite.</p>
+              </div>
+            </div>
             <div class="d-flex form-register py-0">
-              <div class="col-6">
+              <div class="col-12">
                 <!--<label class="form-label">Selecciona un perfil</label>-->
                 <select [(ngModel)]="selectedOption" (change)="onOptionChange($event)"
                   class="form-select input-register" [disabled]="isReadOnly">
@@ -28,7 +31,7 @@
 
             <div *ngIf="selectedOption == 1">
               <!-- Formulario para Club -->
-              <form [formGroup]="registerFormClub" (ngSubmit)="registerClub()" class="form-register">
+              <form [formGroup]="registerFormClub" (ngSubmit)="openModal(1)" class="form-register">
                 <div class="mb-3 d-flex">
                   <div class="col-6">
                     <!--<label for="name" class="form-label">Ingresa el nombre del club</label>-->
@@ -72,18 +75,34 @@
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
                     <label class="form-check-label" for="termsCheckbox">
-                      Acepto los términos y condiciones
+                      Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
+                        privacidad</a>
+                      <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                        condiciones de contratación</a> -->
                     </label>
                   </div>
                 </div>
-                <button type="submit" [disabled]="passwordsDoNotMatch"
-                  class="btn btn-primary btn-block textoCentrado">Registrarse</button>
+                <div class="mb-3 d-flex">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="comunCheckbox" formControlName="comunicaciones">
+                    <label class="form-check-label" for="comunCheckbox">
+                      Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
+                        target="_blank">comunicaciones comerciales</a>
+                    </label>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="col-12">
+                    <button type="submit" [disabled]="passwordsDoNotMatch"
+                      class="btn btn-primary btn-block textoCentrado">Registrarse</button>
+                  </div>
+                </div>
               </form>
             </div>
 
-            <div *ngIf="selectedOption == 2">
+            <div *ngIf="selectedOption == 2 || selectedOption == 5">
               <!-- Formulario para Entrenador -->
-              <form [formGroup]="registerFormEntrenador" (ngSubmit)="registerEntrenador()" class="form-register">
+              <form [formGroup]="registerFormEntrenador" (ngSubmit)="openModal(2)" class="form-register">
                 <div class="mb-3 d-flex">
                   <div class="col-6">
                     <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
@@ -138,36 +157,134 @@
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
                     <label class="form-check-label" for="termsCheckbox">
-                      Acepto los <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">términos y
-                        condiciones</a>
+                      Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
+                        privacidad</a>
+                      <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                        condiciones de contratación</a> -->
                     </label>
                   </div>
                 </div>
-                <button type="submit" [disabled]="passwordsDoNotMatch"
-                  class="btn btn-custom btn-block textoCentrado">Registrarse</button>
+                <div class="mb-3 d-flex">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="comunCheckbox" formControlName="comunicaciones">
+                    <label class="form-check-label" for="comunCheckbox">
+                      Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
+                        target="_blank">comunicaciones comerciales</a>
+                    </label>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="col-12">
+                    <button type="submit" [disabled]="passwordsDoNotMatch"
+                      class="btn btn-primary btn-block textoCentrado">Registrarse</button>
+                  </div>
+                </div>
               </form>
             </div>
 
             <div *ngIf="selectedOption == 3">
               <!-- Formulario para Entrenador -->
-              <form [formGroup]="registerFormEntrenador" (ngSubmit)="registerEntrenador()" class="form-register">
+              <form [formGroup]="registerFormEntrenador" (ngSubmit)="openModal(2)" class="form-register">
+                <!--<div class="mb-3 d-flex">
+                  <div class="col-6">
+                    <label for="name" class="form-label">Ingresa tu nombre</label>
+                    <input type="text" class="form-control input-register" id="nameSon"
+                      placeholder="Ingresa tu nombre completo" formControlName="nameSon">
+                  </div>
+                </div>-->
                 <div class="mb-3 d-flex">
                   <div class="col-6">
                     <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                    <input type="text" class="form-control input-register" id="nameSon" placeholder="Ingresa tu nombre completo"
-                      formControlName="nameSon">
+                    <input type="text" class="form-control input-register" id="name" placeholder="Ingresa nombre"
+                      formControlName="name">
+                  </div>
+                  <div class="col-6" style="margin-left: 10px;">
+                    <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
+                    <input type="text" class="form-control input-register" id="surname" placeholder="Ingresa apellidos"
+                      formControlName="surname">
                   </div>
                 </div>
                 <div class="mb-3 d-flex">
                   <div class="col-6">
+                    <!--<label for="birthdate" class="form-label">Selecciona fecha de nacimiento</label>-->
+                    <input type="text" class="form-control input-register" id="date" formControlName="birthdate"
+                      placeholder="Fecha de nacimiento" onfocus="(this.type='date')" onblur="(this.type='text')" />
+                  </div>
+                  <div class="col-6" style="margin-left: 10px;">
+                    <!--<label for="genre" class="form-label">Selecciona tu género</label>-->
+                    <select class="form-select input-register" formControlName="genre">
+                      <option value="" disabled selected hidden>Selecciona tu género</option>
+                      <option value="1">Masculino</option>
+                      <option value="2">Femenino</option>
+                      <option value="3">Otro</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="col-6">
+                    <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
+                    <input type="email" class="form-control input-register" id="email"
+                      placeholder="Ingresa tu correo electrónico" formControlName="email">
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="col-6">
+                    <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
+                    <input type="password" class="form-control input-register" id="password" formControlName="password"
+                      placeholder="Ingresa tu contraseña" (input)="checkPasswordMatchEntrenador()">
+                  </div>
+                  <div class="col-6" style="margin-left: 10px;">
+                    <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
+                    <input type="password" class="form-control input-register" id="password2"
+                      formControlName="password2" placeholder="Repite la contraseña"
+                      (input)="checkPasswordMatchEntrenador()">
+                    <div *ngIf="passwordsDoNotMatch" class="text-danger">
+                      Las contraseñas no coinciden.
+                    </div>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
+                    <label class="form-check-label" for="termsCheckbox">
+                      Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
+                        privacidad</a>
+                      <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                        condiciones de contratación</a> -->
+                    </label>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="comunCheckbox" formControlName="comunicaciones">
+                    <label class="form-check-label" for="comunCheckbox">
+                      Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
+                        target="_blank">comunicaciones comerciales</a>
+                    </label>
+                  </div>
+                </div>
+                <div class="mb-3 d-flex">
+                  <div class="col-12">
+                    <button type="submit" [disabled]="passwordsDoNotMatch"
+                      class="btn btn-primary btn-block textoCentrado">Registrarse</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <div *ngIf="selectedOption == 4">
+              <!-- Formulario para Entrenador -->
+              <form [formGroup]="registerFormEntrenador" (ngSubmit)="openModal(2)" class="form-register">
+                <div class="mb-3 d-flex">
+                  <div class="col-6">
                     <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                    <input type="text" class="form-control input-register" id="name" placeholder="Ingresa nombre del hij@"
+                    <input type="text" class="form-control input-register" id="name" placeholder="Ingresa tu nombre"
                       formControlName="name">
                   </div>
                   <div class="col-6" style="margin-left: 10px;">
                     <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
                     <input type="text" class="form-control input-register" id="surname"
-                      placeholder="Ingresa apellido del hij@" formControlName="surname">
+                      placeholder="Ingresa tu apellido" formControlName="surname">
                   </div>
                 </div>
                 <div class="mb-3 d-flex">
@@ -212,93 +329,84 @@
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
                     <label class="form-check-label" for="termsCheckbox">
-                      Acepto los <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">términos y
-                        condiciones</a>
+                      Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
+                        privacidad</a>
+                      <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                        condiciones de contratación</a> -->
                     </label>
-                  </div>
-                </div>
-                <button type="submit" [disabled]="passwordsDoNotMatch"
-                  class="btn btn-custom btn-block textoCentrado">Registrarse</button>
-              </form>
-            </div>
-
-            <div *ngIf="selectedOption == 4">
-              <!-- Formulario para Entrenador -->
-              <form [formGroup]="registerFormEntrenador" (ngSubmit)="registerEntrenador()" class="form-register">
-                <div class="mb-3 d-flex">
-                  <div class="col-6">
-                    <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                    <input type="text" class="form-control input-register" id="name" placeholder="Ingresa tu nombre"
-                      formControlName="name">
-                  </div>
-                  <div class="col-6" style="margin-left: 10px;">
-                    <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
-                    <input type="text" class="form-control input-register" id="surname"
-                      placeholder="Ingresa tu apellido" formControlName="surname">
-                  </div>
-                </div>
-                <div class="mb-3 d-flex">
-                  <div class="col-6">
-                    <!--<label for="birthdate" class="form-label">Selecciona fecha de nacimiento</label>-->
-                    <input type="date" class="form-control input-register" id="date" formControlName="birthdate">
-                  </div>
-                  <div class="col-6" style="margin-left: 10px;">
-                    <!--<label for="genre" class="form-label">Selecciona tu género</label>-->
-                    <select class="form-select input-register" formControlName="genre">
-                      <option value="" disabled selected hidden>Selecciona tu género</option>
-                      <option value="1">Masculino</option>
-                      <option value="2">Femenino</option>
-                      <option value="3">Otro</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="mb-3 d-flex">
-                  <div class="col-6">
-                    <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
-                    <input type="email" class="form-control input-register" id="email"
-                      placeholder="Ingresa tu correo electrónico"  formControlName="email" [attr.disabled]="true">
-                  </div>
-                </div>
-                <div class="mb-3 d-flex">
-                  <div class="col-6">
-                    <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
-                    <input type="password" class="form-control input-register" id="password" formControlName="password"
-                      placeholder="Ingresa tu contraseña" (input)="checkPasswordMatchEntrenador()">
-                  </div>
-                  <div class="col-6" style="margin-left: 10px;">
-                    <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
-                    <input type="password" class="form-control input-register" id="password2"
-                      formControlName="password2" placeholder="Repite la contraseña"
-                      (input)="checkPasswordMatchEntrenador()">
-                    <div *ngIf="passwordsDoNotMatch" class="text-danger">
-                      Las contraseñas no coinciden.
-                    </div>
                   </div>
                 </div>
                 <div class="mb-3 d-flex">
                   <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
-                    <label class="form-check-label" for="termsCheckbox">
-                      Acepto los <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">términos y
-                        condiciones</a>
+                    <input class="form-check-input" type="checkbox" id="comunCheckbox" formControlName="comunicaciones">
+                    <label class="form-check-label" for="comunCheckbox">
+                      Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
+                        target="_blank">comunicaciones comerciales</a>
                     </label>
                   </div>
                 </div>
-                <button type="submit" [disabled]="passwordsDoNotMatch"
-                  class="btn btn-custom btn-block textoCentrado">Registrarse</button>
+                <div class="mb-3 d-flex">
+                  <div class="col-12">
+                    <button type="submit" [disabled]="passwordsDoNotMatch"
+                      class="btn btn-primary btn-block textoCentrado">Registrarse</button>
+                  </div>
+                </div>
               </form>
             </div>
           </div>
           <div class="form-control" *ngIf="msgAge" style="display: block; color: red;">
-            <p>Lo sentimos, pero si eres menor de 14 años, han de darse de alta uno de tus padres o tutores.</p>
+            <p>Lo sentimos, pero si eres menor de 14 años, ha de darse de alta uno de tus padres o tutores.</p>
+          </div>
+          <div class="form-control" *ngIf="msgForm" style="display: block; color: red;">
+            <p>Revisa los campos que te falten por rellenar y acepta política de privacidad.</p>
           </div>
           <div class="card-footer textoCentrado" style="flex-direction: column;">
-            <div class="row">
-              <div class="col-md-12 col-sm-12 textoCentrado">
+            <div class="row text-center">
+              <div class="col-md-12">
                 <p>¿Ya tienes una cuenta? <a href="#" (click)="toLogin($event)">Inicia sesión aquí</a></p>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal para la creación de equipo -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <!-- Sphaira Club HTML Structure -->
+        <div class="pricing-card">
+          <div class="discount-banner">
+            50% DESCUENTO
+          </div>
+          <h2>REGISTRO COMPLETADO</h2>
+          <p>Maximiza la eficiencia y el rendimiento de tu club de fútbol.</p>
+          <p>pruébalo durante 7 días y despues:</p>
+          <div class="price">
+            <span class="old-price">9,99€</span>
+            <span class="current-price">4,99€</span>
+            <span class="monthly">Mensual</span>
+          </div>
+          <ul class="features">
+            <li>✔ Ahorra más de un 30% con este plan</li>
+            <li>✔ Compromiso de 1 año</li>
+            <li>✔ Control Total</li>
+            <li>✔ Funcionalidades Completas</li>
+            <li>✔ Colaboración Ampliada</li>
+          </ul>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="termsCheckbox2" checked disabled>
+            <label class="form-check-label" for="termsCheckbox2">
+              Acepto las <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                condiciones de contratación</a>
+            </label>
+          </div>
+          <button class="cta-button" (click)="goLogin()">Empezar semana gratis</button>
         </div>
       </div>
     </div>

@@ -30,6 +30,8 @@ export class EstadisticasJugadoresComponent implements OnInit {
   golesTodosAvanzadoAFavor: any[] = [];
   golesAvanzadoAFavor: any[] = [];
 
+  tipoPartidoSelected: string = 'Liga';
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -45,17 +47,21 @@ export class EstadisticasJugadoresComponent implements OnInit {
       this.teamId = +params['teamId'];  // El + convierte el valor a número
       console.log('teamId:', this.teamId);
     });
-    this.cargarTablaJugadores();
+    this.cargarTablaJugadores('Liga');
   }
 
   // Método para navegar a la pantalla de calendario
   navegarACalendario(): void {
     // Puedes ajustar la ruta según tu estructura de rutas
-    this.router.navigate(['/dashboard/calendario', this.teamId]);
+    this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
   }
 
-  cargarTablaJugadores() {
-    this.playerService.getListPlayersEstadisticsByTeam(this.teamId.toString()).subscribe(
+  selectedTipoPartido(){
+    this.cargarTablaJugadores(this.tipoPartidoSelected);
+  }
+
+  cargarTablaJugadores(tipoPartido: string) {
+    this.playerService.getListPlayersEstadisticsByTeam(this.teamId, tipoPartido).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data && Array.isArray(response.data.listDto)) {
@@ -65,7 +71,7 @@ export class EstadisticasJugadoresComponent implements OnInit {
           this.players = list; //.map((post: PostPartido) => new PostPartido(post));
           this.totalMatchs = resp.data.matchs;
           // Inicializar el DataTable después de cargar los datos
-          this.inicializarDataTable();
+          //this.inicializarDataTable();
           this.datosCargados = true;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
@@ -75,7 +81,6 @@ export class EstadisticasJugadoresComponent implements OnInit {
         console.error('Error al cargar el listado de equipos', error);
       }
     );
-
   }
 
   // Método para inicializar el DataTable

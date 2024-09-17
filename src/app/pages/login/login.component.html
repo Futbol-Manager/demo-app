@@ -1,11 +1,15 @@
 <form [formGroup]="loginForm" class="form-login" #thisForm="ngForm" (ngSubmit)="login()">
   <div class="mb-3">
     <!--<label for="mail" class="form-label">Ingrese mail</label>-->
-    <input type="email" placeholder="Correo electrónico" class="form-control input-login" id="mail" formControlName="mail" [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)">
-    <div *ngIf="mailControl?.hasError('required') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)" class="invalid-feedback">
+    <input type="email" placeholder="Correo electrónico" class="form-control input-login" id="mail"
+      formControlName="mail"
+      [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)">
+    <div *ngIf="mailControl?.hasError('required') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
+      class="invalid-feedback">
       Correo electrónico requerido
     </div>
-    <div *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)" class="invalid-feedback">
+    <div *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
+      class="invalid-feedback">
       Ingresa un correo electrónico válido
     </div>
   </div>
@@ -13,21 +17,26 @@
   <div class="mb-3">
     <!--<label for="password" class="form-label">Ingrese contraseña</label>-->
     <div class="input-group">
-      <input type="password" placeholder="Contraseña" class="form-control input-login" id="password" formControlName="password" [type]="hidePassword ? 'password' : 'text'" [class.is-invalid]="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)">
+      <input type="password" placeholder="Contraseña" class="form-control input-login" id="password"
+        formControlName="password" [type]="hidePassword ? 'password' : 'text'"
+        [class.is-invalid]="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)">
       <div class="input-group-append">
         <button class="btn btn-outline-secondary input-login" type="button" (click)="hidePassword = !hidePassword">
           <i class="fas" [class.fa-eye]="!hidePassword" [class.fa-eye-slash]="hidePassword"></i>
         </button>
       </div>
-      <div *ngIf="passwordControl?.hasError('required') && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)" class="invalid-feedback">
+      <div
+        *ngIf="passwordControl?.hasError('required') && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)"
+        class="invalid-feedback">
         Contraseña requerida
       </div>
     </div>
   </div>
-
   <button type="submit" class="btn btn-custom btn-block textoCentrado">Iniciar sesión</button>
-  <div *ngIf="verificarCuenta" class="text-danger">
+
+  <div [ngStyle]="{ display: verificarCuenta ? 'block' : 'none' }" class="text-danger mt-3">
     <p>Usuario bloqueado! Para desbloquearlo debes validarlo siguiendo el enlace recibido en tu correo electrónico.
-      <a href="#" (click)="enviarMail()">Haz click aquí para recibir un nuevo mail.</a></p>
+      <a href="#" (click)="enviarMail()">Haz click aquí para recibir un nuevo mail.</a>
+    </p>
   </div>
 </form>

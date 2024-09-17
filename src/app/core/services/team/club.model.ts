@@ -72,45 +72,45 @@ export class RopaClub {
     ropaclubId: number;
     clubId: number;
     temporada: string;
-    camisetaJuego: string;
-    pantalonJuego: string;
-    medias: string;
-    camisetaJuegoDos: string;
-    pantalonJuegoDos: string;
-    mediasDos: string;
-    camisetaEntreno: string;
-    pantalonEntreno: string;
-    mediastres: string;
-    sudaderaEntreno: string;
-    chaquetaChandal: string;
-    pantalonChandal: string;
-    poloPaseo: string;
-    pantalonPaseo: string;
-    abrigo: string;
-    chubasquero: string;
-    mochila: string;
+    camisetaJuego: number;
+    pantalonJuego: number;
+    medias: number;
+    camisetaJuegoDos: number;
+    pantalonJuegoDos: number;
+    mediasDos: number;
+    camisetaEntreno: number;
+    pantalonEntreno: number;
+    mediasTres: number;
+    sudaderaEntreno: number;
+    chaquetaChandal: number;
+    pantalonChandal: number;
+    poloPaseo: number;
+    pantalonPaseo: number;
+    abrigo: number;
+    chubasquero: number;
+    mochila: number;
 
-    constructor(object: any) {
-        this.ropaclubId = object.ropaclubId ? object.ropaclubId : null;
-        this.clubId = object.clubId ? object.clubId : null;
-        this.temporada = object.temporada ? object.temporada : null;
-        this.camisetaJuego = object.camisetaJuego ? object.camisetaJuego : null;
-        this.pantalonJuego = object.pantalonJuego ? object.pantalonJuego : null;
-        this.camisetaEntreno = object.camisetaEntreno ? object.camisetaEntreno : null;
-        this.pantalonEntreno = object.pantalonEntreno ? object.pantalonEntreno : null;
-        this.sudaderaEntreno = object.sudaderaEntreno ? object.sudaderaEntreno : null;
-        this.chaquetaChandal = object.chaquetaChandal ? object.chaquetaChandal : null;
-        this.pantalonChandal = object.pantalonChandal ? object.pantalonChandal : null;
-        this.poloPaseo = object.poloPaseo ? object.poloPaseo : null;
-        this.pantalonPaseo = object.pantalonPaseo ? object.pantalonPaseo : null;
-        this.medias = object.medias ? object.medias : null;
-        this.abrigo = object.abrigo ? object.abrigo : null;
-        this.chubasquero = object.chubasquero ? object.chubasquero : null;
-        this.mochila = object.mochila ? object.mochila : null;
-        this.camisetaJuegoDos = object.camisetaJuegoDos ? object.camisetaJuegoDos : null;
-        this.pantalonJuegoDos = object.pantalonJuegoDos ? object.pantalonJuegoDos : null;
-        this.mediasDos = object.mediasDos ? object.mediasDos : null;
-        this.mediastres = object.mediastres ? object.mediastres : null;
+    constructor(object: any = {}) {
+        this.ropaclubId = object.ropaclubId ? object.ropaclubId : 0;
+        this.clubId = object.clubId ? object.clubId : 0;
+        this.temporada = object.temporada ? object.temporada : '2024';
+        this.camisetaJuego = object.camisetaJuego ? object.camisetaJuego : 0;
+        this.pantalonJuego = object.pantalonJuego ? object.pantalonJuego : 0;
+        this.camisetaEntreno = object.camisetaEntreno ? object.camisetaEntreno : 0;
+        this.pantalonEntreno = object.pantalonEntreno ? object.pantalonEntreno : 0;
+        this.sudaderaEntreno = object.sudaderaEntreno ? object.sudaderaEntreno : 0;
+        this.chaquetaChandal = object.chaquetaChandal ? object.chaquetaChandal : 0;
+        this.pantalonChandal = object.pantalonChandal ? object.pantalonChandal : 0;
+        this.poloPaseo = object.poloPaseo ? object.poloPaseo : 0;
+        this.pantalonPaseo = object.pantalonPaseo ? object.pantalonPaseo : 0;
+        this.medias = object.medias ? object.medias : 0;
+        this.abrigo = object.abrigo ? object.abrigo : 0;
+        this.chubasquero = object.chubasquero ? object.chubasquero : 0;
+        this.mochila = object.mochila ? object.mochila : 0;
+        this.camisetaJuegoDos = object.camisetaJuegoDos ? object.camisetaJuegoDos : 0;
+        this.pantalonJuegoDos = object.pantalonJuegoDos ? object.pantalonJuegoDos : 0;
+        this.mediasDos = object.mediasDos ? object.mediasDos : 0;
+        this.mediasTres = object.mediasTres ? object.mediasTres : 0;
     }
 }
 
@@ -274,5 +274,19 @@ export class HostoryPagosPlayer {
         this.metodo = object.metodo ? object.metodo : 'Efectivo';
         this.comentario = object.comentario ? object.comentario : null;
         this.estado = object.estado ? object.estado : 0;
+    }
+}
+
+export class TotalesCuotas {
+    cuotaClub: string;
+    cuotaRopa: string;
+    pagado: string;
+    restante: string;
+
+    constructor(object: any) {
+        this.cuotaClub = object.cuotaClub ? object.cuotaClub : '';
+        this.cuotaRopa = object.cuotaRopa ? object.cuotaRopa : '';
+        this.pagado = object.pagado ? object.pagado : '';
+        this.restante = object.restante ? object.restante : '';
     }
 }

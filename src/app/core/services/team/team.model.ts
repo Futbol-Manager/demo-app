@@ -48,6 +48,7 @@ export class TeamNew {
   categoryType: CategoryType;
   clubId: number;
   userId: number;
+  temporada: string;
 
   constructor() {
     this.teamId = 0; // O el valor por defecto que desees para teamId
@@ -59,6 +60,7 @@ export class TeamNew {
     this.categoryType = new CategoryType(null); // Inicializado con el constructor de CategoryType
     this.clubId = 0;
     this.userId = 0;
+    this.temporada = '';
   }
 }
 
@@ -101,6 +103,62 @@ export class GolPostPartido {
     this.teamId = object.teamId || 0;
   }
 
+}
+
+export class HorarioTeam {
+  horarioTeamId: number;
+  clubId: number;
+  team: Team;
+  lunes: number;
+  martes: number;
+  miercoles: number;
+  jueves: number;
+  viernes: number;
+  sabado: number;
+  domingo: number;
+  lunesInicio: string;
+  martesInicio: string;
+  miercolesInicio: string;
+  juevesInicio: string;
+  viernesInicio: string;
+  sabadoInicio: string;
+  domingoInicio: string;
+  lunesFin: string;
+  martesFin: string;
+  miercolesFin: string;
+  juevesFin: string;
+  viernesFin: string;
+  sabadoFin: string;
+  domingoFin: string;
+  temporada: string;
+
+  constructor(object: any) {
+    this.horarioTeamId = object.horarioTeamId || 0;
+    this.clubId = object.clubId || 0;
+    this.team = object.team || new Team({});
+    this.lunes = object.lunes || 0;
+    this.martes = object.martes || 0;
+    this.miercoles = object.miercoles || 0;
+    this.jueves = object.jueves || 0;
+    this.viernes = object.viernes || 0;
+    this.sabado = object.sabado || 0;
+    this.domingo = object.domingo || 0;
+    this.lunesInicio = object.lunesInicio || '';
+    this.martesInicio = object.martesInicio || '';
+    this.miercolesInicio = object.miercolesInicio || '';
+    this.juevesInicio = object.juevesInicio || '';
+    this.viernesInicio = object.viernesInicio || '';
+    this.sabadoInicio = object.sabadoInicio || '';
+    this.domingoInicio = object.domingoInicio || '';
+    this.lunesFin = object.lunesFin || '';
+    this.martesFin = object.martesFin || '';
+    this.miercolesFin = object.miercolesFin || '';
+    this.juevesFin = object.juevesFin || '';
+    this.viernesFin = object.viernesFin || '';
+    this.sabadoFin = object.sabadoFin || '';
+    this.domingoFin = object.domingoFin || '';
+    this.temporada = object.temporada || '';
+  }
 }
 
 

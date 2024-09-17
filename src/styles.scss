@@ -18,7 +18,7 @@ body {
 
 // Estilos para tema claro
 .theme-header {
-  background-color: #fff;
+  background-color: #22bf63;
   color: #333; // Color de texto habitual para el tema claro
 }
 
@@ -38,7 +38,7 @@ body {
 // Estilos para tema oscuro
 .dark-theme-body {
   background-color: #3a444e;
-  color: #fff; // Color de texto habitual para el tema oscuro
+  color: #2e1f1f; // Color de texto habitual para el tema oscuro
   height: -webkit-fill-available;
 }
 
@@ -138,14 +138,23 @@ body {
 
 /* Estilos personalizados para el botón de cierre */
 .btn-close {
-  font-size: 0.75rem; /* Tamaño de fuente más pequeño */
-  width: 1rem; /* Ancho más pequeño */
-  height: 1rem; /* Altura más pequeña */
-  padding: 0.15rem; /* Padding más pequeño */
+  font-size: 0.75rem;
+  /* Tamaño de fuente más pequeño */
+  width: 1rem;
+  /* Ancho más pequeño */
+  height: 1rem;
+  /* Altura más pequeña */
+  padding: 0.15rem;
+  /* Padding más pequeño */
 }
 
 .btn-custom {
-  background-color: #459864;
+  background-color: #22bf63;
+  color: white;
+}
+
+.btn-success {
+  background-color: #22bf63 !important;
   color: white;
 }
 
@@ -163,17 +172,18 @@ body {
   background-color: #505050;
   color: white;
 }
+
 .btn-custom-green {
   background-color: #063009;
   color: white;
 }
 
-.nav-tabs .nav-link.active {  
+.nav-tabs .nav-link.active {
   background-color: #3a444e;
   color: white;
 }
 
-.nav-tabs .nav-link {  
+.nav-tabs .nav-link {
   background-color: #818181;
   color: white;
 }
@@ -239,6 +249,146 @@ body {
   background-color: #22bf63 !important;
 }
 
+.p {
+  text-align: justify;
+}
 
+.no-underline {
+  text-decoration: none;
+  color: inherit;
+  /* Optional: keeps the color of the link the same as the surrounding text */
+}
 
+.no-underline:hover {
+  text-decoration: underline;
+  color: blue;
+}
 
+.submenu {
+  text-align: -webkit-center;
+  padding-block: inherit;
+  background-color: #333131;
+}
+
+.submenu .row {
+  display: flex;
+  justify-content: space-around;
+}
+
+.submenu .col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+}
+
+.submenu a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  text-decoration: none !important;
+  /* Quita el subrayado por defecto */
+  position: relative;
+  /* Necesario para el subrayado personalizado */
+}
+
+.submenu a:link,
+.submenu a:visited,
+.submenu a:hover,
+.submenu a:active {
+  text-decoration: none !important;
+  /* Asegura que no haya subrayado en ningún estado del enlace */
+  color: white;
+  /* Asegura que el color del texto sea blanco en todos los estados */
+}
+
+.submenu a::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  /* Grosor del subrayado */
+  background-color: #22BF63;
+  /* Color del subrayado */
+  bottom: -2px;
+  /* Posición del subrayado */
+  left: 0;
+  transform: scaleX(0);
+  transform-origin: bottom right;
+  transition: transform 0.25s ease-out;
+}
+
+.submenu a:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+.submenu i {
+  font-size: 1.5em;
+  color: white;
+}
+
+.submenu span {
+  margin-top: 5px;
+  color: white;
+}
+
+@media (max-width: 768px) {
+  .submenu span {
+    display: none;
+  }
+}
+
+/* Estilo por defecto para los inputs */
+.custom-input {
+  border: 2px solid #22bf63;
+  /* Color verde para los bordes */
+  border-radius: 4px;
+  /* Bordes redondeados */
+  padding: 8px;
+  /* Relleno interno */
+  transition: border-color 0.3s;
+  /* Transición suave para el cambio de borde */
+}
+
+/* Estilo para los inputs cuando están en foco */
+.custom-input:focus {
+  border-color: #145724;
+  /* Verde oscuro cuando está enfocado */
+  outline: none;
+  /* Elimina el borde de enfoque predeterminado */
+  box-shadow: 0 0 5px rgba(30, 126, 52, 0.5);
+  /* Sombra para un efecto visual */
+}
+
+/* Estilo para el switch */
+.form-check-input:checked {
+  background-color: #22bf63;
+  /* Cambia el color de fondo cuando está marcado */
+  border-color: #22bf63;
+  /* Cambia el color del borde cuando está marcado */
+}
+
+.form-check-input:checked:focus {
+  box-shadow: 0 0 5px rgba(30, 126, 52, 0.5);
+  /* Sombra para un efecto visual cuando está enfocado y marcado */
+}
+
+.modal-content {
+  border-color: black;
+}
+
+.badge-primary {
+  background-color: #007bff;
+  color: white;
+}
+
+.badge-secondary {
+  background-color: #6c757d;
+  color: white;
+}

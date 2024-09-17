@@ -1,7 +1,11 @@
-<button class="btn btn-primary" (click)="navegarACalendario()">
-  <i class="bi bi-calendar"></i> Calendario
-</button>
-<div class="container mt-2">
+<div class="subMenu">
+  <div class="row">
+    <div class="col">
+      <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">Calendario <i class="bi bi-calendar"></i></a>
+    </div>
+  </div>
+</div>
+<div class="container mt-2" style="margin-top: 3em;">
   <div class="container">
     <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': true}">
       <div class="modal-dialog" role="document" style="margin-top: 10%;">
@@ -14,7 +18,8 @@
             <form>
               <div class="mb-3">
                 <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
-                <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" [(ngModel)]="team.categoryType.categoryTypeId">
+                <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
+                  [(ngModel)]="team.categoryType.categoryTypeId">
                   <!-- Opciones ajustadas según tus necesidades -->
                   <option value="1">LaLiga EA Sports</option>
                   <option value="2">Liga F</option>
@@ -60,11 +65,12 @@
               </div>
               <div class="mb-3">
                 <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
-                <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo" [(ngModel)]="team.objectiveTeam">
+                <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo"
+                  [(ngModel)]="team.objectiveTeam">
               </div>
               <div class="mb-3">
                 <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
-                <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento" [(ngModel)]="team.trainingDays">
+                <button type="button" class="btn btn-success float-end" (click)="openModalHorario()">Abrir</button>
               </div>
               <div class="mb-3">
                 <label for="clubEquipo" class="form-label">Club del Equipo:</label>
@@ -74,7 +80,8 @@
               </div>
               <div class="mb-3">
                 <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
-                <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo" [(ngModel)]="team.opinionTeam">
+                <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo"
+                  [(ngModel)]="team.opinionTeam">
               </div>
               <!-- Botón para guardar el nuevo equipo -->
               <button type="button" class="btn btn-success float-end" (click)="guardarCambios()">Guardar</button>
@@ -83,5 +90,35 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Modal para la creación de equipo -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalHorario}">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h5 class="modal-title" id="standard-modalLabel">Horario del equipo</h5>
+              <!-- Botón de cerrar con un icono -->
+              <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalHorario()"></button>
+          </div>
+          <div class="modal-body">
+              <p>Habilita o deshabilita aquellos días que haya entrenamiento y asigna una hora de inicio y de fin.
+              </p>
+              <div *ngFor="let dia of dias">
+                  <div class="d-flex align-items-center justify-content-between mb-3">
+                      <span>{{ dia.label }}</span>
+                      <div class="form-check form-switch">
+                          <input class="form-check-input custom-input" type="checkbox" id="{{dia.property}}"
+                              [checked]="HorarioTeam[dia.property] === 0"
+                              (change)="toggleDiaOkDesactivar(dia.property, HorarioTeam[dia.property])">
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" (click)="cerrarModalHorario()">Cerrar</button>
+          </div>
+      </div>
   </div>
 </div>

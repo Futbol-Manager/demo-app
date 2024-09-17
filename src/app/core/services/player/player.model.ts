@@ -133,12 +133,30 @@ export class Player {
   telefonoMadre: string;
   emailPadre: string;
   emailMadre: string;
+  nick: string;
+  numero: string;
+  dni: string;
+  nombrePadre: string;
+  dniPadre: string;
+  nombreMadre: string;
+  dniMadre: string;
+  posicionDos: string;
+  email: string;
+  nacionalidad: string;
+  direccion: string;
+  municipio: string;
+  imgDniUno: string;
+  imgDniDos: string;
+  dniPadre1: string;
+  dniPadre2: string;
+  dniMadre1: string;
+  dniMadre2: string;
 
   constructor(object: any) {
     this.playerId = object.playerId || 0;
     this.nombre = object.nombre || '';
     this.apellido = object.apellido || '';
-    this.posicion = object.posicion || '';
+    this.posicion = object.posicion || 'Sin definir';
     this.fechaDeNacimiento = object.fechaDeNacimiento || '';
     this.altura = object.altura || '';
     this.peso = object.peso || '';
@@ -191,6 +209,24 @@ export class Player {
     this.telefonoMadre = object.telefonoMadre || '';
     this.emailPadre = object.emailPadre || '';
     this.emailMadre = object.emailMadre || '';
+    this.nick = object.nick || '';
+    this.numero = object.numero || '';
+    this.dni = object.dni || '';
+    this.nombrePadre = object.nombrePadre || '';
+    this.dniPadre = object.dniPadre || '';
+    this.nombreMadre = object.nombreMadre || '';
+    this.dniMadre = object.dniMadre || '';
+    this.posicionDos = object.posicionDos || '';
+    this.email = object.email || '';
+    this.nacionalidad = object.nacionalidad || '';
+    this.direccion = object.direccion || '';
+    this.municipio = object.municipio || '';
+    this.imgDniUno = object.imgDniUno || '';
+    this.imgDniDos = object.imgDniDos || '';
+    this.dniPadre1 = object.dniPadre1 || '';
+    this.dniPadre2 = object.dniPadre2 || '';
+    this.dniMadre1 = object.dniMadre1 || '';
+    this.dniMadre2 = object.dniMadre2 || '';
   }
 }
 
@@ -250,3 +286,30 @@ export class PlayerEstadistica {
     this.MediaGolesAsistenciasPorPartido = object.MediaGolesAsistenciasPorPartido || '';
   }
 }
+
+export class NotificatePlayerUI {
+  players: Player[] = [];
+  rival: string = '';
+  noConvocados: string[] = [];
+  convocados: string[] = [];
+  lugar: string = '';
+  fechaPartido: string = '';
+  horaQuedada: string = '';
+  horaPartido: string = '';
+  tipoPartido: string = '';
+  local: number = 0; // 0 para local, 1 para visitante
+
+  constructor(object: any) {
+    this.players = object.players || [];
+    this.rival = object.rival || '';
+    this.noConvocados = object.noConvocados || [];
+    this.convocados = object.convocados || [];
+    this.lugar = object.lugar || '';
+    this.fechaPartido = object.fechaPartido || '';
+    this.horaQuedada = object.horaQuedada || '';
+    this.horaPartido = object.horaPartido || '';
+    this.tipoPartido = object.tipoPartido || '';
+    this.local = object.local || 0;
+  }
+}
+

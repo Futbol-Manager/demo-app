@@ -242,7 +242,7 @@ export class TrainerComponent implements OnInit {
   // Método para navegar a la pantalla de calendario
   navegarACalendario(): void {
     // Puedes ajustar la ruta según tu estructura de rutas
-    this.router.navigate(['/dashboard/calendario', this.teamId]);
+    this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
   }
 
   inicializePlayer() {
@@ -302,8 +302,25 @@ export class TrainerComponent implements OnInit {
       telefonoPadre: '',
       telefonoMadre: '',
       emailPadre: '',
-      emailMadre: ''
-      
+      emailMadre: '',
+      nick: '',
+      numero: '',
+      dni: '', 
+      nombrePadre: '', 
+      dniPadre: '', 
+      nombreMadre: '', 
+      dniMadre: '',
+      posicionDos: 'Sin definir',
+      email: '',
+      nacionalidad: '',
+      direccion: '',
+      municipio: '',
+      imgDniUno: '',
+      imgDniDos: '',
+      dniPadre1: '',
+      dniPadre2: '',
+      dniMadre1: '',
+      dniMadre2: ''
     };
   }
 

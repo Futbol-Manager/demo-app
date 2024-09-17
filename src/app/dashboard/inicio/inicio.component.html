@@ -1,133 +1,140 @@
-<div *ngIf="datosCargados" class="container">
-  <!-- Botón para abrir el modal de creación de equipo -->
-  <div class="btn-container">
+<div [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
+  <div class="submenu">
     <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
-      <div class="col">
-        <button class="btn btn-custom btn-sm" (click)="irAPantalla(1)">Contabilidad</button>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearEquipo()">
+          <i class="bi bi-plus-circle"></i>
+          <span class="d-none d-md-inline">Crear un equipo</span>
+        </a>
       </div>
-      <div class="col">
-        <button class="btn btn-custom btn-sm" (click)="irAPantalla(2)">
-          Ropa
-        </button>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(3)">
+          <i class="bi bi-clipboard2-data"></i>
+          <span class="d-none d-md-inline">Cuadro Mando Deportivo</span>
+        </a>
       </div>
-    </div>
-    <div class="row" style="margin-top: 2em;">
-      <div class="col"
-        *ngIf="this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2">
-        <button class="btn btn-custom btn-sm" (click)="abrirModalCrearEquipo()">
-          Crear un equipo
-        </button>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
+          <i class="bi bi-bank"></i>
+          <span class="d-none d-md-inline">Cuotas</span>
+        </a>
+      </div>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
+          <i class="bi bi-backpack3"></i>
+          <span class="d-none d-md-inline">Ropa</span>
+        </a>
+      </div>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);">
+          <i class="bi bi-collection"></i>
+          <span class="d-none d-md-inline">Patrocinadores</span>
+        </a>
+      </div>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);">
+          <i class="bi bi-envelope"></i>
+          <span class="d-none d-md-inline">Notificaciones</span>
+        </a>
       </div>
     </div>
   </div>
 
-  <div>
-    <!-- Contenido principal con la tabla de equipos utilizando Bootstrap -->
-    <div class="mt-4">
-
-      <div>
-        <h2 class="text-dark mt-3">Listado de Equipos de Fútbol</h2>
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-content"
-              type="button" role="tab" aria-controls="list-content" aria-selected="true">Vista de lista</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-content" type="button"
-              role="tab" aria-controls="card-content" aria-selected="false">Vista de tarjetas</button>
-          </li>
-        </ul>
-        <div class="tab-content" id="myTabContent">
-          <div class="tab-pane fade show active" id="list-content" role="tabpanel" aria-labelledby="list-tab">
-            <div class="p-3">
-              <div class="row" *ngFor="let team of listTeam">
-                <div class="col mb-3 rounded card" style="padding: 1.5em 2em 0.5em;">
-                  <div class="row">
-                    <div class="col">                      
-                      <h5>{{ team.category }} {{ team.name }}</h5>
-                      <div class="row">                        
-                        <div class="col">
-                          <p>
-                            <strong>-</strong> {{ team.levelLeague }}
-                          </p>
-                        </div>
-                        <div class="col text-end">
-                          <p>
-                            {{ team.trainingDays }}
-                            <i class="bi bi-calendar-week ml-2"></i>
-                            -
-                            {{ team.jugadoresPorEquipo }}
-                            <i class="bi bi-people-fill"></i>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-auto">
-                      <div class="d-flex flex-column justify-content-between h-100">
-                        <div class="btn-container">
-                          <button class="btn btn-link text-success" (click)="navegarACalendario(team.teamId)">
-                            <i class="bi bi-arrow-right-circle-fill"></i>
-                          </button>
-                          <div class="hint">Entrar</div>
-                        </div>
-                        <div class="btn-container"><!-- *ngIf="team.userId == this.usuarioActual!!.userId">--> 
-                          <button class="btn btn-link text-danger"
-                            (click)="confirmarEliminarEquipo(team.teamId, team.name)">
-                            <i class="bi bi-trash"></i>
-                          </button>
-                          <div class="hint">Borrar</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+  <!-- Botón para abrir el modal de creación de equipo -->
+  <div class="container">
+    <div class="row">
+      <div class="col text-center" *ngIf="this.usuarioActual!.profileType.profileId < 3">
+        <h2 class="text-dark mt-3">Listado de Equipos</h2>
+      </div>
+      <div class="col text-center" *ngIf="this.usuarioActual!.profileType.profileId > 2">
+        <h2 class="text-dark mt-3">Listado de jugadores</h2>
+      </div>
+    </div>
+    <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
+      <div class="col">
+        <button class="btn btn-success" (click)="openModalSubirJugadores()">
+          Cargar jugadores desde plantilla Excel <i class="bi bi-file-earmark-spreadsheet"></i>
+        </button>
+      </div>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
+      *ngIf="this.usuarioActual!.profileType.profileId < 3">
+      <div class="col mb-3" *ngFor="let team of listTeam; let i = index" style="cursor: pointer;"
+        (click)="navegarACalendario(team.teamId, 0)">
+        <div class="card h-100" style="border: 1px solid black;">
+          <div class="card-body text-center">
+            <div class="row mb-2">
+              <div class="col text-start" style="font-size: 0.8em;">
+                ID: {{ team.teamId }}
               </div>
             </div>
+            <div class="row mb-2">
+              <div class="col">
+                <img *ngIf="noPicture" src="https://sphairatech.com/images/user/{{ pictureClub }}" alt="user-image"
+                  width="90" height="90" style="max-width: 100%;">
+              </div>
+            </div>
+            <h5 class="card-title"
+              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ team.category }}
+              {{ team.name }}</h5>
+            <p class="card-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              {{ team.levelLeague }}
+            </p>
+            <p class="card-text">
+              {{ team.trainingDays }}
+              <i class="bi bi-calendar-week ml-2"></i>
+              -
+              {{ team.jugadoresPorEquipo }}
+              <i class="bi bi-people-fill"></i>
+            </p>
+            <p *ngIf="team.nombreEntrenador" class="card-text"
+              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              <b>Cuerpo técnico: </b> {{ team.nombreEntrenador }}
+            </p>
           </div>
-          <div class="tab-pane fade" id="card-content" role="tabpanel" aria-labelledby="card-tab">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 p-3">
-              <div class="col mb-3" *ngFor="let team of listTeam">
-                <div class="card">
-                  <div class="card-body text-center">
-                    <div class="dropdown card-widgets" style="text-align: end;">
-                      <a href="#" data-bs-toggle="dropdown" aria-expanded="false" style="color: #565656;">
-                        <i class="bi bi-three-dots"></i>
-                      </a>
-                      <div class="dropdown-menu dropdown-menu-end">
-                        <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item"
-                          (click)="navegarACalendario(team.teamId)">Entrar <i
-                            class="bi bi-arrow-right-circle-fill icono-azul"></i></a>
-                        <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item"
-                          (click)="confirmarEliminarEquipo(team.teamId, team.name)">Borrar <i
-                            class="bi bi-trash icono-rojo"></i></a>
-                      </div>
-                    </div>
-                    <h5 class="card-title">{{ team.category }} {{ team.name }}</h5>
+        </div>
+      </div>
+    </div>
 
-                    <div class="row">
-                      <div class="col">
-                        <p class="card-text">
-                           {{ team.levelLeague }}
-                        </p>
-                      </div>
-                    </div>
-                    <div class="row">
-                      <div class="col">
-                        <p>
-                          {{ team.trainingDays }}
-                          <i class="bi bi-calendar-week ml-2"></i>
-                          -
-                          {{ team.jugadoresPorEquipo }}
-                          <i class="bi bi-people-fill"></i>
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
+      *ngIf="this.usuarioActual!.profileType.profileId > 2">
+      <div class="col mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
+        (click)="navegarACalendario(hijo.teamId, hijo.playerId)">
+        <div class="card h-100" style="border: 1px solid black;">
+          <div class="card-body text-center">
+            <div class="row mb-2">
+            </div>
+            <div class="row mb-2">
+              <div class="col d-flex justify-content-center align-items-center" *ngIf="hijo.picturePlayer">
+                <img src="https://sphairatech.com/images/user/{{ hijo.picturePlayer }}"
+                  alt="user-image" width="90" height="90" style="max-width: 100%;">  
+              </div>
+              <div class="col d-flex justify-content-center align-items-center" *ngIf="!hijo.picturePlayer">               
+                  <ng-container>
+                    <span class="bi bi-person" style="font-size: 4rem;"></span>
+                </ng-container>
               </div>
             </div>
+            <h5 class="card-title"
+              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              {{ hijo.nombre }} {{ hijo.apellido }}</h5>
+          </div>
+        </div>
+      </div>
+
+      <div class="col mb-3" style="cursor: not-allowed; opacity: 0.5;">
+        <div class="card h-100" style="border: 1px solid black;">
+          <div class="card-body text-center">
+            <div class="row mb-2"></div>
+            <div class="row mb-2">
+              <div class="col d-flex justify-content-center align-items-center">
+                <i class="bi bi-camera-reels" style="font-size: 90px; color: gray;"></i>
+              </div>
+            </div>
+            <h5 class="card-title" style="color: gray; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              Scouting
+            </h5>
           </div>
         </div>
       </div>
@@ -154,6 +161,7 @@
             <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
             <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" formControlName="categoryTypeId">
               <!-- Opciones ajustadas según tus necesidades -->
+              <option value="27">Sin equipo</option>
               <option value="15">Senior</option>
               <option value="16">Juvenil</option>
               <option value="17">Juvenil/Cadete Femenina</option>
@@ -215,26 +223,15 @@
               <option value="M">M</option>
             </select>
           </div>
-          <div class="mb-3">
+          <!--<div class="mb-3">
             <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
             <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo"
               formControlName="objectiveTeam">
-          </div>
+          </div>-->
           <div class="mb-3">
             <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
-            <input type="text" class="form-control" id="diasEntrenamiento" name="diasEntrenamiento"
-              formControlName="trainingDays">
-          </div>
-          <!-- <div class="mb-3">
-            <label for="clubEquipo" class="form-label">Club del Equipo:</label>
-            <select class="form-control" id="clubEquipo" name="clubEquipo" formControlName="clubId">
-              <option *ngFor="let club of clubList" [value]="club.clubId">{{ club.name }}</option>
-            </select>
-          </div> -->
-          <div class="mb-3">
-            <label for="opinionEquipo" class="form-label">Opinión del Equipo:</label>
-            <input type="text" class="form-control" id="opinionEquipo" name="opinionEquipo"
-              formControlName="opinionTeam">
+            <p>Para introducir un horario, una vez creado el equipo, pulsa en él y después accede al menú "información
+              del equipo".</p>
           </div>
           <div class="modal-footer">
             <!-- Botón para guardar el nuevo equipo -->
@@ -246,26 +243,43 @@
   </div>
 </div>
 
-<!--<div id="standard-modal" class="modal fade show" tabindex="-1" aria-labelledby="standard-modalLabel" style="display: block; padding-left: 0px;" aria-modal="true" role="dialog">
-  <div class="modal-dialog">
+<!-- Modal para subir jugadores desde plantilla -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalSubirJugadores}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
       <div class="modal-content">
-          <div class="modal-header">
-              <h4 class="modal-title" id="standard-modalLabel">Modal Heading</h4>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              <h6 class="mt-0">Text in a modal</h6>
-              <p>Duis mollis, est non commodo luctus, nisi erat porttitor ligula.</p>
-              <hr>
-              <h6>Overflowing text to show scroll behavior</h6>
-              <p>Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.</p>
-              <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.</p>
-              <p class="mb-0">Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.</p>
+        <div class="modal-header">
+          <h5 class="modal-title" id="stripeModalLabel">Sube la plantilla para cargar los jugadores</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSubirJugadores()"></button>
+        </div>
+        <div class="modal-body">
+          <p>Solo es obligatorio rellenar el nombre, el resto de campos se podrían dejar vacíos. Descarga la plantilla
+            para poder rellenar los jugadores. Pulsa en <a href="https://sphairatech.com/images/docs/Plantilla.xlsx"
+              download="Plantilla.xlsx">
+              descargar plantilla.
+            </a></p>
+          <div class="mb-3">
+            <form [formGroup]="excelForm" class="form-upload" (ngSubmit)="uploadExcel()" enctype="multipart/form-data">
+              <div class="mb-3" style="text-align: center;">
+                <h4>Sube tu archivo Excel</h4>
+                <div class="form-group">
+                  <label for="excelFile">Seleccionar archivo en formato XLSX:</label>
+                  <input type="file" id="excelFile" accept=".xlsx" (change)="onFileSelected($event)"
+                    class="form-control-file">
+                  <div *ngIf="fileName" class="mt-2">Archivo seleccionado: {{ fileName }}</div>
+                </div>
+                <button *ngIf="showUploadButton" style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir
+                  archivo</button>
+              </div>
+            </form>
           </div>
           <div class="modal-footer">
-              <button type="button" class="btn btn-light" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary">Save changes</button>
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="submit" class="btn btn-success float-end"
+              (click)="cerrarModalSubirJugadores()">Cerrar</button>
           </div>
+        </div>
       </div>
+    </div>
   </div>
-</div> -->
+</div>

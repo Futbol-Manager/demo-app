@@ -32,13 +32,14 @@ export class LoginService {
     // Realiza la solicitud de inicio de sesión
     return this.http.post<LoginResponse>(url, login).pipe(
       tap(response => {
-        // Guarda el usuario en el localStorage al iniciar sesión
-        // Guarda el usuario y el token en el localStorage al iniciar sesión
-        localStorage.setItem('usuario', JSON.stringify(response.data.userDTO));
-        localStorage.setItem('token', response.data.tokenAcces);
-
-        // Actualiza el BehaviorSubject con el usuario autenticado
-        this['usuarioAutenticado'].next(response.data.userDTO);
+        if(response.data){
+          // Guarda el usuario en el localStorage al iniciar sesión
+          // Guarda el usuario y el token en el localStorage al iniciar sesión
+          localStorage.setItem('usuario', JSON.stringify(response.data.userDTO));
+          localStorage.setItem('token', response.data.tokenAcces);
+          // Actualiza el BehaviorSubject con el usuario autenticado
+          this['usuarioAutenticado'].next(response.data.userDTO);
+        }
       })
     );
   }

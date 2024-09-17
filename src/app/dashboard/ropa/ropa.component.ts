@@ -27,11 +27,13 @@ export class RopaComponent implements OnInit {
   ropaPlayers: any[] = [];
   datosCargados = false;
 
-  abrigoSizes: string[] = ['', '4', '6', '8', '10', '12', '14', '16','2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+  abrigoSizes: string[] = ['', '4', '6', '8', '10', '12', '14', '16', '2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
   abrigoSizesMedias: string[] = ['', 'XS', 'S', 'M', 'L'];
   private abrigoSubject = new Subject<RopaJugador>();
   showModal = false;
   ropaClub: any;
+
+  reloadPage = false;
 
   prendas = [
     { label: 'Camiseta de Juego', property: 'camisetaJuego', index: 5 },
@@ -52,8 +54,10 @@ export class RopaComponent implements OnInit {
     { label: 'Chubasquero', property: 'chubasquero', index: 20 },
     { label: 'Mochila', property: 'mochila', index: 21 }
   ];
-  
+
   prendasOcultar: number[] = [0];
+
+  ropaPrendas: RopaClub = new RopaClub({});
 
   constructor(
     private loginService: LoginService,
@@ -80,16 +84,16 @@ export class RopaComponent implements OnInit {
       });
     });
 
-    this.clubService.getRopaClub(this.clubId.toString(), '2023').subscribe(
+    this.clubService.getRopaClub(this.clubId.toString(), '2024').subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.ropaClub = response.data;
           this.ropaClub.clubId = this.clubId;
-          this.ropaClub.temporada = '2023';
+          this.ropaClub.temporada = '2024';
           //recuperar las prendas que han de verse y las que no
           this.ocultarColumnasRopa();
-          this.clubService.getRopaJugadoresByClubForTemp(this.clubId.toString(), '2023').subscribe(
+          this.clubService.getRopaJugadoresByClubForTemp(this.clubId.toString(), '2024').subscribe(
             (response: Response) => {
               // Verifica que la propiedad 'data' exista en la respuesta
               if (response.data !== null) {
@@ -109,7 +113,7 @@ export class RopaComponent implements OnInit {
 
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
-        }        
+        }
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
@@ -156,7 +160,7 @@ export class RopaComponent implements OnInit {
     }
 
     this.http.get('assets/dataTable/Spanish.json').subscribe((translation) => {
-      $(document).ready( () => {
+      $(document).ready(() => {
         $('#dataTable').DataTable({
           paging: true,
           pageLength: 100,
@@ -311,60 +315,61 @@ export class RopaComponent implements OnInit {
     ropa.estado = this.getStatusRopa(ropa);
     //ropa.estado = ropa.estado === 1 ? 0 : 1;
 
+    this.reloadPage = true;
     this.updateRopaJugador(ropa);
   }
 
-  getStatusRopa(ropa: any): string{
+  getStatusRopa(ropa: any): string {
     let status = '1';
-    if( this.ropaClub.camisetaJuego === 0) {
+    if (this.ropaClub.camisetaJuego === 0) {
       if (ropa.camisetaJuegoOk === 0) status = '0';
     }
-    if( this.ropaClub.pantalonJuego === 0) {
+    if (this.ropaClub.pantalonJuego === 0) {
       if (ropa.pantalonJuegoOk === 0) status = '0';
     }
-    if( this.ropaClub.medias === 0) {
+    if (this.ropaClub.medias === 0) {
       if (ropa.medias === 0) status = '0';
     }
-    if( this.ropaClub.camisetaJuegoDos === 0) {
+    if (this.ropaClub.camisetaJuegoDos === 0) {
       if (ropa.camisetaJuegoDosOk === 0) status = '0';
     }
-    if( this.ropaClub.pantalonJuegoDos === 0) {
+    if (this.ropaClub.pantalonJuegoDos === 0) {
       if (ropa.pantalonJuegoDosOk === 0) status = '0';
     }
-    if( this.ropaClub.mediasDos === 0) {
+    if (this.ropaClub.mediasDos === 0) {
       if (ropa.mediasDosOk === 0) status = '0';
     }
-    if( this.ropaClub.camisetaEntreno === 0) {
+    if (this.ropaClub.camisetaEntreno === 0) {
       if (ropa.camisetaEntrenoOk === 0) status = '0';
     }
-    if( this.ropaClub.pantalonEntreno === 0) {
+    if (this.ropaClub.pantalonEntreno === 0) {
       if (ropa.pantalonEntrenoOk === 0) status = '0';
     }
-    if( this.ropaClub.mediasTres === 0) {
+    if (this.ropaClub.mediasTres === 0) {
       if (ropa.mediasTresOk === 0) status = '0';
     }
-    if( this.ropaClub.sudaderaEntreno === 0) {
+    if (this.ropaClub.sudaderaEntreno === 0) {
       if (ropa.sudaderaEntrenoOk === 0) status = '0';
     }
-    if( this.ropaClub.chaquetaChandal === 0) {
+    if (this.ropaClub.chaquetaChandal === 0) {
       if (ropa.chaquetaChandalOk === 0) status = '0';
     }
-    if( this.ropaClub.pantalonChandal === 0) {
+    if (this.ropaClub.pantalonChandal === 0) {
       if (ropa.pantalonChandalOk === 0) status = '0';
     }
-    if( this.ropaClub.poloPaseo === 0) {
+    if (this.ropaClub.poloPaseo === 0) {
       if (ropa.poloPaseoOk === 0) status = '0';
     }
-    if( this.ropaClub.pantalonPaseo === 0) {
+    if (this.ropaClub.pantalonPaseo === 0) {
       if (ropa.pantalonPaseoOk === 0) status = '0';
     }
-    if( this.ropaClub.abrigo === 0) {
+    if (this.ropaClub.abrigo === 0) {
       if (ropa.abrigoOk === 0) status = '0';
     }
-    if( this.ropaClub.chubasquero === 0) {
+    if (this.ropaClub.chubasquero === 0) {
       if (ropa.chubasqueroOk === 0) status = '0';
     }
-    if( this.ropaClub.mochila === 0) {
+    if (this.ropaClub.mochila === 0) {
       if (ropa.mochilaOk === 0) status = '0';
     }
 
@@ -397,17 +402,17 @@ export class RopaComponent implements OnInit {
   }
 
   // Método para abrir el modal de creación de equipo
-  abrirModal(): void {    
-    this.clubService.getRopaClub(this.clubId.toString(), '2023').subscribe(
+  abrirModal(): void {
+    this.clubService.getRopaClub(this.clubId.toString(), '2024').subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.ropaClub = response.data;
           this.ropaClub.clubId = this.clubId;
-          this.ropaClub.temporada = '2023';
+          this.ropaClub.temporada = '2024';
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
-        }        
+        }
         this.showModal = true;
       },
       (error) => {
@@ -419,15 +424,15 @@ export class RopaComponent implements OnInit {
   // Método para cerrar el modal de creación de equipo
   cerrarModal(): void {
     this.showModal = false;
-    this.router.navigate(['/dashboard/inicio']);
+    if (this.reloadPage) this.router.navigate(['/dashboard/inicio']);
   }
 
   togglePrendaOkDesactivar(property: string, value: number) {
     this.ropaClub[property] = value === 0 ? 1 : 0;
     this.updateRopaClub(this.ropaClub);
     // Aquí puedes añadir cualquier otra lógica necesaria
-    console.log(`${property} actualizada a ${value}`);
-  }  
+    //console.log(`${property} actualizada a ${value}`);
+  }
 
   updateRopaClub(ropa: RopaClub) {
     this.clubService.updateRopaClub(ropa).subscribe(

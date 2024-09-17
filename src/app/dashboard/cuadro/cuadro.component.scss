@@ -1,0 +1,68 @@
+table {
+    width: 100%;
+    /* Ajusta según sea necesario */
+    border-collapse: collapse;
+    /* Para eliminar espacios entre celdas */
+}
+
+th,
+td {
+    border: 1px solid black;
+    /* Opcional: para añadir bordes a las celdas */
+    text-align: center;
+    /* Centra horizontalmente */
+    vertical-align: middle;
+    /* Centra verticalmente */
+    padding: 10px;
+    /* Opcional: añade un poco de espacio alrededor del contenido */
+    height: 50px;
+    /* Ajusta la altura según sea necesario */
+}
+
+table thead {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    /* Asegurar que el encabezado se superponga a las filas */
+}
+
+
+table thead .columna-nombre {
+    position: sticky;
+    left: 0;
+    width: 150px;
+    /* Ajusta el ancho según tu columna */
+    background-color: #58ad6a;
+    /* Color de fondo opcional */
+}
+
+tbody .fila-completa {
+    position: sticky;
+    left: 0;
+    width: 400px;
+    /* Ajusta el ancho según tu tabla */
+    background-color: #f5f5f5;
+    /* Color de fondo opcional */
+}
+
+tbody .fila-completa td {
+    position: sticky;
+    left: 0;
+}
+
+tbody .fila-completa .columna-nombre {
+    width: 150px;
+    /* Ajusta el ancho según tu columna */
+    background-color: #e0e0e0;
+    /* Color de fondo opcional */
+}
+
+.current-hour {
+    background-color: #22bf63 !important;
+}
+
+.equipo-info {
+    background-color: #f0f0f0;
+    /* Puedes cambiar el color de fondo de las celdas de equipo aquí */
+    text-align: center;
+}

@@ -1,20 +1,32 @@
-<div *ngIf="datosCargados" class="container">
-    <div class="btn-container mt-3">
-        <div class="row">
-            <div class="col"><button class="btn btn-custom" (click)="navegarACalendario()">
-                    <i class="bi bi-calendar"></i>
-                </button>
-                <div class="hint">Volver al calendario</div>
-            </div>
+<div class="submenu">
+    <div class="row">
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">
+                <i class="bi bi-calendar"></i>
+                <span class="d-none d-md-inline">Calendario</span>
+            </a>
         </div>
     </div>
-    <div class="btn-container mt-3">
+</div>
+<div *ngIf="datosCargados" class="container">
+    <div class="btn-container mt-3" style="margin-top: 3em;">
         <div class="row mt-3">
             <div class="col">
                 <button class="btn btn-custom" (click)="verGraficaEquipo()">
                     <i class="bi bi-bar-chart-line"></i>
                 </button>
                 <div class="hint">Ver gráficas Equipo</div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-2">
+                <label for="tipoPartidoSelected" class="form-label">Selecciona un equipo</label>
+                <select class="form-control me-2" id="tipoPartidoSelected" name="tipoPartidoSelected"
+                    [(ngModel)]="tipoPartidoSelected" (change)="selectedTipoPartido()">
+                    <option value="Liga">Liga</option>
+                    <option value="Amistoso">Amistoso</option>
+                    <option value="Torneo">Torneo</option>
+                </select>
             </div>
         </div>
     </div>
@@ -68,7 +80,7 @@
                 <thead class="table-custom">
                     <tr>
                         <th>FECHA</th>
-                        <th>Partido ID</th>
+                        <!--  <th>Partido ID</th> -->
                         <th>NOMBRE_RIVAL</th>
                         <th>RESULTADO</th>
                         <th>GOLES_FAVOR</th>
@@ -92,7 +104,7 @@
                 <tbody>
                     <tr *ngFor="let partido of partidos; let i = index">
                         <td>{{ partido.matchPreparation.matchDate }}</td>
-                        <td>{{ partido.postPartidoId }}</td>
+                        <!-- <td>{{ partido.postPartidoId }}</td> -->
                         <td>
                             <div class="simular-enlace" (click)="openInfoPostPartido(partido.postPartidoId)">
                                 {{ partido.matchPreparation.rivalName }}
@@ -247,16 +259,7 @@
 <!-- aqui las graficas de los jugadores -->
 
 <div *ngIf="graficasEquipo" class="container">
-    <div class="btn-container mt-3">
-        <div class="row">
-            <div class="col"><button class="btn btn-custom" (click)="navegarACalendario()">
-                    <i class="bi bi-calendar"></i>
-                </button>
-                <div class="hint">Volver al calendario</div>
-            </div>
-        </div>
-    </div>
-    <div class="btn-container mt-3">
+    <div class="btn-container mt-3" style="margin-top: 3em;">
         <div class="row mt-3">
             <div class="col">
                 <button class="btn btn-custom" (click)="verTablaPlayers()">
@@ -314,9 +317,9 @@
             </div>
         </div>
 
-        
+
         <h2>Gráfica goles Categoría</h2>
-        
+
         <div class="row mb-3">
             <div class="col-12 col-md-6" style="text-align: center;">
                 <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;"

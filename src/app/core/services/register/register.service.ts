@@ -27,8 +27,8 @@ export class RegisterService {
     return this.http.post<any>(url, mail);
   }
 
-  inviteCoach(mail: String, teamId: number) {
-    const url: string = environment.apiUrl + `user/inviteCoach/${teamId}`;
+  inviteCoach(mail: String, teamId: number, userId: number) {
+    const url: string = environment.apiUrl + `user/inviteCoach/${teamId}/${userId}`;
     return this.http.post<any>(url, mail);
   }
 

@@ -20,7 +20,7 @@ export class RegisterComponent implements OnInit {
 
   registerFormClub: FormGroup;
   registerFormEntrenador: FormGroup;
-  selectedOption: number = 2;
+  selectedOption: number = 0;
   passwordsDoNotMatch: boolean = false;
   listaDeClubes: Club = new Club({});
   msgAge: boolean = false;
@@ -31,12 +31,18 @@ export class RegisterComponent implements OnInit {
   isReadOnlyMail: boolean = false;
 
   selectOptions = [
+    { value: "0", label: "¿Eres un club o un entrenador?" },
     { value: "1", label: "Club" },
     { value: "2", label: "Entrenador" },
     // Opciones eliminadas
-    { value: "3", label: "Padre o tutor" },
-    { value: "4", label: "Jugador" }
+    { value: "3", label: "Jugador/Padre" },
+    { value: "4", label: "Jugador" },
+    { value: "5", label: "Scouter" }
   ];
+  msgForm = false;
+  showPPlayer = false;
+  showModal = false;
+  optionSelected = 0;
 
   constructor(
     private router: Router,
@@ -49,6 +55,7 @@ export class RegisterComponent implements OnInit {
     private route: ActivatedRoute,
   ) {
     this.registerFormClub = this.fb.group({
+      comunicaciones: [false],
       name: ['', Validators.required],
       foundationDate: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -58,6 +65,7 @@ export class RegisterComponent implements OnInit {
     });
 
     this.registerFormEntrenador = this.fb.group({
+      comunicaciones: [false],
       name: [''],
       surname: ['', Validators.required],
       birthdate: ['', Validators.required],
@@ -79,18 +87,36 @@ export class RegisterComponent implements OnInit {
       //console.log('this.playerID =' + this.playerID + 'y this.emailParam =' + this.emailParam);
     });
 
-    let option = 0;
+    //let option = 0;
     if (this.isMenor !== undefined && !Number.isNaN(this.isMenor)) {
       if (this.isMenor === 0) {
         this.selectedOption = 4;
-      } else {
+        this.showPPlayer = true;
+      } else if (this.isMenor === 1) {
         this.selectedOption = 3;
+        this.showPPlayer = true;
+      } else if (this.isMenor === 2) { //este es club
+        this.selectedOption = 1;
+        this.emailParam = '';
+        this.playerID = 0;
+      } else if (this.isMenor === 3) { //este es entrenador 
+        this.selectedOption = 2;
+        this.emailParam = '';
+        this.playerID = 0;
+      } else if (this.isMenor === 4) { //este es scouter 
+        this.selectedOption = 5;
+        this.emailParam = '';
+        this.playerID = 0;
       }
       this.isReadOnly = true;
       // Establecer valor predeterminado para el campo email
       this.registerFormEntrenador.get('email')!.setValue(this.emailParam);
+
+      if(this.emailParam !== '')
+        this.registerFormEntrenador.get('email')?.disable(); // Deshabilita el campo
     } else {
-      this.selectOptions = this.selectOptions.filter(option => option.value !== "3" && option.value !== "4");
+      this.selectOptions = this.selectOptions.filter(option => option.value !== "4");
+      this.registerFormEntrenador.get('email')?.enable(); // Habilita el campo
     }
   }
 
@@ -165,6 +191,7 @@ export class RegisterComponent implements OnInit {
 
       const fv = this.registerFormClub.value;
       const register: RegisterModel = new RegisterModel(
+        fv.comunicaciones ? 1 : 0,
         profileType,
         fv.name,
         '',
@@ -194,8 +221,8 @@ export class RegisterComponent implements OnInit {
                 Si aún así no encuentras el correo, por favor, contáctanos en info@sphairatech.com para que podamos asistirte.\n\n
                 ¡Esperamos verte pronto!`,
                 'Ok', snackBarConfig
-              );
-              this.login(1);
+              );         
+              //this.login(1);
             } else {
               const snackBarConfig = new MatSnackBarConfig();
               snackBarConfig.duration = 5000;
@@ -226,8 +253,11 @@ export class RegisterComponent implements OnInit {
         this.registerFormEntrenador.value.genre == 1 ? 'Masculino' : (this.registerFormEntrenador.value.genre == 2 ? 'Femenino' : 'Otro')
       );
 
+
+      this.msgForm = false;
       const fv = this.registerFormEntrenador.value;
       const register: RegisterModel = new RegisterModel(
+        fv.comunicaciones ? 1 : 0,
         profileType,
         fv.name,
         fv.surname,
@@ -255,8 +285,8 @@ export class RegisterComponent implements OnInit {
               snackBarConfig.duration = 5000;
               snackBarConfig.horizontalPosition = 'center';
               snackBarConfig.verticalPosition = 'bottom';
-              this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
-              this.login(2);
+              this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);     
+              //this.login(2);
             } else {
               const snackBarConfig = new MatSnackBarConfig();
               snackBarConfig.duration = 5000;
@@ -265,7 +295,8 @@ export class RegisterComponent implements OnInit {
               this.snackBar.open('Ese email ya está dado de alta, prueba a iniciar sesión o date de alta con un email diferente.', 'Cerrar', snackBarConfig);
             }
           })
-    }
+    } else
+      this.msgForm = true;
   }
 
   login(profile: number) {
@@ -301,6 +332,28 @@ export class RegisterComponent implements OnInit {
   toLogin(event: Event) {
     event.preventDefault();
     this.router.navigate(['/home']);
+  }
+
+  openModal(option: number) {
+    switch (option) {
+      case 1:
+        this.registerClub();             
+        this.optionSelected = 1;
+        break;
+      case 2:
+        this.registerEntrenador();             
+        this.optionSelected = 2;
+        break;
+    }
+    this.showModal = true;
+  }
+
+  cerrarModal() {
+    this.showModal = false;
+  }
+
+  goLogin() {
+    this.login(this.optionSelected);
   }
 
 }

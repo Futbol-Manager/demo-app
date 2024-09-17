@@ -1,61 +1,70 @@
 <div class="modal" role="dialog" class="d-block">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header d-flex">
-        <div>
-          <h2>Selecciona una tarea para descargarla</h2>
-        </div>
-        <div>
-          <label for="work">Tipo de Trabajo:</label>
-          <select class="form-control" (change)="onTipoTrabajoSeleccionado($event)">
-              <option disabled selected>Selecciona un tipo de trabajo</option>
-              <option value="Trabajo Físico">Trabajo Físico</option>
-              <option value="Resistencia">Resistencia</option>
-              <option value="Juegos de posesión">Juegos de posesión</option>
-              <option value="Juegos de posición">Juegos de posición</option>
-              <option value="Ataque - Defensa">Ataque - Defensa</option>
-              <option value="Partidos reducidos">Partidos reducidos</option>
-              <option value="Partidos condicionados">Partidos condicionados</option>
-              <option value="Acciones combinadas">Acciones combinadas</option>
-              <option value="Finalizaciones">Finalizaciones</option>
-              <option value="Fuerza">Fuerza</option>
-              <option value="Circuitos Físicos">Circuitos Físicos</option>
-              <option value="Juego de Posesión">Juego de Posesión</option>
-              <option value="Ataque – Defensa">Ataque – Defensa</option>
-              <option value="Finalizaciones">Finalizaciones</option>
-              <option value="Velocidad">Velocidad</option>
-              <option disabled>──────────</option>
-              <option value="Trabajo Táctico">Trabajo Táctico</option>
-              <option value="Trabajo por posiciones">Trabajo por posiciones</option>
-              <option value="Trabajo por líneas">Trabajo por líneas</option>
-              <option value="Específicos">Específicos</option>
-              <option disabled>──────────</option>
-              <option value="Tecnificación">Tecnificación</option>
-              <option disabled>──────────</option>
-              <option value="ABP">ABP</option>
-              <option value="Faltas laterales">Faltas laterales</option>
-              <option value="Faltas frontales">Faltas frontales</option>
-              <option value="Corners">Corners</option>
-              <option disabled>──────────</option>
-              <option value="Trabajo Preventivo">Trabajo Preventivo</option>
-              <option value="Core">Core</option>
-              <option value="Estabilización de rodilla">Estabilización de rodilla</option>
-              <option value="Glúteos">Glúteos</option>
-              <option value="Cuádriceps">Cuádriceps</option>
-              <option value="Aductores">Aductores</option>
-              <option value="Isquiotibiales">Isquiotibiales</option>
-              <option value="Gemelos">Gemelos</option>
-              <option value="Propiocepción">Propiocepción</option>
-          </select>
-          <button type="button" class="btn btn-success mt-3" (click)="descargarTarea(selectedTask)" *ngIf="downloadTask">Descargar Tarea</button>
+        <div class="row text-center mt-3">
+          <div class="col-12 col-md-12 mt-3">
+            <h2>Selecciona una tarea para descargarla</h2>
+          </div>
         </div>
       </div>
       <div class="modal-body">
-        <div class="card" *ngFor="let tarea of taskList; let i = index" [class.selected]="tarea === selectedTask"
-          (click)="seleccionarTarea(tarea)">
-          <div class="card-body">
-            <h5 class="card-title">{{ tarea.slogans }}</h5>
-            <p class="card-text">{{ tarea.description }}</p>
+        <div class="container">
+          <div class="row text-center mt-3 align-items-center">
+            <div class="col-12 col-md-6 mt-3">
+              <input type="text" class="form-control custom-input" id="textSearch" [(ngModel)]="textSearch"
+                placeholder="Buscar por título..." (keydown.enter)="filterSearch()">
+            </div>
+            <div class="col-12 col-md-3 mt-3">
+              <select class="form-control custom-input" id="estrategia" [(ngModel)]="estrategia" name="estrategia">
+                <option value="-">Selecciona estrategía...</option>
+                <option *ngFor="let estrategia of estrategias" [value]="estrategia">{{ estrategia }}</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-3 mt-3">
+              <select class="form-control custom-input" id="intencion" [(ngModel)]="intencion" name="intencion">
+                <option value="-">Selecciona intención...</option>
+                <option *ngFor="let intencion of intenciones" [value]="intencion">{{ intencion }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row text-center mt-3 align-items-center">
+            <div class="col-12 col-md-3 mt-3">
+            </div>
+            <div class="col-12 col-md-3 mt-3">
+            </div>
+            <div class="col-12 col-md-3 mt-3">
+              <button type="button" class="form-control btn btn-danger mt-2" (click)="clearSearch()">Limpiar</button>
+            </div>
+            <div class="col-12 col-md-3 mt-3">
+              <button type="button" class="form-control btn btn-primary mt-2" (click)="filterSearch()">Buscar</button>
+            </div>
+          </div>
+          <br>
+          <div class="row mt-3">
+            <div class="col-12 col-md-4 mb-4" *ngFor="let tarea of taskList; let i = index"
+              [class.selected]="tarea === selectedTask" (click)="seleccionarTarea(tarea)">
+              <div class="card h-100">
+                <div *ngIf="tarea.imagenBoard">
+                  <img [src]="'https://sphairatech.com/images/task-board/' + tarea.imagenBoard" class="card-img-top"
+                    onerror="this.src='https://sphairatech.com/images/task-board/blank.png'" alt="...">
+                </div>
+                <div *ngIf="!tarea.imagenBoard">
+                  <img [src]="'https://sphairatech.com/images/task-board/blank.png'" class="card-img-top">
+                </div>
+                <div class="card-body custom-card-body">
+                  <h6 class="card-title">ID: {{ tarea.tasksShopId }}</h6>
+                  <h5 class="card-title">{{ tarea.slogans }}</h5>
+                  <div class="tags-container">
+                    <span class="badge badge-secondary">{{ tarea.estrategia }}</span>
+                    <span class="badge badge-primary">{{ tarea.intencion }}</span>
+                  </div>
+                  <p class="card-text" style="color: #aeaeae;">{{ tarea.description }}</p>
+                  <button type="button" class="btn btn-success mt-2" (click)="descargarTarea(tarea)">Añadir
+                    tarea</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
