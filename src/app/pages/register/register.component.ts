@@ -91,17 +91,17 @@ export class RegisterComponent implements OnInit {
     if (this.isMenor !== undefined && !Number.isNaN(this.isMenor)) {
       if (this.isMenor === 0) {
         this.selectedOption = 4;
-        this.showPPlayer = true;
+        //this.showPPlayer = true;
       } else if (this.isMenor === 1) {
         this.selectedOption = 3;
-        this.showPPlayer = true;
+        //this.showPPlayer = true;
       } else if (this.isMenor === 2) { //este es club
         this.selectedOption = 1;
         this.emailParam = '';
         this.playerID = 0;
       } else if (this.isMenor === 3) { //este es entrenador 
         this.selectedOption = 2;
-        this.emailParam = '';
+        //this.emailParam = '';
         this.playerID = 0;
       } else if (this.isMenor === 4) { //este es scouter 
         this.selectedOption = 5;
@@ -112,8 +112,9 @@ export class RegisterComponent implements OnInit {
       // Establecer valor predeterminado para el campo email
       this.registerFormEntrenador.get('email')!.setValue(this.emailParam);
 
-      if (this.emailParam !== '')
+      /*if (this.emailParam !== '') {
         this.registerFormEntrenador.get('email')?.disable(); // Deshabilita el campo
+      }*/
     } else {
       this.selectOptions = this.selectOptions.filter(option => option.value !== "4");
       this.registerFormEntrenador.get('email')?.enable(); // Habilita el campo
