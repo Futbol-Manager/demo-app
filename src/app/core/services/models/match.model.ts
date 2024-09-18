@@ -45,6 +45,7 @@ export class MatchPreparation {
     rolesEspecificos: string;
     ajustesTacticos: string;
     convocatoria: string;
+imgClub: any;
 
     constructor(object: any) {
         this.matchPreparationId = object.matchPreparationId || 0;

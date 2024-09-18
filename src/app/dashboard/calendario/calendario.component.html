@@ -453,7 +453,8 @@
           </div>
           <div id="divPrePArtdo" style="display: none;">
             <div class="mb-3">
-              <label style="font-weight: bold;" style="font-weight: bold;" for="nombreRival" class="form-label">Nombre del Rivales:</label>
+              <label style="font-weight: bold;" style="font-weight: bold;" for="nombreRival" class="form-label">Nombre
+                del Rivales:</label>
               <p>{{ match.rivalName }}</p>
             </div>
             <div class="mb-3">
@@ -554,8 +555,7 @@
                 class="btn btn-success mb-2 mb-sm-0 me-sm-2" (click)="openPostPartido(match.matchPreparationId)">Post
                 Partido</button>
               <button *ngIf="this.usuarioActual!.profileType.profileId === 2"
-                class="btn btn-secondary ms-sm-2 mb-2 mb-sm-0"
-                (click)="printDivPostPartido('divPrePArtdo')">Imprimir</button>
+                class="btn btn-secondary ms-sm-2 mb-2 mb-sm-0" (click)="abrirModalPDF()">Imprimir</button>
             </div>
 
             <!-- Toggle de visibilidad del partido -->
@@ -574,17 +574,6 @@
         </div>
       </div>
       <div class="modal-body">
-        <div id="pdf-content">
-          <h1>Informe del Partido</h1>
-          <img [src]="{{ match2.imgClub }}" alt="Club Image" />
-          <h2>Nombre del rival</h2>
-          <p>{{ match2.rivalName }}</p>
-          <h2>Terreno</h2>
-          <p>{{ match2.terreno }}</p>
-        </div>
-        
-        <button (click)="generatePDF()">Generar PDF</button>
-        
         <div class="row text-center mt-3">
           <div class="col-12 col-md-12">
             <!-- Contenido de la subcolumna -->
@@ -3380,7 +3369,7 @@
                   <!-- Botones de acción -->
                   <div class="d-flex justify-content-between">
                     <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
-                      class="btn btn-secondary" (click)="printDiv(tarea)">
+                      class="btn btn-secondary" (click)="abrirModalPDF()">
                       <i class="bi bi-printer"></i> Imprimir
                     </button>
                     <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
@@ -4394,6 +4383,205 @@
         <!-- Contenido del modal (en este caso, el iframe) -->
         <iframe width="100%" height="100%" id="urlIframe" scrolling="no" frameborder="0"
           src="https://tacticalboard.sphairatech.com"></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal para ver la pizarra -->
+<div class="modal modal-large" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPDF}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Imprimir en pdf</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPDF()"></button>
+      </div>
+      <div class="modal-body">
+        <button (click)="generatePDF()">Generar PDF</button>
+        <div id="pdf-content">
+          <div class="header">
+            <img src="assets/images/Logo_SphairaTech_1.png" alt="logo-sphaira" style="width: 300px" />
+            <img [src]="match2.imgClub" alt="Club Image" class="club-logo" onerror="this.src='assets/images/512.png'" />
+          </div>
+
+          <h1>Informe del Partido</h1>
+          <div class="row">
+            <div class="col-6">
+              <h4>Nombre del rival</h4>
+              <p>{{ match2.rivalName }}</p>
+            </div>
+            <div class="col-6">
+              <h4 *ngIf="match2.terreno">Local o visitante</h4>
+              <p>{{ match2.terreno }}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <h4 *ngIf="match2.horaPartido">Hora</h4>
+              <p>{{ match2.horaPartido }} , a las {{ match2.horaQuedada }} en el campo</p>
+            </div>
+            <div class="col-6">
+              <h4 *ngIf="match2.refereeName">Nombre del árbitro</h4>
+              <p>{{ match2.refereeName }}</p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-6">
+              <h4 *ngIf="match2.lugar">Lugar del encuentro</h4>
+              <p>{{ match2.lugar }}</p>
+            </div>
+          </div>
+
+          <div *ngIf="match2.puntosFuertesRival || match2.puntosDebilesRival ||
+          match2.estiloJuegoRival || match2.ultimosResultadosRival ||
+          match2.formacionesRecientesRival || match2.patronesOfensivosRival ||
+          match2.patronesDefensivosRival || match2.estadisticasRival ||
+          match2.tendenciasTacticasRival || match2.datosIndividualesRival ||
+          match2.abpsRival">
+            <h1>Información del rival</h1>
+            <div class="row" *ngIf="match2.puntosFuertesRival">
+              <div class="col">
+                <h4>Puntos fuertes</h4>
+                <p>{{ match2.puntosFuertesRival }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.puntosDebilesRival">
+              <div class="col">
+                <h4>Puntos débiles</h4>
+                <p>{{ match2.puntosDebilesRival }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.estiloJuegoRival">
+              <div class="col">
+                <h4>Estilo juego</h4>
+                <p>{{ match2.estiloJuegoRival }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.ultimosResultadosRival">
+              <div class="col">
+                <h4>Últimos Resultados</h4>
+                <p>{{ match2.ultimosResultadosRival }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.formacionesRecientesRival">
+              <div class="col">
+                <h4>Formaciones recientes</h4>
+                <p>{{ match2.formacionesRecientesRival }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.patronesOfensivosRival">
+              <div class="col">
+                <h4>Patrones ofensivos</h4>
+                <p>{{ match2.patronesOfensivosRival }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.patronesDefensivosRival">
+              <div class="col">
+                <h4>Patrones defensivos</h4>
+                <p>{{ match2.patronesDefensivosRival }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.estadisticasRival">
+              <div class="col">
+                <h4>Estadísticas</h4>
+                <p>{{ match2.estadisticasRival }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.tendenciasTacticasRival">
+              <div class="col">
+                <h4>Tendencias tácticas</h4>
+                <p>{{ match2.tendenciasTacticasRival }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.datosIndividualesRival">
+              <div class="col">
+                <h4>Datos individuales</h4>
+                <p>{{ match2.datosIndividualesRival }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.abpsRival">
+              <div class="col">
+                <h4>abpsRival</h4>
+                <p>{{ match2.abpsRival }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="match2.formacionInicial || match2.planJuegoAtaque ||
+          match2.planJuegoDefensa || match2.transicionesOfensivas ||
+          match2.transicionesDefensivas || match2.abpsOfensivas ||
+          match2.abpsDefensivas || match2.rolesEspecificos ||
+          match2.ajustesTacticos">
+            <h1>Información de mi equipo</h1>
+            <div class="row" *ngIf="match2.formacionInicial">
+              <div class="col">
+                <h4>Formación Inicial</h4>
+                <p>{{ match2.formacionInicial }}</p>
+              </div>
+            </div>
+
+            <div class="row" *ngIf="match2.planJuegoAtaque">
+              <div class="col">
+                <h4>Plan juego ataque</h4>
+                <p>{{ match2.planJuegoAtaque }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.planJuegoDefensa">
+              <div class="col">
+                <h4>Plan Juego Defensa</h4>
+                <p>{{ match2.planJuegoDefensa }}</p>
+              </div>
+            </div>
+
+            <div class="row" *ngIf="match2.transicionesOfensivas">
+              <div class="col">
+                <h4>Transiciones ofensivas</h4>
+                <p>{{ match2.transicionesOfensivas }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.transicionesDefensivas">
+              <div class="col">
+                <h4>Transiciones defensivas</h4>
+                <p>{{ match2.transicionesDefensivas }}</p>
+              </div>
+            </div>
+
+            <div class="row" *ngIf="match2.abpsOfensivas">
+              <div class="col">
+                <h4>ABPS ofensivas</h4>
+                <p>{{ match2.abpsOfensivas }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.abpsDefensivas">
+              <div class="col">
+                <h4>ABPS defensivas</h4>
+                <p>{{ match2.abpsDefensivas }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.rolesEspecificos">
+              <div class="col">
+                <h4>Roles especificos</h4>
+                <p>{{ match2.rolesEspecificos }}</p>
+              </div>
+            </div>
+            <div class="row" *ngIf="match2.ajustesTacticos">
+              <div class="col">
+                <h4>Ajustes tácticos</h4>
+                <p>{{ match2.ajustesTacticos }}</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <h4>Puedes añadir aquí comentarios</h4>
+                <p>-</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button (click)="generatePDF()">Generar PDF</button>
       </div>
     </div>
   </div>

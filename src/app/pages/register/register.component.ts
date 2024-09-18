@@ -112,12 +112,14 @@ export class RegisterComponent implements OnInit {
       // Establecer valor predeterminado para el campo email
       this.registerFormEntrenador.get('email')!.setValue(this.emailParam);
 
-      if(this.emailParam !== '')
+      if (this.emailParam !== '')
         this.registerFormEntrenador.get('email')?.disable(); // Deshabilita el campo
     } else {
       this.selectOptions = this.selectOptions.filter(option => option.value !== "4");
       this.registerFormEntrenador.get('email')?.enable(); // Habilita el campo
     }
+
+    console.log(this.emailParam);
   }
 
   onOptionChange(event: any) {
@@ -205,6 +207,11 @@ export class RegisterComponent implements OnInit {
         validationUser
       );
 
+      if (register.mail === undefined) {
+        if (this.emailParam != '') {
+          register.mail = this.emailParam;
+        }
+      }
       this.registerService.registerUser(register).pipe()
         .subscribe(
           (res) => {
@@ -221,8 +228,9 @@ export class RegisterComponent implements OnInit {
                 Si aún así no encuentras el correo, por favor, contáctanos en info@sphairatech.com para que podamos asistirte.\n\n
                 ¡Esperamos verte pronto!`,
                 'Ok', snackBarConfig
-              );         
-              //this.login(1);
+              );
+              //this.showModal = true;
+              this.login(1);
             } else {
               const snackBarConfig = new MatSnackBarConfig();
               snackBarConfig.duration = 5000;
@@ -277,6 +285,12 @@ export class RegisterComponent implements OnInit {
         return;
       }
 
+      if (register.mail === undefined) {
+        if (this.emailParam != '') {
+          register.mail = this.emailParam;
+        }
+      }
+
       this.registerService.registerUser(register).pipe()
         .subscribe(
           (res) => {
@@ -285,8 +299,9 @@ export class RegisterComponent implements OnInit {
               snackBarConfig.duration = 5000;
               snackBarConfig.horizontalPosition = 'center';
               snackBarConfig.verticalPosition = 'bottom';
-              this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);     
-              //this.login(2);
+              this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
+              this.login(2);
+              //this.showModal = true;
             } else {
               const snackBarConfig = new MatSnackBarConfig();
               snackBarConfig.duration = 5000;
@@ -337,15 +352,14 @@ export class RegisterComponent implements OnInit {
   openModal(option: number) {
     switch (option) {
       case 1:
-        this.registerClub();             
+        this.registerClub();
         this.optionSelected = 1;
         break;
       case 2:
-        this.registerEntrenador();             
+        this.registerEntrenador();
         this.optionSelected = 2;
         break;
     }
-    this.showModal = true;
   }
 
   cerrarModal() {

@@ -534,7 +534,7 @@ export class CalendarioComponent implements OnInit {
   startY: number = 0;
 
   playerId = 0;  
-
+  imgClub = '';
 
   constructor(
     private router: Router,
@@ -570,6 +570,8 @@ export class CalendarioComponent implements OnInit {
           if (response.data !== null) {
             this.nombreEquipo = response.data.categoryType.categoryName + ' ' + response.data.levelLeague;
             this.categoryTeam = response.data.categoryTypeId;
+            this.imgClub = response.data.imgClub;
+            this.match2.imgClub = 'https://sphairatech.com/images/user/' + response.data.imgClub;
             if (this.categoryTeam === 14) this.irAPantalla(2);
             this.getListaEntrenamientos();
           } else {
@@ -2205,24 +2207,121 @@ export class CalendarioComponent implements OnInit {
     });
   }
 
-  match2 = {
-    rivalName: 'Atlético de Madrid',
-    terreno: 'Estadio Santiago Bernabeu',
-    imgClub: 'https://sphairatech.com/images/user/2108952-imguser.png',
+  match2: any = {
+    rivalName: '',
+    terreno: '',
+    imgClub:  '',
+    horaQuedada: '',
+    horaPartido: '',
+    lugar: '',
+    puntosFuertesRival: '',
+    puntosDebilesRival: '',
+    jugadoresClaveRival: '',
+    estiloJuegoRival: '',
+    ultimosResultadosRival: '',
+    formacionesRecientesRival: '',
+    patronesOfensivosRival: '',
+    patronesDefensivosRival: '',
+    tendenciasTacticasRival: '',
+    datosIndividualesRival: '',
+    abpsRival: '',
+    formacionInicial: '',
+    planJuegoAtaque: '',
+    planJuegoDefensa: '',
+    transicionesOfensivas: '',
+    transicionesDefensivas: '',
+    abpsOfensivas: '',
+    abpsDefensivas: '',
+    rolesEspecificos: '',
+    ajustesTacticos: '',
+    refereeName: ''
   };
 
-  generatePDF() {
+  showModalPDF = false;
+  
+  convertImgToBase64URL(url: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.src = url;
+  
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.height = img.height;
+        canvas.width = img.width;
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          const dataURL = canvas.toDataURL('image/png');
+          resolve(dataURL);
+        } else {
+          reject(new Error('Failed to get canvas context.'));
+        }
+      };
+  
+      img.onerror = () => {
+        reject(new Error('Failed to load image.'));
+      };
+    });
+  }
+
+  async generatePDF() {
+    this.match2.rivalName = this.match.rivalName;
+    this.match2.terreno = this.match.terreno;
+    this.match2.lugar = this.match.lugar;
+    this.match2.horaQuedada = this.match.hora + ':' + this.match.minutos;
+    this.match2.horaPartido = this.match.horaEmpieza + ':' + this.match.minutosEmpieza;
+    this.match2.puntosFuertesRival = this.match.puntosFuertesRival;
+    this.match2.puntosDebilesRival = this.match.puntosDebilesRival;
+    this.match2.jugadoresClaveRival = this.match.jugadoresClaveRival;
+    this.match2.estiloJuegoRival = this.match.estiloJuegoRival;
+    this.match2.ultimosResultadosRival = this.match.ultimosResultadosRival;
+    this.match2.formacionesRecientesRival = this.match.formacionesRecientesRival;
+    this.match2.patronesOfensivosRival = this.match.patronesOfensivosRival;
+    this.match2.patronesDefensivosRival = this.match.patronesDefensivosRival;
+    this.match2.tendenciasTacticasRival = this.match.tendenciasTacticasRival;
+    this.match2.datosIndividualesRival = this.match.datosIndividualesRival;
+    this.match2.abpsRival = this.match.abpsRival;
+    this.match2.formacionInicial = this.match.formacionInicial;
+    this.match2.planJuegoAtaque = this.match.planJuegoAtaque;
+    this.match2.planJuegoDefensa = this.match.planJuegoDefensa;
+    this.match2.transicionesOfensivas = this.match.transicionesOfensivas;
+    this.match2.transicionesDefensivas = this.match.transicionesDefensivas;
+    this.match2.abpsOfensivas = this.match.abpsOfensivas;
+    this.match2.abpsDefensivas = this.match.abpsDefensivas;
+    this.match2.rolesEspecificos = this.match.rolesEspecificos;
+    this.match2.ajustesTacticos = this.match.ajustesTacticos;
+    this.match2.refereeName = this.match.refereeName;
+  
+    try {
+      const base64Img = await this.convertImgToBase64URL(this.match2.imgClub);
+      this.match2.imgClub = base64Img;
+    } catch (error) {
+      console.error('Failed to convert image to Base64:', error);
+      // Establecer una imagen de respaldo o proceder sin la imagen
+      this.match2.imgClub = 'assets/images/512.png';  // Cambia a una imagen predeterminada si es necesario
+    }
+  
     const element = document.getElementById('pdf-content');
     const options = {
-      margin:       1,
-      filename:     'informe-partido.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      margin: 0.5,
+      filename: 'informe-partido.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
+  
     html2pdf().from(element).set(options).save();
-
-    
   }
+
+  abrirModalPDF(){
+    this.showModalPDF = true;
+  }
+
+  cerrarModalPDF(){
+    this.showModalPDF = false;
+  }
+  
+  
 }
 
