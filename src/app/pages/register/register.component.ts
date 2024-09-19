@@ -43,6 +43,10 @@ export class RegisterComponent implements OnInit {
   showPPlayer = false;
   showModal = false;
   optionSelected = 0;
+  showRegistro = false;
+  showNextRegistro = false;
+  btnRegistro = false;
+  selected: number | 0 = 0;
 
   constructor(
     private router: Router,
@@ -89,6 +93,7 @@ export class RegisterComponent implements OnInit {
 
     //let option = 0;
     if (this.isMenor !== undefined && !Number.isNaN(this.isMenor)) {
+      this.showNextRegistro = true;
       if (this.isMenor === 0) {
         this.selectedOption = 4;
         //this.showPPlayer = true;
@@ -116,11 +121,12 @@ export class RegisterComponent implements OnInit {
         this.registerFormEntrenador.get('email')?.disable(); // Deshabilita el campo
       }*/
     } else {
+      this.isMenor = -1;
       this.selectOptions = this.selectOptions.filter(option => option.value !== "4");
       this.registerFormEntrenador.get('email')?.enable(); // Habilita el campo
     }
 
-    console.log(this.emailParam);
+    //console.log(this.emailParam);
   }
 
   onOptionChange(event: any) {
@@ -369,6 +375,22 @@ export class RegisterComponent implements OnInit {
 
   goLogin() {
     this.login(this.optionSelected);
+  }
+
+  nextRegistro(){
+    this.showNextRegistro = true;
+    this.btnRegistro = true;
+  }
+
+  backRegistro(){
+    this.showNextRegistro = false;
+    this.btnRegistro = false;
+  }
+
+  select(option: number) {
+    this.selected = option;
+    this.selectedOption = option;
+    //console.log(option);
   }
 
 }
