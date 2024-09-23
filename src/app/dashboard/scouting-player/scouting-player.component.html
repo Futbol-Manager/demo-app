@@ -1,0 +1,393 @@
+<div class="submenu">
+    <div class="row">
+        <div class="col text-center">
+            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(0)">
+                <i class="bi bi-house"></i>
+                <span class="d-none d-md-inline">Inicio</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- calendario.component.html -->
+<div class="container mt-3" *ngIf="datosCargados">
+    <h2 class="text-center">Datos para el Scouting</h2>
+    <div class="container">
+        <!-- Información personal -->
+        <div class="row">
+            <div class="col-12">
+                <label><strong>Información Personal:</strong></label>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12 col-md-12">
+                <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                    <div class="col" *ngIf="scoutingPlayer.imagenPerfil">
+                        <img src="https://sphairatech.com/images/imgScoutingPlayer/{{ scoutingPlayer.imagenPerfil }}"
+                            alt="user-image" width="90" height="90" style="max-width: 100%;">
+                    </div>
+                    <div class="col d-flex justify-content-center align-items-center"
+                        *ngIf="!scoutingPlayer.imagenPerfil">
+                        <ng-container>
+                            <span class="bi bi-person" style="font-size: 4rem;"></span>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="nombre" name="nombre"
+                        [(ngModel)]="scoutingPlayer.nombre" placeholder="Nombre completo">
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="fechaDeNacimiento"
+                        name="fechaDeNacimiento" [(ngModel)]="scoutingPlayer.fechaDeNacimiento"
+                        placeholder="Fecha de Nacimiento" placeholder="Fecha de nacimiento" onfocus="(this.type='date')"
+                        onblur="(this.type='text')">
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="paisResidencia" name="paisResidencia"
+                        [(ngModel)]="scoutingPlayer.paisResidencia" placeholder="País de Residencia">
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="provinciaResidencia"
+                        name="provinciaResidencia" [(ngModel)]="scoutingPlayer.provinciaResidencia"
+                        placeholder="Provincia de Residencia">
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="nacionalidad" name="nacionalidad"
+                        [(ngModel)]="scoutingPlayer.nacionalidad" placeholder="Nacionalidad">
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="altura" name="altura"
+                        [(ngModel)]="scoutingPlayer.altura" placeholder="Altura (cm)">
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="peso" name="peso"
+                        [(ngModel)]="scoutingPlayer.peso" placeholder="Peso (kg)">
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <select class="form-control custom-input mt-3" id="piernaNatural" name="piernaNatural"
+                        [(ngModel)]="scoutingPlayer.piernaNatural">
+                        <option value="Pie">Pie natural</option>
+                        <option value="Derecha">Derecha</option>
+                        <option value="Izquierda">Izquierda</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="email" class="form-control custom-input mt-3" id="mailContacto" name="mailContacto"
+                        [(ngModel)]="scoutingPlayer.mailContacto" placeholder="Correo Electrónico">
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="tel" class="form-control custom-input mt-3" id="telefonoContacto"
+                        name="telefonoContacto" [(ngModel)]="scoutingPlayer.telefonoContacto"
+                        placeholder="Teléfono de Contacto">
+                </div>
+            </div>
+        </div>
+
+        <!-- Posición en el campo -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <label><strong>Posición en el Campo:</strong></label>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <select class="form-control custom-input mt-3" id="posicionPrincipal" name="posicionPrincipal"
+                        [(ngModel)]="scoutingPlayer.posicionPrincipal">
+                        <option value="Sin definir">Posición principal</option>
+                        <option value="Portero">Portero</option>
+                        <option value="Defensa Central">Defensa Central</option>
+                        <option value="Defensa Lateral">Defensa Lateral</option>
+                        <option value="Carrilero">Carrilero</option>
+                        <option value="Centrocampista">Centrocampista</option>
+                        <option value="Centrocampista Defensivo">Centrocampista Defensivo</option>
+                        <option value="Centrocampista Ofensivo">Centrocampista Ofensivo</option>
+                        <option value="Mediapunta">Mediapunta</option>
+                        <option value="Extremo">Extremo</option>
+                        <option value="Delantero Centro">Delantero Centro</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <select class="form-control custom-input mt-3" id="posicionesSecundarias"
+                        name="posicionesSecundarias" [(ngModel)]="scoutingPlayer.posicionesSecundarias">
+                        <option value="Posicion Secundaria">Posición secundaría</option>
+                        <option value="Portero">Portero</option>
+                        <option value="Defensa Central">Defensa Central</option>
+                        <option value="Defensa Lateral">Defensa Lateral</option>
+                        <option value="Carrilero">Carrilero</option>
+                        <option value="Centrocampista">Centrocampista</option>
+                        <option value="Centrocampista Defensivo">Centrocampista Defensivo</option>
+                        <option value="Centrocampista Ofensivo">Centrocampista Ofensivo</option>
+                        <option value="Mediapunta">Mediapunta</option>
+                        <option value="Extremo">Extremo</option>
+                        <option value="Delantero Centro">Delantero Centro</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- CV futbolístico -->
+        <div class="row mt-4">
+            <div class="col-12 col-md-12">
+                <label><strong>CV Futbolístico:</strong></label>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-12">
+                <div class="form-group">
+                    <textarea class="form-control custom-input mt-3" id="clubesAnteriores" name="clubesAnteriores"
+                        rows="8" [(ngModel)]="scoutingPlayer.clubesAnteriores"
+                        placeholder="Clubes Anteriores"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <select class="form-control custom-input mt-3" id="ultimosPartidos" name="ultimosPartidos"
+                        [(ngModel)]="scoutingPlayer.ultimosPartidos">
+                        <option value="0">Partidos jugados en la última temporada</option>
+                        <option *ngFor="let numero of numeros" [value]="numero">{{ numero }}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <select class="form-control custom-input mt-3" id="goles" name="goles"
+                        [(ngModel)]="scoutingPlayer.goles">
+                        <option value="0">Goles en la última temporada</option>
+                        <option *ngFor="let numero of numeros" [value]="numero">{{ numero }}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <select class="form-control custom-input mt-3" id="asistencias" name="asistencias"
+                        [(ngModel)]="scoutingPlayer.asistencias">
+                        <option value="0">Asistencias en la última temporada</option>
+                        <option *ngFor="let numero of numeros" [value]="numero">{{ numero }}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-12">
+                <div class="form-group">
+                    <textarea class="form-control custom-input mt-3" id="torneosImportantes" name="torneosImportantes"
+                        rows="8" [(ngModel)]="scoutingPlayer.torneosImportantes"
+                        placeholder="Torneos Importantes en los que ha Participado"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Premios individuales y convocatorias -->
+        <div class="row mt-4">
+            <div class="col-12 col-md-6">
+                <label><strong>Premios y Convocatorias:</strong></label>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="premiosIndividuales"
+                        name="premiosIndividuales" [(ngModel)]="scoutingPlayer.premiosIndividuales"
+                        placeholder="Premios Individuales">
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="convocatoriasSelecciones"
+                        name="convocatoriasSelecciones" [(ngModel)]="scoutingPlayer.convocatoriasSelecciones"
+                        placeholder="Convocatorias a Selecciones">
+                </div>
+            </div>
+        </div>
+
+        <!-- Salud y estado físico -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <label><strong>Salud y Estado Físico:</strong></label>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-12">
+                <div class="form-group">
+                    <textarea class="form-control custom-input mt-3" id="lesionesRecientes" name="lesionesRecientes"
+                        [(ngModel)]="scoutingPlayer.lesionesRecientes" placeholder="Lesiones Recientes (en los últimos 12 meses)"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-12">
+                <div class="form-group">
+                    <textarea class="form-control custom-input mt-3" id="historialMedico" name="historialMedico"
+                        [(ngModel)]="scoutingPlayer.historialMedico" placeholder="Historial Médico (información sobre lesiones graves o cirugías)"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <textarea class="form-control custom-input mt-3" id="estadoActual" name="estadoActual"
+                        [(ngModel)]="scoutingPlayer.estadoActual"
+                        placeholder="Estado Actual (si está al 100%, en recuperación, etc.)">
+                    </textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video de Highlights -->
+        <div class="row mt-4">
+            <div class="col-12 col-md-12">
+                <label><strong>Video de Highlights:</strong></label>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-12">
+                <!-- <div class="form-group">
+                    <input type="url" class="form-control custom-input mt-3" id="videoHighlights" name="videoHighlights"
+                        [(ngModel)]="scoutingPlayer.videoHighlights" placeholder="URL del Video de Highlights">
+                </div>-->
+            </div>
+            <div class="col-12 col-md-12">
+                <div class="form-group">
+                    <textarea class="form-control custom-input mt-3" id="descripcionVideo" name="descripcionVideo"
+                        [(ngModel)]="scoutingPlayer.descripcionVideo" placeholder="Descripción del Video"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Disponibilidad y expectativas -->
+        <div class="row mt-4">
+            <div class="col-12 col-md-12">
+                <label><strong>Disponibilidad y Expectativas:</strong></label>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="disponibilidadPruebas"
+                        name="disponibilidadPruebas" [(ngModel)]="scoutingPlayer.disponibilidadPruebas"
+                        placeholder="Disponibilidad para Pruebas">
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="disponibilidadMudarse"
+                        name="disponibilidadMudarse" [(ngModel)]="scoutingPlayer.disponibilidadMudarse"
+                        placeholder="Disponibilidad para Mudarse">
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="expectativasContractuales"
+                        name="expectativasContractuales" [(ngModel)]="scoutingPlayer.expectativasContractuales"
+                        placeholder="Expectativas Contractuales">
+                </div>
+            </div>
+        </div>
+
+        <!-- Referencias -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <label><strong>Referencias:</strong></label>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="form-group">
+                    <textarea class="form-control custom-input mt-3" id="entrenadoresAnteriores"
+                        name="entrenadoresAnteriores" [(ngModel)]="scoutingPlayer.entrenadoresAnteriores"
+                        placeholder="Entrenadores Anteriores"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Opinión sobre sí mismo -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <label><strong>Opinión sobre Sí Mismo:</strong></label>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <textarea class="form-control custom-input mt-3" id="fortalezas" name="fortalezas"
+                        [(ngModel)]="scoutingPlayer.fortalezas" placeholder="Fortalezas"></textarea>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <textarea class="form-control custom-input mt-3" id="areasMejora" name="areasMejora"
+                        [(ngModel)]="scoutingPlayer.areasMejora" placeholder="Áreas de Mejora"></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ocupación -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <label><strong>Ocupación:</strong></label>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="estudiaTrabaja" name="estudiaTrabaja"
+                        [(ngModel)]="scoutingPlayer.estudiaTrabaja" placeholder="Estudia o Trabaja">
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-input mt-3" id="estadoEstudios" name="estadoEstudios"
+                        [(ngModel)]="scoutingPlayer.estadoEstudios" placeholder="Estado de Estudios">
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="form-group">
+                    <textarea class="form-control custom-input mt-3" id="descripcion" name="descripcion"
+                        [(ngModel)]="scoutingPlayer.descripcion" placeholder="Descripción"></textarea>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

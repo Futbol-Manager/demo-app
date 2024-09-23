@@ -99,41 +99,44 @@
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
       *ngIf="this.usuarioActual!.profileType.profileId > 2">
+      <!-- Tarjeta de jugador -->
       <div class="col mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
         (click)="navegarACalendario(hijo.teamId, hijo.playerId)">
         <div class="card h-100" style="border: 1px solid black;">
-          <div class="card-body text-center">
-            <div class="row mb-2">
-            </div>
-            <div class="row mb-2">
-              <div class="col d-flex justify-content-center align-items-center" *ngIf="hijo.picturePlayer">
-                <img src="https://sphairatech.com/images/user/{{ hijo.picturePlayer }}"
-                  alt="user-image" width="90" height="90" style="max-width: 100%;">  
+          <div class="card-body d-flex flex-column text-center">
+            <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+              <div class="col" *ngIf="hijo.picturePlayer">
+                <img src="https://sphairatech.com/images/user/{{ hijo.picturePlayer }}" alt="user-image" width="90"
+                  height="90" style="max-width: 100%;">
               </div>
-              <div class="col d-flex justify-content-center align-items-center" *ngIf="!hijo.picturePlayer">               
-                  <ng-container>
-                    <span class="bi bi-person" style="font-size: 4rem;"></span>
+              <div class="col d-flex justify-content-center align-items-center" *ngIf="!hijo.picturePlayer">
+                <ng-container>
+                  <span class="bi bi-person" style="font-size: 4rem;"></span>
                 </ng-container>
               </div>
             </div>
-            <h5 class="card-title"
-              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              {{ hijo.nombre }} {{ hijo.apellido }}</h5>
+            <h5 class="card-title mt-auto"
+              style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+              {{ hijo.nombre }} {{ hijo.apellido }}
+            </h5>
           </div>
         </div>
       </div>
 
-      <div class="col mb-3" style="cursor: not-allowed; opacity: 0.5;">
+      <!-- Tarjeta de scouting -->
+      <div class="col mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
+        (click)="navegarAScouting(hijo.playerId)">
         <div class="card h-100" style="border: 1px solid black;">
-          <div class="card-body text-center">
-            <div class="row mb-2"></div>
-            <div class="row mb-2">
+          <div class="card-body d-flex flex-column text-center">
+            <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
               <div class="col d-flex justify-content-center align-items-center">
-                <i class="bi bi-camera-reels" style="font-size: 90px; color: gray;"></i>
+                <img src="/assets/iconos/prismaticos.svg" class="card-img-top mx-auto d-block p-3" style="width: 7em;"
+                  alt="Scouting Icon">
               </div>
             </div>
-            <h5 class="card-title" style="color: gray; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              Scouting
+            <h5 class="card-title mt-auto"
+              style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+              Scouting de {{ hijo.nombre }} {{ hijo.apellido }}
             </h5>
           </div>
         </div>

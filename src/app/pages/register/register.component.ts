@@ -311,7 +311,7 @@ export class RegisterComponent implements OnInit {
               //this.showModal = true;
             } else {
               const snackBarConfig = new MatSnackBarConfig();
-              snackBarConfig.duration = 5000;
+              snackBarConfig.duration = 20000;
               snackBarConfig.horizontalPosition = 'center';
               snackBarConfig.verticalPosition = 'bottom';
               this.snackBar.open('Ese email ya está dado de alta, prueba a iniciar sesión o date de alta con un email diferente.', 'Cerrar', snackBarConfig);

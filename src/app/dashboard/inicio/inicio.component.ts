@@ -241,6 +241,11 @@ export class InicioComponent implements OnInit {
     this.router.navigate(['/dashboard/calendario', teamId, playerId]);
   }
 
+  navegarAScouting(playerId: number): void {
+    // Puedes ajustar la ruta según tu estructura de rutas
+    this.router.navigate(['/dashboard/scouting-player', playerId]);
+  }
+
   irAPantalla(id: number): void {
     switch (id) {
       case 1:

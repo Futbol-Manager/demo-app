@@ -19,6 +19,7 @@ import { EstadisticasEquiposClubComponent } from './estadisticas-equipos-club/es
 import { EstadisticasEntrenadoresClubComponent } from './estadisticas-entrenadores-club/estadisticas-entrenadores-club.component';
 import { AsistenciaComponent } from './asistencia/asistencia.component';
 import { SuscripcionComponent } from './suscripcion/suscripcion.component';
+import { ScoutingPlayerComponent } from './scouting-player/scouting-player.component';
 
 const routes: Routes = [
   {
@@ -42,6 +43,7 @@ const routes: Routes = [
       { path: 'cuadro-de-mandos/estadisticas-entrenadores-club/:clubId', component: EstadisticasEntrenadoresClubComponent },
       { path: 'informacion_equipo/asistencia/:teamId', component: AsistenciaComponent },
       { path: 'suscripcion/:userId', component: SuscripcionComponent },
+      { path: 'scouting-player/:playerId', component: ScoutingPlayerComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
   }
