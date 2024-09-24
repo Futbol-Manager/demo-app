@@ -19,12 +19,11 @@
                 <label><strong>Información Personal:</strong></label>
             </div>
         </div>
-
         <div class="row mt-3">
             <div class="col-12 col-md-12">
                 <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
                     <div class="col" *ngIf="scoutingPlayer.imagenPerfil">
-                        <img src="https://sphairatech.com/images/imgScoutingPlayer/{{ scoutingPlayer.imagenPerfil }}"
+                        <img src="https://appsphairatech.com/images/imgScoutingPlayer/{{ scoutingPlayer.imagenPerfil }}"
                             alt="user-image" width="90" height="90" style="max-width: 100%;">
                     </div>
                     <div class="col d-flex justify-content-center align-items-center"
@@ -249,7 +248,8 @@
             <div class="col-12 col-md-12">
                 <div class="form-group">
                     <textarea class="form-control custom-input mt-3" id="lesionesRecientes" name="lesionesRecientes"
-                        [(ngModel)]="scoutingPlayer.lesionesRecientes" placeholder="Lesiones Recientes (en los últimos 12 meses)"></textarea>
+                        [(ngModel)]="scoutingPlayer.lesionesRecientes"
+                        placeholder="Lesiones Recientes (en los últimos 12 meses)"></textarea>
                 </div>
             </div>
         </div>
@@ -257,7 +257,8 @@
             <div class="col-12 col-md-12">
                 <div class="form-group">
                     <textarea class="form-control custom-input mt-3" id="historialMedico" name="historialMedico"
-                        [(ngModel)]="scoutingPlayer.historialMedico" placeholder="Historial Médico (información sobre lesiones graves o cirugías)"></textarea>
+                        [(ngModel)]="scoutingPlayer.historialMedico"
+                        placeholder="Historial Médico (información sobre lesiones graves o cirugías)"></textarea>
                 </div>
             </div>
         </div>
@@ -304,14 +305,14 @@
                 <div class="form-group">
                     <input type="text" class="form-control custom-input mt-3" id="disponibilidadPruebas"
                         name="disponibilidadPruebas" [(ngModel)]="scoutingPlayer.disponibilidadPruebas"
-                        placeholder="Disponibilidad para Pruebas">
+                        placeholder="Disponibilidad para Pruebas (fechas y localización preferida)">
                 </div>
             </div>
             <div class="col-12 col-md-6">
                 <div class="form-group">
                     <input type="text" class="form-control custom-input mt-3" id="disponibilidadMudarse"
                         name="disponibilidadMudarse" [(ngModel)]="scoutingPlayer.disponibilidadMudarse"
-                        placeholder="Disponibilidad para Mudarse">
+                        placeholder="Disponibilidad para Mudarse (sí/no, o localidades preferidas)">
                 </div>
             </div>
         </div>
@@ -320,7 +321,7 @@
                 <div class="form-group">
                     <input type="text" class="form-control custom-input mt-3" id="expectativasContractuales"
                         name="expectativasContractuales" [(ngModel)]="scoutingPlayer.expectativasContractuales"
-                        placeholder="Expectativas Contractuales">
+                        placeholder="Expectativas Contractuales (si está buscando contrato profesional o semi-profesional)">
                 </div>
             </div>
         </div>
@@ -336,7 +337,7 @@
                 <div class="form-group">
                     <textarea class="form-control custom-input mt-3" id="entrenadoresAnteriores"
                         name="entrenadoresAnteriores" [(ngModel)]="scoutingPlayer.entrenadoresAnteriores"
-                        placeholder="Entrenadores Anteriores"></textarea>
+                        placeholder="Entrenadores anteriores (nombre y contacto)"></textarea>
                 </div>
             </div>
         </div>
@@ -351,13 +352,15 @@
             <div class="col-12 col-md-6">
                 <div class="form-group">
                     <textarea class="form-control custom-input mt-3" id="fortalezas" name="fortalezas"
-                        [(ngModel)]="scoutingPlayer.fortalezas" placeholder="Fortalezas"></textarea>
+                        [(ngModel)]="scoutingPlayer.fortalezas"
+                        placeholder="Fortalezas ¿En qué crees que destacas?"></textarea>
                 </div>
             </div>
             <div class="col-12 col-md-6">
                 <div class="form-group">
                     <textarea class="form-control custom-input mt-3" id="areasMejora" name="areasMejora"
-                        [(ngModel)]="scoutingPlayer.areasMejora" placeholder="Áreas de Mejora"></textarea>
+                        [(ngModel)]="scoutingPlayer.areasMejora"
+                        placeholder="Áreas de Mejora ¿En qué aspectos sientes que puedes mejorar?"></textarea>
                 </div>
             </div>
         </div>
@@ -371,23 +374,40 @@
         <div class="row mt-3">
             <div class="col-12 col-md-6">
                 <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="estudiaTrabaja" name="estudiaTrabaja"
-                        [(ngModel)]="scoutingPlayer.estudiaTrabaja" placeholder="Estudia o Trabaja">
+                    <select class="form-control custom-input mt-3" id="estudiaTrabaja" name="estudiaTrabaja"
+                        [(ngModel)]="scoutingPlayer.estudiaTrabaja">
+                        <option value="Estoy_estudiando">Estoy estudiando</option>
+                        <option value="Estoy_trabajando">Estoy trabajando</option>
+                        <option value="Ambos">Ambos</option>
+                    </select>
                 </div>
             </div>
             <div class="col-12 col-md-6">
                 <div class="form-group">
                     <input type="text" class="form-control custom-input mt-3" id="estadoEstudios" name="estadoEstudios"
-                        [(ngModel)]="scoutingPlayer.estadoEstudios" placeholder="Estado de Estudios">
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="form-group">
-                    <textarea class="form-control custom-input mt-3" id="descripcion" name="descripcion"
-                        [(ngModel)]="scoutingPlayer.descripcion" placeholder="Descripción"></textarea>
+                        [(ngModel)]="scoutingPlayer.estadoEstudios"
+                        placeholder="En el caso de estudiar, describir cómo va en los estudios">
                 </div>
             </div>
         </div>
-
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="form-group">
+                    <textarea class="form-control custom-input mt-3" id="descripcion" name="descripcion"
+                        [(ngModel)]="scoutingPlayer.descripcion"
+                        placeholder="Descripción (describe el trabajo o el curso en el que se encuentra ahora mismo)"></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="form-group">
+                    <button type="button" class="btn btn-custom btn-block textoCentrado float-end"
+                        (click)="guardarForm()">Guardar</button>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-3">
+        </div>
     </div>
 </div>

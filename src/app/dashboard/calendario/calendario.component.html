@@ -3345,11 +3345,11 @@
               <div class="card h-100">
                 <!-- Imagen de la tarea -->
                 <div *ngIf="tarea.imagenBoard">
-                  <img [src]="'https://sphairatech.com/images/task-board/' + tarea.imagenBoard" class="card-img-top"
-                    onerror="this.src='https://sphairatech.com/images/task-board/blank.png'" alt="Imagen de la tarea">
+                  <img [src]="'https://appsphairatech.com/images/task-board/' + tarea.imagenBoard" class="card-img-top"
+                    onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'" alt="Imagen de la tarea">
                 </div>
                 <div *ngIf="!tarea.imagenBoard">
-                  <img [src]="'https://sphairatech.com/images/task-board/blank.png'" class="card-img-top"
+                  <img [src]="'https://appsphairatech.com/images/task-board/blank.png'" class="card-img-top"
                     alt="Imagen por defecto">
                 </div>
 
@@ -4212,14 +4212,14 @@
           <p><b>Video YouTube:</b> {{ tareaSeleccionada?.video }}</p>
           <br>
           <!-- <img *ngIf="tareaSeleccionada?.imagenBoard"
-            [src]="'https://sphairatech.com/images/task-board/' + tareaSeleccionada.imagenBoard"
+            [src]="'https://appsphairatech.com/images/task-board/' + tareaSeleccionada.imagenBoard"
             alt="Imagen de la tarea" class="img-fluid">
            Mostrar la imagen si tarea.imagenBoard tiene un valor -->
           <div [id]="'div_tarea_' + tareaSeleccionada?.taskId">
             <img class="imgBoard" *ngIf="tareaSeleccionada?.imagenBoard"
-              [src]="'https://sphairatech.com/images/task-board/' + tareaSeleccionada?.imagenBoard"
+              [src]="'https://appsphairatech.com/images/task-board/' + tareaSeleccionada?.imagenBoard"
               alt="Imagen de la tarea" [id]="'imagen_tarea_' + tareaSeleccionada?.taskId"
-              onerror="this.src='https://sphairatech.com/images/task-board/blank.png'">
+              onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'">
           </div>
           <hr>
           <div *ngIf="this.usuarioActual!.profileType.profileId === 2">

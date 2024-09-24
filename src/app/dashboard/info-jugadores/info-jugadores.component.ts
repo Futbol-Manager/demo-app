@@ -391,7 +391,7 @@ export class InfoJugadoresComponent implements OnInit {
   }
 
   descargarImagen(url: string, nombreArchivo: string) {
-    //const urlImagen = 'https://sphairatech.com/images/user/277699-imguser.png';
+    //const urlImagen = 'https://appsphairatech.com/images/user/277699-imguser.png';
     const urlEnvi = environment.apiUrl;
     //console.log(urlEnvi);
     const urlBackend = urlEnvi + `commons/download-image?url=${encodeURIComponent(url)}`;

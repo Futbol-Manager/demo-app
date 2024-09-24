@@ -1,4 +1,4 @@
-import { APIURLPROD, APIURLLOCAL, ApiEnvironments } from "src/app/core/models/master/masters.enum";
+import { APIURLPROD, APIURLLOCAL, ApiEnvironments, APIURLPROD2 } from "src/app/core/models/master/masters.enum";
 
 export const localenvironment = {
   production: false,
@@ -7,6 +7,6 @@ export const localenvironment = {
 
 export const prodenvironment = {
   production: true,
-  apiUrl: `${APIURLPROD}${ApiEnvironments.PRO}`
+  apiUrl: `${APIURLPROD2}${ApiEnvironments.PRO}`
 }
 

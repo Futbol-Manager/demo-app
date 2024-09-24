@@ -571,7 +571,7 @@ export class CalendarioComponent implements OnInit {
             this.nombreEquipo = response.data.categoryType.categoryName + ' ' + response.data.levelLeague;
             this.categoryTeam = response.data.categoryTypeId;
             this.imgClub = response.data.imgClub;
-            this.match2.imgClub = 'https://sphairatech.com/images/user/' + response.data.imgClub;
+            this.match2.imgClub = 'https://appsphairatech.com/images/user/' + response.data.imgClub;
             if (this.categoryTeam === 14) this.irAPantalla(2);
             this.getListaEntrenamientos();
           } else {
@@ -839,7 +839,7 @@ export class CalendarioComponent implements OnInit {
                 id: index, // Asignar el índice como ID,
                 playerId: player.playerId, // Asegúrate de que este campo esté presente en la respuesta
                 nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
-                img: player.picturePlayer != null && player.picturePlayer != '' ? 'https://sphairatech.com/images/user/' + player.picturePlayer : '', // Puedes asignar una imagen si está disponible o usar un valor por defecto
+                img: player.picturePlayer != null && player.picturePlayer != '' ? 'https://appsphairatech.com/images/user/' + player.picturePlayer : '', // Puedes asignar una imagen si está disponible o usar un valor por defecto
                 posicion_x: player.posicion_x || null, // O asignar null si no tiene coordenadas
                 posicion_y: player.posicion_y || null  // O asignar null si no tiene coordenadas
               }));
@@ -1191,13 +1191,13 @@ export class CalendarioComponent implements OnInit {
 
             if (imgElement) {
               // Asignar la nueva URL de la imagen al atributo src
-              imgElement.src = 'https://sphairatech.com/images/task-board/' + response.data;
+              imgElement.src = 'https://appsphairatech.com/images/task-board/' + response.data;
             } else {
               console.error('No se encontró la imagen con el id:', imageId);
 
               // Crear un nuevo elemento img
               const newImgElement = document.createElement('img') as HTMLImageElement;
-              newImgElement.src = 'https://sphairatech.com/images/task-board/' + response.data;
+              newImgElement.src = 'https://appsphairatech.com/images/task-board/' + response.data;
               newImgElement.alt = 'Imagen de la tarea';
               newImgElement.className = 'imgBoard';
               newImgElement.id = 'imagen_tarea_' + taskId;
@@ -1307,7 +1307,7 @@ export class CalendarioComponent implements OnInit {
             <p><b>Material:</b> ${tarea.material}</p>
             <p><b>Video YouTube:</b> ${tarea.video}</p>
             <br>
-            ${tarea.imagenBoard ? `<img src="https://sphairatech.com/images/task-board/${tarea.imagenBoard}" alt="Imagen de la tarea">` : ''}
+            ${tarea.imagenBoard ? `<img src="https://appsphairatech.com/images/task-board/${tarea.imagenBoard}" alt="Imagen de la tarea">` : ''}
         </div>
     `;
 

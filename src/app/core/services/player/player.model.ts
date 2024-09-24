@@ -371,6 +371,8 @@ export class ScoutingPlayer {
   descripcion: string;
   estadoEstudios: string;
 
+  esPublico: number;
+
   constructor(object: any) {
     this.scoutingPlayerId = object.scoutingPlayerId || 0;
     this.playerId = object.playerId || 0;
@@ -425,9 +427,10 @@ export class ScoutingPlayer {
     this.areasMejora = object.areasMejora || '';
 
     /* Ocupación */
-    this.estudiaTrabaja = object.estudiaTrabaja || '';
+    this.estudiaTrabaja = object.estudiaTrabaja || 'Estoy_estudiando';
     this.descripcion = object.descripcion || '';
     this.estadoEstudios = object.estadoEstudios || '';
+    this.esPublico = object.esPublico || 0;
   }
 }
 

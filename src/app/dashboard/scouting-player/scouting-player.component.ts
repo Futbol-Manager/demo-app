@@ -7,6 +7,7 @@ import { ScoutingPlayer } from 'src/app/core/services/player/player.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { Response } from 'src/app/core/services/models/response.model';
 
 @Component({
   selector: 'app-scouting-player',
@@ -52,8 +53,25 @@ export class ScoutingPlayerComponent implements OnInit {
     }
   }
 
-  cargarForm(){
-    this.datosCargados = true;
+  cargarForm() {
+    this.playerService.getscoutingplayerbyplayerid(this.playerId).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.scoutingPlayer = response.data;
+        } else {
+          console.error('No hay datos', response);
+        }
+        this.datosCargados = true;
+      },
+      (error) => {
+        console.error('Error al cargar el los datos', error);
+      }
+    );
+  }
+
+  guardarForm() {
+
   }
 
 }
