@@ -372,6 +372,8 @@ export class ScoutingPlayer {
   estadoEstudios: string;
 
   esPublico: number;
+  dateCreate: string;
+  dateEdit: string;
 
   constructor(object: any) {
     this.scoutingPlayerId = object.scoutingPlayerId || 0;
@@ -431,6 +433,8 @@ export class ScoutingPlayer {
     this.descripcion = object.descripcion || '';
     this.estadoEstudios = object.estadoEstudios || '';
     this.esPublico = object.esPublico || 0;
+    this.dateCreate = object.dateCreate || '';
+    this.dateEdit = object.dateEdit || '';
   }
 }
 

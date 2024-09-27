@@ -15,26 +15,56 @@
     <div class="container">
         <!-- Información personal -->
         <div class="row">
-            <div class="col-12">
+            <div class="col-12 col-md-6">
                 <label><strong>Información Personal:</strong></label>
             </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-12">
-                <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                    <div class="col" *ngIf="scoutingPlayer.imagenPerfil">
-                        <img src="https://appsphairatech.com/images/imgScoutingPlayer/{{ scoutingPlayer.imagenPerfil }}"
-                            alt="user-image" width="90" height="90" style="max-width: 100%;">
-                    </div>
-                    <div class="col d-flex justify-content-center align-items-center"
-                        *ngIf="!scoutingPlayer.imagenPerfil">
-                        <ng-container>
-                            <span class="bi bi-person" style="font-size: 4rem;"></span>
-                        </ng-container>
+            <div class="col-12 col-md-6">
+                <!-- Sección del día con el interruptor -->
+                <div class="d-flex align-items-center mb-3">
+                    <span><strong>Privado / Publico&nbsp;&nbsp;</strong></span>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input custom-input" type="checkbox" id="publico" name="publico"
+                            [checked]="scoutingPlayer.esPublico === 1"
+                            (change)="togglePrivadoPublico(scoutingPlayer.esPublico)">
                     </div>
                 </div>
             </div>
         </div>
+        <div class="row mt-3">
+            <div class="col-12 col-md-6">
+                <div class="col" *ngIf="scoutingPlayer.imagenPerfil">
+                    <img src="https://appsphairatech.com/images/imgScoutingPlayer/{{ scoutingPlayer.imagenPerfil }}"
+                        alt="user-image" width="150" height="150" style="max-width: 100%;" class="rounded-circle me-2">
+                </div>
+                <div class="col" *ngIf="!scoutingPlayer.imagenPerfil">
+                    <ng-container>
+                        <span class="bi bi-person" style="font-size: 4rem;"></span>
+                    </ng-container>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="mb-3" style="text-align: center;">
+                    <ng-container>
+                      <div class="container">
+                        <h4>Sube tu foto de perfil</h4>
+                        <form (submit)="onSubmit()" enctype="multipart/form-data">
+                          <div class="form-group">
+                            <label for="image">Seleccionar imagen en formato JPG o PNG:</label>
+                            <input type="file" id="image" (change)="onFileSelected($event)">
+                            <!-- Vista previa de la imagen seleccionada, solo visible si showPreview es true -->
+                            <img *ngIf="showPreview" [src]="imagePreviewUrl" alt="Image Preview" width="150" height="150"
+                              class="rounded-circle me-2">
+                          </div>
+                          <button *ngIf="showbtnupimg" style="margin-top: 1em;" type="submit" class="btn btn-custom">Subir
+                            imagen</button>
+                        </form>
+                      </div>
+                    </ng-container>
+                  </div>
+            </div>
+        </div>
+
+
         <div class="row mt-3">
             <div class="col-12 col-md-6">
                 <div class="form-group">
