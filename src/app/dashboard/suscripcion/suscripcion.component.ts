@@ -9,6 +9,7 @@ import { ActivatedRoute } from '@angular/router';
 export class SuscripcionComponent implements OnInit {
 
   userId = 0;
+  selected = 0;
   constructor(
     private route: ActivatedRoute,) { }
 
@@ -18,6 +19,10 @@ export class SuscripcionComponent implements OnInit {
       this.userId = params['userId'];
       //console.log('this.playerID =' + this.playerID + 'y this.emailParam =' + this.emailParam);
     });
+  }
+
+  select(option: number){
+    
   }
 
 }

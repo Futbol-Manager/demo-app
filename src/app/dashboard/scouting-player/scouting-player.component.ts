@@ -18,7 +18,7 @@ export class ScoutingPlayerComponent implements OnInit {
   scoutingPlayer: ScoutingPlayer = new ScoutingPlayer({});
 
   numeros: number[] = Array.from({ length: 50 }, (_, i) => i + 1);
-  
+
   imgUser: string = '';
   selectedFile: File | null = null;
   imagePreviewUrl: string | ArrayBuffer | null = null;
@@ -26,6 +26,8 @@ export class ScoutingPlayerComponent implements OnInit {
   showPreview: boolean = false;
 
   showbtnupimg = false;
+
+  showModalSus = false;
 
   constructor(
     private router: Router,
@@ -49,6 +51,9 @@ export class ScoutingPlayerComponent implements OnInit {
       case 0:
         this.router.navigate(['/dashboard/inicio']);
         break;
+      case 1:
+        this.router.navigate(['/dashboard/suscripcion', this.playerId]);
+        break;
     }
   }
 
@@ -70,7 +75,7 @@ export class ScoutingPlayerComponent implements OnInit {
     );
   }
 
-  guardarForm() {    
+  guardarForm() {
     this.playerService.createUpdateScoutingPlayer(this.scoutingPlayer).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
@@ -101,17 +106,21 @@ export class ScoutingPlayerComponent implements OnInit {
 
   updatePrivateScoutingPlayer(playerId: number, value: number) {
     let msg = 'Perfil publicado.';
-    if (value === 0){
+    if (value === 0) {
       msg = 'Perfil despublicado, ahora está privado.';
     }
 
     this.playerService.setPublicoPrivadoScoutingPlayerByPlayerId(playerId, value).subscribe(
       (response) => {
-        const snackBarConfig = new MatSnackBarConfig();
-        snackBarConfig.duration = 3000;
-        snackBarConfig.horizontalPosition = 'center';
-        snackBarConfig.verticalPosition = 'bottom';
-        this.snackBar.open(msg, 'Cerrar', snackBarConfig);
+        if (response.data) {
+          const snackBarConfig = new MatSnackBarConfig();
+          snackBarConfig.duration = 3000;
+          snackBarConfig.horizontalPosition = 'center';
+          snackBarConfig.verticalPosition = 'bottom';
+          this.snackBar.open(msg, 'Cerrar', snackBarConfig);
+        } else {
+          this.showModalSus = true;
+        }
       },
       (error) => {
         console.error('Error al crear el equipo:', error);
@@ -120,7 +129,7 @@ export class ScoutingPlayerComponent implements OnInit {
     );
   }
 
-  
+
 
   onFileSelected(event: any) {
     if (event.target.files[0].type === 'image/png' || event.target.files[0].type === 'image/jpeg') {
@@ -141,7 +150,7 @@ export class ScoutingPlayerComponent implements OnInit {
 
   onSubmit() {
     if (this.selectedFile) {
-      this.playerService.createUpdateImgPerfilPlayer( this.selectedFile, this.playerId, this.scoutingPlayer.imagenPerfil)
+      this.playerService.createUpdateImgPerfilPlayer(this.selectedFile, this.playerId, this.scoutingPlayer.imagenPerfil)
         .subscribe(
           (response) => {
             const snackBarConfig = new MatSnackBarConfig();
@@ -163,6 +172,10 @@ export class ScoutingPlayerComponent implements OnInit {
     } else {
       console.log('Ninguna imagen seleccionada.');
     }
+  }
+
+  cerrarModalSus() {
+    this.showModalSus = false;
   }
 
 }

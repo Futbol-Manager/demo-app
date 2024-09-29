@@ -441,3 +441,23 @@
         </div>
     </div>
 </div>
+
+<!-- Modal para ver los detalles de la tarea -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalSus}">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+                <h5 class="modal-title">Información de Suscripción</h5>
+                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSus()"></button>
+            </div>
+            <div class="modal-body">
+                <p>Necesitas tener una suscripción activa. Ve al perfil y en la opción Suscripción o pulsa en acceder para acceder a la pantalla 
+                    y elegir una para usar las funciones de Scouting.
+                </p>
+                <button type="button" class="btn btn-custom btn-block textoCentrado float-end"
+                    (click)="irAPantalla(1)">Acceder</button>
+            </div>
+        </div>
+    </div>
+</div>

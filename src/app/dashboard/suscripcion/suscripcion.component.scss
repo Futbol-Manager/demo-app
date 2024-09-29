@@ -1,0 +1,46 @@
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    color: #6c757d;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0px solid #dee2e6;
+    border-radius: 0.25rem;
+    box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+    /*cursor: pointer;*/
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    border-color: #22BF63;
+    background-color: #22BF63;
+    box-shadow: 0px 0px 35px 0px rgba(34, 191, 99, 0.5);
+}
+
+.card-title {
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 14px;
+}
+
+.proximamente-title {
+    font-size: 4rem;
+    font-weight: bold;
+    color: #343a40;
+    /* Color oscuro moderno */
+    text-align: center;
+    margin-top: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    background: linear-gradient(45deg, #202020, #919292);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
