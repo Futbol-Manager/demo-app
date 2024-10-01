@@ -648,6 +648,8 @@ export class CalendarioComponent implements OnInit {
       this.router.navigate(['/dashboard/estadisticas_jugadores', this.teamId]);
     } else if (id === 5) {
       this.router.navigate(['/dashboard/cuotas', this.teamId]);
+    } else if (id === 6) {
+      this.router.navigate(['/dashboard/adminsettings']);
     }
   }
 
@@ -1785,6 +1787,12 @@ export class CalendarioComponent implements OnInit {
   }
 
   onSelectGolTypes(event: any): void {
+    /*if (event.target.value === 'En propia')
+      this.isSelectDisabled = false;
+    else
+      this.isSelectDisabled = true;*/
+
+    
     if (event.target.value === 'Falta disparo directo' || event.target.value === 'Penalti') {
       //no va haber nada mas
       this.selectedGolTypes = '';
@@ -1805,11 +1813,6 @@ export class CalendarioComponent implements OnInit {
     }
     this.cat11 = event.target.value;
     this.cdr.detectChanges(); // Forzar la detección de cambios
-
-    if (event.target.value === 'En propia')
-      this.isSelectDisabled = false;
-    else
-      this.isSelectDisabled = true;
 
   }
 
@@ -1880,10 +1883,10 @@ export class CalendarioComponent implements OnInit {
         this.selectedOptionGolTypes = this.golAvanzadoEnContra.option;
         this.selectedGolTypesCombi = this.golAvanzadoEnContra.combinado;
         access = true;
-        if (this.selectedGolTypes === 'En propia')
+        /*if (this.selectedGolTypes === 'En propia')
           this.isSelectDisabled = false;
         else
-          this.isSelectDisabled = true;
+          this.isSelectDisabled = true;*/
       } else {
         this.golAvanzadoEnContra = new GolPostPartido({});
       }

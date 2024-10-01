@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap } from "rxjs";
 
 import { LoginModel } from '../../models/users/login.model';
@@ -10,6 +10,7 @@ import { LOCALSTORAGESTRINGS } from '../../models/master/localstorage.enum';
 // Utils
 import { LocalStorage } from 'src/app/core/utils/local-storage';
 import { Router } from '@angular/router';
+import { Response } from 'src/app/core/services/models/response.model';
 
 
 
@@ -66,6 +67,29 @@ export class LoginService {
   get usuarioActual(): Observable<User | null> {
     return this.usuarioAutenticado.asObservable();
   }
+
+  
+    
+  getlistallusers(): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+        // Configura las cabeceras con el token para la solicitud HTTP
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${token}`
+        });
+
+        // Construye la URL para la solicitud
+        const url: string = environment.apiUrl + `user/getlistallusers`;
+
+        // Realiza la solicitud HTTP con las cabeceras configuradas
+        return this.http.get<Response>(url, { headers });
+    } else {
+        // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+        return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+}
 
   /*actualizarImagenUsuario(imgUser: string) {
     const currentUser = this.usuarioAutenticado.value;

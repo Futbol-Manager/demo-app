@@ -1,0 +1,34 @@
+<!-- Contenido para el dataTable -->
+<div class="container mt-4">
+    <h2>Usuarios</h2>
+    <div style="overflow-x: auto;">
+        <table id="dataTable" class="table table-bordered table-striped">
+            <thead class="table-custom">
+                <tr>
+                    <th>ID</th>
+                    <th>CREADO</th>
+                    <th>PERFIL</th>
+                    <th>NOMBRE</th>
+                    <th>APELLIDOS</th>
+                    <th>EMAIL</th>
+                    <th>FECHA NAC</th>
+                    <th>VALIDADO</th>
+                    <th>COMUNICACIONES</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let user of tableUsers; let i = index">
+                    <td>{{ user.userId }}</td>
+                    <td>{{ user.dateCreate }}</td>
+                    <td>{{ user.profileType.profileId }}</td>
+                    <td>{{ user.firstName }}</td>
+                    <td>{{ user.secondName }}</td>
+                    <td>{{ user.mail }}</td>
+                    <td>{{ user.birthdate }}</td>
+                    <td>{{ user.validationUser.validationUserId }}</td>
+                    <td>{{ user.comunicaciones }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
