@@ -327,49 +327,6 @@ export class TeamService {
         }
     }
 
-    // Método para crear o actualizar stripe como club
-    createAccountStripe(email: string, clubId: number): Observable<any> {
-        // Obtén el token almacenado en localStorage
-        const token: string | null = localStorage.getItem('token');
-        // Verifica si el token está presente
-        if (token) {
-            // Configura las cabeceras con el token para la solicitud HTTP
-            const headers = new HttpHeaders({
-                'Authorization': `Bearer ${token}`
-            });
-
-            // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `stripe/create-account/${email}/${clubId}`;
-
-            // Realiza la solicitud HTTP con las cabeceras configuradas
-            return this.http.get<Response>(url, { headers });
-        } else {
-            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
-        }
-    }
-
-    processPayment(paymentRequest: any): Observable<any> {
-        // Obtén el token almacenado en localStorage
-        const token: string | null = localStorage.getItem('token');
-        // Verifica si el token está presente
-        if (token) {
-            // Configura las cabeceras con el token para la solicitud HTTP
-            const headers = new HttpHeaders({
-                'Authorization': `Bearer ${token}`
-            });
-
-            // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `stripe/process-payment`;
-
-            // Realiza la solicitud HTTP con las cabeceras configuradas
-            return this.http.post<Response>(url, paymentRequest, { headers });
-        } else {
-            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
-        }
-    }
-
     getTeamsByClubForCombo(clubId: number, temporada: string): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
@@ -471,6 +428,96 @@ export class TeamService {
 
             // Construye la URL para la solicitud
             const url: string = environment.apiUrl + `team/gethorariosbyclub/${clubId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    /*****************      STRIPE            **************/    
+
+    // Método para crear o actualizar stripe como club
+    createAccountStripe(email: string, clubId: number): Observable<any> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `stripe/create-account/${email}/${clubId}`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.get<Response>(url, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    processPayment(paymentRequest: any): Observable<any> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `stripe/process-payment`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.post<Response>(url, paymentRequest, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+    
+
+    // Método para crear o actualizar stripe como club
+    createSubscription(dto: HorarioTeam): Observable<any> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `stripe/create-subscription`;
+
+            // Realiza la solicitud HTTP con las cabeceras configuradas
+            return this.http.post<Response>(url, dto, { headers });
+        } else {
+            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+        }
+    }
+
+    // Método para obtener la suscripcionDTO de un playerID
+    getSubscriptionByPlayerId(playerId: number): Observable<any> {
+        // Obtén el token almacenado en localStorage
+        const token: string | null = localStorage.getItem('token');
+        // Verifica si el token está presente
+        if (token) {
+            // Configura las cabeceras con el token para la solicitud HTTP
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+
+            // Construye la URL para la solicitud
+            const url: string = environment.apiUrl + `stripe/getsubscriptionbyplayerid/${playerId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });

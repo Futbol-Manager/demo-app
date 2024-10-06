@@ -533,7 +533,7 @@ export class CalendarioComponent implements OnInit {
   startX: number = 0;
   startY: number = 0;
 
-  playerId = 0;  
+  playerId = 0;
   imgClub = '';
 
   constructor(
@@ -613,15 +613,26 @@ export class CalendarioComponent implements OnInit {
           const matchPreparation = this.listMatchPreparation.find(match => match.matchDate === daysession);
 
           if (training && matchPreparation) {
+            const maxLength = 16;
+            const rivalNameConst = matchPreparation.rivalName.length > maxLength
+              ? matchPreparation.rivalName.substring(0, maxLength) + '...'
+              : matchPreparation.rivalName;
             // Si hay tanto entrenamiento como partido, se pueden asignar ambos al mismo día
             this.calendario[i][j] = {
               numero: dia, daysession, trainingId: training.trainingSessionId, matchPreparationId: matchPreparation.matchPreparationId,
-              traininVisible: training.visible, matchVisible: matchPreparation.visible
+              traininVisible: training.visible, matchVisible: matchPreparation.visible, rivalName: rivalNameConst
             };
           } else if (training) {
             this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId, traininVisible: training.visible };
           } else if (matchPreparation) {
-            this.calendario[i][j] = { numero: dia, daysession, matchPreparationId: matchPreparation.matchPreparationId, matchVisible: matchPreparation.visible };
+            const maxLength = 16;
+            const rivalNameConst = matchPreparation.rivalName.length > maxLength
+              ? matchPreparation.rivalName.substring(0, maxLength) + '...'
+              : matchPreparation.rivalName;
+            this.calendario[i][j] = {
+              numero: dia, daysession, matchPreparationId: matchPreparation.matchPreparationId,
+              matchVisible: matchPreparation.visible, rivalName: rivalNameConst
+            };
           } else {
             this.calendario[i][j] = { numero: dia, daysession };
           }
@@ -1591,9 +1602,9 @@ export class CalendarioComponent implements OnInit {
       (response) => {
         this.respPostPartido = new RespPostPartido({});
         this.showModalFormPostPartido = false;
-        if(!response.data){
+        if (!response.data) {
           alert('No se han enviado las respuestas porque ya se rellenó anteriormente y solo se puede una vez por partido.');
-        } else {          
+        } else {
           alert('Respuestas enviadas correctamente.');
         }
       },
@@ -1792,7 +1803,7 @@ export class CalendarioComponent implements OnInit {
     else
       this.isSelectDisabled = true;*/
 
-    
+
     if (event.target.value === 'Falta disparo directo' || event.target.value === 'Penalti') {
       //no va haber nada mas
       this.selectedGolTypes = '';
@@ -2203,6 +2214,7 @@ export class CalendarioComponent implements OnInit {
       ...this.jugadoresTitulares.map((jugador: ConvocatoriaUI) => jugador.nombre)
     ];
 
+    ui.mailEntrenador = this.usuarioActual?.mail !== undefined ? this.usuarioActual?.mail : '';
     console.log(ui);
 
     this.playerService.notificateMatchPlayer(ui, this.teamId).subscribe(response => {
@@ -2213,7 +2225,7 @@ export class CalendarioComponent implements OnInit {
   match2: any = {
     rivalName: '',
     terreno: '',
-    imgClub:  '',
+    imgClub: '',
     horaQuedada: '',
     horaPartido: '',
     lugar: '',
@@ -2241,13 +2253,13 @@ export class CalendarioComponent implements OnInit {
   };
 
   showModalPDF = false;
-  
+
   convertImgToBase64URL(url: string): Promise<string> {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.crossOrigin = 'Anonymous';
       img.src = url;
-  
+
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -2261,7 +2273,7 @@ export class CalendarioComponent implements OnInit {
           reject(new Error('Failed to get canvas context.'));
         }
       };
-  
+
       img.onerror = () => {
         reject(new Error('Failed to load image.'));
       };
@@ -2295,7 +2307,7 @@ export class CalendarioComponent implements OnInit {
     this.match2.rolesEspecificos = this.match.rolesEspecificos;
     this.match2.ajustesTacticos = this.match.ajustesTacticos;
     this.match2.refereeName = this.match.refereeName;
-  
+
     try {
       const base64Img = await this.convertImgToBase64URL(this.match2.imgClub);
       this.match2.imgClub = base64Img;
@@ -2304,7 +2316,7 @@ export class CalendarioComponent implements OnInit {
       // Establecer una imagen de respaldo o proceder sin la imagen
       this.match2.imgClub = 'assets/images/512.png';  // Cambia a una imagen predeterminada si es necesario
     }
-  
+
     const element = document.getElementById('pdf-content');
     const options = {
       margin: 0.5,
@@ -2313,18 +2325,18 @@ export class CalendarioComponent implements OnInit {
       html2canvas: { scale: 2 },
       jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
-  
+
     html2pdf().from(element).set(options).save();
   }
 
-  abrirModalPDF(){
+  abrirModalPDF() {
     this.showModalPDF = true;
   }
 
-  cerrarModalPDF(){
+  cerrarModalPDF() {
     this.showModalPDF = false;
   }
-  
-  
+
+
 }
 

@@ -1,6 +1,6 @@
 <div class="background">
 
-  <img src="assets/videos/video.gif" alt="GIF de jugando" class="video-background">
+  <img src="assets/images/fondoLoginV1.png" alt="GIF de jugando" class="video-background">
 
   <!--REGISTRO-->
   <div class="container" style="height: 100vh; overflow-y: auto;">
@@ -265,11 +265,10 @@
                         placeholder="Ingresa apellidos" formControlName="surname">
                     </div>
                   </div>
-                  <div class="mb-3 d-flex">
+                  <div class="mb-3 d-flex">                  
                     <div class="col-6">
                       <!--<label for="birthdate" class="form-label">Selecciona fecha de nacimiento</label>-->
-                      <input type="text" class="form-control input-register" id="date" formControlName="birthdate"
-                        placeholder="Fecha de nacimiento" onfocus="(this.type='date')" onblur="(this.type='text')" />
+                      <input type="date" class="form-control input-register" id="date" formControlName="birthdate">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="genre" class="form-label">Selecciona tu género</label>-->
@@ -426,11 +425,11 @@
           <div class="form-control" *ngIf="msgForm" style="display: block; color: red;">
             <p>Revisa los campos que te falten por rellenar y acepta política de privacidad.</p>
           </div>
-          <div class="card-footer textoCentrado" style="flex-direction: column;">
+          <div class="card-footer textoCentrado" style="flex-direction: column; background: #141414;">
             <div class="row text-center">
               <div class="col-md-12">
-                <p>¿Ya tienes una cuenta? <a href="#" (click)="toLogin($event)">Inicia sesión aquí</a></p>
-                <p>Si tienes alguna duda, contacta a <a href="#" onclick="event.preventDefault()">info&#64;sphairatech.com</a> o al WhatsApp 
+                <p style="color: white">¿Ya tienes una cuenta? <a style="color: #1e8832" href="#" (click)="toLogin($event)">Inicia sesión aquí</a></p>
+                <p style="color: white">Si tienes alguna duda, contacta a <a style="color: #1e8832" href="#" onclick="event.preventDefault()">info&#64;sphairatech.com</a> o al WhatsApp 
                  +34 666 93 73 40</p>
               </div>
             </div>

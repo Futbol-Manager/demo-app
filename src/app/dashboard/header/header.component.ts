@@ -41,6 +41,8 @@ export class HeaderComponent implements OnInit {
 
   showbtnupimg = false;
   userId: number = 0;
+  profileId = 0;
+  idValidation = 1;
 
   constructor(
     private router: Router,
@@ -56,6 +58,8 @@ export class HeaderComponent implements OnInit {
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe((user: User | null) => {
       this.usuarioActual = user;
+      this.profileId = this.usuarioActual!.profileType.profileId;
+      this.idValidation = this.usuarioActual!.idValidation;
       this.nameUser = user !== null ? user.firstName : '';
       this.userId = user !== null ? user.userId : 0;
       this.imgUser = user !== null ? user.pictureUser : '';
@@ -144,6 +148,7 @@ export class HeaderComponent implements OnInit {
   }
 
   saveChanges() {
+    console.log(this.profileId);
     if (this.userForm.valid) {
       const today: Date = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
       const isoString: string = today.toISOString();
@@ -152,8 +157,9 @@ export class HeaderComponent implements OnInit {
         this.userForm.value.genreType,
         this.userForm.value.genreType == 1 ? 'Masculino' : (this.userForm.value.genreType == 2 ? 'Femenino' : 'Otro')
       );
-      const profileType: ProfileTypeModel = new ProfileTypeModel(2, 'Entrenador') //hardcodeado
-      const validationUser: ValidationUserModel = new ValidationUserModel(2, 'Validado por mail');//hardcodeado
+
+      const profileType: ProfileTypeModel = new ProfileTypeModel(this.profileId, 'Entrenador') //hardcodeado
+      const validationUser: ValidationUserModel = new ValidationUserModel(this.idValidation, 'Validado por mail');//hardcodeado
 
       const register: RegisterModel = new RegisterModel(
         this.userForm.value.comunicaciones,

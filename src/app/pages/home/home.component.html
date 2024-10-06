@@ -1,5 +1,5 @@
 <div class="background">
-  <img src="assets/videos/video.gif" alt="GIF de jugando" class="video-background">
+  <img src="assets/images/fondoLoginV1.png" alt="GIF de jugando" class="video-background">
 
   <!--LOGIN-->
   <div class="container" *ngIf="screen == 1">
@@ -13,15 +13,15 @@
           <div class="card-body textoCentrado">
             <app-login></app-login>
           </div>
-          <div class="card-footer textoCentrado" style="flex-direction: column;">
+          <div class="card-footer textoCentrado" style="flex-direction: column; background: #141414;">
             <div class="row">
               <div class="col-md-12 col-sm-12 textoCentrado">
-                <p><a href="#" (click)="toRemember($event)">He olvidado mi contraseña</a></p>
+                <p><a style="color: #1e8832" href="#" (click)="toRemember($event)">He olvidado mi contraseña</a></p>
               </div>
             </div>
             <div class="row">
               <div class="col-md-12 col-sm-12 textoCentrado">
-                <p>¿No tienes una cuenta? <a href="#" (click)="toRegister($event)">Regístrate</a></p>
+                <p style="color: white">¿No tienes una cuenta? <a style="color: #1e8832" href="#" (click)="toRegister($event)">Regístrate</a></p>
               </div>
             </div>
           </div>
@@ -52,10 +52,10 @@
                 <button type="submit" class="btn btn-primary btn-block textoCentrado">Enviar Mail</button>
               </form>
             </div>
-            <div class="card-footer textoCentrado" style="flex-direction: column;">
+            <div class="card-footer textoCentrado" style="flex-direction: column; background: #141414;">
               <div class="row">
                 <div class="col-md-12 col-sm-12 textoCentrado">
-                  <p>¿Recuerdas la contraseña? <a href="#" (click)="toLogin($event)">Inicia sesión aquí</a></p>
+                  <p style="color: white">¿Recuerdas la contraseña? <a style="color: #1e8832" href="#" (click)="toLogin($event)">Inicia sesión aquí</a></p>
                 </div>
               </div>
             </div>

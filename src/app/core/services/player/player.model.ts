@@ -298,6 +298,7 @@ export class NotificatePlayerUI {
   horaPartido: string = '';
   tipoPartido: string = '';
   local: number = 0; // 0 para local, 1 para visitante
+  mailEntrenador: string = '';
 
   constructor(object: any) {
     this.players = object.players || [];
@@ -310,6 +311,7 @@ export class NotificatePlayerUI {
     this.horaPartido = object.horaPartido || '';
     this.tipoPartido = object.tipoPartido || '';
     this.local = object.local || 0;
+    this.mailEntrenador = object.mailEntrenador || '';
   }
 }
 

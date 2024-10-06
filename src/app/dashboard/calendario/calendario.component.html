@@ -111,7 +111,7 @@
                         <div class="col"
                           *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) || dia.matchVisible === 1">
                           <button *ngIf="dia.matchPreparationId" class="btn btn-partido btn-sm btn-block"
-                            (click)="openPartido(dia.matchPreparationId, dia.daysession)">Partido</button>
+                            (click)="openPartido(dia.matchPreparationId, dia.daysession)">{{ dia.rivalName }}</button>
                         </div>
                       </div>
                     </div>
