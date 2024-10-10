@@ -490,24 +490,29 @@ export class ContabilidadComponent implements OnInit {
   }
 
   createUpdateHistoryCuotaJugador() {
-    this.clubService.updatehistorypagosplayer(this.agregarPagoPlayer).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          //actualizamos los campos de pagado y restante
-          this.listHCP[this.indexPlayerSelected].pagado = (Number(this.listHCP[this.indexPlayerSelected].pagado) + Number(this.agregarPagoPlayer.cantidad));
-          this.listHCP[this.indexPlayerSelected].restante = (Number(this.listHCP[this.indexPlayerSelected].cuotaClub) - Number(this.listHCP[this.indexPlayerSelected].pagado));
-          //this.agregarPagoPlayer = new HostoryPagosPlayer({});
-          this.guardar();
-          this.recalcular = true;
-        } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+    if (this.agregarPagoPlayer.cantidad == null || this.agregarPagoPlayer.fecha == null) {
+      //avisar de poner cantidad y fecha
+    } else {
+      this.clubService.updatehistorypagosplayer(this.agregarPagoPlayer).subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            //actualizamos los campos de pagado y restante
+            this.listHCP[this.indexPlayerSelected].pagado = (Number(this.listHCP[this.indexPlayerSelected].pagado) + Number(this.agregarPagoPlayer.cantidad));
+            this.listHCP[this.indexPlayerSelected].restante = (Number(this.listHCP[this.indexPlayerSelected].cuotaClub) - Number(this.listHCP[this.indexPlayerSelected].pagado));
+            //this.agregarPagoPlayer = new HostoryPagosPlayer({});
+            this.guardar();
+            this.recalcular = true;
+          } else {
+            console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          }
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
+    }
+
   }
 
   estadoPago(estado: string): number {

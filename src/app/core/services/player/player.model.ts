@@ -298,6 +298,7 @@ export class NotificatePlayerUI {
   horaPartido: string = '';
   tipoPartido: string = '';
   local: number = 0; // 0 para local, 1 para visitante
+  mailEntrenador: string = '';
 
   constructor(object: any) {
     this.players = object.players || [];
@@ -310,6 +311,133 @@ export class NotificatePlayerUI {
     this.horaPartido = object.horaPartido || '';
     this.tipoPartido = object.tipoPartido || '';
     this.local = object.local || 0;
+    this.mailEntrenador = object.mailEntrenador || '';
   }
 }
+
+export class ScoutingPlayer {
+  scoutingPlayerId: number;
+  playerId: number;
+
+  /* Información personal */
+  imagenPerfil: string;
+  nombre: string;
+  fechaDeNacimiento: string;
+  paisResidencia: string;
+  provinciaResidencia: string;
+  nacionalidad: string;
+  altura: string;
+  peso: string;
+  piernaNatural: string;
+  mailContacto: string;
+  telefonoContacto: string;
+
+  /* Posición en el campo */
+  posicionPrincipal: string;
+  posicionesSecundarias: string;
+
+  /* CV futbolístico */
+  clubesAnteriores: string;
+  ultimosPartidos: number;
+  goles: number;
+  asistencias: number;
+  torneosImportantes: string;
+
+  /* Premios individuales y convocatorias a selecciones */
+  premiosIndividuales: string;
+  convocatoriasSelecciones: string;
+
+  /* Salud y estado físico */
+  lesionesRecientes: string;
+  historialMedico: string;
+  estadoActual: string;
+
+  /* Video de Highlights */
+  videoHighlights: string;
+  descripcionVideo: string;
+
+  /* Disponibilidad y expectativas */
+  disponibilidadPruebas: string;
+  disponibilidadMudarse: string;
+  expectativasContractuales: string;
+
+  /* Referencias */
+  entrenadoresAnteriores: string;
+
+  /* Opinión sobre sí mismo */
+  fortalezas: string;
+  areasMejora: string;
+
+  /* Ocupación */
+  estudiaTrabaja: string;
+  descripcion: string;
+  estadoEstudios: string;
+
+  esPublico: number;
+  dateCreate: string;
+  dateEdit: string;
+
+  constructor(object: any) {
+    this.scoutingPlayerId = object.scoutingPlayerId || 0;
+    this.playerId = object.playerId || 0;
+
+    /* Información personal */
+    this.imagenPerfil = object.imagenPerfil || '';
+    this.nombre = object.nombre || '';
+    this.fechaDeNacimiento = object.fechaDeNacimiento || '';
+    this.paisResidencia = object.paisResidencia || '';
+    this.provinciaResidencia = object.provinciaResidencia || '';
+    this.nacionalidad = object.nacionalidad || '';
+    this.altura = object.altura || '';
+    this.peso = object.peso || '';
+    this.piernaNatural = object.piernaNatural || 'Pie';
+    this.mailContacto = object.mailContacto || '';
+    this.telefonoContacto = object.telefonoContacto || '';
+
+    /* Posición en el campo */
+    this.posicionPrincipal = object.posicionPrincipal || 'Sin definir';
+    this.posicionesSecundarias = object.posicionesSecundarias || 'Posicion Secundaria';
+
+    /* CV futbolístico */
+    this.clubesAnteriores = object.clubesAnteriores || '';
+    this.ultimosPartidos = object.clubesAnteriores || 0;
+    this.goles = object.goles || 0;
+    this.asistencias = object.asistencias || 0;
+    this.torneosImportantes = object.torneosImportantes || '';
+
+    /* Premios individuales y convocatorias a selecciones */
+    this.premiosIndividuales = object.premiosIndividuales || '';
+    this.convocatoriasSelecciones = object.convocatoriasSelecciones || '';
+
+    /* Salud y estado físico */
+    this.lesionesRecientes = object.lesionesRecientes || '';
+    this.historialMedico = object.historialMedico || '';
+    this.estadoActual = object.estadoActual || '';
+
+    /* Video de Highlights */
+    this.videoHighlights = object.videoHighlights || '';
+    this.descripcionVideo = object.descripcionVideo || '';
+
+    /* Disponibilidad y expectativas */
+    this.disponibilidadPruebas = object.disponibilidadPruebas || '';
+    this.disponibilidadMudarse = object.disponibilidadMudarse || '';
+    this.expectativasContractuales = object.expectativasContractuales || '';
+
+    /* Referencias */
+    this.entrenadoresAnteriores = object.entrenadoresAnteriores || '';
+
+    /* Opinión sobre sí mismo */
+    this.fortalezas = object.fortalezas || '';
+    this.areasMejora = object.areasMejora || '';
+
+    /* Ocupación */
+    this.estudiaTrabaja = object.estudiaTrabaja || 'Estoy_estudiando';
+    this.descripcion = object.descripcion || '';
+    this.estadoEstudios = object.estadoEstudios || '';
+    this.esPublico = object.esPublico || 0;
+    this.dateCreate = object.dateCreate || '';
+    this.dateEdit = object.dateEdit || '';
+  }
+}
+
 

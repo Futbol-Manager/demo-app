@@ -43,6 +43,10 @@ export class RegisterComponent implements OnInit {
   showPPlayer = false;
   showModal = false;
   optionSelected = 0;
+  showRegistro = false;
+  showNextRegistro = false;
+  btnRegistro = false;
+  selected: number | 0 = 0;
 
   constructor(
     private router: Router,
@@ -89,19 +93,20 @@ export class RegisterComponent implements OnInit {
 
     //let option = 0;
     if (this.isMenor !== undefined && !Number.isNaN(this.isMenor)) {
+      this.showNextRegistro = true;
       if (this.isMenor === 0) {
         this.selectedOption = 4;
-        this.showPPlayer = true;
+        //this.showPPlayer = true;
       } else if (this.isMenor === 1) {
         this.selectedOption = 3;
-        this.showPPlayer = true;
+        //this.showPPlayer = true;
       } else if (this.isMenor === 2) { //este es club
         this.selectedOption = 1;
         this.emailParam = '';
         this.playerID = 0;
       } else if (this.isMenor === 3) { //este es entrenador 
         this.selectedOption = 2;
-        this.emailParam = '';
+        //this.emailParam = '';
         this.playerID = 0;
       } else if (this.isMenor === 4) { //este es scouter 
         this.selectedOption = 5;
@@ -112,12 +117,16 @@ export class RegisterComponent implements OnInit {
       // Establecer valor predeterminado para el campo email
       this.registerFormEntrenador.get('email')!.setValue(this.emailParam);
 
-      if(this.emailParam !== '')
+      /*if (this.emailParam !== '') {
         this.registerFormEntrenador.get('email')?.disable(); // Deshabilita el campo
+      }*/
     } else {
+      this.isMenor = -1;
       this.selectOptions = this.selectOptions.filter(option => option.value !== "4");
       this.registerFormEntrenador.get('email')?.enable(); // Habilita el campo
     }
+
+    //console.log(this.emailParam);
   }
 
   onOptionChange(event: any) {
@@ -205,6 +214,11 @@ export class RegisterComponent implements OnInit {
         validationUser
       );
 
+      if (register.mail === undefined) {
+        if (this.emailParam != '') {
+          register.mail = this.emailParam;
+        }
+      }
       this.registerService.registerUser(register).pipe()
         .subscribe(
           (res) => {
@@ -221,8 +235,9 @@ export class RegisterComponent implements OnInit {
                 Si aún así no encuentras el correo, por favor, contáctanos en info@sphairatech.com para que podamos asistirte.\n\n
                 ¡Esperamos verte pronto!`,
                 'Ok', snackBarConfig
-              );         
-              //this.login(1);
+              );
+              //this.showModal = true;
+              this.login(1);
             } else {
               const snackBarConfig = new MatSnackBarConfig();
               snackBarConfig.duration = 5000;
@@ -277,6 +292,12 @@ export class RegisterComponent implements OnInit {
         return;
       }
 
+      if (register.mail === undefined) {
+        if (this.emailParam != '') {
+          register.mail = this.emailParam;
+        }
+      }
+
       this.registerService.registerUser(register).pipe()
         .subscribe(
           (res) => {
@@ -285,11 +306,12 @@ export class RegisterComponent implements OnInit {
               snackBarConfig.duration = 5000;
               snackBarConfig.horizontalPosition = 'center';
               snackBarConfig.verticalPosition = 'bottom';
-              this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);     
-              //this.login(2);
+              this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
+              this.login(2);
+              //this.showModal = true;
             } else {
               const snackBarConfig = new MatSnackBarConfig();
-              snackBarConfig.duration = 5000;
+              snackBarConfig.duration = 20000;
               snackBarConfig.horizontalPosition = 'center';
               snackBarConfig.verticalPosition = 'bottom';
               this.snackBar.open('Ese email ya está dado de alta, prueba a iniciar sesión o date de alta con un email diferente.', 'Cerrar', snackBarConfig);
@@ -337,15 +359,14 @@ export class RegisterComponent implements OnInit {
   openModal(option: number) {
     switch (option) {
       case 1:
-        this.registerClub();             
+        this.registerClub();
         this.optionSelected = 1;
         break;
       case 2:
-        this.registerEntrenador();             
+        this.registerEntrenador();
         this.optionSelected = 2;
         break;
     }
-    this.showModal = true;
   }
 
   cerrarModal() {
@@ -354,6 +375,22 @@ export class RegisterComponent implements OnInit {
 
   goLogin() {
     this.login(this.optionSelected);
+  }
+
+  nextRegistro(){
+    this.showNextRegistro = true;
+    this.btnRegistro = true;
+  }
+
+  backRegistro(){
+    this.showNextRegistro = false;
+    this.btnRegistro = false;
+  }
+
+  select(option: number) {
+    this.selected = option;
+    this.selectedOption = option;
+    //console.log(option);
   }
 
 }

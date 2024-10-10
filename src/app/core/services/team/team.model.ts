@@ -102,7 +102,6 @@ export class GolPostPartido {
     this.combinado = object.combinado || '';
     this.teamId = object.teamId || 0;
   }
-
 }
 
 export class HorarioTeam {
@@ -158,6 +157,69 @@ export class HorarioTeam {
     this.sabadoFin = object.sabadoFin || '';
     this.domingoFin = object.domingoFin || '';
     this.temporada = object.temporada || '';
+  }
+}
+
+export class Suscripcion {
+  suscripcionId: number;
+  userId: number;
+  playerId: number;
+  suscripcionTipo: SuscripcionTipo;
+  dateCreate: string;
+  dateFinal: string;
+  suscripcionStripeId: string;
+  valido: string;
+  renueva: number;
+  clienteStripeId: string;
+
+  constructor(object: any) {
+    this.suscripcionId = object.suscripcionId || 0;
+    this.userId = object.userId || 0;
+    this.playerId = object.playerId || 0;
+    this.suscripcionTipo = object.suscripcionTipo || new SuscripcionTipo({});
+    this.dateCreate = object.dateCreate || '';
+    this.dateFinal = object.dateFinal || '';
+    this.suscripcionStripeId = object.suscripcionStripeId || '';
+    this.valido = object.valido || '';
+    this.renueva = object.renueva || 0;
+    this.clienteStripeId = object.clienteStripeId || '';
+  }
+}
+
+
+export class SuscripcionTipo {
+  suscripcionTiposId: number;
+  codigo: string;
+  descripcion: string;
+  priceId: string;
+  precio: string;
+  tiempo: string;
+
+  constructor(object: any) {
+    this.suscripcionTiposId = object.suscripcionTiposId || 0;
+    this.codigo = object.codigo || '';
+    this.descripcion = object.descripcion || '';
+    this.priceId = object.priceId || '';
+    this.precio = object.precio || '';
+    this.tiempo = object.tiempo || '';
+  }
+}
+
+export class SubscriptionRequest {
+  userId: number;              // ID del usuario que realiza la suscripción
+  email: string;               // Email del usuario
+  name: string;                // Nombre del usuario
+  priceId: string;             // ID del plan de precios en Stripe
+  paymentMethodId: string;     // ID del método de pago en Stripe
+  suscripcion: Suscripcion; // Objeto de la suscripción
+
+  constructor(object: any) {
+    this.userId = object.userId || 0;
+    this.email = object.email || '';
+    this.name = object.name || '';
+    this.priceId = object.priceId || '';
+    this.paymentMethodId = object.paymentMethodId || '';
+    this.suscripcion = object.suscripcion || new Suscripcion({});
   }
 }
 

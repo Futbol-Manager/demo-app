@@ -82,6 +82,15 @@ export class InicioComponent implements OnInit {
           );
         }
       });
+
+      this.checkSuscripcion();
+  }
+
+  checkSuscripcion(){
+
+    //acceder a un endpoint que revisa la sus, que revisara primero la fecha de renovacion, si no paso aun, pues no hacer nada, si paso
+    //revisar en stripe el estado, porque si esta bien, hay que actualizar la fecha y si esta mal, actualizar a F el valido y la fecha, si esta mal
+    // avisar por un alert
   }
 
   // Método para cargar el listado de equipos
@@ -239,6 +248,11 @@ export class InicioComponent implements OnInit {
   navegarACalendario(teamId: number, playerId: number): void {
     // Puedes ajustar la ruta según tu estructura de rutas
     this.router.navigate(['/dashboard/calendario', teamId, playerId]);
+  }
+
+  navegarAScouting(playerId: number): void {
+    // Puedes ajustar la ruta según tu estructura de rutas
+    this.router.navigate(['/dashboard/scouting-player', playerId]);
   }
 
   irAPantalla(id: number): void {

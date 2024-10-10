@@ -41,7 +41,6 @@ export class CuadroComponent implements OnInit {
       console.log('clubId:', this.clubId);
     });
 
-
     this.cargarHorariosEquipos();
   }
 

@@ -533,8 +533,8 @@ export class CalendarioComponent implements OnInit {
   startX: number = 0;
   startY: number = 0;
 
-  playerId = 0;  
-
+  playerId = 0;
+  imgClub = '';
 
   constructor(
     private router: Router,
@@ -570,6 +570,8 @@ export class CalendarioComponent implements OnInit {
           if (response.data !== null) {
             this.nombreEquipo = response.data.categoryType.categoryName + ' ' + response.data.levelLeague;
             this.categoryTeam = response.data.categoryTypeId;
+            this.imgClub = response.data.imgClub;
+            this.match2.imgClub = 'https://appsphairatech.com/images/user/' + response.data.imgClub;
             if (this.categoryTeam === 14) this.irAPantalla(2);
             this.getListaEntrenamientos();
           } else {
@@ -611,15 +613,26 @@ export class CalendarioComponent implements OnInit {
           const matchPreparation = this.listMatchPreparation.find(match => match.matchDate === daysession);
 
           if (training && matchPreparation) {
+            const maxLength = 16;
+            const rivalNameConst = matchPreparation.rivalName.length > maxLength
+              ? matchPreparation.rivalName.substring(0, maxLength) + '...'
+              : matchPreparation.rivalName;
             // Si hay tanto entrenamiento como partido, se pueden asignar ambos al mismo día
             this.calendario[i][j] = {
               numero: dia, daysession, trainingId: training.trainingSessionId, matchPreparationId: matchPreparation.matchPreparationId,
-              traininVisible: training.visible, matchVisible: matchPreparation.visible
+              traininVisible: training.visible, matchVisible: matchPreparation.visible, rivalName: rivalNameConst
             };
           } else if (training) {
             this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId, traininVisible: training.visible };
           } else if (matchPreparation) {
-            this.calendario[i][j] = { numero: dia, daysession, matchPreparationId: matchPreparation.matchPreparationId, matchVisible: matchPreparation.visible };
+            const maxLength = 16;
+            const rivalNameConst = matchPreparation.rivalName.length > maxLength
+              ? matchPreparation.rivalName.substring(0, maxLength) + '...'
+              : matchPreparation.rivalName;
+            this.calendario[i][j] = {
+              numero: dia, daysession, matchPreparationId: matchPreparation.matchPreparationId,
+              matchVisible: matchPreparation.visible, rivalName: rivalNameConst
+            };
           } else {
             this.calendario[i][j] = { numero: dia, daysession };
           }
@@ -646,6 +659,8 @@ export class CalendarioComponent implements OnInit {
       this.router.navigate(['/dashboard/estadisticas_jugadores', this.teamId]);
     } else if (id === 5) {
       this.router.navigate(['/dashboard/cuotas', this.teamId]);
+    } else if (id === 6) {
+      this.router.navigate(['/dashboard/adminsettings']);
     }
   }
 
@@ -837,7 +852,7 @@ export class CalendarioComponent implements OnInit {
                 id: index, // Asignar el índice como ID,
                 playerId: player.playerId, // Asegúrate de que este campo esté presente en la respuesta
                 nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
-                img: player.picturePlayer != null && player.picturePlayer != '' ? 'https://sphairatech.com/images/user/' + player.picturePlayer : '', // Puedes asignar una imagen si está disponible o usar un valor por defecto
+                img: player.picturePlayer != null && player.picturePlayer != '' ? 'https://appsphairatech.com/images/user/' + player.picturePlayer : '', // Puedes asignar una imagen si está disponible o usar un valor por defecto
                 posicion_x: player.posicion_x || null, // O asignar null si no tiene coordenadas
                 posicion_y: player.posicion_y || null  // O asignar null si no tiene coordenadas
               }));
@@ -1189,13 +1204,13 @@ export class CalendarioComponent implements OnInit {
 
             if (imgElement) {
               // Asignar la nueva URL de la imagen al atributo src
-              imgElement.src = 'https://sphairatech.com/images/task-board/' + response.data;
+              imgElement.src = 'https://appsphairatech.com/images/task-board/' + response.data;
             } else {
               console.error('No se encontró la imagen con el id:', imageId);
 
               // Crear un nuevo elemento img
               const newImgElement = document.createElement('img') as HTMLImageElement;
-              newImgElement.src = 'https://sphairatech.com/images/task-board/' + response.data;
+              newImgElement.src = 'https://appsphairatech.com/images/task-board/' + response.data;
               newImgElement.alt = 'Imagen de la tarea';
               newImgElement.className = 'imgBoard';
               newImgElement.id = 'imagen_tarea_' + taskId;
@@ -1305,7 +1320,7 @@ export class CalendarioComponent implements OnInit {
             <p><b>Material:</b> ${tarea.material}</p>
             <p><b>Video YouTube:</b> ${tarea.video}</p>
             <br>
-            ${tarea.imagenBoard ? `<img src="https://sphairatech.com/images/task-board/${tarea.imagenBoard}" alt="Imagen de la tarea">` : ''}
+            ${tarea.imagenBoard ? `<img src="https://appsphairatech.com/images/task-board/${tarea.imagenBoard}" alt="Imagen de la tarea">` : ''}
         </div>
     `;
 
@@ -1587,9 +1602,9 @@ export class CalendarioComponent implements OnInit {
       (response) => {
         this.respPostPartido = new RespPostPartido({});
         this.showModalFormPostPartido = false;
-        if(!response.data){
+        if (!response.data) {
           alert('No se han enviado las respuestas porque ya se rellenó anteriormente y solo se puede una vez por partido.');
-        } else {          
+        } else {
           alert('Respuestas enviadas correctamente.');
         }
       },
@@ -1783,6 +1798,12 @@ export class CalendarioComponent implements OnInit {
   }
 
   onSelectGolTypes(event: any): void {
+    /*if (event.target.value === 'En propia')
+      this.isSelectDisabled = false;
+    else
+      this.isSelectDisabled = true;*/
+
+
     if (event.target.value === 'Falta disparo directo' || event.target.value === 'Penalti') {
       //no va haber nada mas
       this.selectedGolTypes = '';
@@ -1803,11 +1824,6 @@ export class CalendarioComponent implements OnInit {
     }
     this.cat11 = event.target.value;
     this.cdr.detectChanges(); // Forzar la detección de cambios
-
-    if (event.target.value === 'En propia')
-      this.isSelectDisabled = false;
-    else
-      this.isSelectDisabled = true;
 
   }
 
@@ -1878,10 +1894,10 @@ export class CalendarioComponent implements OnInit {
         this.selectedOptionGolTypes = this.golAvanzadoEnContra.option;
         this.selectedGolTypesCombi = this.golAvanzadoEnContra.combinado;
         access = true;
-        if (this.selectedGolTypes === 'En propia')
+        /*if (this.selectedGolTypes === 'En propia')
           this.isSelectDisabled = false;
         else
-          this.isSelectDisabled = true;
+          this.isSelectDisabled = true;*/
       } else {
         this.golAvanzadoEnContra = new GolPostPartido({});
       }
@@ -2198,6 +2214,7 @@ export class CalendarioComponent implements OnInit {
       ...this.jugadoresTitulares.map((jugador: ConvocatoriaUI) => jugador.nombre)
     ];
 
+    ui.mailEntrenador = this.usuarioActual?.mail !== undefined ? this.usuarioActual?.mail : '';
     console.log(ui);
 
     this.playerService.notificateMatchPlayer(ui, this.teamId).subscribe(response => {
@@ -2205,24 +2222,121 @@ export class CalendarioComponent implements OnInit {
     });
   }
 
-  match2 = {
-    rivalName: 'Atlético de Madrid',
-    terreno: 'Estadio Santiago Bernabeu',
-    imgClub: 'https://sphairatech.com/images/user/2108952-imguser.png',
+  match2: any = {
+    rivalName: '',
+    terreno: '',
+    imgClub: '',
+    horaQuedada: '',
+    horaPartido: '',
+    lugar: '',
+    puntosFuertesRival: '',
+    puntosDebilesRival: '',
+    jugadoresClaveRival: '',
+    estiloJuegoRival: '',
+    ultimosResultadosRival: '',
+    formacionesRecientesRival: '',
+    patronesOfensivosRival: '',
+    patronesDefensivosRival: '',
+    tendenciasTacticasRival: '',
+    datosIndividualesRival: '',
+    abpsRival: '',
+    formacionInicial: '',
+    planJuegoAtaque: '',
+    planJuegoDefensa: '',
+    transicionesOfensivas: '',
+    transicionesDefensivas: '',
+    abpsOfensivas: '',
+    abpsDefensivas: '',
+    rolesEspecificos: '',
+    ajustesTacticos: '',
+    refereeName: ''
   };
 
-  generatePDF() {
+  showModalPDF = false;
+
+  convertImgToBase64URL(url: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = 'Anonymous';
+      img.src = url;
+
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.height = img.height;
+        canvas.width = img.width;
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          const dataURL = canvas.toDataURL('image/png');
+          resolve(dataURL);
+        } else {
+          reject(new Error('Failed to get canvas context.'));
+        }
+      };
+
+      img.onerror = () => {
+        reject(new Error('Failed to load image.'));
+      };
+    });
+  }
+
+  async generatePDF() {
+    this.match2.rivalName = this.match.rivalName;
+    this.match2.terreno = this.match.terreno;
+    this.match2.lugar = this.match.lugar;
+    this.match2.horaQuedada = this.match.hora + ':' + this.match.minutos;
+    this.match2.horaPartido = this.match.horaEmpieza + ':' + this.match.minutosEmpieza;
+    this.match2.puntosFuertesRival = this.match.puntosFuertesRival;
+    this.match2.puntosDebilesRival = this.match.puntosDebilesRival;
+    this.match2.jugadoresClaveRival = this.match.jugadoresClaveRival;
+    this.match2.estiloJuegoRival = this.match.estiloJuegoRival;
+    this.match2.ultimosResultadosRival = this.match.ultimosResultadosRival;
+    this.match2.formacionesRecientesRival = this.match.formacionesRecientesRival;
+    this.match2.patronesOfensivosRival = this.match.patronesOfensivosRival;
+    this.match2.patronesDefensivosRival = this.match.patronesDefensivosRival;
+    this.match2.tendenciasTacticasRival = this.match.tendenciasTacticasRival;
+    this.match2.datosIndividualesRival = this.match.datosIndividualesRival;
+    this.match2.abpsRival = this.match.abpsRival;
+    this.match2.formacionInicial = this.match.formacionInicial;
+    this.match2.planJuegoAtaque = this.match.planJuegoAtaque;
+    this.match2.planJuegoDefensa = this.match.planJuegoDefensa;
+    this.match2.transicionesOfensivas = this.match.transicionesOfensivas;
+    this.match2.transicionesDefensivas = this.match.transicionesDefensivas;
+    this.match2.abpsOfensivas = this.match.abpsOfensivas;
+    this.match2.abpsDefensivas = this.match.abpsDefensivas;
+    this.match2.rolesEspecificos = this.match.rolesEspecificos;
+    this.match2.ajustesTacticos = this.match.ajustesTacticos;
+    this.match2.refereeName = this.match.refereeName;
+
+    try {
+      const base64Img = await this.convertImgToBase64URL(this.match2.imgClub);
+      this.match2.imgClub = base64Img;
+    } catch (error) {
+      console.error('Failed to convert image to Base64:', error);
+      // Establecer una imagen de respaldo o proceder sin la imagen
+      this.match2.imgClub = 'assets/images/512.png';  // Cambia a una imagen predeterminada si es necesario
+    }
+
     const element = document.getElementById('pdf-content');
     const options = {
-      margin:       1,
-      filename:     'informe-partido.pdf',
-      image:        { type: 'jpeg', quality: 0.98 },
-      html2canvas:  { scale: 2 },
-      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+      margin: 0.5,
+      filename: 'informe-partido.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
-    html2pdf().from(element).set(options).save();
 
-    
+    html2pdf().from(element).set(options).save();
   }
+
+  abrirModalPDF() {
+    this.showModalPDF = true;
+  }
+
+  cerrarModalPDF() {
+    this.showModalPDF = false;
+  }
+
+
 }
 

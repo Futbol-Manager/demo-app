@@ -1,1 +1,214 @@
-<p>suscripcion works!</p>
+<div class="container">
+    <h3>Perfiles</h3>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3">
+        <!-- Tarjeta de jugador -->
+        <div class="col mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
+            (click)="selectedHijo(hijo.playerId)">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <div class="col" *ngIf="hijo.picturePlayer">
+                            <img src="https://appsphairatech.com/images/user/{{ hijo.picturePlayer }}" alt="user-image"
+                                width="90" height="90" style="max-width: 100%;">
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center" *ngIf="!hijo.picturePlayer">
+                            <ng-container>
+                                <span class="bi bi-person" style="font-size: 4rem;"></span>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        {{ hijo.nombre }} {{ hijo.apellido }}
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" *ngIf="datosCargados">
+    <h3>Datos de la suscripción</h3>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3">
+        <div class="col mb-3">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column" *ngIf="yesSus">
+                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'M'" class="card-title mt-auto" style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Mensual
+                    </h5>
+                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'T'" class="card-title mt-auto" style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Trimestral
+                    </h5>
+                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'A'" class="card-title mt-auto" style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Anual
+                    </h5>
+                    <p><b>Fecha de inicio:</b> {{ susInfo.dateCreate }}</p>
+                    <p><b>Próxima renovación:</b> {{ susInfo.dateFinal }}</p>
+                    <p><b>Código se susciripción:</b> {{ susInfo.suscripcionTipo.codigo }}</p>
+                    <p><b>Precio:</b> {{ susInfo.suscripcionTipo.precio }}</p>
+                </div>
+                <div class="card-body d-flex flex-column" *ngIf="noSus">
+                    <p><b>Fecha de inicio:</b> -</p>
+                    <p><b>Próxima renovación:</b> -</p>
+                    <p><b>Código se susciripción:</b> -</p>
+                    <p><b>Precio:</b> -</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container" *ngIf="datosCargados">
+    <h1 class="proximamente-title">¡Cuotas!</h1>
+    <!-- Cards con las opciones de suscripción -->
+    <div class="row text-center">
+        <!-- Mensual -->
+        <div class="col-12 col-md-4 mt-3">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <h2 class="card-title">Mensual</h2>
+                        <p class="card-text">4,99€ / mes</p>
+                        <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q7aEPHzMBDrutQn07e2k6q3')">
+                            Seleccionar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Trimestral -->
+        <div class="col-12 col-md-4 mt-3">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <h2 class="card-title">Trimestral</h2>
+                        <p class="card-text">12,99€ / trimestre</p>
+                        <button class="btn btn-primary mt-auto" (click)="select(2, 'price_1Q5x4wHzMBDrutQndQIlqIqX')">
+                            Seleccionar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Anual -->
+        <div class="col-12 col-md-4 mt-3">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <h2 class="card-title">Anual</h2>
+                        <p class="card-text">39,99€ / año</p>
+                        <button class="btn btn-primary mt-auto" (click)="select(3, 'price_1Q5x6DHzMBDrutQnB0xf6HhY')">
+                            Seleccionar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Párrafo explicativo -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <p><strong style="color: #22BF63; font-size: 24px;">¿Estás esperando a que te descubran o vas a tomar la
+                    iniciativa?</strong></p>
+            <p style="font-size: 18px;">Lo sabemos, tienes talento, te esfuerzas en cada partido, pero ¿cuántas veces
+                has sentido que <strong style="color: #22BF63; font-size: 24px;">no estás recibiendo la atención que
+                    mereces</strong>? ¿Vas a dejar tu futuro en manos del azar, esperando a que un scout o un club te
+                vean por casualidad?</p>
+            <p><strong style="color: #22BF63; font-size: 24px;">Es hora de que tomes el control de tu carrera</strong>.
+                Con <strong style="color: #22BF63; font-size: 24px;">Sphaira Player</strong>, vas a estar en el <strong
+                    style="color: #22BF63; font-size: 24px;">punto de mira de</strong> <strong
+                    style="color: #22BF63; font-size: 24px;">scouters</strong> <strong
+                    style="color: #22BF63; font-size: 24px;">y clubes</strong>. No se trata solo de jugar bien, se trata
+                de estar en el lugar correcto y en el momento adecuado, para eso, necesitas Sphaira.</p>
+            <p><strong style="color: #22BF63; font-size: 24px;">¿Qué puedes hacer con Sphaira Player?</strong></p>
+            <ul style="font-size: 18px;">
+                <li><strong style="color: #22BF63; font-size: 24px;">Haz que te vean:</strong> Completa tu perfil con
+                    todos los detalles que los clubes y scouters necesitan saber sobre ti: fecha de nacimiento, lugar de
+                    residencia, país de origen, altura, peso, posición, pierna dominante, y tu CV futbolístico completo,
+                    entre otros.</li>
+                <li><strong style="color: #22BF63; font-size: 24px;">Destaca tu talento:</strong> ¿Tienes jugadas que
+                    hablan por sí solas? Haz que los scouters y clubes vean lo que te hace diferente, lo que te
+                    convierte en el jugador que están buscando. Un <strong
+                        style="color: #22BF63; font-size: 24px;">vídeo con recortes de tus mejores momentos</strong>
+                    puede ser la diferencia entre destacar o pasar desapercibido. Este es tu momento para demostrar que
+                    estás listo para dar el salto.</li>
+            </ul>
+            <p><strong style="color: #22BF63; font-size: 24px;">Catapulta tu carrera:</strong></p>
+            <p style="font-size: 18px;">Estar en <strong style="color: #22BF63; font-size: 24px;">Sphaira
+                    Player</strong> te pone en un lugar visible, donde <strong
+                    style="color: #22BF63; font-size: 24px;">clubes y scouters están buscando talento como el
+                    tuyo</strong>.</p>
+            <p><strong style="color: #22BF63; font-size: 24px;">No esperes a que la oportunidad te llegue estando
+                    sentado en el sofá.</strong> <strong style="color: #22BF63; font-size: 24px;">Crea tu
+                    oportunidad.</strong> Con <strong style="color: #22BF63; font-size: 24px;">Sphaira Player</strong>,
+                puedes ganar visibilidad y hacer que los clubes y scouters te tengan en su radar.</p>
+            <p style="font-size: 18px;">¿Preparado para ser el jugador que todos buscan? <strong
+                    style="color: #22BF63; font-size: 24px;">No dejes tu futuro al azar</strong>. Empieza a construirlo
+                hoy.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver hacer el pago de la sus 
+<div class="modal" id="paymentModal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalSus}">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">Introducir datos de la tarjeta</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSus()"></button>
+                </div>
+                <div class="modal-body">
+                    <form #paymentForm="ngForm">
+                        <div class="row text-center">
+                            <div class="col-12 col-md-12 mt-3">
+                                <label for="cardNumber" class="form-label">Número de tarjeta</label>
+                                <input type="text" class="form-control" id="cardNumber" required
+                                    [(ngModel)]="cardNumber" name="cardNumber">
+                            </div>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-12 col-md-6 mt-3">
+                                <label for="expiryDate" class="form-label">Fecha de caducidad</label>
+                                <input type="text" class="form-control" id="expiryDate" placeholder="MM/AA" required
+                                    [(ngModel)]="expiryDate" name="expiryDate">
+                            </div>
+                            <div class="col-12 col-md-6 mt-3">
+                                <label for="cvc" class="form-label">CVC</label>
+                                <input type="text" class="form-control" id="cvc" required [(ngModel)]="cvc" name="cvc">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="submitSubscription()">Confirmar
+                        suscripción</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>-->
+
+<!-- Modal para editar stripe -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalSus}">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Realizar Pago</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSus()"></button>
+                </div>
+                <div class="modal-body">
+                    <form (ngSubmit)="makePayment()">
+                        <div class="row mb-3">
+                            <div id="card-element"></div> <!-- Elemento de tarjeta de Stripe -->
+                        </div>
+                        <div class="row mb-3">
+                            <button type="submit" class="btn btn-success">Pagar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
