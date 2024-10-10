@@ -1,5 +1,63 @@
 <div class="container">
-    <h1 class="proximamente-title">¡Próximamente!</h1>
+    <h3>Perfiles</h3>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3">
+        <!-- Tarjeta de jugador -->
+        <div class="col mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
+            (click)="selectedHijo(hijo.playerId)">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <div class="col" *ngIf="hijo.picturePlayer">
+                            <img src="https://appsphairatech.com/images/user/{{ hijo.picturePlayer }}" alt="user-image"
+                                width="90" height="90" style="max-width: 100%;">
+                        </div>
+                        <div class="col d-flex justify-content-center align-items-center" *ngIf="!hijo.picturePlayer">
+                            <ng-container>
+                                <span class="bi bi-person" style="font-size: 4rem;"></span>
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        {{ hijo.nombre }} {{ hijo.apellido }}
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" *ngIf="datosCargados">
+    <h3>Datos de la suscripción</h3>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3">
+        <div class="col mb-3">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column" *ngIf="yesSus">
+                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'M'" class="card-title mt-auto" style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Mensual
+                    </h5>
+                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'T'" class="card-title mt-auto" style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Trimestral
+                    </h5>
+                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'A'" class="card-title mt-auto" style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Anual
+                    </h5>
+                    <p><b>Fecha de inicio:</b> {{ susInfo.dateCreate }}</p>
+                    <p><b>Próxima renovación:</b> {{ susInfo.dateFinal }}</p>
+                    <p><b>Código se susciripción:</b> {{ susInfo.suscripcionTipo.codigo }}</p>
+                    <p><b>Precio:</b> {{ susInfo.suscripcionTipo.precio }}</p>
+                </div>
+                <div class="card-body d-flex flex-column" *ngIf="noSus">
+                    <p><b>Fecha de inicio:</b> -</p>
+                    <p><b>Próxima renovación:</b> -</p>
+                    <p><b>Código se susciripción:</b> -</p>
+                    <p><b>Precio:</b> -</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container" *ngIf="datosCargados">
+    <h1 class="proximamente-title">¡Cuotas!</h1>
     <!-- Cards con las opciones de suscripción -->
     <div class="row text-center">
         <!-- Mensual -->
@@ -9,7 +67,7 @@
                     <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
                         <h2 class="card-title">Mensual</h2>
                         <p class="card-text">4,99€ / mes</p>
-                        <button class="btn btn-primary mt-auto" (click)="select(1)">
+                        <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q7aEPHzMBDrutQn07e2k6q3')">
                             Seleccionar
                         </button>
                     </div>
@@ -23,7 +81,7 @@
                     <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
                         <h2 class="card-title">Trimestral</h2>
                         <p class="card-text">12,99€ / trimestre</p>
-                        <button class="btn btn-primary mt-auto" (click)="select(2)">
+                        <button class="btn btn-primary mt-auto" (click)="select(2, 'price_1Q5x4wHzMBDrutQndQIlqIqX')">
                             Seleccionar
                         </button>
                     </div>
@@ -37,7 +95,7 @@
                     <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
                         <h2 class="card-title">Anual</h2>
                         <p class="card-text">39,99€ / año</p>
-                        <button class="btn btn-primary mt-auto" (click)="select(3)">
+                        <button class="btn btn-primary mt-auto" (click)="select(3, 'price_1Q5x6DHzMBDrutQnB0xf6HhY')">
                             Seleccionar
                         </button>
                     </div>
@@ -90,7 +148,7 @@
     </div>
 </div>
 
-<!-- Modal para ver hacer el pago de la sus -->
+<!-- Modal para ver hacer el pago de la sus 
 <div class="modal" id="paymentModal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalSus}">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-dialog modal-dialog-centered">
@@ -101,19 +159,23 @@
                 </div>
                 <div class="modal-body">
                     <form #paymentForm="ngForm">
-                        <div class="mb-3">
-                            <label for="cardNumber" class="form-label">Número de tarjeta</label>
-                            <input type="text" class="form-control" id="cardNumber" required [(ngModel)]="cardNumber"
-                                name="cardNumber">
+                        <div class="row text-center">
+                            <div class="col-12 col-md-12 mt-3">
+                                <label for="cardNumber" class="form-label">Número de tarjeta</label>
+                                <input type="text" class="form-control" id="cardNumber" required
+                                    [(ngModel)]="cardNumber" name="cardNumber">
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="expiryDate" class="form-label">Fecha de caducidad</label>
-                            <input type="text" class="form-control" id="expiryDate" placeholder="MM/AA" required
-                                [(ngModel)]="expiryDate" name="expiryDate">
-                        </div>
-                        <div class="mb-3">
-                            <label for="cvc" class="form-label">CVC</label>
-                            <input type="text" class="form-control" id="cvc" required [(ngModel)]="cvc" name="cvc">
+                        <div class="row text-center">
+                            <div class="col-12 col-md-6 mt-3">
+                                <label for="expiryDate" class="form-label">Fecha de caducidad</label>
+                                <input type="text" class="form-control" id="expiryDate" placeholder="MM/AA" required
+                                    [(ngModel)]="expiryDate" name="expiryDate">
+                            </div>
+                            <div class="col-12 col-md-6 mt-3">
+                                <label for="cvc" class="form-label">CVC</label>
+                                <input type="text" class="form-control" id="cvc" required [(ngModel)]="cvc" name="cvc">
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -125,3 +187,28 @@
             </div>
         </div>
     </div>
+</div>-->
+
+<!-- Modal para editar stripe -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalSus}">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Realizar Pago</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSus()"></button>
+                </div>
+                <div class="modal-body">
+                    <form (ngSubmit)="makePayment()">
+                        <div class="row mb-3">
+                            <div id="card-element"></div> <!-- Elemento de tarjeta de Stripe -->
+                        </div>
+                        <div class="row mb-3">
+                            <button type="submit" class="btn btn-success">Pagar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

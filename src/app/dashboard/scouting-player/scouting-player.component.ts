@@ -4,6 +4,7 @@ import { ScoutingPlayer } from 'src/app/core/services/player/player.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { LoginService } from 'src/app/core/services/login/login.service';
 
 @Component({
   selector: 'app-scouting-player',
@@ -28,11 +29,13 @@ export class ScoutingPlayerComponent implements OnInit {
   showbtnupimg = false;
 
   showModalSus = false;
+  userId = 0;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private playerService: PlayerService,
+    private loginService: LoginService,
     private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
@@ -40,6 +43,11 @@ export class ScoutingPlayerComponent implements OnInit {
     this.route.params.subscribe(params => {
       // Obtener el valor de teamId de los parámetros
       this.playerId = +params['playerId'];  // El + convierte el valor a número
+    });
+
+    this.loginService.usuarioActual.subscribe(user => {
+      this.userId = user?.userId != undefined ? user?.userId : 0;
+      //this.playerIdsList = this.usuarioActual!.playerIds;
     });
 
     this.cargarForm();
@@ -52,13 +60,13 @@ export class ScoutingPlayerComponent implements OnInit {
         this.router.navigate(['/dashboard/inicio']);
         break;
       case 1:
-        this.router.navigate(['/dashboard/suscripcion', this.playerId]);
+        this.router.navigate(['/dashboard/suscripcion', this.userId]);
         break;
     }
   }
 
   cargarForm() {
-    this.playerService.getscoutingplayerbyplayerid(this.playerId).subscribe(
+    this.playerService.getscoutingplayerbyplayerid(this.playerId, this.userId).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
@@ -110,7 +118,7 @@ export class ScoutingPlayerComponent implements OnInit {
       msg = 'Perfil despublicado, ahora está privado.';
     }
 
-    this.playerService.setPublicoPrivadoScoutingPlayerByPlayerId(playerId, value).subscribe(
+    this.playerService.setPublicoPrivadoScoutingPlayerByPlayerId(playerId, value, this.userId).subscribe(
       (response) => {
         if (response.data) {
           const snackBarConfig = new MatSnackBarConfig();

@@ -82,6 +82,15 @@ export class InicioComponent implements OnInit {
           );
         }
       });
+
+      this.checkSuscripcion();
+  }
+
+  checkSuscripcion(){
+
+    //acceder a un endpoint que revisa la sus, que revisara primero la fecha de renovacion, si no paso aun, pues no hacer nada, si paso
+    //revisar en stripe el estado, porque si esta bien, hay que actualizar la fecha y si esta mal, actualizar a F el valido y la fecha, si esta mal
+    // avisar por un alert
   }
 
   // Método para cargar el listado de equipos

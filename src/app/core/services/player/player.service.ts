@@ -241,7 +241,7 @@ export class PlayerService {
         }
     }
     
-    getscoutingplayerbyplayerid(playerId: number): Observable<Response> {
+    getscoutingplayerbyplayerid(playerId: number, userId: number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente
@@ -252,7 +252,7 @@ export class PlayerService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `player/getscoutingplayerbyplayerid/${playerId}`;
+            const url: string = environment.apiUrl + `player/getscoutingplayerbyplayerid/${playerId}/${userId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
@@ -283,7 +283,7 @@ export class PlayerService {
         }
     }
     
-    setPublicoPrivadoScoutingPlayerByPlayerId(playerId: number, value: number): Observable<Response> {
+    setPublicoPrivadoScoutingPlayerByPlayerId(playerId: number, value: number, userId: number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente
@@ -294,7 +294,7 @@ export class PlayerService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `player/setpublicooprivadoscoutingplayer/${playerId}/${value}`;
+            const url: string = environment.apiUrl + `player/setpublicooprivadoscoutingplayer/${playerId}/${value}/${userId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });

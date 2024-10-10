@@ -45,7 +45,7 @@ export class CuotasComponent implements OnInit {
     private loginService: LoginService,
     private fb: FormBuilder,
     private elementRef: ElementRef,
-    private http: HttpClient,) {
+    private http: HttpClient) {
   }
 
   async ngOnInit(): Promise<void> {

@@ -4,7 +4,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
-import { HorarioTeam, Team, TeamNew } from './team.model';
+import { HorarioTeam, SubscriptionRequest, Suscripcion, Team, TeamNew } from './team.model';
 import { CuotasClub, HistoryCuotasClub } from '../models/club.model';
 import { RopaClub } from './club.model';
 
@@ -484,7 +484,7 @@ export class TeamService {
     
 
     // Método para crear o actualizar stripe como club
-    createSubscription(dto: HorarioTeam): Observable<any> {
+    createSubscription(dto: SubscriptionRequest): Observable<any> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente
@@ -506,7 +506,7 @@ export class TeamService {
     }
 
     // Método para obtener la suscripcionDTO de un playerID
-    getSubscriptionByPlayerId(playerId: number): Observable<any> {
+    getSubscriptionByPlayerId(playerId: number, userId: number): Observable<any> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
         // Verifica si el token está presente
@@ -517,7 +517,7 @@ export class TeamService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `stripe/getsubscriptionbyplayerid/${playerId}`;
+            const url: string = environment.apiUrl + `stripe/getsubscriptionbyplayerid/${playerId}/${userId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
