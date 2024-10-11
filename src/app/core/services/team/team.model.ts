@@ -223,4 +223,23 @@ export class SubscriptionRequest {
   }
 }
 
+export class CancelSubscriptionRequest {
+  subscriptionId: string;
+  userId: number;
+  playerId: number;
+  nuevo: number;
+  suscripcionStripeId: string;
+  suscripcionTiposId: number;
+
+  constructor(object: any) {
+    this.subscriptionId = object.subscriptionId || 0;
+    this.userId = object.userId || 0;
+    this.playerId = object.playerId || 0;
+    this.nuevo = object.nuevo || 0;
+    this.suscripcionStripeId = object.suscripcionStripeId || '';
+    this.suscripcionTiposId = object.suscripcionTiposId || 0;
+  }
+}
+
+
 

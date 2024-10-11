@@ -5,7 +5,7 @@ import { ActivatedRoute } from '@angular/router';
 import { loadStripe } from '@stripe/stripe-js';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import { SubscriptionRequest, Suscripcion, SuscripcionTipo } from 'src/app/core/services/team/team.model';
+import { CancelSubscriptionRequest, SubscriptionRequest, Suscripcion, SuscripcionTipo } from 'src/app/core/services/team/team.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 
@@ -40,6 +40,9 @@ export class SuscripcionComponent implements OnInit {
   susInfo: any;
   yesSus = false;
   noSus = false;
+  cancelSus: CancelSubscriptionRequest = new CancelSubscriptionRequest({});
+  cambiarSus: SubscriptionRequest = new SubscriptionRequest({});
+
 
   constructor(
     private route: ActivatedRoute,
@@ -104,24 +107,17 @@ export class SuscripcionComponent implements OnInit {
     this.teamService.getSubscriptionByPlayerId(this.playerIdSelected, this.userId).subscribe(
       (response: Response) => {
         console.log(response.data);
-        if(response.data.suscripcionId != 0) {
+        if (response.data.suscripcionId != 0) {
           this.susInfo = response.data;
           this.yesSus = true;
           this.noSus = false;
         } else {
+          this.susInfo = null;
           this.noSus = true;
           this.yesSus = false;
         }
-        //so tiene una sus, dejarla seleccionada
+        //si tiene una sus, dejarla seleccionada
         this.datosCargados = true;
-        // Verifica que la propiedad 'data' exista en la respuesta
-        /* if (response.data !== null) {
-           this.scoutingPlayer = response.data;
-         } else {
-           this.scoutingPlayer.playerId = this.playerId;
-           console.error('No hay datos', response);
-         }
-         this.datosCargados = true;*/
       },
       (error) => {
         console.error('Error al cargar el los datos', error);
@@ -141,11 +137,16 @@ export class SuscripcionComponent implements OnInit {
         this.tiempo = 'A';
         break;
     }
-    this.showModalSus = true;
+
+    if (this.susInfo != null) {
+      this.confirmCambiarSuscripcion();
+    } else {
+      this.showModalSus = true;
+    }
   }
 
   // Enviar los datos al backend para crear la suscripción
-  submitSubscription() {
+  /*submitSubscription() {
     const paymentData = {
       userId: this.userId,
       subscriptionType: this.selected, // 1 = Mensual, 2 = Trimestral, 3 = Anual
@@ -162,7 +163,7 @@ export class SuscripcionComponent implements OnInit {
       }, error => {
         console.error('Error al crear la suscripción', error);
       });
-  }
+  }*/
 
   async makePayment() {
     const { paymentMethod, error } = await this.stripe?.createPaymentMethod({
@@ -212,7 +213,7 @@ export class SuscripcionComponent implements OnInit {
       // Llamar a tu servicio para procesar la suscripción
       this.teamService.createSubscription(subscriptionRequest).subscribe(
         (response: Response) => {
-          if(response.data){
+          if (response.data) {
             alert('Suscripción creada con éxito:');
             this.cerrarModalSus();
             console.log('Suscripción creada con éxito:', response);
@@ -227,5 +228,80 @@ export class SuscripcionComponent implements OnInit {
 
   cerrarModalSus() {
     this.showModalSus = false;
+  }
+
+  cancelarSuscripcion() {
+    this.cancelSus = {
+      playerId: this.susInfo.playerId,
+      userId: this.susInfo.userId,
+      nuevo: 2,
+      suscripcionStripeId: this.susInfo.suscripcionStripeId,
+      subscriptionId: this.susInfo.subscriptionId,
+      suscripcionTiposId: this.selected
+    }
+
+    // Llamar a tu servicio para procesar la suscripción
+    this.teamService.cancelSubscription(this.cancelSus).subscribe(
+      (response: Response) => {
+        if (response.data) {
+          alert('Suscripción creada con éxito:');
+          this.cerrarModalSus();
+          console.log('Suscripción creada con éxito:', response);
+        }
+      },
+      (error) => {
+        console.error('Error al crear la suscripción:', error);
+      }
+    );
+  }
+
+  cambiarSuscripcion() {
+    /*this.cambiarSus = {
+      email: this.susInfo.email
+    }*/
+
+    // Crear objeto con la suscripción
+    const susTipo: SuscripcionTipo = {
+      suscripcionTiposId: this.selected,    // ID del tipo de suscripción seleccionado
+      codigo: '',                           // Si no tienes el código, puedes dejarlo vacío
+      descripcion: '',                      // Igual con la descripción
+      priceId: '',                          // Deberás obtener el priceId si es necesario
+      precio: '',                           // Puedes dejar el precio vacío o poner un valor predeterminado
+      tiempo: this.tiempo                            // Igual para el tiempo
+    };
+
+    this.susInfo.suscripcionTipo = susTipo;
+
+    const subscriptionRequest: SubscriptionRequest = {
+      userId: this.userId,
+      email: this.usuarioActual?.mail === undefined ? '' : this.usuarioActual?.mail,
+      name: this.usuarioActual?.firstName === undefined ? '' : this.usuarioActual?.firstName,
+      priceId: this.precioId, // Aquí va el ID del plan de precios en Stripe
+      paymentMethodId: '', // ID del PaymentMethod obtenido de Stripe
+      suscripcion: this.susInfo
+    };
+
+    // Llamar a tu servicio para procesar la suscripción
+    this.teamService.updateSubscription(subscriptionRequest).subscribe(
+      (response: Response) => {
+        if (response.data) {
+          alert('Suscripción creada con éxito:');
+          this.cerrarModalSus();
+          console.log('Suscripción creada con éxito:', response);
+        }
+      },
+      (error) => {
+        console.error('Error al crear la suscripción:', error);
+      }
+    );
+
+    //cambiar sus
+  }
+
+  confirmCambiarSuscripcion() {
+    const confirmacion = confirm('AVISO: Vas a cancelar la suscripción anterior y a establecer la suscripción seleccionada. ¿Estás seguro?');
+    if (confirmacion) {
+      this.cambiarSuscripcion();
+    }
   }
 }
