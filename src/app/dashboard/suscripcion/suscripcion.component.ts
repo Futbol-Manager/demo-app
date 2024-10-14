@@ -82,8 +82,8 @@ export class SuscripcionComponent implements OnInit {
     //ver primero si existe alguna suscripcion 
     //obtenerSuscripcionActual()
 
-    //this.stripe = await loadStripe('pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL'); // Reemplaza con tu clave pública
-    this.stripe = await loadStripe('pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU'); // Reemplaza con tu clave pública
+    this.stripe = await loadStripe('pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL'); // Reemplaza con tu clave pública
+    //this.stripe = await loadStripe('pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU'); // Reemplaza con tu clave pública
     const elements = this.stripe.elements();
     this.card = elements.create('card');
     this.card.mount('#card-element');
@@ -166,6 +166,7 @@ export class SuscripcionComponent implements OnInit {
   }*/
 
   async makePayment() {
+    // Crear el PaymentMethod con la tarjeta
     const { paymentMethod, error } = await this.stripe?.createPaymentMethod({
       type: 'card',
       card: this.card
@@ -173,57 +174,60 @@ export class SuscripcionComponent implements OnInit {
 
     if (error) {
       console.error(error);
-    } else {
-      // Crear objeto con la suscripción
-      const susCripcion = {
-        userId: this.userId,
-        subscriptionType: { suscripcionTiposId: this.selected }, // El tipo de suscripción
-        paymentMethodId: paymentMethod?.id // ID del PaymentMethod de Stripe
-      };
-
-      const susTipo: SuscripcionTipo = {
-        suscripcionTiposId: this.selected,    // ID del tipo de suscripción seleccionado
-        codigo: '',                           // Si no tienes el código, puedes dejarlo vacío
-        descripcion: '',                      // Igual con la descripción
-        priceId: '',                          // Deberás obtener el priceId si es necesario
-        precio: '',                           // Puedes dejar el precio vacío o poner un valor predeterminado
-        tiempo: this.tiempo                            // Igual para el tiempo
-      };
-
-      const subscriptionRequest: SubscriptionRequest = {
-        userId: this.userId,
-        email: this.usuarioActual?.mail === undefined ? '' : this.usuarioActual?.mail,
-        name: this.usuarioActual?.firstName === undefined ? '' : this.usuarioActual?.firstName,
-        priceId: this.precioId, // Aquí va el ID del plan de precios en Stripe
-        paymentMethodId: paymentMethod.id, // ID del PaymentMethod obtenido de Stripe
-        suscripcion: {
-          suscripcionId: 0,
-          userId: this.userId,
-          playerId: this.playerIdSelected,
-          suscripcionTipo: susTipo,
-          dateCreate: '',
-          dateFinal: '',
-          suscripcionStripeId: '',
-          valido: '',
-          renueva: 0,
-          clienteStripeId: ''
-        }
-      };
-
-      // Llamar a tu servicio para procesar la suscripción
-      this.teamService.createSubscription(subscriptionRequest).subscribe(
-        (response: Response) => {
-          if (response.data) {
-            alert('Suscripción creada con éxito:');
-            this.cerrarModalSus();
-            console.log('Suscripción creada con éxito:', response);
-          }
-        },
-        (error) => {
-          console.error('Error al crear la suscripción:', error);
-        }
-      );
+      return;
     }
+
+    // Crear objeto con la suscripción
+    const susTipo: SuscripcionTipo = {
+      suscripcionTiposId: this.selected,    // ID del tipo de suscripción seleccionado
+      codigo: '',                           // Si no tienes el código, puedes dejarlo vacío
+      descripcion: '',                      // Igual con la descripción
+      priceId: this.precioId,               // Asegúrate de obtener el priceId correcto para la suscripción
+      precio: '',                           // Precio (puedes usar el valor predeterminado si es necesario)
+      tiempo: this.tiempo                   // El tiempo de la suscripción
+    };
+
+    const subscriptionRequest: SubscriptionRequest = {
+      userId: this.userId,
+      email: this.usuarioActual?.mail || '',
+      name: this.usuarioActual?.firstName || '',
+      priceId: this.precioId,               // Aquí va el ID del plan de precios en Stripe
+      paymentMethodId: paymentMethod?.id || '', // ID del PaymentMethod obtenido de Stripe
+      suscripcion: {
+        suscripcionId: 0,
+        userId: this.userId,
+        playerId: this.playerIdSelected,
+        suscripcionTipo: susTipo,
+        dateCreate: '',
+        dateFinal: '',
+        suscripcionStripeId: '',
+        valido: '',
+        renueva: 0,
+        clienteStripeId: ''
+      }
+    };
+
+    // Llamar al backend para crear la suscripción y obtener el clientSecret
+    this.teamService.createSubscription(subscriptionRequest).subscribe(
+      async (response: Response) => {
+        if (response.data) {
+          // Verificar si el pago requiere acción adicional (SCA)
+          const clientSecret = response.data;
+          const { error: confirmError } = await this.stripe?.confirmCardPayment(clientSecret) || {};
+
+          if (confirmError) {
+            console.error('Error al confirmar el pago:', confirmError);
+            alert('Error al confirmar el pago: ' + confirmError.message);
+          } else {
+            alert('Suscripción creada y pago confirmado con éxito.');
+            this.cerrarModalSus();
+          }
+        }
+      },
+      (error) => {
+        console.error('Error al crear la suscripción:', error);
+      }
+    );
   }
 
   cerrarModalSus() {
@@ -236,8 +240,8 @@ export class SuscripcionComponent implements OnInit {
       userId: this.susInfo.userId,
       nuevo: 2,
       suscripcionStripeId: this.susInfo.suscripcionStripeId,
-      subscriptionId: this.susInfo.subscriptionId,
-      suscripcionTiposId: this.selected
+      subscriptionId: this.susInfo.suscripcionId,
+      suscripcionTiposId: this.susInfo.suscripcionTipo.suscripcionTiposId
     }
 
     // Llamar a tu servicio para procesar la suscripción
@@ -299,9 +303,16 @@ export class SuscripcionComponent implements OnInit {
   }
 
   confirmCambiarSuscripcion() {
-    const confirmacion = confirm('AVISO: Vas a cancelar la suscripción anterior y a establecer la suscripción seleccionada. ¿Estás seguro?');
+    const confirmacion = confirm('AVISO: Vas a cancelar la suscripción anterior y a establecer la suscripción seleccionada, ¿Estás seguro?');
     if (confirmacion) {
       this.cambiarSuscripcion();
+    }
+  }
+
+  confirmCancelarSuscripcion() {
+    const confirmacion = confirm('AVISO: Vas a cancelar la suscripción, la cual no se renovará, tienes hasta entonces para seguir disfrutando, ¿Estás seguro?');
+    if (confirmacion) {
+      this.cancelarSuscripcion();
     }
   }
 }

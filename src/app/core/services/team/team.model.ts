@@ -224,7 +224,7 @@ export class SubscriptionRequest {
 }
 
 export class CancelSubscriptionRequest {
-  subscriptionId: string;
+  subscriptionId: number;
   userId: number;
   playerId: number;
   nuevo: number;

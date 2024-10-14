@@ -42,9 +42,13 @@
                         Anual
                     </h5>
                     <p><b>Fecha de inicio:</b> {{ susInfo.dateCreate }}</p>
-                    <p><b>Próxima renovación:</b> {{ susInfo.dateFinal }}</p>
+                    <p *ngIf="susInfo.renueva === 1" ><b>Próxima renovación:</b> {{ susInfo.dateFinal }}</p>
+                    <p style="color: red;" *ngIf="susInfo.renueva === 0" ><b>Final de suscripción:</b> {{ susInfo.dateFinal }}</p>
                     <p><b>Código se susciripción:</b> {{ susInfo.suscripcionTipo.codigo }}</p>
                     <p><b>Precio:</b> {{ susInfo.suscripcionTipo.precio }}</p>
+                    <a *ngIf="susInfo.renueva === 1" style="color: red;" href="javascript:void(0);" (click)="confirmCancelarSuscripcion()">
+                        Dar de baja suscripción
+                      </a>
                 </div>
                 <div class="card-body d-flex flex-column" *ngIf="noSus">
                     <p><b>Fecha de inicio:</b> -</p>
@@ -67,7 +71,8 @@
                     <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
                         <h2 class="card-title">Mensual</h2>
                         <p class="card-text">4,99€ / mes</p>
-                        <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q5kqMHzMBDrutQnMx4skwfX')">
+                        <!-- <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q5kqMHzMBDrutQnMx4skwfX')"> -->
+                        <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q9Z8KHzMBDrutQnZfd2OCqf')">
                             Seleccionar
                         </button>
                     </div>
