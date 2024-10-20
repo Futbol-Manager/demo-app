@@ -42,7 +42,21 @@ export class SuscripcionComponent implements OnInit {
   noSus = false;
   cancelSus: CancelSubscriptionRequest = new CancelSubscriptionRequest({});
   cambiarSus: SubscriptionRequest = new SubscriptionRequest({});
+  //stripeKey = 'pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL';
+  stripeKey = 'pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU';
+  datosCargadosScouting = false;
+  datosCargadosPlayer = false;
+  datosCargadosClub = false;
+  unidades = 0;
 
+  // Variables para manejar la lógica
+  subscriptionType: string = 'monthly'; // Mensual por defecto
+  numTeams: number = 1; // Número de equipos (por defecto 1)
+  monthlyPrice: number = 9.99; // Precio mensual
+  annualPricePerMonth: number = 4.99; // Precio mensual para la suscripción anual
+  totalPrice: number = this.monthlyPrice; // Total inicial
+
+  susIsNew = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -59,31 +73,35 @@ export class SuscripcionComponent implements OnInit {
 
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
+
+      if (user?.profileType.profileId == 4 || user?.profileType.profileId == 3) {
+        this.teamService.getTeamByPlayer(this.userId.toString()).subscribe(
+          (response: Response) => {
+            if (response.data !== null) {
+              this.listHijos = response.data;
+              if (this.listHijos.length == 1) {
+                //si solo hay uno, dejar ya ese seleccionado.
+                this.playerIdSelected = this.listHijos[0].playerId;
+                //this.obtenerSuscripcionActual();
+              }
+            } else {
+              console.error('La respuesta del servicio no tiene la estructura esperada', response);
+            }
+          },
+          (error) => {
+            console.error('Error al cargar el listado de equipos', error);
+          }
+        );
+      } else if (user?.profileType.profileId == 5) {
+        this.obtenerSuscripcionActual();
+        this.datosCargadosScouting = true;
+      } else if (user?.profileType.profileId == 1) {
+        this.obtenerSuscripcionActual();
+        this.datosCargadosClub = true;
+      }
     });
 
-    this.teamService.getTeamByPlayer(this.userId.toString()).subscribe(
-      (response: Response) => {
-        if (response.data !== null) {
-          this.listHijos = response.data;
-          if (this.listHijos.length == 1) {
-            //si solo hay uno, dejar ya ese seleccionado.
-            this.playerIdSelected = this.listHijos[0].playerId;
-            this.obtenerSuscripcionActual();
-          }
-        } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
-        }
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
-
-    //ver primero si existe alguna suscripcion 
-    //obtenerSuscripcionActual()
-
-    this.stripe = await loadStripe('pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL'); // Reemplaza con tu clave pública
-    //this.stripe = await loadStripe('pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU'); // Reemplaza con tu clave pública
+    this.stripe = await loadStripe(this.stripeKey); // Reemplaza con tu clave pública
     const elements = this.stripe.elements();
     this.card = elements.create('card');
     this.card.mount('#card-element');
@@ -91,16 +109,12 @@ export class SuscripcionComponent implements OnInit {
     this.paymentForm = this.fb.group({
       amount: ['']
     });
-    //obtener el listado de hijos si tiene mas de uno y mostrarlo, 2 botones, que si escoge uno, se ve debajo el plan que tiene y 
-    //si pulsa en el otro hijo, se busca el plan de ese otro hijo y se actualiza la info de la pantalla
-
-    //obtener la sus actual por si quisiera cambiarla y mostrarle cual tiene
-    //this.obtenerSuscripcionActual();
   }
 
   selectedHijo(playerId: number) {
     this.playerIdSelected = playerId;
     this.obtenerSuscripcionActual();
+    this.datosCargadosPlayer = true;
   }
 
   obtenerSuscripcionActual() {
@@ -113,6 +127,7 @@ export class SuscripcionComponent implements OnInit {
           this.noSus = false;
         } else {
           this.susInfo = null;
+          this.susIsNew = true;
           this.noSus = true;
           this.yesSus = false;
         }
@@ -127,6 +142,7 @@ export class SuscripcionComponent implements OnInit {
 
   // Abrir el modal cuando se selecciona una opción de suscripción
   select(option: number, precioId: string) {
+    this.unidades = 1;
     this.precioId = precioId;
     this.selected = option;
     switch (option) {
@@ -144,26 +160,6 @@ export class SuscripcionComponent implements OnInit {
       this.showModalSus = true;
     }
   }
-
-  // Enviar los datos al backend para crear la suscripción
-  /*submitSubscription() {
-    const paymentData = {
-      userId: this.userId,
-      subscriptionType: this.selected, // 1 = Mensual, 2 = Trimestral, 3 = Anual
-      cardNumber: this.cardNumber,
-      expiryDate: this.expiryDate,
-      cvc: this.cvc
-    };
-
-    // Llamar al endpoint para crear la suscripción
-    this.http.post('/api/create-subscription', paymentData)
-      .subscribe(response => {
-        console.log('Suscripción creada con éxito', response);
-        this.showModalSus = false;
-      }, error => {
-        console.error('Error al crear la suscripción', error);
-      });
-  }*/
 
   async makePayment() {
     // Crear el PaymentMethod con la tarjeta
@@ -203,8 +199,9 @@ export class SuscripcionComponent implements OnInit {
         suscripcionStripeId: '',
         valido: '',
         renueva: 0,
-        clienteStripeId: ''
-      }
+        clienteStripeId: '',
+        numeroEquipos: this.unidades //1 solo parascouting y jugador, pero para club y entrenador, va el numero que pongan
+      },
     };
 
     // Llamar al backend para crear la suscripción y obtener el clientSecret
@@ -220,6 +217,7 @@ export class SuscripcionComponent implements OnInit {
             alert('Error al confirmar el pago: ' + confirmError.message);
           } else {
             alert('Suscripción creada y pago confirmado con éxito.');
+            this.obtenerSuscripcionActual();
             this.cerrarModalSus();
           }
         }
@@ -248,9 +246,36 @@ export class SuscripcionComponent implements OnInit {
     this.teamService.cancelSubscription(this.cancelSus).subscribe(
       (response: Response) => {
         if (response.data) {
+          this.obtenerSuscripcionActual();
           alert('Suscripción creada con éxito:');
           this.cerrarModalSus();
           console.log('Suscripción creada con éxito:', response);
+        }
+      },
+      (error) => {
+        console.error('Error al crear la suscripción:', error);
+      }
+    );
+  }
+
+  reactivarSuscripcion() {
+    const subscriptionRequest: SubscriptionRequest = {
+      userId: this.userId,
+      email: this.usuarioActual?.mail === undefined ? '' : this.usuarioActual?.mail,
+      name: this.usuarioActual?.firstName === undefined ? '' : this.usuarioActual?.firstName,
+      priceId: '', // Aquí va el ID del plan de precios en Stripe
+      paymentMethodId: '', // ID del PaymentMethod obtenido de Stripe
+      suscripcion: this.susInfo
+    };
+
+    // Llamar a tu servicio para procesar la suscripción
+    this.teamService.reactivarSubscription(subscriptionRequest).subscribe(
+      (response: Response) => {
+        if (response.data) {
+          this.obtenerSuscripcionActual();
+          alert('Suscripción reactivada con éxito:');
+          //this.cerrarModalSus();
+          //console.log('Suscripción creada con éxito:', response);
         }
       },
       (error) => {
@@ -275,6 +300,7 @@ export class SuscripcionComponent implements OnInit {
     };
 
     this.susInfo.suscripcionTipo = susTipo;
+    this.susInfo.numeroEquipos = this.unidades;
 
     const subscriptionRequest: SubscriptionRequest = {
       userId: this.userId,
@@ -289,6 +315,7 @@ export class SuscripcionComponent implements OnInit {
     this.teamService.updateSubscription(subscriptionRequest).subscribe(
       (response: Response) => {
         if (response.data) {
+          this.obtenerSuscripcionActual();
           alert('Suscripción creada con éxito:');
           this.cerrarModalSus();
           console.log('Suscripción creada con éxito:', response);
@@ -303,7 +330,7 @@ export class SuscripcionComponent implements OnInit {
   }
 
   confirmCambiarSuscripcion() {
-    const confirmacion = confirm('AVISO: Vas a cancelar la suscripción anterior y a establecer la suscripción seleccionada, ¿Estás seguro?');
+    const confirmacion = confirm('AVISO: Vas a cambiar la suscripción que tenias, se cobrará una pequeña comisión de hasta un máximno de 1% ¿Estás seguro?');
     if (confirmacion) {
       this.cambiarSuscripcion();
     }
@@ -313,6 +340,45 @@ export class SuscripcionComponent implements OnInit {
     const confirmacion = confirm('AVISO: Vas a cancelar la suscripción, la cual no se renovará, tienes hasta entonces para seguir disfrutando, ¿Estás seguro?');
     if (confirmacion) {
       this.cancelarSuscripcion();
+    }
+  }
+
+  // Método para calcular el total en función del tipo de suscripción y el número de equipos
+  calculateTotal() {
+    if (this.subscriptionType === 'monthly') {
+      this.totalPrice = this.monthlyPrice * this.numTeams;
+      this.precioId = 'price_1Q67EUHzMBDrutQn0ToeV5OT';
+      this.selected = 7;
+      this.tiempo = 'M';
+    } else if (this.subscriptionType === 'annual') {
+      this.totalPrice = this.annualPricePerMonth * this.numTeams * 12; // Precio anual multiplicado por 12 meses
+      this.precioId = 'price_1QBBQuHzMBDrutQn5lZDwQsZ';
+      this.selected = 8;
+      this.tiempo = 'A';
+    }
+  }
+
+  // Método para confirmar la suscripción
+  confirmSubscription() {
+    this.unidades = this.numTeams;
+    this.showModalSus = true;
+    //alert(`Has seleccionado una suscripción de tipo ${this.subscriptionType} para ${this.numTeams} equipo(s). El total a pagar es de ${this.totalPrice} €.`);
+    // Aquí puedes realizar la lógica para enviar la suscripción
+  }
+
+  confirmSubscription2() {
+    if (this.susInfo.renueva == 0) {
+      alert('Primero debes de reactivar la cuenta para poder cambiar o aplicar una nueva suscripción.');
+    } else {
+      this.unidades = this.numTeams;
+      this.confirmCambiarSuscripcion();
+    }
+  }
+
+  confirmReactivarSubscription() {
+    const confirmacion = confirm('AVISO: Vas a reactivar la suscripción, ¿Estás seguro?');
+    if (confirmacion) {
+      this.reactivarSuscripcion();
     }
   }
 }

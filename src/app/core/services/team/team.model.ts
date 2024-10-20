@@ -171,6 +171,7 @@ export class Suscripcion {
   valido: string;
   renueva: number;
   clienteStripeId: string;
+  numeroEquipos: number;
 
   constructor(object: any) {
     this.suscripcionId = object.suscripcionId || 0;
@@ -181,8 +182,9 @@ export class Suscripcion {
     this.dateFinal = object.dateFinal || '';
     this.suscripcionStripeId = object.suscripcionStripeId || '';
     this.valido = object.valido || '';
-    this.renueva = object.renueva || 0;
+    this.renueva = object.renueva || 1;
     this.clienteStripeId = object.clienteStripeId || '';
+    this.numeroEquipos = object.numeroEquipos || 0;
   }
 }
 

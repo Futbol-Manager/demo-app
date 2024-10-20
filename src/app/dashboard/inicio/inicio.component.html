@@ -43,10 +43,13 @@
   <!-- Botón para abrir el modal de creación de equipo -->
   <div class="container">
     <div class="row">
+      <div class="col text-center" *ngIf="this.usuarioActual!.profileType.profileId == 5">
+        <h2 class="text-dark mt-3">Jugadores de Sphaira</h2>
+      </div>
       <div class="col text-center" *ngIf="this.usuarioActual!.profileType.profileId < 3">
         <h2 class="text-dark mt-3">Listado de Equipos</h2>
       </div>
-      <div class="col text-center" *ngIf="this.usuarioActual!.profileType.profileId > 2">
+      <div class="col text-center" *ngIf="this.usuarioActual!.profileType.profileId == 3 || this.usuarioActual!.profileType.profileId == 4">
         <h2 class="text-dark mt-3">Listado de jugadores</h2>
       </div>
     </div>
@@ -137,6 +140,46 @@
             <h5 class="card-title mt-auto"
               style="color: black; white-space: nowrap; text-overflow: ellipsis;">
               Scouting de {{ hijo.nombre }} {{ hijo.apellido }}
+            </h5>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- parte de scouting -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
+      *ngIf="this.usuarioActual!.profileType.profileId == 5">
+      <!-- Tarjeta de jugador -->
+      <div class="col mb-3" >
+        <div class="card h-100" style="border: 1px solid black;">
+          <div class="card-body d-flex flex-column text-center">
+            <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+              <div class="col d-flex justify-content-center align-items-center">
+                <img src="/assets/iconos/buscar.svg" class="card-img-top mx-auto d-block p-3" style="width: 7em;"
+                  alt="Scouting Icon">
+              </div>
+            </div>
+            <h5 class="card-title mt-auto"
+              style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+              Ver todos
+            </h5>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarjeta de scouting -->
+      <div class="col mb-3" >
+        <div class="card h-100" style="border: 1px solid black;">
+          <div class="card-body d-flex flex-column text-center">
+            <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+              <div class="col d-flex justify-content-center align-items-center">
+                <img src="/assets/iconos/estrella.svg" class="card-img-top mx-auto d-block p-3" style="width: 7em;"
+                  alt="Scouting Icon">
+              </div>
+            </div>
+            <h5 class="card-title mt-auto"
+              style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+              Ver favoritos
             </h5>
           </div>
         </div>

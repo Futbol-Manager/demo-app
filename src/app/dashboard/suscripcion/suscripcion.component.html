@@ -1,8 +1,9 @@
 <div class="container">
-    <h3>Perfiles</h3>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3">
+    <h3 *ngIf="this.usuarioActual!.profileType.profileId < 5 && this.usuarioActual!.profileType.profileId > 5">Perfiles
+    </h3>
+    <div class="row p-3">
         <!-- Tarjeta de jugador -->
-        <div class="col mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
+        <div class="col-12 col-md-6 mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
             (click)="selectedHijo(hijo.playerId)">
             <div class="card h-100" style="border: 1px solid black;">
                 <div class="card-body d-flex flex-column text-center">
@@ -28,27 +29,38 @@
 
 <div class="container" *ngIf="datosCargados">
     <h3>Datos de la suscripción</h3>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3">
-        <div class="col mb-3">
+    <div class="row p-3">
+        <div class="col-12 col-md-6 mb-3">
             <div class="card h-100" style="border: 1px solid black;">
                 <div class="card-body d-flex flex-column" *ngIf="yesSus">
-                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'M'" class="card-title mt-auto" style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
+                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'M'" class="card-title mt-3"
+                        style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
                         Mensual
                     </h5>
-                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'T'" class="card-title mt-auto" style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
+                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'T'" class="card-title mt-3"
+                        style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
                         Trimestral
                     </h5>
-                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'A'" class="card-title mt-auto" style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
+                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'A'" class="card-title mt-3"
+                        style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
                         Anual
                     </h5>
                     <p><b>Fecha de inicio:</b> {{ susInfo.dateCreate }}</p>
-                    <p *ngIf="susInfo.renueva === 1" ><b>Próxima renovación:</b> {{ susInfo.dateFinal }}</p>
-                    <p style="color: red;" *ngIf="susInfo.renueva === 0" ><b>Final de suscripción:</b> {{ susInfo.dateFinal }}</p>
+                    <p *ngIf="susInfo.renueva === 1"><b>Próxima renovación:</b> {{ susInfo.dateFinal }}</p>
+                    <p style="color: red;" *ngIf="susInfo.renueva === 0"><b>Final de suscripción:</b> {{
+                        susInfo.dateFinal }}</p>
                     <p><b>Código se susciripción:</b> {{ susInfo.suscripcionTipo.codigo }}</p>
-                    <p><b>Precio:</b> {{ susInfo.suscripcionTipo.precio }}</p>
-                    <a *ngIf="susInfo.renueva === 1" style="color: red;" href="javascript:void(0);" (click)="confirmCancelarSuscripcion()">
+                    <p><b>Precio de la suscripción:</b> {{ susInfo.suscripcionTipo.precio }} €</p>
+                    <p *ngIf="susInfo.numeroEquipos > 1"><b>Número de equipos:</b> {{ susInfo.numeroEquipos }} (x {{
+                        susInfo.suscripcionTipo.precio }} €)</p>
+                    <a *ngIf="susInfo.renueva === 1" style="color: red;" href="javascript:void(0);"
+                        (click)="confirmCancelarSuscripcion()">
                         Dar de baja suscripción
-                      </a>
+                    </a>
+                    <a *ngIf="susInfo.renueva === 0" style="color: green;" href="javascript:void(0);"
+                        (click)="confirmReactivarSubscription()">
+                        Reactivar suscripción
+                    </a>
                 </div>
                 <div class="card-body d-flex flex-column" *ngIf="noSus">
                     <p><b>Fecha de inicio:</b> -</p>
@@ -58,9 +70,63 @@
                 </div>
             </div>
         </div>
+        <div *ngIf="datosCargadosClub" class="col-12 col-md-6 mb-3">
+            <div class="card h-100" style="border: 1px solid black; padding: 1em;">
+                <!-- precios para scouting -->
+                <h1 class="text-center">Suscripción de Club</h1>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <!-- Combo para seleccionar el tipo de suscripción -->
+                        <div class="form-group">
+                            <label for="subscriptionType">Tipo de suscripción</label>
+                            <select class="form-control custom-input" id="subscriptionType"
+                                [(ngModel)]="subscriptionType" (change)="calculateTotal()">
+                                <option value="monthly">Mensual - 9,99€ / mes</option>
+                                <option value="annual">Anual - 59,88€ / año (4,99€ / mes)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <!-- Contenido de la subcolumna -->
+                        <div class="form-group">
+                            <label for="numTeams">Número de equipos</label>
+                            <input type="number" id="numTeams" class="form-control custom-input" [(ngModel)]="numTeams"
+                                (input)="calculateTotal()" min="1" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <!-- Contenido de la subcolumna -->
+                        <div class="form-group">
+                            <div class="mt-4">
+                                <h3 class="text-center">Total a pagar: {{ totalPrice | currency: 'EUR':'symbol' }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <!-- Contenido de la subcolumna -->
+                        <div class="form-group text-center">
+                            <button *ngIf="susInfo == null" class="btn btn-success"
+                                (click)="confirmSubscription()">Confirmar
+                                suscripción</button>
+                            <button *ngIf="susInfo != null" class="btn btn-success"
+                                (click)="confirmSubscription2()">Cambiar
+                                suscripción</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-<div class="container" *ngIf="datosCargados">
+
+<!-- Precios para player o padre -->
+<div class="container" *ngIf="datosCargadosPlayer">
     <h1 class="proximamente-title">¡Cuotas!</h1>
     <!-- Cards con las opciones de suscripción -->
     <div class="row text-center">
@@ -72,7 +138,7 @@
                         <h2 class="card-title">Mensual</h2>
                         <p class="card-text">4,99€ / mes</p>
                         <!-- <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q5kqMHzMBDrutQnMx4skwfX')"> -->
-                        <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q9Z8KHzMBDrutQnZfd2OCqf')">
+                        <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q5kqMHzMBDrutQnMx4skwfX')">
                             Seleccionar
                         </button>
                     </div>
@@ -86,6 +152,8 @@
                     <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
                         <h2 class="card-title">Trimestral</h2>
                         <p class="card-text">12,99€ / trimestre</p>
+                        <!-- <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q9vMmHzMBDrutQnQxFCy8jg')"> PRO -->
+                        <!-- <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q5x4wHzMBDrutQndQIlqIqX')"> TEST-->
                         <button class="btn btn-primary mt-auto" (click)="select(2, 'price_1Q5x4wHzMBDrutQndQIlqIqX')">
                             Seleccionar
                         </button>
@@ -100,7 +168,7 @@
                     <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
                         <h2 class="card-title">Anual</h2>
                         <p class="card-text">39,99€ / año</p>
-                        <button class="btn btn-primary mt-auto" (click)="select(3, 'price_1Q5x6DHzMBDrutQnB0xf6HhY')">
+                        <button class="btn btn-primary mt-auto" (click)="select(3, 'price_1Q9vMpHzMBDrutQnxRjDU8Ru')">
                             Seleccionar
                         </button>
                     </div>
@@ -153,46 +221,56 @@
     </div>
 </div>
 
-<!-- Modal para ver hacer el pago de la sus 
-<div class="modal" id="paymentModal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalSus}">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="paymentModalLabel">Introducir datos de la tarjeta</h5>
-                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSus()"></button>
+<!-- precios para scouting -->
+<div class="container" *ngIf="datosCargadosScouting">
+    <h1 class="proximamente-title">¡Cuotas!</h1>
+    <!-- Cards con las opciones de suscripción -->
+    <div class="row text-center">
+        <!-- Mensual -->
+        <div class="col-12 col-md-4 mt-3">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <h2 class="card-title">Mensual</h2>
+                        <p class="card-text">19,99€ / mes</p>
+                        <button class="btn btn-primary mt-auto" (click)="select(4, 'price_1Q9vMwHzMBDrutQn52GvkYnK')">
+                            Seleccionar
+                        </button>
+                    </div>
                 </div>
-                <div class="modal-body">
-                    <form #paymentForm="ngForm">
-                        <div class="row text-center">
-                            <div class="col-12 col-md-12 mt-3">
-                                <label for="cardNumber" class="form-label">Número de tarjeta</label>
-                                <input type="text" class="form-control" id="cardNumber" required
-                                    [(ngModel)]="cardNumber" name="cardNumber">
-                            </div>
-                        </div>
-                        <div class="row text-center">
-                            <div class="col-12 col-md-6 mt-3">
-                                <label for="expiryDate" class="form-label">Fecha de caducidad</label>
-                                <input type="text" class="form-control" id="expiryDate" placeholder="MM/AA" required
-                                    [(ngModel)]="expiryDate" name="expiryDate">
-                            </div>
-                            <div class="col-12 col-md-6 mt-3">
-                                <label for="cvc" class="form-label">CVC</label>
-                                <input type="text" class="form-control" id="cvc" required [(ngModel)]="cvc" name="cvc">
-                            </div>
-                        </div>
-                    </form>
+            </div>
+        </div>
+        <!-- Trimestral -->
+        <div class="col-12 col-md-4 mt-3">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <h2 class="card-title">Trimestral</h2>
+                        <p class="card-text">54,99€ / trimestre</p>
+                        <!-- <button class="btn btn-primary mt-auto" (click)="select(2, 'price_1Q5xDSHzMBDrutQnQToE4RdJ')"> -->
+                        <button class="btn btn-primary mt-auto" (click)="select(5, 'price_1Q9vMzHzMBDrutQnXoQQsSsN')">
+                            Seleccionar
+                        </button>
+                    </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" (click)="submitSubscription()">Confirmar
-                        suscripción</button>
+            </div>
+        </div>
+        <!-- Anual -->
+        <div class="col-12 col-md-4 mt-3">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <h2 class="card-title">Anual</h2>
+                        <p class="card-text">199,99€ / año</p>
+                        <button class="btn btn-primary mt-auto" (click)="select(6, 'price_1Q9vN2HzMBDrutQndn1P09nY')">
+                            Seleccionar
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>-->
+</div>
 
 <!-- Modal para editar stripe -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalSus}">

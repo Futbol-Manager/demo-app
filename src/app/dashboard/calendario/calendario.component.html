@@ -3291,7 +3291,7 @@
                     <!-- Botones de acción -->
                     <div class="d-flex justify-content-between">
                       <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
-                        class="btn btn-secondary" (click)="abrirModalPDF()">
+                        class="btn btn-secondary" (click)="printDiv(tarea)">
                         <i class="bi bi-printer"></i> Imprimir
                       </button>
                       <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
