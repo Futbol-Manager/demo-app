@@ -44,3 +44,37 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+.spinner {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.double-bounce1,
+.double-bounce2 {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #00a86b;
+    opacity: 0.6;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: bounce 2s infinite ease-in-out;
+}
+
+.double-bounce2 {
+    animation-delay: -1s;
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: scale(0);
+    }
+
+    50% {
+        transform: scale(1);
+    }
+}

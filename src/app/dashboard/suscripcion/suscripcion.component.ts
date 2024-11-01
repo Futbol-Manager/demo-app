@@ -18,7 +18,7 @@ import { User } from 'src/app/core/models/users/user.model';
 export class SuscripcionComponent implements OnInit {
 
   userId = 0;
-  selected = 0;
+  selected = 7;
 
   cardNumber = '';
   expiryDate = '';
@@ -35,28 +35,34 @@ export class SuscripcionComponent implements OnInit {
   susCripcion: Suscripcion = new Suscripcion({});
   susTipo: SuscripcionTipo = new SuscripcionTipo({});
   usuarioActual!: User | null;
-  precioId = '';
+  precioId = 'price_1QC6W3HzMBDrutQnKitrxLpV';
   tiempo = 'M';
   susInfo: any;
   yesSus = false;
   noSus = false;
   cancelSus: CancelSubscriptionRequest = new CancelSubscriptionRequest({});
   cambiarSus: SubscriptionRequest = new SubscriptionRequest({});
-  //stripeKey = 'pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL';
-  stripeKey = 'pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU';
+  stripeKey = 'pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL';
+  //stripeKey = 'pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU';
   datosCargadosScouting = false;
   datosCargadosPlayer = false;
   datosCargadosClub = false;
+  datosCargadosEntrenador = false;
   unidades = 0;
 
   // Variables para manejar la lógica
   subscriptionType: string = 'monthly'; // Mensual por defecto
   numTeams: number = 1; // Número de equipos (por defecto 1)
-  monthlyPrice: number = 9.99; // Precio mensual
-  annualPricePerMonth: number = 4.99; // Precio mensual para la suscripción anual
+  monthlyPrice: number = 3.99; // Precio mensual
+  annualPricePerMonth: number = 2.50; // Precio mensual para la suscripción anual
+  monthlyPriceClub: number = 9.99; // Precio mensual
+  annualPricePerMonthClub: number = 4.99; // Precio mensual para la suscripción anual
   totalPrice: number = this.monthlyPrice; // Total inicial
+  totalPriceClub: number = this.monthlyPriceClub; // Total inicial
 
   susIsNew = false;
+  aceptaCondiciones = false;
+  isLoading: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -98,6 +104,9 @@ export class SuscripcionComponent implements OnInit {
       } else if (user?.profileType.profileId == 1) {
         this.obtenerSuscripcionActual();
         this.datosCargadosClub = true;
+      } else if (user?.profileType.profileId == 2) {
+        this.obtenerSuscripcionActual();
+        this.datosCargadosEntrenador = true;
       }
     });
 
@@ -162,6 +171,9 @@ export class SuscripcionComponent implements OnInit {
   }
 
   async makePayment() {
+    // Mostrar el spinner y ocultar el botón de pagar
+    this.isLoading = true;
+
     // Crear el PaymentMethod con la tarjeta
     const { paymentMethod, error } = await this.stripe?.createPaymentMethod({
       type: 'card',
@@ -170,25 +182,26 @@ export class SuscripcionComponent implements OnInit {
 
     if (error) {
       console.error(error);
+      this.isLoading = false; // Dejar de mostrar el spinner si hay un error
       return;
     }
 
     // Crear objeto con la suscripción
     const susTipo: SuscripcionTipo = {
-      suscripcionTiposId: this.selected,    // ID del tipo de suscripción seleccionado
-      codigo: '',                           // Si no tienes el código, puedes dejarlo vacío
-      descripcion: '',                      // Igual con la descripción
-      priceId: this.precioId,               // Asegúrate de obtener el priceId correcto para la suscripción
-      precio: '',                           // Precio (puedes usar el valor predeterminado si es necesario)
-      tiempo: this.tiempo                   // El tiempo de la suscripción
+      suscripcionTiposId: this.selected,
+      codigo: '',
+      descripcion: '',
+      priceId: this.precioId,
+      precio: '',
+      tiempo: this.tiempo
     };
 
     const subscriptionRequest: SubscriptionRequest = {
       userId: this.userId,
       email: this.usuarioActual?.mail || '',
       name: this.usuarioActual?.firstName || '',
-      priceId: this.precioId,               // Aquí va el ID del plan de precios en Stripe
-      paymentMethodId: paymentMethod?.id || '', // ID del PaymentMethod obtenido de Stripe
+      priceId: this.precioId,
+      paymentMethodId: paymentMethod?.id || '',
       suscripcion: {
         suscripcionId: 0,
         userId: this.userId,
@@ -200,30 +213,34 @@ export class SuscripcionComponent implements OnInit {
         valido: '',
         renueva: 0,
         clienteStripeId: '',
-        numeroEquipos: this.unidades //1 solo parascouting y jugador, pero para club y entrenador, va el numero que pongan
-      },
+        numeroEquipos: this.unidades
+      }
     };
 
     // Llamar al backend para crear la suscripción y obtener el clientSecret
     this.teamService.createSubscription(subscriptionRequest).subscribe(
       async (response: Response) => {
         if (response.data) {
-          // Verificar si el pago requiere acción adicional (SCA)
-          const clientSecret = response.data;
+          const clientSecret = response.data.clientSecret;
           const { error: confirmError } = await this.stripe?.confirmCardPayment(clientSecret) || {};
 
           if (confirmError) {
-            console.error('Error al confirmar el pago:', confirmError);
             alert('Error al confirmar el pago: ' + confirmError.message);
+            //se elimina el registro de la bbdd            
+            this.teamService.deleteSuscripcionById(response.data.suscripcion.suscripcionId).subscribe();
           } else {
             alert('Suscripción creada y pago confirmado con éxito.');
             this.obtenerSuscripcionActual();
-            this.cerrarModalSus();
           }
+          // Finalizar el estado de carga
+          this.isLoading = false;
+          this.cerrarModalSus();
         }
+
       },
       (error) => {
         console.error('Error al crear la suscripción:', error);
+        this.isLoading = false; // Finalizar el estado de carga si hay error
       }
     );
   }
@@ -330,14 +347,14 @@ export class SuscripcionComponent implements OnInit {
   }
 
   confirmCambiarSuscripcion() {
-    const confirmacion = confirm('AVISO: Vas a cambiar la suscripción que tenias, se cobrará una pequeña comisión de hasta un máximno de 1% ¿Estás seguro?');
+    const confirmacion = confirm('AVISO: Se cambiará la suscripción actual, ¿Estás seguro?');
     if (confirmacion) {
       this.cambiarSuscripcion();
     }
   }
 
   confirmCancelarSuscripcion() {
-    const confirmacion = confirm('AVISO: Vas a cancelar la suscripción, la cual no se renovará, tienes hasta entonces para seguir disfrutando, ¿Estás seguro?');
+    const confirmacion = confirm('AVISO: Tu suscripción se cancelará cuando termine el periodo actual y no se renovará. Podrás reactivarla en cualquier momento, ¿Estás seguro?');
     if (confirmacion) {
       this.cancelarSuscripcion();
     }
@@ -346,14 +363,29 @@ export class SuscripcionComponent implements OnInit {
   // Método para calcular el total en función del tipo de suscripción y el número de equipos
   calculateTotal() {
     if (this.subscriptionType === 'monthly') {
-      this.totalPrice = this.monthlyPrice * this.numTeams;
-      this.precioId = 'price_1Q67EUHzMBDrutQn0ToeV5OT';
+      this.totalPriceClub = this.monthlyPriceClub * this.numTeams;
+      this.precioId = 'price_1QC6W3HzMBDrutQnKitrxLpV';
       this.selected = 7;
       this.tiempo = 'M';
     } else if (this.subscriptionType === 'annual') {
-      this.totalPrice = this.annualPricePerMonth * this.numTeams * 12; // Precio anual multiplicado por 12 meses
-      this.precioId = 'price_1QBBQuHzMBDrutQn5lZDwQsZ';
+      this.totalPriceClub = this.annualPricePerMonthClub * this.numTeams * 12; // Precio anual multiplicado por 12 meses
+      this.precioId = 'price_1QC6VpHzMBDrutQnbCKNmItj';
       this.selected = 8;
+      this.tiempo = 'A';
+    }
+  }
+
+  // Método para calcular el total en función del tipo de suscripción y el número de equipos
+  calculateTotal2() {
+    if (this.subscriptionType === 'monthly') {
+      this.totalPrice = this.monthlyPrice * this.numTeams;
+      this.precioId = 'price_1QCzwDHzMBDrutQnzNPTj1G9';
+      this.selected = 9;
+      this.tiempo = 'M';
+    } else if (this.subscriptionType === 'annual') {
+      this.totalPrice = this.annualPricePerMonth * this.numTeams * 12; // Precio anual multiplicado por 12 meses
+      this.precioId = 'price_1QCzw9HzMBDrutQnYz3ctq3A';
+      this.selected = 10;
       this.tiempo = 'A';
     }
   }
@@ -380,5 +412,9 @@ export class SuscripcionComponent implements OnInit {
     if (confirmacion) {
       this.reactivarSuscripcion();
     }
+  }
+
+  changeCheck() {
+    this.aceptaCondiciones = this.aceptaCondiciones == true ? false : true;
   }
 }

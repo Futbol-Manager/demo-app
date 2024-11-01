@@ -1798,12 +1798,6 @@ export class CalendarioComponent implements OnInit {
   }
 
   onSelectGolTypes(event: any): void {
-    /*if (event.target.value === 'En propia')
-      this.isSelectDisabled = false;
-    else
-      this.isSelectDisabled = true;*/
-
-
     if (event.target.value === 'Falta disparo directo' || event.target.value === 'Penalti') {
       //no va haber nada mas
       this.selectedGolTypes = '';
@@ -2210,12 +2204,12 @@ export class CalendarioComponent implements OnInit {
 
     // Asignar los nombres de jugadores suplentes y titulares a convocados
     ui.convocados = [
-      ...this.jugadoresSuplentes.map((jugador: ConvocatoriaUI) => jugador.nombre),
-      ...this.jugadoresTitulares.map((jugador: ConvocatoriaUI) => jugador.nombre)
-    ];
+      ...this.jugadoresTitulares.map((jugador: ConvocatoriaUI) => jugador.nombre),
+      ...this.jugadoresSuplentes.map((jugador: ConvocatoriaUI) => jugador.nombre)
+    ].sort((a, b) => a.localeCompare(b)); // Ordenar alfabéticamente    
 
     ui.mailEntrenador = this.usuarioActual?.mail !== undefined ? this.usuarioActual?.mail : '';
-    console.log(ui);
+    //console.log(ui);
 
     this.playerService.notificateMatchPlayer(ui, this.teamId).subscribe(response => {
       alert('Notificados con éxito.');

@@ -7,7 +7,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { Router } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ClubService } from 'src/app/core/services/club/club.service';
-import { distinctUntilChanged } from 'rxjs/operators';
+import { distinctUntilChanged, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-inicio',
@@ -33,6 +33,10 @@ export class InicioComponent implements OnInit {
   showUploadButton: boolean = false;
   selectedFile: File | null = null;
   userId = 0;
+  profileId = 0;
+  datosNoCargados = false;
+  datosCargando = true;
+  numEquipos = 0;
 
   constructor(private loginService: LoginService,
     private router: Router,
@@ -54,19 +58,24 @@ export class InicioComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    let datosYaCargados = false; // Bandera para evitar múltiples cargas
+
     this.loginService.usuarioActual
-      .pipe(distinctUntilChanged())
+      .pipe(
+        filter(user => !!user), // Solo procede si `user` tiene un valor
+        distinctUntilChanged() // Asegura que el valor de `user` haya cambiado
+      )
       .subscribe(user => {
+        if (datosYaCargados) return; // Evita múltiples ejecuciones si ya cargó
         this.usuarioActual = user;
-        let profileId = this.usuarioActual!.profileType.profileId;
-        //let playerId = this.usuarioActual!.playerId;
+        this.profileId = this.usuarioActual!.profileType.profileId;
         this.userId = this.usuarioActual!.userId;
-  
-        if (profileId === 2) {
+
+        if (this.profileId === 2) {
           this.cargarListadoEquipos();
-        } else if (profileId === 1) {
+        } else if (this.profileId === 1) {
           this.cargarListadoEquiposForClub();
-        } else if (profileId > 2) {
+        } else if (this.profileId > 2) {
           this.teamService.getTeamByPlayer(this.userId.toString()).subscribe(
             (response: Response) => {
               if (response.data !== null) {
@@ -75,22 +84,37 @@ export class InicioComponent implements OnInit {
               } else {
                 console.error('La respuesta del servicio no tiene la estructura esperada', response);
               }
+              this.datosCargando = false;
             },
             (error) => {
               console.error('Error al cargar el listado de equipos', error);
             }
           );
         }
+        datosYaCargados = true; // Actualiza la bandera después de la primera carga
       });
-
-      this.checkSuscripcion();
   }
 
-  checkSuscripcion(){
-
-    //acceder a un endpoint que revisa la sus, que revisara primero la fecha de renovacion, si no paso aun, pues no hacer nada, si paso
+  checkSuscripcion() {
+    //acceder a un endpoint que revisa la sus, si es null, ver si está dentro de la semana que se creo la cuenta
+    //si ya paso la semana, se revisara luego la fecha de renovacion, si no paso aun, pues no hacer nada, si paso
     //revisar en stripe el estado, porque si esta bien, hay que actualizar la fecha y si esta mal, actualizar a F el valido y la fecha, si esta mal
     // avisar por un alert
+    this.teamService.getEstadoSuscripcion(this.userId, this.profileId).subscribe(
+      (response: Response) => {
+        this.numEquipos = response.data;
+        if (response.data < 1) {
+          //significa que NO es valido el acceso
+          this.datosNoCargados = true;
+        } else {
+          this.datosCargados = true;
+        }
+        this.datosCargando = false;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
   }
 
   // Método para cargar el listado de equipos
@@ -108,7 +132,8 @@ export class InicioComponent implements OnInit {
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
-        this.datosCargados = true;
+        this.checkSuscripcion();
+        //this.datosCargados = true;
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
@@ -122,7 +147,6 @@ export class InicioComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data) {
           this.clubId = response.data.club.clubId;
-          
           if (response.data.club.picture != null) {
             this.pictureClub = response.data.club.picture;
             this.noPicture = true;
@@ -132,7 +156,8 @@ export class InicioComponent implements OnInit {
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
-        this.datosCargados = true;
+        this.checkSuscripcion();
+        //this.datosCargados = true;
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
@@ -165,7 +190,28 @@ export class InicioComponent implements OnInit {
 
   // Método para abrir el modal de creación de equipo
   abrirModalCrearEquipo(): void {
-    this.showModal = true;
+    let accessSusOk = false;
+    //revisar el numero de equipos que hay y puede tener
+    if (this.profileId === 2) {
+      //comparar con el numero exacto
+      if (this.listTeam.length < this.numEquipos) {
+        accessSusOk = true;
+      }
+    } else if (this.profileId === 1) {
+      //comparar con uno menos ya que estara el Sin Equipo
+      if (this.listTeam.length < (this.numEquipos + 1)) {
+        accessSusOk = true;
+      }
+    }
+
+    if (!accessSusOk) {
+      const confirmacion = confirm('No puedes creear más equipos, necesitas actualizar tu suscripción, ¿quieres ir a la página de suscripción?');
+      if (confirmacion) {
+        this.router.navigate(['/dashboard/suscripcion', this.userId]);
+      }
+    } else {
+      this.showModal = true;
+    }
   }
 
   // Método para cerrar el modal de creación de equipo
@@ -318,6 +364,11 @@ export class InicioComponent implements OnInit {
 
   cerrarModalSubirJugadores() {
     this.showModalSubirJugadores = false;
+  }
+
+  goSuscripcion() {
+    this.showModal = false;
+    this.router.navigate(['/dashboard/suscripcion', this.userId]);
   }
 
 }

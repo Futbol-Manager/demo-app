@@ -102,6 +102,58 @@
                         <!-- Contenido de la subcolumna -->
                         <div class="form-group">
                             <div class="mt-4">
+                                <h3 class="text-center">Total a pagar: {{ totalPriceClub | currency: 'EUR':'symbol' }}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <!-- Contenido de la subcolumna -->
+                        <div class="form-group text-center">
+                            <button *ngIf="susInfo == null" class="btn btn-success"
+                                (click)="confirmSubscription()">Confirmar
+                                suscripción</button>
+                            <button *ngIf="susInfo != null" class="btn btn-success"
+                                (click)="confirmSubscription2()">Cambiar
+                                suscripción</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="datosCargadosEntrenador" class="col-12 col-md-6 mb-3">
+            <div class="card h-100" style="border: 1px solid black; padding: 1em;">
+                <!-- precios para scouting -->
+                <h1 class="text-center">Suscripción de Entrenador</h1>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <!-- Combo para seleccionar el tipo de suscripción -->
+                        <div class="form-group">
+                            <label for="subscriptionType">Tipo de suscripción</label>
+                            <select class="form-control custom-input" id="subscriptionType"
+                                [(ngModel)]="subscriptionType" (change)="calculateTotal2()">
+                                <option value="monthly">Mensual - 3,99€ / mes</option>
+                                <option value="annual">Anual - 30€ / año (2,50€ / mes)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <!-- Contenido de la subcolumna -->
+                        <div class="form-group">
+                            <label for="numTeams">Número de equipos</label>
+                            <input type="number" id="numTeams" class="form-control custom-input" [(ngModel)]="numTeams"
+                                (input)="calculateTotal2()" min="1" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <!-- Contenido de la subcolumna -->
+                        <div class="form-group">
+                            <div class="mt-4">
                                 <h3 class="text-center">Total a pagar: {{ totalPrice | currency: 'EUR':'symbol' }}</h3>
                             </div>
                         </div>
@@ -138,7 +190,7 @@
                         <h2 class="card-title">Mensual</h2>
                         <p class="card-text">4,99€ / mes</p>
                         <!-- <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q5kqMHzMBDrutQnMx4skwfX')"> -->
-                        <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q5kqMHzMBDrutQnMx4skwfX')">
+                        <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q9vMeHzMBDrutQnqVEUpOed')">
                             Seleccionar
                         </button>
                     </div>
@@ -154,7 +206,7 @@
                         <p class="card-text">12,99€ / trimestre</p>
                         <!-- <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q9vMmHzMBDrutQnQxFCy8jg')"> PRO -->
                         <!-- <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q5x4wHzMBDrutQndQIlqIqX')"> TEST-->
-                        <button class="btn btn-primary mt-auto" (click)="select(2, 'price_1Q5x4wHzMBDrutQndQIlqIqX')">
+                        <button class="btn btn-primary mt-auto" (click)="select(2, 'price_1Q9vMmHzMBDrutQnQxFCy8jg')">
                             Seleccionar
                         </button>
                     </div>
@@ -283,11 +335,29 @@
                 </div>
                 <div class="modal-body">
                     <form (ngSubmit)="makePayment()">
-                        <div class="row mb-3">
+                        <div class="row m-3">
                             <div id="card-element"></div> <!-- Elemento de tarjeta de Stripe -->
                         </div>
-                        <div class="row mb-3">
-                            <button type="submit" class="btn btn-success">Pagar</button>
+                        <div class="row m-3">
+                            <!-- Toggle de visibilidad del partido -->
+                            <div class="form-check">
+                                <input class="form-check-input custom-input" type="checkbox" id="condiciones"
+                                    (change)="changeCheck()">
+                                <label class="form-check-label" for="termsCheckbox2" (change)="changeCheck()">
+                                    Acepto las <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/"
+                                        target="_blank">
+                                        condiciones de contratación</a>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="row m-3" *ngIf="aceptaCondiciones">
+                            <!-- Botón de pagar y spinner -->
+                            <button type="submit" class="btn btn-success" *ngIf="!isLoading">Pagar</button>
+                            <div class="spinner" *ngIf="isLoading">
+                                <div class="double-bounce1"></div>
+                                <div class="double-bounce2"></div>
+                                <span>Procesando pago...</span>
+                            </div>
                         </div>
                     </form>
                 </div>

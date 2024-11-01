@@ -1,3 +1,14 @@
+<div
+  class="loading-container"
+  [ngStyle]="{ display: datosCargando ? 'flex' : 'none' }"
+>
+  <div class="spinner-border text-primary" role="status"></div>
+  <div class="loading-text">
+    <i class="mdi mdi-loading mdi-spin me-2"></i> Cargando datos y leyendo suscripción...
+  </div>
+</div>
+
+
 <div [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
   <div class="submenu">
     <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
@@ -49,7 +60,8 @@
       <div class="col text-center" *ngIf="this.usuarioActual!.profileType.profileId < 3">
         <h2 class="text-dark mt-3">Listado de Equipos</h2>
       </div>
-      <div class="col text-center" *ngIf="this.usuarioActual!.profileType.profileId == 3 || this.usuarioActual!.profileType.profileId == 4">
+      <div class="col text-center"
+        *ngIf="this.usuarioActual!.profileType.profileId == 3 || this.usuarioActual!.profileType.profileId == 4">
         <h2 class="text-dark mt-3">Listado de jugadores</h2>
       </div>
     </div>
@@ -118,8 +130,7 @@
                 </ng-container>
               </div>
             </div>
-            <h5 class="card-title mt-auto"
-              style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+            <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
               {{ hijo.nombre }} {{ hijo.apellido }}
             </h5>
           </div>
@@ -137,8 +148,7 @@
                   alt="Scouting Icon">
               </div>
             </div>
-            <h5 class="card-title mt-auto"
-              style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+            <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
               Scouting de {{ hijo.nombre }} {{ hijo.apellido }}
             </h5>
           </div>
@@ -150,7 +160,7 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
       *ngIf="this.usuarioActual!.profileType.profileId == 5">
       <!-- Tarjeta de jugador -->
-      <div class="col mb-3" >
+      <div class="col mb-3">
         <div class="card h-100" style="border: 1px solid black;">
           <div class="card-body d-flex flex-column text-center">
             <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
@@ -159,8 +169,7 @@
                   alt="Scouting Icon">
               </div>
             </div>
-            <h5 class="card-title mt-auto"
-              style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+            <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
               Ver todos
             </h5>
           </div>
@@ -168,7 +177,7 @@
       </div>
 
       <!-- Tarjeta de scouting -->
-      <div class="col mb-3" >
+      <div class="col mb-3">
         <div class="card h-100" style="border: 1px solid black;">
           <div class="card-body d-flex flex-column text-center">
             <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
@@ -177,12 +186,27 @@
                   alt="Scouting Icon">
               </div>
             </div>
-            <h5 class="card-title mt-auto"
-              style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+            <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
               Ver favoritos
             </h5>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div [ngStyle]="{ display: !datosNoCargados ? 'none' : 'block' }">
+  <div class="d-flex justify-content-center align-items-center mt-3">
+    <div class="card text-center shadow-lg p-4">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Acceso Restringido</h5>
+        <p class="card-text text-muted">
+          Necesitas una suscripción para poder usar la aplicación.
+        </p>
+        <button class="btn btn-primary btn-lg" (click)="goSuscripcion()">
+          <i class="mdi mdi-account-circle me-2"></i> Obtener Suscripción
+        </button>
       </div>
     </div>
   </div>

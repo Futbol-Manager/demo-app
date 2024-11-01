@@ -49,3 +49,45 @@
 .modal-content {
   background-size: 400% 400%;
 }
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: #007bff;
+  /* Color principal */
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa;
+  /* Fondo claro */
+}
+
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 1rem;
+}
+
+.loading-text {
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.mdi-loading {
+  font-size: 1.5rem;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
