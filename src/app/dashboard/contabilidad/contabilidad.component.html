@@ -1,10 +1,16 @@
-<div *ngIf="datosCargados">
+<div>
   <div class="submenu">
     <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
       <div class="col text-center">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
           <i class="bi bi-house"></i>
           <span class="d-none d-md-inline">Inicio</span>
+        </a>
+      </div>
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
+          <i class="bi bi-people-fill"></i>
+          <span class="d-none d-md-inline">Abonados</span>
         </a>
       </div>
       <div class="col text-center">
@@ -21,6 +27,8 @@
       </div>
     </div>
   </div>
+</div>
+<div *ngIf="datosCargados">
 
   <div class="container mt-3">
     <!-- Contenido para el dataTable -->
@@ -87,8 +95,8 @@
               <td>{{ player.playerId }}</td>
               <td *ngIf="player.picturePlayer">
                 <div class="container">
-                  <img src="https://appsphairatech.com/images/user/{{ player.picturePlayer }}" alt="user-player" width="50"
-                    height="50" class="rounded-circle me-2">
+                  <img src="https://appsphairatech.com/images/user/{{ player.picturePlayer }}" alt="user-player"
+                    width="50" height="50" class="rounded-circle me-2">
                 </div>
               </td>
               <td *ngIf="!player.picturePlayer">

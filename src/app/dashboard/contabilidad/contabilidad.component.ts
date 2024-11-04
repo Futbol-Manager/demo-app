@@ -240,8 +240,13 @@ export class ContabilidadComponent implements OnInit {
   }
 
   irAPantalla(id: number): void {
-    if (id === 1) {
-      this.router.navigate(['/dashboard/inicio']);
+    switch (id) {
+      case 1:
+        this.router.navigate(['/dashboard/inicio']);
+        break;
+      case 2:
+        this.router.navigate(['/dashboard/abonados', this.clubId]);
+        break;
     }
   }
 

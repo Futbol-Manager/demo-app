@@ -21,6 +21,7 @@ import { AsistenciaComponent } from './asistencia/asistencia.component';
 import { SuscripcionComponent } from './suscripcion/suscripcion.component';
 import { ScoutingPlayerComponent } from './scouting-player/scouting-player.component';
 import { AdminsettingsComponent } from './adminsettings/adminsettings.component';
+import { AbonadosComponent } from './abonados/abonados.component';
 
 const routes: Routes = [
   {
@@ -35,6 +36,7 @@ const routes: Routes = [
       { path: 'estadisticas_jugadores/:teamId', component: EstadisticasJugadoresComponent },
       { path: 'entrenadores/:teamId', component: TrainerComponent },
       { path: 'contabilidad/:clubId', component: ContabilidadComponent },
+      { path: 'abonados/:clubId', component: AbonadosComponent },
       { path: 'ropa/:clubId', component: RopaComponent },
       { path: 'cuotas/:teamId', component: CuotasComponent },
       { path: 'cuadro-de-mandos/:clubId', component: CuadroComponent },

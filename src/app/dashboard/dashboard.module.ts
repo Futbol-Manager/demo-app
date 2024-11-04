@@ -24,6 +24,7 @@ import { EstadisticasEntrenadoresClubComponent } from './estadisticas-entrenador
 import { SuscripcionComponent } from './suscripcion/suscripcion.component';
 import { ScoutingPlayerComponent } from './scouting-player/scouting-player.component';
 import { AdminsettingsComponent } from './adminsettings/adminsettings.component';
+import { AbonadosComponent } from './abonados/abonados.component';
 
 
 
@@ -49,7 +50,8 @@ import { AdminsettingsComponent } from './adminsettings/adminsettings.component'
     EstadisticasEntrenadoresClubComponent,
     SuscripcionComponent,
     ScoutingPlayerComponent,
-    AdminsettingsComponent
+    AdminsettingsComponent,
+    AbonadosComponent
   ],
   imports: [
     CommonModule,
