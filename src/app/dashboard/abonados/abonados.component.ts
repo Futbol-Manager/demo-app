@@ -33,6 +33,9 @@ export class AbonadosComponent implements OnInit {
   textoInfoNameAbonado = '';
   agregarPago: AbonadoPagoHistorico = new AbonadoPagoHistorico({});
   showAlert = false;
+  showModalVerHistorialPagos = false;
+  historyPagosAbonado: any[] = [];
+  abonadoSelected = 0;
 
 
   listAT: any[] = [];
@@ -239,10 +242,14 @@ export class AbonadosComponent implements OnInit {
   }
 
   updateAbonado() {
+    if(this.listAT[this.indexAbonado].restante === '0'){
+      this.listAT[this.indexAbonado].restante = this.abonadoUpdate.cuota;
+    }
+    this.showModalUpdateAbonado = false;
+
     this.clubService.createUpdateAbonado(this.abonadoUpdate.abonado, this.clubId, this.abonadoUpdate.cuota, this.abonadoUpdate.abonadosTemporadaId).subscribe(
       (response: Response) => {
-        this.listAT[this.indexAbonado].restante = this.abonadoUpdate.cuota;
-        this.showModalUpdateAbonado = false;
+        //guardado ok
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
@@ -277,4 +284,57 @@ export class AbonadosComponent implements OnInit {
       }
     );
   }
+
+  openModalHistorialPagos(index: number){
+    this.abonadoSelected = index;
+    this.clubService.getListPagosAbonadoHistorico(this.listAT[index].abonadosTemporadaId).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.historyPagosAbonado = response.data;
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+        this.showModalVerHistorialPagos = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  cerrarModalHistorialPagos(){
+    this.showModalVerHistorialPagos = false;
+  }
+
+  confirmReturnPay(pago: any) {
+    //console.log(pago);
+    const confirmacion = confirm('Se creará un registro para restar esta cantidad con la fecha de hoy. ¿Estás seguro?');
+
+    if (confirmacion) {
+      this.returnPay(pago);
+    }
+  }
+
+  returnPay(pago: any){
+    this.clubService.insertReembolsoAbonadoPagoHistorico(pago).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.listAT[this.abonadoSelected].pagado = response.data.pagado;
+          this.listAT[this.abonadoSelected].restante = response.data.restante;
+          if(this.listAT[this.abonadoSelected].cuota === this.listAT[this.abonadoSelected].pagado){
+            this.listAT[this.abonadoSelected].estado = 2;
+          }
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+        this.cerrarModalHistorialPagos();
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
 }
