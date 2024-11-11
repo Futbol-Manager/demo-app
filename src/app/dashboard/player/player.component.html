@@ -6,6 +6,12 @@
                 <span class="d-none d-md-inline">Calendario</span>
             </a>
         </div>
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="navegarAAsistencia()">
+                <i class="bi bi-person-check"></i>
+                <span class="d-none d-md-inline">Control de Asistencia</span>
+            </a>
+        </div>
         <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3">
             <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearJugador()">
                 <i class="bi bi-plus-circle"></i>
@@ -268,7 +274,8 @@
                                     <!-- Contenido de la subcolumna -->
                                     <div class="form-group">
                                         <input type="text" class="form-control custom-input" id="telefono"
-                                            name="telefono" [(ngModel)]="player.telefono" placeholder="Teléfono" maxlength="9">
+                                            name="telefono" [(ngModel)]="player.telefono" placeholder="Teléfono"
+                                            maxlength="9">
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">

@@ -535,6 +535,7 @@ export class CalendarioComponent implements OnInit {
 
   playerId = 0;
   imgClub = '';
+  selected: string = '';
 
   constructor(
     private router: Router,
@@ -583,6 +584,10 @@ export class CalendarioComponent implements OnInit {
         }
       );
     });
+  }
+
+  select(option: string) {
+    this.selected = option;
   }
 
   // Método para generar el calendario para el mes especificado
@@ -702,6 +707,7 @@ export class CalendarioComponent implements OnInit {
     this.daySession = '';
     this.showModal = false;
     this.showAddTaskForm = false;
+    this.selected = '';
   }
 
   crearEntrenamiento() {

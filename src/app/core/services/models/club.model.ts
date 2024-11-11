@@ -190,3 +190,33 @@ export class AbonadoPagoHistorico {
         this.comentario = object.comentario || '';
     }
 }
+
+export class Patrocinador {
+    patrocinadorId: number;
+    clubId: number;
+    nombre: string;
+    descripcion: string;
+    imagen: string;
+    fechaCreate: string;
+    estado: number;
+    oculto: number;
+    web: string;
+    beneficios: string;
+    telefono: string;
+    mail: string;
+
+    constructor(object: any) {
+        this.patrocinadorId = object.patrocinadorId || 0;
+        this.clubId = object.clubId || 0;
+        this.nombre = object.nombre || '';
+        this.descripcion = object.descripcion || '';
+        this.imagen = object.imagen || '';
+        this.fechaCreate = object.fechaCreate || '';
+        this.estado = object.estado || 0;
+        this.oculto = object.oculto || 0;
+        this.web = object.web || '';
+        this.beneficios = object.beneficios || '';
+        this.telefono = object.telefono || '';
+        this.mail = object.mail || '';
+    }
+}

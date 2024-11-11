@@ -21,8 +21,11 @@
     <div style="margin-top: 2em;">
         <h2>Tabla Cuota Abonados</h2>
         <!-- Botón para exportar a Excel-->
-        <button class="btn btn-success" style="margin-bottom: 2em;" (click)="openModalCreateUpdateAbonado()">
+        <button class="btn btn-success" style="margin-bottom: 2em; margin-right: 2em;" (click)="openModalCreateUpdateAbonado()">
             Crear abonado
+        </button>
+        <button class="btn btn-success" style="margin-bottom: 2em;" (click)="exportTableToExcel()">
+            <i class="bi bi-file-earmark-spreadsheet-fill"></i> Descargar Excel
         </button>
         <div class="row justify-content-between div-headdatatable">
             <div class="col-md-auto mr-auto" id="dt-length">
@@ -36,6 +39,7 @@
                 <thead class="table-custom">
                     <tr>
                         <th>ID</th>
+                        <th>IMAGEN</th>
                         <th>NOMBRE</th>
                         <th>APELLIDOS</th>
                         <th>EMAIL</th>
@@ -50,6 +54,17 @@
                 <tbody>
                     <tr *ngFor="let abonadoTemp of listAT; let i = index">
                         <td>{{ abonadoTemp.abonadosTemporadaId }}</td>
+                        <td *ngIf="abonadoTemp.abonado.imgPerfil">
+                            <div class="container">
+                                <img src="https://appsphairatech.com/images/abonado/{{ abonadoTemp.abonado.imgPerfil }}"
+                                    alt="user-player" width="50" height="50" class="rounded-circle me-2">
+                            </div>
+                        </td>
+                        <td *ngIf="!abonadoTemp.abonado.imgPerfil">
+                            <div class="container">
+                                <span class="bi bi-person" style="font-size: 3rem;"></span>
+                            </div>
+                        </td>
                         <td>{{ abonadoTemp.abonado.nombre }}</td>
                         <td>{{ abonadoTemp.abonado.apellidos }}</td>
                         <td>{{ abonadoTemp.abonado.mail }}</td>
@@ -74,7 +89,7 @@
                             <i class="bi bi-wallet2 ms-2" style="cursor: pointer;" title="Introducir un pago"
                                 (click)="openModalPagoAbonado(i)"></i>
                             <i class="bi bi-clock-history ms-2" style="cursor: pointer;"
-                            (click)="openModalHistorialPagos(i)" title="Ver histoial de pagos"></i>
+                                (click)="openModalHistorialPagos(i)" title="Ver histoial de pagos"></i>
                         </td>
                     </tr>
                 </tbody>
@@ -83,6 +98,46 @@
     </div>
     <div id="button_datatable">
     </div>
+</div>
+
+<!-- tabla para imprimir en excel -->
+<div style="display: none;">
+    <table id="tablaExcel" class="table table-bordered table-striped text-center" #table1>
+        <thead class="table-custom">
+            <tr>
+                <th>NOMBRE</th>
+                <th>APELLIDOS</th>
+                <th>EMAIL</th>
+                <th>TELEFONO</th>
+                <th>ESTADO</th>
+                <th>CUOTA</th>
+                <th>PAGADO</th>
+                <th>RESTANTE</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let abonadoTemp of listAT; let i = index">
+                <td>{{ abonadoTemp.abonado.nombre }}</td>
+                <td>{{ abonadoTemp.abonado.apellidos }}</td>
+                <td>{{ abonadoTemp.abonado.mail }}</td>
+                <td>{{ abonadoTemp.abonado.telefono }}</td>
+                <td>
+                    <ng-container *ngIf="abonadoTemp.estado === 0">
+                        Ningún pago
+                    </ng-container>
+                    <ng-container *ngIf="abonadoTemp.estado === 1">
+                        Pagos PDTE
+                    </ng-container>
+                    <ng-container *ngIf="abonadoTemp.estado === 2">
+                        Completado
+                    </ng-container>
+                </td>
+                <td>{{ abonadoTemp.cuota }}</td>
+                <td>{{ abonadoTemp.pagado }}</td>
+                <td>{{ abonadoTemp.restante }}</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <!-- Modal para modificar el abonado -->
@@ -222,6 +277,44 @@
                         <div class="row text-center">
                             <!-- Primera columna principal -->
                             <div class="col-12 col-md-12">
+
+                                <div class="row text-center align-items-center">
+                                    <div class="col-12 col-md-12">
+                                        <!-- Contenido de la subcolumna -->
+                                        <ng-container *ngIf="abonadoUpdate.abonado.abonadoId !== 0">
+                                            <div class="form-group">
+                                                <ng-container *ngIf="abonadoUpdate.abonado.imgPerfil">
+                                                    <div class="container">
+                                                        <img src="https://appsphairatech.com/images/abonado/{{ abonadoUpdate.abonado.imgPerfil }}"
+                                                            alt="user-player" width="150" height="150"
+                                                            class="rounded-circle me-2">
+                                                    </div>
+                                                </ng-container>
+                                                <ng-container *ngIf="!abonadoUpdate.abonado.imgPerfil">
+                                                    <span class="bi bi-person" style="font-size: 3rem;"></span>
+                                                </ng-container>
+                                                <h4>Sube la foto del jugador</h4>
+                                                <form (submit)="onSubmit(abonadoUpdate.abonado.abonadoId)"
+                                                    enctype="multipart/form-data">
+                                                    <div class="form-group">
+                                                        <p>Seleccionar imagen en formato JPG o PNG:</p>
+                                                        <input type="file" id="image" (change)="onFileSelected($event)">
+                                                        <div *ngIf="showPreview" style="margin-top: 2em;">
+                                                            <img [src]="imagePreviewUrl" alt="Image Preview" width="150"
+                                                                height="150" class="rounded-circle me-2">
+                                                            <button *ngIf="showbtnupimg" style="margin-top: 1em;"
+                                                                type="submit" class="btn btn-success">Subir
+                                                                foto</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </ng-container>
+                                        <ng-container *ngIf="abonadoUpdate.abonado.abonadoId == 0">
+                                            <span class="bi bi-person" style="font-size: 3rem;"></span>
+                                        </ng-container>
+                                    </div>
+                                </div>
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
@@ -392,47 +485,48 @@
 <!-- Modal para ver el historial de pagos de los abonados -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalVerHistorialPagos}">
     <div class="modal-dialog" role="document">
-      <div class="modal-content">
         <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="stripeModalLabel">Historial de pagos de los abonados</h5>
-            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalHistorialPagos()"></button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-3">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Cantidad</th>
-                    <th>Fecha</th>
-                    <th>Método</th>
-                    <th>Comentario</th>
-                    <th>Devolver</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let pago of historyPagosAbonado">
-                    <td>{{ pago.cantidad }}</td>
-                    <td>{{ pago.fechaPago }}</td>
-                    <td>{{ pago.metodo }}</td>
-                    <td>{{ pago.comentario }}</td>
-                    <td>
-                      <button *ngIf="!pago.cantidad.includes('-')" class="btn btn-warning" title="Devolver pago"
-                        (click)="confirmReturnPay(pago)">
-                        <span class="bi bi-arrow-counterclockwise btn-danger"></span>
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="stripeModalLabel">Historial de pagos de los abonados</h5>
+                    <button type="button" class="btn-close" aria-label="Close"
+                        (click)="cerrarModalHistorialPagos()"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Cantidad</th>
+                                    <th>Fecha</th>
+                                    <th>Método</th>
+                                    <th>Comentario</th>
+                                    <th>Devolver</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let pago of historyPagosAbonado">
+                                    <td>{{ pago.cantidad }}</td>
+                                    <td>{{ pago.fechaPago }}</td>
+                                    <td>{{ pago.metodo }}</td>
+                                    <td>{{ pago.comentario }}</td>
+                                    <td>
+                                        <button *ngIf="!pago.cantidad.includes('-')" class="btn btn-warning"
+                                            title="Devolver pago" (click)="confirmReturnPay(pago)">
+                                            <span class="bi bi-arrow-counterclockwise btn-danger"></span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- Botón para guardar el nuevo equipo -->
+                        <button type="submit" class="btn btn-success float-end"
+                            (click)="cerrarModalHistorialPagos()">Cerrar</button>
+                    </div>
+                </div>
             </div>
-            <div class="modal-footer">
-              <!-- Botón para guardar el nuevo equipo -->
-              <button type="submit" class="btn btn-success float-end"
-                (click)="cerrarModalHistorialPagos()">Cerrar</button>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>

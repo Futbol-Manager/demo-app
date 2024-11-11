@@ -27,7 +27,7 @@ export class InfoEquipoComponent implements OnInit {
     { label: 'Sábado', property: 'sabado', index: 6 },
     { label: 'Domingo', property: 'domingo', index: 7 }
   ];
-  
+
   horarioTeam: HorarioTeam = new HorarioTeam({});
   diasTeam: any;
 
@@ -36,24 +36,24 @@ export class InfoEquipoComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute,
     private clubService: ClubService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-        // Suscribirse a los cambios en los parámetros de la URL
-        this.route.params.subscribe(params => {
-          // Obtener el valor de teamId de los parámetros
-          this.teamId = +params['teamId'];  // El + convierte el valor a número
-          console.log('teamId:', this.teamId);
-          this.cargarInfoEquipo();
-          this.cargarListadoClubes();
-        });
+    // Suscribirse a los cambios en los parámetros de la URL
+    this.route.params.subscribe(params => {
+      // Obtener el valor de teamId de los parámetros
+      this.teamId = +params['teamId'];  // El + convierte el valor a número
+      console.log('teamId:', this.teamId);
+      this.cargarInfoEquipo();
+      this.cargarListadoClubes();
+    });
   }
 
-  cargarInfoEquipo(){
+  cargarInfoEquipo() {
     this.teamService.getTeamById(this.teamId.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
-        if(response.data !== null){
+        if (response.data !== null) {
           this.team = response.data;
           this.teamInfo = {
             teamId: this.team.teamId,
@@ -69,7 +69,9 @@ export class InfoEquipoComponent implements OnInit {
             },
             clubId: this.team.clubId,
             userId: this.team.userId,
-            temporada: '2024'
+            temporada: '2024',
+            dateCreate: this.team.dateCreate,
+            dateUpdate: this.team.dateUpdate
           };
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
@@ -85,7 +87,7 @@ export class InfoEquipoComponent implements OnInit {
   cargarListadoClubes(): void {
     this.clubService.getAllClubsRegistered().subscribe(
       (response: Response) => {
-        if(response.data.length > 0){
+        if (response.data.length > 0) {
           this.clubList = response.data;
         }
       },
@@ -100,7 +102,7 @@ export class InfoEquipoComponent implements OnInit {
     this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
   }
 
-  guardarCambios(){}
+  guardarCambios() { }
 
 
   toggleDiaOkDesactivar(property: string, value: number) {
@@ -125,7 +127,7 @@ export class InfoEquipoComponent implements OnInit {
     );
   }
 
-  cerrarModalHorario(){
+  cerrarModalHorario() {
     this.showModalHorario = false;
   }
 

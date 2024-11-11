@@ -6,12 +6,6 @@
         <span class="d-none d-md-inline">Calendario</span>
       </a>
     </div>
-    <div class="col">
-      <a class="no-underline" href="javascript:void(0);" (click)="navegarAAsistencia()">
-        <i class="bi bi-person-check"></i>
-        <span class="d-none d-md-inline">Control de Asistencia</span>
-      </a>
-    </div>
   </div>
 </div>
 <div class="container">
@@ -29,14 +23,13 @@
               <div class="col-md-6 mb-3">
                 <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
                 <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
-                  formControlName="categoryTypeId" [attr.disabled]="profileId === 2 ? true : null">
+                  formControlName="categoryTypeId">
                   <option *ngFor="let option of categoryOptions" [value]="option.value">{{ option.label }}</option>
                 </select>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="nivelLiga" class="form-label">Nivel:</label>
-                <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague"
-                  [attr.disabled]="profileId === 2 ? true : null">
+                <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague">
                   <option *ngFor="let option of levelOptions" [value]="option.value">{{ option.label }}</option>
                 </select>
               </div>
@@ -44,15 +37,14 @@
             <div class="row">
               <div class="col-md-6 mb-3">
                 <label for="nombreEquipo" class="form-label">Letra del equipo:</label>
-                <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name"
-                  [attr.disabled]="profileId === 2 ? true : null">
+                <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
                   <option *ngFor="let option of nameOptions" [value]="option.value">{{ option.label }}</option>
                 </select>
               </div>
               <div class="col-md-6 mb-3">
                 <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
                 <div class="d-flex align-items-end">
-                  <button [attr.disabled]="profileId === 2 ? true : null" type="button" class="form-control btn btn-primary" (click)="openModalHorario()">Pulsa para poner el horario</button>
+                  <button type="button" class="form-control btn btn-primary" (click)="openModalHorario()">Pulsa para poner el horario</button>
                 </div>
               </div>
             </div>

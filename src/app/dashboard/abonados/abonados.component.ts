@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Abonado, AbonadoPagoHistorico, AbonadoTemporada } from 'src/app/core/services/models/club.model';
+import * as XLSX from "xlsx";
 
 @Component({
   selector: 'app-abonados',
@@ -36,7 +37,10 @@ export class AbonadosComponent implements OnInit {
   showModalVerHistorialPagos = false;
   historyPagosAbonado: any[] = [];
   abonadoSelected = 0;
-
+  selectedFile!: File;
+  showbtnupimg = false;
+  imagePreviewUrl: string | ArrayBuffer | null = null;
+  showPreview: boolean = false;
 
   listAT: any[] = [];
   /*{
@@ -242,7 +246,7 @@ export class AbonadosComponent implements OnInit {
   }
 
   updateAbonado() {
-    if(this.listAT[this.indexAbonado].restante === '0'){
+    if (this.listAT[this.indexAbonado].restante === '0') {
       this.listAT[this.indexAbonado].restante = this.abonadoUpdate.cuota;
     }
     this.showModalUpdateAbonado = false;
@@ -285,7 +289,7 @@ export class AbonadosComponent implements OnInit {
     );
   }
 
-  openModalHistorialPagos(index: number){
+  openModalHistorialPagos(index: number) {
     this.abonadoSelected = index;
     this.clubService.getListPagosAbonadoHistorico(this.listAT[index].abonadosTemporadaId).subscribe(
       (response: Response) => {
@@ -303,7 +307,7 @@ export class AbonadosComponent implements OnInit {
     );
   }
 
-  cerrarModalHistorialPagos(){
+  cerrarModalHistorialPagos() {
     this.showModalVerHistorialPagos = false;
   }
 
@@ -316,14 +320,14 @@ export class AbonadosComponent implements OnInit {
     }
   }
 
-  returnPay(pago: any){
+  returnPay(pago: any) {
     this.clubService.insertReembolsoAbonadoPagoHistorico(pago).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.listAT[this.abonadoSelected].pagado = response.data.pagado;
           this.listAT[this.abonadoSelected].restante = response.data.restante;
-          if(this.listAT[this.abonadoSelected].cuota === this.listAT[this.abonadoSelected].pagado){
+          if (this.listAT[this.abonadoSelected].cuota === this.listAT[this.abonadoSelected].pagado) {
             this.listAT[this.abonadoSelected].estado = 2;
           }
         } else {
@@ -335,6 +339,68 @@ export class AbonadosComponent implements OnInit {
         console.error('Error al cargar el listado de equipos', error);
       }
     );
+  }
+
+  onFileSelected(event: any) {
+    if (event.target.files[0].type === 'image/png' || event.target.files[0].type === 'image/jpeg') {
+      this.selectedFile = event.target.files[0];
+      this.showbtnupimg = true;
+      if (this.selectedFile) {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.imagePreviewUrl = e.target.result;
+          this.showPreview = true; // Mostrar vista previa
+        };
+        reader.readAsDataURL(this.selectedFile);
+      }
+    } else {
+      this.showbtnupimg = false;
+    }
+  }
+
+  onSubmit(playerId: number) {
+    // Verifica si se ha seleccionado un archivo
+    if (this.selectedFile) {
+      //console.log('Imagen seleccionada:', this.selectedFile);
+
+      this.clubService.subirImgAbonado(playerId.toString(), this.selectedFile)
+        .subscribe(
+          (response) => {
+            this.cerrarModalUpdateAbonado();
+          },
+          error => {
+            console.error('Error al subir la imagen', error);
+            // Aquí puedes manejar el error si la subida de la imagen falla
+          }
+        );
+    } else {
+      console.log('Ninguna imagen seleccionada.');
+    }
+  }
+
+  @ViewChild("table1") table: ElementRef | undefined;
+  exportTableToExcel(): void {
+    // Comprobar si el elemento existe antes de usar su ID
+    const tableElement = document.getElementById('tablaExcel');
+
+    if (tableElement) {
+      const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(tableElement);
+
+      // Resto del código (asegurar formato de cadena, ancho de columnas, etc.)
+      // ... (puedes copiar y pegar el código de la respuesta anterior)
+
+      // Crear y guardar libro de trabajo
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+
+      // Personalizar nombre de archivo y opciones de guardado (opcional)
+      const fileName = "tabla_exportada.xlsx"; // Ajustar según tus necesidades
+      XLSX.writeFile(wb, fileName, { bookType: 'xlsx' });
+    } else {
+      console.error("¡Elemento 'tablaExcel' no encontrado!");
+      // Manejar el error de forma adecuada (opcional)
+      // Por ejemplo, mostrar un mensaje de alerta al usuario
+    }
   }
 
 }

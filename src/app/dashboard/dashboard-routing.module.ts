@@ -22,6 +22,7 @@ import { SuscripcionComponent } from './suscripcion/suscripcion.component';
 import { ScoutingPlayerComponent } from './scouting-player/scouting-player.component';
 import { AdminsettingsComponent } from './adminsettings/adminsettings.component';
 import { AbonadosComponent } from './abonados/abonados.component';
+import { PatrocinadoresComponent } from './patrocinadores/patrocinadores.component';
 
 const routes: Routes = [
   {
@@ -40,6 +41,7 @@ const routes: Routes = [
       { path: 'ropa/:clubId', component: RopaComponent },
       { path: 'cuotas/:teamId', component: CuotasComponent },
       { path: 'cuadro-de-mandos/:clubId', component: CuadroComponent },
+      { path: 'patrocinadores/:clubId', component: PatrocinadoresComponent },
       { path: 'cuadro-de-mandos/info-jugadores/:clubId', component: InfoJugadoresComponent },
       { path: 'cuadro-de-mandos/estadisticas-jugadores-club/:clubId', component: EstadisticasJugadoresClubComponent },
       { path: 'cuadro-de-mandos/estadisticas-equipos-club/:clubId', component: EstadisticasEquiposClubComponent },

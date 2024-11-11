@@ -38,7 +38,8 @@ export class InicioComponent implements OnInit {
   datosCargando = true;
   numEquipos = 0;
 
-  constructor(private loginService: LoginService,
+  constructor(
+    private loginService: LoginService,
     private router: Router,
     private teamService: TeamService,
     private clubService: ClubService,
@@ -239,7 +240,9 @@ export class InicioComponent implements OnInit {
         },
         clubId: this.crearEquipoForm.value.clubId || 0,
         userId: 0,
-        temporada: '2024' //TODO aqui debe de coger el año de la temporada actual
+        temporada: '2024', //TODO aqui debe de coger el año de la temporada actual
+        dateCreate: '',
+        dateUpdate: ''
       };
 
       // Llamada al servicio para crear el equipo
@@ -311,6 +314,9 @@ export class InicioComponent implements OnInit {
         break;
       case 3:
         this.router.navigate(['/dashboard/cuadro-de-mandos', this.clubId]);
+        break;
+      case 4:
+        this.router.navigate(['/dashboard/patrocinadores', this.clubId]);
         break;
     }
   }

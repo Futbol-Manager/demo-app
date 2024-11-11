@@ -680,6 +680,11 @@ export class PlayerComponent implements OnInit {
     } else {
       console.log('Ninguna imagen seleccionada.');
     }
+  }  
+
+  navegarAAsistencia(): void {
+    // Puedes ajustar la ruta según tu estructura de rutas
+    this.router.navigate(['/dashboard/informacion_equipo/asistencia', this.teamId]);
   }
 
   invitarJugador(playerId: number): void {

@@ -49,6 +49,8 @@ export class TeamNew {
   clubId: number;
   userId: number;
   temporada: string;
+  dateCreate: string;
+  dateUpdate: string;
 
   constructor() {
     this.teamId = 0; // O el valor por defecto que desees para teamId
@@ -61,6 +63,8 @@ export class TeamNew {
     this.clubId = 0;
     this.userId = 0;
     this.temporada = '';
+    this.dateCreate = '';
+    this.dateUpdate = '';
   }
 }
 

@@ -1,6 +1,6 @@
 <div *ngIf="datosCargados">
   <div class="submenu">
-    <div class="row">      
+    <div class="row">
       <div class="col" *ngIf="this.userId === 9">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(6)">
           <i class="bi bi-table"></i>
@@ -136,7 +136,7 @@
           <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
         </div>
         <div class="modal-body">
-          <h6 class="mt-0">Instruciones</h6>
+          <!-- <h6 class="mt-0">Instruciones</h6>
           <p>Escoge la pestaña deseada y decide si crear un entrenamiento o un pre partido</p>
           <hr>
           <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -149,318 +149,326 @@
               <button class="nav-link" id="partido-tab" data-bs-toggle="tab" data-bs-target="#partido" type="button"
                 role="tab" aria-controls="partido" aria-selected="false">Partido</button>
             </li>
-          </ul>
+          </ul> -->
 
-
-
-          <div class="tab-content" id="myTabContent">
-            <!-- Primera columna principal 
-          <div class="row text-center">
-            <div class="col-12 col-md-4 mt-3">
-              <div class="row mt-3">
-                <div class="col-12 col-md-12">
-                  <label><strong>Datos del Jugador:</strong></label>
+          <div class="container row mt-3">
+            <div class="col-12 col-md-6 mb-4">
+              <div id="entrenamiento" class="card selection-card" [ngClass]="{'selected': selected === 'entrenamiento'}"
+                (click)="select('entrenamiento')">
+                <img src="/assets/iconos/futbol.svg" class="card-img-top mx-auto d-block p-3" alt="Entrenamiento Icon">
+                <div class="card-body text-center">
+                  <h5 class="card-title">Entrenamiento</h5>
                 </div>
               </div>
             </div>
-          </div>-->
+            <div class="col-12 col-md-6 mb-4">
+              <div id="partido" class="card selection-card" [ngClass]="{'selected': selected === 'partido'}"
+                (click)="select('partido')">
+                <img src="/assets/iconos/juego.svg" class="card-img-top mx-auto d-block p-3" alt="Partido Icon">
+                <div class="card-body text-center">
+                  <h5 class="card-title">Partido</h5>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contenido mostrado basado en la selección -->
+          <div *ngIf="selected === 'entrenamiento'" class="mt-3">
+            <h5>Contenido para Entrenamiento</h5>
+            <form (ngSubmit)="crearEntrenamiento()">
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-6 mt-3">
+                  <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
+                  <textarea class="form-control custom-input" id="objectiveSession" rows="5" name="objectiveSession"
+                    [(ngModel)]="trainingSession.objectiveSession"></textarea>
+                </div>
+                <div class="col-12 col-md-6 mt-3">
+                  <label for="warmUp" class="form-label">Calentamiento:</label>
+                  <textarea class="form-control custom-input" id="warmUp" rows="5" name="warmUp"
+                    [(ngModel)]="trainingSession.warmUp"></textarea>
+                </div>
+              </div>
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-12 text-end">
+                  <!-- Botón para guardar el nuevo entrenamiento -->
+                  <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
+                    class="btn btn-custom float-end">Guardar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div *ngIf="selected === 'partido'" class="mt-3">
+            <h5>Contenido para Partido</h5>
+            <form (ngSubmit)="crearPartido()">
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-12">
+                  <!-- Contenido de la subcolumna -->
+                  <label><strong>Información general del partido:</strong></label>
+                </div>
+              </div>
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-6 mt-3">
+                  <label for="tipoPartido" class="form-label">Tipo de partido:</label>
+                  <select class="form-control custom-input" id="tipoPartido" name="tipoPartido"
+                    [(ngModel)]="match.tipoPartido">
+                    <option value="Amistoso">Amistoso</option>
+                    <option value="Liga">Liga</option>
+                    <option value="Torneo">Torneo</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-6 mt-3">
+                  <label for="rivalName" class="form-label">Nombre del Rival:</label>
+                  <input class="form-control custom-input" id="rivalName" name="rivalName"
+                    [(ngModel)]="match.rivalName" />
+                </div>
+              </div>
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-12 mt-3">
+                  <label for="lugar" class="form-label">Lugar:</label>
+                  <textarea class="form-control custom-input" id="lugar" rows="2" name="lugar"
+                    [(ngModel)]="match.lugar"></textarea>
+                </div>
+              </div>
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-1 mt-3">
+                  <label for="hora" class="form-label">Hora de</label>
+                  <select class="form-control custom-input" id="hora" name="hora" [(ngModel)]="match.hora"
+                    aria-placeholder="08">
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-1 mt-3">
+                  <label for="minutos" class="form-label">quedada:</label>
+                  <select class="form-control custom-input" id="minutos" name="minutos" [(ngModel)]="match.minutos">
+                    <option value="00">00</option>
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="45">45</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <label for="terreno" class="form-label">Local o Visitante:</label>
+                  <select class="form-control custom-input" id="terreno" name="terreno" [(ngModel)]="match.terreno">
+                    <option value="Local">Local</option>
+                    <option value="Visitante">Visitante</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-1 mt-3">
+                  <label for="horaEmpieza" class="form-label">Hora del</label>
+                  <select class="form-control custom-input" id="horaEmpieza" name="horaEmpieza"
+                    [(ngModel)]="match.horaEmpieza">
+                    <option value="08">08</option>
+                    <option value="09">09</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                    <option value="16">16</option>
+                    <option value="17">17</option>
+                    <option value="18">18</option>
+                    <option value="19">19</option>
+                    <option value="20">20</option>
+                    <option value="21">21</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-1 mt-3">
+                  <label for="minutosEmpieza" class="form-label">partido:</label>
+                  <select class="form-control custom-input" id="minutosEmpieza" name="minutosEmpieza"
+                    [(ngModel)]="match.minutosEmpieza">
+                    <option value="00">00</option>
+                    <option value="15">15</option>
+                    <option value="30">30</option>
+                    <option value="45">45</option>
+                  </select>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <label for="refereeName" class="form-label">Nombre del Árbitro:</label>
+                  <input type="text" class="form-control custom-input" id="refereeName" name="refereeName"
+                    [(ngModel)]="match.refereeName">
+                </div>
+              </div>
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-12">
+                  <!-- Contenido de la subcolumna -->
+                  <label><strong>Información del Rival:</strong></label>
+                </div>
+              </div>
 
 
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="puntosFuertesRival" rows="2" name="puntosFuertesRival"
+                    [(ngModel)]="match.puntosFuertesRival" placeholder="Puntos fuertes"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="puntosDebilesRival" rows="2" name="puntosDebilesRival"
+                    [(ngModel)]="match.puntosDebilesRival" placeholder="Puntos débiles"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="jugadoresClaveRival" rows="2"
+                    name="jugadoresClaveRival" [(ngModel)]="match.jugadoresClaveRival"
+                    placeholder="Jugadores clave (Nombre, Posición, Dorsal, Comentarios, etc)"></textarea>
+                </div>
+              </div>
 
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="estiloJuegoRival" rows="2" name="estiloJuegoRival"
+                    [(ngModel)]="match.estiloJuegoRival"
+                    placeholder="Estilo de juego (Posición, transición, presión, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="ultimosResultadosRival" rows="2"
+                    name="ultimosResultadosRival" [(ngModel)]="match.ultimosResultadosRival"
+                    placeholder="Últimos resultados (Fecha, rival, resultado)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="formacionesRecientesRival" rows="2"
+                    name="formacionesRecientesRival" [(ngModel)]="match.formacionesRecientesRival"
+                    placeholder="Formaciones recientes (4-3-3, 4-4-2, etc)"></textarea>
+                </div>
+              </div>
+
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="patronesOfensivosRival" rows="2"
+                    name="patronesOfensivosRival" [(ngModel)]="match.patronesOfensivosRival"
+                    placeholder="Patrones Ofensivos (Ataque por bandas, Atauqe por centro, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="patronesDefensivosRival" rows="2"
+                    name="patronesDefensivosRival" [(ngModel)]="match.patronesDefensivosRival"
+                    placeholder="Patrones Defensivos (Bloque bajo, medio, alto, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="estadisticasRival" rows="2" name="estadisticasRival"
+                    [(ngModel)]="match.estadisticasRival"
+                    placeholder="Estadísticas (goles a favor, en contra, goles por partido, encajados por partido, etc)"></textarea>
+                </div>
+              </div>
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="tendenciasTacticasRival" rows="2"
+                    name="tendenciasTacticasRival" [(ngModel)]="match.tendenciasTacticasRival"
+                    placeholder="Tendencias Tácticas (Cambios de formación durante el partido, sustituciones habituales, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="datosIndividualesRival" rows="2"
+                    name="datosIndividualesRival" [(ngModel)]="match.datosIndividualesRival"
+                    placeholder="Datos Individuales Importantes (Portero, Defenas, Centrocampista, Delanteros)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="abpsRival" rows="2" name="abpsRival"
+                    [(ngModel)]="match.abpsRival" placeholder="ABPs (Corners, Faltas, Banda, etc)"></textarea>
+                </div>
+              </div>
+
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-12">
+                  <!-- Contenido de la subcolumna -->
+                  <label><strong>Información de mi equipo:</strong></label>
+                </div>
+              </div>
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                </div>
+              </div>
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="formacionInicial" rows="2" name="formacionInicial"
+                    [(ngModel)]="match.formacionInicial" placeholder="Formación Inicial (4-4-2, 4-3-3, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="planJuegoAtaque" rows="2" name="planJuegoAtaque"
+                    [(ngModel)]="match.planJuegoAtaque"
+                    placeholder="Plan de Juego en Ataque (subida por bandas, balones largos, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="planJuegoDefensa" rows="2" name="planJuegoDefensa"
+                    [(ngModel)]="match.planJuegoDefensa"
+                    placeholder="Plan de Juego en Defensa (Bloque bajo, medio, alto, presión tras pérdida, etc)"></textarea>
+                </div>
+              </div>
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="transicionesOfensivas" rows="2"
+                    name="transicionesOfensivas" [(ngModel)]="match.transicionesOfensivas"
+                    placeholder="Transiciones Ofensivas (rapidez con balón largo, reinicio de juego, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="transicionesDefensivas" rows="2"
+                    name="transicionesDefensivas" [(ngModel)]="match.transicionesDefensivas"
+                    placeholder="Transiciones Defensivas (Presión tras pérdida, repliegue rápido, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="abpsOfensivas" rows="2" name="abpsOfensivas"
+                    [(ngModel)]="match.abpsOfensivas"
+                    placeholder="ABPs Ofensivas (Jugadas ensayadas, centros al área, etc)"></textarea>
+                </div>
+              </div>
+
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="abpsDefensivas" rows="2" name="abpsDefensivas"
+                    [(ngModel)]="match.abpsDefensivas"
+                    placeholder="ABPs Defensivas (Marcaje al hombre, en zona, quién libra, rechace, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="rolesEspecificos" rows="2" name="rolesEspecificos"
+                    [(ngModel)]="match.rolesEspecificos"
+                    placeholder="Roles Específicos (Capitán, lanzador de faltas, de penaltis, corners, jugadores de barrera, etc)"></textarea>
+                </div>
+                <div class="col-12 col-md-4 mt-3">
+                  <textarea class="form-control custom-input" id="ajustesTacticos" rows="2" name="ajustesTacticos"
+                    [(ngModel)]="match.ajustesTacticos"
+                    placeholder="Ajustes Tácticos (Cambio de formación, adaptaciones durante el partido, cambios según situaciones del partido, etc)"></textarea>
+                </div>
+              </div>
+              <div class="row text-center mt-3">
+                <div class="col-12 col-md-12 text-end">
+                  <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
+                    class="btn btn-custom float-end">Guardar</button>
+                </div>
+              </div>
+            </form>
+          </div>
+
+          <div class="tab-content" id="myTabContent">
             <div class="tab-pane fade show active" id="entrenamiento" role="tabpanel"
               aria-labelledby="entrenamiento-tab">
-              <form (ngSubmit)="crearEntrenamiento()">
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-6 mt-3">
-                    <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
-                    <textarea class="form-control custom-input" id="objectiveSession" rows="5" name="objectiveSession"
-                      [(ngModel)]="trainingSession.objectiveSession"></textarea>
-                  </div>
-                  <div class="col-12 col-md-6 mt-3">
-                    <label for="warmUp" class="form-label">Calentamiento:</label>
-                    <textarea class="form-control custom-input" id="warmUp" rows="5" name="warmUp"
-                      [(ngModel)]="trainingSession.warmUp"></textarea>
-                  </div>
-                </div>
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-12 text-end">
-                    <!-- Botón para guardar el nuevo entrenamiento -->
-                    <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
-                      class="btn btn-custom float-end">Guardar</button>
-                  </div>
-                </div>
-              </form>
             </div>
 
             <!-- pestaña crear un partido -->
             <div class="tab-pane fade" id="partido" role="tabpanel" aria-labelledby="partido-tab">
-              <form (ngSubmit)="crearPartido()">
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-12">
-                    <!-- Contenido de la subcolumna -->
-                    <label><strong>Información general del partido:</strong></label>
-                  </div>
-                </div>
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-6 mt-3">
-                    <label for="tipoPartido" class="form-label">Tipo de partido:</label>
-                    <select class="form-control custom-input" id="tipoPartido" name="tipoPartido"
-                      [(ngModel)]="match.tipoPartido">
-                      <option value="Amistoso">Amistoso</option>
-                      <option value="Liga">Liga</option>
-                      <option value="Torneo">Torneo</option>
-                    </select>
-                  </div>
-                  <div class="col-12 col-md-6 mt-3">
-                    <label for="rivalName" class="form-label">Nombre del Rival:</label>
-                    <input class="form-control custom-input" id="rivalName" name="rivalName"
-                      [(ngModel)]="match.rivalName" />
-                  </div>
-                </div>
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-12 mt-3">
-                    <label for="lugar" class="form-label">Lugar:</label>
-                    <textarea class="form-control custom-input" id="lugar" rows="2" name="lugar"
-                      [(ngModel)]="match.lugar"></textarea>
-                  </div>
-                </div>
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-1 mt-3">
-                    <label for="hora" class="form-label">Hora de</label>
-                    <select class="form-control custom-input" id="hora" name="hora" [(ngModel)]="match.hora"
-                      aria-placeholder="08">
-                      <option value="08">08</option>
-                      <option value="09">09</option>
-                      <option value="10">10</option>
-                      <option value="11">11</option>
-                      <option value="12">12</option>
-                      <option value="13">13</option>
-                      <option value="14">14</option>
-                      <option value="15">15</option>
-                      <option value="16">16</option>
-                      <option value="17">17</option>
-                      <option value="18">18</option>
-                      <option value="19">19</option>
-                      <option value="20">20</option>
-                      <option value="21">21</option>
-                    </select>
-                  </div>
-                  <div class="col-12 col-md-1 mt-3">
-                    <label for="minutos" class="form-label">quedada:</label>
-                    <select class="form-control custom-input" id="minutos" name="minutos" [(ngModel)]="match.minutos">
-                      <option value="00">00</option>
-                      <option value="15">15</option>
-                      <option value="30">30</option>
-                      <option value="45">45</option>
-                    </select>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <label for="terreno" class="form-label">Local o Visitante:</label>
-                    <select class="form-control custom-input" id="terreno" name="terreno" [(ngModel)]="match.terreno">
-                      <option value="Local">Local</option>
-                      <option value="Visitante">Visitante</option>
-                    </select>
-                  </div>
-                  <div class="col-12 col-md-1 mt-3">
-                    <label for="horaEmpieza" class="form-label">Hora del</label>
-                    <select class="form-control custom-input" id="horaEmpieza" name="horaEmpieza"
-                      [(ngModel)]="match.horaEmpieza">
-                      <option value="08">08</option>
-                      <option value="09">09</option>
-                      <option value="10">10</option>
-                      <option value="11">11</option>
-                      <option value="12">12</option>
-                      <option value="13">13</option>
-                      <option value="14">14</option>
-                      <option value="15">15</option>
-                      <option value="16">16</option>
-                      <option value="17">17</option>
-                      <option value="18">18</option>
-                      <option value="19">19</option>
-                      <option value="20">20</option>
-                      <option value="21">21</option>
-                    </select>
-                  </div>
-                  <div class="col-12 col-md-1 mt-3">
-                    <label for="minutosEmpieza" class="form-label">partido:</label>
-                    <select class="form-control custom-input" id="minutosEmpieza" name="minutosEmpieza"
-                      [(ngModel)]="match.minutosEmpieza">
-                      <option value="00">00</option>
-                      <option value="15">15</option>
-                      <option value="30">30</option>
-                      <option value="45">45</option>
-                    </select>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <label for="refereeName" class="form-label">Nombre del Árbitro:</label>
-                    <input type="text" class="form-control custom-input" id="refereeName" name="refereeName"
-                      [(ngModel)]="match.refereeName">
-                  </div>
-                </div>
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-12">
-                    <!-- Contenido de la subcolumna -->
-                    <label><strong>Información del Rival:</strong></label>
-                  </div>
-                </div>
-
-
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="puntosFuertesRival" rows="2"
-                      name="puntosFuertesRival" [(ngModel)]="match.puntosFuertesRival"
-                      placeholder="Puntos fuertes"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="puntosDebilesRival" rows="2"
-                      name="puntosDebilesRival" [(ngModel)]="match.puntosDebilesRival"
-                      placeholder="Puntos débiles"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="jugadoresClaveRival" rows="2"
-                      name="jugadoresClaveRival" [(ngModel)]="match.jugadoresClaveRival"
-                      placeholder="Jugadores clave (Nombre, Posición, Dorsal, Comentarios, etc)"></textarea>
-                  </div>
-                </div>
-
-
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="estiloJuegoRival" rows="2" name="estiloJuegoRival"
-                      [(ngModel)]="match.estiloJuegoRival"
-                      placeholder="Estilo de juego (Posición, transición, presión, etc)"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="ultimosResultadosRival" rows="2"
-                      name="ultimosResultadosRival" [(ngModel)]="match.ultimosResultadosRival"
-                      placeholder="Últimos resultados (Fecha, rival, resultado)"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="formacionesRecientesRival" rows="2"
-                      name="formacionesRecientesRival" [(ngModel)]="match.formacionesRecientesRival"
-                      placeholder="Formaciones recientes (4-3-3, 4-4-2, etc)"></textarea>
-                  </div>
-                </div>
-
-
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="patronesOfensivosRival" rows="2"
-                      name="patronesOfensivosRival" [(ngModel)]="match.patronesOfensivosRival"
-                      placeholder="Patrones Ofensivos (Ataque por bandas, Atauqe por centro, etc)"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="patronesDefensivosRival" rows="2"
-                      name="patronesDefensivosRival" [(ngModel)]="match.patronesDefensivosRival"
-                      placeholder="Patrones Defensivos (Bloque bajo, medio, alto, etc)"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="estadisticasRival" rows="2" name="estadisticasRival"
-                      [(ngModel)]="match.estadisticasRival"
-                      placeholder="Estadísticas (goles a favor, en contra, goles por partido, encajados por partido, etc)"></textarea>
-                  </div>
-                </div>
-
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="tendenciasTacticasRival" rows="2"
-                      name="tendenciasTacticasRival" [(ngModel)]="match.tendenciasTacticasRival"
-                      placeholder="Tendencias Tácticas (Cambios de formación durante el partido, sustituciones habituales, etc)"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="datosIndividualesRival" rows="2"
-                      name="datosIndividualesRival" [(ngModel)]="match.datosIndividualesRival"
-                      placeholder="Datos Individuales Importantes (Portero, Defenas, Centrocampista, Delanteros)"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="abpsRival" rows="2" name="abpsRival"
-                      [(ngModel)]="match.abpsRival" placeholder="ABPs (Corners, Faltas, Banda, etc)"></textarea>
-                  </div>
-                </div>
-
-
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-12">
-                    <!-- Contenido de la subcolumna -->
-                    <label><strong>Información de mi equipo:</strong></label>
-                  </div>
-                </div>
-
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-4 mt-3">
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                  </div>
-                </div>
-
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="formacionInicial" rows="2" name="formacionInicial"
-                      [(ngModel)]="match.formacionInicial"
-                      placeholder="Formación Inicial (4-4-2, 4-3-3, etc)"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="planJuegoAtaque" rows="2" name="planJuegoAtaque"
-                      [(ngModel)]="match.planJuegoAtaque"
-                      placeholder="Plan de Juego en Ataque (subida por bandas, balones largos, etc)"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="planJuegoDefensa" rows="2" name="planJuegoDefensa"
-                      [(ngModel)]="match.planJuegoDefensa"
-                      placeholder="Plan de Juego en Defensa (Bloque bajo, medio, alto, presión tras pérdida, etc)"></textarea>
-                  </div>
-                </div>
-
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="transicionesOfensivas" rows="2"
-                      name="transicionesOfensivas" [(ngModel)]="match.transicionesOfensivas"
-                      placeholder="Transiciones Ofensivas (rapidez con balón largo, reinicio de juego, etc)"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="transicionesDefensivas" rows="2"
-                      name="transicionesDefensivas" [(ngModel)]="match.transicionesDefensivas"
-                      placeholder="Transiciones Defensivas (Presión tras pérdida, repliegue rápido, etc)"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="abpsOfensivas" rows="2" name="abpsOfensivas"
-                      [(ngModel)]="match.abpsOfensivas"
-                      placeholder="ABPs Ofensivas (Jugadas ensayadas, centros al área, etc)"></textarea>
-                  </div>
-                </div>
-
-                <div class="row text-center mt-3">
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="abpsDefensivas" rows="2" name="abpsDefensivas"
-                      [(ngModel)]="match.abpsDefensivas"
-                      placeholder="ABPs Defensivas (Marcaje al hombre, en zona, quién libra, rechace, etc)"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="rolesEspecificos" rows="2" name="rolesEspecificos"
-                      [(ngModel)]="match.rolesEspecificos"
-                      placeholder="Roles Específicos (Capitán, lanzador de faltas, de penaltis, corners, jugadores de barrera, etc)"></textarea>
-                  </div>
-                  <div class="col-12 col-md-4 mt-3">
-                    <textarea class="form-control custom-input" id="ajustesTacticos" rows="2" name="ajustesTacticos"
-                      [(ngModel)]="match.ajustesTacticos"
-                      placeholder="Ajustes Tácticos (Cambio de formación, adaptaciones durante el partido, cambios según situaciones del partido, etc)"></textarea>
-                  </div>
-                </div>
-
-
-
-                <!-- <div class="mb-3">
-                <label for="summoned" class="form-label">Convocados:</label>
-                <textarea class="form-control" id="summoned" rows="5" name="summoned"
-                  [(ngModel)]="match.summoned"></textarea>
-              </div>
-              Botón para guardar el nuevo equipo -->
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
-                  class="btn btn-custom float-end">Guardar</button>
-              </form>
             </div>
+
             <div id="divPrePArtdo" style="display: none;">
               <div class="mb-3">
                 <label style="font-weight: bold;" style="font-weight: bold;" for="nombreRival" class="form-label">Nombre
@@ -3144,10 +3152,12 @@
             <!-- modal modificar entrenamiento -->
             <div class="row text-center mt-3">
               <div class="col-12 col-md-6 mt-3">
+                <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
                 <textarea class="form-control custom-input" id="objectiveSession" rows="5" name="objectiveSession"
                   [(ngModel)]="trainingSession.objectiveSession"></textarea>
               </div>
               <div class="col-12 col-md-6 mt-3 ">
+                <label for="objectiveSession" class="form-label">Calentamiento:</label>
                 <textarea class="form-control custom-input" id="warmUp" rows="5" name="warmUp"
                   [(ngModel)]="trainingSession.warmUp"></textarea>
               </div>

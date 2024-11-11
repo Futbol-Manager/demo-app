@@ -127,7 +127,7 @@ export class InformacionEquipoComponent implements OnInit {
       categoryTypeId: ["", Validators.required],
       levelLeague: ["", Validators.required],
       name: [""],
-      objectiveTeam: ["", Validators.required],
+      objectiveTeam: [""],
       trainingDays: ["", Validators.required],
       opinionTeam: [""],
     });
@@ -198,8 +198,11 @@ export class InformacionEquipoComponent implements OnInit {
             },
             clubId: this.team.clubId,
             userId: this.team.userId,
-            temporada: this.team.temporada
+            temporada: this.team.temporada,
+            dateCreate: this.team.dateCreate,
+            dateUpdate: this.team.dateUpdate
           };
+          
           // Asignar los valores recuperados del equipo al formulario
           this.editarEquipoForm.patchValue({
             teamId: this.teamInfo.teamId,
@@ -237,7 +240,9 @@ export class InformacionEquipoComponent implements OnInit {
         },
         clubId: this.team.clubId || 0,
         userId: 0,
-        temporada: this.team.temporada
+        temporada: this.team.temporada,
+        dateCreate: this.team.dateCreate,
+        dateUpdate: this.team.dateUpdate
       };
       // Llamada al servicio para editar el equipo
       // como estamos editando el equipo, podemos mandar userId = 0
@@ -260,11 +265,6 @@ export class InformacionEquipoComponent implements OnInit {
   navegarACalendario(): void {
     // Puedes ajustar la ruta según tu estructura de rutas
     this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
-  }
-
-  navegarAAsistencia(): void {
-    // Puedes ajustar la ruta según tu estructura de rutas
-    this.router.navigate(['/dashboard/informacion_equipo/asistencia', this.teamId]);
   }
 
   cerrarModal(): void {

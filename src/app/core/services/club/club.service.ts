@@ -1,10 +1,10 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
 import { ClubCuotas, HostoryPagosPlayer, PlayerCuotas, RopaClub, RopaJugador } from '../team/club.model';
-import { Abonado, AbonadoPagoHistorico } from '../models/club.model';
+import { Abonado, AbonadoPagoHistorico, Patrocinador } from '../models/club.model';
 
 @Injectable({
   providedIn: 'root'
@@ -159,7 +159,7 @@ export class ClubService {
     }
   }
 
-  
+
   getClubCuotaForLoadTeam(clubId: number, temp: string, teamId: number): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
@@ -495,6 +495,155 @@ export class ClubService {
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.post<Response>(url, abonadoPagoHist, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  subirImgAbonado(abonadoId: string, file: File): Observable<Response> {
+    // Verifica si el archivo está presente
+    if (file) {
+      // Obtén el token almacenado en localStorage
+      const token: string | null = localStorage.getItem('token');
+      // Verifica si el token está presente
+      if (token) {
+        // Configura las cabeceras con el token para la solicitud HTTP
+        const headers = new HttpHeaders({
+          'Authorization': `Bearer ${token}`
+        });
+
+        // Construye el cuerpo de la solicitud FormData
+        const formData: FormData = new FormData();
+        formData.append('files', file, file.name);
+
+        // Construye la URL para la solicitud
+        const url: string = environment.apiUrl + `club/subirimgabonado/${abonadoId}`;
+
+        // Realiza la solicitud HTTP con las cabeceras y el cuerpo configurados
+        return this.http.post<Response>(url, formData, { headers });
+      } else {
+        // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+        return throwError('Token no disponible');
+      }
+    } else {
+      // Manejo de error si no se proporciona un archivo (puedes personalizar según tus necesidades)
+      return throwError('Archivo no proporcionado');
+    }
+  }
+
+  //**********************Patrocinadores**************/
+
+  subirImgPatrocinador(patrocinadorId: number, file: File): Observable<Response> {
+    // Verifica si el archivo está presente
+    if (file) {
+      // Obtén el token almacenado en localStorage
+      const token: string | null = localStorage.getItem('token');
+      // Verifica si el token está presente
+      if (token) {
+        // Configura las cabeceras con el token para la solicitud HTTP
+        const headers = new HttpHeaders({
+          'Authorization': `Bearer ${token}`
+        });
+
+        // Construye el cuerpo de la solicitud FormData
+        const formData: FormData = new FormData();
+        formData.append('files', file, file.name);
+
+        // Construye la URL para la solicitud
+        const url: string = environment.apiUrl + `club/subirimgpatrocinador/${patrocinadorId}`;
+
+        // Realiza la solicitud HTTP con las cabeceras y el cuerpo configurados
+        return this.http.post<Response>(url, formData, { headers });
+      } else {
+        // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+        return throwError('Token no disponible');
+      }
+    } else {
+      // Manejo de error si no se proporciona un archivo (puedes personalizar según tus necesidades)
+      return throwError('Archivo no proporcionado');
+    }
+  }
+
+  getListPatrocinadoresByClub(clubId: number): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/getlistpatrocinadoresbyclub/${clubId}`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  // Método para crear o actualizar un equipo
+  createUpdatePatrocinador(patrocinador: Patrocinador): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/createpatrocinador`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.post<Response>(url, patrocinador, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  deletePatrocinadorById(patrocinadorId: number): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/deletepatrocinadorbyid/${patrocinadorId}`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  avtivePatrocinadorById(patrocinadorId: number, value: number): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/avtivepatrocinadorbyid/${patrocinadorId}/${value}`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
       return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera

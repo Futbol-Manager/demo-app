@@ -11,6 +11,14 @@
 
 <div [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
   <div class="submenu">
+    <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 2">
+      <div class="col text-center">
+        <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearEquipo()">
+          <i class="bi bi-plus-circle"></i>
+          <span class="d-none d-md-inline">Crear un equipo</span>
+        </a>
+      </div>
+    </div>
     <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
       <div class="col text-center">
         <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearEquipo()">
@@ -37,7 +45,7 @@
         </a>
       </div>
       <div class="col text-center">
-        <a class="no-underline" href="javascript:void(0);">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(4)">
           <i class="bi bi-collection"></i>
           <span class="d-none d-md-inline">Patrocinadores</span>
         </a>
@@ -110,7 +118,6 @@
         </div>
       </div>
     </div>
-
 
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
       *ngIf="this.usuarioActual!.profileType.profileId > 2">

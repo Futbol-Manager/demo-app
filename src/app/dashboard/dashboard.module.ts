@@ -25,6 +25,7 @@ import { SuscripcionComponent } from './suscripcion/suscripcion.component';
 import { ScoutingPlayerComponent } from './scouting-player/scouting-player.component';
 import { AdminsettingsComponent } from './adminsettings/adminsettings.component';
 import { AbonadosComponent } from './abonados/abonados.component';
+import { PatrocinadoresComponent } from './patrocinadores/patrocinadores.component';
 
 
 
@@ -51,7 +52,8 @@ import { AbonadosComponent } from './abonados/abonados.component';
     SuscripcionComponent,
     ScoutingPlayerComponent,
     AdminsettingsComponent,
-    AbonadosComponent
+    AbonadosComponent,
+    PatrocinadoresComponent
   ],
   imports: [
     CommonModule,

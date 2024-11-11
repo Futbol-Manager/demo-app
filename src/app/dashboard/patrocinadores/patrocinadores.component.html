@@ -1,0 +1,296 @@
+<div class="submenu">
+    <div class="row">
+        <div class="col text-center">
+            <a class="no-underline" href="javascript:void(0);" (click)="abrirModalPatrocinador()">
+                <i class="bi bi-plus-circle"></i>
+                <span class="d-none d-md-inline">Crear un patrocinador</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
+    <div class="container">
+        <div class="row mt-2">
+            <div class="col-12">
+                <div *ngIf="listPatrocinadores && listPatrocinadores.length > 0" class="carousel-container">
+                    <div class="carousel-content">
+                        <ng-container *ngFor="let patrocinador of listPatrocinadores">
+                            <img *ngIf="patrocinador.imagen && patrocinador.oculto === 1"
+                                [src]="'https://appsphairatech.com/images/patrocinadores/' + patrocinador.imagen"
+                                (click)="mostrarId(patrocinador.patrocinadorId)" class="patrocinador-img"
+                                alt="Patrocinador" title="Haz clic para ver el ID del patrocinador">
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mostrar lista de tareas colapsada -->
+        <div class="row mt-3">
+            <div class="col-12 col-md-4 mb-4" *ngFor="let patro of listPatrocinadores; let i = index">
+                <div class="card h-100">
+                    <!-- Imagen de la tarea -->
+                    <div *ngIf="patro.imagen">
+                        <img [src]="'https://appsphairatech.com/images/patrocinadores/' + patro.imagen"
+                            class="card-img-top fixed-size-img"
+                            onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'"
+                            alt="Imagen de la tarea">
+                    </div>
+                    <div *ngIf="!patro.imagen">
+                        <img src="https://appsphairatech.com/images/task-board/blank.png"
+                            class="card-img-top fixed-size-img" alt="Imagen por defecto">
+                    </div>
+
+                    <!-- Contenido de la tarjeta -->
+                    <div class="card-body custom-card-body">
+                        <h5 class="card-title text-center" style="max-height: 2em; min-height: 2em;">{{ patro.nombre }}
+                        </h5>
+                        <ul>
+                            <li>{{ patro.web }}</li>
+                            <li>{{ patro.telefono }}</li>
+                            <li>{{ patro.mail }}</li>
+                        </ul>
+                        <!-- Limitar la altura del texto -->
+                        <p class="card-text"
+                            style="color: #aeaeae; max-height: 4em; min-height: 4em; overflow-y: auto;">
+                            Descripción: {{ patro.descripcion
+                            }}</p>
+                        <p class="card-text"
+                            style="color: #aeaeae; max-height: 4em; min-height: 4em; overflow-y: auto;">
+                            Beneficios: {{ patro.beneficios
+                            }}</p>
+
+
+                        <!-- Botones de acción -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input custom-input" type="checkbox" id="oculto"
+                                    [checked]="patro.oculto === 1"
+                                    (change)="toggleChaneOculto(patro.oculto, patro.patrocinadorId)">
+                                <label class="form-check-label">Carrusel</label>
+                            </div>
+                            <button type="button" style="background-color: black; color: white" class="btn" (click)="openPatrocinador(patro, i)">
+                                <i class="bi bi-eye"></i> Ver
+                            </button>
+                            <button type="button" class="btn btn-danger"
+                                (click)="confirmDeletePatrocinador(patro.patrocinadorId, i, patro.nombre)">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para la crear un patrocinador -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalCrearPatro}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="stripeModalLabel">Patrocinador</h5>
+                    <button type="button" class="btn-close" aria-label="Close"
+                        (click)="cerrarModalCrearPatro()"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row text-center">
+                            <!-- Primera columna principal -->
+                            <div class="col-12 col-md-12">
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-12">
+                                        <!-- Contenido de la subcolumna -->
+                                        <label><strong>Datos del Patrocinador:</strong></label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="text" class="form-control custom-input" id="nombre"
+                                                name="nombre" [(ngModel)]="patrocinadorObj.nombre" placeholder="Nombre"
+                                                #primerCampo>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="text" class="form-control custom-input" id="web" name="web"
+                                                [(ngModel)]="patrocinadorObj.web" placeholder="Web">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <textarea class="form-control custom-input" id="descripcion"
+                                                name="descripcion" [(ngModel)]="patrocinadorObj.descripcion" rows="5"
+                                                placeholder="Descripción"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <textarea class="form-control custom-input" id="beneficios"
+                                                name="beneficios" [(ngModel)]="patrocinadorObj.beneficios" rows="5"
+                                                placeholder="Beneficios"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="text" class="form-control custom-input" id="telefono"
+                                                name="telefono" [(ngModel)]="patrocinadorObj.telefono"
+                                                placeholder="Teléfono" maxlength="9">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="mail" class="form-control custom-input" id="email" name="email"
+                                                [(ngModel)]="patrocinadorObj.mail" placeholder="Email">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer mt-3">
+                            <!-- Botón para guardar el nuevo equipo -->
+                            <button type="button" class="btn btn-success float-end"
+                                (click)="createUpdatePatrocinador(1)">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para modificar el patrocinador -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalUpdatePatrocinador}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="stripeModalLabel">Patrocinador</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarPatrocinador()"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row text-center">
+                            <!-- Primera columna principal -->
+                            <div class="col-12 col-md-12">
+                                <div class="row text-center align-items-center">
+                                    <div class="col-12 col-md-12">
+                                        <!-- Contenido de la subcolumna -->
+                                        <ng-container *ngIf="patrocinadorUpdate.patrocinadorId !== 0">
+                                            <div class="form-group">
+                                                <ng-container *ngIf="patrocinadorUpdate.imagen">
+                                                    <div class="container">
+                                                        <img src="https://appsphairatech.com/images/patrocinadores/{{ patrocinadorUpdate.imagen }}"
+                                                            alt="user-player" max-width="350" max-height="350">
+                                                    </div>
+                                                </ng-container>
+                                                <ng-container *ngIf="!patrocinadorUpdate.imagen">
+                                                    <span class="bi bi-person" style="font-size: 3rem;"></span>
+                                                </ng-container>
+                                                <h4>Sube la imagen del patrocinador</h4>
+                                                <form (submit)="onSubmit(patrocinadorUpdate.patrocinadorId)"
+                                                    enctype="multipart/form-data">
+                                                    <div class="form-group">
+                                                        <p>Seleccionar imagen en formato JPG o PNG:</p>
+                                                        <input type="file" id="image" (change)="onFileSelected($event)">
+                                                        <div *ngIf="showPreview" style="margin-top: 2em;">
+                                                            <img [src]="imagePreviewUrl" alt="Image Preview"
+                                                                max-width="350" max-height="350">
+                                                            <button *ngIf="showbtnupimg" style="margin-top: 1em;"
+                                                                type="submit" class="btn btn-success">Subir
+                                                                imagen</button>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </ng-container>
+                                        <ng-container *ngIf="patrocinadorUpdate.patrocinadorId == 0">
+                                            <span class="bi bi-person" style="font-size: 3rem;"></span>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-12">
+                                        <!-- Contenido de la subcolumna -->
+                                        <label><strong>Editar datos del Patrocinador:</strong></label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="text" class="form-control custom-input" id="nombre"
+                                                name="nombre" [(ngModel)]="patrocinadorUpdate.nombre"
+                                                placeholder="Nombre" #primerCampo>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="text" class="form-control custom-input" id="web" name="web"
+                                                [(ngModel)]="patrocinadorUpdate.web" placeholder="Web">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <textarea class="form-control custom-input" id="descripcion"
+                                                name="descripcion" [(ngModel)]="patrocinadorUpdate.descripcion" rows="5"
+                                                placeholder="Descripción"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <textarea class="form-control custom-input" id="beneficios"
+                                                name="beneficios" [(ngModel)]="patrocinadorUpdate.beneficios" rows="5"
+                                                placeholder="Beneficios"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="text" class="form-control custom-input" id="telefono"
+                                                name="telefono" [(ngModel)]="patrocinadorUpdate.telefono"
+                                                placeholder="Teléfono" maxlength="9">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="mail" class="form-control custom-input" id="email" name="email"
+                                                [(ngModel)]="patrocinadorUpdate.mail" placeholder="Email">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="modal-footer mt-3">
+                            <!-- Botón para guardar el nuevo equipo -->
+                            <button type="button" class="btn btn-success float-end"
+                                (click)="createUpdatePatrocinador(2)">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
