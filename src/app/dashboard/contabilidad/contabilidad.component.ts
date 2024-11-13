@@ -392,7 +392,10 @@ export class ContabilidadComponent implements OnInit {
       /*if (this.isMenor) {
         menor = 1;
       }*/
-      this.registerService.invitePlayer(this.userForm.value.mail, this.selectedPlayerId, menor, this.selectedTeamId).pipe().subscribe(
+
+      const normalizedEmail = this.normalizeEmail(this.userForm.value.mail);
+
+      this.registerService.invitePlayer(normalizedEmail, this.selectedPlayerId, menor, this.selectedTeamId).pipe().subscribe(
         res => {
           this.cerrarModalInvitar();
           const snackBarConfig = new MatSnackBarConfig();
@@ -403,6 +406,15 @@ export class ContabilidadComponent implements OnInit {
         }
       )
     }
+  }
+
+  removeAccents(text: string) {
+    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  normalizeEmail(email: string) {
+    // Elimina las tildes de toda la cadena de correo electrónico
+    return this.removeAccents(email.toLowerCase());
   }
 
   openModalEditar(player: any, index: number) {

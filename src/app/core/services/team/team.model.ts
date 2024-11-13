@@ -218,6 +218,7 @@ export class SubscriptionRequest {
   priceId: string;             // ID del plan de precios en Stripe
   paymentMethodId: string;     // ID del método de pago en Stripe
   suscripcion: Suscripcion; // Objeto de la suscripción
+  cuponId: string;
 
   constructor(object: any) {
     this.userId = object.userId || 0;
@@ -226,6 +227,7 @@ export class SubscriptionRequest {
     this.priceId = object.priceId || '';
     this.paymentMethodId = object.paymentMethodId || '';
     this.suscripcion = object.suscripcion || new Suscripcion({});
+    this.cuponId = object.cuponId || '';
   }
 }
 

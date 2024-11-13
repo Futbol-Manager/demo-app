@@ -1,59 +1,61 @@
-<div *ngIf="datosCargados">
-  <div class="submenu">
-    <div class="row">
-      <div class="col" *ngIf="this.userId === 9">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(6)">
-          <i class="bi bi-table"></i>
-          <span class="d-none d-md-inline">Usuarios</span>
-        </a>
-      </div>
-      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3 && categoryTeam < 27">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
-          <i class="bi bi-info-circle"></i>
-          <span class="d-none d-md-inline">Información del equipo</span>
-        </a>
-      </div>
-      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
-          <i class="bi bi-people-fill"></i>
-          <span class="d-none d-md-inline">Ver jugadores del equipo</span>
-        </a>
-      </div>
-      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
-          <i class="bi bi-people-fill"></i>
-          <span class="d-none d-md-inline">Ver Información</span>
-        </a>
-      </div>
-      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2 && categoryTeam < 27">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">
-          <i class="bi bi-bank"></i>
-          <span class="d-none d-md-inline">Cuotas</span>
-        </a>
-      </div>
-      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3 && categoryTeam < 27">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(3)">
-          <span class="icon-container d-none d-md-flex">
-            <i class="bi bi-bar-chart-line"></i>
-            <i class="bi bi-shield"></i>
-          </span>
-          <i class="bi bi-shield d-md-none"></i>
-          <span class="d-none d-md-inline">Estadísticas del equipo</span>
-        </a>
-      </div>
-      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3 && categoryTeam < 27">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(4)">
-          <span class="icon-container d-none d-md-flex">
-            <i class="bi bi-bar-chart-line"></i>
-            <i class="bi bi-person"></i>
-          </span>
-          <i class="bi bi-person d-md-none"></i>
-          <span class="d-none d-md-inline">Estadísticas por jugador</span>
-        </a>
-      </div>
+<div class="submenu">
+  <div class="row">
+    <div class="col" *ngIf="this.userId === 9">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(6)">
+        <i class="bi bi-table"></i>
+        <span class="d-none d-md-inline">Usuarios</span>
+      </a>
+    </div>
+    <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3 && categoryTeam < 27">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
+        <i class="bi bi-info-circle"></i>
+        <span class="d-none d-md-inline">Información del equipo</span>
+      </a>
+    </div>
+    <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
+        <i class="bi bi-people-fill"></i>
+        <span class="d-none d-md-inline">Ver jugadores del equipo</span>
+      </a>
+    </div>
+    <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
+        <i class="bi bi-people-fill"></i>
+        <span class="d-none d-md-inline">Ver Información</span>
+      </a>
+    </div>
+    <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2 && categoryTeam < 27">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">
+        <i class="bi bi-bank"></i>
+        <span class="d-none d-md-inline">Cuotas</span>
+      </a>
+    </div>
+    <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3 && categoryTeam < 27">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(3)">
+        <span class="icon-container d-none d-md-flex">
+          <i class="bi bi-bar-chart-line"></i>
+          <i class="bi bi-shield"></i>
+        </span>
+        <i class="bi bi-shield d-md-none"></i>
+        <span class="d-none d-md-inline">Estadísticas del equipo</span>
+      </a>
+    </div>
+    <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3 && categoryTeam < 27">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(4)">
+        <span class="icon-container d-none d-md-flex">
+          <i class="bi bi-bar-chart-line"></i>
+          <i class="bi bi-person"></i>
+        </span>
+        <i class="bi bi-person d-md-none"></i>
+        <span class="d-none d-md-inline">Estadísticas por jugador</span>
+      </a>
     </div>
   </div>
+</div>
 
+<app-publicidad></app-publicidad>
+
+<div *ngIf="datosCargados">
   <!-- calendario.component.html -->
   <div class="container" style="margin-top: 3em;" *ngIf="categoryTeam < 27">
     <h2 class="text-center">{{ nombreEquipo }}</h2>

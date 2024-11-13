@@ -680,7 +680,7 @@ export class PlayerComponent implements OnInit {
     } else {
       console.log('Ninguna imagen seleccionada.');
     }
-  }  
+  }
 
   navegarAAsistencia(): void {
     // Puedes ajustar la ruta según tu estructura de rutas
@@ -769,7 +769,10 @@ export class PlayerComponent implements OnInit {
       /*if (this.isMenor) {
         menor = 1;
       }*/
-      this.registerService.invitePlayer(this.userForm.value.mail, this.selectedPlayerId, menor, this.teamId).pipe().subscribe(
+
+      const normalizedEmail = this.normalizeEmail(this.userForm.value.mail);
+
+      this.registerService.invitePlayer(normalizedEmail, this.selectedPlayerId, menor, this.teamId).pipe().subscribe(
         res => {
           if (res.data) {
             //ocultar sobre TODO
@@ -783,6 +786,15 @@ export class PlayerComponent implements OnInit {
         }
       )
     }
+  }
+
+  removeAccents(text: string) {
+    return text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  normalizeEmail(email: string) {
+    // Elimina las tildes de toda la cadena de correo electrónico
+    return this.removeAccents(email.toLowerCase());
   }
 
   showPortero(value: string) {

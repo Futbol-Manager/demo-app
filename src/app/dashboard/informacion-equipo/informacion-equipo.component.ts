@@ -93,7 +93,8 @@ export class InformacionEquipoComponent implements OnInit {
     { value: 'Preferente', label: 'Preferente' },
     { value: 'Primera', label: 'Primera' },
     { value: 'Segunda', label: 'Segunda' },
-    { value: 'Tercera', label: 'Tercera' }
+    { value: 'Tercera', label: 'Tercera' },
+    { value: 'Fútbol 5', label: 'Fútbol 5' }
   ];
 
   nameOptions: { value: string, label: string }[] = [

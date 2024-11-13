@@ -1,3 +1,5 @@
+<app-publicidad></app-publicidad>
+
 <div class="container">
     <h3 *ngIf="this.usuarioActual!.profileType.profileId < 5 && this.usuarioActual!.profileType.profileId > 5">Perfiles
     </h3>
@@ -102,7 +104,8 @@
                         <!-- Contenido de la subcolumna -->
                         <div class="form-group">
                             <div class="mt-4">
-                                <h3 class="text-center">Total a pagar: {{ totalPriceClub | currency: 'EUR':'symbol' }}</h3>
+                                <h3 class="text-center">Total a pagar: {{ totalPriceClub | currency: 'EUR':'symbol' }}
+                                </h3>
                             </div>
                         </div>
                     </div>
@@ -147,6 +150,16 @@
                             <input type="number" id="numTeams" class="form-control custom-input" [(ngModel)]="numTeams"
                                 (input)="calculateTotal2()" min="1" />
                         </div>
+                    </div>
+                </div>
+                <div class="row mt-3 align-items-center">
+                    <div class="col-8">
+                        <input type="text" id="cupon" class="form-control custom-input" [(ngModel)]="cuponId"
+                            placeholder="Escribe aquí tu cupón" />
+                    </div>
+                    <div class="col-4">
+                        <button class="btn btn-primary" (click)="validateCupon()">Validar
+                            cupón</button>
                     </div>
                 </div>
                 <div class="row mt-3">

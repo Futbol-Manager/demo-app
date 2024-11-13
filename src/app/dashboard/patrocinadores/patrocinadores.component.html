@@ -18,7 +18,7 @@
                         <ng-container *ngFor="let patrocinador of listPatrocinadores">
                             <img *ngIf="patrocinador.imagen && patrocinador.oculto === 1"
                                 [src]="'https://appsphairatech.com/images/patrocinadores/' + patrocinador.imagen"
-                                (click)="mostrarId(patrocinador.patrocinadorId)" class="patrocinador-img"
+                                (click)="mostrarId(patrocinador)" class="patrocinador-img"
                                 alt="Patrocinador" title="Haz clic para ver el ID del patrocinador">
                         </ng-container>
                     </div>
@@ -47,9 +47,9 @@
                         <h5 class="card-title text-center" style="max-height: 2em; min-height: 2em;">{{ patro.nombre }}
                         </h5>
                         <ul>
-                            <li>{{ patro.web }}</li>
-                            <li>{{ patro.telefono }}</li>
+                            <li><a href="{{ patro.web }}" target="_blank">{{ patro.web }}</a></li>
                             <li>{{ patro.mail }}</li>
+                            <li>{{ patro.telefono }}</li>
                         </ul>
                         <!-- Limitar la altura del texto -->
                         <p class="card-text"
@@ -129,7 +129,7 @@
                                         <div class="form-group">
                                             <textarea class="form-control custom-input" id="descripcion"
                                                 name="descripcion" [(ngModel)]="patrocinadorObj.descripcion" rows="5"
-                                                placeholder="Descripción"></textarea>
+                                                placeholder="Descripción" maxlength="300"></textarea>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
@@ -137,7 +137,7 @@
                                         <div class="form-group">
                                             <textarea class="form-control custom-input" id="beneficios"
                                                 name="beneficios" [(ngModel)]="patrocinadorObj.beneficios" rows="5"
-                                                placeholder="Beneficios"></textarea>
+                                                placeholder="Beneficios" maxlength="300"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -194,7 +194,7 @@
                                                 <ng-container *ngIf="patrocinadorUpdate.imagen">
                                                     <div class="container">
                                                         <img src="https://appsphairatech.com/images/patrocinadores/{{ patrocinadorUpdate.imagen }}"
-                                                            alt="user-player" max-width="350" max-height="350">
+                                                            alt="user-player" style="width: -webkit-fill-available;">
                                                     </div>
                                                 </ng-container>
                                                 <ng-container *ngIf="!patrocinadorUpdate.imagen">
@@ -208,7 +208,7 @@
                                                         <input type="file" id="image" (change)="onFileSelected($event)">
                                                         <div *ngIf="showPreview" style="margin-top: 2em;">
                                                             <img [src]="imagePreviewUrl" alt="Image Preview"
-                                                                max-width="350" max-height="350">
+                                                                style="width: -webkit-fill-available;">
                                                             <button *ngIf="showbtnupimg" style="margin-top: 1em;"
                                                                 type="submit" class="btn btn-success">Subir
                                                                 imagen</button>
@@ -251,7 +251,7 @@
                                         <div class="form-group">
                                             <textarea class="form-control custom-input" id="descripcion"
                                                 name="descripcion" [(ngModel)]="patrocinadorUpdate.descripcion" rows="5"
-                                                placeholder="Descripción"></textarea>
+                                                placeholder="Descripción" maxlength="300"></textarea>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-6">
@@ -259,7 +259,7 @@
                                         <div class="form-group">
                                             <textarea class="form-control custom-input" id="beneficios"
                                                 name="beneficios" [(ngModel)]="patrocinadorUpdate.beneficios" rows="5"
-                                                placeholder="Beneficios"></textarea>
+                                                placeholder="Beneficios" maxlength="300"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -287,6 +287,103 @@
                             <!-- Botón para guardar el nuevo equipo -->
                             <button type="button" class="btn btn-success float-end"
                                 (click)="createUpdatePatrocinador(2)">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal para ver el patrocinador -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalVerPatrocinador}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="stripeModalLabel">Patrocinador</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarVerPatrocinador()"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row text-center">
+                            <!-- Primera columna principal -->
+                            <div class="col-12 col-md-12">
+                                <div class="row text-center align-items-center">
+                                    <div class="col-12 col-md-12">
+                                        <!-- Contenido de la subcolumna -->
+                                        <ng-container *ngIf="patrocinadorUpdate.patrocinadorId !== 0">
+                                            <div class="form-group">
+                                                <ng-container *ngIf="patrocinadorUpdate.imagen">
+                                                    <div class="container">
+                                                        <img src="https://appsphairatech.com/images/patrocinadores/{{ patrocinadorUpdate.imagen }}"
+                                                            alt="user-player" style="width: -webkit-fill-available;">
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-12">
+                                        <!-- Contenido de la subcolumna -->
+                                        <label><strong>Datos del Patrocinador:</strong></label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="text" class="form-control custom-input" id="nombre"
+                                                name="nombre" [(ngModel)]="patrocinadorUpdate.nombre"
+                                                placeholder="Nombre" #primerCampo readonly="true">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="text" class="form-control custom-input" id="web" name="web"
+                                                [(ngModel)]="patrocinadorUpdate.web" placeholder="Web" readonly="true">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <textarea class="form-control custom-input" id="descripcion"
+                                                name="descripcion" [(ngModel)]="patrocinadorUpdate.descripcion" rows="5"
+                                                placeholder="Descripción" readonly="true"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <textarea class="form-control custom-input" id="beneficios"
+                                                name="beneficios" [(ngModel)]="patrocinadorUpdate.beneficios" rows="5"
+                                                placeholder="Beneficios" readonly="true"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="text" class="form-control custom-input" id="telefono"
+                                                name="telefono" [(ngModel)]="patrocinadorUpdate.telefono"
+                                                placeholder="Teléfono" maxlength="9" readonly="true">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="mail" class="form-control custom-input" id="email" name="email"
+                                                [(ngModel)]="patrocinadorUpdate.mail" placeholder="Email" readonly="true">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>

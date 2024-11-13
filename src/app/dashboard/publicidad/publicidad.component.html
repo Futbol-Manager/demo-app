@@ -1,0 +1,17 @@
+
+<div class="container">
+    <div class="row mt-2">
+        <div class="col-12">
+            <div *ngIf="listPatrocinadores && listPatrocinadores.length > 0" class="carousel-container">
+                <div class="carousel-content">
+                    <ng-container *ngFor="let patrocinador of listPatrocinadores">
+                        <img *ngIf="patrocinador.imagen && patrocinador.oculto === 1"
+                            [src]="'https://appsphairatech.com/images/patrocinadores/' + patrocinador.imagen"
+                            (click)="mostrarId(patrocinador)" class="patrocinador-img"
+                            alt="Patrocinador" title="Haz clic para ver el ID del patrocinador">
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

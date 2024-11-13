@@ -63,6 +63,8 @@ export class SuscripcionComponent implements OnInit {
   susIsNew = false;
   aceptaCondiciones = false;
   isLoading: boolean = false;
+  cuponId = '';
+  cuponIsValid = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -214,7 +216,8 @@ export class SuscripcionComponent implements OnInit {
         renueva: 0,
         clienteStripeId: '',
         numeroEquipos: this.unidades
-      }
+      },
+      cuponId: this.cuponId
     };
 
     // Llamar al backend para crear la suscripción y obtener el clientSecret
@@ -282,7 +285,8 @@ export class SuscripcionComponent implements OnInit {
       name: this.usuarioActual?.firstName === undefined ? '' : this.usuarioActual?.firstName,
       priceId: '', // Aquí va el ID del plan de precios en Stripe
       paymentMethodId: '', // ID del PaymentMethod obtenido de Stripe
-      suscripcion: this.susInfo
+      suscripcion: this.susInfo,
+      cuponId: ''
     };
 
     // Llamar a tu servicio para procesar la suscripción
@@ -325,7 +329,8 @@ export class SuscripcionComponent implements OnInit {
       name: this.usuarioActual?.firstName === undefined ? '' : this.usuarioActual?.firstName,
       priceId: this.precioId, // Aquí va el ID del plan de precios en Stripe
       paymentMethodId: '', // ID del PaymentMethod obtenido de Stripe
-      suscripcion: this.susInfo
+      suscripcion: this.susInfo,
+      cuponId: ''
     };
 
     // Llamar a tu servicio para procesar la suscripción
@@ -384,6 +389,9 @@ export class SuscripcionComponent implements OnInit {
       this.tiempo = 'M';
     } else if (this.subscriptionType === 'annual') {
       this.totalPrice = this.annualPricePerMonth * this.numTeams * 12; // Precio anual multiplicado por 12 meses
+      if(this.cuponIsValid){        
+        this.totalPrice = this.totalPrice - (this.totalPrice * 0.34);
+      }
       this.precioId = 'price_1QCzw9HzMBDrutQnYz3ctq3A';
       this.selected = 10;
       this.tiempo = 'A';
@@ -416,5 +424,28 @@ export class SuscripcionComponent implements OnInit {
 
   changeCheck() {
     this.aceptaCondiciones = this.aceptaCondiciones == true ? false : true;
+  }
+
+  validateCupon(){
+    if(this.subscriptionType == 'monthly' || this.cuponId === ''){
+      alert('Ingresa tu cupón y selecciona pago anual.');
+    } else {
+      this.teamService.validateCupon(this.cuponId.toUpperCase()).subscribe(
+        (response: Response) => {
+          if (response.data) {
+            alert('Cupón válido.');
+            this.cuponIsValid = true;
+            this.totalPrice = this.totalPrice - (this.totalPrice * 0.34);
+          } else {
+            alert('Cupón no válido.');
+            this.cuponIsValid = false;
+            this.totalPrice = this.annualPricePerMonth * this.numTeams * 12;
+          }
+        },
+        (error) => {
+          console.error('Error al crear la suscripción:', error);
+        }
+      );
+    }
   }
 }
