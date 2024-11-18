@@ -39,7 +39,7 @@ const routes: Routes = [
       { path: 'contabilidad/:clubId', component: ContabilidadComponent },
       { path: 'abonados/:clubId', component: AbonadosComponent },
       { path: 'ropa/:clubId', component: RopaComponent },
-      { path: 'cuotas/:teamId', component: CuotasComponent },
+      { path: 'cuotas/:teamId/:playerId', component: CuotasComponent },
       { path: 'cuadro-de-mandos/:clubId', component: CuadroComponent },
       { path: 'patrocinadores/:clubId', component: PatrocinadoresComponent },
       { path: 'cuadro-de-mandos/info-jugadores/:clubId', component: InfoJugadoresComponent },

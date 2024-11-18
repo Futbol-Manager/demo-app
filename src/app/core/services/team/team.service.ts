@@ -283,7 +283,7 @@ export class TeamService {
         }
     }
 
-    getHistoryCuotaClubByPlayer(playerId: number): Observable<Response> {
+    getHistoryCuotaClubByPlayer(teamId: number, playerId: number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -295,7 +295,7 @@ export class TeamService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `team/gethistorycuotaclubbyplayer/${playerId}`;
+            const url: string = environment.apiUrl + `team/gethistorycuotaclubbyplayer/${teamId}/${playerId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });

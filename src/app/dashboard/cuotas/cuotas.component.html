@@ -9,119 +9,174 @@
     </div>
 </div>
 
-<div *ngIf="datosCargados" class="container">
-    <h2 style="margin-top: 2em;">Puedes pagar por transferencia</h2>
-    <p>Puedes pagar por transferencia a la cuenta indicada poniendo el asunto o concepto y pulsando en mago manual para
-        avisar de ello.</p>
-    <div class="row mb-3">
+<div class="container">
+    <!-- Contenido para el dataTable -->
+    <div *ngIf="tablasCargados">
+        <div class="row mt-3">
+            <div class="col-12 col-md-12 text-center">
+                <h2><u>Información</u></h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 col-md-6">
+                <h2>Cuotas Club</h2>
+                <div style="overflow-x: auto;">
+                    <table id="dataTable" class="table table-bordered table-striped text-center">
+                        <thead class="table-custom">
+                            <tr>
+                                <th>Nº</th>
+                                <th>CUOTA</th>
+                                <th>PLAZO</th>
+                                <!-- numCuotas-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngIf="playerCuotas.cuotaRopa != 0">
+                                <td>0</td>
+                                <td>{{ playerCuotas.cuotaRopa }}€</td>
+                                <td>{{ playerCuotas.cuotaRopaDate }}</td>
+                            </tr>
+                            <tr *ngIf="playerCuotas.numCuotas > 0">
+                                <td>1</td>
+                                <td>{{ playerCuotas.cuotaUno }}€</td>
+                                <td>{{ playerCuotas.cuotaUnoDate }}</td>
+                            </tr>
+                            <tr *ngIf="playerCuotas.numCuotas > 1">
+                                <td>2</td>
+                                <td>{{ playerCuotas.cuotaDos }}€</td>
+                                <td>{{ playerCuotas.cuotaDosDate }}</td>
+                            </tr>
+                            <tr *ngIf="playerCuotas.numCuotas > 2">
+                                <td>3</td>
+                                <td>{{ playerCuotas.cuotaTres }}€</td>
+                                <td>{{ playerCuotas.cuotaTresDate }}</td>
+                            </tr>
+                            <tr *ngIf="playerCuotas.numCuotas > 3">
+                                <td>4</td>
+                                <td>{{ playerCuotas.cuotaCuatro }}€</td>
+                                <td>{{ playerCuotas.cuotaCuatroDate }}</td>
+                            </tr>
+                            <tr *ngIf="playerCuotas.numCuotas > 4">
+                                <td>5</td>
+                                <td>{{ playerCuotas.cuotaCinco }}€</td>
+                                <td>{{ playerCuotas.cuotaCincoDate }}</td>
+                            </tr>
+                            <tr *ngIf="playerCuotas.numCuotas > 5">
+                                <td>6</td>
+                                <td>{{ playerCuotas.cuotaSeis }}€</td>
+                                <td>{{ playerCuotas.cuotaSeisDate }}</td>
+                            </tr>
+                            <tr *ngIf="playerCuotas.numCuotas > 6">
+                                <td>7</td>
+                                <td>{{ playerCuotas.cuotaSiete }}€</td>
+                                <td>{{ playerCuotas.cuotaSieteDate }}</td>
+                            </tr>
+                            <tr *ngIf="playerCuotas.numCuotas > 7">
+                                <td>8</td>
+                                <td>{{ playerCuotas.cuotaOcho }}€</td>
+                                <td>{{ playerCuotas.cuotaOchoDate }}</td>
+                            </tr>
+                            <tr *ngIf="playerCuotas.numCuotas > 8">
+                                <td>9</td>
+                                <td>{{ playerCuotas.cuotaNueve }}€</td>
+                                <td>{{ playerCuotas.cuotaNueveDate }}</td>
+                            </tr>
+                            <tr *ngIf="playerCuotas.numCuotas > 9">
+                                <td>10</td>
+                                <td>{{ playerCuotas.cuotaDiez }}€</td>
+                                <td>{{ playerCuotas.cuotaDiezDate }}</td>
+                            </tr>
+                            <tr *ngIf="playerCuotas.numCuotas > 10">
+                                <td>11</td>
+                                <td>{{ playerCuotas.cuotaOnce }}€</td>
+                                <td>{{ playerCuotas.cuotaOnceDate }}</td>
+                            </tr>
+                            <tr *ngIf="playerCuotas.numCuotas > 11">
+                                <td>12</td>
+                                <td>{{ playerCuotas.cuotaDoce }}€</td>
+                                <td>{{ playerCuotas.cuotaDoceDate }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <h2>Historial de pago</h2>
+                <div style="overflow-x: auto;">
+                    <table id="dataTable2" class="table table-bordered table-striped text-center">
+                        <thead class="table-custom">
+                            <tr>
+                                <th>Nº</th>
+                                <th>CANTIDAD PAGADA</th>
+                                <th>EL DIA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let player of historyCuotasPlayer; let i = index">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ player.cantidad }}€</td>
+                                <td>{{ player.fecha }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <label for="cuota" class="form-label">Precio de la cuota del Club:</label>
+                <input type="text" class="form-control" id="cuota" name="cuota" [(ngModel)]="cuotaClub" disabled>
+            </div>
+            <div class="col-md-6">
+                <label for="cuotaRopa" class="form-label">Precio de la cuota de la ropa:</label>
+                <input type="text" class="form-control" id="cuotaRopa" name="cuotaRopa" [(ngModel)]="cuotaRopa"
+                    disabled>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="restanteCero" class="container">
+    <h2 style="margin-top: 2em;">Has pagado todo, gracias!</h2>
+</div>
+
+<div *ngIf="datosCargados" class="container mt-3">
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <h2>Llevas pagado {{ pagado }}€ y te falta por pagar {{ restante }}€</h2>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-md-12">
+            <h2>- Puedes pagar por transferencia</h2>
+            <p>Puedes pagar por transferencia a la cuenta indicada poniendo el asunto o concepto, una vez realizado el
+                pago,
+                no olvides notificarselo al club para que lo registren. </p>
+        </div>
+    </div>
+    <div class="row mt-3">
         <div class="col-md-6">
             <label for="asunto" class="form-label">Asunto o concepto pago de la cuota</label>
-            <input type="text" class="form-control" id="asunto" name="asunto" [(ngModel)]="cuota.asunto" disabled>
+            <input type="text" class="form-control" id="asunto" name="asunto" [(ngModel)]="cuota.asunto"
+                placeholder="Nombre y apellidos + equipo (Ej: Cadete A)" disabled>
         </div>
         <div class="col-md-6">
             <label for="banco" class="form-label">Número del banco del Club</label>
             <input type="text" class="form-control" id="banco" name="banco" [(ngModel)]="cuota.banco" disabled>
         </div>
     </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <label for="cuota" class="form-label">Precio de la cuota del Club:</label>
-            <input type="text" class="form-control" id="cuota" name="cuota" [(ngModel)]="cuota.cuota" disabled>
-        </div>
-        <div class="col-md-6">
-            <label for="cuotaRopa" class="form-label">Precio de la cuota de la ropa:</label>
-            <input type="text" class="form-control" id="cuotaRopa" name="cuotaRopa" [(ngModel)]="cuota.cuotaRopa"
-                disabled>
-        </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
+    <div class="row mt-3">
+        <!-- <div class="col-md-6">
             <button class="btn btn-custom btn-sm">Pago manual</button>
-        </div>
+        </div> -->
+        <h2>- Puedes pagar por Stripe</h2>
         <div class="col-md-6">
-            <button class="btn btn-custom btn-sm" (click)="openModalStripe()">Pagar con tarjeta<i
-                    class="bi bi-stripe ms-2"></i></button>
+            <button class="btn btn-custom btn-sm" (click)="openModalStripe()">Pagar con tarjeta</button>
         </div>
     </div>
-
-    <!-- Contenido para el dataTable -->
-    <div class="container mt-4">
-        <h2>Pagos temporada {{ temporada }}</h2>
-        <div class="row justify-content-between div-headdatatable">
-            <div class="col-md-auto mr-auto" id="dt-length">
-                <!-- Contenido para el dt-length -->
-            </div>
-            <div class="col-md-auto ml-auto" id="dt-search">
-            </div>
+    <div class="row mt-3">
+        <div class="col-md-12" style="height: 10px;">
         </div>
-        <div style="overflow-x: auto;">
-            <table id="dataTable" class="table table-bordered table-striped text-center">
-                <thead class="table-custom">
-                    <tr>
-                        <th>ID</th>
-                        <!-- <th>EQUIPO_ID</th>-->
-                        <th>ESTADO</th>
-                        <!-- <th>FRACCIONADO</th>-->
-                        <th>ROPA</th>
-                        <th>CUOTA_1º</th>
-                        <th>FECHA_PAGO</th>
-                        <th>CUOTA_2º</th>
-                        <th>FECHA_PAGO</th>
-                        <th>CUOTA_3º</th>
-                        <th>FECHA_PAGO</th>
-                        <th>CUOTA_ROPA</th>
-                        <th>FECHA_PAGO</th>
-                        <th>PAGADO</th>
-                        <th>RESTANTE</th>
-                        <!-- <th>PRESTANTE</th>-->
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let player of historyCuotasPlayer; let i = index">
-                        <td>{{ player.playerId }}</td>
-                        <!-- <td>{{ player.teamId }}</td> -->
-                        <td>
-                            <ng-container *ngIf="estadoPago(player.estado) === 0">
-                                <i class="bi bi-x-circle text-danger" title="No ha pagado nada"></i>
-                            </ng-container>
-                            <ng-container *ngIf="estadoPago(player.estado) === 1">
-                                <i class="bi bi-exclamation-triangle text-warning" title="{{ player.estado }}"></i>
-                            </ng-container>
-                            <ng-container *ngIf="estadoPago(player.estado) === 2">
-                                <i class="bi bi-check-circle text-success" title="{{ player.estado }}"></i>
-                            </ng-container>
-                            <ng-container *ngIf="estadoPago(player.estado) === 3">
-                                <i class="bi bi-check-circle text-success" title="{{ player.estado }}"></i>
-                            </ng-container>
-                        </td>
-                        <!-- <td>
-                            <ng-container *ngIf="estadoPago(player.fraccionado) === 0">
-                                No
-                            </ng-container>
-                            <ng-container *ngIf="estadoPago(player.fraccionado) === 1">
-                                Si
-                            </ng-container>
-                        </td>-->
-                        <td>{{ conRopa }}</td>
-                        <td>{{ player.pagoUno }}€</td>
-                        <td>{{ player.datePagoUno }}</td>
-                        <td>{{ player.pagoDos }}€</td>
-                        <td>{{ player.datePagoDos }}</td>
-                        <td>{{ player.pagoTres }}€</td>
-                        <td>{{ player.datePagoTres }}</td>
-                        <td>{{ player.pagoRopa }}€</td>
-                        <td>{{ player.datePagoRopa }}</td>
-                        <td>{{ player.totalPagado }}€</td>
-                        <td>{{ restante }}</td>
-                        <!-- <td>{{ player.restante }}</td> -->
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div id="button_datatable">
     </div>
 </div>
 
@@ -136,55 +191,43 @@
                 </div>
                 <div class="modal-body">
                     <form (ngSubmit)="makePayment()">
+                        <div class="row mb-3">
+                            <label for="cantidadAPagar" class="form-label">Selecciona la cuota a pagar:</label>
+                            <select [(ngModel)]="cantidadAPagar" id="cantidadAPagar" name="cantidadAPagar" class="form-control" (change)="calcularComision($event)">
+                                <option *ngFor="let cuota of cuotas" [value]="cuota.value">
+                                    {{ cuota.text }}
+                                </option>
+                            </select>                  
+                        </div>
                         <!-- <div class="row mb-3">
-                            <label for="amount" class="form-label">Cantidad a Pagar:</label>
-                            <input type="number" class="form-control" id="amount" [(ngModel)]="amount" name="amount"
-                                required>
+                            <label for="cantidadAPagar" class="form-label">Cantidad a pagar:
+                                {{ cantidadAPagar }}</label>
+                            <input type="number" class="form-control" id="cantidadAPagar" [(ngModel)]="cantidadAPagar"
+                                name="cantidadAPagar" required>
                         </div> -->
                         <div class="row mb-3">
-                            <select class="form-control" id="amount" [(ngModel)]="amount" name="amount"
-                                (change)="onAmountChange($event)" required>
-                                <option [value]="99">
-                                    Selecciona una opcion
-                                </option>
-                                <option *ngIf="combo.cuotaUno !== ''" [value]="combo.cuotaUno">
-                                    1. Cuota uno - {{ combo.cuotaUno }} €
-                                </option>
-                                <option *ngIf="combo.cuotaDos !== ''" [value]="combo.cuotaDos">
-                                    2. Cuota dos - {{ combo.cuotaDos }} €
-                                </option>
-                                <option *ngIf="combo.cuotaTres !== ''" [value]="combo.cuotaTres">
-                                    3. Cuota tres - {{ combo.cuotaTres }} €
-                                </option>
-                                <option *ngIf="combo.cuotaRopa !== ''" [value]="combo.cuotaRopa">
-                                    4. Cuota ropa - {{ combo.cuotaRopa }} €
-                                </option>
-                                <option *ngIf="combo.cuotaTotalSinRopa !== ''" [value]="combo.cuotaTotalSinRopa">
-                                    5. Cuota total sin ropa - {{ combo.cuotaTotalSinRopa }} €
-                                </option>
-                                <option *ngIf="combo.cuotaTotalConRopa !== ''" [value]="combo.cuotaTotalConRopa">
-                                    6. Cuota total con ropa - {{ combo.cuotaTotalConRopa }} €
-                                </option>
-                            </select>
+                            <label for="amount" class="form-label">a cantidad final a pagar será de:</label>
+                            <input type="number" class="form-control" id="amount" [(ngModel)]="amount" name="amount"
+                                disabled>
                         </div>
                         <div class="row mb-3">
+                            <!-- <button class="btn btn-custom btn-sm" (click)="calcularComision($event)">Calcular
+                                comisión</button> -->
+                        </div>
+                        <div class="row mt-3">
+                            <h2>Datos de la tarjeta</h2>
+                        </div>
+                        <div class="row mt-3 mb-3">
                             <div id="card-element"></div>
                         </div>
-                        <div class="row mb-3">
-                            <button type="submit" class="btn btn-success">Pagar</button>
-                        </div>
-                        <div class="row mb-3">
-                            <div id="card-element"></div>
+                        <div class="row mb-3" *ngIf="pagarOk">
+                            <button type="submit" class="btn btn-custom">Pagar</button>
                         </div>
                         <div class="row mb-3">
                             <p style="color: rgb(172, 172, 172);">Cuando realices el pago de las cuotas del club o de la
                                 ropa mediante tarjeta
                                 de débito o
-                                crédito, se aplicará un pequeño coste adicional por "gastos de gestión". Este coste es
-                                necesario
-                                para cubrir los gastos administrativos asociados al procesamiento de pagos. Agradecemos
-                                tu
-                                comprensión y colaboración para facilitar esta gestión.</p>
+                                crédito, se aplicará un pequeño coste adicional por "gastos de gestión".</p>
                         </div>
                     </form>
                 </div>

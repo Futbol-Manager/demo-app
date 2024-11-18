@@ -28,7 +28,7 @@ export class SuscripcionComponent implements OnInit {
   stripe: any;
   card: any;
   loading = false;
-  amount: number = 99;
+  amount: number = 0;
   playerIdSelected = 0;
   listHijos: any[] = []; // Define una variable para almacenar el listado de hijos
   datosCargados = false;
@@ -51,13 +51,13 @@ export class SuscripcionComponent implements OnInit {
   unidades = 0;
 
   // Variables para manejar la lógica
-  subscriptionType: string = 'monthly'; // Mensual por defecto
+  subscriptionType: string = 'annual'; // Mensual por defecto
   numTeams: number = 1; // Número de equipos (por defecto 1)
   monthlyPrice: number = 3.99; // Precio mensual
-  annualPricePerMonth: number = 2.50; // Precio mensual para la suscripción anual
+  annualPricePerMonth: number = 29.99; // Precio mensual para la suscripción anual
   monthlyPriceClub: number = 9.99; // Precio mensual
   annualPricePerMonthClub: number = 4.99; // Precio mensual para la suscripción anual
-  totalPrice: number = this.monthlyPrice; // Total inicial
+  totalPrice: number = this.annualPricePerMonth; // Total inicial
   totalPriceClub: number = this.monthlyPriceClub; // Total inicial
 
   susIsNew = false;
@@ -373,7 +373,7 @@ export class SuscripcionComponent implements OnInit {
       this.selected = 7;
       this.tiempo = 'M';
     } else if (this.subscriptionType === 'annual') {
-      this.totalPriceClub = this.annualPricePerMonthClub * this.numTeams * 12; // Precio anual multiplicado por 12 meses
+      this.totalPriceClub = this.annualPricePerMonthClub * this.numTeams * 12; // Precio anual por 12 meses
       this.precioId = 'price_1QC6VpHzMBDrutQnbCKNmItj';
       this.selected = 8;
       this.tiempo = 'A';
@@ -388,7 +388,7 @@ export class SuscripcionComponent implements OnInit {
       this.selected = 9;
       this.tiempo = 'M';
     } else if (this.subscriptionType === 'annual') {
-      this.totalPrice = this.annualPricePerMonth * this.numTeams * 12; // Precio anual multiplicado por 12 meses
+      this.totalPrice = this.annualPricePerMonth * this.numTeams; // Precio anual multiplicado x num de equipo
       if(this.cuponIsValid){        
         this.totalPrice = this.totalPrice - (this.totalPrice * 0.34);
       }
@@ -439,7 +439,7 @@ export class SuscripcionComponent implements OnInit {
           } else {
             alert('Cupón no válido.');
             this.cuponIsValid = false;
-            this.totalPrice = this.annualPricePerMonth * this.numTeams * 12;
+            this.totalPrice = this.annualPricePerMonth * this.numTeams;
           }
         },
         (error) => {

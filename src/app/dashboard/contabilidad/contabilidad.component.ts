@@ -281,7 +281,11 @@ export class ContabilidadComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.infoClub = response.data.infoClub;
-          this.showModalStripe = true;
+          if(this.infoClub.banco != null){
+            this.showModalStripe = true;
+          } else {
+            this.showModal = true;
+          }
         }
       },
       (error) => {

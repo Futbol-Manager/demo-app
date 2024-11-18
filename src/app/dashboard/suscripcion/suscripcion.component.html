@@ -83,8 +83,8 @@
                             <label for="subscriptionType">Tipo de suscripción</label>
                             <select class="form-control custom-input" id="subscriptionType"
                                 [(ngModel)]="subscriptionType" (change)="calculateTotal()">
-                                <option value="monthly">Mensual - 9,99€ / mes</option>
                                 <option value="annual">Anual - 59,88€ / año (4,99€ / mes)</option>
+                                <option value="monthly">Mensual - 9,99€ / mes</option>
                             </select>
                         </div>
                     </div>
@@ -136,8 +136,8 @@
                             <label for="subscriptionType">Tipo de suscripción</label>
                             <select class="form-control custom-input" id="subscriptionType"
                                 [(ngModel)]="subscriptionType" (change)="calculateTotal2()">
+                                <option value="annual">Anual - 29,99€ / año (2,50€ / mes)</option>
                                 <option value="monthly">Mensual - 3,99€ / mes</option>
-                                <option value="annual">Anual - 30€ / año (2,50€ / mes)</option>
                             </select>
                         </div>
                     </div>

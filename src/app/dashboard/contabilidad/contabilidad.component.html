@@ -895,7 +895,7 @@
                   <td>{{ pago.metodo }}</td>
                   <td>{{ pago.comentario }}</td>
                   <td>
-                    <button *ngIf="!pago.cantidad.includes('-')" class="btn btn-warning" title="Devolver pago"
+                    <button *ngIf="!pago.cantidad.includes('-') && pago.metodo != 'Stripe'" class="btn btn-warning" title="Devolver pago"
                       (click)="confirmReturnPay(pago)">
                       <span class="bi bi-arrow-counterclockwise btn-danger"></span>
                     </button>

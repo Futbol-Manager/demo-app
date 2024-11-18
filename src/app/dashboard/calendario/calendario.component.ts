@@ -663,7 +663,7 @@ export class CalendarioComponent implements OnInit {
     } else if (id === 4) {
       this.router.navigate(['/dashboard/estadisticas_jugadores', this.teamId]);
     } else if (id === 5) {
-      this.router.navigate(['/dashboard/cuotas', this.teamId]);
+      this.router.navigate(['/dashboard/cuotas', this.teamId, this.playerId]);
     } else if (id === 6) {
       this.router.navigate(['/dashboard/adminsettings']);
     }

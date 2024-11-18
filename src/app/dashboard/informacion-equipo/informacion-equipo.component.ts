@@ -129,7 +129,7 @@ export class InformacionEquipoComponent implements OnInit {
       levelLeague: ["", Validators.required],
       name: [""],
       objectiveTeam: [""],
-      trainingDays: ["", Validators.required],
+      trainingDays: [""],
       opinionTeam: [""],
     });
   }
