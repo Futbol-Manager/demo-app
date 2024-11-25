@@ -318,6 +318,9 @@ export class InicioComponent implements OnInit {
       case 4:
         this.router.navigate(['/dashboard/patrocinadores', this.clubId]);
         break;
+      case 5:
+        this.router.navigate(['/dashboard/notificaciones', this.clubId]);
+        break;
     }
   }
 

@@ -27,6 +27,7 @@ import { AdminsettingsComponent } from './adminsettings/adminsettings.component'
 import { AbonadosComponent } from './abonados/abonados.component';
 import { PatrocinadoresComponent } from './patrocinadores/patrocinadores.component';
 import { PublicidadComponent } from './publicidad/publicidad.component';
+import { NotificacionesComponent } from './notificaciones/notificaciones.component';
 
 
 
@@ -55,7 +56,8 @@ import { PublicidadComponent } from './publicidad/publicidad.component';
     AdminsettingsComponent,
     AbonadosComponent,
     PatrocinadoresComponent,
-    PublicidadComponent
+    PublicidadComponent,
+    NotificacionesComponent
   ],
   imports: [
     CommonModule,

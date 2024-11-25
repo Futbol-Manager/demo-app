@@ -23,6 +23,7 @@ import { ScoutingPlayerComponent } from './scouting-player/scouting-player.compo
 import { AdminsettingsComponent } from './adminsettings/adminsettings.component';
 import { AbonadosComponent } from './abonados/abonados.component';
 import { PatrocinadoresComponent } from './patrocinadores/patrocinadores.component';
+import { NotificacionesComponent } from './notificaciones/notificaciones.component';
 
 const routes: Routes = [
   {
@@ -50,6 +51,7 @@ const routes: Routes = [
       { path: 'suscripcion/:userId', component: SuscripcionComponent },
       { path: 'scouting-player/:playerId', component: ScoutingPlayerComponent },
       { path: 'adminsettings', component: AdminsettingsComponent },
+      { path: 'notificaciones/:clubId', component: NotificacionesComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
   }
