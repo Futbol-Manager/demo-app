@@ -35,6 +35,8 @@ export class PatrocinadoresComponent implements OnInit {
   showPreview: boolean = false;
   selectedPatro = 0;
   showModalVerPatrocinador = false;
+  profileId = 0;
+  userId: any = 0;
 
   constructor(
     private loginService: LoginService,
@@ -52,29 +54,69 @@ export class PatrocinadoresComponent implements OnInit {
       console.log('clubId:', this.clubId);
     });
 
-    this.clubService.getListPatrocinadoresByClub(this.clubId).subscribe(
-      (response: Response) => {
-        if (response.data !== null) {
-          this.listPatrocinadores = response.data;
+    this.loginService.usuarioActual.subscribe(user => {
+      this.usuarioActual = user;
+      this.userId = user?.userId;
+      this.profileId = this.usuarioActual!.profileType.profileId;
 
-          const carouselElement = document.getElementById('carouselPatrocinadores');
-          if (carouselElement) {
-            let num = this.listPatrocinadores.length * 1000;
-            const carousel = new bootstrap.Carousel(carouselElement, {
-              interval: num, // Cambia el tiempo de transición (ms)
-              wrap: true
-            });
+      //llamar a endpoint que de userId y profileId
+      if (this.profileId == 2 || this.profileId == 3) {
+        this.clubService.getListPatrocinadoresByUser(this.userId, this.profileId).subscribe(
+          (response: Response) => {
+            if (response.data !== null) {
+              this.listPatrocinadores = response.data;
+
+              const carouselElement = document.getElementById('carouselPatrocinadores');
+              if (carouselElement) {
+                let num = this.listPatrocinadores.length * 1000;
+                const carousel = new bootstrap.Carousel(carouselElement, {
+                  interval: num, // Cambia el tiempo de transición (ms)
+                  wrap: true
+                });
+              }
+              this.datosCargados = true;
+            } else {
+              console.error('La respuesta del servicio no tiene la estructura esperada', response);
+            }
+          },
+          (error) => {
+            console.error('Error al cargar el listado de equipos', error);
           }
-          this.datosCargados = true;
-        } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
-        }
-        this.datosCargando = false;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
+        );
+      } else {
+        this.clubService.getListPatrocinadoresByClub(this.clubId).subscribe(
+          (response: Response) => {
+            if (response.data !== null) {
+              this.listPatrocinadores = response.data;
+
+              const carouselElement = document.getElementById('carouselPatrocinadores');
+              if (carouselElement) {
+                let num = this.listPatrocinadores.length * 1000;
+                const carousel = new bootstrap.Carousel(carouselElement, {
+                  interval: num, // Cambia el tiempo de transición (ms)
+                  wrap: true
+                });
+              }
+              this.datosCargados = true;
+            } else {
+              console.error('La respuesta del servicio no tiene la estructura esperada', response);
+            }
+            this.datosCargando = false;
+          },
+          (error) => {
+            console.error('Error al cargar el listado de equipos', error);
+          }
+        );
       }
-    );
+    });
+  }
+
+  irAPantalla(id: number): void {
+    switch (id) {
+      case 1:
+        this.router.navigate(['/dashboard/inicio']);
+        break;
+    }
   }
 
   abrirModalPatrocinador() {
@@ -85,7 +127,12 @@ export class PatrocinadoresComponent implements OnInit {
   openPatrocinador(patrocinador: any, i: number) {
     this.selectedPatro = i;
     this.patrocinadorUpdate = patrocinador;
-    this.showModalUpdatePatrocinador = true;
+
+    if(this.profileId > 2){
+      this.showModalVerPatrocinador = true;
+    } else {
+      this.showModalUpdatePatrocinador = true;
+    }
   }
 
   confirmDeletePatrocinador(id: number, index: number, nombre: string) {
@@ -133,36 +180,36 @@ export class PatrocinadoresComponent implements OnInit {
   createUpdatePatrocinador(opcion: number) {
     this.patrocinadorObj.clubId = this.clubId;
 
-    if(opcion === 2){
+    if (opcion === 2) {
       this.patrocinadorObj = this.patrocinadorUpdate;
     }
-    
-    if(this.patrocinadorObj.nombre !== '' && this.patrocinadorObj.beneficios !== '' && this.patrocinadorObj.descripcion !== '' && this.patrocinadorObj.mail !== ''
+
+    if (this.patrocinadorObj.nombre !== '' && this.patrocinadorObj.beneficios !== '' && this.patrocinadorObj.descripcion !== '' && this.patrocinadorObj.mail !== ''
       && this.patrocinadorObj.telefono !== '' && this.patrocinadorObj.web !== '') {
-        this.clubService.createUpdatePatrocinador(this.patrocinadorObj).subscribe(
-          (response: Response) => {
-            if (response.data !== null) {
-              if(opcion === 2){
-                this.listPatrocinadores[this.selectedPatro] = this.patrocinadorUpdate;
-                this.cerrarPatrocinador();
-              } else {
-                this.listPatrocinadores.push(response.data);
-                this.cerrarModalCrearPatro();
-              }
+      this.clubService.createUpdatePatrocinador(this.patrocinadorObj).subscribe(
+        (response: Response) => {
+          if (response.data !== null) {
+            if (opcion === 2) {
+              this.listPatrocinadores[this.selectedPatro] = this.patrocinadorUpdate;
+              this.cerrarPatrocinador();
             } else {
-              console.error('La respuesta del servicio no tiene la estructura esperada', response);
+              this.listPatrocinadores.push(response.data);
+              this.cerrarModalCrearPatro();
             }
-          },
-          (error) => {
-            console.error('Error al cargar el listado de equipos', error);
+          } else {
+            console.error('La respuesta del servicio no tiene la estructura esperada', response);
           }
-        );
-      } else {
-        alert('Por favor, rellena todos los campos.');
-      }
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
+        }
+      );
+    } else {
+      alert('Por favor, rellena todos los campos.');
+    }
   }
 
-  cerrarVerPatrocinador(){
+  cerrarVerPatrocinador() {
     this.showModalVerPatrocinador = false;
   }
 

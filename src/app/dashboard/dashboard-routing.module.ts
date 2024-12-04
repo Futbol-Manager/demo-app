@@ -24,6 +24,8 @@ import { AdminsettingsComponent } from './adminsettings/adminsettings.component'
 import { AbonadosComponent } from './abonados/abonados.component';
 import { PatrocinadoresComponent } from './patrocinadores/patrocinadores.component';
 import { NotificacionesComponent } from './notificaciones/notificaciones.component';
+import { TareasComponent } from './tareas/tareas.component';
+import { OpcionesjugadorComponent } from './opcionesjugador/opcionesjugador.component';
 
 const routes: Routes = [
   {
@@ -32,6 +34,7 @@ const routes: Routes = [
     children: [
       { path: 'inicio', component: InicioComponent },
       { path: 'calendario/:teamId/:playerId', component: CalendarioComponent },
+      { path: 'opcionesjugador/:teamId/:playerId', component: OpcionesjugadorComponent },
       { path: 'jugadores/:teamId', component: PlayerComponent },
       { path: 'estadisticas_equipo/:teamId', component: EstadisticasEquipoComponent },
       { path: 'informacion_equipo/:teamId', component: InformacionEquipoComponent },
@@ -43,6 +46,7 @@ const routes: Routes = [
       { path: 'cuotas/:teamId/:playerId', component: CuotasComponent },
       { path: 'cuadro-de-mandos/:clubId', component: CuadroComponent },
       { path: 'patrocinadores/:clubId', component: PatrocinadoresComponent },
+      { path: 'tareas/:teamId', component: TareasComponent },
       { path: 'cuadro-de-mandos/info-jugadores/:clubId', component: InfoJugadoresComponent },
       { path: 'cuadro-de-mandos/estadisticas-jugadores-club/:clubId', component: EstadisticasJugadoresClubComponent },
       { path: 'cuadro-de-mandos/estadisticas-equipos-club/:clubId', component: EstadisticasEquiposClubComponent },

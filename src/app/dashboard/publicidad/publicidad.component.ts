@@ -39,8 +39,7 @@ export class PublicidadComponent implements OnInit {
       this.profileId = this.usuarioActual!.profileType.profileId;
 
       //llamar a endpoint que de userId y profileId
-      if(this.profileId == 2 || this.profileId == 3){
-        
+      if(this.profileId == 2 || this.profileId == 3){        
         this.clubService.getListPatrocinadoresByUser(this.userId, this.profileId).subscribe(
           (response: Response) => {
             if (response.data !== null) {
@@ -70,6 +69,10 @@ export class PublicidadComponent implements OnInit {
     //alert(`ID del patrocinador: ${id}`);
     this.patrocinadorUpdate = patrocinador;
     this.showModalVerPatrocinador = true;
+  }
+
+  cerrarVerPatrocinador(){
+    this.showModalVerPatrocinador = false;
   }
 
 }

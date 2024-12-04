@@ -15,3 +15,97 @@
         </div>
     </div>
 </div>
+
+<!-- Modal para ver el patrocinador -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalVerPatrocinador}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="stripeModalLabel">Patrocinador</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarVerPatrocinador()"></button>
+                </div>
+                <div class="modal-body">
+                        <div class="row text-center">
+                            <!-- Primera columna principal -->
+                            <div class="col-12 col-md-12">
+                                <div class="row text-center align-items-center">
+                                    <div class="col-12 col-md-12">
+                                        <!-- Contenido de la subcolumna -->
+                                        <ng-container *ngIf="patrocinadorUpdate.patrocinadorId !== 0">
+                                            <div class="form-group">
+                                                <ng-container *ngIf="patrocinadorUpdate.imagen">
+                                                    <div class="container">
+                                                        <img src="https://appsphairatech.com/images/patrocinadores/{{ patrocinadorUpdate.imagen }}"
+                                                            alt="user-player" style="width: -webkit-fill-available;">
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-12">
+                                        <!-- Contenido de la subcolumna -->
+                                        <label><strong>Datos del Patrocinador:</strong></label>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="text" class="form-control custom-input" id="nombre"
+                                                name="nombre" [(ngModel)]="patrocinadorUpdate.nombre"
+                                                placeholder="Nombre" #primerCampo readonly="true">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="text" class="form-control custom-input" id="web" name="web"
+                                                [(ngModel)]="patrocinadorUpdate.web" placeholder="Web" readonly="true">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <textarea class="form-control custom-input" id="descripcion"
+                                                name="descripcion" [(ngModel)]="patrocinadorUpdate.descripcion" rows="5"
+                                                placeholder="Descripción" readonly="true"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <textarea class="form-control custom-input" id="beneficios"
+                                                name="beneficios" [(ngModel)]="patrocinadorUpdate.beneficios" rows="5"
+                                                placeholder="Beneficios" readonly="true"></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="text" class="form-control custom-input" id="telefono"
+                                                name="telefono" [(ngModel)]="patrocinadorUpdate.telefono"
+                                                placeholder="Teléfono" maxlength="9" readonly="true">
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6">
+                                        <!-- Contenido de la subcolumna -->
+                                        <div class="form-group">
+                                            <input type="mail" class="form-control custom-input" id="email" name="email"
+                                                [(ngModel)]="patrocinadorUpdate.mail" placeholder="Email" readonly="true">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

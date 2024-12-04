@@ -1,6 +1,12 @@
 <div class="submenu">
     <div class="row">
         <div class="col text-center">
+            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
+                <i class="bi bi-house"></i>
+                <span class="d-none d-md-inline">Inicio</span>
+            </a>
+        </div>
+        <div class="col text-center" *ngIf="profileId < 3">
             <a class="no-underline" href="javascript:void(0);" (click)="abrirModalPatrocinador()">
                 <i class="bi bi-plus-circle"></i>
                 <span class="d-none d-md-inline">Crear un patrocinador</span>
@@ -18,8 +24,8 @@
                         <ng-container *ngFor="let patrocinador of listPatrocinadores">
                             <img *ngIf="patrocinador.imagen && patrocinador.oculto === 1"
                                 [src]="'https://appsphairatech.com/images/patrocinadores/' + patrocinador.imagen"
-                                (click)="mostrarId(patrocinador)" class="patrocinador-img"
-                                alt="Patrocinador" title="Haz clic para ver el ID del patrocinador">
+                                (click)="mostrarId(patrocinador)" class="patrocinador-img" alt="Patrocinador"
+                                title="Haz clic para ver el ID del patrocinador">
                         </ng-container>
                     </div>
                 </div>
@@ -64,16 +70,17 @@
 
                         <!-- Botones de acción -->
                         <div class="d-flex justify-content-between align-items-center">
-                            <div class="form-check form-switch">
+                            <div class="form-check form-switch" *ngIf="profileId < 3">
                                 <input class="form-check-input custom-input" type="checkbox" id="oculto"
                                     [checked]="patro.oculto === 1"
                                     (change)="toggleChaneOculto(patro.oculto, patro.patrocinadorId)">
                                 <label class="form-check-label">Carrusel</label>
                             </div>
-                            <button type="button" style="background-color: black; color: white" class="btn" (click)="openPatrocinador(patro, i)">
+                            <button type="button" style="background-color: black; color: white" class="btn"
+                                (click)="openPatrocinador(patro, i)">
                                 <i class="bi bi-eye"></i> Ver
                             </button>
-                            <button type="button" class="btn btn-danger"
+                            <button type="button" class="btn btn-danger" *ngIf="profileId < 3"
                                 (click)="confirmDeletePatrocinador(patro.patrocinadorId, i, patro.nombre)">
                                 <i class="bi bi-trash"></i> Eliminar
                             </button>
@@ -186,7 +193,7 @@
                         <div class="row text-center">
                             <!-- Primera columna principal -->
                             <div class="col-12 col-md-12">
-                                <div class="row text-center align-items-center">
+                                <div class="row text-center align-items-center" >
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
                                         <ng-container *ngIf="patrocinadorUpdate.patrocinadorId !== 0">
@@ -282,7 +289,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="modal-footer mt-3">
                             <!-- Botón para guardar el nuevo equipo -->
                             <button type="button" class="btn btn-success float-end"
@@ -295,7 +301,6 @@
     </div>
 </div>
 
-
 <!-- Modal para ver el patrocinador -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalVerPatrocinador}">
     <div class="modal-dialog modal-xl" role="document">
@@ -303,7 +308,8 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="stripeModalLabel">Patrocinador</h5>
-                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarVerPatrocinador()"></button>
+                    <button type="button" class="btn-close" aria-label="Close"
+                        (click)="cerrarVerPatrocinador()"></button>
                 </div>
                 <div class="modal-body">
                     <form>
@@ -379,7 +385,8 @@
                                         <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="mail" class="form-control custom-input" id="email" name="email"
-                                                [(ngModel)]="patrocinadorUpdate.mail" placeholder="Email" readonly="true">
+                                                [(ngModel)]="patrocinadorUpdate.mail" placeholder="Email"
+                                                readonly="true">
                                         </div>
                                     </div>
                                 </div>

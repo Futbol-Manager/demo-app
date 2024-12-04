@@ -1,0 +1,93 @@
+.card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    color: #6c757d;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 0px solid #dee2e6;
+    border-radius: 0.25rem;
+    box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.05);
+    border-color: #22BF63;
+    background-color: #22BF63;
+    box-shadow: 0px 0px 35px 0px rgba(34, 191, 99, 0.5);
+}
+
+.card-title {
+    font-weight: bold;
+}
+
+.card-text {
+    font-size: 14px;
+}
+
+.btn-danger {
+    margin-right: 10px;
+}
+
+.img-half-size {
+    width: 50%;
+    height: auto;
+}
+
+.bg-light-green {
+    background: linear-gradient(270deg, #5ae8c4, #33a7db);
+    background-size: 400% 400%;
+}
+
+.btn-width {
+    width: 100%;
+}
+
+.modal-content {
+    background-size: 400% 400%;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #007bff;
+    /* Color principal */
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+    /* Fondo claro */
+}
+
+.spinner-border {
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1rem;
+}
+
+.loading-text {
+    display: flex;
+    align-items: center;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.mdi-loading {
+    font-size: 1.5rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

@@ -28,6 +28,8 @@ import { AbonadosComponent } from './abonados/abonados.component';
 import { PatrocinadoresComponent } from './patrocinadores/patrocinadores.component';
 import { PublicidadComponent } from './publicidad/publicidad.component';
 import { NotificacionesComponent } from './notificaciones/notificaciones.component';
+import { TareasComponent } from './tareas/tareas.component';
+import { OpcionesjugadorComponent } from './opcionesjugador/opcionesjugador.component';
 
 
 
@@ -57,7 +59,9 @@ import { NotificacionesComponent } from './notificaciones/notificaciones.compone
     AbonadosComponent,
     PatrocinadoresComponent,
     PublicidadComponent,
-    NotificacionesComponent
+    NotificacionesComponent,
+    TareasComponent,
+    OpcionesjugadorComponent
   ],
   imports: [
     CommonModule,

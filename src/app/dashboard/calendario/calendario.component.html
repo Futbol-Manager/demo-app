@@ -24,6 +24,12 @@
         <span class="d-none d-md-inline">Ver Información</span>
       </a>
     </div>
+    <div class="col" *ngIf="this.usuarioActual!.profileType.profileId == 2">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(7)">
+        <i class="bi bi-backpack"></i>
+        <span class="d-none d-md-inline">Tareas</span>
+      </a>
+    </div>
     <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2 && categoryTeam < 27">
       <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">
         <i class="bi bi-bank"></i>
@@ -1064,7 +1070,7 @@
                           <button class="accordion-button" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(true, 0)" data-bs-target="#collapseOne" aria-expanded="true"
                             aria-controls="collapseOne">
-                            Descripcion gol 1
+                            Descripción gol 1
                           </button>
                         </h2>
                         <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
@@ -1163,7 +1169,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(true, 1)" data-bs-target="#collapseTwo" aria-expanded="false"
                             aria-controls="collapseTwo">
-                            Descripcion gol 2
+                            Descripción gol 2
                           </button>
                         </h2>
                         <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
@@ -1176,7 +1182,7 @@
                                   name="golesAFavor">
                                   <option value="0">Selecciona una opción</option>
                                   <option *ngFor="let player of playerPostPartido" [value]="player.playerId">{{
-                                    player.nombre }} {{ player.apellido }} {{ player.apellido }}</option>
+                                    player.nombre }} {{ player.apellido }}</option>
                                 </select>
                               </div>
                               <div class="col-6">
@@ -1263,7 +1269,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(true, 2)" data-bs-target="#collapseThree" aria-expanded="false"
                             aria-controls="collapseThree">
-                            Descripcion gol 3
+                            Descripción gol 3
                           </button>
                         </h2>
                         <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
@@ -1363,7 +1369,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(true, 3)" data-bs-target="#collapseCuatro" aria-expanded="false"
                             aria-controls="collapseCuatro">
-                            Descripcion gol 4
+                            Descripción gol 4
                           </button>
                         </h2>
                         <div id="collapseCuatro" class="accordion-collapse collapse" aria-labelledby="headingThree"
@@ -1463,7 +1469,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(true, 4)" data-bs-target="#collapseCinco" aria-expanded="false"
                             aria-controls="collapseCinco">
-                            Descripcion gol 5
+                            Descripción gol 5
                           </button>
                         </h2>
                         <div id="collapseCinco" class="accordion-collapse collapse" aria-labelledby="headingThree"
@@ -1563,7 +1569,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(true, 5)" data-bs-target="#collapseSeis" aria-expanded="false"
                             aria-controls="collapseSeis">
-                            Descripcion gol 6
+                            Descripción gol 6
                           </button>
                         </h2>
                         <div id="collapseSeis" class="accordion-collapse collapse" aria-labelledby="headingThree"
@@ -1663,7 +1669,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(true, 6)" data-bs-target="#collapseSiete" aria-expanded="false"
                             aria-controls="collapseSiete">
-                            Descripcion gol 7
+                            Descripción gol 7
                           </button>
                         </h2>
                         <div id="collapseSiete" class="accordion-collapse collapse" aria-labelledby="headingThree"
@@ -1763,7 +1769,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(true, 7)" data-bs-target="#collapseOcho" aria-expanded="false"
                             aria-controls="collapseOcho">
-                            Descripcion gol 8
+                            Descripción gol 8
                           </button>
                         </h2>
                         <div id="collapseOcho" class="accordion-collapse collapse" aria-labelledby="headingThree"
@@ -1863,7 +1869,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(true, 8)" data-bs-target="#collapseNueve" aria-expanded="false"
                             aria-controls="collapseNueve">
-                            Descripcion gol 9
+                            Descripción gol 9
                           </button>
                         </h2>
                         <div id="collapseNueve" class="accordion-collapse collapse" aria-labelledby="headingThree"
@@ -1963,7 +1969,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(true, 9)" data-bs-target="#collapseDiez" aria-expanded="false"
                             aria-controls="collapseDiez">
-                            Descripcion gol 10
+                            Descripción gol 10
                           </button>
                         </h2>
                         <div id="collapseDiez" class="accordion-collapse collapse" aria-labelledby="headingThree"
@@ -2072,7 +2078,7 @@
                           <button class="accordion-button" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(false, 0)" data-bs-target="#collapseOneB" aria-expanded="true"
                             aria-controls="collapseOneB">
-                            Descripcion gol 1
+                            Descripción gol 1
                           </button>
                         </h2>
                         <div id="collapseOneB" class="accordion-collapse collapse show" aria-labelledby="headingOneB"
@@ -2151,7 +2157,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(false, 1)" data-bs-target="#collapseTwoB" aria-expanded="false"
                             aria-controls="collapseTwoB">
-                            Descripcion gol 2
+                            Descripción gol 2
                           </button>
                         </h2>
                         <div id="collapseTwoB" class="accordion-collapse collapse" aria-labelledby="headingTwoB"
@@ -2230,7 +2236,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(false, 2)" data-bs-target="#collapseThreeB" aria-expanded="false"
                             aria-controls="collapseThreeB">
-                            Descripcion gol 3
+                            Descripción gol 3
                           </button>
                         </h2>
                         <div id="collapseThreeB" class="accordion-collapse collapse" aria-labelledby="headingThreeB"
@@ -2310,7 +2316,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(false, 3)" data-bs-target="#collapseCuatroB"
                             aria-expanded="false" aria-controls="collapseCuatroB">
-                            Descripcion gol 4
+                            Descripción gol 4
                           </button>
                         </h2>
                         <div id="collapseCuatroB" class="accordion-collapse collapse" aria-labelledby="headingCuatroB"
@@ -2390,7 +2396,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(false, 4)" data-bs-target="#collapseCincoB" aria-expanded="false"
                             aria-controls="collapseCincoB">
-                            Descripcion gol 5
+                            Descripción gol 5
                           </button>
                         </h2>
                         <div id="collapseCincoB" class="accordion-collapse collapse" aria-labelledby="headingCincoB"
@@ -2470,7 +2476,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(false, 5)" data-bs-target="#collapseSeisB" aria-expanded="false"
                             aria-controls="collapseSeisB">
-                            Descripcion gol 6
+                            Descripción gol 6
                           </button>
                         </h2>
                         <div id="collapseSeisB" class="accordion-collapse collapse" aria-labelledby="headingSeisB"
@@ -2550,7 +2556,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(false, 6)" data-bs-target="#collapseSieteB" aria-expanded="false"
                             aria-controls="collapseSieteB">
-                            Descripcion gol 7
+                            Descripción gol 7
                           </button>
                         </h2>
                         <div id="collapseSieteB" class="accordion-collapse collapse" aria-labelledby="headingSieteB"
@@ -2630,7 +2636,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(false, 7)" data-bs-target="#collapseOchoB" aria-expanded="false"
                             aria-controls="collapseOchoB">
-                            Descripcion gol 8
+                            Descripción gol 8
                           </button>
                         </h2>
                         <div id="collapseOchoB" class="accordion-collapse collapse" aria-labelledby="headingOchoB"
@@ -2710,7 +2716,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(false, 8)" data-bs-target="#collapseNueveB" aria-expanded="false"
                             aria-controls="collapseNueveB">
-                            Descripcion gol 9
+                            Descripción gol 9
                           </button>
                         </h2>
                         <div id="collapseNueveB" class="accordion-collapse collapse" aria-labelledby="headingNueveB"
@@ -2790,7 +2796,7 @@
                           <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                             (click)="toggleGolAvanzado(false, 9)" data-bs-target="#collapseTdiezB" aria-expanded="false"
                             aria-controls="collapseTdiezB">
-                            Descripcion gol 10
+                            Descripción gol 10
                           </button>
                         </h2>
                         <div id="collapseTdiezB" class="accordion-collapse collapse" aria-labelledby="headingDiezB"

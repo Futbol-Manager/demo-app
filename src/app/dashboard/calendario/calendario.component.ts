@@ -666,6 +666,8 @@ export class CalendarioComponent implements OnInit {
       this.router.navigate(['/dashboard/cuotas', this.teamId, this.playerId]);
     } else if (id === 6) {
       this.router.navigate(['/dashboard/adminsettings']);
+    } else if (id === 7) {
+      this.router.navigate(['/dashboard/tareas', this.teamId]);
     }
   }
 
@@ -1817,7 +1819,7 @@ export class CalendarioComponent implements OnInit {
     }
 
     if (event.target.value === 'Jugada combinativa' || event.target.value === 'Pérdida/Recuperación'
-      || event.target.value === 'Penalti' || event.target.value === 'Falta') {
+      || event.target.value === 'Falta') {
       this.showSelectedOptional = true;
     } else {
       this.showSelectedOptional = false;
@@ -1905,7 +1907,7 @@ export class CalendarioComponent implements OnInit {
 
     if (access) {
       if (this.selectedGolTypes === 'Jugada combinativa' || this.selectedGolTypes === 'Pérdida/Recuperación'
-        || this.selectedGolTypes === 'Penalti' || this.selectedGolTypes === 'Falta') {
+        || this.selectedGolTypes === 'Falta') {
         this.showSelectedOptional = true;
       } else {
         this.showSelectedOptional = false;

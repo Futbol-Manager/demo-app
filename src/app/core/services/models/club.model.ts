@@ -220,3 +220,30 @@ export class Patrocinador {
         this.mail = object.mail || '';
     }
 }
+
+
+export class CorreoEnviado {
+    correoEnviadoId: number;
+    clubId: number;
+    teamId: number;
+    userId: number;
+    destinatarios: string;
+    asunto: string;
+    body: string;
+    fechaCreate: string;
+    remitente: string;
+    destinatario: string;
+
+    constructor(object: any) {
+        this.correoEnviadoId = object.correoEnviadoId || 0;
+        this.clubId = object.clubId || 0;
+        this.teamId = object.teamId || 0;
+        this.userId = object.userId || 0;
+        this.asunto = object.asunto || '';
+        this.destinatarios = object.destinatarios || '0';
+        this.body = object.body || '';
+        this.fechaCreate = object.fechaCreate || '';
+        this.remitente = object.remitente || '';
+        this.destinatario = object.destinatario || '';
+    }
+}
