@@ -5,12 +5,12 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { PostPartido } from 'src/app/core/services/models/match.model';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
-import * as $ from 'jquery';
-import 'datatables.net';
 import { HttpClient } from '@angular/common/http';
 import { Chart, ChartType, registerables } from 'chart.js/auto';
 import { GolPostPartido } from 'src/app/core/services/team/team.model';
 Chart.register(...registerables);
+import * as $ from 'jquery';
+import 'datatables.net';
 
 interface DatasetIF {
   label: string;

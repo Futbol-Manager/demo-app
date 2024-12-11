@@ -26,6 +26,11 @@ import { PatrocinadoresComponent } from './patrocinadores/patrocinadores.compone
 import { NotificacionesComponent } from './notificaciones/notificaciones.component';
 import { TareasComponent } from './tareas/tareas.component';
 import { OpcionesjugadorComponent } from './opcionesjugador/opcionesjugador.component';
+import { HorariosequiposComponent } from './horariosequipos/horariosequipos.component';
+import { EntrenamientosCreadosComponent } from './entrenamientos-creados/entrenamientos-creados.component';
+import { PuntuacionEquipsComponent } from './puntuacion-equips/puntuacion-equips.component';
+import { GraficaCuotasComponent } from './grafica-cuotas/grafica-cuotas.component';
+import { GoleadoresComponent } from './goleadores/goleadores.component';
 
 const routes: Routes = [
   {
@@ -48,8 +53,13 @@ const routes: Routes = [
       { path: 'patrocinadores/:clubId', component: PatrocinadoresComponent },
       { path: 'tareas/:teamId', component: TareasComponent },
       { path: 'cuadro-de-mandos/info-jugadores/:clubId', component: InfoJugadoresComponent },
+      { path: 'cuadro-de-mandos/entrenamientos/:clubId', component: EntrenamientosCreadosComponent },
+      { path: 'cuadro-de-mandos/goleadores/:clubId', component: GoleadoresComponent },
+      { path: 'cuadro-de-mandos/puntuaciones/:clubId', component: PuntuacionEquipsComponent },
+      { path: 'cuadro-de-mandos/cuotas/:clubId', component: GraficaCuotasComponent },
       { path: 'cuadro-de-mandos/estadisticas-jugadores-club/:clubId', component: EstadisticasJugadoresClubComponent },
       { path: 'cuadro-de-mandos/estadisticas-equipos-club/:clubId', component: EstadisticasEquiposClubComponent },
+      { path: 'cuadro-de-mandos/horario-equipos/:clubId', component: HorariosequiposComponent },
       { path: 'cuadro-de-mandos/estadisticas-entrenadores-club/:clubId', component: EstadisticasEntrenadoresClubComponent },
       { path: 'informacion_equipo/asistencia/:teamId', component: AsistenciaComponent },
       { path: 'suscripcion/:userId', component: SuscripcionComponent },

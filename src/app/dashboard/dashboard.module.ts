@@ -30,6 +30,11 @@ import { PublicidadComponent } from './publicidad/publicidad.component';
 import { NotificacionesComponent } from './notificaciones/notificaciones.component';
 import { TareasComponent } from './tareas/tareas.component';
 import { OpcionesjugadorComponent } from './opcionesjugador/opcionesjugador.component';
+import { HorariosequiposComponent } from './horariosequipos/horariosequipos.component';
+import { EntrenamientosCreadosComponent } from './entrenamientos-creados/entrenamientos-creados.component';
+import { PuntuacionEquipsComponent } from './puntuacion-equips/puntuacion-equips.component';
+import { GraficaCuotasComponent } from './grafica-cuotas/grafica-cuotas.component';
+import { GoleadoresComponent } from './goleadores/goleadores.component';
 
 
 
@@ -61,7 +66,12 @@ import { OpcionesjugadorComponent } from './opcionesjugador/opcionesjugador.comp
     PublicidadComponent,
     NotificacionesComponent,
     TareasComponent,
-    OpcionesjugadorComponent
+    OpcionesjugadorComponent,
+    HorariosequiposComponent,
+    EntrenamientosCreadosComponent,
+    PuntuacionEquipsComponent,
+    GraficaCuotasComponent,
+    GoleadoresComponent
   ],
   imports: [
     CommonModule,

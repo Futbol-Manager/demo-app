@@ -536,18 +536,16 @@ export class CalendarioComponent implements OnInit {
   playerId = 0;
   imgClub = '';
   selected: string = '';
+  showModalPDF = false;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private trainingService: TrainingService,
     private playerService: PlayerService,
-    private dialog: MatDialog,
-    private fb: FormBuilder,
     private teamService: TeamService,
     private cdr: ChangeDetectorRef,
-    private loginService: LoginService,
-    private snackBar: MatSnackBar
+    private loginService: LoginService
   ) {
   }
 
@@ -2253,8 +2251,6 @@ export class CalendarioComponent implements OnInit {
     ajustesTacticos: '',
     refereeName: ''
   };
-
-  showModalPDF = false;
 
   convertImgToBase64URL(url: string): Promise<string> {
     return new Promise((resolve, reject) => {

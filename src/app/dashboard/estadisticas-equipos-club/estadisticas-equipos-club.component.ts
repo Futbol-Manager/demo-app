@@ -20,6 +20,7 @@ export class EstadisticasEquiposClubComponent implements OnInit {
   playerSearch: string = '';
   filteredPlayers: any[] = [];
   mostarTabla = false;
+  loading = true;
 
   constructor(
     private router: Router,
@@ -58,6 +59,7 @@ export class EstadisticasEquiposClubComponent implements OnInit {
             this.datosResumentTotales(this.resumenes[index]);
           }
           this.datosCargados = true;
+          this.loading = false;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }

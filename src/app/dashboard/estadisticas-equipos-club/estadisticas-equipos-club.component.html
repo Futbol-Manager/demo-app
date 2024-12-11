@@ -11,6 +11,10 @@
 
 <app-publicidad></app-publicidad>
 
+<div *ngIf="loading" class="spinner-container mt-3">
+    <div class="spinnerLoad"></div>
+</div>
+
 <div *ngIf="datosCargados" class="container">
     <div style="margin-top: 3em; overflow-x: auto; text-align: center;">
         <h2>Tabla de Resumen</h2>
