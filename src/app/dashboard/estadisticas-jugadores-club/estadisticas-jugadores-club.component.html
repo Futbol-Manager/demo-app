@@ -8,6 +8,11 @@
         </div>
     </div>
 </div>
+
+<div *ngIf="loading" class="spinner-container mt-3">
+    <div class="spinnerLoad"></div>
+</div>
+
 <div *ngIf="datosCargados" class="container">
     <!-- Contenido para el dataTable -->
     <div class="container mt-4">

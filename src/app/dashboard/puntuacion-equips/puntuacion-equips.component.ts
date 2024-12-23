@@ -100,7 +100,7 @@ export class PuntuacionEquipsComponent implements OnInit {
       data: {
         labels: this.labels,
         datasets: [{
-          label: 'Porcentaje de cuotas del club',
+          label: 'Equipos',
           data: this.data,
           backgroundColor: backgroundColors // Colores para cada barra
         }]
@@ -110,7 +110,7 @@ export class PuntuacionEquipsComponent implements OnInit {
         plugins: {
           title: {
             display: true,
-            text: 'Porcentaje de cuotas del Club'
+            text: 'Puntos de los equipos'
           }
         },
         scales: {

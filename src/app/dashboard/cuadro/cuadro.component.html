@@ -7,29 +7,23 @@
       </a>
     </div>
     <div class="col">
-      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(7)">
         <i class="bi bi-info-circle"></i>
         <span class="d-none d-md-inline">Información Jugadores</span>
       </a>
     </div>
     <div class="col">
-      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
-        <i class="bi bi-people-fill"></i>
-        <span class="d-none d-md-inline">Estadísticas de Entrenadores</span>
-      </a>
-    </div>
-    <div class="col">
-      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(3)">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(8)">
         <span class="icon-container d-none d-md-flex">
           <i class="bi bi-bar-chart-line"></i>
           <i class="bi bi-shield"></i>
         </span>
         <i class="bi bi-shield d-md-none"></i>
-        <span class="d-none d-md-inline">Estadísticas del Equipo</span>
+        <span class="d-none d-md-inline">Estadísticas de Equipos</span>
       </a>
     </div>
     <div class="col">
-      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(4)">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(9)">
         <span class="icon-container d-none d-md-flex">
           <i class="bi bi-bar-chart-line"></i>
           <i class="bi bi-person"></i>
@@ -44,58 +38,52 @@
 <div class="container">
   <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
     <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(1)">
-      <div class="card h-100" style="border: 1px solid black;">
+      <div class="card fixed-card" style="border: 1px solid black;">
         <div class="card-body d-flex flex-column text-center">
           <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
             Cuotas
           </h5>
           <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
             <div class="col d-flex justify-content-center align-items-center">
-              <ng-container>
-                <img style="width: 10em;" src="/assets/iconos/cuotas.svg" class="card-img-top mx-auto d-block p-3"
-                  alt="Scouting Icon">
-              </ng-container>
+              <img style="width: 10em;" src="/assets/iconos/cuotas.svg" class="card-img-top mx-auto d-block p-3"
+                alt="Icon">
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(2)">
-      <div class="card h-100" style="border: 1px solid black;">
+      <div class="card fixed-card" style="border: 1px solid black;">
         <div class="card-body d-flex flex-column text-center">
           <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
             Puntuación equipos
           </h5>
           <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
             <div class="col d-flex justify-content-center align-items-center">
-              <ng-container>
-                <img style="width: 10em;" src="/assets/iconos/puntos.svg" class="card-img-top mx-auto d-block p-3"
-                  alt="Scouting Icon">
-              </ng-container>
+              <img style="width: 10em;" src="/assets/iconos/puntos.svg" class="card-img-top mx-auto d-block p-3"
+                alt="Icon">
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(3)">
-      <div class="card h-100" style="border: 1px solid black;">
+      <div class="card fixed-card" style="border: 1px solid black;">
         <div class="card-body d-flex flex-column text-center">
           <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
             Entrenamientos creados
           </h5>
           <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
             <div class="col d-flex justify-content-center align-items-center">
-              <ng-container>
-                <img style="width: 10em;" src="/assets/iconos/entrenamientos.svg"
-                  class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-              </ng-container>
+              <img style="width: 10em;" src="/assets/iconos/entrenamientos.svg" class="card-img-top mx-auto d-block p-3"
+                alt="Icon">
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(4)">
-      <div class="card h-100" style="border: 1px solid black;">
+      <div class="card fixed-card" style="border: 1px solid black;">
         <div class="card-body d-flex flex-column text-center">
           <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
             Entrenando hoy:
@@ -111,24 +99,27 @@
       </div>
     </div>
     <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(5)">
-      <div class="card h-100" style="border: 1px solid black;">
+      <div class="card fixed-card" style="border: 1px solid black;">
         <div class="card-body d-flex flex-column text-center">
           <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
             Resultados última jornada
           </h5>
           <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
             <div class="col d-flex justify-content-center align-items-center">
-              <ng-container>
-                <img style="width: 10em;" src="/assets/iconos/fecha-del-calendario.svg"
-                  class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-              </ng-container>
+              <ul class="scrollable-list">
+                <li *ngFor="let equipo of listUltimos" [ngClass]="{'text-success': equipo.startsWith('V'), 
+                                'text-danger': equipo.startsWith('D'), 
+                                'text-secondary': equipo.startsWith('E')}">
+                  {{ equipo }}
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
     </div>
     <div class="col mb-3" style="cursor: pointer;">
-      <div class="card h-100" style="border: 1px solid black;">
+      <div class="card fixed-card" style="border: 1px solid black;">
         <div class="card-body d-flex flex-column text-center">
           <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
             Proximos partidos

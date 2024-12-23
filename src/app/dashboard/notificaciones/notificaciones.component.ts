@@ -340,7 +340,7 @@ export class NotificacionesComponent implements OnInit {
       body: '',
       remitente: '',
       destinatario: '',
-    fechaCreate: ''
+      fechaCreate: ''
     }; // Limpia la selección si es necesario
   }
 

@@ -1,0 +1,754 @@
+<div class="submenu">
+    <div class="row">
+        <div class="col text-center">
+            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
+                <i class="bi bi-house"></i>
+                <span class="d-none d-md-inline">Inicio</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<app-publicidad></app-publicidad>
+
+<div class="container">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
+        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(2)">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/futbol.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Crear entrenamiento
+                    </h5>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(3)">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/tactica.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Tareas
+                    </h5>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(4)">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/juego.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Crear partido
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
+        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(5)">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/fecha-del-calendario.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Calendario
+                    </h5>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(6)">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/grafico.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Estadísticas
+                    </h5>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(7)">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/jugador-de-futbol.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Jugadores
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
+        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(8)">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/informacion.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Info de equipos
+                    </h5>
+                </div>
+            </div>
+        </div>
+        <!--
+        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(9)">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/globo-de-chat.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Notificaciones
+                    </h5>
+                </div>
+            </div>
+        </div>
+        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(10)">
+            <div class="card h-100" style="border: 1px solid black;">
+                <div class="card-body d-flex flex-column text-center">
+                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                        <div class="col d-flex justify-content-center align-items-center">
+                            <ng-container>
+                                <img style="width: 10em;" src="/assets/iconos/etiqueta.svg"
+                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                            </ng-container>
+                        </div>
+                    </div>
+                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                        Patrocinadores
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+    -->
+    </div>
+</div>
+
+<!-- Modal para mostrar información del entrenamiento -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalEntrenamiento}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles del Entrenamiento</h5>
+                    <!-- Botón de cerrar con un icono -->
+                    <button type="button" class="btn-close" aria-label="Close"
+                        (click)="cerrarModalEntrenamiento()"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- modal modificar entrenamiento -->
+                    <div class="row text-center align-items-center mt-3">
+                        <div class="col-12 col-md-6 mt-3 text-start">
+                            <label for="objectiveSession" class="form-label">Fecha del entrenamiento:</label>
+                            <input type="date" class="form-control custom-input" id="date" [(ngModel)]="daySession">
+                        </div>
+                    </div>
+                    <div class="row text-center mt-3">
+                        <div class="col-12 col-md-6 mt-3">
+                            <label for="objectiveSession" class="form-label">Objetivo de la Sesión:</label>
+                            <textarea class="form-control custom-input" id="objectiveSession" rows="5"
+                                name="objectiveSession" [(ngModel)]="trainingSession.objectiveSession"></textarea>
+                        </div>
+                        <div class="col-12 col-md-6 mt-3 ">
+                            <label for="objectiveSession" class="form-label">Calentamiento:</label>
+                            <textarea class="form-control custom-input" id="warmUp" rows="5" name="warmUp"
+                                [(ngModel)]="trainingSession.warmUp"></textarea>
+                        </div>
+                    </div>
+                    <div class="row text-center align-items-center mt-3">
+                        <div class="col-12 col-md-6 mt-3 text-start">
+                            <div class="form-check form-switch" *ngIf="this.usuarioActual!.profileType.profileId === 2">
+                                <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
+                                    [checked]="toggleVisible === 1" title="Si está no visible el jugador no lo verá"
+                                    (change)="onChangeToggle($event, trainingSession.trainingSessionId)">
+                                <label class="form-check-label">No visible / Visible</label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 mt-3 text-end">
+                            <button *ngIf="this.btnCrearEntreno" type="button" class="btn btn-custom"
+                                (click)="crearEntrenamiento()">Crear Entrenamiento</button>
+                        </div>
+                    </div>
+                    <hr>
+
+                    <div *ngIf="entrenamientoCreado">
+                        <!-- Agregar formulario para crear tareas -->
+                        <div *ngIf="showAddTaskForm">
+                            <form (submit)="crearTarea()">
+                                <div class="row text-center mt-3">
+                                    <div class="col-12 col-md-4 mt-3">
+                                        <input class="form-control custom-input" id="slogans" rows="5"
+                                            [(ngModel)]="nuevaTarea.slogans" name="slogans" placeholder="Título" />
+                                    </div>
+                                    <div class="col-12 col-md-2 mt-3 ">
+                                        <input class="form-control custom-input" id="worktime" rows="5"
+                                            [(ngModel)]="nuevaTarea.worktime" name="worktime" placeholder="Tiempo" />
+                                    </div>
+                                    <div class="col-12 col-md-2 mt-3 ">
+                                        <input class="form-control custom-input" id="space" rows="5"
+                                            [(ngModel)]="nuevaTarea.space" name="space" placeholder="Espacio" />
+                                    </div>
+                                </div>
+
+                                <div class="row text-center mt-3">
+                                    <div class="col-12 col-md-4 mt-3">
+                                        <textarea class="form-control custom-input" id="description" rows="5"
+                                            [(ngModel)]="nuevaTarea.description" name="description"
+                                            placeholder="Descripción"></textarea>
+                                    </div>
+                                    <div class="col-12 col-md-4 mt-3 ">
+                                        <textarea class="form-control custom-input" id="rules" rows="5"
+                                            [(ngModel)]="nuevaTarea.rules" name="rules" placeholder="Reglas"></textarea>
+                                    </div>
+                                    <div class="col-12 col-md-4 mt-3 ">
+                                        <textarea class="form-control custom-input" id="variants" rows="5"
+                                            [(ngModel)]="nuevaTarea.variants" name="variants"
+                                            placeholder="Variantes"></textarea>
+                                    </div>
+                                </div>
+
+                                <div class="row text-center mt-3">
+                                    <div class="col-12 col-md-4 mt-3">
+                                        <input class="form-control custom-input" id="material"
+                                            [(ngModel)]="nuevaTarea.material" name="material" placeholder="Material" />
+                                    </div>
+                                    <div class="col-12 col-md-4 mt-3 ">
+                                        <select class="form-control custom-input" id="estrategia"
+                                            [(ngModel)]="nuevaTarea.estrategia" name="estrategia">
+                                            <option value="-">Selecciona estrategia...</option>
+                                            <option *ngFor="let estrategia of estrategias" [value]="estrategia">{{
+                                                estrategia }}</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-12 col-md-4 mt-3 ">
+                                        <select class="form-control custom-input" id="intencion"
+                                            [(ngModel)]="nuevaTarea.intencion" name="intencion">
+                                            <option value="-">Selecciona intención...</option>
+                                            <option *ngFor="let intencion of intenciones" [value]="intencion">{{
+                                                intencion }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="row text-center mt-3">
+                                    <div class="col-12 col-md-4 mt-3">
+                                        <textarea class="form-control custom-input" id="video" rows="3"
+                                            [(ngModel)]="nuevaTarea.video" name="video"
+                                            placeholder="Video YouTube"></textarea>
+                                    </div>
+                                    <div class="col-12 col-md-4 mt-3 ">
+                                    </div>
+                                    <div class="col-12 col-md-4 mt-3 ">
+                                    </div>
+                                </div>
+
+                                <div class="row text-center align-items-center mt-3">
+                                    <div class="col-12 col-md-6 mt-3 text-start">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input custom-input" type="checkbox" id="subirTarea"
+                                                [checked]="subirTarea === 1"
+                                                (change)="toggleChangeSubirTarea(subirTarea)">
+                                            <label class="form-check-label">Subir tarea a la nube</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-3 mt-3 text-start">
+                                        <button *ngIf="this.usuarioActual!.profileType.profileId === 2"
+                                            (click)="toggleAddTaskForm()" class="btn btn-danger">Cancelar</button>
+                                    </div>
+                                    <div class="col-12 col-md-3 mt-3 text-end">
+                                        <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
+                                            class="btn btn-custom">Crear Tarea</button>
+                                    </div>
+                                </div>
+                            </form>
+                            <hr>
+                        </div>
+
+                        <!-- Mostrar lista de tareas colapsada -->
+                        <div class="row mt-3" *ngIf="trainingSession.tasks && trainingSession.tasks.length > 0">
+                            <div class="col-12 col-md-4 mb-4"
+                                *ngFor="let tarea of trainingSession.tasks; let i = index">
+                                <div class="card h-100">
+                                    <!-- Imagen de la tarea -->
+                                    <div *ngIf="tarea.imagenBoard">
+                                        <img [src]="'https://appsphairatech.com/images/task-board/' + tarea.imagenBoard"
+                                            class="card-img-top"
+                                            onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'"
+                                            alt="Imagen de la tarea">
+                                    </div>
+                                    <div *ngIf="!tarea.imagenBoard">
+                                        <img [src]="'https://appsphairatech.com/images/task-board/blank.png'"
+                                            class="card-img-top" alt="Imagen por defecto">
+                                    </div>
+
+                                    <!-- Contenido de la tarjeta -->
+                                    <div class="card-body custom-card-body">
+                                        <h6 class="card-title">ID: {{ tarea.taskId }}</h6>
+                                        <h5 class="card-title" style="max-height: 2em; min-height: 2em;">{{
+                                            tarea.slogans }}</h5>
+                                        <div class="tags-container">
+                                            <span class="badge badge-secondary">{{ tarea.estrategia }}</span>
+                                            <span class="badge badge-primary">{{ tarea.intencion }}</span>
+                                        </div>
+                                        <!-- Limitar la altura del texto -->
+                                        <p class="card-text"
+                                            style="color: #aeaeae; max-height: 4em; min-height: 4em; overflow-y: auto;">
+                                            Descripción: {{ tarea.description
+                                            }}</p>
+
+                                        <!-- Botones de acción -->
+                                        <div class="d-flex justify-content-between">
+                                            <button *ngIf="this.usuarioActual!.profileType.profileId === 2"
+                                                type="button" class="btn btn-secondary" (click)="printDiv(tarea)">
+                                                <i class="bi bi-printer"></i> Imprimir
+                                            </button>
+                                            <button *ngIf="this.usuarioActual!.profileType.profileId === 2"
+                                                type="button" class="btn btn-primary" (click)="openTaskModal(tarea)">
+                                                <i class="bi bi-eye"></i> Ver
+                                            </button>
+                                            <button *ngIf="this.usuarioActual!.profileType.profileId === 2"
+                                                type="button" class="btn btn-danger" (click)="deleteTask(tarea)">
+                                                <i class="bi bi-trash"></i> Eliminar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row text-center align-items-center mt-3">
+                            <div class="col-12 col-md-6 mt-3 text-start">
+                                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
+                                    class="form-control btn btn-custom mt-3" [disabled]="showAddTaskForm"
+                                    (click)="toggleAddTaskForm()">Agregar
+                                    Tarea</button>
+                            </div>
+                            <div class="col-12 col-md-6 mt-3 text-start">
+                                <button type="button" class="form-control btn btn-custom mt-3" (click)="verTienda()"
+                                    *ngIf="!viewShop && this.usuarioActual!.profileType.profileId === 2">Nube de
+                                    Tareas</button>
+                                <button type="button" class="form-control btn btn-danger mt-3" (click)="cerrarTienda()"
+                                    *ngIf="viewShop && this.usuarioActual!.profileType.profileId === 2">Cerrar
+                                    Nube de Tareas</button>
+                            </div>
+                        </div>
+                        <!-- Botón para agregar tarea -->
+                        <!-- Modal para abrir listado de tareas de la tienda-->
+                        <app-shop [trainingId]="trainingId" (tareaDescargada)="tareaDescargada($event)"
+                            *ngIf="viewShop">
+                        </app-shop>
+
+                        <!-- Contenido del modal -->
+                        <div #endOfModal></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver los detalles de la tarea -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalTask}">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles de la Tarea</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="closeTaskModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <h1>Tarea: {{ tareaSeleccionada?.slogans }}</h1>
+                    <p>ID: {{ tareaSeleccionada?.taskId }}</p>
+                    <p><b>Estrategia:</b> {{ tareaSeleccionada?.estrategia }}</p>
+                    <p><b>Intención:</b> {{ tareaSeleccionada?.intencion }}</p>
+                    <p><b>Descripción:</b> {{ tareaSeleccionada?.description }}</p>
+                    <p><b>Reglas:</b> {{ tareaSeleccionada?.rules }}</p>
+                    <p><b>Variantes:</b> {{ tareaSeleccionada?.variants }}</p>
+                    <p><b>Tiempo de Trabajo:</b> {{ tareaSeleccionada?.worktime }}</p>
+                    <p><b>Espacio:</b> {{ tareaSeleccionada?.space }}</p>
+                    <p><b>Material:</b> {{ tareaSeleccionada?.material }}</p>
+                    <p><b>Video YouTube:</b> {{ tareaSeleccionada?.video }}</p>
+                    <br>
+                    <!-- <img *ngIf="tareaSeleccionada?.imagenBoard"
+            [src]="'https://appsphairatech.com/images/task-board/' + tareaSeleccionada.imagenBoard"
+            alt="Imagen de la tarea" class="img-fluid">
+           Mostrar la imagen si tarea.imagenBoard tiene un valor -->
+                    <div [id]="'div_tarea_' + tareaSeleccionada?.taskId">
+                        <img class="imgBoard" *ngIf="tareaSeleccionada?.imagenBoard"
+                            [src]="'https://appsphairatech.com/images/task-board/' + tareaSeleccionada?.imagenBoard"
+                            alt="Imagen de la tarea" [id]="'imagen_tarea_' + tareaSeleccionada?.taskId"
+                            onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'">
+                    </div>
+                    <hr>
+                    <div *ngIf="this.usuarioActual!.profileType.profileId === 2">
+                        <h4>Puedes crear la tarea en una pizarra y subir después la imagen</h4>
+                        <!-- Botón para abrir el modal -->
+                        <button class="btn btn-warning" (click)="openBoardModal()">Abrir pizarra</button> o también
+                        puedes
+                        <!-- Botón para abrir enlace en una nueva pestaña -->
+                        <a href="https://tacticalboard.sphairatech.com/" target="_blank"> ir a la aplicacion</a>
+                        <!-- Agregar más campos de tarea según sea necesario -->
+                        <div class="container">
+                            <h4>Sube ahora la imagen descargada de tu pizarra</h4>
+                            <form (submit)="onSubmit(tareaSeleccionada)" enctype="multipart/form-data">
+                                <div class="form-group">
+                                    <label for="image">Seleccionar imagen:</label>
+                                    <input type="file" id="image" (change)="onFileSelected($event)">
+                                </div>
+                                <button style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir
+                                    imagen</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" (click)="closeTaskModal()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver la pizarra -->
+<div class="modal modal-large" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalBoard}">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Entrenamiento</h5>
+                <!-- Botón de cerrar con un icono -->
+                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarBoardModal()"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Contenido del modal (en este caso, el iframe) -->
+                <iframe width="100%" height="100%" id="urlIframe" scrolling="no" frameborder="0"
+                    src="https://tacticalboard.sphairatech.com"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para mostrar información del entrenamiento -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPartido}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalles del Partido</h5>
+                    <!-- Botón de cerrar con un icono -->
+                    <button type="button" class="btn-close" aria-label="Close"
+                        (click)="cerrarModalPartido()"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- modal crear un partido -->
+                    <div class="mt-3">
+                        <h5>Contenido para Partido</h5>
+                        <form (ngSubmit)="crearPartido()">
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-12">
+                                    <!-- Contenido de la subcolumna -->
+                                    <label><strong>Información general del partido:</strong></label>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-6 mt-3">
+                                    <label for="fechaPartido" class="form-label">Fecha del partido:</label>
+                                    <input type="date" class="form-control custom-input" id="fechaPartido" name="fechaPartido"
+                                        [(ngModel)]="dayPartido">
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-6 mt-3">
+                                    <label for="tipoPartido" class="form-label">Tipo de partido:</label>
+                                    <select class="form-control custom-input" id="tipoPartido" name="tipoPartido"
+                                        [(ngModel)]="match.tipoPartido">
+                                        <option value="Amistoso">Amistoso</option>
+                                        <option value="Liga">Liga</option>
+                                        <option value="Torneo">Torneo</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-6 mt-3">
+                                    <label for="rivalName" class="form-label">Nombre del Rival:</label>
+                                    <input class="form-control custom-input" id="rivalName" name="rivalName"
+                                        [(ngModel)]="match.rivalName" />
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-12 mt-3">
+                                    <label for="lugar" class="form-label">Lugar:</label>
+                                    <textarea class="form-control custom-input" id="lugar" rows="2" name="lugar"
+                                        [(ngModel)]="match.lugar"></textarea>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-1 mt-3">
+                                    <label for="hora" class="form-label">Hora de</label>
+                                    <select class="form-control custom-input" id="hora" name="hora"
+                                        [(ngModel)]="match.hora" aria-placeholder="08">
+                                        <option value="08">08</option>
+                                        <option value="09">09</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                        <option value="13">13</option>
+                                        <option value="14">14</option>
+                                        <option value="15">15</option>
+                                        <option value="16">16</option>
+                                        <option value="17">17</option>
+                                        <option value="18">18</option>
+                                        <option value="19">19</option>
+                                        <option value="20">20</option>
+                                        <option value="21">21</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-1 mt-3">
+                                    <label for="minutos" class="form-label">quedada:</label>
+                                    <select class="form-control custom-input" id="minutos" name="minutos"
+                                        [(ngModel)]="match.minutos">
+                                        <option value="00">00</option>
+                                        <option value="15">15</option>
+                                        <option value="30">30</option>
+                                        <option value="45">45</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <label for="terreno" class="form-label">Local o Visitante:</label>
+                                    <select class="form-control custom-input" id="terreno" name="terreno"
+                                        [(ngModel)]="match.terreno">
+                                        <option value="Local">Local</option>
+                                        <option value="Visitante">Visitante</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-1 mt-3">
+                                    <label for="horaEmpieza" class="form-label">Hora del</label>
+                                    <select class="form-control custom-input" id="horaEmpieza" name="horaEmpieza"
+                                        [(ngModel)]="match.horaEmpieza">
+                                        <option value="08">08</option>
+                                        <option value="09">09</option>
+                                        <option value="10">10</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                        <option value="13">13</option>
+                                        <option value="14">14</option>
+                                        <option value="15">15</option>
+                                        <option value="16">16</option>
+                                        <option value="17">17</option>
+                                        <option value="18">18</option>
+                                        <option value="19">19</option>
+                                        <option value="20">20</option>
+                                        <option value="21">21</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-1 mt-3">
+                                    <label for="minutosEmpieza" class="form-label">partido:</label>
+                                    <select class="form-control custom-input" id="minutosEmpieza" name="minutosEmpieza"
+                                        [(ngModel)]="match.minutosEmpieza">
+                                        <option value="00">00</option>
+                                        <option value="15">15</option>
+                                        <option value="30">30</option>
+                                        <option value="45">45</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <label for="refereeName" class="form-label">Nombre del Árbitro:</label>
+                                    <input type="text" class="form-control custom-input" id="refereeName"
+                                        name="refereeName" [(ngModel)]="match.refereeName">
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-12">
+                                    <!-- Contenido de la subcolumna -->
+                                    <label><strong>Información del Rival:</strong></label>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="puntosFuertesRival" rows="2"
+                                        name="puntosFuertesRival" [(ngModel)]="match.puntosFuertesRival"
+                                        placeholder="Puntos fuertes"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="puntosDebilesRival" rows="2"
+                                        name="puntosDebilesRival" [(ngModel)]="match.puntosDebilesRival"
+                                        placeholder="Puntos débiles"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="jugadoresClaveRival" rows="2"
+                                        name="jugadoresClaveRival" [(ngModel)]="match.jugadoresClaveRival"
+                                        placeholder="Jugadores clave (Nombre, Posición, Dorsal, Comentarios, etc)"></textarea>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="estiloJuegoRival" rows="2"
+                                        name="estiloJuegoRival" [(ngModel)]="match.estiloJuegoRival"
+                                        placeholder="Estilo de juego (Posición, transición, presión, etc)"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="ultimosResultadosRival" rows="2"
+                                        name="ultimosResultadosRival" [(ngModel)]="match.ultimosResultadosRival"
+                                        placeholder="Últimos resultados (Fecha, rival, resultado)"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="formacionesRecientesRival" rows="2"
+                                        name="formacionesRecientesRival" [(ngModel)]="match.formacionesRecientesRival"
+                                        placeholder="Formaciones recientes (4-3-3, 4-4-2, etc)"></textarea>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="patronesOfensivosRival" rows="2"
+                                        name="patronesOfensivosRival" [(ngModel)]="match.patronesOfensivosRival"
+                                        placeholder="Patrones Ofensivos (Ataque por bandas, Atauqe por centro, etc)"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="patronesDefensivosRival" rows="2"
+                                        name="patronesDefensivosRival" [(ngModel)]="match.patronesDefensivosRival"
+                                        placeholder="Patrones Defensivos (Bloque bajo, medio, alto, etc)"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="estadisticasRival" rows="2"
+                                        name="estadisticasRival" [(ngModel)]="match.estadisticasRival"
+                                        placeholder="Estadísticas (goles a favor, en contra, goles por partido, encajados por partido, etc)"></textarea>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="tendenciasTacticasRival" rows="2"
+                                        name="tendenciasTacticasRival" [(ngModel)]="match.tendenciasTacticasRival"
+                                        placeholder="Tendencias Tácticas (Cambios de formación durante el partido, sustituciones habituales, etc)"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="datosIndividualesRival" rows="2"
+                                        name="datosIndividualesRival" [(ngModel)]="match.datosIndividualesRival"
+                                        placeholder="Datos Individuales Importantes (Portero, Defenas, Centrocampista, Delanteros)"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="abpsRival" rows="2" name="abpsRival"
+                                        [(ngModel)]="match.abpsRival"
+                                        placeholder="ABPs (Corners, Faltas, Banda, etc)"></textarea>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-12">
+                                    <!-- Contenido de la subcolumna -->
+                                    <label><strong>Información de mi equipo:</strong></label>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="formacionInicial" rows="2"
+                                        name="formacionInicial" [(ngModel)]="match.formacionInicial"
+                                        placeholder="Formación Inicial (4-4-2, 4-3-3, etc)"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="planJuegoAtaque" rows="2"
+                                        name="planJuegoAtaque" [(ngModel)]="match.planJuegoAtaque"
+                                        placeholder="Plan de Juego en Ataque (subida por bandas, balones largos, etc)"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="planJuegoDefensa" rows="2"
+                                        name="planJuegoDefensa" [(ngModel)]="match.planJuegoDefensa"
+                                        placeholder="Plan de Juego en Defensa (Bloque bajo, medio, alto, presión tras pérdida, etc)"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="transicionesOfensivas" rows="2"
+                                        name="transicionesOfensivas" [(ngModel)]="match.transicionesOfensivas"
+                                        placeholder="Transiciones Ofensivas (rapidez con balón largo, reinicio de juego, etc)"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="transicionesDefensivas" rows="2"
+                                        name="transicionesDefensivas" [(ngModel)]="match.transicionesDefensivas"
+                                        placeholder="Transiciones Defensivas (Presión tras pérdida, repliegue rápido, etc)"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="abpsOfensivas" rows="2"
+                                        name="abpsOfensivas" [(ngModel)]="match.abpsOfensivas"
+                                        placeholder="ABPs Ofensivas (Jugadas ensayadas, centros al área, etc)"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="abpsDefensivas" rows="2"
+                                        name="abpsDefensivas" [(ngModel)]="match.abpsDefensivas"
+                                        placeholder="ABPs Defensivas (Marcaje al hombre, en zona, quién libra, rechace, etc)"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="rolesEspecificos" rows="2"
+                                        name="rolesEspecificos" [(ngModel)]="match.rolesEspecificos"
+                                        placeholder="Roles Específicos (Capitán, lanzador de faltas, de penaltis, corners, jugadores de barrera, etc)"></textarea>
+                                </div>
+                                <div class="col-12 col-md-4 mt-3">
+                                    <textarea class="form-control custom-input" id="ajustesTacticos" rows="2"
+                                        name="ajustesTacticos" [(ngModel)]="match.ajustesTacticos"
+                                        placeholder="Ajustes Tácticos (Cambio de formación, adaptaciones durante el partido, cambios según situaciones del partido, etc)"></textarea>
+                                </div>
+                            </div>
+                            <div class="row text-center mt-3">
+                                <div class="col-12 col-md-12 text-end">
+                                    <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
+                                        class="btn btn-custom float-end">Guardar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

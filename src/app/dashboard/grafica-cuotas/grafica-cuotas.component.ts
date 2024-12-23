@@ -102,7 +102,7 @@ export class GraficaCuotasComponent implements OnInit {
       data: {
         labels: this.labels,
         datasets: [{
-          label: 'Porcentaje de cuotas del club',
+          label: 'Cuotas del club',
           data: this.data,
           backgroundColor: ['red', 'gray', 'green'] // Colores para cada barra
         }]

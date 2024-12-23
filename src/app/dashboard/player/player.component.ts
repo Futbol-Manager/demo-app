@@ -342,7 +342,8 @@ export class PlayerComponent implements OnInit {
   // Método para navegar a la pantalla de calendario
   navegarACalendario(): void {
     // Puedes ajustar la ruta según tu estructura de rutas
-    this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
+    //this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
+    this.router.navigate(['/dashboard/menu-entrenador', this.teamId, 0]);
   }
 
   inicializePlayer() {

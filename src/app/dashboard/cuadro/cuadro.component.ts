@@ -24,6 +24,7 @@ export class CuadroComponent implements OnInit {
   datosCargados = false;
   listTeams: any = [];
   listProximos: any = [];
+  listUltimos: any = [];
 
   constructor(
     private router: Router,
@@ -50,6 +51,7 @@ export class CuadroComponent implements OnInit {
         if (response.data !== null) {
           this.listTeams = response.data.teams;
           this.listProximos = response.data.proximos;
+          this.listUltimos = response.data.ultimos;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -77,13 +79,22 @@ export class CuadroComponent implements OnInit {
         this.router.navigate(['/dashboard/cuadro-de-mandos/entrenamientos', this.clubId]);
         break;
       case 4:
-        this.router.navigate(['/dashboard/cuadro-de-mandos/estadisticas-jugadores-club', this.clubId]);
+        this.router.navigate(['/dashboard/cuadro-de-mandos/horario-equipos', this.clubId]);
         break;
       case 5:
         this.router.navigate(['/dashboard/cuadro-de-mandos/estadisticas-equipos-club', this.clubId]);
         break;
       case 6:
         this.router.navigate(['/dashboard/cuadro-de-mandos/goleadores', this.clubId]);
+        break;
+      case 7:
+        this.router.navigate(['/dashboard/cuadro-de-mandos/info-jugadores', this.clubId]);
+        break;
+      case 8:
+        this.router.navigate(['/dashboard/cuadro-de-mandos/estadisticas-equipos-club', this.clubId]);
+        break;
+      case 9:
+        this.router.navigate(['/dashboard/cuadro-de-mandos/estadisticas-jugadores-club', this.clubId]);
         break;
     }
   }

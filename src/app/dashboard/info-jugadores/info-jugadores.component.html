@@ -9,6 +9,10 @@
     </div>
 </div>
 
+<div *ngIf="loading" class="spinner-container mt-3">
+    <div class="spinnerLoad"></div>
+</div>
+
 <div *ngIf="datosCargados" class="container">
     <div style="margin-top: 3em;">
         <h2 class="text-dark mt-3">Listado de Jugadores</h2>

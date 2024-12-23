@@ -47,7 +47,7 @@ export class TareasComponent implements OnInit {
   // Método para redirigir a la pantalla de jugadores con el teamId
   irAPantalla(id: number): void {
     if (id === 1) {
-      this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
+      this.router.navigate(['/dashboard/menu-entrenador', this.teamId, 0]);
     } else if (id === 2) {
       //poner aqui el resto
       // Abrir la URL en una nueva pestaña

@@ -45,3 +45,16 @@
     scrollbar-width: thin;
     /* Tamaño del scroll en Firefox */
 }
+
+.fixed-card {
+    height: 18em;
+    /* Altura fija para todas las tarjetas */
+    overflow: hidden;
+    /* Evita que el contenido sobresalga */
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}

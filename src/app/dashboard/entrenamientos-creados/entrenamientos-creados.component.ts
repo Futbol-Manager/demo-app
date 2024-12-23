@@ -102,7 +102,7 @@ export class EntrenamientosCreadosComponent implements OnInit {
       data: {
         labels: this.labels,
         datasets: [{
-          label: 'Porcentaje de cuotas del club',
+          label: 'Nº de entrenamientos creados',
           data: this.data,
           backgroundColor: backgroundColors // Colores para cada barra
         }]
@@ -112,7 +112,7 @@ export class EntrenamientosCreadosComponent implements OnInit {
         plugins: {
           title: {
             display: true,
-            text: 'Porcentaje de cuotas del Club'
+            text: 'Nº de entrenamientos creados'
           }
         },
         scales: {

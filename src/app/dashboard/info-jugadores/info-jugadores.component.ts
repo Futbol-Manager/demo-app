@@ -54,6 +54,7 @@ export class InfoJugadoresComponent implements OnInit {
   selectedFileCara6: File | null = null;
 
   indexSelected = 0;
+  loading = true;
 
   constructor(
     private router: Router,
@@ -98,6 +99,7 @@ export class InfoJugadoresComponent implements OnInit {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
         this.datosCargados = true;
+        this.loading = false;
       },
       (error) => {
         console.error('Error al cargar el listado de jugadores', error);

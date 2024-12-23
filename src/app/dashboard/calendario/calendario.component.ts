@@ -63,7 +63,6 @@ export class CalendarioComponent implements OnInit {
   trainingId!: number;
   matchPreparationId!: number;
 
-
   showModalPartido: boolean = false;
   match: MatchPreparation = new MatchPreparation({});
 
@@ -770,7 +769,6 @@ export class CalendarioComponent implements OnInit {
       }
     );
   }
-
 
   getListaPrePartido() {
     this.trainingService.getListPrePartidoByTeam(this.teamId.toString()).subscribe(
