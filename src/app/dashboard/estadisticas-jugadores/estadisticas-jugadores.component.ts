@@ -445,8 +445,8 @@ export class EstadisticasJugadoresComponent implements OnInit {
         datasets: [{
           label: label,
           data: data,
-          backgroundColor: backgroundColors,
-          borderColor: borderColors,
+          backgroundColor: '#22bf63', //backgroundColors,
+          borderColor: '#22bf63',//borderColors,
           borderWidth: 1
         }]
       },

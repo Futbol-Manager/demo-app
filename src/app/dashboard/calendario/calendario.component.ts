@@ -665,6 +665,8 @@ export class CalendarioComponent implements OnInit {
       this.router.navigate(['/dashboard/adminsettings']);
     } else if (id === 7) {
       this.router.navigate(['/dashboard/tareas', this.teamId]);
+    } else if (id === 8) {
+      this.router.navigate(['/dashboard/menu-entrenador', this.teamId, 0]);
     }
   }
 

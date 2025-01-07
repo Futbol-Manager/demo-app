@@ -32,12 +32,14 @@ import { PuntuacionEquipsComponent } from './puntuacion-equips/puntuacion-equips
 import { GraficaCuotasComponent } from './grafica-cuotas/grafica-cuotas.component';
 import { GoleadoresComponent } from './goleadores/goleadores.component';
 import { MenuEntrenadorComponent } from './menu-entrenador/menu-entrenador.component';
+import { InicioDeportesComponent } from './inicio-deportes/inicio-deportes.component';
 
 const routes: Routes = [
   {
     path: '',
     component: DashboardComponent,
     children: [
+      { path: 'inicio-deportes', component: InicioDeportesComponent },
       { path: 'inicio', component: InicioComponent },
       { path: 'calendario/:teamId/:playerId', component: CalendarioComponent },
       { path: 'menu-entrenador/:teamId/:playerId', component: MenuEntrenadorComponent },
@@ -68,7 +70,7 @@ const routes: Routes = [
       { path: 'scouting-player/:playerId', component: ScoutingPlayerComponent },
       { path: 'adminsettings', component: AdminsettingsComponent },
       { path: 'notificaciones/:clubId', component: NotificacionesComponent },
-      { path: '**', redirectTo: 'inicio' },
+      { path: '**', redirectTo: 'inicio-deportes' },
     ],
   }
 ];

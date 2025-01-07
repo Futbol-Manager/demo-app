@@ -59,7 +59,7 @@ export class LoginComponent implements OnInit {
           (res) => {
             if (res.data != null && res.data.userDTO.idValidation == 2) { //usuario ya validado
               snackbarOn = false;
-              this.router.navigate(['/dashboard/inicio']);
+              this.router.navigate(['/dashboard/inicio-deportes']);
             } else if (res.data != null && res.data.userDTO.idValidation == 1) {
               let fechaCreacion: Date = new Date(res.data.userDTO.dateCreate);
               // Obtener la fecha actual
@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit {
                 snackBarConfig.horizontalPosition = 'center';
                 snackBarConfig.verticalPosition = 'top';
                 this.snackBar.open('Aún no has verificado tu cuenta, por favor revisa tu bandeja de entrada o spam del correo electrónico para validar tu cuenta.', 'Cerrar', snackBarConfig);
-                this.router.navigate(['/dashboard/inicio']);
+                this.router.navigate(['/dashboard/inicio-deportes']);
               } else { //ya han pasado mas de 3 dias, por lo que debes verificar tu cuenta si o si
                 if (!this.verificarCuenta) {
                   const snackBarConfig = new MatSnackBarConfig();

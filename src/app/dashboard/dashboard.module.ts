@@ -36,6 +36,7 @@ import { PuntuacionEquipsComponent } from './puntuacion-equips/puntuacion-equips
 import { GraficaCuotasComponent } from './grafica-cuotas/grafica-cuotas.component';
 import { GoleadoresComponent } from './goleadores/goleadores.component';
 import { MenuEntrenadorComponent } from './menu-entrenador/menu-entrenador.component';
+import { InicioDeportesComponent } from './inicio-deportes/inicio-deportes.component';
 
 
 
@@ -73,7 +74,8 @@ import { MenuEntrenadorComponent } from './menu-entrenador/menu-entrenador.compo
     PuntuacionEquipsComponent,
     GraficaCuotasComponent,
     GoleadoresComponent,
-    MenuEntrenadorComponent
+    MenuEntrenadorComponent,
+    InicioDeportesComponent
   ],
   imports: [
     CommonModule,
