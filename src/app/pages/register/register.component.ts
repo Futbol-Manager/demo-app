@@ -65,6 +65,7 @@ export class RegisterComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       password2: ['', Validators.required],
+      mobile: ['', Validators.required],
       terms: [false, Validators.requiredTrue],
     });
 
@@ -77,6 +78,7 @@ export class RegisterComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
       password2: ['', Validators.required],
+      mobile: ['', Validators.required],
       terms: [false, Validators.requiredTrue],
       nameSon: [''],
     });
@@ -200,6 +202,7 @@ export class RegisterComponent implements OnInit {
 
       const fv = this.registerFormClub.value;
       const register: RegisterModel = new RegisterModel(
+        fv.mobile,
         fv.comunicaciones ? 1 : 0,
         profileType,
         fv.name,
@@ -272,6 +275,7 @@ export class RegisterComponent implements OnInit {
       this.msgForm = false;
       const fv = this.registerFormEntrenador.value;
       const register: RegisterModel = new RegisterModel(
+        fv.mobile,
         fv.comunicaciones ? 1 : 0,
         profileType,
         fv.name,

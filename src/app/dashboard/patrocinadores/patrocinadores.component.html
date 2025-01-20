@@ -23,7 +23,7 @@
                     <div class="carousel-content">
                         <ng-container *ngFor="let patrocinador of listPatrocinadores">
                             <img *ngIf="patrocinador.imagen && patrocinador.oculto === 1"
-                                [src]="'https://appsphairatech.com/images/patrocinadores/' + patrocinador.imagen"
+                            [src]="imageBaseUrl + patrocinador.imagen"
                                 (click)="mostrarId(patrocinador)" class="patrocinador-img" alt="Patrocinador"
                                 title="Haz clic para ver el ID del patrocinador">
                         </ng-container>
@@ -38,7 +38,7 @@
                 <div class="card h-100">
                     <!-- Imagen de la tarea -->
                     <div *ngIf="patro.imagen">
-                        <img [src]="'https://appsphairatech.com/images/patrocinadores/' + patro.imagen"
+                        <img [src]="imageBaseUrl + patro.imagen"
                             class="card-img-top fixed-size-img"
                             onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'"
                             alt="Imagen de la tarea">
@@ -200,7 +200,7 @@
                                             <div class="form-group">
                                                 <ng-container *ngIf="patrocinadorUpdate.imagen">
                                                     <div class="container">
-                                                        <img src="https://appsphairatech.com/images/patrocinadores/{{ patrocinadorUpdate.imagen }}"
+                                                        <img [src]="imageBaseUrl + patrocinadorUpdate.imagen"
                                                             alt="user-player" style="width: -webkit-fill-available;">
                                                     </div>
                                                 </ng-container>
@@ -323,7 +323,7 @@
                                             <div class="form-group">
                                                 <ng-container *ngIf="patrocinadorUpdate.imagen">
                                                     <div class="container">
-                                                        <img src="https://appsphairatech.com/images/patrocinadores/{{ patrocinadorUpdate.imagen }}"
+                                                        <img [src]="imageBaseUrl + patrocinadorUpdate.imagen"
                                                             alt="user-player" style="width: -webkit-fill-available;">
                                                     </div>
                                                 </ng-container>

@@ -55,6 +55,8 @@ export class InfoJugadoresComponent implements OnInit {
 
   indexSelected = 0;
   loading = true;
+  imageBaseUrlUser: string = environment.images + 'user/';
+  imageBaseUrlPlayerDni: string = environment.images + 'playerDni/';
 
   constructor(
     private router: Router,

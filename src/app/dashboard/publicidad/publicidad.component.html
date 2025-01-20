@@ -6,7 +6,7 @@
                 <div class="carousel-content">
                     <ng-container *ngFor="let patrocinador of listPatrocinadores">
                         <img *ngIf="patrocinador.imagen && patrocinador.oculto === 1"
-                            [src]="'https://appsphairatech.com/images/patrocinadores/' + patrocinador.imagen"
+                            [src]="imageBaseUrlPatro + patrocinador.imagen"
                             (click)="mostrarId(patrocinador)" class="patrocinador-img"
                             alt="Patrocinador" title="Haz clic para ver el ID del patrocinador">
                     </ng-container>
@@ -36,7 +36,7 @@
                                             <div class="form-group">
                                                 <ng-container *ngIf="patrocinadorUpdate.imagen">
                                                     <div class="container">
-                                                        <img src="https://appsphairatech.com/images/patrocinadores/{{ patrocinadorUpdate.imagen }}"
+                                                        <img [src]="imageBaseUrlPatro + patrocinadorUpdate.imagen"
                                                             alt="user-player" style="width: -webkit-fill-available;">
                                                     </div>
                                                 </ng-container>

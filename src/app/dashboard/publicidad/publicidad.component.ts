@@ -12,6 +12,7 @@ import { RegisterService } from 'src/app/core/services/register/register.service
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Response } from 'src/app/core/services/models/response.model';
+import { environment } from 'src/environments/environment';
 declare var bootstrap: any;
 
 @Component({
@@ -27,6 +28,7 @@ export class PublicidadComponent implements OnInit {
   usuarioActual!: User | null;
   profileId = 0;
   userId: any = 0;
+  imageBaseUrlPatro: string = environment.images + 'patrocinadores/';
 
   constructor(
     private loginService: LoginService,

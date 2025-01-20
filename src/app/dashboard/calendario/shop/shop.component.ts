@@ -1,5 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-shop',
@@ -32,6 +33,7 @@ export class ShopComponent implements OnInit {
   estrategia = "-";
   intencion = '-';
   textSearch = '';
+  imageBaseUrlTask: string = environment.images + 'task-board/';
 
   constructor(
     private trainingService: TrainingService,

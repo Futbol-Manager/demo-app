@@ -7,10 +7,9 @@ import { BehaviorSubject } from 'rxjs';
 import { GenreTypeModel, ProfileTypeModel, RegisterModel, ValidationUserModel } from 'src/app/core/models/users/register.model';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
-import { PlayerId } from 'src/app/core/services/player/player.model';
 import { RegisterService } from 'src/app/core/services/register/register.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
-import { ProfileComponent } from 'src/app/pages/profile/profile.component';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-header',
@@ -18,6 +17,7 @@ import { ProfileComponent } from 'src/app/pages/profile/profile.component';
   styleUrls: ['./header.component.scss']
 })
 export class HeaderComponent implements OnInit {
+
   isDarkMode: boolean = false;
   usuarioActual!: User | null;
   userForm: FormGroup = this.formBuilder.group({
@@ -27,13 +27,16 @@ export class HeaderComponent implements OnInit {
     mail: [''],
     birthdate: [''],
     genreType: [''],
-  });;
+    mobile: [''],
+  });
+
   private usuarioAutenticado: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
   // Variable para controlar la visibilidad del modal
   showModal: boolean = false;
 
   nameUser: string = '';
   imgUser: string = '';
+  mobile: string = '';
   selectedFile: File | null = null;
   imagePreviewUrl: string | ArrayBuffer | null = null;
   uploadedImageUrl: string | null = null; // Almacena la URL de la imagen subida
@@ -43,6 +46,7 @@ export class HeaderComponent implements OnInit {
   userId: number = 0;
   profileId = 0;
   idValidation = 1;
+  imageBaseUrl: string = environment.images + 'user/';
 
   constructor(
     private router: Router,
@@ -63,6 +67,7 @@ export class HeaderComponent implements OnInit {
       this.nameUser = user !== null ? user.firstName : '';
       this.userId = user !== null ? user.userId : 0;
       this.imgUser = user !== null ? user.pictureUser : '';
+      this.mobile = user !== null ? user.mobile : '';
       this.updateForm(); // Actualiza el formulario cuando cambia el usuario actual
     });
   }
@@ -125,8 +130,6 @@ export class HeaderComponent implements OnInit {
       this.renderer.setStyle(dia, 'color', this.isDarkMode ? 'white' : 'black');
     });
 
-
-
     if (this.isDarkMode) {
       document.body.style.backgroundColor = '#343a40';
       document.body.style.color = 'white';
@@ -134,8 +137,6 @@ export class HeaderComponent implements OnInit {
       document.body.style.backgroundColor = '#fafbfe';
       document.body.style.color = 'black';
     }
-
-
   }
 
   goInicio() {
@@ -162,6 +163,7 @@ export class HeaderComponent implements OnInit {
       const validationUser: ValidationUserModel = new ValidationUserModel(this.idValidation, 'Validado por mail');//hardcodeado
 
       const register: RegisterModel = new RegisterModel(
+        this.userForm.value.mobile,
         this.userForm.value.comunicaciones,
         profileType,
         this.userForm.value.firstName,
@@ -205,6 +207,7 @@ export class HeaderComponent implements OnInit {
   updateForm() {
     if (this.usuarioActual) {
       this.userForm?.patchValue({
+        mobile: this.usuarioActual.mobile || '',
         pictureUser: this.usuarioActual.pictureUser || '',
         firstName: this.usuarioActual.firstName || '',
         secondName: this.usuarioActual.secondName || '',
@@ -261,7 +264,7 @@ export class HeaderComponent implements OnInit {
     }
   }
 
-  goSuscripcion(){
+  goSuscripcion() {
     this.showModal = false;
     this.router.navigate(['/dashboard/suscripcion', this.userId]);
   }

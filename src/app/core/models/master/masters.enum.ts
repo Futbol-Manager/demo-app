@@ -8,5 +8,14 @@ export const IMAGESASSETS:string = '/assets/images/'
  */
 export enum ApiEnvironments{
     LOCAL = '/api/rest/',
-    PRO = '/api/rest/'
+    PRO = '/api/rest/',
+    DESA = '/api-desa/rest/'
+}
+
+/**
+ * Carpetas de las imágenes según el entorno en el que nos encontremos
+ */
+export enum ImageEnvironments{
+    DESA = '/images-desa',
+    PRO = '/images',
 }

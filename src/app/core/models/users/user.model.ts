@@ -17,6 +17,7 @@ export class User {
     nameSon: string;
     playerId: number;
     playerIds: number[]; // Añadir playerIds como un array de números
+    mobile: string;
 
 
     constructor( object: any){
@@ -35,5 +36,6 @@ export class User {
         this.nameSon = (object.nameSon) ? object.nameSon : null;
         this.playerId = (object.playerId) ? object.playerId : null;
         this.playerIds = object.playerIds ?? []; // Inicializar playerIds como un array vacío o con los valores del objeto
+        this.mobile = (object.mobile) ? object.mobile : null;
     }
 }

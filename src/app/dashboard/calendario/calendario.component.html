@@ -1,18 +1,18 @@
 <div class="submenu">
   <div class="row">
-    <div class="col" *ngIf="this.userId === 9">
-      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(6)">
-        <i class="bi bi-table"></i>
-        <span class="d-none d-md-inline">Usuarios</span>
-      </a>
-    </div>
     <div class="row">
-        <div class="col" *ngIf="this.usuarioActual!.profileType.profileId == 2 && categoryTeam < 27">
-            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(8)">
-                <i class="bi bi-arrow-left-square-fill"></i>
-                <span class="d-none d-md-inline">Volver</span>
-            </a>
-        </div>
+      <div class="col" *ngIf="this.userId === 9">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(6)">
+          <i class="bi bi-table"></i>
+          <span class="d-none d-md-inline">Usuarios</span>
+        </a>
+      </div>
+      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId == 2 && categoryTeam < 27">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(8)">
+          <i class="bi bi-arrow-left-square-fill"></i>
+          <span class="d-none d-md-inline">Volver</span>
+        </a>
+      </div>
     </div>
     <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 2 && categoryTeam < 27">
       <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
@@ -25,7 +25,7 @@
         <i class="bi bi-people-fill"></i>
         <span class="d-none d-md-inline">Ver jugadores del equipo</span>
       </a>
-    </div>     
+    </div>
     <!-- <div class="col" *ngIf="this.usuarioActual!.profileType.profileId == 2">
       <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(7)">
         <i class="bi bi-backpack"></i>
@@ -3293,8 +3293,8 @@
                 <div class="card h-100">
                   <!-- Imagen de la tarea -->
                   <div *ngIf="tarea.imagenBoard">
-                    <img [src]="'https://appsphairatech.com/images/task-board/' + tarea.imagenBoard"
-                      class="card-img-top" onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'"
+                    <img [src]="imageBaseUrlTask + tarea.imagenBoard" class="card-img-top"
+                      onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'"
                       alt="Imagen de la tarea">
                   </div>
                   <div *ngIf="!tarea.imagenBoard">
@@ -4168,8 +4168,8 @@
            Mostrar la imagen si tarea.imagenBoard tiene un valor -->
             <div [id]="'div_tarea_' + tareaSeleccionada?.taskId">
               <img class="imgBoard" *ngIf="tareaSeleccionada?.imagenBoard"
-                [src]="'https://appsphairatech.com/images/task-board/' + tareaSeleccionada?.imagenBoard"
-                alt="Imagen de la tarea" [id]="'imagen_tarea_' + tareaSeleccionada?.taskId"
+                [src]="imageBaseUrlTask + tareaSeleccionada?.imagenBoard" alt="Imagen de la tarea"
+                [id]="'imagen_tarea_' + tareaSeleccionada?.taskId"
                 onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'">
             </div>
             <hr>

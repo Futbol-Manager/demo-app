@@ -45,6 +45,21 @@ export class LoginService {
     );
   }
 
+  loginGloouds(token: string): Observable<LoginResponse> {
+    const url: string = environment.apiUrl + `auth/login-gloouds/${token}`;
+    return this.http.get<LoginResponse>(url).pipe(
+      tap(response => {
+        if (response.data) {
+          // Guarda el usuario en el localStorage al iniciar sesión
+          localStorage.setItem('usuario', JSON.stringify(response.data.userDTO));
+          localStorage.setItem('token', response.data.tokenAcces);
+          // Actualiza el BehaviorSubject con el usuario autenticado
+          this['usuarioAutenticado'].next(response.data.userDTO);
+        }
+      })
+    );
+  }
+
   resendMailWelcome(login: LoginModel) {
     const url: string = environment.apiUrl + `auth/resendMailWelcome`;
     return this.http.post<any>(url, login);
@@ -67,8 +82,6 @@ export class LoginService {
   get usuarioActual(): Observable<User | null> {
     return this.usuarioAutenticado.asObservable();
   }
-
-  
     
   getlistallusers(): Observable<Response> {
     // Obtén el token almacenado en localStorage

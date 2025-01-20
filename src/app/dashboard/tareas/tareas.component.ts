@@ -22,12 +22,6 @@ export class TareasComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private trainingService: TrainingService,
-    private playerService: PlayerService,
-    private dialog: MatDialog,
-    private fb: FormBuilder,
-    private teamService: TeamService,
-    private cdr: ChangeDetectorRef,
     private loginService: LoginService,) { }
 
   ngOnInit(): void {

@@ -16,6 +16,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { environment } from 'src/environments/environment';
+import { Location } from '@angular/common';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -124,6 +125,12 @@ export class PlayerComponent implements OnInit {
   selectedFileCara6: File | null = null;
 
   indexSelectedDni = 0;
+  imageBaseUrlPlayerDni: string = environment.images + 'playerDni/';
+  imageBaseUrlUser: string = environment.images + 'user/';
+  rotateAngle: number = 0; // Almacena el ángulo de rotación actual
+  showModalAsistencia = false;
+
+  listAsistencia: any[] = [];
 
   constructor(private playerservice: PlayerService,
     private router: Router,
@@ -136,7 +143,8 @@ export class PlayerComponent implements OnInit {
     private fb: FormBuilder,
     private teamService: TeamService,
     private loginService: LoginService,
-    private playerService: PlayerService,) { }
+    private playerService: PlayerService,
+    private location: Location) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -153,6 +161,10 @@ export class PlayerComponent implements OnInit {
       this.profileId = this.usuarioActual!.profileType.profileId;
       //this.playerIdsList = this.usuarioActual!.playerIds;
     });
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   // Método para cargar el listado de equipos
@@ -341,6 +353,12 @@ export class PlayerComponent implements OnInit {
 
   // Método para navegar a la pantalla de calendario
   navegarACalendario(): void {
+    // Puedes ajustar la ruta según tu estructura de rutas
+    //this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
+    this.router.navigate(['/dashboard/menu-entrenador', this.teamId, 0]);
+  }
+
+  navegarAtras(): void {
     // Puedes ajustar la ruta según tu estructura de rutas
     //this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
     this.router.navigate(['/dashboard/menu-entrenador', this.teamId, 0]);
@@ -639,7 +657,7 @@ export class PlayerComponent implements OnInit {
     this.player.portero = promedio.toString();
   }
 
-  onFileSelected(event: any) {
+  /*onFileSelected(event: any) {
     if (event.target.files[0].type === 'image/png' || event.target.files[0].type === 'image/jpeg') {
       this.selectedFile = event.target.files[0];
       this.showbtnupimg = true;
@@ -654,13 +672,10 @@ export class PlayerComponent implements OnInit {
     } else {
       this.showbtnupimg = false;
     }
-  }
+  }*/
 
   onSubmit(playerId: number) {
-    // Verifica si se ha seleccionado un archivo
     if (this.selectedFile) {
-      //console.log('Imagen seleccionada:', this.selectedFile);
-
       this.trainingService.createUpdateImgPlayer(playerId.toString(), this.selectedFile)
         .subscribe(
           (response) => {
@@ -675,13 +690,86 @@ export class PlayerComponent implements OnInit {
           },
           error => {
             console.error('Error al subir la imagen', error);
-            // Aquí puedes manejar el error si la subida de la imagen falla
           }
         );
     } else {
       console.log('Ninguna imagen seleccionada.');
     }
   }
+
+
+  rotateImage() {
+    if (!this.imagePreviewUrl) return;
+
+    if (typeof this.imagePreviewUrl !== 'string') {
+      console.error('Error: imagePreviewUrl no es una cadena.');
+      return;
+    }
+
+    const img = new Image();
+    img.src = this.imagePreviewUrl;
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+
+      // Incrementar el ángulo de rotación en 90 grados
+      this.rotateAngle = (this.rotateAngle + 90) % 360;
+
+      // Configurar dimensiones del canvas según el ángulo
+      if (this.rotateAngle === 90 || this.rotateAngle === 270) {
+        canvas.width = img.height;
+        canvas.height = img.width;
+      } else {
+        canvas.width = img.width;
+        canvas.height = img.height;
+      }
+
+      // Rotar el canvas
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((this.rotateAngle * Math.PI) / 180);
+      ctx.drawImage(img, -img.width / 2, -img.height / 2);
+
+      // Actualizar la URL de vista previa
+      this.imagePreviewUrl = canvas.toDataURL('image/jpeg');
+
+      // Convertir el contenido del canvas en un archivo Blob
+      canvas.toBlob((blob) => {
+        if (blob) {
+          this.selectedFile = new File([blob], 'rotated-image.jpg', { type: 'image/jpeg' });
+        }
+      }, 'image/jpeg');
+    };
+  }
+
+
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+
+    if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+      this.selectedFile = file;
+      this.showbtnupimg = true;
+
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const result = e.target.result;
+        // Convertimos a string si es necesario
+        if (typeof result === 'string') {
+          this.imagePreviewUrl = result;
+          this.showPreview = true;
+        } else {
+          console.error('El resultado del archivo no es un string.');
+        }
+      };
+
+      reader.readAsDataURL(file);
+    } else {
+      this.showbtnupimg = false;
+    }
+  }
+
+
 
   navegarAAsistencia(): void {
     // Puedes ajustar la ruta según tu estructura de rutas
@@ -966,6 +1054,29 @@ export class PlayerComponent implements OnInit {
         //console.error('Error descargando la imagen:', error);
         //alert('No se pudo descargar la imagen. Por favor, intente de nuevo más tarde.');
       });
+  }
+
+  getListTableAsistencia(playerId: number) {
+    this.trainingService.getListsAsistenciaByTeamYPlayer(this.teamId, playerId).subscribe(
+      (response) => {
+        if (response.data) {
+          console.log(response.data);
+          this.listAsistencia = response.data;
+          /*this.players = response.data.players;
+          this.asistMultasPlayers = response.data.asistMultasPlayers;
+          this.numTotal = this.asistMultasPlayers.length;
+          this.asistTotales = response.data.asistenciaTotales;*/
+        }
+        this.showModalAsistencia = true;
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  cerrarModalAsistencia() {
+    this.showModalAsistencia = false;
   }
 
 }

@@ -9,6 +9,7 @@ export class RegisterModel {
   genreType: GenreTypeModel;
   mail: string;
 	password: string;
+  mobile: string;
   userId: number;
   nameSon: string;
   playerId?: number;
@@ -18,6 +19,7 @@ export class RegisterModel {
 	dateEdit?: Date;
 
   constructor(
+    mobile: string,
     comunicaciones: number,
     profileType: ProfileTypeModel,
     firstName: string,
@@ -34,6 +36,7 @@ export class RegisterModel {
     dateCreate?: string,
     dateEdit?: Date,
   ) {
+    this.mobile = mobile;
     this.comunicaciones = comunicaciones;
     this.userId = userId;
     this.birthdate = birthdate;

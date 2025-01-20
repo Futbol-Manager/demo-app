@@ -102,7 +102,7 @@ export class PuntuacionEquipsComponent implements OnInit {
         datasets: [{
           label: 'Equipos',
           data: this.data,
-          backgroundColor: backgroundColors // Colores para cada barra
+          backgroundColor: '#22bf63', //backgroundColors // Colores para cada barra
         }]
       },
       options: {

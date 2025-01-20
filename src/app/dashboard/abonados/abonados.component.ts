@@ -11,6 +11,7 @@ import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Abonado, AbonadoPagoHistorico, AbonadoTemporada } from 'src/app/core/services/models/club.model';
 import * as XLSX from "xlsx";
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-abonados',
@@ -43,6 +44,8 @@ export class AbonadosComponent implements OnInit {
   showPreview: boolean = false;
 
   listAT: any[] = [];
+  imageBaseUrl: string = environment.images;
+  imageBaseUrlAbonado: string = environment.images + 'abonado/';
   /*{
     abonadoId: 1 , nombre: 'Pedro', apellidos: 'Gómez Pérez', email: 'pedro@mail.com', telefono: '654745856', estado: 0, cuota: '50', pagado: '0', restante: '0'
   },{

@@ -55,8 +55,8 @@
                     <tr *ngFor="let abonadoTemp of listAT; let i = index">
                         <td>{{ abonadoTemp.abonadosTemporadaId }}</td>
                         <td *ngIf="abonadoTemp.abonado.imgPerfil">
-                            <div class="container">
-                                <img src="https://appsphairatech.com/images/abonado/{{ abonadoTemp.abonado.imgPerfil }}"
+                            <div class="container">                                
+                                <img [src]="imageBaseUrl + abonadoTemp.abonado.imgPerfil" 
                                     alt="user-player" width="50" height="50" class="rounded-circle me-2">
                             </div>
                         </td>
@@ -285,7 +285,7 @@
                                             <div class="form-group">
                                                 <ng-container *ngIf="abonadoUpdate.abonado.imgPerfil">
                                                     <div class="container">
-                                                        <img src="https://appsphairatech.com/images/abonado/{{ abonadoUpdate.abonado.imgPerfil }}"
+                                                        <img [src]="imageBaseUrl + abonadoUpdate.abonado.imgPerfil"
                                                             alt="user-player" width="150" height="150"
                                                             class="rounded-circle me-2">
                                                     </div>

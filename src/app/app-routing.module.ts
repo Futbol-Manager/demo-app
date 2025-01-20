@@ -10,7 +10,7 @@ import { ValidationUserComponent } from './pages/validation-user/validation-user
 const appRoutes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: 'home', component: HomeComponent },
-  { path: 'login', component: LoginComponent },
+  { path: 'login/:token', component: LoginComponent },
   { path: 'registro', component: RegisterComponent },
   { path: 'registro/:playerId/:email/:isMenor', component: RegisterComponent },
   { path: 'change-password', component: ChangePasswordComponent },

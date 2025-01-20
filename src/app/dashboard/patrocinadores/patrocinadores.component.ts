@@ -8,6 +8,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Patrocinador } from 'src/app/core/services/models/club.model';
+import { environment } from 'src/environments/environment';
 declare var bootstrap: any;
 
 @Component({
@@ -37,6 +38,7 @@ export class PatrocinadoresComponent implements OnInit {
   showModalVerPatrocinador = false;
   profileId = 0;
   userId: any = 0;
+  imageBaseUrl: string = environment.images + 'patrocinadores/';
 
   constructor(
     private loginService: LoginService,

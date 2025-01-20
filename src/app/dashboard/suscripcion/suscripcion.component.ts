@@ -8,6 +8,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { CancelSubscriptionRequest, SubscriptionRequest, Suscripcion, SuscripcionTipo } from 'src/app/core/services/team/team.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-suscripcion',
@@ -65,6 +66,7 @@ export class SuscripcionComponent implements OnInit {
   isLoading: boolean = false;
   cuponId = '';
   cuponIsValid = false;
+  imageBaseUrlUser: string = environment.images + 'user/';
 
   constructor(
     private route: ActivatedRoute,

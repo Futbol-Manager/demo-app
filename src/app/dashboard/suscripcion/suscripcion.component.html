@@ -11,7 +11,7 @@
                 <div class="card-body d-flex flex-column text-center">
                     <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
                         <div class="col" *ngIf="hijo.picturePlayer">
-                            <img src="https://appsphairatech.com/images/user/{{ hijo.picturePlayer }}" alt="user-image"
+                            <img [src]="imageBaseUrlUser + hijo.picturePlayer" alt="user-image"
                                 width="90" height="90" style="max-width: 100%;">
                         </div>
                         <div class="col d-flex justify-content-center align-items-center" *ngIf="!hijo.picturePlayer">

@@ -46,7 +46,7 @@
               [class.selected]="tarea === selectedTask" (click)="seleccionarTarea(tarea)">
               <div class="card h-100">
                 <div *ngIf="tarea.imagenBoard">
-                  <img [src]="'https://appsphairatech.com/images/task-board/' + tarea.imagenBoard" class="card-img-top"
+                  <img [src]="imageBaseUrlTask + tarea.imagenBoard" class="card-img-top"
                     onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'" alt="...">
                 </div>
                 <div *ngIf="!tarea.imagenBoard">

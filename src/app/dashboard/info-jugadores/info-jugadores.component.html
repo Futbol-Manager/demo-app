@@ -66,7 +66,7 @@
                         <tr *ngFor="let player of filteredPlayers; let i = index">
                             <td class="borde-izquierdo-gordo" *ngIf="player.picturePlayer">
                                 <div class="container">
-                                    <img src="https://appsphairatech.com/images/user/{{ player.picturePlayer }}"
+                                    <img [src]="imageBaseUrlUser + player.picturePlayer"
                                         alt="user-player" width="50" height="50" class="rounded-circle me-2">
                                 </div>
                             </td>
@@ -121,7 +121,7 @@
                     <div class="col-md-6">
                         <h6>Primera Cara del DNI</h6>
                         <div *ngIf="selectedPlayer?.imgDniUno || dniCara1">
-                            <img [src]="dniCara1 ? dniCara1 : 'https://appsphairatech.com/images/playerDni/' + selectedPlayer?.imgDniUno"
+                            <img [src]="dniCara1 ? dniCara1 : imageBaseUrlPlayerDni + selectedPlayer?.imgDniUno"
                                 alt="Primera Cara del DNI" class="img-thumbnail mb-2" />
                         </div>
                         <input type="file" (change)="onFileChange($event, 'cara1')" accept="image/*" />
@@ -129,7 +129,7 @@
                             (click)="subirCaraDni('cara1')">Subir Primera Cara</button> -->
                         <button *ngIf="selectedPlayer?.imgDniUno" class="form-group btn btn-primary mt-2"
                             title="Descargar cara 1"
-                            (click)="descargarImagen('https://appsphairatech.com/images/playerDni/' + selectedPlayer.imgDniUno, 'dni_cara1.jpg')">
+                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.imgDniUno, 'dni_cara1.jpg')">
                             Descargar <i class="bi bi-cloud-download"></i>
                         </button>
                     </div>
@@ -138,7 +138,7 @@
                     <div class="col-md-6">
                         <h6>Segunda Cara del DNI</h6>
                         <div *ngIf="selectedPlayer?.imgDniDos || dniCara2">
-                            <img [src]="dniCara2 ? dniCara2 : 'https://appsphairatech.com/images/playerDni/' + selectedPlayer?.imgDniDos"
+                            <img [src]="dniCara2 ? dniCara2 : imageBaseUrlPlayerDni + selectedPlayer?.imgDniDos"
                                 alt="Segunda Cara del DNI" class="img-thumbnail mb-2" />
                         </div>
                         <input type="file" (change)="onFileChange($event, 'cara2')" accept="image/*" />
@@ -146,7 +146,7 @@
                             (click)="subirCaraDni('cara2')">Subir Segunda Cara</button> -->
                         <button *ngIf="selectedPlayer?.imgDniDos" class="form-group btn btn-primary mt-2"
                             title="Descargar cara 2"
-                            (click)="descargarImagen('https://appsphairatech.com/images/playerDni/' + selectedPlayer.imgDniDos, 'dni_cara2.jpg')">
+                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.imgDniDos, 'dni_cara2.jpg')">
                             Descargar <i class="bi bi-cloud-download"></i>
                         </button>
                     </div>
@@ -160,7 +160,7 @@
                     <div class="col-md-6">
                         <h6>Primera Cara del DNI</h6>
                         <div *ngIf="selectedPlayer?.dniPadre1 || dniCara3">
-                            <img [src]="dniCara3 ? dniCara3 : 'https://appsphairatech.com/images/playerDni/' + selectedPlayer?.dniPadre1"
+                            <img [src]="dniCara3 ? dniCara3 : imageBaseUrlPlayerDni + selectedPlayer?.dniPadre1"
                                 alt="Primera Cara del DNI" class="img-thumbnail mb-2" />
                         </div>
                         <input type="file" (change)="onFileChange($event, 'cara3')" accept="image/*" />
@@ -168,7 +168,7 @@
                             (click)="subirCaraDni('cara3')">Subir Primera Cara</button> -->
                         <button *ngIf="selectedPlayer?.dniPadre1" class="form-group btn btn-primary mt-2"
                             title="Descargar cara 1"
-                            (click)="descargarImagen('https://appsphairatech.com/images/playerDni/' + selectedPlayer.dniPadre1, 'dni_cara1.jpg')">
+                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniPadre1, 'dni_cara1.jpg')">
                             Descargar <i class="bi bi-cloud-download"></i>
                         </button>
                     </div>
@@ -177,7 +177,7 @@
                     <div class="col-md-6">
                         <h6>Segunda Cara del DNI</h6>
                         <div *ngIf="selectedPlayer?.dniPadre2 || dniCara4">
-                            <img [src]="dniCara4 ? dniCara4 : 'https://appsphairatech.com/images/playerDni/' + selectedPlayer?.dniPadre2"
+                            <img [src]="dniCara4 ? dniCara4 : imageBaseUrlPlayerDni + selectedPlayer?.dniPadre2"
                                 alt="Segunda Cara del DNI" class="img-thumbnail mb-2" />
                         </div>
                         <input type="file" (change)="onFileChange($event, 'cara4')" accept="image/*" />
@@ -185,7 +185,7 @@
                             (click)="subirCaraDni('cara4')">Subir Segunda Cara</button> -->
                         <button *ngIf="selectedPlayer?.dniPadre2" class="form-group btn btn-primary mt-2"
                             title="Descargar cara 2"
-                            (click)="descargarImagen('https://appsphairatech.com/images/playerDni/' + selectedPlayer.dniPadre2, 'dni_cara2.jpg')">
+                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniPadre2, 'dni_cara2.jpg')">
                             Descargar <i class="bi bi-cloud-download"></i>
                         </button>
                     </div>
@@ -198,7 +198,7 @@
                     <div class="col-md-6">
                         <h6>Primera Cara del DNI</h6>
                         <div *ngIf="selectedPlayer?.dniMadre1 || dniCara5">
-                            <img [src]="dniCara5 ? dniCara5 : 'https://appsphairatech.com/images/playerDni/' + selectedPlayer?.dniMadre1"
+                            <img [src]="dniCara5 ? dniCara5 : imageBaseUrlPlayerDni + selectedPlayer?.dniMadre1"
                                 alt="Primera Cara del DNI" class="img-thumbnail mb-2" />
                         </div>
                         <input type="file" (change)="onFileChange($event, 'cara5')" accept="image/*" />
@@ -206,7 +206,7 @@
                             (click)="subirCaraDni('cara5')">Subir Primera Cara</button> -->
                         <button *ngIf="selectedPlayer?.dniMadre1" class="form-group btn btn-primary mt-2"
                             title="Descargar cara 1"
-                            (click)="descargarImagen('https://appsphairatech.com/images/playerDni/' + selectedPlayer.dniMadre1, 'dni_cara1.jpg')">
+                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniMadre1, 'dni_cara1.jpg')">
                             Descargar <i class="bi bi-cloud-download"></i>
                         </button>
                     </div>
@@ -215,7 +215,7 @@
                     <div class="col-md-6">
                         <h6>Segunda Cara del DNI</h6>
                         <div *ngIf="selectedPlayer?.dniMadre2 || dniCara6">
-                            <img [src]="dniCara6 ? dniCara6 : 'https://appsphairatech.com/images/playerDni/' + selectedPlayer?.dniMadre2"
+                            <img [src]="dniCara6 ? dniCara6 : imageBaseUrlPlayerDni + selectedPlayer?.dniMadre2"
                                 alt="Segunda Cara del DNI" class="img-thumbnail mb-2" />
                         </div>
                         <input type="file" (change)="onFileChange($event, 'cara6')" accept="image/*" />
@@ -223,7 +223,7 @@
                             (click)="subirCaraDni('cara6')">Subir Segunda Cara</button> -->
                         <button *ngIf="selectedPlayer?.dniMadre2" class="form-group btn btn-primary mt-2"
                             title="Descargar cara 2"
-                            (click)="descargarImagen('https://appsphairatech.com/images/playerDni/' + selectedPlayer.dniMadre2, 'dni_cara2.jpg')">
+                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniMadre2, 'dni_cara2.jpg')">
                             Descargar <i class="bi bi-cloud-download"></i>
                         </button>
                     </div>

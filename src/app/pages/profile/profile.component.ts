@@ -83,6 +83,7 @@ export class ProfileComponent implements OnInit {
       const profileType: ProfileTypeModel = new ProfileTypeModel(2, 'Entrenador') //hardcodeado
       const validationUser: ValidationUserModel = new ValidationUserModel(2, 'Validado por mail');//hardcodeado
       const register: RegisterModel = new RegisterModel(
+        this.userForm.value.mobile,
         this.userForm.value.comunicaciones,
         profileType,
         this.userForm.value.firstName,

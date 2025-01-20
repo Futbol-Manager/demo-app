@@ -675,8 +675,8 @@ export class EstadisticasEquipoComponent implements OnInit {
         datasets: [{
           label: label,
           data: data,
-          backgroundColor: backgroundColors,
-          borderColor: borderColors,
+          backgroundColor: '#22bf63', //backgroundColors,
+          borderColor: '#22bf63', //borderColors,
           borderWidth: 1
         }]
       },
@@ -1098,8 +1098,8 @@ export class EstadisticasEquipoComponent implements OnInit {
         datasets: [{
           label: 'Nº de goles',
           data: goles,
-          backgroundColor: backgroundColors,
-          borderColor: borderColors,
+          backgroundColor: '#22bf63', //backgroundColors,
+          borderColor: '#22bf63', //borderColors,
           borderWidth: 1
         }]
       },
@@ -1162,8 +1162,8 @@ export class EstadisticasEquipoComponent implements OnInit {
         datasets: [{
           label: 'Nº de goles',
           data: goles,
-          backgroundColor: backgroundColors,
-          borderColor: borderColors,
+          backgroundColor: '#22bf63', //backgroundColors,
+          borderColor: '#22bf63', //borderColors,
           borderWidth: 1
         }]
       },

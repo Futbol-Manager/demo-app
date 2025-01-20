@@ -1,17 +1,23 @@
 <div class="submenu">
     <div class="row">
-        <div class="col">
+        <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2">
+            <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
+                <i class="bi bi-arrow-left-square-fill"></i>
+                <span class="d-none d-md-inline">Volver</span>
+            </a>
+        </div>
+        <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3">
             <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">
                 <i class="bi bi-arrow-left-square-fill"></i>
                 <span class="d-none d-md-inline">Volver</span>
             </a>
         </div>
-        <div class="col">
+        <!-- <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3">
             <a class="no-underline" href="javascript:void(0);" (click)="navegarAAsistencia()">
                 <i class="bi bi-person-check"></i>
                 <span class="d-none d-md-inline">Control de Asistencia</span>
             </a>
-        </div>
+        </div> -->
         <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3">
             <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearJugador()">
                 <i class="bi bi-plus-circle"></i>
@@ -70,8 +76,8 @@
                                         <span class="bi bi-person" style="font-size: 4rem;"></span>
                                     </ng-container>
                                     <ng-container *ngIf="player.picturePlayer">
-                                        <img src="https://appsphairatech.com/images/user/{{ player.picturePlayer }}"
-                                            alt="user-player" width="100" height="100" class="rounded-circle me-2">
+                                        <img [src]="imageBaseUrlUser + player.picturePlayer" alt="user-player"
+                                            width="100" height="100" class="rounded-circle me-2">
                                     </ng-container>
                                     <h5 class="card-title title-negro">{{ player.nombre }} {{ player.apellido }}</h5>
                                     <p class="card-text">
@@ -85,7 +91,11 @@
                                             (click)="verInfoJugador(player)">
                                             <span class="bi bi-person"></span>
                                         </button>
-                                        <button class="btn btn-primary" title="Editar"
+                                        <button class="btn btn-primary" title="Asistencia"
+                                            (click)="getListTableAsistencia(player.playerId)">
+                                            <i class="bi bi-person-check-fill"></i>
+                                        </button>
+                                        <button class="btn btn-secondary" title="Editar"
                                             (click)="editarJugador(player.playerId)">
                                             <span class="bi bi-pencil"></span>
                                         </button>
@@ -135,8 +145,8 @@
                                     <td>{{ player.playerId }}</td>
                                     <td *ngIf="player.picturePlayer">
                                         <div class="container">
-                                            <img src="https://appsphairatech.com/images/user/{{ player.picturePlayer }}"
-                                                alt="user-player" width="50" height="50" class="rounded-circle me-2">
+                                            <img [src]="imageBaseUrlUser + player.picturePlayer" alt="user-player"
+                                                width="50" height="50" class="rounded-circle me-2">
                                         </div>
                                     </td>
                                     <td *ngIf="!player.picturePlayer">
@@ -203,8 +213,8 @@
                                 <div class="form-group">
                                     <ng-container *ngIf="player.picturePlayer">
                                         <div class="container">
-                                            <img src="https://appsphairatech.com/images/user/{{ player.picturePlayer }}"
-                                                alt="user-player" width="150" height="150" class="rounded-circle me-2">
+                                            <img [src]="imageBaseUrlUser + player.picturePlayer" alt="user-player"
+                                                width="150" height="150" class="rounded-circle me-2">
                                         </div>
                                     </ng-container>
                                     <ng-container *ngIf="!player.picturePlayer">
@@ -218,8 +228,18 @@
                                             <div *ngIf="showPreview" style="margin-top: 2em;">
                                                 <img [src]="imagePreviewUrl" alt="Image Preview" width="150"
                                                     height="150" class="rounded-circle me-2">
-                                                <button *ngIf="showbtnupimg" style="margin-top: 1em;" type="submit"
-                                                    class="btn btn-success">Subir foto</button>
+
+                                                <!-- Botones alineados verticalmente -->
+                                                <div class="d-grid gap-2 mt-3">
+                                                    <button (click)="rotateImage()" type="button"
+                                                        class="btn btn-primary btn-lg">
+                                                        Rotar Imagen
+                                                    </button>
+                                                    <button *ngIf="showbtnupimg" type="submit"
+                                                        class="btn btn-success btn-lg">
+                                                        Subir foto
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </form>
@@ -1063,8 +1083,8 @@
                         </ng-container>
                         <ng-container *ngIf="selectedPlayer.picturePlayer">
                             <div class="container">
-                                <img src="https://appsphairatech.com/images/user/{{ selectedPlayer.picturePlayer }}"
-                                    alt="user-player" width="150" height="150" class="rounded-circle me-2">
+                                <img [src]="imageBaseUrlUser + selectedPlayer.picturePlayer" alt="user-player"
+                                    width="150" height="150" class="rounded-circle me-2">
                             </div>
                         </ng-container>
                         <!--<img style="max-width: 15vw;" *ngIf="!selectedPlayer.picturePlayer" src="./../../../assets/images/jugador.png" class="img-fluid"
@@ -1177,7 +1197,7 @@
                     <div class="col-md-6">
                         <h6>Primera Cara del DNI</h6>
                         <div *ngIf="selectedPlayer?.imgDniUno || dniCara1">
-                            <img [src]="dniCara1 ? dniCara1 : 'https://appsphairatech.com/images/playerDni/' + selectedPlayer?.imgDniUno"
+                            <img [src]="dniCara1 ? dniCara1 : imageBaseUrlPlayerDni + selectedPlayer?.imgDniUno"
                                 alt="Primera Cara del DNI" class="img-thumbnail mb-2" />
                         </div>
                         <input type="file" (change)="onFileChange($event, 'cara1')" accept="image/*" />
@@ -1185,7 +1205,7 @@
                             (click)="subirCaraDni('cara1')">Subir Primera Cara</button> -->
                         <button *ngIf="selectedPlayer?.imgDniUno" class="form-group btn btn-primary mt-2"
                             title="Descargar cara 1"
-                            (click)="descargarImagen('https://appsphairatech.com/images/playerDni/' + selectedPlayer.imgDniUno, 'dni_cara1.jpg')">
+                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.imgDniUno, 'dni_cara1.jpg')">
                             Descargar <i class="bi bi-cloud-download"></i>
                         </button>
                     </div>
@@ -1194,7 +1214,7 @@
                     <div class="col-md-6">
                         <h6>Segunda Cara del DNI</h6>
                         <div *ngIf="selectedPlayer?.imgDniDos || dniCara2">
-                            <img [src]="dniCara2 ? dniCara2 : 'https://appsphairatech.com/images/playerDni/' + selectedPlayer?.imgDniDos"
+                            <img [src]="dniCara2 ? dniCara2 : imageBaseUrlPlayerDni + selectedPlayer?.imgDniDos"
                                 alt="Segunda Cara del DNI" class="img-thumbnail mb-2" />
                         </div>
                         <input type="file" (change)="onFileChange($event, 'cara2')" accept="image/*" />
@@ -1202,7 +1222,7 @@
                             (click)="subirCaraDni('cara2')">Subir Segunda Cara</button> -->
                         <button *ngIf="selectedPlayer?.imgDniDos" class="form-group btn btn-primary mt-2"
                             title="Descargar cara 2"
-                            (click)="descargarImagen('https://appsphairatech.com/images/playerDni/' + selectedPlayer.imgDniDos, 'dni_cara2.jpg')">
+                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.imgDniDos, 'dni_cara2.jpg')">
                             Descargar <i class="bi bi-cloud-download"></i>
                         </button>
                     </div>
@@ -1216,7 +1236,7 @@
                     <div class="col-md-6">
                         <h6>Primera Cara del DNI</h6>
                         <div *ngIf="selectedPlayer?.dniPadre1 || dniCara3">
-                            <img [src]="dniCara3 ? dniCara3 : 'https://appsphairatech.com/images/playerDni/' + selectedPlayer?.dniPadre1"
+                            <img [src]="dniCara3 ? dniCara3 : imageBaseUrlPlayerDni + selectedPlayer?.dniPadre1"
                                 alt="Primera Cara del DNI" class="img-thumbnail mb-2" />
                         </div>
                         <input type="file" (change)="onFileChange($event, 'cara3')" accept="image/*" />
@@ -1224,7 +1244,7 @@
                             (click)="subirCaraDni('cara3')">Subir Primera Cara</button> -->
                         <button *ngIf="selectedPlayer?.dniPadre1" class="form-group btn btn-primary mt-2"
                             title="Descargar cara 1"
-                            (click)="descargarImagen('https://appsphairatech.com/images/playerDni/' + selectedPlayer.dniPadre1, 'dni_cara1.jpg')">
+                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniPadre1, 'dni_cara1.jpg')">
                             Descargar <i class="bi bi-cloud-download"></i>
                         </button>
                     </div>
@@ -1233,7 +1253,7 @@
                     <div class="col-md-6">
                         <h6>Segunda Cara del DNI</h6>
                         <div *ngIf="selectedPlayer?.dniPadre2 || dniCara4">
-                            <img [src]="dniCara4 ? dniCara4 : 'https://appsphairatech.com/images/playerDni/' + selectedPlayer?.dniPadre2"
+                            <img [src]="dniCara4 ? dniCara4 : imageBaseUrlPlayerDni + selectedPlayer?.dniPadre2"
                                 alt="Segunda Cara del DNI" class="img-thumbnail mb-2" />
                         </div>
                         <input type="file" (change)="onFileChange($event, 'cara4')" accept="image/*" />
@@ -1241,7 +1261,7 @@
                             (click)="subirCaraDni('cara4')">Subir Segunda Cara</button> -->
                         <button *ngIf="selectedPlayer?.dniPadre2" class="form-group btn btn-primary mt-2"
                             title="Descargar cara 2"
-                            (click)="descargarImagen('https://appsphairatech.com/images/playerDni/' + selectedPlayer.dniPadre2, 'dni_cara2.jpg')">
+                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniPadre2, 'dni_cara2.jpg')">
                             Descargar <i class="bi bi-cloud-download"></i>
                         </button>
                     </div>
@@ -1254,7 +1274,7 @@
                     <div class="col-md-6">
                         <h6>Primera Cara del DNI</h6>
                         <div *ngIf="selectedPlayer?.dniMadre1 || dniCara5">
-                            <img [src]="dniCara5 ? dniCara5 : 'https://appsphairatech.com/images/playerDni/' + selectedPlayer?.dniMadre1"
+                            <img [src]="dniCara5 ? dniCara5 : imageBaseUrlPlayerDni + selectedPlayer?.dniMadre1"
                                 alt="Primera Cara del DNI" class="img-thumbnail mb-2" />
                         </div>
                         <input type="file" (change)="onFileChange($event, 'cara5')" accept="image/*" />
@@ -1262,7 +1282,7 @@
                             (click)="subirCaraDni('cara5')">Subir Primera Cara</button> -->
                         <button *ngIf="selectedPlayer?.dniMadre1" class="form-group btn btn-primary mt-2"
                             title="Descargar cara 1"
-                            (click)="descargarImagen('https://appsphairatech.com/images/playerDni/' + selectedPlayer.dniMadre1, 'dni_cara1.jpg')">
+                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniMadre1, 'dni_cara1.jpg')">
                             Descargar <i class="bi bi-cloud-download"></i>
                         </button>
                     </div>
@@ -1271,7 +1291,7 @@
                     <div class="col-md-6">
                         <h6>Segunda Cara del DNI</h6>
                         <div *ngIf="selectedPlayer?.dniMadre2 || dniCara6">
-                            <img [src]="dniCara6 ? dniCara6 : 'https://appsphairatech.com/images/playerDni/' + selectedPlayer?.dniMadre2"
+                            <img [src]="dniCara6 ? dniCara6 : imageBaseUrlPlayerDni + selectedPlayer?.dniMadre2"
                                 alt="Segunda Cara del DNI" class="img-thumbnail mb-2" />
                         </div>
                         <input type="file" (change)="onFileChange($event, 'cara6')" accept="image/*" />
@@ -1279,10 +1299,66 @@
                             (click)="subirCaraDni('cara6')">Subir Segunda Cara</button> -->
                         <button *ngIf="selectedPlayer?.dniMadre2" class="form-group btn btn-primary mt-2"
                             title="Descargar cara 2"
-                            (click)="descargarImagen('https://appsphairatech.com/images/playerDni/' + selectedPlayer.dniMadre2, 'dni_cara2.jpg')">
+                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniMadre2, 'dni_cara2.jpg')">
                             Descargar <i class="bi bi-cloud-download"></i>
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver la asistencia -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalAsistencia}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Asistencia del jugador</h5>
+                <!-- Botón de cerrar con un icono -->
+                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalAsistencia()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>FECHA</th>
+                                <th>ASISTENCIA</th>
+                                <th>RETRASO</th>
+                                <th>CANTIDAD_MULTA</th>
+                                <th>MOTIVO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let player of listAsistencia">
+                                <td>{{ player.fecha }}</td>
+                                <td>
+                                    <span *ngIf="player.asistencia === 1" class="text-success">
+                                        <i class="bi bi-check-circle-fill"></i> <!-- Icono de check -->
+                                    </span>
+                                    <span *ngIf="player.asistencia === 0" class="text-danger">
+                                        <i class="bi bi-x-circle-fill"></i> <!-- Icono de X -->
+                                    </span>
+                                </td>
+                                <td>
+                                    <span *ngIf="player.retraso === 1" class="text-success">
+                                        <i class="bi bi-check-circle-fill"></i> <!-- Icono de check -->
+                                    </span>
+                                    <span *ngIf="player.retraso === 0" class="text-danger">
+                                        <i class="bi bi-x-circle-fill"></i> <!-- Icono de X -->
+                                    </span>
+                                </td>
+                                <td>{{ player.cantidadMulta }}</td>
+                                <td>{{ player.motivo }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <!-- Botón para guardar el nuevo equipo -->
+                    <button type="submit" class="btn btn-success float-end"
+                        (click)="cerrarModalAsistencia()">Cerrar</button>
                 </div>
             </div>
         </div>

@@ -104,7 +104,7 @@ export class EntrenamientosCreadosComponent implements OnInit {
         datasets: [{
           label: 'Nº de entrenamientos creados',
           data: this.data,
-          backgroundColor: backgroundColors // Colores para cada barra
+          backgroundColor: '#22bf63', //backgroundColors // Colores para cada barra
         }]
       },
       options: {

@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoginModel } from 'src/app/core/models/users/login.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 
@@ -9,6 +9,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { User } from 'src/app/core/models/users/user.model';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -29,11 +30,14 @@ export class LoginComponent implements OnInit {
     password: [],
   };
 
+  token = '';
+
   constructor(
     private loginService: LoginService,
     private router: Router,
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
+    private route: ActivatedRoute,
   ) {
     this.loginForm = new FormGroup({
       mail: new FormControl('', [Validators.required, Validators.email]),
@@ -42,8 +46,28 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    //this.resetForm();
-    this.initLoginForm();
+    this.route.params.subscribe(params => {
+      this.token = params['token'];
+  
+      if (this.token) {
+        this.loginGloouds();
+      } else {
+        this.initLoginForm();
+      }
+    });
+  }
+
+  loginGloouds() {
+    this.loginService.loginGloouds(this.token).pipe(take(1)).subscribe(
+      res => {
+        if (res.data?.userDTO?.idValidation > 1) {
+          this.router.navigate(['/dashboard/inicio-deportes']);
+        }
+      },
+      err => {
+        console.error('Error en loginGloouds:', err);
+      }
+    );
   }
 
   login() {
@@ -57,7 +81,7 @@ export class LoginComponent implements OnInit {
       this.loginService.login(login).pipe()
         .subscribe(
           (res) => {
-            if (res.data != null && res.data.userDTO.idValidation == 2) { //usuario ya validado
+            if (res.data != null && res.data.userDTO.idValidation > 1) { //usuario ya validado
               snackbarOn = false;
               this.router.navigate(['/dashboard/inicio-deportes']);
             } else if (res.data != null && res.data.userDTO.idValidation == 1) {

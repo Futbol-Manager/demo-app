@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { RegisterService } from 'src/app/core/services/register/register.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { Location } from '@angular/common';
 
 // Definición de la interfaz
 interface AsistenciaMulta {
@@ -38,7 +39,8 @@ export class AsistenciaComponent implements OnInit {
     private router: Router,
     private snackBar: MatSnackBar,
     private registerService: RegisterService,
-    private loginService: LoginService,) { }
+    private loginService: LoginService,
+    private location: Location) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -46,6 +48,10 @@ export class AsistenciaComponent implements OnInit {
       this.teamId = +params['teamId'];  // El + convierte el valor a número
       this.getListTable();  // Cargar los datos tan pronto se tenga el teamId
     });
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   navegarAInfoEquipo(): void {

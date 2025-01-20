@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { Response } from 'src/app/core/services/models/response.model';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-adminsettings',
@@ -12,7 +13,8 @@ export class AdminsettingsComponent implements OnInit {
   tableUsers: any[] = [];
   
   constructor(
-    private loginService: LoginService
+    private loginService: LoginService,
+    private location: Location
   ) { }
 
   ngOnInit(): void {
@@ -25,6 +27,10 @@ export class AdminsettingsComponent implements OnInit {
         // Puedes manejar el error según tus necesidades
       }
     );
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
 }
