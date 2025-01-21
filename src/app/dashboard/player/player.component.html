@@ -1319,9 +1319,9 @@
                 <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalAsistencia()"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <table class="table">
-                        <thead>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-dark">
                             <tr>
                                 <th>FECHA</th>
                                 <th>ASISTENCIA</th>
@@ -1356,7 +1356,7 @@
                     </table>
                 </div>
                 <div class="modal-footer">
-                    <!-- Botón para guardar el nuevo equipo -->
+                    <!-- Botón para cerrar el modal -->
                     <button type="submit" class="btn btn-success float-end"
                         (click)="cerrarModalAsistencia()">Cerrar</button>
                 </div>
