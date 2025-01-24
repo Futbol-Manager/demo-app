@@ -11,8 +11,8 @@
                 <div class="card-body d-flex flex-column text-center">
                     <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
                         <div class="col" *ngIf="hijo.picturePlayer">
-                            <img [src]="imageBaseUrlUser + hijo.picturePlayer" alt="user-image"
-                                width="90" height="90" style="max-width: 100%;">
+                            <img [src]="imageBaseUrlUser + hijo.picturePlayer" alt="user-image" width="90" height="90"
+                                style="max-width: 100%;">
                         </div>
                         <div class="col d-flex justify-content-center align-items-center" *ngIf="!hijo.picturePlayer">
                             <ng-container>
@@ -85,6 +85,7 @@
                                 [(ngModel)]="subscriptionType" (change)="calculateTotal()">
                                 <option value="annual">Anual - 59,88€ / año (4,99€ / mes)</option>
                                 <option value="monthly">Mensual - 9,99€ / mes</option>
+                                <option value="free">GRATIS - (Ver condiciones)</option>
                             </select>
                         </div>
                     </div>
@@ -95,7 +96,7 @@
                         <div class="form-group">
                             <label for="numTeams">Número de equipos</label>
                             <input type="number" id="numTeams" class="form-control custom-input" [(ngModel)]="numTeams"
-                                (input)="calculateTotal()" min="1" />
+                                (input)="calculateTotal()" min="1" [readonly]="isReadonly"/>
                         </div>
                     </div>
                 </div>
@@ -373,6 +374,55 @@
                             </div>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver el freee -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': openModalFree}">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Realizar Pago</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="closeModalFree()"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="club-info">
+                        <h2>PARA EL CLUB</h2>
+                        <div class="plan gratuito">
+                            <h3>Gratuito:</h3>
+                            <p>
+                                Tu club podrá usar Sphaira de manera gratuita, pero con limitaciones. Estarán
+                                disponibles las funciones de <strong>Información de Jugadores</strong>, donde podrás
+                                tener toda la información personal entregada por los padres para realizar las licencias,
+                                y la parte de <strong>Cuotas</strong>, donde podrás llevar una gestión automática,
+                                semiautomática o manual de las cuotas pagadas por los padres.
+                            </p>
+                        </div>
+                        <div class="plan club-paga">
+                            <h3>El club paga la cuota:</h3>
+                            <p>
+                                Tu club tendrá acceso a todas las funciones de Sphaira, sin limitación alguna para todos
+                                los usuarios (<strong>club, entrenadores y jugadores/padres</strong>), si se realiza el
+                                pago por equipo correspondiente.
+                            </p>
+                        </div>
+                        <div class="plan padres-pagan">
+                            <h3>El padre paga una suscripción:</h3>
+                            <p>
+                                Tu club podrá desbloquear todas las funciones de Sphaira si los padres pagan una cuota
+                                anual de <strong>29,99€</strong>. Para ayudar e impulsar a la economía de tu club, estos
+                                <strong>29,99€</strong> serán repartidos entre <strong>Sphaira Tech</strong> y el club,
+                                obteniendo cada uno el <strong>50%</strong> de cada cuota pagada por los padres.
+                                Se requerirá un mínimo de <strong>100 padres</strong> con suscripción para desbloquear
+                                todas las funciones.
+                            </p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>

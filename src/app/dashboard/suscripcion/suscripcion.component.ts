@@ -67,6 +67,8 @@ export class SuscripcionComponent implements OnInit {
   cuponId = '';
   cuponIsValid = false;
   imageBaseUrlUser: string = environment.images + 'user/';
+  openModalFree = false;
+  isReadonly: boolean = false; // Propiedad para controlar readonly
 
   constructor(
     private route: ActivatedRoute,
@@ -374,11 +376,21 @@ export class SuscripcionComponent implements OnInit {
       this.precioId = 'price_1QC6W3HzMBDrutQnKitrxLpV';
       this.selected = 7;
       this.tiempo = 'M';
+      this.isReadonly = false; // Alterna entre true y false
     } else if (this.subscriptionType === 'annual') {
       this.totalPriceClub = this.annualPricePerMonthClub * this.numTeams * 12; // Precio anual por 12 meses
       this.precioId = 'price_1QC6VpHzMBDrutQnbCKNmItj';
       this.selected = 8;
       this.tiempo = 'A';
+      this.isReadonly = false; // Alterna entre true y false
+    } else {
+      this.openModalFree = true;
+      this.isReadonly = true; // Alterna entre true y false
+      this.totalPriceClub = 0;
+      this.numTeams = 999;
+      this.selected = 11;
+      this.tiempo = 'A';
+      this.precioId = 'price_1QkkOTHzMBDrutQnAQ8zchAz';
     }
   }
 
@@ -391,13 +403,17 @@ export class SuscripcionComponent implements OnInit {
       this.tiempo = 'M';
     } else if (this.subscriptionType === 'annual') {
       this.totalPrice = this.annualPricePerMonth * this.numTeams; // Precio anual multiplicado x num de equipo
-      if(this.cuponIsValid){        
+      if (this.cuponIsValid) {
         this.totalPrice = this.totalPrice - (this.totalPrice * 0.34);
       }
       this.precioId = 'price_1QCzw9HzMBDrutQnYz3ctq3A';
       this.selected = 10;
       this.tiempo = 'A';
     }
+  }
+
+  closeModalFree() {
+    this.openModalFree = false;
   }
 
   // Método para confirmar la suscripción
@@ -428,8 +444,8 @@ export class SuscripcionComponent implements OnInit {
     this.aceptaCondiciones = this.aceptaCondiciones == true ? false : true;
   }
 
-  validateCupon(){
-    if(this.subscriptionType == 'monthly' || this.cuponId === ''){
+  validateCupon() {
+    if (this.subscriptionType == 'monthly' || this.cuponId === '') {
       alert('Ingresa tu cupón y selecciona pago anual.');
     } else {
       this.teamService.validateCupon(this.cuponId.toUpperCase()).subscribe(

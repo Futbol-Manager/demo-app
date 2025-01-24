@@ -49,19 +49,19 @@
           <span class="d-none d-md-inline">Cuotas</span>
         </a>
       </div>
-      <div class="col text-center">
+      <div class="col text-center" *ngIf="clubOk">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
           <i class="bi bi-backpack3"></i>
           <span class="d-none d-md-inline">Ropa</span>
         </a>
       </div>
-      <div class="col text-center">
+      <div class="col text-center" *ngIf="clubOk">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(4)">
           <i class="bi bi-collection"></i>
           <span class="d-none d-md-inline">Patrocinadores</span>
         </a>
       </div>
-      <div class="col text-center">
+      <div class="col text-center" *ngIf="clubOk">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">
           <i class="bi bi-envelope"></i>
           <span class="d-none d-md-inline">Notificaciones</span>
@@ -102,13 +102,14 @@
             <div class="row mb-2">
               <div class="col d-flex justify-content-center align-items-center">
                 <ng-container>
-                  <img style="width: 10em;" src="/assets/iconos/anadir.svg"
-                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
+                  <img style="width: 10em;" src="/assets/iconos/anadir.svg" class="card-img-top mx-auto d-block p-3"
+                    alt="Scouting Icon">
                 </ng-container>
               </div>
             </div>
             <h5 class="card-title"
-              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Crear equipo</h5>
+              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              Crear equipo</h5>
           </div>
         </div>
       </div>
@@ -129,7 +130,8 @@
               </div>
             </div>
             <h5 class="card-title"
-              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ team.category }}
+              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+              {{ team.category }}
               {{ team.name }}</h5>
             <p class="card-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               {{ team.levelLeague }}
@@ -176,23 +178,23 @@
       </div>
 
       <!-- Tarjeta de scouting 
-      <div class="col mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
-        (click)="navegarAScouting(hijo.playerId)">
-        <div class="card h-100" style="border: 1px solid black;">
-          <div class="card-body d-flex flex-column text-center">
-            <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-              <div class="col d-flex justify-content-center align-items-center">
-                <img src="/assets/iconos/prismaticos.svg" class="card-img-top mx-auto d-block p-3" style="width: 7em;"
-                  alt="Scouting Icon">
+        <div class="col mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
+          (click)="navegarAScouting(hijo.playerId)">
+          <div class="card h-100" style="border: 1px solid black;">
+            <div class="card-body d-flex flex-column text-center">
+              <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+                <div class="col d-flex justify-content-center align-items-center">
+                  <img src="/assets/iconos/prismaticos.svg" class="card-img-top mx-auto d-block p-3" style="width: 7em;"
+                    alt="Scouting Icon">
+                </div>
               </div>
+              <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                Scouting de {{ hijo.nombre }} {{ hijo.apellido }}
+              </h5>
             </div>
-            <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-              Scouting de {{ hijo.nombre }} {{ hijo.apellido }}
-            </h5>
           </div>
         </div>
-      </div>
-    </div> -->
+      </div> -->
 
       <!-- parte de scouting -->
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
@@ -233,163 +235,163 @@
       </div>
     </div>
   </div>
+</div>
 
-  <div [ngStyle]="{ display: !datosNoCargados ? 'none' : 'block' }">
-    <div class="d-flex justify-content-center align-items-center mt-3">
-      <div class="card text-center shadow-lg p-4">
-        <div class="card-body">
-          <h5 class="card-title mb-3">Acceso Restringido</h5>
-          <p class="card-text text-muted">
-            Fin a los 7 días de prueba. Necesitas una suscripción para poder usar la aplicación.
-          </p>
-          <button class="btn btn-primary btn-lg" (click)="goSuscripcion()">
-            <i class="mdi mdi-account-circle me-2"></i> Obtener Suscripción
-          </button>
-        </div>
+<div [ngStyle]="{ display: !datosNoCargados ? 'none' : 'block' }">
+  <div class="d-flex justify-content-center align-items-center mt-3">
+    <div class="card text-center shadow-lg p-4">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Acceso Restringido</h5>
+        <p class="card-text text-muted">
+          Fin a los 7 días de prueba. Necesitas una suscripción para poder usar la aplicación.
+        </p>
+        <button class="btn btn-primary btn-lg" (click)="goSuscripcion()">
+          <i class="mdi mdi-account-circle me-2"></i> Obtener Suscripción
+        </button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Modal para la creación de equipo -->
-  <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="standard-modalLabel">Crea un equipo</h5>
-          <!-- Botón de cerrar con un icono -->
-          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
-        </div>
-        <div class="modal-body">
-          <h6 class="mt-0">Instrucciones</h6>
-          <p>Introduce los datos de tu equipo que quieres crear sin dejar ningun campo vacío.</p>
-          <hr>
-          <!-- Formulario para la creación de equipo con campos separados -->
-          <form [formGroup]="crearEquipoForm" (ngSubmit)="crearEquipo()">
-            <div class="mb-3">
-              <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
-              <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" formControlName="categoryTypeId">
-                <!-- Opciones ajustadas según tus necesidades -->
-                <option value="27">Sin equipo</option>
-                <option value="15">Senior</option>
-                <option value="16">Juvenil</option>
-                <option value="17">Juvenil/Cadete Femenina</option>
-                <option value="18">Cadete</option>
-                <option value="19">Cadete/Infantil Femenina</option>
-                <option value="20">Infantil</option>
-                <option value="21">Infantil/Alevín Femenina</option>
-                <option value="22">Alevín</option>
-                <option value="23">Benjamín</option>
-                <option value="24">Benjamín/Prebenjamín Femenina</option>
-                <option value="25">Prebenjamín</option>
-                <option value="26">Debutante</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="nivelLiga" class="form-label">Nivel:</label>
-              <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague">
-                <!-- Opciones ajustadas según tus necesidades -->
-                <option value="LaLiga EA Sports">LaLiga EA Sports</option>
-                <option value="Liga F">Liga F</option>
-                <option value="LaLiga Hypermotion">LaLiga Hypermotion</option>
-                <option value="Segunda RFEF Femenina">Segunda RFEF Femenina</option>
-                <option value="Primera RFEF">Primera RFEF</option>
-                <option value="Segunda RFEF">Segunda RFEF</option>
-                <option value="Tercera RFEF">Tercera RFEF</option>
-                <option value="Tercera RFEF Femenina">Tercera RFEF Femenina</option>
-                <option value="Preferente Autonómica">Preferente Autonómica</option>
-                <option value="Preferente Autonómica Femenina">Preferente Autonómica Femenina</option>
-                <option value="Primera Autonómica">Primera Autonómica</option>
-                <option value="Primera Autonómica Femenina">Primera Autonómica Femenina</option>
-                <option value="Segunda Autonómica">Segunda Autonómica</option>
-                <option value="Tercera Autonómica">Tercera Autonómica</option>
-                <option value="División de Honor">División de Honor</option>
-                <option value="Liga Nacional">Liga Nacional</option>
-                <option value="Superliga">Superliga</option>
-                <option value="Autonómica">Autonómica</option>
-                <option value="Preferente">Preferente</option>
-                <option value="Primera">Primera</option>
-                <option value="Segunda">Segunda</option>
-                <option value="Tercera">Tercera</option>
-                <option value="Fútbol 5">Fútbol 5</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label for="nombreEquipo" class="form-label">Letra del equipo:</label>
-              <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
-                <option value="">Sin letra</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-                <option value="E">E</option>
-                <option value="F">F</option>
-                <option value="G">G</option>
-                <option value="H">H</option>
-                <option value="I">I</option>
-                <option value="J">J</option>
-                <option value="K">K</option>
-                <option value="L">L</option>
-                <option value="M">M</option>
-              </select>
-            </div>
-            <!--<div class="mb-3">
+<!-- Modal para la creación de equipo -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="standard-modalLabel">Crea un equipo</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body">
+        <h6 class="mt-0">Instrucciones</h6>
+        <p>Introduce los datos de tu equipo que quieres crear sin dejar ningun campo vacío.</p>
+        <hr>
+        <!-- Formulario para la creación de equipo con campos separados -->
+        <form [formGroup]="crearEquipoForm" (ngSubmit)="crearEquipo()">
+          <div class="mb-3">
+            <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
+            <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" formControlName="categoryTypeId">
+              <!-- Opciones ajustadas según tus necesidades -->
+              <option value="27">Sin equipo</option>
+              <option value="15">Senior</option>
+              <option value="16">Juvenil</option>
+              <option value="17">Juvenil/Cadete Femenina</option>
+              <option value="18">Cadete</option>
+              <option value="19">Cadete/Infantil Femenina</option>
+              <option value="20">Infantil</option>
+              <option value="21">Infantil/Alevín Femenina</option>
+              <option value="22">Alevín</option>
+              <option value="23">Benjamín</option>
+              <option value="24">Benjamín/Prebenjamín Femenina</option>
+              <option value="25">Prebenjamín</option>
+              <option value="26">Debutante</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="nivelLiga" class="form-label">Nivel:</label>
+            <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague">
+              <!-- Opciones ajustadas según tus necesidades -->
+              <option value="LaLiga EA Sports">LaLiga EA Sports</option>
+              <option value="Liga F">Liga F</option>
+              <option value="LaLiga Hypermotion">LaLiga Hypermotion</option>
+              <option value="Segunda RFEF Femenina">Segunda RFEF Femenina</option>
+              <option value="Primera RFEF">Primera RFEF</option>
+              <option value="Segunda RFEF">Segunda RFEF</option>
+              <option value="Tercera RFEF">Tercera RFEF</option>
+              <option value="Tercera RFEF Femenina">Tercera RFEF Femenina</option>
+              <option value="Preferente Autonómica">Preferente Autonómica</option>
+              <option value="Preferente Autonómica Femenina">Preferente Autonómica Femenina</option>
+              <option value="Primera Autonómica">Primera Autonómica</option>
+              <option value="Primera Autonómica Femenina">Primera Autonómica Femenina</option>
+              <option value="Segunda Autonómica">Segunda Autonómica</option>
+              <option value="Tercera Autonómica">Tercera Autonómica</option>
+              <option value="División de Honor">División de Honor</option>
+              <option value="Liga Nacional">Liga Nacional</option>
+              <option value="Superliga">Superliga</option>
+              <option value="Autonómica">Autonómica</option>
+              <option value="Preferente">Preferente</option>
+              <option value="Primera">Primera</option>
+              <option value="Segunda">Segunda</option>
+              <option value="Tercera">Tercera</option>
+              <option value="Fútbol 5">Fútbol 5</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="nombreEquipo" class="form-label">Letra del equipo:</label>
+            <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
+              <option value="">Sin letra</option>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="E">E</option>
+              <option value="F">F</option>
+              <option value="G">G</option>
+              <option value="H">H</option>
+              <option value="I">I</option>
+              <option value="J">J</option>
+              <option value="K">K</option>
+              <option value="L">L</option>
+              <option value="M">M</option>
+            </select>
+          </div>
+          <!--<div class="mb-3">
             <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
             <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo"
               formControlName="objectiveTeam">
           </div>-->
-            <div class="mb-3">
-              <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
-              <p>Para introducir un horario, una vez creado el equipo, pulsa en él y después accede al menú "información
-                del equipo".</p>
-            </div>
-            <div class="modal-footer">
-              <!-- Botón para guardar el nuevo equipo -->
-              <button type="submit" class="btn btn-success float-end">Guardar</button>
-            </div>
-          </form>
-        </div>
+          <div class="mb-3">
+            <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
+            <p>Para introducir un horario, una vez creado el equipo, pulsa en él y después accede al menú "información
+              del equipo".</p>
+          </div>
+          <div class="modal-footer">
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="submit" class="btn btn-success float-end">Guardar</button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- Modal para subir jugadores desde plantilla -->
-  <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalSubirJugadores}">
-    <div class="modal-dialog" role="document">
+<!-- Modal para subir jugadores desde plantilla -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalSubirJugadores}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
       <div class="modal-content">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="stripeModalLabel">Sube la plantilla para cargar los jugadores</h5>
-            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSubirJugadores()"></button>
-          </div>
-          <div class="modal-body">
-            <p>Solo es obligatorio rellenar el nombre, el resto de campos se podrían dejar vacíos. Descarga la plantilla
-              para poder rellenar los jugadores. Pulsa en <a
-                href="https://appsphairatech.com/images/docs/Plantilla.xlsx" download="Plantilla.xlsx">
-                descargar plantilla.
-              </a></p>
-            <div class="mb-3">
-              <form [formGroup]="excelForm" class="form-upload" (ngSubmit)="uploadExcel()"
-                enctype="multipart/form-data">
-                <div class="mb-3" style="text-align: center;">
-                  <h4>Sube tu archivo Excel</h4>
-                  <div class="form-group">
-                    <label for="excelFile">Seleccionar archivo en formato XLSX:</label>
-                    <input type="file" id="excelFile" accept=".xlsx" (change)="onFileSelected($event)"
-                      class="form-control-file">
-                    <div *ngIf="fileName" class="mt-2">Archivo seleccionado: {{ fileName }}</div>
-                  </div>
-                  <button *ngIf="showUploadButton" style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir
-                    archivo</button>
+        <div class="modal-header">
+          <h5 class="modal-title" id="stripeModalLabel">Sube la plantilla para cargar los jugadores</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSubirJugadores()"></button>
+        </div>
+        <div class="modal-body">
+          <p>Solo es obligatorio rellenar el nombre, el resto de campos se podrían dejar vacíos. Descarga la plantilla
+            para poder rellenar los jugadores. Pulsa en <a href="https://appsphairatech.com/images/docs/Plantilla.xlsx"
+              download="Plantilla.xlsx">
+              descargar plantilla.
+            </a></p>
+          <div class="mb-3">
+            <form [formGroup]="excelForm" class="form-upload" (ngSubmit)="uploadExcel()" enctype="multipart/form-data">
+              <div class="mb-3" style="text-align: center;">
+                <h4>Sube tu archivo Excel</h4>
+                <div class="form-group">
+                  <label for="excelFile">Seleccionar archivo en formato XLSX:</label>
+                  <input type="file" id="excelFile" accept=".xlsx" (change)="onFileSelected($event)"
+                    class="form-control-file">
+                  <div *ngIf="fileName" class="mt-2">Archivo seleccionado: {{ fileName }}</div>
                 </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <!-- Botón para guardar el nuevo equipo -->
-              <button type="submit" class="btn btn-success float-end"
-                (click)="cerrarModalSubirJugadores()">Cerrar</button>
-            </div>
+                <button *ngIf="showUploadButton" style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir
+                  archivo</button>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <!-- Botón para guardar el nuevo equipo -->
+            <button type="submit" class="btn btn-success float-end"
+              (click)="cerrarModalSubirJugadores()">Cerrar</button>
           </div>
         </div>
       </div>
     </div>
   </div>
+</div>

@@ -37,6 +37,8 @@ export class InicioComponent implements OnInit {
   datosNoCargados = false;
   datosCargando = true;
   numEquipos = 0;
+  numPadresPagados = 0;
+  clubOk = false;
 
   constructor(
     private loginService: LoginService,
@@ -104,11 +106,31 @@ export class InicioComponent implements OnInit {
     this.teamService.getEstadoSuscripcion(this.userId, this.profileId).subscribe(
       (response: Response) => {
         this.numEquipos = response.data;
+        if (response.data == 999) {
+          //significa que es un club con plan gratuido
+          //hay que ver si tiene mas de 50 padres que pagan cuota, de ser asi, desbloquear los menus
+          this.teamService.getPlayersByTeamByClubVerify(this.userId, '2024').subscribe(
+            (resp: Response) => {
+              this.numPadresPagados = response.data;
+              if(response.data < 49){
+                //significa que lo puede tener todo
+                this.clubOk = true;
+              } else {
+                //significa que no tiene acceso
+              }
+            },
+            (error) => {
+              console.error('Error al cargar el listado de equipos', error);
+            }
+          );
+        }
+
         if (response.data < 1) {
           //significa que NO es valido el acceso
           this.datosNoCargados = true;
         } else {
           this.datosCargados = true;
+          this.clubOk = true;
         }
         this.datosCargando = false;
       },

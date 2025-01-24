@@ -1315,6 +1315,7 @@ export class CalendarioComponent implements OnInit {
   }
 
   printDiv(tarea: any): void {
+    console.log(tarea);
     const printContents = `
         <div>
             <h1>Tarea: ${tarea.slogans}</h1>
@@ -1329,7 +1330,7 @@ export class CalendarioComponent implements OnInit {
             <p><b>Material:</b> ${tarea.material}</p>
             <p><b>Video YouTube:</b> ${tarea.video}</p>
             <br>
-            ${tarea.imagenBoard ? `<img src="${this.imageBaseUrlUser}${tarea.imagenBoard}" alt="Imagen de la tarea">` : ''}
+            ${tarea.imagenBoard ? `<img src="${this.imageBaseUrlTask}${tarea.imagenBoard}" alt="Imagen de la tarea">` : ''}
             
         </div>
     `;
