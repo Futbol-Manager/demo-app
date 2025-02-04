@@ -96,7 +96,7 @@
                         <div class="form-group">
                             <label for="numTeams">Número de equipos</label>
                             <input type="number" id="numTeams" class="form-control custom-input" [(ngModel)]="numTeams"
-                                (input)="calculateTotal()" min="1" [readonly]="isReadonly"/>
+                                (input)="calculateTotal()" min="1" [readonly]="isReadonly" />
                         </div>
                     </div>
                 </div>
@@ -116,11 +116,11 @@
                         <!-- Contenido de la subcolumna -->
                         <div class="form-group text-center">
                             <button *ngIf="susInfo == null" class="btn btn-success"
-                                (click)="confirmSubscription()">Confirmar
+                                (click)="makeFreeSubscription()">Confirmar
                                 suscripción</button>
-                            <button *ngIf="susInfo != null" class="btn btn-success"
+                            <!-- <button *ngIf="susInfo != null" class="btn btn-success"
                                 (click)="confirmSubscription2()">Cambiar
-                                suscripción</button>
+                                suscripción</button> -->
                         </div>
                     </div>
                 </div>
@@ -196,45 +196,42 @@
     <h1 class="proximamente-title">¡Cuotas!</h1>
     <!-- Cards con las opciones de suscripción -->
     <div class="row text-center">
-        <!-- Mensual -->
+        <!-- Mensual
         <div class="col-12 col-md-4 mt-3">
             <div class="card h-100" style="border: 1px solid black;">
                 <div class="card-body d-flex flex-column text-center">
                     <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
                         <h2 class="card-title">Mensual</h2>
                         <p class="card-text">4,99€ / mes</p>
-                        <!-- <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q5kqMHzMBDrutQnMx4skwfX')"> -->
                         <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q9vMeHzMBDrutQnqVEUpOed')">
                             Seleccionar
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
-        <!-- Trimestral -->
+        </div> -->
+        <!-- Trimestral
         <div class="col-12 col-md-4 mt-3">
             <div class="card h-100" style="border: 1px solid black;">
                 <div class="card-body d-flex flex-column text-center">
                     <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
                         <h2 class="card-title">Trimestral</h2>
                         <p class="card-text">12,99€ / trimestre</p>
-                        <!-- <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q9vMmHzMBDrutQnQxFCy8jg')"> PRO -->
-                        <!-- <button class="btn btn-primary mt-auto" (click)="select(1, 'price_1Q5x4wHzMBDrutQndQIlqIqX')"> TEST-->
                         <button class="btn btn-primary mt-auto" (click)="select(2, 'price_1Q9vMmHzMBDrutQnQxFCy8jg')">
                             Seleccionar
                         </button>
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
         <!-- Anual -->
-        <div class="col-12 col-md-4 mt-3">
+        <div class="col-12 col-md-12 mt-3">
             <div class="card h-100" style="border: 1px solid black;">
                 <div class="card-body d-flex flex-column text-center">
                     <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
                         <h2 class="card-title">Anual</h2>
                         <p class="card-text">39,99€ / año</p>
-                        <button class="btn btn-primary mt-auto" (click)="select(3, 'price_1Q9vMpHzMBDrutQnxRjDU8Ru')">
+                        <button class="btn btn-primary mt-auto" (click)="select(3, 'price_1QlYWsHzMBDrutQnaSYvqoNJ')">
                             Seleccionar
                         </button>
                     </div>
@@ -421,8 +418,10 @@
                                 todas las funciones.
                             </p>
                         </div>
+                        <button class="btn btn-primary mt-auto" (click)="closeModalFree()">
+                            Aceptar
+                        </button>
                     </div>
-
                 </div>
             </div>
         </div>

@@ -112,9 +112,9 @@ export class InicioComponent implements OnInit {
           this.teamService.getPlayersByTeamByClubVerify(this.userId, '2024').subscribe(
             (resp: Response) => {
               this.numPadresPagados = response.data;
-              if(response.data < 49){
+              if(resp.data < 49){
                 //significa que lo puede tener todo
-                this.clubOk = true;
+                this.clubOk = false;
               } else {
                 //significa que no tiene acceso
               }
@@ -260,7 +260,7 @@ export class InicioComponent implements OnInit {
           year: 0,
           categoryName: ''
         },
-        clubId: this.crearEquipoForm.value.clubId || 0,
+        clubId: this.clubId || 0,
         userId: 0,
         temporada: '2024', //TODO aqui debe de coger el año de la temporada actual
         dateCreate: '',

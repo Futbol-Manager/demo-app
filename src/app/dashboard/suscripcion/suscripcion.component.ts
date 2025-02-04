@@ -252,6 +252,60 @@ export class SuscripcionComponent implements OnInit {
     );
   }
 
+  async makeFreeSubscription() {
+    // Mostrar el spinner y deshabilitar el botón
+    this.isLoading = true;
+
+    // Crear objeto con la suscripción
+    const susTipo: SuscripcionTipo = {
+      suscripcionTiposId: this.selected,
+      codigo: '',
+      descripcion: '',
+      priceId: this.precioId,
+      precio: '',
+      tiempo: this.tiempo
+    };
+
+    const subscriptionRequest: SubscriptionRequest = {
+      userId: this.userId,
+      email: this.usuarioActual?.mail || '',
+      name: this.usuarioActual?.firstName || '',
+      priceId: this.precioId,
+      paymentMethodId: '', // No se requiere un método de pago
+      suscripcion: {
+        suscripcionId: 0,
+        userId: this.userId,
+        playerId: this.playerIdSelected,
+        suscripcionTipo: susTipo,
+        dateCreate: '',
+        dateFinal: '',
+        suscripcionStripeId: '',
+        valido: '',
+        renueva: 0,
+        clienteStripeId: '',
+        numeroEquipos: this.unidades
+      },
+      cuponId: this.cuponId
+    };
+
+    // Llamar al backend para crear la suscripción gratuita
+    this.teamService.createSubscriptionGratis(subscriptionRequest).subscribe(
+      (response: Response) => {
+        if (response.data) {
+          alert('Suscripción gratuita creada con éxito.');
+          this.obtenerSuscripcionActual(); // Actualizar la información de suscripciones
+          this.cerrarModalSus(); // Cerrar el modal
+        }
+        // Finalizar el estado de carga
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error('Error al crear la suscripción:', error);
+        this.isLoading = false; // Finalizar el estado de carga si hay error
+      }
+    );
+  }
+
   cerrarModalSus() {
     this.showModalSus = false;
   }

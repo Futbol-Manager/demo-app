@@ -5,6 +5,7 @@ import { User } from 'src/app/core/models/users/user.model';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
+import { Response } from 'src/app/core/services/models/response.model';
 
 @Component({
   selector: 'app-opcionesjugador',
@@ -19,6 +20,7 @@ export class OpcionesjugadorComponent implements OnInit {
   playerIdUserActual: any = 0;
   usuarioActual!: User | null;
   clubId = 0;
+  showOpcionesOk = false;
 
   constructor(
     private loginService: LoginService,
@@ -41,6 +43,8 @@ export class OpcionesjugadorComponent implements OnInit {
         this.playerId = +params['playerId'];  // El + convierte el valor a número
         //console.log('teamId:', this.teamId);
       });
+
+      this.obtenerSuscripcionActual();
     });
   }
 
@@ -61,6 +65,25 @@ export class OpcionesjugadorComponent implements OnInit {
     } else if (id === 7) {
       this.router.navigate(['/dashboard/scouting-player', this.playerId]);
     }
+  }
+
+  obtenerSuscripcionActual() {
+    this.teamService.getSubscriptionByPlayerId(0, this.userId).subscribe(
+      (response: Response) => {
+        console.log(response.data);
+        if (response.data.suscripcionId != 0) {
+          console.log(response.data);
+          this.showOpcionesOk = true;
+        } else {
+          //5555
+        }
+        //si tiene una sus, dejarla seleccionada
+        //this.datosCargados = true;
+      },
+      (error) => {
+        console.error('Error al cargar el los datos', error);
+      }
+    );
   }
 
 }
