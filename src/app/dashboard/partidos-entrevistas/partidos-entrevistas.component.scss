@@ -1,0 +1,65 @@
+/* Contenedor de la galería */
+.gallery-container {
+    margin-top: 20px;
+}
+
+/* Contenedor de las imágenes: se organizan en filas y columnas */
+.gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-width: 500px;
+    /* Ajusta esto según el ancho máximo que desees */
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+/* Cada imagen ocupa un espacio definido */
+.gallery-item {
+    position: relative;
+    width: 100px;
+    height: 150px;
+    flex: 0 1 calc(33.33% - 10px);
+    /* Se reparten en filas de 3 */
+    border: 1px solid #ccc;
+    /* Opcional: para ver el borde de cada imagen */
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+/* Imágenes dentro de la galería */
+.gallery-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Botón de eliminar imagen */
+.delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    border-radius: 50%;
+    background-color: red;
+    color: white;
+    border: none;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: darkred;
+}
+
+.card-img-top {
+    width: 100%;
+    height: 150px;
+    /* Ajusta esto según el tamaño que prefieras */
+    object-fit: contain;
+    /* Mantiene la proporción sin recortar */
+}

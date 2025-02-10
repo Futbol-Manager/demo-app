@@ -50,20 +50,31 @@ export class OpcionesjugadorComponent implements OnInit {
 
   // Método para redirigir a la pantalla de jugadores con el teamId
   irAPantalla(id: number): void {
-    if (id === 1) {
-      this.router.navigate(['/dashboard/inicio']);
-    } else if (id === 2) {
-      this.router.navigate(['/dashboard/jugadores', this.teamId]);
-    } else if (id === 3) {
-      this.router.navigate(['/dashboard/cuotas', this.teamId, this.playerId]);
-    } else if (id === 4) {
-      this.router.navigate(['/dashboard/calendario', this.teamId, this.playerId]);
-    } else if (id === 5) {
-      this.router.navigate(['/dashboard/patrocinadores', 0]);
-    } else if (id === 6) {
-      this.router.navigate(['/dashboard/notificaciones', this.clubId]);
-    } else if (id === 7) {
-      this.router.navigate(['/dashboard/scouting-player', this.playerId]);
+    switch (id) {
+      case 1:
+        this.router.navigate(['/dashboard/inicio']);
+        break;
+      case 2:
+        this.router.navigate(['/dashboard/jugadores', this.teamId]);
+        break;
+      case 3:
+        this.router.navigate(['/dashboard/cuotas', this.teamId, this.playerId]);
+        break;
+      case 4:
+        this.router.navigate(['/dashboard/calendario', this.teamId, this.playerId]);
+        break;
+      case 5:
+        this.router.navigate(['/dashboard/patrocinadores', 0]);
+        break;
+      case 6:
+        this.router.navigate(['/dashboard/notificaciones', this.clubId]);
+        break;
+      case 7:
+        this.router.navigate(['/dashboard/scouting-player', this.playerId]);
+        break;
+      case 8:
+        this.router.navigate(['/dashboard/partidos-entrevistas', this.teamId, this.playerId]);
+        break;
     }
   }
 

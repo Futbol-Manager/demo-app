@@ -1,0 +1,53 @@
+<div class="submenu">
+    <div class="row">
+        <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2">
+            <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
+                <i class="bi bi-arrow-left-square-fill"></i>
+                <span class="d-none d-md-inline">Volver</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<app-publicidad></app-publicidad>
+
+
+<div class="container">
+    <!-- Banner de partidos -->
+    <div class="d-flex justify-content-between align-items-center">
+        <button (click)="prev()" class="btn btn-primary" [disabled]="currentIndex === 0">‹</button>
+
+        <div class="d-flex flex-wrap justify-content-center">
+            <div *ngFor="let item of getVisibleItems()" class="card m-2" style="width: 12rem; cursor: pointer;"
+                (click)="seleccionarPartido(item)">
+                <!-- <img [src]="item.imgEquipo" class="card-img-top" alt="Equipo"> -->
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ item.name }}</h5>
+                    <p class="card-text">Resultado: {{ item.resultado }}</p>
+                    <span class="badge" [ngClass]="{
+            'bg-success': item.letra === 'V', 
+            'bg-danger': item.letra === 'D', 
+            'bg-secondary': item.letra === 'E'
+          }">
+                        {{ item.letra }}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <button (click)="next()" class="btn btn-primary" [disabled]="currentIndex + 4 >= partidos.length">›</button>
+    </div>
+
+    <!-- Galería -->
+    <div *ngIf="selectedPartido" class="gallery-container mt-3">
+        <h3>{{ selectedPartido.name }}</h3>
+        <input type="file" (change)="subirImagen($event, selectedPartido.id)" class="btn btn-secondary mb-2">
+
+        <div class="gallery">
+            <div *ngFor="let item of selectedPartido; let i = index" class="gallery-item">
+                <img [src]="imageBaseUrlGaleria + item.urlImg" class="gallery-img">
+                <button *ngIf="item.playerId === playerId" class="btn btn-danger btn-sm delete-btn"
+                    (click)="eliminarImagen(selectedPartido.id, i)">🗑</button>
+            </div>
+        </div>
+    </div>
+</div>
