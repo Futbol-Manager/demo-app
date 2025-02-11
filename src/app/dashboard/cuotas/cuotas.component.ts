@@ -7,6 +7,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
+import { Location } from '@angular/common';
 import * as $ from 'jquery';
 import 'datatables.net';
 
@@ -62,7 +63,8 @@ export class CuotasComponent implements OnInit {
     private loginService: LoginService,
     private fb: FormBuilder,
     private elementRef: ElementRef,
-    private http: HttpClient) {
+    private http: HttpClient,
+    private location: Location) {
   }
 
   async ngOnInit(): Promise<void> {
@@ -132,7 +134,10 @@ export class CuotasComponent implements OnInit {
         }
       );
     });
+  }
 
+  goBack(): void {
+    this.location.back();
   }
 
   // Método para navegar a la pantalla de calendario

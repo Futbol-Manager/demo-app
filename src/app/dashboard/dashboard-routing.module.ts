@@ -34,6 +34,7 @@ import { GoleadoresComponent } from './goleadores/goleadores.component';
 import { MenuEntrenadorComponent } from './menu-entrenador/menu-entrenador.component';
 import { InicioDeportesComponent } from './inicio-deportes/inicio-deportes.component';
 import { PartidosEntrevistasComponent } from './partidos-entrevistas/partidos-entrevistas.component';
+import { MenuClubComponent } from './menu-club/menu-club.component';
 
 const routes: Routes = [
   {
@@ -44,6 +45,7 @@ const routes: Routes = [
       { path: 'inicio', component: InicioComponent },
       { path: 'calendario/:teamId/:playerId', component: CalendarioComponent },
       { path: 'menu-entrenador/:teamId/:playerId', component: MenuEntrenadorComponent },
+      { path: 'menu-club/:teamId', component: MenuClubComponent },
       { path: 'opcionesjugador/:teamId/:playerId', component: OpcionesjugadorComponent },
       { path: 'partidos-entrevistas/:teamId/:playerId', component: PartidosEntrevistasComponent },
       { path: 'jugadores/:teamId', component: PlayerComponent },

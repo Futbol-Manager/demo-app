@@ -8,6 +8,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { RegisterService } from 'src/app/core/services/register/register.service';
 import { HorarioTeam, TeamNew } from 'src/app/core/services/team/team.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-informacion-equipo',
@@ -122,6 +123,7 @@ export class InformacionEquipoComponent implements OnInit {
     private snackBar: MatSnackBar,
     private registerService: RegisterService,
     private loginService: LoginService,
+    private location: Location
   ) {
     this.editarEquipoForm = this.fb.group({
       teamId: ["", Validators.required],
@@ -157,6 +159,10 @@ export class InformacionEquipoComponent implements OnInit {
       this.cargarInfoEquipo();
       this.cargarInfoEntrenadores();
     });
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   abrirModalInvitarEntenador() {

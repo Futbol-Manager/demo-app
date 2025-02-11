@@ -18,60 +18,86 @@
         <button (click)="prev()" class="btn btn-primary" [disabled]="currentIndex === 0">‹</button>
 
         <div class="d-flex flex-wrap justify-content-center">
-            <div *ngFor="let item of getVisibleItems()" class="card m-2" style="width: 12rem; cursor: pointer;"
-                (click)="seleccionarPartido(item)">
-                <!-- <img [src]="item.imgEquipo" class="card-img-top" alt="Equipo"> -->
+            <div *ngFor="let item of getVisibleItems()" class="card m-2 partido-card"
+                [ngClass]="{'seleccionado': postpartidoSelected === item.id}" (click)="seleccionarPartido(item)"
+                style="width: 12rem; cursor: pointer;">
+
                 <div class="card-body text-center">
                     <h5 class="card-title">{{ item.name }}</h5>
                     <p class="card-text">Resultado: {{ item.resultado }}</p>
                     <span class="badge" [ngClass]="{
-            'bg-success': item.letra === 'V', 
-            'bg-danger': item.letra === 'D', 
-            'bg-secondary': item.letra === 'E'
-          }">
+                    'bg-success': item.letra === 'V', 
+                    'bg-danger': item.letra === 'D', 
+                    'bg-secondary': item.letra === 'E'
+                }">
                         {{ item.letra }}
                     </span>
                 </div>
             </div>
         </div>
+
         <button (click)="next()" class="btn btn-primary" [disabled]="currentIndex + 4 >= partidos.length">›</button>
     </div>
 
     <!-- Galería -->
-    <div *ngIf="selectedPartido" class="gallery-container mt-3">
-        <h3>{{ selectedPartido.name }}</h3>
+    <!-- Contenedor de pestañas -->
+    <div class="mt-3" *ngIf="showGalery">
+        <ul class="nav nav-tabs" id="galeriaTabs">
+            <li class="nav-item">
+                <a class="nav-link active" id="fotos-tab" data-bs-toggle="tab" href="#fotos">Fotos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="videos-tab" data-bs-toggle="tab" href="#videos">Videos</a>
+            </li>
+        </ul>
 
-        <!-- Botones para subir imagen y video -->
-        <div class="row justify-content-center">
-            <div class="col-md-6 d-flex justify-content-center">
-                <input type="file" (change)="subirImagen($event)" class="btn btn-secondary">
+        <div class="tab-content mt-3">
+            <!-- Pestaña de Fotos -->
+            <div class="tab-pane fade show active" id="fotos">
+                <div class="text-center mb-3">
+                    <input type="file" (change)="subirImagen($event)" class="btn btn-secondary">
+                </div>
+
+                <div class="row">
+                    <div *ngFor="let foto of fotos; let i = index" class="col-lg-4 col-md-6 col-12 mb-3">
+                        <div class="gallery-item position-relative">
+                            <img [src]="imageBaseUrlGaleria + foto.urlImg" class="img-fluid rounded shadow-sm"
+                                (click)="abrirModal(imageBaseUrlGaleria + foto.urlImg)">
+
+                            <button *ngIf="foto.playerId === playerId" type="button"
+                                class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                                (click)="eliminarImagen(foto.galeriaPartidoId, i, 0)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-md-6 d-flex justify-content-center">
-                <button class="btn btn-primary" (click)="abrirModalYoutube()">Subir Video YouTube</button>
-            </div>
-        </div>
 
+            <!-- Pestaña de Videos -->
+            <div class="tab-pane fade" id="videos">
+                <div class="text-center mb-3">
+                    <button class="btn btn-primary" (click)="abrirModalYoutube()">Subir Video YouTube</button>
+                </div>
 
-        <div class="gallery">
-            <div *ngFor="let item of selectedPartido; let i = index" class="gallery-item">
-                <!-- Si es imagen -->
-                <img *ngIf="item.tipo === 0" [src]="imageBaseUrlGaleria + item.urlImg" class="gallery-img"
-                    (click)="abrirModal(imageBaseUrlGaleria + item.urlImg)">
+                <div class="row">
+                    <div *ngFor="let video of videos; let a = index" class="col-lg-4 col-md-6 col-12 mb-3">
+                        <div class="gallery-item position-relative">
+                            <iframe [src]="getYouTubeEmbedUrl(video.link)" frameborder="0" allowfullscreen
+                                class="w-100 rounded shadow-sm" style="height: 200px;"></iframe>
 
-                <!-- Si es video -->
-                <iframe *ngIf="item.tipo === 1" [src]="getYouTubeEmbedUrl(item.link)" frameborder="0" allowfullscreen
-                    class="gallery-video"></iframe>
-
-                <!-- Botón eliminar (solo si el usuario es dueño del contenido) -->
-                <button *ngIf="item.playerId === playerId" type="button"
-                    class="btn btn-danger btn-sm d-flex align-items-center position-absolute top-0 end-0 m-1"
-                    (click)="eliminarImagen(item.galeriaPartidoId, i)">
-                    <i class="bi bi-trash"></i>
-                </button>
-
+                            <button *ngIf="video.playerId === playerId" type="button"
+                                class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
+                                (click)="eliminarImagen(video.galeriaPartidoId, a, 1)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+
 </div>
 
 <!-- Modal para ver la imagen en grande -->
@@ -85,7 +111,7 @@
 <!-- Modal para agregar video de YouTube -->
 <div *ngIf="mostrarModalYoutube" class="modal-overlay">
     <div class="modal-content">
-        <h4>Agregar Video de YouTube</h4>
+        <h4>Agregar Vídeo de YouTube</h4>
         <input type="text" [(ngModel)]="youtubeUrl" placeholder="Pega el enlace de YouTube" class="form-control">
         <button class="btn btn-success mt-2" (click)="agregarVideoYoutube()">Agregar</button>
         <button class="btn btn-secondary mt-2" (click)="cerrarModalYoutube()">Cancelar</button>

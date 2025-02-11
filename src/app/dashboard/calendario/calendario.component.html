@@ -1,18 +1,16 @@
 <div class="submenu">
   <div class="row">
-    <div class="row">
-      <div class="col" *ngIf="this.userId === 9">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(6)">
-          <i class="bi bi-table"></i>
-          <span class="d-none d-md-inline">Usuarios</span>
-        </a>
-      </div>
-      <div class="col" *ngIf="this.usuarioActual!.profileType.profileId == 2 && categoryTeam < 27">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(8)">
-          <i class="bi bi-arrow-left-square-fill"></i>
-          <span class="d-none d-md-inline">Volver</span>
-        </a>
-      </div>
+    <div class="col">
+      <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
+        <i class="bi bi-arrow-left-square-fill"></i>
+        <span class="d-none d-md-inline">Volver</span>
+      </a>
+    </div>
+    <div class="col" *ngIf="this.userId === 9">
+      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(6)">
+        <i class="bi bi-table"></i>
+        <span class="d-none d-md-inline">Usuarios</span>
+      </a>
     </div>
     <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 2 && categoryTeam < 27">
       <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
@@ -33,18 +31,6 @@
       </a>
     </div>
     -->
-    <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2">
-      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
-        <i class="bi bi-people-fill"></i>
-        <span class="d-none d-md-inline">Ver Información</span>
-      </a>
-    </div>
-    <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2 && categoryTeam < 27">
-      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">
-        <i class="bi bi-bank"></i>
-        <span class="d-none d-md-inline">Cuotas</span>
-      </a>
-    </div>
     <!-- <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3 && categoryTeam < 27">
       <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(3)">
         <span class="icon-container d-none d-md-flex">

@@ -7,7 +7,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { Router } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ClubService } from 'src/app/core/services/club/club.service';
-import { distinctUntilChanged, filter } from 'rxjs/operators';
+import { distinctUntilChanged, filter, switchAll } from 'rxjs/operators';
 
 @Component({
   selector: 'app-inicio',
@@ -112,7 +112,7 @@ export class InicioComponent implements OnInit {
           this.teamService.getPlayersByTeamByClubVerify(this.userId, '2024').subscribe(
             (resp: Response) => {
               this.numPadresPagados = response.data;
-              if(resp.data < 49){
+              if (resp.data < 49) {
                 //significa que lo puede tener todo
                 this.clubOk = false;
               } else {
@@ -317,12 +317,13 @@ export class InicioComponent implements OnInit {
 
   // Método para navegar a la pantalla de calendario
   navegarACalendario(teamId: number, playerId: number): void {
-    if(this.profileId == 2){
-      //significa que es entrenador, asi que le mandamos al menu de entrenador
-      this.router.navigate(['/dashboard/menu-entrenador', teamId, playerId]);
-    } else {
-      // Puedes ajustar la ruta según tu estructura de rutas
-      this.router.navigate(['/dashboard/calendario', teamId, playerId]);
+    switch (this.profileId) {
+      case 1:
+        this.router.navigate(['/dashboard/menu-club', teamId]);
+        break;
+      case 2:
+        this.router.navigate(['/dashboard/menu-entrenador', teamId, playerId]);
+        break;
     }
   }
 

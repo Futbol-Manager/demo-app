@@ -7,6 +7,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { CorreoEnviado } from 'src/app/core/services/models/club.model';
 import { Response } from 'src/app/core/services/models/response.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
+import { Location } from '@angular/common';
 declare var $: any; // Declaración para usar jQuery
 
 @Component({
@@ -80,7 +81,8 @@ export class NotificacionesComponent implements OnInit {
     private route: ActivatedRoute,
     private teamService: TeamService,
     private http: HttpClient,
-    private clubService: ClubService) { }
+    private clubService: ClubService,
+    private location: Location) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -167,6 +169,10 @@ export class NotificacionesComponent implements OnInit {
         }
       );
     }
+  }  
+
+  goBack(): void {
+    this.location.back();
   }
 
   /**

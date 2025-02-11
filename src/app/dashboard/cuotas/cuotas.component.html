@@ -1,9 +1,9 @@
 <div class="submenu">
     <div class="row">
         <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">
-                <i class="bi bi-calendar"></i>
-                <span class="d-none d-md-inline">Calendario</span>
+            <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
+                <i class="bi bi-arrow-left-square-fill"></i>
+                <span class="d-none d-md-inline">Volver</span>
             </a>
         </div>
     </div>
@@ -193,11 +193,12 @@
                     <form (ngSubmit)="makePayment()">
                         <div class="row mb-3">
                             <label for="cantidadAPagar" class="form-label">Selecciona la cuota a pagar:</label>
-                            <select [(ngModel)]="cantidadAPagar" id="cantidadAPagar" name="cantidadAPagar" class="form-control" (change)="calcularComision($event)">
+                            <select [(ngModel)]="cantidadAPagar" id="cantidadAPagar" name="cantidadAPagar"
+                                class="form-control" (change)="calcularComision($event)">
                                 <option *ngFor="let cuota of cuotas" [value]="cuota.value">
                                     {{ cuota.text }}
                                 </option>
-                            </select>                  
+                            </select>
                         </div>
                         <!-- <div class="row mb-3">
                             <label for="cantidadAPagar" class="form-label">Cantidad a pagar:

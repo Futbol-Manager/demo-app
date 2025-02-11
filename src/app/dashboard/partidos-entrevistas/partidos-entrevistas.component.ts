@@ -54,6 +54,10 @@ export class PartidosEntrevistasComponent implements OnInit {
   mostrarModalYoutube = false;
   youtubeUrl = '';
 
+  fotos: any[] = [];
+  videos: any[] = [];
+  showGalery = false;
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -125,6 +129,20 @@ export class PartidosEntrevistasComponent implements OnInit {
     this.playerService.getListGaleriaPartidos(partido.id).subscribe(
       (response: Response) => {
         this.selectedPartido = response.data;
+        if (this.selectedPartido) {
+          this.fotos = [];  // Limpiar antes de llenar
+          this.videos = []; // Limpiar antes de llenar
+
+          for (let index = 0; index < this.selectedPartido.length; index++) {
+            if (this.selectedPartido[index].tipo === 0) {
+              this.fotos.push(this.selectedPartido[index]);
+            } else {
+              this.videos.push(this.selectedPartido[index]);
+            }
+          }
+        }
+
+        this.showGalery = true;
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
@@ -132,11 +150,17 @@ export class PartidosEntrevistasComponent implements OnInit {
     );
   }
 
-  eliminarImagen(galeriaPartidoId: number, index: number) {
+  eliminarImagen(galeriaPartidoId: number, index: number, tipo: number) {
     if (confirm('¿Seguro que quieres eliminar esta imagen?')) {
       this.playerService.getDeleteGaleriaPartidos(galeriaPartidoId).subscribe(
         (response: Response) => {
           this.selectedPartido = response.data;
+          this.fotos = this.fotos.filter(img => img.galeriaPartidoId !== galeriaPartidoId);
+          if(tipo === 0){
+            this.fotos.splice(index, 1);
+          } else {
+            this.videos.splice(index, 1);
+          }          
         },
         (error) => {
           console.error('Error al cargar el listado de equipos', error);
@@ -151,7 +175,8 @@ export class PartidosEntrevistasComponent implements OnInit {
     if (file && this.postpartidoSelected != 0) {
       this.playerService.uploadImgGaleria(file, this.postpartidoSelected, this.teamId, this.playerId).subscribe(
         (response: Response) => {
-          this.selectedPartido.push(response.data);
+          //this.selectedPartido.push(response.data);
+          this.fotos.push(response.data);
         },
         (error) => {
           console.error('Error al cargar el listado de equipos', error);
@@ -198,7 +223,8 @@ export class PartidosEntrevistasComponent implements OnInit {
 
     this.playerService.setVideoYouTubeGaleria(this.postpartidoSelected, this.teamId, this.playerId, videoId).subscribe(
       (response: Response) => {
-        this.selectedPartido.push(response.data);
+        //this.selectedPartido.push(response.data);
+        this.videos.push(response.data);
         this.cerrarModalYoutube();
       },
       (error) => {

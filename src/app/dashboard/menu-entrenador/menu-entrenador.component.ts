@@ -131,6 +131,8 @@ export class MenuEntrenadorComponent implements OnInit {
       this.router.navigate(['/dashboard/patrocinadores', 0]);
     } else if (id === 11) {
       this.router.navigate(['/dashboard/estadisticas_jugadores', this.teamId]);
+    } else if (id === 12) {
+      this.router.navigate(['/dashboard/partidos-entrevistas', this.teamId, 0]);
     }
   }
 

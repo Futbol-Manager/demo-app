@@ -21,11 +21,11 @@ export const localenvironment = {
 
 export const prodenvironment = {
   production: true,
-  /*apiUrl: `${APIURLPROD2}${ApiEnvironments.PRO}`,
-  images: `${APIURLPROD2}${ImageEnvironments.PRO}/`,*/
+  apiUrl: `${APIURLPROD2}${ApiEnvironments.PRO}`,
+  images: `${APIURLPROD2}${ImageEnvironments.PRO}/`,
   
   //para apuntar a la api-desa
-  apiUrl: `${APIURLPROD2}${ApiEnvironments.DESA}`,
-  images: `${APIURLPROD2}${ImageEnvironments.DESA}/`,
+  /*apiUrl: `${APIURLPROD2}${ApiEnvironments.DESA}`,
+  images: `${APIURLPROD2}${ImageEnvironments.DESA}/`,*/
 }
 

@@ -15,6 +15,7 @@ import { RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from
 import { GolPostPartido } from 'src/app/core/services/team/team.model';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
+import { Location } from '@angular/common';
 
 declare var html2pdf: any;
 
@@ -547,7 +548,8 @@ export class CalendarioComponent implements OnInit {
     private playerService: PlayerService,
     private teamService: TeamService,
     private cdr: ChangeDetectorRef,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private location: Location
   ) {
   }
 
@@ -584,6 +586,10 @@ export class CalendarioComponent implements OnInit {
         }
       );
     });
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   select(option: string) {
