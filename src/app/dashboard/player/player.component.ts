@@ -132,6 +132,21 @@ export class PlayerComponent implements OnInit {
 
   listAsistencia: any[] = [];
 
+  currentIndex = 0;
+  currentIndex2 = 0;
+  selectedPartido: any = null;
+
+  partidos: any = [];
+  partidos2: any = [];
+  partidosJugados: number = 0;
+  titularidades: number = 0;
+  minutosJugados: number = 0;
+  goles: number = 0;
+  tarjetasAmarillas: number = 0;
+  tarjetasRojas: number = 0;
+  numTitulares: number = 0;
+
+
   constructor(private playerservice: PlayerService,
     private router: Router,
     private route: ActivatedRoute,
@@ -161,6 +176,8 @@ export class PlayerComponent implements OnInit {
       this.profileId = this.usuarioActual!.profileType.profileId;
       //this.playerIdsList = this.usuarioActual!.playerIds;
     });
+    this.getListaPostpartidos();
+    this.getListaProximosPartidos();
   }
 
   goBack(): void {
@@ -374,45 +391,45 @@ export class PlayerComponent implements OnInit {
       altura: '',
       peso: '',
       piernaNatural: 'Derecha',
-      habilidadConBalon: '50',
-      habilidadConBalonControlDeBalon: '50',
-      habilidadConBalonRegate: '50',
-      pase: '50',
-      paseCorto: '50',
-      paseLargo: '50',
-      centros: '50',
-      tiro: '50',
-      tiroPotenciaDeTiro: '50',
-      tiroDefinicion: '50',
-      tiroTirosLejanos: '50',
-      tiroVoleas: '50',
-      tiroPrecisionFalta: '50',
-      tiroPenaltis: '50',
-      tiroCabezazo: '50',
-      defensa: '50',
-      defensaMarcaje: '50',
-      defensaEntradas: '50',
-      defensaRobos: '50',
-      fisico: '50',
-      fisicoAceleracion: '50',
-      fisicoVelocidad: '50',
-      fisicoAgilidad: '50',
-      fisicoResistencia: '50',
-      fisicoFuerza: '50',
-      fisicoEquilibrio: '50',
-      fisicoSalto: '50',
-      mentalidad: '50',
-      mentalidadAgresividad: '50',
-      mentalidadAnticipacion: '50',
-      mentalidadInterceptacion: '50',
-      mentalidadVision: '50',
-      mentalidadCompostura: '50',
-      portero: '50',
-      porteroColocacion: '50',
-      porteroEstirada: '50',
-      porteroParadas: '50',
-      porteroSaques: '50',
-      porteroReflejos: '50',
+      habilidadConBalon: '60',
+      habilidadConBalonControlDeBalon: '60',
+      habilidadConBalonRegate: '60',
+      pase: '60',
+      paseCorto: '60',
+      paseLargo: '60',
+      centros: '60',
+      tiro: '60',
+      tiroPotenciaDeTiro: '60',
+      tiroDefinicion: '60',
+      tiroTirosLejanos: '60',
+      tiroVoleas: '60',
+      tiroPrecisionFalta: '60',
+      tiroPenaltis: '60',
+      tiroCabezazo: '60',
+      defensa: '60',
+      defensaMarcaje: '60',
+      defensaEntradas: '60',
+      defensaRobos: '60',
+      fisico: '60',
+      fisicoAceleracion: '60',
+      fisicoVelocidad: '60',
+      fisicoAgilidad: '60',
+      fisicoResistencia: '60',
+      fisicoFuerza: '60',
+      fisicoEquilibrio: '60',
+      fisicoSalto: '60',
+      mentalidad: '60',
+      mentalidadAgresividad: '60',
+      mentalidadAnticipacion: '60',
+      mentalidadInterceptacion: '60',
+      mentalidadVision: '60',
+      mentalidadCompostura: '60',
+      portero: '60',
+      porteroColocacion: '60',
+      porteroEstirada: '60',
+      porteroParadas: '60',
+      porteroSaques: '60',
+      porteroReflejos: '60',
       especialidades: '',
       opinionDelEntrenador: '',
       picturePlayer: '',
@@ -469,10 +486,18 @@ export class PlayerComponent implements OnInit {
   }
 
   verInfoJugador(player: Player): void {
+    this.partidosJugados = 0;
+    this.titularidades = 0;
+    this.minutosJugados = 0;
+    this.goles = 0;
+    this.tarjetasAmarillas = 0;
+    this.tarjetasRojas = 0;
+    this.numTitulares = 0;
+    this.getInfoAsistencia(player.playerId);
+    this.getDatosPlayer(player.playerId);
     this.selectedPlayer = player; // Almacena el jugador seleccionado en una propiedad del componente
     this.edadSeleccionada = this.fechaEnEspañol(this.selectedPlayer.fechaDeNacimiento) + ' (' + this.calcularEdad(player.fechaDeNacimiento) + ')';
     this.mostrarEdad = true;
-    this.mostrarModalInfoJugador = true; // Activa el indicador para mostrar el modal
 
     // Aquí llamamos a la función para cargar el gráfico de radar
     this.cargarGraficoRadar();
@@ -516,8 +541,8 @@ export class PlayerComponent implements OnInit {
         datasets: [{
           label: 'Atributos del Jugador',
           data: data,
-          backgroundColor: 'rgba(255, 99, 132, 0.2)',
-          borderColor: 'rgba(255, 99, 132, 1)',
+          backgroundColor: 'rgba(0, 252, 0, 0.36)',
+          borderColor: 'rgb(0, 54, 0)',
           borderWidth: 1
         }]
       },
@@ -1079,4 +1104,112 @@ export class PlayerComponent implements OnInit {
     this.showModalAsistencia = false;
   }
 
+  next() {
+    if (this.currentIndex + 4 < this.partidos.length) {
+      this.currentIndex += 4;
+    }
+  }
+
+  prev() {
+    if (this.currentIndex - 4 >= 0) {
+      this.currentIndex -= 4;
+    }
+  }
+
+  next2() {
+    if (this.currentIndex2 + 4 < this.partidos2.length) {
+      this.currentIndex2 += 4;
+    }
+  }
+
+  prev2() {
+    if (this.currentIndex2 - 4 >= 0) {
+      this.currentIndex2 -= 4;
+    }
+  }
+
+  getVisibleItems() {
+    return this.partidos.slice(this.currentIndex, this.currentIndex + 4);
+  }
+
+  getVisibleItems2() {
+    return this.partidos2.slice(this.currentIndex2, this.currentIndex2 + 4);
+  }
+
+  getListaPostpartidos() {
+    this.partidos = [];
+    this.playerService.getListPlayersByTeamForGalery(this.teamId).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response && response.data && Array.isArray(response.data)) {
+          // Mapea los datos bajo 'data' a instancias del modelo Team
+          this.partidos = response.data;
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  getListaProximosPartidos() {
+    this.partidos2 = [];
+    this.playerService.getListProximosPartidos(this.teamId).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response && response.data && Array.isArray(response.data)) {
+          // Mapea los datos bajo 'data' a instancias del modelo Team
+          this.partidos2 = response.data;
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  getInfoAsistencia(playerId: number) {
+    this.trainingService.getListsAsistenciaByTeamYPlayer(this.teamId, playerId).subscribe(
+      (response) => {
+        if (response.data) {
+          console.log(response.data);
+          this.listAsistencia = response.data;
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
+  getDatosPlayer(playerId: number) {
+    this.playerService.getDatosPlayer(this.teamId, playerId).subscribe(
+      (response) => {
+        if (response.data) {
+          this.listAsistencia = response.data;
+          this.partidosJugados = response.data.partidosJugados;
+          this.minutosJugados = response.data.minutosJugados;
+          this.goles = response.data.goles;
+          this.tarjetasAmarillas = response.data.tarAmarillas;
+          this.tarjetasRojas = response.data.tarRojas;
+          this.numTitulares = response.data.numTitulares;
+        }
+        this.mostrarModalInfoJugador = true; // Activa el indicador para mostrar el modal
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+
+    /*partidosJugados: string = '';
+    titularidades: string = '';
+    minutosJugados: string = '';
+    goles: string = '';
+    tarjetasAmarillas: string = '';
+    tarjetasRojas: string = '';*/
+  }
 }

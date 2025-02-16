@@ -8,6 +8,7 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { HttpClient } from '@angular/common/http';
 import { Chart, ChartType, registerables } from 'chart.js/auto';
 import { GolPostPartido } from 'src/app/core/services/team/team.model';
+import { Location } from '@angular/common';
 Chart.register(...registerables);
 import * as $ from 'jquery';
 import 'datatables.net';
@@ -301,7 +302,8 @@ export class EstadisticasEquipoComponent implements OnInit {
     private trainingService: TrainingService,
     private teamService: TeamService,
     private http: HttpClient,
-    private elementRef: ElementRef) { }
+    private elementRef: ElementRef,
+    private location: Location) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -318,6 +320,10 @@ export class EstadisticasEquipoComponent implements OnInit {
     // Puedes ajustar la ruta según tu estructura de rutas
     //this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
     this.router.navigate(['/dashboard/menu-entrenador', this.teamId, 0]);
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   cargarNombreEquipo() {

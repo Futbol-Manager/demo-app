@@ -165,3 +165,23 @@ td {
   height: 50px;
   /* Ajusta la altura según sea necesario */
 }
+
+.mi-div {
+  height: 300px;
+  overflow: auto;
+  /* o scroll */
+  scrollbar-width: none;
+  /* Para Firefox */
+  -ms-overflow-style: none;
+  /* Para Internet Explorer y Edge */
+}
+
+.mi-div::-webkit-scrollbar {
+  display: none;
+  /* Para Chrome, Safari y Opera */
+}
+
+.bordeYsombra {
+  border: 1px solid black;
+  box-shadow: 2px 2px 2px black;
+}

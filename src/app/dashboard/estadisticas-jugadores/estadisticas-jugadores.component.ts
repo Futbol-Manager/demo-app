@@ -9,6 +9,7 @@ import 'datatables.net';
 import { HttpClient } from '@angular/common/http';
 import { Chart, registerables } from 'chart.js/auto';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { Location } from '@angular/common';
 Chart.register(...registerables);
 
 @Component({
@@ -38,7 +39,8 @@ export class EstadisticasJugadoresComponent implements OnInit {
     private playerService: PlayerService,
     private http: HttpClient,
     private trainingService: TrainingService,
-    private elementRef: ElementRef) { }
+    private elementRef: ElementRef,
+    private location: Location) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -55,6 +57,10 @@ export class EstadisticasJugadoresComponent implements OnInit {
     // Puedes ajustar la ruta según tu estructura de rutas
     //this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
     this.router.navigate(['/dashboard/menu-entrenador', this.teamId, 0]);
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   selectedTipoPartido(){

@@ -1099,7 +1099,7 @@
                         <div>
                             <p>Pie natural: {{ selectedPlayer.piernaNatural }}</p>
                         </div>
-                        <div>
+                        <div *ngIf="this.usuarioActual!.profileType.profileId < 3">
                             <p>Opinion Entrenador: {{ selectedPlayer.opinionDelEntrenador }}</p>
                         </div>
                     </div>
@@ -1107,6 +1107,127 @@
                         <!-- Aquí mostramos el gráfico de radar -->
                         <canvas id="radarChart"></canvas>
                     </div>
+                </div>
+                <h2 class="mt-3">Datos</h2>
+                <div class="container">
+                    <div class="row row-cols-1 row-cols-md-3 g-3">
+                        <div class="col">
+                            <div class="card p-3 text-center bordeYsombra">
+                                <h5 style="color: black">Partidos jugados</h5>
+                                <p>{{ partidosJugados }}</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card p-3 text-center bordeYsombra">
+                                <h5 style="color: black">Titularidades</h5>
+                                <p>{{ numTitulares }}</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card p-3 text-center bordeYsombra">
+                                <h5 style="color: black">Minutos jugados</h5>
+                                <p>{{ minutosJugados }}</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card p-3 text-center bordeYsombra">
+                                <h5 style="color: black">Goles</h5>
+                                <p>{{ goles }}</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card p-3 text-center bordeYsombra">
+                                <h5 style="color: black">Tarjetas Amarillas</h5>
+                                <p>{{ tarjetasAmarillas }}</p>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card p-3 text-center bordeYsombra">
+                                <h5 style="color: black">Tarjetas Rojas</h5>
+                                <p>{{ tarjetasRojas }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <h2 class="mt-3">Últimos partidos</h2>
+                <div class="row h-50">
+                    <!-- Banner de partidos -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button (click)="prev()" class="btn btn-primary" [disabled]="true">‹</button>
+
+                        <div class="d-flex flex-wrap justify-content-center">
+                            <div *ngFor="let item of getVisibleItems()" class="card m-2 partido-card">
+
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">
+                                        {{ item.name.length > 10 ? (item.name | slice:0:10) + '...' : item.name }}
+                                    </h5>
+                                    <p class="card-text">Resultado: {{ item.resultado }}</p>
+                                    <span class="badge" [ngClass]="{
+                                        'bg-success': item.letra === 'V', 
+                                        'bg-danger': item.letra === 'D', 
+                                        'bg-secondary': item.letra === 'E'
+                                    }">
+                                        {{ item.letra }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button (click)="next()" class="btn btn-primary" [disabled]="true">›</button>
+                    </div>
+                </div>
+                <h2 class="mt-3">Próximos partidos</h2>
+                <div class="row h-50">
+                    <!-- Banner de partidos -->
+                    <div class="d-flex justify-content-between align-items-center">
+                        <button (click)="prev2()" class="btn btn-primary" [disabled]="true">‹</button>
+
+                        <div class="d-flex flex-wrap justify-content-center">
+                            <div *ngFor="let item2 of getVisibleItems2()" class="card m-2 partido-card">
+
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">{{ item2.name }}</h5>
+                                    <p class="card-text">Resultado: 0 - 0</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button (click)="next2()" class="btn btn-primary" [disabled]="true">›</button>
+                    </div>
+                </div>
+                <h2>Asistencia</h2>
+                <div class="table-responsive mi-div">
+                    <table class="table table-bordered table-striped">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>FECHA</th>
+                                <th>ASISTENCIA</th>
+                                <th>RETRASO</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let player of listAsistencia">
+                                <td>{{ player.fecha }}</td>
+                                <td>
+                                    <span *ngIf="player.asistencia === 1" class="text-success">
+                                        <i class="bi bi-check-circle-fill"></i> <!-- Icono de check -->
+                                    </span>
+                                    <span *ngIf="player.asistencia === 0" class="text-danger">
+                                        <i class="bi bi-x-circle-fill"></i> <!-- Icono de X -->
+                                    </span>
+                                </td>
+                                <td>
+                                    <span *ngIf="player.retraso === 1" class="text-success">
+                                        <i class="bi bi-check-circle-fill"></i> <!-- Icono de check -->
+                                    </span>
+                                    <span *ngIf="player.retraso === 0" class="text-danger">
+                                        <i class="bi bi-x-circle-fill"></i> <!-- Icono de X -->
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
