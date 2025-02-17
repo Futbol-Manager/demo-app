@@ -55,7 +55,28 @@
             <!-- Pestaña de Fotos -->
             <div class="tab-pane fade show active" id="fotos">
                 <div class="text-center mb-3">
-                    <input type="file" (change)="subirImagen($event)" class="btn btn-secondary">
+                    <form (submit)="onSubmit()" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <p>Seleccionar imagen en formato JPG o PNG:</p>
+                            <input type="file" id="image" (change)="onFileSelected($event)">
+                            <div *ngIf="showPreview" style="margin-top: 2em;">
+                                <img [src]="imagePreviewUrl" alt="Image Preview" width="150"
+                                    height="150" class="rounded-circle me-2">
+
+                                <!-- Botones alineados verticalmente -->
+                                <div class="d-grid gap-2 mt-3">
+                                    <button (click)="rotateImage()" type="button"
+                                        class="btn btn-primary btn-lg">
+                                        Rotar Imagen
+                                    </button>
+                                    <button *ngIf="showbtnupimg" type="submit"
+                                        class="btn btn-success btn-lg">
+                                        Subir foto
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </div>
 
                 <div class="row">

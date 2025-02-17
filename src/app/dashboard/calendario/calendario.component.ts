@@ -2014,6 +2014,7 @@ export class CalendarioComponent implements OnInit {
     setTimeout(() => {
       this.showAlert = false;
     }, 2000);
+    //alert('Guardado correctamente');
   }
 
   borrar() {

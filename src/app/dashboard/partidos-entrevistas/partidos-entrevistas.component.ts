@@ -58,6 +58,13 @@ export class PartidosEntrevistasComponent implements OnInit {
   videos: any[] = [];
   showGalery = false;
 
+  selectedFile!: File;
+  imagePreviewUrl: string | ArrayBuffer | null = null;
+  showPreview: boolean = false;
+  imageBaseUrlUser: string = environment.images + 'user/';
+  rotateAngle: number = 0; // Almacena el ángulo de rotación actual
+  showbtnupimg = false;
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -156,11 +163,11 @@ export class PartidosEntrevistasComponent implements OnInit {
         (response: Response) => {
           this.selectedPartido = response.data;
           this.fotos = this.fotos.filter(img => img.galeriaPartidoId !== galeriaPartidoId);
-          if(tipo === 0){
+          if (tipo === 0) {
             this.fotos.splice(index, 1);
           } else {
             this.videos.splice(index, 1);
-          }          
+          }
         },
         (error) => {
           console.error('Error al cargar el listado de equipos', error);
@@ -170,7 +177,7 @@ export class PartidosEntrevistasComponent implements OnInit {
     }
   }
 
-  subirImagen(event: any) {
+  /*subirImagen(event: any) {
     const file = event.target.files[0];
     if (file && this.postpartidoSelected != 0) {
       this.playerService.uploadImgGaleria(file, this.postpartidoSelected, this.teamId, this.playerId).subscribe(
@@ -182,6 +189,89 @@ export class PartidosEntrevistasComponent implements OnInit {
           console.error('Error al cargar el listado de equipos', error);
         }
       );
+    }
+  }*/
+
+  onSubmit() {
+    if (this.selectedFile) {
+      this.playerService.uploadImgGaleria(this.selectedFile, this.postpartidoSelected, this.teamId, this.playerId).subscribe(
+        (response: Response) => {
+          //this.selectedPartido.push(response.data);
+          this.fotos.push(response.data);
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
+        }
+      );
+    }
+  }
+
+  rotateImage() {
+    if (!this.imagePreviewUrl) return;
+
+    if (typeof this.imagePreviewUrl !== 'string') {
+      console.error('Error: imagePreviewUrl no es una cadena.');
+      return;
+    }
+
+    const img = new Image();
+    img.src = this.imagePreviewUrl;
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+
+      // Incrementar el ángulo de rotación en 90 grados
+      this.rotateAngle = (this.rotateAngle + 90) % 360;
+
+      // Configurar dimensiones del canvas según el ángulo
+      if (this.rotateAngle === 90 || this.rotateAngle === 270) {
+        canvas.width = img.height;
+        canvas.height = img.width;
+      } else {
+        canvas.width = img.width;
+        canvas.height = img.height;
+      }
+
+      // Rotar el canvas
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((this.rotateAngle * Math.PI) / 180);
+      ctx.drawImage(img, -img.width / 2, -img.height / 2);
+
+      // Actualizar la URL de vista previa
+      this.imagePreviewUrl = canvas.toDataURL('image/jpeg');
+
+      // Convertir el contenido del canvas en un archivo Blob
+      canvas.toBlob((blob) => {
+        if (blob) {
+          this.selectedFile = new File([blob], 'rotated-image.jpg', { type: 'image/jpeg' });
+        }
+      }, 'image/jpeg');
+    };
+  }
+
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+
+    if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
+      this.selectedFile = file;
+      this.showbtnupimg = true;
+
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const result = e.target.result;
+        // Convertimos a string si es necesario
+        if (typeof result === 'string') {
+          this.imagePreviewUrl = result;
+          this.showPreview = true;
+        } else {
+          console.error('El resultado del archivo no es un string.');
+        }
+      };
+
+      reader.readAsDataURL(file);
+    } else {
+      this.showbtnupimg = false;
     }
   }
 
