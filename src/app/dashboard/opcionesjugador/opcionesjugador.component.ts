@@ -58,7 +58,7 @@ export class OpcionesjugadorComponent implements OnInit {
         this.router.navigate(['/dashboard/jugadores', this.teamId]);
         break;
       case 3:
-        this.router.navigate(['/dashboard/cuotas', this.teamId, this.playerId]);
+        this.router.navigate(['/dashboard/clasificacion-resultados', this.teamId]);
         break;
       case 4:
         this.router.navigate(['/dashboard/calendario', this.teamId, this.playerId]);
@@ -74,6 +74,9 @@ export class OpcionesjugadorComponent implements OnInit {
         break;
       case 8:
         this.router.navigate(['/dashboard/partidos-entrevistas', this.teamId, this.playerId]);
+        break;
+      case 9:
+        this.router.navigate(['/dashboard/cuotas', this.teamId, this.playerId]);
         break;
     }
   }

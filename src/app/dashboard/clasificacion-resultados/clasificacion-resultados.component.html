@@ -1,0 +1,84 @@
+<div class="submenu">
+    <div class="row">
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
+                <i class="bi bi-arrow-left-square-fill"></i>
+                <span class="d-none d-md-inline">Volver</span>
+            </a>
+        </div>
+    </div>
+</div>
+<div class="container mt-4">
+    <h3>ADVERTENCIA: Esto es solamente un ejemplo demostrativo, aquí verás la tabla clasificatoria y resultados de tu/s
+        equipo/s.</h3>
+
+    <!-- Botones de navegación -->
+    <div class="d-flex mb-3">
+        <button class="btn btn-custom me-2" id="btn-clasificacion"
+            (click)="mostrarContenido(false)">Clasificación</button>
+        <button class="btn btn-custom" id="btn-resultados" (click)="mostrarContenido(true)">Resultados</button>
+    </div>
+
+    <!-- Contenido de la tabla -->
+    <div class="tab-content mt-3">
+        <!-- TABLA CLASIFICACIÓN -->
+        <div id="clasificacion" *ngIf="!contenidoActivo">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover text-center">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Equipo</th>
+                            <th>Pts</th>
+                            <th>J</th>
+                            <th>G</th>
+                            <th>E</th>
+                            <th>P</th>
+                            <th>Últimos 5</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let equipo of equipos; let i = index">
+                            <td [ngClass]="{ 'top-rank': i < 4, 'danger-zone': i >= equipos.length - 3 }">{{ i + 1 }}
+                            </td>
+                            <td class="team-name">{{ equipo.nombre }}</td>
+                            <td>{{ equipo.puntos }}</td>
+                            <td>{{ equipo.jugados }}</td>
+                            <td>{{ equipo.ganados }}</td>
+                            <td>{{ equipo.empatados }}</td>
+                            <td>{{ equipo.perdidos }}</td>
+                            <td>
+                                <span *ngFor="let resultado of equipo.ultimosPartidos" class="badge me-1" [ngClass]="{
+                                    'bg-success': resultado === 'G',
+                                    'bg-warning text-dark': resultado === 'E',
+                                    'bg-danger': resultado === 'P'
+                                }">{{ resultado }}</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- RESULTADOS -->
+        <div id="resultados" *ngIf="contenidoActivo">
+            <div class="resultados-container">
+                <div class="resultado-card" *ngFor="let resultado of resultados">
+                    <div class="resultado">
+                        <div class="equipo">
+                            <span>{{ resultado.local }} {{ resultado.golesLocal }}</span>
+                            <span class="vs"> - </span>
+                            <span>{{ resultado.golesVisitante }} {{ resultado.visitante }}</span>
+                        </div>
+                    </div>
+                    <div class="detalle">
+                        <div class="fecha-estadio">
+                            <span>📅 {{ resultado.fecha }}</span>
+                            <span>🏟️ {{ resultado.estadio }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

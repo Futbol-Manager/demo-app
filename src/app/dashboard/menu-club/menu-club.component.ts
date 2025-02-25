@@ -63,6 +63,8 @@ export class MenuClubComponent implements OnInit {
         this.router.navigate(['/dashboard/partidos-entrevistas', this.teamId, 0]);
       } else if (id === 4) {
         this.router.navigate(['/dashboard/estadisticas_jugadores', this.teamId]);
+      } else if (id === 8) {
+        this.router.navigate(['/dashboard/clasificacion-resultados', this.teamId]);
       }
     }
 

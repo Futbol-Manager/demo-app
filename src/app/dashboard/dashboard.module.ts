@@ -39,6 +39,7 @@ import { MenuEntrenadorComponent } from './menu-entrenador/menu-entrenador.compo
 import { InicioDeportesComponent } from './inicio-deportes/inicio-deportes.component';
 import { PartidosEntrevistasComponent } from './partidos-entrevistas/partidos-entrevistas.component';
 import { MenuClubComponent } from './menu-club/menu-club.component';
+import { ClasificacionResultadosComponent } from './clasificacion-resultados/clasificacion-resultados.component';
 
 
 
@@ -79,7 +80,8 @@ import { MenuClubComponent } from './menu-club/menu-club.component';
     MenuEntrenadorComponent,
     InicioDeportesComponent,
     PartidosEntrevistasComponent,
-    MenuClubComponent
+    MenuClubComponent,
+    ClasificacionResultadosComponent
   ],
   imports: [
     CommonModule,
