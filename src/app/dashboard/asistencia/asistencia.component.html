@@ -82,10 +82,9 @@
         
                                 <!-- Iconos para marcar como pagada o no pagada, solo si la multa es diferente de 0 -->
                                 <ng-container *ngIf="multa !== 0">
-                                    
                                     <i class="bi bi-hand-index text-white ml-2"
                                        *ngIf="item.multaPagada[j] === 1"
-                                       (click)="toggleMultaPago(item.idsPk[j], 0)" title="Marcar como  NO pagado"></i>
+                                       (click)="toggleMultaPago(item.idsPk[j], 0)" title="Marcar como NO pagado"></i>
                                 </ng-container>
                             </td>
                         </tr>
