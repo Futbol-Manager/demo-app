@@ -23,13 +23,13 @@
                 <tr>
                     <th>Equipo</th>
                     <th>Partidos</th>
+                    <th>Puntos</th>
                     <th>Victorias</th>
                     <th>Empates</th>
                     <th>Derrotas</th>
                     <th>GF</th>
                     <th>GC</th>
                     <th>DG</th>
-                    <th>Puntos</th>
                     <th>5 Últimos</th>
                 </tr>
             </thead>
@@ -39,14 +39,18 @@
                     <td *ngIf="resumen.partidos != 0"><a href="javascript:void(0);" (click)="verTablaequipo(i)">{{
                             resumen.equipo }}</a></td>
                     <td>{{ resumen.partidos }}</td>
+                    <td>{{ resumen.puntos }}</td>
                     <td>{{ resumen.victorias }}</td>
                     <td>{{ resumen.empates }}</td>
                     <td>{{ resumen.derrotas }}</td>
                     <td>{{ resumen.gf }}</td>
                     <td>{{ resumen.gc }}</td>
-                    <td>{{ resumen.dg }}</td>
-                    <td>{{ resumen.puntos }}</td>
-                    <td>{{ resumen.ultimos | json }}</td>
+                    <td>{{ resumen.dg }}</td>                    
+                    <td>
+                        <span *ngFor="let resultado of resumen.ultimos">
+                            {{ getIcono(resultado) }}
+                        </span>
+                    </td>
                 </tr>
             </tbody>
         </table>

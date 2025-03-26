@@ -82,7 +82,7 @@ export class PlayerService {
         }
     }
 
-    // Método para crear o actualizar un equipo
+    // Método para crear o actualizar un jugador
     createUpdatePlayer(teamId: string, player: Player): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
@@ -102,7 +102,6 @@ export class PlayerService {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
             return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
-
     }
 
     deletePlayer(playerId: string): Observable<Response> {

@@ -56,7 +56,9 @@ export class EstadisticasEquiposClubComponent implements OnInit {
           // Mapea los datos bajo 'data' a instancias del modelo Team
           this.resumenes = response.data; 
           for (let index = 0; index < this.resumenes.length; index++) {
-            this.datosResumentTotales(this.resumenes[index]);
+            if(!this.resumenes[index].nameTeam.includes("Sin equipo")){
+              this.datosResumentTotales(this.resumenes[index]);
+            }
           }
           this.datosCargados = true;
           this.loading = false;
@@ -151,4 +153,14 @@ export class EstadisticasEquiposClubComponent implements OnInit {
   openInfoPostPartido(value: number){
 
   }
+
+  getIcono(resultado: string): string {
+    const iconos: { [key: string]: string } = {
+      'V': '🟢',
+      'E': '🟡',
+      'D': '🔴'
+    };
+    return iconos[resultado] || '❓';
+  }
+  
 }

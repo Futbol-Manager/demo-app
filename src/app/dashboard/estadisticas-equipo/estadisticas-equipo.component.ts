@@ -344,7 +344,7 @@ export class EstadisticasEquipoComponent implements OnInit {
     );
   }
 
-  selectedTipoPartido(){
+  selectedTipoPartido() {
     this.getListaPostpartidos(this.tipoPartidoSelected);
   }
 
@@ -884,9 +884,19 @@ export class EstadisticasEquipoComponent implements OnInit {
     let uno: number = 0;
     let dos: number = 0;
     let tres: number = 0;
+    let cuatro: number = 0;
+    let cinco: number = 0;
+    let seis: number = 0;
+    let siete: number = 0;
+    let ocho: number = 0;
     let unoA: any = [];
     let dosA: any = [];
     let tresA: any = [];
+    let cuatroA: any = [];
+    let cincoA: any = [];
+    let seisA: any = [];
+    let sieteA: any = [];
+    let ochoA: any = [];
     //necesito saber la categoria, la subcategoria y luego defiir el resultado a la opcion correcta
 
     for (let e = 0; e < this.listLabels.length; e++) { //5
@@ -894,49 +904,96 @@ export class EstadisticasEquipoComponent implements OnInit {
         if (this.golesAvanzadoAFavor[f].category === this.selectedGolTypes) { //3 
           if (this.golesAvanzadoAFavor[f].subCategory === this.listLabels[e]) {
             switch (this.golesAvanzadoAFavor[f].option) {
-              case 'Tiro a portería':
+              case 'Olímpico 1er palo':
                 uno++;
                 break;
-              case 'Remate de cabeza':
+              case 'Olímpico 2nd palo':
                 dos++;
                 break;
-              case 'Otra parte del cuerpo':
+              case 'De cabeza 1er palo':
                 tres++;
                 break;
-
-              default:
+              case 'Con otra parte 1er palo':
+                cuatro++;
+                break;
+              case 'De cabeza centro palo':
+                cinco++;
+                break;
+              case 'Con otra parte centro palo':
+                seis++;
+                break;
+              case 'De cabeza 2nd palo':
+                siete++;
+                break;
+              case 'Con otra parte 2nd palo':
+                ocho++;
                 break;
             }
           }
         }
-
       }
+
       unoA.push(uno);
       dosA.push(dos);
       tresA.push(tres);
+      cuatroA.push(cuatro);
+      cincoA.push(cinco);
+      seisA.push(seis);
+      sieteA.push(siete);
+      ochoA.push(ocho);
 
       uno = 0;
       dos = 0;
       tres = 0;
+      cuatro = 0;
+      cinco = 0;
+      seis = 0;
+      siete = 0;
+      ocho = 0;
     }
 
     const data = {
       labels: this.listLabels,
       datasets: [
         {
-          label: 'Tiro a portería',
+          label: 'Olímpico 1er palo',
           data: unoA,
-          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+          backgroundColor: 'rgba(235, 81, 54, 0.5)',
         },
         {
-          label: 'Remate de cabeza',
+          label: 'Olímpico 2nd palo',
           data: dosA,
-          backgroundColor: 'rgba(250, 0, 25, 0.5)',
+          backgroundColor: 'rgba(250, 150, 0, 0.5)',
         },
         {
-          label: 'Otra parte del cuerpo',
+          label: 'De cabeza 1er palo',
           data: tresA,
+          backgroundColor: 'rgba(235, 220, 14, 0.5)',
+        },
+        {
+          label: 'Con otra parte 1er palo',
+          data: cuatroA,
+          backgroundColor: 'rgba(133, 250, 0, 0.5)',
+        },
+        {
+          label: 'De cabeza centro palo',
+          data: cincoA,
+          backgroundColor: 'rgba(14, 235, 198, 0.5)',
+        },
+        {
+          label: 'Con otra parte centro palo',
+          data: seisA,
+          backgroundColor: 'rgba(0, 108, 250, 0.5)',
+        },
+        {
+          label: 'De cabeza 2nd palo',
+          data: sieteA,
           backgroundColor: 'rgba(62, 14, 235, 0.5)',
+        },
+        {
+          label: 'Con otra parte 2nd palo',
+          data: ochoA,
+          backgroundColor: 'rgba(250, 0, 250, 0.5)',
         },
       ]
     };
@@ -981,9 +1038,19 @@ export class EstadisticasEquipoComponent implements OnInit {
     let uno: number = 0;
     let dos: number = 0;
     let tres: number = 0;
+    let cuatro: number = 0;
+    let cinco: number = 0;
+    let seis: number = 0;
+    let siete: number = 0;
+    let ocho: number = 0;
     let unoA: any = [];
     let dosA: any = [];
     let tresA: any = [];
+    let cuatroA: any = [];
+    let cincoA: any = [];
+    let seisA: any = [];
+    let sieteA: any = [];
+    let ochoA: any = [];
     //necesito saber la categoria, la subcategoria y luego defiir el resultado a la opcion correcta
 
     for (let e = 0; e < this.listLabels.length; e++) { //5
@@ -991,49 +1058,97 @@ export class EstadisticasEquipoComponent implements OnInit {
         if (this.golesAvanzadoEnContra[f].category === this.selectedGolTypes) { //3 
           if (this.golesAvanzadoEnContra[f].subCategory === this.listLabels[e]) {
             switch (this.golesAvanzadoEnContra[f].option) {
-              case 'Tiro a portería':
+              case 'Olímpico 1er palo':
                 uno++;
                 break;
-              case 'Remate de cabeza':
+              case 'Olímpico 2nd palo':
                 dos++;
                 break;
-              case 'Otra parte del cuerpo':
+              case 'De cabeza 1er palo':
                 tres++;
                 break;
-
-              default:
+              case 'Con otra parte 1er palo':
+                cuatro++;
+                break;
+              case 'De cabeza centro palo':
+                cinco++;
+                break;
+              case 'Con otra parte centro palo':
+                seis++;
+                break;
+              case 'De cabeza 2nd palo':
+                siete++;
+                break;
+              case 'Con otra parte 2nd palo':
+                ocho++;
                 break;
             }
           }
         }
 
       }
+
       unoA.push(uno);
       dosA.push(dos);
       tresA.push(tres);
+      cuatroA.push(cuatro);
+      cincoA.push(cinco);
+      seisA.push(seis);
+      sieteA.push(siete);
+      ochoA.push(ocho);
 
       uno = 0;
       dos = 0;
       tres = 0;
+      cuatro = 0;
+      cinco = 0;
+      seis = 0;
+      siete = 0;
+      ocho = 0;
     }
 
     const data = {
       labels: this.listLabels,
       datasets: [
         {
-          label: 'Tiro a portería',
+          label: 'Olímpico 1er palo',
           data: unoA,
-          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+          backgroundColor: 'rgba(235, 81, 54, 0.5)',
         },
         {
-          label: 'Remate de cabeza',
+          label: 'Olímpico 2nd palo',
           data: dosA,
-          backgroundColor: 'rgba(250, 0, 25, 0.5)',
+          backgroundColor: 'rgba(250, 150, 0, 0.5)',
         },
         {
-          label: 'Otra parte del cuerpo',
+          label: 'De cabeza 1er palo',
           data: tresA,
+          backgroundColor: 'rgba(235, 220, 14, 0.5)',
+        },
+        {
+          label: 'Con otra parte 1er palo',
+          data: cuatroA,
+          backgroundColor: 'rgba(133, 250, 0, 0.5)',
+        },
+        {
+          label: 'De cabeza centro palo',
+          data: cincoA,
+          backgroundColor: 'rgba(14, 235, 198, 0.5)',
+        },
+        {
+          label: 'Con otra parte centro palo',
+          data: seisA,
+          backgroundColor: 'rgba(0, 108, 250, 0.5)',
+        },
+        {
+          label: 'De cabeza 2nd palo',
+          data: sieteA,
           backgroundColor: 'rgba(62, 14, 235, 0.5)',
+        },
+        {
+          label: 'Con otra parte 2nd palo',
+          data: ochoA,
+          backgroundColor: 'rgba(250, 0, 250, 0.5)',
         },
       ]
     };
@@ -1188,6 +1303,15 @@ export class EstadisticasEquipoComponent implements OnInit {
         }
       }
     });
+  }
+
+  getIcono(resultado: string): string {
+    const iconos: { [key: string]: string } = {
+      'V': '🟢',
+      'E': '🟡',
+      'D': '🔴'
+    };
+    return iconos[resultado] || '❓';
   }
 
 }

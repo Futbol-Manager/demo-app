@@ -332,19 +332,27 @@ export class CalendarioComponent implements OnInit {
         {
           "name": "Izquierda",
           "options": [
-            "Saque en corto",
-            "Primer palo",
-            "Punto de penalti",
-            "Segundo palo"
+            "Olímpico 1er palo",
+            "Olímpico 2nd palo",
+            "De cabeza 1er palo",
+            "Con otra parte 1er palo",
+            "De cabeza centro palo",
+            "Con otra parte centro palo",
+            "De cabeza 2nd palo",
+            "Con otra parte 2nd palo"
           ]
         },
         {
           "name": "Derecha",
           "options": [
-            "Saque en corto",
-            "Primer palo",
-            "Punto de penalti",
-            "Segundo palo"
+            "Olímpico 1er palo",
+            "Olímpico 2nd palo",
+            "De cabeza 1er palo",
+            "Con otra parte 1er palo",
+            "De cabeza centro palo",
+            "Con otra parte centro palo",
+            "De cabeza 2nd palo",
+            "Con otra parte 2nd palo"
           ]
         }
       ]

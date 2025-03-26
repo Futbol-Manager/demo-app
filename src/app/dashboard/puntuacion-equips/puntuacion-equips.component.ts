@@ -100,7 +100,7 @@ export class PuntuacionEquipsComponent implements OnInit {
       data: {
         labels: this.labels,
         datasets: [{
-          label: 'Equipos',
+          label: 'Puntos',
           data: this.data,
           backgroundColor: '#22bf63', //backgroundColors // Colores para cada barra
         }]

@@ -1190,7 +1190,7 @@ export class PlayerComponent implements OnInit {
     this.playerService.getDatosPlayer(this.teamId, playerId).subscribe(
       (response) => {
         if (response.data) {
-          this.listAsistencia = response.data;
+          //this.listAsistencia = response.data;
           this.partidosJugados = response.data.partidosJugados;
           this.minutosJugados = response.data.minutosJugados;
           this.goles = response.data.goles;
