@@ -65,6 +65,12 @@ export class PartidosEntrevistasComponent implements OnInit {
   rotateAngle: number = 0; // Almacena el ángulo de rotación actual
   showbtnupimg = false;
 
+  iconos: { [key: string]: string } = {
+    'V': '🟢',
+    'E': '🟡',
+    'D': '🔴'
+  };
+
   constructor(
     private loginService: LoginService,
     private router: Router,

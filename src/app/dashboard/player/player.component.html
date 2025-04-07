@@ -1,23 +1,11 @@
 <div class="submenu">
     <div class="row">
-        <div class="col" *ngIf="this.usuarioActual!.profileType.profileId > 2">
+        <div class="col">
             <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
                 <i class="bi bi-arrow-left-square-fill"></i>
                 <span class="d-none d-md-inline">Volver</span>
             </a>
         </div>
-        <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3">
-            <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
-                <i class="bi bi-arrow-left-square-fill"></i>
-                <span class="d-none d-md-inline">Volver</span>
-            </a>
-        </div>
-        <!-- <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3">
-            <a class="no-underline" href="javascript:void(0);" (click)="navegarAAsistencia()">
-                <i class="bi bi-person-check"></i>
-                <span class="d-none d-md-inline">Control de Asistencia</span>
-            </a>
-        </div> -->
         <div class="col" *ngIf="this.usuarioActual!.profileType.profileId < 3">
             <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearJugador()">
                 <i class="bi bi-plus-circle"></i>
@@ -87,8 +75,7 @@
                                     </p>
                                     <!-- Puedes agregar botones o acciones específicas para cada jugador aquí -->
                                     <div class="d-flex justify-content-between">
-                                        <button class="btn btn-info" title="Ver info"
-                                            (click)="verInfoJugador(player)">
+                                        <button class="btn btn-info" title="Ver info" (click)="verInfoJugador(player)">
                                             <span class="bi bi-person"></span>
                                         </button>
                                         <button class="btn btn-primary" title="Asistencia"
@@ -1163,12 +1150,8 @@
                                         {{ item.name.length > 10 ? (item.name | slice:0:10) + '...' : item.name }}
                                     </h5>
                                     <p class="card-text">Resultado: {{ item.resultado }}</p>
-                                    <span class="badge" [ngClass]="{
-                                        'bg-success': item.letra === 'V', 
-                                        'bg-danger': item.letra === 'D', 
-                                        'bg-secondary': item.letra === 'E'
-                                    }">
-                                        {{ item.letra }}
+                                    <span class="badge fs-5">
+                                        {{ iconos[item.letra] }}
                                     </span>
                                 </div>
                             </div>

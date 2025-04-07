@@ -113,8 +113,23 @@
                         </div>
                         <div class="col"
                           *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) || dia.matchVisible === 1">
-                          <button *ngIf="dia.matchPreparationId" class="btn btn-partido btn-sm btn-block"
-                            (click)="openPartido(dia.matchPreparationId, dia.daysession)">{{ dia.rivalName }}</button>
+                          <!-- <button *ngIf="dia.matchPreparationId" class="btn btn-partido btn-sm btn-block"
+                            (click)="openPartido(dia.matchPreparationId, dia.daysession)">{{ dia.rivalName }}</button> -->
+
+                          <button *ngIf="dia.matchPreparationId"
+                            class="btn btn-partido btn-sm btn-block d-flex align-items-center gap-2"
+                            (click)="openPartido(dia.matchPreparationId, dia.daysession)">
+
+                            <!-- Icono si es Local -->
+                            <img *ngIf="dia.terreno === 'Local'" src="assets/iconos/home.svg" alt="Local" width="16"
+                              height="16" />
+
+                            <!-- Icono si es Visitante -->
+                            <img *ngIf="dia.terreno === 'Visitante'" src="assets/iconos/travel.svg" alt="Visitante"
+                              width="16" height="16" />
+
+                            {{ dia.rivalName }}
+                          </button>
                         </div>
                       </div>
                     </div>
@@ -537,7 +552,7 @@
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
         <div class="modal-header flex-wrap">
-          <h5 class="modal-title">Detalles del Partido</h5>
+          <h5 class="modal-title">Partido {{daySession}}</h5>
 
           <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center ms-lg-auto">
             <!-- Sección para usuarios con profileId 1 o 2 -->
@@ -3130,7 +3145,7 @@
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-          <div class="modal-header">
+          <!-- <div class="modal-header">
             <h5 class="modal-title">Detalles del Entrenamiento</h5>
             <div
               *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) && trainingSession.trainingSessionId !== 0">
@@ -3148,10 +3163,55 @@
               <button type="button" class="btn btn-success"
                 (click)="openModalFormPostEntreno(trainingSession.trainingSessionId)">Post-formulario</button>
             </div>
-            <!-- Botón de cerrar con un icono -->
+            Botón de cerrar con un icono 
+            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalEntrenamiento()"></button>
+          </div>-->
+          <div class="modal-header d-flex justify-content-between align-items-center">
+            <h5 class="modal-title flex-grow-1 text-center">Entrenamiento {{daySession}}</h5>
             <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalEntrenamiento()"></button>
           </div>
+
           <div class="modal-body">
+            <div class="d-flex flex-column flex-md-row justify-content-center gap-2 w-100">
+              <!-- Botones para admin/profesores -->
+              <ng-container
+                *ngIf="(usuarioActual!.profileType.profileId === 1 || usuarioActual!.profileType.profileId === 2) && trainingSession.trainingSessionId !== 0">
+                <div class="col-12 col-md">
+                  <button type="button" class="btn btn-secondary w-100"
+                    (click)="openModalPreEntrenamiento(trainingSession.trainingSessionId)">Pre-formulario</button>
+                </div>
+                <div class="col-12 col-md">
+                  <button type="button" class="btn btn-success w-100"
+                    (click)="openModalPostEntrenamiento(trainingSession.trainingSessionId)">Post-formulario</button>
+                </div>
+                <div class="col-12 col-md">
+                  <button type="button" class="btn btn-primary w-100"
+                    (click)="openModalAsistencia(trainingSession.trainingSessionId)">Asistencia</button>
+                </div>
+                <!-- Toggle -->
+                <div class="col-12 col-md d-flex align-items-center justify-content-center justify-content-md-start">
+                  <div class="form-check form-switch">
+                    <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
+                      [checked]="toggleVisible === 1" title="Si está no visible el jugador no lo verá"
+                      (change)="onChangeToggle($event, trainingSession.trainingSessionId)">
+                    <label class="form-check-label ms-2">No visible / Visible</label>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- Botones para jugadores -->
+              <ng-container
+                *ngIf="usuarioActual!.profileType.profileId === 3 || usuarioActual!.profileType.profileId === 4">
+                <div class="col-12 col-md">
+                  <button type="button" class="btn btn-secondary w-100"
+                    (click)="openModalFormPreEntreno(trainingSession.trainingSessionId)">Pre-formulario</button>
+                </div>
+                <div class="col-12 col-md">
+                  <button type="button" class="btn btn-success w-100"
+                    (click)="openModalFormPostEntreno(trainingSession.trainingSessionId)">Post-formulario</button>
+                </div>
+              </ng-container>
+            </div>
             <!-- modal modificar entrenamiento -->
             <div class="row text-center mt-3">
               <div class="col-12 col-md-6 mt-3">
@@ -3166,13 +3226,7 @@
               </div>
             </div>
             <div class="row text-center align-items-center mt-3">
-              <div class="col-12 col-md-6 mt-3 text-start">
-                <div class="form-check form-switch" *ngIf="this.usuarioActual!.profileType.profileId === 2">
-                  <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
-                    [checked]="toggleVisible === 1" title="Si está no visible el jugador no lo verá"
-                    (change)="onChangeToggle($event,trainingSession.trainingSessionId)">
-                  <label class="form-check-label">No visible / Visible</label>
-                </div>
+              <div class="col-12 col-md-6 mt-3">
               </div>
               <div class="col-12 col-md-3 mt-3">
                 <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
@@ -4312,7 +4366,7 @@
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Detalles del Entrenamiento</h5>
+          <h5 class="modal-title">Entrenamiento {{daySession}}</h5>
           <!-- Botón de cerrar con un icono -->
           <button type="button" class="btn-close" aria-label="Close" (click)="cerrarBoardModal()"></button>
         </div>

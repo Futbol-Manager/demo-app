@@ -9,6 +9,7 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Patrocinador } from 'src/app/core/services/models/club.model';
 import { environment } from 'src/environments/environment';
+import { Location } from '@angular/common';
 declare var bootstrap: any;
 
 @Component({
@@ -46,7 +47,8 @@ export class PatrocinadoresComponent implements OnInit {
     private teamService: TeamService,
     private clubService: ClubService,
     private fb: FormBuilder,
-    private route: ActivatedRoute,) { }
+    private route: ActivatedRoute,
+    private location: Location) { }
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
@@ -119,6 +121,10 @@ export class PatrocinadoresComponent implements OnInit {
         this.router.navigate(['/dashboard/inicio']);
         break;
     }
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   abrirModalPatrocinador() {

@@ -82,7 +82,7 @@
             <div class="col-md-auto ml-auto" id="dt-search">
             </div>
         </div>
-        <div style="overflow-x: auto;">
+        <div style="margin-top: 3em; overflow-x: auto; text-align: center;">
             <table id="dataTable" class="table table-bordered table-striped">
                 <thead class="table-custom">
                     <tr>
@@ -117,7 +117,9 @@
                                 {{ partido.matchPreparation.rivalName }}
                             </div>
                         </td>
-                        <td>{{ partido.resultado }}</td>
+                        <td>
+                            {{ getIcono(partido.resultado) }}
+                        </td>
                         <td>{{ partido.golesAFavor }}</td>
                         <td>{{ partido.golesEnContra }}</td>
                         <td>{{ partido.disparosAFavor }}</td>

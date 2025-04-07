@@ -146,6 +146,12 @@ export class PlayerComponent implements OnInit {
   tarjetasRojas: number = 0;
   numTitulares: number = 0;
 
+  iconos: { [key: string]: string } = {
+    'V': '🟢',
+    'E': '🟡',
+    'D': '🔴'
+  };
+
 
   constructor(private playerservice: PlayerService,
     private router: Router,

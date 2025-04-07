@@ -333,26 +333,26 @@ export class CalendarioComponent implements OnInit {
           "name": "Izquierda",
           "options": [
             "Olímpico 1er palo",
-            "Olímpico 2nd palo",
+            "Olímpico 2do palo",
             "De cabeza 1er palo",
-            "Con otra parte 1er palo",
-            "De cabeza centro palo",
-            "Con otra parte centro palo",
+            "De cabeza punto de penalti",
             "De cabeza 2nd palo",
-            "Con otra parte 2nd palo"
+            "Con otra parte 1er palo",
+            "Con otra parte punto de penalti",
+            "Con otra parte 2do palo"
           ]
         },
         {
           "name": "Derecha",
           "options": [
             "Olímpico 1er palo",
-            "Olímpico 2nd palo",
+            "Olímpico 2do palo",
             "De cabeza 1er palo",
-            "Con otra parte 1er palo",
-            "De cabeza centro palo",
-            "Con otra parte centro palo",
+            "De cabeza punto de penalti",
             "De cabeza 2nd palo",
-            "Con otra parte 2nd palo"
+            "Con otra parte 1er palo",
+            "Con otra parte punto de penalti",
+            "Con otra parte 2do palo"
           ]
         }
       ]
@@ -639,7 +639,7 @@ export class CalendarioComponent implements OnInit {
             // Si hay tanto entrenamiento como partido, se pueden asignar ambos al mismo día
             this.calendario[i][j] = {
               numero: dia, daysession, trainingId: training.trainingSessionId, matchPreparationId: matchPreparation.matchPreparationId,
-              traininVisible: training.visible, matchVisible: matchPreparation.visible, rivalName: rivalNameConst
+              traininVisible: training.visible, matchVisible: matchPreparation.visible, rivalName: rivalNameConst, terreno: matchPreparation.terreno
             };
           } else if (training) {
             this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId, traininVisible: training.visible };
@@ -650,7 +650,7 @@ export class CalendarioComponent implements OnInit {
               : matchPreparation.rivalName;
             this.calendario[i][j] = {
               numero: dia, daysession, matchPreparationId: matchPreparation.matchPreparationId,
-              matchVisible: matchPreparation.visible, rivalName: rivalNameConst
+              matchVisible: matchPreparation.visible, rivalName: rivalNameConst, terreno: matchPreparation.terreno
             };
           } else {
             this.calendario[i][j] = { numero: dia, daysession };

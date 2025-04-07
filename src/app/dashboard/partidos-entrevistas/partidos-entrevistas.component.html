@@ -25,12 +25,8 @@
                 <div class="card-body text-center">
                     <h5 class="card-title">{{ item.name }}</h5>
                     <p class="card-text">Resultado: {{ item.resultado }}</p>
-                    <span class="badge" [ngClass]="{
-                    'bg-success': item.letra === 'V', 
-                    'bg-danger': item.letra === 'D', 
-                    'bg-secondary': item.letra === 'E'
-                }">
-                        {{ item.letra }}
+                    <span class="badge fs-5">
+                        {{ iconos[item.letra] }}
                     </span>
                 </div>
             </div>
@@ -60,17 +56,15 @@
                             <p>Seleccionar imagen en formato JPG o PNG:</p>
                             <input type="file" id="image" (change)="onFileSelected($event)">
                             <div *ngIf="showPreview" style="margin-top: 2em;">
-                                <img [src]="imagePreviewUrl" alt="Image Preview" width="150"
-                                    height="150" class="rounded-circle me-2">
+                                <img [src]="imagePreviewUrl" alt="Image Preview" width="150" height="150"
+                                    class="rounded-circle me-2">
 
                                 <!-- Botones alineados verticalmente -->
                                 <div class="d-grid gap-2 mt-3">
-                                    <button (click)="rotateImage()" type="button"
-                                        class="btn btn-primary btn-lg">
+                                    <button (click)="rotateImage()" type="button" class="btn btn-primary btn-lg">
                                         Rotar Imagen
                                     </button>
-                                    <button *ngIf="showbtnupimg" type="submit"
-                                        class="btn btn-success btn-lg">
+                                    <button *ngIf="showbtnupimg" type="submit" class="btn btn-success btn-lg">
                                         Subir foto
                                     </button>
                                 </div>

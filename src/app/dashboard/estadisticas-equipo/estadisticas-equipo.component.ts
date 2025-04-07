@@ -907,7 +907,7 @@ export class EstadisticasEquipoComponent implements OnInit {
               case 'Olímpico 1er palo':
                 uno++;
                 break;
-              case 'Olímpico 2nd palo':
+              case 'Olímpico 2do palo':
                 dos++;
                 break;
               case 'De cabeza 1er palo':
@@ -916,16 +916,16 @@ export class EstadisticasEquipoComponent implements OnInit {
               case 'Con otra parte 1er palo':
                 cuatro++;
                 break;
-              case 'De cabeza centro palo':
+              case 'De cabeza punto penalti':
                 cinco++;
                 break;
-              case 'Con otra parte centro palo':
+              case 'Con otra parte punto penalti':
                 seis++;
                 break;
-              case 'De cabeza 2nd palo':
+              case 'De cabeza 2do palo':
                 siete++;
                 break;
-              case 'Con otra parte 2nd palo':
+              case 'Con otra parte 2do palo':
                 ocho++;
                 break;
             }

@@ -6,6 +6,7 @@ import { ClubService } from 'src/app/core/services/club/club.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Response } from 'src/app/core/services/models/response.model';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-opcionesjugador',
@@ -28,7 +29,8 @@ export class OpcionesjugadorComponent implements OnInit {
     private route: ActivatedRoute,
     private teamService: TeamService,
     private http: HttpClient,
-    private clubService: ClubService) { }
+    private clubService: ClubService,
+    private location: Location) { }
 
   ngOnInit(): void {
     // Suscríbete al observable del servicio para obtener el usuario actual
@@ -79,6 +81,10 @@ export class OpcionesjugadorComponent implements OnInit {
         this.router.navigate(['/dashboard/cuotas', this.teamId, this.playerId]);
         break;
     }
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   obtenerSuscripcionActual() {

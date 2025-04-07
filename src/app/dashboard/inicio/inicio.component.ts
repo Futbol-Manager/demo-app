@@ -388,6 +388,8 @@ export class InicioComponent implements OnInit {
           console.log('Archivo subido con éxito', response);
           // Aquí puedes manejar la respuesta del servidor
           this.showModalSubirJugadores = false;
+          alert("Jugadores insertado en los exipos.");
+          this.router.navigate(['/dashboard/inicio-deportes']);
         },
         (error) => {
           console.error('Error al subir el archivo', error);
