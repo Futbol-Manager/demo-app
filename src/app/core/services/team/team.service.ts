@@ -170,7 +170,7 @@ export class TeamService {
         }
     }
 
-    getTeamByClub(userId: string): Observable<Response> {
+    getTeamByClub(userId: string, temporada: string): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -182,7 +182,7 @@ export class TeamService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `team/getteamsbyclub/${userId}`;
+            const url: string = environment.apiUrl + `team/getteamsbyclub/${userId}/${temporada}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });

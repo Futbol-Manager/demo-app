@@ -39,6 +39,7 @@ export class InicioComponent implements OnInit {
   numEquipos = 0;
   numPadresPagados = 0;
   clubOk = false;
+  temporada = '2024';
 
   constructor(
     private loginService: LoginService,
@@ -165,7 +166,9 @@ export class InicioComponent implements OnInit {
   }
 
   cargarListadoEquiposForClub(): void {
-    this.teamService.getTeamByClub(this.usuarioActual!.userId.toString()).subscribe(
+    localStorage.setItem('temporada', this.temporada);
+
+    this.teamService.getTeamByClub(this.usuarioActual!.userId.toString(), this.temporada).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data) {
@@ -262,7 +265,7 @@ export class InicioComponent implements OnInit {
         },
         clubId: this.clubId || 0,
         userId: 0,
-        temporada: '2024', //TODO aqui debe de coger el año de la temporada actual
+        temporada: this.temporada, //TODO aqui debe de coger el año de la temporada actual
         dateCreate: '',
         dateUpdate: ''
       };

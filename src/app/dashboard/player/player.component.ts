@@ -151,7 +151,8 @@ export class PlayerComponent implements OnInit {
     'E': '🟡',
     'D': '🔴'
   };
-
+  
+  temporada: string = '2024';
 
   constructor(private playerservice: PlayerService,
     private router: Router,
@@ -176,6 +177,8 @@ export class PlayerComponent implements OnInit {
       this.cargarListadoJugadores();
       // Luego puedes realizar acciones con el teamId según tus necesidades
     });
+
+    this.temporada = localStorage.getItem('temporada') || '';
 
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
@@ -844,7 +847,7 @@ export class PlayerComponent implements OnInit {
     this.nombreJugador = jugadorSeleccionado.nombre + ' ' + jugadorSeleccionado.apellido;
     this.playerIdSelected = playerId;
 
-    this.teamService.getTeamsByClubForCombo(this.clubId, '2024').subscribe(
+    this.teamService.getTeamsByClubForCombo(this.clubId, this.temporada).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
