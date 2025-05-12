@@ -13,6 +13,7 @@ const appRoutes: Routes = [
   { path: 'login/:token', component: LoginComponent },
   { path: 'registro', component: RegisterComponent },
   { path: 'registro/:playerId/:email/:isMenor', component: RegisterComponent },
+  { path: 'registro-padres/:clubId', component: RegisterComponent },
   { path: 'change-password', component: ChangePasswordComponent },
   { path: 'validationUser', component: ValidationUserComponent },
   {

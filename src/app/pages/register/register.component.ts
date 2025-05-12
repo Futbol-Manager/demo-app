@@ -47,6 +47,7 @@ export class RegisterComponent implements OnInit {
   showNextRegistro = false;
   btnRegistro = false;
   selected: number | 0 = 0;
+  clubId = 0;
 
   constructor(
     private router: Router,
@@ -90,10 +91,17 @@ export class RegisterComponent implements OnInit {
       this.playerID = params['playerId'];
       this.emailParam = params['email'];
       this.isMenor = +params['isMenor'];
+      this.clubId = +params['clubId'];
       //console.log('this.playerID =' + this.playerID + 'y this.emailParam =' + this.emailParam);
     });
 
-    //let option = 0;
+    if(!Number.isNaN(this.clubId) && this.clubId != 0){
+      this.showNextRegistro = true;
+      this.selectedOption = 3;
+      this.isReadOnly = true;
+      this.registerFormEntrenador.get('email')?.enable(); // Habilita el campo
+    } else {
+      //let option = 0;
     if (this.isMenor !== undefined && !Number.isNaN(this.isMenor)) {
       this.showNextRegistro = true;
       if (this.isMenor === 0) {
@@ -126,6 +134,7 @@ export class RegisterComponent implements OnInit {
       this.isMenor = -1;
       this.selectOptions = this.selectOptions.filter(option => option.value !== "4");
       this.registerFormEntrenador.get('email')?.enable(); // Habilita el campo
+    }
     }
 
     //console.log(this.emailParam);
@@ -274,6 +283,10 @@ export class RegisterComponent implements OnInit {
 
       this.msgForm = false;
       const fv = this.registerFormEntrenador.value;
+      let id = 0;
+      if(this.clubId != 0){
+        id = this.clubId;
+      }
       const register: RegisterModel = new RegisterModel(
         fv.mobile,
         fv.comunicaciones ? 1 : 0,
@@ -284,7 +297,7 @@ export class RegisterComponent implements OnInit {
         genreType,
         fv.email,
         fv.password,
-        0,
+        id,
         this.playerID,
         fv.nameSon,
         validationUser

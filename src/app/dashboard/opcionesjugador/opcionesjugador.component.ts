@@ -21,7 +21,7 @@ export class OpcionesjugadorComponent implements OnInit {
   playerIdUserActual: any = 0;
   usuarioActual!: User | null;
   clubId = 0;
-  showOpcionesOk = false;
+  showOpcionesOk = true;
 
   constructor(
     private loginService: LoginService,

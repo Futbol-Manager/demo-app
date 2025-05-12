@@ -3,7 +3,7 @@
   <img src="assets/images/fondoLoginV1.png" alt="GIF de jugando" class="video-background">
 
   <!--REGISTRO-->
-  <div class="container" style="height: 100vh; overflow-y: auto;">
+  <div class="container  scroll-oculto">
     <div class="row justify-content-center" style="padding-top: 2%;">
       <div class="col-md-6">
         <div class="card">
@@ -254,13 +254,11 @@
               <div *ngIf="selectedOption == 3">
                 <!-- Formulario para Entrenador -->
                 <form [formGroup]="registerFormEntrenador" (ngSubmit)="openModal(2)" class="form-register">
-                  <!--<div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <label for="name" class="form-label">Ingresa tu nombre</label>
-                      <input type="text" class="form-control input-register" id="nameSon"
-                        placeholder="Ingresa tu nombre completo" formControlName="nameSon">
+                  <div class="mb-3 d-flex">
+                    <div class="col-12">
+                      <p>Introduce tus datos como padre/madre</p>
                     </div>
-                  </div>-->
+                  </div>
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
@@ -314,6 +312,17 @@
                       <div *ngIf="passwordsDoNotMatch" class="text-danger">
                         Las contraseñas no coinciden.
                       </div>
+                    </div>
+                  </div>
+                  <div class="mb-3 d-flex">
+                    <div class="col-12">
+                      <p>Introduce el nombre y apellido de tu hijo/a</p>
+                    </div>
+                  </div>
+                  <div class="mb-3 d-flex">
+                    <div class="col-6">
+                      <input type="text" class="form-control input-register" id="nameSon"
+                        placeholder="Ingresa nombre del hijo" formControlName="nameSon">
                     </div>
                   </div>
                   <div class="mb-3 d-flex">

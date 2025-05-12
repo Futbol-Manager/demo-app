@@ -405,3 +405,17 @@ body {
   margin: auto;
   display: block;
 }
+
+.scroll-oculto {
+  height: 100vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE 10+ */
+}
+
+.scroll-oculto::-webkit-scrollbar {
+  display: none;
+  /* Chrome, Safari, Edge */
+}

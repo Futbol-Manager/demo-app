@@ -40,6 +40,132 @@ export class InicioComponent implements OnInit {
   numPadresPagados = 0;
   clubOk = false;
   temporada = '2024';
+  federacion: number | null = null;
+
+  federaciones: string[] = [
+    'Real Federación Española de Fútbol',
+    'Federación Andaluza de Fútbol',
+    'Federación Aragonesa de Fútbol',
+    'Federación de Fútbol del Principado de Asturias',
+    'Federación Balear de Fútbol',
+    'Federación Canaria de Fútbol',
+    'Federación Cántabra de Fútbol',
+    'Federación Castellano-Manchega de Fútbol',
+    'Federación de Castilla y León de Fútbol',
+    'Federación Catalana de Fútbol',
+    'Federación Extremeña de Fútbol',
+    'Federación Gallega de Fútbol',
+    'Federación de Fútbol de la Comunidad Valenciana',
+    'Federación de Fútbol de Madrid',
+    'Federación de Fútbol de la Región de Murcia',
+    'Federación Navarra de Fútbol',
+    'Federación Riojana de Fútbol',
+    'Federación Vasca de Fútbol',
+    'Federación Interinsular de Fútbol de Las Palmas',
+    'Federación Interinsular de Fútbol de Tenerife',
+  ];
+
+  // Categorías por defecto (las que ya tienes)
+  categoriasDefault = [
+    { value: 27, label: 'Sin equipo' },
+    { value: 15, label: 'Senior' },
+    { value: 16, label: 'Juvenil' },
+    { value: 17, label: 'Juvenil/Cadete Femenina' },
+    { value: 18, label: 'Cadete' },
+    { value: 19, label: 'Cadete/Infantil Femenina' },
+    { value: 20, label: 'Infantil' },
+    { value: 21, label: 'Infantil/Alevín Femenina' },
+    { value: 22, label: 'Alevín' },
+    { value: 23, label: 'Benjamín' },
+    { value: 24, label: 'Benjamín/Prebenjamín Femenina' },
+    { value: 25, label: 'Prebenjamín' },
+    { value: 26, label: 'Debutante' },
+  ];
+
+  // Categorías específicas para Federación 14 (Cataluña)
+  /*categoriasCatalanas = [
+    'Juvenil',
+    'Cadet',
+    'Infantil S14',
+    'Infantil S13',
+    'Aleví S12',
+    'Aleví S11',
+    'Lúdica Aleví',
+    'Benjamí S10',
+    'Benjamí S9',
+    'Lúdica Benjamí',
+    'Prebenjamí S8',
+    'Prebenjamí S7',
+    'Lúdica Prebenjamí',
+  ].map((label, index) => ({ value: 100 + index, label })); // usar valores altos si necesitas diferenciarlos */
+
+  categoriasCatalanas = [
+    { value: 28, label: 'Juvenil' },
+    { value: 29, label: 'Cadet' },
+    { value: 30, label: 'Infantil S14' },
+    { value: 31, label: 'Infantil S13' },
+    { value: 32, label: 'Aleví S12' },
+    { value: 33, label: 'Aleví S11' },
+    { value: 34, label: 'Lúdica Aleví' },
+    { value: 35, label: 'Benjamí S10' },
+    { value: 36, label: 'Benjamí S9' },
+    { value: 37, label: 'Lúdica Benjamí' },
+    { value: 38, label: 'Prebenjamí S8' },
+    { value: 39, label: 'Prebenjamí S7' },
+    { value: 40, label: 'Lúdica Prebenjamí' },
+  ];
+  
+
+  // Niveles por defecto
+  nivelesDefault = [
+    { value: 'LaLiga EA Sports', label: 'LaLiga EA Sports' },
+    { value: 'Liga F', label: 'Liga F' },
+    { value: 'LaLiga Hypermotion', label: 'LaLiga Hypermotion' },
+    { value: 'Segunda RFEF Femenina', label: 'Segunda RFEF Femenina' },
+    { value: 'Primera RFEF', label: 'Primera RFEF' },
+    { value: 'Segunda RFEF', label: 'Segunda RFEF' },
+    { value: 'Tercera RFEF', label: 'Tercera RFEF' },
+    { value: 'Tercera RFEF Femenina', label: 'Tercera RFEF Femenina' },
+    { value: 'Preferente Autonómica', label: 'Preferente Autonómica' },
+    { value: 'Preferente Autonómica Femenina', label: 'Preferente Autonómica Femenina' },
+    { value: 'Primera Autonómica', label: 'Primera Autonómica' },
+    { value: 'Primera Autonómica Femenina', label: 'Primera Autonómica Femenina' },
+    { value: 'Segunda Autonómica', label: 'Segunda Autonómica' },
+    { value: 'Tercera Autonómica', label: 'Tercera Autonómica' },
+    { value: 'División de Honor', label: 'División de Honor' },
+    { value: 'Liga Nacional', label: 'Liga Nacional' },
+    { value: 'Superliga', label: 'Superliga' },
+    { value: 'Autonómica', label: 'Autonómica' },
+    { value: 'Preferente', label: 'Preferente' },
+    { value: 'Primera', label: 'Primera' },
+    { value: 'Segunda', label: 'Segunda' },
+    { value: 'Tercera', label: 'Tercera' },
+    { value: 'Fútbol 5', label: 'Fútbol 5' },
+  ];
+
+  // Niveles específicos para Federación 14
+  nivelesCatalanes = [
+    'Primera Federació',
+    'Segona Federació',
+    'Tercera Federació',
+    'Lliga Elit',
+    'Primera Catalana',
+    'Segona Catalana',
+    'Tercera Catalana',
+    'Quarta Catalana',
+    'Divisió Honor',
+    'Lliga Nacional',
+    'Preferent',
+    'Primera',
+    'Segona',
+    'Tercera',
+    'Quarta',
+    'No Federat',
+  ].map(label => ({ value: label, label }));
+
+  // Variables visibles que cambian dinámicamente
+  categoriasVisibles = [...this.categoriasDefault];
+  nivelesVisibles = [...this.nivelesDefault];
 
   constructor(
     private loginService: LoginService,
@@ -53,6 +179,7 @@ export class InicioComponent implements OnInit {
     });
     this.crearEquipoForm = this.fb.group({
       categoryTypeId: ['', Validators.required],
+      federacion: [''],
       levelLeague: [''],
       name: [''],
       objectiveTeam: [''],
@@ -97,6 +224,49 @@ export class InicioComponent implements OnInit {
         }
         datosYaCargados = true; // Actualiza la bandera después de la primera carga
       });
+
+    const storedValue = localStorage.getItem('federacionSeleccionada');
+    if (storedValue !== null) {
+      this.federacion = +storedValue;
+
+      if (this.federacion.toString() === '10') {
+        this.categoriasVisibles = [...this.categoriasCatalanas];
+        this.nivelesVisibles = [...this.nivelesCatalanes];
+      } else {
+        this.categoriasVisibles = [...this.categoriasDefault];
+        this.nivelesVisibles = [...this.nivelesDefault];
+      }
+    }
+  }
+
+  guardarFederacion() {
+    if (this.federacion !== null) {
+      localStorage.setItem('federacionSeleccionada', this.federacion.toString());
+    }
+
+    if (this.federacion != null && this.federacion.toString() === '10') {
+      this.categoriasVisibles = [...this.categoriasCatalanas];
+      this.nivelesVisibles = [...this.nivelesCatalanes];
+    } else {
+      this.categoriasVisibles = [...this.categoriasDefault];
+      this.nivelesVisibles = [...this.nivelesDefault];
+    }
+  }
+
+  copyLink() {
+    const link = 'https://appsphairatech.com/registro-padres/' + this.clubId;
+    //const link = 'localhost:4200/registro-padres/' + this.clubId;
+
+    navigator.clipboard.writeText(link)
+      .then(() => {
+        console.log('Enlace copiado al portapapeles:', link);
+        // Opcional: puedes usar un toast o alert para avisar al usuario
+        alert('¡Link copiado!');
+      })
+      .catch(err => {
+        console.error('Error al copiar el enlace:', err);
+        alert('No se pudo copiar el enlace. Intenta de nuevo.');
+      });
   }
 
   checkSuscripcion() {
@@ -115,7 +285,7 @@ export class InicioComponent implements OnInit {
               this.numPadresPagados = response.data;
               if (resp.data < 49) {
                 //significa que lo puede tener todo
-                this.clubOk = false;
+                this.clubOk = true;
               } else {
                 //significa que no tiene acceso
               }
@@ -250,6 +420,11 @@ export class InicioComponent implements OnInit {
   // Método para crear un nuevo equipo
   crearEquipo(): void {
     if (this.crearEquipoForm.valid) {
+      //const categoriaLabel = this.categoriasVisibles.find(c => c.value === this.crearEquipoForm.value.categoryTypeId)?.label;
+      const categoriaLabel = this.categoriasVisibles.find(
+        c => +c.value === +this.crearEquipoForm.value.categoryTypeId
+      )?.label;
+      
       // Recoge los campos del modal y asigna al objeto nuevoEquipo
       this.teamNew = {
         teamId: 0, // O el valor por defecto que desees para teamId
@@ -261,7 +436,7 @@ export class InicioComponent implements OnInit {
         categoryType: {
           categoryTypeId: this.crearEquipoForm.value.categoryTypeId,
           year: 0,
-          categoryName: ''
+          categoryName: categoriaLabel != undefined ? categoriaLabel : ''
         },
         clubId: this.clubId || 0,
         userId: 0,

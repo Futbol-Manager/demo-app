@@ -74,7 +74,7 @@
 
   <!-- Botón para abrir el modal de creación de equipo -->
   <div class="container">
-    <div class="row">
+    <!-- <div class="row">
       <div class="col text-center" *ngIf="this.usuarioActual!.profileType.profileId == 5">
         <h2 class="text-dark mt-3">Jugadores de Sphaira</h2>
       </div>
@@ -85,15 +85,21 @@
         *ngIf="this.usuarioActual!.profileType.profileId == 3 || this.usuarioActual!.profileType.profileId == 4">
         <h2 class="text-dark mt-3">Listado de jugadores</h2>
       </div>
-    </div>
-    <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
-      <div class="col">
-        <button class="btn btn-success" (click)="openModalSubirJugadores()">
-          Cargar jugadores desde plantilla Excel <i class="bi bi-file-earmark-spreadsheet"></i>
+    </div> -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em; "
+      *ngIf="this.usuarioActual!.profileType.profileId === 1">
+      <div class="col-3">
+        <label for="excel" class="form-label">Cargar jugadores desde una plantilla de Excel:</label>
+        <button class="btn btn-success form-control" (click)="openModalSubirJugadores()">
+          Subir Excel <i class="bi bi-file-earmark-spreadsheet"></i>
         </button>
       </div>
-    </div>
-    <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
+      <div class="col-3">
+        <label for="excel" class="form-label">Link invitación para padres:</label>
+        <button class="btn btn-secondary form-control" (click)="copyLink()">
+          Copiar <i class="bi bi-copy"></i>
+        </button>
+      </div>
       <div class="col-3">
         <label for="temporada" class="form-label">Temporada:</label>
         <select class="form-control" id="temporada" name="temporada" [(ngModel)]="temporada"
@@ -107,7 +113,6 @@
     </div>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
       *ngIf="this.usuarioActual!.profileType.profileId < 3">
-
       <div class="col mb-3" style="cursor: pointer;" (click)="abrirModalCrearEquipo()">
         <div class="card h-100" style="border: 1px solid black;">
           <div class="card-body text-center">
@@ -281,56 +286,32 @@
         <!-- Formulario para la creación de equipo con campos separados -->
         <form [formGroup]="crearEquipoForm" (ngSubmit)="crearEquipo()">
           <div class="mb-3">
-            <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
-            <select class="form-control" id="categoriaEquipo" name="categoriaEquipo" formControlName="categoryTypeId">
-              <!-- Opciones ajustadas según tus necesidades -->
-              <option value="27">Sin equipo</option>
-              <option value="15">Senior</option>
-              <option value="16">Juvenil</option>
-              <option value="17">Juvenil/Cadete Femenina</option>
-              <option value="18">Cadete</option>
-              <option value="19">Cadete/Infantil Femenina</option>
-              <option value="20">Infantil</option>
-              <option value="21">Infantil/Alevín Femenina</option>
-              <option value="22">Alevín</option>
-              <option value="23">Benjamín</option>
-              <option value="24">Benjamín/Prebenjamín Femenina</option>
-              <option value="25">Prebenjamín</option>
-              <option value="26">Debutante</option>
+            <label for="federacion" class="form-label">Federación:</label>
+            <select [(ngModel)]="federacion" (change)="guardarFederacion()" class="form-select" id="federacion"
+              name="federacion" formControlName="federacion">
+              <option *ngFor="let f of federaciones; let i = index" [value]="i + 1">{{ f }}</option>
             </select>
           </div>
+
+          <!-- Categoría (dinámico) -->
+          <div class="mb-3">
+            <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
+            <select class="form-select" id="categoriaEquipo" formControlName="categoryTypeId">
+              <option *ngFor="let c of categoriasVisibles; let i = index" [value]="c.value">{{ c.label }}</option>
+            </select>
+          </div>
+
+          <!-- Nivel (dinámico) -->
           <div class="mb-3">
             <label for="nivelLiga" class="form-label">Nivel:</label>
-            <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague">
-              <!-- Opciones ajustadas según tus necesidades -->
-              <option value="LaLiga EA Sports">LaLiga EA Sports</option>
-              <option value="Liga F">Liga F</option>
-              <option value="LaLiga Hypermotion">LaLiga Hypermotion</option>
-              <option value="Segunda RFEF Femenina">Segunda RFEF Femenina</option>
-              <option value="Primera RFEF">Primera RFEF</option>
-              <option value="Segunda RFEF">Segunda RFEF</option>
-              <option value="Tercera RFEF">Tercera RFEF</option>
-              <option value="Tercera RFEF Femenina">Tercera RFEF Femenina</option>
-              <option value="Preferente Autonómica">Preferente Autonómica</option>
-              <option value="Preferente Autonómica Femenina">Preferente Autonómica Femenina</option>
-              <option value="Primera Autonómica">Primera Autonómica</option>
-              <option value="Primera Autonómica Femenina">Primera Autonómica Femenina</option>
-              <option value="Segunda Autonómica">Segunda Autonómica</option>
-              <option value="Tercera Autonómica">Tercera Autonómica</option>
-              <option value="División de Honor">División de Honor</option>
-              <option value="Liga Nacional">Liga Nacional</option>
-              <option value="Superliga">Superliga</option>
-              <option value="Autonómica">Autonómica</option>
-              <option value="Preferente">Preferente</option>
-              <option value="Primera">Primera</option>
-              <option value="Segunda">Segunda</option>
-              <option value="Tercera">Tercera</option>
-              <option value="Fútbol 5">Fútbol 5</option>
+            <select class="form-select" id="nivelLiga" formControlName="levelLeague">
+              <option *ngFor="let n of nivelesVisibles; let i = index" [value]="n.value">{{ n.label }}</option>
             </select>
           </div>
+
           <div class="mb-3">
             <label for="nombreEquipo" class="form-label">Letra del equipo:</label>
-            <select class="form-control" id="nombreEquipo" name="nombreEquipo" formControlName="name">
+            <select class="form-select" id="nombreEquipo" name="nombreEquipo" formControlName="name">
               <option value="">Sin letra</option>
               <option value="A">A</option>
               <option value="B">B</option>
