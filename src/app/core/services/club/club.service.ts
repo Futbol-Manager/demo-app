@@ -885,4 +885,88 @@ export class ClubService {
     }
   }
 
+
+  /**************************DOCUMENTOS************************** */
+  
+
+  getlistDocumentosByClub(clubId: number): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/getdocumentosbyclub/${clubId}`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  deleteDocumentoForClub(docClubesId: number): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/deletedocumentoforclub/${docClubesId}`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  setDocumentoVisible(docClubesId: number, visible: number): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/setdocumentovisible/${docClubesId}/${visible}`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  uploadDocClub(file: File, dto: any): Observable<Response> {
+    const token = localStorage.getItem('token');
+    if (!token) return new Observable();
+  
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+  
+    const formData = new FormData();
+    formData.append('files', file, file.name);
+    formData.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+  
+    const url = environment.apiUrl + 'club/uploaddocclub';
+    return this.http.post<Response>(url, formData, { headers });
+  }
+  
+
 }

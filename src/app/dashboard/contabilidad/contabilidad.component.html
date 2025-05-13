@@ -126,7 +126,7 @@
               <td>{{ player.pagado }}</td>
               <td>{{ player.restante }}</td>
               <td>
-                <ng-container *ngIf="player.verify === 0">
+                <ng-container>
                   <i class="bi bi-x-circle text-danger" style="cursor: pointer;" (click)="invitarJugador(player)"></i>
                   <i class="bi bi-envelope text-danger ms-2" style="cursor: pointer;"
                     (click)="invitarJugador(player)"></i>

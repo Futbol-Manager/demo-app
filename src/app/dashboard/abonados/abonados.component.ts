@@ -12,6 +12,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { Abonado, AbonadoPagoHistorico, AbonadoTemporada } from 'src/app/core/services/models/club.model';
 import * as XLSX from "xlsx";
 import { environment } from 'src/environments/environment';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-abonados',
@@ -61,7 +62,8 @@ export class AbonadosComponent implements OnInit {
     private route: ActivatedRoute,
     private elementRef: ElementRef,
     private http: HttpClient,
-    private clubService: ClubService) { }
+    private clubService: ClubService,
+    private location: Location) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -92,6 +94,10 @@ export class AbonadosComponent implements OnInit {
         console.error('Error al cargar el listado de equipos', error);
       }
     );
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   irAPantalla(id: number): void {

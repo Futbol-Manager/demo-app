@@ -36,6 +36,7 @@ import { InicioDeportesComponent } from './inicio-deportes/inicio-deportes.compo
 import { PartidosEntrevistasComponent } from './partidos-entrevistas/partidos-entrevistas.component';
 import { MenuClubComponent } from './menu-club/menu-club.component';
 import { ClasificacionResultadosComponent } from './clasificacion-resultados/clasificacion-resultados.component';
+import { DocumentosClubComponent } from './documentos-club/documentos-club.component';
 
 const routes: Routes = [
   {
@@ -51,6 +52,7 @@ const routes: Routes = [
       { path: 'partidos-entrevistas/:teamId/:playerId', component: PartidosEntrevistasComponent },
       { path: 'clasificacion-resultados/:teamId', component: ClasificacionResultadosComponent },
       { path: 'jugadores/:teamId', component: PlayerComponent },
+      { path: 'documentos-club/:clubId', component: DocumentosClubComponent },
       { path: 'estadisticas_equipo/:teamId', component: EstadisticasEquipoComponent },
       { path: 'informacion_equipo/:teamId', component: InformacionEquipoComponent },
       { path: 'estadisticas_jugadores/:teamId', component: EstadisticasJugadoresComponent },

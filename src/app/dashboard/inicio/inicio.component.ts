@@ -114,7 +114,7 @@ export class InicioComponent implements OnInit {
     { value: 39, label: 'Prebenjamí S7' },
     { value: 40, label: 'Lúdica Prebenjamí' },
   ];
-  
+
 
   // Niveles por defecto
   nivelesDefault = [
@@ -424,7 +424,7 @@ export class InicioComponent implements OnInit {
       const categoriaLabel = this.categoriasVisibles.find(
         c => +c.value === +this.crearEquipoForm.value.categoryTypeId
       )?.label;
-      
+
       // Recoge los campos del modal y asigna al objeto nuevoEquipo
       this.teamNew = {
         teamId: 0, // O el valor por defecto que desees para teamId
@@ -532,6 +532,9 @@ export class InicioComponent implements OnInit {
         break;
       case 5:
         this.router.navigate(['/dashboard/notificaciones', this.clubId]);
+        break;
+      case 6:
+        this.router.navigate(['/dashboard/documentos-club', this.clubId]);
         break;
     }
   }

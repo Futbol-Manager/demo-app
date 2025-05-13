@@ -47,7 +47,7 @@
                             <div class="card h-100" style="border: 1px solid black;">
                                 <!-- Aquí puedes mostrar la imagen del jugador, si tienes -->
                                 <div class="card-body text-center">
-                                    <!-- Puedes agregar botones o acciones específicas para cada jugador aquí -->
+                                    <!-- Puedes agregar botones o acciones específicas para cada jugador aquí
                                     <div *ngIf="player.verify === 0" class="d-flex justify-content-between">
                                         <button class="btn btn-danger" title="Invitar"
                                             (click)="invitarJugador(player.playerId)">
@@ -56,6 +56,12 @@
                                     </div>
                                     <div *ngIf="player.verify !== 0" class="d-flex justify-content-between">
                                         <button style="visibility: hidden;" class="btn btn-danger" title="Invitar"
+                                            (click)="invitarJugador(player.playerId)">
+                                            <i class="bi bi-envelope"></i>
+                                        </button>
+                                    </div> -->
+                                    <div class="d-flex justify-content-between">
+                                        <button class="btn btn-danger" title="Invitar"
                                             (click)="invitarJugador(player.playerId)">
                                             <i class="bi bi-envelope"></i>
                                         </button>

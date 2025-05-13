@@ -13,6 +13,7 @@ import 'datatables.net';
 import { RopaClub, RopaJugador } from 'src/app/core/services/team/club.model';
 import * as XLSX from "xlsx";
 import { Subject, debounceTime } from 'rxjs';
+import { Location } from '@angular/common';
 
 
 @Component({
@@ -65,7 +66,8 @@ export class RopaComponent implements OnInit {
     private route: ActivatedRoute,
     private clubService: ClubService,
     private elementRef: ElementRef,
-    private http: HttpClient) {
+    private http: HttpClient,
+    private location: Location) {
     this.abrigoSubject.pipe(
       debounceTime(500) // Tiempo de espera en milisegundos
     ).subscribe(value => {
@@ -119,6 +121,10 @@ export class RopaComponent implements OnInit {
         console.error('Error al cargar el listado de equipos', error);
       }
     );
+  }
+
+  goBack(): void {
+    this.location.back();
   }
 
   ocultarColumnasRopa() {
