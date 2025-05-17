@@ -57,6 +57,8 @@ export class InfoJugadoresComponent implements OnInit {
   loading = true;
   imageBaseUrlUser: string = environment.images + 'user/';
   imageBaseUrlPlayerDni: string = environment.images + 'playerDni/';
+  
+  temporadaStoredValue = '2024';
 
   constructor(
     private router: Router,
@@ -72,6 +74,11 @@ export class InfoJugadoresComponent implements OnInit {
       this.clubId = +params['clubId'];  // El + convierte el valor a número
       console.log('clubId:', this.clubId);
     });
+
+    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+    }
+    
     this.cargarListadoJugadores();
   }
 
@@ -85,7 +92,7 @@ export class InfoJugadoresComponent implements OnInit {
   }
 
   cargarListadoJugadores(): void {
-    this.clubService.getListJugadoresByClubForTemp(this.clubId, '2024').subscribe(
+    this.clubService.getListJugadoresByClubForTemp(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data) {

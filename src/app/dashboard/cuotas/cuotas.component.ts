@@ -250,7 +250,7 @@ export class CuotasComponent implements OnInit {
     const cuotas = [];
 
     // Cuota de ropa
-    if (this.playerCuotas.cuotaRopa != 0) {
+    if (this.playerCuotas.cuotaRopa && this.playerCuotas.cuotaRopa != 0) {
       cuotas.push({
         value: this.playerCuotas.cuotaRopa,
         text: `${this.playerCuotas.cuotaRopa}€`
@@ -260,10 +260,11 @@ export class CuotasComponent implements OnInit {
     // Cuotas dinámicas
     for (let i = 1; i <= this.playerCuotas.numCuotas; i++) {
       const cuotaValue = this.playerCuotas[`cuota${this.numeroEnTexto(i)}`];
+      //const cuotaAlias = this.playerCuotas[`cuota${this.numeroEnTexto(i)}Alias`];
       if (cuotaValue != null) {
         cuotas.push({
           value: cuotaValue,
-          text: `${cuotaValue}€`
+          text: `${cuotaValue}€` //+  ' ' + cuotaAlias
         });
       }
     }

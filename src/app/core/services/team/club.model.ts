@@ -146,6 +146,18 @@ export class ClubCuotas {
     cuotaDiezDate: string;
     cuotaOnceDate: string;
     cuotaDoceDate: string;
+    cuotaUnoAlias: string;
+    cuotaDosAlias: string;
+    cuotaTresAlias: string;
+    cuotaCuatroAlias: string;
+    cuotaCincoAlias: string;
+    cuotaSeisAlias: string;
+    cuotaSieteAlias: string;
+    cuotaOchoAlias: string;
+    cuotaNueveAlias: string;
+    cuotaDiezAlias: string;
+    cuotaOnceAlias: string;
+    cuotaDoceAlias: string;
     temporada: string;
 
     constructor(object: any) {
@@ -179,6 +191,18 @@ export class ClubCuotas {
         this.cuotaDiezDate = object.cuotaDiezDate ? object.cuotaDiezDate : null;
         this.cuotaOnceDate = object.cuotaOnceDate ? object.cuotaOnceDate : null;
         this.cuotaDoceDate = object.cuotaDoceDate ? object.cuotaDoceDate : null;
+        this.cuotaUnoAlias = object.cuotaUnoAlias ? object.cuotaUnoAlias : null;
+        this.cuotaDosAlias = object.cuotaDosAlias ? object.cuotaDosAlias : null;
+        this.cuotaTresAlias = object.cuotaTresAlias ? object.cuotaTresAlias : null;
+        this.cuotaCuatroAlias = object.cuotaCuatroAlias ? object.cuotaCuatroAlias : null;
+        this.cuotaCincoAlias = object.cuotaCincoAlias ? object.cuotaCincoAlias : null;
+        this.cuotaSeisAlias = object.cuotaSeisAlias ? object.cuotaSeisAlias : null;
+        this.cuotaSieteAlias = object.cuotaSieteAlias ? object.cuotaSieteAlias : null;
+        this.cuotaOchoAlias = object.cuotaOchoAlias ? object.cuotaOchoAlias : null;
+        this.cuotaNueveAlias = object.cuotaNueveAlias ? object.cuotaNueveAlias : null;
+        this.cuotaDiezAlias = object.cuotaDiezAlias ? object.cuotaDiezAlias : null;
+        this.cuotaOnceAlias = object.cuotaOnceAlias ? object.cuotaOnceAlias : null;
+        this.cuotaDoceAlias = object.cuotaDoceAlias ? object.cuotaDoceAlias : null;
         this.temporada = object.temporada ? object.temporada : null;
     }
 }

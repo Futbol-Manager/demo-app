@@ -167,6 +167,8 @@ export class InicioComponent implements OnInit {
   categoriasVisibles = [...this.categoriasDefault];
   nivelesVisibles = [...this.nivelesDefault];
 
+  temporadaStoredValue = '2024';
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -189,7 +191,11 @@ export class InicioComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    let datosYaCargados = false; // Bandera para evitar múltiples cargas
+    let datosYaCargados = false; // Bandera para evitar múltiples carga
+    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+      this.temporada = this.temporadaStoredValue;
+    }
 
     this.loginService.usuarioActual
       .pipe(
@@ -280,7 +286,7 @@ export class InicioComponent implements OnInit {
         if (response.data == 999) {
           //significa que es un club con plan gratuido
           //hay que ver si tiene mas de 50 padres que pagan cuota, de ser asi, desbloquear los menus
-          this.teamService.getPlayersByTeamByClubVerify(this.userId, '2024').subscribe(
+          this.teamService.getPlayersByTeamByClubVerify(this.userId, this.temporadaStoredValue).subscribe(
             (resp: Response) => {
               this.numPadresPagados = response.data;
               if (resp.data < 49) {
@@ -337,8 +343,9 @@ export class InicioComponent implements OnInit {
 
   cargarListadoEquiposForClub(): void {
     localStorage.setItem('temporada', this.temporada);
+    this.temporadaStoredValue = this.temporada;
 
-    this.teamService.getTeamByClub(this.usuarioActual!.userId.toString(), this.temporada).subscribe(
+    this.teamService.getTeamByClub(this.usuarioActual!.userId.toString(), this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data) {
@@ -440,7 +447,7 @@ export class InicioComponent implements OnInit {
         },
         clubId: this.clubId || 0,
         userId: 0,
-        temporada: this.temporada, //TODO aqui debe de coger el año de la temporada actual
+        temporada: this.temporadaStoredValue, //TODO aqui debe de coger el año de la temporada actual
         dateCreate: '',
         dateUpdate: ''
       };

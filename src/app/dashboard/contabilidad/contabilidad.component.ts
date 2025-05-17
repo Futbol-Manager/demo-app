@@ -81,6 +81,9 @@ export class ContabilidadComponent implements OnInit {
   hayRopa = false;
   recalcular = false;
 
+  temporadaStoredValue = '2024';
+  botonDeshabilitado: boolean = false;
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -105,9 +108,13 @@ export class ContabilidadComponent implements OnInit {
       });
     });
 
+    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+    }
+
     //cargar aqui todos los jugadores que pertenezcan al equipo que pertyenezca a ese club
 
-    this.teamService.GetPlayersByTeamByClub(this.clubId.toString(), '2024').subscribe(
+    this.teamService.GetPlayersByTeamByClub(this.clubId.toString(), this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
@@ -130,7 +137,7 @@ export class ContabilidadComponent implements OnInit {
       }
     );
 
-    this.teamService.getTeamsByClubForCombo(this.clubId, '2024').subscribe(
+    this.teamService.getTeamsByClubForCombo(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
@@ -255,7 +262,7 @@ export class ContabilidadComponent implements OnInit {
   }
 
   abrirModal() {
-    let temporada = this.infoClub.temporada === '' ? '2024' : this.infoClub.temporada;
+    let temporada = this.infoClub.temporada === '' ? this.temporadaStoredValue : this.infoClub.temporada;
     this.clubService.getClubCuota(this.clubId.toString(), temporada === null ? '2024' : temporada).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
@@ -275,7 +282,7 @@ export class ContabilidadComponent implements OnInit {
   }
 
   getInfoClub() {
-    let temporada = '2024';
+    let temporada = this.temporadaStoredValue;
     this.clubService.getClubCuota(this.clubId.toString(), temporada).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
@@ -295,6 +302,7 @@ export class ContabilidadComponent implements OnInit {
   }
 
   createUpdateSettings() {
+    this.botonDeshabilitado = true; 
     let option = this.selectedComboTitle;
     let value = option === 0 ? this.teamSelected : this.categorySelected;
     //esto actualiza la info del club, el IBAN, etc
@@ -312,7 +320,7 @@ export class ContabilidadComponent implements OnInit {
             this.totales.restante = this.clubCuotas.restante;
             this.totales.pagado = this.clubCuotas.pagado;*/
 
-            this.teamService.GetPlayersByTeamByClub(this.clubId.toString(), '2024').subscribe(
+            this.teamService.GetPlayersByTeamByClub(this.clubId.toString(), this.temporadaStoredValue).subscribe(
               (response: Response) => {
                 // Verifica que la propiedad 'data' exista en la respuesta
                 if (response.data !== null) {
@@ -466,10 +474,12 @@ export class ContabilidadComponent implements OnInit {
   }
 
   guardar() {
-    this.showAlert = true;
+    /*this.showAlert = true;
     setTimeout(() => {
       this.showAlert = false;
-    }, 2000);
+    }, 2000);*/
+    alert('Guardado correctamente');
+    this.botonDeshabilitado = false; 
   }
 
   openModalPago(player: any, index: number) {
@@ -591,7 +601,7 @@ export class ContabilidadComponent implements OnInit {
   }
 
   loadCuotaClub() {
-    let temporada = this.infoClub.temporada === '' ? '2024' : this.infoClub.temporada;
+    let temporada = this.infoClub.temporada === '' ? this.temporadaStoredValue : this.infoClub.temporada;
     this.clubService.getClubCuotaForLoadTeam(this.clubId, temporada, this.teamSelected).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
