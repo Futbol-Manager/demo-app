@@ -59,6 +59,7 @@ export class RopaComponent implements OnInit {
   prendasOcultar: number[] = [0];
 
   ropaPrendas: RopaClub = new RopaClub({});
+  temporadaStoredValue = '2024';
 
   constructor(
     private loginService: LoginService,
@@ -84,18 +85,22 @@ export class RopaComponent implements OnInit {
         // Obtener el valor de clubId de los parámetros
         this.clubId = +params['clubId'];  // El + convierte el valor a número
       });
-    });
+    });    
 
-    this.clubService.getRopaClub(this.clubId.toString(), '2024').subscribe(
+    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+    }
+
+    this.clubService.getRopaClub(this.clubId.toString(), this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.ropaClub = response.data;
           this.ropaClub.clubId = this.clubId;
-          this.ropaClub.temporada = '2024';
+          this.ropaClub.temporada = this.temporadaStoredValue;
           //recuperar las prendas que han de verse y las que no
           this.ocultarColumnasRopa();
-          this.clubService.getRopaJugadoresByClubForTemp(this.clubId.toString(), '2024').subscribe(
+          this.clubService.getRopaJugadoresByClubForTemp(this.clubId.toString(), this.temporadaStoredValue).subscribe(
             (response: Response) => {
               // Verifica que la propiedad 'data' exista en la respuesta
               if (response.data !== null) {
@@ -409,13 +414,13 @@ export class RopaComponent implements OnInit {
 
   // Método para abrir el modal de creación de equipo
   abrirModal(): void {
-    this.clubService.getRopaClub(this.clubId.toString(), '2024').subscribe(
+    this.clubService.getRopaClub(this.clubId.toString(), this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.ropaClub = response.data;
           this.ropaClub.clubId = this.clubId;
-          this.ropaClub.temporada = '2024';
+          this.ropaClub.temporada = this.temporadaStoredValue;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }

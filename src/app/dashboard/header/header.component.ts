@@ -140,7 +140,8 @@ export class HeaderComponent implements OnInit {
   }
 
   goInicio() {
-    this.router.navigate(['/dashboard/inicio-deportes']);
+    this.router.navigate(['/dashboard/inicio']);
+    //this.router.navigate(['/dashboard/inicio-deportes']);
   }
 
   logOut(): void {

@@ -41,6 +41,7 @@ export class InicioComponent implements OnInit {
   clubOk = false;
   temporada = '2024';
   federacion: number | null = null;
+  showAlertAndroid = true;
 
   federaciones: string[] = [
     'Real Federación Española de Fútbol',
@@ -218,6 +219,21 @@ export class InicioComponent implements OnInit {
               if (response.data !== null) {
                 this.listHijos = response.data;
                 this.datosCargados = true;
+
+                let goToDatos = false;
+                let teamId = 0;
+                for (let a = 0; a < this.listHijos.length; a++) {
+                  if(this.listHijos[a].apellido == null){
+                    goToDatos = true;
+                    teamId = this.listHijos[a].teamId;
+                    break;
+                  }
+                }
+
+                if(goToDatos){
+                  this.router.navigate(['/dashboard/jugadores', teamId]);
+                }
+
               } else {
                 console.error('La respuesta del servicio no tiene la estructura esperada', response);
               }
@@ -602,6 +618,10 @@ export class InicioComponent implements OnInit {
   goSuscripcion() {
     this.showModal = false;
     this.router.navigate(['/dashboard/suscripcion', this.userId]);
+  }
+
+  cerrarAlertaAndroid(): void {
+    this.showAlertAndroid = false;
   }
 
 }

@@ -48,6 +48,7 @@ export class RegisterComponent implements OnInit {
   btnRegistro = false;
   selected: number | 0 = 0;
   clubId = 0;
+  passwordsDoNotSize = false;
 
   constructor(
     private router: Router,
@@ -95,46 +96,46 @@ export class RegisterComponent implements OnInit {
       //console.log('this.playerID =' + this.playerID + 'y this.emailParam =' + this.emailParam);
     });
 
-    if(!Number.isNaN(this.clubId) && this.clubId != 0){
+    if (!Number.isNaN(this.clubId) && this.clubId != 0) {
       this.showNextRegistro = true;
       this.selectedOption = 3;
       this.isReadOnly = true;
       this.registerFormEntrenador.get('email')?.enable(); // Habilita el campo
     } else {
       //let option = 0;
-    if (this.isMenor !== undefined && !Number.isNaN(this.isMenor)) {
-      this.showNextRegistro = true;
-      if (this.isMenor === 0) {
-        this.selectedOption = 4;
-        //this.showPPlayer = true;
-      } else if (this.isMenor === 1) {
-        this.selectedOption = 3;
-        //this.showPPlayer = true;
-      } else if (this.isMenor === 2) { //este es club
-        this.selectedOption = 1;
-        this.emailParam = '';
-        this.playerID = 0;
-      } else if (this.isMenor === 3) { //este es entrenador 
-        this.selectedOption = 2;
-        //this.emailParam = '';
-        this.playerID = 0;
-      } else if (this.isMenor === 4) { //este es scouter 
-        this.selectedOption = 5;
-        this.emailParam = '';
-        this.playerID = 0;
-      }
-      this.isReadOnly = true;
-      // Establecer valor predeterminado para el campo email
-      this.registerFormEntrenador.get('email')!.setValue(this.emailParam);
+      if (this.isMenor !== undefined && !Number.isNaN(this.isMenor)) {
+        this.showNextRegistro = true;
+        if (this.isMenor === 0) {
+          this.selectedOption = 4;
+          //this.showPPlayer = true;
+        } else if (this.isMenor === 1) {
+          this.selectedOption = 3;
+          //this.showPPlayer = true;
+        } else if (this.isMenor === 2) { //este es club
+          this.selectedOption = 1;
+          this.emailParam = '';
+          this.playerID = 0;
+        } else if (this.isMenor === 3) { //este es entrenador 
+          this.selectedOption = 2;
+          //this.emailParam = '';
+          this.playerID = 0;
+        } else if (this.isMenor === 4) { //este es scouter 
+          this.selectedOption = 5;
+          this.emailParam = '';
+          this.playerID = 0;
+        }
+        this.isReadOnly = true;
+        // Establecer valor predeterminado para el campo email
+        this.registerFormEntrenador.get('email')!.setValue(this.emailParam);
 
-      /*if (this.emailParam !== '') {
-        this.registerFormEntrenador.get('email')?.disable(); // Deshabilita el campo
-      }*/
-    } else {
-      this.isMenor = -1;
-      this.selectOptions = this.selectOptions.filter(option => option.value !== "4");
-      this.registerFormEntrenador.get('email')?.enable(); // Habilita el campo
-    }
+        /*if (this.emailParam !== '') {
+          this.registerFormEntrenador.get('email')?.disable(); // Deshabilita el campo
+        }*/
+      } else {
+        this.isMenor = -1;
+        this.selectOptions = this.selectOptions.filter(option => option.value !== "4");
+        this.registerFormEntrenador.get('email')?.enable(); // Habilita el campo
+      }
     }
 
     //console.log(this.emailParam);
@@ -157,7 +158,14 @@ export class RegisterComponent implements OnInit {
       if (passwordControl) {
         const password = passwordControl.value;
         const password2 = registerFormEntrenador.get('password2')?.value; // Uso del operador de navegación segura (?)
-        this.passwordsDoNotMatch = password !== password2;
+
+        if (!this.passwordsDoNotSize)
+          this.passwordsDoNotMatch = password !== password2;
+      }
+      if (passwordControl != null && passwordControl.value.length < 8) {
+        this.passwordsDoNotSize = true;
+      } else {
+        this.passwordsDoNotSize = false;
       }
     }
   }
@@ -169,7 +177,9 @@ export class RegisterComponent implements OnInit {
       if (passwordControl) {
         const password = passwordControl.value;
         const password2 = registerFormClub.get('password2')?.value; // Uso del operador de navegación segura (?)
-        this.passwordsDoNotMatch = password !== password2;
+
+        if (!this.passwordsDoNotSize)
+          this.passwordsDoNotMatch = password !== password2;
       }
     }
   }
@@ -284,7 +294,7 @@ export class RegisterComponent implements OnInit {
       this.msgForm = false;
       const fv = this.registerFormEntrenador.value;
       let id = 0;
-      if(this.clubId != 0){
+      if (this.clubId != 0) {
         id = this.clubId;
       }
       const register: RegisterModel = new RegisterModel(
@@ -394,12 +404,12 @@ export class RegisterComponent implements OnInit {
     this.login(this.optionSelected);
   }
 
-  nextRegistro(){
+  nextRegistro() {
     this.showNextRegistro = true;
     this.btnRegistro = true;
   }
 
-  backRegistro(){
+  backRegistro() {
     this.showNextRegistro = false;
     this.btnRegistro = false;
   }

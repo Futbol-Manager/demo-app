@@ -145,13 +145,14 @@ export class PlayerComponent implements OnInit {
   tarjetasAmarillas: number = 0;
   tarjetasRojas: number = 0;
   numTitulares: number = 0;
+  showAlertAndroid = false;
 
   iconos: { [key: string]: string } = {
     'V': '🟢',
     'E': '🟡',
     'D': '🔴'
   };
-  
+
   temporada: string = '2024';
 
   constructor(private playerservice: PlayerService,
@@ -215,6 +216,22 @@ export class PlayerComponent implements OnInit {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
         this.datosCargados = true;
+
+        let goToDatos = false;
+        let playerId = 0;
+        for (let a = 0; a < this.players.length; a++) {
+          if (this.players[a].apellido == null) {
+            goToDatos = true;
+            playerId = this.players[a].playerId;
+            break;
+          }
+        }
+
+        if (goToDatos) {
+          this.editarJugador(playerId);
+          alert('Rellena estos datos para que el Club pueda acceder a los datos de tu hij@. '
+            + 'Si sigues viendo esta pantalla, revisa que has puesto el apellido correctamente y no está todo puesto en el campo del nombre.');
+        }
       },
       (error) => {
         console.error('Error al cargar el listado de jugadores', error);
@@ -359,22 +376,32 @@ export class PlayerComponent implements OnInit {
     this.showModal = false;
     // Limpiar los datos del nuevo equipo al cerrar el modal si es necesario
     this.inicializePlayer();
+    //ir a https://play.google.com/store/apps/details?id=com.futbol.sphairatech&pcampaignid=web_share
   }
 
   // Método para crear un nuevo equipo
   crearJugador(): void {
-    let id = this.player.playerId;
-    // Llamada al servicio para crear el jugador
-    this.playerservice.createUpdatePlayer(this.teamId.toString(), this.player,).subscribe(
-      (response) => {
-        if (id === 0) this.players.push(response.data);
-        this.cerrarModal();
-      },
-      (error) => {
-        console.error('Error al crear el jugador:', error);
-        // Puedes manejar el error según tus necesidades
-      }
-    );
+    if (this.player.telefonoMadre != null || this.player.telefonoPadre != null) {
+      let id = this.player.playerId;
+      // Llamada al servicio para crear el jugador
+      this.playerservice.createUpdatePlayer(this.teamId.toString(), this.player,).subscribe(
+        (response) => {
+          if (id === 0) this.players.push(response.data);
+          this.cerrarModal();
+          this.showAlertAndroid = true;
+        },
+        (error) => {
+          console.error('Error al crear el jugador:', error);
+          // Puedes manejar el error según tus necesidades
+        }
+      );
+    } else {
+      alert('Es obligatorio rellenar el número de teléfono de uno de los padres.');
+    }
+  }
+
+  cerrarAlertaAndroid(): void {
+    this.showAlertAndroid = false;
   }
 
   // Método para navegar a la pantalla de calendario

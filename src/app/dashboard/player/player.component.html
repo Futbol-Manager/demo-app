@@ -1474,3 +1474,18 @@
         </div>
     </div>
 </div>
+
+<div *ngIf="showAlertAndroid" class="alert alert-success d-flex align-items-center justify-content-between p-3 mt-4"
+    role="alert">
+    <div>
+        <strong>¡Descarga ya la app para Android!</strong><br>
+        Disponible en Google Play. Próximamente también en Apple Store.
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <a href="https://play.google.com/store/apps/details?id=com.futbol.sphairatech&pcampaignid=web_share"
+            target="_blank" class="btn btn-success d-flex align-items-center">
+            <i class="bi bi-android2 me-2" style="font-size: 1.2rem;"></i> Descargar
+        </a>
+        <button type="button" class="btn-close ms-2" aria-label="Cerrar" (click)="cerrarAlertaAndroid()"></button>
+    </div>
+</div>

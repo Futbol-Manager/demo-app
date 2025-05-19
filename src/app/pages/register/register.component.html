@@ -303,6 +303,9 @@
                       <input type="password" class="form-control input-register" id="password"
                         formControlName="password" placeholder="Ingresa tu contraseña"
                         (input)="checkPasswordMatchEntrenador()">
+                        <div *ngIf="passwordsDoNotSize" class="text-danger">
+                          Mínimo 8 caracteres.
+                        </div>
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
