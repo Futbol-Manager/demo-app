@@ -114,6 +114,8 @@ export class InicioComponent implements OnInit {
     { value: 38, label: 'Prebenjamí S8' },
     { value: 39, label: 'Prebenjamí S7' },
     { value: 40, label: 'Lúdica Prebenjamí' },
+    { value: 41, label: 'Cadet S15' },
+    { value: 42, label: 'Cadet S16' }
   ];
 
 
@@ -135,6 +137,7 @@ export class InicioComponent implements OnInit {
     { value: 'Tercera Autonómica', label: 'Tercera Autonómica' },
     { value: 'División de Honor', label: 'División de Honor' },
     { value: 'Liga Nacional', label: 'Liga Nacional' },
+    { value: 'Liga Sub-23', label: 'Liga Sub-23' },
     { value: 'Superliga', label: 'Superliga' },
     { value: 'Autonómica', label: 'Autonómica' },
     { value: 'Preferente', label: 'Preferente' },
@@ -142,6 +145,7 @@ export class InicioComponent implements OnInit {
     { value: 'Segunda', label: 'Segunda' },
     { value: 'Tercera', label: 'Tercera' },
     { value: 'Fútbol 5', label: 'Fútbol 5' },
+    { value: 'No federado', label: 'No federado' },
   ];
 
   // Niveles específicos para Federación 14

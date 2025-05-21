@@ -89,13 +89,15 @@ export class InformacionEquipoComponent implements OnInit {
     { value: 'Tercera Autonómica', label: 'Tercera Autonómica' },
     { value: 'División de Honor', label: 'División de Honor' },
     { value: 'Liga Nacional', label: 'Liga Nacional' },
+    { value: 'Liga Sub-23', label: 'Liga Sub-23' },
     { value: 'Superliga', label: 'Superliga' },
     { value: 'Autonómica', label: 'Autonómica' },
     { value: 'Preferente', label: 'Preferente' },
     { value: 'Primera', label: 'Primera' },
     { value: 'Segunda', label: 'Segunda' },
     { value: 'Tercera', label: 'Tercera' },
-    { value: 'Fútbol 5', label: 'Fútbol 5' }
+    { value: 'Fútbol 5', label: 'Fútbol 5' },
+    { value: 'No federado', label: 'No federado' },
   ];
 
   nameOptions: { value: string, label: string }[] = [
