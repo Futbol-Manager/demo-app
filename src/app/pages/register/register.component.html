@@ -255,7 +255,7 @@
               <div *ngIf="selectedOption == 3 && !newRegistro">
                 <form [formGroup]="registerFormPadre" (ngSubmit)="numHijo()" class="form-register">
                   <div class="mb-3">
-                    <h4>¿Eres el padre, la madre o un tutor?</h4>
+                    <h4>¿Eres padre, madre tutor o jugador mayor de edad?</h4>
                   </div>
 
                   <div class="mb-3 d-flex">
@@ -267,6 +267,7 @@
                         <option value="0">Tutor</option>
                         <option value="1">Padre</option>
                         <option value="2">Madre</option>
+                        <option value="3">Jugador mayor de edad</option>
                       </select>
                     </div>
                   </div>

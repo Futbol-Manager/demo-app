@@ -22,10 +22,10 @@ export class RegisterService {
     return this.http.post<any>(url, data);
   }  
 
-  validateMail(mail: String) {
+  validateMail(mail: string) {
     const url: string = environment.apiUrl + 'user/validateMail';
-    return this.http.post<any>(url, mail);
-  }
+    return this.http.post<any>(url, { mail });
+  }  
 
   changePassByEmail(mail: String) {
     const url: string = environment.apiUrl + 'user/changePassByEmail';

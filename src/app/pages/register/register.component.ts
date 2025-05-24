@@ -55,6 +55,7 @@ export class RegisterComponent implements OnInit {
   parentesco: number = 0;
   numHijos: number = 1;
   hijosVisibles: number[] = [];
+  mailExiste = false;
 
   constructor(
     private router: Router,
@@ -453,12 +454,74 @@ export class RegisterComponent implements OnInit {
     //console.log(option);
   }
 
-  numHijo() {
+
+  checkMail() {
+    const email = this.registerFormPadre.get('email')?.value;
+    if (!email) return;
+
+    if (!this.mailExiste) {
+      this.registerService.validateMail(email).subscribe({
+        next: (res) => {
+          if (res.data === true) {
+            alert('Hemos detectado que ese mail ya existe, para seguir con el registro, introduce los datos correctos de esa cuenta incluida la contraseña.' +
+              ' Si son correctos se completará el registro.'
+            );
+            //aqui se pone solo para que ponga la contraseña
+            this.mailExiste = true;
+            this.registerFormPadre.get('password')?.setValue('');
+            this.registerFormPadre.get('password2')?.setValue('');
+            return;
+            // puedes mostrar una alerta o mensaje en el formulario
+          } else {
+            console.log('El correo está disponible');
+            this.mailOk();
+          }
+        },
+        error: (err) => {
+          console.error('Error al validar el correo:', err);
+        }
+      });
+    } else {
+      this.mailOk();
+    }
+  }
+
+  mailOk() {
+    const parentesco = this.registerFormPadre.get('parentesco')?.value;
+    const birthdate = this.registerFormPadre.get('birthdate')?.value;
+
+    if (birthdate) {
+      const birth = new Date(birthdate);
+      const hoy = new Date();
+      const edad = hoy.getFullYear() - birth.getFullYear();
+      const mes = hoy.getMonth() - birth.getMonth();
+      const dia = hoy.getDate() - birth.getDate();
+
+      const esMayorDeEdad = edad > 18 || (edad === 18 && (mes > 0 || (mes === 0 && dia >= 0)));
+
+      if (!esMayorDeEdad) {
+        alert('Debes ser mayor de edad.');
+        return;
+      }
+    } else {
+      alert('Introduce tu edad de nacimiento.');
+      return;
+    }
+
     if (!this.registerFormPadre.get('terms')?.value) {
       alert('Es obligatorio aceptar los terminos y condiciones para registrarse.');
+      return;
+    }
+
+    if (parentesco == 3) {
+      this.finalizarRegistroJugador();
     } else {
       this.newRegistro = true;
     }
+  }
+
+  numHijo() {
+    this.checkMail();
   }
 
   volver() {
@@ -515,12 +578,76 @@ export class RegisterComponent implements OnInit {
           snackBarConfig.horizontalPosition = 'center';
           snackBarConfig.verticalPosition = 'bottom';
 
-          if (res.data != null) {
+          if (res.data) {
             this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
             this.login(2); // o lo que tengas tras registrarse
           } else {
             snackBarConfig.duration = 20000;
-            this.snackBar.open('Ese email ya está dado de alta, prueba a iniciar sesión o usa otro.', 'Cerrar', snackBarConfig);
+            this.snackBar.open('Error en la contraseña.', 'Cerrar', snackBarConfig);
+          }
+        },
+        error: (err) => {
+          this.snackBar.open('Error al registrar. Intenta de nuevo.', 'Cerrar', {
+            duration: 5000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom'
+          });
+          console.error(err);
+        }
+      });
+
+      // Aquí puedes llamar al servicio que envíe `datosCompletos` al backend
+    } else {
+      console.warn('Formulario no válido');
+    }
+  }
+
+  finalizarRegistroJugador(): void {
+    if (this.registerFormPadre.valid) {
+      const padreData = {
+        parentesco: this.registerFormPadre.get('parentesco')?.value,
+        firstName: this.registerFormPadre.get('name')?.value,
+        secondName: this.registerFormPadre.get('surname')?.value,
+        birthdate: this.registerFormPadre.get('birthdate')?.value,
+        genre: this.registerFormPadre.get('genre')?.value,
+        mail: this.registerFormPadre.get('email')?.value,
+        mobile: this.registerFormPadre.get('mobile')?.value,
+        password: this.registerFormPadre.get('password')?.value,
+        aceptaComunicaciones: this.registerFormPadre.get('comunicaciones')?.value ? 1 : 0,
+        clubId: this.clubId,
+        mailExiste: this.mailExiste ? 1 : 0
+      };
+
+      // Como el padre es el jugador, usamos sus propios datos como hijo único
+      const hijosData = [
+        {
+          nombre: padreData.firstName,
+          apellidos: padreData.secondName,
+          fechaNacimiento: padreData.birthdate,
+          dni: '' // Si lo tienes en otro campo, lo puedes incluir aquí
+        }
+      ];
+
+      const datosCompletos = {
+        padre: padreData,
+        hijos: hijosData
+      };
+
+      console.log('Datos completos para enviar:', datosCompletos);
+
+      this.registerService.registerPadreHijos(datosCompletos).subscribe({
+        next: (res) => {
+          const snackBarConfig = new MatSnackBarConfig();
+          snackBarConfig.duration = 5000;
+          snackBarConfig.horizontalPosition = 'center';
+          snackBarConfig.verticalPosition = 'bottom';
+
+          if (res.data) {
+            this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
+            this.login(2); // o lo que tengas tras registrarse
+          } else {
+            snackBarConfig.duration = 20000;
+            this.snackBar.open('Revisa la contraseña.', 'Cerrar', snackBarConfig);
           }
         },
         error: (err) => {
