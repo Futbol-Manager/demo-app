@@ -251,33 +251,42 @@
                 </form>
               </div>
 
-              <div *ngIf="selectedOption == 3">
-                <!-- Formulario para Entrenador -->
-                <form [formGroup]="registerFormEntrenador" (ngSubmit)="openModal(2)" class="form-register">
-                  <div class="mb-3 d-flex">
-                    <div class="col-12">
-                      <p>Introduce tus datos como padre/madre</p>
-                    </div>
+              <!-- FORMULARIO PADRE/MADRE/TUTOR -->
+              <div *ngIf="selectedOption == 3 && !newRegistro">
+                <form [formGroup]="registerFormPadre" (ngSubmit)="numHijo()" class="form-register">
+                  <div class="mb-3">
+                    <h4>¿Eres el padre, la madre o un tutor?</h4>
                   </div>
+
                   <div class="mb-3 d-flex">
                     <div class="col-6">
-                      <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                      <input type="text" class="form-control input-register" id="name" placeholder="Ingresa nombre"
+                      <label class="form-label">Introduce tus datos como:</label>
+                    </div>
+                    <div class="col-6" style="margin-left: 10px;">
+                      <select class="form-select input-register" formControlName="parentesco">
+                        <option value="0">Tutor</option>
+                        <option value="1">Padre</option>
+                        <option value="2">Madre</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="mb-3 d-flex">
+                    <div class="col-6">
+                      <input type="text" class="form-control input-register" placeholder="nombre"
                         formControlName="name">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
-                      <input type="text" class="form-control input-register" id="surname"
-                        placeholder="Ingresa apellidos" formControlName="surname">
+                      <input type="text" class="form-control input-register" placeholder="apellidos"
+                        formControlName="surname">
                     </div>
                   </div>
-                  <div class="mb-3 d-flex">                  
+
+                  <div class="mb-3 d-flex">
                     <div class="col-6">
-                      <!--<label for="birthdate" class="form-label">Selecciona fecha de nacimiento</label>-->
-                      <input type="date" class="form-control input-register" id="date" formControlName="birthdate">
+                      <input type="date" class="form-control input-register" formControlName="birthdate">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="genre" class="form-label">Selecciona tu género</label>-->
                       <select class="form-select input-register" formControlName="genre">
                         <option value="" disabled selected hidden>Selecciona tu género</option>
                         <option value="1">Masculino</option>
@@ -286,74 +295,104 @@
                       </select>
                     </div>
                   </div>
+
                   <div class="mb-3 d-flex">
                     <div class="col-6">
-                      <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
-                      <input type="email" class="form-control input-register" id="email"
-                        placeholder="Ingresa tu correo electrónico" formControlName="email">
+                      <input type="email" class="form-control input-register" placeholder="correo electrónico"
+                        formControlName="email">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
-                      <input type="number" class="form-control input-register" id="mobile"
-                        placeholder="Ingresa tu número de teléfono" formControlName="mobile">
+                      <input type="number" class="form-control input-register" placeholder="teléfono"
+                        formControlName="mobile">
                     </div>
                   </div>
+
                   <div class="mb-3 d-flex">
                     <div class="col-6">
-                      <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
-                      <input type="password" class="form-control input-register" id="password"
-                        formControlName="password" placeholder="Ingresa tu contraseña"
-                        (input)="checkPasswordMatchEntrenador()">
-                        <div *ngIf="passwordsDoNotSize" class="text-danger">
-                          Mínimo 8 caracteres.
-                        </div>
+                      <input type="password" class="form-control input-register" placeholder="contraseña"
+                        formControlName="password" (input)="checkPasswordMatchPadre()">
+                      <div *ngIf="passwordsDoNotSize" class="text-danger">Mínimo 8 caracteres.</div>
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
-                      <input type="password" class="form-control input-register" id="password2"
-                        formControlName="password2" placeholder="Repite la contraseña"
-                        (input)="checkPasswordMatchEntrenador()">
-                      <div *ngIf="passwordsDoNotMatch" class="text-danger">
-                        Las contraseñas no coinciden.
+                      <input type="password" class="form-control input-register" placeholder="repite contraseña"
+                        formControlName="password2" (input)="checkPasswordMatchPadre()">
+                      <div *ngIf="passwordsDoNotMatch" class="text-danger">Las contraseñas no coinciden.</div>
+                    </div>
+                  </div>
+
+                  <div class="mb-3 form-check">
+                    <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
+                    <label class="form-check-label" for="termsCheckbox">
+                      Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
+                        privacidad</a>
+                    </label>
+                  </div>
+
+                  <div class="mb-3 form-check">
+                    <input class="form-check-input" type="checkbox" id="comunCheckbox" formControlName="comunicaciones">
+                    <label class="form-check-label" for="comunCheckbox">
+                      Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
+                        target="_blank">comunicaciones comerciales</a>
+                    </label>
+                  </div>
+
+                  <div class="mb-3">
+                    <button type="submit" class="btn btn-custom btn-block textoCentrado"
+                      [disabled]="passwordsDoNotMatch">Siguiente</button>
+                  </div>
+                </form>
+              </div>
+
+              <!-- FORMULARIO PARA REGISTRAR HASTA 5 HIJOS (parte del padre) -->
+              <div *ngIf="selectedOption == 3 && newRegistro">
+                <form [formGroup]="registerFormPadreHijos" (ngSubmit)="finalizarRegistroPadre()" class="form-register">
+                  <div class="mb-3 d-flex">
+                    <div class="col-6">
+                      <label class="form-label">¿Cuántos hijos juegan en este club?</label>
+                    </div>
+                    <div class="col-6" style="margin-left: 10px;">
+                      <select class="form-select input-register" formControlName="numHijos"
+                        (change)="onParentescoChange()">
+                        <option *ngFor="let n of [1, 2, 3, 4, 5]" [value]="n">{{ n }}</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- Hijos generados dinámicamente -->
+                  <div *ngFor="let index of hijosVisibles">
+                    <div class="mb-3 d-flex">
+                      <div class="col-12">
+                        <label class="form-label">Introduce los datos de tu hijo {{ index + 1 }}:</label>
+                      </div>
+                    </div>
+
+                    <div class="mb-3 d-flex">
+                      <div class="col-6">
+                        <input type="text" class="form-control input-register" [formControlName]="'hijo' + (index + 1)"
+                          placeholder="nombre">
+                      </div>
+                      <div class="col-6" style="margin-left: 10px;">
+                        <input type="text" class="form-control input-register" [formControlName]="'ape' + (index + 1)"
+                          placeholder="apellidos">
+                      </div>
+                    </div>
+
+                    <div class="mb-3 d-flex">
+                      <div class="col-6">
+                        <input type="date" class="form-control input-register" [formControlName]="'fech' + (index + 1)">
+                      </div>
+                      <div class="col-6" style="margin-left: 10px;">
+                        <input type="text" class="form-control input-register" [formControlName]="'dni' + (index + 1)"
+                          placeholder="DNI/NIE/Pasaporte">
                       </div>
                     </div>
                   </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-12">
-                      <p>Introduce el nombre y apellido de tu hijo/a</p>
-                    </div>
+
+                  <div class="mb-3">
+                    <button type="submit" class="btn btn-custom btn-block textoCentrado">Finalizar</button>
                   </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <input type="text" class="form-control input-register" id="nameSon"
-                        placeholder="Ingresa nombre del hijo" formControlName="nameSon">
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
-                      <label class="form-check-label" for="termsCheckbox">
-                        Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
-                          privacidad</a>
-                        <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
-                          condiciones de contratación</a> -->
-                      </label>
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="comunCheckbox"
-                        formControlName="comunicaciones">
-                      <label class="form-check-label" for="comunCheckbox">
-                        Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
-                          target="_blank">comunicaciones comerciales</a>
-                      </label>
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-12">
-                      <button type="submit" [disabled]="passwordsDoNotMatch"
-                        class="btn btn-custom btn-block textoCentrado">Registrarse</button>
-                    </div>
+                  <div class="mb-3">
+                    <button (click)="volver()" class="btn btn-primary btn-block textoCentrado">Volver</button>
                   </div>
                 </form>
               </div>
@@ -456,9 +495,11 @@
           <div class="card-footer textoCentrado" style="flex-direction: column; background: #141414;">
             <div class="row text-center">
               <div class="col-md-12">
-                <p style="color: white">¿Ya tienes una cuenta? <a style="color: #1e8832" href="#" (click)="toLogin($event)">Inicia sesión aquí</a></p>
-                <p style="color: white">Si tienes alguna duda, contacta a <a style="color: #1e8832" href="#" onclick="event.preventDefault()">info&#64;sphairatech.com</a> </p>
-                 <p style="color: white">o al WhatsApp +34 623 91 17 72</p>
+                <p style="color: white">¿Ya tienes una cuenta? <a style="color: #1e8832" href="#"
+                    (click)="toLogin($event)">Inicia sesión aquí</a></p>
+                <p style="color: white">Si tienes alguna duda, contacta a <a style="color: #1e8832" href="#"
+                    onclick="event.preventDefault()">info&#64;sphairatech.com</a> </p>
+                <p style="color: white">o al WhatsApp +34 623 91 17 72</p>
               </div>
             </div>
           </div>

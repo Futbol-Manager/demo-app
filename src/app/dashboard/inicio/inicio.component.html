@@ -62,7 +62,8 @@
   </div>
 
 
-  <div *ngIf="this.usuarioActual!.profileType.profileId === 4 || this.usuarioActual!.profileType.profileId === 3 && this.showAlertAndroid == true"
+  <div
+    *ngIf="this.usuarioActual!.profileType.profileId === 4 || this.usuarioActual!.profileType.profileId === 3 && this.showAlertAndroid == true"
     class="alert alert-success d-flex align-items-center justify-content-between p-3 mt-4" role="alert">
     <div>
       <strong>¡Descarga ya la app para Android!</strong><br>
@@ -179,6 +180,7 @@
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
       *ngIf="this.usuarioActual!.profileType.profileId > 2">
       <!-- Tarjeta de jugador -->
+      <!-- Mostrar tarjetas de hijos si hay -->
       <div class="col mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
         (click)="navegarAOpcionesJugador(hijo.teamId, hijo.playerId)">
         <div *ngIf="hijo.playerId > 0" class="card h-100" style="border: 1px solid black;">
@@ -199,6 +201,15 @@
             </h5>
           </div>
         </div>
+      </div>
+
+      <!-- Mostrar mensaje si no hay hijos -->
+      <div>
+        <p class="text-center text-muted mt-4">
+          Si no ves aquí o te falta un jugador, es posible que otro tutor tenga registrado. De ser así, ese
+          tutor, el entrenador o el club debe
+          invitarte desde el perfil del jugador. Avísales.
+        </p>
       </div>
 
       <!-- Tarjeta de scouting 

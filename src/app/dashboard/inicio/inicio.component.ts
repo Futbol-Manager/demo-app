@@ -218,6 +218,7 @@ export class InicioComponent implements OnInit {
         } else if (this.profileId === 1) {
           this.cargarListadoEquiposForClub();
         } else if (this.profileId > 2) {
+          this.datosCargando = false;
           this.teamService.getTeamByPlayer(this.userId.toString()).subscribe(
             (response: Response) => {
               if (response.data !== null) {
@@ -241,7 +242,6 @@ export class InicioComponent implements OnInit {
               } else {
                 console.error('La respuesta del servicio no tiene la estructura esperada', response);
               }
-              this.datosCargando = false;
             },
             (error) => {
               console.error('Error al cargar el listado de equipos', error);

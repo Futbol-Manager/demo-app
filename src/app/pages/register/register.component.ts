@@ -20,6 +20,8 @@ export class RegisterComponent implements OnInit {
 
   registerFormClub: FormGroup;
   registerFormEntrenador: FormGroup;
+  registerFormPadre!: FormGroup;
+  registerFormPadreHijos!: FormGroup;
   selectedOption: number = 0;
   passwordsDoNotMatch: boolean = false;
   listaDeClubes: Club = new Club({});
@@ -29,6 +31,7 @@ export class RegisterComponent implements OnInit {
   isMenor!: number;
   isReadOnly: boolean = false;
   isReadOnlyMail: boolean = false;
+  newRegistro: boolean = false;
 
   selectOptions = [
     { value: "0", label: "¿Eres un club o un entrenador?" },
@@ -49,6 +52,9 @@ export class RegisterComponent implements OnInit {
   selected: number | 0 = 0;
   clubId = 0;
   passwordsDoNotSize = false;
+  parentesco: number = 0;
+  numHijos: number = 1;
+  hijosVisibles: number[] = [];
 
   constructor(
     private router: Router,
@@ -60,6 +66,7 @@ export class RegisterComponent implements OnInit {
     private clubService: ClubService,
     private route: ActivatedRoute,
   ) {
+
     this.registerFormClub = this.fb.group({
       comunicaciones: [false],
       name: ['', Validators.required],
@@ -84,6 +91,31 @@ export class RegisterComponent implements OnInit {
       terms: [false, Validators.requiredTrue],
       nameSon: [''],
     });
+
+    this.registerFormPadre = this.fb.group({
+      parentesco: [0, Validators.required],
+      name: ['', Validators.required],
+      surname: ['', Validators.required],
+      birthdate: ['', Validators.required],
+      genre: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      mobile: ['', Validators.required],
+      password: ['', Validators.required],
+      password2: ['', Validators.required],
+      terms: [false, Validators.requiredTrue],
+      comunicaciones: [false]
+    });
+
+    this.registerFormPadreHijos = this.fb.group({
+      numHijos: [1, Validators.required],
+      hijo1: [''], ape1: [''], fech1: [''], dni1: [''],
+      hijo2: [''], ape2: [''], fech2: [''], dni2: [''],
+      hijo3: [''], ape3: [''], fech3: [''], dni3: [''],
+      hijo4: [''], ape4: [''], fech4: [''], dni4: [''],
+      hijo5: [''], ape5: [''], fech5: [''], dni5: ['']
+    });
+
+    this.onParentescoChange();
   }
 
   ngOnInit(): void {
@@ -101,6 +133,7 @@ export class RegisterComponent implements OnInit {
       this.selectedOption = 3;
       this.isReadOnly = true;
       this.registerFormEntrenador.get('email')?.enable(); // Habilita el campo
+      this.btnRegistro = true;
     } else {
       //let option = 0;
       if (this.isMenor !== undefined && !Number.isNaN(this.isMenor)) {
@@ -418,6 +451,92 @@ export class RegisterComponent implements OnInit {
     this.selected = option;
     this.selectedOption = option;
     //console.log(option);
+  }
+
+  numHijo() {
+    if (!this.registerFormPadre.get('terms')?.value) {
+      alert('Es obligatorio aceptar los terminos y condiciones para registrarse.');
+    } else {
+      this.newRegistro = true;
+    }
+  }
+
+  volver() {
+    this.newRegistro = false;
+  }
+
+  onParentescoChange(): void {
+    const hijos = +this.registerFormPadreHijos.get('numHijos')?.value || 1;
+    this.numHijos = hijos;
+    this.hijosVisibles = Array.from({ length: hijos }, (_, i) => i);
+  }
+
+  checkPasswordMatchPadre(): void {
+    const form = this.registerFormPadre;
+    const pass = form.get('password')?.value;
+    const pass2 = form.get('password2')?.value;
+    this.passwordsDoNotMatch = pass !== pass2;
+    this.passwordsDoNotSize = (pass?.length || 0) < 8;
+  }
+
+  finalizarRegistroPadre(): void {
+    if (this.registerFormPadre.valid && this.registerFormPadreHijos.valid) {
+      const padreData = {
+        parentesco: this.registerFormPadre.get('parentesco')?.value,
+        firstName: this.registerFormPadre.get('name')?.value,
+        secondName: this.registerFormPadre.get('surname')?.value,
+        birthdate: this.registerFormPadre.get('birthdate')?.value,
+        genre: this.registerFormPadre.get('genre')?.value,
+        mail: this.registerFormPadre.get('email')?.value,
+        mobile: this.registerFormPadre.get('mobile')?.value,
+        password: this.registerFormPadre.get('password')?.value,
+        aceptaComunicaciones: this.registerFormPadre.get('comunicaciones')?.value ? 1 : 0,
+        clubId: this.clubId
+      };
+
+      const hijosData = this.hijosVisibles.map(index => ({
+        nombre: this.registerFormPadreHijos.get('hijo' + (index + 1))?.value,
+        apellidos: this.registerFormPadreHijos.get('ape' + (index + 1))?.value,
+        fechaNacimiento: this.registerFormPadreHijos.get('fech' + (index + 1))?.value,
+        dni: this.registerFormPadreHijos.get('dni' + (index + 1))?.value
+      }));
+
+      const datosCompletos = {
+        padre: padreData,
+        hijos: hijosData
+      };
+
+      console.log('Datos completos para enviar:', datosCompletos);
+
+      this.registerService.registerPadreHijos(datosCompletos).subscribe({
+        next: (res) => {
+          const snackBarConfig = new MatSnackBarConfig();
+          snackBarConfig.duration = 5000;
+          snackBarConfig.horizontalPosition = 'center';
+          snackBarConfig.verticalPosition = 'bottom';
+
+          if (res.data != null) {
+            this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
+            this.login(2); // o lo que tengas tras registrarse
+          } else {
+            snackBarConfig.duration = 20000;
+            this.snackBar.open('Ese email ya está dado de alta, prueba a iniciar sesión o usa otro.', 'Cerrar', snackBarConfig);
+          }
+        },
+        error: (err) => {
+          this.snackBar.open('Error al registrar. Intenta de nuevo.', 'Cerrar', {
+            duration: 5000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom'
+          });
+          console.error(err);
+        }
+      });
+
+      // Aquí puedes llamar al servicio que envíe `datosCompletos` al backend
+    } else {
+      console.warn('Formulario no válido');
+    }
   }
 
 }

@@ -17,6 +17,11 @@ export class RegisterService {
     return this.http.post<any>(url, user);
   }
 
+  registerPadreHijos(data: any) {
+    const url: string = environment.apiUrl + 'user/createupdateuserpadrehijos';
+    return this.http.post<any>(url, data);
+  }  
+
   validateMail(mail: String) {
     const url: string = environment.apiUrl + 'user/validateMail';
     return this.http.post<any>(url, mail);
