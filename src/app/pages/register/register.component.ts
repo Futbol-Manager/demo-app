@@ -396,8 +396,21 @@ export class RegisterComponent implements OnInit {
               this.router.navigate(['/dashboard/inicio']);
             }
           });
-    } else {
+    } else if (profile == 2) {
       const fv = this.registerFormEntrenador.value;
+      const login: LoginModel = new LoginModel(
+        (fv.email as string).trim(),
+        (fv.password as string).trim(),
+      );
+      this.loginService.login(login).pipe()
+        .subscribe(
+          (res) => {
+            if (res.data != null) {
+              this.router.navigate(['/dashboard/inicio']);
+            }
+          });
+    } else if (profile == 3) {
+      const fv = this.registerFormPadre.value;
       const login: LoginModel = new LoginModel(
         (fv.email as string).trim(),
         (fv.password as string).trim(),
@@ -580,10 +593,13 @@ export class RegisterComponent implements OnInit {
 
           if (res.data) {
             this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
-            this.login(2); // o lo que tengas tras registrarse
+            this.login(3); // o lo que tengas tras registrarse
           } else {
             snackBarConfig.duration = 20000;
             this.snackBar.open('Error en la contraseña.', 'Cerrar', snackBarConfig);
+            this.registerFormPadre.get('password')?.setValue('');
+            this.registerFormPadre.get('password2')?.setValue('');
+            this.volver();
           }
         },
         error: (err) => {
@@ -644,10 +660,13 @@ export class RegisterComponent implements OnInit {
 
           if (res.data) {
             this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
-            this.login(2); // o lo que tengas tras registrarse
+            this.login(3); // o lo que tengas tras registrarse
           } else {
             snackBarConfig.duration = 20000;
             this.snackBar.open('Revisa la contraseña.', 'Cerrar', snackBarConfig);
+            this.registerFormPadre.get('password')?.setValue('');
+            this.registerFormPadre.get('password2')?.setValue('');
+            this.volver();
           }
         },
         error: (err) => {
