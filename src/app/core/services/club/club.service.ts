@@ -801,7 +801,7 @@ export class ClubService {
       }
   }
 
-  getCuotasClub(clubId: number): Observable<Response> {
+  getCuotasClub(clubId: number, temporada: string): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -812,7 +812,7 @@ export class ClubService {
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getcuotasclub/${clubId}`;
+      const url: string = environment.apiUrl + `club/getcuotasclub/${clubId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });

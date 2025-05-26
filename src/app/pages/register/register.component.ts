@@ -52,7 +52,7 @@ export class RegisterComponent implements OnInit {
   selected: number | 0 = 0;
   clubId = 0;
   passwordsDoNotSize = false;
-  parentesco: number = 0;
+  parentesco: number = 1;
   numHijos: number = 1;
   hijosVisibles: number[] = [];
   mailExiste = false;
@@ -94,7 +94,7 @@ export class RegisterComponent implements OnInit {
     });
 
     this.registerFormPadre = this.fb.group({
-      parentesco: [0, Validators.required],
+      parentesco: [1, Validators.required],
       name: ['', Validators.required],
       surname: ['', Validators.required],
       birthdate: ['', Validators.required],
@@ -324,7 +324,6 @@ export class RegisterComponent implements OnInit {
         this.registerFormEntrenador.value.genre == 1 ? 'Masculino' : (this.registerFormEntrenador.value.genre == 2 ? 'Femenino' : 'Otro')
       );
 
-
       this.msgForm = false;
       const fv = this.registerFormEntrenador.value;
       let id = 0;
@@ -347,9 +346,23 @@ export class RegisterComponent implements OnInit {
         validationUser
       );
 
-      const age = this.calculateAge(new Date(fv.birthdate));
-      if (age < 14) {
-        this.msgAge = true;
+      const birthdate = register.birthdate;
+
+      if (birthdate) {
+        const birth = new Date(birthdate);
+        const hoy = new Date();
+        const edad = hoy.getFullYear() - birth.getFullYear();
+        const mes = hoy.getMonth() - birth.getMonth();
+        const dia = hoy.getDate() - birth.getDate();
+
+        const esMayorDeEdad = edad > 18 || (edad === 18 && (mes > 0 || (mes === 0 && dia >= 0)));
+
+        if (!esMayorDeEdad) {
+          alert('Debes ser mayor de edad.');
+          return;
+        }
+      } else {
+        alert('Introduce tu edad de nacimiento.');
         return;
       }
 

@@ -91,8 +91,8 @@
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="name" class="form-label">Ingresa el nombre del club</label>-->
-                      <input type="text" class="form-control input-register" id="name"
-                        placeholder="Ingresa el nombre del club" formControlName="name">
+                      <input type="text" class="form-control input-register" id="name" placeholder="Nombre del club"
+                        formControlName="name">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="name" class="form-label">O selecciona un club</label>
@@ -109,19 +109,18 @@
                     <div class="col-6">
                       <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
                       <input type="email" class="form-control input-register" id="email"
-                        placeholder="Ingresa tu correo electrónico" formControlName="email">
+                        placeholder="Correo electrónico" formControlName="email">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
-                      <input type="number" class="form-control input-register" id="mobile"
-                        placeholder="Ingresa tu número de teléfono" formControlName="mobile">
+                      <input type="number" class="form-control input-register" id="mobile" placeholder="Teléfono"
+                        formControlName="mobile">
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
                       <input type="password" class="form-control input-register" id="password"
-                        formControlName="password" placeholder="Ingresa tu contraseña"
-                        (input)="checkPasswordMatchClub()">
+                        formControlName="password" placeholder="Contraseña" (input)="checkPasswordMatchClub()">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
@@ -169,19 +168,23 @@
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                      <input type="text" class="form-control input-register" id="name" placeholder="Ingresa tu nombre"
+                      <input type="text" class="form-control input-register" id="name" placeholder="Nombre"
                         formControlName="name">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
-                      <input type="text" class="form-control input-register" id="surname"
-                        placeholder="Ingresa tu apellido" formControlName="surname">
+                      <input type="text" class="form-control input-register" id="surname" placeholder="Apellido"
+                        formControlName="surname">
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="col-6">
-                      <!--<label for="birthdate" class="form-label">Selecciona fecha de nacimiento</label>-->
-                      <input type="date" class="form-control input-register" id="date" formControlName="birthdate">
+                      <div class="col-6 position-relative">
+                        <input type="date" class="form-control input-register no-calendar-icon"
+                          formControlName="birthdate">
+                        <i class="bi bi-cake2 position-absolute"
+                          style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
+                      </div>
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="genre" class="form-label">Selecciona tu género</label>-->
@@ -197,19 +200,18 @@
                     <div class="col-6">
                       <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
                       <input type="email" class="form-control input-register" id="email"
-                        placeholder="Ingresa tu correo electrónico" formControlName="email">
+                        placeholder="Correo electrónico" formControlName="email">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
-                      <input type="number" class="form-control input-register" id="mobile"
-                        placeholder="Ingresa tu número de teléfono" formControlName="mobile">
+                      <input type="number" class="form-control input-register" id="mobile" placeholder="Teléfono"
+                        formControlName="mobile">
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
                       <input type="password" class="form-control input-register" id="password"
-                        formControlName="password" placeholder="Ingresa tu contraseña"
-                        (input)="checkPasswordMatchEntrenador()">
+                        formControlName="password" placeholder="Contraseña" (input)="checkPasswordMatchEntrenador()">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
@@ -264,9 +266,9 @@
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <select class="form-select input-register" formControlName="parentesco">
-                        <option value="0">Tutor</option>
                         <option value="1">Padre</option>
                         <option value="2">Madre</option>
+                        <option value="0">Tutor</option>
                         <option value="3">Jugador mayor de edad</option>
                       </select>
                     </div>
@@ -274,18 +276,21 @@
 
                   <div class="mb-3 d-flex">
                     <div class="col-6">
-                      <input type="text" class="form-control input-register" placeholder="nombre"
+                      <input type="text" class="form-control input-register" placeholder="Nombre"
                         formControlName="name">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
-                      <input type="text" class="form-control input-register" placeholder="apellidos"
+                      <input type="text" class="form-control input-register" placeholder="Apellidos"
                         formControlName="surname">
                     </div>
                   </div>
 
                   <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <input type="date" class="form-control input-register" formControlName="birthdate">
+                    <div class="col-6 position-relative">
+                      <input type="date" class="form-control input-register no-calendar-icon"
+                        formControlName="birthdate">
+                      <i class="bi bi-cake2 position-absolute"
+                        style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <select class="form-select input-register" formControlName="genre">
@@ -299,23 +304,23 @@
 
                   <div class="mb-3 d-flex">
                     <div class="col-6">
-                      <input type="email" class="form-control input-register" placeholder="correo electrónico"
+                      <input type="email" class="form-control input-register" placeholder="Correo electrónico"
                         formControlName="email">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
-                      <input type="number" class="form-control input-register" placeholder="teléfono"
+                      <input type="number" class="form-control input-register" placeholder="Teléfono"
                         formControlName="mobile">
                     </div>
                   </div>
 
                   <div class="mb-3 d-flex">
                     <div class="col-6">
-                      <input type="password" class="form-control input-register" placeholder="contraseña"
+                      <input type="password" class="form-control input-register" placeholder="Contraseña"
                         formControlName="password" (input)="checkPasswordMatchPadre()">
                       <div *ngIf="passwordsDoNotSize" class="text-danger">Mínimo 8 caracteres.</div>
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
-                      <input type="password" class="form-control input-register" placeholder="repite contraseña"
+                      <input type="password" class="form-control input-register" placeholder="Repite contraseña"
                         formControlName="password2" (input)="checkPasswordMatchPadre()">
                       <div *ngIf="passwordsDoNotMatch" class="text-danger">Las contraseñas no coinciden.</div>
                     </div>
@@ -370,11 +375,11 @@
                     <div class="mb-3 d-flex">
                       <div class="col-6">
                         <input type="text" class="form-control input-register" [formControlName]="'hijo' + (index + 1)"
-                          placeholder="nombre">
+                          placeholder="Nombre">
                       </div>
                       <div class="col-6" style="margin-left: 10px;">
                         <input type="text" class="form-control input-register" [formControlName]="'ape' + (index + 1)"
-                          placeholder="apellidos">
+                          placeholder="Apellidos">
                       </div>
                     </div>
 
@@ -404,19 +409,23 @@
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                      <input type="text" class="form-control input-register" id="name" placeholder="Ingresa tu nombre"
+                      <input type="text" class="form-control input-register" id="name" placeholder="Nombre"
                         formControlName="name">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
-                      <input type="text" class="form-control input-register" id="surname"
-                        placeholder="Ingresa tu apellido" formControlName="surname">
+                      <input type="text" class="form-control input-register" id="surname" placeholder="Apellido"
+                        formControlName="surname">
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="col-6">
-                      <!--<label for="birthdate" class="form-label">Selecciona fecha de nacimiento</label>-->
-                      <input type="date" class="form-control input-register" id="date" formControlName="birthdate">
+                      <div class="col-6 position-relative">
+                        <input type="date" class="form-control input-register no-calendar-icon"
+                          formControlName="birthdate">
+                        <i class="bi bi-cake2 position-absolute"
+                          style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
+                      </div>
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="genre" class="form-label">Selecciona tu género</label>-->
@@ -432,7 +441,7 @@
                     <div class="col-6">
                       <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
                       <input type="email" class="form-control input-register" id="email"
-                        placeholder="Ingresa tu correo electrónico" formControlName="email" [attr.disabled]="true">
+                        placeholder="Correo electrónico" formControlName="email" [attr.disabled]="true">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <input type="number" class="form-control input-register" id="mobile"
@@ -443,8 +452,7 @@
                     <div class="col-6">
                       <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
                       <input type="password" class="form-control input-register" id="password"
-                        formControlName="password" placeholder="Ingresa tu contraseña"
-                        (input)="checkPasswordMatchEntrenador()">
+                        formControlName="password" placeholder="Contraseña" (input)="checkPasswordMatchEntrenador()">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="password2" class="form-label">Repite la contraseña</label>-->

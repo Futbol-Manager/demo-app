@@ -102,28 +102,20 @@ export class LoginComponent implements OnInit {
                 //this.router.navigate(['/dashboard/inicio-deportes']);
                 this.router.navigate(['/dashboard/inicio']);
               } else { //ya han pasado mas de 3 dias, por lo que debes verificar tu cuenta si o si
-                if (!this.verificarCuenta) {
-                  const snackBarConfig = new MatSnackBarConfig();
-                  snackBarConfig.duration = 10000;
-                  snackBarConfig.horizontalPosition = 'center';
-                  snackBarConfig.verticalPosition = 'top';
-                  this.snackBar.open('Vuelve a intentarlo.', 'Cerrar', snackBarConfig);
-                }
-                this.verificarCuenta = true;
-                //this.datosUser = res.data.userDTO;
+                this.enviarMail();
               }
             } else {
-              let msg = '';
+              /*let msg = '';
               if (res.error.code == 1)
                 msg = 'La cuenta de email no existe.';
               else
-                msg = 'La contraseña es incorrecta.';
+                msg = 'La contraseña es incorrecta.';*/
 
               const snackBarConfig = new MatSnackBarConfig();
               snackBarConfig.duration = 10000;
               snackBarConfig.horizontalPosition = 'center';
               snackBarConfig.verticalPosition = 'top';
-              this.snackBar.open(msg, 'Cerrar', snackBarConfig);
+              this.snackBar.open(res.error.msg, 'Cerrar', snackBarConfig);
 
             }
           }, (err) => {
@@ -150,7 +142,7 @@ export class LoginComponent implements OnInit {
         snackBarConfig.duration = 10000;
         snackBarConfig.horizontalPosition = 'center';
         snackBarConfig.verticalPosition = 'top';
-        this.snackBar.open('Correo electrónico enviado. Por favor revisa tu bandeja de entrada o spam para validar tu cuenta.', 'Cerrar', snackBarConfig);
+        this.snackBar.open('Correo electrónico enviado para verificar la cuenta. Por favor revisa tu bandeja de entrada o spam para validar tu cuenta.', 'Cerrar', snackBarConfig);
       }
     });
   }

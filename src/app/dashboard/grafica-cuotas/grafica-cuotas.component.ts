@@ -26,6 +26,7 @@ export class GraficaCuotasComponent implements OnInit {
   data: any[] = [];
   datosCargados = false;
   loading = true;
+  temporadaStoredValue = '2024';
 
   constructor(
     private loginService: LoginService,
@@ -45,9 +46,13 @@ export class GraficaCuotasComponent implements OnInit {
         this.clubId = +params['clubId'];  // El + convierte el valor a número
         console.log('clubId:', this.clubId);
       });
-    });
+    });      
 
-    this.clubService.getCuotasClub(this.clubId).subscribe(
+    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+    }
+
+    this.clubService.getCuotasClub(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
