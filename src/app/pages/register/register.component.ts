@@ -56,6 +56,7 @@ export class RegisterComponent implements OnInit {
   numHijos: number = 1;
   hijosVisibles: number[] = [];
   mailExiste = false;
+  texBoton: string = 'Siguiente';
 
   constructor(
     private router: Router,
@@ -144,6 +145,8 @@ export class RegisterComponent implements OnInit {
           //this.showPPlayer = true;
         } else if (this.isMenor === 1) {
           this.selectedOption = 3;
+          this.texBoton = 'Registrarme';
+          this.registerFormPadre.get('email')!.setValue(this.emailParam);
           //this.showPPlayer = true;
         } else if (this.isMenor === 2) { //este es club
           this.selectedOption = 1;
@@ -395,6 +398,68 @@ export class RegisterComponent implements OnInit {
       this.msgForm = true;
   }
 
+  registerPadreSinHijos() {
+    //esto es porque ha recibido una invitación como localhost:4200/registro/{playerId}/{email}/{rol}
+    if (this.registerFormPadre.valid) {
+      const padreData = {
+        parentesco: this.registerFormPadre.get('parentesco')?.value,
+        firstName: this.registerFormPadre.get('name')?.value,
+        secondName: this.registerFormPadre.get('surname')?.value,
+        birthdate: this.registerFormPadre.get('birthdate')?.value,
+        genre: this.registerFormPadre.get('genre')?.value,
+        mail: this.registerFormPadre.get('email')?.value,
+        mobile: this.registerFormPadre.get('mobile')?.value,
+        password: this.registerFormPadre.get('password')?.value,
+        aceptaComunicaciones: this.registerFormPadre.get('comunicaciones')?.value ? 1 : 0,
+        clubId: 0,
+        playerId: this.playerID,
+        mailExiste: this.mailExiste ? 1 : 0
+      };
+
+      // Como el padre es el jugador, usamos sus propios datos como hijo único
+      const hijosData = [{}];
+
+      const datosCompletos = {
+        padre: padreData,
+        hijos: hijosData
+      };
+
+      console.log('Datos completos para enviar:', datosCompletos);
+
+      this.registerService.registerPadreHijos(datosCompletos).subscribe({
+        next: (res) => {
+          const snackBarConfig = new MatSnackBarConfig();
+          snackBarConfig.duration = 5000;
+          snackBarConfig.horizontalPosition = 'center';
+          snackBarConfig.verticalPosition = 'bottom';
+
+          if (res.data) {
+            this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
+            this.login(3); // o lo que tengas tras registrarse
+          } else {
+            snackBarConfig.duration = 20000;
+            this.snackBar.open('Revisa la contraseña.', 'Cerrar', snackBarConfig);
+            this.registerFormPadre.get('password')?.setValue('');
+            this.registerFormPadre.get('password2')?.setValue('');
+            this.volver();
+          }
+        },
+        error: (err) => {
+          this.snackBar.open('Error al registrar. Intenta de nuevo.', 'Cerrar', {
+            duration: 5000,
+            horizontalPosition: 'center',
+            verticalPosition: 'bottom'
+          });
+          console.error(err);
+        }
+      });
+
+      // Aquí puedes llamar al servicio que envíe `datosCompletos` al backend
+    } else {
+      console.warn('Formulario no válido');
+    }
+  }
+
   login(profile: number) {
     if (profile == 1) {
       const fv = this.registerFormClub.value;
@@ -514,6 +579,16 @@ export class RegisterComponent implements OnInit {
 
   mailOk() {
     const parentesco = this.registerFormPadre.get('parentesco')?.value;
+    if (this.validations()) {
+      if (parentesco == 3) {
+        this.finalizarRegistroJugador();
+      } else {
+        this.newRegistro = true;
+      }
+    }
+  }
+
+  validations(): boolean {
     const birthdate = this.registerFormPadre.get('birthdate')?.value;
 
     if (birthdate) {
@@ -527,27 +602,29 @@ export class RegisterComponent implements OnInit {
 
       if (!esMayorDeEdad) {
         alert('Debes ser mayor de edad.');
-        return;
+        return false;
       }
     } else {
       alert('Introduce tu edad de nacimiento.');
-      return;
+      return false;
     }
 
     if (!this.registerFormPadre.get('terms')?.value) {
       alert('Es obligatorio aceptar los terminos y condiciones para registrarse.');
-      return;
+      return false;
     }
 
-    if (parentesco == 3) {
-      this.finalizarRegistroJugador();
-    } else {
-      this.newRegistro = true;
-    }
+    return true;
   }
 
   numHijo() {
-    this.checkMail();
+    if (this.playerID != undefined && this.playerID != 0) {
+      if (this.validations()) {
+        this.registerPadreSinHijos();
+      }
+    } else {
+      this.checkMail();
+    }
   }
 
   volver() {

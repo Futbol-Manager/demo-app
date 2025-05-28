@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.token = params['token'];
-  
+
       if (this.token) {
         this.loginGloouds();
       } else {
@@ -111,11 +111,13 @@ export class LoginComponent implements OnInit {
               else
                 msg = 'La contraseña es incorrecta.';*/
 
+              let msg = 'No hemos podido iniciar sesión. Revisa que el correo y la contraseña sean correctos. Si lo necesitas, puedes recuperar tu contraseña pulsando en "He olvidado mi contraseña".';
+
               const snackBarConfig = new MatSnackBarConfig();
               snackBarConfig.duration = 10000;
               snackBarConfig.horizontalPosition = 'center';
               snackBarConfig.verticalPosition = 'top';
-              this.snackBar.open(res.error.msg, 'Cerrar', snackBarConfig);
+              this.snackBar.open(msg, 'Cerrar', snackBarConfig);
 
             }
           }, (err) => {

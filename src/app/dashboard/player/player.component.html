@@ -351,11 +351,26 @@
                         </div>
 
                         <!-- Segunda columna principal -->
-                        <div class="col-12 col-md-4">
+                        <div class="col-12 col-md-4" *ngIf="!showTutor1 && player.tutor1 == 0">
                             <div class="row mt-3">
                                 <div class="col-12 col-md-12">
                                     <!-- Contenido de la subcolumna -->
-                                    <label><strong>Datos del Padre:</strong></label>
+                                    <div class="form-check">
+                                        <button type="button" class="btn btn-outline-primary" (click)="onTutorCheck2()">
+                                            Firmar
+                                        </button>
+                                        <label class="form-check-label ms-2">
+                                            Confirmo que tengo autorización del otro tutor para ver o rellenar los datos
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4" *ngIf="showTutor1">
+                            <div class="row mt-3">
+                                <div class="col-12 col-md-12">
+                                    <!-- Contenido de la subcolumna -->
+                                    <label><strong>Datos del {{ parentTutor1 }}:</strong></label>
                                 </div>
                             </div>
                             <div class="row mt-3">
@@ -394,11 +409,26 @@
                         </div>
 
                         <!-- Tercera columna principal -->
-                        <div class="col-12 col-md-4">
+                        <div class="col-12 col-md-4" *ngIf="!showTutor2 && player.tutor2 == 0">
                             <div class="row mt-3">
                                 <div class="col-12 col-md-12">
                                     <!-- Contenido de la subcolumna -->
-                                    <label><strong>Datos de la Madre:</strong></label>
+                                    <div class="form-check">
+                                        <button type="button" class="btn btn-danger" (click)="onTutorCheck()">
+                                            Firmar
+                                        </button>
+                                        <label class="form-check-label ms-2">
+                                            Confirmo que tengo autorización del otro tutor para ver o rellenar los datos
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4" *ngIf="showTutor2">
+                            <div class="row mt-3">
+                                <div class="col-12 col-md-12">
+                                    <!-- Contenido de la subcolumna -->
+                                    <label><strong>Datos de la {{ parentTutor2 }}:</strong></label>
                                 </div>
                             </div>
                             <div class="row mt-3">
@@ -1272,6 +1302,8 @@
                             <label for="teamSelected" class="form-label">Selecciona el equipo:</label>
                             <select class="form-control" id="teamSelected" name="teamSelected"
                                 [(ngModel)]="teamSelected">
+                                <option value="0">
+                                    Escoge un equipo</option>
                                 <ng-container *ngFor="let team of listTeamsForCombo">
                                     <option *ngIf="team.value !== teamId" [value]="team.value">
                                         {{ team.name }}
@@ -1475,16 +1507,33 @@
     </div>
 </div>
 
-<div *ngIf="showAlertAndroid" class="alert alert-success d-flex align-items-center justify-content-between p-3 mt-4"
-    role="alert">
+<!-- Alerta para Android -->
+<div *ngIf="(usuarioActual?.profileType?.profileId === 4 || usuarioActual?.profileType?.profileId === 3) && showAlertAndroid && isAndroid"
+    class="alert alert-success d-flex align-items-center justify-content-between p-3 mt-4" role="alert">
     <div>
         <strong>¡Descarga ya la app para Android!</strong><br>
-        Disponible en Google Play. Próximamente también en Apple Store.
+        Disponible en Google Play.
     </div>
     <div class="d-flex align-items-center gap-2">
         <a href="https://play.google.com/store/apps/details?id=com.futbol.sphairatech&pcampaignid=web_share"
             target="_blank" class="btn btn-success d-flex align-items-center">
             <i class="bi bi-android2 me-2" style="font-size: 1.2rem;"></i> Descargar
+        </a>
+        <button type="button" class="btn-close ms-2" aria-label="Cerrar" (click)="cerrarAlertaAndroid()"></button>
+    </div>
+</div>
+
+<!-- Alerta para iOS -->
+<div *ngIf="(usuarioActual?.profileType?.profileId === 4 || usuarioActual?.profileType?.profileId === 3) && showAlertAndroid && isiOS"
+    class="alert alert-primary d-flex align-items-center justify-content-between p-3 mt-4" role="alert">
+    <div>
+        <strong>¡Descarga ya la app para iPhone!</strong><br>
+        Disponible en App Store.
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <a href="https://apps.apple.com/es/app/sphaira-tech/id6745791142" target="_blank"
+            class="btn btn-primary d-flex align-items-center">
+            <i class="bi bi-apple me-2" style="font-size: 1.2rem;"></i> Descargar
         </a>
         <button type="button" class="btn-close ms-2" aria-label="Cerrar" (click)="cerrarAlertaAndroid()"></button>
     </div>

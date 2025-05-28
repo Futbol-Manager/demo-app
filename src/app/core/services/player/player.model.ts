@@ -151,6 +151,10 @@ export class Player {
   dniPadre2: string;
   dniMadre1: string;
   dniMadre2: string;
+  tutor1: number;
+  tutor2: number;
+  parentesco1: number;
+  parentesco2: number;
 
   constructor(object: any) {
     this.playerId = object.playerId || 0;
@@ -227,6 +231,10 @@ export class Player {
     this.dniPadre2 = object.dniPadre2 || '';
     this.dniMadre1 = object.dniMadre1 || '';
     this.dniMadre2 = object.dniMadre2 || '';
+    this.tutor1 = object.tutor1 || 0;
+    this.tutor2 = object.tutor2 || 0;
+    this.parentesco1 = object.parentesco1 || 0;
+    this.parentesco2 = object.parentesco2 || 0;
   }
 }
 

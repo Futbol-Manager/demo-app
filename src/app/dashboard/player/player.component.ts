@@ -80,6 +80,11 @@ export class PlayerComponent implements OnInit {
   indexSelected = 0;
   profileId = 0;
 
+  showTutor1 = false;
+  showTutor2 = false;
+  parentTutor1 = 'Tutor 1';
+  parentTutor2 = 'Tutor 2';
+
   countries: string[] = [
     'Afganistán', 'Albania', 'Alemania', 'Andorra', 'Angola', 'Antigua y Barbuda', 'Arabia Saudita',
     'Argelia', 'Argentina', 'Armenia', 'Australia', 'Austria', 'Azerbaiyán', 'Bahamas', 'Bangladés', 'Barbados',
@@ -154,6 +159,9 @@ export class PlayerComponent implements OnInit {
   };
 
   temporada: string = '2024';
+  userId: number = 0;
+  isAndroid: boolean = false;
+  isiOS: boolean = false;
 
   constructor(private playerservice: PlayerService,
     private router: Router,
@@ -170,6 +178,10 @@ export class PlayerComponent implements OnInit {
     private location: Location) { }
 
   ngOnInit(): void {
+    const userAgent = navigator.userAgent || navigator.vendor;
+
+    this.isAndroid = /android/i.test(userAgent);
+    this.isiOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window);
     // Suscribirse a los cambios en los parámetros de la URL
     this.route.params.subscribe(params => {
       // Obtener el valor de teamId de los parámetros
@@ -183,6 +195,7 @@ export class PlayerComponent implements OnInit {
 
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
+      this.userId = this.usuarioActual!.userId;
       this.profileId = this.usuarioActual!.profileType.profileId;
       //this.playerIdsList = this.usuarioActual!.playerIds;
     });
@@ -227,7 +240,7 @@ export class PlayerComponent implements OnInit {
           }
         }
 
-        if (goToDatos) {
+        if (goToDatos && this.profileId == 3) {
           this.editarJugador(playerId);
           alert('Rellena estos datos para que el Club pueda acceder a los datos de tu hij@. '
             + 'Si sigues viendo esta pantalla, revisa que has puesto el apellido correctamente y no está todo puesto en el campo del nombre.');
@@ -492,13 +505,59 @@ export class PlayerComponent implements OnInit {
       dniPadre1: '',
       dniPadre2: '',
       dniMadre1: '',
-      dniMadre2: ''
+      dniMadre2: '',
+      tutor1: 0,
+      tutor2: 0,
+      parentesco1: 0,
+      parentesco2: 0
     };
   }
 
   editarJugador(playerId: number): void {
     const jugadorSeleccionado = this.players.find(player => player.playerId === playerId);
     this.player = jugadorSeleccionado;
+
+    if (this.player.tutor1 == 0 && this.player.tutor2 == 0 && this.profileId == 3) {
+      //agregamos al usuario padre al tutor 1
+      this.player.tutor1 = this.userId;
+      this.player.parentesco1 = this.usuarioActual!.parentesco;
+    }
+
+    if (this.profileId == 3 && (this.player.tutor1 != 0 || this.player.tutor2 != 0)) {
+      if (this.player.tutor1 === this.userId) {
+        this.showTutor1 = true;
+
+        if (this.player.nombrePadre == null) {
+          alert(`Rellena tus datos como padre, madre o tutor`);
+        }
+      } else if (this.player.tutor2 === this.userId) {
+        this.showTutor2 = true;
+      }
+    }
+
+    if (this.profileId < 3) {
+      this.showTutor1 = true;
+      this.showTutor2 = true;
+    }
+
+    switch (this.player.parentesco1) {
+      case 1: //padre
+        this.parentTutor1 = 'Padre';
+        break;
+      case 2: //madre
+        this.parentTutor1 = 'Madre';
+        break;
+    }
+
+    switch (this.player.parentesco2) {
+      case 1: //padre
+        this.parentTutor2 = 'Padre';
+        break;
+      case 2: //madre
+        this.parentTutor2 = 'Madre';
+        break;
+    }
+
     this.showPortero(this.player.posicion);
     this.promedioPase();
     this.promedioDefensa();
@@ -513,6 +572,26 @@ export class PlayerComponent implements OnInit {
     setTimeout(() => {
       this.enfocarPrimerCampo();
     }, 500);
+  }
+
+  onTutorCheck(): void {
+    const confirmado = confirm(
+      'Vas a firmar la confirmación de que estás autorizado por el otro progenitor o tutor para ver o rellenar sus datos, ¿estás seguro?'
+    );
+
+    if (confirmado) {
+      this.showTutor2 = true;
+    }
+  }
+
+  onTutorCheck2(): void {
+    const confirmado = confirm(
+      'Vas a firmar la confirmación de que estás autorizado por el otro progenitor o tutor para ver o rellenar sus datos, ¿estás seguro?'
+    );
+
+    if (confirmado) {
+      this.showTutor1 = true;
+    }
   }
 
   private enfocarPrimerCampo() {
@@ -891,21 +970,25 @@ export class PlayerComponent implements OnInit {
   }
 
   moverJugador(): void {
-    this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.players.splice(this.indexSelected, 1);
-          this.showModalMover = false;
-        } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+    if (this.teamSelected == 0) {
+      alert('Selecciona un equipo del desplegable.');
+    } else {
+      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected).subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.players.splice(this.indexSelected, 1);
+            this.showModalMover = false;
+            this.teamSelected = 0;
+          } else {
+            console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          }
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
-
+      );
+    }
   }
 
 

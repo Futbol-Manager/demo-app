@@ -18,6 +18,7 @@ export class User {
     playerId: number;
     playerIds: number[]; // Añadir playerIds como un array de números
     mobile: string;
+    parentesco: number; //0 tutor, 1 padre y 2 madre
 
 
     constructor( object: any){
@@ -37,5 +38,6 @@ export class User {
         this.playerId = (object.playerId) ? object.playerId : null;
         this.playerIds = object.playerIds ?? []; // Inicializar playerIds como un array vacío o con los valores del objeto
         this.mobile = (object.mobile) ? object.mobile : null;
+        this.parentesco = (object.parentesco) ? object.parentesco : null;
     }
 }

@@ -173,6 +173,8 @@ export class InicioComponent implements OnInit {
   nivelesVisibles = [...this.nivelesDefault];
 
   temporadaStoredValue = '2024';
+  isAndroid: boolean = false;
+  isiOS: boolean = false;
 
   constructor(
     private loginService: LoginService,
@@ -196,6 +198,10 @@ export class InicioComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const userAgent = navigator.userAgent || navigator.vendor;
+
+    this.isAndroid = /android/i.test(userAgent);
+    this.isiOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window);
     let datosYaCargados = false; // Bandera para evitar múltiples carga
     if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
@@ -228,14 +234,14 @@ export class InicioComponent implements OnInit {
                 let goToDatos = false;
                 let teamId = 0;
                 for (let a = 0; a < this.listHijos.length; a++) {
-                  if(this.listHijos[a].apellido == null){
+                  if (this.listHijos[a].apellido == null) {
                     goToDatos = true;
                     teamId = this.listHijos[a].teamId;
                     break;
                   }
                 }
 
-                if(goToDatos){
+                if (goToDatos) {
                   this.router.navigate(['/dashboard/jugadores', teamId]);
                 }
 

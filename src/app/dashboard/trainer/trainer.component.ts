@@ -320,7 +320,11 @@ export class TrainerComponent implements OnInit {
       dniPadre1: '',
       dniPadre2: '',
       dniMadre1: '',
-      dniMadre2: ''
+      dniMadre2: '',
+      tutor1: 0,
+      tutor2: 0,
+      parentesco1: 0,
+      parentesco2: 0
     };
   }
 

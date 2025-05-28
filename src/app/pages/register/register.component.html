@@ -253,7 +253,7 @@
                 </form>
               </div>
 
-              <!-- FORMULARIO PADRE/MADRE/TUTOR -->
+              <!-- FORMULARIO PADRE/MADRE/TUTOR CON HIJOS -->
               <div *ngIf="selectedOption == 3 && !newRegistro">
                 <form [formGroup]="registerFormPadre" (ngSubmit)="numHijo()" class="form-register">
                   <div class="mb-3">
@@ -344,7 +344,7 @@
 
                   <div class="mb-3">
                     <button type="submit" class="btn btn-custom btn-block textoCentrado"
-                      [disabled]="passwordsDoNotMatch">Siguiente</button>
+                      [disabled]="passwordsDoNotMatch">{{ texBoton }}</button>
                   </div>
                 </form>
               </div>
