@@ -41,6 +41,7 @@ import { PartidosEntrevistasComponent } from './partidos-entrevistas/partidos-en
 import { MenuClubComponent } from './menu-club/menu-club.component';
 import { ClasificacionResultadosComponent } from './clasificacion-resultados/clasificacion-resultados.component';
 import { DocumentosClubComponent } from './documentos-club/documentos-club.component';
+import { DocumentosJugadorComponent } from './documentos-jugador/documentos-jugador.component';
 
 
 
@@ -83,7 +84,8 @@ import { DocumentosClubComponent } from './documentos-club/documentos-club.compo
     PartidosEntrevistasComponent,
     MenuClubComponent,
     ClasificacionResultadosComponent,
-    DocumentosClubComponent
+    DocumentosClubComponent,
+    DocumentosJugadorComponent
   ],
   imports: [
     CommonModule,

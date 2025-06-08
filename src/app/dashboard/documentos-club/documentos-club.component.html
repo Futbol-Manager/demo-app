@@ -10,14 +10,21 @@
 </div>
 
 <div class="container">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3 mt-3">
-        <div class="col-3">
-            <label for="excel" class="form-label">Subir nuevo documento:</label>
+    <div class="row p-3 mt-3">
+        <div class="col-12 col-md-3 mb-3">
+            <label class="form-label">Subir nuevo documento:</label>
             <button class="btn btn-success form-control" (click)="openModalSubirDoc()">
                 Subir doc <i class="bi bi-filetype-pdf"></i>
             </button>
         </div>
+        <div class="col-12 col-md-3 mb-3">
+            <label class="form-label">Requerir documento al jugador:</label>
+            <button class="btn btn-success form-control" (click)="openModalSubirSinDoc()">
+                Requerir doc <i class="bi bi-filetype-pdf"></i>
+            </button>
+        </div>
     </div>
+
     <div class="table-responsive mb-3 mt-3">
         <table class="table table-striped table-hover text-center">
             <thead class="table-dark" style="cursor: pointer;">
@@ -40,25 +47,54 @@
                     <td>{{ doc.tipo }}</td>
                     <td>{{ doc.fecCreate | date:'dd/MM/yyyy' }}</td>
                     <td>
-                        <div class="d-flex justify-content-between">
-                            <button class="btn btn-info" title="Visible para jugadores o solo club"
-                                (click)="visible(doc, doc.docClubesId, doc.visible)">
-                                <i [ngClass]="doc.visible === 0 ? 'bi bi-eye' : 'bi bi-eye-slash'"></i>
-                            </button>
-                            <button *ngIf="doc.file?.toLowerCase().endsWith('.pdf')" class="btn btn-secondary"
-                                title="Abrir PDF en nueva pestaña" (click)="abrirPdf(doc.file)">
-                                <i class="bi bi-box-arrow-up-right"></i>
-                            </button>
-                            <button class="btn btn-primary" title="Copiar link del documento"
-                                (click)="copyLink(doc.file)">
-                                <span class="bi bi-copy"></span>
-                            </button>
-                            <button class="btn btn-danger" title="Eliminar documento"
-                                (click)="confirmarEliminarDoc(i, doc.docClubesId, doc.nombre)">
-                                <span class="bi bi-trash"></span>
-                            </button>
+                        <div class="row text-center gx-1">
+                            <div class="col">
+                                <button class="btn btn-custom-black w-100" title="Visible para jugadores o solo club"
+                                    (click)="visible(doc, doc.docClubesId, doc.visible)">
+                                    <i [ngClass]="doc.visible === 0 ? 'bi bi-eye' : 'bi bi-eye-slash'"></i>
+                                </button>
+                            </div>
+
+                            <div class="col">
+                                <button class="btn btn-custom-black w-100"
+                                    title="Permitir que los padres suban el documento"
+                                    (click)="requiere(doc, doc.docClubesId, doc.requiere)">
+                                    <i
+                                        [ngClass]="doc.requiere === 1 ? 'bi bi-file-earmark-arrow-up' : 'bi bi-slash-lg'"></i>
+                                </button>
+                            </div>
+
+                            <div class="col">
+                                <button class="btn btn-custom-black w-100" title="Abrir documento en nueva pestaña"
+                                    *ngIf="doc.file; else botonInvisible" (click)="abrirPdf(doc.file)">
+                                    <i class="bi bi-box-arrow-up-right"></i>
+                                </button>
+                                <ng-template #botonInvisible>
+                                    <button class="btn btn-custom-black w-100 invisible"><i
+                                            class="bi bi-box-arrow-up-right"></i></button>
+                                </ng-template>
+                            </div>
+
+                            <div class="col">
+                                <button class="btn btn-custom-black w-100" title="Copiar link del documento"
+                                    *ngIf="doc.file; else botonInvisible2" (click)="copyLink(doc.file)">
+                                    <span class="bi bi-copy"></span>
+                                </button>
+                                <ng-template #botonInvisible2>
+                                    <button class="btn btn-custom-black w-100 invisible"><i
+                                            class="bi bi-copy"></i></button>
+                                </ng-template>
+                            </div>
+
+                            <div class="col">
+                                <button class="btn btn-danger w-100" title="Eliminar documento"
+                                    (click)="confirmarEliminarDoc(i, doc.docClubesId, doc.nombre)">
+                                    <span class="bi bi-trash"></span>
+                                </button>
+                            </div>
                         </div>
                     </td>
+
                 </tr>
             </tbody>
         </table>
@@ -97,6 +133,12 @@
                         <label class="form-check-label" for="visibleSwitch">Visible para jugadores</label>
                     </div>
 
+                    <div class="mb-3 form-check form-switch">
+                        <input type="checkbox" formControlName="requiereD" class="form-check-input" id="requiereD">
+                        <label class="form-check-label" for="requiereD">Habilita este botón para permitir a los
+                            padres/jugadores subir este documento cumplimentado.</label>
+                    </div>
+
                     <div class="mb-3">
                         <label>Seleccionar archivo (.pdf o .doc/.docx):</label>
                         <input type="file" class="form-control" (change)="onFileSelected($event)"
@@ -109,6 +151,43 @@
                 <button class="btn btn-secondary" (click)="cerrarModalDocumento()">Cancelar</button>
                 <button class="btn btn-primary" [disabled]="!formDocumento.valid || !archivoSeleccionado"
                     (click)="subirDocumento()">Subir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal para subir documento del club -->
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show': mostrarModalSinDocumento }"
+    [style.display]="mostrarModalSinDocumento ? 'block' : 'none'">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Documento que se requiere</h5>
+                <button type="button" class="btn-close" (click)="cerrarModalSinDocumento()"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="documentoSinSubir">
+                    <div class="mb-3">
+                        <label>Nombre del Documento:</label>
+                        <input formControlName="nombreSin" type="text" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Descripción:</label>
+                        <textarea formControlName="descripcionSin" class="form-control" rows="2"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Tipo:</label>
+                        <input formControlName="tipoSin" type="text" class="form-control" />
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="cerrarModalSinDocumento()">Cancelar</button>
+                <button class="btn btn-primary" [disabled]="!documentoSinSubir.valid"
+                    (click)="subirSinDocumento()">Aceptar</button>
             </div>
         </div>
     </div>

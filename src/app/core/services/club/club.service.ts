@@ -781,24 +781,24 @@ export class ClubService {
 
   // Método para obtener la suscripcionDTO de un playerID
   getEntrenandoAhora(clubId: number): Observable<any> {
-      // Obtén el token almacenado en localStorage
-      const token: string | null = localStorage.getItem('token');
-      // Verifica si el token está presente
-      if (token) {
-          // Configura las cabeceras con el token para la solicitud HTTP
-          const headers = new HttpHeaders({
-              'Authorization': `Bearer ${token}`
-          });
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
 
-          // Construye la URL para la solicitud
-          const url: string = environment.apiUrl + `club/getentrenandoahora/${clubId}`;
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/getentrenandoahora/${clubId}`;
 
-          // Realiza la solicitud HTTP con las cabeceras configuradas
-          return this.http.get<Response>(url, { headers });
-      } else {
-          // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-          return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
-      }
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
   }
 
   getCuotasClub(clubId: number, temporada: string): Observable<Response> {
@@ -887,7 +887,7 @@ export class ClubService {
 
 
   /**************************DOCUMENTOS************************** */
-  
+
 
   getlistDocumentosByClub(clubId: number): Observable<Response> {
     // Obtén el token almacenado en localStorage
@@ -952,21 +952,110 @@ export class ClubService {
     }
   }
 
+  
+
+  setDocumentoRequiere(docClubesId: number, requiere: number): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/setdocumentorequiere/${docClubesId}/${requiere}`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
   uploadDocClub(file: File, dto: any): Observable<Response> {
     const token = localStorage.getItem('token');
     if (!token) return new Observable();
-  
+
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`
     });
-  
+
     const formData = new FormData();
     formData.append('files', file, file.name);
     formData.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
-  
+
     const url = environment.apiUrl + 'club/uploaddocclub';
     return this.http.post<Response>(url, formData, { headers });
   }
-  
+
+  uploadSinDocClub(dto: any): Observable<Response> {
+    const token = localStorage.getItem('token');
+    if (!token) return new Observable();
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    const formData = new FormData();
+    formData.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+
+    const url = environment.apiUrl + 'club/uploadsindocclub';
+    return this.http.post<Response>(url, formData, { headers });
+  }
+
+  getListDocumentosPlayer(teamId: number, playerId: number): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/getlistdocumentosplayer/${teamId}/${playerId}`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  updateDocumentoDescargado(dto: any): Observable<Response> {
+    const token = localStorage.getItem('token');
+    if (!token) return new Observable();
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    });
+
+    const url = environment.apiUrl + 'club/updatedocumentodescargado';
+    return this.http.post<Response>(url, dto, { headers }); // ← sin FormData
+  }  
+
+  uploadDocPadres(file: File, dto: any): Observable<Response> {
+    const token = localStorage.getItem('token');
+    if (!token) return new Observable();
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    const formData = new FormData();
+    formData.append('files', file, file.name);
+    formData.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+
+    const url = environment.apiUrl + 'club/uploaddocpadres';
+    return this.http.post<Response>(url, formData, { headers });
+  }
+
+
 
 }

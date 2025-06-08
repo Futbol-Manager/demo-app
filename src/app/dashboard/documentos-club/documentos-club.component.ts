@@ -21,13 +21,31 @@ export class DocumentosClubComponent implements OnInit {
   mostrarModalDocumento = false;
   formDocumento!: FormGroup;
   archivoSeleccionado!: File | null;
+  documentoSinSubir!: FormGroup;
+
+  mostrarModalSinDocumento = false;
 
   constructor(
     private location: Location,
     private clubService: ClubService,
     private router: Router,
     private route: ActivatedRoute,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder) {
+
+    this.formDocumento = this.fb.group({
+      nombre: ['', Validators.required],
+      descripcion: [''],
+      tipo: ['', Validators.required],
+      visible: [false],
+      requiereD: [false]
+    });
+
+    this.documentoSinSubir = this.fb.group({
+      nombreSin: ['', Validators.required],
+      descripcionSin: [''],
+      tipoSin: ['', Validators.required]
+    });
+  }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -37,13 +55,6 @@ export class DocumentosClubComponent implements OnInit {
     });
 
     this.loadDocuments();
-
-    this.formDocumento = this.fb.group({
-      nombre: ['', Validators.required],
-      descripcion: [''],
-      tipo: ['', Validators.required],
-      visible: [false]
-    });
   }
 
   loadDocuments() {
@@ -90,7 +101,6 @@ export class DocumentosClubComponent implements OnInit {
   }
 
   visible(doc: any, id: number, visible: number) {
-
     let isVisible = visible === 0 ? 1 : 0;
 
     this.clubService.setDocumentoVisible(id, isVisible).subscribe(
@@ -104,7 +114,24 @@ export class DocumentosClubComponent implements OnInit {
         // Puedes manejar el error según tus necesidades
       }
     );
+  }
 
+  
+
+  requiere(doc: any, id: number, requiere: number) {
+    let isRequiere = requiere === 0 ? 1 : 0;
+
+    this.clubService.setDocumentoRequiere(id, isRequiere).subscribe(
+      (response) => {
+        // Manejar la respuesta según tus necesidades
+        //console.log('Jugador eliminado con éxito:', response);
+        doc.requiere = isRequiere;
+      },
+      (error) => {
+        console.error('Error al eliminar el jugador:', error);
+        // Puedes manejar el error según tus necesidades
+      }
+    );
   }
 
   copyLink(file: string) {
@@ -150,14 +177,20 @@ export class DocumentosClubComponent implements OnInit {
     this.mostrarModalDocumento = true;
   }
 
-  abrirModalDocumento() {
-    this.mostrarModalDocumento = true;
+  openModalSubirSinDoc() {
+    this.archivoSeleccionado = null;
+    this.mostrarModalSinDocumento = true;
   }
 
   cerrarModalDocumento() {
     this.mostrarModalDocumento = false;
     this.formDocumento.reset();
     this.archivoSeleccionado = null;
+  }
+
+  cerrarModalSinDocumento() {
+    this.mostrarModalSinDocumento = false;
+    this.documentoSinSubir.reset();
   }
 
   onFileSelected(event: Event) {
@@ -176,7 +209,6 @@ export class DocumentosClubComponent implements OnInit {
 
   subirDocumento() {
     const formValues = this.formDocumento.value;
-
     const dto = {
       docClubesId: 0,
       nombre: formValues.nombre,
@@ -185,7 +217,8 @@ export class DocumentosClubComponent implements OnInit {
       visible: formValues.visible ? 0 : 1, // si es true, entonces 0
       file: null,
       clubId: this.clubId, // asegúrate de tener this.clubId en tu componente
-      fecCreate: null
+      fecCreate: null,
+      requiere: formValues.requiereD ? 1 : 0
     };
 
     const file = this.archivoSeleccionado;
@@ -193,9 +226,8 @@ export class DocumentosClubComponent implements OnInit {
       this.clubService.uploadDocClub(file, dto).subscribe({
         next: (res) => {
           this.loadDocuments();
-          alert('Documento subido correctamente');
+          alert('Documento solicitado correctamente');
           this.cerrarModalDocumento();
-          // refrescar lista si hace falta
         },
         error: (err) => {
           console.error(err);
@@ -203,6 +235,35 @@ export class DocumentosClubComponent implements OnInit {
         }
       });
     }
+  }
+
+  subirSinDocumento() {
+    const formValues = this.documentoSinSubir.value;
+    const dto = {
+      docClubesId: 0,
+      nombre: formValues.nombreSin,
+      descripcion: formValues.descripcionSin,
+      tipo: formValues.tipoSin,
+      visible: 0, // si es true, entonces 0
+      file: null,
+      clubId: this.clubId, // asegúrate de tener this.clubId en tu componente
+      fecCreate: null,
+      requiere: 1
+    };
+
+    this.clubService.uploadSinDocClub(dto).subscribe({
+      next: (res) => {
+        this.loadDocuments();
+        alert('Documento subido correctamente');
+        this.cerrarModalDocumento();
+        // refrescar lista si hace falta
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error al subir el documento');
+      }
+    });
+
   }
 
 }

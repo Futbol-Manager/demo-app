@@ -1,0 +1,98 @@
+<div class="submenu">
+    <div class="row">
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
+                <i class="bi bi-arrow-left-square-fill"></i>
+                <span class="d-none d-md-inline">Volver</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <div class="row">
+        <div *ngFor="let doc of listaDocumentos" class="col-12 mb-3 p-3 rounded"
+            style="background-color: #212529; border: 1px solid black; color: white;">
+            <h5 class="fw-bold">{{ doc.nombre }}</h5>
+            <p>{{ doc.descripcion }}</p>
+            <div class="d-flex gap-2">
+                <!-- Botón de descarga (solo si requiere === 0)
+                <button *ngIf="doc.requiere === 0" class="btn btn-light" (click)="descargar(doc)"
+                    title="Descargar documento">
+                    <i class="bi bi-arrow-down-circle"></i>
+                </button> -->
+
+                <!-- Botón de descarga (solo si requiere === 0) -->
+                <button *ngIf="doc.requiere === 0 || doc.fileClub" class="btn btn-light" (click)="descargar(doc)"
+                    title="Descargar documento" [ngClass]="{
+                    'bg-secondary text-white': doc.descargado === 0,
+                    'bg-success text-white': doc.descargado === 1
+                }">
+                    <i class="bi bi-arrow-down-circle"></i>
+                </button>
+
+                <!-- Botón de subida (solo si requiere === 1) -->
+                <button *ngIf="doc.requiere === 1" class="btn btn-light" (click)="subir(doc)" title="Subir documento"
+                    [ngClass]="{
+                    'bg-secondary text-white': doc.subido === 0,
+                    'bg-success text-white': doc.subido === 1
+                }">
+                    <i class="bi bi-arrow-up-circle"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para subir documento del club -->
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show': mostrarModalDocumento }"
+    [style.display]="mostrarModalDocumento ? 'block' : 'none'">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Subir Documento (PDF, Word o imagen)</h5>
+                <button type="button" class="btn-close" (click)="cerrarModalDocumento()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3 text-center"
+                    *ngIf="docPadreTemp?.subido === 1 && docPadreTemp?.filePadre; else subirNuevoArchivo">
+                    <!-- 
+                    <ng-container *ngIf="esImagen(docPadreTemp.filePadre); else mostrarBotonDocumento">
+                        <p class="mb-2">Documento ya subido:</p>
+                        <img [src]="'https://appsphairatech.com/images/docs-padres/' + docPadreTemp.filePadre"
+                            alt="Documento subido" class="img-fluid rounded shadow-sm"
+                            style="max-width: 100%; max-height: 350px; object-fit: contain;" />
+                    </ng-container>
+
+                    <ng-template #mostrarBotonDocumento>
+                        <p class="mb-2">Documento ya subido: {{ docPadreTemp.filePadre }}</p>
+                        <a class="btn btn-primary"
+                            [href]="'https://appsphairatech.com/images/docs-padres/' + docPadreTemp.filePadre"
+                            target="_blank" rel="noopener">
+                            Ver / Descargar documento <i class="bi bi-box-arrow-up-right ms-1"></i>
+                        </a>
+                    </ng-template>
+                    -->
+
+                    <p>Por política de privacidad de datos, no se
+                        puede mostrar el documento que ha sido subido. Por lo tanto, si crees que has cometido un error
+                        y has subido un documento incorrecto súbelo de nuevo</p>
+                </div>
+
+                <ng-template #subirNuevoArchivo>
+                    <p>Aquí puedes subir el archivo que se está solicitando.</p>
+                </ng-template>
+
+                <div class="mb-3">
+                    <label>Seleccionar archivo (.png, .jpg, .pdf o .doc/.docx):</label>
+                    <input type="file" class="form-control" (change)="onFileSelected($event)"
+                        accept=".pdf,.doc,.docx,.jpg,.png,.jpeg" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="cerrarModalDocumento()">Cancelar</button>
+                <button class="btn btn-primary" (click)="subirDocumento()">Subir</button>
+            </div>
+        </div>
+    </div>
+</div>

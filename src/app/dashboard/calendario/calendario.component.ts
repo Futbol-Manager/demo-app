@@ -549,6 +549,8 @@ export class CalendarioComponent implements OnInit {
   imageBaseUrlTask: string = environment.images + 'task-board/';
   imageBaseUrlUser: string = environment.images + 'user/';
 
+  convocatoriaJSON: any = null;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -969,11 +971,14 @@ export class CalendarioComponent implements OnInit {
     this.showModalPartido = false;
     // Limpiar los campos del partido
     this.match = new MatchPreparation({});
+    this.convocatoriaJSON = null;
   }
 
   crearPartido(): void {
     let id = this.match.matchPreparationId;
     this.match.matchDate = this.daySession;
+    this.match.visible = this.togglePartidoVisible;
+    this.match.convocatoria = this.convocatoriaJSON ?? this.match.convocatoria;
     // Lógica para crear el partido usando this.partido y enviarlo al servicio
     this.trainingService.createUpdatePartido(this.teamId.toString(), this.match).subscribe(
       (response) => {
@@ -2172,9 +2177,9 @@ export class CalendarioComponent implements OnInit {
     };
 
     // Convertir la convocatoria a una cadena JSON
-    const convocatoriaJSON = JSON.stringify(convocatoria);
+    this.convocatoriaJSON = JSON.stringify(convocatoria);
 
-    this.playerService.updateConvocatoria(convocatoriaJSON, this.matchPreparationId).subscribe(response => {
+    this.playerService.updateConvocatoria(this.convocatoriaJSON, this.matchPreparationId).subscribe(response => {
       alert('Convocatoria guardada con éxito.');
       this.showNotificar = true;
     });

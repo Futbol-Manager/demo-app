@@ -80,6 +80,9 @@ export class OpcionesjugadorComponent implements OnInit {
       case 9:
         this.router.navigate(['/dashboard/cuotas', this.teamId, this.playerId]);
         break;
+      case 10:
+        this.router.navigate(['/dashboard/documentos-jugador', this.teamId, this.playerId]);
+        break;
     }
   }
 
