@@ -52,6 +52,7 @@
                             <th>TELEFONO</th>
                             <th>DNI</th>
                             <th>IMG_DNI</th>
+                            <th>DOC</th>
                             <th class="borde-izquierdo-gordo">PADRE</th>
                             <th>DNI/NIE</th>
                             <th>TELEFONO</th>
@@ -66,8 +67,8 @@
                         <tr *ngFor="let player of filteredPlayers; let i = index">
                             <td class="borde-izquierdo-gordo" *ngIf="player.picturePlayer">
                                 <div class="container">
-                                    <img [src]="imageBaseUrlUser + player.picturePlayer"
-                                        alt="user-player" width="50" height="50" class="rounded-circle me-2">
+                                    <img [src]="imageBaseUrlUser + player.picturePlayer" alt="user-player" width="50"
+                                        height="50" class="rounded-circle me-2">
                                 </div>
                             </td>
                             <td class="borde-izquierdo-gordo" *ngIf="!player.picturePlayer">
@@ -85,6 +86,12 @@
                                     [ngClass]="{'btn-primary': !player.imgDniUno || !player.imgDniDos, 'btn-success': player.imgDniUno && player.imgDniDos}"
                                     (click)="abrirModalDniJugador(player, i)">
                                     <i class="bi bi-person-badge"></i>
+                                </button>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary"
+                                (click)="abrirModalDocJugador(player, i)">
+                                    <i class="bi bi-filetype-doc"></i>
                                 </button>
                             </td>
                             <td class="borde-izquierdo-gordo">{{ player.nombrePadre }}</td>
@@ -114,7 +121,7 @@
             </div>
             <div class="modal-body">
                 <h2>DNI del Jugador</h2>
-                <p style="color: red">Haz clic en "Seleccionar archivo" y elige o haz la foto que desees. 
+                <p style="color: red">Haz clic en "Seleccionar archivo" y elige o haz la foto que desees.
                     Solo se pueden subir imágenes en formato PNG o JPEG.</p>
                 <div class="row mt-3 mb-3">
                     <!-- Sección para la primera cara del DNI -->
@@ -228,6 +235,104 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver documentacion del jugador -->
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalDocJugador}"
+    [style.display]="mostrarModalDocJugador ? 'block' : 'none'">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content" style="min-height: 80vh;">
+            <div class="modal-header">
+                <h5 class="modal-title">Documentación del Jugador</h5>
+                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalDocJugador()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div *ngFor="let doc of listaDocumentos" class="col-12 mb-3 p-3 rounded"
+                        style="background-color: #212529; border: 1px solid black; color: white;">
+                        <h5 class="fw-bold">{{ doc.nombre }}</h5>
+                        <p>{{ doc.descripcion }}</p>
+                        <div class="d-flex gap-2">
+                            <!-- Botón de descarga (solo si requiere === 0)
+                <button *ngIf="doc.requiere === 0" class="btn btn-light" (click)="descargar(doc)"
+                    title="Descargar documento">
+                    <i class="bi bi-arrow-down-circle"></i>
+                </button> -->
+
+                            <!-- Botón de descarga (solo si requiere === 0) -->
+                            <button *ngIf="doc.requiere === 0 || doc.fileClub" class="btn btn-light"
+                                (click)="descargar(doc)" title="Descargar documento" [ngClass]="{
+                    'bg-secondary text-white': doc.descargado === 0,
+                    'bg-success text-white': doc.descargado === 1
+                }">
+                                <i class="bi bi-arrow-down-circle"></i>
+                            </button>
+
+                            <!-- Botón de subida (solo si requiere === 1) -->
+                            <button *ngIf="doc.requiere === 1" class="btn btn-light" (click)="subir(doc)"
+                                title="Subir documento" [ngClass]="{
+                    'bg-secondary text-white': doc.subido === 0,
+                    'bg-success text-white': doc.subido === 1
+                }">
+                                <i class="bi bi-arrow-up-circle"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para subir documento del club -->
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show': mostrarModalDocumento }"
+    [style.display]="mostrarModalDocumento ? 'block' : 'none'">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Subir Documento (PDF, Word o imagen)</h5>
+                <button type="button" class="btn-close" (click)="cerrarModalDocumento()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3 text-center"
+                    *ngIf="docPadreTemp?.subido === 1 && docPadreTemp?.filePadre; else subirNuevoArchivo">
+                    <ng-container *ngIf="esImagen(docPadreTemp.filePadre); else mostrarBotonDocumento">
+                        <p class="mb-2">Documento ya subido:</p>
+                        <img [src]="'https://appsphairatech.com/images/docs-padres/' + docPadreTemp.filePadre"
+                            alt="Documento subido" class="img-fluid rounded shadow-sm"
+                            style="max-width: 100%; max-height: 350px; object-fit: contain;" />
+                    </ng-container>
+
+                    <ng-template #mostrarBotonDocumento>
+                        <p class="mb-2">Documento ya subido: {{ docPadreTemp.filePadre }}</p>
+                        <a class="btn btn-primary"
+                            [href]="'https://appsphairatech.com/images/docs-padres/' + docPadreTemp.filePadre"
+                            target="_blank" rel="noopener">
+                            Ver / Descargar documento <i class="bi bi-box-arrow-up-right ms-1"></i>
+                        </a>
+                    </ng-template>
+
+                    <p>Por política de privacidad de datos, no se
+                        puede mostrar el documento que ha sido subido. Por lo tanto, si crees que has cometido un error
+                        y has subido un documento incorrecto súbelo de nuevo</p>
+                </div>
+
+                <ng-template #subirNuevoArchivo>
+                    <p>Aquí puedes subir el archivo que se está solicitando.</p>
+                </ng-template>
+
+                <div class="mb-3">
+                    <label>Seleccionar archivo (.png, .jpg, .pdf o .doc/.docx):</label>
+                    <input type="file" class="form-control" (change)="onFileSelected($event)"
+                        accept=".pdf,.doc,.docx,.jpg,.png,.jpeg" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="cerrarModalDocumento()">Cancelar</button>
+                <button class="btn btn-primary" (click)="subirDocumento()">Subir</button>
             </div>
         </div>
     </div>

@@ -9,8 +9,7 @@
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="m-0 textoCentrado flex-grow-1">Registro de usuario</h3>
-            <button class="btn btn-close" (click)="toLogin($event)">
-              <!-- Aquí puedes añadir el icono de cierre -->
+            <button *ngIf="!(selectedOption == 3 && !newRegistro)" class="btn btn-close" (click)="toLogin($event)">
             </button>
           </div>
           <div class="card-body textoCentrado">

@@ -36,12 +36,6 @@ export class DocumentosJugadorComponent implements OnInit {
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
       this.userId = this.usuarioActual!.userId;
-      // Suscribirse a los cambios en los parámetros de la URL
-      this.route.params.subscribe(params => {
-        // Obtener el valor de clubId de los parámetros
-        this.teamId = +params['teamId'];  // El + convierte el valor a número
-        this.playerId = +params['playerId'];  // El + convierte el valor a número
-      });
     });
     this.route.params.subscribe(params => {
       // Obtener el valor de clubId de los parámetros

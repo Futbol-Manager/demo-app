@@ -10,6 +10,8 @@ import { Player } from 'src/app/core/services/player/player.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
+import { LoginService } from 'src/app/core/services/login/login.service';
+import { User } from 'src/app/core/models/users/user.model';
 
 @Component({
   selector: 'app-info-jugadores',
@@ -57,17 +59,31 @@ export class InfoJugadoresComponent implements OnInit {
   loading = true;
   imageBaseUrlUser: string = environment.images + 'user/';
   imageBaseUrlPlayerDni: string = environment.images + 'playerDni/';
-  
+
   temporadaStoredValue = '2024';
+
+  mostrarModalDocJugador = false;
+  mostrarModalDocumento = false;
+  listaDocumentos: any[] = [];
+  archivoSeleccionado!: File | null;
+  docPadreTemp: any;
+
+  usuarioActual!: User | null;
+  userId: number = 0;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar,
     private clubService: ClubService,
-    private playerService: PlayerService,) { }
+    private playerService: PlayerService,
+    private loginService: LoginService) { }
 
   ngOnInit(): void {
+    this.loginService.usuarioActual.subscribe(user => {
+      this.usuarioActual = user;
+      this.userId = this.usuarioActual!.userId;
+    });
     // Suscribirse a los cambios en los parámetros de la URL
     this.route.params.subscribe(params => {
       // Obtener el valor de teamId de los parámetros
@@ -78,7 +94,7 @@ export class InfoJugadoresComponent implements OnInit {
     if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
-    
+
     this.cargarListadoJugadores();
   }
 
@@ -266,6 +282,45 @@ export class InfoJugadoresComponent implements OnInit {
     this.mostrarModalDniJugador = true;
   }
 
+  abrirModalDocJugador(player: any, index: number) {
+    this.indexSelected = index;
+    this.playerIdSelected = player.playerId;
+    this.selectedPlayer = player;
+    this.loadDocuments();
+  }
+
+  loadDocuments() {
+    this.clubService.getListDocumentosPlayer(0, this.playerIdSelected).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.listaDocumentos = response.data;          
+    this.mostrarModalDocJugador = true;
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  cerrarModalDocJugador() {
+    this.mostrarModalDocJugador = false;
+  }
+
+  cerrarModalDocumento() {
+    this.mostrarModalDocumento = false;
+  }
+
+  subir(doc: any) {
+    console.log('Subir:', doc);
+    // Aquí iría la lógica para subir el documento
+    this.mostrarModalDocumento = true;
+    this.docPadreTemp = doc;
+  }
+
   cerrarModalDniJugador() {
     this.dniCara1 = null;
     this.dniCara2 = null;
@@ -274,6 +329,48 @@ export class InfoJugadoresComponent implements OnInit {
     this.dniCara5 = null;
     this.dniCara6 = null;
     this.mostrarModalDniJugador = false;
+  }
+
+  subirDocumento() {
+    const file = this.archivoSeleccionado;
+
+    const dto = {
+      docPadresId: this.docPadreTemp.docPadresId,
+      docClubesId: this.docPadreTemp.docClubesId,
+      nombre: this.docPadreTemp.nombre,
+      file: null,
+      clubId: this.docPadreTemp.clubId, // asegúrate de tener this.clubId en tu componente
+      fecCreate: null,
+      descargado: this.docPadreTemp.descargado,
+      subido: 1,
+      playerId: this.docPadreTemp.playerId,
+      userId: this.userId,
+      descripcion: '',
+      requiere: this.docPadreTemp.requiere
+    };
+
+    if (file) {
+      this.clubService.uploadDocPadres(file, dto).subscribe({
+        next: (res) => {
+          this.loadDocuments();
+          alert('Documento subido correctamente');
+          this.cerrarModalDocumento();
+          // refrescar lista si hace falta
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Error al subir el documento');
+        }
+      });
+    } else {
+      alert('Selecciona un archivo para subir.');
+    }
+  }
+
+  esImagen(nombreArchivo: string): boolean {
+    const extensionesImagen = ['.jpg', '.jpeg', '.png', '.gif'];
+    const extension = nombreArchivo?.toLowerCase().split('.').pop();
+    return extensionesImagen.includes('.' + extension);
   }
 
   onFileChange(event: any, cara: string) {
@@ -426,5 +523,44 @@ export class InfoJugadoresComponent implements OnInit {
       });
   }
 
+  descargar(doc: any): void {
+    if (!doc.fileClub) return;
+    if (doc.descargado == 0) {
+      // Marcar como descargado
+      doc.descargado = 1;
+      doc.userId = this.userId;
+
+      this.clubService.updateDocumentoDescargado(doc).subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            console.log('Guardado.');
+          } else {
+            console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          }
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
+        }
+      );
+    };
+
+    const url = 'https://appsphairatech.com/images/documentos/' + doc.fileClub;
+    window.open(url, '_blank');
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      if (['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'].includes(ext || '')) {
+        this.archivoSeleccionado = file;
+      } else {
+        alert('Solo se permiten archivos PDF o Word.');
+        this.archivoSeleccionado = null;
+      }
+    }
+  }
 
 }
