@@ -11,7 +11,7 @@
 
 <app-publicidad></app-publicidad>
 
-<div class="container">
+<div class="container" [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
   <div class="d-block m-3" tabindex="-1" role="dialog" style="margin-top: 3em;">
     <div class="modal-dialog" role="document">
       <div class="modal-content">
@@ -23,7 +23,47 @@
           TODO hacer que si es entrenador suelto, si pueda editar esa info-->
           <form [formGroup]="editarEquipoForm" (ngSubmit)="editarEquipo()">
             <div class="row">
+
               <div class="col-md-6 mb-3">
+                <label for="categoriaInput" class="form-label">Categoría del Equipo</label>
+                <input type="text" id="categoriaInput" class="form-control" formControlName="categoriaNombre"
+                  (input)="onInputCategoria($event)" (blur)="ocultarDropdownConRetraso()"
+                  (focus)="mostrarDropdown = true" autocomplete="off" placeholder="Escribe la categoría de este equipo">
+
+                <ul *ngIf="mostrarDropdown" class="list-group position-absolute z-3 mt-1"
+                  style="max-height: 200px; overflow-y: auto;">
+                  <li *ngFor="let cat of categoriasFiltradas" class="list-group-item list-group-item-action"
+                    style="cursor: pointer;" (mousedown)="seleccionarCategoria(cat)">
+                    {{ cat.categoryName }}
+                  </li>
+                  <li *ngIf="categoriaNombre.length > 3" class="list-group-item list-group-item-action text-primary"
+                    style="cursor: pointer;" (mousedown)="crearCategoria(categoriaNombre)">
+                    Crear "{{ categoriaNombre }}"
+                  </li>
+                </ul>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="categoriaInput" class="form-label">Nivel o Liga del Equipo</label>
+                <input type="text" id="categoriaInput" class="form-control" formControlName="levelLeague"
+                  (input)="onInputNivel($event)" (blur)="ocultarDropdownConRetrasoNivel()"
+                  (focus)="mostrarDropdown2 = true" autocomplete="off" placeholder="Escribe el nivel de este equipo">
+
+                <ul *ngIf="mostrarDropdown2" class="list-group position-absolute z-3 mt-1"
+                  style="max-height: 200px; overflow-y: auto;">
+                  <li *ngFor="let n of nivelesVisiblesFiltradas" class="list-group-item list-group-item-action"
+                    style="cursor: pointer;" (mousedown)="seleccionarNivel(n)">
+                    {{ n.label }}
+                  </li>
+                  <li class="list-group-item list-group-item-action text-primary" style="cursor: pointer;"
+                    (mousedown)="crearNivel(categoriaNivel)">
+                    Seleccionar "{{ categoriaNivel }}"
+                  </li>
+                </ul>
+              </div>
+
+
+              <!--               <div class="col-md-6 mb-3">
                 <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
                 <select class="form-control" id="categoriaEquipo" name="categoriaEquipo"
                   formControlName="categoryTypeId">
@@ -35,7 +75,8 @@
                 <select class="form-control" id="nivelLiga" name="nivelLiga" formControlName="levelLeague">
                   <option *ngFor="let option of levelOptions" [value]="option.value">{{ option.label }}</option>
                 </select>
-              </div>
+              </div>-->
+
             </div>
             <div class="row">
               <div class="col-md-6 mb-3">
@@ -47,7 +88,8 @@
               <div class="col-md-6 mb-3">
                 <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
                 <div class="d-flex align-items-end">
-                  <button type="button" class="form-control btn btn-primary" (click)="openModalHorario()">Pulsa para poner el horario</button>
+                  <button type="button" class="form-control btn btn-primary" (click)="openModalHorario()">Pulsa para
+                    poner el horario</button>
                 </div>
               </div>
             </div>
@@ -95,8 +137,8 @@
                       <span class="bi bi-person" style="font-size: 4rem;"></span>
                     </ng-container>
                     <ng-container *ngIf="coach.picture">
-                      <img src="https://appsphairatech.com/images/user/{{ coach.picture }}" alt="user-player" width="100"
-                        height="100" class="rounded-circle me-2">
+                      <img src="https://appsphairatech.com/images/user/{{ coach.picture }}" alt="user-player"
+                        width="100" height="100" class="rounded-circle me-2">
                     </ng-container>
                     <h5 class="card-title">{{ coach.name }} {{ coach.surname }}</h5>
                     <div class="d-flex justify-content-between"
@@ -165,7 +207,7 @@
                 [checked]="diasTeam[dia.property] === 1"
                 (change)="toggleDiaOkDesactivar(dia.property, diasTeam[dia.property])">
             </div>
-          </div>         
+          </div>
           <!-- Sección de selectores de hora -->
           <div class="row mb-3" *ngIf="diasTeam[dia.property] === 1">
             <div class="col-4">

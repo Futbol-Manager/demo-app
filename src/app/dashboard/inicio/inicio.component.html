@@ -321,28 +321,67 @@
         <hr>
         <!-- Formulario para la creación de equipo con campos separados -->
         <form [formGroup]="crearEquipoForm" (ngSubmit)="crearEquipo()">
+
+          <div class="mb-3">
+            <label for="categoriaInput" class="form-label">Categoría del Equipo</label>
+            <input type="text" id="categoriaInput" class="form-control" formControlName="categoriaNombre"
+              (input)="onInputCategoria($event)" (blur)="ocultarDropdownConRetraso()" (focus)="mostrarDropdown = true"
+              autocomplete="off" placeholder="Escribe la categoría de este equipo">
+
+            <ul *ngIf="mostrarDropdown" class="list-group position-absolute w-100 z-3 mt-1"
+              style="max-height: 200px; overflow-y: auto;">
+              <li *ngFor="let cat of categoriasFiltradas" class="list-group-item list-group-item-action"
+                style="cursor: pointer;" (mousedown)="seleccionarCategoria(cat)">
+                {{ cat.categoryName }}
+              </li>
+              <li *ngIf="categoriaNombre.length > 3" class="list-group-item list-group-item-action text-primary"
+                style="cursor: pointer;" (mousedown)="crearCategoria(categoriaNombre)">
+                Crear "{{ categoriaNombre }}"
+              </li>
+            </ul>
+          </div>
+
+          <!-- Federacion (dinámico)
           <div class="mb-3">
             <label for="federacion" class="form-label">Federación:</label>
             <select [(ngModel)]="federacion" (change)="guardarFederacion()" class="form-select" id="federacion"
               name="federacion" formControlName="federacion">
               <option *ngFor="let f of federaciones; let i = index" [value]="i + 1">{{ f }}</option>
             </select>
-          </div>
+          </div> -->
 
-          <!-- Categoría (dinámico) -->
+          <!-- Categoría (dinámico)
           <div class="mb-3">
             <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
             <select class="form-select" id="categoriaEquipo" formControlName="categoryTypeId">
               <option *ngFor="let c of categoriasVisibles; let i = index" [value]="c.value">{{ c.label }}</option>
             </select>
-          </div>
+          </div> -->
 
-          <!-- Nivel (dinámico) -->
+          <!-- Nivel (dinámico)
           <div class="mb-3">
             <label for="nivelLiga" class="form-label">Nivel:</label>
             <select class="form-select" id="nivelLiga" formControlName="levelLeague">
               <option *ngFor="let n of nivelesVisibles; let i = index" [value]="n.value">{{ n.label }}</option>
             </select>
+          </div> -->
+
+          <div class="mb-3">
+            <label for="categoriaInput" class="form-label">Nivel o Liga del Equipo</label>
+            <input type="text" id="categoriaInput" class="form-control" formControlName="levelLeague"
+              (input)="onInputNivel($event)" (blur)="ocultarDropdownConRetrasoNivel()" (focus)="mostrarDropdown2 = true"
+              autocomplete="off" placeholder="Escribe el nivel de este equipo">
+
+            <ul *ngIf="mostrarDropdown2" class="list-group position-absolute w-100 z-3 mt-1" style="max-height: 200px; overflow-y: auto;">
+              <li *ngFor="let n of nivelesVisiblesFiltradas" class="list-group-item list-group-item-action"
+                style="cursor: pointer;" (mousedown)="seleccionarNivel(n.label)">
+                {{ n.label }}
+              </li>
+              <li *ngIf="categoriaNivel && categoriaNivel !== ''" class="list-group-item list-group-item-action text-primary" style="cursor: pointer;"
+                (mousedown)="crearNivel(categoriaNivel)">
+                Seleccionar "{{ categoriaNivel }}"
+              </li>
+            </ul>
           </div>
 
           <div class="mb-3">
@@ -363,16 +402,6 @@
               <option value="L">L</option>
               <option value="M">M</option>
             </select>
-          </div>
-          <!--<div class="mb-3">
-            <label for="objetivoEquipo" class="form-label">Objetivo del Equipo:</label>
-            <input type="text" class="form-control" id="objetivoEquipo" name="objetivoEquipo"
-              formControlName="objectiveTeam">
-          </div>-->
-          <div class="mb-3">
-            <label for="diasEntrenamiento" class="form-label">Días de Entrenamiento:</label>
-            <p>Para introducir un horario, una vez creado el equipo, pulsa en él y después accede al menú "información
-              del equipo".</p>
           </div>
           <div class="modal-footer">
             <!-- Botón para guardar el nuevo equipo -->

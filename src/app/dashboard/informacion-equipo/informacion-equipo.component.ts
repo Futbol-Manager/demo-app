@@ -9,6 +9,7 @@ import { RegisterService } from 'src/app/core/services/register/register.service
 import { HorarioTeam, TeamNew } from 'src/app/core/services/team/team.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Location } from '@angular/common';
+import { ClubService } from 'src/app/core/services/club/club.service';
 
 @Component({
   selector: 'app-informacion-equipo',
@@ -117,6 +118,18 @@ export class InformacionEquipoComponent implements OnInit {
     { value: 'M', label: 'M' }
   ];
 
+  categoriaNombre: string = '';
+  categoriasFiltradas: { categoryTypeId: number, categoryName: string, year: number }[] = [];
+  categoriasLista: { categoryTypeId: number, categoryName: string, year: number }[] = [];
+  mostrarDropdown: boolean = false;
+  selectedCategoriaId: number | null = null;
+
+  categoriaNivel: string = '';
+  mostrarDropdown2: boolean = false;
+  nivelesVisiblesFiltradas = [...this.levelOptions];
+  nivelesVisibles = [...this.levelOptions];
+  datosCargados: boolean = false;
+
   constructor(
     private fb: FormBuilder,
     private teamService: TeamService,
@@ -125,6 +138,7 @@ export class InformacionEquipoComponent implements OnInit {
     private snackBar: MatSnackBar,
     private registerService: RegisterService,
     private loginService: LoginService,
+    private clubService: ClubService,
     private location: Location
   ) {
     this.editarEquipoForm = this.fb.group({
@@ -135,6 +149,7 @@ export class InformacionEquipoComponent implements OnInit {
       objectiveTeam: [""],
       trainingDays: [""],
       opinionTeam: [""],
+      categoriaNombre: ['']
     });
   }
 
@@ -149,7 +164,7 @@ export class InformacionEquipoComponent implements OnInit {
       sabado: { inicio: '', fin: '', activo: 0 },
       domingo: { inicio: '', fin: '', activo: 0 }
     };
-    
+
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
       this.profileId = Number(this.usuarioActual!.profileType.profileId);
@@ -160,6 +175,7 @@ export class InformacionEquipoComponent implements OnInit {
       this.teamId = +params['teamId'];  // El + convierte el valor a número
       this.cargarInfoEquipo();
       this.cargarInfoEntrenadores();
+      this.obtenerCategorias();
     });
   }
 
@@ -192,6 +208,7 @@ export class InformacionEquipoComponent implements OnInit {
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
+          this.editarEquipoForm.get('categoriaNombre')?.setValue(response.data.category);
           this.team = response.data;
           this.teamInfo = {
             teamId: this.team.teamId,
@@ -211,7 +228,7 @@ export class InformacionEquipoComponent implements OnInit {
             dateCreate: this.team.dateCreate,
             dateUpdate: this.team.dateUpdate
           };
-          
+
           // Asignar los valores recuperados del equipo al formulario
           this.editarEquipoForm.patchValue({
             teamId: this.teamInfo.teamId,
@@ -243,7 +260,7 @@ export class InformacionEquipoComponent implements OnInit {
         opinionTeam: fv.opinionTeam || '',
         trainingDays: fv.trainingDays || '',
         categoryType: {
-          categoryTypeId: fv.categoryTypeId,
+          categoryTypeId: this.selectedCategoriaId!,
           year: 0,
           categoryName: ''
         },
@@ -346,7 +363,7 @@ export class InformacionEquipoComponent implements OnInit {
     //console.log(`${property} actualizada a ${value}`);
   }
 
-  changeHora(){
+  changeHora() {
     this.updateHorarioTeam(this.diasTeam);
   }
 
@@ -381,6 +398,116 @@ export class InformacionEquipoComponent implements OnInit {
 
   cerrarModalHorario() {
     this.showModalHorario = false;
+  }
+
+  onInputCategoria(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+
+    if (value.length >= 4) {
+      // Lógica para buscar categorías
+      console.log('Buscando categorías con:', value);
+      this.categoriaNombre = value;
+      this.buscarCategorias(value);
+    } else {
+      //this.categoriasFiltradas = [];
+      this.mostrarDropdown = false;
+    }
+  }
+
+  buscarCategorias(nombre: string): void {
+    this.categoriasFiltradas = this.categoriasLista.filter(cat => cat.categoryName.toLowerCase().includes(nombre.toLowerCase()));
+    this.mostrarDropdown = true;
+
+    // Aquí harías la llamada real al backend, por ahora lo simulamos:
+    /*this.categoriasFiltradas = [
+      { id: 1, text: 'Cadete' },
+      { id: 2, text: 'Juvenil' }
+    ].filter(cat => cat.text.toLowerCase().includes(nombre.toLowerCase()));*/
+
+  }
+
+  onInputNivel(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+
+    if (value.length >= 4) {
+      // Lógica para buscar categorías
+      console.log('Buscando niveles con:', value);
+      this.categoriaNivel = value;
+      this.buscarNivel(value);
+    } else {
+      //this.categoriasFiltradas = [];
+      this.mostrarDropdown2 = false;
+    }
+  }
+
+  buscarNivel(nombre: string): void {
+    this.nivelesVisiblesFiltradas = this.nivelesVisibles.filter(n => n.label.toLowerCase().includes(nombre.toLowerCase()));
+    this.mostrarDropdown2 = true;
+  }
+
+  seleccionarCategoria(cat: { categoryTypeId: number, categoryName: string }): void {
+    this.categoriaNombre = cat.categoryName;
+    this.selectedCategoriaId = cat.categoryTypeId;
+    this.mostrarDropdown = false;
+    this.editarEquipoForm.get('categoriaNombre')?.setValue(this.categoriaNombre);
+  }
+
+  seleccionarNivel(nivel: any): void {
+    this.categoriaNivel = nivel;
+    this.editarEquipoForm.get('levelLeague')?.setValue(this.categoriaNivel);
+  }
+
+  crearCategoria(nombre: string): void {
+    if (!nombre.trim()) return;
+
+    // Aquí iría tu llamada real al backend:
+    const dto = { categoryTypeId: 0, categoryName: nombre, year: 0 };
+
+    this.clubService.updateCreateCategoryType(dto).subscribe({
+      next: (res) => {
+        this.selectedCategoriaId = res.data.categoryTypeId;
+        this.categoriaNombre = dto.categoryName;
+        this.mostrarDropdown = false;
+        // Opcionalmente: podrías añadirla a la lista si la quieres mostrar después
+        this.categoriasFiltradas.unshift(res.data);
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error al subir el documento');
+      }
+    });
+  }
+
+  crearNivel(nombre: string): void {
+    if (!nombre.trim()) return;
+    this.seleccionarNivel(nombre);
+  }
+
+  ocultarDropdownConRetraso(): void {
+    setTimeout(() => {
+      this.mostrarDropdown = false;
+    }, 200);
+  }
+
+  ocultarDropdownConRetrasoNivel(): void {
+    setTimeout(() => {
+      this.mostrarDropdown2 = false;
+    }, 200);
+  }
+
+  obtenerCategorias() {
+    this.categoriasFiltradas = [];
+    this.editarEquipoForm.get('categoriaNombre')?.reset();
+    this.categoriaNombre = '';
+    this.clubService.getListCategorias().subscribe(
+      (response: Response) => {
+        this.categoriasLista = response.data;
+        this.datosCargados = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
   }
 
 }

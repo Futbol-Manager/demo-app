@@ -176,6 +176,16 @@ export class InicioComponent implements OnInit {
   isAndroid: boolean = false;
   isiOS: boolean = false;
 
+  categoriaNombre: string = '';
+  categoriasFiltradas: { categoryTypeId: number, categoryName: string, year: number }[] = [];
+  categoriasLista: { categoryTypeId: number, categoryName: string, year: number }[] = [];
+  mostrarDropdown: boolean = false;
+  selectedCategoriaId: number | null = null;
+
+  categoriaNivel: string = '';
+  mostrarDropdown2: boolean = false;
+  nivelesVisiblesFiltradas = [...this.nivelesDefault];
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -187,13 +197,14 @@ export class InicioComponent implements OnInit {
       excelFile: [null]
     });
     this.crearEquipoForm = this.fb.group({
-      categoryTypeId: ['', Validators.required],
+      categoryTypeId: [''],
       federacion: [''],
       levelLeague: [''],
       name: [''],
       objectiveTeam: [''],
       trainingDays: [''],
       opinionTeam: [''],
+      categoriaNombre: ['']
     });
   }
 
@@ -269,6 +280,11 @@ export class InicioComponent implements OnInit {
         this.nivelesVisibles = [...this.nivelesDefault];
       }
     }
+
+    // Escuchar cambios en el campo
+    /*this.crearEquipoForm.get('categoriaNombre')?.valueChanges.subscribe(value => {
+      this.onInputCategoria(value);
+    });*/
   }
 
   guardarFederacion() {
@@ -419,6 +435,7 @@ export class InicioComponent implements OnInit {
 
   // Método para abrir el modal de creación de equipo
   abrirModalCrearEquipo(): void {
+    this.obtenerCategorias();
     let accessSusOk = false;
     //revisar el numero de equipos que hay y puede tener
     if (this.profileId === 2) {
@@ -448,54 +465,61 @@ export class InicioComponent implements OnInit {
     this.showModal = false;
     // Limpiar los datos del nuevo equipo al cerrar el modal si es necesario
     this.teamNew = new TeamNew();
+    this.crearEquipoForm.get('categoriaNombre')?.reset();
+    this.crearEquipoForm.get('levelLeague')?.reset();
+    this.categoriaNivel = '';
   }
 
   // Método para crear un nuevo equipo
   crearEquipo(): void {
     if (this.crearEquipoForm.valid) {
-      //const categoriaLabel = this.categoriasVisibles.find(c => c.value === this.crearEquipoForm.value.categoryTypeId)?.label;
-      const categoriaLabel = this.categoriasVisibles.find(
-        c => +c.value === +this.crearEquipoForm.value.categoryTypeId
-      )?.label;
+      if (this.selectedCategoriaId != null && this.selectedCategoriaId != 0) {
+        // Recoge los campos del modal y asigna al objeto nuevoEquipo
+        this.teamNew = {
+          teamId: 0, // O el valor por defecto que desees para teamId
+          levelLeague: this.crearEquipoForm.value.levelLeague || '',
+          name: this.crearEquipoForm.value.name || '',
+          objectiveTeam: this.crearEquipoForm.value.objectiveTeam || '',
+          opinionTeam: this.crearEquipoForm.value.opinionTeam || '',
+          trainingDays: this.crearEquipoForm.value.trainingDays || '',
+          categoryType: {
+            categoryTypeId: this.selectedCategoriaId!,
+            year: 0,
+            categoryName: ''
+          },
+          clubId: this.clubId || 0,
+          userId: 0,
+          temporada: this.temporadaStoredValue, //TODO aqui debe de coger el año de la temporada actual
+          dateCreate: '',
+          dateUpdate: ''
+        };
 
-      // Recoge los campos del modal y asigna al objeto nuevoEquipo
-      this.teamNew = {
-        teamId: 0, // O el valor por defecto que desees para teamId
-        levelLeague: this.crearEquipoForm.value.levelLeague || '',
-        name: this.crearEquipoForm.value.name || '',
-        objectiveTeam: this.crearEquipoForm.value.objectiveTeam || '',
-        opinionTeam: this.crearEquipoForm.value.opinionTeam || '',
-        trainingDays: this.crearEquipoForm.value.trainingDays || '',
-        categoryType: {
-          categoryTypeId: this.crearEquipoForm.value.categoryTypeId,
-          year: 0,
-          categoryName: categoriaLabel != undefined ? categoriaLabel : ''
-        },
-        clubId: this.clubId || 0,
-        userId: 0,
-        temporada: this.temporadaStoredValue, //TODO aqui debe de coger el año de la temporada actual
-        dateCreate: '',
-        dateUpdate: ''
-      };
+        // Llamada al servicio para crear el equipo
+        this.teamService.createUpdateTeam(this.usuarioActual!.userId, this.teamNew,).subscribe(
+          (resp) => {
+            // Manejar la respuesta según tus necesidades
+            //console.log('Equipo creado con éxito:', response);
 
-      // Llamada al servicio para crear el equipo
-      this.teamService.createUpdateTeam(this.usuarioActual!.userId, this.teamNew,).subscribe(
-        (response) => {
-          // Manejar la respuesta según tus necesidades
-          //console.log('Equipo creado con éxito:', response);
+            // Cargar nuevamente el listado de equipos después de la creación exitosa
+            //this.cargarListadoEquipos();
+            const newTeam = {
+              category: this.categoriaNombre, levelLeague: this.categoriaNivel, name: resp.data.name,
+              teamId: resp.data.teamId
+            };
+            this.listTeam.push(newTeam);
 
-          // Cargar nuevamente el listado de equipos después de la creación exitosa
-          //this.cargarListadoEquipos();
-          this.listTeam.push(response.data);
-
-          // Cerrar el modal después de crear el equipo
-          this.cerrarModal();
-        },
-        (error) => {
-          console.error('Error al crear el equipo:', error);
-          // Puedes manejar el error según tus necesidades
-        }
-      );
+            // Cerrar el modal después de crear el equipo
+            this.cerrarModal();
+          },
+          (error) => {
+            console.error('Error al crear el equipo:', error);
+            // Puedes manejar el error según tus necesidades
+          }
+        );
+      } else {
+        alert('Debes seleccionar o crear la categoria. No vale solo con escribirlo.');
+        return;
+      }
     }
   }
 
@@ -632,6 +656,115 @@ export class InicioComponent implements OnInit {
 
   cerrarAlertaAndroid(): void {
     this.showAlertAndroid = false;
+  }
+
+  onInputCategoria(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+
+    if (value.length >= 4) {
+      // Lógica para buscar categorías
+      console.log('Buscando categorías con:', value);
+      this.categoriaNombre = value;
+      this.buscarCategorias(value);
+    } else {
+      //this.categoriasFiltradas = [];
+      this.mostrarDropdown = false;
+    }
+  }
+
+  buscarCategorias(nombre: string): void {
+    this.categoriasFiltradas = this.categoriasLista.filter(cat => cat.categoryName.toLowerCase().includes(nombre.toLowerCase()));
+    this.mostrarDropdown = true;
+
+    // Aquí harías la llamada real al backend, por ahora lo simulamos:
+    /*this.categoriasFiltradas = [
+      { id: 1, text: 'Cadete' },
+      { id: 2, text: 'Juvenil' }
+    ].filter(cat => cat.text.toLowerCase().includes(nombre.toLowerCase()));*/
+
+  }
+
+  onInputNivel(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+
+    if (value.length >= 4) {
+      // Lógica para buscar categorías
+      console.log('Buscando niveles con:', value);
+      this.categoriaNivel = value;
+      this.buscarNivel(value);
+    } else {
+      //this.categoriasFiltradas = [];
+      this.mostrarDropdown2 = false;
+    }
+  }
+
+  buscarNivel(nombre: string): void {
+    this.nivelesVisiblesFiltradas = this.nivelesVisibles.filter(n => n.label.toLowerCase().includes(nombre.toLowerCase()));
+    this.mostrarDropdown2 = true;
+  }
+
+  seleccionarCategoria(cat: { categoryTypeId: number, categoryName: string }): void {
+    this.categoriaNombre = cat.categoryName;
+    this.selectedCategoriaId = cat.categoryTypeId;
+    this.mostrarDropdown = false;
+    this.crearEquipoForm.get('categoriaNombre')?.setValue(this.categoriaNombre);
+  }
+
+  seleccionarNivel(nivel: any): void {
+    this.categoriaNivel = nivel;
+    this.crearEquipoForm.get('levelLeague')?.setValue(this.categoriaNivel);
+  }
+
+  crearCategoria(nombre: string): void {
+    if (!nombre.trim()) return;
+
+    // Aquí iría tu llamada real al backend:
+    const dto = { categoryTypeId: 0, categoryName: nombre, year: 0 };
+
+    this.clubService.updateCreateCategoryType(dto).subscribe({
+      next: (res) => {
+        this.selectedCategoriaId = res.data.categoryTypeId;
+        this.categoriaNombre = dto.categoryName;
+        this.mostrarDropdown = false;
+        // Opcionalmente: podrías añadirla a la lista si la quieres mostrar después
+        this.categoriasFiltradas.unshift(res.data);
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error al subir el documento');
+      }
+    });
+  }
+
+  crearNivel(nombre: string): void {
+    if (!nombre.trim()) return;
+    this.seleccionarNivel(nombre);
+  }
+
+  ocultarDropdownConRetraso(): void {
+    setTimeout(() => {
+      this.mostrarDropdown = false;
+    }, 200);
+  }
+
+  ocultarDropdownConRetrasoNivel(): void {
+    setTimeout(() => {
+      this.mostrarDropdown2 = false;
+    }, 200);
+  }
+
+  obtenerCategorias() {
+    this.categoriasFiltradas = [];
+    this.crearEquipoForm.get('categoriaNombre')?.reset();
+    this.categoriaNombre = '';
+    this.clubService.getListCategorias().subscribe(
+      (response: Response) => {
+        this.categoriasLista = response.data;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
   }
 
 }
