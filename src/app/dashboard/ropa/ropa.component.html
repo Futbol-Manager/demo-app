@@ -36,9 +36,9 @@
                         <th>ID</th>
                         <!-- <th>IMAGEN</th> -->
                         <th class="columna-nombre">NOMBRE</th>
+                        <th>EQUIPO</th>
                         <th>NOMBRE_CAMISETA</th>
                         <th>NUMERO</th>
-                        <th>EQUIPO</th>
                         <th>CAMISETA_JUEGO</th>
                         <th>PANTALON_JUEGO</th>
                         <th>MEDIAS_JUEGO</th>
@@ -74,6 +74,7 @@
                                     </div>
                                 </td> -->
                         <td class="fila-completa">{{ ropa.player.nombre }} {{ ropa.player.apellido }}</td>
+                        <td>{{ ropa.team.category }} {{ ropa.team.name }} {{ ropa.team.levelLeague }}</td>
                         <td>
                             <div class="d-flex align-items-center">
                                 <input type="text" class="form-control" [(ngModel)]="ropa.nick"
@@ -86,7 +87,6 @@
                                     (ngModelChange)="onAbrigoChange(ropa)">
                             </div>
                         </td>
-                        <td>{{ ropa.team.category }} {{ ropa.team.name }} {{ ropa.team.levelLeague }}</td>
                         <td>
                             <div class="d-flex align-items-center" style="width: 100%;">
                                 <select class="form-control me-2" [(ngModel)]="ropa.camisetaJuego"
@@ -468,8 +468,8 @@
                 <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
             </div>
             <div class="modal-body">
-                <p>Habilita o deshabilita aquellas prendas del que el club disponga. Si por ejemplo el club no dispone
-                    de mochila, deshabilitala aqui para que no aparezca en la tabla.</p>
+                <p>Habilita o deshabilítala aquellas prendas del que el club disponga. Si por ejemplo el club no dispone
+                    de mochila, deshabilítala aquí para que no aparezca en la tabla.</p>
                 <div *ngFor="let prenda of prendas">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <span>{{ prenda.label }}</span>
