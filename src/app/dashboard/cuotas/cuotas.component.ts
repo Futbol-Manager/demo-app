@@ -90,7 +90,7 @@ export class CuotasComponent implements OnInit {
         console.log('teamId:', this.teamId);
         console.log('playerId:', this.playerId);
       });
-      this.teamService.getCuotaPlayer(this.playerIdUserActual, this.teamId).subscribe(
+      this.teamService.getCuotaPlayer(this.playerId, this.teamId).subscribe(
         (response: Response) => {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
