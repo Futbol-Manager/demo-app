@@ -137,9 +137,9 @@
         </select>
       </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
-      *ngIf="this.usuarioActual!.profileType.profileId < 3">
-      <div class="col mb-3" style="cursor: pointer;" (click)="abrirModalCrearEquipo()">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
+      <div class="col mb-3" style="cursor: pointer;" (click)="abrirModalCrearEquipo()"
+        *ngIf="(this.usuarioActual!.profileType.profileId == 1) || (this.usuarioActual!.profileType.profileId == 2 && !clubOk)">
         <div class="card h-100" style="border: 1px solid black;">
           <div class="card-body text-center">
             <div class="row mb-2">
@@ -372,12 +372,14 @@
               (input)="onInputNivel($event)" (blur)="ocultarDropdownConRetrasoNivel()" (focus)="mostrarDropdown2 = true"
               autocomplete="off" placeholder="Escribe el nivel de este equipo">
 
-            <ul *ngIf="mostrarDropdown2" class="list-group position-absolute w-100 z-3 mt-1" style="max-height: 200px; overflow-y: auto;">
+            <ul *ngIf="mostrarDropdown2" class="list-group position-absolute w-100 z-3 mt-1"
+              style="max-height: 200px; overflow-y: auto;">
               <li *ngFor="let n of nivelesVisiblesFiltradas" class="list-group-item list-group-item-action"
                 style="cursor: pointer;" (mousedown)="seleccionarNivel(n.label)">
                 {{ n.label }}
               </li>
-              <li *ngIf="categoriaNivel && categoriaNivel !== ''" class="list-group-item list-group-item-action text-primary" style="cursor: pointer;"
+              <li *ngIf="categoriaNivel && categoriaNivel !== ''"
+                class="list-group-item list-group-item-action text-primary" style="cursor: pointer;"
                 (mousedown)="crearNivel(categoriaNivel)">
                 Seleccionar "{{ categoriaNivel }}"
               </li>

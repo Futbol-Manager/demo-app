@@ -116,8 +116,11 @@
                             <div class="simular-enlace" (click)="openInfoPostPartido(partido.postPartidoId)">
                                 {{ partido.matchPreparation.rivalName }}
                             </div>
+                            
                         </td>
                         <td>
+                            {{ getIconoTerreno(partido.matchPreparation.terreno) }}
+                             - 
                             {{ getIcono(partido.resultado) }}
                         </td>
                         <td>{{ partido.golesAFavor }}</td>

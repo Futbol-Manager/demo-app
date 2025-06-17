@@ -584,7 +584,7 @@ export class CalendarioComponent implements OnInit {
             this.nombreEquipo = response.data.categoryType.categoryName + ' ' + response.data.levelLeague;
             this.categoryTeam = response.data.categoryTypeId;
             this.imgClub = response.data.imgClub;
-            this.match2.imgClub = 'https://appsphairatech.com' + this.imageBaseUrl + '/user/' + response.data.imgClub;
+            this.match2.imgClub = this.imageBaseUrl + 'user/' + response.data.imgClub;
             if (this.categoryTeam === 14) this.irAPantalla(2);
             this.getListaEntrenamientos();
           } else {

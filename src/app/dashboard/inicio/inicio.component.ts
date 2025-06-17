@@ -328,7 +328,7 @@ export class InicioComponent implements OnInit {
         if (response.data == 999) {
           //significa que es un club con plan gratuido
           //hay que ver si tiene mas de 50 padres que pagan cuota, de ser asi, desbloquear los menus
-          this.teamService.getPlayersByTeamByClubVerify(this.userId, this.temporadaStoredValue).subscribe(
+          /*this.teamService.getPlayersByTeamByClubVerify(this.userId, this.temporadaStoredValue).subscribe(
             (resp: Response) => {
               this.numPadresPagados = response.data;
               if (resp.data < 49) {
@@ -341,7 +341,10 @@ export class InicioComponent implements OnInit {
             (error) => {
               console.error('Error al cargar el listado de equipos', error);
             }
-          );
+          );*/
+
+          //significa que lo puede tener todo
+          this.clubOk = true;
         }
 
         if (response.data < 1) {

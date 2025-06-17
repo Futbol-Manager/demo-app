@@ -1314,4 +1314,12 @@ export class EstadisticasEquipoComponent implements OnInit {
     return iconos[resultado] || '❓';
   }
 
+  getIconoTerreno(terreno: string): string {
+    const iconos: { [key: string]: string } = {
+      'Local': '🏠',
+      'Visitante': '✈️'
+    };
+    return iconos[terreno] || '❓';
+  }
+
 }
