@@ -897,7 +897,7 @@ export class TrainingService {
         }
     }
 
-    getListAsistenciaByTraining(trainingSessionId: number, teamId: number): Observable<Response> {
+    getListAsistenciaByTraining(trainingSessionId: number, teamId: number, date: string): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -909,7 +909,7 @@ export class TrainingService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `training/getlistasistenciabytraining/${trainingSessionId}/${teamId}`;
+            const url: string = environment.apiUrl + `training/getlistasistenciabytraining/${trainingSessionId}/${teamId}/${date}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });

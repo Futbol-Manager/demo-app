@@ -1049,10 +1049,25 @@ export class ClubService {
     });
 
     const formData = new FormData();
-    formData.append('files', file, file.name);
+    formData.append('files', file, file.name ? file.name : '');
     formData.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
 
     const url = environment.apiUrl + 'club/uploaddocpadres';
+    return this.http.post<Response>(url, formData, { headers });
+  }
+
+  uploadDocPadresPersonalizado(dto: any): Observable<Response> {
+    const token = localStorage.getItem('token');
+    if (!token) return new Observable();
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`
+    });
+
+    const formData = new FormData();
+    formData.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+
+    const url = environment.apiUrl + 'club/uploaddocpadrespersonalizado';
     return this.http.post<Response>(url, formData, { headers });
   }
 

@@ -99,9 +99,11 @@
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <!--<label for="foundationDate" class="form-label">Selecciona fecha de fundación del club</label>-->
-                      <input type="date" class="form-control input-register" id="date" formControlName="foundationDate">
+                    <div class="col-6 position-relative">
+                      <input type="date" class="form-control input-register no-calendar-icon"
+                         id="date" formControlName="foundationDate" name="date">
+                      <i class="bi bi-cake2 position-absolute"
+                        style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
                     </div>
                   </div>
                   <div class="mb-3 d-flex">

@@ -25,6 +25,15 @@ export class DocumentosClubComponent implements OnInit {
 
   mostrarModalSinDocumento = false;
 
+  mostrarModalPersonalizado: boolean = false;
+  requiereRespuesta: boolean = false;
+  tituloPersonalizado: string = '';
+
+  mostrarModalEditarPersonalizado: boolean = false;
+  contenidoEditando: string = '';
+  tituloEditando: string = '';
+  docEditando: any = null;
+
   constructor(
     private location: Location,
     private clubService: ClubService,
@@ -116,7 +125,7 @@ export class DocumentosClubComponent implements OnInit {
     );
   }
 
-  
+
 
   requiere(doc: any, id: number, requiere: number) {
     let isRequiere = requiere === 0 ? 1 : 0;
@@ -264,6 +273,80 @@ export class DocumentosClubComponent implements OnInit {
       }
     });
 
+  }
+
+  openModalSubirPersonalizado(): void {
+    this.mostrarModalPersonalizado = true;
+  }
+
+  cerrarModalPersonalizado(): void {
+    this.mostrarModalPersonalizado = false;
+    this.requiereRespuesta = false;
+    this.tituloPersonalizado = '';
+  }
+
+  crearPersonalizado(contenido: string): void {
+    const dto = {
+      docClubesId: 0,
+      nombre: this.tituloPersonalizado,
+      descripcion: contenido,
+      tipo: 'Personalizado',
+      visible: 0, // si es true, entonces 0
+      file: null,
+      clubId: this.clubId, // asegúrate de tener this.clubId en tu componente
+      fecCreate: null,
+      requiere: 2
+    };
+
+    this.clubService.uploadSinDocClub(dto).subscribe({
+      next: (res) => {
+        this.loadDocuments();
+        alert('Documento subido correctamente');
+        this.cerrarModalPersonalizado();
+        // refrescar lista si hace falta
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error al subir el documento');
+      }
+    });
+  }
+
+  editarPersonalizado(doc: any): void {
+    this.docEditando = doc;
+    this.contenidoEditando = doc.descripcion || ''; // ajusta al campo real
+    this.tituloEditando = doc.nombre || ''; // ajusta al campo real
+    this.mostrarModalEditarPersonalizado = true;
+  }
+
+  cerrarModalEditarPersonalizado(): void {
+    this.mostrarModalEditarPersonalizado = false;
+    this.docEditando = null;
+    this.contenidoEditando = '';
+  }
+
+  guardarEdicionPersonalizado(): void {
+    if (!this.docEditando) return;
+
+    const contenidoActualizado = (document.getElementById('editorPersonalizado') as HTMLElement).innerHTML;
+
+    const dto = {
+      ...this.docEditando,
+      descripcion: contenidoActualizado,
+      nombre: this.tituloEditando
+    };
+
+    this.clubService.uploadSinDocClub(dto).subscribe({
+      next: (res) => {
+        alert('Contenido actualizado correctamente');
+        this.cerrarModalEditarPersonalizado();
+        // refrescar lista si hace falta
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error al subir el documento');
+      }
+    });
   }
 
 }

@@ -23,8 +23,8 @@
                     <div class="carousel-content">
                         <ng-container *ngFor="let patrocinador of listPatrocinadores">
                             <img *ngIf="patrocinador.imagen && patrocinador.oculto === 1"
-                            [src]="imageBaseUrl + patrocinador.imagen"
-                                (click)="mostrarId(patrocinador)" class="patrocinador-img" alt="Patrocinador"
+                                [src]="imageBaseUrl + patrocinador.imagen" (click)="mostrarId(patrocinador)"
+                                class="patrocinador-img" alt="Patrocinador"
                                 title="Haz clic para ver el ID del patrocinador">
                         </ng-container>
                     </div>
@@ -38,8 +38,7 @@
                 <div class="card h-100">
                     <!-- Imagen de la tarea -->
                     <div *ngIf="patro.imagen">
-                        <img [src]="imageBaseUrl + patro.imagen"
-                            class="card-img-top fixed-size-img"
+                        <img [src]="imageBaseUrl + patro.imagen" class="card-img-top fixed-size-img"
                             onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'"
                             alt="Imagen de la tarea">
                     </div>
@@ -193,15 +192,17 @@
                         <div class="row text-center">
                             <!-- Primera columna principal -->
                             <div class="col-12 col-md-12">
-                                <div class="row text-center align-items-center" >
+                                <div class="row text-center align-items-center">
                                     <div class="col-12 col-md-12">
                                         <!-- Contenido de la subcolumna -->
                                         <ng-container *ngIf="patrocinadorUpdate.patrocinadorId !== 0">
                                             <div class="form-group">
                                                 <ng-container *ngIf="patrocinadorUpdate.imagen">
-                                                    <div class="container">
+                                                    <div class="text-center mb-3">
                                                         <img [src]="imageBaseUrl + patrocinadorUpdate.imagen"
-                                                            alt="user-player" style="width: -webkit-fill-available;">
+                                                            alt="Imagen del patrocinador"
+                                                            class="img-fluid rounded shadow-sm"
+                                                            style="max-width: 400px; height: auto;">
                                                     </div>
                                                 </ng-container>
                                                 <ng-container *ngIf="!patrocinadorUpdate.imagen">
@@ -215,7 +216,8 @@
                                                         <input type="file" id="image" (change)="onFileSelected($event)">
                                                         <div *ngIf="showPreview" style="margin-top: 2em;">
                                                             <img [src]="imagePreviewUrl" alt="Image Preview"
-                                                                style="width: -webkit-fill-available;">
+                                                                class="img-fluid rounded shadow-sm"
+                                                                style="max-width: 400px; height: auto;">
                                                             <button *ngIf="showbtnupimg" style="margin-top: 1em;"
                                                                 type="submit" class="btn btn-success">Subir
                                                                 imagen</button>

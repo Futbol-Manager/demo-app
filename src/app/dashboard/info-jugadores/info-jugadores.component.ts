@@ -64,12 +64,24 @@ export class InfoJugadoresComponent implements OnInit {
 
   mostrarModalDocJugador = false;
   mostrarModalDocumento = false;
+  mostrarModalDocumentoOjo = false;
   listaDocumentos: any[] = [];
   archivoSeleccionado!: File | null;
   docPadreTemp: any;
 
   usuarioActual!: User | null;
   userId: number = 0;
+
+  mostrarModalPersonalizado: boolean = false;
+  requiereRespuesta: boolean = false;
+  tituloPersonalizado: string = '';
+
+  mostrarModalEditarPersonalizado: boolean = false;
+  contenidoEditando: string = '';
+  tituloEditando: string = '';
+  docEditando: any = null;
+  fechaEditando: string = '';
+  showDate = false;
 
   constructor(
     private router: Router,
@@ -294,8 +306,8 @@ export class InfoJugadoresComponent implements OnInit {
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
-          this.listaDocumentos = response.data;          
-    this.mostrarModalDocJugador = true;
+          this.listaDocumentos = response.data;
+          this.mostrarModalDocJugador = true;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -319,6 +331,15 @@ export class InfoJugadoresComponent implements OnInit {
     // Aquí iría la lógica para subir el documento
     this.mostrarModalDocumento = true;
     this.docPadreTemp = doc;
+  }
+
+  verDocSubido(doc: any){
+    this.mostrarModalDocumentoOjo = true;
+    this.docPadreTemp = doc;
+  }
+
+  cerrarModalDocumentoOjo(){
+    this.mostrarModalDocumentoOjo = false;
   }
 
   cerrarModalDniJugador() {
@@ -561,6 +582,60 @@ export class InfoJugadoresComponent implements OnInit {
         this.archivoSeleccionado = null;
       }
     }
+  }
+
+  rellenarPersonalizado(doc: any): void {
+    this.docEditando = doc;
+    this.contenidoEditando = doc.descripcion || ''; // ajusta al campo real
+    this.tituloEditando = doc.nombre || ''; // ajusta al campo real
+    this.fechaEditando = doc.fecCreate
+    if(doc.subido == 1) this.showDate = true;
+    this.mostrarModalEditarPersonalizado = true;
+  }
+
+  cerrarModalEditarPersonalizado(): void {
+    this.docEditando = null;
+    this.contenidoEditando = ''; // ajusta al campo real
+    this.tituloEditando = ''; // ajusta al campo real
+    this.fechaEditando = '';
+    this.showDate = false;
+    this.mostrarModalEditarPersonalizado = false;
+  }
+
+  guardarEdicionPersonalizado(): void {
+    if (!this.requiereRespuesta) {
+      alert('Debes aceptar la autorización o condiciones puestas por el club.');
+      return;
+    }
+
+    const contenidoActualizado = (document.getElementById('editorPersonalizado') as HTMLElement).innerHTML;
+
+    const dto = {
+      docPadresId: this.docEditando.docPadresId,
+      docClubesId: this.docEditando.docClubesId,
+      nombre: this.docEditando.nombre,
+      clubId: this.docEditando.clubId, // asegúrate de tener this.clubId en tu componente
+      fecCreate: null,
+      descargado: this.docEditando.descargado,
+      descripcion: contenidoActualizado,
+      subido: 1,
+      playerId: this.docEditando.playerId,
+      userId: this.userId,
+      requiere: this.docEditando.requiere
+    };
+
+    this.clubService.uploadDocPadresPersonalizado(dto).subscribe({
+      next: (res) => {
+        //this.loadDocuments();
+        alert('Contenido actualizado correctamente');
+        this.cerrarModalEditarPersonalizado();
+        // refrescar lista si hace falta
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error al subir el documento');
+      }
+    });
   }
 
 }

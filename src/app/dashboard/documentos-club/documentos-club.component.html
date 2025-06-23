@@ -23,6 +23,12 @@
                 Requerir doc <i class="bi bi-filetype-pdf"></i>
             </button>
         </div>
+        <div class="col-12 col-md-3 mb-3">
+            <label class="form-label">Requerir información:</label>
+            <button class="btn btn-success form-control" (click)="openModalSubirPersonalizado()">
+                Personalizado <i class="bi bi-card-text"></i>
+            </button>
+        </div>
     </div>
 
     <div class="table-responsive mb-3 mt-3">
@@ -41,8 +47,11 @@
                 <tr *ngFor="let doc of listDocuments; let i = index">
                     <td>{{ i + 1 }}</td>
                     <td>{{ doc.nombre }}</td>
-                    <td style="max-width: 50px; white-space: normal; word-break: break-word;">
+                    <td *ngIf="doc.requiere < 2" style="max-width: 50px; white-space: normal; word-break: break-word;">
                         {{ doc.descripcion }}
+                    </td>
+                    <td *ngIf="doc.requiere == 2" style="max-width: 50px; white-space: normal; word-break: break-word;">
+                        Personalizado
                     </td>
                     <td>{{ doc.tipo }}</td>
                     <td>{{ doc.fecCreate | date:'dd/MM/yyyy' }}</td>
@@ -56,11 +65,15 @@
                             </div>
 
                             <div class="col">
-                                <button class="btn btn-custom-black w-100"
+                                <button *ngIf="doc.requiere < 2" class="btn btn-custom-black w-100"
                                     title="Permitir que los padres suban el documento"
                                     (click)="requiere(doc, doc.docClubesId, doc.requiere)">
                                     <i
                                         [ngClass]="doc.requiere === 1 ? 'bi bi-file-earmark-arrow-up' : 'bi bi-slash-lg'"></i>
+                                </button>
+                                <button *ngIf="doc.requiere == 2" class="btn btn-custom-black w-100"
+                                    title="Editar el contenido" (click)="editarPersonalizado(doc)">
+                                    <i class="bi bi-pencil"></i>
                                 </button>
                             </div>
 
@@ -188,6 +201,73 @@
                 <button class="btn btn-secondary" (click)="cerrarModalSinDocumento()">Cancelar</button>
                 <button class="btn btn-primary" [disabled]="!documentoSinSubir.valid"
                     (click)="subirSinDocumento()">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal texto personalizado -->
+<div class="modal fade" tabindex="-1" [ngClass]="{ 'show': mostrarModalPersonalizado }"
+    [style.display]="mostrarModalPersonalizado ? 'block' : 'none'">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Requerimiento Personalizado</h5>
+                <button type="button" class="btn-close" (click)="cerrarModalPersonalizado()"></button>
+            </div>
+
+            <div class="modal-body">
+                <label class="form-label">Contenido del mensaje:</label>
+                <div class="form-control mb-3" contenteditable="true" #editor style="min-height: 200px;">Aquí puedes
+                    poner lo que quieras, incluido copiar y pegar texto de un word.</div>
+
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="checkboxReq" [(ngModel)]="requiereRespuesta">
+                    <label for="checkboxReq" class="form-check-label">Esto lo verá el jugador/padre para aceptar lo que
+                        pongas debajo.</label>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Texto autorización:</label>
+                    <input type="text" class="form-control" [(ngModel)]="tituloPersonalizado"
+                        placeholder="Eje. Autorizo al club a.....">
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="cerrarModalPersonalizado()">Cancelar</button>
+                <button class="btn btn-primary" (click)="crearPersonalizado(editor.innerHTML)">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar documento personalizado -->
+<div class="modal fade" [ngClass]="{ 'show': mostrarModalEditarPersonalizado }"
+    [style.display]="mostrarModalEditarPersonalizado ? 'block' : 'none'" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar contenido personalizado</h5>
+                <button type="button" class="btn-close" (click)="cerrarModalEditarPersonalizado()"></button>
+            </div>
+            <div class="modal-body">
+                <label class="form-label">Contenido del mensaje:</label>
+                <div class="form-group">
+                    <div class="form-control" id="editorPersonalizado" contenteditable="true"
+                        [innerHTML]="contenidoEditando">
+                    </div>
+                </div>
+
+                <div class="mb-3 mt-3">
+                    <label class="form-label">Texto autorización:</label>
+                    <input type="text" class="form-control" [(ngModel)]="tituloEditando"
+                        placeholder="Eje. Autorizo al club a.....">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="cerrarModalEditarPersonalizado()">Cancelar</button>
+                <button class="btn btn-success" (click)="guardarEdicionPersonalizado()">Guardar cambios</button>
             </div>
         </div>
     </div>

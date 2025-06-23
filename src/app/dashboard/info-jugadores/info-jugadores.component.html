@@ -89,8 +89,7 @@
                                 </button>
                             </td>
                             <td>
-                                <button class="btn btn-primary"
-                                (click)="abrirModalDocJugador(player, i)">
+                                <button class="btn btn-primary" (click)="abrirModalDocJugador(player, i)">
                                     <i class="bi bi-filetype-doc"></i>
                                 </button>
                             </td>
@@ -254,7 +253,7 @@
                     <div *ngFor="let doc of listaDocumentos" class="col-12 mb-3 p-3 rounded"
                         style="background-color: #212529; border: 1px solid black; color: white;">
                         <h5 class="fw-bold">{{ doc.nombre }}</h5>
-                        <p>{{ doc.descripcion }}</p>
+                        <p *ngIf="doc.requiere < 2">{{ doc.descripcion }}</p>
                         <div class="d-flex gap-2">
                             <!-- Botón de descarga (solo si requiere === 0)
                 <button *ngIf="doc.requiere === 0" class="btn btn-light" (click)="descargar(doc)"
@@ -279,6 +278,24 @@
                 }">
                                 <i class="bi bi-arrow-up-circle"></i>
                             </button>
+
+                            <!-- Botón de subida (solo si requiere === 1) -->
+                            <button *ngIf="doc.requiere === 1 && doc.subido === 1" class="btn btn-light"
+                                (click)="verDocSubido(doc)" title="Ver documento" [ngClass]="{
+                    'bg-secondary text-white': doc.subido === 0,
+                    'bg-success text-white': doc.subido === 1
+                }">
+                                <i class="bi bi-eye"></i>
+                            </button>
+
+                            <!-- Botón de subida (solo si requiere === 1) -->
+                            <button *ngIf="doc.requiere === 2" class="btn btn-light"
+                                (click)="rellenarPersonalizado(doc)" title="Subir documento" [ngClass]="{
+                    'bg-secondary text-white': doc.subido === 0,
+                    'bg-success text-white': doc.subido === 1
+                }">
+                                <i class="bi bi-card-text"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -295,6 +312,67 @@
             <div class="modal-header">
                 <h5 class="modal-title">Subir Documento (PDF, Word o imagen)</h5>
                 <button type="button" class="btn-close" (click)="cerrarModalDocumento()"></button>
+            </div>
+            <div class="modal-body">
+                <ng-template #subirNuevoArchivo>
+                    <p>Aquí puedes subir el archivo que se está solicitando.</p>
+                </ng-template>
+
+                <div class="mb-3">
+                    <label>Seleccionar archivo (.png, .jpg, .pdf o .doc/.docx):</label>
+                    <input type="file" class="form-control" (change)="onFileSelected($event)"
+                        accept=".pdf,.doc,.docx,.jpg,.png,.jpeg" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="cerrarModalDocumento()">Cancelar</button>
+                <button class="btn btn-primary" (click)="subirDocumento()">Subir</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal texto personalizado -->
+<div class="modal fade" tabindex="-1" [ngClass]="{ 'show': mostrarModalEditarPersonalizado }"
+    [style.display]="mostrarModalEditarPersonalizado ? 'block' : 'none'">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Requerimiento Personalizado</h5>
+                <button type="button" class="btn-close" (click)="cerrarModalEditarPersonalizado()"></button>
+            </div>
+            <div class="modal-body">
+                <div *ngIf="showDate">
+                    <h3 class="form-label"><b>Modificado y autorizado el día: {{ fechaEditando }}</b></h3>
+                    <hr>
+                </div>
+                <label class="form-label">Contenido del mensaje:</label>
+                <div class="form-group">
+                    <div class="form-control" id="editorPersonalizado" contenteditable="true"
+                        [innerHTML]="contenidoEditando">
+                    </div>
+                </div>
+                <div class="form-check mb-3 mt-3">
+                    <input type="checkbox" class="form-check-input" id="checkboxReq" [(ngModel)]="requiereRespuesta">
+                    <label for="checkboxReq" class="form-check-label"> {{ tituloEditando }}</label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" (click)="cerrarModalEditarPersonalizado()">Cancelar</button>
+                <button class="btn btn-success" (click)="guardarEdicionPersonalizado()">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para subir documento del club -->
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show': mostrarModalDocumentoOjo }"
+    [style.display]="mostrarModalDocumentoOjo ? 'block' : 'none'">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Subir Documento (PDF, Word o imagen)</h5>
+                <button type="button" class="btn-close" (click)="cerrarModalDocumentoOjo()"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3 text-center"
@@ -314,70 +392,11 @@
                             Ver / Descargar documento <i class="bi bi-box-arrow-up-right ms-1"></i>
                         </a>
                     </ng-template>
-
-                    <p>Por política de privacidad de datos, no se
-                        puede mostrar el documento que ha sido subido. Por lo tanto, si crees que has cometido un error
-                        y has subido un documento incorrecto súbelo de nuevo</p>
-                </div>
-
-                <ng-template #subirNuevoArchivo>
-                    <p>Aquí puedes subir el archivo que se está solicitando.</p>
-                </ng-template>
-
-                <div class="mb-3">
-                    <label>Seleccionar archivo (.png, .jpg, .pdf o .doc/.docx):</label>
-                    <input type="file" class="form-control" (change)="onFileSelected($event)"
-                        accept=".pdf,.doc,.docx,.jpg,.png,.jpeg" />
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" (click)="cerrarModalDocumento()">Cancelar</button>
-                <button class="btn btn-primary" (click)="subirDocumento()">Subir</button>
+                <button class="btn btn-secondary" (click)="cerrarModalDocumentoOjo()">Cerrar</button>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Modal para ver información del jugador
-<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalInfoJugador}"
-    [style.display]="mostrarModalInfoJugador ? 'block' : 'none'">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content" style="min-height: 80vh;">
-            <div class="modal-header">
-                <h5 class="modal-title">Información del Jugador</h5>
-                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalInfoJugador()"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row h-50">
-                    <div class="col-md-6 h-50" style="text-align: center;">
-                        <ng-container *ngIf="!selectedPlayer.picturePlayer">
-                            <span class="bi bi-person" style="font-size: 3rem;"></span>
-                        </ng-container>
-                        <ng-container *ngIf="selectedPlayer.picturePlayer">
-                            <div class="container">
-                                <img src="https://appsphairatech.com/images/user/{{ selectedPlayer.picturePlayer }}"
-                                    alt="user-player" width="150" height="150" class="rounded-circle me-2">
-                            </div>
-                        </ng-container>
-                        <h4>{{ selectedPlayer.nombre }} {{ selectedPlayer.apellido }}</h4>
-                        <div>
-                            <p>Edad: {{ edadSeleccionada }} años</p>
-                        </div>
-                        <div>
-                            <p>Posición: {{ selectedPlayer.posicion }}</p>
-                        </div>
-                        <div>
-                            <p>Pie natural: {{ selectedPlayer.piernaNatural }}</p>
-                        </div>
-                        <div>
-                            <p>Opinion Entrenador: {{ selectedPlayer.opinionDelEntrenador }}</p>
-                        </div>
-                    </div>
-                    <div class="col-md-6 h-50">
-                        <canvas id="radarChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div> -->

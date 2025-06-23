@@ -1766,9 +1766,9 @@ export class CalendarioComponent implements OnInit {
 
   //-----------------------
 
-  openModalAsistencia(id: number) {
+  openModalAsistencia(id: number, date: any) {
     this.trainingSessionIdSelected = id;
-    this.trainingService.getListAsistenciaByTraining(id, this.teamId).subscribe(
+    this.trainingService.getListAsistenciaByTraining(id, this.teamId, date).subscribe(
       (response) => {
         if (response.data) {
           this.listAsistencia = response.data;

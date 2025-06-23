@@ -7,20 +7,6 @@
 
 <div [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
   <div class="submenu">
-    <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 2">
-      <div class="col text-center">
-        <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearEquipo()">
-          <i class="bi bi-plus-circle"></i>
-          <span class="d-none d-md-inline">Crear un equipo</span>
-        </a>
-      </div>
-      <div class="col text-center">
-        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">
-          <i class="bi bi-envelope"></i>
-          <span class="d-none d-md-inline">Notificaciones</span>
-        </a>
-      </div>
-    </div>
     <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
       <div class="col text-center">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(6)">
@@ -52,6 +38,14 @@
           <span class="d-none d-md-inline">Patrocinadores</span>
         </a>
       </div>
+      <div class="col text-center" *ngIf="clubOk">
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">
+          <i class="bi bi-envelope"></i>
+          <span class="d-none d-md-inline">Notificaciones</span>
+        </a>
+      </div>
+    </div>
+    <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 2">
       <div class="col text-center" *ngIf="clubOk">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">
           <i class="bi bi-envelope"></i>
@@ -139,7 +133,7 @@
     </div>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
       <div class="col mb-3" style="cursor: pointer;" (click)="abrirModalCrearEquipo()"
-        *ngIf="(this.usuarioActual!.profileType.profileId == 1) || (this.usuarioActual!.profileType.profileId == 2 && !clubOk)">
+        *ngIf="(this.usuarioActual!.profileType.profileId === 1) || (this.usuarioActual!.profileType.profileId === 2 && !clubOk)">
         <div class="card h-100" style="border: 1px solid black;">
           <div class="card-body text-center">
             <div class="row mb-2">
@@ -156,7 +150,6 @@
           </div>
         </div>
       </div>
-
       <div class="col mb-3" *ngFor="let team of listTeam; let i = index" style="cursor: pointer;"
         (click)="navegarACalendario(team.teamId, 0)">
         <div class="card h-100" style="border: 1px solid black;">

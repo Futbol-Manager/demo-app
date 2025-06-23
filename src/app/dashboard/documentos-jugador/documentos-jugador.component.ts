@@ -24,6 +24,15 @@ export class DocumentosJugadorComponent implements OnInit {
   archivoSeleccionado!: File | null;
   docPadreTemp: any;
 
+  mostrarModalPersonalizado: boolean = false;
+  requiereRespuesta: boolean = false;
+  tituloPersonalizado: string = '';
+
+  mostrarModalEditarPersonalizado: boolean = false;
+  contenidoEditando: string = '';
+  tituloEditando: string = '';
+  docEditando: any = null;
+
   constructor(
     private location: Location,
     private clubService: ClubService,
@@ -158,6 +167,54 @@ export class DocumentosJugadorComponent implements OnInit {
     const extensionesImagen = ['.jpg', '.jpeg', '.png', '.gif'];
     const extension = nombreArchivo?.toLowerCase().split('.').pop();
     return extensionesImagen.includes('.' + extension);
+  }
+
+  rellenarPersonalizado(doc: any): void {
+    this.docEditando = doc;
+    this.contenidoEditando = doc.descripcion || ''; // ajusta al campo real
+    this.tituloEditando = doc.nombre || ''; // ajusta al campo real
+    this.mostrarModalEditarPersonalizado = true;
+  }
+
+  cerrarModalEditarPersonalizado(): void {
+    this.docEditando = null;
+    this.mostrarModalEditarPersonalizado = false;
+  }
+
+  guardarEdicionPersonalizado(): void {
+    if (!this.requiereRespuesta) {
+       alert('Debes aceptar la autorización o condiciones puestas por el club.');
+       return;
+    }
+
+    const contenidoActualizado = (document.getElementById('editorPersonalizado') as HTMLElement).innerHTML;
+
+    const dto = {
+      docPadresId: this.docEditando.docPadresId,
+      docClubesId: this.docEditando.docClubesId,
+      nombre: this.docEditando.nombre,
+      clubId: this.docEditando.clubId, // asegúrate de tener this.clubId en tu componente
+      fecCreate: null,
+      descargado: this.docEditando.descargado,
+      descripcion: contenidoActualizado,
+      subido: 1,
+      playerId: this.docEditando.playerId,
+      userId: this.userId,
+      requiere: this.docEditando.requiere
+    };
+
+    this.clubService.uploadDocPadresPersonalizado(dto).subscribe({
+      next: (res) => {
+        //this.loadDocuments();
+        alert('Contenido actualizado correctamente');
+        this.cerrarModalEditarPersonalizado();
+        // refrescar lista si hace falta
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error al subir el documento');
+      }
+    });
   }
 
 
