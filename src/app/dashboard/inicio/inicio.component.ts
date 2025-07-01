@@ -28,6 +28,7 @@ export class InicioComponent implements OnInit {
   pictureClub = '';
   noPicture = false;
   showModalSubirJugadores = false;
+  showModalSubirJugadoresGesDesk = false;
   excelForm: FormGroup;
   fileName: string | null = null;
   showUploadButton: boolean = false;
@@ -630,7 +631,32 @@ export class InicioComponent implements OnInit {
           // Aquí puedes manejar la respuesta del servidor
           this.showModalSubirJugadores = false;
           alert("Jugadores insertado en los exipos.");
-          this.router.navigate(['/dashboard/inicio-deportes']);
+          //this.router.navigate(['/dashboard/inicio']);
+        },
+        (error) => {
+          console.error('Error al subir el archivo', error);
+          // Aquí puedes manejar el error
+        }
+      );
+
+      console.log('Archivo cargado:', this.selectedFile);
+    } else {
+      console.error('Formulario inválido o archivo no seleccionado');
+    }
+  }
+  
+  uploadExcelGesDesk(): void {
+    if (this.excelForm.valid && this.selectedFile) {
+      const formData = new FormData();
+      formData.append('excelFile', this.selectedFile);
+
+      this.clubService.uploadExcelGesDesk(this.clubId, this.selectedFile).subscribe(
+        (response: Response) => {
+          console.log('Archivo subido con éxito', response);
+          // Aquí puedes manejar la respuesta del servidor
+          this.showModalSubirJugadores = false;
+          alert("Jugadores insertado en los exipos.");
+          //this.router.navigate(['/dashboard/inicio']);
         },
         (error) => {
           console.error('Error al subir el archivo', error);
@@ -650,6 +676,14 @@ export class InicioComponent implements OnInit {
 
   cerrarModalSubirJugadores() {
     this.showModalSubirJugadores = false;
+  }
+
+  openModalSubirJugadoresGesDesk() {
+    this.showModalSubirJugadoresGesDesk = true;
+  }
+
+  cerrarModalSubirJugadoresGesDesk() {
+    this.showModalSubirJugadoresGesDesk = false;
   }
 
   goSuscripcion() {

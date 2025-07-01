@@ -136,7 +136,7 @@ export class PatrocinadoresComponent implements OnInit {
     this.selectedPatro = i;
     this.patrocinadorUpdate = patrocinador;
 
-    if(this.profileId > 2){
+    if (this.profileId > 2) {
       this.showModalVerPatrocinador = true;
     } else {
       this.showModalUpdatePatrocinador = true;
@@ -251,6 +251,7 @@ export class PatrocinadoresComponent implements OnInit {
       this.clubService.subirImgPatrocinador(patrocinadorId, this.selectedFile)
         .subscribe(
           (response) => {
+            this.patrocinadorUpdate.imagen = response.data;
             this.cerrarPatrocinador();
           },
           error => {

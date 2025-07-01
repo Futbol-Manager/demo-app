@@ -349,6 +349,23 @@ export class ClubService {
     }
   }
 
+  uploadExcelGesDesk(clubId: number, file: File): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      const formData: FormData = new FormData();
+      formData.append('file', file, file.name);
+
+      const url: string = environment.apiUrl + `club/uploadExcelgesdesk/${clubId}`;
+      return this.http.post<Response>(url, formData, { headers });
+    } else {
+      return new Observable();
+    }
+  }
+
   getListJugadoresByClubForTemp(clubId: number, temporada: string): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');

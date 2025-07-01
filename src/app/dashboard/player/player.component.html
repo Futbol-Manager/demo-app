@@ -467,6 +467,12 @@
                         </div>
                     </div>
 
+                    <!-- Botón disparador -->
+                    <div *ngIf="usuarioActual!.profileType.profileId < 3" class="text-center my-3">
+                        <button class="btn btn-outline-primary" (click)="showPlayerInfo(player.playerId)">
+                            + Otros datos del jugador
+                        </button>
+                    </div>
 
                     <div *ngIf="this.usuarioActual!.profileType.profileId < 3">
                         <div class="row text-center mt-3">
@@ -1536,5 +1542,182 @@
             <i class="bi bi-apple me-2" style="font-size: 1.2rem;"></i> Descargar
         </a>
         <button type="button" class="btn-close ms-2" aria-label="Cerrar" (click)="cerrarAlertaAndroid()"></button>
+    </div>
+</div>
+
+<!-- Modal con todos los campos -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPlayerInfo}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del jugador</h5>
+                <button type="button" class="btn-close" aria-label="Close"
+                    (click)="showModalPlayerInfo = false"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row text-center mt-3">
+                    <div class="col-12"><strong>Información completa del jugador:</strong></div>
+                </div>
+
+                <!-- Repite este patrón de filas con 4 campos cada una -->
+                <div class="row mt-3">
+                    <div class="col-12 col-md-6" *ngFor="let f of [
+            {label:'Nombre', prop:'nombre'},
+            {label:'Apellidos', prop:'apellidos'}
+          ]">
+                        <div class="form-group">
+                            <label>{{ f.label }}:</label>
+                            <input type="text" class="form-control custom-input" [(ngModel)]="playerInfo[f.prop]"
+                                name="{{f.prop}}" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div class="col-12 col-md-3" *ngFor="let f of [
+            {label:'Equipo', prop:'equipo'},
+            {label:'Equipo Abrev.', prop:'equipoAbreviado'},
+            {label:'Extracomunitario', prop:'extracomunitario'},
+            {label:'Club de Origen', prop:'clubDeOrigen'}
+          ]">
+                        <div class="form-group">
+                            <label>{{ f.label }}:</label>
+                            <input class="form-control custom-input" [(ngModel)]="playerInfo[f.prop]"
+                                name="{{f.prop}}" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-3">
+                    <div *ngFor="let f of [
+            {label:'Fecha Alta', prop:'fechaDeAlta', type:'date'},
+            {label:'Fecha Nacimiento', prop:'fechaDeNacimiento', type:'date'},
+            {label:'Fin Derechos', prop:'finDerechos'},
+            {label:'NIF Jugador', prop:'nifJugador'}
+          ]" class="col-12 col-md-3">
+                        <div class="form-group">
+                            <label>{{ f.label }}:</label>
+                            <input [type]="f.type || 'text'" class="form-control custom-input"
+                                [(ngModel)]="playerInfo[f.prop]" name="{{f.prop}}" />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Repite este patrón de filas con 4 campos cada una -->
+
+                <div class="row mt-3" *ngFor="let group of [
+                    [
+                        {label:'Dorsal', prop:'dorsal', type:'text'},
+                        {label:'Talla Ropa', prop:'tallaRopa', type:'text'},
+                        {label:'Número Pie', prop:'numeroDePie', type:'text'},
+                        {label:'Cuenta Corriente', prop:'cuentaCorriente', type:'text'}
+                    ],
+                    [
+                        {label:'Dirección', prop:'direccion', type:'text'},
+                        {label:'Población', prop:'poblacion', type:'text'},
+                        {label:'Provincia', prop:'provincia', type:'text'},
+                        {label:'Código Postal', prop:'codigoPostal', type:'text'}
+                    ],
+                    [
+                        {label:'País', prop:'pais', type:'text'},
+                        {label:'Correo Electrónico', prop:'correoElectronico', type:'email'},
+                        {label:'Página Web', prop:'paginaWeb', type:'text'},
+                        {label:'Teléfonos', prop:'telefonos', type:'text'}
+                    ],
+                    [
+                        {label:'Nombre Padre', prop:'nombreDelPadre', type:'text'},
+                        {label:'Nombre Madre', prop:'nombreDeLaMadre', type:'text'},
+                        {label:'Actividad Padre', prop:'actividadDelPadre', type:'text'},
+                        {label:'Actividad Madre', prop:'actividadDeLaMadre', type:'text'}
+                    ],
+                    [
+                        {label:'Empresa Padre', prop:'empresaPadre', type:'text'},
+                        {label:'Empresa Madre', prop:'empresaMadre', type:'text'},
+                        {label:'Fecha Nac. Padre', prop:'fechaNacPadre', type:'date'},
+                        {label:'Fecha Nac. Madre', prop:'fechaNacMadre', type:'date'}
+                    ],
+                    [
+                        {label:'Lugar Nac. Padre', prop:'lugarNacPadre', type:'text'},
+                        {label:'Lugar Nac. Madre', prop:'lugarNacMadre', type:'text'},
+                        {label:'Teléfono Padre', prop:'telefonoPadre', type:'text'},
+                        {label:'Teléfono Madre', prop:'telefonoMadre', type:'text'}
+                    ],
+                    [
+                        {label:'Email Padre', prop:'correoElecPadre', type:'email'},
+                        {label:'Email Madre', prop:'correoElecMadre', type:'email'},
+                        {label:'Número Hijos', prop:'numeroDeHijos', type:'text'},
+                        {label:'Número Hermanos', prop:'numeroDeHermanos', type:'text'}
+                    ],
+                    [
+                        {label:'Es Mantenedor', prop:'esMantenedor', type:'text'},
+                        {label:'Valoración Técnica', prop:'valoracionTecnica', type:'text'},
+                        {label:'Valoración Táctica', prop:'valoracionTactica', type:'text'},
+                        {label:'Valoración Física', prop:'valoracionFisica', type:'text'}
+                    ],
+                    [
+                        {label:'Valoración Psicológica', prop:'valoracionPsicologica', type:'text'},
+                        {label:'Valoración Personalidad', prop:'valoracionPersonalidad', type:'text'},
+                        {label:'Lugar Nacimiento', prop:'lugarNacimiento', type:'text'},
+                        {label:'Nacionalidad', prop:'nacionalidad', type:'text'}
+                    ],
+                    [
+                        {label:'Tarjeta Sanitaria', prop:'tarjetaSanitaria', type:'text'},
+                        {label:'Campos Libres', prop:'camposLibres', type:'text'},
+                        {label:'Fecha Baja', prop:'fechaDeBaja', type:'date'},
+                        {label:'Vto Revisión', prop:'vtoRevision', type:'date'}
+                    ],
+                    [
+                        {label:'Lateralidad', prop:'lateralidad', type:'text'},
+                        {label:'Continua', prop:'continua', type:'text'},
+                        {label:'Titular Ccc', prop:'titularCcc', type:'text'},
+                        {label:'Número Socio', prop:'numeroSocio', type:'text'}
+                    ],
+                    [
+                        {label:'Identificador', prop:'identificador', type:'text'},
+                        {label:'Observaciones', prop:'observaciones', type:'text'},
+                        {label:'NIF Padre', prop:'nifPadre', type:'text'},
+                        {label:'NIF Madre', prop:'nifMadre', type:'text'}
+                    ],
+                    [
+                        {label:'Género', prop:'genero', type:'text'},
+                        {label:'Hermanos en Club', prop:'hermanosEnClub', type:'text'},
+                        {label:'Total Cuota', prop:'totalCuota', type:'text'},
+                        {label:'Cuota Otros Pagos', prop:'cuotaOtrosPagos', type:'text'}
+                    ],
+                    [
+                        {label:'Nombre Deportivo', prop:'nombreDeportivo', type:'text'},
+                        {label:'Importe Ropa', prop:'importeRopa', type:'text'},
+                        {label:'Peso', prop:'peso', type:'number'},
+                        {label:'Altura', prop:'altura', type:'number'}
+                    ],
+                    [
+                        {label:'Forma de Pago', prop:'formaDePago', type:'text'},
+                        {label:'Tipo de Cuota', prop:'tipoDeCuota', type:'text'},
+                        {label:'Facebook', prop:'facebook', type:'text'},
+                        {label:'Twitter', prop:'twitter', type:'text'}
+                    ],
+                    [
+                        {label:'Instagram', prop:'instagram', type:'text'},
+                        {label:'TikTok', prop:'tiktok', type:'text'},
+                        {}, {}
+                    ]
+                    ]">
+                    <ng-container *ngFor="let f of group">
+                        <div class="col-12 col-md-3" *ngIf="f.prop">
+                            <div class="form-group">
+                                <label>{{ f.label }}:</label>
+                                <input [type]="f.type || 'text'" class="form-control custom-input"
+                                    [(ngModel)]="playerInfo[f.prop]" name="{{f.prop}}" />
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="showModalPlayerInfo = false">Cerrar</button>
+                <button type="button" class="btn btn-primary" (click)="savePlayerInfo()">Guardar</button>
+            </div>
+        </div>
     </div>
 </div>

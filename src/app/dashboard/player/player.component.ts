@@ -17,6 +17,7 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
+import { ClubService } from 'src/app/core/services/club/club.service';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -163,6 +164,11 @@ export class PlayerComponent implements OnInit {
   isAndroid: boolean = false;
   isiOS: boolean = false;
 
+  showOther = false;
+  showModalPlayerInfo = false;
+  playerInfo: any = [];
+
+
   constructor(private playerservice: PlayerService,
     private router: Router,
     private route: ActivatedRoute,
@@ -175,6 +181,7 @@ export class PlayerComponent implements OnInit {
     private teamService: TeamService,
     private loginService: LoginService,
     private playerService: PlayerService,
+    private clubService: ClubService,
     private location: Location) { }
 
   ngOnInit(): void {
@@ -1331,4 +1338,35 @@ export class PlayerComponent implements OnInit {
     tarjetasAmarillas: string = '';
     tarjetasRojas: string = '';*/
   }
+
+  savePlayerInfo() {
+    // Aquí iría tu llamada real al backend:
+    const dto = this.playerInfo;
+
+    this.playerService.updatePlayerInfo(dto).subscribe({
+      next: (res) => {
+        alert('Información guardada.');
+      },
+      error: (err) => {
+        console.error(err);
+        alert('Error al subir el documento');
+      }
+    });
+  }
+
+  showPlayerInfo(playerId: number) {
+    this.playerService.getPlayerInfo(playerId).subscribe(
+      (response) => {
+        if (response.data) {
+          console.log(response.data);
+          this.playerInfo = response.data;
+          this.showModalPlayerInfo = true
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
+
 }
