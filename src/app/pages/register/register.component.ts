@@ -646,65 +646,73 @@ export class RegisterComponent implements OnInit {
   }
 
   finalizarRegistroPadre(): void {
-    if (this.registerFormPadre.valid && this.registerFormPadreHijos.valid) {
-      const padreData = {
-        parentesco: this.registerFormPadre.get('parentesco')?.value,
-        firstName: this.registerFormPadre.get('name')?.value,
-        secondName: this.registerFormPadre.get('surname')?.value,
-        birthdate: this.registerFormPadre.get('birthdate')?.value,
-        genre: this.registerFormPadre.get('genre')?.value,
-        mail: this.registerFormPadre.get('email')?.value,
-        mobile: this.registerFormPadre.get('mobile')?.value,
-        password: this.registerFormPadre.get('password')?.value,
-        aceptaComunicaciones: this.registerFormPadre.get('comunicaciones')?.value ? 1 : 0,
-        clubId: this.clubId
-      };
+    let text = '1 hijo.'
+    if(this.numHijos > 1) {
+      text = this.numHijos + ' hijos.';
+    }
 
-      const hijosData = this.hijosVisibles.map(index => ({
-        nombre: this.registerFormPadreHijos.get('hijo' + (index + 1))?.value,
-        apellidos: this.registerFormPadreHijos.get('ape' + (index + 1))?.value,
-        fechaNacimiento: this.registerFormPadreHijos.get('fech' + (index + 1))?.value,
-        dni: this.registerFormPadreHijos.get('dni' + (index + 1))?.value
-      }));
+    const confirmacion = confirm('Vas a crear ' + text + ' Si esto es correcto, dale a confirmar. Si tienes más hijos, vuelve al formulario y complétalo');
+    if (confirmacion) {
+      if (this.registerFormPadre.valid && this.registerFormPadreHijos.valid) {
+        const padreData = {
+          parentesco: this.registerFormPadre.get('parentesco')?.value,
+          firstName: this.registerFormPadre.get('name')?.value,
+          secondName: this.registerFormPadre.get('surname')?.value,
+          birthdate: this.registerFormPadre.get('birthdate')?.value,
+          genre: this.registerFormPadre.get('genre')?.value,
+          mail: this.registerFormPadre.get('email')?.value,
+          mobile: this.registerFormPadre.get('mobile')?.value,
+          password: this.registerFormPadre.get('password')?.value,
+          aceptaComunicaciones: this.registerFormPadre.get('comunicaciones')?.value ? 1 : 0,
+          clubId: this.clubId
+        };
 
-      const datosCompletos = {
-        padre: padreData,
-        hijos: hijosData
-      };
+        const hijosData = this.hijosVisibles.map(index => ({
+          nombre: this.registerFormPadreHijos.get('hijo' + (index + 1))?.value,
+          apellidos: this.registerFormPadreHijos.get('ape' + (index + 1))?.value,
+          fechaNacimiento: this.registerFormPadreHijos.get('fech' + (index + 1))?.value,
+          dni: this.registerFormPadreHijos.get('dni' + (index + 1))?.value
+        }));
 
-      console.log('Datos completos para enviar:', datosCompletos);
+        const datosCompletos = {
+          padre: padreData,
+          hijos: hijosData
+        };
 
-      this.registerService.registerPadreHijos(datosCompletos).subscribe({
-        next: (res) => {
-          const snackBarConfig = new MatSnackBarConfig();
-          snackBarConfig.duration = 5000;
-          snackBarConfig.horizontalPosition = 'center';
-          snackBarConfig.verticalPosition = 'bottom';
+        console.log('Datos completos para enviar:', datosCompletos);
 
-          if (res.data) {
-            this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
-            this.login(3); // o lo que tengas tras registrarse
-          } else {
-            snackBarConfig.duration = 20000;
-            this.snackBar.open('Error en la contraseña.', 'Cerrar', snackBarConfig);
-            this.registerFormPadre.get('password')?.setValue('');
-            this.registerFormPadre.get('password2')?.setValue('');
-            this.volver();
+        this.registerService.registerPadreHijos(datosCompletos).subscribe({
+          next: (res) => {
+            const snackBarConfig = new MatSnackBarConfig();
+            snackBarConfig.duration = 5000;
+            snackBarConfig.horizontalPosition = 'center';
+            snackBarConfig.verticalPosition = 'bottom';
+
+            if (res.data) {
+              this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
+              this.login(3); // o lo que tengas tras registrarse
+            } else {
+              snackBarConfig.duration = 20000;
+              this.snackBar.open('Error en la contraseña.', 'Cerrar', snackBarConfig);
+              this.registerFormPadre.get('password')?.setValue('');
+              this.registerFormPadre.get('password2')?.setValue('');
+              this.volver();
+            }
+          },
+          error: (err) => {
+            this.snackBar.open('Error al registrar. Intenta de nuevo.', 'Cerrar', {
+              duration: 5000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom'
+            });
+            console.error(err);
           }
-        },
-        error: (err) => {
-          this.snackBar.open('Error al registrar. Intenta de nuevo.', 'Cerrar', {
-            duration: 5000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom'
-          });
-          console.error(err);
-        }
-      });
+        });
 
-      // Aquí puedes llamar al servicio que envíe `datosCompletos` al backend
-    } else {
-      console.warn('Formulario no válido');
+        // Aquí puedes llamar al servicio que envíe `datosCompletos` al backend
+      } else {
+        console.warn('Formulario no válido');
+      }
     }
   }
 

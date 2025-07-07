@@ -167,7 +167,7 @@ export class PlayerComponent implements OnInit {
   showOther = false;
   showModalPlayerInfo = false;
   playerInfo: any = [];
-
+  teamIdPlayerSelected = 0;
 
   constructor(private playerservice: PlayerService,
     private router: Router,
@@ -977,10 +977,16 @@ export class PlayerComponent implements OnInit {
   }
 
   moverJugador(): void {
+    let cuotaTbm = 0;
+    /*const confirmacion = confirm('Pulsa aceptar para cambiar también a las cuotas que tenga ese equipo o pulsa para cancelar y mantener la propia cuota que tenga este jugador.');
+    if (confirmacion) {
+      cuotaTbm = 1;
+    }*/
+
     if (this.teamSelected == 0) {
       alert('Selecciona un equipo del desplegable.');
     } else {
-      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected).subscribe(
+      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected, cuotaTbm).subscribe(
         (response: Response) => {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
@@ -997,7 +1003,6 @@ export class PlayerComponent implements OnInit {
       );
     }
   }
-
 
   cerrarModalMover() {
     this.showModalMover = false;

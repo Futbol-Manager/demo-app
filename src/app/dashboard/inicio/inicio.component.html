@@ -123,7 +123,7 @@
       <!--<div class="col-3">
         <label for="excel" class="form-label">Importar jugadores desde GesDesk:</label>
         <button class="btn btn-success form-control" (click)="openModalSubirJugadoresGesDesk()">
-          Subir Excel GesDesk <i class="bi bi-file-earmark-spreadsheet"></i>
+          Subir Excel GesDep <i class="bi bi-file-earmark-spreadsheet"></i>
         </button>
       </div> -->
       <div class="col-3">
@@ -136,6 +136,19 @@
         <label for="temporada" class="form-label">Temporada:</label>
         <select class="form-control" id="temporada" name="temporada" [(ngModel)]="temporada"
           (change)="cargarListadoEquiposForClub()">
+          <option value="2022">2022/2023</option>
+          <option value="2023">2023/2024</option>
+          <option value="2024">2024/2025</option>
+          <option value="2025">2025/2026</option>
+        </select>
+      </div>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em; "
+      *ngIf="this.usuarioActual!.profileType.profileId === 2">
+      <div class="col-3">
+        <label for="temporada" class="form-label">Temporada:</label>
+        <select class="form-control" id="temporada" name="temporada" [(ngModel)]="temporada"
+          (change)="cargarListadoEquipos()">
           <option value="2022">2022/2023</option>
           <option value="2023">2023/2024</option>
           <option value="2024">2024/2025</option>
@@ -468,13 +481,15 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="stripeModalLabel">Sube la plantilla para cargar los jugadores</h5>
-          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSubirJugadoresGesDesk()"></button>
+          <button type="button" class="btn-close" aria-label="Close"
+            (click)="cerrarModalSubirJugadoresGesDesk()"></button>
         </div>
         <div class="modal-body">
           <p>Esto solo es para excel que han sido exportados desde la aplicación de GesDesk, cualquiero otra fallará.
           </p>
           <div class="mb-3">
-            <form [formGroup]="excelForm" class="form-upload" (ngSubmit)="uploadExcelGesDesk()" enctype="multipart/form-data">
+            <form [formGroup]="excelForm" class="form-upload" (ngSubmit)="uploadExcelGesDesk()"
+              enctype="multipart/form-data">
               <div class="mb-3" style="text-align: center;">
                 <h4>Sube tu archivo Excel</h4>
                 <div class="form-group">

@@ -77,7 +77,13 @@
                                 </div>
                             </td>
                             <td>{{ player.nombre }} {{ player.apellido }}</td>
-                            <td>{{ player.nameTeam }}</td>
+                            <td>
+                                {{ player.nameTeam }}
+                                <button class="btn btn-warning" title="Mover"
+                                    (click)="openShowModalMover(player.playerId, player)">
+                                    <span class="bi bi-folder-symlink"></span>
+                                </button>
+                            </td>
                             <td>{{ player.fechaDeNacimiento }}</td>
                             <td>{{ player.telefono }}</td>
                             <td>{{ player.dni }}</td>
@@ -396,6 +402,42 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" (click)="cerrarModalDocumentoOjo()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para invitar un jugador por mail -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalMover}">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Vas a mover de equipo a {{ nombreJugador }}</h5>
+                <!-- Botón de cerrar con un icono -->
+                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalMover()"></button>
+            </div>
+            <div class="modal-body">
+                <p>Elige el equipo al que quieres mover el jugador.</p>
+                <form class="form-login" (ngSubmit)="moverJugador()">
+                    <div class="mb-3" style="text-align: center;">
+                        <div class="col">
+                            <label for="teamSelected" class="form-label">Selecciona el equipo:</label>
+                            <select class="form-control" id="teamSelected" name="teamSelected"
+                                [(ngModel)]="teamSelected">
+                                <option value="0">
+                                    Escoge un equipo</option>
+                                <ng-container *ngFor="let team of listTeamsForCombo">
+                                    <option *ngIf="team.value !== teamId" [value]="team.value">
+                                        {{ team.name }}
+                                    </option>
+                                </ng-container>
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-primary float-end">Aceptar</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

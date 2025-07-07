@@ -13,16 +13,23 @@
     <div class="row">
         <div *ngFor="let doc of listaDocumentos" class="col-12 mb-3 p-3 rounded"
             style="background-color: #212529; border: 1px solid black; color: white;">
+
             <h5 class="fw-bold">{{ doc.nombre }}</h5>
             <p *ngIf="doc.requiere < 2">{{ doc.descripcion }}</p>
-            <div class="d-flex gap-2">
-                <!-- Botón de descarga (solo si requiere === 0)
-                <button *ngIf="doc.requiere === 0" class="btn btn-light" (click)="descargar(doc)"
-                    title="Descargar documento">
-                    <i class="bi bi-arrow-down-circle"></i>
-                </button> -->
 
-                <!-- Botón de descarga (solo si requiere === 0) -->
+            <!-- Estado -->
+            <ul class="mb-2 ps-0" style="list-style: none;">
+                <li *ngIf="(doc.requiere === 0 || doc.fileClub) && doc.descargado === 0">⚠️ Tienes pendiente descargarlo</li>
+                <li *ngIf="(doc.requiere === 0 || doc.fileClub) && doc.descargado === 1">✅ Ya lo has descargado</li>
+                <li *ngIf="doc.requiere === 1 && doc.subido === 0">⚠️ Tienes pendiente subirlo</li>
+                <li *ngIf="doc.requiere === 1 && doc.subido === 1">✅ Ya lo has subido</li>
+                <li *ngIf="doc.requiere === 2 && doc.subido === 0">⚠️ Tienes pendiente rellenarlo</li>
+                <li *ngIf="doc.requiere === 2 && doc.subido === 1">✅ Ya lo has rellenado</li>
+            </ul>
+
+            <!-- Botones -->
+            <div class="d-flex gap-2">
+                <!-- Descargar -->
                 <button *ngIf="doc.requiere === 0 || doc.fileClub" class="btn btn-light" (click)="descargar(doc)"
                     title="Descargar documento" [ngClass]="{
                     'bg-secondary text-white': doc.descargado === 0,
@@ -31,7 +38,7 @@
                     <i class="bi bi-arrow-down-circle"></i>
                 </button>
 
-                <!-- Botón de subida (solo si requiere === 1) -->
+                <!-- Subir documento -->
                 <button *ngIf="doc.requiere === 1" class="btn btn-light" (click)="subir(doc)" title="Subir documento"
                     [ngClass]="{
                     'bg-secondary text-white': doc.subido === 0,
@@ -40,9 +47,9 @@
                     <i class="bi bi-arrow-up-circle"></i>
                 </button>
 
-                <!-- Botón de subida (solo si requiere === 1) -->
+                <!-- Rellenar personalizado -->
                 <button *ngIf="doc.requiere === 2" class="btn btn-light" (click)="rellenarPersonalizado(doc)"
-                    title="Subir documento" [ngClass]="{
+                    title="Rellenar información" [ngClass]="{
                     'bg-secondary text-white': doc.subido === 0,
                     'bg-success text-white': doc.subido === 1
                 }">
@@ -50,6 +57,8 @@
                 </button>
             </div>
         </div>
+
+
     </div>
 </div>
 

@@ -251,6 +251,11 @@ export class InformacionEquipoComponent implements OnInit {
 
   editarEquipo(): void {
     if (this.editarEquipoForm.valid) {
+      let categoriaId = this.teamInfo.categoryType.categoryTypeId;
+      if(this.selectedCategoriaId !== null){
+        categoriaId = this.selectedCategoriaId;
+      }
+
       const fv = this.editarEquipoForm.value;
       this.teamNew = {
         teamId: fv.teamId,
@@ -260,7 +265,7 @@ export class InformacionEquipoComponent implements OnInit {
         opinionTeam: fv.opinionTeam || '',
         trainingDays: fv.trainingDays || '',
         categoryType: {
-          categoryTypeId: this.selectedCategoriaId!,
+          categoryTypeId: categoriaId,
           year: 0,
           categoryName: ''
         },
@@ -453,7 +458,7 @@ export class InformacionEquipoComponent implements OnInit {
   }
 
   seleccionarNivel(nivel: any): void {
-    this.categoriaNivel = nivel;
+    this.categoriaNivel = nivel.label;
     this.editarEquipoForm.get('levelLeague')?.setValue(this.categoriaNivel);
   }
 

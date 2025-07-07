@@ -169,6 +169,10 @@
                                                 (click)="editarJugador(player.playerId)">
                                                 <span class="bi bi-pencil"></span>
                                             </button>
+                                            <button *ngIf="profileId === 1" class="btn btn-warning" title="Mover"
+                                                (click)="openShowModalMover(player.playerId, i)">
+                                                <span class="bi bi-folder-symlink"></span>
+                                            </button>
                                             <button class="btn btn-danger" title="Eliminar"
                                                 *ngIf="this.usuarioActual!.profileType.profileId < 3"
                                                 (click)="confirmarEliminarJugador(player.playerId, player.nombre, player.apellido, i)">

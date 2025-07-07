@@ -364,8 +364,11 @@ export class InicioComponent implements OnInit {
   }
 
   // Método para cargar el listado de equipos
-  cargarListadoEquipos(): void {
-    this.teamService.getTeams(this.userId.toString()).subscribe(
+  cargarListadoEquipos(): void {    
+    localStorage.setItem('temporada', this.temporada);
+    this.temporadaStoredValue = this.temporada;
+    
+    this.teamService.getTeams(this.userId.toString(), this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data) {
@@ -644,7 +647,7 @@ export class InicioComponent implements OnInit {
       console.error('Formulario inválido o archivo no seleccionado');
     }
   }
-  
+
   uploadExcelGesDesk(): void {
     if (this.excelForm.valid && this.selectedFile) {
       const formData = new FormData();

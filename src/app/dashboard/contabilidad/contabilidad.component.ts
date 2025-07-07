@@ -83,6 +83,10 @@ export class ContabilidadComponent implements OnInit {
 
   temporadaStoredValue = '2024';
   botonDeshabilitado: boolean = false;
+  numCuotas = 0;
+  totalCuota = '';
+  cuotaRopa = '';
+  cuotaRopaDate = '';
 
   constructor(
     private loginService: LoginService,
@@ -269,6 +273,8 @@ export class ContabilidadComponent implements OnInit {
         if (response.data !== null) {
           this.infoClub = response.data.infoClub;
           this.clubCuotas = response.data.cuotaClub;
+          this.numCuotas = this.clubCuotas.numCuotas;
+          this.totalCuota = this.clubCuotas.totalCuota;
           //this.clubCuotas.temporada = response.data.temporada === null ? temporada : response.data.temporada;
         } else {
           this.clubCuotas = new ClubCuotas({});
@@ -288,7 +294,7 @@ export class ContabilidadComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.infoClub = response.data.infoClub;
-          if(this.infoClub.banco != null){
+          if (this.infoClub.banco != null) {
             this.showModalStripe = true;
           } else {
             this.showModal = true;
@@ -302,9 +308,10 @@ export class ContabilidadComponent implements OnInit {
   }
 
   createUpdateSettings() {
-    this.botonDeshabilitado = true; 
     let option = this.selectedComboTitle;
     let value = option === 0 ? this.teamSelected : this.categorySelected;
+    alert('Esta operación puede tardar unos minutos, por favor, espera a que se cierre solo.');
+    this.botonDeshabilitado = true;
     //esto actualiza la info del club, el IBAN, etc
     this.teamService.createUpdateCuotaClub(this.infoClub, option, value).subscribe(
       (response) => {
@@ -325,7 +332,9 @@ export class ContabilidadComponent implements OnInit {
                 // Verifica que la propiedad 'data' exista en la respuesta
                 if (response.data !== null) {
                   this.updateCuotaClub(response.data.list);
-                  this.guardar();
+                  alert('Guardado correctamente');
+                  this.botonDeshabilitado = false;
+                  //this.guardar();
                 } else {
                   console.error('La respuesta del servicio no tiene la estructura esperada', response);
                 }
@@ -479,7 +488,7 @@ export class ContabilidadComponent implements OnInit {
       this.showAlert = false;
     }, 2000);*/
     alert('Guardado correctamente');
-    this.botonDeshabilitado = false; 
+    this.botonDeshabilitado = false;
   }
 
   openModalPago(player: any, index: number) {
@@ -613,6 +622,7 @@ export class ContabilidadComponent implements OnInit {
           this.clubCuotas = new ClubCuotas({});
         }
         this.showModal = true;
+        console.log(this.clubCuotas);
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);

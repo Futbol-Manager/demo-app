@@ -7,12 +7,6 @@
                     <span class="d-none d-md-inline">Volver</span>
                 </a>
             </div>
-            <div class="col text-center">
-                <a class="no-underline" href="javascript:void(0);" (click)="newCorreo()">
-                    <i class="bi bi-plus-circle"></i>
-                    <span class="d-none d-md-inline">Crear</span>
-                </a>
-            </div>
         </div>
     </div>
 </div>
@@ -22,7 +16,7 @@
         <!-- Sidebar -->
         <div style="width: 10em;" class="col-12 col-md-3 bg-light p-3">
             <!-- Botón de Redactar -->
-            <div class="mb-3" (click)="newCorreo()">
+            <div *ngIf="usuarioActual!.profileType.profileId < 3" class="mb-3" (click)="newCorreo()">
                 <button style="background-color: white; height: 4em;"
                     class="btn w-100 d-flex align-items-center border border-1">
                     <i class="bi bi-pencil me-2 text-secondary"></i>
@@ -39,7 +33,7 @@
                         <span>Recibidos</span>
                     </a>
                 </li>
-                <li>
+                <li *ngIf="usuarioActual!.profileType.profileId < 3">
                     <a href="javascript:void(0);" class="d-flex align-items-center text-decoration-none text-dark"
                         (click)="mostrarEnviados()">
                         <i class="bi bi-send me-2"></i>

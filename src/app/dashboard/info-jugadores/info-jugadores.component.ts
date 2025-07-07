@@ -12,6 +12,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
+import { TeamService } from 'src/app/core/services/team/team.service';
 
 @Component({
   selector: 'app-info-jugadores',
@@ -60,7 +61,7 @@ export class InfoJugadoresComponent implements OnInit {
   imageBaseUrlUser: string = environment.images + 'user/';
   imageBaseUrlPlayerDni: string = environment.images + 'playerDni/';
 
-  temporadaStoredValue = '2024';
+  temporadaStoredValue = '2025';
 
   mostrarModalDocJugador = false;
   mostrarModalDocumento = false;
@@ -82,6 +83,12 @@ export class InfoJugadoresComponent implements OnInit {
   docEditando: any = null;
   fechaEditando: string = '';
   showDate = false;
+  nombreJugador = '';
+  temporada = '';
+
+  listTeamsForCombo: any[] = [];
+  showModalMover = false;
+  teamId = 0;
 
   constructor(
     private router: Router,
@@ -89,6 +96,7 @@ export class InfoJugadoresComponent implements OnInit {
     private snackBar: MatSnackBar,
     private clubService: ClubService,
     private playerService: PlayerService,
+    private teamService: TeamService,
     private loginService: LoginService) { }
 
   ngOnInit(): void {
@@ -128,8 +136,12 @@ export class InfoJugadoresComponent implements OnInit {
           this.teams = response.data.teams;
           for (let i = 0; i < this.teams.length; i++) {
             for (let a = 0; a < this.teams[i].players.length; a++) {
-              this.filteredPlayers.push(this.teams[i].players[a]);
-              this.players.push(this.teams[i].players[a]);
+              const p = { ...this.teams[i].players[a] }; // Clonamos para no modificar el original
+              p.teamId = this.teams[i].teamId;           // Añades el nuevo campo
+              this.filteredPlayers.push(p);
+              //this.filteredPlayers.push(this.teams[i].players[a]);
+              //this.players.push(this.teams[i].players[a]);
+              this.players.push(p);
             }
           }
         } else {
@@ -333,12 +345,12 @@ export class InfoJugadoresComponent implements OnInit {
     this.docPadreTemp = doc;
   }
 
-  verDocSubido(doc: any){
+  verDocSubido(doc: any) {
     this.mostrarModalDocumentoOjo = true;
     this.docPadreTemp = doc;
   }
 
-  cerrarModalDocumentoOjo(){
+  cerrarModalDocumentoOjo() {
     this.mostrarModalDocumentoOjo = false;
   }
 
@@ -589,7 +601,7 @@ export class InfoJugadoresComponent implements OnInit {
     this.contenidoEditando = doc.descripcion || ''; // ajusta al campo real
     this.tituloEditando = doc.nombre || ''; // ajusta al campo real
     this.fechaEditando = doc.fecCreate
-    if(doc.subido == 1) this.showDate = true;
+    if (doc.subido == 1) this.showDate = true;
     this.mostrarModalEditarPersonalizado = true;
   }
 
@@ -636,6 +648,60 @@ export class InfoJugadoresComponent implements OnInit {
         alert('Error al subir el documento');
       }
     });
+  }
+
+  moverJugador(): void {
+    let cuotaTbm = 0;
+    /*const confirmacion = confirm('Pulsa aceptar para cambiar también a las cuotas que tenga ese equipo o pulsa para cancelar y mantener la propia cuota que tenga este jugador.');
+    if (confirmacion) {
+      cuotaTbm = 1;
+    }*/
+
+    if (this.teamSelected == 0) {
+      alert('Selecciona un equipo del desplegable.');
+    } else {
+      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected, cuotaTbm).subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            alert("Movido correctamente, cuando vuelvas a entrar verás los cambios.");
+            this.showModalMover = false;
+            this.teamSelected = 0;
+          } else {
+            console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          }
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
+        }
+      );
+    }
+  }
+
+  openShowModalMover(playerId: number, player: any): void {
+    const jugadorSeleccionado = this.players.find(player => player.playerId === playerId);
+    this.nombreJugador = jugadorSeleccionado.nombre + ' ' + jugadorSeleccionado.apellido;
+    this.playerIdSelected = playerId;
+    this.teamId = player.teamId;
+
+    this.teamService.getTeamsByClubForCombo(this.clubId, this.temporadaStoredValue).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.listTeamsForCombo = response.data;
+          this.showModalMover = true;
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  cerrarModalMover() {
+    this.showModalMover = false;
   }
 
 }
