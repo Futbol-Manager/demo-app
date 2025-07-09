@@ -547,23 +547,30 @@ export class PlayerComponent implements OnInit {
       this.showTutor2 = true;
     }
 
-    switch (this.player.parentesco1) {
-      case 1: //padre
-        this.parentTutor1 = 'Padre';
-        break;
-      case 2: //madre
-        this.parentTutor1 = 'Madre';
-        break;
+    if (this.profileId < 3) {
+      this.parentTutor1 = 'Padre';
+      this.parentTutor2 = 'Madre';
+    } else {
+      switch (this.player.parentesco1) {
+        case 1: //padre
+          this.parentTutor1 = 'Padre';
+          break;
+        case 2: //madre
+          this.parentTutor1 = 'Madre';
+          break;
+      }
+
+      switch (this.player.parentesco2) {
+        case 1: //padre
+          this.parentTutor2 = 'Padre';
+          break;
+        case 2: //madre
+          this.parentTutor2 = 'Madre';
+          break;
+      }
     }
 
-    switch (this.player.parentesco2) {
-      case 1: //padre
-        this.parentTutor2 = 'Padre';
-        break;
-      case 2: //madre
-        this.parentTutor2 = 'Madre';
-        break;
-    }
+
 
     this.showPortero(this.player.posicion);
     this.promedioPase();

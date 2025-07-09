@@ -10,6 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ClubesListComponent } from './clubes-list/clubes-list.component';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Club } from 'src/app/core/services/models/club.model';
+import { contains } from 'jquery';
 
 @Component({
   selector: 'app-register',
@@ -618,7 +619,9 @@ export class RegisterComponent implements OnInit {
   }
 
   numHijo() {
-    if (this.playerID != undefined && this.playerID != 0) {
+    if (this.registerFormPadre.get('email')?.value.includes('gmail.con')) {
+      alert('Revisa el correo, has puesto gmail.con con una N y no una M');
+    } else if (this.playerID != undefined && this.playerID != 0) {
       if (this.validations()) {
         this.registerPadreSinHijos();
       }
@@ -647,7 +650,7 @@ export class RegisterComponent implements OnInit {
 
   finalizarRegistroPadre(): void {
     let text = '1 hijo.'
-    if(this.numHijos > 1) {
+    if (this.numHijos > 1) {
       text = this.numHijos + ' hijos.';
     }
 
