@@ -81,12 +81,13 @@ export class CuotasComponent implements OnInit {
     // Suscríbete al observable del servicio para obtener el usuario actual
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
-      this.playerIdUserActual = user?.playerId;
+      //this.playerIdUserActual = user?.playerId;
       // Suscribirse a los cambios en los parámetros de la URL
       this.route.params.subscribe(params => {
         // Obtener el valor de teamId de los parámetros
         this.teamId = +params['teamId'];  // El + convierte el valor a número
         this.playerId = +params['playerId'];  // El + convierte el valor a número
+        this.playerIdUserActual = this.playerId;
         console.log('teamId:', this.teamId);
         console.log('playerId:', this.playerId);
       });

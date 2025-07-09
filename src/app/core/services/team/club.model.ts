@@ -93,7 +93,7 @@ export class RopaClub {
     constructor(object: any = {}) {
         this.ropaclubId = object.ropaclubId ? object.ropaclubId : 0;
         this.clubId = object.clubId ? object.clubId : 0;
-        this.temporada = object.temporada ? object.temporada : '2024';
+        this.temporada = object.temporada ? object.temporada : '2025';
         this.camisetaJuego = object.camisetaJuego ? object.camisetaJuego : 0;
         this.pantalonJuego = object.pantalonJuego ? object.pantalonJuego : 0;
         this.camisetaEntreno = object.camisetaEntreno ? object.camisetaEntreno : 0;
@@ -292,7 +292,7 @@ export class HostoryPagosPlayer {
         this.historyPagosPlayerId = object.historyPagosPlayerId ? object.historyPagosPlayerId : 0;
         this.clubId = object.clubId ? object.clubId : 0;
         this.playerId = object.playerId ? object.playerId : 0;
-        this.temporada = object.temporada ? object.temporada : '2024';
+        this.temporada = object.temporada ? object.temporada : '2025';
         this.cantidad = object.cantidad ? object.cantidad : null;
         this.fecha = object.fecha ? object.fecha : null;
         this.metodo = object.metodo ? object.metodo : 'Efectivo';
