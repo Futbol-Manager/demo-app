@@ -55,6 +55,7 @@ export class CuotasComponent implements OnInit {
   pagarOk = false;
   cantidadAPagar = 0;
   cuotas: any[] = [];
+  userId = 0;
 
   constructor(
     private router: Router,
@@ -81,6 +82,7 @@ export class CuotasComponent implements OnInit {
     // Suscríbete al observable del servicio para obtener el usuario actual
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
+      this.userId = user!.userId;
       //this.playerIdUserActual = user?.playerId;
       // Suscribirse a los cambios en los parámetros de la URL
       this.route.params.subscribe(params => {
@@ -90,6 +92,7 @@ export class CuotasComponent implements OnInit {
         this.playerIdUserActual = this.playerId;
         console.log('teamId:', this.teamId);
         console.log('playerId:', this.playerId);
+        console.log('userId:', this.userId);
       });
       this.teamService.getCuotaPlayer(this.playerId, this.teamId).subscribe(
         (response: Response) => {
@@ -153,58 +156,73 @@ export class CuotasComponent implements OnInit {
 
   closeModal(): void {
     this.showModalStripe = false;
+    this.cantidadAPagar = 0;
+    this.amount = 0;
   }
 
   async makePayment(): Promise<void> {
-    //this.historyCuotasPlayer[0].temporada = '2030';
     if (this.paymentForm.valid) {
       const paymentRequest = this.paymentForm.value;
-
+      this.pagarOk = false;
     }
 
-    const { token, error } = await this.stripe.createToken(this.card);
+    //console.log(this.stripe, this.card);
+    try {
+      const { token, error } = await this.stripe.createToken(this.card);
+      if (error) {
+        //console.error('Stripe token error:', error);
+        alert(error.message);
+        this.closeModal();
+      } else {
+        //console.log('Stripe token:', token);
+        // Sigue con la lógica normal
+        const option = this.selectedText.split('.')[0];
+        const paymentRequest = {
+          token: token.id,
+          amount: this.amount,
+          clubId: this.cuota.clubId,
+          teamId: this.teamId,
+          playerId: this.playerIdUserActual,
+          option: option,
+          accountId: this.cuota.accountId,
+          nameClub: this.cuota.nameClub,
+          cantidadOriginal: this.cantidadAPagar,
+          userId: this.usuarioActual?.userId
+        };
 
-    if (error) {
-      console.error(error);
-    } else {
-      const option = this.selectedText.split('.')[0];
-      const paymentRequest = {
-        token: token.id,
-        amount: this.amount,
-        clubId: this.cuota.clubId,
-        teamId: this.teamId,
-        playerId: this.playerIdUserActual,
-        option: option,
-        accountId: this.cuota.accountId,
-        nameClub: this.cuota.nameClub,
-        cantidadOriginal: this.cantidadAPagar
-      };
+        this.teamService.processPayment(paymentRequest).subscribe(
+          (response: any) => {
+            if (response.data) {
+              this.historyCuotasPlayer.push(response.data);
 
-      this.teamService.processPayment(paymentRequest).subscribe(
-        (response: any) => {
-          if (response.data) {
-            this.historyCuotasPlayer.push(response.data);
+              this.restante = this.restante - this.cantidadAPagar;
+              this.pagado = this.pagado + this.cantidadAPagar;
+              if (this.restante == 0) {
+                this.restanteCero = true;
+                this.datosCargados = false;
+              } else {
+                this.datosCargados = true;
+                this.restanteCero = false;
+              }
 
-            this.restante = this.restante - this.cantidadAPagar;
-            this.pagado = this.pagado + this.cantidadAPagar;
-            if (this.restante == 0) {
-              this.restanteCero = true;
-              this.datosCargados = false;
+              alert('Pago realizado con éxito');
             } else {
-              this.datosCargados = true;
-              this.restanteCero = false;
+              alert('Tarjeta no válida, revise los datos o pruebe con otra tarjeta');
             }
-
-            alert('Pago realizado con éxito');
             this.closeModal();
-          } else {
-            alert('Tarjeta no válida, revise los datos o pruebe con otra tarjeta');
+            this.goBack();
+          },
+          (error) => {
+            alert('An error occurred: ' + error.message);
+            this.goBack();
           }
-        },
-        (error) => {
-          alert('An error occurred: ' + error.message);
-        }
-      );
+        );
+      }
+    } catch (ex) {
+      console.error('Error inesperado al crear token Stripe:', ex);
+      alert('Error inesperado al procesar la tarjeta');
+      this.closeModal();
+      this.goBack();
     }
   }
 

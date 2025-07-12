@@ -165,7 +165,7 @@
             <input type="text" class="form-control" id="banco" name="banco" [(ngModel)]="cuota.banco" disabled>
         </div>
     </div>
-    <div class="row mt-3">
+    <div class="row mt-3" *ngIf="restante > 0">
         <!-- <div class="col-md-6">
             <button class="btn btn-custom btn-sm">Pago manual</button>
         </div> -->

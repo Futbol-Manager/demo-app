@@ -899,7 +899,7 @@
                     </div>
                     <div class="modal-footer">
                         <!-- Botón para guardar el nuevo equipo -->
-                        <button type="submit" class="btn btn-success float-end">Guardar</button>
+                        <button *ngIf="btnPagar" type="submit" class="btn btn-success float-end">Guardar</button>
                     </div>
                     <div class="mb-3 d-flex">
                         <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">

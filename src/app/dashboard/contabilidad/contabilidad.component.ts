@@ -87,6 +87,7 @@ export class ContabilidadComponent implements OnInit {
   totalCuota = '';
   cuotaRopa = '';
   cuotaRopaDate = '';
+  btnPagar = true;
 
   constructor(
     private loginService: LoginService,
@@ -531,8 +532,9 @@ export class ContabilidadComponent implements OnInit {
 
   createUpdateHistoryCuotaJugador() {
     if (this.agregarPagoPlayer.cantidad == null || this.agregarPagoPlayer.fecha == null) {
-      //avisar de poner cantidad y fecha
+      alert('Es necesario tener puesto la cantidad y la fecha.');
     } else {
+      this.btnPagar = false;
       this.clubService.updatehistorypagosplayer(this.agregarPagoPlayer).subscribe(
         (response: Response) => {
           // Verifica que la propiedad 'data' exista en la respuesta
@@ -541,8 +543,10 @@ export class ContabilidadComponent implements OnInit {
             this.listHCP[this.indexPlayerSelected].pagado = (Number(this.listHCP[this.indexPlayerSelected].pagado) + Number(this.agregarPagoPlayer.cantidad));
             this.listHCP[this.indexPlayerSelected].restante = (Number(this.listHCP[this.indexPlayerSelected].cuotaClub) - Number(this.listHCP[this.indexPlayerSelected].pagado));
             //this.agregarPagoPlayer = new HostoryPagosPlayer({});
-            this.guardar();
+            alert('Guardado correctamente');
+            this.btnPagar = true;
             this.recalcular = true;
+            this.cerrarModalAgregarPago();
           } else {
             console.error('La respuesta del servicio no tiene la estructura esperada', response);
           }

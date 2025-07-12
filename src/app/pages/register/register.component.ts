@@ -677,42 +677,51 @@ export class RegisterComponent implements OnInit {
           dni: this.registerFormPadreHijos.get('dni' + (index + 1))?.value
         }));
 
-        const datosCompletos = {
-          padre: padreData,
-          hijos: hijosData
-        };
+        let camposOk = true;
+        for (let index = 0; index < hijosData.length; index++) {
+          if (hijosData[index].nombre != '' && hijosData[index].apellidos != '' && hijosData[index].fechaNacimiento != '') camposOk = false;
+        }
 
-        console.log('Datos completos para enviar:', datosCompletos);
+        if (camposOk) {
+          alert('Por favor, rellena el nombre, los apellidos y la fecha de nacimiento.');
+        } else {
+          const datosCompletos = {
+            padre: padreData,
+            hijos: hijosData
+          };
 
-        this.registerService.registerPadreHijos(datosCompletos).subscribe({
-          next: (res) => {
-            const snackBarConfig = new MatSnackBarConfig();
-            snackBarConfig.duration = 5000;
-            snackBarConfig.horizontalPosition = 'center';
-            snackBarConfig.verticalPosition = 'bottom';
+          console.log('Datos completos para enviar:', datosCompletos);
 
-            if (res.data) {
-              this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
-              this.login(3); // o lo que tengas tras registrarse
-            } else {
-              snackBarConfig.duration = 20000;
-              this.snackBar.open('Error en la contraseña.', 'Cerrar', snackBarConfig);
-              this.registerFormPadre.get('password')?.setValue('');
-              this.registerFormPadre.get('password2')?.setValue('');
-              this.volver();
+          this.registerService.registerPadreHijos(datosCompletos).subscribe({
+            next: (res) => {
+              const snackBarConfig = new MatSnackBarConfig();
+              snackBarConfig.duration = 5000;
+              snackBarConfig.horizontalPosition = 'center';
+              snackBarConfig.verticalPosition = 'bottom';
+
+              if (res.data) {
+                this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
+                this.login(3); // o lo que tengas tras registrarse
+              } else {
+                snackBarConfig.duration = 20000;
+                this.snackBar.open('Error en la contraseña.', 'Cerrar', snackBarConfig);
+                this.registerFormPadre.get('password')?.setValue('');
+                this.registerFormPadre.get('password2')?.setValue('');
+                this.volver();
+              }
+            },
+            error: (err) => {
+              this.snackBar.open('Error al registrar. Intenta de nuevo.', 'Cerrar', {
+                duration: 5000,
+                horizontalPosition: 'center',
+                verticalPosition: 'bottom'
+              });
+              console.error(err);
             }
-          },
-          error: (err) => {
-            this.snackBar.open('Error al registrar. Intenta de nuevo.', 'Cerrar', {
-              duration: 5000,
-              horizontalPosition: 'center',
-              verticalPosition: 'bottom'
-            });
-            console.error(err);
-          }
-        });
+          });
 
-        // Aquí puedes llamar al servicio que envíe `datosCompletos` al backend
+          // Aquí puedes llamar al servicio que envíe `datosCompletos` al backend
+        }
       } else {
         console.warn('Formulario no válido');
       }
@@ -745,42 +754,49 @@ export class RegisterComponent implements OnInit {
         }
       ];
 
-      const datosCompletos = {
-        padre: padreData,
-        hijos: hijosData
-      };
+      let camposOk = true;
+      for (let index = 0; index < hijosData.length; index++) {
+        if (hijosData[index].nombre != '' && hijosData[index].apellidos != '' && hijosData[index].fechaNacimiento != '') camposOk = false;
+      }
 
-      console.log('Datos completos para enviar:', datosCompletos);
+      if (camposOk) {
+        alert('Por favor, rellena el nombre, los apellidos y la fecha de nacimiento.');
+      } else {
+        const datosCompletos = {
+          padre: padreData,
+          hijos: hijosData
+        };
 
-      this.registerService.registerPadreHijos(datosCompletos).subscribe({
-        next: (res) => {
-          const snackBarConfig = new MatSnackBarConfig();
-          snackBarConfig.duration = 5000;
-          snackBarConfig.horizontalPosition = 'center';
-          snackBarConfig.verticalPosition = 'bottom';
+        console.log('Datos completos para enviar:', datosCompletos);
 
-          if (res.data) {
-            this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
-            this.login(3); // o lo que tengas tras registrarse
-          } else {
-            snackBarConfig.duration = 20000;
-            this.snackBar.open('Revisa la contraseña.', 'Cerrar', snackBarConfig);
-            this.registerFormPadre.get('password')?.setValue('');
-            this.registerFormPadre.get('password2')?.setValue('');
-            this.volver();
+        this.registerService.registerPadreHijos(datosCompletos).subscribe({
+          next: (res) => {
+            const snackBarConfig = new MatSnackBarConfig();
+            snackBarConfig.duration = 5000;
+            snackBarConfig.horizontalPosition = 'center';
+            snackBarConfig.verticalPosition = 'bottom';
+
+            if (res.data) {
+              this.snackBar.open('Registro exitoso.', 'Cerrar', snackBarConfig);
+              this.login(3); // o lo que tengas tras registrarse
+            } else {
+              snackBarConfig.duration = 20000;
+              this.snackBar.open('Revisa la contraseña.', 'Cerrar', snackBarConfig);
+              this.registerFormPadre.get('password')?.setValue('');
+              this.registerFormPadre.get('password2')?.setValue('');
+              this.volver();
+            }
+          },
+          error: (err) => {
+            this.snackBar.open('Error al registrar. Intenta de nuevo.', 'Cerrar', {
+              duration: 5000,
+              horizontalPosition: 'center',
+              verticalPosition: 'bottom'
+            });
+            console.error(err);
           }
-        },
-        error: (err) => {
-          this.snackBar.open('Error al registrar. Intenta de nuevo.', 'Cerrar', {
-            duration: 5000,
-            horizontalPosition: 'center',
-            verticalPosition: 'bottom'
-          });
-          console.error(err);
-        }
-      });
-
-      // Aquí puedes llamar al servicio que envíe `datosCompletos` al backend
+        });
+      }
     } else {
       console.warn('Formulario no válido');
     }

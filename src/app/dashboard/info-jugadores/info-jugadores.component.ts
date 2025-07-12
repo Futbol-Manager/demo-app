@@ -704,4 +704,20 @@ export class InfoJugadoresComponent implements OnInit {
     this.showModalMover = false;
   }
 
+  formatFechaEspana(fecha: string): string {
+    if (!fecha) return '';
+
+    // Detectar si viene en formato ISO (aaaa-mm-dd)
+    const isoFormat = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (isoFormat.test(fecha)) {
+      const [year, month, day] = fecha.split('-');
+      return `${day}/${month}/${year}`;
+    }
+
+    // Si ya parece estar en formato dd/mm/aaaa o otro, devolver tal cual
+    return fecha;
+  }
+
+
 }
