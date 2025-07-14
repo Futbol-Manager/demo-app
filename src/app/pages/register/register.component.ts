@@ -58,6 +58,7 @@ export class RegisterComponent implements OnInit {
   hijosVisibles: number[] = [];
   mailExiste = false;
   texBoton: string = 'Siguiente';
+  btnFinalizar = false;
 
   constructor(
     private router: Router,
@@ -585,6 +586,7 @@ export class RegisterComponent implements OnInit {
         this.finalizarRegistroJugador();
       } else {
         this.newRegistro = true;
+        this.btnFinalizar = true;
       }
     }
   }
@@ -632,6 +634,7 @@ export class RegisterComponent implements OnInit {
 
   volver() {
     this.newRegistro = false;
+    this.btnFinalizar = true;
   }
 
   onParentescoChange(): void {
@@ -657,6 +660,7 @@ export class RegisterComponent implements OnInit {
     const confirmacion = confirm('Vas a crear ' + text + ' Si esto es correcto, dale a confirmar. Si tienes más hijos, vuelve al formulario y complétalo');
     if (confirmacion) {
       if (this.registerFormPadre.valid && this.registerFormPadreHijos.valid) {
+        this.btnFinalizar = false;
         const padreData = {
           parentesco: this.registerFormPadre.get('parentesco')?.value,
           firstName: this.registerFormPadre.get('name')?.value,
@@ -684,6 +688,7 @@ export class RegisterComponent implements OnInit {
 
         if (camposOk) {
           alert('Por favor, rellena el nombre, los apellidos y la fecha de nacimiento.');
+          this.btnFinalizar = true;
         } else {
           const datosCompletos = {
             padre: padreData,
@@ -719,8 +724,6 @@ export class RegisterComponent implements OnInit {
               console.error(err);
             }
           });
-
-          // Aquí puedes llamar al servicio que envíe `datosCompletos` al backend
         }
       } else {
         console.warn('Formulario no válido');
