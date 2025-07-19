@@ -26,7 +26,7 @@ export class GraficaCuotasComponent implements OnInit {
   data: any[] = [];
   datosCargados = false;
   loading = true;
-  temporadaStoredValue = '2024';
+  temporadaStoredValue = '2025';
 
   constructor(
     private loginService: LoginService,

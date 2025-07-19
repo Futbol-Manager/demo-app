@@ -40,7 +40,7 @@ export class InicioComponent implements OnInit {
   numEquipos = 0;
   numPadresPagados = 0;
   clubOk = false;
-  temporada = '2024';
+  temporada = '2025';
   federacion: number | null = null;
   showAlertAndroid = true;
 
@@ -173,7 +173,7 @@ export class InicioComponent implements OnInit {
   categoriasVisibles = [...this.categoriasDefault];
   nivelesVisibles = [...this.nivelesDefault];
 
-  temporadaStoredValue = '2024';
+  temporadaStoredValue = '2025';
   isAndroid: boolean = false;
   isiOS: boolean = false;
 

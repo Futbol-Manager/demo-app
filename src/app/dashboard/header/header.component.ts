@@ -180,11 +180,12 @@ export class HeaderComponent implements OnInit {
         this.usuarioActual == null ? '' : this.usuarioActual.pictureUser,
         dateOnlyString,
       );
-      this.registerService.registerUser(register).pipe()
+      this.registerService.registerUserV2(register).pipe()
         .subscribe(
-          (res: { data: null; }) => {
+          (res: { data: any; }) => {
             if (res.data != null) {
               //console.log('Guardado con éxito.');
+              this.nameUser = res.data.firstName;
               this.showModal = false;
             }
           })

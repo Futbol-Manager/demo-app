@@ -81,7 +81,7 @@ export class ContabilidadComponent implements OnInit {
   hayRopa = false;
   recalcular = false;
 
-  temporadaStoredValue = '2024';
+  temporadaStoredValue = '2025';
   botonDeshabilitado: boolean = false;
   numCuotas = 0;
   totalCuota = '';
@@ -268,7 +268,7 @@ export class ContabilidadComponent implements OnInit {
 
   abrirModal() {
     let temporada = this.infoClub.temporada === '' ? this.temporadaStoredValue : this.infoClub.temporada;
-    this.clubService.getClubCuota(this.clubId.toString(), temporada === null ? '2024' : temporada).subscribe(
+    this.clubService.getClubCuota(this.clubId.toString(), temporada === null ? '2025' : temporada).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {

@@ -30,6 +30,7 @@ export class InfoEquipoComponent implements OnInit {
 
   horarioTeam: HorarioTeam = new HorarioTeam({});
   diasTeam: any;
+  temporadaStoredValue = '2025';
 
   constructor(
     private teamService: TeamService,
@@ -47,6 +48,10 @@ export class InfoEquipoComponent implements OnInit {
       this.cargarInfoEquipo();
       this.cargarListadoClubes();
     });
+
+    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+    }
   }
 
   cargarInfoEquipo() {
@@ -69,7 +74,7 @@ export class InfoEquipoComponent implements OnInit {
             },
             clubId: this.team.clubId,
             userId: this.team.userId,
-            temporada: '2024',
+            temporada: this.temporadaStoredValue,
             dateCreate: this.team.dateCreate,
             dateUpdate: this.team.dateUpdate
           };

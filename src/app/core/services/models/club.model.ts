@@ -233,6 +233,7 @@ export class CorreoEnviado {
     fechaCreate: string;
     remitente: string;
     destinatario: string;
+    temporada: string;
 
     constructor(object: any) {
         this.correoEnviadoId = object.correoEnviadoId || 0;
@@ -245,5 +246,6 @@ export class CorreoEnviado {
         this.fechaCreate = object.fechaCreate || '';
         this.remitente = object.remitente || '';
         this.destinatario = object.destinatario || '';
+        this.temporada = object.temporada || '';
     }
 }

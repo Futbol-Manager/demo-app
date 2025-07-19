@@ -59,7 +59,7 @@ export class RopaComponent implements OnInit {
   prendasOcultar: number[] = [0];
 
   ropaPrendas: RopaClub = new RopaClub({});
-  temporadaStoredValue = '2024';
+  temporadaStoredValue = '2025';
 
   constructor(
     private loginService: LoginService,

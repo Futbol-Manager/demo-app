@@ -159,7 +159,7 @@ export class PlayerComponent implements OnInit {
     'D': '🔴'
   };
 
-  temporada: string = '2024';
+  temporada: string = '2025';
   userId: number = 0;
   isAndroid: boolean = false;
   isiOS: boolean = false;

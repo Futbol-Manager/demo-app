@@ -74,6 +74,8 @@ export class NotificacionesComponent implements OnInit {
     fechaCreate: ''
   };*/
   isSending: boolean = false;
+  
+  temporadaStoredValue = '2025';
 
   constructor(
     private loginService: LoginService,
@@ -95,6 +97,10 @@ export class NotificacionesComponent implements OnInit {
         console.log('clubId:', this.clubId);
       });
     });
+
+    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+    }
 
     this.clubService.getListCorreos(this.userId).subscribe(
       (response: Response) => {
@@ -133,7 +139,7 @@ export class NotificacionesComponent implements OnInit {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== 0) {
             this.clubId = response.data;
-            this.teamService.getTeamsByClubForCombo2(this.clubId, '2024', this.userId).subscribe(
+            this.teamService.getTeamsByClubForCombo2(this.clubId, this.temporadaStoredValue, this.userId).subscribe(
               (response: Response) => {
                 // Verifica que la propiedad 'data' exista en la respuesta
                 if (response.data !== null) {
@@ -155,7 +161,7 @@ export class NotificacionesComponent implements OnInit {
         }
       );
     } else {
-      this.teamService.getTeamsByClubForCombo2(this.clubId, '2024', this.userId).subscribe(
+      this.teamService.getTeamsByClubForCombo2(this.clubId, this.temporadaStoredValue, this.userId).subscribe(
         (response: Response) => {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
@@ -409,7 +415,8 @@ export class NotificacionesComponent implements OnInit {
       userId: this.userId,
       fechaCreate: '',
       remitente: '',
-      destinatario: ''
+      destinatario: '',
+      temporada: this.temporadaStoredValue
     }; // Limpia la selección si es necesario
     this.resetSummerNote();
   }

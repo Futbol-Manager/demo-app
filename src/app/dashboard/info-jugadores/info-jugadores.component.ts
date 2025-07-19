@@ -707,17 +707,22 @@ export class InfoJugadoresComponent implements OnInit {
   formatFechaEspana(fecha: string): string {
     if (!fecha) return '';
 
-    // Detectar si viene en formato ISO (aaaa-mm-dd)
+    // Formato ISO: aaaa-mm-dd
     const isoFormat = /^\d{4}-\d{2}-\d{2}$/;
-
     if (isoFormat.test(fecha)) {
       const [year, month, day] = fecha.split('-');
       return `${day}/${month}/${year}`;
     }
 
-    // Si ya parece estar en formato dd/mm/aaaa o otro, devolver tal cual
+    // Formato español con guiones: dd-mm-aaaa
+    const spanishWithDashes = /^\d{2}-\d{2}-\d{4}$/;
+    if (spanishWithDashes.test(fecha)) {
+      const [day, month, year] = fecha.split('-');
+      return `${day}/${month}/${year}`;
+    }
+
+    // Si ya está en formato correcto o no reconocible, devolver tal cual
     return fecha;
   }
-
 
 }
