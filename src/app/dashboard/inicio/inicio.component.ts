@@ -600,6 +600,9 @@ export class InicioComponent implements OnInit {
       case 6:
         this.router.navigate(['/dashboard/documentos-club', this.clubId]);
         break;
+      case 7:
+        this.router.navigate(['/dashboard/new-cuotas', this.clubId]);
+        break;
     }
   }
 

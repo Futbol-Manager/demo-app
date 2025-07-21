@@ -38,6 +38,7 @@ import { MenuClubComponent } from './menu-club/menu-club.component';
 import { ClasificacionResultadosComponent } from './clasificacion-resultados/clasificacion-resultados.component';
 import { DocumentosClubComponent } from './documentos-club/documentos-club.component';
 import { DocumentosJugadorComponent } from './documentos-jugador/documentos-jugador.component';
+import { NewCuotasComponent } from './new-cuotas/new-cuotas.component';
 
 const routes: Routes = [
   {
@@ -60,6 +61,7 @@ const routes: Routes = [
       { path: 'estadisticas_jugadores/:teamId', component: EstadisticasJugadoresComponent },
       { path: 'entrenadores/:teamId', component: TrainerComponent },
       { path: 'contabilidad/:clubId', component: ContabilidadComponent },
+      { path: 'new-cuotas/:clubId', component: NewCuotasComponent },
       { path: 'abonados/:clubId', component: AbonadosComponent },
       { path: 'ropa/:clubId', component: RopaComponent },
       { path: 'cuotas/:teamId/:playerId', component: CuotasComponent },

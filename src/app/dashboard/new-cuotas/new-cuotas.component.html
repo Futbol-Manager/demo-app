@@ -1,0 +1,202 @@
+<div>
+    <div class="submenu">
+        <div class="row">
+            <div class="col">
+                <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
+                    <i class="bi bi-arrow-left-square-fill"></i>
+                    <span class="d-none d-md-inline">Volver</span>
+                </a>
+            </div>
+            <div class="col text-center">
+                <a class="no-underline" href="javascript:void(0);" (click)="openModalCuotas()">
+                    <i class="bi bi-stripe"></i>
+                    <span class="d-none d-md-inline">Cuotas</span>
+                </a>
+            </div>
+            <div class="col text-center">
+                <a class="no-underline" href="javascript:void(0);" (click)="openModalStripe()">
+                    <i class="bi bi-stripe"></i>
+                    <span class="d-none d-md-inline">Stripe</span>
+                </a>
+            </div>
+            <div class="col text-center">
+                <a class="no-underline" href="javascript:void(0);" (click)="openModalBancoClub()">
+                    <i class="bi bi-gear"></i>
+                    <span class="d-none d-md-inline">Ajustes</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="datosCargados">
+    <div class="container mt-3">
+        holaa
+    </div>
+</div>
+
+<!-- Modal para datos bancarios del club -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalBanco}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Información bancaria del club</h5>
+                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalBancoClub()"></button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="guardarBancoClubData()">
+
+                    <div class="mb-3">
+                        <label for="bizum" class="form-label">Número de Bizum:</label>
+                        <input type="text" id="bizum" class="form-control" [(ngModel)]="bancoClubData.bizum"
+                            name="bizum">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="contacto" class="form-label">Persona de contacto:</label>
+                        <input type="text" id="contacto" class="form-control" [(ngModel)]="bancoClubData.contacto"
+                            name="contacto">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="banco" class="form-label">Número de cuenta bancaria:</label>
+                        <input type="text" id="banco" class="form-control" [(ngModel)]="bancoClubData.banco"
+                            name="banco"
+                            placeholder="Ejemplo: Pedro Miguel coordinador 666666666 y coordinador@mail.com">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="asunto" class="form-label">Instrucciones para el pago (asunto):</label>
+                        <textarea id="asunto" class="form-control" rows="4" [(ngModel)]="bancoClubData.asunto"
+                            name="asunto" placeholder="Ejemplo: Poner nombre del jugador + DNI + categoría"></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver cuotas con filtros -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalCuotas}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Gestión de Cuotas</h5>
+                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalCuotas()"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <button class="btn btn-primary mb-3" (click)="abrirModalCuota()">
+                            Añadir cuota <i class="bi bi-plus-circle ms-1"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- Filtros -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control" placeholder="Buscar por título"
+                            [(ngModel)]="filtroTitulo">
+                    </div>
+                    <div class="col-md-6">
+                        <select class="form-select" [(ngModel)]="filtroObligatoria">
+                            <option value="todas">Mostrar todas</option>
+                            <option value="si">Solo obligatorias</option>
+                            <option value="no">Solo no obligatorias</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Lista filtrada de cuotas -->
+                <div *ngIf="cuotasFiltradas()?.length === 0" class="alert alert-info text-center">
+                    No hay cuotas que coincidan con los filtros.
+                </div>
+
+                <div *ngFor="let cuota of cuotasFiltradas()" class="mb-3 p-3 border rounded"
+                    style="background-color: #f8f9fa;">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h5 class="mb-1 fw-bold">{{ cuota.titulo }}</h5>
+                            <p class="mb-1"><strong>Importe:</strong> {{ cuota.importe }} €</p>
+                            <p class="mb-1"><strong>Descripción:</strong> {{ cuota.descripcion }}</p>
+                            <p class="mb-1"><strong>Fecha límite:</strong> {{ cuota.fechaLimite | date: 'dd/MM/yyyy' }}
+                            </p>
+                            <p class="mb-0">
+                                <strong>¿Obligatoria?:</strong>
+                                <span class="badge bg-{{ +cuota.obligatorio === 1 ? 'success' : 'secondary' }}">
+                                    {{ cuota.obligatorio === 1 ? 'Sí' : 'No' }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="ms-3">
+                            <button class="btn btn-sm btn-outline-primary me-2" title="Editar"
+                                (click)="editarCuota(cuota)">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger" title="Eliminar"
+                                (click)="eliminarCuota(cuota)">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModalCuotas()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal crear/editar cuota -->
+<div class="modal" tabindex="-1" [ngClass]="{ 'd-block': showModalCuota }" style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ cuotaSeleccionada ? 'Editar cuota' : 'Crear nueva cuota' }}</h5>
+                <button type="button" class="btn-close" (click)="cerrarModalCuota()"></button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="guardarCuota()">
+                    <div class="mb-3">
+                        <label class="form-label">Título</label>
+                        <input type="text" class="form-control" [(ngModel)]="nuevaCuota.titulo" name="titulo" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" rows="4" [(ngModel)]="nuevaCuota.descripcion"
+                            name="descripcion"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Importe (€)</label>
+                        <input type="number" class="form-control" [(ngModel)]="nuevaCuota.importe" name="importe"
+                            required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha límite</label>
+                        <input type="date" class="form-control" [(ngModel)]="nuevaCuota.fechaLimite" name="fechaLimite"
+                            required>
+                    </div>
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" [(ngModel)]="nuevaCuota.obligatorio"
+                            name="obligatorio" id="obligatorioToggle">
+                        <label class="form-check-label" for="obligatorioToggle">¿Es obligatoria?</label>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">
+                            {{ cuotaSeleccionada ? 'Actualizar cuota' : 'Guardar cuota' }}
+                        </button>
+                        <button type="button" class="btn btn-secondary" (click)="cerrarModalCuota()">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

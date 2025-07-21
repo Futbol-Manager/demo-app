@@ -42,6 +42,7 @@ import { MenuClubComponent } from './menu-club/menu-club.component';
 import { ClasificacionResultadosComponent } from './clasificacion-resultados/clasificacion-resultados.component';
 import { DocumentosClubComponent } from './documentos-club/documentos-club.component';
 import { DocumentosJugadorComponent } from './documentos-jugador/documentos-jugador.component';
+import { NewCuotasComponent } from './new-cuotas/new-cuotas.component';
 
 
 
@@ -85,7 +86,8 @@ import { DocumentosJugadorComponent } from './documentos-jugador/documentos-juga
     MenuClubComponent,
     ClasificacionResultadosComponent,
     DocumentosClubComponent,
-    DocumentosJugadorComponent
+    DocumentosJugadorComponent,
+    NewCuotasComponent
   ],
   imports: [
     CommonModule,
