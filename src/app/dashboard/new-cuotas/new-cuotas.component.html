@@ -189,6 +189,48 @@
                         <label class="form-check-label" for="obligatorioToggle">¿Es obligatoria?</label>
                     </div>
 
+                    <div class="dropdown mb-3">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            Seleccionar equipos
+                        </button>
+                        <ul class="dropdown-menu p-3" style="max-height: 300px; overflow-y: auto;">
+
+                            <!-- Seleccionar todos -->
+                            <li>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" id="selectAll"
+                                        [checked]="isAllSelected()" (change)="toggleSelectAll()" />
+                                    <label class="form-check-label" for="selectAll">
+                                        Seleccionar todos
+                                    </label>
+                                </div>
+                            </li>
+
+                            <li *ngFor="let team of listTeams">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" [id]="'team_' + team.value"
+                                        [value]="team.value" (change)="toggleTeamSelection(team.value)"
+                                        [checked]="listTeamsSelecteds.includes(team.value)" />
+                                    <label class="form-check-label" [for]="'team_' + team.value">
+                                        {{ team.name }}
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Mostrar lo seleccionado -->
+                    <div class="mb-2">
+                        <strong>Qué equipos van a tener esta cuota. Equipos seleccionados:</strong>
+                        <span *ngIf="listTeamsSelecteds.length === 0"> Ninguno</span>
+                        <ul *ngIf="listTeamsSelecteds.length > 0">
+                            <li *ngFor="let id of listTeamsSelecteds">
+                                {{ getTeamNameById(id) }}
+                            </li>
+                        </ul>
+                    </div>
+
+
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success">
                             {{ cuotaSeleccionada ? 'Actualizar cuota' : 'Guardar cuota' }}

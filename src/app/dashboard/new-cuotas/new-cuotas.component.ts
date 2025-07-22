@@ -5,6 +5,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { ClubCuotas } from 'src/app/core/services/team/club.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
+import { TeamService } from 'src/app/core/services/team/team.service';
 
 @Component({
   selector: 'app-new-cuotas',
@@ -26,12 +27,21 @@ export class NewCuotasComponent implements OnInit {
   cuotaSeleccionada = false;
   nuevaCuota: any = {};
 
+  listTeams: { value: number; name: string }[] = [
+    { value: 1, name: 'Alevín A' },
+    { value: 2, name: 'Alevín B' },
+    { value: 3, name: 'Infantil' }
+  ];
+
+  listTeamsSelecteds: number[] = [];
+
   constructor(
     private loginService: LoginService,
     private router: Router,
     private route: ActivatedRoute,
     private location: Location,
-    private clubService: ClubService,) { }
+    private clubService: ClubService,
+    private teamService: TeamService,) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -137,6 +147,7 @@ export class NewCuotasComponent implements OnInit {
     this.showModalCuota = true;
     this.cuotaSeleccionada = true;
     this.nuevaCuota = cuota;
+    this.rellenarCombo(cuota);
   }
 
   eliminarCuota(cuota: any) {
@@ -144,13 +155,15 @@ export class NewCuotasComponent implements OnInit {
   }
 
   abrirModalCuota() {
+    this.listTeamsSelecteds = [];
     this.cuotaSeleccionada = false;
     this.nuevaCuota = {
       PagoClubId: 0, clubId: this.clubId, temporada: this.temporadaStoredValue,
       dateCreate: null, dateEdit: null, titulo: null, descripcion: null, obligatorio: 0, importe: null,
       fechaLimite: null, stripe: null
     };
-    this.showModalCuota = true;
+
+    this.rellenarCombo(null);
   }
 
   cerrarModalCuota() {
@@ -158,29 +171,82 @@ export class NewCuotasComponent implements OnInit {
   }
 
   guardarCuota() {
-    if (this.nuevaCuota.titulo && this.nuevaCuota.titulo != ''
-      && this.nuevaCuota.descripcion && this.nuevaCuota.descripcion != ''
-      && this.nuevaCuota.importe && this.nuevaCuota.importe != ''
-      && this.nuevaCuota.fechaLimite && this.nuevaCuota.fechaLimite != '') {
-
-      // 🔁 Conversión explícita
-      this.nuevaCuota.importe = String(this.nuevaCuota.importe);
-      this.nuevaCuota.obligatorio = this.nuevaCuota.obligatorio ? 1 : 0;
-      this.clubService.createUpdatePagoClub(this.nuevaCuota).subscribe(
-        (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
-          if (response.data !== null) {
-            if(!this.cuotaSeleccionada) this.listaCuotas.push(response.data);
-            alert('Datos guardados correctamente');
-            this.cerrarModalCuota();
-          }
-        },
-        (error) => {
-          console.error('Error al cargar el listado de equipos', error);
-        }
-      );
+    if (this.listTeamsSelecteds.length == 0) {
+      alert('Por favor, selecciona mínimo un equipo.');
     } else {
-      alert('Rellena todos los campos.');
+      if (this.nuevaCuota.titulo && this.nuevaCuota.titulo != ''
+        && this.nuevaCuota.descripcion && this.nuevaCuota.descripcion != ''
+        && this.nuevaCuota.importe && this.nuevaCuota.importe != ''
+        && this.nuevaCuota.fechaLimite && this.nuevaCuota.fechaLimite != '') {
+
+        // 🔁 Conversión explícita
+        this.nuevaCuota.importe = String(this.nuevaCuota.importe);
+        this.nuevaCuota.obligatorio = this.nuevaCuota.obligatorio ? 1 : 0;
+        this.nuevaCuota.listTeams = this.listTeamsSelecteds;
+        this.clubService.createUpdatePagoClub(this.nuevaCuota).subscribe(
+          (response: Response) => {
+            // Verifica que la propiedad 'data' exista en la respuesta
+            if (response.data !== null) {
+              if (!this.cuotaSeleccionada) this.listaCuotas.push(response.data);
+              alert('Datos guardados correctamente');
+              this.cerrarModalCuota();
+            }
+          },
+          (error) => {
+            console.error('Error al cargar el listado de equipos', error);
+          }
+        );
+      } else {
+        alert('Rellena todos los campos.');
+      }
+    }
+  }
+
+  rellenarCombo(cuota: any) {
+    this.teamService.getTeamsByClubForCombo(this.clubId, this.temporadaStoredValue).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.listTeams = response.data;
+          if (cuota) {
+            this.listTeamsSelecteds = cuota.listTeams;
+          }
+          this.showModalCuota = true;
+
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  // Opcional: para mostrar los nombres de los equipos seleccionados
+  getTeamNameById(id: number): string {
+    const found = this.listTeams.find(t => t.value === id);
+    return found ? found.name : 'Desconocido';
+  }
+
+  toggleTeamSelection(teamId: number): void {
+    const index = this.listTeamsSelecteds.indexOf(teamId);
+    if (index >= 0) {
+      this.listTeamsSelecteds.splice(index, 1);
+    } else {
+      this.listTeamsSelecteds.push(teamId);
+    }
+  }
+
+  isAllSelected(): boolean {
+    return this.listTeamsSelecteds.length === this.listTeams.length;
+  }
+
+  toggleSelectAll(): void {
+    if (this.isAllSelected()) {
+      this.listTeamsSelecteds = [];
+    } else {
+      this.listTeamsSelecteds = this.listTeams.map(t => t.value);
     }
   }
 
