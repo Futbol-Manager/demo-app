@@ -28,9 +28,87 @@
         </div>
     </div>
 </div>
-<div *ngIf="datosCargados">
+<div *ngIf="isLoading" class="d-flex align-items-center justify-content-center p-3">
+    <div class="spinner-border text-primary me-2" role="status" aria-hidden="true"></div>
+    <strong>Cargando listado...</strong>
+</div>
+<div *ngIf="!isLoading">
     <div class="container mt-3">
-        holaa
+        <!-- Filtro -->
+        <div class="mb-3 d-flex justify-content-between">
+            <input type="text" class="form-control me-2" placeholder="Filtrar por nombre o equipo" [(ngModel)]="filtro"
+                (input)="filtrarJugadores()" style="width: 300px;">
+        </div>
+
+        <!-- Tabla -->
+        <div style="overflow-x: auto;">
+            <table id="dataTable" class="table table-bordered table-striped text-center">
+                <thead class="table-custom">
+                    <tr>
+                        <th></th>
+                        <th (click)="ordenarPor('nombre')" style="cursor: pointer">Nombre <i
+                                class="bi bi-arrow-down-up"></i></th>
+                        <th (click)="ordenarPor('nameTeam')" style="cursor: pointer">Equipo <i
+                                class="bi bi-arrow-down-up"></i></th>
+                        <th (click)="ordenarPor('estado')" style="cursor: pointer">Estado <i
+                                class="bi bi-arrow-down-up"></i></th>
+                        <th (click)="ordenarPor('totalAPagar')" style="cursor: pointer">Total a pagar <i
+                                class="bi bi-arrow-down-up"></i></th>
+                        <th (click)="ordenarPor('totalPagado')" style="cursor: pointer">Pagado <i
+                                class="bi bi-arrow-down-up"></i></th>
+                        <th (click)="ordenarPor('restante')" style="cursor: pointer">Restante <i
+                                class="bi bi-arrow-down-up"></i></th>
+                        <th (click)="ordenarPor('pagadas')" style="cursor: pointer">Cuotas pagadas <i
+                                class="bi bi-arrow-down-up"></i></th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let player of listaPlayersFiltrados; let i = index">
+                        <td>
+                            <div class="container">
+                                <img *ngIf="player.picturePlayer"
+                                    [src]="'https://appsphairatech.com/images/user/' + player.picturePlayer"
+                                    alt="user-player" width="50" height="50" class="rounded-circle me-2">
+                                <span *ngIf="!player.picturePlayer" class="bi bi-person"
+                                    style="font-size: 2rem;"></span>
+                            </div>
+                        </td>
+                        <td>{{ player.nombre }} {{ player.apellido }}</td>
+                        <td>{{ player.nameTeam }}</td>
+                        <td>
+                            <ng-container *ngIf="player.estado === 0">
+                                <i class="bi bi-x-circle text-danger" title="Ningún pago"></i>
+                            </ng-container>
+                            <ng-container *ngIf="player.estado === 1">
+                                <i class="bi bi-exclamation-triangle text-warning" title="Con retraso"></i>
+                            </ng-container>
+                            <ng-container *ngIf="player.estado === 2">
+                                <i class="bi bi-check-circle text-success" title="Al corriente"></i>
+                            </ng-container>
+                            <ng-container *ngIf="player.estado === 3">
+                                <i class="bi bi-check-circle text-success" title="Completado"></i>
+                            </ng-container>
+                        </td>
+                        <td>{{ player.totalAPagar }}</td>
+                        <td>{{ player.totalPagado }}</td>
+                        <td>{{ player.restante }}</td>
+                        <td>{{ player.pagadas }}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm me-1" style="cursor: pointer;"
+                                title="Editar cuota del jugador" (click)="openModalEditar(player, i)">
+                                <i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-warning btn-sm me-1" style="cursor: pointer;"
+                                title="Introducir un pago" (click)="openModalPago(player, i)">
+                                <i class="bi bi-wallet2"></i></button>
+                            <button class="btn btn-secondary btn-sm me-1" style="cursor: pointer;"
+                                title="Ver histoial de pagos" (click)="openModalVerPagosPlayer(player, i)">
+                                <i class="bi bi-clock-history"></i></button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

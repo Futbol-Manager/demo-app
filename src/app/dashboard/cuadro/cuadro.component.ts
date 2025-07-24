@@ -25,6 +25,7 @@ export class CuadroComponent implements OnInit {
   listTeams: any = [];
   listProximos: any = [];
   listUltimos: any = [];
+  temporadaStoredValue = '2025';
 
   constructor(
     private router: Router,
@@ -45,7 +46,11 @@ export class CuadroComponent implements OnInit {
       console.log('clubId:', this.clubId);
     });
 
-    this.clubService.getEntrenandoAhora(this.clubId).subscribe(
+    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+    }
+
+    this.clubService.getEntrenandoAhora(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {

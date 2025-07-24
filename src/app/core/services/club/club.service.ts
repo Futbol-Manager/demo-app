@@ -797,7 +797,7 @@ export class ClubService {
   }
 
   // Método para obtener la suscripcionDTO de un playerID
-  getEntrenandoAhora(clubId: number): Observable<any> {
+  getEntrenandoAhora(clubId: number, temporada: string): Observable<any> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
@@ -808,7 +808,7 @@ export class ClubService {
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getentrenandoahora/${clubId}`;
+      const url: string = environment.apiUrl + `club/getentrenandoahora/${clubId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1209,5 +1209,27 @@ export class ClubService {
     const url = environment.apiUrl + 'club/createupdate-pagoclub';
     return this.http.post<Response>(url, dto, { headers });
   }  
+
+  getListPlayersPagosClub(clubId: number, temporada: string): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/getlistplayerspagosclub/${clubId}/${temporada}`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
 
 }

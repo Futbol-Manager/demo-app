@@ -237,7 +237,7 @@ export class InicioComponent implements OnInit {
           this.cargarListadoEquiposForClub();
         } else if (this.profileId > 2) {
           this.datosCargando = false;
-          this.teamService.getTeamByPlayer(this.userId.toString()).subscribe(
+          this.teamService.getTeamByPlayer(this.userId.toString(), this.temporadaStoredValue).subscribe(
             (response: Response) => {
               if (response.data !== null) {
                 this.listHijos = response.data;
@@ -364,10 +364,10 @@ export class InicioComponent implements OnInit {
   }
 
   // Método para cargar el listado de equipos
-  cargarListadoEquipos(): void {    
+  cargarListadoEquipos(): void {
     localStorage.setItem('temporada', this.temporada);
     this.temporadaStoredValue = this.temporada;
-    
+
     this.teamService.getTeams(this.userId.toString(), this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
@@ -383,6 +383,40 @@ export class InicioComponent implements OnInit {
         }
         this.checkSuscripcion();
         //this.datosCargados = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  cargarJugadores() {
+    localStorage.setItem('temporada', this.temporada);
+    this.temporadaStoredValue = this.temporada;
+
+    this.teamService.getTeamByPlayer(this.userId.toString(), this.temporadaStoredValue).subscribe(
+      (response: Response) => {
+        if (response.data !== null) {
+          this.listHijos = response.data;
+          this.datosCargados = true;
+
+          let goToDatos = false;
+          let teamId = 0;
+          for (let a = 0; a < this.listHijos.length; a++) {
+            if (this.listHijos[a].apellido == null) {
+              goToDatos = true;
+              teamId = this.listHijos[a].teamId;
+              break;
+            }
+          }
+
+          if (goToDatos) {
+            this.router.navigate(['/dashboard/jugadores', teamId]);
+          }
+
+        } else {
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        }
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);

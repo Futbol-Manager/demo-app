@@ -69,6 +69,8 @@ export class SuscripcionComponent implements OnInit {
   imageBaseUrlUser: string = environment.images + 'user/';
   openModalFree = false;
   isReadonly: boolean = false; // Propiedad para controlar readonly
+  temporadaStoredValue = '2025';
+  temporada = '2025';
 
   constructor(
     private route: ActivatedRoute,
@@ -82,12 +84,16 @@ export class SuscripcionComponent implements OnInit {
       // Obtener el valor de userId de los parámetros
       this.userId = params['userId'];
     });
+    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+      this.temporada = this.temporadaStoredValue;
+    }
 
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
 
       if (user?.profileType.profileId == 4 || user?.profileType.profileId == 3) {
-        this.teamService.getTeamByPlayer(this.userId.toString()).subscribe(
+        this.teamService.getTeamByPlayer(this.userId.toString(), this.temporadaStoredValue).subscribe(
           (response: Response) => {
             if (response.data !== null) {
               this.listHijos = response.data;

@@ -34,6 +34,12 @@ export class NewCuotasComponent implements OnInit {
   ];
 
   listTeamsSelecteds: number[] = [];
+  filtro: string = '';
+  listaPlayersFiltrados: any[] = [];
+  listaPlayers: any[] = [];
+  ordenActual: string = '';
+  ascendente: boolean = true;
+  isLoading: boolean = true; // o false según el caso
 
   constructor(
     private loginService: LoginService,
@@ -56,9 +62,56 @@ export class NewCuotasComponent implements OnInit {
     if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
+
+    this.clubService.getListPlayersPagosClub(this.clubId, this.temporadaStoredValue).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.listaPlayers = response.data;
+          this.listaPlayersFiltrados = [...this.listaPlayers];
+        }
+        this.isLoading = false;
+        //this.datosCargados = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
   }
 
+  filtrarJugadores() {
+    const texto = this.filtro.toLowerCase();
+    this.listaPlayersFiltrados = this.listaPlayers.filter(p =>
+    (`${p.nombre} ${p.apellido}`.toLowerCase().includes(texto) ||
+      p.nameTeam.toLowerCase().includes(texto))
+    );
+  }
 
+  ordenarPor(campo: string) {
+    if (this.ordenActual === campo) {
+      this.ascendente = !this.ascendente;
+    } else {
+      this.ordenActual = campo;
+      this.ascendente = true;
+    }
+
+    this.listaPlayersFiltrados.sort((a, b) => {
+      const valA = a[campo] || '';
+      const valB = b[campo] || '';
+      return this.ascendente ? valA.localeCompare(valB) : valB.localeCompare(valA);
+    });
+  }
+
+  openModalPago(player: any, index: number) {
+
+  }
+
+  openModalVerPagosPlayer(player: any, index: number) {
+
+  }
+
+  openModalEditar(player: any, index: number) {
+  }
 
   goBack(): void {
     this.location.back();
@@ -69,8 +122,7 @@ export class NewCuotasComponent implements OnInit {
   }
 
   openModalBancoClub() {
-    let temporada = this.temporadaStoredValue;
-    this.clubService.getBancoClub(this.clubId, temporada === null ? '2025' : temporada).subscribe(
+    this.clubService.getBancoClub(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {

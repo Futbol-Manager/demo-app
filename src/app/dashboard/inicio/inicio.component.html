@@ -21,11 +21,11 @@
         </a>
       </div>
       <!-- <div class="col text-center">
-          <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
-            <i class="bi bi-bank"></i>
-            <span class="d-none d-md-inline">Cuotas</span>
-          </a>
-        </div> -->
+        <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
+          <i class="bi bi-bank"></i>
+          <span class="d-none d-md-inline">Cuotas</span>
+        </a>
+      </div> -->
       <div class="col text-center">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(7)">
           <i class="bi bi-bank"></i>
@@ -162,7 +162,21 @@
         </select>
       </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em; "
+      *ngIf="this.usuarioActual!.profileType.profileId === 3">
+      <div class="col-3">
+        <label for="temporada" class="form-label">Temporada:</label>
+        <select class="form-control" id="temporada" name="temporada" [(ngModel)]="temporada"
+          (change)="cargarJugadores()">
+          <option value="2022">2022/2023</option>
+          <option value="2023">2023/2024</option>
+          <option value="2024">2024/2025</option>
+          <option value="2025">2025/2026</option>
+        </select>
+      </div>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
+      *ngIf="(usuarioActual!.profileType.profileId < 3)">
       <div class="col mb-3" style="cursor: pointer;" (click)="abrirModalCrearEquipo()"
         *ngIf="(this.usuarioActual!.profileType.profileId === 1) || (this.usuarioActual!.profileType.profileId === 2 && !clubOk)">
         <div class="card h-100" style="border: 1px solid black;">
