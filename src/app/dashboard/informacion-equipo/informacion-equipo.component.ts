@@ -252,7 +252,7 @@ export class InformacionEquipoComponent implements OnInit {
   editarEquipo(): void {
     if (this.editarEquipoForm.valid) {
       let categoriaId = this.teamInfo.categoryType.categoryTypeId;
-      if(this.selectedCategoriaId !== null){
+      if (this.selectedCategoriaId !== null) {
         categoriaId = this.selectedCategoriaId;
       }
 
@@ -340,10 +340,14 @@ export class InformacionEquipoComponent implements OnInit {
 
   // Método para confirmar la eliminación del equipo
   confirmarEliminarEquipo(): void {
-    const confirmacion = confirm('¿Estás seguro de que deseas eliminar el equipo?');
-    if (confirmacion) {
-      // Llama al método para eliminar el equipo
-      this.eliminarEquipo();
+    if (this.team.categoryType.categoryTypeId == 27) {
+      alert('Este equipo no puede ser eliminado ya que todos los nuevos jugadores registrados son añadidos al mismo');
+    } else {
+      const confirmacion = confirm('¿Estás seguro de que deseas eliminar el equipo?');
+      if (confirmacion) {
+        // Llama al método para eliminar el equipo
+        this.eliminarEquipo();
+      }
     }
   }
 
