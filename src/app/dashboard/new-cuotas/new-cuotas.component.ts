@@ -103,14 +103,15 @@ export class NewCuotasComponent implements OnInit {
   }
 
   openModalPago(player: any, index: number) {
-
+    alert('Proximamente....');
   }
 
   openModalVerPagosPlayer(player: any, index: number) {
-
+    alert('Proximamente....');
   }
 
   openModalEditar(player: any, index: number) {
+    alert('Proximamente....');
   }
 
   goBack(): void {
@@ -118,7 +119,7 @@ export class NewCuotasComponent implements OnInit {
   }
 
   openModalStripe() {
-
+    alert('Proximamente....');
   }
 
   openModalBancoClub() {

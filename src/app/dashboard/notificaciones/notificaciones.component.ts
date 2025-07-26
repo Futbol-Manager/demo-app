@@ -368,6 +368,7 @@ export class NotificacionesComponent implements OnInit {
     this.correoNew.teamId = parseInt(this.correoNew.destinatarios);
     this.correoNew.userId = this.userId;
     this.correoNew.correoEnviadoId = 0;
+    this.correoNew.temporada = this.temporadaStoredValue;
 
     //console.log('Contenido en Base64:', contenidoBase64);
 
