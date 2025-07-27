@@ -143,10 +143,6 @@ export class NewCuotasComponent implements OnInit {
     this.showModalBanco = false;
   }
 
-  modalAjustes() {
-
-  }
-
   guardarBancoClubData() {
     this.clubService.updateBancoClub(this.bancoClubData).subscribe(
       (response: Response) => {
@@ -204,7 +200,7 @@ export class NewCuotasComponent implements OnInit {
   }
 
   eliminarCuota(cuota: any) {
-
+    alert('Proximamente.... Y solo se podrá eliminar en el caso de no haber sido usada');
   }
 
   abrirModalCuota() {
