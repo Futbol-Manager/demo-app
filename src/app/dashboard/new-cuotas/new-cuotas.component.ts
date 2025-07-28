@@ -40,6 +40,10 @@ export class NewCuotasComponent implements OnInit {
   ordenActual: string = '';
   ascendente: boolean = true;
   isLoading: boolean = true; // o false según el caso
+  addPago: any = {};
+  textoInfoTitlePagoPlayer = '';
+  showModalAddPago = false;
+  playerSelected = 0;
 
   constructor(
     private loginService: LoginService,
@@ -103,7 +107,22 @@ export class NewCuotasComponent implements OnInit {
   }
 
   openModalPago(player: any, index: number) {
-    alert('Proximamente....');
+    this.playerSelected = player.playerId;
+    this.addPago = {};
+    this.textoInfoTitlePagoPlayer = player.nombre + ' ' + player.apellido;
+    let temporada = this.temporadaStoredValue;
+    this.clubService.getListPagosClub(this.clubId, temporada === null ? '2025' : temporada).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.listaCuotas = response.data;
+        }
+        this.showModalAddPago = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
   }
 
   openModalVerPagosPlayer(player: any, index: number) {
@@ -298,5 +317,33 @@ export class NewCuotasComponent implements OnInit {
       this.listTeamsSelecteds = this.listTeams.map(t => t.value);
     }
   }
+
+  createUpdateHistoryCuotaJugador() {
+    if (this.addPago) {
+      if (this.addPago.importe && this.addPago.metodo && this.addPago.datePago) {
+        console.log(this.addPago);
+        alert('Pago agregado correctamente.');
+        this.addPago = {};
+      } else {
+        alert('Rellena minimo el importe, la fecha y el método de pago.');
+      }
+    } else {
+      alert('Rellena los campos.');
+    }
+  }
+
+  cerrarModalAddPago() {
+    this.showModalAddPago = false;
+  }
+
+  actualizarImporte(): void {
+    const cuotaSeleccionada = this.listaCuotas.find(c => c.pagoClubId === +this.addPago.pagoClubId);
+    if (cuotaSeleccionada) {
+      this.addPago.importe = cuotaSeleccionada.importe;
+      this.addPago.totalPagado = cuotaSeleccionada.importe;      
+    }
+  }
+
+
 
 }
