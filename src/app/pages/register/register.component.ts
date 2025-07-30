@@ -683,11 +683,12 @@ export class RegisterComponent implements OnInit {
 
         let camposOk = true;
         for (let index = 0; index < hijosData.length; index++) {
-          if (hijosData[index].nombre != '' && hijosData[index].apellidos != '' && hijosData[index].fechaNacimiento != '') camposOk = false;
+          if (hijosData[index].nombre != '' && hijosData[index].apellidos != '' && hijosData[index].fechaNacimiento != ''
+            && hijosData[index].dni != '') camposOk = false;
         }
 
         if (camposOk) {
-          alert('Por favor, rellena el nombre, los apellidos y la fecha de nacimiento.');
+          alert('Por favor, rellena el nombre, los apellidos, la fecha de nacimiento y el DNI, si no tiene, escribe "No tiene DNI".');
           this.btnFinalizar = true;
         } else {
           const datosCompletos = {

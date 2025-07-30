@@ -321,9 +321,39 @@ export class NewCuotasComponent implements OnInit {
   createUpdateHistoryCuotaJugador() {
     if (this.addPago) {
       if (this.addPago.importe && this.addPago.metodo && this.addPago.datePago) {
-        console.log(this.addPago);
-        alert('Pago agregado correctamente.');
-        this.addPago = {};
+        this.addPago.temporada = this.temporadaStoredValue;
+        this.addPago.playerId = this.playerSelected;
+        this.addPago.clubId = this.clubId;
+        this.clubService.createPagoHistoryPlayer(this.addPago).subscribe(
+          (response: Response) => {
+            // Verifica que la propiedad 'data' exista en la respuesta
+            if (response.data !== null && response.status == 200) {
+              console.log(response.data);
+              this.addPago = {};
+              this.addPago.pagoClubId = 0;
+              this.clubService.getListPlayersPagosClub(this.clubId, this.temporadaStoredValue).subscribe(
+                (response: Response) => {
+                  // Verifica que la propiedad 'data' exista en la respuesta
+                  if (response.data !== null) {
+                    this.listaPlayers = response.data;
+                    this.listaPlayersFiltrados = [...this.listaPlayers];
+                  }
+                  this.isLoading = false;
+                  //this.datosCargados = true;
+                },
+                (error) => {
+                  console.error('Error al cargar el listado de equipos', error);
+                }
+              );
+              alert('Datos guardados correctamente');
+            } else {
+              alert(response.error.msg);
+            }
+          },
+          (error) => {
+            console.error('Error al cargar el listado de equipos', error);
+          }
+        );
       } else {
         alert('Rellena minimo el importe, la fecha y el método de pago.');
       }
@@ -340,7 +370,7 @@ export class NewCuotasComponent implements OnInit {
     const cuotaSeleccionada = this.listaCuotas.find(c => c.pagoClubId === +this.addPago.pagoClubId);
     if (cuotaSeleccionada) {
       this.addPago.importe = cuotaSeleccionada.importe;
-      this.addPago.totalPagado = cuotaSeleccionada.importe;      
+      this.addPago.totalPagado = cuotaSeleccionada.importe;
     }
   }
 

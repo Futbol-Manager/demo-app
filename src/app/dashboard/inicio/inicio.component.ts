@@ -424,7 +424,10 @@ export class InicioComponent implements OnInit {
     );
   }
 
-  cargarListadoEquiposForClub(): void {
+  cargarListadoEquiposForClub(): void {    
+    localStorage.setItem('temporada', this.temporada);
+    this.temporadaStoredValue = this.temporada;
+    
     this.teamService.getTeamByClub(this.usuarioActual!.userId.toString(), this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta

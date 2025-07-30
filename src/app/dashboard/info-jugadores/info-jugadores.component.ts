@@ -62,6 +62,7 @@ export class InfoJugadoresComponent implements OnInit {
   imageBaseUrlPlayerDni: string = environment.images + 'playerDni/';
 
   temporadaStoredValue = '2025';
+  temporada: string = '';
 
   mostrarModalDocJugador = false;
   mostrarModalDocumento = false;
@@ -84,7 +85,6 @@ export class InfoJugadoresComponent implements OnInit {
   fechaEditando: string = '';
   showDate = false;
   nombreJugador = '';
-  temporada = '';
 
   listTeamsForCombo: any[] = [];
   showModalMover = false;
@@ -110,6 +110,8 @@ export class InfoJugadoresComponent implements OnInit {
       this.clubId = +params['clubId'];  // El + convierte el valor a número
       console.log('clubId:', this.clubId);
     });
+
+    this.temporada = new Date().getFullYear().toString();
 
     if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
@@ -169,9 +171,9 @@ export class InfoJugadoresComponent implements OnInit {
   applyFilter(): void {
     const filter = this.normalizeText(this.playerSearch);
     this.filteredPlayers = this.players.filter(player => {
+      const fullName = this.normalizeText(`${player.nombre} ${player.apellido}`);
       return (
-        (player.nombre && this.normalizeText(player.nombre).includes(filter)) ||
-        (player.apellido && this.normalizeText(player.apellido).includes(filter)) ||
+        fullName.includes(filter) ||
         (player.nameTeam && this.normalizeText(player.nameTeam).includes(filter)) ||
         (player.telefono && this.normalizeText(player.telefono).includes(filter)) ||
         (player.dni && this.normalizeText(player.dni).includes(filter)) ||
@@ -188,7 +190,11 @@ export class InfoJugadoresComponent implements OnInit {
   }
 
   normalizeText(text: string): string {
-    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // elimina acentos
+      .trim();
   }
 
   // Método para filtrar jugadores por nombre
@@ -723,6 +729,26 @@ export class InfoJugadoresComponent implements OnInit {
 
     // Si ya está en formato correcto o no reconocible, devolver tal cual
     return fecha;
+  }
+
+  updateTemporada(player: any) {
+    const confirmacion = confirm('Vas a mover este jugador a otra temporada, esto no significa que desaparezca de la actual, ¿estás seguro?');
+    if (confirmacion) {
+      this.clubService.moverPlayerTemporada(this.clubId, player.playerId).subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data) {
+            alert('Jugador movido correctamente');
+          } else {
+            console.error('La respuesta del servicio no tiene la estructura esperada', response);
+            alert(response.error.msg);
+          }
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
+        }
+      );
+    }
   }
 
 }

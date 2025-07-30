@@ -416,8 +416,11 @@
                         </label>
                         <select class="form-select" [(ngModel)]="addPago.pagoClubId" name="cuota"
                             (change)="actualizarImporte()">
+                            <option  value="0">
+                                Selecciona una cuota
+                            </option>
                             <option *ngFor="let cuota of listaCuotas" [value]="cuota.pagoClubId">
-                                {{ cuota.titulo }} - {{ cuota.importe }} €
+                                {{ cuota.titulo }} - {{ cuota.importe }}
                             </option>
                         </select>
                     </div>
