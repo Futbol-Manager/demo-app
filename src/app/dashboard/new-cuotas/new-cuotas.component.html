@@ -416,7 +416,7 @@
                         </label>
                         <select class="form-select" [(ngModel)]="addPago.pagoClubId" name="cuota"
                             (change)="actualizarImporte()">
-                            <option  value="0">
+                            <option value="0">
                                 Selecciona una cuota
                             </option>
                             <option *ngFor="let cuota of listaCuotas" [value]="cuota.pagoClubId">
@@ -472,6 +472,112 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver historial de pagos -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalHistorialPagos}"
+    style="background-color: rgba(0,0,0,0.5);">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-dark text-white">
+                <h5 class="modal-title">
+                    <i class="bi bi-clock-history me-2"></i> Historial de Pagos
+                </h5>
+                <button style="background-color: white;" type="button" class="btn-close"
+                    (click)="cerrarModalHistorialPagos()"></button>
+            </div>
+            <div class="modal-body bg-light">
+                <!-- Mensaje si no hay historial -->
+                <div *ngIf="listHistoryPagos?.length === 0" class="alert alert-info text-center">
+                    <i class="bi bi-info-circle me-2"></i> No hay historial de pagos disponible.
+                </div>
+                <!-- Lista del historial -->
+                <!-- Lista del historial -->
+                <div *ngFor="let historyPago of listHistoryPagos; let i = index"
+                    class="mb-3 p-4 rounded border shadow-sm bg-white">
+                    <h3>{{ historyPago.namePago }}</h3>
+                    <div class="row align-items-center">
+                        <div class="col-md-1 text-center">
+                            <span class="badge bg-dark fs-5">{{ i + 1 }}</span>
+                        </div>
+                        <div class="col-md-2">
+                            <strong><i class="bi bi-currency-exchange me-1 text-success"></i> Importe:</strong><br>
+                            {{ historyPago.importe }}
+                        </div>
+                        <div class="col-md-2">
+                            <strong><i class="bi bi-credit-card-2-front me-1 text-primary"></i> Método:</strong><br>
+                            {{ historyPago.metodo }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong><i class="bi bi-calendar-check me-1 text-danger"></i> Fecha de pago:</strong><br>
+                            {{ historyPago.datePago | date: 'dd/MM/yyyy' }}
+                        </div>
+                        <div class="col-md-3">
+                            <strong><i class="bi bi-chat-left-text me-1 text-secondary"></i> Comentario:</strong><br>
+                            {{ historyPago.comentario || 'Sin comentario' }}
+                        </div>
+                        <div class="col-md-1 text-end">
+                            <button class="btn btn-sm btn-warning" (click)="devolverPagoClub(historyPago)"
+                                title="Devolver pago">
+                                <i class="bi bi-arrow-counterclockwise"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cerrarModalHistorialPagos()">
+                    <i class="bi bi-x-circle me-1"></i> Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación de devolución -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': showConfirmDevolucion }"
+    style="background-color: rgba(0, 0, 0, 0.5);">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content border-warning">
+            <div class="modal-header bg-warning text-dark">
+                <h5 class="modal-title">
+                    <i class="bi bi-exclamation-triangle me-2"></i> Atención Devolución!
+                </h5>
+                <button type="button" class="btn-close" (click)="cancelarDevolucion()"></button>
+            </div>
+            <div class="modal-body">
+                <p class="fw-semibold">Vas a proceder a realizar una devolución. Indica el método y el motivo.</p>
+
+                <div class="mb-3">
+                    <label for="metodoDevolucion" class="form-label"><i class="bi bi-credit-card me-1"></i>
+                        Método:</label>
+                    <select id="metodoDevolucion" class="form-select" [(ngModel)]="metodoDevolucion">
+                        <option value="" disabled selected>Selecciona método</option>
+                        <option value="Bizum">Bizum</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Efectivo">Efectivo</option>
+                        <option value="Otro">Otro</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="comentarioDevolucion" class="form-label"><i class="bi bi-chat-text me-1"></i>
+                        Comentario:</label>
+                    <textarea id="comentarioDevolucion" class="form-control" rows="4" [(ngModel)]="comentarioDevolucion"
+                        placeholder="Motivo de la devolución..."></textarea>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" (click)="cancelarDevolucion()">
+                    <i class="bi bi-x-circle me-1"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-warning" (click)="okDevolverPagoClub()">
+                    <i class="bi bi-check2-circle me-1"></i> Aceptar
+                </button>
             </div>
         </div>
     </div>

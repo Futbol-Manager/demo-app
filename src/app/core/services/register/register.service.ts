@@ -32,6 +32,11 @@ export class RegisterService {
     return this.http.post<any>(url, { mail });
   }  
 
+  checkPlayerForDni(dni: string){
+    const url: string = environment.apiUrl + `user/checkplayerfordni/${dni}`;
+    return this.http.get<any>(url);
+  }
+
   changePassByEmail(mail: String) {
     const url: string = environment.apiUrl + 'user/changePassByEmail';
     return this.http.post<any>(url, mail);

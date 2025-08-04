@@ -36,6 +36,7 @@ export class NewCuotasComponent implements OnInit {
   listTeamsSelecteds: number[] = [];
   filtro: string = '';
   listaPlayersFiltrados: any[] = [];
+  listHistoryPagos: any[] = [];
   listaPlayers: any[] = [];
   ordenActual: string = '';
   ascendente: boolean = true;
@@ -44,6 +45,12 @@ export class NewCuotasComponent implements OnInit {
   textoInfoTitlePagoPlayer = '';
   showModalAddPago = false;
   playerSelected = 0;
+  showModalHistorialPagos = false;
+
+  comentarioDevolucion = '';
+  metodoDevolucion = '';
+  pagoDevolucion: any = {};
+  showConfirmDevolucion = false;
 
   constructor(
     private loginService: LoginService,
@@ -109,7 +116,7 @@ export class NewCuotasComponent implements OnInit {
   openModalPago(player: any, index: number) {
     this.playerSelected = player.playerId;
     this.addPago = {};
-    this.textoInfoTitlePagoPlayer = player.nombre + ' ' + player.apellido;
+    this.textoInfoTitlePagoPlayer = player.nombre;
     let temporada = this.temporadaStoredValue;
     this.clubService.getListPagosClub(this.clubId, temporada === null ? '2025' : temporada).subscribe(
       (response: Response) => {
@@ -126,7 +133,25 @@ export class NewCuotasComponent implements OnInit {
   }
 
   openModalVerPagosPlayer(player: any, index: number) {
-    alert('Proximamente....');
+    this.clubService.getListHistoryPagosByPlayer(this.clubId, this.temporadaStoredValue, player.playerId).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.listHistoryPagos = response.data;
+          this.showModalHistorialPagos = true;
+        }
+        this.isLoading = false;
+        //this.datosCargados = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  cerrarModalHistorialPagos() {
+    this.listHistoryPagos = [];
+    this.showModalHistorialPagos = false;
   }
 
   openModalEditar(player: any, index: number) {
@@ -372,6 +397,74 @@ export class NewCuotasComponent implements OnInit {
       this.addPago.importe = cuotaSeleccionada.importe;
       this.addPago.totalPagado = cuotaSeleccionada.importe;
     }
+  }
+
+  cancelarDevolucion() {
+    this.comentarioDevolucion = '';
+    this.metodoDevolucion = '';
+    this.pagoDevolucion = {};
+    this.showConfirmDevolucion = false;
+  }
+
+  devolverPagoClub(historyPago: any) {
+    this.pagoDevolucion = historyPago;
+    this.showConfirmDevolucion = true;
+    this.playerSelected = historyPago.playerId;
+  }
+
+  okDevolverPagoClub() {
+    if (!this.metodoDevolucion || this.comentarioDevolucion == null || this.comentarioDevolucion == undefined || this.comentarioDevolucion == '') {
+      alert('Debes seleccionar un método de devolución y explicar por qué.');
+      return;
+    }
+
+    const pago = {
+      clubId: this.clubId,
+      temporada: this.temporadaStoredValue,
+      playerId: this.playerSelected,
+      pagoClubId: this.pagoDevolucion.pagoClubId,
+      comentario: this.comentarioDevolucion,
+      metodo: this.metodoDevolucion
+    };
+
+    this.clubService.devolverPagoClubById(pago).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null && response.status == 200) {
+          console.log(response.data);
+          this.listHistoryPagos.push(response.data);
+          this.comentarioDevolucion = '';
+          this.metodoDevolucion = '';
+          this.pagoDevolucion = {};
+          this.isLoading = true;
+          this.reloadTabla();
+          this.showConfirmDevolucion = false;
+          alert('Devolución hecha correctamente');
+        } else {
+          alert(response.error.msg);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  reloadTabla() {
+    this.clubService.getListPlayersPagosClub(this.clubId, this.temporadaStoredValue).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.listaPlayers = response.data;
+          this.listaPlayersFiltrados = [...this.listaPlayers];
+        }
+        this.isLoading = false;
+        //this.datosCargados = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
   }
 
 

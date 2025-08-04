@@ -100,8 +100,8 @@
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="col-6 position-relative">
-                      <input type="date" class="form-control input-register no-calendar-icon"
-                         id="date" formControlName="foundationDate" name="date">
+                      <input type="date" class="form-control input-register no-calendar-icon" id="date"
+                        formControlName="foundationDate" name="date">
                       <i class="bi bi-cake2 position-absolute"
                         style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
                     </div>
@@ -391,10 +391,17 @@
                       <div class="col-6" style="margin-left: 10px;">
                         <input type="text" class="form-control input-register" [formControlName]="'dni' + (index + 1)"
                           placeholder="DNI/NIE/Pasaporte">
+                        <!-- Botón debajo -->
+                        <button type="button" class="btn mt-2" [ngClass]="{
+                              'btn-warning': estadoValidacionHijos[index] === undefined,
+                              'btn-success': estadoValidacionHijos[index] === true,
+                              'btn-danger': estadoValidacionHijos[index] === false
+                            }" (click)="validateHijo(registerFormPadreHijos.get('dni' + (index + 1))?.value, index)">
+                          <i class="bi bi-person-check"></i> Comprobar si este jugador existe
+                        </button>
                       </div>
                     </div>
                   </div>
-
                   <div class="mb-3" *ngIf="btnFinalizar">
                     <button type="submit" class="btn btn-custom btn-block textoCentrado">Finalizar</button>
                   </div>
@@ -502,7 +509,7 @@
           <div class="form-control" *ngIf="msgForm" style="display: block; color: red;">
             <p>Revisa los campos que te falten por rellenar y acepta política de privacidad.</p>
           </div>
-          <div class="card-footer textoCentrado" style="flex-direction: column; background: #141414;">
+          <div class="card-footer textoCentrado" style="flex-direction: column; background: #002c40;">
             <div class="row text-center">
               <div class="col-md-12">
                 <p style="color: white">¿Ya tienes una cuenta? <a style="color: #1e8832" href="#"

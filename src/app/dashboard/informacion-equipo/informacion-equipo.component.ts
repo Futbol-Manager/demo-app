@@ -379,7 +379,8 @@ export class InformacionEquipoComponent implements OnInit {
   updateHorarioTeam(horario: HorarioTeam) {
     this.teamService.createUpdateHorarioTeam(horario).subscribe(
       (response) => {
-        //todo ok
+        //actualizar el horario del equipo para no eliminarlo al guardar
+        console.log(response.data);
       },
       (error) => {
         console.error('Error al crear el equipo:', error);

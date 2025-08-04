@@ -222,9 +222,6 @@ export class CalendarioComponent implements OnInit {
   showModalPostMatch: boolean = false;
   showModalAsistencia: boolean = false;
 
-  playerIdUserActual: any = 0;
-
-
   respListPreEntreno: RespPreEntreno[] = [];
   respListPostEntreno: RespPostEntreno[] = [];
   respListPreMatch: RespPrePartido[] = [];
@@ -569,7 +566,6 @@ export class CalendarioComponent implements OnInit {
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
       this.userId = user?.userId;
-      this.playerIdUserActual = user?.playerId;
       // Suscribirse a los cambios en los parámetros de la URL
       this.route.params.subscribe(params => {
         // Obtener el valor de teamId de los parámetros
@@ -1449,7 +1445,7 @@ export class CalendarioComponent implements OnInit {
   // AQUI EMPIEZAN LOS FORMULARIOS
 
   openModalFormPreEntreno(trainingSessionId: number) {
-    this.trainingService.getFormPreTraining(trainingSessionId, this.playerIdUserActual).subscribe(
+    this.trainingService.getFormPreTraining(trainingSessionId, this.playerId).subscribe(
       (response) => {
         if (response.data) {
           this.respPreEntreno = response.data;
@@ -1477,7 +1473,7 @@ export class CalendarioComponent implements OnInit {
 
   crearFormPreEntreno() {
     this.respPreEntreno.trainingSessionId = this.trainingId;
-    this.respPreEntreno.playerId = this.usuarioActual?.playerId != null ? this.usuarioActual?.playerId : 0;
+    this.respPreEntreno.playerId = this.playerId;
     this.trainingService.createFormPreEntreno(this.respPreEntreno).subscribe(
       (response) => {
         this.respPreEntreno = new RespPreEntreno({});
@@ -1511,7 +1507,7 @@ export class CalendarioComponent implements OnInit {
   //----------------------------------
 
   openModalFormPostEntreno(trainingSessionId: number) {
-    this.trainingService.getFormPostTraining(trainingSessionId, this.playerIdUserActual).subscribe(
+    this.trainingService.getFormPostTraining(trainingSessionId, this.playerId).subscribe(
       (response) => {
         if (response.data) {
           this.respPostEntreno = response.data;
@@ -1539,7 +1535,7 @@ export class CalendarioComponent implements OnInit {
 
   crearFormPostEntreno() {
     this.respPostEntreno.trainingSessionId = this.trainingId;
-    this.respPostEntreno.playerId = this.usuarioActual?.playerId != null ? this.usuarioActual?.playerId : 0;
+    this.respPostEntreno.playerId = this.playerId;
     this.trainingService.createFormPostEntreno(this.respPostEntreno).subscribe(
       (response) => {
         this.respPostEntreno = new RespPostEntreno({});
@@ -1555,7 +1551,7 @@ export class CalendarioComponent implements OnInit {
 
   openModalFormPrePartido(matchPreparationId: number) {
     this.matchPreparationId = matchPreparationId;
-    this.trainingService.getFormPrePartido(matchPreparationId, this.playerIdUserActual).subscribe(
+    this.trainingService.getFormPrePartido(matchPreparationId, this.playerId).subscribe(
       (response) => {
         if (response.data) {
           this.respPrePartido = response.data;
@@ -1583,7 +1579,7 @@ export class CalendarioComponent implements OnInit {
 
   crearFormPrePartido() {
     this.respPrePartido.matchPreparationId = this.matchPreparationId;
-    this.respPrePartido.playerId = this.usuarioActual?.playerId != null ? this.usuarioActual?.playerId : 0;
+    this.respPrePartido.playerId = this.playerId;
     this.trainingService.createFormPrePartido(this.respPrePartido).subscribe(
       (response) => {
         this.respPrePartido = new RespPrePartido({});
@@ -1599,7 +1595,7 @@ export class CalendarioComponent implements OnInit {
 
   openModalFormPostPartido(matchPreparationId: number) {
     this.matchPreparationId = matchPreparationId;
-    this.trainingService.getFormPostPartido(matchPreparationId, this.playerIdUserActual).subscribe(
+    this.trainingService.getFormPostPartido(matchPreparationId, this.playerId).subscribe(
       (response) => {
         if (response.data) {
           this.respPostPartido = response.data;

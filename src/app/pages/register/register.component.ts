@@ -11,6 +11,8 @@ import { ClubesListComponent } from './clubes-list/clubes-list.component';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Club } from 'src/app/core/services/models/club.model';
 import { contains } from 'jquery';
+import { PlayerService } from 'src/app/core/services/player/player.service';
+import { Response } from 'src/app/core/services/models/response.model';
 
 @Component({
   selector: 'app-register',
@@ -59,6 +61,7 @@ export class RegisterComponent implements OnInit {
   mailExiste = false;
   texBoton: string = 'Siguiente';
   btnFinalizar = false;
+  estadoValidacionHijos: boolean[] = [];
 
   constructor(
     private router: Router,
@@ -69,6 +72,7 @@ export class RegisterComponent implements OnInit {
     private dialog: MatDialog,
     private clubService: ClubService,
     private route: ActivatedRoute,
+    private playerService: PlayerService,
   ) {
 
     this.registerFormClub = this.fb.group({
@@ -659,6 +663,11 @@ export class RegisterComponent implements OnInit {
 
     const confirmacion = confirm('Vas a crear ' + text + ' Si esto es correcto, dale a confirmar. Si tienes más hijos, vuelve al formulario y complétalo');
     if (confirmacion) {
+      if (this.estadoValidacionHijos.includes(false)) {
+        alert('🚫 Uno o más hijos ya existen en el sistema. Contacta con el club para que te envíen una invitación.');
+        return;
+      }
+
       if (this.registerFormPadre.valid && this.registerFormPadreHijos.valid) {
         this.btnFinalizar = false;
         const padreData = {
@@ -805,5 +814,35 @@ export class RegisterComponent implements OnInit {
       console.warn('Formulario no válido');
     }
   }
+
+  validateHijo(dni: string, index: number): void {
+    if (!dni || dni.trim() === '') {
+      alert('Debes introducir un DNI antes de validarlo.');
+      this.estadoValidacionHijos[index] = false;
+      return;
+    }
+
+    if (dni == '-') {
+      this.estadoValidacionHijos[index] = true;
+      return;
+    }
+
+    this.registerService.checkPlayerForDni(dni).subscribe({
+      next: (res) => {
+        if (res.data === true) {
+          console.log('✅ Hijo válido con DNI:', dni);
+          this.estadoValidacionHijos[index] = true;
+        } else {
+          alert('🚫 El jugador ya existe. Contacta con el club para recibir invitación.');
+          this.estadoValidacionHijos[index] = false;
+        }
+      },
+      error: (err) => {
+        console.error('Error al validar el DNI:', err);
+        this.estadoValidacionHijos[index] = false;
+      }
+    });
+  }
+
 
 }

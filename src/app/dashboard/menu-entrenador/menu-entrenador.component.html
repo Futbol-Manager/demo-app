@@ -12,178 +12,151 @@
 <app-publicidad></app-publicidad>
 
 <div class="container">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em; height: 250px;">
         <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(2)">
-            <div class="card h-100" style="border: 1px solid black;">
+            <div class="card h-100" style="border: 1px solid black; 
+                background-image: url('/assets/images/entrenamiento.jpg');
+                background-size: cover;
+                background-position: center;
+                opacity: 0.7;
+                height: 100px;
+                color: white;">
                 <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/futbol.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                    <h5 class="card-title mt-auto" style="white-space: nowrap; text-overflow: ellipsis;">
                         Crear entrenamiento
                     </h5>
                 </div>
             </div>
         </div>
         <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(3)">
-            <div class="card h-100" style="border: 1px solid black;">
+            <div class="card h-100" style="border: 1px solid black;
+                background-image: url('/assets/images/tareas.jpg');
+                background-size: cover;
+                background-position: center;
+                opacity: 0.7;
+                height: 100px;
+                color: white;">
                 <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/tactica.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                    <h5 class="card-title mt-auto" style="white-space: nowrap; text-overflow: ellipsis;">
                         Tareas
                     </h5>
                 </div>
             </div>
         </div>
         <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(4)">
-            <div class="card h-100" style="border: 1px solid black;">
+            <div class="card h-100" style="border: 1px solid black;
+                background-image: url('/assets/images/partido.jpg');
+                background-size: cover;
+                background-position: center;
+                opacity: 0.7;
+                height: 100px;
+                color: white;">
                 <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/juego.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                    <h5 class="card-title mt-auto" style="white-space: nowrap; text-overflow: ellipsis;">
                         Crear partido
                     </h5>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em; height: 250px;">
         <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(5)">
-            <div class="card h-100" style="border: 1px solid black;">
+            <div class="card h-100" style="border: 1px solid black;
+                background-image: url('/assets/images/calendario.jpg');
+                background-size: cover;
+                background-position: center;
+                opacity: 0.7;
+                color: white;">
                 <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/fecha-del-calendario.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                    <h5 class="card-title mt-auto" style="white-space: nowrap; text-overflow: ellipsis;">
                         Calendario
                     </h5>
                 </div>
             </div>
         </div>
         <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(6)">
-            <div class="card h-100" style="border: 1px solid black;">
+            <div class="card h-100" style="border: 1px solid black;
+                background-image: url('/assets/images/estadisticas1.jpg');
+                background-size: cover;
+                background-position: center;
+                opacity: 0.7;
+                color: white;">
                 <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/grafico.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                    <h5 class="card-title mt-auto" style="white-space: nowrap; text-overflow: ellipsis;">
                         Estadísticas Equipo
                     </h5>
                 </div>
             </div>
         </div>
         <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(11)">
-            <div class="card h-100" style="border: 1px solid black;">
+            <div class="card h-100" style="border: 1px solid black;
+                background-image: url('/assets/images/estadisticasjugadores.jpg');
+                background-size: cover;
+                background-position: center;
+                opacity: 0.7;
+                color: white;">
                 <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/grafico-de-barras.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                    <h5 class="card-title mt-auto" style="white-space: nowrap; text-overflow: ellipsis;">
                         Estadísticas Jugadores
                     </h5>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em; height: 250px;">
         <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(7)">
-            <div class="card h-100" style="border: 1px solid black;">
+            <div class="card h-100" style="border: 1px solid black;
+                background-image: url('/assets/images/jugadores.jpg');
+                background-size: cover;
+                background-position: center;
+                opacity: 0.7;
+                color: white;">
                 <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/jugador-de-futbol.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                    <h5 class="card-title mt-auto" style="white-space: nowrap; text-overflow: ellipsis;">
                         Jugadores
                     </h5>
                 </div>
             </div>
         </div>
         <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(8)">
-            <div class="card h-100" style="border: 1px solid black;">
+            <div class="card h-100" style="border: 1px solid black;
+                background-image: url('/assets/images/infoequipo.jpg');
+                background-size: cover;
+                background-position: center;
+                opacity: 0.7;
+                color: white;">
                 <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/informacion.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                    <h5 class="card-title mt-auto" style="white-space: nowrap; text-overflow: ellipsis;">
                         Información del equipo
                     </h5>
                 </div>
             </div>
         </div>
         <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(12)">
-            <div class="card h-100" style="border: 1px solid black;">
+            <div class="card h-100" style="border: 1px solid black;
+                background-image: url('/assets/images/galeria.jpg');
+                background-size: cover;
+                background-position: center;
+                opacity: 0.7;
+                color: white;">
                 <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/reproductor-de-video.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                    <h5 class="card-title mt-auto" style="white-space: nowrap; text-overflow: ellipsis;">
                         Galería
                     </h5>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em; height: 250px;">
         <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(13)">
-            <div class="card h-100" style="border: 1px solid black;">
+            <div class="card h-100" style="border: 1px solid black;
+                background-image: url('/assets/images/clasificaciones.jpg');
+                background-size: cover;
+                background-position: center;
+                opacity: 0.7;
+                color: white;">
                 <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/grafico-de-barras.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+                    <h5 class="card-title mt-auto" style="white-space: nowrap; text-overflow: ellipsis;">
                         Clasificación y resultado
                     </h5>
                 </div>
