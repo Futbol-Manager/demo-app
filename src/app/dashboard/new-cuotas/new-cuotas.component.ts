@@ -27,11 +27,12 @@ export class NewCuotasComponent implements OnInit {
   cuotaSeleccionada = false;
   nuevaCuota: any = {};
 
-  listTeams: { value: number; name: string }[] = [
+  listTeams: any[] = [];
+  /*{ value: number; name: string }[] = [
     { value: 1, name: 'Alevín A' },
     { value: 2, name: 'Alevín B' },
     { value: 3, name: 'Infantil' }
-  ];
+  ];*/
 
   listTeamsSelecteds: number[] = [];
   filtro: string = '';
@@ -51,7 +52,7 @@ export class NewCuotasComponent implements OnInit {
   metodoDevolucion = '';
   pagoDevolucion: any = {};
   showConfirmDevolucion = false;
-  listaCuotasAsignadas: any = {};
+  listaCuotasAsignadas: any[] = [];
   showModalCuotasAsignadas = false;
 
   constructor(
@@ -204,8 +205,7 @@ export class NewCuotasComponent implements OnInit {
   }
 
   openModalCuotas() {
-    let temporada = this.temporadaStoredValue;
-    this.clubService.getListPagosClub(this.clubId, temporada === null ? '2025' : temporada).subscribe(
+    this.clubService.getListPagosClub(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
@@ -469,9 +469,6 @@ export class NewCuotasComponent implements OnInit {
   }
 
   openModalCuotasAsignadas(player: any) {
-    this.playerSelected = player.playerId;
-    this.addPago = {};
-    this.textoInfoTitlePagoPlayer = player.nombre;
     this.clubService.getListPagosClubForPlayer(this.clubId, this.temporadaStoredValue, player.playerId).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
@@ -484,11 +481,10 @@ export class NewCuotasComponent implements OnInit {
         console.error('Error al cargar el listado de equipos', error);
       }
     );
-
   }
 
   cerrarModalCuotasAsignadas() {
-    this.listaCuotasAsignadas = {};
+    this.listaCuotasAsignadas = [];
     this.showModalCuotasAsignadas = false;
   }
 

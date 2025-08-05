@@ -587,7 +587,7 @@
     </div>
 </div>
 
-<!-- Modal para ver cuotas con filtros -->
+<!-- Modal para ver cuotas asignadas -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalCuotasAsignadas}"
     style="background-color: rgba(0,0,0,0.5);">
     <div class="modal-dialog modal-xl" role="document">
@@ -603,30 +603,30 @@
 
             <div class="modal-body bg-light">
                 <!-- Lista de cuotas -->
-                <div *ngFor="let cuota of listaCuotasAsignadas" class="mb-3 p-4 rounded border shadow-sm bg-white">
+                <div *ngFor="let cuotaAsociada of listaCuotasAsignadas" class="mb-3 p-4 rounded border shadow-sm bg-white">
                     <div class="d-flex justify-content-between align-items-start">
 
                         <!-- Detalle de la cuota -->
                         <div>
                             <h5 class="fw-bold text-primary">
-                                <i class="bi bi-tag me-1"></i> {{ cuota.titulo }}
+                                <i class="bi bi-tag me-1"></i> {{ cuotaAsociada.titulo }}
                             </h5>
                             <p class="mb-1">
                                 <strong><i class="bi bi-currency-exchange me-1 text-success"></i> Importe:</strong> {{
-                                cuota.importe }}
+                                cuotaAsociada.importe }}
                             </p>
                             <p class="mb-1">
                                 <strong><i class="bi bi-card-text me-1 text-secondary"></i> Descripción:</strong> {{
-                                cuota.descripcion }}
+                                cuotaAsociada.descripcion }}
                             </p>
                             <p class="mb-1">
                                 <strong><i class="bi bi-calendar-event me-1 text-danger"></i> Fecha límite:</strong>
-                                {{ cuota.fechaLimite | date: 'dd/MM/yyyy' }}
+                                {{ cuotaAsociada.fechaLimite | date: 'dd/MM/yyyy' }}
                             </p>
                             <p class="mb-0">
                                 <strong><i class="bi bi-check2-circle me-1 text-info"></i> ¿Obligatoria?:</strong>
-                                <span class="badge bg-{{ +cuota.obligatorio === 1 ? 'success' : 'secondary' }}">
-                                    {{ cuota.obligatorio === 1 ? 'Sí' : 'No' }}
+                                <span class="badge bg-{{ +cuotaAsociada.obligatorio === 1 ? 'success' : 'secondary' }}">
+                                    {{ cuotaAsociada.obligatorio === 1 ? 'Sí' : 'No' }}
                                 </span>
                             </p>
                         </div>
