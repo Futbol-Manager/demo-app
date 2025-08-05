@@ -51,6 +51,8 @@ export class NewCuotasComponent implements OnInit {
   metodoDevolucion = '';
   pagoDevolucion: any = {};
   showConfirmDevolucion = false;
+  listaCuotasAsignadas: any = {};
+  showModalCuotasAsignadas = false;
 
   constructor(
     private loginService: LoginService,
@@ -117,8 +119,7 @@ export class NewCuotasComponent implements OnInit {
     this.playerSelected = player.playerId;
     this.addPago = {};
     this.textoInfoTitlePagoPlayer = player.nombre;
-    let temporada = this.temporadaStoredValue;
-    this.clubService.getListPagosClub(this.clubId, temporada === null ? '2025' : temporada).subscribe(
+    this.clubService.getListPagosClubForPlayer(this.clubId, this.temporadaStoredValue, player.playerId).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
@@ -465,6 +466,30 @@ export class NewCuotasComponent implements OnInit {
         console.error('Error al cargar el listado de equipos', error);
       }
     );
+  }
+
+  openModalCuotasAsignadas(player: any) {
+    this.playerSelected = player.playerId;
+    this.addPago = {};
+    this.textoInfoTitlePagoPlayer = player.nombre;
+    this.clubService.getListPagosClubForPlayer(this.clubId, this.temporadaStoredValue, player.playerId).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.listaCuotasAsignadas = response.data;
+        }
+        this.showModalCuotasAsignadas = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+
+  }
+
+  cerrarModalCuotasAsignadas() {
+    this.listaCuotasAsignadas = {};
+    this.showModalCuotasAsignadas = false;
   }
 
 
