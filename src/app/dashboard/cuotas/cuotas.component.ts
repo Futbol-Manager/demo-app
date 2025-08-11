@@ -10,6 +10,7 @@ import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { Location } from '@angular/common';
 import * as $ from 'jquery';
 import 'datatables.net';
+import { PlayerService } from 'src/app/core/services/player/player.service';
 
 @Component({
   selector: 'app-cuotas',
@@ -41,27 +42,32 @@ export class CuotasComponent implements OnInit {
   card: any;
   loading = false;
   amount: number = 0;
-  historyCuotasPlayer: any[] = [];
+  historyCuotasPlayer: any = {};
   playerCuotas: any;
+  playerId = 0;
 
   selectedText: string = '';
-  conRopa = 'No';
-  restante = 0;
-  temporada = '';
-  playerId = 0;
-  restanteCero = false;
-  tablasCargados = false;
-  pagado = 0;
+  banco = '';
+  asunto = '';
+  contacto = '';
+  bizum = 0;
+  pagado = '0';
+  pdte = '0';
   pagarOk = false;
   cantidadAPagar = 0;
-  cuotas: any[] = [];
+  cuotasObligatorias: any[] = [];
+  cuotasNoObligatorias: any[] = [];
   userId = 0;
+  restante: number = 0;
+  restanteCero: boolean = false;
+  cuotas: any[] = [];
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private teamService: TeamService,
     private loginService: LoginService,
+    private playerService: PlayerService,
     private fb: FormBuilder,
     private elementRef: ElementRef,
     private http: HttpClient,
@@ -94,43 +100,24 @@ export class CuotasComponent implements OnInit {
         console.log('playerId:', this.playerId);
         console.log('userId:', this.userId);
       });
-      this.teamService.getCuotaPlayer(this.playerId, this.teamId).subscribe(
+
+      this.playerService.getPagoCuotasPlayer(this.teamId, this.playerId).subscribe(
         (response: Response) => {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
-            this.cuota = response.data;
-            this.cuotaClub = this.cuota.cuota
-            this.cuotaRopa = this.cuota.cuotaRopa
-            //this.combo = this.cuota.combo;
-            //ahora obtenemos la lista del historico de pagos
-            this.teamService.getHistoryCuotaClubByPlayer(this.teamId, this.playerId).subscribe(
-              (response: Response) => {
-                // Verifica que la propiedad 'data' exista en la respuesta
-                if (response.data !== null) {
-                  this.historyCuotasPlayer = response.data.listP;
-                  this.playerCuotas = response.data.listC;
-                  this.restante = response.data.restante;
-                  this.pagado = response.data.pagado;
-                  this.getCuotas();
-                  if (this.restante == 0) {
-                    this.restanteCero = true;
-                  } else {
-                    this.datosCargados = true;
-                  }
-                  this.tablasCargados = true;
-                  /*this.restante = Number(this.historyCuotasPlayer[0].totalCuota) - Number(this.historyCuotasPlayer[0].totalPagado);
-                  this.conRopa = this.SIoNo(this.historyCuotasPlayer[0].pagoConRopa);
-                  this.temporada = this.historyCuotasPlayer[0].temporada;*/
-                } else {
-                  console.log('No hay registros en la tabla');
-                }
-              },
-              (error) => {
-                console.error('Error al cargar el listado de equipos', error);
-              }
-            );
+            this.historyCuotasPlayer = response.data;
+            this.pagado = this.historyCuotasPlayer.totalPagado;
+            this.pdte = this.historyCuotasPlayer.pendiente;
+
+            this.cuotasObligatorias = this.historyCuotasPlayer.obligatorios;
+            this.cuotasNoObligatorias = this.historyCuotasPlayer.noObligatorios;
+            this.banco = this.historyCuotasPlayer.banco;
+            this.asunto = this.historyCuotasPlayer.asunto;
+            this.contacto = this.historyCuotasPlayer.contacto;
+            this.bizum = this.historyCuotasPlayer.bizum;
+            this.datosCargados = true;
           } else {
-            console.error('La respuesta del servicio no tiene la estructura esperada', response);
+            console.log('No hay registros en la tabla');
           }
         },
         (error) => {

@@ -44,6 +44,7 @@ export class TrainerComponent implements OnInit {
   players: any[] = [];
   imgPlayer: string = '';
   selectedFile!: File;
+  temporadaStoredValue = '2025';
 
   constructor(private playerservice: PlayerService,
     private router: Router,
@@ -61,6 +62,10 @@ export class TrainerComponent implements OnInit {
       this.cargarListadoJugadores();
       // Luego puedes realizar acciones con el teamId según tus necesidades
     });
+
+    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+    }
   }
 
   // Método para cargar el listado de equipos
@@ -180,7 +185,7 @@ export class TrainerComponent implements OnInit {
 
   // Método para confirmar la eliminación del equipo
   confirmarEliminarJugador(playerId: number, name: string, surname: string): void {
-    const confirmacion = confirm('¿Estás seguro de que deseas eliminar el jugador ' + name + ' ' + surname + ` con ID ${playerId}?`);
+    const confirmacion = confirm('¿Estás seguro de que deseas eliminar el jugador ' + name + ' ' + surname + ` con ID ${playerId}? Si está en Sin equipo, se eliminará completamente...`);
     if (confirmacion) {
       // Llama al método para eliminar el equipo
       this.eliminarJugador(playerId);
@@ -190,7 +195,7 @@ export class TrainerComponent implements OnInit {
   // Método para eliminar el equipo
   eliminarJugador(playerId: number): void {
     // Lógica para eliminar el equipo llamando al servicio correspondiente
-    this.playerservice.deletePlayer(playerId.toString()).subscribe(
+    this.playerservice.deletePlayer(playerId, this.teamId, this.temporadaStoredValue, 1).subscribe(
       (response) => {
         // Manejar la respuesta según tus necesidades
         console.log('Jugador eliminado con éxito:', response);

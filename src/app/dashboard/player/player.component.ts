@@ -168,6 +168,7 @@ export class PlayerComponent implements OnInit {
   showModalPlayerInfo = false;
   playerInfo: any = [];
   teamIdPlayerSelected = 0;
+  temporadaStoredValue = '2025';
 
   constructor(private playerservice: PlayerService,
     private router: Router,
@@ -198,7 +199,9 @@ export class PlayerComponent implements OnInit {
       // Luego puedes realizar acciones con el teamId según tus necesidades
     });
 
-    this.temporada = localStorage.getItem('temporada') || '';
+    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+    }
 
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
@@ -355,7 +358,7 @@ export class PlayerComponent implements OnInit {
 
   // Método para confirmar la eliminación del equipo
   confirmarEliminarJugador(playerId: number, name: string, surname: string, index: number): void {
-    const confirmacion = confirm('¿Estás seguro de que deseas eliminar el jugador ' + name + ' ' + surname + ` con ID ${playerId}?`);
+    const confirmacion = confirm('¿Estás seguro de que deseas eliminar el jugador ' + name + ' ' + surname + ` con ID ${playerId}? Si está en Sin equipo, se eliminará completamente...`);
     if (confirmacion) {
       // Llama al método para eliminar el equipo
       this.eliminarJugador(playerId, index);
@@ -365,7 +368,7 @@ export class PlayerComponent implements OnInit {
   // Método para eliminar el equipo
   eliminarJugador(playerId: number, index: number): void {
     // Lógica para eliminar el equipo llamando al servicio correspondiente
-    this.playerservice.deletePlayer(playerId.toString()).subscribe(
+    this.playerservice.deletePlayer(playerId, this.teamId, this.temporadaStoredValue, 1).subscribe(
       (response) => {
         // Manejar la respuesta según tus necesidades
         //console.log('Jugador eliminado con éxito:', response);

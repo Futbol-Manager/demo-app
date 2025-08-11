@@ -424,10 +424,10 @@ export class InicioComponent implements OnInit {
     );
   }
 
-  cargarListadoEquiposForClub(): void {    
+  cargarListadoEquiposForClub(): void {
     localStorage.setItem('temporada', this.temporada);
     this.temporadaStoredValue = this.temporada;
-    
+
     this.teamService.getTeamByClub(this.usuarioActual!.userId.toString(), this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
@@ -617,6 +617,9 @@ export class InicioComponent implements OnInit {
   irAPantalla(id: number): void {
     switch (id) {
       case 1:
+        const msg = 'Este apartado de "Cuotas" está obsoleto, solo está disponible para que '
+          + 'aquellos clubs que lo hayan usado previamente puedan visualizar sus datos, por favor, '
+          + 'accede al nuevo apartado "New Cuotas" para llevar un registro de tus pagos';
         this.router.navigate(['/dashboard/contabilidad', this.clubId]);
         break;
       case 2:

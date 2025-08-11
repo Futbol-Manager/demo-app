@@ -19,8 +19,30 @@ td {
     /* Ajusta la altura según sea necesario */
 }
 
-
-
 p {
     text-align: justify;
-  }
+}
+
+.card-title {
+    font-weight: bold;
+}
+
+.card .bi {
+    font-size: 1.2rem;
+}
+
+.card-financiero {
+    background: linear-gradient(135deg, #1b2a41, #25354f);
+    color: white;
+    border-radius: 15px;
+    padding: 20px;
+    position: relative;
+}
+
+.box-pagado {
+    background-color: #3e4e68;
+    /* verde suave */
+    border-radius: 10px;
+    padding: 10px;
+    color: white;
+}
