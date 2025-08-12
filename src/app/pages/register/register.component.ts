@@ -416,7 +416,7 @@ export class RegisterComponent implements OnInit {
         mail: this.registerFormPadre.get('email')?.value,
         mobile: this.registerFormPadre.get('mobile')?.value,
         password: this.registerFormPadre.get('password')?.value,
-        aceptaComunicaciones: this.registerFormPadre.get('comunicaciones')?.value ? 1 : 0,
+        comunicaciones: this.registerFormPadre.get('comunicaciones')?.value ? 1 : 0,
         clubId: 0,
         playerId: this.playerID,
         mailExiste: this.mailExiste ? 1 : 0
@@ -679,7 +679,7 @@ export class RegisterComponent implements OnInit {
           mail: this.registerFormPadre.get('email')?.value,
           mobile: this.registerFormPadre.get('mobile')?.value,
           password: this.registerFormPadre.get('password')?.value,
-          aceptaComunicaciones: this.registerFormPadre.get('comunicaciones')?.value ? 1 : 0,
+          comunicaciones: this.registerFormPadre.get('comunicaciones')?.value ? 1 : 0,
           clubId: this.clubId
         };
 
@@ -752,7 +752,7 @@ export class RegisterComponent implements OnInit {
         mail: this.registerFormPadre.get('email')?.value,
         mobile: this.registerFormPadre.get('mobile')?.value,
         password: this.registerFormPadre.get('password')?.value,
-        aceptaComunicaciones: this.registerFormPadre.get('comunicaciones')?.value ? 1 : 0,
+        comunicaciones: this.registerFormPadre.get('comunicaciones')?.value ? 1 : 0,
         clubId: this.clubId,
         mailExiste: this.mailExiste ? 1 : 0
       };

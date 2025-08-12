@@ -155,6 +155,9 @@ export class Player {
   tutor2: number;
   parentesco1: number;
   parentesco2: number;
+  titularBanco: string;
+  iban: string;
+  entidad: string;
 
   constructor(object: any) {
     this.playerId = object.playerId || 0;
@@ -235,6 +238,9 @@ export class Player {
     this.tutor2 = object.tutor2 || 0;
     this.parentesco1 = object.parentesco1 || 0;
     this.parentesco2 = object.parentesco2 || 0;
+    this.titularBanco = object.titularBanco || '';
+    this.entidad = object.entidad || '';
+    this.iban = object.iban || '';
   }
 }
 

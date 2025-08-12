@@ -470,6 +470,42 @@
                             </div>
                         </div>
                     </div>
+                    <div>
+                        <div class="row text-center mt-3" *ngIf="this.usuarioActual!.profileType.profileId != 2">
+                            <div class="row mt-3">
+                                <div class="col-12 col-md-12">
+                                    <!-- Contenido de la subcolumna -->
+                                    <label><strong>Datos bancarios:</strong></label>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-12 col-md-4">
+                                    <!-- Contenido de la subcolumna -->
+                                    <div class="form-group">
+                                        <label for="tiroPrecisionFalta">IBAN:</label>
+                                        <input type="text" class="form-control custom-input" id="iban" name="iban"
+                                            [(ngModel)]="player.iban" placeholder="IBAN">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <!-- Contenido de la subcolumna -->
+                                    <div class="form-group">
+                                        <label for="tiroPrecisionFalta">Entidad:</label>
+                                        <input type="text" class="form-control custom-input" id="entidad" name="entidad"
+                                            [(ngModel)]="player.entidad" placeholder="Entidad">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <!-- Contenido de la subcolumna -->
+                                    <div class="form-group">
+                                        <label for="tiroPrecisionFalta">Titular:</label>
+                                        <input type="text" class="form-control custom-input" id="titu" name="titu"
+                                            [(ngModel)]="player.titularBanco" placeholder="Titular">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Botón disparador -->
                     <div *ngIf="usuarioActual!.profileType.profileId < 3" class="text-center my-3">

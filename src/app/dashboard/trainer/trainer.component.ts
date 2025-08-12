@@ -329,7 +329,10 @@ export class TrainerComponent implements OnInit {
       tutor1: 0,
       tutor2: 0,
       parentesco1: 0,
-      parentesco2: 0
+      parentesco2: 0,
+      entidad: '',
+      titularBanco: '',
+      iban: ''
     };
   }
 
