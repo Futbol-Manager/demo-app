@@ -734,7 +734,7 @@ export class InfoJugadoresComponent implements OnInit {
   updateTemporada(player: any) {
     const confirmacion = confirm('Vas a mover este jugador a otra temporada, esto no significa que desaparezca de la actual, ¿estás seguro?');
     if (confirmacion) {
-      this.clubService.moverPlayerTemporada(this.clubId, player.playerId).subscribe(
+      this.clubService.moverPlayerTemporada(this.clubId, player.playerId, this.temporadaStoredValue).subscribe(
         (response: Response) => {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data) {

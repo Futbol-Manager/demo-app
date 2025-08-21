@@ -678,4 +678,8 @@ export class NewCuotasComponent implements OnInit {
     this.showModalEditarCuotaPlayer = false;
   }
 
+  copy(text: string) {
+    navigator.clipboard?.writeText(text);
+  }
+
 }

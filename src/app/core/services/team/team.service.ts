@@ -1,7 +1,7 @@
 // team.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
 import { CancelSubscriptionRequest, HorarioTeam, SubscriptionRequest, Suscripcion, Team, TeamNew } from './team.model';
@@ -13,7 +13,14 @@ import { RopaClub } from './club.model';
 })
 export class TeamService {
 
+    private base = environment.apiUrl;
+
     constructor(private http: HttpClient) { }
+
+    private authHeaders(): HttpHeaders | undefined {
+        const token = localStorage.getItem('token');
+        return token ? new HttpHeaders({ 'Authorization': `Bearer ${token}` }) : undefined;
+    }
 
     getTeams(userId: string, temporada: string): Observable<Response> {
         // Obtén el token almacenado en localStorage
@@ -480,7 +487,7 @@ export class TeamService {
         }
     }
 
-    /*****************      STRIPE            **************/    
+    /*****************      STRIPE            **************/
 
     // Método para crear o actualizar stripe como club
     createAccountStripe(email: string, clubId: number): Observable<any> {
@@ -523,7 +530,7 @@ export class TeamService {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
             return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
-    }    
+    }
 
     // Método para crear una suscripcion
     createSubscription(dto: SubscriptionRequest): Observable<any> {
@@ -633,7 +640,7 @@ export class TeamService {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
             return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
-    } 
+    }
 
     // Método para crear una suscripcion
     reactivarSubscription(dto: SubscriptionRequest): Observable<any> {
@@ -722,5 +729,20 @@ export class TeamService {
             return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
+
+    createIntent(body: any): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        const url = `${this.base}stripe/payments/create-intent`;
+        return this.http.post<any>(url, body, { headers });
+    }
+
+    verify(body: { paymentIntentId: string }): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        const url = `${this.base}stripe/payments/verify`;
+        return this.http.post<any>(url, body, { headers });
+    }
+
 
 }

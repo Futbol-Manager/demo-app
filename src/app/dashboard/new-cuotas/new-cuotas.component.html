@@ -249,7 +249,8 @@
                 </div>
 
                 <!-- Lista de cuotas -->
-                <div *ngFor="let cuota of cuotasFiltradas(); let e = index" class="mb-3 p-4 rounded border shadow-sm bg-white">
+                <div *ngFor="let cuota of cuotasFiltradas(); let e = index"
+                    class="mb-3 p-4 rounded border shadow-sm bg-white">
                     <div class="d-flex justify-content-between align-items-start">
 
                         <!-- Detalle de la cuota -->
@@ -541,9 +542,23 @@
                             <strong><i class="bi bi-calendar-check me-1 text-danger"></i> Fecha de pago:</strong><br>
                             {{ historyPago.datePago | date: 'dd/MM/yyyy' }}
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-3" style="min-width:0;">
                             <strong><i class="bi bi-chat-left-text me-1 text-secondary"></i> Comentario:</strong><br>
-                            {{ historyPago.comentario || 'Sin comentario' }}
+
+                            <ng-container *ngIf="historyPago.comentario?.startsWith('http'); else textoPlano">
+                                <a [href]="historyPago.comentario" target="_blank" rel="noopener"
+                                    class="d-inline-block text-truncate" style="max-width:100%;">
+                                    Ver recibo
+                                </a>
+                                <button class="btn btn-sm btn-outline-secondary ms-1"
+                                    (click)="copy(historyPago.comentario)" title="Copiar enlace">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                            </ng-container>
+
+                            <ng-template #textoPlano>
+                                <span class="text-break">{{ historyPago.comentario || 'Sin comentario' }}</span>
+                            </ng-template>
                         </div>
                         <div class="col-md-1 text-end">
                             <button class="btn cursor btn-sm btn-warning" (click)="devolverPagoClub(historyPago)"

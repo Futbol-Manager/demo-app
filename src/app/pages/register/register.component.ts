@@ -10,9 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ClubesListComponent } from './clubes-list/clubes-list.component';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Club } from 'src/app/core/services/models/club.model';
-import { contains } from 'jquery';
 import { PlayerService } from 'src/app/core/services/player/player.service';
-import { Response } from 'src/app/core/services/models/response.model';
 
 @Component({
   selector: 'app-register',
@@ -63,6 +61,21 @@ export class RegisterComponent implements OnInit {
   btnFinalizar = false;
   estadoValidacionHijos: boolean[] = [];
 
+  inputPassword: string = '';
+  readonly realPassword = 'RegistroClubesST2025'; // la contraseña que quieras validar
+
+  mailsOk = false;
+  showModalClub  = false;
+  form = this.fb.group(
+    {
+      email: ['', [Validators.required, Validators.email]],
+      confirmEmail: ['', [Validators.required, Validators.email]],
+    },
+    { validators: [this.emailsMatchValidator()] }
+  );
+
+  showEmailAlert = false;
+
   constructor(
     private router: Router,
     private registerService: RegisterService,
@@ -72,7 +85,6 @@ export class RegisterComponent implements OnInit {
     private dialog: MatDialog,
     private clubService: ClubService,
     private route: ActivatedRoute,
-    private playerService: PlayerService,
   ) {
 
     this.registerFormClub = this.fb.group({
@@ -111,7 +123,8 @@ export class RegisterComponent implements OnInit {
       password: ['', Validators.required],
       password2: ['', Validators.required],
       terms: [false, Validators.requiredTrue],
-      comunicaciones: [false]
+      comunicaciones: [false],
+      confirmEmail: ['', [Validators.required, Validators.email]],
     });
 
     this.registerFormPadreHijos = this.fb.group({
@@ -406,7 +419,7 @@ export class RegisterComponent implements OnInit {
 
   registerPadreSinHijos() {
     //esto es porque ha recibido una invitación como localhost:4200/registro/{playerId}/{email}/{rol}
-    if (this.registerFormPadre.valid) {
+    if (this.registerFormPadre.valid && this.mailsOk) {
       const padreData = {
         parentesco: this.registerFormPadre.get('parentesco')?.value,
         firstName: this.registerFormPadre.get('name')?.value,
@@ -463,6 +476,7 @@ export class RegisterComponent implements OnInit {
       // Aquí puedes llamar al servicio que envíe `datosCompletos` al backend
     } else {
       console.warn('Formulario no válido');
+      alert('Revisa los emails');
     }
   }
 
@@ -536,8 +550,7 @@ export class RegisterComponent implements OnInit {
   }
 
   nextRegistro() {
-    this.showNextRegistro = true;
-    this.btnRegistro = true;
+    this.openConfirm();
   }
 
   backRegistro() {
@@ -742,7 +755,7 @@ export class RegisterComponent implements OnInit {
   }
 
   finalizarRegistroJugador(): void {
-    if (this.registerFormPadre.valid) {
+    if (this.registerFormPadre.valid && this.mailsOk) {
       const padreData = {
         parentesco: this.registerFormPadre.get('parentesco')?.value,
         firstName: this.registerFormPadre.get('name')?.value,
@@ -812,6 +825,7 @@ export class RegisterComponent implements OnInit {
       }
     } else {
       console.warn('Formulario no válido');
+      alert('Revisa los emails');
     }
   }
 
@@ -844,5 +858,41 @@ export class RegisterComponent implements OnInit {
     });
   }
 
+  private emailsMatchValidator(): ValidatorFn {
+    return (group: AbstractControl) => {
+      const email = group.get('email')?.value?.trim().toLowerCase() || '';
+      const confirm = group.get('confirmEmail')?.value?.trim().toLowerCase() || '';
+      return email && confirm && email !== confirm ? { emailsMismatch: true } : null;
+    };
+  }
+
+  /** Llamado al dejar de escribir (blur) en cualquiera de los dos inputs */
+  checkEmails(): void {
+    const mail1 = this.registerFormPadre.get('email')?.value;
+    const mail2 = this.registerFormPadre.get('confirmEmail')?.value;
+    if (mail1 == '' || mail2 == '') return;
+    if (mail1 != mail2) {
+      alert('Los emails no coinciden, vuelve a escribirlos');
+      this.registerFormPadre.get('email')!.setValue('');
+      this.registerFormPadre.get('confirmEmail')!.setValue('');
+    } else this.mailsOk = true;
+  }
+
+
+  openConfirm() {
+    this.showModalClub = true;
+  }
+
+  validatePassword() {
+    if (this.inputPassword === this.realPassword) {
+      alert('Contraseña correcta ✅');
+      this.showModalClub = false;
+
+      this.showNextRegistro = true;
+      this.btnRegistro = true;
+    } else {
+      alert('Contraseña incorrecta ❌');
+    }
+  }
 
 }

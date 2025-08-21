@@ -130,6 +130,11 @@
                 pago, no
                 olvides notificarlo al club para que lo registre.
             </div>
+            <div class="mb-3" *ngIf="usuarioActual?.userId == 243">
+                <button class="btn btn-custom btn-sm" (click)="openModalStripe()">Pagar con Stripe
+                    <i class="bi bi-stripe"></i>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -147,10 +152,13 @@
                     <form (ngSubmit)="makePayment()">
                         <div class="row mb-3">
                             <label for="cantidadAPagar" class="form-label">Selecciona la cuota a pagar:</label>
-                            <select [(ngModel)]="cantidadAPagar" id="cantidadAPagar" name="cantidadAPagar"
-                                class="form-control" (change)="calcularComision($event)">
-                                <option *ngFor="let cuota of cuotas" [value]="cuota.value">
-                                    {{ cuota.text }}
+                            <select [(ngModel)]="selectedCuota" [ngModelOptions]="{ standalone: true }"
+                                id="selectedCuota" name="selectedCuota" class="form-control"
+                                (ngModelChange)="onCuotaChange($event)">
+
+                                <option [ngValue]="null" disabled selected>Selecciona el pago</option>
+                                <option *ngFor="let c of listAllCuotas" [ngValue]="c">
+                                    {{ c.titulo }}
                                 </option>
                             </select>
                         </div>
@@ -176,7 +184,10 @@
                             <div id="card-element"></div>
                         </div>
                         <div class="row mb-3" *ngIf="pagarOk">
-                            <button type="submit" class="btn btn-custom">Pagar</button>
+                            <button type="submit" class="btn btn-custom" [disabled]="loading || !pagarOk">
+                                <span *ngIf="!loading">Pagar {{ amount | number:'1.2-2' }} €</span>
+                                <span *ngIf="loading">Procesando...</span>
+                            </button>
                         </div>
                         <div class="row mb-3">
                             <p style="color: rgb(172, 172, 172);">Cuando realices el pago de las cuotas del club o de la

@@ -1266,7 +1266,7 @@ export class ClubService {
     return this.http.post<Response>(url, dto, { headers });
   } 
 
-  moverPlayerTemporada(clubId: number, playerId: number): Observable<Response> {
+  moverPlayerTemporada(clubId: number, playerId: number, temporada: string): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -1278,7 +1278,7 @@ export class ClubService {
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/moverplayertemporada/${clubId}/${playerId}`;
+      const url: string = environment.apiUrl + `club/moverplayertemporada/${clubId}/${playerId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });

@@ -19,19 +19,19 @@
               <div class="container" *ngIf="!btnRegistro">
                 <h3>Selecciona el tipo de usuario</h3>
                 <div class="row mt-3">
-                  <div class="col-md-6 mb-4">
+                  <div class="col-md-12 mb-4">
                     <div id="club" class="card selection-card" [ngClass]="{'selected': selected === 1}"
                       (click)="select(1)">
-                      <img src="/assets/iconos/divisa.svg" class="card-img-top mx-auto d-block p-3" alt="Club Icon">
+                      <img src="/assets/images/club-verde.png" class="card-img-top mx-auto d-block p-3" alt="Club Icon">
                       <div class="card-body text-center">
                         <h5 class="card-title">Club</h5>
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-6 mb-4">
+                  <div class="col-md-12 mb-4">
                     <div id="coach" class="card selection-card" [ngClass]="{'selected': selected === 2}"
                       (click)="select(2)">
-                      <img src="/assets/iconos/entrenador.svg" class="card-img-top mx-auto d-block p-3"
+                      <img src="/assets/images/coach-verde.png" class="card-img-top mx-auto d-block p-3"
                         alt="Coach Icon">
                       <div class="card-body text-center">
                         <h5 class="card-title">Coach</h5>
@@ -306,9 +306,24 @@
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <input type="email" class="form-control input-register" placeholder="Correo electrónico"
-                        formControlName="email">
+                        formControlName="email" (blur)="checkEmails()" />
                     </div>
+
                     <div class="col-6" style="margin-left: 10px;">
+                      <input type="email" class="form-control input-register" placeholder="Repite el correo"
+                        formControlName="confirmEmail" (blur)="checkEmails()" (paste)="$event.preventDefault()"
+                        (drop)="$event.preventDefault()" (copy)="$event.preventDefault()"
+                        (cut)="$event.preventDefault()" (contextmenu)="$event.preventDefault()" />
+                    </div>
+                  </div>
+
+                  <!-- Alerta Bootstrap -->
+                  <div *ngIf="showEmailAlert" class="alert alert-danger py-2 mb-3">
+                    Los emails no coinciden.
+                  </div>
+
+                  <div class="mb-3 d-flex">
+                    <div class="col-6">
                       <input type="number" class="form-control input-register" placeholder="Teléfono"
                         formControlName="mobile">
                     </div>
@@ -565,3 +580,36 @@
     </div>
   </div>
 </div>
+
+<!-- Modal -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalClub}">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmación requerida</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+
+      <div class="modal-body">
+        <p class="mb-3">
+          <strong>Por seguridad</strong>, el registro de clubes requiere una contraseña de acceso.
+          <br>Si aún no la tienes, solicítala antes de continuar:
+        </p>
+
+        <ul class="list-unstyled mb-4">
+          <li>📞 Teléfono: <a href="tel:+34666937340">+34 666 93 73 40</a></li>
+          <li>📧 Email: <a href="mailto:info@sphairatech.com">info&#64;sphairatech.com</a></li>
+        </ul>
+
+        <div class="mb-3">
+          <label for="passwordInput" class="form-label">Introduce la contraseña</label>
+          <input type="password" id="passwordInput" class="form-control" [(ngModel)]="inputPassword" />
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-success" (click)="validatePassword()">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>

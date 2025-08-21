@@ -99,7 +99,7 @@
                       <span class="numero-dia">{{ dia.numero }}</span>
                       <div class="row">
                         <div class="col" *ngIf="!dia.trainingId || !dia.matchPreparationId">
-                          <div class="btn-container" *ngIf="this.usuarioActual!.profileType.profileId === 2">
+                          <div class="btn-container" *ngIf="this.usuarioActual!.profileType.profileId != 3">
                             <button class="btn btn-link text-danger" (click)="abrirModal(dia.daysession)">
                               <i class="bi bi-plus-circle-fill"></i>
                             </button>
@@ -209,7 +209,7 @@
               <div class="row text-center mt-3">
                 <div class="col-12 col-md-12 text-end">
                   <!-- Botón para guardar el nuevo entrenamiento -->
-                  <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
+                  <button *ngIf="this.usuarioActual!.profileType.profileId != 3" type="submit"
                     class="btn btn-custom float-end">Guardar</button>
                 </div>
               </div>
@@ -471,7 +471,7 @@
               </div>
               <div class="row text-center mt-3">
                 <div class="col-12 col-md-12 text-end">
-                  <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
+                  <button *ngIf="this.usuarioActual!.profileType.profileId != 3" type="submit"
                     class="btn btn-custom float-end">Guardar</button>
                 </div>
               </div>
@@ -3229,12 +3229,12 @@
               <div class="col-12 col-md-6 mt-3">
               </div>
               <div class="col-12 col-md-3 mt-3">
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
+                <button *ngIf="this.usuarioActual!.profileType.profileId != 3" type="button"
                   class="btn btn-danger me-2" (click)="eliminarEntrenamiento()">Eliminar
                   Entrenamiento</button>
               </div>
               <div class="col-12 col-md-3 mt-3">
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-custom"
+                <button *ngIf="this.usuarioActual!.profileType.profileId != 3" type="button" class="btn btn-custom"
                   (click)="crearEntrenamiento()">Guardar Entrenamiento</button>
               </div>
             </div>
@@ -3315,11 +3315,11 @@
                     </div>
                   </div>
                   <div class="col-12 col-md-3 mt-3 text-start">
-                    <button *ngIf="this.usuarioActual!.profileType.profileId === 2" (click)="toggleAddTaskForm()"
+                    <button *ngIf="this.usuarioActual!.profileType.profileId != 3" (click)="toggleAddTaskForm()"
                       class="btn btn-danger">Cancelar</button>
                   </div>
                   <div class="col-12 col-md-3 mt-3 text-end">
-                    <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="submit"
+                    <button *ngIf="this.usuarioActual!.profileType.profileId != 3" type="submit"
                       class="btn btn-custom">Crear Tarea</button>
                   </div>
                 </div>
@@ -3357,15 +3357,15 @@
 
                     <!-- Botones de acción -->
                     <div class="d-flex justify-content-between">
-                      <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
+                      <button *ngIf="this.usuarioActual!.profileType.profileId != 3" type="button"
                         class="btn btn-secondary" (click)="printDiv(tarea)">
                         <i class="bi bi-printer"></i> Imprimir
                       </button>
-                      <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
+                      <button *ngIf="this.usuarioActual!.profileType.profileId != 3" type="button"
                         class="btn btn-primary" (click)="openTaskModal(tarea)">
                         <i class="bi bi-eye"></i> Ver
                       </button>
-                      <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
+                      <button *ngIf="this.usuarioActual!.profileType.profileId != 3" type="button"
                         class="btn btn-danger" (click)="deleteTask(tarea)">
                         <i class="bi bi-trash"></i> Eliminar
                       </button>
@@ -3377,17 +3377,17 @@
 
             <div class="row text-center align-items-center mt-3">
               <div class="col-12 col-md-6 mt-3 text-start">
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
+                <button *ngIf="this.usuarioActual!.profileType.profileId != 3" type="button"
                   class="form-control btn btn-custom mt-3" [disabled]="showAddTaskForm"
                   (click)="toggleAddTaskForm()">Agregar
                   Tarea</button>
               </div>
               <div class="col-12 col-md-6 mt-3 text-start">
                 <button type="button" class="form-control btn btn-custom mt-3" (click)="verTienda()"
-                  *ngIf="!viewShop && this.usuarioActual!.profileType.profileId === 2">Nube de
+                  *ngIf="!viewShop && this.usuarioActual!.profileType.profileId != 3">Nube de
                   Tareas</button>
                 <button type="button" class="form-control btn btn-danger mt-3" (click)="cerrarTienda()"
-                  *ngIf="viewShop && this.usuarioActual!.profileType.profileId === 2">Cerrar
+                  *ngIf="viewShop && this.usuarioActual!.profileType.profileId != 3">Cerrar
                   Nube de Tareas</button>
               </div>
             </div>
@@ -4213,7 +4213,7 @@
                 onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'">
             </div>
             <hr>
-            <div *ngIf="this.usuarioActual!.profileType.profileId === 2">
+            <div *ngIf="this.usuarioActual!.profileType.profileId != 3">
               <h4>Puedes crear la tarea en una pizarra y subir después la imagen</h4>
               <!-- Botón para abrir el modal -->
               <button class="btn btn-warning" (click)="openBoardModal()">Abrir pizarra</button> o también puedes

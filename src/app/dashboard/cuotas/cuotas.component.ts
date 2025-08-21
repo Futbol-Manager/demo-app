@@ -12,6 +12,10 @@ import * as $ from 'jquery';
 import 'datatables.net';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 
+import { environment } from 'src/environments/environment';
+import { firstValueFrom } from 'rxjs';
+import { ClubService } from 'src/app/core/services/club/club.service';
+
 @Component({
   selector: 'app-cuotas',
   templateUrl: './cuotas.component.html',
@@ -48,7 +52,10 @@ export class CuotasComponent implements OnInit {
 
   selectedText: string = '';
   banco = '';
+  nameClub = '';
+  stripeId = '';
   asunto = '';
+  clubId = 0;
   contacto = '';
   bizum = 0;
   pagado = '0';
@@ -61,6 +68,15 @@ export class CuotasComponent implements OnInit {
   restante: number = 0;
   restanteCero: boolean = false;
   cuotas: any[] = [];
+  temporadaStoredValue = '2025';
+  selectedCuota: any = null;   // aquí guardas el objeto 'c' elegido
+
+  listAllCuotas: Array<{ pagoClubId: number; titulo: string }> = [];
+
+  stripeFeePct = 0.018;
+  stripeFeeFix = 0.25;
+  pagoClubIdSelected = 0;
+  importeSelected = '';
 
   constructor(
     private router: Router,
@@ -71,15 +87,23 @@ export class CuotasComponent implements OnInit {
     private fb: FormBuilder,
     private elementRef: ElementRef,
     private http: HttpClient,
+    private clubService: ClubService,
     private location: Location) {
   }
 
   async ngOnInit(): Promise<void> {
+
+    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+    }
     this.paymentForm = this.fb.group({
       amount: ['']
     });
 
-    this.stripe = await loadStripe('pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL'); // Reemplaza con tu clave pública
+    console.log(environment.stripePublicKey);
+    this.stripe = await loadStripe(environment.stripePublicKey);
+
+    //this.stripe = await loadStripe('pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL'); // Reemplaza con tu clave pública
     //this.stripe = await loadStripe('pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU'); // Reemplaza con tu clave pública
     const elements = this.stripe.elements();
     this.card = elements.create('card');
@@ -111,7 +135,10 @@ export class CuotasComponent implements OnInit {
 
             this.cuotasObligatorias = this.historyCuotasPlayer.obligatorios;
             this.cuotasNoObligatorias = this.historyCuotasPlayer.noObligatorios;
+            this.stripeId = this.historyCuotasPlayer.stripeId;
             this.banco = this.historyCuotasPlayer.banco;
+            this.nameClub = this.historyCuotasPlayer.nameClub;
+            this.clubId = this.historyCuotasPlayer.clubId;
             this.asunto = this.historyCuotasPlayer.asunto;
             this.contacto = this.historyCuotasPlayer.contacto;
             this.bizum = this.historyCuotasPlayer.bizum;
@@ -138,7 +165,7 @@ export class CuotasComponent implements OnInit {
   }
 
   openModalStripe(): void {
-    this.showModalStripe = true;
+    this.getCuotas();
   }
 
   closeModal(): void {
@@ -148,6 +175,86 @@ export class CuotasComponent implements OnInit {
   }
 
   async makePayment(): Promise<void> {
+    if (!this.pagarOk || !this.stripe || !this.card) {
+      alert('Selecciona una cuota e introduce la tarjeta.');
+      return;
+    }
+
+    try {
+      this.loading = true;
+
+      // 1) Pide el clientSecret a tu API (NO mandes token de tarjeta)
+      const option = this.selectedText?.split('.')?.[0] || null;
+
+      const payload = {
+        userId: this.usuarioActual?.userId,
+        clubId: this.clubId,
+        teamId: this.teamId,
+        playerId: this.playerIdUserActual,
+        nameClub: this.nameClub,
+        cantidadOriginal: this.cantidadAPagar,     // base sin fee
+        accountId: this.stripeId,          // acct_xxx del club
+        option: option,
+        pagoClubId: this.pagoClubIdSelected,
+        importe: this.importeSelected
+      };
+
+      const createResp: any = await firstValueFrom(this.teamService.createIntent(payload));
+      const clientSecret = createResp?.data?.clientSecret;
+      const paymentIntentId = createResp?.data?.paymentIntentId;
+
+      if (!clientSecret) {
+        throw new Error('No se pudo iniciar el pago (sin clientSecret).');
+      }
+
+      // 2) Confirmar el pago en el FRONT (gestiona 3DS automáticamente)
+      const { error, paymentIntent } = await this.stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: this.card,
+          billing_details: {
+            name: `${this.usuarioActual?.firstName || ''} ${this.usuarioActual?.secondName || ''}`.trim(),
+            email: this.usuarioActual?.mail || undefined,
+            phone: this.usuarioActual?.mobile || undefined
+          }
+        }
+      });
+
+      if (error) {
+        // Error del banco / 3DS no superado / tarjeta inválida
+        alert(error.message || 'No se pudo confirmar el pago.');
+        return;
+      }
+
+      // 3) UI inmediata + (opcional) verificar con tu API
+      if (paymentIntent?.status === 'succeeded') {
+        // (Opcional) Verificar/registrar ya en tu API — si tienes /payments/verify
+        try {
+          await firstValueFrom(this.teamService.verify({ paymentIntentId }));
+        } catch { /* si no existe verify, el webhook lo registrará */ }
+
+        // Actualiza tu UI
+        this.restante = this.restante - this.cantidadAPagar;
+        this.pagado = (parseFloat(this.pagado as any) + this.cantidadAPagar).toFixed(2);
+        this.restanteCero = this.restante === 0;
+
+        alert('Pago realizado con éxito');
+        this.closeModal();
+        this.goBack();
+      } else if (paymentIntent?.status === 'processing') {
+        alert('El pago está procesándose. Te avisaremos al confirmarse.');
+        // Puedes hacer polling con /payments/verify cada X segundos si quieres.
+      } else {
+        alert('Estado del pago: ' + paymentIntent?.status);
+      }
+    } catch (ex: any) {
+      console.error('Error en makePayment():', ex);
+      alert(ex?.message || 'Error inesperado al procesar el pago.');
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  async makePaymentOld(): Promise<void> {
     if (this.paymentForm.valid) {
       const paymentRequest = this.paymentForm.value;
       this.pagarOk = false;
@@ -243,7 +350,7 @@ export class CuotasComponent implements OnInit {
     return resp;
   }
 
-  calcularComision(event: Event) {
+  calcularComisionOld(event: Event) {
     const selectedValue = (event.target as HTMLSelectElement).value;
     let cantidad = parseFloat(selectedValue);
     //console.log('Cuota seleccionada:', selectedValue);
@@ -252,11 +359,35 @@ export class CuotasComponent implements OnInit {
     this.pagarOk = true;
   }
 
+  calcularComision(event: Event) {
+    // Base que debe recibir el club
+    const base = parseFloat((event.target as HTMLSelectElement).value) || 0;
+
+    // === parámetros ===
+    const APP_PCT = this.stripeFeePct;   // tu fee 1,8%
+    const APP_FIX = this.stripeFeeFix;    // 0,25 €
+    const STRIPE_PCT = 0.035; // 3,5%  <-- AJUSTA a tu contrato real
+    const STRIPE_FIX = 0.00;  // 0,00 € <-- AJUSTA (p.ej. 0.25 si aplica)
+
+    const toCents = (x: number) => Math.round(x * 100);
+    const fromC = (c: number) => +(c / 100).toFixed(2);
+
+    const B = toCents(base);
+    const appFeeC = Math.round(B * APP_PCT) + toCents(APP_FIX);
+    const denom = 1 - STRIPE_PCT;
+
+    // A = (B + appFee + STRIPE_FIX) / (1 - STRIPE_PCT)
+    const A = Math.ceil((B + appFeeC + toCents(STRIPE_FIX)) / denom);
+
+    this.cantidadAPagar = fromC(B);   // base que se envía al backend (club)
+    this.amount = fromC(A);           // total que paga el padre (lo que muestras)
+    this.pagarOk = this.cantidadAPagar > 0;
+  }
+
   getCuotas() {
     const cuotas = [];
-
     // Cuota de ropa
-    if (this.playerCuotas.cuotaRopa && this.playerCuotas.cuotaRopa != 0) {
+    /*if (this.playerCuotas.cuotaRopa && this.playerCuotas.cuotaRopa != 0) {
       cuotas.push({
         value: this.playerCuotas.cuotaRopa,
         text: `${this.playerCuotas.cuotaRopa}€`
@@ -273,10 +404,22 @@ export class CuotasComponent implements OnInit {
           text: `${cuotaValue}€` //+  ' ' + cuotaAlias
         });
       }
-    }
+    }*/
 
-    this.cuotas = cuotas;
-    return cuotas;
+    this.clubService.getListPagosClub(this.clubId, this.temporadaStoredValue).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.listAllCuotas = response.data;
+        }
+        this.showModalStripe = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+
+    return this.listAllCuotas;
   }
 
   // Función para convertir número a texto (1 -> 'Uno', 2 -> 'Dos', etc.)
@@ -292,6 +435,58 @@ export class CuotasComponent implements OnInit {
     console.log('Nueva cuota seleccionada:', this.cantidadAPagar);
     // Lógica para manejar la nueva cuota
   }
+
+  onCuotaChange(c: any) {
+    this.pagoClubIdSelected = c.pagoClubId;
+    this.importeSelected = c.importe;
+    this.selectedCuota = c;
+
+    if (!c) {
+      this.pagarOk = false;
+      this.cantidadAPagar = 0;
+      this.amount = 0;
+      return;
+    }
+
+    // Base que debe recibir el club (ajusta el nombre del campo si no es 'importe')
+    const base = Number(c.importe ?? 0);
+
+    // === Parámetros de fee ===
+    const APP_PCT = 0.003;   // tu fee 1,8%
+    const APP_FIX = 0.25;    // tu fijo 0,25 €
+    // ⬇️ AJUSTA a tu contrato real con Stripe:
+    const STRIPE_PCT = 0.015; // ejemplo 3,5% (por tu captura)
+    const STRIPE_FIX = 0.00;  // ejemplo 0,00 € (usa 0.25 si aplica)
+
+    // Helpers en céntimos para evitar errores de redondeo
+    const toCents = (x: number) => Math.round(x * 100);
+    const fromC = (cents: number) => +(cents / 100).toFixed(2);
+
+    // Cálculo:
+    const B = toCents(base);                                       // club neto deseado
+    const appFeeC = Math.round(B * APP_PCT) + toCents(APP_FIX);    // tu fee sobre B
+    const denom = 1 - STRIPE_PCT;
+
+    // Gross-up: (1 - STRIPE_PCT) * A = B + appFeeC + STRIPE_FIX
+    const A = Math.ceil((B + appFeeC + toCents(STRIPE_FIX)) / denom); // total a cobrar al padre
+
+    // Actualiza UI
+    this.cantidadAPagar = fromC(B); // base que enviarás al backend como cantidadOriginal
+    this.amount = fromC(A); // total que verá/pagará el padre
+    this.pagarOk = B > 0;
+
+    // Guarda datos de la cuota que usarás en makePayment()
+    this.cuota = {
+      clubId: c.clubId,
+      accountId: c.accountId, // acct_xxx
+      nameClub: c.nameClub
+    };
+
+    // (Opcional) si quieres mostrar desglose en la UI:
+    // const stripeFeeEst = Math.ceil(A * STRIPE_PCT + toCents(STRIPE_FIX));
+    // this.desglose = { club: fromC(B), tuFee: fromC(appFeeC), stripe: fromC(stripeFeeEst), total: this.amount };
+  }
+
 
 
 }
