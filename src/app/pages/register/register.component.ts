@@ -65,7 +65,7 @@ export class RegisterComponent implements OnInit {
   readonly realPassword = 'RegistroClubesST2025'; // la contraseña que quieras validar
 
   mailsOk = false;
-  showModalClub  = false;
+  showModalClub = false;
   form = this.fb.group(
     {
       email: ['', [Validators.required, Validators.email]],
@@ -550,7 +550,13 @@ export class RegisterComponent implements OnInit {
   }
 
   nextRegistro() {
-    this.openConfirm();
+    if (this.selectedOption == 1) {
+      this.openConfirm();
+    } else {
+      this.showModalClub = false;
+      this.showNextRegistro = true;
+      this.btnRegistro = true;
+    }
   }
 
   backRegistro() {
@@ -881,6 +887,10 @@ export class RegisterComponent implements OnInit {
 
   openConfirm() {
     this.showModalClub = true;
+  }
+
+  cerrarModalClub() {
+    this.showModalClub = false;
   }
 
   validatePassword() {

@@ -100,10 +100,7 @@
                                 <ng-container *ngIf="player.estado === 0">
                                     <i class="bi bi-x-circle text-danger" title="Ningún pago"></i>
                                 </ng-container>
-                                <ng-container *ngIf="player.estado === 1">
-                                    <i class="bi bi-exclamation-triangle text-warning" title="Con retraso"></i>
-                                </ng-container>
-                                <ng-container *ngIf="player.estado === 2">
+                                <ng-container *ngIf="player.estado === 1 || player.estado === 2">
                                     <i class="bi bi-check-circle text-success" title="Al corriente"></i>
                                 </ng-container>
                                 <ng-container *ngIf="player.estado === 3">

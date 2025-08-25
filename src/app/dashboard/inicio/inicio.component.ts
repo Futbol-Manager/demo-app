@@ -352,8 +352,9 @@ export class InicioComponent implements OnInit {
           //significa que NO es valido el acceso
           this.datosNoCargados = true;
         } else {
+          //significa que está solo, sin club
           this.datosCargados = true;
-          this.clubOk = true;
+          //this.clubOk = true;
         }
         this.datosCargando = false;
       },
@@ -492,7 +493,7 @@ export class InicioComponent implements OnInit {
     }
 
     if (!accessSusOk) {
-      const confirmacion = confirm('No puedes creear más equipos, necesitas actualizar tu suscripción, ¿quieres ir a la página de suscripción?');
+      const confirmacion = confirm('No puedes crear más equipos, necesitas actualizar tu suscripción, ¿quieres ir a la página de suscripción?');
       if (confirmacion) {
         this.router.navigate(['/dashboard/suscripcion', this.userId]);
       }
