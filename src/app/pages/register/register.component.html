@@ -179,7 +179,7 @@
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
-                    <div class="col-6">                      
+                    <div class="col-6">
                       <div class="position-relative">
                         <input type="date" class="form-control input-register no-calendar-icon"
                           formControlName="birthdate">
@@ -587,11 +587,14 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Confirmación requerida</h5>
-                <button style="background-color: white;" type="button" class="btn-close"
-                    (click)="cerrarModalClub()"></button>
+        <button style="background-color: white;" type="button" class="btn-close" (click)="cerrarModalClub()"></button>
       </div>
 
       <div class="modal-body">
+        <h2>⚠️ Atención.</h2>
+        <p class="mb-3" style="color: red;">
+          SI ERES UN PADRE/MADRE, ESTE NO ES TU REGISTRO. HABLA CON TU CLUB PARA RECIBIR EL ENLACE DE REGISTRO
+        </p>
         <p class="mb-3">
           <strong>Por seguridad</strong>, el registro de clubes requiere una contraseña de acceso.
           <br>Si aún no la tienes, solicítala antes de continuar:
@@ -608,7 +611,8 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" (click)="cerrarModalClub()">Cancelar</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+            (click)="cerrarModalClub()">Cancelar</button>
           <button type="button" class="btn btn-success" (click)="validatePassword()">Aceptar</button>
         </div>
       </div>
