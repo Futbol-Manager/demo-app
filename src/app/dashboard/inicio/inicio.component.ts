@@ -187,6 +187,12 @@ export class InicioComponent implements OnInit {
   mostrarDropdown2: boolean = false;
   nivelesVisiblesFiltradas = [...this.nivelesDefault];
 
+  appStoreUrl = 'https://apps.apple.com/es/app/sphaira-tech/id6745791142';
+  playStore = 'https://play.google.com/store/apps/details?id=com.futbol.sphairatech&pcampaignid=web_share';
+  aceptoGestionNavegador = false;
+  modalConfirAndroid = false;
+  optionTienda = 1
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -846,6 +852,29 @@ export class InicioComponent implements OnInit {
         console.error('Error al cargar el listado de equipos', error);
       }
     );
+  }
+
+  openSuscriptionModal(option: number): void {
+    this.optionTienda = option;
+    this.aceptoGestionNavegador = false;
+    this.modalConfirAndroid = true;
+  }
+
+  onAceptarDescarga(): void {
+    if (!this.aceptoGestionNavegador) {
+      alert('Debes aceptar que la suscripción se gestiona desde el navegador.');
+      return;
+    }
+    // Cierra el modal y abre la Store
+    this.modalConfirAndroid = false;
+    if(this.optionTienda == 1) //1 es android y 2 iphone
+      window.open(this.playStore, '_blank');
+    else
+      window.open(this.appStoreUrl, '_blank');
+  }
+
+  closeModalConfirAndroid(){
+    this.modalConfirAndroid = false;
   }
 
 }

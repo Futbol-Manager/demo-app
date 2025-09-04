@@ -83,6 +83,20 @@ export class NewCuotasComponent implements OnInit {
 
   playerIndex = 0;
 
+  // Campos de apoyo para mostrar/ocultar
+  showStripeConfig = false;
+  isSubscription = false;
+  accountIdDelClub = '';
+
+  periodos = [
+    { value: 'day', label: 'Día' },
+    { value: 'week', label: 'Semana' },
+    { value: 'month', label: 'Mes' },
+    { value: 'year', label: 'Año' }
+  ];
+
+  soloLectura = false;
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -252,6 +266,8 @@ export class NewCuotasComponent implements OnInit {
   }
 
   openModalCuotas() {
+    this.cerrarDatosStripe();
+    this.soloLectura = false;
     this.clubService.getListPagosClub(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
@@ -284,18 +300,34 @@ export class NewCuotasComponent implements OnInit {
     this.showModalCuotas = false;
   }
 
-  editarCuota(cuota: any) {
-    this.showModalCuota = true;
+  editarCuota(cuota: any, stripe: number) {
+    this.soloLectura = false;
     this.cuotaSeleccionada = true;
     this.nuevaCuota = cuota;
+    this.nuevaCuota.stripe = stripe;
+    this.nuevaCuota.tipoPagoStripe = cuota.tipoPagoStripe;
     this.rellenarCombo(cuota);
+
+    if (stripe == 0) {
+      this.cerrarDatosStripe();
+    } else {
+      this.showStripeConfig = true;
+      if (cuota.tipoPagoStripe == 1) {
+        this.isSubscription = true;
+        this.soloLectura = true;
+      } else
+        this.isSubscription = false;
+    }
+    this.showModalCuota = true;
   }
 
   eliminarCuota(cuota: any, index: number): void {
     const ok = confirm(`¿Eliminar el pago "${cuota.titulo}"?`);
     if (!ok) return;
 
-    this.clubService.deletePagoClub(cuota.pagoClubId).subscribe(
+    let pago = cuota.PagoClubId != null && cuota.PagoClubId != undefined ? cuota.PagoClubId : cuota.pagoClubId;
+
+    this.clubService.deletePagoClub(pago).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data) {
@@ -316,7 +348,7 @@ export class NewCuotasComponent implements OnInit {
     this.listTeamsSelecteds = [];
     this.cuotaSeleccionada = false;
     this.nuevaCuota = {
-      PagoClubId: 0, clubId: this.clubId, temporada: this.temporadaStoredValue,
+      pagoClubId: 0, clubId: this.clubId, temporada: this.temporadaStoredValue,
       dateCreate: null, dateEdit: null, titulo: null, descripcion: null, obligatorio: 0, importe: null,
       fechaLimite: null, stripe: null
     };
@@ -329,8 +361,12 @@ export class NewCuotasComponent implements OnInit {
   }
 
   guardarCuota() {
+    const err = this.validarStripe();
+    if (err) { alert(err); return; }
+
     if (this.listTeamsSelecteds.length == 0) {
       alert('Por favor, selecciona mínimo un equipo.');
+      return;
     } else {
       if (this.nuevaCuota.titulo && this.nuevaCuota.titulo != ''
         && this.nuevaCuota.descripcion && this.nuevaCuota.descripcion != ''
@@ -341,10 +377,20 @@ export class NewCuotasComponent implements OnInit {
         this.nuevaCuota.importe = String(this.nuevaCuota.importe);
         this.nuevaCuota.obligatorio = this.nuevaCuota.obligatorio ? 1 : 0;
         this.nuevaCuota.listTeams = this.listTeamsSelecteds;
+
+        if (this.nuevaCuota.stripe == 1 && this.nuevaCuota.tipoPagoStripe == 1) {
+          if (this.nuevaCuota.fechaInicio == null || this.nuevaCuota.fechaInicio == undefined || this.nuevaCuota.fechaInicio == ''
+            || this.nuevaCuota.fechaFin == null || this.nuevaCuota.fechaFin == undefined || this.nuevaCuota.fechaFin == ''
+          ) {
+            alert('Por favor, Para una suscripción con Stripe, es obligatorio poner las fechas de inicio y de fin.');
+            return;
+          }
+        }
         this.clubService.createUpdatePagoClub(this.nuevaCuota).subscribe(
           (response: Response) => {
             // Verifica que la propiedad 'data' exista en la respuesta
             if (response.data !== null) {
+              this.crearSuscripcion();
               if (!this.cuotaSeleccionada) this.listaCuotas.push(response.data);
 
               this.reloadTabla();
@@ -360,6 +406,44 @@ export class NewCuotasComponent implements OnInit {
         alert('Rellena todos los campos.');
       }
     }
+  }
+
+
+
+  crearSuscripcion() {
+    if (this.nuevaCuota?.stripe !== 1 || this.nuevaCuota?.tipoPagoStripe !== 1) return;
+
+    let pago = this.nuevaCuota.PagoClubId != null && this.nuevaCuota.PagoClubId != undefined ? this.nuevaCuota.PagoClubId : this.nuevaCuota.pagoClubId;
+
+    const body = {
+      pagoClubId: pago,   // el ID devuelto al guardar
+      clubId: this.clubId,                      // o desde la cuota
+      accountId: this.accountIdDelClub,         // acct_xxx del club
+      titulo: this.nuevaCuota.titulo,
+      descripcion: this.nuevaCuota.descripcion,
+      importe: Number(this.nuevaCuota.importe),
+      currency: 'eur',
+      intervalo: this.nuevaCuota.intervalo,           // 'month' por defecto
+      intervaloCuenta: this.nuevaCuota.intervaloCuenta, // 1 por defecto
+      fechaInicio: this.nuevaCuota.fechaInicio || null,
+      fechaFin: this.nuevaCuota.fechaFin || null
+    };
+
+    this.teamService.createSubscriptionPlan(body)
+      .subscribe({
+        next: (resp) => {
+          if (resp.status === 200) {
+            // puedes guardar stripePriceId/productId en tu modelo si te los devuelve también el clubService
+            console.log('Plan creado:', resp.data);
+          } else {
+            alert('Error creando plan de suscripción');
+          }
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Error creando plan de suscripción');
+        }
+      });
   }
 
   rellenarCombo(cuota: any) {
@@ -680,6 +764,127 @@ export class NewCuotasComponent implements OnInit {
 
   copy(text: string) {
     navigator.clipboard?.writeText(text);
+  }
+
+  // Llama a esto cuando abras el modal para editar/crear, para sincronizar el UI
+  initStripeUIFromModel() {
+    this.showStripeConfig = this.nuevaCuota?.stripe === 1;
+    this.isSubscription = this.showStripeConfig && this.nuevaCuota?.tipoPagoStripe === 1;
+
+    // Defaults sensatos si vienen nulos
+    if (!this.nuevaCuota) return;
+    if (this.nuevaCuota.tipoPagoStripe === undefined || this.nuevaCuota.tipoPagoStripe === null) {
+      this.nuevaCuota.tipoPagoStripe = 0; // puntual por defecto
+    }
+    if (!this.nuevaCuota.intervalo) {
+      this.nuevaCuota.intervalo = 'month';
+    }
+    if (!this.nuevaCuota.intervaloCuenta || this.nuevaCuota.intervaloCuenta < 1) {
+      this.nuevaCuota.intervaloCuenta = 1;
+    }
+  }
+
+  // Toggle principal: 0/1 en el modelo
+  onToggleStripe(ev: Event) {
+    if (this.nuevaCuota.pagoClubId == 0) {
+      alert('Para habilitar Stripe sobre este pago, primero créalo y después lo buscas y desde edición, lo habilitas.');
+      this.nuevaCuota.stripe = 0;
+      return;
+    }
+
+    const checked = (ev.target as HTMLInputElement).checked;
+    if (!checked) {
+      //this.cerrarDatosStripe();
+      return;
+    };
+
+    //vamos a comprobar que tiene stripe configurado
+    this.clubService.getBancoClub(this.clubId, this.temporadaStoredValue).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data !== null) {
+          this.infoClub = response.data;
+          if (this.infoClub.stripeId !== null && this.infoClub.stripeId !== undefined && this.infoClub.stripeId !== '') {
+            this.accountIdDelClub = this.infoClub.stripeId;
+            //carga bien            
+            this.nuevaCuota.stripe = checked ? 1 : 0;
+            this.mostrarDatosStripe();
+          } else {
+            //se muestra alert y se abre modal stripe
+            this.cerrarDatosStripe();
+          }
+        } else {
+          this.cerrarDatosStripe();
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  // Pediste que al cambiar llame a este método
+  mostrarDatosStripe() {
+    this.showStripeConfig = this.nuevaCuota.stripe === 1;
+    this.isSubscription = this.showStripeConfig && this.nuevaCuota.tipoPagoStripe === 1;
+
+    // Si desactivas Stripe, limpia campos de suscripción
+    if (!this.showStripeConfig) {
+      this.nuevaCuota.tipoPagoStripe = 0;
+      this.nuevaCuota.intervalo = 'month';
+      this.nuevaCuota.intervaloCuenta = 1;
+      this.nuevaCuota.fechaInicio = null;
+      this.nuevaCuota.fechaFin = null;
+    }
+  }
+
+  cerrarDatosStripe() {
+    this.showModalStripe = false;
+    this.showModalCuota = false;
+    this.showModalCuotas = false;
+    this.showStripeConfig = false;
+    this.isSubscription = false;
+    this.nuevaCuota.stripe = 0;
+
+    // Si desactivas Stripe, limpia campos de suscripción
+    this.nuevaCuota.tipoPagoStripe = 0;
+    this.nuevaCuota.intervalo = 'month';
+    this.nuevaCuota.intervaloCuenta = 1;
+    this.nuevaCuota.fechaInicio = null;
+    this.nuevaCuota.fechaFin = null;
+  }
+
+  // Cambiar tipo puntual/suscripción
+  onTipoPagoChange(tipo: 0 | 1) {
+    this.nuevaCuota.tipoPagoStripe = tipo;
+    this.isSubscription = (tipo === 1);
+
+    if (tipo === 0) {
+      // Si vuelven a puntual, oculta y limpia fechas/periodicidad
+      this.nuevaCuota.intervalo = 'month';
+      this.nuevaCuota.intervaloCuenta = 1;
+      this.nuevaCuota.fechaInicio = null;
+      this.nuevaCuota.fechaFin = null;
+    }
+  }
+
+  // (Opcional) al guardar, puedes validar si falta algo cuando es suscripción
+  validarStripe(): string | null {
+    if (this.nuevaCuota.stripe !== 1) return null;
+    if (this.nuevaCuota.tipoPagoStripe === 1) {
+      if (!this.nuevaCuota.intervalo || !this.nuevaCuota.intervaloCuenta) {
+        return 'Selecciona el periodo y la cantidad de periodos para la suscripción.';
+      }
+      if (this.nuevaCuota.intervaloCuenta < 1) {
+        return 'La “cantidad de periodos” debe ser al menos 1.';
+      }
+      // Fechas son opcionales; si las usas, asegúrate de que inicio <= fin
+      if (this.nuevaCuota.fechaInicio && this.nuevaCuota.fechaFin &&
+        this.nuevaCuota.fechaInicio > this.nuevaCuota.fechaFin) {
+        return 'La fecha de inicio no puede ser posterior a la fecha de fin.';
+      }
+    }
+    return null;
   }
 
 }

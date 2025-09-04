@@ -52,7 +52,7 @@ export class NotificacionesComponent implements OnInit {
     fechaCreate: ''
   };*/
   isSending: boolean = false;
-  
+
   temporadaStoredValue = '2025';
 
   constructor(
@@ -153,7 +153,7 @@ export class NotificacionesComponent implements OnInit {
         }
       );
     }
-  }  
+  }
 
   goBack(): void {
     this.location.back();
@@ -361,19 +361,22 @@ export class NotificacionesComponent implements OnInit {
           if (this.correosEnviadosSinFiltro == null) {
             this.correosEnviadosSinFiltro = [];
           }
-
           this.correosEnviadosSinFiltro.unshift(this.correoNew);
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
-        this.cerrarModalNew();
-        this.isSending = false; // Oculta el spinner después de enviar
-        this.resetSummerNote();
+        this.cerrarEnviando();
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
       }
     );
+  }
+
+  cerrarEnviando() {
+    this.cerrarModalNew();
+    this.isSending = false; // Oculta el spinner después de enviar
+    this.resetSummerNote();
   }
 
   newCorreo() {

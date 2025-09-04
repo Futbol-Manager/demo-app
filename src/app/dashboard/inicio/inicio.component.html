@@ -52,13 +52,13 @@
       </div>
     </div>
     <div class="row" *ngIf="profileId === 2">
-      <div class="col text-center" *ngIf="this.usuarioActual!.userId === 1701">
+      <div class="col text-center" *ngIf="!clubOk">
         <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearEquipo()">
           <i class="bi bi-plus-circle"></i>
           <span class="d-none d-md-inline">Crear un equipo</span>
         </a>
       </div>
-      <div class="col text-center" *ngIf="clubOk">
+      <div class="col text-center">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">
           <i class="bi bi-envelope"></i>
           <span class="d-none d-md-inline">Notificaciones</span>
@@ -67,9 +67,8 @@
     </div>
   </div>
 
-  <!-- Alerta para Android -->
-  <div
-    *ngIf="profileId > 1 && showAlertAndroid && isAndroid"
+  <!-- Alerta para Android
+  <div *ngIf="profileId > 1 && showAlertAndroid && isAndroid"
     class="alert alert-success d-flex align-items-center justify-content-between p-3 mt-4" role="alert">
     <div>
       <strong>Para una mejor experiencia, accede desde la app móvil. ¡Descarga ya la app para Android!</strong><br>
@@ -82,9 +81,26 @@
       </a>
       <button type="button" class="btn-close ms-2" aria-label="Cerrar" (click)="cerrarAlertaAndroid()"></button>
     </div>
+  </div> -->
+
+  <div *ngIf="profileId > 1 && showAlertAndroid && isAndroid"
+    class="alert alert-primary d-flex align-items-center justify-content-between p-3 mt-4" role="alert">
+    <div>
+      <strong>Para una mejor experiencia, accede desde la app móvil. ¡Descarga ya la app para Android!</strong><br>
+      Disponible en Google Play.
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <!-- Abre el modal -->
+      <button type="button" class="btn btn-primary d-flex align-items-center" (click)="openSuscriptionModal(1)">
+        <i class="bi bi-apple me-2" style="font-size: 1.2rem;"></i> Descargar
+      </button>
+
+      <button type="button" class="btn-close ms-2" aria-label="Cerrar" (click)="cerrarAlertaAndroid()"></button>
+    </div>
   </div>
 
-  <!-- Alerta para iOS -->
+  <!-- Alerta para iOS
   <div
     *ngIf="profileId > 1 && showAlertAndroid && isiOS"
     class="alert alert-primary d-flex align-items-center justify-content-between p-3 mt-4" role="alert">
@@ -99,8 +115,24 @@
       </a>
       <button type="button" class="btn-close ms-2" aria-label="Cerrar" (click)="cerrarAlertaAndroid()"></button>
     </div>
-  </div>
+  </div> -->
 
+  <div *ngIf="profileId > 1 && showAlertAndroid && isiOS"
+    class="alert alert-primary d-flex align-items-center justify-content-between p-3 mt-4" role="alert">
+    <div>
+      <strong>Para una mejor experiencia, accede desde la app móvil. ¡Descarga ya la app para iPhone!</strong><br />
+      Disponible en App Store.
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <!-- Abre el modal -->
+      <button type="button" class="btn btn-primary d-flex align-items-center" (click)="openSuscriptionModal(2)">
+        <i class="bi bi-apple me-2" style="font-size: 1.2rem;"></i> Descargar
+      </button>
+
+      <button type="button" class="btn-close ms-2" aria-label="Cerrar" (click)="cerrarAlertaAndroid()"></button>
+    </div>
+  </div>
 
   <app-publicidad></app-publicidad>
 
@@ -532,6 +564,40 @@
             <button type="submit" class="btn btn-success float-end"
               (click)="cerrarModalSubirJugadoresGesDesk()">Cerrar</button>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': modalConfirAndroid}">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body p-4">
+        <div class="d-flex align-items-center mb-3">
+          <span class="me-2">⚠️</span>
+          <h5 class="m-0 text-danger fw-bold">Atención</h5>
+        </div>
+
+        <p class="mb-3">
+          Este mensaje es solo para los entrenadores independientes, que no han sido invitados por un club.
+        </p>
+        <p class="mb-3">
+          La gestión de tu suscripción solo puede realizarse desde el navegador web.
+          En la aplicación móvil no es posible modificar, renovar ni cancelar tu suscripción.
+        </p>
+
+        <div class="form-check my-3">
+          <input id="chkAceptoGestion" type="checkbox" class="form-check-input" [(ngModel)]="aceptoGestionNavegador" />
+          <label class="form-check-label" for="chkAceptoGestion">
+            He leído y acepto que mi suscripción se gestiona desde el navegador
+          </label>
+        </div>
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <button type="button" class="btn btn-outline-secondary" (click)="closeModalConfirAndroid()">Cancelar</button>
+          <button type="button" class="btn btn-primary" (click)="onAceptarDescarga()">Aceptar</button>
         </div>
       </div>
     </div>

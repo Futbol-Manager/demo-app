@@ -69,7 +69,6 @@ export class CuotasComponent implements OnInit {
   restanteCero: boolean = false;
   cuotas: any[] = [];
   temporadaStoredValue = '2025';
-  selectedCuota: any = null;   // aquí guardas el objeto 'c' elegido
 
   listAllCuotas: Array<{ pagoClubId: number; titulo: string }> = [];
 
@@ -77,6 +76,10 @@ export class CuotasComponent implements OnInit {
   stripeFeeFix = 0.25;
   pagoClubIdSelected = 0;
   importeSelected = '';
+  stripeBtoShow = false;
+
+  selectedCuota: any = null; // { tipoPagoStripe: 0|1, stripePriceId?: string, pagoClubId?: number, ... }
+  infoRecurrente = '';
 
   constructor(
     private router: Router,
@@ -135,6 +138,9 @@ export class CuotasComponent implements OnInit {
 
             this.cuotasObligatorias = this.historyCuotasPlayer.obligatorios;
             this.cuotasNoObligatorias = this.historyCuotasPlayer.noObligatorios;
+
+            this.stripeBtoShow = this.historyCuotasPlayer.stripeId != null && this.historyCuotasPlayer.stripeId != undefined
+              && this.historyCuotasPlayer.stripeId != '' ? true : false;
             this.stripeId = this.historyCuotasPlayer.stripeId;
             this.banco = this.historyCuotasPlayer.banco;
             this.nameClub = this.historyCuotasPlayer.nameClub;
@@ -174,7 +180,212 @@ export class CuotasComponent implements OnInit {
     this.amount = 0;
   }
 
+  // Helper opcional
+  private isSubscriptionSelected(): boolean {
+    return this.selectedCuota?.tipoPagoStripe === 1;
+  }
+
   async makePayment(): Promise<void> {
+    if (!this.pagarOk || !this.stripe || !this.card) {
+      alert('Selecciona una cuota e introduce la tarjeta.');
+      return;
+    }
+
+    try {
+      this.loading = true;
+
+      const option = this.selectedText?.split('.')?.[0] || null;
+
+      if (this.isSubscriptionSelected()) {
+        const priceId = this.selectedCuota?.stripePriceId;
+        if (!priceId) { alert('Esta cuota es de suscripción pero no tiene priceId configurado.'); return; }
+        if (!this.stripeId?.startsWith('acct_')) { alert('El club no tiene configurada su cuenta de Stripe (acct_...).'); return; }
+
+        const body = {
+          userId: this.usuarioActual?.userId,
+          priceId,
+          accountId: this.stripeId, // acct_xxx del club
+          clubId: this.clubId,
+          teamId: this.teamId ?? undefined,
+          playerId: this.playerIdUserActual ?? undefined,
+          pagoClubId: this.selectedCuota?.pagoClubId ?? this.pagoClubIdSelected ?? undefined,
+          option,
+          fechaInicio: this.selectedCuota?.fechaInicio || undefined,
+          fechaFin: this.selectedCuota?.fechaFin || undefined,
+          // si no lo mandas, el backend lo lee de BD por pagoClubId
+          applicationFeePercent: this.selectedCuota?.applicationFeePercent ?? undefined
+        };
+
+        const resp: any = await firstValueFrom(this.teamService.subscribeToPlan(body));
+        const data = resp?.data || {};
+        const subscriptionId: string | undefined = data.subscriptionId;
+        const latestInvoiceId: string | undefined = data.latestInvoiceId;
+        let clientSecret: string | undefined = data.clientSecret;
+        let confirmationMode: 'payment' | 'setup' | undefined = data.confirmationMode;
+
+        // Fallback si el backend aún no envía confirmationMode:
+        if (!confirmationMode && clientSecret) {
+          confirmationMode = latestInvoiceId ? 'payment' : 'setup';
+        }
+
+        // Nada que confirmar ahora (p. ej. trial futuro sin capturar)
+        if (!confirmationMode || !clientSecret) {
+          try {
+            await firstValueFrom(
+              this.teamService.verifySubscription({
+                subscriptionId: subscriptionId ?? '',
+                // sin paymentIntentId ni invoiceId en este caso
+                clubId: this.clubId,
+                teamId: this.teamId ?? undefined,
+                playerId: this.playerIdUserActual ?? undefined,
+                pagoClubId: this.selectedCuota?.pagoClubId ?? undefined
+              })
+            );
+          } catch { }
+          alert('Suscripción iniciada. No es necesario confirmar un pago ahora.');
+          this.closeModal();
+          this.goBack();
+          return;
+        }
+
+        if (confirmationMode === 'payment') {
+          const { error, paymentIntent } = await this.stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+              card: this.card,
+              billing_details: {
+                name: `${this.usuarioActual?.firstName || ''} ${this.usuarioActual?.secondName || ''}`.trim(),
+                email: this.usuarioActual?.mail || undefined,
+                phone: this.usuarioActual?.mobile || undefined
+              }
+            }
+          });
+
+          if (error) { alert(error.message || 'No se pudo confirmar el primer cobro de la suscripción.'); return; }
+
+          // Registrar en backend (payment)
+          try {
+            await firstValueFrom(this.teamService.verifySubscription({
+              subscriptionId: subscriptionId ?? '',
+              paymentIntentId: paymentIntent?.id ?? undefined,
+              invoiceId: latestInvoiceId ?? undefined, // opcional
+              clubId: this.clubId,
+              teamId: this.teamId ?? undefined,
+              playerId: this.playerIdUserActual ?? undefined,
+              pagoClubId: this.selectedCuota?.pagoClubId ?? undefined
+            }));
+          } catch { }
+
+          alert('Primer cobro confirmado correctamente.');
+          this.closeModal();
+          this.goBack();
+          return;
+        }
+
+        if (confirmationMode === 'setup') {
+          const { error, setupIntent } = await this.stripe.confirmCardSetup(clientSecret, {
+            payment_method: {
+              card: this.card,
+              billing_details: {
+                name: `${this.usuarioActual?.firstName || ''} ${this.usuarioActual?.secondName || ''}`.trim(),
+                email: this.usuarioActual?.mail || undefined,
+                phone: this.usuarioActual?.mobile || undefined
+              }
+            }
+          });
+
+          if (error) { alert(error.message || 'No se pudo guardar el método de pago.'); return; }
+
+          // Registrar en backend (setup)
+          try {
+            await firstValueFrom(
+              this.teamService.verifySubscription({
+                subscriptionId: subscriptionId ?? '',
+                setupIntentId: setupIntent?.id ?? undefined,
+                // NO invoiceId en setup
+                clubId: this.clubId,
+                teamId: this.teamId ?? undefined,
+                playerId: this.playerIdUserActual ?? undefined,
+                pagoClubId: this.selectedCuota?.pagoClubId ?? undefined
+              })
+            );
+          } catch { }
+
+          alert('Tarjeta guardada. Se cobrará automáticamente cuando empiece la suscripción.');
+          this.closeModal();
+          this.goBack();
+          return;
+        }
+
+        // Fallback
+        alert('Suscripción creada correctamente.');
+        this.closeModal();
+        this.goBack();
+        return;
+      }
+
+      // ======== PAGO PUNTUAL ========
+      const payload = {
+        userId: this.usuarioActual?.userId,
+        clubId: this.clubId,
+        teamId: this.teamId,
+        playerId: this.playerIdUserActual,
+        nameClub: this.nameClub,
+        cantidadOriginal: this.cantidadAPagar,   // base sin fee (lo que debe recibir el club)
+        accountId: this.stripeId,                // acct_xxx del club
+        option: option,
+        pagoClubId: this.pagoClubIdSelected ?? this.selectedCuota?.pagoClubId ?? null,
+        importe: this.importeSelected ?? this.cantidadAPagar
+      };
+
+      const createResp: any = await firstValueFrom(this.teamService.createIntent(payload));
+      const clientSecret = createResp?.data?.clientSecret;
+      const paymentIntentId = createResp?.data?.paymentIntentId;
+      if (!clientSecret) throw new Error('No se pudo iniciar el pago (sin clientSecret).');
+
+      const { error, paymentIntent } = await this.stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: this.card,
+          billing_details: {
+            name: `${this.usuarioActual?.firstName || ''} ${this.usuarioActual?.secondName || ''}`.trim(),
+            email: this.usuarioActual?.mail || undefined,
+            phone: this.usuarioActual?.mobile || undefined
+          }
+        }
+      });
+
+      if (error) {
+        alert(error.message || 'No se pudo confirmar el pago.');
+        return;
+      }
+
+      if (paymentIntent?.status === 'succeeded') {
+        try {
+          await firstValueFrom(this.teamService.verifyPayment({ paymentIntentId }));
+        } catch { /* el webhook también lo registrará */ }
+
+        // Actualiza UI local
+        this.restante = this.restante - this.cantidadAPagar;
+        this.pagado = (parseFloat(this.pagado as any) + this.cantidadAPagar).toFixed(2);
+        this.restanteCero = this.restante === 0;
+
+        alert('Pago realizado con éxito');
+        this.closeModal();
+        this.goBack();
+      } else if (paymentIntent?.status === 'processing') {
+        alert('El pago está procesándose. Te avisaremos al confirmarse.');
+      } else {
+        alert('Estado del pago: ' + paymentIntent?.status);
+      }
+
+    } catch (ex: any) {
+      console.error('Error en makePayment():', ex);
+      alert(ex?.message || 'Error inesperado al procesar el pago.');
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  /*async makePayment(): Promise<void> {
     if (!this.pagarOk || !this.stripe || !this.card) {
       alert('Selecciona una cuota e introduce la tarjeta.');
       return;
@@ -230,7 +441,7 @@ export class CuotasComponent implements OnInit {
         // (Opcional) Verificar/registrar ya en tu API — si tienes /payments/verify
         try {
           await firstValueFrom(this.teamService.verify({ paymentIntentId }));
-        } catch { /* si no existe verify, el webhook lo registrará */ }
+        } catch {  }
 
         // Actualiza tu UI
         this.restante = this.restante - this.cantidadAPagar;
@@ -252,7 +463,7 @@ export class CuotasComponent implements OnInit {
     } finally {
       this.loading = false;
     }
-  }
+  }*/
 
   async makePaymentOld(): Promise<void> {
     if (this.paymentForm.valid) {
@@ -406,7 +617,7 @@ export class CuotasComponent implements OnInit {
       }
     }*/
 
-    this.clubService.getListPagosClub(this.clubId, this.temporadaStoredValue).subscribe(
+    this.clubService.getListPagosClubForStripe(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
@@ -434,6 +645,38 @@ export class CuotasComponent implements OnInit {
   calcularComisionDirecto() {
     console.log('Nueva cuota seleccionada:', this.cantidadAPagar);
     // Lógica para manejar la nueva cuota
+  }
+
+  formatText(c: any): string {
+    // formatea 'yyyy-MM-dd' -> 'dd-MM-yyyy'
+    const formatDate = (s?: string): string => {
+      if (!s || typeof s !== 'string') return '';
+      const parts = s.split('-'); // [yyyy, MM, dd]
+      return parts.length === 3 ? `${parts[2]}-${parts[1]}-${parts[0]}` : s;
+      // si no viene en el formato esperado, lo devolvemos tal cual
+    };
+
+    const start = formatDate(c?.fechaInicio);
+    const end = formatDate(c?.fechaFin);
+
+    // mapa de unidades al español
+    const units: Record<string, { sing: string; plur: string }> = {
+      day: { sing: 'día', plur: 'días' },
+      week: { sing: 'semana', plur: 'semanas' },
+      month: { sing: 'mes', plur: 'meses' },
+      year: { sing: 'año', plur: 'años' }
+    };
+
+    const count = Number(c?.intervaloCuenta ?? 1);
+    const key = String(c?.intervalo ?? '').toLowerCase();
+
+    const unit = units[key] ?? { sing: key || 'periodo', plur: (key ? key + 's' : 'periodos') };
+    const unitWord = count === 1 ? unit.sing : unit.plur;
+
+    const inicioTxt = start ? `fecha de inicio el ${start}` : 'sin fecha de inicio';
+    const finTxt = end ? `hasta el ${end}` : 'sin fecha de fin';
+
+    return `${inicioTxt} ${finTxt} y los plazos son cada ${count} ${unitWord}.`;
   }
 
   onCuotaChange(c: any) {
@@ -485,8 +728,23 @@ export class CuotasComponent implements OnInit {
     // (Opcional) si quieres mostrar desglose en la UI:
     // const stripeFeeEst = Math.ceil(A * STRIPE_PCT + toCents(STRIPE_FIX));
     // this.desglose = { club: fromC(B), tuFee: fromC(appFeeC), stripe: fromC(stripeFeeEst), total: this.amount };
+
+    
+    if (c.tipoPagoStripe == 1) {
+      //significa que laq cuota es recurrente, mostrar div info
+      this.infoRecurrente = `El pago se realizará automaticamente. Las cuotas son de ${this.amount}€ y son de ` + this.formatText(c);
+    } else {
+      this.infoRecurrente = '';
+    }
   }
 
+  isRecurrente(c: any) {
+    if (c.tipoPagoStripe == 1) {
+      //significa que laq cuota es recurrente
+      return ' - Recurrente';
+    }
+    return '';
+  }
 
 
 }

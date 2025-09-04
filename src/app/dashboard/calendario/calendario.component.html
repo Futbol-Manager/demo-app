@@ -222,7 +222,7 @@
               <div class="row text-center mt-3">
                 <div class="col-12 col-md-12">
                   <!-- Contenido de la subcolumna -->
-                  <label><strong>Información general del partido1:</strong></label>
+                  <label><strong>Información general del partido:</strong></label>
                 </div>
               </div>
               <div class="row text-center mt-3">
@@ -614,7 +614,7 @@
           <div class="row text-center mt-3">
             <div class="col-12 col-md-12">
               <!-- Contenido de la subcolumna -->
-              <label><strong>Información general del partido2:</strong></label>
+              <label><strong>Información general del partido:</strong></label>
             </div>
           </div>
           <div class="row text-center mt-3">
@@ -880,14 +880,14 @@
           </div>
         </div>
         <div class="modal-footer d-flex">
-          <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-primary"
+          <button *ngIf="profileId < 3" type="button" class="btn btn-primary"
             (click)="abrirModalConvocatoria()">Convocatoria</button>
-          <button *ngIf="this.usuarioActual!.profileType.profileId != 2" type="button" class="btn btn-secondary"
+          <button *ngIf="profileId != 2" type="button" class="btn btn-secondary"
             (click)="abrirModalConvocatoriaLista()">Convocatoria</button>
           <!-- Botón para guardar el nuevo partido -->
-          <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-danger float-end"
+          <button *ngIf="profileId < 3" type="button" class="btn btn-danger float-end"
             (click)="eliminarPartido()">Eliminar Partido</button>
-          <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button" class="btn btn-custom float-end"
+          <button *ngIf="profileId < 3" type="button" class="btn btn-custom float-end"
             (click)="crearPartido()">Guardar Partido</button>
         </div>
       </div>

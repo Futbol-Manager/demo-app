@@ -547,6 +547,7 @@ export class CalendarioComponent implements OnInit {
   imageBaseUrlUser: string = environment.images + 'user/';
 
   convocatoriaJSON: any = null;
+  profileId = 0;
 
   constructor(
     private router: Router,
@@ -566,6 +567,7 @@ export class CalendarioComponent implements OnInit {
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
       this.userId = user?.userId;
+      this.profileId = user?.profileType.profileId != null ? user?.profileType.profileId : 0;
       // Suscribirse a los cambios en los parámetros de la URL
       this.route.params.subscribe(params => {
         // Obtener el valor de teamId de los parámetros

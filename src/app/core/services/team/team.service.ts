@@ -8,6 +8,17 @@ import { CancelSubscriptionRequest, HorarioTeam, SubscriptionRequest, Suscripcio
 import { CuotasClub, HistoryCuotasClub } from '../models/club.model';
 import { RopaClub } from './club.model';
 
+export interface VerifySubPayload {
+    subscriptionId: string;            // siempre
+    paymentIntentId?: string;          // solo en 'payment'
+    invoiceId?: string;                // opcional en 'payment'
+    setupIntentId?: string;            // solo en 'setup'
+    clubId?: number;
+    teamId?: number;
+    playerId?: number;
+    pagoClubId?: number;
+}
+
 @Injectable({
     providedIn: 'root'
 })
@@ -737,12 +748,36 @@ export class TeamService {
         return this.http.post<any>(url, body, { headers });
     }
 
-    verify(body: { paymentIntentId: string }): Observable<any> {
+    verifyPayment(body: { paymentIntentId: string }): Observable<any> {
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));
         const url = `${this.base}stripe/payments/verify`;
         return this.http.post<any>(url, body, { headers });
     }
 
+    createSubscriptionPlan(body: any): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        const url = `${this.base}stripe/subscriptions/create-plan`;
+        return this.http.post<any>(url, body, { headers });
+    }
+
+    subscribeToPlan(body: any): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        const url = `${this.base}stripe/subscriptions/subscribe`;
+        return this.http.post<any>(url, body, { headers });
+    }
+
+    verifySubscription(body: VerifySubPayload): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        const url = `${this.base}stripe/subscriptions/verify`;
+        // elimina undefined/null/'' para no obligar al backend
+        const cleaned = Object.fromEntries(
+            Object.entries(body).filter(([, v]) => v !== undefined && v !== null && v !== '')
+        );
+        return this.http.post<any>(url, cleaned, { headers });
+    }
 
 }

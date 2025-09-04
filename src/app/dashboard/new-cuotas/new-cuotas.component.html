@@ -278,7 +278,7 @@
                         <!-- Acciones -->
                         <div class="ms-3">
                             <button class="btn cursor btn-sm btn-outline-primary me-2" title="Editar"
-                                (click)="editarCuota(cuota)">
+                                (click)="editarCuota(cuota, cuota.stripe)">
                                 <i class="bi bi-pencil"></i>
                             </button>
                             <button class="btn cursor btn-sm btn-outline-danger" title="Eliminar"
@@ -336,7 +336,7 @@
                             <i class="bi bi-currency-exchange text-success"></i> Importe
                         </label>
                         <input type="number" class="form-control" [(ngModel)]="nuevaCuota.importe" name="importe"
-                            required placeholder="Ej: 50">
+                            required placeholder="Ej: 50" [readonly]="soloLectura">
                     </div>
 
                     <div class="mb-3">
@@ -395,6 +395,72 @@
                                 {{ getTeamNameById(id) }}
                             </li>
                         </ul>
+                    </div>
+
+                    <!-- Permitir pago con Stripe -->
+                    <div class="mb-3 form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="stripeToggle"
+                            [checked]="nuevaCuota.stripe === 1" (change)="onToggleStripe($event)">
+                        <label class="form-check-label" for="stripeToggle">
+                            <i class="bi bi-lightning-charge me-1 text-info"></i> Permitir pago con Stripe
+                        </label>
+                    </div>
+
+                    <!-- Configuración Stripe -->
+                    <div *ngIf="showStripeConfig" class="border rounded p-3 bg-white mb-3">
+
+                        <!-- Tipo de cobro -->
+                        <label class="form-label mb-2 d-block">
+                            <i class="bi bi-sliders me-1 text-primary"></i> Tipo de cobro
+                        </label>
+
+                        <div class="btn-group" role="group" aria-label="Tipo de cobro">
+                            <input type="radio" class="btn-check" id="tipoPuntual"
+                                [checked]="nuevaCuota.tipoPagoStripe === 0" (change)="onTipoPagoChange(0)">
+                            <label class="btn btn-outline-primary" for="tipoPuntual">Pago puntual</label>
+
+                            <input type="radio" class="btn-check" id="tipoSuscripcion"
+                                [checked]="nuevaCuota.tipoPagoStripe === 1" (change)="onTipoPagoChange(1)">
+                            <label class="btn btn-outline-primary" for="tipoSuscripcion">Suscripción</label>
+                        </div>
+
+                        <!-- Detalles de suscripción -->
+                        <div *ngIf="isSubscription" class="row g-3 mt-3">
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <i class="bi bi-calendar-range me-1 text-success"></i> Unidad de periodo
+                                </label>
+                                <select class="form-select" [(ngModel)]="nuevaCuota.intervalo" name="intervalo">
+                                    <option [ngValue]="null" disabled>Selecciona</option>
+                                    <option *ngFor="let p of periodos" [ngValue]="p.value">{{ p.label }}</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <i class="bi bi-123 me-1 text-success"></i> Cada cuántos periodos
+                                </label>
+                                <input type="number" class="form-control" [(ngModel)]="nuevaCuota.intervaloCuenta"
+                                    name="intervaloCuenta" min="1" placeholder="Ej: 1, 3, 6">
+                                <small class="text-muted">Ej.: 1 = cada mes; 3 = cada 3 meses</small>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <i class="bi bi-calendar-event me-1 text-danger"></i> Fecha de inicio
+                                </label>
+                                <input type="date" class="form-control" [(ngModel)]="nuevaCuota.fechaInicio"
+                                    name="fechaInicio">
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label">
+                                    <i class="bi bi-calendar2-event me-1 text-danger"></i> Fecha de fin
+                                </label>
+                                <input type="date" class="form-control" [(ngModel)]="nuevaCuota.fechaFin"
+                                    name="fechaFin">
+                            </div>
+                        </div>
                     </div>
 
                     <div class="modal-footer justify-content-end">
@@ -679,93 +745,6 @@
     </div>
 </div>
 
-<!-- Modal para editar stripe -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalStripe}">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">Configurar Stripe</h5>
-                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalStripe()"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3 text-center" *ngIf="infoClub.stripeUrl != null">
-                        <button (click)="goStripeURL()" class="btn btn-primary">Acceder a Stripe</button>
-                    </div>
-                    <form (ngSubmit)="onSubmit()" #stripeForm="ngForm" *ngIf="infoClub.stripeUrl === null">
-                        <div class="mb-3" style="height: 20em; overflow-y: scroll; padding: 1em;">
-                            <p><strong>¿Qué es Stripe?</strong></p>
-                            <p>Stripe es una plataforma de pagos en línea que permite a empresas y organizaciones
-                                recibir pagos de
-                                manera segura y eficiente. Con Stripe, puedes gestionar todas tus transacciones de forma
-                                sencilla,
-                                asegurando que los pagos se procesen rápidamente y con total seguridad. Además, Stripe
-                                ofrece
-                                herramientas
-                                para automatizar y simplificar la contabilidad y la gestión financiera de tu club. Para
-                                facilitar esta
-                                gestión, la hemos integrado directamente en SphairaTech.</p>
-
-                            <p><strong>¿Cómo puedo activar Stripe en Sphaira para automatizar el pago de las cuotas o
-                                    pagos de
-                                    los padres y no
-                                    tener que preocuparme?</strong></p>
-
-                            <p><strong>1. Registro en Stripe:</strong></p>
-                            <p>Primero, date de alta en Stripe usando el botón proporcionado.</p>
-
-                            <p><strong>2. Introduce las cuotas o pagos:</strong></p>
-
-                            <p><strong>3. Recibir Pagos:</strong></p>
-                            <p>Los padres podrán acceder a través de una invitación del entrenador o del club. Una vez
-                                registrados,
-                                podrán realizar los pagos para cubrir las cuotas anuales o la cuota de la ropa en las
-                                fechas fijadas por
-                                el club. Recibirás estos pagos automáticamente en tu cuenta de Stripe.</p>
-
-                            <p><strong>4. Actualización Automática:</strong></p>
-                            <p>La tabla de pagos se actualizará automáticamente. Solo tendrás que revisarla, sin
-                                necesidad de hacer
-                                cambios manuales.</p>
-
-                            <p><strong>5. Comisión:</strong></p>
-                            <p>Hay una comisión del 1,8% en cada pago. Aun así, recibirás el importe total que
-                                establezcas como cuota,
-                                ya que la comisión no se te repercutirá.</p>
-
-                            <p><strong>6. Importancia del Registro:</strong></p>
-                            <p>Si decides no darte de alta en Stripe, no podrás recibir pagos por parte de los padres a
-                                través de
-                                Sphaira y tendrás que llevar un registro manual.</p>
-                        </div>
-                        <div class="mb-3 d-flex align-items-center" style="margin-top: 2em;">
-                            <input type="checkbox" id="stripeAgreement" name="stripeAgreement" [(ngModel)]="aceptStripe"
-                                class="me-2">
-                            <label for="stripeAgreement" class="mb-0">He leído y estoy de acuerdo con el funcionamiento
-                                de Stripe a
-                                través de SphairaTech.</label>
-                        </div>
-                        <div class="mb-3 d-flex">
-                            <div class="col-12">
-                                <label for="email" class="form-label">Correo Electrónico</label>
-                                <input type="email" class="form-control" id="email" name="email"
-                                    placeholder="tuemail@mail.com" [(ngModel)]="email" required>
-                            </div>
-                        </div>
-                        <div class="mb-3 d-flex" *ngIf="aceptStripe">
-                            <div class="col-12">
-                                <button style="
-                  width: -webkit-fill-available;" type=" submit" class="btn btn-primary">Crear Cuenta en
-                                    Stripe</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <!-- Modal: Cuotas del jugador -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalCuotasJugador}"
     style="background-color: rgba(0,0,0,0.5);">
@@ -926,6 +905,94 @@
                 </form>
             </div>
 
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar stripe -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalStripe}">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="stripeModalLabel">Configurar Stripe</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalStripe()"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3 text-center" *ngIf="infoClub.stripeUrl != null">
+                        <button (click)="goStripeURL()" class="btn btn-primary">Acceder a Stripe</button>
+                    </div>
+                    <form (ngSubmit)="onSubmit()" #stripeForm="ngForm" *ngIf="infoClub.stripeUrl === null">
+                        <div class="mb-3" style="height: 20em; overflow-y: scroll; padding: 1em;">
+                            <h2>⚠️ Atención, solo vácido para España.</h2>
+                            <p><strong>¿Qué es Stripe?</strong></p>
+                            <p>Stripe es una plataforma de pagos en línea que permite a empresas y organizaciones
+                                recibir pagos de
+                                manera segura y eficiente. Con Stripe, puedes gestionar todas tus transacciones de forma
+                                sencilla,
+                                asegurando que los pagos se procesen rápidamente y con total seguridad. Además, Stripe
+                                ofrece
+                                herramientas
+                                para automatizar y simplificar la contabilidad y la gestión financiera de tu club. Para
+                                facilitar esta
+                                gestión, la hemos integrado directamente en SphairaTech.</p>
+
+                            <p><strong>¿Cómo puedo activar Stripe en Sphaira para automatizar el pago de las cuotas o
+                                    pagos de
+                                    los padres y no
+                                    tener que preocuparme?</strong></p>
+
+                            <p><strong>1. Registro en Stripe:</strong></p>
+                            <p>Primero, date de alta en Stripe usando el botón proporcionado.</p>
+
+                            <p><strong>2. Introduce las cuotas o pagos:</strong></p>
+
+                            <p><strong>3. Recibir Pagos:</strong></p>
+                            <p>Los padres podrán acceder a través de una invitación del entrenador o del club. Una vez
+                                registrados,
+                                podrán realizar los pagos para cubrir las cuotas anuales o la cuota de la ropa en las
+                                fechas fijadas por
+                                el club. Recibirás estos pagos automáticamente en tu cuenta de Stripe.</p>
+
+                            <p><strong>4. Actualización Automática:</strong></p>
+                            <p>La tabla de pagos se actualizará automáticamente. Solo tendrás que revisarla, sin
+                                necesidad de hacer
+                                cambios manuales.</p>
+
+                            <p><strong>5. Comisión:</strong></p>
+                            <p>Hay una comisión del 1,8% en cada pago. Aun así, recibirás el importe total que
+                                establezcas como cuota,
+                                ya que la comisión no se te repercutirá.</p>
+
+                            <p><strong>6. Importancia del Registro:</strong></p>
+                            <p>Si decides no darte de alta en Stripe, no podrás recibir pagos por parte de los padres a
+                                través de
+                                Sphaira y tendrás que llevar un registro manual.</p>
+                        </div>
+                        <div class="mb-3 d-flex align-items-center" style="margin-top: 2em;">
+                            <input type="checkbox" id="stripeAgreement" name="stripeAgreement" [(ngModel)]="aceptStripe"
+                                class="me-2">
+                            <label for="stripeAgreement" class="mb-0">He leído y estoy de acuerdo con el funcionamiento
+                                de Stripe a
+                                través de SphairaTech.</label>
+                        </div>
+                        <div class="mb-3 d-flex">
+                            <div class="col-12">
+                                <label for="email" class="form-label">Correo Electrónico</label>
+                                <input type="email" class="form-control" id="email" name="email"
+                                    placeholder="tuemail@mail.com" [(ngModel)]="email" required>
+                            </div>
+                        </div>
+                        <div class="mb-3 d-flex" *ngIf="aceptStripe">
+                            <div class="col-12">
+                                <button style="
+                  width: -webkit-fill-available;" type=" submit" class="btn btn-primary">Crear Cuenta en
+                                    Stripe</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>
