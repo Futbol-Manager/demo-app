@@ -15,6 +15,7 @@ import { PlayerService } from 'src/app/core/services/player/player.service';
 import { environment } from 'src/environments/environment';
 import { firstValueFrom } from 'rxjs';
 import { ClubService } from 'src/app/core/services/club/club.service';
+import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-cuotas',
@@ -80,6 +81,12 @@ export class CuotasComponent implements OnInit {
 
   selectedCuota: any = null; // { tipoPagoStripe: 0|1, stripePriceId?: string, pagoClubId?: number, ... }
   infoRecurrente = '';
+  acceptedTerms = false;
+
+  // “Hola <b>mundo</b>” en base64
+  terminos: string = 'SG9sYSA8Yj5tdW5kbzwvYj4=';
+
+  terminosHtmlSafe!: SafeHtml;
 
   constructor(
     private router: Router,
@@ -91,11 +98,11 @@ export class CuotasComponent implements OnInit {
     private elementRef: ElementRef,
     private http: HttpClient,
     private clubService: ClubService,
-    private location: Location) {
+    private location: Location,
+    private sanitizer: DomSanitizer) {
   }
 
   async ngOnInit(): Promise<void> {
-
     if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
@@ -148,6 +155,12 @@ export class CuotasComponent implements OnInit {
             this.asunto = this.historyCuotasPlayer.asunto;
             this.contacto = this.historyCuotasPlayer.contacto;
             this.bizum = this.historyCuotasPlayer.bizum;
+            this.terminos = this.historyCuotasPlayer.terminos;
+            this.decodeAndSanitizeTerminos();
+
+            //el club 83 ha pedido que los padres no lo vean
+            if (this.historyCuotasPlayer.clubId == 83) this.stripeBtoShow = false;
+
             this.datosCargados = true;
           } else {
             console.log('No hay registros en la tabla');
@@ -178,6 +191,7 @@ export class CuotasComponent implements OnInit {
     this.showModalStripe = false;
     this.cantidadAPagar = 0;
     this.amount = 0;
+    this.acceptedTerms = false; // resetea
   }
 
   // Helper opcional
@@ -617,7 +631,9 @@ export class CuotasComponent implements OnInit {
       }
     }*/
 
-    this.clubService.getListPagosClubForStripe(this.clubId, this.temporadaStoredValue).subscribe(
+    this.clubService.getListPagosClubForStripe(this.clubId, this.temporadaStoredValue
+      , this.teamId, this.playerId
+    ).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
@@ -729,7 +745,7 @@ export class CuotasComponent implements OnInit {
     // const stripeFeeEst = Math.ceil(A * STRIPE_PCT + toCents(STRIPE_FIX));
     // this.desglose = { club: fromC(B), tuFee: fromC(appFeeC), stripe: fromC(stripeFeeEst), total: this.amount };
 
-    
+
     if (c.tipoPagoStripe == 1) {
       //significa que laq cuota es recurrente, mostrar div info
       this.infoRecurrente = `El pago se realizará automaticamente. Las cuotas son de ${this.amount}€ y son de ` + this.formatText(c);
@@ -744,6 +760,23 @@ export class CuotasComponent implements OnInit {
       return ' - Recurrente';
     }
     return '';
+  }
+
+  private decodeAndSanitizeTerminos(): void {
+    // Decodifica base64 a string HTML
+    const html = this.base64Decode(this.terminos);
+    // Marca como HTML seguro (asumes que el contenido viene de una fuente de confianza)
+    this.terminosHtmlSafe = this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+
+  private base64Decode(b64: string): string {
+    try {
+      // atob para base64 -> binario; decodeURIComponent para UTF-8 correcto si viniera con escape
+      return decodeURIComponent(escape(window.atob(b64)));
+    } catch {
+      // Fallback simple si hay caracteres fuera de ASCII
+      return atob(b64);
+    }
   }
 
 

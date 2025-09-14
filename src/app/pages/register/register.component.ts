@@ -66,6 +66,7 @@ export class RegisterComponent implements OnInit {
 
   mailsOk = false;
   showModalClub = false;
+  showModalCoach = false;
   form = this.fb.group(
     {
       email: ['', [Validators.required, Validators.email]],
@@ -553,9 +554,7 @@ export class RegisterComponent implements OnInit {
     if (this.selectedOption == 1) {
       this.openConfirm();
     } else {
-      this.showModalClub = false;
-      this.showNextRegistro = true;
-      this.btnRegistro = true;
+      this.showModalCoach = true;
     }
   }
 
@@ -884,6 +883,17 @@ export class RegisterComponent implements OnInit {
     } else this.mailsOk = true;
   }
 
+
+  openConfirmCoach() {
+    this.showModalCoach = false;
+    this.showModalClub = false;
+    this.showNextRegistro = true;
+    this.btnRegistro = true;
+  }
+
+  cerrarModalCoach(){
+    this.showModalCoach = false;
+  }
 
   openConfirm() {
     this.showModalClub = true;

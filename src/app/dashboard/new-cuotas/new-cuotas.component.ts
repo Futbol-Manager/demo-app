@@ -119,6 +119,10 @@ export class NewCuotasComponent implements OnInit {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
 
+    this.loadTabla();
+  }
+
+  loadTabla() {
     this.clubService.getListPlayersPagosClub(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
@@ -128,6 +132,23 @@ export class NewCuotasComponent implements OnInit {
         }
         this.isLoading = false;
         //this.datosCargados = true;
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+  }
+
+  resetPagosPlayers() {
+    this.isLoading = true;
+    this.clubService.updateInfoPagosPlayer(this.clubId, this.temporadaStoredValue).subscribe(
+      (response: Response) => {
+        // Verifica que la propiedad 'data' exista en la respuesta
+        if (response.data) {
+          this.loadTabla();
+          alert('Datos actualzados.');
+        }
+        this.isLoading = false;
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
@@ -663,7 +684,8 @@ export class NewCuotasComponent implements OnInit {
           if (this.infoClub.banco != null && this.infoClub.banco != '') {
             this.showModalStripe = true;
           } else {
-            this.showModalCuotas = true;
+            alert('Por favor, completa esta información para poder acceder a Stripe.');
+            this.showModalBanco = true;
           }
           console.log(this.infoClub.urlStripe);
         }
@@ -804,14 +826,24 @@ export class NewCuotasComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.infoClub = response.data;
+          //si no hay datos bancarios, que los ponga
+          if (this.infoClub.banco == null && this.infoClub.banco == undefined) {
+            alert('Por favor, completa esta información para poder acceder a Stripe.');
+            this.cerrarDatosStripe();
+            this.showModalBanco = true;
+            return;
+          }
+
           if (this.infoClub.stripeId !== null && this.infoClub.stripeId !== undefined && this.infoClub.stripeId !== '') {
             this.accountIdDelClub = this.infoClub.stripeId;
             //carga bien            
             this.nuevaCuota.stripe = checked ? 1 : 0;
             this.mostrarDatosStripe();
           } else {
-            //se muestra alert y se abre modal stripe
             this.cerrarDatosStripe();
+            alert('Por favor, crea primero la cuenta en Stripe.');
+            //se muestra alert y se abre modal stripe
+            this.showModalStripe = true;
           }
         } else {
           this.cerrarDatosStripe();
@@ -886,5 +918,6 @@ export class NewCuotasComponent implements OnInit {
     }
     return null;
   }
+
 
 }

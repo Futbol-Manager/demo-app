@@ -46,3 +46,13 @@ p {
     padding: 10px;
     color: white;
 }
+
+.terms-box {
+  max-height: 35vh;      /* alto visible, “alto para que ocupe” sin romper el modal */
+  overflow: auto;
+  background: #fafafa;
+}
+
+.terms-overlay {
+  min-height: 60px;
+}

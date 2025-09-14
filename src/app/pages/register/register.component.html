@@ -581,7 +581,7 @@
   </div>
 </div>
 
-<!-- Modal -->
+<!-- Modal CLUB-->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalClub}">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -593,13 +593,12 @@
       <div class="modal-body">
         <h2>⚠️ Atención.</h2>
         <p class="mb-3" style="color: red;">
-          SI ERES UN PADRE/MADRE, ESTE NO ES TU REGISTRO. HABLA CON TU CLUB PARA RECIBIR EL ENLACE DE REGISTRO
+          Este registro es <strong>EXCLUSIVAMENTE PARA ENTIDADES DEPORTIVAS</strong>. Si eres un
+          <strong>PADRE/MADRE/TUTOR, ESTE NO ES TU
+            REGISTRO</strong>. Habla con tu club para recibir el enlace de registro.
         </p>
-        <p class="mb-3">
-          <strong>Por seguridad</strong>, el registro de clubes requiere una contraseña de acceso.
-          <br>Si aún no la tienes, solicítala antes de continuar:
-        </p>
-
+        <strong>Por seguridad</strong>, el registro de clubes requiere una contraseña de acceso.
+        <br>Si aún no la tienes, solicítala antes de continuar:
         <ul class="list-unstyled mb-4">
           <li>📞 Teléfono: <a href="tel:+34 623 91 17 72">+34 623 91 17 72</a></li>
           <li>📧 Email: <a href="mailto:info@sphairatech.com">info&#64;sphairatech.com</a></li>
@@ -618,3 +617,27 @@
       </div>
     </div>
   </div>
+</div>
+
+<!-- Modal COACH-->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalCoach}">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">⚠️ Atención.</h5>
+      </div>
+      <div class="modal-body">
+        <p class="mb-3" style="color: red;">
+          Este registro es <strong>EXCLUSIVAMENTE PARA ENTRENADORES</strong>. Si eres un
+          <strong>PADRE/MADRE/TUTOR, ESTE NO ES TU
+            REGISTRO</strong>. Habla con tu club para recibir el enlace de registro.
+        </p>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+            (click)="cerrarModalCoach()">Entendido</button>
+          <button type="button" class="btn btn-success" (click)="openConfirmCoach()">Soy entrenador</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

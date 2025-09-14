@@ -42,6 +42,8 @@
                     (input)="filtrarJugadores()">
             </div>
             <div class="col-md-4 col-sm-12 mb-2 mb-md-0">
+                <button class="btn btn-custom form-control" (click)="resetPagosPlayers()">Resetear datos
+                </button>
             </div>
 
             <!-- Combo -->
@@ -460,6 +462,14 @@
                                 <input type="date" class="form-control" [(ngModel)]="nuevaCuota.fechaFin"
                                     name="fechaFin">
                             </div>
+
+                            <h2>⚠️ Atención.</h2>
+                            <p class="mb-3" style="color: red;">
+                                El padre deberá realizar el primer pago para poder suscribirse y pagar los meses
+                                restantes. Funciona como Netflix, el usuario paga el primer mes, y automáticamente se le
+                                cobran los siguientes pagos sin necesidad de hacer el pago manualmente. El club será
+                                quien indique el importe de los pagos y cada cuánto tiempo.
+                            </p>
                         </div>
                     </div>
 
@@ -623,7 +633,7 @@
                                 <span class="text-break">{{ historyPago.comentario || 'Sin comentario' }}</span>
                             </ng-template>
                         </div>
-                        <div class="col-md-1 text-end">
+                        <div class="col-md-1 text-end" *ngIf="!historyPago.importe.includes('-')">
                             <button class="btn cursor btn-sm btn-warning" (click)="devolverPagoClub(historyPago)"
                                 title="Devolver pago">
                                 <i class="bi bi-arrow-counterclockwise"></i>

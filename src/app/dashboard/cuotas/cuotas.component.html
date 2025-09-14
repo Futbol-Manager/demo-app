@@ -17,6 +17,11 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-12 col-md-12" *ngIf="stripeBtoShow">
+            <button class="btn btn-custom btn-sm" (click)="openModalStripe()">Pagar con Stripe
+                <i class="bi bi-stripe"></i>
+            </button>
+        </div>
         <div class="col-12 col-md-6">
             <h2>Cuotas Obligatorias</h2>
             <div style="overflow-x: auto;">
@@ -148,54 +153,97 @@
                     <h5 class="modal-title">Realizar Pago</h5>
                     <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
                 </div>
+
                 <div class="modal-body">
+                    <!-- ===================== BLOQUE 1: Términos y condiciones ===================== -->
+                    <h6 class="mb-2">TÉRMINOS Y CONDICIONES DE PAGO DE CUOTAS Y SERVICIOS (SPHAIRA TECH)</h6>
+                    <div class="terms-box mb-3 p-3 border rounded" [innerHTML]="terminosHtmlSafe"></div>
+
+                    <!-- ===================== BLOQUE 2: Texto de aceptación ===================== -->
+                    <h6 class="mb-2">TEXTO DE ACEPTACIÓN / AUTORIZACIÓN</h6>
+                    <div class="terms-box mb-3 p-3 border rounded" style="white-space: pre-wrap;">
+                        <p>
+                            Autorizo a <b>{{nameClub}}</b> a cobrar en mi tarjeta o método de pago proporcionado los
+                            importes
+                            indicados en pantalla. Entiendo que:
+                        </p>
+                        <ul>
+                            <li>He leído y acepto los <b>Términos y Condiciones</b> de pago.</li>
+                            <li>En caso de ser una suscripción, la primera autorización se realiza ahora y las
+                                siguientes se cargarán automáticamente según el calendario indicado.</li>
+                            <li><b>Sphaira</b> facilita la plataforma; <b>Stripe</b> procesará el pago y transferirá los
+                                fondos al Club.</li>
+                            <li>Soy mayor de edad o tutor legal del menor y consiento el tratamiento de datos necesario.
+                            </li>
+                            <li>Acepto la política de privacidad de <b>Sphaira</b> y de <b>Stripe</b>.</li>
+                        </ul>
+                    </div>
+
+                    <!-- ===================== Checkbox de aceptación ===================== -->
+                    <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="chkAcepto" [(ngModel)]="acceptedTerms"
+                            [ngModelOptions]="{standalone: true}">
+                        <label class="form-check-label" for="chkAcepto">
+                            He leído y acepto los Términos y Condiciones y autorizo los cargos automáticos,
+                            siempre y cuando aplique, según lo descrito.
+                        </label>
+                    </div>
+
+                    <!-- ===================== FORMULARIO DE PAGO (solo si aceptan) ===================== -->
                     <form (ngSubmit)="makePayment()">
                         <div class="row mb-3">
                             <label for="cantidadAPagar" class="form-label">Selecciona la cuota a pagar:</label>
                             <select [(ngModel)]="selectedCuota" [ngModelOptions]="{ standalone: true }"
                                 id="selectedCuota" name="selectedCuota" class="form-control"
                                 (ngModelChange)="onCuotaChange($event)">
-
                                 <option [ngValue]="null" disabled selected>Selecciona el pago</option>
                                 <option *ngFor="let c of listAllCuotas" [ngValue]="c">
                                     {{ c.titulo }} {{ isRecurrente(c)}}
                                 </option>
                             </select>
                         </div>
-                        <!-- <div class="row mb-3">
-                            <label for="cantidadAPagar" class="form-label">Cantidad a pagar:
-                                {{ cantidadAPagar }}</label>
-                            <input type="number" class="form-control" id="cantidadAPagar" [(ngModel)]="cantidadAPagar"
-                                name="cantidadAPagar" required>
-                        </div> -->
+
                         <div class="row mb-3">
-                            <label for="amount" class="form-label">a cantidad final a pagar será de:</label>
+                            <label for="amount" class="form-label">La cantidad final a pagar será de:</label>
                             <input type="number" class="form-control" id="amount" [(ngModel)]="amount" name="amount"
                                 disabled>
                         </div>
+
                         <div class="row mb-3" *ngIf="infoRecurrente != ''">
                             <h3>&#9888;&#65039; Atención</h3>
                             <p style="color: red">{{ infoRecurrente }}</p>
                         </div>
+
                         <div class="row mt-3">
                             <h2>Datos de la tarjeta</h2>
                         </div>
                         <div class="row mt-3 mb-3">
                             <div id="card-element"></div>
                         </div>
+
                         <div class="row mb-3" *ngIf="pagarOk">
-                            <button type="submit" class="btn btn-custom" [disabled]="loading || !pagarOk">
+                            <button type="submit" class="btn btn-custom"
+                                [disabled]="!acceptedTerms || loading || !pagarOk">
                                 <span *ngIf="!loading">Pagar {{ amount | number:'1.2-2' }} €</span>
                                 <span *ngIf="loading">Procesando...</span>
                             </button>
                         </div>
+
                         <div class="row mb-3">
-                            <p style="color: rgb(172, 172, 172);">Cuando realices el pago de las cuotas del club o de la
-                                ropa mediante tarjeta
-                                de débito o
-                                crédito, se aplicará un pequeño coste adicional por "gastos de gestión".</p>
+                            <p style="color: rgb(172, 172, 172);">
+                                Cuando realices el pago de las cuotas del club o de la ropa mediante tarjeta de débito o
+                                crédito, se aplicará un pequeño coste adicional por "gastos de gestión".
+                            </p>
                         </div>
                     </form>
+
+                    <!-- Overlay para indicar que falta aceptar términos (opcional, si prefieres mostrar el form deshabilitado) -->
+                    <div class="terms-overlay d-flex align-items-center justify-content-center" *ngIf="!acceptedTerms">
+                        <small class="text-muted text-center px-3">
+                            Debes aceptar los Términos y Condiciones para continuar con el pago.
+                        </small>
+                    </div>
+
                 </div>
             </div>
         </div>
