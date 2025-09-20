@@ -578,9 +578,9 @@
             <!-- Botones para Convocatoria -->
             <div class="mt-2 mt-lg-0">
               <div class="d-flex flex-column flex-sm-row flex-wrap">
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
+                <button *ngIf="this.usuarioActual!.profileType.profileId < 3" type="button"
                   class="btn btn-primary mb-2 mb-sm-0" (click)="abrirModalConvocatoria()">Convocatoria</button>
-                <button *ngIf="this.usuarioActual!.profileType.profileId != 2" type="button"
+                <button *ngIf="this.usuarioActual!.profileType.profileId > 2" type="button"
                   class="btn btn-secondary mb-2 mb-sm-0" (click)="abrirModalConvocatoriaLista()">Convocatoria</button>
               </div>
             </div>

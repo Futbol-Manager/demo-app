@@ -43,6 +43,7 @@ import { ClasificacionResultadosComponent } from './clasificacion-resultados/cla
 import { DocumentosClubComponent } from './documentos-club/documentos-club.component';
 import { DocumentosJugadorComponent } from './documentos-jugador/documentos-jugador.component';
 import { NewCuotasComponent } from './new-cuotas/new-cuotas.component';
+import { HistorialPagosClubComponent } from './historial-pagos-club/historial-pagos-club.component';
 
 
 
@@ -87,7 +88,8 @@ import { NewCuotasComponent } from './new-cuotas/new-cuotas.component';
     ClasificacionResultadosComponent,
     DocumentosClubComponent,
     DocumentosJugadorComponent,
-    NewCuotasComponent
+    NewCuotasComponent,
+    HistorialPagosClubComponent
   ],
   imports: [
     CommonModule,
