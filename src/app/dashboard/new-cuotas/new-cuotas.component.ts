@@ -103,7 +103,7 @@ export class NewCuotasComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location,
     private clubService: ClubService,
-    private teamService: TeamService,) { }
+    private teamService: TeamService) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -248,6 +248,10 @@ export class NewCuotasComponent implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  goHistorial() {
+    this.router.navigate(['/dashboard/historial-pagos-club', this.clubId]);
   }
 
   openModalBancoClub() {

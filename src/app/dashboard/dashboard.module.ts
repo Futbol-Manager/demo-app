@@ -44,6 +44,8 @@ import { DocumentosClubComponent } from './documentos-club/documentos-club.compo
 import { DocumentosJugadorComponent } from './documentos-jugador/documentos-jugador.component';
 import { NewCuotasComponent } from './new-cuotas/new-cuotas.component';
 import { HistorialPagosClubComponent } from './historial-pagos-club/historial-pagos-club.component';
+import { InicioFederacionComponent } from './inicio-federacion/inicio-federacion.component';
+import { InfoJugadoresFederacionComponent } from './info-jugadores-federacion/info-jugadores-federacion.component';
 
 
 
@@ -89,7 +91,9 @@ import { HistorialPagosClubComponent } from './historial-pagos-club/historial-pa
     DocumentosClubComponent,
     DocumentosJugadorComponent,
     NewCuotasComponent,
-    HistorialPagosClubComponent
+    HistorialPagosClubComponent,
+    InicioFederacionComponent,
+    InfoJugadoresFederacionComponent
   ],
   imports: [
     CommonModule,

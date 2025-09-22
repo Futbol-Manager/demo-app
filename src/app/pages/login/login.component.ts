@@ -84,7 +84,11 @@ export class LoginComponent implements OnInit {
           (res) => {
             if (res.data != null && res.data.userDTO.idValidation > 1) { //usuario ya validado
               snackbarOn = false;
-              this.router.navigate(['/dashboard/inicio']);
+              if (res.data.userDTO.profileType.profileId == 0) {
+                this.router.navigate(['/dashboard/inicio-federacion']);
+              } else {
+                this.router.navigate(['/dashboard/inicio']);
+              }
               //this.router.navigate(['/dashboard/inicio-deportes']);
             } else if (res.data != null && res.data.userDTO.idValidation == 1) {
               let fechaCreacion: Date = new Date(res.data.userDTO.dateCreate);

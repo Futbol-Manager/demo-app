@@ -1,1 +1,46 @@
-<p>historial-pagos-club works!</p>
+<div>
+    <div class="submenu">
+        <div class="row">
+            <div class="col">
+                <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
+                    <i class="bi bi-arrow-left-square-fill"></i>
+                    <span class="d-none d-md-inline">Volver</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div *ngIf="isLoading" class="d-flex align-items-center justify-content-center p-3">
+    <div class="spinner-border text-primary me-2" role="status" aria-hidden="true"></div>
+    <strong>Cargando listado...</strong>
+</div>
+
+<div *ngIf="!isLoading" class="container mt-3">
+    <div style="margin-top: 3em; overflow-x: auto; text-align: center;">
+        <h2>{{ nCargos }} Cargos</h2>
+        <table class="table table-bordered table-striped">
+            <thead class="table-custom">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Descripción Pago</th>
+                    <th>Importe</th>
+                    <th>Método</th>
+                    <th>Tipo</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let pago of listaPagos">
+                    <td>{{ pago.name }}</td>
+                    <td [innerHTML]="descripcionConLink(pago.descripcionPago)"></td>
+                    <td [ngClass]="pago.importe.includes('-') ? 'text-danger' : 'text-success'">
+                        {{ pago.importe }}
+                    </td>
+                    <td>{{ pago.metodo }}</td>
+                    <td>{{ pago.tipo }}</td>
+                    <td>{{ pago.fechaFormateada }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

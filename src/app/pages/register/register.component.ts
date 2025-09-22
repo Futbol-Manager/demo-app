@@ -63,6 +63,7 @@ export class RegisterComponent implements OnInit {
 
   inputPassword: string = '';
   readonly realPassword = 'RegistroClubesST2025'; // la contraseña que quieras validar
+  readonly realPasswordFede = 'ADDFEDESPHAIRA25'; // la contraseña que quieras validar
 
   mailsOk = false;
   showModalClub = false;
@@ -270,7 +271,17 @@ export class RegisterComponent implements OnInit {
   registerClub() {
     if (this.registerFormClub.valid) {
       const profileType: ProfileTypeModel = new ProfileTypeModel(1, 'Club');
-      const validationUser: ValidationUserModel = new ValidationUserModel(1, 'Pdte de validar mail');
+
+      const storedValue = localStorage.getItem('federacionId');
+      let federacionId = 1;
+      if (storedValue !== null) {
+        federacionId = Number(storedValue);
+        console.log('FederacionId recuperado:', federacionId);
+      } else {
+        console.warn('No hay federacionId en localStorage');
+      }
+
+      const validationUser: ValidationUserModel = new ValidationUserModel(federacionId, 'Pdte de validar mail');
       const genreType: GenreTypeModel = new GenreTypeModel(
         3,
         'Otro'
@@ -891,7 +902,7 @@ export class RegisterComponent implements OnInit {
     this.btnRegistro = true;
   }
 
-  cerrarModalCoach(){
+  cerrarModalCoach() {
     this.showModalCoach = false;
   }
 
@@ -907,7 +918,20 @@ export class RegisterComponent implements OnInit {
     if (this.inputPassword === this.realPassword) {
       alert('Contraseña correcta ✅');
       this.showModalClub = false;
+      this.showNextRegistro = true;
+      this.btnRegistro = true;
+    } else if (this.inputPassword.toLowerCase().includes(this.realPasswordFede.toLowerCase())) {
+      // separar en dos partes
+      const partes = this.inputPassword.split('-');
 
+      if (partes.length > 1) {
+        const federacionId = partes[1]; // lo que viene después del guion
+        localStorage.setItem('federacionId', federacionId.toString());
+        console.log('FederacionId guardado:', federacionId);
+      }
+
+      alert('Contraseña correcta ✅');
+      this.showModalClub = false;
       this.showNextRegistro = true;
       this.btnRegistro = true;
     } else {

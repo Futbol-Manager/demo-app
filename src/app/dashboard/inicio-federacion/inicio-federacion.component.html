@@ -1,0 +1,94 @@
+<div class="submenu">
+    <div class="row">
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
+                <i class="bi bi-info-circle"></i>
+                <span class="d-none d-md-inline">Información Jugadores</span>
+            </a>
+        </div>
+        <div class="col text-center">
+            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
+                <i class="bi bi-collection"></i>
+                <span class="d-none d-md-inline">Patrocinadores</span>
+            </a>
+        </div>
+        <!-- <div class="col text-center"> <a class="no-underline" href="javascript:void(0);"
+             (click)="irAPantalla(3)"> <i class="bi bi-envelope"></i> <span class="d-none d-md-inline">Notificaciones</span> </a> </div> -->
+    </div>
+</div>
+
+<div *ngIf="loading" class="d-flex align-items-center justify-content-center p-3">
+    <div class="spinner-border text-primary me-2" role="status" aria-hidden="true"></div>
+    <strong>Cargando listado...</strong>
+</div>
+
+<div class="container" *ngIf="!loading">
+    <!-- fila 1 -->
+    <div class="row g-3 p-3" style="margin-top: 3em;">
+        <div class="col-12 col-md-4">
+            <label for="excel" class="form-label">Link de registro:</label>
+            <button class="btn btn-secondary w-100" (click)="copyLink()">
+                Copiar <i class="bi bi-copy"></i>
+            </button>
+        </div>
+
+        <div class="col-12 col-md-8">
+            <label for="buscarClub" class="form-label">Email del club existente:</label>
+            <input type="text" id="buscarClub" class="form-control"
+                placeholder="Escribe el email del club registrado..." [(ngModel)]="mailAdd" />
+        </div>
+
+        <div class="col-12 col-md-4">
+            <label for="temporada" class="form-label">Pulsa para añadir club:</label>
+            <button (click)="setNewClubInFederacion()" class="btn btn-custom w-100">
+                Añadir <i class="bi bi-person-plus"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- fila 2 -->
+    <div class="row g-3 p-3" style="margin-top: 3em;">
+        <div class="col-12 col-md-4">
+            <label for="buscarClub" class="form-label">Buscar club:</label>
+            <input type="text" id="buscarClub" class="form-control" placeholder="Escribe el nombre..."
+                [(ngModel)]="busqueda" (input)="filtrarClubes()" />
+        </div>
+
+        <div class="col-12 col-md-4">
+            <label for="temporada" class="form-label">Temporada:</label>
+            <select class="form-control" id="temporada" name="temporada" [(ngModel)]="temporada"
+                (change)="cargarListadoEquiposForClub()">
+                <option value="2022">2022/2023</option>
+                <option value="2023">2023/2024</option>
+                <option value="2024">2024/2025</option>
+                <option value="2025">2025/2026</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- fila cards -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 p-3" style="margin-top: 3em;">
+        <div class="col" *ngFor="let club of listClubes; let i = index" style="cursor: pointer;"
+            (click)="navegarAClub(club.userIdClub)">
+            <div class="card h-100 border">
+                <div class="card-body text-center">
+                    <div class="row mb-2">
+                        <div class="col text-start" style="font-size: 0.8em;">
+                            ID: {{ club.userIdClub }}
+                        </div>
+                    </div>
+                    <div class="row mb-2">
+                        <div class="col">
+                            <img *ngIf="club.pictureClub"
+                                src="https://appsphairatech.com/images/user/{{ club.pictureClub }}" alt="user-image"
+                                width="90" height="90" style="max-width: 100%;">
+                        </div>
+                    </div>
+                    <h5 class="card-title text-truncate" style="color: black;">
+                        {{ club.name }}
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

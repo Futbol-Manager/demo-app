@@ -237,9 +237,13 @@ export class InicioComponent implements OnInit {
         this.profileId = this.usuarioActual!.profileType.profileId;
         this.userId = this.usuarioActual!.userId;
 
+        if (this.profileId === 0){
+          this.userId = Number(localStorage.getItem('userIdClub'));
+        }
+
         if (this.profileId === 2) {
           this.cargarListadoEquipos();
-        } else if (this.profileId === 1) {
+        } else if (this.profileId < 2) {
           this.cargarListadoEquiposForClub();
         } else if (this.profileId > 2) {
           this.datosCargando = false;
@@ -435,7 +439,7 @@ export class InicioComponent implements OnInit {
     localStorage.setItem('temporada', this.temporada);
     this.temporadaStoredValue = this.temporada;
 
-    this.teamService.getTeamByClub(this.usuarioActual!.userId.toString(), this.temporadaStoredValue).subscribe(
+    this.teamService.getTeamByClub(this.userId.toString(), this.temporadaStoredValue).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data) {
@@ -543,7 +547,7 @@ export class InicioComponent implements OnInit {
         };
 
         // Llamada al servicio para crear el equipo
-        this.teamService.createUpdateTeam(this.usuarioActual!.userId, this.teamNew,).subscribe(
+        this.teamService.createUpdateTeam(this.userId, this.teamNew,).subscribe(
           (resp) => {
             // Manejar la respuesta según tus necesidades
             //console.log('Equipo creado con éxito:', response);
@@ -601,6 +605,7 @@ export class InicioComponent implements OnInit {
   // Método para navegar a la pantalla de calendario
   navegarACalendario(teamId: number, playerId: number): void {
     switch (this.profileId) {
+      case 0:
       case 1:
         this.router.navigate(['/dashboard/menu-club', teamId]);
         break;
@@ -646,6 +651,9 @@ export class InicioComponent implements OnInit {
         break;
       case 7:
         this.router.navigate(['/dashboard/new-cuotas', this.clubId]);
+        break;
+      case 8:
+        this.router.navigate(['/dashboard/inicio-federacion']);
         break;
     }
   }
