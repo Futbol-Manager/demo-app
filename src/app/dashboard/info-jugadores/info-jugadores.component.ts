@@ -89,6 +89,7 @@ export class InfoJugadoresComponent implements OnInit {
   listTeamsForCombo: any[] = [];
   showModalMover = false;
   teamId = 0;
+  addPlayerMoved: boolean = false;
 
   constructor(
     private router: Router,
@@ -666,12 +667,13 @@ export class InfoJugadoresComponent implements OnInit {
     if (this.teamSelected == 0) {
       alert('Selecciona un equipo del desplegable.');
     } else {
-      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected, cuotaTbm).subscribe(
+      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected, cuotaTbm, this.addPlayerMoved ? 1 : 0).subscribe(
         (response: Response) => {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
             alert("Movido correctamente, cuando vuelvas a entrar verás los cambios.");
             this.showModalMover = false;
+            this.addPlayerMoved = false;
             this.teamSelected = 0;
           } else {
             console.error('La respuesta del servicio no tiene la estructura esperada', response);

@@ -67,7 +67,7 @@ export class InicioFederacionComponent implements OnInit {
       .then(() => {
         console.log('Enlace copiado al portapapeles:', link);
         // Opcional: puedes usar un toast o alert para avisar al usuario
-        alert('¡Link copiado! Compartelo con el club deseado. La contraseña es ADDFEDESPHAIRA25-' + this.userId);
+        alert('¡Link copiado! Compartelo con el club deseado. La contraseña es LFP2000-' + this.userId);
       })
       .catch(err => {
         console.error('Error al copiar el enlace:', err);
@@ -129,7 +129,7 @@ export class InicioFederacionComponent implements OnInit {
 
   setNewClubInFederacion(): void {
     if (this.mailAdd == '' || !this.mailAdd.toLowerCase().includes('@')) {
-      alert('Por favor introduce un email válido y del club existente en Spaira para agregarlo a la federación.');
+      alert('Por favor introduce un email válido y del club existente en Sphaira para agregarlo a la federación.');
       return;
     }
 

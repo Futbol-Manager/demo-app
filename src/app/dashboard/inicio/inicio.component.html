@@ -7,6 +7,7 @@
 
 <div [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
   <div class="submenu">
+    <!-- profileId = 0 -->
     <div class="row" *ngIf="profileId === 0">
       <div class="col text-center">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(8)">
@@ -15,6 +16,8 @@
         </a>
       </div>
     </div>
+
+    <!-- profileId = 1 -->
     <div class="row" *ngIf="profileId === 1">
       <div class="col text-center">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(6)">
@@ -59,6 +62,8 @@
         </a>
       </div>
     </div>
+
+    <!-- profileId = 2 -->
     <div class="row" *ngIf="profileId === 2">
       <div class="col text-center" *ngIf="!clubOk">
         <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearEquipo()">
@@ -75,22 +80,7 @@
     </div>
   </div>
 
-  <!-- Alerta para Android
-  <div *ngIf="profileId > 1 && showAlertAndroid && isAndroid"
-    class="alert alert-success d-flex align-items-center justify-content-between p-3 mt-4" role="alert">
-    <div>
-      <strong>Para una mejor experiencia, accede desde la app móvil. ¡Descarga ya la app para Android!</strong><br>
-      Disponible en Google Play.
-    </div>
-    <div class="d-flex align-items-center gap-2">
-      <a href="https://play.google.com/store/apps/details?id=com.futbol.sphairatech&pcampaignid=web_share"
-        target="_blank" class="btn btn-success d-flex align-items-center">
-        <i class="bi bi-android2 me-2" style="font-size: 1.2rem;"></i> Descargar
-      </a>
-      <button type="button" class="btn-close ms-2" aria-label="Cerrar" (click)="cerrarAlertaAndroid()"></button>
-    </div>
-  </div> -->
-
+  <!-- 🔹 Alerta Android -->
   <div *ngIf="profileId > 1 && showAlertAndroid && isAndroid"
     class="alert alert-primary d-flex align-items-center justify-content-between p-3 mt-4" role="alert">
     <div>
@@ -99,8 +89,9 @@
     </div>
 
     <div class="d-flex align-items-center gap-2">
-      <!-- Abre el modal -->
-      <button type="button" class="btn btn-primary d-flex align-items-center" (click)="openSuscriptionModal(1)">
+      <!-- Abre modal -->
+      <button type="button" class="btn btn-primary d-flex align-items-center w-100 w-md-auto"
+        (click)="openSuscriptionModal(1)">
         <i class="bi bi-apple me-2" style="font-size: 1.2rem;"></i> Descargar
       </button>
 
@@ -108,23 +99,7 @@
     </div>
   </div>
 
-  <!-- Alerta para iOS
-  <div
-    *ngIf="profileId > 1 && showAlertAndroid && isiOS"
-    class="alert alert-primary d-flex align-items-center justify-content-between p-3 mt-4" role="alert">
-    <div>
-      <strong>Para una mejor experiencia, accede desde la app móvil. ¡Descarga ya la app para iPhone!</strong><br>
-      Disponible en App Store.
-    </div>
-    <div class="d-flex align-items-center gap-2">
-      <a href="https://apps.apple.com/es/app/sphaira-tech/id6745791142" target="_blank"
-        class="btn btn-primary d-flex align-items-center">
-        <i class="bi bi-apple me-2" style="font-size: 1.2rem;"></i> Descargar
-      </a>
-      <button type="button" class="btn-close ms-2" aria-label="Cerrar" (click)="cerrarAlertaAndroid()"></button>
-    </div>
-  </div> -->
-
+  <!-- 🔹 Alerta iOS -->
   <div *ngIf="profileId > 1 && showAlertAndroid && isiOS"
     class="alert alert-primary d-flex align-items-center justify-content-between p-3 mt-4" role="alert">
     <div>
@@ -133,8 +108,9 @@
     </div>
 
     <div class="d-flex align-items-center gap-2">
-      <!-- Abre el modal -->
-      <button type="button" class="btn btn-primary d-flex align-items-center" (click)="openSuscriptionModal(2)">
+      <!-- Abre modal -->
+      <button type="button" class="btn btn-primary d-flex align-items-center w-100 w-md-auto"
+        (click)="openSuscriptionModal(2)">
         <i class="bi bi-apple me-2" style="font-size: 1.2rem;"></i> Descargar
       </button>
 
@@ -144,41 +120,31 @@
 
   <app-publicidad></app-publicidad>
 
-  <!-- Botón para abrir el modal de creación de equipo -->
+  <!-- 🔹 Bloques con responsive cols -->
   <div class="container">
-    <!-- <div class="row">
-      <div class="col text-center" *ngIf="this.usuarioActual!.profileType.profileId == 5">
-        <h2 class="text-dark mt-3">Jugadores de Sphaira</h2>
-      </div>
-      <div class="col text-center" *ngIf="this.usuarioActual!.profileType.profileId < 3">
-        <h2 class="text-dark mt-3">Listado de Equipos</h2>
-      </div>
-      <div class="col text-center"
-        *ngIf="this.usuarioActual!.profileType.profileId == 3 || this.usuarioActual!.profileType.profileId == 4">
-        <h2 class="text-dark mt-3">Listado de jugadores</h2>
-      </div>
-    </div> -->
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em; "
-      *ngIf="profileId === 1">
-      <div class="col-3">
-        <label for="excel" class="form-label">Cargar jugadores desde una plantilla de Excel:</label>
-        <button class="btn btn-success form-control" (click)="openModalSubirJugadores()">
+    <div class="row g-3 p-3" style="margin-top: 3em;" *ngIf="profileId === 1">
+      <div class="col-12 col-md-3">
+        <label for="excel" class="form-label">Cargar jugadores desde Excel:</label>
+        <button class="btn btn-success w-100" (click)="openModalSubirJugadores()">
           Subir Excel <i class="bi bi-file-earmark-spreadsheet"></i>
         </button>
       </div>
+
       <!--<div class="col-3">
         <label for="excel" class="form-label">Importar jugadores desde GesDesk:</label>
         <button class="btn btn-success form-control" (click)="openModalSubirJugadoresGesDesk()">
           Subir Excel GesDep <i class="bi bi-file-earmark-spreadsheet"></i>
         </button>
       </div> -->
-      <div class="col-3">
+
+      <div class="col-12 col-md-3">
         <label for="excel" class="form-label">Link invitación para padres:</label>
-        <button class="btn btn-secondary form-control" (click)="copyLink()">
+        <button class="btn btn-secondary w-100" (click)="copyLink()">
           Copiar <i class="bi bi-copy"></i>
         </button>
       </div>
-      <div class="col-3">
+
+      <div class="col-12 col-md-3">
         <label for="temporada" class="form-label">Temporada:</label>
         <select class="form-control" id="temporada" name="temporada" [(ngModel)]="temporada"
           (change)="cargarListadoEquiposForClub()">
@@ -189,9 +155,10 @@
         </select>
       </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em; "
-      *ngIf="profileId === 2">
-      <div class="col-3">
+
+    <!-- 🔹 profileId === 2 -->
+    <div class="row g-3 p-3" style="margin-top: 3em;" *ngIf="profileId === 2">
+      <div class="col-12 col-md-3">
         <label for="temporada" class="form-label">Temporada:</label>
         <select class="form-control" id="temporada" name="temporada" [(ngModel)]="temporada"
           (change)="cargarListadoEquipos()">
@@ -202,9 +169,10 @@
         </select>
       </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em; "
-      *ngIf="profileId === 3">
-      <div class="col-3">
+
+    <!-- 🔹 profileId === 3 -->
+    <div class="row g-3 p-3" style="margin-top: 3em;" *ngIf="profileId === 3">
+      <div class="col-12 col-md-3">
         <label for="temporada" class="form-label">Temporada:</label>
         <select class="form-control" id="temporada" name="temporada" [(ngModel)]="temporada"
           (change)="cargarJugadores()">
@@ -215,8 +183,9 @@
         </select>
       </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
-      *ngIf="profileId < 3">
+
+    <!-- 🔹 Cards de equipos -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 p-3" style="margin-top: 3em;" *ngIf="profileId < 3">
       <div class="col mb-3" style="cursor: pointer;" (click)="abrirModalCrearEquipo()"
         *ngIf="this.profileId === 1 || (this.profileId === 2 && !clubOk)">
         <div class="card h-100" style="border: 1px solid black;">
@@ -229,12 +198,13 @@
                 </ng-container>
               </div>
             </div>
-            <h5 class="card-title"
-              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              Crear equipo</h5>
+            <h5 class="card-title text-truncate" style="color: black;">
+              Crear equipo
+            </h5>
           </div>
         </div>
       </div>
+
       <div class="col mb-3" *ngFor="let team of listTeam; let i = index" style="cursor: pointer;"
         (click)="navegarACalendario(team.teamId, 0)">
         <div class="card h-100" style="border: 1px solid black;">
@@ -254,22 +224,18 @@
                   width="90" height="90" style="max-width: 100%;">
               </div>
             </div>
-            <h5 class="card-title"
-              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-              {{ team.category }}
-              {{ team.name }}</h5>
-            <p class="card-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            <h5 class="card-title text-truncate" style="color: black;">
+              {{ team.category }} {{ team.name }}
+            </h5>
+            <p class="card-text text-truncate">
               {{ team.levelLeague }}
             </p>
             <p class="card-text">
               {{ team.trainingDays }}
-              <i class="bi bi-calendar-week ml-2"></i>
-              -
-              {{ team.jugadoresPorEquipo }}
+              <i class="bi bi-calendar-week ml-2"></i> - {{ team.jugadoresPorEquipo }}
               <i class="bi bi-people-fill"></i>
             </p>
-            <p *ngIf="team.nombreEntrenador" class="card-text"
-              style="color: black; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            <p *ngIf="team.nombreEntrenador" class="card-text text-truncate" style="color: black;">
               <b>Cuerpo técnico: </b> {{ team.nombreEntrenador }}
             </p>
           </div>
@@ -277,10 +243,8 @@
       </div>
     </div>
 
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
-      *ngIf="profileId > 2">
-      <!-- Tarjeta de jugador -->
-      <!-- Mostrar tarjetas de hijos si hay -->
+    <!-- 🔹 Cards de hijos -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3 p-3" style="margin-top: 3em;" *ngIf="profileId > 2">
       <div class="col mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
         (click)="navegarAOpcionesJugador(hijo.teamId, hijo.playerId)">
         <div *ngIf="hijo.playerId > 0" class="card h-100" style="border: 1px solid black;">
@@ -296,77 +260,18 @@
                 </ng-container>
               </div>
             </div>
-            <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+            <h5 class="card-title mt-auto text-truncate" style="color: black;">
               {{ hijo.nombre }} {{ hijo.apellido }}
             </h5>
           </div>
         </div>
       </div>
 
-      <!-- Mostrar mensaje si no hay hijos -->
       <div>
         <p class="text-center text-muted mt-4">
           Si no ves aquí o te falta un jugador, es posible que otro tutor tenga registrado. De ser así, ese
-          tutor, el entrenador o el club debe
-          invitarte desde el perfil del jugador. Avísales.
+          tutor, el entrenador o el club debe invitarte desde el perfil del jugador. Avísales.
         </p>
-      </div>
-
-      <!-- Tarjeta de scouting 
-        <div class="col mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
-          (click)="navegarAScouting(hijo.playerId)">
-          <div class="card h-100" style="border: 1px solid black;">
-            <div class="card-body d-flex flex-column text-center">
-              <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                <div class="col d-flex justify-content-center align-items-center">
-                  <img src="/assets/iconos/prismaticos.svg" class="card-img-top mx-auto d-block p-3" style="width: 7em;"
-                    alt="Scouting Icon">
-                </div>
-              </div>
-              <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-                Scouting de {{ hijo.nombre }} {{ hijo.apellido }}
-              </h5>
-            </div>
-          </div>
-        </div>
-      </div> -->
-
-      <!-- parte de scouting -->
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;"
-        *ngIf="profileId == 5">
-        <!-- Tarjeta de jugador -->
-        <div class="col mb-3">
-          <div class="card h-100" style="border: 1px solid black;">
-            <div class="card-body d-flex flex-column text-center">
-              <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                <div class="col d-flex justify-content-center align-items-center">
-                  <img src="/assets/iconos/buscar.svg" class="card-img-top mx-auto d-block p-3" style="width: 7em;"
-                    alt="Scouting Icon">
-                </div>
-              </div>
-              <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-                Ver todos
-              </h5>
-            </div>
-          </div>
-        </div>
-
-        <!-- Tarjeta de scouting -->
-        <div class="col mb-3">
-          <div class="card h-100" style="border: 1px solid black;">
-            <div class="card-body d-flex flex-column text-center">
-              <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                <div class="col d-flex justify-content-center align-items-center">
-                  <img src="/assets/iconos/estrella.svg" class="card-img-top mx-auto d-block p-3" style="width: 7em;"
-                    alt="Scouting Icon">
-                </div>
-              </div>
-              <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-                Ver favoritos
-              </h5>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   </div>

@@ -125,11 +125,13 @@ export class NewCuotasComponent implements OnInit {
   loadTabla() {
     this.clubService.getListPlayersPagosClub(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.listaPlayers = response.data;
-          this.listaPlayersFiltrados = [...this.listaPlayers];
-        }
+        // eliminar duplicados por playerId
+        const uniquePlayers = Array.from(
+          new Map(response.data.map((p: any) => [p.playerId, p])).values()
+        );
+
+        this.listaPlayers = uniquePlayers;
+        this.listaPlayersFiltrados = [...this.listaPlayers];
         this.isLoading = false;
         //this.datosCargados = true;
       },

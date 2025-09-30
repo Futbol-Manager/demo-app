@@ -410,7 +410,7 @@ export class TeamService {
         }
     }
 
-    movePlayer(playerId: number, teamIdOld: number, teamIdNew: number, cuotaTbm: number): Observable<Response> {
+    movePlayer(playerId: number, teamIdOld: number, teamIdNew: number, cuotaTbm: number, addPlayerMoved: number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
 
@@ -422,7 +422,7 @@ export class TeamService {
             });
 
             // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `player/moveplayer/${playerId}/${teamIdOld}/${teamIdNew}/${cuotaTbm}`;
+            const url: string = environment.apiUrl + `player/moveplayer/${playerId}/${teamIdOld}/${teamIdNew}/${cuotaTbm}/${addPlayerMoved}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });

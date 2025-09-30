@@ -170,6 +170,7 @@ export class PlayerComponent implements OnInit {
   teamIdPlayerSelected = 0;
   temporadaStoredValue = '2025';
 
+  addPlayerMoved: boolean = false;
   constructor(private playerservice: PlayerService,
     private router: Router,
     private route: ActivatedRoute,
@@ -999,12 +1000,15 @@ export class PlayerComponent implements OnInit {
     if (this.teamSelected == 0) {
       alert('Selecciona un equipo del desplegable.');
     } else {
-      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected, cuotaTbm).subscribe(
+      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected, cuotaTbm, this.addPlayerMoved ? 1 : 0).subscribe(
         (response: Response) => {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
-            this.players.splice(this.indexSelected, 1);
+            if(!this.addPlayerMoved)
+              this.players.splice(this.indexSelected, 1);
+
             this.showModalMover = false;
+            this.addPlayerMoved = false;
             this.teamSelected = 0;
           } else {
             console.error('La respuesta del servicio no tiene la estructura esperada', response);

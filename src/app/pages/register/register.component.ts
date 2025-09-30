@@ -63,7 +63,7 @@ export class RegisterComponent implements OnInit {
 
   inputPassword: string = '';
   readonly realPassword = 'RegistroClubesST2025'; // la contraseña que quieras validar
-  readonly realPasswordFede = 'ADDFEDESPHAIRA25'; // la contraseña que quieras validar
+  readonly realPasswordFede = 'LFP2000'; // la contraseña que quieras validar
 
   mailsOk = false;
   showModalClub = false;

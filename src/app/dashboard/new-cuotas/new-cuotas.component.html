@@ -427,9 +427,11 @@
                                 [checked]="nuevaCuota.tipoPagoStripe === 0" (change)="onTipoPagoChange(0)">
                             <label class="btn btn-outline-primary" for="tipoPuntual">Pago puntual</label>
 
-                            <input type="radio" class="btn-check" id="tipoSuscripcion"
-                                [checked]="nuevaCuota.tipoPagoStripe === 1" (change)="onTipoPagoChange(1)">
-                            <label class="btn btn-outline-primary" for="tipoSuscripcion">Suscripción</label>
+                            <div >
+                                <input type="radio" class="btn-check" id="tipoSuscripcion"
+                                    [checked]="nuevaCuota.tipoPagoStripe === 1" (change)="onTipoPagoChange(1)">
+                                <label class="btn btn-outline-primary" for="tipoSuscripcion">Suscripción</label>
+                            </div>
                         </div>
 
                         <!-- Detalles de suscripción -->

@@ -1348,8 +1348,7 @@
                             <label for="teamSelected" class="form-label">Selecciona el equipo:</label>
                             <select class="form-control" id="teamSelected" name="teamSelected"
                                 [(ngModel)]="teamSelected">
-                                <option value="0">
-                                    Escoge un equipo</option>
+                                <option value="0">Escoge un equipo</option>
                                 <ng-container *ngFor="let team of listTeamsForCombo">
                                     <option *ngIf="team.value !== teamId" [value]="team.value">
                                         {{ team.name }}
@@ -1357,6 +1356,16 @@
                                 </ng-container>
                             </select>
                         </div>
+
+                        <!-- Checkbox añadido -->
+                        <div class="form-check mt-3">
+                            <input class="form-check-input" type="checkbox" id="addPlayerMoved"
+                                [(ngModel)]="addPlayerMoved" name="addPlayerMoved">
+                            <label class="form-check-label" for="addPlayerMoved" style="color: red">
+                                Si activas el check box, el jugador será añadido al equipo seleccionado, además de permanecer en el que ya está.
+                            </label>
+                        </div>
+
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary float-end">Aceptar</button>
                         </div>
@@ -1366,6 +1375,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Modal para subir el DNI del jugador -->
 <div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalDniJugador}"

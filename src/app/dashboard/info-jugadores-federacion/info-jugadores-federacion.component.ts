@@ -660,7 +660,7 @@ export class InfoJugadoresFederacionComponent implements OnInit {
     if (this.teamSelected == 0) {
       alert('Selecciona un equipo del desplegable.');
     } else {
-      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected, cuotaTbm).subscribe(
+      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected, cuotaTbm, 0).subscribe(
         (response: Response) => {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
