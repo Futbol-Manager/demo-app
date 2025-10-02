@@ -570,62 +570,56 @@
         <div class="modal-header flex-wrap">
           <h5 class="modal-title">Partido {{daySession}}</h5>
 
-          <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center ms-lg-auto">
+          <div class="d-flex flex-wrap align-items-center ms-auto gap-2">
+
             <!-- Sección para usuarios con profileId 1 o 2 -->
             <div
-              *ngIf="(this.usuarioActual!.profileType.profileId === 1 || this.usuarioActual!.profileType.profileId === 2) && match.matchPreparationId !== 0"
-              class="d-flex flex-column flex-sm-row mb-2 mb-sm-0 flex-wrap">
-              <button class="btn btn-secondary mb-2 mb-sm-0 me-sm-2"
+              *ngIf="(usuarioActual!.profileType.profileId === 1 || usuarioActual!.profileType.profileId === 2) && match.matchPreparationId !== 0"
+              class="d-flex flex-wrap gap-2">
+              <button class="btn btn-secondary"
                 (click)="openModalPrePartido(match.matchPreparationId)">Pre-formulario</button>
               <button class="btn btn-success"
                 (click)="openModalPostMatch(match.matchPreparationId)">Post-formulario</button>
             </div>
 
             <!-- Sección para usuarios con profileId 3 o 4 -->
-            <div
-              *ngIf="this.usuarioActual!.profileType.profileId === 3 || this.usuarioActual!.profileType.profileId === 4"
-              class="d-flex flex-column flex-sm-row mb-2 mb-sm-0 flex-wrap">
-              <button class="btn btn-secondary mb-2 mb-sm-0 me-sm-2"
+            <div *ngIf="usuarioActual!.profileType.profileId === 3 || usuarioActual!.profileType.profileId === 4"
+              class="d-flex flex-wrap gap-2">
+              <button class="btn btn-secondary"
                 (click)="openModalFormPrePartido(match.matchPreparationId)">Pre-formulario</button>
               <button class="btn btn-success"
                 (click)="openModalFormPostPartido(match.matchPreparationId)">Post-formulario</button>
             </div>
 
-            <!-- Botones para Convocatoria -->
-            <div class="mt-2 mt-lg-0">
-              <div class="d-flex flex-column flex-sm-row flex-wrap">
-                <button *ngIf="this.usuarioActual!.profileType.profileId < 3" type="button"
-                  class="btn btn-primary mb-2 mb-sm-0" (click)="abrirModalConvocatoria()">Convocatoria</button>
-                <button *ngIf="this.usuarioActual!.profileType.profileId > 2" type="button"
-                  class="btn btn-secondary mb-2 mb-sm-0" (click)="abrirModalConvocatoriaLista(match.matchPreparationId)">Convocatoria</button>
-              </div>
+            <!-- Botones Convocatoria -->
+            <div class="d-flex flex-wrap gap-2">
+              <button *ngIf="usuarioActual!.profileType.profileId < 3" class="btn btn-primary"
+                (click)="abrirModalConvocatoria()">Convocatoria</button>
+              <button *ngIf="usuarioActual!.profileType.profileId > 2" class="btn btn-secondary"
+                (click)="abrirModalConvocatoriaLista(match.matchPreparationId)">Convocatoria</button>
             </div>
 
-            <!-- Sección para post-partido y opciones de impresión -->
-            <div class="d-flex flex-column flex-lg-row align-items-center ms-lg-3 mt-2 mt-lg-0 flex-wrap">
-              <div class="d-flex flex-column flex-sm-row flex-wrap">
-                <button *ngIf="this.usuarioActual!.profileType.profileId < 3"
-                  class="btn btn-success mb-2 mb-sm-0 me-sm-2" (click)="openPostPartido(match.matchPreparationId)">Post
-                  Partido</button>
-                <button *ngIf="this.usuarioActual!.profileType.profileId === 2"
-                  class="btn btn-secondary ms-sm-2 mb-2 mb-sm-0" (click)="abrirModalPDF()">Imprimir</button>
-              </div>
-
-              <!-- Toggle de visibilidad del partido -->
-              <div class="form-check form-switch ms-sm-3 mt-2 mt-sm-0"
-                *ngIf="this.usuarioActual!.profileType.profileId === 2">
-                <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
-                  [checked]="togglePartidoVisible === 1" title="Si está no visible el jugador no lo verá"
-                  (change)="onChangeTogglePartido($event, match.matchPreparationId)">
-                <label class="form-check-label">No visible / Visible</label>
-              </div>
-
-              <!-- Botón de cierre del modal -->
-              <button type="button" class="btn btn-close ms-sm-3 mt-2 mt-sm-0" aria-label="Close"
-                (click)="cerrarModalPartido()"></button>
+            <!-- Post-partido + PDF -->
+            <div class="d-flex flex-wrap gap-2">
+              <button *ngIf="usuarioActual!.profileType.profileId < 3" class="btn btn-success"
+                (click)="openPostPartido(match.matchPreparationId)">Post Partido</button>
+              <button *ngIf="usuarioActual!.profileType.profileId === 2" class="btn btn-secondary"
+                (click)="abrirModalPDF()">Imprimir</button>
             </div>
+
+            <!-- Toggle -->
+            <div class="form-check form-switch" *ngIf="usuarioActual!.profileType.profileId === 2">
+              <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
+                [checked]="togglePartidoVisible === 1"
+                (change)="onChangeTogglePartido($event, match.matchPreparationId)">
+              <label class="form-check-label" for="toggleVisible">No visible / Visible</label>
+            </div>
+
+            <!-- Botón de cierre -->
+            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalPartido()"></button>
           </div>
         </div>
+
         <div class="modal-body">
           <div class="row text-center mt-3">
             <div class="col-12 col-md-12">
@@ -4350,7 +4344,7 @@
               <!-- Toggle de visibilidad del partido -->
               <div class="form-check form-switch ms-sm-3 mt-2 mt-sm-0">
                 <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
-                  [checked]="playerAsistencia" title="Decir si asistirá o no al partido"
+                  [checked]="playerAsistencia == true" title="Decir si asistirá o no al partido"
                   (change)="onChangeToggleAsistencia(match.matchPreparationId)">
                 <label class="form-check-label">No asistencia / Si Asistencia</label>
               </div>

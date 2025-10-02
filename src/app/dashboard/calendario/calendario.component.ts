@@ -857,33 +857,56 @@ export class CalendarioComponent implements OnInit {
           this.togglePartidoVisible = response.data.visible === 0 || !response.data.visible ? 0 : 1;
           this.playersConvo = response.data.players;
 
-          if (this.match.convocatoria != null && this.match.convocatoria != '') {
-            // se carga el json y se distribuye
-            const convocatoria = JSON.parse(this.match.convocatoria);
+          if (this.match.convocatoria != null && this.match.convocatoria !== '') {
+            // Parse convocatoria
+            const convocatoria = JSON.parse(this.match.convocatoria || '{}');
 
-            this.jugadoresNoConvocados = convocatoria.noConvocados;
-            this.jugadoresSuplentes = convocatoria.suplentes;
-            this.jugadoresTitulares = convocatoria.titulares;
-            if (convocatoria.titulares.length > 0 || convocatoria.suplentes.length > 0) this.showNotificar = true;
-
-            // además, guardar todos los playersConvo en startConvocarotia como no convocados
-            if (this.playersConvo) {
-              const nuevosNoConvocados = this.playersConvo.map((player: any, index: number) => new ConvocatoriaUI({
-                id: index,
-                playerId: player.playerId,
-                nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
-                img: player.picturePlayer != null && player.picturePlayer != '' ? this.imageBaseUrlUser + player.picturePlayer : '',
-                posicion_x: player.posicion_x || null,
-                posicion_y: player.posicion_y || null
-              }));
-
-              // si quieres añadirlos a jugadoresNoConvocados también:
-              //this.jugadoresNoConvocados = [...this.jugadoresNoConvocados, ...nuevosNoConvocados];
-
-              // guardar copia inicial
-              this.startConvocarotia = [...nuevosNoConvocados];
+            // Parse siAsisten -> Set<number> (solo si viene y es válido)
+            let asistentesSet: Set<number> | null = null;
+            const siAsistenStr = this.match.siAsisten;
+            if (siAsistenStr && siAsistenStr.trim().length > 0) {
+              try {
+                const ids: any = JSON.parse(siAsistenStr); // p.ej. "[741,456,453]"
+                if (Array.isArray(ids)) {
+                  asistentesSet = new Set(
+                    ids.map((x: any) => Number(x)).filter((n: number) => Number.isFinite(n))
+                  );
+                }
+              } catch (e) {
+                console.error('Error parseando siAsisten:', e);
+              }
             }
 
+            // Helper: filtra por siAsisten si existe; si no, devuelve el array original
+            const filtrarPorAsistentes = (arr: any[]): any[] => {
+              if (!Array.isArray(arr)) return [];
+              if (!asistentesSet || asistentesSet.size === 0) return arr;
+              return arr.filter(p => asistentesSet!.has(Number(p?.playerId)));
+            };
+
+            // Aplica el filtrado ANTES de asignar a las variables del componente
+            this.jugadoresNoConvocados = filtrarPorAsistentes(convocatoria?.noConvocados ?? []);
+            this.jugadoresSuplentes = filtrarPorAsistentes(convocatoria?.suplentes ?? []);
+            this.jugadoresTitulares = filtrarPorAsistentes(convocatoria?.titulares ?? []);
+
+            if ((this.jugadoresTitulares.length > 0) || (this.jugadoresSuplentes.length > 0)) {
+              this.showNotificar = true;
+            }
+
+            // Copia base de todos los jugadores (como no convocados iniciales)
+            if (this.playersConvo) {
+              const nuevosNoConvocados = this.playersConvo.map((player: any, index: number) =>
+                new ConvocatoriaUI({
+                  id: index,
+                  playerId: player.playerId,
+                  nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
+                  img: player.picturePlayer ? this.imageBaseUrlUser + player.picturePlayer : '',
+                  posicion_x: player.posicion_x || null,
+                  posicion_y: player.posicion_y || null
+                })
+              );
+              this.startConvocarotia = [...nuevosNoConvocados];
+            }
           } else {
             this.showNotificar = false;
 

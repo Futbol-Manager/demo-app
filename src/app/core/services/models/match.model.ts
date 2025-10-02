@@ -47,6 +47,7 @@ export class MatchPreparation {
     convocatoria: string;
     imgClub: any;
     equipacion: string;
+    siAsisten: string;
 
     constructor(object: any) {
         this.matchPreparationId = object.matchPreparationId || 0;
@@ -94,6 +95,7 @@ export class MatchPreparation {
         this.ajustesTacticos = object.ajustesTacticos || '';
         this.convocatoria = object.convocatoria || '';
         this.equipacion = object.equipacion || '';
+        this.siAsisten = object.siAsisten || '';
     }
 }
 
