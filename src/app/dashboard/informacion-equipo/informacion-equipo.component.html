@@ -120,7 +120,7 @@
         <div class="modal-header" style="justify-content: flex-start;">
           <h5 class="modal-title" id="standard-modalLabel">Entrenadores del equipo</h5>
           <div
-            *ngIf="coaches.length < 3 && this.team.userId == this.usuarioActual!!.userId || coaches.length < 3 && this.usuarioActual!!.profileType.profileId == 1">
+            *ngIf="coaches.length < 4 && this.team.userId == this.usuarioActual!!.userId || coaches.length < 4 && this.usuarioActual!!.profileType.profileId == 1">
             <button class="btn btn-link text-primary" (click)="abrirModalInvitarEntenador()">
               <i class="bi bi-plus-circle-fill"></i>
             </button>

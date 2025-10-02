@@ -521,6 +521,7 @@ export class CalendarioComponent implements OnInit {
   };
 
   jugadoresNoConvocados: ConvocatoriaUI[] = [];
+  startConvocarotia: ConvocatoriaUI[] = [];
   jugadoresSuplentes: ConvocatoriaUI[] = [];
   jugadoresTitulares: ConvocatoriaUI[] = [];
 
@@ -548,6 +549,7 @@ export class CalendarioComponent implements OnInit {
 
   convocatoriaJSON: any = null;
   profileId = 0;
+  playerAsistencia = false;
 
   constructor(
     private router: Router,
@@ -856,33 +858,49 @@ export class CalendarioComponent implements OnInit {
           this.playersConvo = response.data.players;
 
           if (this.match.convocatoria != null && this.match.convocatoria != '') {
-            //se carga el json y se distribuye
-            // Convertir la cadena JSON a un objeto JavaScript
+            // se carga el json y se distribuye
             const convocatoria = JSON.parse(this.match.convocatoria);
-            this.jugadoresNoConvocados = convocatoria.noConvocados;
-            this.jugadoresSuplentes = convocatoria.suplentes;    // Inicializa con los datos del backend
-            this.jugadoresTitulares = convocatoria.titulares;
-            this.showNotificar = true;
-          } else {
-            this.showNotificar = false;
-            //se coge todo de la lista de jugadores y se pone en no convocados
-            // Supongamos que response.data.players es la lista de jugadores
 
+            this.jugadoresNoConvocados = convocatoria.noConvocados;
+            this.jugadoresSuplentes = convocatoria.suplentes;
+            this.jugadoresTitulares = convocatoria.titulares;
+            if (convocatoria.titulares.length > 0 || convocatoria.suplentes.length > 0) this.showNotificar = true;
+
+            // además, guardar todos los playersConvo en startConvocarotia como no convocados
             if (this.playersConvo) {
-              // Asignar a jugadoresNoConvocados mapeando cada jugador a una instancia de ConvocatoriaUI
-              let i = 0;
-              this.jugadoresNoConvocados = this.playersConvo.map((player: any, index: number) => new ConvocatoriaUI({
-                id: index, // Asignar el índice como ID,
-                playerId: player.playerId, // Asegúrate de que este campo esté presente en la respuesta
+              const nuevosNoConvocados = this.playersConvo.map((player: any, index: number) => new ConvocatoriaUI({
+                id: index,
+                playerId: player.playerId,
                 nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
-                img: player.picturePlayer != null && player.picturePlayer != '' ? this.imageBaseUrlUser + player.picturePlayer : '', // Puedes asignar una imagen si está disponible o usar un valor por defecto
-                posicion_x: player.posicion_x || null, // O asignar null si no tiene coordenadas
-                posicion_y: player.posicion_y || null  // O asignar null si no tiene coordenadas
+                img: player.picturePlayer != null && player.picturePlayer != '' ? this.imageBaseUrlUser + player.picturePlayer : '',
+                posicion_x: player.posicion_x || null,
+                posicion_y: player.posicion_y || null
               }));
+
+              // si quieres añadirlos a jugadoresNoConvocados también:
+              //this.jugadoresNoConvocados = [...this.jugadoresNoConvocados, ...nuevosNoConvocados];
+
+              // guardar copia inicial
+              this.startConvocarotia = [...nuevosNoConvocados];
             }
 
-            //console.log(this.jugadoresNoConvocados);
+          } else {
+            this.showNotificar = false;
+
+            if (this.playersConvo) {
+              this.jugadoresNoConvocados = this.playersConvo.map((player: any, index: number) => new ConvocatoriaUI({
+                id: index,
+                playerId: player.playerId,
+                nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
+                img: player.picturePlayer != null && player.picturePlayer != '' ? this.imageBaseUrlUser + player.picturePlayer : '',
+                posicion_x: player.posicion_x || null,
+                posicion_y: player.posicion_y || null
+              }));
+
+              this.startConvocarotia = [...this.jugadoresNoConvocados];
+            }
           }
+
           // Abrir el modal
           this.showModalPartido = true;
         } else {
@@ -2154,6 +2172,14 @@ export class CalendarioComponent implements OnInit {
     }
   }
 
+  resetConvocatoria() {
+    this.jugadoresNoConvocados = this.startConvocarotia;
+    this.jugadoresSuplentes = [];
+    this.jugadoresTitulares = [];
+    this.guardarConvocatoria();
+    this.mostrarModalConvocatoria = false;
+  }
+
   removeJugador(jugador: any) {
     this.jugadoresNoConvocados = this.jugadoresNoConvocados.filter(j => j.id !== jugador.id);
     this.jugadoresSuplentes = this.jugadoresSuplentes.filter(j => j.id !== jugador.id);
@@ -2191,21 +2217,34 @@ export class CalendarioComponent implements OnInit {
     this.mostrarModalConvocatoria = false;
   }
 
-  abrirModalConvocatoriaLista() {
-    let ui = new NotificatePlayerUI({});
-    ui.players = this.playersConvo;
-    // Asignar los nombres de jugadores no convocados
-    ui.noConvocados = this.jugadoresNoConvocados.map((jugador: ConvocatoriaUI) => jugador.nombre);
+  abrirModalConvocatoriaLista(matchPreparationId: number) {
+    this.playerService.getAsistenciaPartido(matchPreparationId, this.playerId).subscribe(
+      (resp) => {
+        if (resp.data) {
+          this.playerAsistencia = true;
+        } else {
+          this.playerAsistencia = false;
+        }
 
-    // Asignar los nombres de jugadores suplentes y titulares a convocados
-    ui.convocados = [
-      ...this.jugadoresSuplentes.map((jugador: ConvocatoriaUI) => jugador.nombre),
-      ...this.jugadoresTitulares.map((jugador: ConvocatoriaUI) => jugador.nombre)
-    ];
+        let ui = new NotificatePlayerUI({});
+        ui.players = this.playersConvo;
+        // Asignar los nombres de jugadores no convocados
+        ui.noConvocados = this.jugadoresNoConvocados.map((jugador: ConvocatoriaUI) => jugador.nombre);
 
-    this.showConvocados = ui.convocados;
-    this.showNoConvocados = ui.noConvocados;
-    this.mostrarModalConvocatoriaLista = true;
+        // Asignar los nombres de jugadores suplentes y titulares a convocados
+        ui.convocados = [
+          ...this.jugadoresSuplentes.map((jugador: ConvocatoriaUI) => jugador.nombre),
+          ...this.jugadoresTitulares.map((jugador: ConvocatoriaUI) => jugador.nombre)
+        ];
+
+        this.showConvocados = ui.convocados;
+        this.showNoConvocados = ui.noConvocados;
+        this.mostrarModalConvocatoriaLista = true;
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
   }
 
   cerrarModalConvocatoriaLista() {
@@ -2245,6 +2284,33 @@ export class CalendarioComponent implements OnInit {
     });
   }
 
+  preavisoConvocatoria() {
+    let partido = this.match;
+    //crear el objeto para enviarlo
+    let ui = new NotificatePlayerUI({});
+    ui.players = this.playersConvo;
+
+    ui.local = partido.terreno == 'Local' ? 0 : 1;
+    ui.lugar = partido.lugar;
+    ui.rival = partido.rivalName;
+    ui.tipoPartido = partido.tipoPartido;
+
+    //esta es la hora de partido
+    ui.horaPartido = partido.horaEmpieza + ':' + partido.minutosEmpieza;
+    ui.horaQuedada = partido.hora + ':' + partido.minutos;
+    ui.fechaPartido = partido.matchDate;
+
+    // Asignar los nombres de jugadores no convocados
+    ui.noConvocados = this.jugadoresNoConvocados.map((jugador: ConvocatoriaUI) => jugador.nombre);
+
+    ui.mailEntrenador = this.usuarioActual?.mail !== undefined ? this.usuarioActual?.mail : '';
+    //console.log(ui);
+
+    this.playerService.notificateMatchPlayer(ui, this.teamId).subscribe(response => {
+      alert('Pre-aviso enviado a los padres, en No convocados solo veras a los juagdores que han confirmado asistencia.');
+    });
+  }
+
   match2: any = {
     rivalName: '',
     terreno: '',
@@ -2274,6 +2340,19 @@ export class CalendarioComponent implements OnInit {
     ajustesTacticos: '',
     refereeName: ''
   };
+
+  onChangeToggleAsistencia(matchPreparationId: number) {
+    this.playerService.setAsistenciaPartido(matchPreparationId, this.playerId).subscribe(
+      (resp) => {
+        if (resp.data) {
+          alert("Cambio guardado.");
+        }
+      },
+      (error) => {
+        console.error('Error en la solicitud:', error);
+      }
+    );
+  }
 
   convertImgToBase64URL(url: string): Promise<string> {
     return new Promise((resolve, reject) => {

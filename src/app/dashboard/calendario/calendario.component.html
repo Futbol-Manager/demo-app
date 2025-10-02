@@ -57,8 +57,11 @@
 <app-publicidad></app-publicidad>
 
 <div *ngIf="datosCargados">
+  <div class="container mt-3" *ngIf="categoryTeam == 27">
+    <h2 class="text-center">Sin equipo no dispone de Calendario</h2>
+  </div>
   <!-- calendario.component.html -->
-  <div class="container" style="margin-top: 3em;" *ngIf="categoryTeam != 27">
+  <div class="container mt-3" *ngIf="categoryTeam != 27">
     <h2 class="text-center">{{ nombreEquipo }}</h2>
     <div class="d-flex justify-content-between">
       <button class="btn btn-entrena" (click)="mesAnterior()">
@@ -594,7 +597,7 @@
                 <button *ngIf="this.usuarioActual!.profileType.profileId < 3" type="button"
                   class="btn btn-primary mb-2 mb-sm-0" (click)="abrirModalConvocatoria()">Convocatoria</button>
                 <button *ngIf="this.usuarioActual!.profileType.profileId > 2" type="button"
-                  class="btn btn-secondary mb-2 mb-sm-0" (click)="abrirModalConvocatoriaLista()">Convocatoria</button>
+                  class="btn btn-secondary mb-2 mb-sm-0" (click)="abrirModalConvocatoriaLista(match.matchPreparationId)">Convocatoria</button>
               </div>
             </div>
 
@@ -902,7 +905,7 @@
           <button *ngIf="profileId < 3" type="button" class="btn btn-primary"
             (click)="abrirModalConvocatoria()">Convocatoria</button>
           <button *ngIf="profileId != 2" type="button" class="btn btn-secondary"
-            (click)="abrirModalConvocatoriaLista()">Convocatoria</button>
+            (click)="abrirModalConvocatoriaLista(match.matchPreparationId)">Convocatoria</button>
           <!-- Botón para guardar el nuevo partido -->
           <button *ngIf="profileId < 3" type="button" class="btn btn-danger float-end"
             (click)="eliminarPartido()">Eliminar Partido</button>
@@ -4321,6 +4324,9 @@
           </div>
         </div>
         <div class="modal-footer">
+          <button type="button" class="btn btn-primary pr-2" (click)="resetConvocatoria()">Resetear</button>
+          <button *ngIf="!showNotificar" type="button" class="btn btn-primary pr-2"
+            (click)="preavisoConvocatoria()">Pre-aviso</button>
           <button *ngIf="showNotificar" type="button" class="btn btn-primary pr-2"
             (click)="enviarConvocatoria()">Notificar</button>
           <button type="button" class="btn btn-primary" (click)="guardarConvocatoria()">Guardar</button>
@@ -4339,6 +4345,17 @@
           <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalConvocatoriaLista()"></button>
         </div>
         <div class="modal-body">
+          <div class="row mt-3">
+            <div class="col-12">
+              <!-- Toggle de visibilidad del partido -->
+              <div class="form-check form-switch ms-sm-3 mt-2 mt-sm-0">
+                <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
+                  [checked]="playerAsistencia" title="Decir si asistirá o no al partido"
+                  (change)="onChangeToggleAsistencia(match.matchPreparationId)">
+                <label class="form-check-label">No asistencia / Si Asistencia</label>
+              </div>
+            </div>
+          </div>
           <div class="row mt-3">
             <div class="col-12">
               <div style="overflow-x: auto;">

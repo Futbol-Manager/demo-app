@@ -140,8 +140,11 @@ export class HeaderComponent implements OnInit {
   }
 
   goInicio() {
-    this.router.navigate(['/dashboard/inicio']);
-    //this.router.navigate(['/dashboard/inicio-deportes']);
+    if (this.profileId == 0) {
+      this.router.navigate(['/dashboard/inicio-federacion']);
+    } else {
+      this.router.navigate(['/dashboard/inicio']);
+    }
   }
 
   logOut(): void {

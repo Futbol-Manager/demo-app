@@ -294,7 +294,7 @@ export class RegisterComponent implements OnInit {
         profileType,
         fv.name,
         '',
-        fv.birthdate,
+        fv.foundationDate,
         genreType,
         fv.email,
         fv.password,
