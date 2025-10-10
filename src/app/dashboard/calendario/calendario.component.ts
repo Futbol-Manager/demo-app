@@ -550,6 +550,7 @@ export class CalendarioComponent implements OnInit {
   convocatoriaJSON: any = null;
   profileId = 0;
   playerAsistencia = false;
+  motivoNoAsistencia = '';
 
   constructor(
     private router: Router,
@@ -885,9 +886,10 @@ export class CalendarioComponent implements OnInit {
             };
 
             // Aplica el filtrado ANTES de asignar a las variables del componente
-            this.jugadoresNoConvocados = filtrarPorAsistentes(convocatoria?.noConvocados ?? []);
-            this.jugadoresSuplentes = filtrarPorAsistentes(convocatoria?.suplentes ?? []);
-            this.jugadoresTitulares = filtrarPorAsistentes(convocatoria?.titulares ?? []);
+            // this.jugadoresNoConvocados = filtrarPorAsistentes(convocatoria?.noConvocados ?? []);
+            this.jugadoresNoConvocados = convocatoria?.noConvocados ?? [];
+            this.jugadoresSuplentes = convocatoria?.suplentes ?? [];
+            this.jugadoresTitulares = convocatoria?.titulares ?? [];
 
             if ((this.jugadoresTitulares.length > 0) || (this.jugadoresSuplentes.length > 0)) {
               this.showNotificar = true;
@@ -902,7 +904,8 @@ export class CalendarioComponent implements OnInit {
                   nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
                   img: player.picturePlayer ? this.imageBaseUrlUser + player.picturePlayer : '',
                   posicion_x: player.posicion_x || null,
-                  posicion_y: player.posicion_y || null
+                  posicion_y: player.posicion_y || null,
+                  confirmacion: player.confirmacion
                 })
               );
               this.startConvocarotia = [...nuevosNoConvocados];
@@ -917,7 +920,8 @@ export class CalendarioComponent implements OnInit {
                 nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
                 img: player.picturePlayer != null && player.picturePlayer != '' ? this.imageBaseUrlUser + player.picturePlayer : '',
                 posicion_x: player.posicion_x || null,
-                posicion_y: player.posicion_y || null
+                posicion_y: player.posicion_y || null,
+                confirmacion: player.confirmacion
               }));
 
               this.startConvocarotia = [...this.jugadoresNoConvocados];
@@ -934,6 +938,14 @@ export class CalendarioComponent implements OnInit {
         console.error('Error en la solicitud:', error);
       }
     );
+  }
+
+  getIconoConfirmacion(confirmacion: number): { icon: string; color: string } {
+    if (confirmacion === 1) {
+      return { icon: '✔️', color: 'green' }; // Tic verde
+    } else {
+      return { icon: '❌', color: 'red' }; // X roja
+    }
   }
 
   // Método para cerrar el modal
@@ -2219,7 +2231,8 @@ export class CalendarioComponent implements OnInit {
         nombre: j.nombre,
         img: j.img,
         posicion_x: j.posicion_x,
-        posicion_y: j.posicion_y
+        posicion_y: j.posicion_y,
+        confirmacion: j.confirmacion
       }))
     };
 
@@ -2307,7 +2320,27 @@ export class CalendarioComponent implements OnInit {
     });
   }
 
-  preavisoConvocatoria() {
+  preavisoConvocatoria() {    
+    const convocatoria = {
+      noConvocados: this.jugadoresNoConvocados,
+      suplentes: this.jugadoresSuplentes,
+      titulares: this.jugadoresTitulares.map(j => ({
+        id: j.id,
+        playerId: j.playerId,
+        nombre: j.nombre,
+        img: j.img,
+        posicion_x: j.posicion_x,
+        posicion_y: j.posicion_y,
+        confirmacion: j.confirmacion
+      }))
+    };
+
+    // Convertir la convocatoria a una cadena JSON
+    this.convocatoriaJSON = JSON.stringify(convocatoria);
+
+    this.playerService.updateConvocatoria(this.convocatoriaJSON, this.matchPreparationId).subscribe(response => {
+    });
+
     let partido = this.match;
     //crear el objeto para enviarlo
     let ui = new NotificatePlayerUI({});
@@ -2365,7 +2398,8 @@ export class CalendarioComponent implements OnInit {
   };
 
   onChangeToggleAsistencia(matchPreparationId: number) {
-    this.playerService.setAsistenciaPartido(matchPreparationId, this.playerId).subscribe(
+    this.playerAsistencia = !this.playerAsistencia;      // si no asiste → mostrar textarea
+    this.playerService.setAsistenciaPartido(matchPreparationId, this.playerId, this.playerAsistencia == true ? 1 : 0).subscribe(
       (resp) => {
         if (resp.data) {
           alert("Cambio guardado.");
@@ -2458,6 +2492,21 @@ export class CalendarioComponent implements OnInit {
 
   cerrarModalPDF() {
     this.showModalPDF = false;
+  }
+
+  notificarNoAsistencia(value1: any, value2: any) {
+    const dto = {
+      matchPreparationId: this.matchPreparationId,
+      playerId: this.playerId,
+      motivo: this.motivoNoAsistencia,
+      teamId: this.teamId,
+      userId: this.userId
+    }
+
+    this.playerService.notificarNoAsistencia(dto).subscribe(response => {
+      alert('Notificación enviada.');
+      this.motivoNoAsistencia = '';
+    });
   }
 
 

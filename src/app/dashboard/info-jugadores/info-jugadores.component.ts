@@ -608,7 +608,12 @@ export class InfoJugadoresComponent implements OnInit {
     this.contenidoEditando = doc.descripcion || ''; // ajusta al campo real
     this.tituloEditando = doc.nombre || ''; // ajusta al campo real
     this.fechaEditando = doc.fecCreate
-    if (doc.subido == 1) this.showDate = true;
+    if (doc.subido == 1) {
+      this.showDate = true;
+      this.requiereRespuesta = true;
+    } else {
+      this.requiereRespuesta = false;
+    }
     this.mostrarModalEditarPersonalizado = true;
   }
 

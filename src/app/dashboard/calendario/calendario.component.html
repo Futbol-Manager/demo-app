@@ -4278,6 +4278,12 @@
                   (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd($event, 'no_convocado')"
                   [attr.data-id]="jugador.id">
                   {{ jugador.nombre }}
+                  <span>
+                    <i [ngClass]="{
+                      'bi bi-check-circle-fill text-success': jugador.confirmacion === 1,
+                      'bi bi-x-circle-fill text-danger': jugador.confirmacion === 0
+                    }"></i>
+                  </span>
                 </div>
               </div>
             </div>
@@ -4292,6 +4298,12 @@
                   (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd($event, 'suplente')"
                   [attr.data-id]="jugador.id">
                   {{ jugador.nombre }}
+                  <span>
+                    <i [ngClass]="{
+                      'bi bi-check-circle-fill text-success': jugador.confirmacion === 1,
+                      'bi bi-x-circle-fill text-danger': jugador.confirmacion === 0
+                    }"></i>
+                  </span>
                 </div>
               </div>
             </div>
@@ -4311,7 +4323,11 @@
                   <i *ngIf="!jugador.img" class="bi bi-person-circle"></i>
                   <div *ngIf="jugador.img" [ngStyle]="{'background-image': 'url(' + jugador.img + ')'}"
                     class="player-img"></div>
-                  <span class="player-name">{{ jugador.nombre }}</span>
+                  <span class="player-name">{{ jugador.nombre }}
+                    <i [ngClass]="{
+                      'bi bi-check-circle-fill text-success': jugador.confirmacion === 1,
+                      'bi bi-x-circle-fill text-danger': jugador.confirmacion === 0
+                    }"></i></span>
                 </div>
               </div>
             </div>
@@ -4350,6 +4366,24 @@
               </div>
             </div>
           </div>
+          <!-- Solo se muestra si NO asiste -->
+          <div class="row mt-3" [ngClass]="{'d-none': playerAsistencia}">
+            <div class="col-12">
+              <label for="motivoNoAsistencia" class="form-label">Motivo de no asistencia:</label>
+              <textarea id="motivoNoAsistencia" class="form-control custom-input" [(ngModel)]="motivoNoAsistencia"
+                rows="3" placeholder="Escribe el motivo de tu no asistencia..."></textarea>
+            </div>
+          </div>
+
+          <div class="row mt-2" [ngClass]="{'d-none': playerAsistencia}">
+            <div class="col-12 text-end">
+              <button type="button" class="btn btn-warning"
+                (click)="notificarNoAsistencia(match.matchPreparationId, motivoNoAsistencia)">
+                Notificar
+              </button>
+            </div>
+          </div>
+
           <div class="row mt-3">
             <div class="col-12">
               <div style="overflow-x: auto;">

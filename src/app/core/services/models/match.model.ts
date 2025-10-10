@@ -212,6 +212,7 @@ export class ConvocatoriaUI {
     img: string;
     posicion_x: any;
     posicion_y: any;
+    confirmacion: number;
 
     constructor(object: any) {
         this.id = object.id || 0;
@@ -220,5 +221,6 @@ export class ConvocatoriaUI {
         this.img = object.img || '';
         this.posicion_x = object.posicion_x || null;
         this.posicion_y = object.posicion_y || null;
+        this.confirmacion = object.confirmacion || 0;
     }
 }
