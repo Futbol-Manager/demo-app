@@ -28,13 +28,6 @@
 <div class="container" *ngIf="!loading">
     <!-- fila 1 -->
     <div class="row g-3 p-3" style="margin-top: 3em;">
-        <div class="col-12 col-md-4">
-            <label for="excel" class="form-label">Link de registro:</label>
-            <button class="btn btn-secondary w-100" (click)="copyLink()">
-                Copiar <i class="bi bi-copy"></i>
-            </button>
-        </div>
-
         <div class="col-12 col-md-8">
             <label for="buscarClub" class="form-label">Email del club existente:</label>
             <input type="text" id="buscarClub" class="form-control"
@@ -45,6 +38,14 @@
             <label for="temporada" class="form-label">Pulsa para añadir club:</label>
             <button (click)="setNewClubInFederacion()" class="btn btn-custom w-100">
                 Añadir <i class="bi bi-person-plus"></i>
+            </button>
+        </div>
+    </div>
+    <div class="row g-3 p-3" style="margin-top: 3em;">
+        <div class="col-12 col-md-4">
+            <label for="excel" class="form-label">Link de registro:</label>
+            <button class="btn btn-secondary w-100" (click)="copyLink()">
+                Copiar <i class="bi bi-copy"></i>
             </button>
         </div>
     </div>

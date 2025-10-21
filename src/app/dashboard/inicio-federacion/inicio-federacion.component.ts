@@ -95,10 +95,10 @@ export class InicioFederacionComponent implements OnInit {
         break;
       /*case 2:
         this.router.navigate(['/dashboard/cuadro-de-mandos/puntuaciones', 0]);
-        break;
-      case 3:
-        this.router.navigate(['/dashboard/cuadro-de-mandos/entrenamientos', 0]);
         break;*/
+      case 3:
+        this.router.navigate(['/dashboard/notificaciones-federacion']);
+        break;
     }
   }
 

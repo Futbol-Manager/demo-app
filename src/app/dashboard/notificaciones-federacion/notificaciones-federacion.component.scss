@@ -1,0 +1,67 @@
+/* Espaciado y diseño limpio */
+.club-item {
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* Efecto hover */
+.club-item:hover {
+  background-color: #f8f9fa; /* gris claro tipo Bootstrap */
+}
+
+/* Mejora el espaciado del checkbox */
+.club-item .form-check-input {
+  margin-left: 0.4rem;
+}
+
+/* Ajusta el ancho del scroll si hay muchos elementos */
+.club-item::-webkit-scrollbar {
+  width: 6px;
+}
+.club-item::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 3px;
+}
+
+/* deja espacio a la flecha dentro del input */
+.input-with-caret {
+  padding-right: 2.25rem;
+}
+
+/* botón-flecha dentro del input */
+.caret-btn {
+  position: absolute;
+  right: .5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  background: transparent;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+/* triangulito (caret) hecho con CSS, sin dependencias */
+.caret {
+  width: 0;
+  height: 0;
+  border-left: .35rem solid transparent;
+  border-right: .35rem solid transparent;
+  border-top: .45rem solid #6c757d; /* gris bootstrap */
+  transition: transform .15s ease;
+}
+
+/* gira cuando está abierto */
+.caret.rotate {
+  transform: rotate(180deg);
+}
+
+/* (tu CSS existente) */
+.club-item { border-radius: 6px; cursor: pointer; transition: background-color .2s ease; }
+.club-item:hover { background-color: #f8f9fa; }
+.club-item .form-check-input { margin-left: .4rem; }
+.club-item::-webkit-scrollbar { width: 6px; }
+.club-item::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }

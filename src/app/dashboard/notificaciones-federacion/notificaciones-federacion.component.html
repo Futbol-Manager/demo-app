@@ -1,0 +1,358 @@
+<div>
+    <div class="submenu">
+        <div class="row">
+            <div class="col">
+                <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
+                    <i class="bi bi-arrow-left-square-fill"></i>
+                    <span class="d-none d-md-inline">Volver</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div style="width: 10em;" class="col-12 col-md-3 bg-light p-3">
+            <!-- Botón de Redactar -->
+            <div *ngIf="usuarioActual!.profileType.profileId < 3" class="mb-3" (click)="newCorreo()">
+                <button style="background-color: white; height: 4em;"
+                    class="btn w-100 d-flex align-items-center border border-1">
+                    <i class="bi bi-pencil me-2 text-secondary"></i>
+                    <span class="text-secondary">Redactar</span>
+                </button>
+            </div>
+
+            <!-- Menú de navegación -->
+            <ul class="list-unstyled">
+                <li class="mb-2">
+                    <a href="javascript:void(0);" class="d-flex align-items-center text-decoration-none text-dark"
+                        (click)="mostrarRecibidos()">
+                        <i class="bi bi-inbox me-2"></i>
+                        <span>Recibidos</span>
+                    </a>
+                </li>
+                <li *ngIf="usuarioActual!.profileType.profileId < 3">
+                    <a href="javascript:void(0);" class="d-flex align-items-center text-decoration-none text-dark"
+                        (click)="mostrarEnviados()">
+                        <i class="bi bi-send me-2"></i>
+                        <span>Enviados</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-12 col-md-9 p-3" style="height: 100vh;">
+            <!-- Filters -->
+            <!-- Filters -->
+            <div class="d-flex mb-3">
+                <button style="margin-right: 2em;" class="btn btn-outline-primary" (click)="mostrarTodos()"
+                    *ngIf="showBtn">Todos</button>
+                <button style="margin-right: 2em;" class="btn btn-outline-success" (click)="mostrarLeidos()"
+                    *ngIf="showBtn">Leídos</button>
+                <button class="btn btn-outline-danger" (click)="mostrarNoLeidos()" *ngIf="showBtn">No Leídos</button>
+            </div>
+            <!-- Email List with Scroll -->
+            <div class="list-group" style="height: calc(70% - 3rem); overflow-y: auto;">
+                <div class="list-group-item d-flex align-items-center" *ngFor="let correo of correos; let i = index"
+                    [ngStyle]="{
+              'background-color': correo.leido ? 'rgba(211, 211, 211, 0.5)' : 'rgba(255, 255, 255, 0.5)',
+              'cursor': 'pointer'
+            }" (click)="openCorreo(correo, i)">
+                    <div class="d-flex align-items-center flex-wrap w-100" style="gap: 1rem;">
+                        <!-- Destinatario -->
+                        <span *ngIf="showBtn" class="text-primary"><strong>Remitente:</strong> {{ correo.remitente
+                            }}</span>
+                        <span *ngIf="!showBtn" class="text-primary"><strong>Para:</strong> {{ correo.destinatario
+                            }}</span>
+                        <!-- Asunto -->
+                        <span class="fw-bold">{{ correo.asunto }}</span>
+                        <!-- Cuerpo -->
+                        <span class="text-muted text-truncate" style="flex: 1;">Abrir para ver el mensaje...</span>
+                        <!-- fecha -->
+                        <span class="text-muted text-truncate" style="flex: 1; text-align: end; margin-right: 2em;">{{
+                            correo.fechaCreate }}</span>
+                    </div>
+                    <!-- Ícono de papelera -->
+                    <button class="btn btn-link text-danger p-0 ms-auto"
+                        (click)="deleteCorreo(correo, i); $event.stopPropagation()" title="Eliminar correo">
+                        <i class="bi bi-trash3-fill" style="font-size: 1.2rem;"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver el correo -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="stripeModalLabel">Correo</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <!-- poner aqui el contenido -->
+                        <div class="row mb-3" *ngIf="!this.showBtn">
+                            <!-- fecha -->
+                            <span class="text-muted text-truncate" style="flex: 1;">Enviado el: {{
+                                correoSelected.fechaCreate }}</span>
+                            <div class="col-12 col-md-12">
+                                <div class="col-12 col-md-12">
+                                    <label for="correoTo" class="form-label"><strong>Para:</strong></label>
+                                    <input type="text" id="correoTo" class="form-control custom-input"
+                                        [(ngModel)]="correoSelected.destinatario" readonly>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3" *ngIf="this.showBtn">
+                            <!-- fecha -->
+                            <span class="text-muted text-truncate" style="flex: 1;">Enviado el: {{
+                                correoSelected.fechaCreate }}</span>
+                            <!-- Destinatario -->
+                            <div class="col-12 col-md-12">
+                                <label for="correoTo" class="form-label"><strong>Remitente:</strong></label>
+                                <input type="text" id="correoTo" class="form-control custom-input"
+                                    [(ngModel)]="correoSelected.remitente" readonly>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <!-- Destinatario -->
+                            <div class="col-12 col-md-12">
+                                <label for="asunto" class="form-label"><strong>Asunto:</strong></label>
+                                <input type="text" id="asunto" class="form-control custom-input"
+                                    [(ngModel)]="correoSelected.asunto" readonly>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 col-md-12">
+                                <label for="correoBody" class="form-label"><strong>Mensaje:</strong></label>
+                                <!-- Contenedor para Summernote -->
+                                <div class="form-control custom-input" id="summernote"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- Botón para guardar el nuevo equipo -->
+                        <button type="submit" class="btn btn-success float-end" (click)="cerrarModal()">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Modal para crear un nuevo correo -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalNew}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="stripeModalLabel">Correo</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalNew()"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <!-- poner aqui el contenido -->
+
+                        <div class="row mb-3">
+                            <div class="col-12 col-md-12">
+                                <label for="asunto" class="form-label"><strong>Escoge una opción:</strong></label>
+                                <select class="form-control custom-input" id="opciones" name="opciones"
+                                    [(ngModel)]="opciones" (change)="changeOptions()">
+                                    <option value=0>Para todos (clubes, entrenadores, jugadores, etc)</option>
+                                    <option value=1>Para todos los clubes</option>
+                                    <option value=2>Para todos los entrenadores de todos los clubes</option>
+                                    <option value=3>Para todos los jugadores de todos los clubes</option>
+                                    <option value=4>Para todos los entrenadores de un solo club</option>
+                                    <option value=5>Para todos los jugadores de un solo club</option>
+                                    <option value=6>Para un jugador de un solo club</option>
+                                    <option value=7>Para varios jugadores</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3" *ngIf="opciones > 3 && opciones < 6">
+                            <div class="col-12 col-md-12">
+                                <label for="asunto" class="form-label"><strong>Selecciona un club:</strong></label>
+                                <select class="form-control custom-input" id="destinatarios" name="destinatarios"
+                                    [(ngModel)]="selectedClub">
+                                    <option *ngFor="let club of listClubsForCombo" [value]="club.value">Para el
+                                        club
+                                        {{ club.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3" *ngIf="opciones == 6">
+                            <div class="col-12 col-md-12">
+                                <label for="asunto" class="form-label"><strong>Selecciona un club:</strong></label>
+                                <select class="form-control custom-input" id="destinatarios" name="destinatarios"
+                                    [(ngModel)]="selectedClub" (change)="loadTeams()">
+                                    <option *ngFor="let club of listClubsForCombo" [value]="club.value">
+                                        {{ club.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3" *ngIf="opciones == 6">
+                            <div class="col-12 col-md-12">
+                                <label for="asunto" class="form-label"><strong>Selecciona un equipo:</strong></label>
+                                <select class="form-control custom-input" id="destinatarios" name="destinatarios"
+                                    [(ngModel)]="selectedTeam" (change)="loadPlayers()">
+                                    <option *ngFor="let team of listTeamsForCombo" [value]="team.value">
+                                        {{ team.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3" *ngIf="opciones == 6">
+                            <div class="col-12 col-md-12">
+                                <label for="asunto" class="form-label"><strong>Selecciona un jugador:</strong></label>
+                                <select class="form-control custom-input" id="destinatarios" name="destinatarios"
+                                    [(ngModel)]="selectedPlayer">
+                                    <option *ngFor="let player of listPlayersForCombo" [value]="player.value">
+                                        {{ player.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3" *ngIf="opciones > 0 && opciones < 4" style="position: relative;">
+                            <label for="clubInput" class="form-label">
+                                <strong>Clubes destinatarios</strong>
+                            </label>
+
+                            <!-- Input que activa el dropdown -->
+                            <input type="text" id="clubInput" class="form-control"
+                                placeholder="Selecciona los clubes..." (focus)="mostrarDropdown = true"
+                                (blur)="ocultarDropdownConRetraso()" [(ngModel)]="filtroClub" autocomplete="off" />
+
+                            <!-- Dropdown con estilo -->
+                            <div class="border rounded bg-white mt-1 shadow-sm position-absolute w-100 px-2"
+                                *ngIf="mostrarDropdown" style="max-height: 250px; overflow-y: auto; z-index: 1000;">
+                                <div *ngFor="let club of listClubsForCombo" class="form-check py-2 ps-3 club-item"
+                                    [hidden]="
+                                filtroClub &&
+                                !club.name.toLowerCase().includes(filtroClub.toLowerCase())
+                            ">
+                                    <input class="form-check-input me-2" type="checkbox" [id]="'club-' + club.value"
+                                        [checked]="correoNew.destinatarios.includes(club.value)"
+                                        (change)="toggleClub(club.value)" />
+                                    <label class="form-check-label" [for]="'club-' + club.value"
+                                        style="cursor: pointer;">
+                                        {{ club.name }}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Etiquetas de seleccionados -->
+                            <div class="mt-2">
+                                <small class="text-muted">Clubes seleccionados: </small>
+                                <span *ngFor="let id of correoNew.destinatarios" class="badge bg-primary me-1">
+                                    {{ obtenerNombreClub(id) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3" *ngIf="opciones == 7" style="position: relative;">
+                            <label for="PlayerInput" class="form-label">
+                                <strong>Jugadores destinatarios</strong>
+                            </label>
+
+                            <!-- Contenedor relativo para posicionar la flecha dentro -->
+                            <div class="position-relative">
+                                <input type="text" id="PlayerInput" class="form-control input-with-caret"
+                                    placeholder="Selecciona los jugadores..." (focus)="mostrarDropdownPlayer = true"
+                                    (blur)="ocultarDropdownConRetrasoPlayer()" [(ngModel)]="filtroPlayer"
+                                    autocomplete="off" [attr.aria-expanded]="mostrarDropdownPlayer"
+                                    aria-haspopup="listbox" />
+
+                                <!-- Botón-flecha dentro del input -->
+                                <button type="button" class="caret-btn" (mousedown)="$event.preventDefault()"
+                                    (click)="toggleDropdownPlayer()"
+                                    [attr.aria-label]="mostrarDropdownPlayer ? 'Cerrar' : 'Abrir'">
+                                    <span class="caret" [class.rotate]="mostrarDropdownPlayer"></span>
+                                </button>
+                            </div>
+
+                            <!-- Dropdown -->
+                            <div class="border rounded bg-white mt-1 shadow-sm position-absolute w-100 px-2"
+                                *ngIf="mostrarDropdownPlayer"
+                                style="max-height: 250px; overflow-y: auto; z-index: 1000;"
+                                (mousedown)="$event.preventDefault()">
+                                <div *ngFor="let club of listAllPlayersForCombo" class="form-check py-2 ps-3 club-item"
+                                    [hidden]="filtroPlayer && !club.name.toLowerCase().includes(filtroPlayer.toLowerCase())">
+                                    <input class="form-check-input me-2" type="checkbox" [id]="'player-' + club.value"
+                                        [checked]="correoNew.destinatarios.includes(club.value)"
+                                        (change)="toggleClub(club.value)" />
+                                    <label class="form-check-label" [for]="'player-' + club.value"
+                                        style="cursor: pointer;">
+                                        {{ club.name }}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <!-- Etiquetas de seleccionados -->
+                            <div class="mt-2">
+                                <small class="text-muted">Jugadores seleccionados: </small>
+                                <span *ngFor="let id of correoNew.destinatarios" class="badge bg-primary me-1">
+                                    {{ obtenerNombrePlayer(id) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <!-- Destinatario -->
+                            <div class="col-12">
+                                <label for="asunto" class="form-label"><strong>Asunto:</strong></label>
+                                <input type="text" id="asunto" class="form-control custom-input"
+                                    [(ngModel)]="correoNew.asunto">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <label for="correoBody" class="form-label"><strong>Mensaje:</strong></label>
+                                <!-- Contenedor para Summernote -->
+                                <div class="form-control custom-input" id="summernoteNew"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <!-- Botón para guardar el nuevo equipo -->
+                        <button type="submit" class="btn btn-danger float-end"
+                            (click)="cerrarModalNew()">Cancelar</button>
+                        <button *ngIf="correoSelected.asunto == ''" type="submit" class="btn btn-custom float-end"
+                            (click)="guardarCorreo()">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver el correo -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': isSending}">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="stripeModalLabel">Correo</h5>
+                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarEnviando()"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="spinner-container">
+                        <!-- Aquí va el HTML del spinner -->
+                        <div class="envelope">
+                            <div class="flap"></div>
+                            <div class="paper"></div>
+                        </div>
+                        <p class="spinner-text">Enviando... Puedes esperar a que termine o cerrar la ventana.</p>
+                    </div>
+                    <button class="btn btn-custom float-end" (click)="cerrarEnviando()">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -221,7 +221,6 @@ export class Patrocinador {
     }
 }
 
-
 export class CorreoEnviado {
     correoEnviadoId: number;
     clubId: number;
@@ -247,5 +246,35 @@ export class CorreoEnviado {
         this.remitente = object.remitente || '';
         this.destinatario = object.destinatario || '';
         this.temporada = object.temporada || '';
+    }
+}
+
+export class CorreoEnviadoFede {
+    correoEnviadoId: number;
+    clubId: number;
+    teamId: number;
+    userId: number;
+    destinatarios: number[];
+    asunto: string;
+    body: string;
+    fechaCreate: string;
+    remitente: string;
+    destinatario: string;
+    temporada: string;
+    opciones: number;
+
+    constructor(object: any) {
+        this.correoEnviadoId = object.correoEnviadoId || 0;
+        this.clubId = object.clubId || 0;
+        this.teamId = object.teamId || 0;
+        this.userId = object.userId || 0;
+        this.asunto = object.asunto || '';
+        this.destinatarios = object.destinatarios || [];
+        this.body = object.body || '';
+        this.fechaCreate = object.fechaCreate || '';
+        this.remitente = object.remitente || '';
+        this.destinatario = object.destinatario || '';
+        this.temporada = object.temporada || '';
+        this.opciones = object.opciones || 0;
     }
 }

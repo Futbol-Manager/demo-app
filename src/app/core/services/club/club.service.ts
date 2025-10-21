@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
 import { ClubCuotas, HostoryPagosPlayer, PlayerCuotas, RopaClub, RopaJugador } from '../team/club.model';
-import { Abonado, AbonadoPagoHistorico, CorreoEnviado, Patrocinador } from '../models/club.model';
+import { Abonado, AbonadoPagoHistorico, CorreoEnviado, CorreoEnviadoFede, Patrocinador } from '../models/club.model';
 
 @Injectable({
   providedIn: 'root'
@@ -1522,6 +1522,49 @@ export class ClubService {
 
       // Construye la URL para la solicitud
       const url: string = environment.apiUrl + `club/getlistallplayersforfede/${userId}/${temporada}`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.get<Response>(url, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  // Método para crear o actualizar un equipo
+  createCorreoFede(correoEnviado: CorreoEnviadoFede): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/create-correo-fede`;
+
+      // Realiza la solicitud HTTP con las cabeceras configuradas
+      return this.http.post<Response>(url, correoEnviado, { headers });
+    } else {
+      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
+      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  getListPlayersForFedeCombo(userId: number, temporada: string): Observable<Response> {
+    // Obtén el token almacenado en localStorage
+    const token: string | null = localStorage.getItem('token');
+    // Verifica si el token está presente
+    if (token) {
+      // Configura las cabeceras con el token para la solicitud HTTP
+      const headers = new HttpHeaders({
+        'Authorization': `Bearer ${token}`
+      });
+
+      // Construye la URL para la solicitud
+      const url: string = environment.apiUrl + `club/getlistallplayersforfedecombo/${userId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });

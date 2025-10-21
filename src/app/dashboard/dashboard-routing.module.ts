@@ -42,6 +42,7 @@ import { NewCuotasComponent } from './new-cuotas/new-cuotas.component';
 import { HistorialPagosClubComponent } from './historial-pagos-club/historial-pagos-club.component';
 import { InicioFederacionComponent } from './inicio-federacion/inicio-federacion.component';
 import { InfoJugadoresFederacionComponent } from './info-jugadores-federacion/info-jugadores-federacion.component';
+import { NotificacionesFederacionComponent } from './notificaciones-federacion/notificaciones-federacion.component';
 
 const routes: Routes = [
   {
@@ -88,6 +89,7 @@ const routes: Routes = [
       { path: 'scouting-player/:playerId', component: ScoutingPlayerComponent },
       { path: 'adminsettings', component: AdminsettingsComponent },
       { path: 'notificaciones/:clubId', component: NotificacionesComponent },
+      { path: 'notificaciones-federacion', component: NotificacionesFederacionComponent },
       { path: '**', redirectTo: 'inicio-deportes' },
     ],
   }
