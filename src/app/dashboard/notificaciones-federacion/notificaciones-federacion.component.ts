@@ -107,7 +107,7 @@ export class NotificacionesFederacionComponent implements OnInit {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
 
-    /*this.clubService.getListCorreos(this.userId).subscribe(
+    this.clubService.getListCorreos(this.userId).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
@@ -122,7 +122,7 @@ export class NotificacionesFederacionComponent implements OnInit {
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
       }
-    );*/
+    );
 
     this.teamService.getOpcionesFederacionCombo(this.temporadaStoredValue, this.userId).subscribe(
       (response: Response) => {
