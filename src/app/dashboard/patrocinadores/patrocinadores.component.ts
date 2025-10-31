@@ -64,7 +64,30 @@ export class PatrocinadoresComponent implements OnInit {
       this.profileId = this.usuarioActual!.profileType.profileId;
 
       //llamar a endpoint que de userId y profileId
-      if (this.profileId == 2 || this.profileId == 3) {
+      if (this.profileId == 0) {
+        this.clubService.getListPatrocinadoresByUser(this.userId, this.profileId).subscribe(
+          (response: Response) => {
+            if (response.data !== null) {
+              this.listPatrocinadores = response.data;
+
+              const carouselElement = document.getElementById('carouselPatrocinadores');
+              if (carouselElement) {
+                let num = this.listPatrocinadores.length * 1000;
+                const carousel = new bootstrap.Carousel(carouselElement, {
+                  interval: num, // Cambia el tiempo de transición (ms)
+                  wrap: true
+                });
+              }
+              this.datosCargados = true;
+            } else {
+              console.error('La respuesta del servicio no tiene la estructura esperada', response);
+            }
+          },
+          (error) => {
+            console.error('Error al cargar el listado de equipos', error);
+          }
+        );
+      } else if (this.profileId == 2 || this.profileId == 3) {
         this.clubService.getListPatrocinadoresByUser(this.userId, this.profileId).subscribe(
           (response: Response) => {
             if (response.data !== null) {

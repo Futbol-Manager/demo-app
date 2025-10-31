@@ -93,9 +93,9 @@ export class InicioFederacionComponent implements OnInit {
       case 1:
         this.router.navigate(['/dashboard/info-jugadores-federacion']);
         break;
-      /*case 2:
-        this.router.navigate(['/dashboard/cuadro-de-mandos/puntuaciones', 0]);
-        break;*/
+      case 2:
+        this.router.navigate(['/dashboard/patrocinadores', 0]);
+        break;
       case 3:
         this.router.navigate(['/dashboard/notificaciones-federacion']);
         break;
