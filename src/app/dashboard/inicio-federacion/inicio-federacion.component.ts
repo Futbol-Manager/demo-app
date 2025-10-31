@@ -152,4 +152,25 @@ export class InicioFederacionComponent implements OnInit {
     );
   }
 
+  deleteClub(club: any, index: number) {
+    const confirmacion = confirm(`AVISO: Vas a eliminar y desvincular el club ${club.name}. ¿Estás seguro?`);
+
+    if (confirmacion) {
+      this.clubService.deleteClubFede(club.userIdClub, this.temporadaStoredValue).subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data) {
+            this.listClubes.splice(index, 1);
+            alert('Club Eliminado ✅');
+          } else {
+            alert('Ese mail no existe o no hay ningún club registrado. ❌');
+          }
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
+        }
+      );
+    }
+  }
+
 }

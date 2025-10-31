@@ -75,19 +75,31 @@
         <div class="col" *ngFor="let club of listClubes; let i = index" style="cursor: pointer;"
             (click)="navegarAClub(club.userIdClub)">
             <div class="card h-100 border">
-                <div class="card-body text-center">
+                <div class="card-body text-center position-relative">
+
+                    <!-- ID izquierda / Papelera derecha -->
                     <div class="row mb-2">
                         <div class="col text-start" style="font-size: 0.8em;">
                             ID: {{ club.userIdClub }}
                         </div>
+                        <div class="col text-end">
+                            <button type="button" class="btn btn-link p-0"
+                                (click)="deleteClub(club, i); $event.stopPropagation();" title="Eliminar club">
+                                <i class="bi bi-trash-fill" style="color: red; font-size: 1.2em;"></i>
+                            </button>
+                        </div>
                     </div>
+
+                    <!-- Imagen -->
                     <div class="row mb-2">
                         <div class="col">
                             <img *ngIf="club.pictureClub"
                                 src="https://appsphairatech.com/images/user/{{ club.pictureClub }}" alt="user-image"
-                                width="90" height="90" style="max-width: 100%;">
+                                width="90" height="90" style="max-width: 100%;" />
                         </div>
                     </div>
+
+                    <!-- Nombre -->
                     <h5 class="card-title text-truncate" style="color: black;">
                         {{ club.name }}
                     </h5>
@@ -95,4 +107,6 @@
             </div>
         </div>
     </div>
+
+
 </div>
