@@ -210,6 +210,7 @@ export class PatrocinadoresComponent implements OnInit {
 
   createUpdatePatrocinador(opcion: number) {
     this.patrocinadorObj.clubId = this.clubId;
+    if(this.profileId == 0) this.patrocinadorObj.federacionId = this.userId;
 
     if (opcion === 2) {
       this.patrocinadorObj = this.patrocinadorUpdate;

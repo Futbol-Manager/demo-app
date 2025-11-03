@@ -204,6 +204,7 @@ export class Patrocinador {
     beneficios: string;
     telefono: string;
     mail: string;
+    federacionId: number;
 
     constructor(object: any) {
         this.patrocinadorId = object.patrocinadorId || 0;
@@ -218,6 +219,7 @@ export class Patrocinador {
         this.beneficios = object.beneficios || '';
         this.telefono = object.telefono || '';
         this.mail = object.mail || '';
+        this.federacionId = object.federacionId || 0;
     }
 }
 

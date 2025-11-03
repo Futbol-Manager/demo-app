@@ -10,6 +10,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { RegisterService } from 'src/app/core/services/register/register.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { environment } from 'src/environments/environment';
+import { Dropdown } from 'bootstrap';
 
 @Component({
   selector: 'app-header',
@@ -70,6 +71,11 @@ export class HeaderComponent implements OnInit {
       this.mobile = user !== null ? user.mobile : '';
       this.updateForm(); // Actualiza el formulario cuando cambia el usuario actual
     });
+  }
+
+  ngAfterViewInit() {
+    document.querySelectorAll('[data-bs-toggle="dropdown"]')
+      .forEach(el => Dropdown.getOrCreateInstance(el as HTMLElement));
   }
 
   //metodo para el modo oscuro y claro
