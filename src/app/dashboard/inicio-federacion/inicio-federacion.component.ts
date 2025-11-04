@@ -35,6 +35,10 @@ export class InicioFederacionComponent implements OnInit {
     private loginService: LoginService) { }
 
   ngOnInit(): void {
+    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+    }
+    
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
       this.userId = this.usuarioActual!.userId;
@@ -98,6 +102,9 @@ export class InicioFederacionComponent implements OnInit {
         break;
       case 3:
         this.router.navigate(['/dashboard/notificaciones-federacion']);
+        break;
+      case 4:
+        this.router.navigate(['/dashboard/listado-clubes']);
         break;
     }
   }

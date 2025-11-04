@@ -1,36 +1,34 @@
-<div>
-    <div class="submenu">
-        <div class="row">
-            <div class="col">
-                <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
-                    <i class="bi bi-arrow-left-square-fill"></i>
-                    <span class="d-none d-md-inline">Volver</span>
-                </a>
-            </div>
-            <div class="col text-center">
-                <a class="no-underline" href="javascript:void(0);" (click)="openModalCuotas()">
-                    <i class="bi bi-currency-exchange"></i>
-                    <span class="d-none d-md-inline">Pagos</span>
-                </a>
-            </div>
-            <div class="col text-center">
-                <a class="no-underline" href="javascript:void(0);" (click)="openModalStripe()">
-                    <i class="bi bi-stripe"></i>
-                    <span class="d-none d-md-inline">Stripe</span>
-                </a>
-            </div>
-            <div class="col text-center">
-                <a class="no-underline" href="javascript:void(0);" (click)="goHistorial()">
-                    <i class="bi bi-table"></i>
-                    <span class="d-none d-md-inline">Historial</span>
-                </a>
-            </div>
-            <div class="col text-center">
-                <a class="no-underline" href="javascript:void(0);" (click)="openModalBancoClub()">
-                    <i class="bi bi-gear"></i>
-                    <span class="d-none d-md-inline">Ajustes</span>
-                </a>
-            </div>
+<div class="submenu">
+    <div class="row">
+        <div class="col">
+            <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
+                <i class="bi bi-arrow-left-square-fill"></i>
+                <span class="d-none d-md-inline">Volver</span>
+            </a>
+        </div>
+        <div class="col text-center">
+            <a class="no-underline" href="javascript:void(0);" (click)="openModalCuotas()">
+                <i class="bi bi-currency-exchange"></i>
+                <span class="d-none d-md-inline">Pagos</span>
+            </a>
+        </div>
+        <div class="col text-center">
+            <a class="no-underline" href="javascript:void(0);" (click)="openModalStripe()">
+                <i class="bi bi-stripe"></i>
+                <span class="d-none d-md-inline">Stripe</span>
+            </a>
+        </div>
+        <div class="col text-center">
+            <a class="no-underline" href="javascript:void(0);" (click)="goHistorial()">
+                <i class="bi bi-table"></i>
+                <span class="d-none d-md-inline">Historial</span>
+            </a>
+        </div>
+        <div class="col text-center">
+            <a class="no-underline" href="javascript:void(0);" (click)="openModalBancoClub()">
+                <i class="bi bi-gear"></i>
+                <span class="d-none d-md-inline">Ajustes</span>
+            </a>
         </div>
     </div>
 </div>
@@ -427,7 +425,7 @@
                                 [checked]="nuevaCuota.tipoPagoStripe === 0" (change)="onTipoPagoChange(0)">
                             <label class="btn btn-outline-primary" for="tipoPuntual">Pago puntual</label>
 
-                            <div >
+                            <div>
                                 <input type="radio" class="btn-check" id="tipoSuscripcion"
                                     [checked]="nuevaCuota.tipoPagoStripe === 1" (change)="onTipoPagoChange(1)">
                                 <label class="btn btn-outline-primary" for="tipoSuscripcion">Suscripción</label>

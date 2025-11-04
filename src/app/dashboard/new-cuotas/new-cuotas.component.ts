@@ -2,11 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Location } from '@angular/common';
 import { LoginService } from 'src/app/core/services/login/login.service';
-import { ClubCuotas } from 'src/app/core/services/team/club.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
-import { CuotasClub } from 'src/app/core/services/models/club.model';
 
 @Component({
   selector: 'app-new-cuotas',
