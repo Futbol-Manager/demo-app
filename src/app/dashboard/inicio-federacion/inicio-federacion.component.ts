@@ -150,7 +150,7 @@ export class InicioFederacionComponent implements OnInit {
           alert('Club agregado ✅');
           this.loadClubes();
         } else {
-          alert('Ese mail no existe o no hay ningún club registrado. ❌');
+          alert('Ese email no está registrado o no pertenece a un club. ❌');
         }
       },
       (error) => {

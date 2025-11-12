@@ -2246,6 +2246,9 @@ export class CalendarioComponent implements OnInit {
   }
 
   abrirModalConvocatoria() {
+    if(this.match.convocatoria == null || this.match.convocatoria == '' ){
+      this.resetConvocatoria();
+    }
     this.mostrarModalConvocatoria = true;
   }
 

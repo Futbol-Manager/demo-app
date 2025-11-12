@@ -237,7 +237,7 @@ export class InicioComponent implements OnInit {
         this.profileId = this.usuarioActual!.profileType.profileId;
         this.userId = this.usuarioActual!.userId;
 
-        if (this.profileId === 0){
+        if (this.profileId === 0) {
           this.userId = Number(localStorage.getItem('userIdClub'));
         }
 
@@ -503,7 +503,7 @@ export class InicioComponent implements OnInit {
     }
 
     if (!accessSusOk) {
-      const confirmacion = confirm('No puedes crear más equipos, necesitas actualizar tu suscripción, ¿quieres ir a la página de suscripción?');
+      const confirmacion = confirm('No puedes crear más equipos, necesitas actualizar tu suscripción, ¿quieres ir a la página de suscripción?. Si tu club pertenece a una federación, habla con ellos para que te amplien el límite.');
       if (confirmacion) {
         this.router.navigate(['/dashboard/suscripcion', this.userId]);
       }
@@ -875,13 +875,13 @@ export class InicioComponent implements OnInit {
     }
     // Cierra el modal y abre la Store
     this.modalConfirAndroid = false;
-    if(this.optionTienda == 1) //1 es android y 2 iphone
+    if (this.optionTienda == 1) //1 es android y 2 iphone
       window.open(this.playStore, '_blank');
     else
       window.open(this.appStoreUrl, '_blank');
   }
 
-  closeModalConfirAndroid(){
+  closeModalConfirAndroid() {
     this.modalConfirAndroid = false;
   }
 

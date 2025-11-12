@@ -2,9 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Location } from '@angular/common';
 import { LoginService } from 'src/app/core/services/login/login.service';
-import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
-import { TeamService } from 'src/app/core/services/team/team.service';
 import { User } from 'src/app/core/models/users/user.model';
 
 @Component({
@@ -25,14 +23,19 @@ export class ListadoClubesComponent implements OnInit {
   userIdClub = 0;
   userId = 0;
   temporadaStoredValue = '2025';
+  equiposClubSelected = 0;
+  suscripcionSelected = 0;
+  equiposDelClub = 0;
+
+  // Props de estado del modal
+  showModalVerEquipos = false;
+  equiposClubEdit = 0;     // input del formulario
+  private selectedClubId: number | null = null;
 
   constructor(
     private loginService: LoginService,
-    private router: Router,
-    private route: ActivatedRoute,
     private location: Location,
-    private clubService: ClubService,
-    private teamService: TeamService) { }
+    private clubService: ClubService) { }
 
   ngOnInit(): void {
     if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
@@ -94,5 +97,46 @@ export class ListadoClubesComponent implements OnInit {
     });
   }
 
+  verEquiposClub(userId: number) {
+    this.equiposClubEdit = 0;
+    this.selectedClubId = userId;
 
+    // Busca el club en tu lista para precargar datos
+    const club = this.listaClubesFiltrados.find(c => c.userId === userId || c.userIdClub === userId);
+    this.equiposClubSelected = club?.numEquipos ?? 0;
+    this.suscripcionSelected = club.suscripcionId;
+    this.equiposDelClub = club.equipos;
+
+    this.showModalVerEquipos = true;
+  }
+
+  cerrarModalVerEquipos() {
+    this.showModalVerEquipos = false;
+    this.selectedClubId = 0;
+    this.equiposClubEdit = 0;
+  }
+
+  cambioEquiposClub() {
+    const numEquipos = this.equiposClubEdit;
+    if ((this.equiposDelClub - 1) > numEquipos) {
+      alert('Este club ya tiene creados ' + (this.equiposDelClub - 1) +
+        ' equipos, por lo que no puede ser menor de eso. En cuyo caso, elimina primero los equipos necesarios y repite esta acción.'
+      );
+      return;
+    };
+
+    this.clubService.setEquiposClub(this.suscripcionSelected, numEquipos).subscribe(
+      (response: Response) => {
+        // 1) Actualiza en memoria (UI inmediata)
+        const idx = this.listaClubesFiltrados.findIndex(c => c.suscripcionId === this.suscripcionSelected);
+        if (idx > -1) {
+          this.listaClubesFiltrados[idx].numEquipos = Number(numEquipos);
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
+    this.cerrarModalVerEquipos();
+  }
 }
