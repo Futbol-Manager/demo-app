@@ -26,6 +26,11 @@ export class HistorialPagosClubComponent implements OnInit {
   listaPlayers: any[] = [];
   nCargos = 0;
 
+  filtro: string = '';
+  listaPagosFiltrados: any[] = [];
+  ordenActual: string = '';
+  ascendente: boolean = true;
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -61,8 +66,10 @@ export class HistorialPagosClubComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.listaPagos = response.data;
+          this.listaPagosFiltrados = [...this.listaPagos];
           this.nCargos = this.listaPagos.length;
           this.formatearFechas();
+          this.formatearFechasFiltro();
         }
         this.isLoading = false;
         //this.datosCargados = true;
@@ -75,6 +82,14 @@ export class HistorialPagosClubComponent implements OnInit {
 
   private formatearFechas(): void {
     this.listaPagos = this.listaPagos.map(pago => {
+      const partes = pago.fecha.split('-'); // yyyy-MM-dd
+      const fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`;
+      return { ...pago, fechaFormateada };
+    });
+  }
+
+  private formatearFechasFiltro(): void {
+    this.listaPagosFiltrados = this.listaPagosFiltrados.map(pago => {
       const partes = pago.fecha.split('-'); // yyyy-MM-dd
       const fechaFormateada = `${partes[2]}-${partes[1]}-${partes[0]}`;
       return { ...pago, fechaFormateada };
@@ -106,7 +121,77 @@ export class HistorialPagosClubComponent implements OnInit {
     return descripcion;
   }
 
+  filtrarClubes() {
+    const texto = this.filtro.toLowerCase();
 
+    this.listaPagosFiltrados = this.listaPagos.filter(p =>
+    (p.name?.toLowerCase().includes(texto) ||
+      p.descripcionPago?.toLowerCase().includes(texto) ||
+      p.titulo?.toLowerCase().includes(texto) ||
+      p.importe?.toString().includes(texto) ||
+      p.metodo?.toLowerCase().includes(texto) ||
+      p.tipo?.toLowerCase().includes(texto) ||
+      p.fechaFormateada?.includes(texto))
+    );
+  }
 
+  ordenarPor(campo: string) {
+    if (this.ordenActual === campo) {
+      this.ascendente = !this.ascendente;
+    } else {
+      this.ordenActual = campo;
+      this.ascendente = true;
+    }
+
+    this.listaPagosFiltrados.sort((a, b) => {
+      const valA = a[campo];
+      const valB = b[campo];
+
+      // Si ambos son números, comparamos numéricamente
+      if (!isNaN(valA) && !isNaN(valB)) {
+        return this.ascendente ? valA - valB : valB - valA;
+      }
+
+      // Si son strings, comparamos alfabéticamente
+      const strA = (valA ?? '').toString().toLowerCase();
+      const strB = (valB ?? '').toString().toLowerCase();
+      return this.ascendente ? strA.localeCompare(strB) : strB.localeCompare(strA);
+    });
+  }
+
+  exportarExcel() {
+    const table = document.getElementById('dataTable') as HTMLTableElement | null;
+    if (!table) return;
+
+    // Clonamos para no tocar el DOM real (por si quieres limpiar algo antes)
+    const tableClone = table.cloneNode(true) as HTMLElement;
+
+    // Documento HTML que Excel entiende como hoja de cálculo
+    const html = `
+    <html xmlns:o="urn:schemas-microsoft-com:office:office"
+          xmlns:x="urn:schemas-microsoft-com:office:excel"
+          xmlns="http://www.w3.org/TR/REC-html40">
+      <head>
+        <meta charset="UTF-8">
+        <title>Export</title>
+      </head>
+      <body>
+        ${tableClone.outerHTML}
+      </body>
+    </html>
+  `;
+
+    const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    const fecha = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    a.href = url;
+    a.download = `cargos_${fecha}.xls`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 
 }

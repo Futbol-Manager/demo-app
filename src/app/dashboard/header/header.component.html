@@ -2,16 +2,16 @@
   <div class="container-fluid">
     <div class="row align-items-center justify-content-between">
       <div class="col-auto" style="cursor: pointer;" *ngIf="profileId < 2">
-        <img [src]="isDarkMode ? 'assets/images/club.svg' : 'assets/images/club.svg'"
-          alt="Logo" (click)="goInicio()" class="logo-image">
+        <img [src]="isDarkMode ? 'assets/images/club.svg' : 'assets/images/club.svg'" alt="Logo" (click)="goInicio()"
+          class="logo-image">
       </div>
       <div class="col-auto" style="cursor: pointer;" *ngIf="profileId === 2">
-        <img [src]="isDarkMode ? 'assets/images/coach.svg' : 'assets/images/coach.svg'"
-          alt="Logo" (click)="goInicio()" class="logo-image">
+        <img [src]="isDarkMode ? 'assets/images/coach.svg' : 'assets/images/coach.svg'" alt="Logo" (click)="goInicio()"
+          class="logo-image">
       </div>
       <div class="col-auto" style="cursor: pointer;" *ngIf="profileId > 2">
-        <img [src]="isDarkMode ? 'assets/images/player.svg' : 'assets/images/player.svg'"
-          alt="Logo" (click)="goInicio()" class="logo-image">
+        <img [src]="isDarkMode ? 'assets/images/player.svg' : 'assets/images/player.svg'" alt="Logo"
+          (click)="goInicio()" class="logo-image">
       </div>
       <div class="col-auto" style="cursor: pointer; text-align: center;">
         <div class="dropdown">
@@ -62,6 +62,12 @@
               <span id="span2">Perfil</span>
             </a>
 
+            <!-- item suscripcion -->
+            <a href="javascript:void(0);" class="dropdown-item" (click)="profile()">
+              <i class="mdi mdi-account-circle me-1"></i>
+              <span id="span2">Cambiar idioma</span>
+            </a>
+
             <!-- item -->
             <a *ngIf="profileId === 2" href="javascript:void(0);" class="dropdown-item" (click)="goSuscripcion()">
               <i class="mdi mdi-account-circle me-1"></i>
@@ -97,8 +103,7 @@
           <div class="mb-3" style="text-align: center;">
             <ng-container *ngIf="imgUser">
               <!-- Imagen principal que cambiará al subir una nueva imagen -->
-              <img [src]="imageBaseUrl + imgUser" alt="user-image" width="150" height="150"
-                class="rounded-circle me-2">
+              <img [src]="imageBaseUrl + imgUser" alt="user-image" width="150" height="150" class="rounded-circle me-2">
               <div class="container">
                 <h4>Sube tu foto de perfil</h4>
                 <form (submit)="onSubmit()" enctype="multipart/form-data">
@@ -161,7 +166,7 @@
               <option value="2">Femenino</option>
               <option value="3">Otro</option>
             </select>
-          </div>          
+          </div>
           <!-- Botón para guardar el nuevo equipo
           <div class="mb-3">
             <button type="button" class="btn btn-warning form-control" (click)="goSuscripcion()">Suscripción</button>
@@ -171,6 +176,34 @@
           <div class="modal-footer">
             <!-- Botón para guardar el nuevo equipo -->
             <button type="button" class="btn btn-success float-end" (click)="saveChanges()">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de selección de idioma -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalIdioma}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{ 'LANG.MODAL_TITLE' | translate }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalIdioma()"></button>
+      </div>
+      <div class="modal-body">
+        <p>{{ 'LANG.INSTRUCCIONES' | translate }}</p>
+        <hr />
+        <form>
+          <div class="mb-3">
+            <label for="langSelect" class="form-label">{{ 'LANG.LABEL' | translate }}</label>
+            <select class="form-control" id="langSelect" [(ngModel)]="selectedLang" name="langSelect"
+              (change)="cambiarIdioma()">
+              <option value="es">Español</option>
+              <option value="en">English</option>
+              <option value="fr">Français</option>
+              <option value="de">Deutsch</option>
+            </select>
           </div>
         </form>
       </div>

@@ -4,7 +4,7 @@
             <div class="col">
                 <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
                     <i class="bi bi-arrow-left-square-fill"></i>
-                    <span class="d-none d-md-inline">Volver</span>
+                    <span class="d-none d-md-inline">{{ 'APP.NAV.BACK' | translate }}</span>
                 </a>
             </div>
         </div>
@@ -13,45 +13,48 @@
 
 <div class="container mt-3" *ngIf="datosCargados">
     <div style="margin-top: 2em;">
-        <h2>Tabla Cuota Abonados</h2>
-        <!-- Botón para exportar a Excel-->
-        <button class="btn btn-success" style="margin-bottom: 2em; margin-right: 2em;" (click)="openModalCreateUpdateAbonado()">
-            Crear abonado
+        <h2>{{ 'APP.SUBS.TITLE_TABLE' | translate }}</h2>
+
+        <button class="btn btn-success" style="margin-bottom: 2em; margin-right: 2em;"
+            (click)="openModalCreateUpdateAbonado()">
+            {{ 'APP.SUBS.CREATE' | translate }}
         </button>
+
         <button class="btn btn-success" style="margin-bottom: 2em;" (click)="exportTableToExcel()">
-            <i class="bi bi-file-earmark-spreadsheet-fill"></i> Descargar Excel
+            <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+            {{ 'APP.SUBS.DOWNLOAD_EXCEL' | translate }}
         </button>
+
         <div class="row justify-content-between div-headdatatable">
-            <div class="col-md-auto mr-auto" id="dt-length">
-                <!-- Contenido para el dt-length -->
-            </div>
-            <div class="col-md-auto ml-auto" id="dt-search">
-            </div>
+            <div class="col-md-auto mr-auto" id="dt-length"></div>
+            <div class="col-md-auto ml-auto" id="dt-search"></div>
         </div>
+
         <div style="overflow-x: auto;">
             <table id="dataTable" class="table table-bordered table-striped text-center">
                 <thead class="table-custom">
                     <tr>
-                        <th>ID</th>
-                        <th>IMAGEN</th>
-                        <th>NOMBRE</th>
-                        <th>APELLIDOS</th>
-                        <th>EMAIL</th>
-                        <th>TELEFONO</th>
-                        <th>ESTADO</th>
-                        <th>CUOTA</th>
-                        <th>PAGADO</th>
-                        <th>RESTANTE</th>
-                        <th>ACCIONES</th>
+                        <th>{{ 'APP.SUBS.TABLE.ID' | translate }}</th>
+                        <th>{{ 'APP.SUBS.TABLE.IMAGE' | translate }}</th>
+                        <th>{{ 'APP.SUBS.TABLE.NAME' | translate }}</th>
+                        <th>{{ 'APP.SUBS.TABLE.SURNAMES' | translate }}</th>
+                        <th>{{ 'APP.SUBS.TABLE.EMAIL' | translate }}</th>
+                        <th>{{ 'APP.SUBS.TABLE.PHONE' | translate }}</th>
+                        <th>{{ 'APP.SUBS.TABLE.STATUS' | translate }}</th>
+                        <th>{{ 'APP.SUBS.TABLE.FEE' | translate }}</th>
+                        <th>{{ 'APP.SUBS.TABLE.PAID' | translate }}</th>
+                        <th>{{ 'APP.SUBS.TABLE.REMAINING' | translate }}</th>
+                        <th>{{ 'APP.SUBS.TABLE.ACTIONS' | translate }}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let abonadoTemp of listAT; let i = index">
                         <td>{{ abonadoTemp.abonadosTemporadaId }}</td>
+
                         <td *ngIf="abonadoTemp.abonado.imgPerfil">
-                            <div class="container">                                
-                                <img [src]="imageBaseUrl + abonadoTemp.abonado.imgPerfil" 
-                                    alt="user-player" width="50" height="50" class="rounded-circle me-2">
+                            <div class="container">
+                                <img [src]="imageBaseUrl + abonadoTemp.abonado.imgPerfil" alt="user-player" width="50"
+                                    height="50" class="rounded-circle me-2">
                             </div>
                         </td>
                         <td *ngIf="!abonadoTemp.abonado.imgPerfil">
@@ -59,39 +62,50 @@
                                 <span class="bi bi-person" style="font-size: 3rem;"></span>
                             </div>
                         </td>
+
                         <td>{{ abonadoTemp.abonado.nombre }}</td>
                         <td>{{ abonadoTemp.abonado.apellidos }}</td>
                         <td>{{ abonadoTemp.abonado.mail }}</td>
                         <td>{{ abonadoTemp.abonado.telefono }}</td>
+
                         <td>
                             <ng-container *ngIf="abonadoTemp.estado === 0">
-                                <i class="bi bi-x-circle text-danger" title="Ningún pago"></i>
+                                <i class="bi bi-x-circle text-danger"
+                                    [attr.title]="'APP.SUBS.STATUS.NONE' | translate"></i>
                             </ng-container>
                             <ng-container *ngIf="abonadoTemp.estado === 1">
-                                <i class="bi bi-exclamation-triangle text-warning" title="Pagos PDTE"></i>
+                                <i class="bi bi-exclamation-triangle text-warning"
+                                    [attr.title]="'APP.SUBS.STATUS.PENDING' | translate"></i>
                             </ng-container>
                             <ng-container *ngIf="abonadoTemp.estado === 2">
-                                <i class="bi bi-check-circle text-success" title="Completado"></i>
+                                <i class="bi bi-check-circle text-success"
+                                    [attr.title]="'APP.SUBS.STATUS.DONE' | translate"></i>
                             </ng-container>
                         </td>
+
                         <td>{{ abonadoTemp.cuota }}</td>
                         <td>{{ abonadoTemp.pagado }}</td>
                         <td>{{ abonadoTemp.restante }}</td>
+
                         <td>
-                            <i class="bi bi-pencil" style="cursor: pointer;" title="Editar abonado"
+                            <i class="bi bi-pencil" style="cursor: pointer;"
+                                [attr.title]="'APP.SUBS.ACTIONS.EDIT' | translate"
                                 (click)="openModalUpdateAbonado(i)"></i>
-                            <i class="bi bi-wallet2 ms-2" style="cursor: pointer;" title="Introducir un pago"
+
+                            <i class="bi bi-wallet2 ms-2" style="cursor: pointer;"
+                                [attr.title]="'APP.SUBS.ACTIONS.INSERT_PAY' | translate"
                                 (click)="openModalPagoAbonado(i)"></i>
+
                             <i class="bi bi-clock-history ms-2" style="cursor: pointer;"
-                                (click)="openModalHistorialPagos(i)" title="Ver histoial de pagos"></i>
+                                [attr.title]="'APP.SUBS.ACTIONS.VIEW_HISTORY' | translate"
+                                (click)="openModalHistorialPagos(i)"></i>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
-    <div id="button_datatable">
-    </div>
+    <div id="button_datatable"></div>
 </div>
 
 <!-- tabla para imprimir en excel -->
@@ -99,14 +113,14 @@
     <table id="tablaExcel" class="table table-bordered table-striped text-center" #table1>
         <thead class="table-custom">
             <tr>
-                <th>NOMBRE</th>
-                <th>APELLIDOS</th>
-                <th>EMAIL</th>
-                <th>TELEFONO</th>
-                <th>ESTADO</th>
-                <th>CUOTA</th>
-                <th>PAGADO</th>
-                <th>RESTANTE</th>
+                <th>{{ 'APP.SUBS.TABLE.NAME' | translate }}</th>
+                <th>{{ 'APP.SUBS.TABLE.SURNAMES' | translate }}</th>
+                <th>{{ 'APP.SUBS.TABLE.EMAIL' | translate }}</th>
+                <th>{{ 'APP.SUBS.TABLE.PHONE' | translate }}</th>
+                <th>{{ 'APP.SUBS.TABLE.STATUS' | translate }}</th>
+                <th>{{ 'APP.SUBS.TABLE.FEE' | translate }}</th>
+                <th>{{ 'APP.SUBS.TABLE.PAID' | translate }}</th>
+                <th>{{ 'APP.SUBS.TABLE.REMAINING' | translate }}</th>
             </tr>
         </thead>
         <tbody>
@@ -117,13 +131,13 @@
                 <td>{{ abonadoTemp.abonado.telefono }}</td>
                 <td>
                     <ng-container *ngIf="abonadoTemp.estado === 0">
-                        Ningún pago
+                        {{ 'APP.SUBS.STATUS.NONE' | translate }}
                     </ng-container>
                     <ng-container *ngIf="abonadoTemp.estado === 1">
-                        Pagos PDTE
+                        {{ 'APP.SUBS.STATUS.PENDING' | translate }}
                     </ng-container>
                     <ng-container *ngIf="abonadoTemp.estado === 2">
-                        Completado
+                        {{ 'APP.SUBS.STATUS.DONE' | translate }}
                     </ng-container>
                 </td>
                 <td>{{ abonadoTemp.cuota }}</td>
@@ -134,93 +148,93 @@
     </table>
 </div>
 
-<!-- Modal para modificar el abonado -->
+<!-- Modal crear/actualizar abonado -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalCreateUpdateAbonado}">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">Abonado</h5>
+                    <h5 class="modal-title" id="stripeModalLabel">{{ 'APP.SUBS.MODAL.TITLE' | translate }}</h5>
                     <button type="button" class="btn-close" aria-label="Close"
                         (click)="cerrarModalCreateUpdateAbonado()"></button>
                 </div>
                 <div class="modal-body">
                     <form>
                         <div class="row text-center">
-                            <!-- Primera columna principal -->
                             <div class="col-12 col-md-12">
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
-                                        <!-- Contenido de la subcolumna -->
-                                        <label><strong>Datos del Abonado:</strong></label>
+                                        <label><strong>{{ 'APP.SUBS.MODAL.DATA_LABEL' | translate }}</strong></label>
                                     </div>
                                 </div>
+
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-4">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="nombre"
-                                                name="nombre" [(ngModel)]="abonadoObj.nombre" placeholder="Nombre"
+                                                name="nombre" [(ngModel)]="abonadoObj.nombre"
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.NAME' | translate"
                                                 #primerCampo>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-8">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="apellido"
                                                 name="apellido" [(ngModel)]="abonadoObj.apellidos"
-                                                placeholder="Apellidos">
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.SURNAMES' | translate">
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-4">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="date" class="form-control custom-input" id="fechaDeNacimiento"
                                                 name="fechaDeNacimiento" [(ngModel)]="abonadoObj.fechaDeNacimiento"
-                                                placeholder="Fecha de Nacimiento">
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.BIRTHDATE' | translate">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-8">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="dni" name="dni"
-                                                [(ngModel)]="abonadoObj.dni" placeholder="DNI/NIE">
+                                                [(ngModel)]="abonadoObj.dni"
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.DNI' | translate">
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-4">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="telefono"
-                                                name="telefono" [(ngModel)]="abonadoObj.telefono" placeholder="Teléfono"
-                                                maxlength="9">
+                                                name="telefono" [(ngModel)]="abonadoObj.telefono" maxlength="9"
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.PHONE' | translate">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-8">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="mail" class="form-control custom-input" id="email" name="email"
-                                                [(ngModel)]="abonadoObj.mail" placeholder="Email">
+                                                [(ngModel)]="abonadoObj.mail"
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.EMAIL' | translate">
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-4">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <select class="form-select input-register custom-input" id="genero"
                                                 name="genero" [(ngModel)]="abonadoObj.genero">
-                                                <option value="" disabled selected hidden>Género</option>
-                                                <option value="M">Masculino</option>
-                                                <option value="F">Femenino</option>
-                                                <option value="O">Otro</option>
+                                                <option value="" disabled selected hidden>{{ 'APP.SUBS.MODAL.GENDER' |
+                                                    translate }}</option>
+                                                <option value="M">{{ 'APP.SUBS.MODAL.GENDER_M' | translate }}</option>
+                                                <option value="F">{{ 'APP.SUBS.MODAL.GENDER_F' | translate }}</option>
+                                                <option value="O">{{ 'APP.SUBS.MODAL.GENDER_O' | translate }}</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
 
@@ -228,53 +242,50 @@
                             <div class="col-12 col-md-12">
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
-                                        <!-- Contenido de la subcolumna -->
-                                        <label><strong>Cuota del abonado</strong></label>
+                                        <label><strong>{{ 'APP.SUBS.MODAL.FEE_SECTION' | translate }}</strong></label>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-4">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="number" class="form-control custom-input" id="cuota"
                                                 name="cuota" [readOnly]="cuotaReadOnly" [(ngModel)]="cuotaAbonado"
-                                                placeholder="Cuota">
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FEE_PLACEHOLDER' | translate">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="modal-footer mt-3">
-                            <!-- Botón para guardar el nuevo equipo -->
-                            <button type="button" class="btn btn-success float-end"
-                                (click)="createUpdateAbonado()">Guardar</button>
+                            <button type="button" class="btn btn-success float-end" (click)="createUpdateAbonado()">
+                                {{ 'APP.BUTTONS.SAVE' | translate }}
+                            </button>
                         </div>
                     </form>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- Modal para modificar el abonado y su info de la cuota -->
+<!-- Modal editar abonado + cuota -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalUpdateAbonado}">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">Abonado</h5>
+                    <h5 class="modal-title" id="stripeModalLabel">{{ 'APP.SUBS.MODAL.TITLE' | translate }}</h5>
                     <button type="button" class="btn-close" aria-label="Close" (click)="updateAbonado()"></button>
                 </div>
+
                 <div class="modal-body">
                     <form>
                         <div class="row text-center">
-                            <!-- Primera columna principal -->
                             <div class="col-12 col-md-12">
-
                                 <div class="row text-center align-items-center">
                                     <div class="col-12 col-md-12">
-                                        <!-- Contenido de la subcolumna -->
                                         <ng-container *ngIf="abonadoUpdate.abonado.abonadoId !== 0">
                                             <div class="form-group">
                                                 <ng-container *ngIf="abonadoUpdate.abonado.imgPerfil">
@@ -287,101 +298,110 @@
                                                 <ng-container *ngIf="!abonadoUpdate.abonado.imgPerfil">
                                                     <span class="bi bi-person" style="font-size: 3rem;"></span>
                                                 </ng-container>
-                                                <h4>Sube la foto del jugador</h4>
+
+                                                <h4>{{ 'APP.SUBS.MODAL.UPLOAD_TITLE' | translate }}</h4>
+
                                                 <form (submit)="onSubmit(abonadoUpdate.abonado.abonadoId)"
                                                     enctype="multipart/form-data">
                                                     <div class="form-group">
-                                                        <p>Seleccionar imagen en formato JPG o PNG:</p>
+                                                        <p>{{ 'APP.SUBS.MODAL.SELECT_IMAGE_TEXT' | translate }}</p>
                                                         <input type="file" id="image" (change)="onFileSelected($event)">
                                                         <div *ngIf="showPreview" style="margin-top: 2em;">
-                                                            <img [src]="imagePreviewUrl" alt="Image Preview" width="150"
-                                                                height="150" class="rounded-circle me-2">
+                                                            <img [src]="imagePreviewUrl"
+                                                                [attr.alt]="'APP.SUBS.MODAL.IMAGE_PREVIEW_ALT' | translate"
+                                                                width="150" height="150" class="rounded-circle me-2">
                                                             <button *ngIf="showbtnupimg" style="margin-top: 1em;"
-                                                                type="submit" class="btn btn-success">Subir
-                                                                foto</button>
+                                                                type="submit" class="btn btn-success">
+                                                                {{ 'APP.SUBS.MODAL.UPLOAD_PHOTO' | translate }}
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </form>
                                             </div>
                                         </ng-container>
+
                                         <ng-container *ngIf="abonadoUpdate.abonado.abonadoId == 0">
                                             <span class="bi bi-person" style="font-size: 3rem;"></span>
                                         </ng-container>
                                     </div>
                                 </div>
+
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
-                                        <!-- Contenido de la subcolumna -->
-                                        <label><strong>Editar datos del Abonado:</strong></label>
+                                        <label><strong>{{ 'APP.SUBS.MODAL.EDIT_DATA_LABEL' | translate
+                                                }}</strong></label>
                                     </div>
                                 </div>
+
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-4">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="nombre"
                                                 name="nombre" [(ngModel)]="abonadoUpdate.abonado.nombre"
-                                                placeholder="Nombre" #primerCampo>
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.NAME' | translate"
+                                                #primerCampo>
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-8">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="apellido"
                                                 name="apellido" [(ngModel)]="abonadoUpdate.abonado.apellidos"
-                                                placeholder="Apellidos">
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.SURNAMES' | translate">
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-4">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="date" class="form-control custom-input" id="fechaDeNacimiento"
                                                 name="fechaDeNacimiento"
                                                 [(ngModel)]="abonadoUpdate.abonado.fechaDeNacimiento"
-                                                placeholder="Fecha de Nacimiento">
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.BIRTHDATE' | translate">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-8">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="dni" name="dni"
-                                                [(ngModel)]="abonadoUpdate.abonado.dni" placeholder="DNI/NIE">
+                                                [(ngModel)]="abonadoUpdate.abonado.dni"
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.DNI' | translate">
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-4">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="telefono"
                                                 name="telefono" [(ngModel)]="abonadoUpdate.abonado.telefono"
-                                                placeholder="Teléfono" maxlength="9">
+                                                maxlength="9"
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.PHONE' | translate">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-8">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="mail" class="form-control custom-input" id="email" name="email"
-                                                [(ngModel)]="abonadoUpdate.abonado.mail" placeholder="Email">
+                                                [(ngModel)]="abonadoUpdate.abonado.mail"
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.EMAIL' | translate">
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-4">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <select class="form-select input-register custom-input" id="genero"
                                                 name="genero" [(ngModel)]="abonadoUpdate.abonado.genero">
-                                                <option value="" disabled selected hidden>Género</option>
-                                                <option value="M">Masculino</option>
-                                                <option value="F">Femenino</option>
-                                                <option value="O">Otro</option>
+                                                <option value="" disabled selected hidden>{{ 'APP.SUBS.MODAL.GENDER' |
+                                                    translate }}</option>
+                                                <option value="M">{{ 'APP.SUBS.MODAL.GENDER_M' | translate }}</option>
+                                                <option value="F">{{ 'APP.SUBS.MODAL.GENDER_F' | translate }}</option>
+                                                <option value="O">{{ 'APP.SUBS.MODAL.GENDER_O' | translate }}</option>
                                             </select>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
 
@@ -389,85 +409,91 @@
                             <div class="col-12 col-md-12">
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
-                                        <!-- Contenido de la subcolumna -->
-                                        <label><strong>Cuota del abonado</strong></label>
+                                        <label><strong>{{ 'APP.SUBS.MODAL.FEE_SECTION' | translate }}</strong></label>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-4">
-                                        <!-- Contenido de la subcolumna -->
                                         <div class="form-group">
                                             <input type="number" class="form-control custom-input" id="cuota"
                                                 name="cuota" [readOnly]="cuotaReadOnly"
-                                                [(ngModel)]="abonadoUpdate.cuota" placeholder="Cuota">
+                                                [(ngModel)]="abonadoUpdate.cuota"
+                                                [attr.placeholder]="'APP.SUBS.MODAL.FEE_PLACEHOLDER' | translate">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                     </form>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 
-<!-- Modal para pagar la cuota de un abonado -->
+<!-- Modal insertar pago -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalAgregarPago}">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="standard-modalLabel">Insertar pago abonado</h5>
-                <!-- Botón de cerrar con un icono -->
+                <h5 class="modal-title" id="standard-modalLabel">{{ 'APP.SUBS.PAY.TITLE' | translate }}</h5>
                 <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalAgregarPago()"></button>
             </div>
             <div class="modal-body">
-                <p>Vas a agregar un pago al abonado <b>{{ textoInfoNameAbonado }}</b></p>
+                <p [innerHTML]="'APP.SUBS.PAY.INFO' | translate:{ name: textoInfoNameAbonado }"></p>
+
                 <form (ngSubmit)="createPagoAbonado()">
                     <div class="row mb-3">
                         <div class="col">
-                            <p style="color: red;">(En la cantidad, solo se permiten números enteros, sin "comas" ni
-                                "puntos")</p>
+                            <p style="color: red;">{{ 'APP.SUBS.PAY.ONLY_INTEGER_NOTICE' | translate }}</p>
                         </div>
                     </div>
+
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label for="cantidad" class="form-label">Cantidad:</label>
+                            <label for="cantidad" class="form-label">{{ 'APP.SUBS.PAY.AMOUNT' | translate }}</label>
                             <input type="number" class="form-control" id="cantidad" name="cantidad"
                                 [(ngModel)]="agregarPago.cantidad">
                         </div>
                         <div class="col-6">
-                            <label for="metodo" class="form-label">Método de pago:</label>
+                            <label for="metodo" class="form-label">{{ 'APP.SUBS.PAY.METHOD' | translate }}</label>
                             <select class="form-control" id="metodo" name="metodo" [(ngModel)]="agregarPago.metodo">
-                                <option value="Tarjeta">Tarjeta</option>
-                                <option value="Efectivo">Efectivo</option>
-                                <option value="Transferencia">Transferencia</option>
-                                <option value="Bizum">Bizum</option>
-                                <option value="Otro">Otro</option>
+                                <option value="Tarjeta">{{ 'APP.SUBS.PAY.METHODS.CARD' | translate }}</option>
+                                <option value="Efectivo">{{ 'APP.SUBS.PAY.METHODS.CASH' | translate }}</option>
+                                <option value="Transferencia">{{ 'APP.SUBS.PAY.METHODS.TRANSFER' | translate }}</option>
+                                <option value="Bizum">{{ 'APP.SUBS.PAY.METHODS.BIZUM' | translate }}</option>
+                                <option value="Otro">{{ 'APP.SUBS.PAY.METHODS.OTHER' | translate }}</option>
                             </select>
                         </div>
                     </div>
+
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label for="fecha" class="form-label">Fecha:</label>
+                            <label for="fecha" class="form-label">{{ 'APP.SUBS.PAY.DATE' | translate }}</label>
                             <input type="date" class="form-control" id="fecha" name="fecha"
                                 [(ngModel)]="agregarPago.fechaPago">
                         </div>
                     </div>
+
                     <div class="row mb-3">
                         <div class="col-12">
-                            <label for="comentario" class="form-label">comentario:</label>
+                            <label for="comentario" class="form-label">{{ 'APP.SUBS.PAY.COMMENT' | translate }}</label>
                             <textarea class="form-control" id="comentario" name="comentario"
                                 [(ngModel)]="agregarPago.comentario" rows="5"></textarea>
                         </div>
                     </div>
+
                     <div class="modal-footer">
-                        <!-- Botón para guardar el nuevo equipo -->
-                        <button type="submit" class="btn btn-success float-end">Guardar</button>
+                        <button type="submit" class="btn btn-success float-end">
+                            {{ 'APP.BUTTONS.SAVE' | translate }}
+                        </button>
                     </div>
+
                     <div class="mb-3 d-flex">
                         <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
-                            Guardado correctamente
+                            {{ 'APP.SUBS.PAY.SAVED_OK' | translate }}
                         </div>
                     </div>
                 </form>
@@ -476,13 +502,13 @@
     </div>
 </div>
 
-<!-- Modal para ver el historial de pagos de los abonados -->
+<!-- Modal historial pagos -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalVerHistorialPagos}">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">Historial de pagos de los abonados</h5>
+                    <h5 class="modal-title" id="stripeModalLabel">{{ 'APP.SUBS.HISTORY.TITLE' | translate }}</h5>
                     <button type="button" class="btn-close" aria-label="Close"
                         (click)="cerrarModalHistorialPagos()"></button>
                 </div>
@@ -491,11 +517,11 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Cantidad</th>
-                                    <th>Fecha</th>
-                                    <th>Método</th>
-                                    <th>Comentario</th>
-                                    <th>Devolver</th>
+                                    <th>{{ 'APP.SUBS.HISTORY.AMOUNT' | translate }}</th>
+                                    <th>{{ 'APP.SUBS.HISTORY.DATE' | translate }}</th>
+                                    <th>{{ 'APP.SUBS.HISTORY.METHOD' | translate }}</th>
+                                    <th>{{ 'APP.SUBS.HISTORY.COMMENT' | translate }}</th>
+                                    <th>{{ 'APP.SUBS.HISTORY.REFUND' | translate }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -506,7 +532,8 @@
                                     <td>{{ pago.comentario }}</td>
                                     <td>
                                         <button *ngIf="!pago.cantidad.includes('-')" class="btn btn-warning"
-                                            title="Devolver pago" (click)="confirmReturnPay(pago)">
+                                            [attr.title]="'APP.SUBS.HISTORY.REFUND_TITLE' | translate"
+                                            (click)="confirmReturnPay(pago)">
                                             <span class="bi bi-arrow-counterclockwise btn-danger"></span>
                                         </button>
                                     </td>
@@ -514,11 +541,13 @@
                             </tbody>
                         </table>
                     </div>
+
                     <div class="modal-footer">
-                        <!-- Botón para guardar el nuevo equipo -->
-                        <button type="submit" class="btn btn-success float-end"
-                            (click)="cerrarModalHistorialPagos()">Cerrar</button>
+                        <button type="submit" class="btn btn-success float-end" (click)="cerrarModalHistorialPagos()">
+                            {{ 'APP.BUTTONS.CLOSE' | translate }}
+                        </button>
                     </div>
+
                 </div>
             </div>
         </div>

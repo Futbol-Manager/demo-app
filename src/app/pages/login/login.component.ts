@@ -5,9 +5,6 @@ import { LoginModel } from 'src/app/core/models/users/login.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 
 import { MatSnackBar, MatSnackBarConfig, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { MatButtonModule } from '@angular/material/button';
-import { MatSelectModule } from '@angular/material/select';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { User } from 'src/app/core/models/users/user.model';
 import { take } from 'rxjs';
 
@@ -38,11 +35,17 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private snackBar: MatSnackBar,
     private route: ActivatedRoute,
+    //private translate: TranslateService
   ) {
     this.loginForm = new FormGroup({
       mail: new FormControl('', [Validators.required, Validators.email]),
       password: new FormControl('', [Validators.required])
     });
+
+    /*const saved = localStorage.getItem('lang') || 'es';
+    translate.addLangs(['es', 'en']);
+    translate.setDefaultLang('es');
+    translate.use(saved);*/
   }
 
   ngOnInit(): void {

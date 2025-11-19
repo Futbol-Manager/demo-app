@@ -1,0 +1,119 @@
+{
+    "APP": {
+        "TITLE": "Gestión de clubes",
+        "HELLO": "Hola, {{name}}",
+        "EQUIPOS": "Equipos",
+        "PLAYERS_COUNT": "Tienes {{count}} jugador",
+        "PLAYERS_COUNT_plural": "Tienes {{count}} jugadores",
+        "BUTTONS": {
+            "SAVE": "Guardar",
+            "CANCEL": "Cancelar",
+            "LOGIN": "Iniciar sesión",
+            "CLOSE": "Cerrar"
+        },
+        "LOGIN": {
+            "EMAIL_PLACEHOLDER": "Correo electrónico",
+            "EMAIL_REQUIRED": "Correo electrónico requerido",
+            "EMAIL_INVALID": "Ingresa un correo electrónico válido",
+            "PASSWORD_PLACEHOLDER": "Contraseña",
+            "PASSWORD_REQUIRED": "Contraseña requerida",
+            "BLOCKED_MESSAGE": "Usuario bloqueado. Para desbloquearlo debes validarlo siguiendo el enlace recibido en tu correo electrónico.",
+            "BLOCKED_LINK": "Haz click aquí para recibir un nuevo correo."
+        },
+        "AUTH": {
+            "FORGOT_PASSWORD": "He olvidado mi contraseña",
+            "NO_ACCOUNT": "¿No tienes una cuenta?",
+            "REGISTER": "Regístrate",
+            "REMEMBER_PASSWORD": "¿Recuerdas la contraseña?",
+            "LOGIN_HERE": "Inicia sesión aquí",
+            "REMEMBER_TITLE": "Ingresa tu correo electrónico para cambiar la contraseña",
+            "EMAIL_PLACEHOLDER": "Correo electrónico",
+            "EMAIL_INVALID": "Ingresa un correo electrónico válido",
+            "SEND_MAIL": "Enviar correo"
+        },
+        "ALT": {
+            "BACKGROUND": "Fondo con imagen de fútbol",
+            "LOGO": "Logo de SphairaTech"
+        },
+        "NAV": {
+            "BACK": "Volver"
+        },
+        "SUBS": {
+            "TITLE_TABLE": "Tabla Cuota Abonados",
+            "CREATE": "Crear abonado",
+            "DOWNLOAD_EXCEL": "Descargar Excel",
+            "TABLE": {
+                "ID": "ID",
+                "IMAGE": "Imagen",
+                "NAME": "Nombre",
+                "SURNAMES": "Apellidos",
+                "EMAIL": "Email",
+                "PHONE": "Teléfono",
+                "STATUS": "Estado",
+                "FEE": "Cuota",
+                "PAID": "Pagado",
+                "REMAINING": "Restante",
+                "ACTIONS": "Acciones"
+            },
+            "STATUS": {
+                "NONE": "Ningún pago",
+                "PENDING": "Pagos PDTE",
+                "DONE": "Completado"
+            },
+            "ACTIONS": {
+                "EDIT": "Editar abonado",
+                "INSERT_PAY": "Introducir un pago",
+                "VIEW_HISTORY": "Ver historial de pagos"
+            },
+            "MODAL": {
+                "TITLE": "Abonado",
+                "DATA_LABEL": "Datos del Abonado:",
+                "EDIT_DATA_LABEL": "Editar datos del Abonado:",
+                "UPLOAD_TITLE": "Sube la foto del jugador",
+                "SELECT_IMAGE_TEXT": "Seleccionar imagen en formato JPG o PNG:",
+                "UPLOAD_PHOTO": "Subir foto",
+                "IMAGE_PREVIEW_ALT": "Vista previa de imagen",
+                "FEE_SECTION": "Cuota del abonado",
+                "FEE_PLACEHOLDER": "Cuota",
+                "GENDER": "Género",
+                "GENDER_M": "Masculino",
+                "GENDER_F": "Femenino",
+                "GENDER_O": "Otro",
+                "FIELDS": {
+                    "NAME": "Nombre",
+                    "SURNAMES": "Apellidos",
+                    "BIRTHDATE": "Fecha de Nacimiento",
+                    "DNI": "DNI/NIE",
+                    "PHONE": "Teléfono",
+                    "EMAIL": "Email"
+                }
+            },
+            "PAY": {
+                "TITLE": "Insertar pago abonado",
+                "INFO": "Vas a agregar un pago al abonado <b>{{name}}</b>",
+                "ONLY_INTEGER_NOTICE": "(En la cantidad, solo se permiten números enteros, sin \"comas\" ni \"puntos\")",
+                "AMOUNT": "Cantidad:",
+                "METHOD": "Método de pago:",
+                "DATE": "Fecha:",
+                "COMMENT": "Comentario:",
+                "METHODS": {
+                    "CARD": "Tarjeta",
+                    "CASH": "Efectivo",
+                    "TRANSFER": "Transferencia",
+                    "BIZUM": "Bizum",
+                    "OTHER": "Otro"
+                },
+                "SAVED_OK": "Guardado correctamente"
+            },
+            "HISTORY": {
+                "TITLE": "Historial de pagos de los abonados",
+                "AMOUNT": "Cantidad",
+                "DATE": "Fecha",
+                "METHOD": "Método",
+                "COMMENT": "Comentario",
+                "REFUND": "Devolver",
+                "REFUND_TITLE": "Devolver pago"
+            }
+        }
+    }
+}

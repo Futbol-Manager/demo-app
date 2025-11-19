@@ -12,35 +12,65 @@
 </div>
 <div *ngIf="isLoading" class="d-flex align-items-center justify-content-center p-3">
     <div class="spinner-border text-primary me-2" role="status" aria-hidden="true"></div>
-    <strong>Cargando listado...</strong>
+    <strong>Cargando listado, puede tardar unos segundos, espere...</strong>
 </div>
 
 <div *ngIf="!isLoading" class="container mt-3">
-    <div style="margin-top: 3em; overflow-x: auto; text-align: center;">
-        <h2>{{ nCargos }} Cargos</h2>
-        <table class="table table-bordered table-striped">
-            <thead class="table-custom">
-                <tr>
-                    <th>Nombre</th>
-                    <th>Descripción Pago</th>
-                    <th>Importe</th>
-                    <th>Método</th>
-                    <th>Tipo</th>
-                    <th>Fecha</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let pago of listaPagos">
-                    <td>{{ pago.name }}</td>
-                    <td [innerHTML]="descripcionConLink(pago.descripcionPago)"></td>
-                    <td [ngClass]="pago.importe.includes('-') ? 'text-danger' : 'text-success'">
-                        {{ pago.importe }}
-                    </td>
-                    <td>{{ pago.metodo }}</td>
-                    <td>{{ pago.tipo }}</td>
-                    <td>{{ pago.fechaFormateada }}</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="row mb-3 align-items-center">
+        <!-- Input filtro -->
+        <div class="col-md-4 col-sm-12 mb-2 mb-md-0">
+            <input type="text" class="form-control" placeholder="Filtrar por nombre del club" [(ngModel)]="filtro"
+                (input)="filtrarClubes()">
+        </div>
+
+        <!-- Exportar Excel -->
+        <div class="col-md-3 col-sm-12">
+            <button class="btn btn-success w-100" (click)="exportarExcel()">
+                <i class="bi bi-file-earmark-spreadsheet-fill"></i> Exportar Excel
+            </button>
+        </div>
     </div>
-</div>
+
+    <!-- Tabla -->
+    <div class="row mb-3 align-items-center">
+        <div style="overflow-x: auto;">
+            <h2>{{ nCargos }} Cargos</h2>
+            <table id="dataTable" class="table table-bordered table-striped text-center">
+                <thead class="table-custom">
+                    <tr>
+                        <th>Nº</th>
+                        <th (click)="ordenarPor('name')" style="cursor: pointer">Nombre <i
+                                class="bi bi-arrow-down-up"></i></th>
+                        <th (click)="ordenarPor('descripcionPago')" style="cursor: pointer">Descripción Pago <i
+                                class="bi bi-arrow-down-up"></i></th>
+                        <th (click)="ordenarPor('titulo')" style="cursor: pointer">Título <i
+                                class="bi bi-arrow-down-up"></i></th>
+                        <th (click)="ordenarPor('importe')" style="cursor: pointer">Importe <i
+                                class="bi bi-arrow-down-up"></i></th>
+                        <th (click)="ordenarPor('metodo')" style="cursor: pointer">Método <i
+                                class="bi bi-arrow-down-up"></i></th>
+                        <th (click)="ordenarPor('tipo')" style="cursor: pointer">Tipo <i
+                                class="bi bi-arrow-down-up"></i></th>
+                        <th (click)="ordenarPor('fechaFormateada')" style="cursor: pointer">Fecha <i
+                                class="bi bi-arrow-down-up"></i></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let pago of listaPagosFiltrados; let i = index">
+                        <td>
+                            {{ i+1 }}
+                        </td>
+                        <td>{{ pago.name }}</td>
+                        <td [innerHTML]="descripcionConLink(pago.descripcionPago)"></td>
+                        <td>{{ pago.titulo }}</td>
+                        <td [ngClass]="pago.importe.includes('-') ? 'text-danger' : 'text-success'">
+                            {{ pago.importe }}
+                        </td>
+                        <td>{{ pago.metodo }}</td>
+                        <td>{{ pago.tipo }}</td>
+                        <td>{{ pago.fechaFormateada }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>

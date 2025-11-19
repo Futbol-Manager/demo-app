@@ -48,8 +48,13 @@ import { InicioFederacionComponent } from './inicio-federacion/inicio-federacion
 import { InfoJugadoresFederacionComponent } from './info-jugadores-federacion/info-jugadores-federacion.component';
 import { NotificacionesFederacionComponent } from './notificaciones-federacion/notificaciones-federacion.component';
 import { ListadoClubesComponent } from './listado-clubes/listado-clubes.component';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { TranslateModule } from '@ngx-translate/core';
 
-
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http, './assets/i18n/', '.json');
+}
 
 @NgModule({
   declarations: [
@@ -104,7 +109,9 @@ import { ListadoClubesComponent } from './listado-clubes/listado-clubes.componen
     DashboardRoutingModule,
     FormsModule,
 		ReactiveFormsModule,
-    NgxDatatableModule
+    NgxDatatableModule,
+    HttpClientModule,
+    TranslateModule
   ]
 })
 export class DashboardModule { }

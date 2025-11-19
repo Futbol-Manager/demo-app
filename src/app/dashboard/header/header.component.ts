@@ -11,6 +11,7 @@ import { RegisterService } from 'src/app/core/services/register/register.service
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { environment } from 'src/environments/environment';
 import { Dropdown } from 'bootstrap';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-header',
@@ -49,6 +50,9 @@ export class HeaderComponent implements OnInit {
   idValidation = 1;
   imageBaseUrl: string = environment.images + 'user/';
 
+  showModalIdioma = false;
+  selectedLang: string = 'es'; // Idioma actual por defecto
+
   constructor(
     private router: Router,
     private loginService: LoginService,
@@ -58,7 +62,12 @@ export class HeaderComponent implements OnInit {
     private renderer: Renderer2,
     private elementRef: ElementRef,
     private trainingService: TrainingService,
-  ) { }
+    private translate: TranslateService) {
+    const lang = localStorage.getItem('lang');
+    if (lang) {
+      this.selectedLang = lang;
+    }
+  }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe((user: User | null) => {
@@ -203,6 +212,20 @@ export class HeaderComponent implements OnInit {
 
   profile() {
     this.abrirModalCrearEquipo();
+  }
+
+  abrirModalIdioma() {
+    this.showModalIdioma = true;
+  }
+
+  cerrarModalIdioma() {
+    this.showModalIdioma = false;
+  }
+
+  cambiarIdioma() {
+    localStorage.setItem('lang', this.selectedLang);
+    this.translate.use(this.selectedLang);
+    this.cerrarModalIdioma();
   }
 
   // Método para abrir el modal

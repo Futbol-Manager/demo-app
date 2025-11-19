@@ -1,96 +1,95 @@
 <div class="background">
-  <img src="assets/images/fondoLoginV1.png" alt="GIF de jugando" class="video-background">
+  <img src="assets/images/fondoLoginV1.png" [attr.alt]="'APP.ALT.BACKGROUND' | translate" class="video-background">
 
-  <!--LOGIN-->
+  <!-- LOGIN -->
   <div class="container" *ngIf="screen == 1">
     <div class="row justify-content-center" style="padding-top: 2%;">
       <div class="col-md-6">
         <div class="card">
           <div class="card-header textoCentrado" style="background-color: #31b270;">
-            <img src="assets/images/Logo_SphairaTech1.svg" alt="Logo"
+            <img src="assets/images/Logo_SphairaTech1.svg" [attr.alt]="'APP.ALT.LOGO' | translate"
               style="cursor: pointer; width: 10em;">
           </div>
+
           <div class="card-body textoCentrado">
             <app-login></app-login>
           </div>
+
           <div class="card-footer textoCentrado" style="flex-direction: column; background: #002c40;">
             <div class="row">
               <div class="col-md-12 col-sm-12 textoCentrado">
-                <p><a style="color: #1e8832" href="#" (click)="toRemember($event)">He olvidado mi contraseña</a></p>
+                <p>
+                  <a style="color: #1e8832" href="#" (click)="toRemember($event)">
+                    {{ 'APP.AUTH.FORGOT_PASSWORD' | translate }}
+                  </a>
+                </p>
               </div>
             </div>
+
             <div class="row">
               <div class="col-md-12 col-sm-12 textoCentrado">
-                <p style="color: white">¿No tienes una cuenta? <a style="color: #1e8832" href="#" (click)="toRegister($event)">Regístrate</a></p>
+                <p style="color: white">
+                  {{ 'APP.AUTH.NO_ACCOUNT' | translate }}
+                  <a style="color: #1e8832" href="#" (click)="toRegister($event)">
+                    {{ 'APP.AUTH.REGISTER' | translate }}
+                  </a>
+                </p>
               </div>
             </div>
-          </div>
-        </div>
+          </div> <!-- /card-footer -->
+        </div> <!-- /card -->
       </div>
     </div>
   </div>
 
-    <!--RECORDAR CONTRASEÑA-->
-    <div class="container" *ngIf="screen == 3">
-      <div class="row justify-content-center" style="padding-top: 2%;">
-        <div class="col-md-6">
-          <div class="card">
-            <div class="card-header textoCentrado" style="background-color: #31b270;">
-              <img src="assets/images/Logo_SphairaTech1.svg" alt="Logo"
-                style="cursor: pointer; width: 10em;">
-            </div>
-            <div class="card-body textoCentrado">
-              <form [formGroup]="rememberForm" class="form-login" #thisForm="ngForm" (ngSubmit)="sendMail()">
-                <div class="mb-3">
-                  <label for="mail" class="form-label">Ingresa tu correo electrónico para cambiar la contraseña</label>
-                  <input type="email" placeholder="Correo electrónico" class="form-control input-login" id="mail" formControlName="mail" [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)">
-                  <div *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)" class="invalid-feedback">
-                    Ingresa un correo electrónico válido
-                  </div>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-block textoCentrado">Enviar Mail</button>
-              </form>
-            </div>
-            <div class="card-footer textoCentrado" style="flex-direction: column; background: #002c40;">
-              <div class="row">
-                <div class="col-md-12 col-sm-12 textoCentrado">
-                  <p style="color: white">¿Recuerdas la contraseña? <a style="color: #1e8832" href="#" (click)="toLogin($event)">Inicia sesión aquí</a></p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  <!--REGISTRO-->
-  <!--
-  <div class="container" *ngIf="screen == 2">
+  <!-- RECORDAR CONTRASEÑA -->
+  <div class="container" *ngIf="screen == 3">
     <div class="row justify-content-center" style="padding-top: 2%;">
       <div class="col-md-6">
         <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h1 class="m-0 textoCentrado flex-grow-1">Registro de usuario</h1>
-            <button class="btn btn-close" (click)="toLogin($event)">
-              -->
-              <!-- Aquí puedes añadir el icono de cierre -->
-              <!--
-            </button>
+          <div class="card-header textoCentrado" style="background-color: #31b270;">
+            <img src="assets/images/Logo_SphairaTech1.svg" [attr.alt]="'APP.ALT.LOGO' | translate"
+              style="cursor: pointer; width: 10em;">
           </div>
+
           <div class="card-body textoCentrado">
-            <app-register></app-register>
+            <form [formGroup]="rememberForm" class="form-login" #thisForm="ngForm" (ngSubmit)="sendMail()">
+              <div class="mb-3">
+                <label for="mail" class="form-label">
+                  {{ 'APP.AUTH.REMEMBER_TITLE' | translate }}
+                </label>
+
+                <input type="email" class="form-control input-login" id="mail" formControlName="mail"
+                  [attr.placeholder]="'APP.AUTH.EMAIL_PLACEHOLDER' | translate"
+                  [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)">
+
+                <div
+                  *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
+                  class="invalid-feedback">
+                  {{ 'APP.AUTH.EMAIL_INVALID' | translate }}
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-primary btn-block textoCentrado">
+                {{ 'APP.AUTH.SEND_MAIL' | translate }}
+              </button>
+            </form>
           </div>
-          <div class="card-footer textoCentrado" style="flex-direction: column;">
+
+          <div class="card-footer textoCentrado" style="flex-direction: column; background: #002c40;">
             <div class="row">
               <div class="col-md-12 col-sm-12 textoCentrado">
-                <p>¿Ya tienes una cuenta? <a href="#" (click)="toLogin($event)">Inicia sesión aquí</a></p>
+                <p style="color: white">
+                  {{ 'APP.AUTH.REMEMBER_PASSWORD' | translate }}
+                  <a style="color: #1e8832" href="#" (click)="toLogin($event)">
+                    {{ 'APP.AUTH.LOGIN_HERE' | translate }}
+                  </a>
+                </p>
               </div>
             </div>
-          </div>
-        </div>
+          </div> <!-- /card-footer -->
+        </div> <!-- /card -->
       </div>
     </div>
   </div>
--->
 </div>
