@@ -1,7 +1,7 @@
 {
   "APP": {
     "TITLE": "Club management",
-    "HELLO": "Hi, {{name}}",
+    "HELLO": "Hello, {{name}}",
     "EQUIPOS": "Teams",
     "PLAYERS_COUNT": "You have {{count}} player",
     "PLAYERS_COUNT_plural": "You have {{count}} players",
@@ -10,110 +10,143 @@
       "CANCEL": "Cancel",
       "LOGIN": "Login",
       "CLOSE": "Close"
+    }
+  },
+  "LOGIN": {
+    "EMAIL_PLACEHOLDER": "Email",
+    "EMAIL_REQUIRED": "Email is required",
+    "EMAIL_INVALID": "Please enter a valid email address",
+    "PASSWORD_PLACEHOLDER": "Password",
+    "PASSWORD_REQUIRED": "Password is required",
+    "BLOCKED_MESSAGE": "User is blocked. To unblock, validate the link sent to your email.",
+    "BLOCKED_LINK": "Click here to receive a new email."
+  },
+  "AUTH": {
+    "FORGOT_PASSWORD": "I forgot my password",
+    "NO_ACCOUNT": "Don't have an account?",
+    "REGISTER": "Register",
+    "REMEMBER_PASSWORD": "Remember your password?",
+    "LOGIN_HERE": "Login here",
+    "REMEMBER_TITLE": "Enter your email to reset your password",
+    "EMAIL_PLACEHOLDER": "Email",
+    "EMAIL_INVALID": "Please enter a valid email address",
+    "SEND_MAIL": "Send email"
+  },
+  "ALT": {
+    "BACKGROUND": "Background with football image",
+    "LOGO": "SphairaTech Logo"
+  },
+  "NAV": {
+    "BACK": "Back"
+  },
+  "HEADER": {
+    "WELCOME": "Welcome!",
+    "PROFILE": "Profile",
+    "CHANGE_LANG": "Change language",
+    "SUBSCRIPTION": "Subscription",
+    "LOGOUT": "Log out"
+  },
+  "PROFILE": {
+    "EDIT_TITLE": "Edit user profile",
+    "INSTRUCTIONS_TITLE": "Instructions",
+    "INSTRUCTIONS_TEXT": "Enter the data you want to update without leaving any fields empty.",
+    "UPLOAD_TITLE": "Upload your profile photo",
+    "SELECT_IMAGE_TEXT": "Select an image in JPG or PNG format:",
+    "UPLOAD_PHOTO": "Upload image",
+    "NO_IMAGE_ALT": "Profile photo",
+    "EMAIL_INVALID": "Please enter a valid email address",
+    "FIELDS": {
+      "NAME": "Name",
+      "SURNAMES": "Surname",
+      "EMAIL": "Email",
+      "PHONE": "Phone",
+      "BIRTHDATE": "Birthdate",
+      "GENDER": "Gender"
     },
-    "LOGIN": {
-      "EMAIL_PLACEHOLDER": "Email address",
-      "EMAIL_REQUIRED": "Email is required",
-      "EMAIL_INVALID": "Enter a valid email address",
-      "PASSWORD_PLACEHOLDER": "Password",
-      "PASSWORD_REQUIRED": "Password is required",
-      "BLOCKED_MESSAGE": "User is blocked. To unlock your account, please validate it using the link sent to your email.",
-      "BLOCKED_LINK": "Click here to receive a new email."
+    "GENDER_M": "Male",
+    "GENDER_F": "Female",
+    "GENDER_O": "Other"
+  },
+  "LANG": {
+    "MODAL_TITLE": "Select language",
+    "INSTRUCCIONES": "Choose the language you want to use the app in.",
+    "LABEL": "Language:"
+  },
+  "SUBS": {
+    "TITLE_TABLE": "Subscriber Fee Table",
+    "CREATE": "Create subscriber",
+    "DOWNLOAD_EXCEL": "Download Excel",
+    "TABLE": {
+      "ID": "ID",
+      "IMAGE": "Image",
+      "NAME": "Name",
+      "SURNAMES": "Surnames",
+      "EMAIL": "Email",
+      "PHONE": "Phone",
+      "STATUS": "Status",
+      "FEE": "Fee",
+      "PAID": "Paid",
+      "REMAINING": "Remaining",
+      "ACTIONS": "Actions"
     },
-    "AUTH": {
-      "FORGOT_PASSWORD": "I forgot my password",
-      "NO_ACCOUNT": "Don't have an account?",
-      "REGISTER": "Register",
-      "REMEMBER_PASSWORD": "Remember your password?",
-      "LOGIN_HERE": "Login here",
-      "REMEMBER_TITLE": "Enter your email to change your password",
-      "EMAIL_PLACEHOLDER": "Email address",
-      "EMAIL_INVALID": "Enter a valid email address",
-      "SEND_MAIL": "Send email"
+    "STATUS": {
+      "NONE": "No payment",
+      "PENDING": "Pending payments",
+      "DONE": "Completed"
     },
-    "ALT": {
-      "BACKGROUND": "Football background image",
-      "LOGO": "SphairaTech logo"
+    "ACTIONS": {
+      "EDIT": "Edit subscriber",
+      "INSERT_PAY": "Add a payment",
+      "VIEW_HISTORY": "View payment history"
     },
-    "NAV": {
-      "BACK": "Back"
-    },
-    "SUBS": {
-      "TITLE_TABLE": "Subscribers Fee Table",
-      "CREATE": "Create subscriber",
-      "DOWNLOAD_EXCEL": "Download Excel",
-      "TABLE": {
-        "ID": "ID",
-        "IMAGE": "Image",
+    "MODAL": {
+      "TITLE": "Subscriber",
+      "DATA_LABEL": "Subscriber Data:",
+      "EDIT_DATA_LABEL": "Edit Subscriber Data:",
+      "UPLOAD_TITLE": "Upload player's photo",
+      "SELECT_IMAGE_TEXT": "Select an image in JPG or PNG format:",
+      "UPLOAD_PHOTO": "Upload photo",
+      "IMAGE_PREVIEW_ALT": "Image preview",
+      "FEE_SECTION": "Subscriber fee",
+      "FEE_PLACEHOLDER": "Fee",
+      "GENDER": "Gender",
+      "GENDER_M": "Male",
+      "GENDER_F": "Female",
+      "GENDER_O": "Other",
+      "FIELDS": {
         "NAME": "Name",
         "SURNAMES": "Surnames",
-        "EMAIL": "Email",
+        "BIRTHDATE": "Birthdate",
+        "DNI": "DNI/NIE",
         "PHONE": "Phone",
-        "STATUS": "Status",
-        "FEE": "Fee",
-        "PAID": "Paid",
-        "REMAINING": "Remaining",
-        "ACTIONS": "Actions"
-      },
-      "STATUS": {
-        "NONE": "No payment",
-        "PENDING": "Pending payments",
-        "DONE": "Completed"
-      },
-      "ACTIONS": {
-        "EDIT": "Edit subscriber",
-        "INSERT_PAY": "Insert payment",
-        "VIEW_HISTORY": "View payment history"
-      },
-      "MODAL": {
-        "TITLE": "Subscriber",
-        "DATA_LABEL": "Subscriber Data:",
-        "EDIT_DATA_LABEL": "Edit Subscriber Data:",
-        "UPLOAD_TITLE": "Upload player photo",
-        "SELECT_IMAGE_TEXT": "Select image in JPG or PNG format:",
-        "UPLOAD_PHOTO": "Upload photo",
-        "IMAGE_PREVIEW_ALT": "Image preview",
-        "FEE_SECTION": "Subscriber Fee",
-        "FEE_PLACEHOLDER": "Fee",
-        "GENDER": "Gender",
-        "GENDER_M": "Male",
-        "GENDER_F": "Female",
-        "GENDER_O": "Other",
-        "FIELDS": {
-          "NAME": "Name",
-          "SURNAMES": "Surnames",
-          "BIRTHDATE": "Birthdate",
-          "DNI": "DNI/NIE",
-          "PHONE": "Phone",
-          "EMAIL": "Email"
-        }
-      },
-      "PAY": {
-        "TITLE": "Insert subscriber payment",
-        "INFO": "You are going to add a payment to subscriber <b>{{name}}</b>",
-        "ONLY_INTEGER_NOTICE": "(Only integer numbers are allowed in the amount, no commas or dots)",
-        "AMOUNT": "Amount:",
-        "METHOD": "Payment method:",
-        "DATE": "Date:",
-        "COMMENT": "Comment:",
-        "METHODS": {
-          "CARD": "Card",
-          "CASH": "Cash",
-          "TRANSFER": "Transfer",
-          "BIZUM": "Bizum",
-          "OTHER": "Other"
-        },
-        "SAVED_OK": "Saved successfully"
-      },
-      "HISTORY": {
-        "TITLE": "Subscriber payment history",
-        "AMOUNT": "Amount",
-        "DATE": "Date",
-        "METHOD": "Method",
-        "COMMENT": "Comment",
-        "REFUND": "Refund",
-        "REFUND_TITLE": "Refund payment"
+        "EMAIL": "Email"
       }
+    },
+    "PAY": {
+      "TITLE": "Add subscriber payment",
+      "INFO": "You are going to add a payment for subscriber <b>{{name}}</b>",
+      "ONLY_INTEGER_NOTICE": "(Only whole numbers are allowed, no commas or dots)",
+      "AMOUNT": "Amount:",
+      "METHOD": "Payment method:",
+      "DATE": "Date:",
+      "COMMENT": "Comment:",
+      "METHODS": {
+        "CARD": "Card",
+        "CASH": "Cash",
+        "TRANSFER": "Bank transfer",
+        "BIZUM": "Bizum",
+        "OTHER": "Other"
+      },
+      "SAVED_OK": "Saved successfully"
+    },
+    "HISTORY": {
+      "TITLE": "Subscriber payment history",
+      "AMOUNT": "Amount",
+      "DATE": "Date",
+      "METHOD": "Method",
+      "COMMENT": "Comment",
+      "REFUND": "Refund",
+      "REFUND_TITLE": "Refund payment"
     }
   }
 }

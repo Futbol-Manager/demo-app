@@ -13,10 +13,14 @@
         <img [src]="isDarkMode ? 'assets/images/player.svg' : 'assets/images/player.svg'" alt="Logo"
           (click)="goInicio()" class="logo-image">
       </div>
+
+      <!-- Usuario -->
       <div class="col-auto" style="cursor: pointer; text-align: center;">
         <div class="dropdown">
           <a class="nav-link dropdown-toggle arrow-none nav-user px-2" data-bs-toggle="dropdown" href="#" role="button"
             aria-haspopup="false" aria-expanded="false">
+
+            <!-- Móvil -->
             <span class="d-lg-none">
               <span class="account-user-avatar">
                 <ng-container *ngIf="imgUser">
@@ -25,11 +29,13 @@
                 </ng-container>
                 <ng-container *ngIf="!imgUser">
                   <img src="./../../../assets/images/no-image.png" class="rounded-circle img-custom"
-                    alt="Foto de perfil">
+                    alt="{{ 'PROFILE.NO_IMAGE_ALT' | translate }}">
                 </ng-container>
               </span>
               <h5 class="my-0">{{ nameUser }}</h5>
             </span>
+
+            <!-- Escritorio -->
             <span class="d-none d-lg-flex flex-column gap-1">
               <span class="account-user-avatar">
                 <ng-container *ngIf="imgUser">
@@ -38,46 +44,42 @@
                 </ng-container>
                 <ng-container *ngIf="!imgUser">
                   <img src="./../../../assets/images/no-image.png" class="rounded-circle img-custom"
-                    alt="Foto de perfil">
+                    alt="{{ 'PROFILE.NO_IMAGE_ALT' | translate }}">
                 </ng-container>
               </span>
               <h5 class="my-0">{{ nameUser }}</h5>
             </span>
           </a>
+
+          <!-- SUBMENU -->
           <div id="submenu" class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
-            <!-- item-->
+
             <div class="dropdown-header noti-title">
-              <h6 class="text-overflow m-0">¡Bienvenido!</h6>
+              <h6 class="text-overflow m-0">{{ 'HEADER.WELCOME' | translate }}</h6>
             </div>
 
-            <!-- item
-            <a href="javascript:void(0);" class="dropdown-item" (click)="toggleDarkMode()">
-              <i class="mdi mdi-account-circle me-1"></i>
-              <span id="span">Oscuro/Claro</span>
-            </a>-->
-
-            <!-- item suscripcion -->
+            <!-- Perfil -->
             <a href="javascript:void(0);" class="dropdown-item" (click)="profile()">
               <i class="mdi mdi-account-circle me-1"></i>
-              <span id="span2">Perfil</span>
+              <span>{{ 'HEADER.PROFILE' | translate }}</span>
             </a>
 
-            <!-- item suscripcion -->
-            <a href="javascript:void(0);" class="dropdown-item" (click)="profile()">
-              <i class="mdi mdi-account-circle me-1"></i>
-              <span id="span2">Cambiar idioma</span>
+            <!-- Idioma -->
+            <a href="javascript:void(0);" class="dropdown-item" (click)="abrirModalIdioma()">
+              <i class="mdi mdi-translate me-1"></i>
+              <span>{{ 'HEADER.CHANGE_LANG' | translate }}</span>
             </a>
 
-            <!-- item -->
+            <!-- Suscripción SOLO entrenadores -->
             <a *ngIf="profileId === 2" href="javascript:void(0);" class="dropdown-item" (click)="goSuscripcion()">
-              <i class="mdi mdi-account-circle me-1"></i>
-              <span id="span2">Suscripción</span>
+              <i class="mdi mdi-credit-card me-1"></i>
+              <span>{{ 'HEADER.SUBSCRIPTION' | translate }}</span>
             </a>
 
-            <!-- item-->
+            <!-- Cerrar sesión -->
             <a href="javascript:void(0);" class="dropdown-item" (click)="logOut()">
               <i class="mdi mdi-logout me-1"></i>
-              <span id="span3">Cerrar sesión</span>
+              <span>{{ 'HEADER.LOGOUT' | translate }}</span>
             </a>
           </div>
         </div>
@@ -86,127 +88,132 @@
   </div>
 </header>
 
-<!-- Modal para crear equipo -->
+
+<!-- MODAL EDITAR PERFIL -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Editar perfil de usuario</h5>
-        <!-- Botón de cerrar con un icono -->
+        <h5 class="modal-title">{{ 'PROFILE.EDIT_TITLE' | translate }}</h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
       </div>
+
       <div class="modal-body">
-        <h6 class="mt-0">Instrucciones</h6>
-        <p>Introduce los datos de tu perfil que quieres modificar sin dejar ningún campo vacío.</p>
+        <h6 class="mt-0">{{ 'PROFILE.INSTRUCTIONS_TITLE' | translate }}</h6>
+        <p>{{ 'PROFILE.INSTRUCTIONS_TEXT' | translate }}</p>
         <hr>
-        <form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="saveChanges()">
+
+        <form [formGroup]="userForm" #thisForm="ngForm" (ngSubmit)="saveChanges()" class="form-login">
+
+          <!-- Imagen -->
           <div class="mb-3" style="text-align: center;">
             <ng-container *ngIf="imgUser">
-              <!-- Imagen principal que cambiará al subir una nueva imagen -->
               <img [src]="imageBaseUrl + imgUser" alt="user-image" width="150" height="150" class="rounded-circle me-2">
-              <div class="container">
-                <h4>Sube tu foto de perfil</h4>
-                <form (submit)="onSubmit()" enctype="multipart/form-data">
-                  <div class="form-group">
-                    <label for="image">Seleccionar imagen en formato JPG o PNG:</label>
-                    <input type="file" id="image" (change)="onFileSelected($event)">
-                    <!-- Vista previa de la imagen seleccionada, solo visible si showPreview es true -->
-                    <img *ngIf="showPreview" [src]="imagePreviewUrl" alt="Image Preview" width="150" height="150"
-                      class="rounded-circle me-2">
-                  </div>
-                  <button *ngIf="showbtnupimg" style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir
-                    imagen</button>
-                </form>
-              </div>
+
+              <h4>{{ 'PROFILE.UPLOAD_TITLE' | translate }}</h4>
+
+              <form (submit)="onSubmit()" enctype="multipart/form-data">
+                <label>{{ 'PROFILE.SELECT_IMAGE_TEXT' | translate }}</label>
+                <input type="file" (change)="onFileSelected($event)">
+                <img *ngIf="showPreview" [src]="imagePreviewUrl" width="150" height="150" class="rounded-circle me-2">
+
+                <button *ngIf="showbtnupimg" type="submit" class="btn btn-primary mt-2">
+                  {{ 'PROFILE.UPLOAD_PHOTO' | translate }}
+                </button>
+              </form>
             </ng-container>
 
             <ng-container *ngIf="!imgUser">
-              <div class="container">
-                <h4>Sube tu foto de perfil</h4>
-                <form (submit)="onSubmit()" enctype="multipart/form-data">
-                  <div class="form-group">
-                    <label for="image">Seleccionar imagen en formato JPG o PNG:</label>
-                    <input type="file" id="image" (change)="onFileSelected($event)">
-                  </div>
-                  <button *ngIf="showbtnupimg" style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir
-                    imagen</button>
-                </form>
-              </div>
+              <h4>{{ 'PROFILE.UPLOAD_TITLE' | translate }}</h4>
+              <form (submit)="onSubmit()" enctype="multipart/form-data">
+                <label>{{ 'PROFILE.SELECT_IMAGE_TEXT' | translate }}</label>
+                <input type="file" (change)="onFileSelected($event)">
+                <button *ngIf="showbtnupimg" type="submit" class="btn btn-primary mt-2">
+                  {{ 'PROFILE.UPLOAD_PHOTO' | translate }}
+                </button>
+              </form>
             </ng-container>
           </div>
+
+          <!-- Campos -->
           <div class="mb-3">
-            <label for="firstName" class="form-label">Nombre</label>
-            <input type="text" class="form-control input-login" id="firstName" formControlName="firstName">
+            <label class="form-label">{{ 'PROFILE.FIELDS.NAME' | translate }}</label>
+            <input type="text" class="form-control input-login" formControlName="firstName">
           </div>
+
           <div class="mb-3">
-            <label for="secondName" class="form-label">Apellido</label>
-            <input type="text" class="form-control input-login" id="secondName" formControlName="secondName">
+            <label class="form-label">{{ 'PROFILE.FIELDS.SURNAMES' | translate }}</label>
+            <input type="text" class="form-control input-login" formControlName="secondName">
           </div>
+
           <div class="mb-3">
-            <label for="mail" class="form-label">Correo electrónico</label>
-            <input type="email" class="form-control input-login" id="mail" formControlName="mail">
+            <label class="form-label">{{ 'PROFILE.FIELDS.EMAIL' | translate }}</label>
+            <input type="email" class="form-control input-login" formControlName="mail">
+
             <div
               *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
               class="invalid-feedback">
-              Ingresa un correo electrónico válido
+              {{ 'PROFILE.EMAIL_INVALID' | translate }}
             </div>
           </div>
+
           <div class="mb-3">
-            <label for="mobile" class="form-label">Teléfono</label>
-            <input type="text" class="form-control input-login" id="mobile" formControlName="mobile">
+            <label class="form-label">{{ 'PROFILE.FIELDS.PHONE' | translate }}</label>
+            <input type="text" class="form-control input-login" formControlName="mobile">
           </div>
+
           <div class="mb-3">
-            <label for="birthdate" class="form-label">Fecha de nacimiento</label>
-            <input type="date" class="form-control input-login" id="birthdate" formControlName="birthdate">
+            <label class="form-label">{{ 'PROFILE.FIELDS.BIRTHDATE' | translate }}</label>
+            <input type="date" class="form-control input-login" formControlName="birthdate">
           </div>
+
           <div class="mb-3">
-            <label for="genreType" class="form-label">Género</label>
-            <select class="form-control" id="genreType" formControlName="genreType">
-              <option value="1">Masculino</option>
-              <option value="2">Femenino</option>
-              <option value="3">Otro</option>
+            <label class="form-label">{{ 'PROFILE.FIELDS.GENDER' | translate }}</label>
+            <select class="form-control" formControlName="genreType">
+              <option value="1">{{ 'PROFILE.GENDER_M' | translate }}</option>
+              <option value="2">{{ 'PROFILE.GENDER_F' | translate }}</option>
+              <option value="3">{{ 'PROFILE.GENDER_O' | translate }}</option>
             </select>
           </div>
-          <!-- Botón para guardar el nuevo equipo
-          <div class="mb-3">
-            <button type="button" class="btn btn-warning form-control" (click)="goSuscripcion()">Suscripción</button>
-          </div> -->
-          <div class="mb-3">
-          </div>
+
           <div class="modal-footer">
-            <!-- Botón para guardar el nuevo equipo -->
-            <button type="button" class="btn btn-success float-end" (click)="saveChanges()">Guardar</button>
+            <button type="button" class="btn btn-success float-end" (click)="saveChanges()">
+              {{ 'APP.BUTTONS.SAVE' | translate }}
+            </button>
           </div>
+
         </form>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal de selección de idioma -->
+
+<!-- MODAL IDIOMA -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalIdioma}">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
+
       <div class="modal-header">
         <h5 class="modal-title">{{ 'LANG.MODAL_TITLE' | translate }}</h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalIdioma()"></button>
       </div>
+
       <div class="modal-body">
         <p>{{ 'LANG.INSTRUCCIONES' | translate }}</p>
         <hr />
-        <form>
-          <div class="mb-3">
-            <label for="langSelect" class="form-label">{{ 'LANG.LABEL' | translate }}</label>
-            <select class="form-control" id="langSelect" [(ngModel)]="selectedLang" name="langSelect"
-              (change)="cambiarIdioma()">
-              <option value="es">Español</option>
-              <option value="en">English</option>
-              <option value="fr">Français</option>
-              <option value="de">Deutsch</option>
-            </select>
-          </div>
-        </form>
+
+        <label class="form-label">{{ 'LANG.LABEL' | translate }}</label>
+
+        <select class="form-control" [(ngModel)]="selectedLang" name="langSelect" (change)="cambiarIdioma()">
+          <option value="es">Español</option>
+          <option value="en">English</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+        </select>
+
       </div>
+
     </div>
   </div>
 </div>
