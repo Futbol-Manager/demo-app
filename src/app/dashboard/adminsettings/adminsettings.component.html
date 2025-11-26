@@ -4,28 +4,28 @@
         <div class="col">
             <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
                 <i class="bi bi-arrow-left-square-fill"></i>
-                <span class="d-none d-md-inline">Volver</span>
+                <span class="d-none d-md-inline">{{ 'NAV.BACK' | translate }}</span>
             </a>
         </div>
     </div>
 </div>
 
 <div class="container mt-4">
-    <h2>Usuarios</h2>
+    <h2>{{ 'TITLES.USERS' | translate }}</h2>
     <div style="overflow-x: auto;">
         <table id="dataTable" class="table table-bordered table-striped">
             <thead class="table-custom">
                 <tr>
-                    <th>ID</th>
-                    <th>CREADO</th>
-                    <th>PERFIL</th>
-                    <th>NOMBRE</th>
-                    <th>APELLIDOS</th>
-                    <th>MOVIL</th>
-                    <th>EMAIL</th>
-                    <th>FECHA NAC</th>
-                    <th>VALIDADO</th>
-                    <th>COMUNICACIONES</th>
+                    <th>{{ 'SUBS.TABLE.ID' | translate }}</th>
+                    <th>{{ 'SUBS.TABLE.CREATE' | translate }}</th>
+                    <th>{{ 'SUBS.TABLE.PROFILE' | translate }}</th>
+                    <th>{{ 'SUBS.TABLE.NAME' | translate }}</th>
+                    <th>{{ 'SUBS.TABLE.SURNAMES' | translate }}</th>
+                    <th>{{ 'SUBS.TABLE.MOBILE' | translate }}</th>
+                    <th>{{ 'SUBS.TABLE.EMAIL' | translate }}</th>
+                    <th>{{ 'SUBS.TABLE.FECDATE' | translate }}</th>
+                    <th>{{ 'SUBS.TABLE.VALIDATE' | translate }}</th>
+                    <th>{{ 'SUBS.TABLE.COMUNICATIONS' | translate }}</th>
                 </tr>
             </thead>
             <tbody>

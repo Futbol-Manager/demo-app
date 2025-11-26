@@ -20,7 +20,7 @@
               <div class="col-md-12 col-sm-12 textoCentrado">
                 <p>
                   <a style="color: #1e8832" href="#" (click)="toRemember($event)">
-                    {{ 'APP.AUTH.FORGOT_PASSWORD' | translate }}
+                    {{ 'AUTH.FORGOT_PASSWORD' | translate }}
                   </a>
                 </p>
               </div>
@@ -29,9 +29,9 @@
             <div class="row">
               <div class="col-md-12 col-sm-12 textoCentrado">
                 <p style="color: white">
-                  {{ 'APP.AUTH.NO_ACCOUNT' | translate }}
+                  {{ 'AUTH.NO_ACCOUNT' | translate }}
                   <a style="color: #1e8832" href="#" (click)="toRegister($event)">
-                    {{ 'APP.AUTH.REGISTER' | translate }}
+                    {{ 'AUTH.REGISTER' | translate }}
                   </a>
                 </p>
               </div>
@@ -56,22 +56,22 @@
             <form [formGroup]="rememberForm" class="form-login" #thisForm="ngForm" (ngSubmit)="sendMail()">
               <div class="mb-3">
                 <label for="mail" class="form-label">
-                  {{ 'APP.AUTH.REMEMBER_TITLE' | translate }}
+                  {{ 'AUTH.REMEMBER_TITLE' | translate }}
                 </label>
 
                 <input type="email" class="form-control input-login" id="mail" formControlName="mail"
-                  [attr.placeholder]="'APP.AUTH.EMAIL_PLACEHOLDER' | translate"
+                  [attr.placeholder]="'AUTH.EMAIL_PLACEHOLDER' | translate"
                   [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)">
 
                 <div
                   *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
                   class="invalid-feedback">
-                  {{ 'APP.AUTH.EMAIL_INVALID' | translate }}
+                  {{ 'AUTH.EMAIL_INVALID' | translate }}
                 </div>
               </div>
 
               <button type="submit" class="btn btn-primary btn-block textoCentrado">
-                {{ 'APP.AUTH.SEND_MAIL' | translate }}
+                {{ 'AUTH.SEND_MAIL' | translate }}
               </button>
             </form>
           </div>
@@ -80,9 +80,9 @@
             <div class="row">
               <div class="col-md-12 col-sm-12 textoCentrado">
                 <p style="color: white">
-                  {{ 'APP.AUTH.REMEMBER_PASSWORD' | translate }}
+                  {{ 'AUTH.REMEMBER_PASSWORD' | translate }}
                   <a style="color: #1e8832" href="#" (click)="toLogin($event)">
-                    {{ 'APP.AUTH.LOGIN_HERE' | translate }}
+                    {{ 'AUTH.LOGIN_HERE' | translate }}
                   </a>
                 </p>
               </div>

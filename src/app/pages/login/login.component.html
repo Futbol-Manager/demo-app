@@ -3,17 +3,17 @@
   <!-- Campo de email -->
   <div class="mb-3">
     <input type="email" class="form-control input-login" id="mail" formControlName="mail"
-      [attr.placeholder]="'APP.LOGIN.EMAIL_PLACEHOLDER' | translate"
+      [attr.placeholder]="'LOGIN.EMAIL_PLACEHOLDER' | translate"
       [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)">
 
     <div *ngIf="mailControl?.hasError('required') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
       class="invalid-feedback">
-      {{ 'APP.LOGIN.EMAIL_REQUIRED' | translate }}
+      {{ 'LOGIN.EMAIL_REQUIRED' | translate }}
     </div>
 
     <div *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
       class="invalid-feedback">
-      {{ 'APP.LOGIN.EMAIL_INVALID' | translate }}
+      {{ 'LOGIN.EMAIL_INVALID' | translate }}
     </div>
   </div>
 
@@ -21,7 +21,7 @@
   <div class="mb-3">
     <div class="input-group">
       <input class="form-control input-login" id="password" formControlName="password"
-        [type]="hidePassword ? 'password' : 'text'" [attr.placeholder]="'APP.LOGIN.PASSWORD_PLACEHOLDER' | translate"
+        [type]="hidePassword ? 'password' : 'text'" [attr.placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate"
         [class.is-invalid]="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)">
 
       <div class="input-group-append">
@@ -33,7 +33,7 @@
       <div
         *ngIf="passwordControl?.hasError('required') && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)"
         class="invalid-feedback">
-        {{ 'APP.LOGIN.PASSWORD_REQUIRED' | translate }}
+        {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
       </div>
     </div>
   </div>
@@ -46,9 +46,9 @@
   <!-- Usuario bloqueado -->
   <div [ngStyle]="{ display: verificarCuenta ? 'block' : 'none' }" class="text-danger mt-3">
     <p>
-      {{ 'APP.LOGIN.BLOCKED_MESSAGE' | translate }}
+      {{ 'LOGIN.BLOCKED_MESSAGE' | translate }}
       <a href="#" (click)="enviarMail()">
-        {{ 'APP.LOGIN.BLOCKED_LINK' | translate }}
+        {{ 'LOGIN.BLOCKED_LINK' | translate }}
       </a>
     </p>
   </div>

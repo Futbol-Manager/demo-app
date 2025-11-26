@@ -1,73 +1,126 @@
 <div class="modal" role="dialog" class="d-block">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
+
       <div class="modal-header d-flex">
         <div class="row text-center mt-3">
           <div class="col-12 col-md-12 mt-3">
-            <h2>Selecciona una tarea para descargarla</h2>
+            <h2>{{ 'TASKS.MODAL_TITLE' | translate }}</h2>
           </div>
         </div>
       </div>
+
       <div class="modal-body">
         <div class="container">
+
+          <!-- Filtros -->
           <div class="row text-center mt-3 align-items-center">
             <div class="col-12 col-md-6 mt-3">
-              <input type="text" class="form-control custom-input" id="textSearch" [(ngModel)]="textSearch"
-                placeholder="Buscar por título..." (keydown.enter)="filterSearch()">
+              <input type="text"
+                class="form-control custom-input"
+                id="textSearch"
+                [(ngModel)]="textSearch"
+                [placeholder]="'TASKS.SEARCH_PLACEHOLDER' | translate"
+                (keydown.enter)="filterSearch()">
             </div>
+
             <div class="col-12 col-md-3 mt-3">
-              <select class="form-control custom-input" id="estrategia" [(ngModel)]="estrategia" name="estrategia">
-                <option value="-">Selecciona estrategía...</option>
-                <option *ngFor="let estrategia of estrategias" [value]="estrategia">{{ estrategia }}</option>
+              <select class="form-control custom-input"
+                      id="estrategia"
+                      [(ngModel)]="estrategia"
+                      name="estrategia">
+                <option value="-">{{ 'TASKS.SELECT_STRATEGY' | translate }}</option>
+                <option *ngFor="let estrategia of estrategias"
+                        [value]="estrategia">{{ estrategia }}</option>
               </select>
             </div>
+
             <div class="col-12 col-md-3 mt-3">
-              <select class="form-control custom-input" id="intencion" [(ngModel)]="intencion" name="intencion">
-                <option value="-">Selecciona intención...</option>
-                <option *ngFor="let intencion of intenciones" [value]="intencion">{{ intencion }}</option>
+              <select class="form-control custom-input"
+                      id="intencion"
+                      [(ngModel)]="intencion"
+                      name="intencion">
+                <option value="-">{{ 'TASKS.SELECT_INTENTION' | translate }}</option>
+                <option *ngFor="let intencion of intenciones"
+                        [value]="intencion">{{ intencion }}</option>
               </select>
             </div>
           </div>
+
+          <!-- Botones -->
           <div class="row text-center mt-3 align-items-center">
+            <div class="col-12 col-md-3 mt-3"></div>
+            <div class="col-12 col-md-3 mt-3"></div>
             <div class="col-12 col-md-3 mt-3">
+              <button type="button"
+                      class="form-control btn btn-danger mt-2"
+                      (click)="clearSearch()">
+                {{ 'TASKS.CLEAR' | translate }}
+              </button>
             </div>
             <div class="col-12 col-md-3 mt-3">
-            </div>
-            <div class="col-12 col-md-3 mt-3">
-              <button type="button" class="form-control btn btn-danger mt-2" (click)="clearSearch()">Limpiar</button>
-            </div>
-            <div class="col-12 col-md-3 mt-3">
-              <button type="button" class="form-control btn btn-primary mt-2" (click)="filterSearch()">Buscar</button>
+              <button type="button"
+                      class="form-control btn btn-primary mt-2"
+                      (click)="filterSearch()">
+                {{ 'TASKS.SEARCH' | translate }}
+              </button>
             </div>
           </div>
+
           <br>
+
+          <!-- Cards -->
           <div class="row mt-3">
-            <div class="col-12 col-md-4 mb-4" *ngFor="let tarea of taskList; let i = index"
-              [class.selected]="tarea === selectedTask" (click)="seleccionarTarea(tarea)">
+            <div class="col-12 col-md-4 mb-4"
+                 *ngFor="let tarea of taskList; let i = index"
+                 [class.selected]="tarea === selectedTask"
+                 (click)="seleccionarTarea(tarea)">
+
               <div class="card h-100">
+
                 <div *ngIf="tarea.imagenBoard">
-                  <img [src]="imageBaseUrlTask + tarea.imagenBoard" class="card-img-top"
-                    onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'" alt="...">
+                  <img [src]="imageBaseUrlTask + tarea.imagenBoard"
+                       class="card-img-top"
+                       onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'"
+                       alt="{{ 'TASKS.NO_IMAGE_ALT' | translate }}">
                 </div>
+
                 <div *ngIf="!tarea.imagenBoard">
-                  <img [src]="'https://appsphairatech.com/images/task-board/blank.png'" class="card-img-top">
+                  <img src="https://appsphairatech.com/images/task-board/blank.png"
+                       class="card-img-top"
+                       alt="{{ 'TASKS.NO_IMAGE_ALT' | translate }}">
                 </div>
+
                 <div class="card-body custom-card-body">
-                  <h6 class="card-title">ID: {{ tarea.tasksShopId }}</h6>
+                  <h6 class="card-title">
+                    {{ 'TASKS.ID' | translate }}: {{ tarea.tasksShopId }}
+                  </h6>
                   <h5 class="card-title">{{ tarea.slogans }}</h5>
+
                   <div class="tags-container">
                     <span class="badge badge-secondary">{{ tarea.estrategia }}</span>
                     <span class="badge badge-primary">{{ tarea.intencion }}</span>
                   </div>
-                  <p class="card-text" style="color: #aeaeae;">{{ tarea.description }}</p>
-                  <button type="button" class="btn btn-success mt-2" (click)="descargarTarea(tarea)">Añadir
-                    tarea</button>
+
+                  <p class="card-text" style="color: #aeaeae;">
+                    {{ tarea.description }}
+                  </p>
+
+                  <button type="button"
+                          class="btn btn-success mt-2"
+                          (click)="descargarTarea(tarea)">
+                    {{ 'TASKS.ADD_TASK' | translate }}
+                  </button>
                 </div>
+
               </div>
+
             </div>
           </div>
+
         </div>
       </div>
+
     </div>
   </div>
 </div>

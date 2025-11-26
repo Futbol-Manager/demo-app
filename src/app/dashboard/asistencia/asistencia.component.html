@@ -3,7 +3,7 @@
         <div class="col">
             <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
                 <i class="bi bi-arrow-left-square-fill"></i>
-                <span class="d-none d-md-inline">Volver</span>
+                <span class="d-none d-md-inline">{{ 'NAV.BACK' | translate }}</span>
             </a>
         </div>
         <!-- <div class="col">
@@ -23,10 +23,10 @@
 <div class="container" style="margin-top: 3em;" *ngIf="!loading">
     <ul class="nav nav-tabs">
         <li class="nav-item">
-            <a class="nav-link active" data-bs-toggle="tab" href="#asistencia">Asistencia</a>
+            <a class="nav-link active" data-bs-toggle="tab" href="#asistencia">{{ 'TITLES.ASSISTANCE' | translate }}</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" data-bs-toggle="tab" href="#multas">Multas</a>
+            <a class="nav-link" data-bs-toggle="tab" href="#multas">{{ 'TITLES.PENALTY' | translate }}</a>
         </li>
     </ul>
 
@@ -37,13 +37,13 @@
                 <table class="table table-bordered table-striped text-center">
                     <thead class="table-custom" style="position: sticky; top: 0; background-color: white; z-index: 1;">
                         <tr>
-                            <th>Fecha</th>
+                            <th>{{ 'SUBS.TABLE.DATE' | translate }}</th>
                             <th *ngFor="let player of players">{{ player }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>Totales -></td>
+                            <td>{{ 'SUBS.TABLE.DATE' | translate }} -></td>
                             <td *ngFor="let total of asistTotales">
                                 {{ total }} / {{ numTotal }}
                             </td>
@@ -67,7 +67,7 @@
                 <table class="table table-bordered table-striped text-center">
                     <thead class="table-custom" style="position: sticky; top: 0; background-color: white; z-index: 1;">
                         <tr>
-                            <th>Fecha</th>
+                            <th>{{ 'SUBS.TABLE.DATE' | translate }}</th>
                             <th *ngFor="let player of players">{{ player }}</th>
                         </tr>
                     </thead>
@@ -76,15 +76,14 @@
                             <td>{{ item.fecha }}</td>
                             <td *ngFor="let multa of item.multas; let j = index"
                                 [ngClass]="{'bg-danger text-white': multa !== 0 && item.multaPagada[j] === 0, 'bg-success text-white': multa !== 0 && item.multaPagada[j] === 1}">
-                                
+
                                 <!-- Monto de la multa -->
                                 {{ multa }}
-        
+
                                 <!-- Iconos para marcar como pagada o no pagada, solo si la multa es diferente de 0 -->
                                 <ng-container *ngIf="multa !== 0">
-                                    <i class="bi bi-hand-index text-white ml-2"
-                                       *ngIf="item.multaPagada[j] === 1"
-                                       (click)="toggleMultaPago(item.idsPk[j], 0)" title="Marcar como NO pagado"></i>
+                                    <i class="bi bi-hand-index text-white ml-2" *ngIf="item.multaPagada[j] === 1"
+                                        (click)="toggleMultaPago(item.idsPk[j], 0)" title="Marcar como NO pagado"></i>
                                 </ng-container>
                             </td>
                         </tr>

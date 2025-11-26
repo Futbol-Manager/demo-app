@@ -1,7 +1,7 @@
 <div class="loading-container" [ngStyle]="{ display: datosCargando ? 'flex' : 'none' }">
   <div class="spinner-border text-primary" role="status"></div>
   <div class="loading-text">
-    <i class="mdi mdi-loading mdi-spin me-2"></i> Cargando datos y leyendo suscripción...
+    <i class="mdi mdi-loading mdi-spin me-2"></i> {{ 'TITLES.LOAD' | translate }}
   </div>
 </div>
 
@@ -12,7 +12,7 @@
       <div class="col text-center">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(8)">
           <i class="bi bi-house"></i>
-          <span class="d-none d-md-inline">Inicio</span>
+          <span class="d-none d-md-inline">{{ 'NAV.INICIO' | translate }}</span>
         </a>
       </div>
     </div>
@@ -22,43 +22,43 @@
       <div class="col text-center">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(6)">
           <i class="bi bi-file-earmark-pdf"></i>
-          <span class="d-none d-md-inline">Documentos</span>
+          <span class="d-none d-md-inline">{{ 'NAV.DOCUMENTS' | translate }}</span>
         </a>
       </div>
       <div class="col text-center">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(3)">
           <i class="bi bi-clipboard2-data"></i>
-          <span class="d-none d-md-inline">Cuadro Mando Deportivo</span>
+          <span class="d-none d-md-inline">{{ 'NAV.CUADRO' | translate }}</span>
         </a>
       </div>
       <div class="col text-center">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
           <i class="bi bi-bank"></i>
-          <span class="d-none d-md-inline">Cuotas</span>
+          <span class="d-none d-md-inline">{{ 'NAV.PAYS' | translate }}</span>
         </a>
       </div>
       <div class="col text-center">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(7)">
           <i class="bi bi-bank2"></i>
-          <span class="d-none d-md-inline">New Cuotas</span>
+          <span class="d-none d-md-inline">{{ 'NAV.NEWPAYS' | translate }}</span>
         </a>
       </div>
       <div class="col text-center" *ngIf="clubOk">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
           <i class="bi bi-backpack3"></i>
-          <span class="d-none d-md-inline">Ropa</span>
+          <span class="d-none d-md-inline">{{ 'NAV.CLOTHES' | translate }}</span>
         </a>
       </div>
       <div class="col text-center" *ngIf="clubOk">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(4)">
           <i class="bi bi-collection"></i>
-          <span class="d-none d-md-inline">Patrocinadores</span>
+          <span class="d-none d-md-inline">{{ 'NAV.SPONSORS' | translate }}</span>
         </a>
       </div>
       <div class="col text-center" *ngIf="clubOk">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">
           <i class="bi bi-envelope"></i>
-          <span class="d-none d-md-inline">Notificaciones</span>
+          <span class="d-none d-md-inline">{{ 'NAV.NOTIFICATIONS' | translate }}</span>
         </a>
       </div>
     </div>
@@ -68,13 +68,13 @@
       <div class="col text-center" *ngIf="!clubOk">
         <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearEquipo()">
           <i class="bi bi-plus-circle"></i>
-          <span class="d-none d-md-inline">Crear un equipo</span>
+          <span class="d-none d-md-inline">{{ 'NAV.NOTIFICATIONS' | translate }}</span>
         </a>
       </div>
       <div class="col text-center">
         <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(5)">
           <i class="bi bi-envelope"></i>
-          <span class="d-none d-md-inline">Notificaciones</span>
+          <span class="d-none d-md-inline">{{ 'NAV.NOTIFICATIONS' | translate }}</span>
         </a>
       </div>
     </div>
@@ -84,15 +84,15 @@
   <div *ngIf="profileId > 1 && showAlertAndroid && isAndroid"
     class="alert alert-primary d-flex align-items-center justify-content-between p-3 mt-4" role="alert">
     <div>
-      <strong>Para una mejor experiencia, accede desde la app móvil. ¡Descarga ya la app para Android!</strong><br>
-      Disponible en Google Play.
+      <strong>{{ 'MOBILE.ANDROID' | translate }}</strong><br>
+      {{ 'MOBILE.TEXTANDROID' | translate }}
     </div>
 
     <div class="d-flex align-items-center gap-2">
       <!-- Abre modal -->
       <button type="button" class="btn btn-primary d-flex align-items-center w-100 w-md-auto"
         (click)="openSuscriptionModal(1)">
-        <i class="bi bi-apple me-2" style="font-size: 1.2rem;"></i> Descargar
+        <i class="bi bi-apple me-2" style="font-size: 1.2rem;"></i> {{ 'TITLES.DOWNLOAD' | translate }}
       </button>
 
       <button type="button" class="btn-close ms-2" aria-label="Cerrar" (click)="cerrarAlertaAndroid()"></button>
@@ -103,15 +103,15 @@
   <div *ngIf="profileId > 1 && showAlertAndroid && isiOS"
     class="alert alert-primary d-flex align-items-center justify-content-between p-3 mt-4" role="alert">
     <div>
-      <strong>Para una mejor experiencia, accede desde la app móvil. ¡Descarga ya la app para iPhone!</strong><br />
-      Disponible en App Store.
+      <strong>{{ 'MOBILE.IOS' | translate }}</strong><br>
+      {{ 'MOBILE.TEXTIOS' | translate }}
     </div>
 
     <div class="d-flex align-items-center gap-2">
       <!-- Abre modal -->
       <button type="button" class="btn btn-primary d-flex align-items-center w-100 w-md-auto"
         (click)="openSuscriptionModal(2)">
-        <i class="bi bi-apple me-2" style="font-size: 1.2rem;"></i> Descargar
+        <i class="bi bi-apple me-2" style="font-size: 1.2rem;"></i> {{ 'TITLES.DOWNLOAD' | translate }}
       </button>
 
       <button type="button" class="btn-close ms-2" aria-label="Cerrar" (click)="cerrarAlertaAndroid()"></button>
@@ -124,9 +124,9 @@
   <div class="container">
     <div class="row g-3 p-3" style="margin-top: 3em;" *ngIf="profileId === 1">
       <div class="col-12 col-md-3">
-        <label for="excel" class="form-label">Cargar jugadores desde Excel:</label>
+        <label for="excel" class="form-label">{{ 'TITLES.EXCELLOAD' | translate }}</label>
         <button class="btn btn-success w-100" (click)="openModalSubirJugadores()">
-          Subir Excel <i class="bi bi-file-earmark-spreadsheet"></i>
+          {{ 'TITLES.EXCELUP' | translate }} <i class="bi bi-file-earmark-spreadsheet"></i>
         </button>
       </div>
 
@@ -138,20 +138,20 @@
       </div> -->
 
       <div class="col-12 col-md-3">
-        <label for="excel" class="form-label">Link invitación para padres:</label>
+        <label for="excel" class="form-label">{{ 'TITLES.INVITED' | translate }}</label>
         <button class="btn btn-secondary w-100" (click)="copyLink()">
-          Copiar <i class="bi bi-copy"></i>
+          {{ 'TITLES.COPY' | translate }} <i class="bi bi-copy"></i>
         </button>
       </div>
 
       <div class="col-12 col-md-3">
-        <label for="temporada" class="form-label">Temporada:</label>
+        <label for="temporada" class="form-label">{{ 'TITLES.SEASON' | translate }}:</label>
         <select class="form-control" id="temporada" name="temporada" [(ngModel)]="temporada"
           (change)="cargarListadoEquiposForClub()">
-          <option value="2022">2022/2023</option>
-          <option value="2023">2023/2024</option>
-          <option value="2024">2024/2025</option>
-          <option value="2025">2025/2026</option>
+          <option value="2022">{{ 'SELECTS.2022' | translate }}</option>
+          <option value="2023">{{ 'SELECTS.2023' | translate }}</option>
+          <option value="2024">{{ 'SELECTS.2024' | translate }}</option>
+          <option value="2025">{{ 'SELECTS.2025' | translate }}</option>
         </select>
       </div>
     </div>
@@ -159,13 +159,13 @@
     <!-- 🔹 profileId === 2 -->
     <div class="row g-3 p-3" style="margin-top: 3em;" *ngIf="profileId === 2">
       <div class="col-12 col-md-3">
-        <label for="temporada" class="form-label">Temporada:</label>
+        <label for="temporada" class="form-label">{{ 'TITLES.SEASON' | translate }}:</label>
         <select class="form-control" id="temporada" name="temporada" [(ngModel)]="temporada"
           (change)="cargarListadoEquipos()">
-          <option value="2022">2022/2023</option>
-          <option value="2023">2023/2024</option>
-          <option value="2024">2024/2025</option>
-          <option value="2025">2025/2026</option>
+          <option value="2022">{{ 'SELECTS.2022' | translate }}</option>
+          <option value="2023">{{ 'SELECTS.2023' | translate }}</option>
+          <option value="2024">{{ 'SELECTS.2024' | translate }}</option>
+          <option value="2025">{{ 'SELECTS.2025' | translate }}</option>
         </select>
       </div>
     </div>
@@ -173,13 +173,13 @@
     <!-- 🔹 profileId === 3 -->
     <div class="row g-3 p-3" style="margin-top: 3em;" *ngIf="profileId === 3">
       <div class="col-12 col-md-3">
-        <label for="temporada" class="form-label">Temporada:</label>
+        <label for="temporada" class="form-label">{{ 'TITLES.SEASON' | translate }}:</label>
         <select class="form-control" id="temporada" name="temporada" [(ngModel)]="temporada"
           (change)="cargarJugadores()">
-          <option value="2022">2022/2023</option>
-          <option value="2023">2023/2024</option>
-          <option value="2024">2024/2025</option>
-          <option value="2025">2025/2026</option>
+          <option value="2022">{{ 'SELECTS.2022' | translate }}</option>
+          <option value="2023">{{ 'SELECTS.2023' | translate }}</option>
+          <option value="2024">{{ 'SELECTS.2024' | translate }}</option>
+          <option value="2025">{{ 'SELECTS.2025' | translate }}</option>
         </select>
       </div>
     </div>
@@ -199,7 +199,7 @@
               </div>
             </div>
             <h5 class="card-title text-truncate" style="color: black;">
-              Crear equipo
+              {{ 'TITLES.CREATETEAM' | translate }}
             </h5>
           </div>
         </div>
@@ -236,7 +236,7 @@
               <i class="bi bi-people-fill"></i>
             </p>
             <p *ngIf="team.nombreEntrenador" class="card-text text-truncate" style="color: black;">
-              <b>Cuerpo técnico: </b> {{ team.nombreEntrenador }}
+              <b>{{ 'TITLES.TEAMTRAINERS' | translate }}: </b> {{ team.nombreEntrenador }}
             </p>
           </div>
         </div>
@@ -269,8 +269,7 @@
 
       <div>
         <p class="text-center text-muted mt-4">
-          Si no ves aquí o te falta un jugador, es posible que otro tutor tenga registrado. De ser así, ese
-          tutor, el entrenador o el club debe invitarte desde el perfil del jugador. Avísales.
+          {{ 'PHRASES.INICIO1' | translate }}
         </p>
       </div>
     </div>
@@ -281,13 +280,12 @@
   <div class="d-flex justify-content-center align-items-center mt-3">
     <div class="card text-center shadow-lg p-4">
       <div class="card-body">
-        <h5 class="card-title mb-3">Acceso Restringido</h5>
+        <h5 class="card-title mb-3">{{ 'TITLES.ACCESSREST' | translate }}</h5>
         <p class="card-text text-muted">
-          Fin a los 7 días de prueba. Necesitas una suscripción para poder usar la aplicación.
+          {{ 'PHRASES.INICIO2' | translate }}
         </p>
         <button class="btn btn-primary btn-lg" (click)="goSuscripcion()">
-          <i class="mdi mdi-account-circle me-2"></i> Obtener Suscripción
-        </button>
+          <i class="mdi mdi-account-circle me-2"></i> {{ 'TITLES.GETSUS' | translate }}        </button>
       </div>
     </div>
   </div>
@@ -298,19 +296,19 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="standard-modalLabel">Crea un equipo</h5>
+        <h5 class="modal-title" id="standard-modalLabel">{{ 'NAV.CREATETEAM' | translate }}</h5>
         <!-- Botón de cerrar con un icono -->
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
       </div>
       <div class="modal-body">
-        <h6 class="mt-0">Instrucciones</h6>
-        <p>Introduce los datos de tu equipo que quieres crear sin dejar ningun campo vacío.</p>
+        <h6 class="mt-0">{{ 'PROFILE.INSTRUCTIONS_TITLE' | translate }}</h6>
+        <p>{{ 'PHRASES.INICIO3' | translate }}</p>
         <hr>
         <!-- Formulario para la creación de equipo con campos separados -->
         <form [formGroup]="crearEquipoForm" (ngSubmit)="crearEquipo()">
 
           <div class="mb-3">
-            <label for="categoriaInput" class="form-label">Categoría del Equipo</label>
+            <label for="categoriaInput" class="form-label">{{ 'TITLES.CATEGORYTEAM' | translate }}</label>
             <input type="text" id="categoriaInput" class="form-control" formControlName="categoriaNombre"
               (input)="onInputCategoria($event)" (blur)="ocultarDropdownConRetraso()" (focus)="mostrarDropdown = true"
               autocomplete="off" placeholder="Escribe la categoría de este equipo">
@@ -323,7 +321,7 @@
               </li>
               <li *ngIf="categoriaNombre.length > 3" class="list-group-item list-group-item-action text-primary"
                 style="cursor: pointer;" (mousedown)="crearCategoria(categoriaNombre)">
-                Crear "{{ categoriaNombre }}"
+                {{ 'NAV.CREATE' | translate }} "{{ categoriaNombre }}"
               </li>
             </ul>
           </div>
@@ -354,7 +352,7 @@
           </div> -->
 
           <div class="mb-3">
-            <label for="categoriaInput" class="form-label">Nivel o Liga del Equipo</label>
+            <label for="categoriaInput" class="form-label">{{ 'LABELS.INICIO1' | translate }}</label>
             <input type="text" id="categoriaInput" class="form-control" formControlName="levelLeague"
               (input)="onInputNivel($event)" (blur)="ocultarDropdownConRetrasoNivel()" (focus)="mostrarDropdown2 = true"
               autocomplete="off" placeholder="Escribe el nivel de este equipo">
@@ -368,15 +366,15 @@
               <li *ngIf="categoriaNivel && categoriaNivel !== ''"
                 class="list-group-item list-group-item-action text-primary" style="cursor: pointer;"
                 (mousedown)="crearNivel(categoriaNivel)">
-                Seleccionar "{{ categoriaNivel }}"
+                {{ 'TITLES.SELECTED' | translate }} "{{ categoriaNivel }}"
               </li>
             </ul>
           </div>
 
           <div class="mb-3">
-            <label for="nombreEquipo" class="form-label">Letra del equipo:</label>
+            <label for="nombreEquipo" class="form-label">{{ 'LABELS.INICIO2' | translate }}:</label>
             <select class="form-select" id="nombreEquipo" name="nombreEquipo" formControlName="name">
-              <option value="">Sin letra</option>
+              <option value="">{{ 'SELECTS.NOLETTER' | translate }}</option>
               <option value="A">A</option>
               <option value="B">B</option>
               <option value="C">C</option>
@@ -394,7 +392,7 @@
           </div>
           <div class="modal-footer">
             <!-- Botón para guardar el nuevo equipo -->
-            <button type="submit" class="btn btn-success float-end">Guardar</button>
+            <button type="submit" class="btn btn-success float-end">{{ 'APP.BUTTONS.SAVE' | translate }}</button>
           </div>
         </form>
       </div>
@@ -408,34 +406,32 @@
     <div class="modal-content">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="stripeModalLabel">Sube la plantilla para cargar los jugadores</h5>
+          <h5 class="modal-title" id="stripeModalLabel">{{ 'PHRASES.INICIO4' | translate }}</h5>
           <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSubirJugadores()"></button>
         </div>
         <div class="modal-body">
-          <p>Solo es obligatorio rellenar el nombre, el resto de campos se podrían dejar vacíos. Descarga la plantilla
-            para poder rellenar los jugadores. Pulsa en <a href="https://appsphairatech.com/images/docs/Plantilla.xlsx"
+          <p>{{ 'PHRASES.INICIO5' | translate }} <a href="https://appsphairatech.com/images/docs/Plantilla.xlsx"
               download="Plantilla.xlsx">
-              descargar plantilla.
+              {{ 'APP.BUTTONS.DOWNLOADTEMPLATE' | translate }}
             </a></p>
           <div class="mb-3">
             <form [formGroup]="excelForm" class="form-upload" (ngSubmit)="uploadExcel()" enctype="multipart/form-data">
               <div class="mb-3" style="text-align: center;">
-                <h4>Sube tu archivo Excel</h4>
+                <h4>{{ 'TITLES.UPFILEEXCEL' | translate }}</h4>
                 <div class="form-group">
-                  <label for="excelFile">Seleccionar archivo en formato XLSX:</label>
+                  <label for="excelFile">{{ 'LABELS.SELECTEDFILEXLSX' | translate }}:</label>
                   <input type="file" id="excelFile" accept=".xlsx" (change)="onFileSelected($event)"
                     class="form-control-file">
-                  <div *ngIf="fileName" class="mt-2">Archivo seleccionado: {{ fileName }}</div>
+                  <div *ngIf="fileName" class="mt-2">{{ 'LABELS.FILESELECTED' | translate }}: {{ fileName }}</div>
                 </div>
-                <button *ngIf="showUploadButton" style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir
-                  archivo</button>
+                <button *ngIf="showUploadButton" style="margin-top: 1em;" type="submit" class="btn btn-primary">{{ 'APP.BUTTONS.UPFILE' | translate }}</button>
               </div>
             </form>
           </div>
           <div class="modal-footer">
             <!-- Botón para guardar el nuevo equipo -->
             <button type="submit" class="btn btn-success float-end"
-              (click)="cerrarModalSubirJugadores()">Cerrar</button>
+              (click)="cerrarModalSubirJugadores()">{{ 'APP.BUTTONS.CLOSE' | translate }}</button>
           </div>
         </div>
       </div>
@@ -449,33 +445,33 @@
     <div class="modal-content">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="stripeModalLabel">Sube la plantilla para cargar los jugadores</h5>
+          <h5 class="modal-title" id="stripeModalLabel">{{ 'PHRASES.INICIO6' | translate }}</h5>
           <button type="button" class="btn-close" aria-label="Close"
             (click)="cerrarModalSubirJugadoresGesDesk()"></button>
         </div>
         <div class="modal-body">
-          <p>Esto solo es para excel que han sido exportados desde la aplicación de GesDesk, cualquiero otra fallará.
+          <p>{{ 'PHRASES.INICIO7' | translate }}
           </p>
           <div class="mb-3">
             <form [formGroup]="excelForm" class="form-upload" (ngSubmit)="uploadExcelGesDesk()"
               enctype="multipart/form-data">
               <div class="mb-3" style="text-align: center;">
-                <h4>Sube tu archivo Excel</h4>
+                <h4>{{ 'TITLES.UPFILEEXCEL' | translate }}</h4>
                 <div class="form-group">
-                  <label for="excelFile">Seleccionar archivo en formato XLSX:</label>
+                  <label for="excelFile">{{ 'LABELS.SELECTEDFILEXLSX' | translate }}:</label>
                   <input type="file" id="excelFile" accept=".xlsx" (change)="onFileSelected($event)"
                     class="form-control-file">
-                  <div *ngIf="fileName" class="mt-2">Archivo seleccionado: {{ fileName }}</div>
+                  <div *ngIf="fileName" class="mt-2">{{ 'LABELS.FILESELECTED' | translate }}: {{ fileName }}</div>
                 </div>
                 <button *ngIf="showUploadButton" style="margin-top: 1em;" type="submit" class="btn btn-primary">Subir
-                  archivo</button>
+                  {{ 'APP.BUTTONS.UPFILE' | translate }}</button>
               </div>
             </form>
           </div>
           <div class="modal-footer">
             <!-- Botón para guardar el nuevo equipo -->
             <button type="submit" class="btn btn-success float-end"
-              (click)="cerrarModalSubirJugadoresGesDesk()">Cerrar</button>
+              (click)="cerrarModalSubirJugadoresGesDesk()">{{ 'APP.BUTTONS.CLOSE' | translate }}</button>
           </div>
         </div>
       </div>
@@ -490,27 +486,26 @@
       <div class="modal-body p-4">
         <div class="d-flex align-items-center mb-3">
           <span class="me-2">⚠️</span>
-          <h5 class="m-0 text-danger fw-bold">Atención</h5>
+          <h5 class="m-0 text-danger fw-bold">{{ 'TITLES.ATENTION' | translate }}</h5>
         </div>
 
         <p class="mb-3">
-          Este mensaje es solo para los entrenadores independientes, que no han sido invitados por un club.
+          {{ 'PHRASES.INICIO8' | translate }}
         </p>
         <p class="mb-3">
-          La gestión de tu suscripción solo puede realizarse desde el navegador web.
-          En la aplicación móvil no es posible modificar, renovar ni cancelar tu suscripción.
+          {{ 'PHRASES.INICIO9' | translate }}
         </p>
 
         <div class="form-check my-3">
           <input id="chkAceptoGestion" type="checkbox" class="form-check-input" [(ngModel)]="aceptoGestionNavegador" />
           <label class="form-check-label" for="chkAceptoGestion">
-            He leído y acepto que mi suscripción se gestiona desde el navegador
+            {{ 'PHRASES.INICIO10' | translate }}
           </label>
         </div>
 
         <div class="d-flex justify-content-end gap-2 mt-4">
-          <button type="button" class="btn btn-outline-secondary" (click)="closeModalConfirAndroid()">Cancelar</button>
-          <button type="button" class="btn btn-primary" (click)="onAceptarDescarga()">Aceptar</button>
+          <button type="button" class="btn btn-outline-secondary" (click)="closeModalConfirAndroid()">{{ 'APP.BUTTONS.CANCEL' | translate }}</button>
+          <button type="button" class="btn btn-primary" (click)="onAceptarDescarga()">{{ 'APP.BUTTONS.ACCEPT' | translate }}</button>
         </div>
       </div>
     </div>

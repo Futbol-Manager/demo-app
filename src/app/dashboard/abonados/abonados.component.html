@@ -4,7 +4,7 @@
             <div class="col">
                 <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
                     <i class="bi bi-arrow-left-square-fill"></i>
-                    <span class="d-none d-md-inline">{{ 'APP.NAV.BACK' | translate }}</span>
+                    <span class="d-none d-md-inline">{{ 'NAV.BACK' | translate }}</span>
                 </a>
             </div>
         </div>
@@ -13,16 +13,16 @@
 
 <div class="container mt-3" *ngIf="datosCargados">
     <div style="margin-top: 2em;">
-        <h2>{{ 'APP.SUBS.TITLE_TABLE' | translate }}</h2>
+        <h2>{{ 'SUBS.TITLE_TABLE' | translate }}</h2>
 
         <button class="btn btn-success" style="margin-bottom: 2em; margin-right: 2em;"
             (click)="openModalCreateUpdateAbonado()">
-            {{ 'APP.SUBS.CREATE' | translate }}
+            {{ 'SUBS.CREATE' | translate }}
         </button>
 
         <button class="btn btn-success" style="margin-bottom: 2em;" (click)="exportTableToExcel()">
             <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-            {{ 'APP.SUBS.DOWNLOAD_EXCEL' | translate }}
+            {{ 'SUBS.DOWNLOAD_EXCEL' | translate }}
         </button>
 
         <div class="row justify-content-between div-headdatatable">
@@ -34,17 +34,17 @@
             <table id="dataTable" class="table table-bordered table-striped text-center">
                 <thead class="table-custom">
                     <tr>
-                        <th>{{ 'APP.SUBS.TABLE.ID' | translate }}</th>
-                        <th>{{ 'APP.SUBS.TABLE.IMAGE' | translate }}</th>
-                        <th>{{ 'APP.SUBS.TABLE.NAME' | translate }}</th>
-                        <th>{{ 'APP.SUBS.TABLE.SURNAMES' | translate }}</th>
-                        <th>{{ 'APP.SUBS.TABLE.EMAIL' | translate }}</th>
-                        <th>{{ 'APP.SUBS.TABLE.PHONE' | translate }}</th>
-                        <th>{{ 'APP.SUBS.TABLE.STATUS' | translate }}</th>
-                        <th>{{ 'APP.SUBS.TABLE.FEE' | translate }}</th>
-                        <th>{{ 'APP.SUBS.TABLE.PAID' | translate }}</th>
-                        <th>{{ 'APP.SUBS.TABLE.REMAINING' | translate }}</th>
-                        <th>{{ 'APP.SUBS.TABLE.ACTIONS' | translate }}</th>
+                        <th>{{ 'SUBS.TABLE.ID' | translate }}</th>
+                        <th>{{ 'SUBS.TABLE.IMAGE' | translate }}</th>
+                        <th>{{ 'SUBS.TABLE.NAME' | translate }}</th>
+                        <th>{{ 'SUBS.TABLE.SURNAMES' | translate }}</th>
+                        <th>{{ 'SUBS.TABLE.EMAIL' | translate }}</th>
+                        <th>{{ 'SUBS.TABLE.PHONE' | translate }}</th>
+                        <th>{{ 'SUBS.TABLE.STATUS' | translate }}</th>
+                        <th>{{ 'SUBS.TABLE.FEE' | translate }}</th>
+                        <th>{{ 'SUBS.TABLE.PAID' | translate }}</th>
+                        <th>{{ 'SUBS.TABLE.REMAINING' | translate }}</th>
+                        <th>{{ 'SUBS.TABLE.ACTIONS' | translate }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -71,15 +71,15 @@
                         <td>
                             <ng-container *ngIf="abonadoTemp.estado === 0">
                                 <i class="bi bi-x-circle text-danger"
-                                    [attr.title]="'APP.SUBS.STATUS.NONE' | translate"></i>
+                                    [attr.title]="'SUBS.STATUS.NONE' | translate"></i>
                             </ng-container>
                             <ng-container *ngIf="abonadoTemp.estado === 1">
                                 <i class="bi bi-exclamation-triangle text-warning"
-                                    [attr.title]="'APP.SUBS.STATUS.PENDING' | translate"></i>
+                                    [attr.title]="'SUBS.STATUS.PENDING' | translate"></i>
                             </ng-container>
                             <ng-container *ngIf="abonadoTemp.estado === 2">
                                 <i class="bi bi-check-circle text-success"
-                                    [attr.title]="'APP.SUBS.STATUS.DONE' | translate"></i>
+                                    [attr.title]="'SUBS.STATUS.DONE' | translate"></i>
                             </ng-container>
                         </td>
 
@@ -89,15 +89,15 @@
 
                         <td>
                             <i class="bi bi-pencil" style="cursor: pointer;"
-                                [attr.title]="'APP.SUBS.ACTIONS.EDIT' | translate"
+                                [attr.title]="'SUBS.ACTIONS.EDIT' | translate"
                                 (click)="openModalUpdateAbonado(i)"></i>
 
                             <i class="bi bi-wallet2 ms-2" style="cursor: pointer;"
-                                [attr.title]="'APP.SUBS.ACTIONS.INSERT_PAY' | translate"
+                                [attr.title]="'SUBS.ACTIONS.INSERT_PAY' | translate"
                                 (click)="openModalPagoAbonado(i)"></i>
 
                             <i class="bi bi-clock-history ms-2" style="cursor: pointer;"
-                                [attr.title]="'APP.SUBS.ACTIONS.VIEW_HISTORY' | translate"
+                                [attr.title]="'SUBS.ACTIONS.VIEW_HISTORY' | translate"
                                 (click)="openModalHistorialPagos(i)"></i>
                         </td>
                     </tr>
@@ -113,14 +113,14 @@
     <table id="tablaExcel" class="table table-bordered table-striped text-center" #table1>
         <thead class="table-custom">
             <tr>
-                <th>{{ 'APP.SUBS.TABLE.NAME' | translate }}</th>
-                <th>{{ 'APP.SUBS.TABLE.SURNAMES' | translate }}</th>
-                <th>{{ 'APP.SUBS.TABLE.EMAIL' | translate }}</th>
-                <th>{{ 'APP.SUBS.TABLE.PHONE' | translate }}</th>
-                <th>{{ 'APP.SUBS.TABLE.STATUS' | translate }}</th>
-                <th>{{ 'APP.SUBS.TABLE.FEE' | translate }}</th>
-                <th>{{ 'APP.SUBS.TABLE.PAID' | translate }}</th>
-                <th>{{ 'APP.SUBS.TABLE.REMAINING' | translate }}</th>
+                <th>{{ 'SUBS.TABLE.NAME' | translate }}</th>
+                <th>{{ 'SUBS.TABLE.SURNAMES' | translate }}</th>
+                <th>{{ 'SUBS.TABLE.EMAIL' | translate }}</th>
+                <th>{{ 'SUBS.TABLE.PHONE' | translate }}</th>
+                <th>{{ 'SUBS.TABLE.STATUS' | translate }}</th>
+                <th>{{ 'SUBS.TABLE.FEE' | translate }}</th>
+                <th>{{ 'SUBS.TABLE.PAID' | translate }}</th>
+                <th>{{ 'SUBS.TABLE.REMAINING' | translate }}</th>
             </tr>
         </thead>
         <tbody>
@@ -131,13 +131,13 @@
                 <td>{{ abonadoTemp.abonado.telefono }}</td>
                 <td>
                     <ng-container *ngIf="abonadoTemp.estado === 0">
-                        {{ 'APP.SUBS.STATUS.NONE' | translate }}
+                        {{ 'SUBS.STATUS.NONE' | translate }}
                     </ng-container>
                     <ng-container *ngIf="abonadoTemp.estado === 1">
-                        {{ 'APP.SUBS.STATUS.PENDING' | translate }}
+                        {{ 'SUBS.STATUS.PENDING' | translate }}
                     </ng-container>
                     <ng-container *ngIf="abonadoTemp.estado === 2">
-                        {{ 'APP.SUBS.STATUS.DONE' | translate }}
+                        {{ 'SUBS.STATUS.DONE' | translate }}
                     </ng-container>
                 </td>
                 <td>{{ abonadoTemp.cuota }}</td>
@@ -154,7 +154,7 @@
         <div class="modal-content">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">{{ 'APP.SUBS.MODAL.TITLE' | translate }}</h5>
+                    <h5 class="modal-title" id="stripeModalLabel">{{ 'SUBS.MODAL.TITLE' | translate }}</h5>
                     <button type="button" class="btn-close" aria-label="Close"
                         (click)="cerrarModalCreateUpdateAbonado()"></button>
                 </div>
@@ -164,7 +164,7 @@
                             <div class="col-12 col-md-12">
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
-                                        <label><strong>{{ 'APP.SUBS.MODAL.DATA_LABEL' | translate }}</strong></label>
+                                        <label><strong>{{ 'SUBS.MODAL.DATA_LABEL' | translate }}</strong></label>
                                     </div>
                                 </div>
 
@@ -173,7 +173,7 @@
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="nombre"
                                                 name="nombre" [(ngModel)]="abonadoObj.nombre"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.NAME' | translate"
+                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.NAME' | translate"
                                                 #primerCampo>
                                         </div>
                                     </div>
@@ -181,7 +181,7 @@
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="apellido"
                                                 name="apellido" [(ngModel)]="abonadoObj.apellidos"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.SURNAMES' | translate">
+                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.SURNAMES' | translate">
                                         </div>
                                     </div>
                                 </div>
@@ -191,14 +191,14 @@
                                         <div class="form-group">
                                             <input type="date" class="form-control custom-input" id="fechaDeNacimiento"
                                                 name="fechaDeNacimiento" [(ngModel)]="abonadoObj.fechaDeNacimiento"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.BIRTHDATE' | translate">
+                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.BIRTHDATE' | translate">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-8">
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="dni" name="dni"
                                                 [(ngModel)]="abonadoObj.dni"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.DNI' | translate">
+                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.DNI' | translate">
                                         </div>
                                     </div>
                                 </div>
@@ -208,14 +208,14 @@
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="telefono"
                                                 name="telefono" [(ngModel)]="abonadoObj.telefono" maxlength="9"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.PHONE' | translate">
+                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.PHONE' | translate">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-8">
                                         <div class="form-group">
                                             <input type="mail" class="form-control custom-input" id="email" name="email"
                                                 [(ngModel)]="abonadoObj.mail"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.EMAIL' | translate">
+                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.EMAIL' | translate">
                                         </div>
                                     </div>
                                 </div>
@@ -225,11 +225,11 @@
                                         <div class="form-group">
                                             <select class="form-select input-register custom-input" id="genero"
                                                 name="genero" [(ngModel)]="abonadoObj.genero">
-                                                <option value="" disabled selected hidden>{{ 'APP.SUBS.MODAL.GENDER' |
+                                                <option value="" disabled selected hidden>{{ 'SUBS.MODAL.GENDER' |
                                                     translate }}</option>
-                                                <option value="M">{{ 'APP.SUBS.MODAL.GENDER_M' | translate }}</option>
-                                                <option value="F">{{ 'APP.SUBS.MODAL.GENDER_F' | translate }}</option>
-                                                <option value="O">{{ 'APP.SUBS.MODAL.GENDER_O' | translate }}</option>
+                                                <option value="M">{{ 'SUBS.MODAL.GENDER_M' | translate }}</option>
+                                                <option value="F">{{ 'SUBS.MODAL.GENDER_F' | translate }}</option>
+                                                <option value="O">{{ 'SUBS.MODAL.GENDER_O' | translate }}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -242,7 +242,7 @@
                             <div class="col-12 col-md-12">
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
-                                        <label><strong>{{ 'APP.SUBS.MODAL.FEE_SECTION' | translate }}</strong></label>
+                                        <label><strong>{{ 'SUBS.MODAL.FEE_SECTION' | translate }}</strong></label>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -250,7 +250,7 @@
                                         <div class="form-group">
                                             <input type="number" class="form-control custom-input" id="cuota"
                                                 name="cuota" [readOnly]="cuotaReadOnly" [(ngModel)]="cuotaAbonado"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FEE_PLACEHOLDER' | translate">
+                                                [attr.placeholder]="'SUBS.MODAL.FEE_PLACEHOLDER' | translate">
                                         </div>
                                     </div>
                                 </div>
@@ -259,7 +259,7 @@
 
                         <div class="modal-footer mt-3">
                             <button type="button" class="btn btn-success float-end" (click)="createUpdateAbonado()">
-                                {{ 'APP.BUTTONS.SAVE' | translate }}
+                                {{ 'BUTTONS.SAVE' | translate }}
                             </button>
                         </div>
                     </form>
@@ -276,7 +276,7 @@
         <div class="modal-content">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">{{ 'APP.SUBS.MODAL.TITLE' | translate }}</h5>
+                    <h5 class="modal-title" id="stripeModalLabel">{{ 'SUBS.MODAL.TITLE' | translate }}</h5>
                     <button type="button" class="btn-close" aria-label="Close" (click)="updateAbonado()"></button>
                 </div>
 
@@ -299,20 +299,20 @@
                                                     <span class="bi bi-person" style="font-size: 3rem;"></span>
                                                 </ng-container>
 
-                                                <h4>{{ 'APP.SUBS.MODAL.UPLOAD_TITLE' | translate }}</h4>
+                                                <h4>{{ 'SUBS.MODAL.UPLOAD_TITLE' | translate }}</h4>
 
                                                 <form (submit)="onSubmit(abonadoUpdate.abonado.abonadoId)"
                                                     enctype="multipart/form-data">
                                                     <div class="form-group">
-                                                        <p>{{ 'APP.SUBS.MODAL.SELECT_IMAGE_TEXT' | translate }}</p>
+                                                        <p>{{ 'SUBS.MODAL.SELECT_IMAGE_TEXT' | translate }}</p>
                                                         <input type="file" id="image" (change)="onFileSelected($event)">
                                                         <div *ngIf="showPreview" style="margin-top: 2em;">
                                                             <img [src]="imagePreviewUrl"
-                                                                [attr.alt]="'APP.SUBS.MODAL.IMAGE_PREVIEW_ALT' | translate"
+                                                                [attr.alt]="'SUBS.MODAL.IMAGE_PREVIEW_ALT' | translate"
                                                                 width="150" height="150" class="rounded-circle me-2">
                                                             <button *ngIf="showbtnupimg" style="margin-top: 1em;"
                                                                 type="submit" class="btn btn-success">
-                                                                {{ 'APP.SUBS.MODAL.UPLOAD_PHOTO' | translate }}
+                                                                {{ 'SUBS.MODAL.UPLOAD_PHOTO' | translate }}
                                                             </button>
                                                         </div>
                                                     </div>
@@ -328,7 +328,7 @@
 
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
-                                        <label><strong>{{ 'APP.SUBS.MODAL.EDIT_DATA_LABEL' | translate
+                                        <label><strong>{{ 'SUBS.MODAL.EDIT_DATA_LABEL' | translate
                                                 }}</strong></label>
                                     </div>
                                 </div>
@@ -338,7 +338,7 @@
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="nombre"
                                                 name="nombre" [(ngModel)]="abonadoUpdate.abonado.nombre"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.NAME' | translate"
+                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.NAME' | translate"
                                                 #primerCampo>
                                         </div>
                                     </div>
@@ -346,7 +346,7 @@
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="apellido"
                                                 name="apellido" [(ngModel)]="abonadoUpdate.abonado.apellidos"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.SURNAMES' | translate">
+                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.SURNAMES' | translate">
                                         </div>
                                     </div>
                                 </div>
@@ -357,14 +357,14 @@
                                             <input type="date" class="form-control custom-input" id="fechaDeNacimiento"
                                                 name="fechaDeNacimiento"
                                                 [(ngModel)]="abonadoUpdate.abonado.fechaDeNacimiento"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.BIRTHDATE' | translate">
+                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.BIRTHDATE' | translate">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-8">
                                         <div class="form-group">
                                             <input type="text" class="form-control custom-input" id="dni" name="dni"
                                                 [(ngModel)]="abonadoUpdate.abonado.dni"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.DNI' | translate">
+                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.DNI' | translate">
                                         </div>
                                     </div>
                                 </div>
@@ -375,14 +375,14 @@
                                             <input type="text" class="form-control custom-input" id="telefono"
                                                 name="telefono" [(ngModel)]="abonadoUpdate.abonado.telefono"
                                                 maxlength="9"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.PHONE' | translate">
+                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.PHONE' | translate">
                                         </div>
                                     </div>
                                     <div class="col-12 col-md-8">
                                         <div class="form-group">
                                             <input type="mail" class="form-control custom-input" id="email" name="email"
                                                 [(ngModel)]="abonadoUpdate.abonado.mail"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FIELDS.EMAIL' | translate">
+                                                [attr.placeholder]="'SUBS.MODAL.FIELDS.EMAIL' | translate">
                                         </div>
                                     </div>
                                 </div>
@@ -392,11 +392,11 @@
                                         <div class="form-group">
                                             <select class="form-select input-register custom-input" id="genero"
                                                 name="genero" [(ngModel)]="abonadoUpdate.abonado.genero">
-                                                <option value="" disabled selected hidden>{{ 'APP.SUBS.MODAL.GENDER' |
+                                                <option value="" disabled selected hidden>{{ 'SUBS.MODAL.GENDER' |
                                                     translate }}</option>
-                                                <option value="M">{{ 'APP.SUBS.MODAL.GENDER_M' | translate }}</option>
-                                                <option value="F">{{ 'APP.SUBS.MODAL.GENDER_F' | translate }}</option>
-                                                <option value="O">{{ 'APP.SUBS.MODAL.GENDER_O' | translate }}</option>
+                                                <option value="M">{{ 'SUBS.MODAL.GENDER_M' | translate }}</option>
+                                                <option value="F">{{ 'SUBS.MODAL.GENDER_F' | translate }}</option>
+                                                <option value="O">{{ 'SUBS.MODAL.GENDER_O' | translate }}</option>
                                             </select>
                                         </div>
                                     </div>
@@ -409,7 +409,7 @@
                             <div class="col-12 col-md-12">
                                 <div class="row mt-3">
                                     <div class="col-12 col-md-12">
-                                        <label><strong>{{ 'APP.SUBS.MODAL.FEE_SECTION' | translate }}</strong></label>
+                                        <label><strong>{{ 'SUBS.MODAL.FEE_SECTION' | translate }}</strong></label>
                                     </div>
                                 </div>
                                 <div class="row mt-3">
@@ -418,7 +418,7 @@
                                             <input type="number" class="form-control custom-input" id="cuota"
                                                 name="cuota" [readOnly]="cuotaReadOnly"
                                                 [(ngModel)]="abonadoUpdate.cuota"
-                                                [attr.placeholder]="'APP.SUBS.MODAL.FEE_PLACEHOLDER' | translate">
+                                                [attr.placeholder]="'SUBS.MODAL.FEE_PLACEHOLDER' | translate">
                                         </div>
                                     </div>
                                 </div>
@@ -438,40 +438,40 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="standard-modalLabel">{{ 'APP.SUBS.PAY.TITLE' | translate }}</h5>
+                <h5 class="modal-title" id="standard-modalLabel">{{ 'SUBS.PAY.TITLE' | translate }}</h5>
                 <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalAgregarPago()"></button>
             </div>
             <div class="modal-body">
-                <p [innerHTML]="'APP.SUBS.PAY.INFO' | translate:{ name: textoInfoNameAbonado }"></p>
+                <p [innerHTML]="'SUBS.PAY.INFO' | translate:{ name: textoInfoNameAbonado }"></p>
 
                 <form (ngSubmit)="createPagoAbonado()">
                     <div class="row mb-3">
                         <div class="col">
-                            <p style="color: red;">{{ 'APP.SUBS.PAY.ONLY_INTEGER_NOTICE' | translate }}</p>
+                            <p style="color: red;">{{ 'SUBS.PAY.ONLY_INTEGER_NOTICE' | translate }}</p>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label for="cantidad" class="form-label">{{ 'APP.SUBS.PAY.AMOUNT' | translate }}</label>
+                            <label for="cantidad" class="form-label">{{ 'SUBS.PAY.AMOUNT' | translate }}</label>
                             <input type="number" class="form-control" id="cantidad" name="cantidad"
                                 [(ngModel)]="agregarPago.cantidad">
                         </div>
                         <div class="col-6">
-                            <label for="metodo" class="form-label">{{ 'APP.SUBS.PAY.METHOD' | translate }}</label>
+                            <label for="metodo" class="form-label">{{ 'SUBS.PAY.METHOD' | translate }}</label>
                             <select class="form-control" id="metodo" name="metodo" [(ngModel)]="agregarPago.metodo">
-                                <option value="Tarjeta">{{ 'APP.SUBS.PAY.METHODS.CARD' | translate }}</option>
-                                <option value="Efectivo">{{ 'APP.SUBS.PAY.METHODS.CASH' | translate }}</option>
-                                <option value="Transferencia">{{ 'APP.SUBS.PAY.METHODS.TRANSFER' | translate }}</option>
-                                <option value="Bizum">{{ 'APP.SUBS.PAY.METHODS.BIZUM' | translate }}</option>
-                                <option value="Otro">{{ 'APP.SUBS.PAY.METHODS.OTHER' | translate }}</option>
+                                <option value="Tarjeta">{{ 'SUBS.PAY.METHODS.CARD' | translate }}</option>
+                                <option value="Efectivo">{{ 'SUBS.PAY.METHODS.CASH' | translate }}</option>
+                                <option value="Transferencia">{{ 'SUBS.PAY.METHODS.TRANSFER' | translate }}</option>
+                                <option value="Bizum">{{ 'SUBS.PAY.METHODS.BIZUM' | translate }}</option>
+                                <option value="Otro">{{ 'SUBS.PAY.METHODS.OTHER' | translate }}</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label for="fecha" class="form-label">{{ 'APP.SUBS.PAY.DATE' | translate }}</label>
+                            <label for="fecha" class="form-label">{{ 'SUBS.PAY.DATE' | translate }}</label>
                             <input type="date" class="form-control" id="fecha" name="fecha"
                                 [(ngModel)]="agregarPago.fechaPago">
                         </div>
@@ -479,7 +479,7 @@
 
                     <div class="row mb-3">
                         <div class="col-12">
-                            <label for="comentario" class="form-label">{{ 'APP.SUBS.PAY.COMMENT' | translate }}</label>
+                            <label for="comentario" class="form-label">{{ 'SUBS.PAY.COMMENT' | translate }}</label>
                             <textarea class="form-control" id="comentario" name="comentario"
                                 [(ngModel)]="agregarPago.comentario" rows="5"></textarea>
                         </div>
@@ -487,13 +487,13 @@
 
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success float-end">
-                            {{ 'APP.BUTTONS.SAVE' | translate }}
+                            {{ 'BUTTONS.SAVE' | translate }}
                         </button>
                     </div>
 
                     <div class="mb-3 d-flex">
                         <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
-                            {{ 'APP.SUBS.PAY.SAVED_OK' | translate }}
+                            {{ 'SUBS.PAY.SAVED_OK' | translate }}
                         </div>
                     </div>
                 </form>
@@ -508,7 +508,7 @@
         <div class="modal-content">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">{{ 'APP.SUBS.HISTORY.TITLE' | translate }}</h5>
+                    <h5 class="modal-title" id="stripeModalLabel">{{ 'SUBS.HISTORY.TITLE' | translate }}</h5>
                     <button type="button" class="btn-close" aria-label="Close"
                         (click)="cerrarModalHistorialPagos()"></button>
                 </div>
@@ -517,11 +517,11 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>{{ 'APP.SUBS.HISTORY.AMOUNT' | translate }}</th>
-                                    <th>{{ 'APP.SUBS.HISTORY.DATE' | translate }}</th>
-                                    <th>{{ 'APP.SUBS.HISTORY.METHOD' | translate }}</th>
-                                    <th>{{ 'APP.SUBS.HISTORY.COMMENT' | translate }}</th>
-                                    <th>{{ 'APP.SUBS.HISTORY.REFUND' | translate }}</th>
+                                    <th>{{ 'SUBS.HISTORY.AMOUNT' | translate }}</th>
+                                    <th>{{ 'SUBS.HISTORY.DATE' | translate }}</th>
+                                    <th>{{ 'SUBS.HISTORY.METHOD' | translate }}</th>
+                                    <th>{{ 'SUBS.HISTORY.COMMENT' | translate }}</th>
+                                    <th>{{ 'SUBS.HISTORY.REFUND' | translate }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -532,7 +532,7 @@
                                     <td>{{ pago.comentario }}</td>
                                     <td>
                                         <button *ngIf="!pago.cantidad.includes('-')" class="btn btn-warning"
-                                            [attr.title]="'APP.SUBS.HISTORY.REFUND_TITLE' | translate"
+                                            [attr.title]="'SUBS.HISTORY.REFUND_TITLE' | translate"
                                             (click)="confirmReturnPay(pago)">
                                             <span class="bi bi-arrow-counterclockwise btn-danger"></span>
                                         </button>
@@ -544,7 +544,7 @@
 
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-success float-end" (click)="cerrarModalHistorialPagos()">
-                            {{ 'APP.BUTTONS.CLOSE' | translate }}
+                            {{ 'BUTTONS.CLOSE' | translate }}
                         </button>
                     </div>
 
