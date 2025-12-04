@@ -124,11 +124,11 @@
                             (click)="openPartido(dia.matchPreparationId, dia.daysession)">
 
                             <!-- Icono si es Local -->
-                            <img *ngIf="dia.terreno === 'Local'" src="assets/iconos/home.svg" alt="{ 'CAL.TEXT_001' | translate }" width="16"
+                            <img *ngIf="dia.terreno === 'Local'" src="assets/iconos/home.svg" alt="{{ 'CAL.TEXT_001' | translate }}" width="16"
                               height="16" />
 
                             <!-- Icono si es Visitante -->
-                            <img *ngIf="dia.terreno === 'Visitante'" src="assets/iconos/travel.svg" alt="{ 'CAL.TEXT_002' | translate }"
+                            <img *ngIf="dia.terreno === 'Visitante'" src="assets/iconos/travel.svg" alt="{{ 'CAL.TEXT_002' | translate }}"
                               width="16" height="16" />
 
                             {{ dia.rivalName }}
@@ -176,7 +176,7 @@
             <div class="col-12 col-md-6 mb-4">
               <div id="entrenamiento" class="card selection-card" [ngClass]="{'selected': selected === 'entrenamiento'}"
                 (click)="select('entrenamiento')">
-                <img src="/assets/iconos/futbol.svg" class="card-img-top mx-auto d-block p-3" alt="{ 'CAL.TEXT_003' | translate }">
+                <img src="/assets/iconos/futbol.svg" class="card-img-top mx-auto d-block p-3" alt="{{ 'CAL.TEXT_003' | translate }}">
                 <div class="card-body text-center">
                   <h5 class="card-title">{{ 'CAL.TEXT_062' | translate }}</h5>
                 </div>
@@ -185,7 +185,7 @@
             <div class="col-12 col-md-6 mb-4">
               <div id="partido" class="card selection-card" [ngClass]="{'selected': selected === 'partido'}"
                 (click)="select('partido')">
-                <img src="/assets/iconos/juego.svg" class="card-img-top mx-auto d-block p-3" alt="{ 'CAL.TEXT_004' | translate }">
+                <img src="/assets/iconos/juego.svg" class="card-img-top mx-auto d-block p-3" alt="{{ 'CAL.TEXT_004' | translate }}">
                 <div class="card-body text-center">
                   <h5 class="card-title">{{ 'CAL.TEXT_066' | translate }}</h5>
                 </div>
@@ -326,7 +326,7 @@
                 <div class="col-12 col-md-12 mt-3">
                   <label for="equipacion" class="form-label">{{ 'CAL.TEXT_084' | translate }}</label>
                   <textarea class="form-control custom-input" id="equipacion" rows="2" name="equipacion"
-                    placeholder="{ 'CAL.TEXT_005' | translate }"
+                    placeholder="{{ 'CAL.TEXT_005' | translate }}"
                     [(ngModel)]="match.equipacion"></textarea>
                 </div>
               </div>
@@ -341,16 +341,16 @@
               <div class="row text-center mt-3">
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="puntosFuertesRival" rows="2" name="puntosFuertesRival"
-                    [(ngModel)]="match.puntosFuertesRival" placeholder="{ 'CAL.TEXT_006' | translate }"></textarea>
+                    [(ngModel)]="match.puntosFuertesRival" placeholder="{{ 'CAL.TEXT_006' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="puntosDebilesRival" rows="2" name="puntosDebilesRival"
-                    [(ngModel)]="match.puntosDebilesRival" placeholder="{ 'CAL.TEXT_007' | translate }"></textarea>
+                    [(ngModel)]="match.puntosDebilesRival" placeholder="{{ 'CAL.TEXT_007' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="jugadoresClaveRival" rows="2"
                     name="jugadoresClaveRival" [(ngModel)]="match.jugadoresClaveRival"
-                    placeholder="{ 'CAL.TEXT_008' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_008' | translate }}"></textarea>
                 </div>
               </div>
 
@@ -359,17 +359,17 @@
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="estiloJuegoRival" rows="2" name="estiloJuegoRival"
                     [(ngModel)]="match.estiloJuegoRival"
-                    placeholder="{ 'CAL.TEXT_009' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_009' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="ultimosResultadosRival" rows="2"
                     name="ultimosResultadosRival" [(ngModel)]="match.ultimosResultadosRival"
-                    placeholder="{ 'CAL.TEXT_010' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_010' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="formacionesRecientesRival" rows="2"
                     name="formacionesRecientesRival" [(ngModel)]="match.formacionesRecientesRival"
-                    placeholder="{ 'CAL.TEXT_011' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_011' | translate }}"></textarea>
                 </div>
               </div>
 
@@ -378,17 +378,17 @@
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="patronesOfensivosRival" rows="2"
                     name="patronesOfensivosRival" [(ngModel)]="match.patronesOfensivosRival"
-                    placeholder="{ 'CAL.TEXT_012' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_012' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="patronesDefensivosRival" rows="2"
                     name="patronesDefensivosRival" [(ngModel)]="match.patronesDefensivosRival"
-                    placeholder="{ 'CAL.TEXT_013' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_013' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="estadisticasRival" rows="2" name="estadisticasRival"
                     [(ngModel)]="match.estadisticasRival"
-                    placeholder="{ 'CAL.TEXT_014' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_014' | translate }}"></textarea>
                 </div>
               </div>
 
@@ -396,16 +396,16 @@
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="tendenciasTacticasRival" rows="2"
                     name="tendenciasTacticasRival" [(ngModel)]="match.tendenciasTacticasRival"
-                    placeholder="{ 'CAL.TEXT_015' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_015' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="datosIndividualesRival" rows="2"
                     name="datosIndividualesRival" [(ngModel)]="match.datosIndividualesRival"
-                    placeholder="{ 'CAL.TEXT_016' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_016' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="abpsRival" rows="2" name="abpsRival"
-                    [(ngModel)]="match.abpsRival" placeholder="{ 'CAL.TEXT_017' | translate }"></textarea>
+                    [(ngModel)]="match.abpsRival" placeholder="{{ 'CAL.TEXT_017' | translate }}"></textarea>
                 </div>
               </div>
 
@@ -429,17 +429,17 @@
               <div class="row text-center mt-3">
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="formacionInicial" rows="2" name="formacionInicial"
-                    [(ngModel)]="match.formacionInicial" placeholder="{ 'CAL.TEXT_018' | translate }"></textarea>
+                    [(ngModel)]="match.formacionInicial" placeholder="{{ 'CAL.TEXT_018' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="planJuegoAtaque" rows="2" name="planJuegoAtaque"
                     [(ngModel)]="match.planJuegoAtaque"
-                    placeholder="{ 'CAL.TEXT_019' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_019' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="planJuegoDefensa" rows="2" name="planJuegoDefensa"
                     [(ngModel)]="match.planJuegoDefensa"
-                    placeholder="{ 'CAL.TEXT_020' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_020' | translate }}"></textarea>
                 </div>
               </div>
 
@@ -447,17 +447,17 @@
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="transicionesOfensivas" rows="2"
                     name="transicionesOfensivas" [(ngModel)]="match.transicionesOfensivas"
-                    placeholder="{ 'CAL.TEXT_021' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_021' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="transicionesDefensivas" rows="2"
                     name="transicionesDefensivas" [(ngModel)]="match.transicionesDefensivas"
-                    placeholder="{ 'CAL.TEXT_022' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_022' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="abpsOfensivas" rows="2" name="abpsOfensivas"
                     [(ngModel)]="match.abpsOfensivas"
-                    placeholder="{ 'CAL.TEXT_023' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_023' | translate }}"></textarea>
                 </div>
               </div>
 
@@ -465,17 +465,17 @@
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="abpsDefensivas" rows="2" name="abpsDefensivas"
                     [(ngModel)]="match.abpsDefensivas"
-                    placeholder="{ 'CAL.TEXT_024' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_024' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="rolesEspecificos" rows="2" name="rolesEspecificos"
                     [(ngModel)]="match.rolesEspecificos"
-                    placeholder="{ 'CAL.TEXT_025' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_025' | translate }}"></textarea>
                 </div>
                 <div class="col-12 col-md-4 mt-3">
                   <textarea class="form-control custom-input" id="ajustesTacticos" rows="2" name="ajustesTacticos"
                     [(ngModel)]="match.ajustesTacticos"
-                    placeholder="{ 'CAL.TEXT_026' | translate }"></textarea>
+                    placeholder="{{ 'CAL.TEXT_026' | translate }}"></textarea>
                 </div>
               </div>
               <div class="row text-center mt-3">
@@ -659,7 +659,7 @@
             <div class="col-12 col-md-12 mt-3">
               <label for="equipacion" class="form-label">{{ 'CAL.TEXT_084' | translate }}</label>
               <textarea class="form-control custom-input" id="equipacion" rows="2" name="equipacion"
-                placeholder="{ 'CAL.TEXT_005' | translate }" [(ngModel)]="match.equipacion"></textarea>
+                placeholder="{{ 'CAL.TEXT_005' | translate }}" [(ngModel)]="match.equipacion"></textarea>
             </div>
           </div>
           <div class="row text-center mt-3">
@@ -764,66 +764,66 @@
           <div class="row text-center mt-3">
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="puntosFuertesRival" rows="2" name="puntosFuertesRival"
-                [(ngModel)]="match.puntosFuertesRival" placeholder="{ 'CAL.TEXT_006' | translate }"></textarea>
+                [(ngModel)]="match.puntosFuertesRival" placeholder="{{ 'CAL.TEXT_006' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="puntosDebilesRival" rows="2" name="puntosDebilesRival"
-                [(ngModel)]="match.puntosDebilesRival" placeholder="{ 'CAL.TEXT_007' | translate }"></textarea>
+                [(ngModel)]="match.puntosDebilesRival" placeholder="{{ 'CAL.TEXT_007' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="jugadoresClaveRival" rows="2" name="jugadoresClaveRival"
                 [(ngModel)]="match.jugadoresClaveRival"
-                placeholder="{ 'CAL.TEXT_008' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_008' | translate }}"></textarea>
             </div>
           </div>
           <div class="row text-center mt-3">
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="estiloJuegoRival" rows="2" name="estiloJuegoRival"
                 [(ngModel)]="match.estiloJuegoRival"
-                placeholder="{ 'CAL.TEXT_009' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_009' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="ultimosResultadosRival" rows="2"
                 name="ultimosResultadosRival" [(ngModel)]="match.ultimosResultadosRival"
-                placeholder="{ 'CAL.TEXT_010' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_010' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="formacionesRecientesRival" rows="2"
                 name="formacionesRecientesRival" [(ngModel)]="match.formacionesRecientesRival"
-                placeholder="{ 'CAL.TEXT_011' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_011' | translate }}"></textarea>
             </div>
           </div>
           <div class="row text-center mt-3">
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="patronesOfensivosRival" rows="2"
                 name="patronesOfensivosRival" [(ngModel)]="match.patronesOfensivosRival"
-                placeholder="{ 'CAL.TEXT_012' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_012' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="patronesDefensivosRival" rows="2"
                 name="patronesDefensivosRival" [(ngModel)]="match.patronesDefensivosRival"
-                placeholder="{ 'CAL.TEXT_013' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_013' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="estadisticasRival" rows="2" name="estadisticasRival"
                 [(ngModel)]="match.estadisticasRival"
-                placeholder="{ 'CAL.TEXT_014' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_014' | translate }}"></textarea>
             </div>
           </div>
           <div class="row text-center mt-3">
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="tendenciasTacticasRival" rows="2"
                 name="tendenciasTacticasRival" [(ngModel)]="match.tendenciasTacticasRival"
-                placeholder="{ 'CAL.TEXT_015' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_015' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="datosIndividualesRival" rows="2"
                 name="datosIndividualesRival" [(ngModel)]="match.datosIndividualesRival"
-                placeholder="{ 'CAL.TEXT_016' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_016' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="abpsRival" rows="2" name="abpsRival"
-                [(ngModel)]="match.abpsRival" placeholder="{ 'CAL.TEXT_017' | translate }"></textarea>
+                [(ngModel)]="match.abpsRival" placeholder="{{ 'CAL.TEXT_017' | translate }}"></textarea>
             </div>
           </div>
           <div class="row text-center mt-3">
@@ -843,17 +843,17 @@
           <div class="row text-center mt-3">
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="formacionInicial" rows="2" name="formacionInicial"
-                [(ngModel)]="match.formacionInicial" placeholder="{ 'CAL.TEXT_018' | translate }"></textarea>
+                [(ngModel)]="match.formacionInicial" placeholder="{{ 'CAL.TEXT_018' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="planJuegoAtaque" rows="2" name="planJuegoAtaque"
                 [(ngModel)]="match.planJuegoAtaque"
-                placeholder="{ 'CAL.TEXT_019' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_019' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="planJuegoDefensa" rows="2" name="planJuegoDefensa"
                 [(ngModel)]="match.planJuegoDefensa"
-                placeholder="{ 'CAL.TEXT_020' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_020' | translate }}"></textarea>
             </div>
           </div>
 
@@ -861,34 +861,34 @@
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="transicionesOfensivas" rows="2"
                 name="transicionesOfensivas" [(ngModel)]="match.transicionesOfensivas"
-                placeholder="{ 'CAL.TEXT_021' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_021' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="transicionesDefensivas" rows="2"
                 name="transicionesDefensivas" [(ngModel)]="match.transicionesDefensivas"
-                placeholder="{ 'CAL.TEXT_022' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_022' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="abpsOfensivas" rows="2" name="abpsOfensivas"
                 [(ngModel)]="match.abpsOfensivas"
-                placeholder="{ 'CAL.TEXT_027' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_027' | translate }}"></textarea>
             </div>
           </div>
           <div class="row text-center mt-3">
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="abpsDefensivas" rows="2" name="abpsDefensivas"
                 [(ngModel)]="match.abpsDefensivas"
-                placeholder="{ 'CAL.TEXT_024' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_024' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="rolesEspecificos" rows="2" name="rolesEspecificos"
                 [(ngModel)]="match.rolesEspecificos"
-                placeholder="{ 'CAL.TEXT_025' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_025' | translate }}"></textarea>
             </div>
             <div class="col-12 col-md-4 mt-3">
               <textarea class="form-control custom-input" id="ajustesTacticos" rows="2" name="ajustesTacticos"
                 [(ngModel)]="match.ajustesTacticos"
-                placeholder="{ 'CAL.TEXT_026' | translate }"></textarea>
+                placeholder="{{ 'CAL.TEXT_026' | translate }}"></textarea>
             </div>
           </div>
         </div>
@@ -3202,7 +3202,7 @@
                 <div class="col-12 col-md d-flex align-items-center justify-content-center justify-content-md-start">
                   <div class="form-check form-switch">
                     <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
-                      [checked]="toggleVisible === 1" title="{ 'CAL.TEXT_028' | translate }"
+                      [checked]="toggleVisible === 1" title="{{ 'CAL.TEXT_028' | translate }}"
                       (change)="onChangeToggle($event, trainingSession.trainingSessionId)">
                     <label class="form-check-label ms-2">{{ 'CAL.TEXT_102' | translate }}</label>
                   </div>
@@ -3256,37 +3256,37 @@
                 <div class="row text-center mt-3">
                   <div class="col-12 col-md-4 mt-3">
                     <input class="form-control custom-input" id="slogans" rows="5" [(ngModel)]="nuevaTarea.slogans"
-                      name="slogans" placeholder="{ 'CAL.TEXT_029' | translate }" />
+                      name="slogans" placeholder="{{ 'CAL.TEXT_029' | translate }}" />
                   </div>
                   <div class="col-12 col-md-2 mt-3 ">
                     <input class="form-control custom-input" id="worktime" rows="5" [(ngModel)]="nuevaTarea.worktime"
-                      name="worktime" placeholder="{ 'CAL.TEXT_030' | translate }" />
+                      name="worktime" placeholder="{{ 'CAL.TEXT_030' | translate }}" />
                   </div>
                   <div class="col-12 col-md-2 mt-3 ">
                     <input class="form-control custom-input" id="space" rows="5" [(ngModel)]="nuevaTarea.space"
-                      name="space" placeholder="{ 'CAL.TEXT_031' | translate }" />
+                      name="space" placeholder="{{ 'CAL.TEXT_031' | translate }}" />
                   </div>
                 </div>
 
                 <div class="row text-center mt-3">
                   <div class="col-12 col-md-4 mt-3">
                     <textarea class="form-control custom-input" id="description" rows="5"
-                      [(ngModel)]="nuevaTarea.description" name="description" placeholder="{ 'CAL.TEXT_032' | translate }"></textarea>
+                      [(ngModel)]="nuevaTarea.description" name="description" placeholder="{{ 'CAL.TEXT_032' | translate }}"></textarea>
                   </div>
                   <div class="col-12 col-md-4 mt-3 ">
                     <textarea class="form-control custom-input" id="rules" rows="5" [(ngModel)]="nuevaTarea.rules"
-                      name="rules" placeholder="{ 'CAL.TEXT_033' | translate }"></textarea>
+                      name="rules" placeholder="{{ 'CAL.TEXT_033' | translate }}"></textarea>
                   </div>
                   <div class="col-12 col-md-4 mt-3 ">
                     <textarea class="form-control custom-input" id="variants" rows="5" [(ngModel)]="nuevaTarea.variants"
-                      name="variants" placeholder="{ 'CAL.TEXT_034' | translate }"></textarea>
+                      name="variants" placeholder="{{ 'CAL.TEXT_034' | translate }}"></textarea>
                   </div>
                 </div>
 
                 <div class="row text-center mt-3">
                   <div class="col-12 col-md-4 mt-3">
                     <input class="form-control custom-input" id="material" [(ngModel)]="nuevaTarea.material"
-                      name="material" placeholder="{ 'CAL.TEXT_035' | translate }" />
+                      name="material" placeholder="{{ 'CAL.TEXT_035' | translate }}" />
                   </div>
                   <div class="col-12 col-md-4 mt-3 ">
                     <select class="form-control custom-input" id="estrategia" [(ngModel)]="nuevaTarea.estrategia"
@@ -3307,7 +3307,7 @@
                 <div class="row text-center mt-3">
                   <div class="col-12 col-md-4 mt-3">
                     <textarea class="form-control custom-input" id="video" rows="3" [(ngModel)]="nuevaTarea.video"
-                      name="video" placeholder="{ 'CAL.TEXT_036' | translate }"></textarea>
+                      name="video" placeholder="{{ 'CAL.TEXT_036' | translate }}"></textarea>
                   </div>
                   <div class="col-12 col-md-4 mt-3 ">
                   </div>
@@ -3344,11 +3344,11 @@
                   <div *ngIf="tarea.imagenBoard">
                     <img [src]="imageBaseUrlTask + tarea.imagenBoard" class="card-img-top"
                       onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'"
-                      alt="{ 'CAL.TEXT_037' | translate }">
+                      alt="{{ 'CAL.TEXT_037' | translate }}">
                   </div>
                   <div *ngIf="!tarea.imagenBoard">
                     <img [src]="'https://appsphairatech.com/images/task-board/blank.png'" class="card-img-top"
-                      alt="{ 'CAL.TEXT_038' | translate }">
+                      alt="{{ 'CAL.TEXT_038' | translate }}">
                   </div>
 
                   <!-- Contenido de la tarjeta -->
@@ -3665,7 +3665,7 @@
               <h4>{{ 'CAL.TEXT_243' | translate }}</h4>
               <div class="mb-3">
                 <label for="q10" class="form-label">{{ 'CAL.TEXT_244' | translate }}</label>
-                <textarea placeholder="{ 'CAL.TEXT_039' | translate }" class="form-control" id="q10" rows="5"
+                <textarea placeholder="{{ 'CAL.TEXT_039' | translate }}" class="form-control" id="q10" rows="5"
                   [(ngModel)]="respPostEntreno.q10" name="q10"></textarea>
               </div>
               <h4>{{ 'CAL.TEXT_245' | translate }}</h4>
@@ -3793,7 +3793,7 @@
               <h4>{{ 'CAL.TEXT_206' | translate }}</h4>
               <div class="mb-3">
                 <label for="q7" class="form-label">{{ 'CAL.TEXT_250' | translate }}</label>
-                <textarea placeholder="{ 'CAL.TEXT_040' | translate }" class="form-control" id="q7" rows="5"
+                <textarea placeholder="{{ 'CAL.TEXT_040' | translate }}" class="form-control" id="q7" rows="5"
                   [(ngModel)]="respPrePartido.q7" name="q7"></textarea>
               </div>
               <h4>{{ 'CAL.TEXT_208' | translate }}</h4>
@@ -3842,7 +3842,7 @@
               <h4>{{ 'CAL.TEXT_251' | translate }}</h4>
               <div class="mb-3">
                 <label for="q12" class="form-label">{{ 'CAL.TEXT_252' | translate }}</label>
-                <textarea placeholder="{ 'CAL.TEXT_041' | translate }" class="form-control" id="q12" rows="5"
+                <textarea placeholder="{{ 'CAL.TEXT_041' | translate }}" class="form-control" id="q12" rows="5"
                   [(ngModel)]="respPrePartido.q12" name="q12"></textarea>
               </div>
               <h4>{{ 'CAL.TEXT_214' | translate }}</h4>
@@ -4191,11 +4191,11 @@
             <br>
             <!-- <img *ngIf="tareaSeleccionada?.imagenBoard"
             [src]="'https://appsphairatech.com/images/task-board/' + tareaSeleccionada.imagenBoard"
-            alt="{ 'CAL.TEXT_037' | translate }" class="img-fluid">
+            alt="{{ 'CAL.TEXT_037' | translate }}" class="img-fluid">
            Mostrar la imagen si tarea.imagenBoard tiene un valor -->
             <div [id]="'div_tarea_' + tareaSeleccionada?.taskId">
               <img class="imgBoard" *ngIf="tareaSeleccionada?.imagenBoard"
-                [src]="imageBaseUrlTask + tareaSeleccionada?.imagenBoard" alt="{ 'CAL.TEXT_037' | translate }"
+                [src]="imageBaseUrlTask + tareaSeleccionada?.imagenBoard" alt="{{ 'CAL.TEXT_037' | translate }}"
                 [id]="'imagen_tarea_' + tareaSeleccionada?.taskId"
                 onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'">
             </div>
@@ -4331,7 +4331,7 @@
               <!-- Toggle de visibilidad del partido -->
               <div class="form-check form-switch ms-sm-3 mt-2 mt-sm-0">
                 <input class="form-check-input custom-input" type="checkbox" id="toggleVisible"
-                  [checked]="playerAsistencia == true" title="{ 'CAL.TEXT_042' | translate }"
+                  [checked]="playerAsistencia == true" title="{{ 'CAL.TEXT_042' | translate }}"
                   (change)="onChangeToggleAsistencia(match.matchPreparationId)">
                 <label class="form-check-label">{{ 'CAL.TEXT_324' | translate }}</label>
               </div>
@@ -4342,7 +4342,7 @@
             <div class="col-12">
               <label for="motivoNoAsistencia" class="form-label">{{ 'CAL.TEXT_325' | translate }}</label>
               <textarea id="motivoNoAsistencia" class="form-control custom-input" [(ngModel)]="motivoNoAsistencia"
-                rows="3" placeholder="{ 'CAL.TEXT_043' | translate }"></textarea>
+                rows="3" placeholder="{{ 'CAL.TEXT_043' | translate }}"></textarea>
             </div>
           </div>
 
@@ -4428,8 +4428,8 @@
           <button (click)="generatePDF()">{{ 'CAL.TEXT_329' | translate }}</button>
           <div id="pdf-content">
             <div class="header">
-              <img src="assets/images/Logo_SphairaTech_1.png" alt="{ 'CAL.TEXT_044' | translate }" style="width: 300px" />
-              <img [src]="match2.imgClub" alt="{ 'CAL.TEXT_045' | translate }" class="club-logo"
+              <img src="assets/images/Logo_SphairaTech_1.png" alt="{{ 'CAL.TEXT_044' | translate }}" style="width: 300px" />
+              <img [src]="match2.imgClub" alt="{{ 'CAL.TEXT_045' | translate }}" class="club-logo"
                 onerror="this.src='assets/images/512.png'" />
             </div>
 

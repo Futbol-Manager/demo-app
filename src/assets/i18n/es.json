@@ -73,7 +73,7 @@
         "DOCUMENTS": "Documentos",
         "CUADRO": "Cuadro Mando Deportivo",
         "PAYS": "Cuotas",
-        "NEWPAYS": "New",
+        "NEWPAYS": "Pagos",
         "CLOTHES": "Ropa",
         "SPONSORS": "Patrocinadores",
         "NOTIFICATIONS": "Notificaciones",
@@ -603,6 +603,7 @@
         "TEXT_359": "Úlimos 5",
         "TEXT_360": "Acta del partido",
         "TEXT_361": "Tarjetas",
-        "TEXT_362": "Los datos de competiciones mostrados proceden de fuentes públicas de la Federación de Fútbol. Sphaira solo reproduce información disponible públicamente y no es responsable de su exactitud ni de su actualización."
+        "TEXT_362": "Los datos de competiciones mostrados proceden de fuentes públicas de la Federación de Fútbol. Sphaira solo reproduce información disponible públicamente y no es responsable de su exactitud ni de su actualización.",
+        "TEXT_363": "Se ha eliminado el pago, pero existen registros en el historial, se eliminan todos los registros realizados de ese pago."
     }
 }

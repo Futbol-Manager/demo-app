@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
+import * as bootstrap from 'bootstrap';
 
 @Component({
   selector: 'app-clasificacion-resultados',
@@ -51,16 +53,19 @@ export class ClasificacionResultadosComponent implements OnInit {
   teamId = 0;
 
   showModalActa = false;
+  showModalActa2 = false;
   actaSeleccionada: any = null;
   codGrupo = '';
   codCompeticion = '';
   loading = true;
 
+  urlActa: SafeResourceUrl = '';
+
   constructor(
     private location: Location,
-    private router: Router,
     private route: ActivatedRoute,
-    private clubService: ClubService) { }
+    private clubService: ClubService,
+    private sanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
@@ -81,7 +86,7 @@ export class ClasificacionResultadosComponent implements OnInit {
           const list: any = response;
           this.equipos = list.clasificacion;
           this.loadResults(jornada);
-          console.log(response);
+          //console.log(response);
         } else {
           this.loading = false;
         }
@@ -115,7 +120,7 @@ export class ClasificacionResultadosComponent implements OnInit {
           urlImgLocal: `https://www.rffm.es${p.url_img_local}`,
           urlImgVisitante: `https://www.rffm.es${p.url_img_visitante}`
         }));
-        console.log(response);
+        //console.log(response);
         this.datosCargados = true;
         this.loading = false;
       },
@@ -148,7 +153,8 @@ export class ClasificacionResultadosComponent implements OnInit {
       (response: Response) => {
         const list: any = response;
         this.actaSeleccionada = list.pageProps.game;
-        this.showModalActa = true;
+        //this.showModalActa = true;
+        this.abrirActaEnNuevaPestana('541628');
         console.log(this.actaSeleccionada);
       },
       (error) => {
@@ -162,8 +168,29 @@ export class ClasificacionResultadosComponent implements OnInit {
     this.actaSeleccionada = null;
   }
 
+  cerrarModalActa2() {
+    this.showModalActa2 = false;
+  }
+
   esTitular(jugador: any): boolean {
     return jugador.titular === '1';
+  }
+
+  abrirModalActa2(codActa: string) {
+    const rawUrl = `https://www.ffcm.es/pnfg/NFG_CmpPartido?cod_primaria=1000120&CodActa=${codActa}`;
+    this.urlActa = this.sanitizer.bypassSecurityTrustResourceUrl(rawUrl);
+    const modal = new bootstrap.Modal(document.getElementById('modalVerActa')!);
+    modal.show();
+  }
+
+  abrirActaEnNuevaPestana(codActa: string): void {
+    const url = `https://www.ffcm.es/pnfg/NFG_CmpPartido?cod_primaria=1000120&CodActa=${codActa}`;
+    window.open(url, '_blank');
+  }
+
+  sanitizarUrl(): SafeResourceUrl {
+    const url = 'https://www.ffcm.es/pnfg/NFG_CmpPartido?cod_primaria=1000120&CodActa=541628';
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
   }
 
 }

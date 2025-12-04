@@ -5,6 +5,8 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
+import { TranslateService } from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-new-cuotas',
@@ -101,7 +103,8 @@ export class NewCuotasComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location,
     private clubService: ClubService,
-    private teamService: TeamService) { }
+    private teamService: TeamService,
+    private translate: TranslateService) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -757,7 +760,10 @@ export class NewCuotasComponent implements OnInit {
           this.listCuotasPlayerPersonal.splice(this.playerIndex, 1);
           this.reloadTabla();
         } else {
-          alert(response.error.msg);
+          const mensaje = this.translate.instant('CAL.TEXT_363');
+          alert(mensaje);
+          this.listCuotasPlayerPersonal.splice(this.playerIndex, 1);
+          this.reloadTabla();
         }
       },
       (error) => {
