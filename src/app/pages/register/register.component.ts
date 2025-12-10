@@ -10,7 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ClubesListComponent } from './clubes-list/clubes-list.component';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Club } from 'src/app/core/services/models/club.model';
-import { PlayerService } from 'src/app/core/services/player/player.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-register',
@@ -87,6 +87,7 @@ export class RegisterComponent implements OnInit {
     private dialog: MatDialog,
     private clubService: ClubService,
     private route: ActivatedRoute,
+    private translate: TranslateService
   ) {
 
     this.registerFormClub = this.fb.group({
@@ -333,9 +334,15 @@ export class RegisterComponent implements OnInit {
               snackBarConfig.duration = 5000;
               snackBarConfig.horizontalPosition = 'center';
               snackBarConfig.verticalPosition = 'bottom';
-              this.snackBar.open('Ese email ya está dado de alta, prueba a iniciar sesión o date de alta con un email diferente.', 'Cerrar', snackBarConfig);
+              this.snackBar.open(this.translate.instant('CAL.TEXT_366'), this.translate.instant('APP.BUTTONS.CLOSE'), snackBarConfig);
             }
           })
+    } else {
+      const snackBarConfig = new MatSnackBarConfig();
+      snackBarConfig.duration = 5000;
+      snackBarConfig.horizontalPosition = 'center';
+      snackBarConfig.verticalPosition = 'top';
+      this.snackBar.open(this.translate.instant('CAL.TEXT_365'), this.translate.instant('APP.BUTTONS.CLOSE'), snackBarConfig);
     }
   }
 

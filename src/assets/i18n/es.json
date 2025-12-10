@@ -604,6 +604,9 @@
         "TEXT_360": "Acta del partido",
         "TEXT_361": "Tarjetas",
         "TEXT_362": "Los datos de competiciones mostrados proceden de fuentes públicas de la Federación de Fútbol. Sphaira solo reproduce información disponible públicamente y no es responsable de su exactitud ni de su actualización.",
-        "TEXT_363": "Se ha eliminado el pago, pero existen registros en el historial, se eliminan todos los registros realizados de ese pago."
+        "TEXT_363": "Se ha eliminado el pago, pero existen registros en el historial, se eliminan todos los registros realizados de ese pago.",
+        "TEXT_364": "La federación no ha servido los datos, espera y vuelve a intentarlo más tarde.",
+        "TEXT_365": "Por favor, rellena todos los campos.",
+        "TEXT_366":"Ese email ya está dado de alta, prueba a iniciar sesión o date de alta con un email diferente."
     }
 }

@@ -58,6 +58,7 @@ export class ClasificacionResultadosComponent implements OnInit {
   codGrupo = '';
   codCompeticion = '';
   loading = true;
+  datosNulos = false;
 
   urlActa: SafeResourceUrl = '';
 
@@ -76,7 +77,37 @@ export class ClasificacionResultadosComponent implements OnInit {
     // Generar array de jornadas de 1 a 30
     //this.jornadas = Array.from({ length: 30 }, (_, i) => i + 1);
     this.jornadaSeleccionada = 1; // valor por defecto
-    this.loadTable(1);
+    //this.loadTable(1);
+    this.loadTableTodo(1);
+  }
+
+
+
+  loadTableTodo(jornada: number) {
+    this.clubService.getTodo(this.teamId, jornada.toString()).subscribe(
+      (response: Response) => {
+        if (response != null && response.data != null) {
+          const list: any = response.data;
+          this.equipos = list.clasificacion;
+          this.resultados = list.partidos;
+          let numJ = list.totalJornadas;
+          if(numJ == null) numJ = 35;
+          this.jornadas = Array.from({ length: numJ }, (_, i) => i + 1);
+          
+          this.datosCargados = true;
+          this.loading = false;
+          //this.loadResults(jornada);
+          //console.log(response);
+        } else {
+          this.datosNulos = true;
+          //this.datosCargados = false;
+          this.loading = false;
+        }
+      },
+      (error) => {
+        console.error('Error al cargar el listado de equipos', error);
+      }
+    );
   }
 
   loadTable(jornada: number) {
@@ -145,7 +176,8 @@ export class ClasificacionResultadosComponent implements OnInit {
   }
 
   obtenerDatosJornada(jornada: number): void {
-    this.loadTable(jornada);
+    //this.loadTable(jornada);
+    this.loadTableTodo(jornada);
   }
 
   abrirModalActa(codActa: any): void {
@@ -191,6 +223,10 @@ export class ClasificacionResultadosComponent implements OnInit {
   sanitizarUrl(): SafeResourceUrl {
     const url = 'https://www.ffcm.es/pnfg/NFG_CmpPartido?cod_primaria=1000120&CodActa=541628';
     return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+  }
+
+  abrirActaEnPestanaNueva(url: string): void {
+    window.open(url, '_blank');
   }
 
 }

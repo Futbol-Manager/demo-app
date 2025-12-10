@@ -17,6 +17,10 @@
         <h3>{{ 'CAL.TEXT_357' | translate }}</h3>
     </div>
 
+    <div class="container mt-4" [ngStyle]="{ display: datosNulos ? 'block' : 'none' }">
+        <h3>{{ 'CAL.TEXT_364' | translate }}</h3>
+    </div>
+
     <div class="container mt-4" [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
         <h5>{{ 'CAL.TEXT_362' | translate }}</h5>
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -55,7 +59,7 @@
                                 <th>E</th>
                                 <th>P</th>
                                 <th>GF - GC</th>
-                                <th>{{ 'CAL.TEXT_359' | translate }}</th>
+                                <!-- <th>{{ 'CAL.TEXT_359' | translate }}</th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -72,8 +76,8 @@
                                 <td>{{ equipo.ganados }}</td>
                                 <td>{{ equipo.empatados }}</td>
                                 <td>{{ equipo.perdidos }}</td>
-                                <td>{{ equipo.goles_a_favor }} - {{ equipo.goles_en_contra }}</td>
-                                <td>
+                                <td>{{ equipo.golesAFavor }} - {{ equipo.golesEnContra }}</td>
+                                <!--<td>
                                     <span *ngFor="let racha of equipo.racha_partidos" class="badge me-1" [ngClass]="{
                                         'bg-success': racha.tipo === 'G',
                                         'bg-warning text-dark': racha.tipo === 'E',
@@ -81,7 +85,7 @@
                                     }">
                                         {{ racha.tipo }}
                                     </span>
-                                </td>
+                                </td>-->
                             </tr>
                         </tbody>
                     </table>
@@ -94,13 +98,13 @@
                     <div class="resultado-card" *ngFor="let resultado of resultados">
                         <div class="resultado d-flex align-items-center">
                             <div class="equipo fw-bold text-end flex-fill">
-                                {{ resultado.nombreLocal }}
+                                {{ resultado.nombreEquipoLocal }}
                             </div>
                             <div class="marcador mx-2">
                                 {{ resultado.golesLocal }} - {{ resultado.golesVisitante }}
                             </div>
                             <div class="equipo fw-bold text-start flex-fill">
-                                {{ resultado.nombreVisitante }}
+                                {{ resultado.nombreEquipoVisitante }}
                             </div>
                         </div>
 
@@ -110,13 +114,13 @@
                                 📅 {{ resultado.fecha }} - {{ resultado.hora }}
                             </span>
                             <span class="d-flex align-items-center">
-                                🏟️ {{ resultado.estadio }}
+                                🏟️ {{ resultado.campoJuego }}
                             </span>
                         </div>
 
                         <!-- 📄 Botón centrado -->
                         <div class="text-center mt-2">
-                            <button class="btn btn-custom btn-sm" (click)="abrirModalActa(resultado.codActa)">
+                            <button class="btn btn-custom btn-sm" (click)="abrirActaEnPestanaNueva(resultado.codActa)">
                                 📄 {{ 'CAL.TEXT_358' | translate }}
                             </button>
                         </div>
