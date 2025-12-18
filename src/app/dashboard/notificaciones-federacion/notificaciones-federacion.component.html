@@ -204,6 +204,7 @@
                                 <label for="asunto" class="form-label"><strong>Selecciona un equipo:</strong></label>
                                 <select class="form-control custom-input" id="destinatarios" name="destinatarios"
                                     [(ngModel)]="selectedTeam" (change)="loadPlayers()">
+                                    <option>Selecciona un equipo</option>
                                     <option *ngFor="let team of listTeamsForCombo" [value]="team.value">
                                         {{ team.name }}</option>
                                 </select>
@@ -214,6 +215,7 @@
                                 <label for="asunto" class="form-label"><strong>Selecciona un jugador:</strong></label>
                                 <select class="form-control custom-input" id="destinatarios" name="destinatarios"
                                     [(ngModel)]="selectedPlayer">
+                                    <option>Selecciona un jugador</option>
                                     <option *ngFor="let player of listPlayersForCombo" [value]="player.value">
                                         {{ player.name }}</option>
                                 </select>
