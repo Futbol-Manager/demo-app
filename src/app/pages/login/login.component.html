@@ -1,45 +1,61 @@
-<form [formGroup]="loginForm" class="form-login" #thisForm="ngForm" (ngSubmit)="login()">
+<form #thisForm="ngForm" (ngSubmit)="login()" [formGroup]="loginForm" class="form-login">
 
   <!-- Campo de email -->
   <div class="mb-3">
-    <input type="email" class="form-control input-login" id="mail" formControlName="mail"
-      [attr.placeholder]="'LOGIN.EMAIL_PLACEHOLDER' | translate"
-      [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)">
+    <input [attr.placeholder]="'LOGIN.EMAIL_PLACEHOLDER' | translate" [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)" class="form-control input-login" formControlName="mail"
+           id="mail"
+           type="email">
 
     <div *ngIf="mailControl?.hasError('required') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
-      class="invalid-feedback">
+         class="invalid-feedback">
       {{ 'LOGIN.EMAIL_REQUIRED' | translate }}
     </div>
 
     <div *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
-      class="invalid-feedback">
+         class="invalid-feedback">
       {{ 'LOGIN.EMAIL_INVALID' | translate }}
     </div>
   </div>
 
   <!-- Campo de contraseña -->
-  <div class="mb-3">
-    <div class="input-group">
-      <input class="form-control input-login" id="password" formControlName="password"
-        [type]="hidePassword ? 'password' : 'text'" [attr.placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate"
-        [class.is-invalid]="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)">
+  <div class="mb-3 password-wrapper">
+    <div class="password-wrapper">
+      <input
+        [attr.placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate"
+        [class.is-invalid]="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)"
+        [type]="hidePassword ? 'password' : 'text'"
+        class="form-control input-login"
+        formControlName="password"
+        id="password"
+      />
 
-      <div class="input-group-append">
-        <button class="btn btn-outline-secondary input-login" type="button" (click)="hidePassword = !hidePassword">
-          <i class="fas" [class.fa-eye]="!hidePassword" [class.fa-eye-slash]="hidePassword"></i>
-        </button>
-      </div>
-
-      <div
-        *ngIf="passwordControl?.hasError('required') && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)"
-        class="invalid-feedback">
-        {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
-      </div>
+      <!-- OJO SOLO SI HAY CONTENIDO -->
+      <button
+        (click)="hidePassword = !hidePassword"
+        *ngIf="passwordControl?.value"
+        class="toggle-password"
+        type="button"
+      >
+        <i
+          [class.fa-eye-slash]="!hidePassword"
+          [class.fa-eye]="hidePassword"
+          class="fas"
+        ></i>
+      </button>
     </div>
+
+    <div
+      *ngIf="passwordControl?.invalid && (passwordControl?.dirty || passwordControl?.touched || thisForm.submitted)"
+      class="invalid-feedback d-block"
+    >
+      {{ 'LOGIN.PASSWORD_REQUIRED' | translate }}
+    </div>
+
   </div>
 
+
   <!-- Botón de login -->
-  <button type="submit" class="btn btn-custom btn-block textoCentrado">
+  <button class="btn btn-custom btn-block textoCentrado" type="submit">
     {{ 'APP.BUTTONS.LOGIN' | translate }}
   </button>
 
@@ -47,7 +63,7 @@
   <div [ngStyle]="{ display: verificarCuenta ? 'block' : 'none' }" class="text-danger mt-3">
     <p>
       {{ 'LOGIN.BLOCKED_MESSAGE' | translate }}
-      <a href="#" (click)="enviarMail()">
+      <a (click)="enviarMail()" href="#">
         {{ 'LOGIN.BLOCKED_LINK' | translate }}
       </a>
     </p>

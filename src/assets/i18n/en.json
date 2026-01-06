@@ -1,6 +1,6 @@
 {
   "APP": {
-    "TITLE": "Club management",
+    "TITLE": "Club Management",
     "HELLO": "Hello, {{name}}",
     "EQUIPOS": "Teams",
     "PLAYERS_COUNT": "You have {{count}} player",
@@ -8,17 +8,20 @@
     "BUTTONS": {
       "SAVE": "Save",
       "CANCEL": "Cancel",
-      "LOGIN": "Login",
-      "CLOSE": "Close"
+      "LOGIN": "Log in",
+      "CLOSE": "Close",
+      "UPFILE": "Upload file",
+      "DOWNLOADTEMPLATE": "Download template",
+      "ACCEPT": "Accept"
     }
   },
   "LOGIN": {
-    "EMAIL_PLACEHOLDER": "Email",
+    "EMAIL_PLACEHOLDER": "Email address",
     "EMAIL_REQUIRED": "Email is required",
-    "EMAIL_INVALID": "Please enter a valid email address",
+    "EMAIL_INVALID": "Enter a valid email address",
     "PASSWORD_PLACEHOLDER": "Password",
     "PASSWORD_REQUIRED": "Password is required",
-    "BLOCKED_MESSAGE": "User is blocked. To unblock, validate the link sent to your email.",
+    "BLOCKED_MESSAGE": "User blocked. To unblock it, you must verify it using the link sent to your email address.",
     "BLOCKED_LINK": "Click here to receive a new email."
   },
   "AUTH": {
@@ -37,7 +40,75 @@
     "LOGO": "SphairaTech Logo"
   },
   "NAV": {
-    "BACK": "Back"
+    "BACK": "Back",
+    "INICIO": "Home",
+    "DOCUMENTS": "Documents",
+    "CUADRO": "Sports Dashboard",
+    "TEAMS": "Teams",
+    "PAYS": "Fees",
+    "NEWPAYS": "Payments",
+    "CLOTHES": "Clothing",
+    "SPONSORS": "Sponsors",
+    "NOTIFICATIONS": "Notifications",
+    "CREATETEAM": "Create a Team",
+    "CREATE": "Create"
+  },
+  "TITLES": {
+    "USERS": "Users",
+    "ASSISTANCE": "Attendance",
+    "LOAD": "Loading data...",
+    "LOADLIST": "Loading list...",
+    "DOWNLOAD": "Download",
+    "EXCELLOAD": "Upload players from Excel:",
+    "EXCELUP": "Upload Excel",
+    "INVITED": "Invitation link for parents:",
+    "COPY": "Copy link",
+    "SEASON": "Season",
+    "CREATETEAM": "Create team",
+    "TEAMTRAINERS": "Coaching staff",
+    "ACCESSREST": "Restricted Access",
+    "GETSUS": "Get Subscription",
+    "CATEGORYTEAM": "Team Category",
+    "SELECTED": "Select",
+    "UPFILEEXCEL": "Upload your Excel file",
+    "ATENTION": "Attention",
+    "STANDINGS": "Standings",
+    "ROUND": "Matchday",
+    "RESULTS": "Results",
+    "TRAINER": "Coach",
+    "TECNICS": "Technical staff",
+    "DELEGADO": "Team Manager",
+    "REFEREE": "Referee",
+    "FIELD": "Field"
+  },
+  "AUTH": {
+    "FORGOT_PASSWORD": "I forgot my password",
+    "NO_ACCOUNT": "Don't have an account?",
+    "REGISTER": "Sign up",
+    "REMEMBER_PASSWORD": "Remember your password?",
+    "LOGIN_HERE": "Log in here",
+    "REMEMBER_TITLE": "Enter your email address to reset your password",
+    "EMAIL_PLACEHOLDER": "Email address",
+    "EMAIL_INVALID": "Enter a valid email address",
+    "SEND_MAIL": "Send email"
+  },
+  "ALT": {
+    "BACKGROUND": "Soccer background image",
+    "LOGO": "SphairaTech logo"
+  },
+  "NAV": {
+    "BACK": "Back",
+    "INICIO": "Home",
+    "DOCUMENTS": "Documents",
+    "CUADRO": "Sports Management Dashboard",
+    "TEAMS": "Teams",
+    "PAYS": "Fees",
+    "NEWPAYS": "Payments",
+    "CLOTHES": "Clothing",
+    "SPONSORS": "Sponsors",
+    "NOTIFICATIONS": "Notifications",
+    "CREATETEAM": "Create a team",
+    "CREATE": "Create"
   },
   "HEADER": {
     "WELCOME": "Welcome!",
@@ -79,15 +150,23 @@
     "TABLE": {
       "ID": "ID",
       "IMAGE": "Image",
-      "NAME": "Name",
-      "SURNAMES": "Surnames",
+      "NAME": "First name",
+      "SURNAMES": "Last name",
       "EMAIL": "Email",
       "PHONE": "Phone",
       "STATUS": "Status",
       "FEE": "Fee",
       "PAID": "Paid",
       "REMAINING": "Remaining",
-      "ACTIONS": "Actions"
+      "ACTIONS": "Actions",
+      "COMUNICATIONS": "Communications",
+      "VALIDATE": "Validated",
+      "FECDATE": "Birth date",
+      "MOBILE": "Mobile",
+      "PROFILE": "Profile",
+      "CREATE": "Created",
+      "DATE": "Date",
+      "TOTALS": "Totals"
     },
     "STATUS": {
       "NONE": "No payment",
@@ -147,6 +226,62 @@
       "COMMENT": "Comment",
       "REFUND": "Refund",
       "REFUND_TITLE": "Refund payment"
+    }
+  },
+  "REGISTER": {
+    "TITLE": "User registration",
+    "SELECT_USER_TYPE": "Select the user type",
+    "REGISTER": "Sign up",
+    "USER_TYPE": {
+      "CLUB": {
+        "TITLE": "Club",
+        "SUBTITLE": "Register as a sports club",
+        "MODAL": {
+          "WARNING_PREFIX": "This registration is",
+          "WARNING_HIGHLIGHT_1": "EXCLUSIVELY FOR SPORTS ORGANIZATIONS",
+          "WARNING_MIDDLE": "If you are a",
+          "WARNING_HIGHLIGHT_2": "PARENT/GUARDIAN, THIS IS NOT YOUR REGISTRATION",
+          "WARNING_HIGHLIGHT_3": "EXCLUSIVELY FOR COACH",
+          "WARNING_SUFFIX": "Talk to your club to receive the registration link"
+        }
+      },
+      "COACH": {
+        "TITLE": "Coach",
+        "SUBTITLE": "Register as coach"
+      }
+    },
+    "COMMON": {
+      "NEXT": "Next",
+      "BACK": "Back",
+      "EMAIL": "Email",
+      "PASSWORD": "Password",
+      "NAME": "Name",
+      "SURNAME": "Last name",
+      "GENDER": "Select your gender",
+      "PHONE": "Phone",
+      "REPEAT_PASSWORD": "Repeat password",
+      "TERMS_PREFIX": "I accept the",
+      "TERMS_LINK": "privacy policy",
+      "COMMS_PREFIX": "I accept",
+      "COMMS_LINK": "commercial communications",
+      "HELP": "If you need help, contact",
+      "WHATSAPP": "or WhatsApp"
+    },
+    "AUTH": {
+      "ALREADY_HAVE_ACCOUNT": "Already have an account?",
+      "LOGIN_HERE": "Login here"
+    },
+    "MESSAGE": {
+      "ATTENTION": "Attention",
+      "PLAYER_MS": "If you are a PLAYER, wait for your coach/club to invite you."
+    },
+    "ERROR": {
+      "PASSWORD_MISMATCH": "Passwords do not match.",
+      "INCOMPLETE_FORM": "Please complete all required fields and accept the privacy policy."
+    },
+    "BUTTONS_MODALS": {
+      "ACKNOWLEDGE": "Got it",
+      "I_AM_COACH": "I am a coach"
     }
   }
 }

@@ -51,6 +51,7 @@ import { ListadoClubesComponent } from './listado-clubes/listado-clubes.componen
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateModule } from '@ngx-translate/core';
+import { EquiposComponent } from './equipos/equipos.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -102,7 +103,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     InicioFederacionComponent,
     InfoJugadoresFederacionComponent,
     NotificacionesFederacionComponent,
-    ListadoClubesComponent
+    ListadoClubesComponent,
+    EquiposComponent,
   ],
   imports: [
     CommonModule,

@@ -1,14 +1,14 @@
 <div class="background">
-  <img src="assets/images/fondoLoginV1.png" [attr.alt]="'APP.ALT.BACKGROUND' | translate" class="video-background">
+  <img [attr.alt]="'APP.ALT.BACKGROUND' | translate" class="video-background" src="assets/images/fondoLoginV1.png">
 
   <!-- LOGIN -->
-  <div class="container" *ngIf="screen == 1">
+  <div *ngIf="screen == 1" class="container">
     <div class="row justify-content-center" style="padding-top: 2%;">
       <div class="col-md-6">
         <div class="card">
-          <div class="card-header textoCentrado" style="background-color: #31b270;">
-            <img src="assets/images/Logo_SphairaTech1.svg" [attr.alt]="'APP.ALT.LOGO' | translate"
-              style="cursor: pointer; width: 10em;">
+          <div class="card-header textoCentrado" style="">
+            <img [attr.alt]="'APP.ALT.LOGO' | translate" src="assets/images/Logo_SphairaTech1.png"
+                 style="cursor: pointer; width: 10em;">
           </div>
 
           <div class="card-body textoCentrado">
@@ -19,7 +19,7 @@
             <div class="row">
               <div class="col-md-12 col-sm-12 textoCentrado">
                 <p>
-                  <a style="color: #1e8832" href="#" (click)="toRemember($event)">
+                  <a (click)="toRemember($event)" href="#" style="color: #1e8832">
                     {{ 'AUTH.FORGOT_PASSWORD' | translate }}
                   </a>
                 </p>
@@ -28,9 +28,9 @@
 
             <div class="row">
               <div class="col-md-12 col-sm-12 textoCentrado">
-                <p style="color: white">
+                <p>
                   {{ 'AUTH.NO_ACCOUNT' | translate }}
-                  <a style="color: #1e8832" href="#" (click)="toRegister($event)">
+                  <a (click)="toRegister($event)" href="#">
                     {{ 'AUTH.REGISTER' | translate }}
                   </a>
                 </p>
@@ -43,25 +43,25 @@
   </div>
 
   <!-- RECORDAR CONTRASEÑA -->
-  <div class="container" *ngIf="screen == 3">
+  <div *ngIf="screen == 3" class="container">
     <div class="row justify-content-center" style="padding-top: 2%;">
       <div class="col-md-6">
         <div class="card">
           <div class="card-header textoCentrado" style="background-color: #31b270;">
-            <img src="assets/images/Logo_SphairaTech1.svg" [attr.alt]="'APP.ALT.LOGO' | translate"
-              style="cursor: pointer; width: 10em;">
+            <img [attr.alt]="'APP.ALT.LOGO' | translate" src="assets/images/Logo_SphairaTech1.svg"
+                 style="cursor: pointer; width: 10em;">
           </div>
 
           <div class="card-body textoCentrado">
-            <form [formGroup]="rememberForm" class="form-login" #thisForm="ngForm" (ngSubmit)="sendMail()">
+            <form #thisForm="ngForm" (ngSubmit)="sendMail()" [formGroup]="rememberForm" class="form-login">
               <div class="mb-3">
-                <label for="mail" class="form-label">
+                <label class="form-label" for="mail">
                   {{ 'AUTH.REMEMBER_TITLE' | translate }}
                 </label>
 
-                <input type="email" class="form-control input-login" id="mail" formControlName="mail"
-                  [attr.placeholder]="'AUTH.EMAIL_PLACEHOLDER' | translate"
-                  [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)">
+                <input [attr.placeholder]="'AUTH.EMAIL_PLACEHOLDER' | translate" [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)" class="form-control input-login" formControlName="mail"
+                       id="mail"
+                       type="email">
 
                 <div
                   *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
@@ -70,7 +70,7 @@
                 </div>
               </div>
 
-              <button type="submit" class="btn btn-primary btn-block textoCentrado">
+              <button class="btn btn-primary btn-block textoCentrado" type="submit">
                 {{ 'AUTH.SEND_MAIL' | translate }}
               </button>
             </form>
@@ -79,9 +79,9 @@
           <div class="card-footer textoCentrado" style="flex-direction: column; background: #002c40;">
             <div class="row">
               <div class="col-md-12 col-sm-12 textoCentrado">
-                <p style="color: white">
+                <p>
                   {{ 'AUTH.REMEMBER_PASSWORD' | translate }}
-                  <a style="color: #1e8832" href="#" (click)="toLogin($event)">
+                  <a (click)="toLogin($event)" href="#">
                     {{ 'AUTH.LOGIN_HERE' | translate }}
                   </a>
                 </p>

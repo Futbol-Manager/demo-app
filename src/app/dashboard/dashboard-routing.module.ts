@@ -44,6 +44,7 @@ import { InicioFederacionComponent } from './inicio-federacion/inicio-federacion
 import { InfoJugadoresFederacionComponent } from './info-jugadores-federacion/info-jugadores-federacion.component';
 import { NotificacionesFederacionComponent } from './notificaciones-federacion/notificaciones-federacion.component';
 import { ListadoClubesComponent } from './listado-clubes/listado-clubes.component';
+import { EquiposComponent } from './equipos/equipos.component';
 
 const routes: Routes = [
   {
@@ -52,6 +53,7 @@ const routes: Routes = [
     children: [
       { path: 'inicio-deportes', component: InicioDeportesComponent },
       { path: 'inicio', component: InicioComponent },
+      { path: 'equipos', component: EquiposComponent },
       { path: 'inicio-federacion', component: InicioFederacionComponent },
       { path: 'info-jugadores-federacion', component: InfoJugadoresFederacionComponent },
       { path: 'calendario/:teamId/:playerId', component: CalendarioComponent },

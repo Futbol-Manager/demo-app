@@ -1,16 +1,21 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { LoginModel } from 'src/app/core/models/users/login.model';
-import { GenreTypeModel, ProfileTypeModel, RegisterModel, ValidationUserModel } from 'src/app/core/models/users/register.model';
-import { LoginService } from 'src/app/core/services/login/login.service';
-import { RegisterService } from 'src/app/core/services/register/register.service';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
-import { ClubesListComponent } from './clubes-list/clubes-list.component';
-import { ClubService } from 'src/app/core/services/club/club.service';
-import { Club } from 'src/app/core/services/models/club.model';
-import { TranslateService } from '@ngx-translate/core';
+import {Component, OnInit} from '@angular/core';
+import {AbstractControl, FormBuilder, FormGroup, ValidatorFn, Validators} from '@angular/forms';
+import {ActivatedRoute, Router} from '@angular/router';
+import {LoginModel} from 'src/app/core/models/users/login.model';
+import {
+  GenreTypeModel,
+  ProfileTypeModel,
+  RegisterModel,
+  ValidationUserModel
+} from 'src/app/core/models/users/register.model';
+import {LoginService} from 'src/app/core/services/login/login.service';
+import {RegisterService} from 'src/app/core/services/register/register.service';
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
+import {MatDialog} from '@angular/material/dialog';
+import {ClubesListComponent} from './clubes-list/clubes-list.component';
+import {ClubService} from 'src/app/core/services/club/club.service';
+import {Club} from 'src/app/core/services/models/club.model';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-register',
@@ -35,13 +40,13 @@ export class RegisterComponent implements OnInit {
   newRegistro: boolean = false;
 
   selectOptions = [
-    { value: "0", label: "¿Eres un club o un entrenador?" },
-    { value: "1", label: "Club" },
-    { value: "2", label: "Entrenador" },
+    {value: "0", label: "¿Eres un club o un entrenador?"},
+    {value: "1", label: "Club"},
+    {value: "2", label: "Entrenador"},
     // Opciones eliminadas
-    { value: "3", label: "Jugador/Padre" },
-    { value: "4", label: "Jugador" },
-    { value: "5", label: "Scouter" }
+    {value: "3", label: "Jugador/Padre"},
+    {value: "4", label: "Jugador"},
+    {value: "5", label: "Scouter"}
   ];
   msgForm = false;
   showPPlayer = false;
@@ -61,6 +66,10 @@ export class RegisterComponent implements OnInit {
   btnFinalizar = false;
   estadoValidacionHijos: boolean[] = [];
 
+  mensajePassword: string = '';
+  passwordValida: boolean | null = null;
+
+
   inputPassword: string = '';
   readonly realPassword = 'RegistroClubesST2025'; // la contraseña que quieras validar
   readonly realPasswordFede = 'LFP2000'; // la contraseña que quieras validar
@@ -73,7 +82,7 @@ export class RegisterComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       confirmEmail: ['', [Validators.required, Validators.email]],
     },
-    { validators: [this.emailsMatchValidator()] }
+    {validators: [this.emailsMatchValidator()]}
   );
 
   showEmailAlert = false;
@@ -174,11 +183,11 @@ export class RegisterComponent implements OnInit {
           this.selectedOption = 1;
           this.emailParam = '';
           this.playerID = 0;
-        } else if (this.isMenor === 3) { //este es entrenador 
+        } else if (this.isMenor === 3) { //este es entrenador
           this.selectedOption = 2;
           //this.emailParam = '';
           this.playerID = 0;
-        } else if (this.isMenor === 4) { //este es scouter 
+        } else if (this.isMenor === 4) { //este es scouter
           this.selectedOption = 5;
           this.emailParam = '';
           this.playerID = 0;
@@ -248,7 +257,7 @@ export class RegisterComponent implements OnInit {
       (response) => {
         this.listaDeClubes = response.data;
         const dialogRef = this.dialog.open(ClubesListComponent, {
-          data: { clubes: this.listaDeClubes } // Pasamos la lista de clubes como datos al componente hijo
+          data: {clubes: this.listaDeClubes} // Pasamos la lista de clubes como datos al componente hijo
         });
 
         dialogRef.componentInstance.clubSeleccionadoChange.subscribe((clubSeleccionado: any) => {
@@ -680,7 +689,7 @@ export class RegisterComponent implements OnInit {
   onParentescoChange(): void {
     const hijos = +this.registerFormPadreHijos.get('numHijos')?.value || 1;
     this.numHijos = hijos;
-    this.hijosVisibles = Array.from({ length: hijos }, (_, i) => i);
+    this.hijosVisibles = Array.from({length: hijos}, (_, i) => i);
   }
 
   checkPasswordMatchPadre(): void {
@@ -881,14 +890,6 @@ export class RegisterComponent implements OnInit {
     });
   }
 
-  private emailsMatchValidator(): ValidatorFn {
-    return (group: AbstractControl) => {
-      const email = group.get('email')?.value?.trim().toLowerCase() || '';
-      const confirm = group.get('confirmEmail')?.value?.trim().toLowerCase() || '';
-      return email && confirm && email !== confirm ? { emailsMismatch: true } : null;
-    };
-  }
-
   /** Llamado al dejar de escribir (blur) en cualquiera de los dos inputs */
   checkEmails(): void {
     const mail1 = this.registerFormPadre.get('email')?.value;
@@ -900,7 +901,6 @@ export class RegisterComponent implements OnInit {
       this.registerFormPadre.get('confirmEmail')!.setValue('');
     } else this.mailsOk = true;
   }
-
 
   openConfirmCoach() {
     this.showModalCoach = false;
@@ -922,28 +922,44 @@ export class RegisterComponent implements OnInit {
   }
 
   validatePassword() {
+    this.mensajePassword = '';
+    this.passwordValida = null;
+
     if (this.inputPassword === this.realPassword) {
-      alert('Contraseña correcta ✅');
-      this.showModalClub = false;
-      this.showNextRegistro = true;
-      this.btnRegistro = true;
+      this.procesarPasswordCorrecta();
     } else if (this.inputPassword.toLowerCase().includes(this.realPasswordFede.toLowerCase())) {
-      // separar en dos partes
+
       const partes = this.inputPassword.split('-');
 
       if (partes.length > 1) {
-        const federacionId = partes[1]; // lo que viene después del guion
-        localStorage.setItem('federacionId', federacionId.toString());
+        const federacionId = partes[1];
+        localStorage.setItem('federacionId', federacionId);
         console.log('FederacionId guardado:', federacionId);
       }
 
-      alert('Contraseña correcta ✅');
-      this.showModalClub = false;
-      this.showNextRegistro = true;
-      this.btnRegistro = true;
+      this.procesarPasswordCorrecta();
     } else {
-      alert('Contraseña incorrecta ❌');
+      this.mensajePassword = 'Contraseña incorrecta ❌';
+      this.passwordValida = false;
     }
   }
+
+  private emailsMatchValidator(): ValidatorFn {
+    return (group: AbstractControl) => {
+      const email = group.get('email')?.value?.trim().toLowerCase() || '';
+      const confirm = group.get('confirmEmail')?.value?.trim().toLowerCase() || '';
+      return email && confirm && email !== confirm ? {emailsMismatch: true} : null;
+    };
+  }
+
+  private procesarPasswordCorrecta() {
+    this.mensajePassword = 'Contraseña correcta ✅';
+    this.passwordValida = true;
+
+    this.showModalClub = false;
+    this.showNextRegistro = true;
+    this.btnRegistro = true;
+  }
+
 
 }

@@ -1,8 +1,8 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
-import { RegisterService } from 'src/app/core/services/register/register.service';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
+import {Router} from '@angular/router';
+import {RegisterService} from 'src/app/core/services/register/register.service';
 
 @Component({
   selector: 'app-home',
@@ -24,6 +24,10 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  get mailControl() {
+    return this.rememberForm.get('mail');
+  }
+
   ngOnInit(): void {
   }
 
@@ -37,19 +41,19 @@ export class HomeComponent implements OnInit {
     this.screen = 3;
   }
 
-  sendMail(){
-    if(this.rememberForm.valid){
+  sendMail() {
+    if (this.rememberForm.valid) {
       const fm = this.rememberForm.value;
       this.registerService.changePassByEmail(fm.mail).pipe().subscribe(
         res => {
-          if(res){
+          if (res) {
             const snackBarConfig = new MatSnackBarConfig();
             snackBarConfig.duration = 5000;
             snackBarConfig.horizontalPosition = 'center';
             snackBarConfig.verticalPosition = 'top';
             this.snackBar.open('Correo electrónico enviado con éxito.', 'Cerrar', snackBarConfig);
             this.screen = 1;
-          } else{
+          } else {
             const snackBarConfig = new MatSnackBarConfig();
             snackBarConfig.duration = 5000;
             snackBarConfig.horizontalPosition = 'center';
@@ -61,11 +65,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  get mailControl() {
-    return this.rememberForm.get('mail');
-  }
-
-  toLogin(event: Event){
+  toLogin(event: Event) {
     event.preventDefault();
     this.screen = 1;
   }

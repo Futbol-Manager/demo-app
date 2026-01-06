@@ -10,6 +10,50 @@
   justify-content: center;
 }
 
+.row.justify-content-center {
+  height: 100vh; /* toda la altura visible */
+  display: flex;
+  justify-content: center; /* centrado horizontal */
+  align-items: center; /* centrado vertical */
+}
+
+.card {
+  border-radius: 18px;
+  border: none;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.card-header {
+  background: transparent;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 1.5rem;
+
+  h3 {
+    font-weight: 600;
+    letter-spacing: -0.3px;
+  }
+
+  .btn-close {
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+  }
+
+  .btn-close:hover {
+    opacity: 1;
+  }
+}
+
+.card-body {
+  padding: 2rem;
+}
+
+.card-body h3 {
+  font-weight: 500;
+  color: #6b7280;
+}
+
 .form-register {
   padding: 2rem;
 }
@@ -137,19 +181,88 @@ h2 {
 }
 
 .selection-card {
-  border: 5px solid black;
-  background-color: white;
-  transition: transform 0.3s ease-in-out, border-color 0.3s;
-}
-
-.selection-card img {
-  max-width: 50%;
-  /* Ajusta el tamaño del icono dentro de la tarjeta */
-  max-height: 50%;
+  border-radius: 16px;
+  border: 2px solid #e5e7eb;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
 .selection-card:hover {
-  transform: scale(1.10);
+  transform: translateY(-3px);
+  border-color: #22bf63;
+}
+
+.selection-card.selected {
+  border-color: #22bf63 !important;
+  box-shadow: 0 0 0 3px rgba(34, 191, 99, 0.25);
+}
+
+.selection-card .card-body {
+  padding: 1.25rem;
+}
+
+.selection-card h5 {
+  font-weight: 500;
+}
+
+.selection-card img {
+  max-width: 370px;
+  margin-top: 1rem;
+}
+
+.btn-custom {
+  background: #31b270;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  height: 40px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #31b270, #efdcb6);
+    color: #0f172a; // mejor contraste en hover
+    box-shadow: 0 12px 25px rgba(49, 178, 112, 0.45);
+    transform: translateY(-1px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.35);
+  }
+}
+
+.btn-outline-secondary {
+  background: #002c40;
+  margin-top: 10px;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  height: 40px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #31b270, #002c40);
+    color: #f4f4f4; // mejor contraste en hover
+    box-shadow: 0 12px 25px rgba(49, 178, 112, 0.45);
+    transform: translateY(-1px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.35);
+  }
+}
+
+.date-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  pointer-events: none;
 }
 
 .selected {
@@ -157,6 +270,39 @@ h2 {
   /* Cambia el borde a azul cuando está seleccionado */
 }
 
+.card-body span,
+.card-body small {
+  color: #6b7280;
+}
+
+.card-body a {
+  color: #22bf63;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.card-body a:hover {
+  text-decoration: underline;
+}
+
+.colored-column {
+  background: radial-gradient(circle at top, #2fbf71, #0c3b36);
+}
+
 input.no-calendar-icon::-webkit-calendar-picker-indicator {
   opacity: 0;
 }
+
+@media (min-width: 768px) {
+  .row.mt-3 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .row.mt-3 > .col-md-12 {
+    max-width: 100%;
+  }
+}
+
+
