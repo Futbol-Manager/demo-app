@@ -7,7 +7,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 @Component({
   selector: 'app-estadisticas-equipos-club',
   templateUrl: './estadisticas-equipos-club.component.html',
-  styleUrls: ['./estadisticas-equipos-club.component.scss']
+  styleUrls: ['./estadisticas-equipos-club.component.scss'],
 })
 export class EstadisticasEquiposClubComponent implements OnInit {
   clubId = 0;
@@ -16,10 +16,11 @@ export class EstadisticasEquiposClubComponent implements OnInit {
   datosCargados = false;
   partidos: any[] = [];
   partidosTeamSelected: any[] = [];
-  
+
   playerSearch: string = '';
   filteredPlayers: any[] = [];
   mostarTabla = false;
+  equipoSeleccionado = '';
   loading = true;
 
   constructor(
@@ -27,13 +28,14 @@ export class EstadisticasEquiposClubComponent implements OnInit {
     private route: ActivatedRoute,
     private clubService: ClubService,
     private http: HttpClient,
-    private elementRef: ElementRef) { }
+    private elementRef: ElementRef
+  ) {}
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       // Obtener el valor de teamId de los parámetros
-      this.clubId = +params['clubId'];  // El + convierte el valor a número
+      this.clubId = +params['clubId']; // El + convierte el valor a número
       console.log('clubId:', this.clubId);
     });
     this.getListaPostpartidos();
@@ -49,29 +51,36 @@ export class EstadisticasEquiposClubComponent implements OnInit {
   }
 
   getListaPostpartidos() {
+    this.loading = true;
+    this.datosCargados = false;
     this.clubService.getListTeamsOfClubByStadistics(this.clubId).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data && Array.isArray(response.data)) {
           // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.resumenes = response.data; 
+          this.resumenes = response.data;
           for (let index = 0; index < this.resumenes.length; index++) {
-            if(!this.resumenes[index].nameTeam.includes("Sin equipo")){
+            if (!this.resumenes[index].nameTeam.includes('Sin equipo')) {
               this.datosResumentTotales(this.resumenes[index]);
             }
           }
           this.datosCargados = true;
           this.loading = false;
         } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          console.error(
+            'La respuesta del servicio no tiene la estructura esperada',
+            response
+          );
         }
       },
+
       (error) => {
+        this.loading = false;
         console.error('Error al cargar el listado de equipos', error);
       }
     );
   }
-  
+
   datosResumentTotales(team: any) {
     let vic = 0;
     let emp = 0;
@@ -83,7 +92,10 @@ export class EstadisticasEquiposClubComponent implements OnInit {
 
     // Obtener los primeros 5 resultados que realmente son los ultimos
     this.partidos = team.partidos;
-    const ultimosResultados = this.partidos.slice(0, 5).map(partido => partido.resultado).reverse();
+    const ultimosResultados = this.partidos
+      .slice(0, 5)
+      .map((partido) => partido.resultado)
+      .reverse();
 
     for (let partido of team.partidos) {
       // Aquí dentro del bucle, puedes acceder a cada elemento de la lista como "partido"
@@ -117,50 +129,56 @@ export class EstadisticasEquiposClubComponent implements OnInit {
       gc: gc,
       dg: dg,
       puntos: pun,
-      ultimos: ultimosResultados //['Ganado', 'Empatado', 'Perdido', 'Ganado', 'Ganado']
+      ultimos: ultimosResultados, //['Ganado', 'Empatado', 'Perdido', 'Ganado', 'Ganado']
     };
 
     this.resumentotales.push(resumen);
   }
 
-  verTablaequipo(index: number){
+  verTablaequipo(index: number) {
     //console.log(this.resumenes[index].teamId);
     //console.log(this.resumenes[index].partidos);
     this.partidosTeamSelected = this.resumenes[index].partidos;
+    console.log(this.partidosTeamSelected)
     this.filteredPlayers = this.partidosTeamSelected;
+    this.equipoSeleccionado = this.resumenes[index].nameTeam;
     this.mostarTabla = true;
+  }
+  cerrarModal(): void {
+    this.mostarTabla = false;
   }
 
   applyFilter(): void {
     const filter = this.normalizeText(this.playerSearch);
-    this.filteredPlayers = this.partidosTeamSelected.filter(partido => {
+    this.filteredPlayers = this.partidosTeamSelected.filter((partido) => {
       return (
-        (partido.matchPreparation.rivalName && this.normalizeText(partido.matchPreparation.rivalName).includes(filter)) ||
-        (partido.resultado && this.normalizeText(partido.resultado).includes(filter))
+        (partido.matchPreparation.rivalName &&
+          this.normalizeText(partido.matchPreparation.rivalName).includes(
+            filter
+          )) ||
+        (partido.resultado &&
+          this.normalizeText(partido.resultado).includes(filter))
       );
     });
   }
-  
+
   normalizeText(text: string): string {
-    return text.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  }
-  
-
-  exportTableToExcel(){
-
+    return text
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase();
   }
 
-  openInfoPostPartido(value: number){
+  exportTableToExcel() {}
 
-  }
+  openInfoPostPartido(value: number) {}
 
   getIcono(resultado: string): string {
     const iconos: { [key: string]: string } = {
-      'V': '🟢',
-      'E': '🟡',
-      'D': '🔴'
+      V: '🟢',
+      E: '🟡',
+      D: '🔴',
     };
     return iconos[resultado] || '❓';
   }
-  
 }

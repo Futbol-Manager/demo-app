@@ -59,9 +59,9 @@
     "LOAD": "Loading data...",
     "LOADLIST": "Loading list...",
     "DOWNLOAD": "Download",
-    "EXCELLOAD": "Upload players from Excel:",
+    "EXCELLOAD": "Upload players from Excel",
     "EXCELUP": "Upload Excel",
-    "INVITED": "Invitation link for parents:",
+    "INVITED": "Invite parents",
     "COPY": "Copy link",
     "SEASON": "Season",
     "CREATETEAM": "Create team",
@@ -283,5 +283,96 @@
       "ACKNOWLEDGE": "Got it",
       "I_AM_COACH": "I am a coach"
     }
+  },
+  "CUADROMANDO": {
+    "SUBMENU": {
+      "BACK": "Dashboard"
+    },
+
+    "OPTIONS": {
+      "FEES": "Fees",
+      "FEES_DESC": "Payment management",
+
+      "SCORES": "Team standings",
+      "SCORES_DESC": "League table",
+
+      "TRAINING": "Training",
+      "TRAINING_DESC": "Sessions",
+
+      "PLAYERS": "Players",
+      "PLAYERS_DESC": "Information",
+
+      "TEAMS": "Teams",
+      "TEAMS_DESC": "Statistics",
+
+      "PLAYER": "Player",
+      "PLAYER_DESC": "Metrics"
+    },
+
+    "RESULTS": {
+      "TITLE": "Last matchday results",
+      "FINISHED": "Finished",
+      "LOCAL": "Home",
+      "VISITOR": "Away"
+    },
+
+    "TRAINING_TODAY": {
+      "TITLE": "Training today"
+    },
+
+    "NEXT_MATCHES": {
+      "TITLE": "Upcoming matches",
+      "LOCAL": "Home",
+      "VISITOR": "Away",
+      "UNDEFINED": "To be defined"
+    },
+
+    "COMMON": {
+      "VS": "VS"
+    }
+  },
+
+  "ESTADIS_EQUIPO": {
+    "BACK": "Dashboard",
+
+    "TITLE": "Summary Table",
+
+    "TABLE": {
+      "TEAM": "Team",
+      "PJ": "MP",
+      "PTS": "PTS",
+      "W": "W",
+      "D": "D",
+      "L": "L",
+      "GF": "GF",
+      "GA": "GA",
+      "DG": "GD",
+      "LAST": "Last"
+    },
+
+    "RESULT": {
+      "WIN": "W",
+      "DRAW": "D",
+      "LOSS": "L"
+    },
+
+    "MODAL": {
+      "TITLE": "Match List",
+      "SEARCH": "Search rival or result…",
+
+      "DATE": "Date",
+      "RIVAL": "Rival",
+      "RESULT": "Result",
+      "GF": "GF",
+      "GA": "GA",
+      "SHOTS_FOR": "DF",
+      "SHOTS_AGAINST": "DC",
+      "FOULS_FOR": "FF",
+      "FOULS_AGAINST": "FC",
+      "CORNERS": "Corners",
+      "YELLOW": "TA",
+      "RED": "TR"
+    }
   }
+
 }

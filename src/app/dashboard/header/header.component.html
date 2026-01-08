@@ -190,29 +190,30 @@
 
 
 <!-- MODAL IDIOMA -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalIdioma}">
-  <div class="modal-dialog" role="document">
+<div class="modal fade show d-block" *ngIf="showModalIdioma">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
 
       <div class="modal-header">
         <h5 class="modal-title">{{ 'LANG.MODAL_TITLE' | translate }}</h5>
-        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalIdioma()"></button>
+        <button class="btn-close" (click)="cerrarModalIdioma()"></button>
       </div>
 
       <div class="modal-body">
-        <p>{{ 'LANG.INSTRUCCIONES' | translate }}</p>
-        <hr />
+        <p class="text-muted">{{ 'LANG.INSTRUCCIONES' | translate }}</p>
 
-        <label class="form-label">{{ 'LANG.LABEL' | translate }}</label>
-
-        <select class="form-control" [(ngModel)]="selectedLang" name="langSelect" (change)="cambiarIdioma()">
-          <option value="es">Español</option>
-          <option value="en">English</option>
-          <option value="fr">Français</option>
-          <option value="de">Deutsch</option>
+        <select
+          class="form-select"
+          [(ngModel)]="selectedLang"
+          (change)="cambiarIdioma()"
+        >
+          <option value="es">🇪🇸 Español</option>
+          <option value="en">🇺🇸 English</option>
+          <option value="fr">🇫🇷 Français</option>
+          <option value="de">🇩🇪 Deutsch</option>
         </select>
-
       </div>
+
 
     </div>
   </div>

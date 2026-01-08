@@ -24,6 +24,7 @@ import { AsistenciaComponent } from './dashboard/asistencia/asistencia.component
 
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { LogoSpinnerComponent } from './shared/logo-spinner/logo-spinner.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -39,7 +40,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ValidationUserComponent,
     ProfileComponent,
     ClubesListComponent,
-    AsistenciaComponent
+    AsistenciaComponent,
   ],
   imports: [
     BrowserModule,

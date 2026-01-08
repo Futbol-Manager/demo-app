@@ -130,7 +130,7 @@ export class HeaderComponent implements OnInit {
       this.renderer.setStyle(card, 'color', this.isDarkMode ? 'white' : 'black');
       this.renderer.setStyle(card, 'background-color', this.isDarkMode ? '#3a444e' : 'white');
     });
-    //cambiamos el calendario    
+    //cambiamos el calendario
     const calendar = document.getElementById('tableCalendar');
     if (calendar) {
       if (this.isDarkMode) {

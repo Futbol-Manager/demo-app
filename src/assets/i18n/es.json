@@ -30,9 +30,9 @@
     "LOAD": "Cargando datos...",
     "LOADLIST": "Cargando listado...",
     "DOWNLOAD": "Descargar",
-    "EXCELLOAD": "Cargar jugadores desde Excel:",
+    "EXCELLOAD": "Cargar jugadores desde Excel",
     "EXCELUP": "Subir Excel",
-    "INVITED": "Link invitación para padres:",
+    "INVITED": "Invitar padres",
     "COPY": "Subir Excel",
     "SEASON": "Temporada",
     "CREATETEAM": "Crear equipo",
@@ -665,6 +665,96 @@
     "BUTTONS_MODALS": {
       "ACKNOWLEDGE": "Entendido",
       "I_AM_COACH": "Soy entrenador"
+    }
+  },
+  "CUADROMANDO": {
+    "SUBMENU": {
+      "BACK": "Panel de Control"
+    },
+
+    "OPTIONS": {
+      "FEES": "Cuotas",
+      "FEES_DESC": "Gestión de pagos",
+
+      "SCORES": "Puntuación equipos",
+      "SCORES_DESC": "Clasificación",
+
+      "TRAINING": "Entrenamientos",
+      "TRAINING_DESC": "Sesiones",
+
+      "PLAYERS": "Jugadores",
+      "PLAYERS_DESC": "Información",
+
+      "TEAMS": "Equipos",
+      "TEAMS_DESC": "Estadísticas",
+
+      "PLAYER": "Jugador",
+      "PLAYER_DESC": "Métricas"
+    },
+
+    "RESULTS": {
+      "TITLE": "Resultados última jornada",
+      "FINISHED": "Finalizado",
+      "LOCAL": "Local",
+      "VISITOR": "Visitante"
+    },
+
+    "TRAINING_TODAY": {
+      "TITLE": "Entrenando hoy"
+    },
+
+    "NEXT_MATCHES": {
+      "TITLE": "Próximos partidos",
+      "LOCAL": "Local",
+      "VISITOR": "Visitante",
+      "UNDEFINED": "Por definir"
+    },
+
+    "COMMON": {
+      "VS": "VS"
+    }
+  },
+
+  "ESTADIS_EQUIPO": {
+    "BACK": "Cuadro de mando",
+
+    "TITLE": "Tabla de Resumen",
+
+    "TABLE": {
+      "TEAM": "Equipo",
+      "PJ": "PJ",
+      "PTS": "PTS",
+      "W": "V",
+      "D": "E",
+      "L": "D",
+      "GF": "GF",
+      "GA": "GC",
+      "DG": "DG",
+      "LAST": "Últimos"
+    },
+
+    "RESULT": {
+      "WIN": "G",
+      "DRAW": "E",
+      "LOSS": "P"
+    },
+
+    "MODAL": {
+      "TITLE": "Listado de Partidos",
+      "SEARCH": "Buscar rival o resultado…",
+
+      "DATE": "Fecha",
+      "RIVAL": "Rival",
+      "RESULT": "Resultado",
+      "GF": "GF",
+      "GA": "GC",
+      "SHOTS_FOR": "DF",
+      "SHOTS_AGAINST": "DC",
+      "FOULS_FOR": "FF",
+      "FOULS_AGAINST": "FC",
+      "CORNERS": "Corners",
+      "YELLOW": "TA",
+      "RED": "TR"
     }
   }
 }

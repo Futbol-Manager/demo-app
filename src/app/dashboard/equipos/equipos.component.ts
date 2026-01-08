@@ -8,6 +8,7 @@ import {Router} from '@angular/router';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {ClubService} from 'src/app/core/services/club/club.service';
 import {distinctUntilChanged, filter} from 'rxjs/operators';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 @Component({
   selector: 'app-inicio',
@@ -832,6 +833,11 @@ export class EquiposComponent implements OnInit {
         alert('Error al subir el documento');
       }
     });
+  }
+
+
+  dropTeam(event: CdkDragDrop<any[]>) {
+    moveItemInArray(this.listTeam, event.previousIndex, event.currentIndex);
   }
 
   crearNivel(nombre: string): void {

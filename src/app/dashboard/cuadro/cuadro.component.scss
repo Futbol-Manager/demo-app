@@ -1,60 +1,443 @@
-.scrollable-list {
-    height: 100px;
-    /* Altura fija */
-    overflow-y: auto;
-    /* Activar scroll vertical */
-    width: 100%;
-    /* Ocupa todo el ancho disponible */
-    margin: 0;
-    /* Elimina márgenes predeterminados */
-    padding: 0 10px;
-    /* Añade un poco de padding a los lados */
-    list-style-type: none;
-    /* Elimina los puntos del listado */
-    box-sizing: border-box;
-    /* Asegura que padding no altere el ancho total */
+.cuadro-dashboard {
+  background: #f8f9fa;
+  padding: 1.5rem;
 }
 
-.scrollable-list::-webkit-scrollbar {
-    width: 6px;
-    /* Ancho del scroll en navegadores WebKit */
+/* SUBMENU */
+.submenu {
+  background: #002c40;
+  padding: 0.6rem 1rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
 }
 
-.scrollable-list::-webkit-scrollbar-thumb {
-    background-color: #28a745;
-    /* Color verde del scroll */
-    border-radius: 10px;
-    /* Bordes redondeados */
+/* BOTÓN BACK */
+.submenu-back {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #31b270;
+  font-weight: 500;
+  font-size: 1.5rem;
+  cursor: pointer;
+  margin: 0 !important;
+  text-align: left !important;
 }
 
-.scrollable-list::-webkit-scrollbar-thumb:hover {
-    background-color: #218838;
-    /* Un verde más oscuro al pasar el mouse */
+/* ICONO */
+.submenu-back i {
+  font-size: 1.5rem;
+  color: #31b270;
+}
+.submenu-back span {
+  font-size: 1.5rem;
+  color: #31b270;
 }
 
-.scrollable-list::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    /* Fondo del track del scroll */
-    border-radius: 10px;
-    /* Bordes redondeados */
+/* HOVER */
+.submenu-back:hover {
+  opacity: 0.85;
 }
 
-.scrollable-list::-moz-scrollbar {
-    scrollbar-color: #28a745 #f1f1f1;
-    /* Para Firefox: color del scroll y del track */
-    scrollbar-width: thin;
-    /* Tamaño del scroll en Firefox */
+
+/* TITULOS */
+.section-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
-.fixed-card {
-    height: 18em;
-    /* Altura fija para todas las tarjetas */
-    overflow: hidden;
-    /* Evita que el contenido sobresalga */
+/* OPCIONES */
+.option-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.4rem;
+  text-align: center;
+  border: 1px solid #bababa;
+  cursor: pointer;
+  transition: 0.25s;
 }
 
-.card-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+.option-card i {
+  font-size: 1.6rem;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.option-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* INFO */
+.info-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.4rem;
+  border: 1px solid #e6e6e6;
+  margin-bottom: 1.5rem;
+}
+/* =========================
+   SKELETON BASE
+========================= */
+
+.skeleton-line,
+.skeleton-badge,
+.skeleton-hour {
+  background: linear-gradient(
+    90deg,
+    #eeeeee 25%,
+    #f5f5f5 37%,
+    #eeeeee 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 6px;
+  margin-bottom: 0.6rem;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* RESULTADOS */
+.skeleton-card {
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.skeleton-badge {
+  width: 80px;
+  height: 18px;
+  margin-bottom: 0.8rem;
+}
+
+.skeleton-line {
+  height: 14px;
+}
+
+.skeleton-line.w-70 { width: 70%; }
+.skeleton-line.w-40 { width: 40%; }
+
+/* CALENDARIO */
+.skeleton-calendar {
+  padding: 1rem;
+}
+
+.skeleton-hour {
+  height: 50px;
+  margin-bottom: 0.8rem;
+}
+
+/* ENTRENANDO */
+.train-card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  background: #28a745;
+  border-radius: 50%;
+}
+
+/* RESULTADOS */
+.match-card {
+  border-radius: 18px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border: 2px solid;
+}
+
+.match-card.victoria { border-color: #b7e5c7; }
+.match-card.empate { border-color: #ffd8a8; }
+.match-card.derrota { border-color: #f5b7b1; }
+
+.match-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+.badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.badge.victoria { background: #e6f4ea; color: #1e7e34; }
+.badge.empate { background: #fff3cd; color: #d39e00; }
+.badge.derrota { background: #fdecea; color: #c82333; }
+
+.status {
+  font-size: 0.75rem;
+  color: #9aa0a6;
+}
+
+.match-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.match-body {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* centra todo respecto al score */
+}
+
+/* Contenedor equipo */
+.team {
+  width: 35%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 🔑 centra el nombre respecto al score */
+}
+
+/* Visitante a la derecha */
+.team-visitor {
+  align-items: center;
+  text-align: center;
+}
+
+
+/* Wrapper del nombre */
+.team-name-wrapper {
+  display: flex;
+  align-items: center;
+  min-height: 32px; /* 🔑 iguala altura visual con score */
+}
+
+/* Nombre equipo */
+.team-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Local / Visitante */
+.team-role {
+  font-size: 0.7rem;
+  color: #9aa0a6;
+  margin-top: 2px;
+}
+
+/* Marcador */
+.score {
+  background: #f1f3f5;
+  padding: 0.6rem 1.1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1rem;
+}
+/* =========================
+   CALENDARIO
+========================= */
+
+.calendar {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+}
+
+/* HORAS */
+.calendar-hours {
+  display: flex;
+  flex-direction: column;
+}
+
+.hour {
+  height: 32px; /* 🔑 1 hora = 32px */
+  font-size: 0.7rem;
+  color: #6c757d;
+  text-align: right;
+  padding-right: 6px;
+}
+
+/* CUERPO DEL CALENDARIO */
+.calendar-body {
+  position: relative;
+  border-left: 1px solid #e0e0e0;
+  overflow: hidden; /* 🔑 evita desbordes */
+}
+
+/* EVENTOS */
+.calendar-event {
+  position: absolute;
+  background: #e6f4ea;
+  border-left: 3px solid #28a745;
+  border-radius: 6px;
+  padding: 4px 6px;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.calendar-event strong {
+  display: block;
+  font-size: 0.72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calendar-event small {
+  font-size: 0.65rem;
+  color: #495057;
+}
+
+
+/* =========================
+   PRÓXIMOS PARTIDOS (REAL)
+========================= */
+
+.next-matches-card {
+  padding: 1.4rem;
+}
+
+.next-match {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: linear-gradient(180deg, #0b3a53, #062737);
+  border-radius: 16px;
+  color: #fff;
+}
+
+
+/* EQUIPOS */
+.team-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  flex: 1;
+}
+
+.team-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.team-avatar i {
+  font-size: 1.6rem;
+  color: #fff;
+}
+
+/* VISITANTE */
+.team-avatar.visitor {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* INFO DEL EQUIPO */
+.team-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.team-info.align-right {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.team-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.1;
+}
+
+/* BADGES */
+.team-badge {
+  font-size: 0.6rem;
+  font-weight: 600;
+  padding: 0.15rem 0.45rem;
+  border-radius: 6px;
+  width: fit-content;
+}
+
+/* LOCAL */
+.team-badge.local {
+  background: #dee2e6;
+  color: #495057;
+}
+
+/* VISITANTE */
+.team-badge.visitante {
+  background: #d4edda;
+  color: #1e7e34;
+}
+.vs-box {
+  background: #0d6efd;
+  color: #fff;
+  font-weight: 700;
+  padding: 0.4rem 0.8rem;
+  border-radius: 10px;
+  font-size: 0.75rem;
+}
+
+/* =========================
+   SKELETON (DEFAULT)
+========================= */
+
+.match-skeleton {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: #f8f9fa; /* 🔑 CLARO */
+  border-radius: 16px;
+}
+
+/* CÍRCULOS */
+.skeleton-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(
+    90deg,
+    #e0e0e0 25%,
+    #f3f3f3 37%,
+    #e0e0e0 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+/* VS */
+.skeleton-vs {
+  width: 36px;
+  height: 20px;
+  border-radius: 6px;
+  background: #e0e0e0;
+}
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: 200px 0;
+  }
 }

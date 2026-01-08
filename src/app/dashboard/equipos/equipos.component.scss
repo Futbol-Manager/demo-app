@@ -1,93 +1,227 @@
-.card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  color: #6c757d;
-  word-wrap: break-word;
-  background-color: #fff;
-  background-clip: border-box;
-  border: 0px solid #dee2e6;
-  border-radius: 0.25rem;
-  box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
-  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
-}
-
-.card:hover {
-  transform: scale(1.05);
-  border-color: #22BF63;
-  background-color: #22BF63;
-  box-shadow: 0px 0px 35px 0px rgba(34, 191, 99, 0.5);
-}
-
-.card-title {
-  font-weight: bold;
-}
-
-.card-text {
-  font-size: 14px;
-}
-
-.btn-danger {
-  margin-right: 10px;
-}
-
-.img-half-size {
-  width: 50%;
-  height: auto;
-}
-
-.bg-light-green {
-  background: linear-gradient(270deg, #5ae8c4, #33a7db);
-  background-size: 400% 400%;
-}
-
-.btn-width {
-  width: 100%;
-}
-
-.modal-content {
-  background-size: 400% 400%;
-}
-
 .loading-container {
+  position: fixed;
+  inset: 0; /* top:0 right:0 bottom:0 left:0 */
+  z-index: 9999;
+
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-direction: row;
   align-items: center;
-  height: 100vh;
-  color: #007bff;
-  /* Color principal */
-  font-family: Arial, sans-serif;
-  background-color: #f8f9fa;
-  /* Fondo claro */
+  justify-content: center;
+  gap: 12px;
+
+  background-color: rgba(255, 255, 255, 0.256);
 }
 
 .spinner-border {
-  width: 3rem;
-  height: 3rem;
-  margin-bottom: 1rem;
+  width: 2.5rem;
+  height: 2.5rem;
 }
 
 .loading-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #0b2e3b;
+}
+
+.actions-row {
+  display: flex;
+  gap: 12px;
+}
+
+.actions-row .btn {
+  flex: 1;
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 12px;
+  white-space: nowrap;
+}
+
+.season-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.season-select {
+  max-width: 220px;
+  text-align: center;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 576px) {
+  .actions-row {
+    flex-direction: column;
+  }
+}
+
+
+.teams-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.team-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 8px 24px rgba(0, 44, 64, 0.08);
+  transition: all 0.25s ease;
+  text-align: center;
+  cursor: pointer;
+}
+
+.team-card:hover {
+  background: linear-gradient(135deg, #31b270, #002c40);
+  box-shadow: 0 14px 32px rgba(0, 44, 64, 0.25);
+}
+
+.team-card strong {
+  display: block;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #002c40;
+  margin-bottom: 4px;
+}
+
+.team-card:hover strong {
+  color: #ffffff;
+}
+
+.team-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.team-name {
+  text-align: center;
+  font-weight: 700;
+  color: #002c40;
+}
+
+.team-id {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #5c6f7a38;
+  color: #002c40;
+  white-space: nowrap;
+}
+
+
+.team-card:hover .team-id {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
+.team-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: #5c6f7a;
+  line-height: 1.4;
+  flex-wrap: wrap;
+  word-break: break-word;
+}
+
+.team-info i {
+  font-size: 1.15rem;
+  color: #31b270;
+}
+
+.team-card:hover .team-info,
+.team-card:hover .team-info i {
+  color: #ffffff;
+}
+
+.team-card strong {
+  text-align: center;
+  display: block;
+}
+
+
+
+@media (min-width: 1200px) {
+  .teams-mobile {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+/* =====================================================
+   DESKTOP GRANDE → 2 COLUMNAS
+   ===================================================== */
+@media (min-width: 1200px) {
+  .teams-mobile {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+.btn.btn-invite {
+  background-color: #002c40 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.btn.btn-invite:hover {
+  background-color: #001f2e !important;
+}
+.btn.btn-create-team {
+  background: linear-gradient(135deg, #31b270, #002c40) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.btn.btn-create-team:hover {
+  background: linear-gradient(135deg, #002c40, #31b270) !important;
+}
+
+/* =====================================================
+   LIMPIAR EFECTOS ANTIGUOS
+   ===================================================== */
+.card,
+.card:hover {
+  transform: none !important;
+  background-color: #ffffff !important;
+}
+.actions-row {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.actions-row .btn {
+  flex: 1;
+  min-height: 46px;
+  border-radius: 12px;
+  font-weight: 600;
   display: flex;
   align-items: center;
-  font-size: 1.2rem;
-  font-weight: 500;
-  color: #333;
+  justify-content: center;
+  gap: 8px;
 }
 
-.mdi-loading {
-  font-size: 1.5rem;
-  animation: spin 1s linear infinite;
+.cdk-drag-preview {
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
+.cdk-drag-placeholder {
+  opacity: 0;
+}
 
-  100% {
-    transform: rotate(360deg);
-  }
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
 }
