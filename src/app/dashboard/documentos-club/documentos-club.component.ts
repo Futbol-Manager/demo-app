@@ -4,19 +4,24 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule, ToastrService } from 'ngx-toastr';
+import { finalize } from 'rxjs/operators';
+import { HttpEventType } from '@angular/common/http';
 
 @Component({
   selector: 'app-documentos-club',
   templateUrl: './documentos-club.component.html',
-  styleUrls: ['./documentos-club.component.scss']
+  styleUrls: ['./documentos-club.component.scss'],
 })
 export class DocumentosClubComponent implements OnInit {
-
   listDocuments: any[] = [];
   clubId = 0;
 
   ordenAscendente = true;
   columnaActual = '';
+  loadingUpload = false;
+  uploadProgress = 0;
 
   mostrarModalDocumento = false;
   formDocumento!: FormGroup;
@@ -33,53 +38,64 @@ export class DocumentosClubComponent implements OnInit {
   contenidoEditando: string = '';
   tituloEditando: string = '';
   docEditando: any = null;
+  mostrarModalEliminar = false;
+
+  docEliminarId!: number;
+  docEliminarIndex!: number;
+  docEliminarNombre = '';
+
+  loadingEliminar = false;
 
   constructor(
     private location: Location,
     private clubService: ClubService,
     private router: Router,
     private route: ActivatedRoute,
-    private fb: FormBuilder) {
-
+    private fb: FormBuilder,
+    private toastr: ToastrService
+  ) {
     this.formDocumento = this.fb.group({
       nombre: ['', Validators.required],
       descripcion: [''],
       tipo: ['', Validators.required],
       visible: [false],
-      requiereD: [false]
+      requiereD: [false],
     });
 
     this.documentoSinSubir = this.fb.group({
       nombreSin: ['', Validators.required],
       descripcionSin: [''],
-      tipoSin: ['', Validators.required]
+      tipoSin: ['', Validators.required],
     });
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       // Obtener el valor de clubId de los parámetros
-      this.clubId = +params['clubId'];  // El + convierte el valor a número
+      this.clubId = +params['clubId']; // El + convierte el valor a número
       console.log('clubId:', this.clubId);
     });
 
     this.loadDocuments();
   }
 
-  loadDocuments() {
-    this.clubService.getlistDocumentosByClub(this.clubId).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.listDocuments = response.data;
-        } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+  loadDocuments(): void {
+    this.clubService.getlistDocumentosByClub(this.clubId).subscribe({
+      next: (response: Response) => {
+        if (!response?.data?.documentos) {
+          this.listDocuments = [];
+          return;
         }
+
+        // ✅ Backend ya trae totalPadres y totalSubidos
+        this.listDocuments = response.data.documentos;
+
+        console.log('Documentos:', this.listDocuments);
       },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      error: (err) => {
+        console.error('Error cargando documentos', err);
+      },
+    });
   }
 
   goBack(): void {
@@ -87,7 +103,8 @@ export class DocumentosClubComponent implements OnInit {
   }
 
   abrirPdf(nombreArchivo: string): void {
-    const link = 'https://appsphairatech.com/images/documentos/' + nombreArchivo;
+    const link =
+      'https://appsphairatech.com/images/documentos/' + nombreArchivo;
     window.open(link, '_blank');
   }
 
@@ -125,8 +142,6 @@ export class DocumentosClubComponent implements OnInit {
     );
   }
 
-
-
   requiere(doc: any, id: number, requiere: number) {
     let isRequiere = requiere === 0 ? 1 : 0;
 
@@ -147,39 +162,60 @@ export class DocumentosClubComponent implements OnInit {
     const link = 'https://appsphairatech.com/images/documentos/' + file;
     //const link = 'localhost:4200/registro-padres/' + this.clubId;
 
-    navigator.clipboard.writeText(link)
+    navigator.clipboard
+      .writeText(link)
       .then(() => {
         console.log('Enlace copiado al portapapeles:', link);
         // Opcional: puedes usar un toast o alert para avisar al usuario
         alert('¡Link copiado!');
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Error al copiar el enlace:', err);
         alert('No se pudo copiar el enlace. Intenta de nuevo.');
       });
   }
 
   confirmarEliminarDoc(index: number, id: number, nombre: string) {
-    const confirmacion = confirm('¿Estás seguro de que deseas eliminar el documento ' + nombre + '?');
-    if (confirmacion) {
-      // Llama al método para eliminar el equipo
-      this.eliminarDocumento(id, index);
-    }
+    this.docEliminarId = id;
+    this.docEliminarIndex = index;
+    this.docEliminarNombre = nombre;
+    this.mostrarModalEliminar = true;
+  }
+
+  cerrarModalEliminar() {
+    this.mostrarModalEliminar = false;
+    this.loadingEliminar = false;
+  }
+  confirmarEliminarDefinitivo() {
+    this.loadingEliminar = true;
+    this.eliminarDocumento(this.docEliminarId, this.docEliminarIndex);
   }
 
   eliminarDocumento(id: number, index: number): void {
-    // Lógica para eliminar el equipo llamando al servicio correspondiente
-    this.clubService.deleteDocumentoForClub(id).subscribe(
-      (response) => {
-        // Manejar la respuesta según tus necesidades
-        //console.log('Jugador eliminado con éxito:', response);
-        this.listDocuments.splice(index, 1);
-      },
-      (error) => {
-        console.error('Error al eliminar el jugador:', error);
-        // Puedes manejar el error según tus necesidades
-      }
-    );
+    this.clubService
+      .deleteDocumentoForClub(id)
+      .pipe(
+        finalize(() => {
+          // 🔑 SIEMPRE se ejecuta (éxito o error)
+          this.loadingEliminar = false;
+          this.cerrarModalEliminar();
+        })
+      )
+      .subscribe({
+        next: () => {
+          // ✅ eliminar de la tabla
+          this.listDocuments.splice(index, 1);
+
+          // opcional: feedback visual
+          this.toastr.success('Documento eliminado correctamente');
+        },
+        error: (error) => {
+          console.error('Error al eliminar el documento:', error);
+
+          // opcional: mostrar toast / alert
+          this.toastr.error('Error al eliminar el documento');
+        },
+      });
   }
 
   openModalSubirDoc() {
@@ -217,33 +253,49 @@ export class DocumentosClubComponent implements OnInit {
   }
 
   subirDocumento() {
+    if (!this.archivoSeleccionado) return;
+
+    this.loadingUpload = true;
+    this.uploadProgress = 0;
+
     const formValues = this.formDocumento.value;
+
     const dto = {
       docClubesId: 0,
       nombre: formValues.nombre,
       descripcion: formValues.descripcion,
       tipo: formValues.tipo,
-      visible: formValues.visible ? 0 : 1, // si es true, entonces 0
+      visible: formValues.visible ? 0 : 1,
       file: null,
-      clubId: this.clubId, // asegúrate de tener this.clubId en tu componente
+      clubId: this.clubId,
       fecCreate: null,
-      requiere: formValues.requiereD ? 1 : 0
+      requiere: formValues.requiereD ? 1 : 0,
     };
 
-    const file = this.archivoSeleccionado;
-    if (file) {
-      this.clubService.uploadDocClub(file, dto).subscribe({
-        next: (res) => {
-          this.loadDocuments();
-          alert('Documento solicitado correctamente');
-          this.cerrarModalDocumento();
-        },
-        error: (err) => {
-          console.error(err);
-          alert('Error al subir el documento');
+    this.clubService.uploadDocClub(this.archivoSeleccionado, dto).subscribe({
+      next: (event) => {
+        // 📊 PROGRESO
+        if (event.type === HttpEventType.UploadProgress && event.total) {
+          this.uploadProgress = Math.round((event.loaded / event.total) * 100);
         }
-      });
-    }
+
+        // ✅ FINALIZÓ
+        if (event.type === HttpEventType.Response) {
+          this.loadingUpload = false;
+          this.uploadProgress = 100;
+
+          this.loadDocuments();
+          this.cerrarModalDocumento();
+
+          this.toastr.success('Documento subido correctamente');
+        }
+      },
+      error: () => {
+        this.loadingUpload = false;
+        this.uploadProgress = 0;
+        this.toastr.error('Error al subir el documento');
+      },
+    });
   }
 
   subirSinDocumento() {
@@ -257,7 +309,7 @@ export class DocumentosClubComponent implements OnInit {
       file: null,
       clubId: this.clubId, // asegúrate de tener this.clubId en tu componente
       fecCreate: null,
-      requiere: 1
+      requiere: 1,
     };
 
     this.clubService.uploadSinDocClub(dto).subscribe({
@@ -270,9 +322,8 @@ export class DocumentosClubComponent implements OnInit {
       error: (err) => {
         console.error(err);
         alert('Error al subir el documento');
-      }
+      },
     });
-
   }
 
   openModalSubirPersonalizado(): void {
@@ -295,7 +346,7 @@ export class DocumentosClubComponent implements OnInit {
       file: null,
       clubId: this.clubId, // asegúrate de tener this.clubId en tu componente
       fecCreate: null,
-      requiere: 2
+      requiere: 2,
     };
 
     this.clubService.uploadSinDocClub(dto).subscribe({
@@ -308,7 +359,7 @@ export class DocumentosClubComponent implements OnInit {
       error: (err) => {
         console.error(err);
         alert('Error al subir el documento');
-      }
+      },
     });
   }
 
@@ -328,12 +379,14 @@ export class DocumentosClubComponent implements OnInit {
   guardarEdicionPersonalizado(): void {
     if (!this.docEditando) return;
 
-    const contenidoActualizado = (document.getElementById('editorPersonalizado') as HTMLElement).innerHTML;
+    const contenidoActualizado = (
+      document.getElementById('editorPersonalizado') as HTMLElement
+    ).innerHTML;
 
     const dto = {
       ...this.docEditando,
       descripcion: contenidoActualizado,
-      nombre: this.tituloEditando
+      nombre: this.tituloEditando,
     };
 
     this.clubService.uploadSinDocClub(dto).subscribe({
@@ -345,8 +398,7 @@ export class DocumentosClubComponent implements OnInit {
       error: (err) => {
         console.error(err);
         alert('Error al subir el documento');
-      }
+      },
     });
   }
-
 }

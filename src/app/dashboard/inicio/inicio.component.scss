@@ -1,6 +1,35 @@
 /* ===============================
-   Dashboard Mobile (Inicio)
+   Dashboard (Inicio)
 ================================ */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+app-root {
+  height: 100%;
+  display: block;
+}
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-content {
+  flex: 1;
+}
+
+.dashboard-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-content {
+  flex: 1;
+}
 
 .dashboard-mobile {
   padding-top: 1rem;

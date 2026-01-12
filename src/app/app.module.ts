@@ -1,3 +1,4 @@
+import { ToastrModule } from 'ngx-toastr';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -21,10 +22,8 @@ import { ClubesListComponent } from './pages/register/clubes-list/clubes-list.co
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { ValidationUserComponent } from './pages/validation-user/validation-user.component';
 import { AsistenciaComponent } from './dashboard/asistencia/asistencia.component';
-
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
-import { LogoSpinnerComponent } from './shared/logo-spinner/logo-spinner.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -59,12 +58,20 @@ export function HttpLoaderFactory(http: HttpClient) {
       }
     }),
 
+    ToastrModule.forRoot({
+      positionClass: 'toast-bottom-right',
+      timeOut: 3000,
+      closeButton: true,
+      progressBar: true,
+      preventDuplicates: true
+    }),
+
     DashboardModule,
     CommonModule,
     NgxDatatableModule,
     MatSnackBarModule,
     MatDialogModule,
-    MatFormFieldModule
+    MatFormFieldModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

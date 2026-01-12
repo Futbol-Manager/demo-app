@@ -40,6 +40,7 @@
     "file-saver": "^2.0.5",
     "html2pdf.js": "^0.10.2",
     "jquery": "^3.7.1",
+    "ngx-toastr": "^14.3.0",
     "popper.js": "^1.16.1",
     "rxjs": "^7.8.1",
     "tslib": "^2.6.2",

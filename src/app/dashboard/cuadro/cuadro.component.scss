@@ -16,8 +16,7 @@
 .submenu-back {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  color: #31b270;
+  color: #f4f4f4;
   font-weight: 500;
   font-size: 1.5rem;
   cursor: pointer;
@@ -28,11 +27,16 @@
 /* ICONO */
 .submenu-back i {
   font-size: 1.5rem;
-  color: #31b270;
+  gap: 0.3rem;
+  margin-left: 5px;
+  margin-right: 5px;
+  font-weight: 500;
+  color: #f4f4f4;
 }
 .submenu-back span {
   font-size: 1.5rem;
-  color: #31b270;
+  color: #f4f4f4;
+  margin-bottom: 10PX;
 }
 
 /* HOVER */

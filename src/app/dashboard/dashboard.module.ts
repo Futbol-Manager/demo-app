@@ -54,6 +54,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { EquiposComponent } from './equipos/equipos.component';
 import { LogoSpinnerComponent } from '../shared/logo-spinner/logo-spinner.component';
+import { FooterComponent } from '../shared/footer/footer.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -91,6 +92,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HorariosequiposComponent,
     EntrenamientosCreadosComponent,
     PuntuacionEquipsComponent,
+    PublicidadComponent,
     GraficaCuotasComponent,
     GoleadoresComponent,
     MenuEntrenadorComponent,
@@ -108,6 +110,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ListadoClubesComponent,
     EquiposComponent,
     LogoSpinnerComponent,
+    FooterComponent
   ],
   imports: [
     CommonModule,

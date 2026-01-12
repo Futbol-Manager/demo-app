@@ -696,7 +696,10 @@
       "TITLE": "Resultados última jornada",
       "FINISHED": "Finalizado",
       "LOCAL": "Local",
-      "VISITOR": "Visitante"
+      "VISITOR": "Visitante",
+      "VICTORIA": "VICTORIA",
+      "EMPATE": "EMPATE",
+      "DERROTA": "DERROTA"
     },
 
     "TRAINING_TODAY": {
@@ -713,6 +716,9 @@
     "COMMON": {
       "VS": "VS"
     }
+  },
+  "FOOTER": {
+    "RIGHTS": "Todos los derechos reservados."
   },
 
   "ESTADIS_EQUIPO": {
@@ -742,7 +748,8 @@
     "MODAL": {
       "TITLE": "Listado de Partidos",
       "SEARCH": "Buscar rival o resultado…",
-
+      "LOCAL_VISITOR":"Local/Visitante",
+      "TYPEMATCH":"Tipo Partido",
       "DATE": "Fecha",
       "RIVAL": "Rival",
       "RESULT": "Resultado",
@@ -755,6 +762,107 @@
       "CORNERS": "Corners",
       "YELLOW": "TA",
       "RED": "TR"
+    }
+  },
+  "DOCS_EQUIPO": {
+    "COMMON": {
+      "SAVE": "Guardar",
+      "CANCEL": "Cancelar",
+      "EDIT": "Editar",
+      "DELETE": "Eliminar",
+      "COPY": "Copiar",
+      "ACTIONS": "Acción",
+      "BACK": "Volver"
+    },
+    "DOCS": {
+      "UPLOAD_NEW": "Subir nuevo documento",
+      "UPLOAD_DOC": "Subir documento",
+      "REQUIRE_DOC_TITLE": "Requerir documento al jugador",
+      "REQUIRE_DOC": "Requerir documento",
+      "CUSTOM_INFO_TITLE": "Requerir información",
+      "CUSTOM": "Personalizado",
+      "COMPLETED": "Completado",
+      "NAME": "Nombre",
+      "DESCRIPTION": "Descripción",
+      "TYPE": "Tipo",
+      "DATE": "Fecha",
+      "VISIBILITY": "Visibilidad",
+      "REQUIRE_UPLOAD": "Permitir subida",
+      "OPEN": "Abrir documento"
+    },
+    "MODAL": {
+      "UPLOAD_TITLE": "Subir Documento (PDF o Word)",
+      "REQUIRE_TITLE": "Documento que se requiere",
+      "CUSTOM_TITLE": "Requerimiento Personalizado",
+
+      "NAME": "Nombre del documento",
+      "DESCRIPTION": "Descripción",
+      "TYPE": "Tipo",
+      "FILE": "Seleccionar archivo (.pdf o .doc/.docx)",
+
+      "VISIBLE": "Visible para jugadores",
+      "REQUIRE_UPLOAD_HELP": "Habilita este botón para permitir a los padres/jugadores subir este documento cumplimentado.",
+
+      "CUSTOM_CONTENT": "Contenido del mensaje",
+      "CUSTOM_HELP": "Aquí puedes poner lo que quieras, incluido copiar y pegar texto desde Word.",
+      "CUSTOM_CHECK": "Esto lo verá el jugador/padre para aceptar lo que pongas debajo.",
+      "CUSTOM_TITLE_LABEL": "Texto autorización",
+      "CUSTOM_TITLE_PLACEHOLDER": "Ej. Autorizo al club a...",
+
+       "UPLOADING": "Subiendo documento...",
+      "UPLOAD_PROGRESS": "Progreso de subida",
+      "UPLOAD_SUCCESS": "Documento subido correctamente",
+      "UPLOAD_ERROR": "Error al subir el documento",
+      "UPLOAD_WAIT": "Por favor espera mientras se completa la subida"
+    }
+  },
+
+  "CUOTAS": {
+    "NAV": {
+      "BACK": "Volver",
+      "PAYMENTS": "Pagos",
+      "STRIPE": "Stripe",
+      "HISTORY": "Historial",
+      "SETTINGS": "Ajustes"
+    },
+    "LOADING": "Cargando listado...",
+    "FILTER": {
+      "SEARCH": "Filtrar por nombre o equipo",
+      "RESET": "Resetear datos",
+      "ONLY_REQUIRED": "Mostrando solo pagos obligatorios",
+      "INFO": "Los pagos no obligatorios se pueden ver desde el historial del jugador."
+    },
+    "TABLE": {
+      "NAME": "Nombre",
+      "TEAM": "Equipo",
+      "STATUS": "Estado",
+      "TOTAL": "Total a pagar",
+      "PAID": "Pagado",
+      "REMAINING": "Restante",
+      "PAYMENTS": "Pagos realizados",
+      "ACTIONS": "Acciones"
+    },
+    "ACTIONS": {
+      "EDIT": "Editar pago del jugador",
+      "PAY": "Introducir un pago",
+      "HISTORY": "Ver historial de pagos"
+
+    },
+    "NO_TEAM": "Sin equipo",
+    "PAGINATION": {
+      "SHOWING": "Mostrando",
+      "OF": "de"
+    },
+    "CUOTAS_ASSIGNED": {
+      "TITLE": "Pagos asignados al jugador",
+      "AMOUNT": "Importe",
+      "DESCRIPTION": "Descripción",
+      "DEADLINE": "Fecha límite",
+      "MANDATORY": "Obligatoria",
+      "YES": "Sí",
+      "NO": "No",
+      "CLOSE": "Cerrar",
+      "EMPTY": "Este jugador no tiene pagos asignados"
     }
   }
 }

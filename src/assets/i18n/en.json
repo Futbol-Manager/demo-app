@@ -313,7 +313,10 @@
       "TITLE": "Last matchday results",
       "FINISHED": "Finished",
       "LOCAL": "Home",
-      "VISITOR": "Away"
+      "VISITOR": "Away",
+      "VICTORIA": "VICTORY",
+      "EMPATE": "DRAW",
+      "DERROTA": "LOSS"
     },
 
     "TRAINING_TODAY": {
@@ -331,12 +334,13 @@
       "VS": "VS"
     }
   },
+  "FOOTER": {
+    "RIGHTS": "All rights reserved."
+  },
 
   "ESTADIS_EQUIPO": {
     "BACK": "Dashboard",
-
     "TITLE": "Summary Table",
-
     "TABLE": {
       "TEAM": "Team",
       "PJ": "MP",
@@ -359,7 +363,8 @@
     "MODAL": {
       "TITLE": "Match List",
       "SEARCH": "Search rival or result…",
-
+      "LOCAL_VISITOR":"Local/Visitor",
+      "TYPEMATCH":"Type Match",
       "DATE": "Date",
       "RIVAL": "Rival",
       "RESULT": "Result",
@@ -373,6 +378,104 @@
       "YELLOW": "TA",
       "RED": "TR"
     }
-  }
+  },
+  "DOCS_EQUIPO": {
+    "COMMON": {
+      "SAVE": "Save",
+      "CANCEL": "Cancel",
+      "EDIT": "Edit",
+      "DELETE": "Delete",
+      "COPY": "Copy",
+      "ACTIONS": "Action",
+      "BACK": "Back"
+    },
+    "DOCS": {
+      "UPLOAD_NEW": "Upload new document",
+      "UPLOAD_DOC": "Upload document",
+      "REQUIRE_DOC_TITLE": "Require document from the player",
+      "REQUIRE_DOC": "Require document",
+      "CUSTOM_INFO_TITLE": "Request information",
+      "CUSTOM": "Custom",
+      "COMPLETED": "Completed",
+      "NAME": "Name",
+      "DESCRIPTION": "Description",
+      "TYPE": "Type",
+      "DATE": "Date",
+      "VISIBILITY": "Visibility",
+      "REQUIRE_UPLOAD": "Allow upload",
+      "OPEN": "Open document"
+    },
+    "MODAL": {
+      "UPLOAD_TITLE": "Upload Document (PDF or Word)",
+      "REQUIRE_TITLE": "Required document",
+      "CUSTOM_TITLE": "Custom Requirement",
 
+      "NAME": "Document name",
+      "DESCRIPTION": "Description",
+      "TYPE": "Type",
+      "FILE": "Select file (.pdf or .doc/.docx)",
+
+      "VISIBLE": "Visible to players",
+      "REQUIRE_UPLOAD_HELP": "Enable this option to allow parents/players to upload the completed document.",
+
+      "CUSTOM_CONTENT": "Message content",
+      "CUSTOM_HELP": "Here you can write anything you want, including copying and pasting text from Word.",
+      "CUSTOM_CHECK": "This will be shown to the player/parent to accept what you write below.",
+      "CUSTOM_TITLE_LABEL": "Authorization text",
+      "CUSTOM_TITLE_PLACEHOLDER": "e.g. I authorize the club to...",
+
+      "UPLOADING": "Uploading document...",
+      "UPLOAD_PROGRESS": "Upload progress",
+      "UPLOAD_SUCCESS": "Document uploaded successfully",
+      "UPLOAD_ERROR": "Error uploading document",
+      "UPLOAD_WAIT": "Please wait while the upload completes"
+    }
+  },
+  "CUOTAS": {
+    "NAV": {
+      "BACK": "Back",
+      "PAYMENTS": "Payments",
+      "STRIPE": "Stripe",
+      "HISTORY": "History",
+      "SETTINGS": "Settings"
+    },
+    "LOADING": "Loading data...",
+    "FILTER": {
+      "SEARCH": "Filter by name or team",
+      "RESET": "Reset data",
+      "ONLY_REQUIRED": "Showing only mandatory payments",
+      "INFO": "Non-mandatory payments can be seen in the player's history."
+    },
+    "TABLE": {
+      "NAME": "Name",
+      "TEAM": "Team",
+      "STATUS": "Status",
+      "TOTAL": "Total amount",
+      "PAID": "Paid",
+      "REMAINING": "Remaining",
+      "PAYMENTS": "Payments made",
+      "ACTIONS": "Actions"
+    },
+    "ACTIONS": {
+      "EDIT": "Edit player payment",
+      "PAY": "Add a payment",
+      "HISTORY": "View payment history"
+    },
+    "NO_TEAM": "No team",
+    "PAGINATION": {
+      "SHOWING": "Showing",
+      "OF": "of"
+    },
+    "CUOTAS_ASSIGNED": {
+      "TITLE": "Assigned Payments to Player",
+      "AMOUNT": "Amount",
+      "DESCRIPTION": "Description",
+      "DEADLINE": "Due Date",
+      "MANDATORY": "Mandatory",
+      "YES": "Yes",
+      "NO": "No",
+      "CLOSE": "Close",
+      "EMPTY": "This player has no assigned payments"
+    }
+  }
 }
