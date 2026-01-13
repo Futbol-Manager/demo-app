@@ -82,6 +82,9 @@ export class InicioComponent implements OnInit {
       case 7:
         this.router.navigate(['/dashboard/new-cuotas', this.clubId]);
         break;
+      case 8:
+        this.router.navigate(['/dashboard/notificaciones', this.clubId]);
+        break;
       case 9:
         this.router.navigate(['/dashboard/equipos']);
         break;

@@ -166,12 +166,11 @@ export class DocumentosClubComponent implements OnInit {
       .writeText(link)
       .then(() => {
         console.log('Enlace copiado al portapapeles:', link);
-        // Opcional: puedes usar un toast o alert para avisar al usuario
-        alert('¡Link copiado!');
+        this.toastr.success('¡Link copiado!');
       })
       .catch((err) => {
         console.error('Error al copiar el enlace:', err);
-        alert('No se pudo copiar el enlace. Intenta de nuevo.');
+        this.toastr.error('No se pudo copiar el enlace. Intenta de nuevo.');
       });
   }
 
@@ -211,8 +210,6 @@ export class DocumentosClubComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error al eliminar el documento:', error);
-
-          // opcional: mostrar toast / alert
           this.toastr.error('Error al eliminar el documento');
         },
       });
@@ -246,7 +243,7 @@ export class DocumentosClubComponent implements OnInit {
       if (['pdf', 'doc', 'docx'].includes(ext || '')) {
         this.archivoSeleccionado = file;
       } else {
-        alert('Solo se permiten archivos PDF o Word.');
+        this.toastr.error('Solo se permiten archivos PDF o Word.');
         this.archivoSeleccionado = null;
       }
     }
@@ -315,13 +312,13 @@ export class DocumentosClubComponent implements OnInit {
     this.clubService.uploadSinDocClub(dto).subscribe({
       next: (res) => {
         this.loadDocuments();
-        alert('Documento subido correctamente');
+        this.toastr.success('Documento subido correctamente.');
         this.cerrarModalDocumento();
         // refrescar lista si hace falta
       },
       error: (err) => {
         console.error(err);
-        alert('Error al subir el documento');
+        this.toastr.error('Error al subir el documento.');
       },
     });
   }
@@ -352,13 +349,13 @@ export class DocumentosClubComponent implements OnInit {
     this.clubService.uploadSinDocClub(dto).subscribe({
       next: (res) => {
         this.loadDocuments();
-        alert('Documento subido correctamente');
+       this.toastr.success('Documento subido correctamente');
         this.cerrarModalPersonalizado();
         // refrescar lista si hace falta
       },
       error: (err) => {
         console.error(err);
-        alert('Error al subir el documento');
+        this.toastr.error('Error al subir el documento.');
       },
     });
   }
@@ -391,13 +388,13 @@ export class DocumentosClubComponent implements OnInit {
 
     this.clubService.uploadSinDocClub(dto).subscribe({
       next: (res) => {
-        alert('Contenido actualizado correctamente');
+        this.toastr.success('Contenido actualizado correctamente');
         this.cerrarModalEditarPersonalizado();
         // refrescar lista si hace falta
       },
       error: (err) => {
         console.error(err);
-        alert('Error al subir el documento');
+        this.toastr.error('Error al subir el documento');
       },
     });
   }

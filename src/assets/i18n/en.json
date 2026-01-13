@@ -15,6 +15,12 @@
       "ACCEPT": "Accept"
     }
   },
+  "COMMON": {
+    "BACK": "Back",
+    "DATE": "Date",
+    "EXPORT_EXCEL": "Export Excel",
+    "LOADING_LIST": "Loading list..."
+  },
   "LOGIN": {
     "EMAIL_PLACEHOLDER": "Email address",
     "EMAIL_REQUIRED": "Email is required",
@@ -22,7 +28,13 @@
     "PASSWORD_PLACEHOLDER": "Password",
     "PASSWORD_REQUIRED": "Password is required",
     "BLOCKED_MESSAGE": "User blocked. To unblock it, you must verify it using the link sent to your email address.",
-    "BLOCKED_LINK": "Click here to receive a new email."
+    "BLOCKED_LINK": "Click here to receive a new email.",
+    "ERROR": {
+      "INVALID_CREDENTIALS": "The email or password is incorrect. Please review them and try again.",
+      "NOT_VERIFIED": "Your account has not been verified yet. Please check your email.",
+      "RESEND_VERIFICATION": "Resend verification email",
+      "GENERIC": "We couldn’t sign you in. Please try again later."
+    }
   },
   "AUTH": {
     "FORGOT_PASSWORD": "I forgot my password",
@@ -80,35 +92,6 @@
     "DELEGADO": "Team Manager",
     "REFEREE": "Referee",
     "FIELD": "Field"
-  },
-  "AUTH": {
-    "FORGOT_PASSWORD": "I forgot my password",
-    "NO_ACCOUNT": "Don't have an account?",
-    "REGISTER": "Sign up",
-    "REMEMBER_PASSWORD": "Remember your password?",
-    "LOGIN_HERE": "Log in here",
-    "REMEMBER_TITLE": "Enter your email address to reset your password",
-    "EMAIL_PLACEHOLDER": "Email address",
-    "EMAIL_INVALID": "Enter a valid email address",
-    "SEND_MAIL": "Send email"
-  },
-  "ALT": {
-    "BACKGROUND": "Soccer background image",
-    "LOGO": "SphairaTech logo"
-  },
-  "NAV": {
-    "BACK": "Back",
-    "INICIO": "Home",
-    "DOCUMENTS": "Documents",
-    "CUADRO": "Sports Management Dashboard",
-    "TEAMS": "Teams",
-    "PAYS": "Fees",
-    "NEWPAYS": "Payments",
-    "CLOTHES": "Clothing",
-    "SPONSORS": "Sponsors",
-    "NOTIFICATIONS": "Notifications",
-    "CREATETEAM": "Create a team",
-    "CREATE": "Create"
   },
   "HEADER": {
     "WELCOME": "Welcome!",
@@ -476,6 +459,87 @@
       "NO": "No",
       "CLOSE": "Close",
       "EMPTY": "This player has no assigned payments"
+    },
+    "BANK_INFO": {
+      "TITLE": "Club bank information",
+      "BIZUM": "Bizum number",
+      "BIZUM_PLACEHOLDER": "E.g. 666 666 666",
+      "CONTACT": "Contact person",
+      "CONTACT_PLACEHOLDER": "E.g. John Smith, coordinator",
+      "ACCOUNT": "Bank account number",
+      "ACCOUNT_PLACEHOLDER": "E.g. ES76 1234 5678 9012 3456 7890",
+      "INSTRUCTIONS": "Payment instructions",
+      "INSTRUCTIONS_PLACEHOLDER": "E.g. Player name + ID + category",
+      "SAVE": "Save",
+      "CLOSE": "Close"
+    },
+    "PAYMENTS_MODAL": {
+      "TITLE": "Payments management",
+      "ADD": "Add payment",
+      "SEARCH": "Search by title",
+      "SEARCH_PLACEHOLDER": "E.g. September payment",
+      "FILTER": "Filter by mandatory",
+      "ALL": "Show all",
+      "MANDATORY_ONLY": "Mandatory only",
+      "OPTIONAL_ONLY": "Optional only",
+      "EMPTY": "No payments match the filters.",
+      "MANDATORY": "Mandatory",
+      "YES": "Yes",
+      "NO": "No",
+      "AMOUNT": "Amount",
+      "DEADLINE": "Deadline",
+      "EDIT": "Edit payment",
+      "DELETE": "Delete payment",
+      "CLOSE": "Close"
+    },
+    "PAYMENT_FORM": {
+      "CREATE_TITLE": "Create new payment",
+      "EDIT_TITLE": "Edit payment",
+      "TITLE": "Title",
+      "TITLE_PLACEHOLDER": "E.g. September payment",
+      "DESCRIPTION": "Description",
+      "DESCRIPTION_PLACEHOLDER": "Briefly describe this payment...",
+      "AMOUNT": "Amount",
+      "DEADLINE": "Deadline",
+      "MANDATORY": "Is it mandatory?",
+      "TEAMS": "Teams",
+      "SELECT_TEAMS": "Select teams",
+      "SELECT_ALL": "Select all",
+      "STRIPE": "Enable Stripe payments",
+      "SAVE": "Save payment",
+      "UPDATE": "Update payment",
+      "CANCEL": "Cancel"
     }
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "Notification",
+    "ALL": "All",
+    "READ": "Read",
+    "UNREAD": "Unread",
+    "COMPOSE": "Compose",
+    "INBOX": "Inbox",
+    "SENT": "Sent",
+    "OPEN_MESSAGE": "Open to view message…",
+    "SENT_AT": "Sent at",
+    "FROM": "From",
+    "TO":"To",
+    "SUBJECT": "Subject",
+    "MESSAGE": "Message",
+    "CLOSE": "Close",
+    "SELECT_MESSAGE": "You have not selected any message.",
+    "DELETE": "Delete",
+    "SEND": "Send",
+    "CANCEL": "Cancel"
+  },
+  "PAYMENTS": {
+    "TITLE": "Charges",
+    "TOTAL": "Charges",
+    "FILTER_CLUB": "Filter by club name",
+    "NAME": "Name",
+    "DESCRIPTION": "Payment description",
+    "TITLE_COL": "Title",
+    "AMOUNT": "Amount",
+    "METHOD": "Method",
+    "TYPE": "Type"
   }
 }

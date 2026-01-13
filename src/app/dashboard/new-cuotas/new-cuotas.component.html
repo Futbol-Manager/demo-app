@@ -30,133 +30,154 @@
       <span>{{ 'CUOTAS.NAV.SETTINGS' | translate }}</span>
     </button>
   </div>
-
 </div>
 
-<app-logo-spinner *ngIf="isLoading"></app-logo-spinner>
-<div *ngIf="!isLoading">
-  <div class="container mt-3">
-    <!-- Filtro -->
-    <div class="row mb-3 align-items-center">
-      <!-- Input filtro -->
-      <div class="filters-bar">
+<!--<app-logo-spinner *ngIf="isLoading"></app-logo-spinner>  -->
+<div class="container mt-3">
+  <!-- Filtro -->
+  <div class="row mb-3 align-items-center">
+    <!-- Input filtro -->
+    <div class="filters-bar modern-filters">
 
+      <!-- BUSCADOR -->
+      <div class="filter-search">
+        <i class="bi bi-search"></i>
         <input type="text" class="form-control" [placeholder]="'CUOTAS.FILTER.SEARCH' | translate" [(ngModel)]="filtro"
           (input)="filtrarJugadores()" />
-
-        <button class="btn btn-primary" (click)="resetPagosPlayers()">
-          {{ 'CUOTAS.FILTER.RESET' | translate }}
-        </button>
-
+      </div>
+      <!-- RESET -->
+      <button class="btn btn-outline-secondary btn-reset" (click)="resetPagosPlayers()">
+        <i class="bi bi-arrow-counterclockwise me-1"></i>
+        {{ 'CUOTAS.FILTER.RESET' | translate }}
+      </button>
+      <!-- SELECT -->
+      <div class="filter-select">
+        <i class="bi bi-exclamation-circle"></i>
         <select class="form-select">
           <option>
             {{ 'CUOTAS.FILTER.ONLY_REQUIRED' | translate }}
           </option>
         </select>
-
-        <i class="bi bi-info-circle info-icon" [title]="'CUOTAS.FILTER.INFO' | translate">
-        </i>
-
       </div>
-
+      <!-- INFO -->
+      <button class="btn btn-light btn-info-icon" [title]="'CUOTAS.FILTER.INFO' | translate">
+        <i class="bi bi-info-circle"></i>
+      </button>
     </div>
+  </div>
 
-    <!-- Tabla -->
-    <!-- Tabla -->
-    <div class="row mb-3">
-      <div class="col-12">
-        <div class="table-wrapper">
-          <div class="table-scroll">
-            <table class="modern-table">
-              <thead>
-                <tr>
-                  <th></th>
+  <!-- Tabla -->
+  <div class="row mb-3">
+    <div class="col-12">
+      <div class="table-wrapper">
+        <div class="table-scroll" [class.no-scroll]="isLoading">
+          <table class="modern-table">
+            <thead *ngIf="!isLoading">
+              <tr>
+                <th></th>
 
-                  <!-- Nombre -->
-                  <th class="col-name" (click)="ordenarPor('nombre')">
-                    {{ 'CUOTAS.TABLE.NAME' | translate }}
-                    <i class="bi ms-1" [ngClass]="{
+                <!-- Nombre -->
+                <th class="col-name" (click)="ordenarPor('nombre')">
+                  {{ 'CUOTAS.TABLE.NAME' | translate }}
+                  <i class="bi ms-1" [ngClass]="{
           'bi-arrow-up': columnaActual === 'nombre' && ordenAscendente,
           'bi-arrow-down': columnaActual === 'nombre' && !ordenAscendente,
           'bi-arrow-down-up': columnaActual !== 'nombre'
         }">
-                    </i>
-                  </th>
+                  </i>
+                </th>
 
-                  <!-- Equipo -->
-                  <th (click)="ordenarPor('nameTeam')">
-                    {{ 'CUOTAS.TABLE.TEAM' | translate }}
-                    <i class="bi ms-1" [ngClass]="{
+                <!-- Equipo -->
+                <th (click)="ordenarPor('nameTeam')">
+                  {{ 'CUOTAS.TABLE.TEAM' | translate }}
+                  <i class="bi ms-1" [ngClass]="{
                     'bi-arrow-up': columnaActual === 'nameTeam' && ordenAscendente,
                     'bi-arrow-down': columnaActual === 'nameTeam' && !ordenAscendente,
                     'bi-arrow-down-up': columnaActual !== 'nameTeam'
                   }">
-                    </i>
-                  </th>
+                  </i>
+                </th>
 
-                  <!-- Estado -->
-                  <th (click)="ordenarPor('estado')">
-                    {{ 'CUOTAS.TABLE.STATUS' | translate }}
-                    <i class="bi ms-1" [ngClass]="{
+                <!-- Estado -->
+                <th (click)="ordenarPor('estado')">
+                  {{ 'CUOTAS.TABLE.STATUS' | translate }}
+                  <i class="bi ms-1" [ngClass]="{
                     'bi-arrow-up': columnaActual === 'estado' && ordenAscendente,
                     'bi-arrow-down': columnaActual === 'estado' && !ordenAscendente,
                     'bi-arrow-down-up': columnaActual !== 'estado'
                   }">
-                    </i>
-                  </th>
+                  </i>
+                </th>
 
-                  <!-- Total -->
-                  <th (click)="ordenarPor('totalAPagar')">
-                    {{ 'CUOTAS.TABLE.TOTAL' | translate }}
-                    <i class="bi ms-1" [ngClass]="{
+                <!-- Total -->
+                <th (click)="ordenarPor('totalAPagar')">
+                  {{ 'CUOTAS.TABLE.TOTAL' | translate }}
+                  <i class="bi ms-1" [ngClass]="{
                     'bi-arrow-up': columnaActual === 'totalAPagar' && ordenAscendente,
                     'bi-arrow-down': columnaActual === 'totalAPagar' && !ordenAscendente,
                     'bi-arrow-down-up': columnaActual !== 'totalAPagar'
                   }">
-                    </i>
-                  </th>
+                  </i>
+                </th>
 
-                  <!-- Pagado -->
-                  <th (click)="ordenarPor('totalPagado')">
-                    {{ 'CUOTAS.TABLE.PAID' | translate }}
-                    <i class="bi ms-1" [ngClass]="{
+                <!-- Pagado -->
+                <th (click)="ordenarPor('totalPagado')">
+                  {{ 'CUOTAS.TABLE.PAID' | translate }}
+                  <i class="bi ms-1" [ngClass]="{
                     'bi-arrow-up': columnaActual === 'totalPagado' && ordenAscendente,
                     'bi-arrow-down': columnaActual === 'totalPagado' && !ordenAscendente,
                     'bi-arrow-down-up': columnaActual !== 'totalPagado'
                   }">
-                    </i>
-                  </th>
+                  </i>
+                </th>
 
-                  <!-- Restante -->
-                  <th (click)="ordenarPor('restante')">
-                    {{ 'CUOTAS.TABLE.REMAINING' | translate }}
-                    <i class="bi ms-1" [ngClass]="{
+                <!-- Restante -->
+                <th (click)="ordenarPor('restante')">
+                  {{ 'CUOTAS.TABLE.REMAINING' | translate }}
+                  <i class="bi ms-1" [ngClass]="{
                     'bi-arrow-up': columnaActual === 'restante' && ordenAscendente,
                     'bi-arrow-down': columnaActual === 'restante' && !ordenAscendente,
                     'bi-arrow-down-up': columnaActual !== 'restante'
                   }">
-                    </i>
-                  </th>
+                  </i>
+                </th>
 
-                  <!-- Pagos -->
-                  <th (click)="ordenarPor('pagadas')">
-                    {{ 'CUOTAS.TABLE.PAYMENTS' | translate }}
-                    <i class="bi ms-1" [ngClass]="{
+                <!-- Pagos -->
+                <th (click)="ordenarPor('pagadas')">
+                  {{ 'CUOTAS.TABLE.PAYMENTS' | translate }}
+                  <i class="bi ms-1" [ngClass]="{
                     'bi-arrow-up': columnaActual === 'pagadas' && ordenAscendente,
                     'bi-arrow-down': columnaActual === 'pagadas' && !ordenAscendente,
                     'bi-arrow-down-up': columnaActual !== 'pagadas'
                   }">
-                    </i>
-                  </th>
+                  </i>
+                </th>
 
-                  <th>{{ 'CUOTAS.TABLE.ACTIONS' | translate }}</th>
+                <th>{{ 'CUOTAS.TABLE.ACTIONS' | translate }}</th>
+              </tr>
+            </thead>
+
+
+            <tbody>
+              <ng-container *ngIf="isLoading">
+                <tr *ngFor="let i of [1,2,3,4,5,6]">
+                  <td colspan="9">
+                    <div class="table-skeleton-row cuotas">
+                      <div class="sk sk-avatar"></div>
+                      <div class="sk sk-name"></div>
+                      <div class="sk sk-md"></div>
+                      <div class="sk sk-xs"></div>
+                      <div class="sk sk-md"></div>
+                      <div class="sk sk-md"></div>
+                      <div class="sk sk-md"></div>
+                      <div class="sk sk-progress"></div>
+                      <div class="sk sk-actions"></div>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-
-
-              <tbody>
+              </ng-container>
+              <ng-container *ngIf="!isLoading">
                 <tr *ngFor="let player of playersPaginados; trackBy: trackByPlayerId">
-
                   <td class="avatar-cell">
                     <img *ngIf="player.picturePlayer"
                       [src]="'https://appsphairatech.com/images/user/' + player.picturePlayer">
@@ -222,941 +243,960 @@
                   </td>
 
                 </tr>
-              </tbody>
-            </table>
-          </div>
+              </ng-container>
+            </tbody>
+
+          </table>
         </div>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- PAGINACIÓN (FUERA de la tabla) -->
-    <div class="pagination-wrapper">
+<!-- PAGINACIÓN (FUERA de la tabla) -->
+<div class="pagination-wrapper" *ngIf="!isLoading">
 
-      <div class="pagination-content">
+  <div class="pagination-content">
 
-        <!-- Texto -->
-        <div class="pagination-info">
-          {{ 'CUOTAS.PAGINATION.SHOWING' | translate }}
-          {{ paginaInicio + 1 }}–{{ paginaFin }}
-          {{ 'CUOTAS.PAGINATION.OF' | translate }}
-          {{ listaPlayersFiltrados.length }}
-        </div>
+    <!-- Texto -->
+    <div class="pagination-info">
+      {{ 'CUOTAS.PAGINATION.SHOWING' | translate }}
+      {{ paginaInicio + 1 }}–{{ paginaFin }}
+      {{ 'CUOTAS.PAGINATION.OF' | translate }}
+      {{ listaPlayersFiltrados.length }}
+    </div>
 
-        <!-- Selector -->
-        <select class="pagination-select" [(ngModel)]="itemsPorPagina" (ngModelChange)="cambiarItemsPorPagina()">
-          <option [ngValue]="5">5</option>
-          <option [ngValue]="10">10</option>
-          <option [ngValue]="20">20</option>
-          <option [ngValue]="50">50</option>
-          <option [ngValue]="100">100</option>
-        </select>
+    <!-- Selector -->
+    <select class="pagination-select" [(ngModel)]="itemsPorPagina" (ngModelChange)="cambiarItemsPorPagina()">
+      <option [ngValue]="5">5</option>
+      <option [ngValue]="10">10</option>
+      <option [ngValue]="20">20</option>
+      <option [ngValue]="50">50</option>
+      <option [ngValue]="100">100</option>
+    </select>
 
 
-        <!-- Controles -->
-        <div class="pagination-controls">
-          <button class="page-btn" [disabled]="paginaActual === 1" (click)="paginaAnterior()">
-            <i class="bi bi-chevron-left"></i>
+    <!-- Controles -->
+    <div class="pagination-controls">
+      <button class="page-btn" [disabled]="paginaActual === 1" (click)="paginaAnterior()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <span class="page-indicator">
+        {{ paginaActual }} / {{ totalPaginas }}
+      </span>
+
+      <button class="page-btn" [disabled]="paginaActual === totalPaginas" (click)="paginaSiguiente()">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Modal para datos bancarios del club -->
+<div [ngClass]="{ 'd-block': showModalBanco }" class="modal" role="dialog" tabindex="-1"
+  style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal fade show d-block modal-overlay">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content modal-modern">
+
+        <!-- HEADER -->
+        <div class="modal-header modal-header-dark">
+          <h5 class="modal-title">
+            <i class="bi bi-bank2 me-2"></i>
+            {{ 'CUOTAS.BANK_INFO.TITLE' | translate }}
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModalBancoClub()">
           </button>
-
-          <span class="page-indicator">
-            {{ paginaActual }} / {{ totalPaginas }}
-          </span>
-
-          <button class="page-btn" [disabled]="paginaActual === totalPaginas" (click)="paginaSiguiente()">
-            <i class="bi bi-chevron-right"></i>
-          </button>
         </div>
 
-      </div>
+        <!-- BODY -->
+        <div class="modal-body modal-body-light">
+          <form (ngSubmit)="guardarBancoClubData()">
 
-    </div>
+            <div class="cuota-card">
 
-    <!-- Modal para datos bancarios del club -->
-    <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalBanco}">
-      <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-          <div class="modal-header bg-dark text-white">
-            <h5 class="modal-title">
-              <i class="bi bi-bank2 me-2"></i> Información bancaria del club
-            </h5>
-            <button style="background-color: white;" type="button" class="btn-close" aria-label="Close"
-              (click)="cerrarModalBancoClub()"></button>
-          </div>
-          <div class="modal-body bg-light">
-            <form (ngSubmit)="guardarBancoClubData()">
-
-              <div class="mb-3">
-                <label for="bizum" class="form-label">
-                  <i class="bi bi-phone me-1 text-primary"></i> Número de Bizum:
-                </label>
-                <input type="text" id="bizum" class="form-control" [(ngModel)]="bancoClubData.bizum" name="bizum"
-                  placeholder="Ej: 666 666 666">
-              </div>
-
-              <div class="mb-3">
-                <label for="contacto" class="form-label">
-                  <i class="bi bi-person-lines-fill me-1 text-success"></i> Persona de contacto:
-                </label>
-                <input type="text" id="contacto" class="form-control" [(ngModel)]="bancoClubData.contacto"
-                  name="contacto" placeholder="Ej: Pedro Miguel, coordinador">
-              </div>
-
-              <div class="mb-3">
-                <label for="banco" class="form-label">
-                  <i class="bi bi-credit-card-2-front me-1 text-info"></i> Número de cuenta bancaria:
-                </label>
-                <input type="text" id="banco" class="form-control" [(ngModel)]="bancoClubData.banco" name="banco"
-                  placeholder="ES76 1234 5678 9012 3456 7890">
-              </div>
-
-              <div class="mb-3">
-                <label for="asunto" class="form-label">
-                  <i class="bi bi-info-circle me-1 text-warning"></i> Instrucciones para el pago (asunto):
-                </label>
-                <textarea id="asunto" class="form-control" rows="4" [(ngModel)]="bancoClubData.asunto" name="asunto"
-                  placeholder="Ejemplo: Poner nombre del jugador + DNI + categoría"></textarea>
-              </div>
-
-              <div class="modal-footer justify-content-end">
-                <button type="submit" class="btn cursor btn-success">
-                  <i class="bi bi-check-circle me-1"></i> Guardar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Modal para ver cuotas con filtros -->
-    <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalCuotas}"
-      style="background-color: rgba(0,0,0,0.5);">
-      <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-
-          <div class="modal-header bg-dark text-white">
-            <h5 class="modal-title">
-              <i class="bi bi-wallet2 me-2"></i> Gestión de Pagos
-            </h5>
-            <button style="background-color: white;" type="button" class="btn-close"
-              (click)="cerrarModalCuotas()"></button>
-          </div>
-
-          <div class="modal-body bg-light">
-
-            <!-- Botón para añadir -->
-            <div class="row mb-4">
-              <div class="col-12 text-end">
-                <button class="btn cursor btn-success" (click)="abrirModalCuota()">
-                  <i class="bi bi-plus-circle me-1"></i> Añadir pago
-                </button>
-              </div>
-            </div>
-
-            <!-- Filtros -->
-            <div class="row mb-4 align-items-end">
-              <div class="col-md-6">
-                <label class="form-label fw-semibold">
-                  <i class="bi bi-search me-1"></i> Buscar por título
-                </label>
-                <input type="text" class="form-control" [(ngModel)]="filtroTitulo" placeholder="Ej: Pago septiembre">
-              </div>
-
-              <div class="col-md-6">
-                <label class="form-label fw-semibold">
-                  <i class="bi bi-filter-circle me-1"></i> Filtrar por obligatoriedad
-                </label>
-                <select class="form-select" [(ngModel)]="filtroObligatoria">
-                  <option value="todas">Mostrar todas</option>
-                  <option value="si">Solo obligatorias</option>
-                  <option value="no">Solo no obligatorias</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Mensaje si no hay resultados -->
-            <div *ngIf="cuotasFiltradas()?.length === 0" class="alert alert-info text-center">
-              <i class="bi bi-info-circle me-2"></i> No hay pagos que coincidan con los filtros.
-            </div>
-
-            <!-- Lista de cuotas -->
-            <div *ngFor="let cuota of cuotasFiltradas(); let e = index"
-              class="mb-3 p-4 rounded border shadow-sm bg-white">
-              <div class="d-flex justify-content-between align-items-start">
-
-                <!-- Detalle de la cuota -->
+              <!-- Bizum -->
+              <div class="cuota-grid">
                 <div>
-                  <h5 class="fw-bold text-primary">
-                    <i class="bi bi-tag me-1"></i> {{ cuota.titulo }}
-                  </h5>
-                  <p class="mb-1">
-                    <strong><i class="bi bi-currency-exchange me-1 text-success"></i> Importe:</strong> {{
-                    cuota.importe }}
-                  </p>
-                  <p class="mb-1">
-                    <strong><i class="bi bi-card-text me-1 text-secondary"></i> Descripción:</strong> {{
-                    cuota.descripcion }}
-                  </p>
-                  <p class="mb-1">
-                    <strong><i class="bi bi-calendar-event me-1 text-danger"></i> Fecha límite:</strong>
-                    {{ cuota.fechaLimite | date: 'dd/MM/yyyy' }}
-                  </p>
-                  <p class="mb-0">
-                    <strong><i class="bi bi-check2-circle me-1 text-info"></i> ¿Obligatoria?:</strong>
-                    <span class="badge bg-{{ +cuota.obligatorio === 1 ? 'success' : 'secondary' }}">
-                      {{ cuota.obligatorio === 1 ? 'Sí' : 'No' }}
-                    </span>
-                  </p>
+                  <label>
+                    <i class="bi bi-phone me-1"></i>
+                    {{ 'CUOTAS.BANK_INFO.BIZUM' | translate }}
+                  </label>
+                  <input type="text" class="form-control" [(ngModel)]="bancoClubData.bizum" name="bizum"
+                    [placeholder]="'CUOTAS.BANK_INFO.BIZUM_PLACEHOLDER' | translate" />
                 </div>
 
-                <!-- Acciones -->
-                <div class="ms-3">
-                  <button class="btn cursor btn-sm btn-outline-primary me-2" title="Editar"
-                    (click)="editarCuota(cuota, cuota.stripe)">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button class="btn cursor btn-sm btn-outline-danger" title="Eliminar"
-                    (click)="eliminarCuota(cuota, e)">
-                    <i class="bi bi-trash"></i>
-                  </button>
+                <!-- Contact -->
+                <div>
+                  <label>
+                    <i class="bi bi-person-lines-fill me-1"></i>
+                    {{ 'CUOTAS.BANK_INFO.CONTACT' | translate }}
+                  </label>
+                  <input type="text" class="form-control" [(ngModel)]="bancoClubData.contacto" name="contacto"
+                    [placeholder]="'CUOTAS.BANK_INFO.CONTACT_PLACEHOLDER' | translate" />
                 </div>
               </div>
-            </div>
 
-          </div>
+              <!-- Account -->
+              <div class="cuota-grid mt-3">
+                <div>
+                  <label>
+                    <i class="bi bi-credit-card-2-front me-1"></i>
+                    {{ 'CUOTAS.BANK_INFO.ACCOUNT' | translate }}
+                  </label>
+                  <input type="text" class="form-control" [(ngModel)]="bancoClubData.banco" name="banco"
+                    [placeholder]="'CUOTAS.BANK_INFO.ACCOUNT_PLACEHOLDER' | translate" />
+                </div>
+              </div>
 
-          <div class="modal-footer">
-            <button type="button" class="btn cursor btn-secondary" (click)="cerrarModalCuotas()">
-              <i class="bi bi-x-circle me-1"></i> Cerrar
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal crear/editar cuota -->
-    <div class="modal" tabindex="-1" [ngClass]="{ 'd-block': showModalCuota }"
-      style="background-color: rgba(0,0,0,0.5);">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header bg-dark text-white">
-            <h5 class="modal-title">
-              <i class="bi bi-cash-coin me-2"></i>
-              {{ cuotaSeleccionada ? 'Editar pago' : 'Crear nuevo pago' }}
-            </h5>
-            <button style="background-color: white;" type="button" class="btn-close"
-              (click)="cerrarModalCuota()"></button>
-          </div>
-          <div class="modal-body bg-light">
-            <form (ngSubmit)="guardarCuota()">
-
-              <div class="mb-3">
-                <label class="form-label">
-                  <i class="bi bi-type me-1 text-primary"></i> Título
+              <!-- Instructions -->
+              <div class="cuota-description mt-3">
+                <label>
+                  <i class="bi bi-info-circle me-1"></i>
+                  {{ 'CUOTAS.BANK_INFO.INSTRUCTIONS' | translate }}
                 </label>
-                <input type="text" class="form-control" [(ngModel)]="nuevaCuota.titulo" name="titulo" required
-                  placeholder="Ej: Pago septiembre">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">
-                  <i class="bi bi-card-text me-1 text-secondary"></i> Descripción
-                </label>
-                <textarea class="form-control" rows="4" [(ngModel)]="nuevaCuota.descripcion" name="descripcion"
-                  placeholder="Describe brevemente este pago..."></textarea>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">
-                  <i class="bi bi-currency-exchange text-success"></i> Importe
-                </label>
-                <input type="number" class="form-control" [(ngModel)]="nuevaCuota.importe" name="importe" required
-                  placeholder="Ej: 50" [readonly]="soloLectura">
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">
-                  <i class="bi bi-calendar-event me-1 text-danger"></i> Fecha límite
-                </label>
-                <input type="date" class="form-control" [(ngModel)]="nuevaCuota.fechaLimite" name="fechaLimite"
-                  required>
-              </div>
-
-              <div class="mb-3 form-check form-switch">
-                <input class="form-check-input" type="checkbox" [(ngModel)]="nuevaCuota.obligatorio" name="obligatorio"
-                  id="obligatorioToggle">
-                <label class="form-check-label" for="obligatorioToggle">
-                  <i class="bi bi-exclamation-circle me-1 text-warning"></i> ¿Es obligatoria?
-                </label>
-              </div>
-
-              <!-- Dropdown de selección de equipos -->
-              <div class="dropdown mb-3">
-                <button class="btn cursor btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                  <i class="bi bi-people me-1"></i> Seleccionar equipos
-                </button>
-                <ul class="dropdown-menu p-3" style="max-height: 300px; overflow-y: auto;">
-
-                  <li>
-                    <div class="form-check mb-2">
-                      <input class="form-check-input" type="checkbox" id="selectAll" [checked]="isAllSelected()"
-                        (change)="toggleSelectAll()" />
-                      <label class="form-check-label" for="selectAll">
-                        <i class="bi bi-check2-square me-1"></i> Seleccionar todos
-                      </label>
-                    </div>
-                  </li>
-
-                  <li *ngFor="let team of listTeams">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" [id]="'team_' + team.value" [value]="team.value"
-                        (change)="toggleTeamSelection(team.value)"
-                        [checked]="listTeamsSelecteds.includes(team.value)" />
-                      <label class="form-check-label" [for]="'team_' + team.value">
-                        {{ team.name }}
-                      </label>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-
-              <!-- Equipos seleccionados -->
-              <div class="mb-2">
-                <strong><i class="bi bi-eye me-1"></i> Equipos seleccionados:</strong>
-                <span *ngIf="listTeamsSelecteds.length === 0"> Ninguno</span>
-                <ul *ngIf="listTeamsSelecteds.length > 0" class="mb-0">
-                  <li *ngFor="let id of listTeamsSelecteds">
-                    {{ getTeamNameById(id) }}
-                  </li>
-                </ul>
-              </div>
-
-              <!-- Permitir pago con Stripe -->
-              <div class="mb-3 form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="stripeToggle" [checked]="nuevaCuota.stripe === 1"
-                  (change)="onToggleStripe($event)">
-                <label class="form-check-label" for="stripeToggle">
-                  <i class="bi bi-lightning-charge me-1 text-info"></i> Permitir pago con Stripe
-                </label>
-              </div>
-
-              <!-- Configuración Stripe -->
-              <div *ngIf="showStripeConfig" class="border rounded p-3 bg-white mb-3">
-
-                <!-- Tipo de cobro -->
-                <label class="form-label mb-2 d-block">
-                  <i class="bi bi-sliders me-1 text-primary"></i> Tipo de cobro
-                </label>
-
-                <div class="btn-group" role="group" aria-label="Tipo de cobro">
-                  <input type="radio" class="btn-check" id="tipoPuntual" [checked]="nuevaCuota.tipoPagoStripe === 0"
-                    (change)="onTipoPagoChange(0)">
-                  <label class="btn btn-outline-primary" for="tipoPuntual">Pago puntual</label>
-
-                  <div>
-                    <input type="radio" class="btn-check" id="tipoSuscripcion"
-                      [checked]="nuevaCuota.tipoPagoStripe === 1" (change)="onTipoPagoChange(1)">
-                    <label class="btn btn-outline-primary" for="tipoSuscripcion">Suscripción</label>
-                  </div>
-                </div>
-
-                <!-- Detalles de suscripción -->
-                <div *ngIf="isSubscription" class="row g-3 mt-3">
-                  <div class="col-md-4">
-                    <label class="form-label">
-                      <i class="bi bi-calendar-range me-1 text-success"></i> Unidad de periodo
-                    </label>
-                    <select class="form-select" [(ngModel)]="nuevaCuota.intervalo" name="intervalo">
-                      <option [ngValue]="null" disabled>Selecciona</option>
-                      <option *ngFor="let p of periodos" [ngValue]="p.value">{{ p.label }}</option>
-                    </select>
-                  </div>
-
-                  <div class="col-md-4">
-                    <label class="form-label">
-                      <i class="bi bi-123 me-1 text-success"></i> Cada cuántos periodos
-                    </label>
-                    <input type="number" class="form-control" [(ngModel)]="nuevaCuota.intervaloCuenta"
-                      name="intervaloCuenta" min="1" placeholder="Ej: 1, 3, 6">
-                    <small class="text-muted">Ej.: 1 = cada mes; 3 = cada 3 meses</small>
-                  </div>
-
-                  <div class="col-md-4">
-                    <label class="form-label">
-                      <i class="bi bi-calendar-event me-1 text-danger"></i> Fecha de inicio
-                    </label>
-                    <input type="date" class="form-control" [(ngModel)]="nuevaCuota.fechaInicio" name="fechaInicio">
-                  </div>
-
-                  <div class="col-md-4">
-                    <label class="form-label">
-                      <i class="bi bi-calendar2-event me-1 text-danger"></i> Fecha de fin
-                    </label>
-                    <input type="date" class="form-control" [(ngModel)]="nuevaCuota.fechaFin" name="fechaFin">
-                  </div>
-
-                  <h2>⚠️ Atención.</h2>
-                  <p class="mb-3" style="color: red;">
-                    El padre deberá realizar el primer pago para poder suscribirse y pagar los meses
-                    restantes. Funciona como Netflix, el usuario paga el primer mes, y automáticamente se le
-                    cobran los siguientes pagos sin necesidad de hacer el pago manualmente. El club será
-                    quien indique el importe de los pagos y cada cuánto tiempo.
-                  </p>
-                </div>
-              </div>
-
-              <div class="modal-footer justify-content-end">
-                <button type="submit" class="btn cursor btn-success">
-                  <i class="bi bi-check-circle me-1"></i>
-                  {{ cuotaSeleccionada ? 'Actualizar pago' : 'Guardar pago' }}
-                </button>
-                <button type="button" class="btn cursor btn-secondary" (click)="cerrarModalCuota()">
-                  <i class="bi bi-x-circle me-1"></i> Cancelar
-                </button>
-              </div>
-
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal para pagar la cuota de un jugador -->
-    <div class="modal" tabindex="-1" [ngClass]="{ 'd-block': showModalAddPago }"
-      style="background-color: rgba(0,0,0,0.5);">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <!-- Encabezado -->
-          <div class="modal-header bg-dark text-white">
-            <h5 class="modal-title">
-              <i class="bi bi-credit-card-2-front-fill me-2"></i> Agregar pago del jugador
-            </h5>
-            <button style="background-color: white;" type="button" class="btn-close"
-              (click)="cerrarModalAddPago()"></button>
-          </div>
-
-          <!-- Cuerpo -->
-          <div class="modal-body bg-light">
-            <p class="mb-4">
-              Vas a agregar un pago al jugador <b>{{ textoInfoTitlePagoPlayer }}</b>
-            </p>
-
-            <form (ngSubmit)="createUpdateHistoryCuotaJugador()">
-              <!-- Combo de cuotas -->
-              <div class="mb-3">
-                <label class="form-label fw-semibold">
-                  <i class="bi bi-list-check me-1"></i> Selecciona el pago
-                </label>
-                <select class="form-select" [(ngModel)]="addPago.pagoClubId" name="cuota"
-                  (change)="actualizarImporte()">
-                  <option value="0">
-                    Selecciona un pago
-                  </option>
-                  <option *ngFor="let cuota of listaCuotas" [value]="cuota.pagoClubId">
-                    {{ cuota.titulo }} - {{ cuota.importe }}
-                  </option>
-                </select>
-              </div>
-
-              <!-- Importe -->
-              <div class="mb-3">
-                <label class="form-label fw-semibold">
-                  <i class="bi bi-currency-euro me-1 text-success"></i> Cantidad (puedes modificarla)
-                </label>
-                <input type="number" class="form-control" [(ngModel)]="addPago.importe" name="importe"
-                  placeholder="Ej. 50" required>
-              </div>
-
-              <!-- Fecha -->
-              <div class="mb-3">
-                <label class="form-label fw-semibold">
-                  <i class="bi bi-calendar-check me-1 text-primary"></i> Fecha de pago
-                </label>
-                <input type="date" class="form-control" [(ngModel)]="addPago.datePago" name="fecha" required>
-              </div>
-
-              <!-- Método de pago -->
-              <div class="mb-3">
-                <label class="form-label fw-semibold">
-                  <i class="bi bi-wallet2 me-1 text-info"></i> Método de pago
-                </label>
-                <select class="form-select" [(ngModel)]="addPago.metodo" name="metodo" required>
-                  <option value="Tarjeta">Tarjeta</option>
-                  <option value="Efectivo">Efectivo</option>
-                  <option value="Transferencia">Transferencia</option>
-                  <option value="Bizum">Bizum</option>
-                  <option value="Otro">Otro</option>
-                </select>
-              </div>
-
-              <!-- Comentario -->
-              <div class="mb-4">
-                <label class="form-label fw-semibold">
-                  <i class="bi bi-chat-dots me-1 text-secondary"></i> Comentario
-                </label>
-                <textarea class="form-control" [(ngModel)]="addPago.comentario" name="comentario" rows="4"
-                  placeholder="Opcional..."></textarea>
-              </div>
-
-              <!-- Botón y alerta -->
-              <div class="modal-footer px-0">
-                <button type="submit" class="btn cursor btn-success">
-                  <i class="bi bi-check-circle me-1"></i> Guardar
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal para ver historial de pagos -->
-    <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalHistorialPagos}"
-      style="background-color: rgba(0,0,0,0.5);">
-      <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-          <div class="modal-header bg-dark text-white">
-            <h5 class="modal-title">
-              <i class="bi bi-clock-history me-2"></i> Historial de Pagos
-            </h5>
-            <button style="background-color: white;" type="button" class="btn-close"
-              (click)="cerrarModalHistorialPagos()"></button>
-          </div>
-          <div class="modal-body bg-light">
-            <!-- Mensaje si no hay historial -->
-            <div *ngIf="listHistoryPagos?.length === 0" class="alert alert-info text-center">
-              <i class="bi bi-info-circle me-2"></i> No hay historial de pagos disponible.
-            </div>
-            <!-- Lista del historial -->
-            <!-- Lista del historial -->
-            <div *ngFor="let historyPago of listHistoryPagos; let i = index"
-              class="mb-3 p-4 rounded border shadow-sm bg-white">
-              <h3>{{ historyPago.namePago }}</h3>
-              <div class="row align-items-center">
-                <div class="col-md-1 text-center">
-                  <span class="badge bg-dark fs-5">{{ i + 1 }}</span>
-                </div>
-                <div class="col-md-2">
-                  <strong><i class="bi bi-currency-exchange me-1 text-success"></i> Importe:</strong><br>
-                  {{ historyPago.importe }}
-                </div>
-                <div class="col-md-2">
-                  <strong><i class="bi bi-credit-card-2-front me-1 text-primary"></i> Método:</strong><br>
-                  {{ historyPago.metodo }}
-                </div>
-                <div class="col-md-3">
-                  <strong><i class="bi bi-calendar-check me-1 text-danger"></i> Fecha de pago:</strong><br>
-                  {{ historyPago.datePago | date: 'dd/MM/yyyy' }}
-                </div>
-                <div class="col-md-3" style="min-width:0;">
-                  <strong><i class="bi bi-chat-left-text me-1 text-secondary"></i> Comentario:</strong><br>
-
-                  <ng-container *ngIf="historyPago.comentario?.startsWith('http'); else textoPlano">
-                    <a [href]="historyPago.comentario" target="_blank" rel="noopener"
-                      class="d-inline-block text-truncate" style="max-width:100%;">
-                      Ver recibo
-                    </a>
-                    <button class="btn btn-sm btn-outline-secondary ms-1" (click)="copy(historyPago.comentario)"
-                      title="Copiar enlace">
-                      <i class="bi bi-clipboard"></i>
-                    </button>
-                  </ng-container>
-
-                  <ng-template #textoPlano>
-                    <span class="text-break">{{ historyPago.comentario || 'Sin comentario' }}</span>
-                  </ng-template>
-                </div>
-                <div class="col-md-1 text-end" *ngIf="!historyPago.importe.includes('-')">
-                  <button class="btn cursor btn-sm btn-warning" (click)="devolverPagoClub(historyPago)"
-                    title="Devolver pago">
-                    <i class="bi bi-arrow-counterclockwise"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn cursor btn-secondary" (click)="cerrarModalHistorialPagos()">
-              <i class="bi bi-x-circle me-1"></i> Cerrar
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal de confirmación de devolución -->
-    <div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': showConfirmDevolucion }"
-      style="background-color: rgba(0, 0, 0, 0.5);">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content border-warning">
-          <div class="modal-header bg-warning text-dark">
-            <h5 class="modal-title">
-              <i class="bi bi-exclamation-triangle me-2"></i> Atención Devolución!
-            </h5>
-            <button type="button" class="btn-close" (click)="cancelarDevolucion()"></button>
-          </div>
-          <div class="modal-body">
-            <p class="fw-semibold">Vas a proceder a realizar una devolución. Indica el método y el motivo.</p>
-
-            <div class="mb-3">
-              <label for="metodoDevolucion" class="form-label"><i class="bi bi-credit-card me-1"></i>
-                Método:</label>
-              <select id="metodoDevolucion" class="form-select" [(ngModel)]="metodoDevolucion">
-                <option value="" disabled selected>Selecciona método</option>
-                <option value="Bizum">Bizum</option>
-                <option value="Transferencia">Transferencia</option>
-                <option value="Efectivo">Efectivo</option>
-                <option value="Otro">Otro</option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label for="comentarioDevolucion" class="form-label"><i class="bi bi-chat-text me-1"></i>
-                Comentario:</label>
-              <textarea id="comentarioDevolucion" class="form-control" rows="4" [(ngModel)]="comentarioDevolucion"
-                placeholder="Motivo de la devolución..."></textarea>
-            </div>
-          </div>
-
-          <div class="modal-footer">
-            <button type="button" class="btn cursor btn-secondary" (click)="cancelarDevolucion()">
-              <i class="bi bi-x-circle me-1"></i> Cancelar
-            </button>
-            <button type="button" class="btn cursor btn-warning" (click)="okDevolverPagoClub()">
-              <i class="bi bi-check2-circle me-1"></i> Aceptar
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Modal Pagos asignados -->
-    <div [ngClass]="{'d-block': showModalCuotasAsignadas}" class="modal" role="dialog"
-      style="background-color: rgba(0,0,0,0.5);" tabindex="-1">
-      <div class="modal fade show d-block modal-overlay">
-        <div class="modal-dialog modal-xl modal-dialog-centered">
-          <div class="modal-content modal-modern">
-
-            <!-- HEADER -->
-            <div class="modal-header modal-header-dark">
-              <h5 class="modal-title">
-                <i class="bi bi-wallet2 me-2"></i>
-                {{ 'CUOTAS.CUOTAS_ASSIGNED.TITLE' | translate }}
-              </h5>
-              <button type="button" class="btn-close btn-close-white" (click)="cerrarModalCuotasAsignadas()">
-              </button>
-            </div>
-
-            <!-- BODY -->
-            <div class="modal-body modal-body-light">
-
-              <!-- Sin resultados -->
-              <div *ngIf="listaCuotasAsignadas.length === 0" class="alert alert-info text-center">
-                <i class="bi bi-info-circle me-2"></i>
-                {{ 'CUOTAS.CUOTAS_ASSIGNED.EMPTY' | translate }}
-              </div>
-
-              <!-- Cards -->
-              <div *ngFor="let cuota of listaCuotasAsignadas" class="cuota-card">
-
-                <div class="cuota-header">
-                  <i class="bi bi-tag"></i>
-                  <span class="cuota-title">{{ cuota.titulo }}</span>
-
-                  <span class="cuota-mandatory">
-                    <small class="label">
-                      {{ 'CUOTAS.CUOTAS_ASSIGNED.MANDATORY' | translate }}:
-                    </small>
-
-                    <span class="badge" [ngClass]="cuota.obligatorio === 1 ? 'badge-success' : 'badge-secondary'">
-                      {{ cuota.obligatorio === 1
-                      ? ('CUOTAS.CUOTAS_ASSIGNED.YES' | translate)
-                      : ('CUOTAS.CUOTAS_ASSIGNED.NO' | translate) }}
-                    </span>
-                  </span>
-                </div>
-
-
-                <div class="cuota-grid">
-                  <div>
-                    <label>{{ 'CUOTAS.CUOTAS_ASSIGNED.AMOUNT' | translate }}</label>
-                    <span class="amount">{{ cuota.importe }} €</span>
-                  </div>
-
-                  <div>
-                    <label>{{ 'CUOTAS.CUOTAS_ASSIGNED.DEADLINE' | translate }}</label>
-                    <span>{{ cuota.fechaLimite | date:'dd/MM/yyyy' }}</span>
-                  </div>
-                </div>
-
-                <div class="cuota-description">
-                  <i class="bi bi-card-text me-1"></i>
-                  {{ cuota.descripcion }}
-                </div>
-
+                <textarea class="form-control mt-2" rows="4" [(ngModel)]="bancoClubData.asunto" name="asunto"
+                  [placeholder]="'CUOTAS.BANK_INFO.INSTRUCTIONS_PLACEHOLDER' | translate">
+                </textarea>
               </div>
 
             </div>
 
             <!-- FOOTER -->
             <div class="modal-footer">
-              <button class="btn btn-secondary" (click)="cerrarModalCuotasAsignadas()">
+              <button type="submit" class="btn btn-success">
+                <i class="bi bi-check-circle me-1"></i>
+                {{ 'CUOTAS.BANK_INFO.SAVE' | translate }}
+              </button>
+
+              <button type="button" class="btn btn-secondary" (click)="cerrarModalBancoClub()">
                 <i class="bi bi-x-circle me-1"></i>
-                {{ 'CUOTAS.CUOTAS_ASSIGNED.CLOSE' | translate }}
+                {{ 'CUOTAS.BANK_INFO.CLOSE' | translate }}
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal para ver cuotas con filtros -->
+<div [ngClass]="{ 'd-block': showModalCuotas }" class="modal" role="dialog" tabindex="-1"
+  style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal fade show d-block modal-overlay">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content modal-modern">
+
+        <!-- HEADER -->
+        <div class="modal-header modal-header-dark">
+          <h5 class="modal-title">
+            <i class="bi bi-wallet2 me-2"></i>
+            {{ 'CUOTAS.PAYMENTS_MODAL.TITLE' | translate }}
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModalCuotas()">
+          </button>
+        </div>
+
+        <!-- BODY -->
+        <div class="modal-body modal-body-light">
+
+          <!-- ACCIÓN PRINCIPAL -->
+          <div class="text-end mb-4">
+            <button class="btn btn-success" (click)="abrirModalCuota()">
+              <i class="bi bi-plus-circle me-1"></i>
+              {{ 'CUOTAS.PAYMENTS_MODAL.ADD' | translate }}
+            </button>
+          </div>
+
+          <!-- FILTROS -->
+          <div class="cuota-card mb-4">
+            <div class="cuota-grid">
+
+              <div>
+                <label>
+                  <i class="bi bi-search me-1"></i>
+                  {{ 'CUOTAS.PAYMENTS_MODAL.SEARCH' | translate }}
+                </label>
+                <input type="text" class="form-control" [(ngModel)]="filtroTitulo"
+                  [placeholder]="'CUOTAS.PAYMENTS_MODAL.SEARCH_PLACEHOLDER' | translate" />
+              </div>
+
+              <div>
+                <label>
+                  <i class="bi bi-filter-circle me-1"></i>
+                  {{ 'CUOTAS.PAYMENTS_MODAL.FILTER' | translate }}
+                </label>
+                <select class="form-select" [(ngModel)]="filtroObligatoria">
+                  <option value="todas">
+                    {{ 'CUOTAS.PAYMENTS_MODAL.ALL' | translate }}
+                  </option>
+                  <option value="si">
+                    {{ 'CUOTAS.PAYMENTS_MODAL.MANDATORY_ONLY' | translate }}
+                  </option>
+                  <option value="no">
+                    {{ 'CUOTAS.PAYMENTS_MODAL.OPTIONAL_ONLY' | translate }}
+                  </option>
+                </select>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- SIN RESULTADOS -->
+          <div *ngIf="cuotasFiltradas().length === 0" class="alert alert-info text-center">
+            <i class="bi bi-info-circle me-2"></i>
+            {{ 'CUOTAS.PAYMENTS_MODAL.EMPTY' | translate }}
+          </div>
+
+          <!-- LISTA DE PAGOS -->
+          <div *ngFor="let cuota of cuotasFiltradas(); let e = index" class="cuota-card">
+
+            <div class="cuota-header">
+              <i class="bi bi-tag"></i>
+              <span class="cuota-title">{{ cuota.titulo }}</span>
+
+              <span class="cuota-mandatory">
+                <small class="label">
+                  {{ 'CUOTAS.PAYMENTS_MODAL.MANDATORY' | translate }}:
+                </small>
+                <span class="badge" [ngClass]="cuota.obligatorio === 1 ? 'badge-success' : 'badge-secondary'">
+                  {{ cuota.obligatorio === 1
+                  ? ('CUOTAS.PAYMENTS_MODAL.YES' | translate)
+                  : ('CUOTAS.PAYMENTS_MODAL.NO' | translate)
+                  }}
+                </span>
+              </span>
+            </div>
+
+            <div class="cuota-grid">
+              <div>
+                <label>{{ 'CUOTAS.PAYMENTS_MODAL.AMOUNT' | translate }}</label>
+                <span class="amount">{{ cuota.importe }} €</span>
+              </div>
+
+              <div>
+                <label>{{ 'CUOTAS.PAYMENTS_MODAL.DEADLINE' | translate }}</label>
+                <span>{{ cuota.fechaLimite | date:'dd/MM/yyyy' }}</span>
+              </div>
+            </div>
+
+            <div class="cuota-description">
+              <i class="bi bi-card-text me-1"></i>
+              {{ cuota.descripcion }}
+            </div>
+
+            <!-- ACCIONES -->
+            <div class="text-end mt-3">
+              <button class="btn btn-sm btn-outline-primary me-2" [title]="'CUOTAS.PAYMENTS_MODAL.EDIT' | translate"
+                (click)="editarCuota(cuota, cuota.stripe)">
+                <i class="bi bi-pencil"></i>
+              </button>
+
+              <button class="btn btn-sm btn-outline-danger" [title]="'CUOTAS.PAYMENTS_MODAL.DELETE' | translate"
+                (click)="eliminarCuota(cuota, e)">
+                <i class="bi bi-trash"></i>
               </button>
             </div>
 
           </div>
+
         </div>
+
+        <!-- FOOTER -->
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cerrarModalCuotas()">
+            <i class="bi bi-x-circle me-1"></i>
+            {{ 'CUOTAS.PAYMENTS_MODAL.CLOSE' | translate }}
+          </button>
+        </div>
+
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- Modal: Cuotas del jugador -->
-    <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalCuotasJugador}"
-      style="background-color: rgba(0,0,0,0.5);">
-      <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
 
-          <!-- Header -->
-          <div class="modal-header bg-dark text-white">
-            <h5 class="modal-title">
-              <i class="bi bi-wallet2 me-2"></i> Pagos del jugador
-            </h5>
-            <button style="background-color: white;" type="button" class="btn-close"
-              (click)="cerrarModalCuotasJugador()"></button>
+<!-- Modal crear/editar cuota -->
+<div [ngClass]="{ 'd-block': showModalCuota }" class="modal" role="dialog" tabindex="-1"
+  style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal fade show d-block modal-overlay">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content modal-modern">
+
+        <!-- HEADER -->
+        <div class="modal-header modal-header-dark">
+          <h5 class="modal-title">
+            <i class="bi bi-cash-coin me-2"></i>
+            {{ cuotaSeleccionada
+            ? ('CUOTAS.PAYMENT_FORM.EDIT_TITLE' | translate)
+            : ('CUOTAS.PAYMENT_FORM.CREATE_TITLE' | translate)
+            }}
+          </h5>
+
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModalCuota()">
+          </button>
+        </div>
+
+        <!-- BODY -->
+        <div class="modal-body modal-body-light">
+          <form (ngSubmit)="guardarCuota()">
+
+            <!-- TÍTULO -->
+            <div class="mb-3">
+              <label class="form-label">
+                <i class="bi bi-type me-1 text-primary"></i>
+                {{ 'CUOTAS.PAYMENT_FORM.TITLE' | translate }}
+              </label>
+              <input type="text" class="form-control" [(ngModel)]="nuevaCuota.titulo" name="titulo" required
+                [placeholder]="'CUOTAS.PAYMENT_FORM.TITLE_PLACEHOLDER' | translate" />
+            </div>
+
+            <!-- DESCRIPCIÓN -->
+            <div class="mb-3">
+              <label class="form-label">
+                <i class="bi bi-card-text me-1 text-secondary"></i>
+                {{ 'CUOTAS.PAYMENT_FORM.DESCRIPTION' | translate }}
+              </label>
+              <textarea class="form-control" rows="4" [(ngModel)]="nuevaCuota.descripcion" name="descripcion"
+                [placeholder]="'CUOTAS.PAYMENT_FORM.DESCRIPTION_PLACEHOLDER' | translate"></textarea>
+            </div>
+
+            <!-- IMPORTE -->
+            <div class="mb-3">
+              <label class="form-label">
+                <i class="bi bi-currency-exchange me-1 text-success"></i>
+                {{ 'CUOTAS.PAYMENT_FORM.AMOUNT' | translate }}
+              </label>
+              <input type="number" class="form-control" [(ngModel)]="nuevaCuota.importe" name="importe" required
+                [readonly]="soloLectura" />
+            </div>
+
+            <!-- FECHA -->
+            <div class="mb-3">
+              <label class="form-label">
+                <i class="bi bi-calendar-event me-1 text-danger"></i>
+                {{ 'CUOTAS.PAYMENT_FORM.DEADLINE' | translate }}
+              </label>
+              <input type="date" class="form-control" [(ngModel)]="nuevaCuota.fechaLimite" name="fechaLimite"
+                required />
+            </div>
+
+            <!-- OBLIGATORIA -->
+            <div class="mb-3 form-check form-switch">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="nuevaCuota.obligatorio" name="obligatorio"
+                id="obligatorioToggle" />
+              <label class="form-check-label" for="obligatorioToggle">
+                <i class="bi bi-exclamation-circle me-1 text-warning"></i>
+                {{ 'CUOTAS.PAYMENT_FORM.MANDATORY' | translate }}
+              </label>
+            </div>
+
+            <!-- EQUIPOS -->
+            <div class="mb-3">
+              <label class="form-label d-block">
+                <i class="bi bi-people me-1"></i>
+                {{ 'CUOTAS.PAYMENT_FORM.TEAMS' | translate }}
+              </label>
+
+              <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                {{ 'CUOTAS.PAYMENT_FORM.SELECT_TEAMS' | translate }}
+              </button>
+
+              <ul class="dropdown-menu p-3" style="max-height:300px; overflow-y:auto;">
+                <li>
+                  <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" id="selectAll" [checked]="isAllSelected()"
+                      (change)="toggleSelectAll()" />
+                    <label class="form-check-label" for="selectAll">
+                      {{ 'CUOTAS.PAYMENT_FORM.SELECT_ALL' | translate }}
+                    </label>
+                  </div>
+                </li>
+
+                <li *ngFor="let team of listTeams">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" [id]="'team_' + team.value"
+                      [checked]="listTeamsSelecteds.includes(team.value)" (change)="toggleTeamSelection(team.value)" />
+                    <label class="form-check-label" [for]="'team_' + team.value">
+                      {{ team.name }}
+                    </label>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <!-- STRIPE -->
+            <div class="mb-3 form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="stripeToggle" [checked]="nuevaCuota.stripe === 1"
+                (change)="onToggleStripe($event)" />
+              <label class="form-check-label" for="stripeToggle">
+                <i class="bi bi-lightning-charge me-1 text-info"></i>
+                {{ 'CUOTAS.PAYMENT_FORM.STRIPE' | translate }}
+              </label>
+            </div>
+
+            <!-- FOOTER -->
+            <div class="modal-footer justify-content-end">
+              <button type="submit" class="btn btn-success">
+                <i class="bi bi-check-circle me-1"></i>
+                {{ cuotaSeleccionada
+                ? ('CUOTAS.PAYMENT_FORM.UPDATE' | translate)
+                : ('CUOTAS.PAYMENT_FORM.SAVE' | translate)
+                }}
+              </button>
+
+              <button type="button" class="btn btn-secondary" (click)="cerrarModalCuota()">
+                <i class="bi bi-x-circle me-1"></i>
+                {{ 'CUOTAS.PAYMENT_FORM.CANCEL' | translate }}
+              </button>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal para pagar la cuota de un jugador -->
+<div class="modal" tabindex="-1" [ngClass]="{ 'd-block': showModalAddPago }" style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <!-- Encabezado -->
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title">
+          <i class="bi bi-credit-card-2-front-fill me-2"></i> Agregar pago del jugador
+        </h5>
+        <button style="background-color: white;" type="button" class="btn-close"
+          (click)="cerrarModalAddPago()"></button>
+      </div>
+
+      <!-- Cuerpo -->
+      <div class="modal-body bg-light">
+        <p class="mb-4">
+          Vas a agregar un pago al jugador <b>{{ textoInfoTitlePagoPlayer }}</b>
+        </p>
+
+        <form (ngSubmit)="createUpdateHistoryCuotaJugador()">
+          <!-- Combo de cuotas -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-list-check me-1"></i> Selecciona el pago
+            </label>
+            <select class="form-select" [(ngModel)]="addPago.pagoClubId" name="cuota" (change)="actualizarImporte()">
+              <option value="0">
+                Selecciona un pago
+              </option>
+              <option *ngFor="let cuota of listaCuotas" [value]="cuota.pagoClubId">
+                {{ cuota.titulo }} - {{ cuota.importe }}
+              </option>
+            </select>
           </div>
 
-          <!-- Body -->
-          <div class="modal-body bg-light">
+          <!-- Importe -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-currency-euro me-1 text-success"></i> Cantidad (puedes modificarla)
+            </label>
+            <input type="number" class="form-control" [(ngModel)]="addPago.importe" name="importe" placeholder="Ej. 50"
+              required>
+          </div>
 
-            <!-- Selector para añadir cuota -->
-            <div class="row mb-4 align-items-end">
-              <div class="col-md-8">
-                <label class="form-label fw-semibold">
-                  <i class="bi bi-plus-circle me-1"></i> Añadir pago
-                </label>
-                <select class="form-select" [(ngModel)]="cuotaSeleccionadaId">
-                  <option [ngValue]="null" disabled selected>Selecciona el pago</option>
-                  <option *ngFor="let c of listAllCuotas" [ngValue]="c.pagoClubId">
-                    {{ c.titulo }}
-                  </option>
-                </select>
-              </div>
-              <div class="col-md-4 text-end mt-3 mt-md-0">
-                <button class="btn btn-success" (click)="addCuotaPlayer()">
-                  <i class="bi bi-plus-lg me-1"></i> Añadir
+          <!-- Fecha -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-calendar-check me-1 text-primary"></i> Fecha de pago
+            </label>
+            <input type="date" class="form-control" [(ngModel)]="addPago.datePago" name="fecha" required>
+          </div>
+
+          <!-- Método de pago -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-wallet2 me-1 text-info"></i> Método de pago
+            </label>
+            <select class="form-select" [(ngModel)]="addPago.metodo" name="metodo" required>
+              <option value="Tarjeta">Tarjeta</option>
+              <option value="Efectivo">Efectivo</option>
+              <option value="Transferencia">Transferencia</option>
+              <option value="Bizum">Bizum</option>
+              <option value="Otro">Otro</option>
+            </select>
+          </div>
+
+          <!-- Comentario -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-chat-dots me-1 text-secondary"></i> Comentario
+            </label>
+            <textarea class="form-control" [(ngModel)]="addPago.comentario" name="comentario" rows="4"
+              placeholder="Opcional..."></textarea>
+          </div>
+
+          <!-- Botón y alerta -->
+          <div class="modal-footer px-0">
+            <button type="submit" class="btn cursor btn-success">
+              <i class="bi bi-check-circle me-1"></i> Guardar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para ver historial de pagos -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalHistorialPagos}"
+  style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title">
+          <i class="bi bi-clock-history me-2"></i> Historial de Pagos
+        </h5>
+        <button style="background-color: white;" type="button" class="btn-close"
+          (click)="cerrarModalHistorialPagos()"></button>
+      </div>
+      <div class="modal-body bg-light">
+        <!-- Mensaje si no hay historial -->
+        <div *ngIf="listHistoryPagos.length === 0" class="alert alert-info text-center">
+          <i class="bi bi-info-circle me-2"></i> No hay historial de pagos disponible.
+        </div>
+        <!-- Lista del historial -->
+        <div *ngFor="let historyPago of listHistoryPagos; let i = index"
+          class="mb-3 p-4 rounded border shadow-sm bg-white">
+          <h3>{{ historyPago.namePago }}</h3>
+          <div class="row align-items-center">
+            <div class="col-md-1 text-center">
+              <span class="badge bg-dark fs-5">{{ i + 1 }}</span>
+            </div>
+            <div class="col-md-2">
+              <strong><i class="bi bi-currency-exchange me-1 text-success"></i> Importe:</strong><br>
+              {{ historyPago.importe }}
+            </div>
+            <div class="col-md-2">
+              <strong><i class="bi bi-credit-card-2-front me-1 text-primary"></i> Método:</strong><br>
+              {{ historyPago.metodo }}
+            </div>
+            <div class="col-md-3">
+              <strong><i class="bi bi-calendar-check me-1 text-danger"></i> Fecha de pago:</strong><br>
+              {{ historyPago.datePago | date: 'dd/MM/yyyy' }}
+            </div>
+            <div class="col-md-3" style="min-width:0;">
+              <strong><i class="bi bi-chat-left-text me-1 text-secondary"></i> Comentario:</strong><br>
+
+              <ng-container *ngIf="historyPago.comentario?.startsWith('http'); else textoPlano">
+                <a [href]="historyPago.comentario" target="_blank" rel="noopener" class="d-inline-block text-truncate"
+                  style="max-width:100%;">
+                  Ver recibo
+                </a>
+                <button class="btn btn-sm btn-outline-secondary ms-1" (click)="copy(historyPago.comentario)"
+                  title="Copiar enlace">
+                  <i class="bi bi-clipboard"></i>
                 </button>
+              </ng-container>
+
+              <ng-template #textoPlano>
+                <span class="text-break">{{ historyPago.comentario || 'Sin comentario' }}</span>
+              </ng-template>
+            </div>
+            <div class="col-md-1 text-end" *ngIf="!historyPago.importe.includes('-')">
+              <button class="btn cursor btn-sm btn-warning" (click)="devolverPagoClub(historyPago)"
+                title="Devolver pago">
+                <i class="bi bi-arrow-counterclockwise"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn cursor btn-secondary" (click)="cerrarModalHistorialPagos()">
+          <i class="bi bi-x-circle me-1"></i> Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación de devolución -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': showConfirmDevolucion }"
+  style="background-color: rgba(0, 0, 0, 0.5);">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content border-warning">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title">
+          <i class="bi bi-exclamation-triangle me-2"></i> Atención Devolución!
+        </h5>
+        <button type="button" class="btn-close" (click)="cancelarDevolucion()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="fw-semibold">Vas a proceder a realizar una devolución. Indica el método y el motivo.</p>
+
+        <div class="mb-3">
+          <label for="metodoDevolucion" class="form-label"><i class="bi bi-credit-card me-1"></i>
+            Método:</label>
+          <select id="metodoDevolucion" class="form-select" [(ngModel)]="metodoDevolucion">
+            <option value="" disabled selected>Selecciona método</option>
+            <option value="Bizum">Bizum</option>
+            <option value="Transferencia">Transferencia</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="comentarioDevolucion" class="form-label"><i class="bi bi-chat-text me-1"></i>
+            Comentario:</label>
+          <textarea id="comentarioDevolucion" class="form-control" rows="4" [(ngModel)]="comentarioDevolucion"
+            placeholder="Motivo de la devolución..."></textarea>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn cursor btn-secondary" (click)="cancelarDevolucion()">
+          <i class="bi bi-x-circle me-1"></i> Cancelar
+        </button>
+        <button type="button" class="btn cursor btn-warning" (click)="okDevolverPagoClub()">
+          <i class="bi bi-check2-circle me-1"></i> Aceptar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Pagos asignados -->
+<div [ngClass]="{'d-block': showModalCuotasAsignadas}" class="modal" role="dialog"
+  style="background-color: rgba(0,0,0,0.5);" tabindex="-1">
+  <div class="modal fade show d-block modal-overlay">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+      <div class="modal-content modal-modern">
+
+        <!-- HEADER -->
+        <div class="modal-header modal-header-dark">
+          <h5 class="modal-title">
+            <i class="bi bi-wallet2 me-2"></i>
+            {{ 'CUOTAS.CUOTAS_ASSIGNED.TITLE' | translate }}
+          </h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarModalCuotasAsignadas()">
+          </button>
+        </div>
+
+        <!-- BODY -->
+        <div class="modal-body modal-body-light">
+
+          <!-- Sin resultados -->
+          <div *ngIf="listaCuotasAsignadas.length === 0" class="alert alert-info text-center">
+            <i class="bi bi-info-circle me-2"></i>
+            {{ 'CUOTAS.CUOTAS_ASSIGNED.EMPTY' | translate }}
+          </div>
+
+          <!-- Cards -->
+          <div *ngFor="let cuota of listaCuotasAsignadas" class="cuota-card">
+
+            <div class="cuota-header">
+              <i class="bi bi-tag"></i>
+              <span class="cuota-title">{{ cuota.titulo }}</span>
+
+              <span class="cuota-mandatory">
+                <small class="label">
+                  {{ 'CUOTAS.CUOTAS_ASSIGNED.MANDATORY' | translate }}:
+                </small>
+
+                <span class="badge" [ngClass]="cuota.obligatorio === 1 ? 'badge-success' : 'badge-secondary'">
+                  {{ cuota.obligatorio === 1
+                  ? ('CUOTAS.CUOTAS_ASSIGNED.YES' | translate)
+                  : ('CUOTAS.CUOTAS_ASSIGNED.NO' | translate) }}
+                </span>
+              </span>
+            </div>
+
+
+            <div class="cuota-grid">
+              <div>
+                <label>{{ 'CUOTAS.CUOTAS_ASSIGNED.AMOUNT' | translate }}</label>
+                <span class="amount">{{ cuota.importe }} €</span>
+              </div>
+
+              <div>
+                <label>{{ 'CUOTAS.CUOTAS_ASSIGNED.DEADLINE' | translate }}</label>
+                <span>{{ cuota.fechaLimite | date:'dd/MM/yyyy' }}</span>
               </div>
             </div>
 
-            <!-- Mensaje vacío -->
-            <div *ngIf="!listCuotasPlayerPersonal || listCuotasPlayerPersonal.length === 0"
-              class="alert alert-info text-center">
-              <i class="bi bi-info-circle me-2"></i> Este jugador no tiene pagos asignadas.
-            </div>
-
-            <!-- Listado de cuotas del jugador -->
-            <div *ngFor="let cuota of listCuotasPlayerPersonal; let a = index"
-              class="mb-3 p-4 rounded border shadow-sm bg-white">
-              <div class="d-flex justify-content-between align-items-start">
-                <!-- Detalle -->
-                <div>
-                  <h5 class="fw-bold text-primary">
-                    <i class="bi bi-tag me-1"></i> {{ cuota.titulo }}
-                  </h5>
-                  <p class="mb-1">
-                    <strong><i class="bi bi-currency-exchange me-1 text-success"></i> Importe:</strong>
-                    {{ cuota.importe }}
-                  </p>
-                  <p class="mb-1">
-                    <strong><i class="bi bi-card-text me-1 text-secondary"></i> Descripción:</strong>
-                    {{ cuota.descripcion }}
-                  </p>
-                  <p class="mb-1">
-                    <strong><i class="bi bi-calendar-event me-1 text-danger"></i> Fecha límite:</strong>
-                    {{ cuota.fechaLimite | date:'dd/MM/yyyy' }}
-                  </p>
-                  <p class="mb-0">
-                    <strong><i class="bi bi-check2-circle me-1 text-info"></i> ¿Obligatoria?:</strong>
-                    <span class="badge bg-{{ +cuota.obligatorio === 1 ? 'success' : 'secondary' }}">
-                      {{ +cuota.obligatorio === 1 ? 'Sí' : 'No' }}
-                    </span>
-                  </p>
-                </div>
-
-                <!-- Acciones -->
-                <div class="ms-3">
-                  <button class="btn btn-sm btn-outline-primary me-2" title="Editar cuota"
-                    (click)="editarCuotaPlayer(cuota, a)">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button class="btn btn-sm btn-outline-danger" title="Eliminar cuota"
-                    (click)="eliminarCuotaPlayer(cuota, a)">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </div>
+            <div class="cuota-description">
+              <i class="bi bi-card-text me-1"></i>
+              {{ cuota.descripcion }}
             </div>
 
           </div>
 
-          <!-- Footer -->
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" (click)="cerrarModalCuotasJugador()">
-              <i class="bi bi-x-circle me-1"></i> Cerrar
+        </div>
+
+        <!-- FOOTER -->
+        <div class="modal-footer">
+          <button class="btn btn-secondary" (click)="cerrarModalCuotasAsignadas()">
+            <i class="bi bi-x-circle me-1"></i>
+            {{ 'CUOTAS.CUOTAS_ASSIGNED.CLOSE' | translate }}
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Cuotas del jugador -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalCuotasJugador}"
+  style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+
+      <!-- Header -->
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title">
+          <i class="bi bi-wallet2 me-2"></i> Pagos del jugador
+        </h5>
+        <button style="background-color: white;" type="button" class="btn-close"
+          (click)="cerrarModalCuotasJugador()"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body bg-light">
+
+        <!-- Selector para añadir cuota -->
+        <div class="row mb-4 align-items-end">
+          <div class="col-md-8">
+            <label class="form-label fw-semibold">
+              <i class="bi bi-plus-circle me-1"></i> Añadir pago
+            </label>
+            <select class="form-select" [(ngModel)]="cuotaSeleccionadaId">
+              <option [ngValue]="null" disabled selected>Selecciona el pago</option>
+              <option *ngFor="let c of listAllCuotas" [ngValue]="c.pagoClubId">
+                {{ c.titulo }}
+              </option>
+            </select>
+          </div>
+          <div class="col-md-4 text-end mt-3 mt-md-0">
+            <button class="btn btn-success" (click)="addCuotaPlayer()">
+              <i class="bi bi-plus-lg me-1"></i> Añadir
             </button>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- Modal: Editar cuota del jugador -->
-    <div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': showModalEditarCuotaPlayer }"
-      style="background-color: rgba(0,0,0,0.5);">
-      <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
+        <!-- Mensaje vacío -->
+        <div *ngIf="!listCuotasPlayerPersonal || listCuotasPlayerPersonal.length === 0"
+          class="alert alert-info text-center">
+          <i class="bi bi-info-circle me-2"></i> Este jugador no tiene pagos asignadas.
+        </div>
 
-          <div class="modal-header bg-dark text-white">
-            <h5 class="modal-title">
-              <i class="bi bi-pencil-square me-2"></i> Editar cuota del jugador
-            </h5>
-            <button style="background-color: white;" type="button" class="btn-close"
-              (click)="cerrarModalEditarCuotaPlayer()"></button>
-          </div>
+        <!-- Listado de cuotas del jugador -->
+        <div *ngFor="let cuota of listCuotasPlayerPersonal; let a = index"
+          class="mb-3 p-4 rounded border shadow-sm bg-white">
+          <div class="d-flex justify-content-between align-items-start">
+            <!-- Detalle -->
+            <div>
+              <h5 class="fw-bold text-primary">
+                <i class="bi bi-tag me-1"></i> {{ cuota.titulo }}
+              </h5>
+              <p class="mb-1">
+                <strong><i class="bi bi-currency-exchange me-1 text-success"></i> Importe:</strong>
+                {{ cuota.importe }}
+              </p>
+              <p class="mb-1">
+                <strong><i class="bi bi-card-text me-1 text-secondary"></i> Descripción:</strong>
+                {{ cuota.descripcion }}
+              </p>
+              <p class="mb-1">
+                <strong><i class="bi bi-calendar-event me-1 text-danger"></i> Fecha límite:</strong>
+                {{ cuota.fechaLimite | date:'dd/MM/yyyy' }}
+              </p>
+              <p class="mb-0">
+                <strong><i class="bi bi-check2-circle me-1 text-info"></i> ¿Obligatoria?:</strong>
+                <span class="badge bg-{{ +cuota.obligatorio === 1 ? 'success' : 'secondary' }}">
+                  {{ +cuota.obligatorio === 1 ? 'Sí' : 'No' }}
+                </span>
+              </p>
+            </div>
 
-          <div class="modal-body bg-light">
-            <form (ngSubmit)="guardarEdicionCuotaPlayer()">
-
-              <div class="mb-3">
-                <label class="form-label">
-                  <i class="bi bi-type me-1 text-primary"></i> Título
-                </label>
-                <input type="text" class="form-control" [(ngModel)]="cuotaPlayerEdit.titulo" name="tituloEdit" required>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">
-                  <i class="bi bi-card-text me-1 text-secondary"></i> Descripción
-                </label>
-                <textarea class="form-control" rows="4" [(ngModel)]="cuotaPlayerEdit.descripcion"
-                  name="descripcionEdit"></textarea>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">
-                  <i class="bi bi-currency-exchange text-success"></i> Importe
-                </label>
-                <input type="number" class="form-control" [(ngModel)]="cuotaPlayerEdit.importe" name="importeEdit"
-                  required>
-              </div>
-
-              <div class="mb-3">
-                <label class="form-label">
-                  <i class="bi bi-calendar-event me-1 text-danger"></i> Fecha límite
-                </label>
-                <input type="date" class="form-control" [(ngModel)]="cuotaPlayerEdit.fechaLimite" name="fechaLimiteEdit"
-                  required>
-              </div>
-
-              <div class="modal-footer justify-content-end">
-                <button type="submit" class="btn btn-success">
-                  <i class="bi bi-check-circle me-1"></i> Guardar cambios
-                </button>
-                <button type="button" class="btn btn-secondary" (click)="cerrarModalEditarCuotaPlayer()">
-                  <i class="bi bi-x-circle me-1"></i> Cancelar
-                </button>
-              </div>
-            </form>
+            <!-- Acciones -->
+            <div class="ms-3">
+              <button class="btn btn-sm btn-outline-primary me-2" title="Editar cuota"
+                (click)="editarCuotaPlayer(cuota, a)">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger" title="Eliminar cuota"
+                (click)="eliminarCuotaPlayer(cuota, a)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
           </div>
         </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalCuotasJugador()">
+          <i class="bi bi-x-circle me-1"></i> Cerrar
+        </button>
       </div>
     </div>
+  </div>
+</div>
 
-    <!-- Modal para editar stripe -->
-    <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalStripe}">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="stripeModalLabel">Configurar Stripe</h5>
-              <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalStripe()"></button>
+<!-- Modal: Editar cuota del jugador -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': showModalEditarCuotaPlayer }"
+  style="background-color: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil-square me-2"></i> Editar cuota del jugador
+        </h5>
+        <button style="background-color: white;" type="button" class="btn-close"
+          (click)="cerrarModalEditarCuotaPlayer()"></button>
+      </div>
+
+      <div class="modal-body bg-light">
+        <form (ngSubmit)="guardarEdicionCuotaPlayer()">
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="bi bi-type me-1 text-primary"></i> Título
+            </label>
+            <input type="text" class="form-control" [(ngModel)]="cuotaPlayerEdit.titulo" name="tituloEdit" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="bi bi-card-text me-1 text-secondary"></i> Descripción
+            </label>
+            <textarea class="form-control" rows="4" [(ngModel)]="cuotaPlayerEdit.descripcion"
+              name="descripcionEdit"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="bi bi-currency-exchange text-success"></i> Importe
+            </label>
+            <input type="number" class="form-control" [(ngModel)]="cuotaPlayerEdit.importe" name="importeEdit" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              <i class="bi bi-calendar-event me-1 text-danger"></i> Fecha límite
+            </label>
+            <input type="date" class="form-control" [(ngModel)]="cuotaPlayerEdit.fechaLimite" name="fechaLimiteEdit"
+              required>
+          </div>
+
+          <div class="modal-footer justify-content-end">
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-check-circle me-1"></i> Guardar cambios
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="cerrarModalEditarCuotaPlayer()">
+              <i class="bi bi-x-circle me-1"></i> Cancelar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para editar stripe -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalStripe}">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="stripeModalLabel">Configurar Stripe</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalStripe()"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3 text-center" *ngIf="infoClub.stripeUrl != null">
+            <button (click)="goStripeURL()" class="btn btn-primary">Acceder a Stripe</button>
+          </div>
+          <form (ngSubmit)="onSubmit()" #stripeForm="ngForm" *ngIf="infoClub.stripeUrl === null">
+            <div class="mb-3" style="height: 20em; overflow-y: scroll; padding: 1em;">
+              <h2>⚠️ Atención, solo válido para España.</h2>
+              <p><strong>¿Qué es Stripe?</strong></p>
+              <p>Stripe es una plataforma de pagos en línea que permite a empresas y organizaciones
+                recibir pagos de
+                manera segura y eficiente. Con Stripe, puedes gestionar todas tus transacciones de forma
+                sencilla,
+                asegurando que los pagos se procesen rápidamente y con total seguridad. Además, Stripe
+                ofrece
+                herramientas
+                para automatizar y simplificar la contabilidad y la gestión financiera de tu club. Para
+                facilitar esta
+                gestión, la hemos integrado directamente en SphairaTech.</p>
+
+              <p><strong>¿Cómo puedo activar Stripe en Sphaira para automatizar el pago de las cuotas o
+                  pagos de
+                  los padres y no
+                  tener que preocuparme?</strong></p>
+
+              <p><strong>1. Registro en Stripe:</strong></p>
+              <p>Primero, date de alta en Stripe usando el botón proporcionado.</p>
+
+              <p><strong>2. Introduce las cuotas o pagos:</strong></p>
+
+              <p><strong>3. Recibir Pagos:</strong></p>
+              <p>Los padres podrán acceder a través de una invitación del entrenador o del club. Una vez
+                registrados,
+                podrán realizar los pagos para cubrir las cuotas anuales o la cuota de la ropa en las
+                fechas fijadas por
+                el club. Recibirás estos pagos automáticamente en tu cuenta de Stripe.</p>
+
+              <p><strong>4. Actualización Automática:</strong></p>
+              <p>La tabla de pagos se actualizará automáticamente. Solo tendrás que revisarla, sin
+                necesidad de hacer
+                cambios manuales.</p>
+
+              <p><strong>5. Comisión:</strong></p>
+              <p>Hay una comisión del 1,8% en cada pago. Aun así, recibirás el importe total que
+                establezcas como cuota,
+                ya que la comisión no se te repercutirá.</p>
+
+              <p><strong>6. Importancia del Registro:</strong></p>
+              <p>Si decides no darte de alta en Stripe, no podrás recibir pagos por parte de los padres a
+                través de
+                Sphaira y tendrás que llevar un registro manual.</p>
             </div>
-            <div class="modal-body">
-              <div class="mb-3 text-center" *ngIf="infoClub.stripeUrl != null">
-                <button (click)="goStripeURL()" class="btn btn-primary">Acceder a Stripe</button>
+            <div class="mb-3 d-flex align-items-center" style="margin-top: 2em;">
+              <input type="checkbox" id="stripeAgreement" name="stripeAgreement" [(ngModel)]="aceptStripe" class="me-2">
+              <label for="stripeAgreement" class="mb-0">He leído y estoy de acuerdo con el funcionamiento
+                de Stripe a
+                través de SphairaTech.</label>
+            </div>
+            <div class="mb-3 d-flex">
+              <div class="col-12">
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" class="form-control" id="email" name="email" placeholder="tuemail@mail.com"
+                  [(ngModel)]="email" required>
               </div>
-              <form (ngSubmit)="onSubmit()" #stripeForm="ngForm" *ngIf="infoClub.stripeUrl === null">
-                <div class="mb-3" style="height: 20em; overflow-y: scroll; padding: 1em;">
-                  <h2>⚠️ Atención, solo válido para España.</h2>
-                  <p><strong>¿Qué es Stripe?</strong></p>
-                  <p>Stripe es una plataforma de pagos en línea que permite a empresas y organizaciones
-                    recibir pagos de
-                    manera segura y eficiente. Con Stripe, puedes gestionar todas tus transacciones de forma
-                    sencilla,
-                    asegurando que los pagos se procesen rápidamente y con total seguridad. Además, Stripe
-                    ofrece
-                    herramientas
-                    para automatizar y simplificar la contabilidad y la gestión financiera de tu club. Para
-                    facilitar esta
-                    gestión, la hemos integrado directamente en SphairaTech.</p>
-
-                  <p><strong>¿Cómo puedo activar Stripe en Sphaira para automatizar el pago de las cuotas o
-                      pagos de
-                      los padres y no
-                      tener que preocuparme?</strong></p>
-
-                  <p><strong>1. Registro en Stripe:</strong></p>
-                  <p>Primero, date de alta en Stripe usando el botón proporcionado.</p>
-
-                  <p><strong>2. Introduce las cuotas o pagos:</strong></p>
-
-                  <p><strong>3. Recibir Pagos:</strong></p>
-                  <p>Los padres podrán acceder a través de una invitación del entrenador o del club. Una vez
-                    registrados,
-                    podrán realizar los pagos para cubrir las cuotas anuales o la cuota de la ropa en las
-                    fechas fijadas por
-                    el club. Recibirás estos pagos automáticamente en tu cuenta de Stripe.</p>
-
-                  <p><strong>4. Actualización Automática:</strong></p>
-                  <p>La tabla de pagos se actualizará automáticamente. Solo tendrás que revisarla, sin
-                    necesidad de hacer
-                    cambios manuales.</p>
-
-                  <p><strong>5. Comisión:</strong></p>
-                  <p>Hay una comisión del 1,8% en cada pago. Aun así, recibirás el importe total que
-                    establezcas como cuota,
-                    ya que la comisión no se te repercutirá.</p>
-
-                  <p><strong>6. Importancia del Registro:</strong></p>
-                  <p>Si decides no darte de alta en Stripe, no podrás recibir pagos por parte de los padres a
-                    través de
-                    Sphaira y tendrás que llevar un registro manual.</p>
-                </div>
-                <div class="mb-3 d-flex align-items-center" style="margin-top: 2em;">
-                  <input type="checkbox" id="stripeAgreement" name="stripeAgreement" [(ngModel)]="aceptStripe"
-                    class="me-2">
-                  <label for="stripeAgreement" class="mb-0">He leído y estoy de acuerdo con el funcionamiento
-                    de Stripe a
-                    través de SphairaTech.</label>
-                </div>
-                <div class="mb-3 d-flex">
-                  <div class="col-12">
-                    <label for="email" class="form-label">Correo Electrónico</label>
-                    <input type="email" class="form-control" id="email" name="email" placeholder="tuemail@mail.com"
-                      [(ngModel)]="email" required>
-                  </div>
-                </div>
-                <div class="mb-3 d-flex" *ngIf="aceptStripe">
-                  <div class="col-12">
-                    <button style="
+            </div>
+            <div class="mb-3 d-flex" *ngIf="aceptStripe">
+              <div class="col-12">
+                <button style="
                   width: -webkit-fill-available;" type=" submit" class="btn btn-primary">Crear Cuenta en
-                      Stripe</button>
-                  </div>
-                </div>
-              </form>
+                  Stripe</button>
+              </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>
+  </div>
+</div>

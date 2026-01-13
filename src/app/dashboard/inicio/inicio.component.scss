@@ -2,7 +2,6 @@
    Dashboard (Inicio)
 ================================ */
 html, body {
-  height: 100%;
   margin: 0;
 }
 
@@ -11,27 +10,26 @@ app-root {
   display: block;
 }
 
-.app-layout {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
 .app-content {
   flex: 1;
 }
 
 .dashboard-layout {
-  min-height: 100vh;
+  min-height: 90vh;
   display: flex;
   flex-direction: column;
 }
-
+.dashboard-main {
+  flex: 1 0 auto;
+  display: flex;
+  flex-direction: column;
+}
 .dashboard-content {
   flex: 1;
 }
 
 .dashboard-mobile {
+  padding-bottom: 0;
   padding-top: 1rem;
   margin-top: 70px;
 }

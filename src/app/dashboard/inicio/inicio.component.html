@@ -1,85 +1,96 @@
 <!-- DASHBOARD -->
 <div class="dashboard-layout">
-  <main *ngIf="profileId === 1" class="container dashboard-mobile">
+  <main *ngIf="profileId === 1" class="dashboard-main">
+    <div class="container dashboard-mobile">
+      <div class="row g-3">
 
-    <div class="row g-3">
-
-      <!-- CUADRO DE MANDO -->
-      <div class="col-6 col-md-4">
-        <div (click)="irAPantalla(3)" class="dashboard-card">
-          <img src="assets/images/estadisticas2.jpg">
-          <div class="overlay">
-            <i class="bi bi-clipboard2-data"></i>
-            <span>{{ 'NAV.CUADRO' | translate }}</span>
+        <!-- CUADRO DE MANDO -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantalla(3)" class="dashboard-card">
+            <img src="assets/images/estadisticas2.jpg">
+            <div class="overlay">
+              <i class="bi bi-clipboard2-data"></i>
+              <span>{{ 'NAV.CUADRO' | translate }}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- EQUIPOS -->
-      <div class="col-6 col-md-4">
-        <div (click)="irAPantalla(9)" class="dashboard-card">
-          <img src="assets/images/infoequipo.jpg">
-          <div class="overlay">
-            <i class="bi bi-people"></i>
-            <span>{{ 'NAV.TEAMS' | translate }}</span>
+        <!-- EQUIPOS -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantalla(9)" class="dashboard-card">
+            <img src="assets/images/infoequipo.jpg">
+            <div class="overlay">
+              <i class="bi bi-people"></i>
+              <span>{{ 'NAV.TEAMS' | translate }}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- DOCUMENTOS -->
-      <div class="col-6 col-md-4">
-        <div (click)="irAPantalla(6)" class="dashboard-card">
-          <img src="assets/images/documentacion.jpg">
-          <div class="overlay">
-            <i class="bi bi-file-earmark-pdf"></i>
-            <span>{{ 'NAV.DOCUMENTS' | translate }}</span>
+        <!-- DOCUMENTOS -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantalla(6)" class="dashboard-card">
+            <img src="assets/images/documentacion.jpg">
+            <div class="overlay">
+              <i class="bi bi-file-earmark-pdf"></i>
+              <span>{{ 'NAV.DOCUMENTS' | translate }}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- COUTA -->
-      <div class="col-6 col-md-4">
-        <div (click)="irAPantalla(7)" class="dashboard-card">
-          <img src="assets/images/pagarcuota.jpg">
-          <div class="overlay">
-            <i class="bi bi-bank2"></i>
-            <span>{{ 'NAV.NEWPAYS' | translate }}</span>
+        <!-- COUTA -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantalla(7)" class="dashboard-card">
+            <img src="assets/images/pagarcuota.jpg">
+            <div class="overlay">
+              <i class="bi bi-bank2"></i>
+              <span>{{ 'NAV.NEWPAYS' | translate }}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- SKELETON MIENTRAS CARGA -->
-      <div *ngIf="clubLoading" class="col-6 col-md-4">
-        <div class="dashboard-card skeleton"></div>
-      </div>
+        <!-- SKELETON MIENTRAS CARGA -->
+        <div *ngIf="clubLoading" class="col-6 col-md-4">
+          <div class="dashboard-card skeleton"></div>
+        </div>
 
-      <div *ngIf="clubLoading" class="col-6 col-md-4">
-        <div class="dashboard-card skeleton"></div>
-      </div>
+        <div *ngIf="clubLoading" class="col-6 col-md-4">
+          <div class="dashboard-card skeleton"></div>
+        </div>
 
-      <!-- ROPA -->
-      <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
-        <div (click)="irAPantalla(2)" class="dashboard-card">
-          <img src="assets/images/jugadores.jpg">
-          <div class="overlay">
-            <i class="bi bi-backpack3"></i>
-            <span>{{ 'NAV.CLOTHES' | translate }}</span>
+        <!-- ROPA -->
+        <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
+          <div (click)="irAPantalla(2)" class="dashboard-card">
+            <img src="assets/images/jugadores.jpg">
+            <div class="overlay">
+              <i class="bi bi-backpack3"></i>
+              <span>{{ 'NAV.CLOTHES' | translate }}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- PATROCINADORES -->
-      <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
-        <div (click)="irAPantalla(4)" class="dashboard-card">
-          <img src="assets/images/patrocinadores.jpg">
-          <div class="overlay">
-            <i class="bi bi-collection"></i>
-            <span>{{ 'NAV.SPONSORS' | translate }}</span>
+        <!-- PATROCINADORES -->
+        <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
+          <div (click)="irAPantalla(4)" class="dashboard-card">
+            <img src="assets/images/patrocinadores.jpg">
+            <div class="overlay">
+              <i class="bi bi-collection"></i>
+              <span>{{ 'NAV.SPONSORS' | translate }}</span>
+            </div>
           </div>
         </div>
+
+        <!-- NOTIFICACIONES -->
+        <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
+          <div (click)="irAPantalla(8)" class="dashboard-card">
+            <img src="assets/images/notificaciones.jpg">
+            <div class="overlay">
+              <i class="bi bi-bell-fill"></i>
+              <span>{{ 'NAV.NOTIFICATIONS' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
       </div>
-
-
     </div>
   </main>
   <app-footer></app-footer>

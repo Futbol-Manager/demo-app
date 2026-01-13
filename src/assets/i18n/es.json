@@ -15,6 +15,12 @@
       "ACCEPT": "Aceptar"
     }
   },
+  "COMMON": {
+    "BACK": "Volver",
+    "DATE": "Fecha",
+    "EXPORT_EXCEL": "Exportar Excel",
+    "LOADING_LIST": "Cargando listado..."
+  },
   "LOGIN": {
     "EMAIL_PLACEHOLDER": "Correo electrónico",
     "EMAIL_REQUIRED": "Correo electrónico requerido",
@@ -22,7 +28,13 @@
     "PASSWORD_PLACEHOLDER": "Contraseña",
     "PASSWORD_REQUIRED": "Contraseña requerida",
     "BLOCKED_MESSAGE": "Usuario bloqueado. Para desbloquearlo debes validarlo siguiendo el enlace recibido en tu correo electrónico.",
-    "BLOCKED_LINK": "Haz click aquí para recibir un nuevo correo."
+    "BLOCKED_LINK": "Haz click aquí para recibir un nuevo correo.",
+    "ERROR": {
+      "INVALID_CREDENTIALS": "El correo o la contraseña no son correctos. Revísalos e inténtalo de nuevo.",
+      "NOT_VERIFIED": "Tu cuenta aún no ha sido verificada. Revisa tu correo electrónico.",
+      "RESEND_VERIFICATION": "Reenviar correo de verificación",
+      "GENERIC": "No hemos podido iniciar sesión. Inténtalo de nuevo más tarde."
+    }
   },
   "TITLES": {
     "USERS": "Usuarios",
@@ -863,6 +875,87 @@
       "NO": "No",
       "CLOSE": "Cerrar",
       "EMPTY": "Este jugador no tiene pagos asignados"
+    },
+    "BANK_INFO": {
+      "TITLE": "Información bancaria del club",
+      "BIZUM": "Número de Bizum",
+      "BIZUM_PLACEHOLDER": "Ej: 666 666 666",
+      "CONTACT": "Persona de contacto",
+      "CONTACT_PLACEHOLDER": "Ej: Pedro Miguel, coordinador",
+      "ACCOUNT": "Número de cuenta bancaria",
+      "ACCOUNT_PLACEHOLDER": "Ej: ES76 1234 5678 9012 3456 7890",
+      "INSTRUCTIONS": "Instrucciones para el pago",
+      "INSTRUCTIONS_PLACEHOLDER": "Ej: Nombre del jugador + DNI + categoría",
+      "SAVE": "Guardar",
+      "CLOSE": "Cerrar"
+    },
+    "PAYMENTS_MODAL": {
+      "TITLE": "Gestión de pagos",
+      "ADD": "Añadir pago",
+      "SEARCH": "Buscar por título",
+      "SEARCH_PLACEHOLDER": "Ej: Pago septiembre",
+      "FILTER": "Filtrar por obligatoriedad",
+      "ALL": "Mostrar todas",
+      "MANDATORY_ONLY": "Solo obligatorias",
+      "OPTIONAL_ONLY": "Solo no obligatorias",
+      "EMPTY": "No hay pagos que coincidan con los filtros.",
+      "MANDATORY": "Obligatoria",
+      "YES": "Sí",
+      "NO": "No",
+      "AMOUNT": "Importe",
+      "DEADLINE": "Fecha límite",
+      "EDIT": "Editar pago",
+      "DELETE": "Eliminar pago",
+      "CLOSE": "Cerrar"
+    },
+    "PAYMENT_FORM": {
+      "CREATE_TITLE": "Crear nuevo pago",
+      "EDIT_TITLE": "Editar pago",
+      "TITLE": "Título",
+      "TITLE_PLACEHOLDER": "Ej: Pago septiembre",
+      "DESCRIPTION": "Descripción",
+      "DESCRIPTION_PLACEHOLDER": "Describe brevemente este pago...",
+      "AMOUNT": "Importe",
+      "DEADLINE": "Fecha límite",
+      "MANDATORY": "¿Es obligatoria?",
+      "TEAMS": "Equipos",
+      "SELECT_TEAMS": "Seleccionar equipos",
+      "SELECT_ALL": "Seleccionar todos",
+      "STRIPE": "Permitir pago con Stripe",
+      "SAVE": "Guardar pago",
+      "UPDATE": "Actualizar pago",
+      "CANCEL": "Cancelar"
     }
+  },
+  "PAYMENTS": {
+    "TITLE": "Cargos",
+    "TOTAL": "Cargos",
+    "FILTER_CLUB": "Filtrar por nombre del club",
+    "NAME": "Nombre",
+    "DESCRIPTION": "Descripción Pago",
+    "TITLE_COL": "Título",
+    "AMOUNT": "Importe",
+    "METHOD": "Método",
+    "TYPE": "Tipo"
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "Notificación",
+    "ALL": "Todos",
+    "READ": "Leídos",
+    "UNREAD": "No leídos",
+    "COMPOSE": "Redactar",
+    "INBOX": "Recibidos",
+    "SENT": "Enviados",
+    "OPEN_MESSAGE": "Abrir para ver el mensaje…",
+    "SENT_AT": "Enviado el",
+    "FROM": "Remitente",
+    "TO":"Destinatarios",
+    "SUBJECT": "Asunto",
+    "MESSAGE": "Mensaje",
+    "CLOSE": "Cerrar",
+    "SELECT_MESSAGE": "No ha seleccionado ningún correo.",
+    "DELETE": "Eliminar",
+    "SEND": "Enviar",
+    "CANCEL": "Cancelar"
   }
 }

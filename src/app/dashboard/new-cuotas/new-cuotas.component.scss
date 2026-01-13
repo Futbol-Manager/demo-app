@@ -10,6 +10,56 @@
 .submenu-left {
   flex: 0 0 auto;
 }
+/* ===== SKELETON ROW ===== */
+.table-skeleton-row.cuotas {
+  display: grid;
+  grid-template-columns:
+    42px        /* avatar */
+    180px       /* nombre */
+    160px       /* equipo */
+    60px        /* estado */
+    110px       /* total */
+    110px       /* pagado */
+    110px       /* restante */
+    160px       /* progreso */
+    140px;      /* acciones */
+  gap: 12px;
+  align-items: center;
+  padding: 14px 8px;
+}
+
+/* ===== SKELETON BASE ===== */
+.sk {
+  height: 14px;
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    #e5e7eb 25%,
+    #f3f4f6 37%,
+    #e5e7eb 63%
+  );
+  background-size: 400% 100%;
+  animation: skeleton 1.4s ease infinite;
+}
+
+/* VARIANTES */
+.sk-avatar { width: 42px; height: 42px; border-radius: 50%; }
+.sk-name { height: 16px; }
+.sk-md { height: 14px; }
+.sk-xs { height: 12px; width: 40px; }
+.sk-progress { height: 8px; border-radius: 6px; }
+.sk-actions { height: 20px; }
+
+/* ANIMACIÓN */
+@keyframes skeleton {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}
+
+/* SCROLL CONTROL */
+.table-scroll.no-scroll {
+  overflow: hidden;
+}
 
 /* CENTRO */
 .submenu-center {
@@ -74,12 +124,79 @@
 }
 
 /* FILTERS */
-.filters-bar {
-  display: grid;
-  grid-template-columns: 1fr auto auto auto;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+.modern-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
 }
+
+/* SEARCH */
+.filter-search {
+  position: relative;
+  flex: 1;
+}
+
+.filter-search i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.filter-search input {
+  padding-left: 40px;
+  height: 42px;
+  border-radius: 10px;
+}
+
+/* SELECT */
+.filter-select {
+  position: relative;
+  min-width: 260px;
+}
+
+.filter-select i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #fd7e14;
+  font-size: 0.9rem;
+}
+
+.filter-select select {
+  padding-left: 40px;
+  height: 42px;
+  border-radius: 10px;
+}
+
+/* RESET */
+.btn-reset {
+  height: 42px;
+  border-radius: 10px;
+  white-space: nowrap;
+  background-color: #31b270;
+  color: #002c40;
+  font-weight: bold;
+}
+
+/* INFO ICON */
+.btn-info-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
 /* TABLE */
 .table-scroll {

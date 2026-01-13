@@ -25,7 +25,7 @@
                 <div class="row mt-3">
                   <div class="col-md-12 mb-4">
                     <div (click)="select(1)" [ngClass]="{'selected': selected === 1}" class="card selection-card"
-                         id="club">
+                      id="club">
                       <img alt="Club Icon" class="card-img-top mx-auto d-block p-3" src="/assets/images/club-verde.png">
                       <div class="card-body text-center">
                         <h5 class="card-title">
@@ -37,9 +37,9 @@
                   </div>
                   <div class="col-md-12 mb-4">
                     <div (click)="select(2)" [ngClass]="{'selected': selected === 2}" class="card selection-card"
-                         id="coach">
+                      id="coach">
                       <img alt="Coach Icon" class="card-img-top mx-auto d-block p-3"
-                           src="/assets/images/coach-verde.png">
+                        src="/assets/images/coach-verde.png">
                       <div class="card-body text-center">
                         <h5 class="card-title">
                           {{ 'REGISTER.USER_TYPE.COACH.TITLE' | translate }}
@@ -73,7 +73,7 @@
               </div>
 
               <button (click)="nextRegistro()" *ngIf="!btnRegistro" [disabled]="selected === 0"
-                      class="btn btn-custom btn-block textoCentrado">{{ 'REGISTER.COMMON.NEXT' | translate }}</button>
+                class="btn btn-custom btn-block">{{ 'REGISTER.COMMON.NEXT' | translate }}</button>
 
             </div>
             <div *ngIf="showNextRegistro">
@@ -85,8 +85,8 @@
               <div *ngIf="!btnRegistro" class="d-flex form-register py-0">
                 <div class="col-12">
                   <!--<label class="form-label">Selecciona un perfil</label>-->
-                  <select (change)="onOptionChange($event)" [(ngModel)]="selectedOption"
-                          [disabled]="isReadOnly" class="form-select input-register">
+                  <select (change)="onOptionChange($event)" [(ngModel)]="selectedOption" [disabled]="isReadOnly"
+                    class="form-select input-register">
                     <option *ngFor="let option of selectOptions" [value]="option.value">{{ option.label }}</option>
                   </select>
                 </div>
@@ -98,9 +98,8 @@
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="name" class="form-label">Ingresa el nombre del club</label>-->
-                      <input [placeholder]="'REGISTER.USER_TYPE.CLUB.NAME' | translate" class="form-control input-register"
-                             formControlName="name" id="name"
-                             type="text">
+                      <input [placeholder]="'REGISTER.USER_TYPE.CLUB.NAME' | translate"
+                        class="form-control input-register" formControlName="name" id="name" type="text">
                     </div>
                     <!--<div class="col-6" style="margin-left: 10px;">
                       <label for="name" class="form-label">O selecciona un club</label>
@@ -108,12 +107,8 @@
                     </div>-->
                     <div class="col-6 ms-2">
                       <div class="position-relative">
-                        <input
-                          class="form-control input-register no-calendar-icon"
-                          formControlName="foundationDate"
-                          id="foundationDate"
-                          name="foundationDate"
-                          type="date">
+                        <input class="form-control input-register no-calendar-icon" formControlName="foundationDate"
+                          id="foundationDate" name="foundationDate" type="date">
 
                         <i class="bi bi-cake2 date-icon"></i>
                       </div>
@@ -123,29 +118,25 @@
                   <div class="mb-3 d-flex ">
                     <div class="col-6">
                       <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
-                      <input [placeholder]="'REGISTER.COMMON.EMAIL' | translate" class="form-control input-register" formControlName="email"
-                             id="email"
-                             type="email">
+                      <input [placeholder]="'REGISTER.COMMON.EMAIL' | translate" class="form-control input-register"
+                        formControlName="email" id="email" type="email">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
-                      <input [placeholder]="'REGISTER.COMMON.PHONE' | translate" class="form-control input-register" formControlName="mobile"
-                             id="mobile"
-                             type="number">
+                      <input [placeholder]="'REGISTER.COMMON.PHONE' | translate" class="form-control input-register"
+                        formControlName="mobile" id="mobile" type="number">
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
-                      <input (input)="checkPasswordMatchClub()" [placeholder]="'REGISTER.COMMON.PASSWORD' | translate" class="form-control input-register"
-                             formControlName="password"
-                             id="password" type="password">
+                      <input (input)="checkPasswordMatchClub()" [placeholder]="'REGISTER.COMMON.PASSWORD' | translate"
+                        class="form-control input-register" formControlName="password" id="password" type="password">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
-                      <input (input)="checkPasswordMatchClub()" [placeholder]="'REGISTER.COMMON.REPEAT_PASSWORD' | translate" class="form-control input-register"
-                             formControlName="password2"
-                             id="password2"
-                             type="password">
+                      <input (input)="checkPasswordMatchClub()"
+                        [placeholder]="'REGISTER.COMMON.REPEAT_PASSWORD' | translate"
+                        class="form-control input-register" formControlName="password2" id="password2" type="password">
                       <div *ngIf="passwordsDoNotMatch" class="text-danger">
                         {{ 'REGISTER.ERROR.PASSWORD_MISMATCH' | translate }}
                       </div>
@@ -166,7 +157,7 @@
                   <div class="mb-3 d-flex">
                     <div class="form-check">
                       <input class="form-check-input" formControlName="comunicaciones" id="comunCheckbox"
-                             type="checkbox">
+                        type="checkbox">
                       <label class="form-check-label" for="comunCheckbox">
                         {{ 'REGISTER.COMMON.COMMS_PREFIX' | translate }}
                         <a href="https://sphairatech.com/comunicaciones-comerciales" target="_blank">
@@ -178,9 +169,9 @@
                   <div class="mb-3 d-flex">
                     <div class="col-12">
                       <button [disabled]="passwordsDoNotMatch" class="btn btn-custom btn-block textoCentrado"
-                              type="submit">{{ 'REGISTER.REGISTER' | translate }}</button>
+                        type="submit">{{ 'REGISTER.REGISTER' | translate }}</button>
                       <button (click)="backRegistro()" *ngIf="btnRegistro"
-                              class="btn btn-outline-secondary btn-block textoCentrado">
+                        class="btn btn-outline-secondary btn-block textoCentrado">
                         {{ 'REGISTER.COMMON.BACK' | translate }}
                       </button>
                     </div>
@@ -194,22 +185,22 @@
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                      <input [placeholder]="'REGISTER.COMMON.NAME' | translate" class="form-control input-register" formControlName="name"
-                             id="name" type="text">
+                      <input [placeholder]="'REGISTER.COMMON.NAME' | translate" class="form-control input-register"
+                        formControlName="name" id="name" type="text">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
-                      <input [placeholder]="'REGISTER.COMMON.SURNAME' | translate" class="form-control input-register" formControlName="surname"
-                             id="surname" type="text">
+                      <input [placeholder]="'REGISTER.COMMON.SURNAME' | translate" class="form-control input-register"
+                        formControlName="surname" id="surname" type="text">
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <div class="position-relative">
                         <input class="form-control input-register no-calendar-icon" formControlName="birthdate"
-                               type="date">
+                          type="date">
                         <i class="bi bi-cake2 position-absolute"
-                           style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
+                          style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
                       </div>
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
@@ -225,26 +216,26 @@
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
-                      <input [placeholder]="'REGISTER.COMMON.EMAIL' | translate" class="form-control input-register" formControlName="email"
-                             id="email" type="email">
+                      <input [placeholder]="'REGISTER.COMMON.EMAIL' | translate" class="form-control input-register"
+                        formControlName="email" id="email" type="email">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
-                      <input [placeholder]="'REGISTER.COMMON.PHONE' | translate" class="form-control input-register" formControlName="mobile"
-                             id="mobile" type="number">
+                      <input [placeholder]="'REGISTER.COMMON.PHONE' | translate" class="form-control input-register"
+                        formControlName="mobile" id="mobile" type="number">
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
-                      <input (input)="checkPasswordMatchEntrenador()" [placeholder]="'REGISTER.COMMON.PASSWORD' | translate" class="form-control input-register"
-                             formControlName="password" id="password"
-                             type="password">
+                      <input (input)="checkPasswordMatchEntrenador()"
+                        [placeholder]="'REGISTER.COMMON.PASSWORD' | translate" class="form-control input-register"
+                        formControlName="password" id="password" type="password">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
-                      <input (input)="checkPasswordMatchEntrenador()" [placeholder]="'REGISTER.COMMON.REPEAT_PASSWORD' | translate" class="form-control input-register"
-                             formControlName="password2" id="password2"
-                             type="password">
+                      <input (input)="checkPasswordMatchEntrenador()"
+                        [placeholder]="'REGISTER.COMMON.REPEAT_PASSWORD' | translate"
+                        class="form-control input-register" formControlName="password2" id="password2" type="password">
                       <div *ngIf="passwordsDoNotMatch" class="text-danger">
                         {{ 'REGISTER.ERROR.PASSWORD_MISMATCH' | translate }}
                       </div>
@@ -265,7 +256,7 @@
                   <div class="mb-3 d-flex">
                     <div class="form-check">
                       <input class="form-check-input" formControlName="comunicaciones" id="comunCheckbox"
-                             type="checkbox">
+                        type="checkbox">
                       <label class="form-check-label" for="comunCheckbox">
                         {{ 'REGISTER.COMMON.COMMS_PREFIX' | translate }}
                         <a href="https://sphairatech.com/comunicaciones-comerciales" target="_blank">
@@ -278,9 +269,9 @@
                   <div class="mb-3 d-flex">
                     <div class="col-12">
                       <button [disabled]="passwordsDoNotMatch" class="btn btn-custom btn-block textoCentrado"
-                              type="submit">{{ 'REGISTER.REGISTER' | translate }}</button>
+                        type="submit">{{ 'REGISTER.REGISTER' | translate }}</button>
                       <button (click)="backRegistro()" *ngIf="btnRegistro"
-                              class="btn btn-outline-secondary btn-block textoCentrado">
+                        class="btn btn-outline-secondary btn-block textoCentrado">
                         {{ 'REGISTER.COMMON.BACK' | translate }} </button>
                     </div>
                   </div>
@@ -311,20 +302,20 @@
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <input class="form-control input-register" formControlName="name" placeholder="Nombre"
-                             type="text">
+                        type="text">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <input class="form-control input-register" formControlName="surname" placeholder="Apellidos"
-                             type="text">
+                        type="text">
                     </div>
                   </div>
 
                   <div class="mb-3 d-flex">
                     <div class="col-6 position-relative">
                       <input class="form-control input-register no-calendar-icon" formControlName="birthdate"
-                             type="date">
+                        type="date">
                       <i class="bi bi-cake2 position-absolute"
-                         style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
+                        style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <select class="form-select input-register" formControlName="genre">
@@ -339,14 +330,15 @@
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <input (blur)="checkEmails()" class="form-control input-register" formControlName="email"
-                             placeholder="Correo electrónico" type="email"/>
+                        placeholder="Correo electrónico" type="email" />
                     </div>
 
                     <div class="col-6" style="margin-left: 10px;">
-                      <input (blur)="checkEmails()" (contextmenu)="$event.preventDefault()" (copy)="$event.preventDefault()"
-                             (cut)="$event.preventDefault()" (drop)="$event.preventDefault()" (paste)="$event.preventDefault()"
-                             class="form-control input-register" formControlName="confirmEmail"
-                             placeholder="Repite el correo" type="email"/>
+                      <input (blur)="checkEmails()" (contextmenu)="$event.preventDefault()"
+                        (copy)="$event.preventDefault()" (cut)="$event.preventDefault()"
+                        (drop)="$event.preventDefault()" (paste)="$event.preventDefault()"
+                        class="form-control input-register" formControlName="confirmEmail"
+                        placeholder="Repite el correo" type="email" />
                     </div>
                   </div>
 
@@ -358,19 +350,19 @@
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <input class="form-control input-register" formControlName="mobile" placeholder="Teléfono"
-                             type="number">
+                        type="number">
                     </div>
                   </div>
 
                   <div class="mb-3 d-flex">
                     <div class="col-6">
-                      <input (input)="checkPasswordMatchPadre()" class="form-control input-register" formControlName="password"
-                             placeholder="Contraseña" type="password">
+                      <input (input)="checkPasswordMatchPadre()" class="form-control input-register"
+                        formControlName="password" placeholder="Contraseña" type="password">
                       <div *ngIf="passwordsDoNotSize" class="text-danger">Mínimo 8 caracteres.</div>
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
-                      <input (input)="checkPasswordMatchPadre()" class="form-control input-register" formControlName="password2"
-                             placeholder="Repite contraseña" type="password">
+                      <input (input)="checkPasswordMatchPadre()" class="form-control input-register"
+                        formControlName="password2" placeholder="Repite contraseña" type="password">
                       <div *ngIf="passwordsDoNotMatch" class="text-danger">Las contraseñas no coinciden.</div>
                     </div>
                   </div>
@@ -379,7 +371,7 @@
                     <input class="form-check-input" formControlName="terms" id="termsCheckbox" type="checkbox">
                     <label class="form-check-label" for="termsCheckbox">
                       Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
-                      privacidad</a>
+                        privacidad</a>
                     </label>
                   </div>
 
@@ -387,13 +379,13 @@
                     <input class="form-check-input" formControlName="comunicaciones" id="comunCheckbox" type="checkbox">
                     <label class="form-check-label" for="comunCheckbox">
                       Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
-                                    target="_blank">comunicaciones comerciales</a>
+                        target="_blank">comunicaciones comerciales</a>
                     </label>
                   </div>
 
                   <div class="mb-3">
                     <button [disabled]="passwordsDoNotMatch" class="btn btn-custom btn-block textoCentrado"
-                            type="submit">{{ texBoton }}</button>
+                      type="submit">{{ texBoton }}</button>
                   </div>
                 </form>
               </div>
@@ -407,7 +399,7 @@
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <select (change)="onParentescoChange()" class="form-select input-register"
-                              formControlName="numHijos">
+                        formControlName="numHijos">
                         <option *ngFor="let n of [1, 2, 3, 4, 5]" [value]="n">{{ n }}</option>
                       </select>
                     </div>
@@ -423,12 +415,12 @@
 
                     <div class="mb-3 d-flex">
                       <div class="col-6">
-                        <input [formControlName]="'hijo' + (index + 1)" class="form-control input-register" placeholder="Nombre"
-                               type="text">
+                        <input [formControlName]="'hijo' + (index + 1)" class="form-control input-register"
+                          placeholder="Nombre" type="text">
                       </div>
                       <div class="col-6" style="margin-left: 10px;">
-                        <input [formControlName]="'ape' + (index + 1)" class="form-control input-register" placeholder="Apellidos"
-                               type="text">
+                        <input [formControlName]="'ape' + (index + 1)" class="form-control input-register"
+                          placeholder="Apellidos" type="text">
                       </div>
                     </div>
 
@@ -437,10 +429,11 @@
                         <input [formControlName]="'fech' + (index + 1)" class="form-control input-register" type="date">
                       </div>
                       <div class="col-6" style="margin-left: 10px;">
-                        <input [formControlName]="'dni' + (index + 1)" class="form-control input-register" placeholder="DNI/NIE/Pasaporte"
-                               type="text">
+                        <input [formControlName]="'dni' + (index + 1)" class="form-control input-register"
+                          placeholder="DNI/NIE/Pasaporte" type="text">
                         <!-- Botón debajo -->
-                        <button (click)="validateHijo(registerFormPadreHijos.get('dni' + (index + 1))?.value, index)" [ngClass]="{
+                        <button (click)="validateHijo(registerFormPadreHijos.get('dni' + (index + 1))?.value, index)"
+                          [ngClass]="{
                               'btn-warning': estadoValidacionHijos[index] === undefined,
                               'btn-success': estadoValidacionHijos[index] === true,
                               'btn-danger': estadoValidacionHijos[index] === false
@@ -466,21 +459,21 @@
                     <div class="col-6">
                       <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
                       <input class="form-control input-register" formControlName="name" id="name" placeholder="Nombre"
-                             type="text">
+                        type="text">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
-                      <input class="form-control input-register" formControlName="surname" id="surname" placeholder="Apellido"
-                             type="text">
+                      <input class="form-control input-register" formControlName="surname" id="surname"
+                        placeholder="Apellido" type="text">
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <div class="position-relative">
                         <input class="form-control input-register no-calendar-icon" formControlName="birthdate"
-                               type="date">
+                          type="date">
                         <i class="bi bi-cake2 position-absolute"
-                           style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
+                          style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
                       </div>
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
@@ -497,25 +490,23 @@
                     <div class="col-6">
                       <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
                       <input [attr.disabled]="true" class="form-control input-register" formControlName="email"
-                             id="email" placeholder="Correo electrónico" type="email">
+                        id="email" placeholder="Correo electrónico" type="email">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <input class="form-control input-register" formControlName="mobile" id="mobile"
-                             placeholder="Ingresa tu número de teléfono" type="number">
+                        placeholder="Ingresa tu número de teléfono" type="number">
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
-                      <input (input)="checkPasswordMatchEntrenador()" class="form-control input-register" formControlName="password"
-                             id="password" placeholder="Contraseña"
-                             type="password">
+                      <input (input)="checkPasswordMatchEntrenador()" class="form-control input-register"
+                        formControlName="password" id="password" placeholder="Contraseña" type="password">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
-                      <input (input)="checkPasswordMatchEntrenador()" class="form-control input-register" formControlName="password2"
-                             id="password2" placeholder="Repite la contraseña"
-                             type="password">
+                      <input (input)="checkPasswordMatchEntrenador()" class="form-control input-register"
+                        formControlName="password2" id="password2" placeholder="Repite la contraseña" type="password">
                       <div *ngIf="passwordsDoNotMatch" class="text-danger">
                         Las contraseñas no coinciden.
                       </div>
@@ -526,7 +517,7 @@
                       <input class="form-check-input" formControlName="terms" id="termsCheckbox" type="checkbox">
                       <label class="form-check-label" for="termsCheckbox">
                         Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
-                        privacidad</a>
+                          privacidad</a>
                         <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
                           condiciones de contratación</a> -->
                       </label>
@@ -535,17 +526,17 @@
                   <div class="mb-3 d-flex">
                     <div class="form-check">
                       <input class="form-check-input" formControlName="comunicaciones" id="comunCheckbox"
-                             type="checkbox">
+                        type="checkbox">
                       <label class="form-check-label" for="comunCheckbox">
                         Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
-                                      target="_blank">comunicaciones comerciales</a>
+                          target="_blank">comunicaciones comerciales</a>
                       </label>
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="col-12">
                       <button [disabled]="passwordsDoNotMatch" class="btn btn-custom btn-block textoCentrado"
-                              type="submit">Registrarse
+                        type="submit">Registrarse
                       </button>
                     </div>
                   </div>
@@ -562,14 +553,13 @@
           <div class="card-footer textoCentrado" style="flex-direction: column; background: #002c40;">
             <div class="row text-center">
               <div class="col-md-12">
-                <p style="color: white">{{ 'REGISTER.AUTH.ALREADY_HAVE_ACCOUNT' | translate }} <a (click)="toLogin($event)"
-                                                                                                  href="#"
-                                                                                                  style="color: #1e8832">{{ 'REGISTER.AUTH.LOGIN_HERE' | translate }} </a>
+                <p>{{ 'REGISTER.AUTH.ALREADY_HAVE_ACCOUNT' | translate }} <a
+                    (click)="toLogin($event)" href="#">{{ 'REGISTER.AUTH.LOGIN_HERE' | translate }} </a>
                 </p>
-                <p style="color: white">{{ 'REGISTER.COMMON.HELP' | translate }} <a href="#" onclick="event.preventDefault()"
-                                                                                    style="color: #1e8832">info&#64;sphairatech.com</a>
+                <p>{{ 'REGISTER.COMMON.HELP' | translate }} <a href="#"
+                    onclick="event.preventDefault()">info&#64;sphairatech.com</a>
                 </p>
-                <p style="color: white">{{ 'REGISTER.COMMON.WHATSAPP' | translate }} +34 623 91 17 72</p>
+                <p>{{ 'REGISTER.COMMON.WHATSAPP' | translate }} +34 623 91 17 72</p>
               </div>
             </div>
           </div>
@@ -609,7 +599,7 @@
             <input checked class="form-check-input" disabled id="termsCheckbox2" type="checkbox">
             <label class="form-check-label" for="termsCheckbox2">
               Acepto las <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
-              condiciones de contratación</a>
+                condiciones de contratación</a>
             </label>
           </div>
           <button (click)="goLogin()" class="cta-button">Empezar semana gratis</button>
@@ -647,29 +637,21 @@
 
         <div class="mb-3">
           <label class="form-label" for="passwordInput">Introduce la contraseña</label>
-          <input
-            (keyup.enter)="validatePassword()"
-            [(ngModel)]="inputPassword"
-            class="form-control"
-            id="passwordInput"
-            type="password"
-          />
+          <input (keyup.enter)="validatePassword()" [(ngModel)]="inputPassword" class="form-control" id="passwordInput"
+            type="password" />
 
           <!-- Mensaje -->
-          <div *ngIf="mensajePassword"
-               [ngClass]="{
+          <div *ngIf="mensajePassword" [ngClass]="{
              'alert-success': passwordValida,
              'alert-danger': passwordValida === false
-           }"
-               class="mt-2 alert">
+           }" class="mt-2 alert">
             {{ mensajePassword }}
           </div>
         </div>
 
 
         <div class="modal-footer">
-          <button (click)="cerrarModalClub()" class="btn btn-secondary" data-bs-dismiss="modal"
-                  type="button">Cancelar
+          <button (click)="cerrarModalClub()" class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar
           </button>
           <button (click)="validatePassword()" class="btn btn-success" type="button">Aceptar</button>
         </div>

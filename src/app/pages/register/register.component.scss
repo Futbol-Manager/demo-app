@@ -1,3 +1,4 @@
+
 .colored-column {
   background-color: #004a45;
   justify-content: center;
@@ -5,11 +6,55 @@
   display: flex;
 }
 
-.textoCentrado {
-  width: 100%;
-  justify-content: center;
+
+.card-footer {
+  background: #f9fafb !important;
+  border-top: 1px solid #f4f4f4;
+  padding: 1.25rem 1.5rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #002c40;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  a {
+    color: #31b270;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
+.textoCentrado {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.btn-primary {
+  height: 48px;
+  border-radius: 10px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #31b270, #16a34a);
+  border: none;
+  transition: all 0.25s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 12px 25px rgba(34, 197, 94, 0.35);
+  }
+}
 .row.justify-content-center {
   height: 100vh; /* toda la altura visible */
   display: flex;
@@ -302,6 +347,134 @@ input.no-calendar-icon::-webkit-calendar-picker-indicator {
 
   .row.mt-3 > .col-md-12 {
     max-width: 100%;
+  }
+}
+/* ===== BACKDROP ===== */
+.modal {
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+/* ===== MODAL DIALOG ===== */
+.modal-dialog {
+  max-width: 560px;
+  margin: auto;
+}
+
+/* ===== CONTENIDO ===== */
+.modal-content {
+  border: none;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+  animation: modalFadeIn 0.3s ease;
+}
+
+/* ===== HEADER ===== */
+.modal-header {
+  background: linear-gradient(90deg, #31b270, #22a862);
+  color: #ffffff;
+  padding: 16px 20px;
+  border-bottom: none;
+}
+
+.modal-title {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Botón cerrar */
+.modal-header .btn-close {
+  filter: invert(1);
+  opacity: 0.85;
+}
+
+.modal-header .btn-close:hover {
+  opacity: 1;
+}
+
+/* ===== BODY ===== */
+.modal-body {
+  padding: 22px;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+.modal-body h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* Texto de alerta */
+.modal-body p {
+  line-height: 1.5;
+}
+
+/* ===== INPUT ===== */
+.modal-body .form-control {
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+}
+
+.modal-body .form-control:focus {
+  border-color: #31b270;
+  box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.25);
+}
+
+/* ===== ALERTAS ===== */
+.modal-body .alert {
+  border-radius: 10px;
+  font-size: 0.85rem;
+  padding: 10px 12px;
+}
+
+/* ===== FOOTER ===== */
+.modal-footer {
+  padding: 14px 20px;
+  border-top: none;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* ===== BOTONES ===== */
+.modal-footer .btn {
+  border-radius: 10px;
+  padding: 8px 16px;
+  font-weight: 600;
+}
+
+.modal-footer .btn-success {
+  background: #31b270;
+  border: none;
+}
+
+.modal-footer .btn-success:hover {
+  background: linear-gradient(135deg, #31b270, #22a862);
+  box-shadow: 0 10px 25px rgba(49, 178, 112, 0.35);
+}
+
+.modal-footer .btn-secondary {
+  background: #e5e7eb;
+  border: none;
+  color: #374151;
+}
+
+.modal-footer .btn-secondary:hover {
+  background: #d1d5db;
+}
+
+/* ===== ANIMACIÓN ===== */
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 

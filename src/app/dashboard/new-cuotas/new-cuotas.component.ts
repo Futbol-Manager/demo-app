@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { TranslateService } from '@ngx-translate/core';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-new-cuotas',
@@ -106,7 +107,8 @@ export class NewCuotasComponent implements OnInit {
     private location: Location,
     private clubService: ClubService,
     private teamService: TeamService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -135,7 +137,7 @@ export class NewCuotasComponent implements OnInit {
       .getListPlayersPagosClub(this.clubId, this.temporadaStoredValue)
       .subscribe(
         (response: Response) => {
-          console.log(response.data)
+          console.log(response.data);
           // eliminar duplicados por playerId
           const uniquePlayers = Array.from(
             new Map(response.data.map((p: any) => [p.playerId, p])).values()
@@ -151,15 +153,12 @@ export class NewCuotasComponent implements OnInit {
       );
   }
   calcularProgreso(player: any): number {
-  if (!player.totalAPagar || player.totalAPagar === 0) {
-    return 0;
-  }
+    if (!player.totalAPagar || player.totalAPagar === 0) {
+      return 0;
+    }
 
-  return Math.min(
-    (player.totalPagado / player.totalAPagar) * 100,
-    100
-  );
-}
+    return Math.min((player.totalPagado / player.totalAPagar) * 100, 100);
+  }
 
   get totalPaginas(): number {
     return Math.ceil(this.listaPlayersFiltrados.length / this.itemsPorPagina);
@@ -205,12 +204,13 @@ export class NewCuotasComponent implements OnInit {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data) {
             this.loadTabla();
-            alert('Datos actualzados.');
+            this.toastr.success('Datos actualzados.');
           }
           this.isLoading = false;
         },
         (error) => {
           console.error('Error al cargar el listado de equipos', error);
+          this.toastr.error('Error al cargar el listado de equipos');
         }
       );
   }
@@ -378,11 +378,12 @@ export class NewCuotasComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.bancoClubData = response.data;
-          alert('Datos guardados correctamente');
+          this.toastr.success('Datos guardados correctamente.');
         }
       },
       (error) => {
-        console.error('Error al cargar el listado de equipos', error);
+        this.toastr.error('Error al cargar el listado de equipos.');
+        console.error('', error);
       }
     );
   }
@@ -461,7 +462,7 @@ export class NewCuotasComponent implements OnInit {
           this.listaCuotas.splice(index, 1);
           this.reloadTabla();
         } else {
-          alert(response.error.msg);
+          this.toastr.error('Error: ', response.error.msg);
           console.error(
             'La respuesta del servicio no tiene la estructura esperada',
             response
@@ -501,12 +502,13 @@ export class NewCuotasComponent implements OnInit {
   guardarCuota() {
     const err = this.validarStripe();
     if (err) {
-      alert(err);
+      this.toastr.error('Error: ', err);
+
       return;
     }
 
     if (this.listTeamsSelecteds.length == 0) {
-      alert('Por favor, selecciona mínimo un equipo.');
+       this.toastr.error('Por favor, selecciona mínimo un equipo.');
       return;
     } else {
       if (
@@ -536,7 +538,7 @@ export class NewCuotasComponent implements OnInit {
             this.nuevaCuota.fechaFin == undefined ||
             this.nuevaCuota.fechaFin == ''
           ) {
-            alert(
+             this.toastr.error(
               'Por favor, Para una suscripción con Stripe, es obligatorio poner las fechas de inicio y de fin.'
             );
             return;
@@ -550,16 +552,17 @@ export class NewCuotasComponent implements OnInit {
               if (!this.cuotaSeleccionada) this.listaCuotas.push(response.data);
 
               this.reloadTabla();
-              alert('Datos guardados correctamente');
+              this.toastr.success('Datos guardados correctamente.');
               this.cerrarModalCuota();
             }
           },
           (error) => {
+            this.toastr.error('Error al cargar el listado de equipos.', error);
             console.error('Error al cargar el listado de equipos', error);
           }
         );
       } else {
-        alert('Rellena todos los campos.');
+         this.toastr.error('Rellena todos los campos.');
       }
     }
   }
@@ -594,12 +597,12 @@ export class NewCuotasComponent implements OnInit {
           // puedes guardar stripePriceId/productId en tu modelo si te los devuelve también el clubService
           console.log('Plan creado:', resp.data);
         } else {
-          alert('Error creando plan de suscripción');
+          this.toastr.error('Error creando plan de suscripción.');
         }
       },
       error: (err) => {
         console.error(err);
-        alert('Error creando plan de suscripción');
+        this.toastr.error('Error creando plan de suscripción.');
       },
     });
   }
@@ -672,9 +675,10 @@ export class NewCuotasComponent implements OnInit {
             if (response.data !== null && response.status == 200) {
               this.addPago = {};
               this.reloadTabla();
-              alert('Datos guardados correctamente');
+              this.toastr.success('Datos guardados correctamente.');
+
             } else {
-              alert(response.error.msg);
+              this.toastr.error('Error: ',response.error.msg);
             }
           },
           (error) => {
@@ -682,10 +686,10 @@ export class NewCuotasComponent implements OnInit {
           }
         );
       } else {
-        alert('Rellena minimo el importe, la fecha y el método de pago.');
+         this.toastr.error('Rellena minimo el importe, la fecha y el método de pago.');
       }
     } else {
-      alert('Rellena los campos.');
+       this.toastr.error('Rellena los campos.');
     }
   }
 
@@ -723,7 +727,7 @@ export class NewCuotasComponent implements OnInit {
       this.comentarioDevolucion == undefined ||
       this.comentarioDevolucion == ''
     ) {
-      alert('Debes seleccionar un método de devolución y explicar por qué.');
+       this.toastr.error('Debes seleccionar un método de devolución y explicar por qué.');
       return;
     }
 
@@ -748,9 +752,9 @@ export class NewCuotasComponent implements OnInit {
           this.isLoading = true;
           this.reloadTabla();
           this.showConfirmDevolucion = false;
-          alert('Devolución hecha correctamente');
+          this.toastr.success('Devolución hecha correctamente.');
         } else {
-          alert(response.error.msg);
+          this.toastr.error('Error: ', response.error.msg);
         }
       },
       (error) => {
@@ -820,11 +824,11 @@ export class NewCuotasComponent implements OnInit {
           if (response.data) {
             window.open(response.data.url, '_blank');
           } else {
-            alert('Error: ' + response.error);
+            this.toastr.error('Error: ' + response.error);
           }
         },
         (error) => {
-          alert('An error occurred: ' + error.message);
+           this.toastr.error('An error occurred: ' + error.message);
           console.log(error);
         }
       );
@@ -846,7 +850,7 @@ export class NewCuotasComponent implements OnInit {
             if (this.infoClub.banco != null && this.infoClub.banco != '') {
               this.showModalStripe = true;
             } else {
-              alert(
+               this.toastr.error(
                 'Por favor, completa esta información para poder acceder a Stripe.'
               );
               this.showModalBanco = true;
@@ -866,7 +870,7 @@ export class NewCuotasComponent implements OnInit {
 
   addCuotaPlayer(): void {
     if (!this.cuotaSeleccionadaId) {
-      alert('Selecciona una cuota primero.');
+       this.toastr.error('Selecciona una cuota primero.');
       return;
     }
 
@@ -934,7 +938,7 @@ export class NewCuotasComponent implements OnInit {
             this.reloadTabla();
           } else {
             const mensaje = this.translate.instant('CAL.TEXT_363');
-            alert(mensaje);
+             this.toastr.error(mensaje);
             this.listCuotasPlayerPersonal.splice(this.playerIndex, 1);
             this.reloadTabla();
           }
@@ -954,13 +958,13 @@ export class NewCuotasComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.reloadTabla();
-          alert('Pago modificado correctamente');
+           this.toastr.success('Pago modificado correctamente');
           this.showModalEditarCuotaPlayer = false;
           // refrescar lista si hace falta
         },
         error: (err) => {
           console.error(err);
-          alert('Error al subir el documento');
+           this.toastr.error('Error al subir el documento');
         },
       });
   }
@@ -1004,7 +1008,7 @@ export class NewCuotasComponent implements OnInit {
   // Toggle principal: 0/1 en el modelo
   onToggleStripe(ev: Event) {
     if (this.nuevaCuota.pagoClubId == 0) {
-      alert(
+       this.toastr.error(
         'Para habilitar Stripe sobre este pago, primero créalo y después lo buscas y desde edición, lo habilitas.'
       );
       this.nuevaCuota.stripe = 0;
@@ -1030,7 +1034,7 @@ export class NewCuotasComponent implements OnInit {
               this.infoClub.banco == null &&
               this.infoClub.banco == undefined
             ) {
-              alert(
+               this.toastr.error(
                 'Por favor, completa esta información para poder acceder a Stripe.'
               );
               this.cerrarDatosStripe();
@@ -1049,8 +1053,7 @@ export class NewCuotasComponent implements OnInit {
               this.mostrarDatosStripe();
             } else {
               this.cerrarDatosStripe();
-              alert('Por favor, crea primero la cuenta en Stripe.');
-              //se muestra alert y se abre modal stripe
+               this.toastr.error('Por favor, crea primero la cuenta en Stripe.');
               this.showModalStripe = true;
             }
           } else {
