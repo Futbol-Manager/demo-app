@@ -43,7 +43,7 @@ export class DocumentosClubComponent implements OnInit {
   docEliminarId!: number;
   docEliminarIndex!: number;
   docEliminarNombre = '';
-
+  loadingData = false;
   loadingEliminar = false;
 
   constructor(
@@ -70,29 +70,29 @@ export class DocumentosClubComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.params.subscribe((params) => {
-      // Obtener el valor de clubId de los parámetros
-      this.clubId = +params['clubId']; // El + convierte el valor a número
+    this.route.paramMap.subscribe((params) => {
+      this.clubId = Number(params.get('clubId'));
       console.log('clubId:', this.clubId);
+      this.loadDocuments();
     });
-
-    this.loadDocuments();
   }
 
   loadDocuments(): void {
+    console.log('CARGANDO DOCS');
     this.clubService.getlistDocumentosByClub(this.clubId).subscribe({
       next: (response: Response) => {
         if (!response?.data?.documentos) {
           this.listDocuments = [];
           return;
         }
-
         // ✅ Backend ya trae totalPadres y totalSubidos
         this.listDocuments = response.data.documentos;
-
+        this.loadingData = true;
+        console.log(this.listDocuments);
         console.log('Documentos:', this.listDocuments);
       },
       error: (err) => {
+        this.loadingData = true;
         console.error('Error cargando documentos', err);
       },
     });
@@ -349,7 +349,7 @@ export class DocumentosClubComponent implements OnInit {
     this.clubService.uploadSinDocClub(dto).subscribe({
       next: (res) => {
         this.loadDocuments();
-       this.toastr.success('Documento subido correctamente');
+        this.toastr.success('Documento subido correctamente');
         this.cerrarModalPersonalizado();
         // refrescar lista si hace falta
       },
