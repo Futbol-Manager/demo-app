@@ -336,7 +336,7 @@ export class InicioComponent implements OnInit {
     this.teamService.getEstadoSuscripcion(this.userId, this.profileId).subscribe(
       (response: Response) => {
         this.numEquipos = response.data;
-        if (response.data == 999) {
+        if (response.data > 98) {
           //significa que es un club con plan gratuido
           //hay que ver si tiene mas de 50 padres que pagan cuota, de ser asi, desbloquear los menus
           /*this.teamService.getPlayersByTeamByClubVerify(this.userId, this.temporadaStoredValue).subscribe(
