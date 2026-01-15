@@ -3,78 +3,12 @@
 <div [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
 
   <!-- ================= SUBMENU ORIGINAL ================= -->
-  <div class="submenu">
-
-    <!-- profileId = 0 -->
-    <div *ngIf="profileId === 0" class="row">
-      <div class="col text-center">
-        <a (click)="irAPantalla(8)" class="no-underline" href="javascript:void(0);">
-          <i class="bi bi-house"></i>
-          <span class="d-none d-md-inline">{{ 'NAV.INICIO' | translate }}</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- profileId = 1 -->
-    <div *ngIf="profileId === 1" class="row">
-      <div class="col text-center">
-        <a (click)="irAPantalla(6)" class="no-underline" href="javascript:void(0);">
-          <i class="bi bi-file-earmark-pdf"></i>
-          <span class="d-none d-md-inline">{{ 'NAV.DOCUMENTS' | translate }}</span>
-        </a>
-      </div>
-      <div class="col text-center">
-        <a (click)="irAPantalla(3)" class="no-underline" href="javascript:void(0);">
-          <i class="bi bi-clipboard2-data"></i>
-          <span class="d-none d-md-inline">{{ 'NAV.CUADRO' | translate }}</span>
-        </a>
-      </div>
-      <div class="col text-center">
-        <a (click)="irAPantalla(7)" class="no-underline" href="javascript:void(0);">
-          <i class="bi bi-bank2"></i>
-          <span class="d-none d-md-inline">{{ 'NAV.NEWPAYS' | translate }}</span>
-        </a>
-      </div>
-      <div *ngIf="clubOk" class="col text-center">
-        <a (click)="irAPantalla(2)" class="no-underline" href="javascript:void(0);">
-          <i class="bi bi-backpack3"></i>
-          <span class="d-none d-md-inline">{{ 'NAV.CLOTHES' | translate }}</span>
-        </a>
-      </div>
-      <div *ngIf="clubOk" class="col text-center">
-        <a (click)="irAPantalla(4)" class="no-underline" href="javascript:void(0);">
-          <i class="bi bi-collection"></i>
-          <span class="d-none d-md-inline">{{ 'NAV.SPONSORS' | translate }}</span>
-        </a>
-      </div>
-      <div *ngIf="clubOk" class="col text-center">
-        <a (click)="irAPantalla(5)" class="no-underline" href="javascript:void(0);">
-          <i class="bi bi-envelope"></i>
-          <span class="d-none d-md-inline">{{ 'NAV.NOTIFICATIONS' | translate }}</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- profileId = 2 -->
-    <div *ngIf="profileId === 2" class="row">
-      <div *ngIf="!clubOk" class="col text-center">
-        <a (click)="abrirModalCrearEquipo()" class="no-underline" href="javascript:void(0);">
-          <i class="bi bi-plus-circle"></i>
-          <span class="d-none d-md-inline">{{ 'NAV.CREATETEAM' | translate }}</span>
-        </a>
-      </div>
-      <div class="col text-center">
-        <a (click)="irAPantalla(5)" class="no-underline" href="javascript:void(0);">
-          <i class="bi bi-envelope"></i>
-          <span class="d-none d-md-inline">{{ 'NAV.NOTIFICATIONS' | translate }}</span>
-        </a>
-      </div>
-    </div>
-
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
   </div>
-
-  <!-- ================= PUBLICIDAD ================= -->
-  <app-publicidad></app-publicidad>
 
   <!-- ================= CONTENIDO ================= -->
   <div class="container">

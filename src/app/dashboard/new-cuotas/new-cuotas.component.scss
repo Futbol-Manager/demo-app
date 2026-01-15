@@ -1,15 +1,88 @@
-/* SUBMENU BASE */
-.submenu {
-  background: #002c40;
-  padding: 0.6rem 1rem;
-  display: flex;
+.page-actions {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
+  margin: 16px 0 12px;
 }
 
-/* IZQUIERDA */
-.submenu-left {
-  flex: 0 0 auto;
+
+/* BOTÓN VOLVER */
+.btn-back-clean {
+  margin-left: 26px;
+  padding: 0.35rem 0.6rem;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+
+  background-color: rgba(15, 163, 232, 0.08);
+  border: none;
+  border-radius: 8px;
+
+  color: #002c40;
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
+
+
+/* ICONO */
+.btn-back-clean i {
+  font-size: 1.1rem;
+}
+
+/* HOVER */
+.btn-back-clean:hover {
+  background-color: rgba(0, 44, 64, 0.08);
+  transform: translateX(-2px);
+}
+
+/* ACTIVE */
+.btn-back-clean:active {
+  transform: translateX(0);
+}
+/* TITULOS */
+.section-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+.actions-group {
+  justify-self: center;
+  display: flex;
+  gap: 14px;
+}
+
+.action-btn {
+  background: transparent;
+  border: none;
+  color: #002c40;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  padding: 6px 10px;
+  border-radius: 10px;
+
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.action-btn i {
+  font-size: 1.35rem;
+}
+
+.action-btn:hover {
+  background-color: rgba(0, 44, 64, 0.06);
+  transform: translateY(-1px);
+}
+
 /* ===== SKELETON ROW ===== */
 .table-skeleton-row.cuotas {
   display: grid;

@@ -1,36 +1,42 @@
-<div class="submenu">
+<div class="page-actions">
 
-  <!-- IZQUIERDA -->
-  <div class="submenu-left">
-    <button class="submenu-btn submenu-back" (click)="goBack()">
-      <i class="bi bi-arrow-left-circle"></i>
-      <span>{{ 'CUOTAS.NAV.BACK' | translate }}</span>
+  <!-- IZQUIERDA: VOLVER -->
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
   </div>
 
-  <!-- CENTRO -->
-  <div class="submenu-center">
-    <button class="submenu-btn" (click)="openModalCuotas()">
+  <!-- CENTRO: ACCIONES -->
+  <div class="actions-group">
+    <button class="action-btn" (click)="openModalCuotas()">
       <i class="bi bi-currency-exchange"></i>
-      <span>{{ 'CUOTAS.NAV.PAYMENTS' | translate }}</span>
+      <span>Pagos</span>
     </button>
 
-    <button class="submenu-btn" (click)="openModalStripe()">
+    <button class="action-btn" (click)="openModalStripe()">
       <i class="bi bi-stripe"></i>
-      <span>{{ 'CUOTAS.NAV.STRIPE' | translate }}</span>
+      <span>Stripe</span>
     </button>
 
-    <button class="submenu-btn" (click)="goHistorial()">
+    <button class="action-btn" (click)="goHistorial()">
       <i class="bi bi-table"></i>
-      <span>{{ 'CUOTAS.NAV.HISTORY' | translate }}</span>
+      <span>Historial</span>
     </button>
 
-    <button class="submenu-btn" (click)="openModalBancoClub()">
+    <button class="action-btn" (click)="openModalBancoClub()">
       <i class="bi bi-gear"></i>
-      <span>{{ 'CUOTAS.NAV.SETTINGS' | translate }}</span>
+      <span>Ajustes</span>
     </button>
   </div>
+
+  <!-- DERECHA: ESPACIADOR -->
+  <div></div>
+
 </div>
+
+
 
 <!--<app-logo-spinner *ngIf="isLoading"></app-logo-spinner>  -->
 <div class="container mt-3">

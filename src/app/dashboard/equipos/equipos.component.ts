@@ -9,6 +9,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {ClubService} from 'src/app/core/services/club/club.service';
 import {distinctUntilChanged, filter} from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-inicio',
@@ -200,6 +201,7 @@ export class EquiposComponent implements OnInit {
     private teamService: TeamService,
     private clubService: ClubService,
     private fb: FormBuilder,
+    private location: Location,
   ) {
     this.excelForm = this.fb.group({
       excelFile: [null]
@@ -401,7 +403,9 @@ export class EquiposComponent implements OnInit {
       }
     );
   }
-
+  goBack(): void {
+    this.location.back();
+  }
   cargarJugadores() {
     localStorage.setItem('temporada', this.temporada);
     this.temporadaStoredValue = this.temporada;

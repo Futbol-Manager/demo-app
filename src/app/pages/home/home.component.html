@@ -6,10 +6,10 @@
     <div class="row justify-content-center" style="padding-top: 2%;">
       <div class="col-md-6">
         <div class="card">
-          <div class="card-header textoCentrado" style="">
-            <img [attr.alt]="'APP.ALT.LOGO' | translate" src="assets/images/Logo_SphairaTech1.png"
-                 style="cursor: pointer; width: 10em;">
+          <div class="card-header logo-header-wrapper">
+            <img src="assets/images/Logo_SphairaTech1.png" alt="Logo" class="logo-header" />
           </div>
+
 
           <div class="card-body textoCentrado">
             <app-login></app-login>
@@ -47,11 +47,9 @@
     <div class="row justify-content-center" style="padding-top: 2%;">
       <div class="col-md-6">
         <div class="card">
-          <div class="card-header textoCentrado" style="background-color: #31b270;">
-            <img [attr.alt]="'APP.ALT.LOGO' | translate" src="assets/images/Logo_SphairaTech1.svg"
-                 style="cursor: pointer; width: 10em;">
+          <div class="card-header textoCentrado">
+            <img [attr.alt]="'APP.ALT.LOGO' | translate" src="assets/images/Logo_SphairaTech1.png" class="logo-header">
           </div>
-
           <div class="card-body textoCentrado">
             <form #thisForm="ngForm" (ngSubmit)="sendMail()" [formGroup]="rememberForm" class="form-login">
               <div class="mb-3">
@@ -59,9 +57,9 @@
                   {{ 'AUTH.REMEMBER_TITLE' | translate }}
                 </label>
 
-                <input [attr.placeholder]="'AUTH.EMAIL_PLACEHOLDER' | translate" [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)" class="form-control input-login" formControlName="mail"
-                       id="mail"
-                       type="email">
+                <input [attr.placeholder]="'AUTH.EMAIL_PLACEHOLDER' | translate"
+                  [class.is-invalid]="mailControl?.invalid && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"
+                  class="form-control input-login" formControlName="mail" id="mail" type="email">
 
                 <div
                   *ngIf="mailControl?.hasError('email') && (mailControl?.dirty || mailControl?.touched || thisForm.submitted)"

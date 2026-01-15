@@ -64,14 +64,38 @@ $border: #f4f4f4;
 }
 
 .card-header {
-  background: #ffffff;
   border-bottom: 1px solid $border;
   padding: 2rem 1.5rem;
+  text-align: center;
+}
+.logo-header-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2.5rem 1.5rem;
+}
 
-  img {
-    width: 10em;
+/* LOGO */
+.logo-header {
+  width: 220px;          /* ⬅️ CAMBIA ESTE VALOR */
+  height: auto;
+  max-width: none;       /* ⬅️ CLAVE: quita el límite */
+  cursor: pointer;
+  transition: transform 0.25s ease;
+}
+
+/* Hover elegante */
+.logo-header:hover {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .logo-header {
+    width: 12em;
   }
 }
+
+
 
 .card-body {
   padding: 2rem 2.25rem;

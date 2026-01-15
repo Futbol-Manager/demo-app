@@ -1,55 +1,46 @@
-<header class="border-bottom theme-header">
+<header class="theme-header border-bottom">
   <div class="container-fluid">
     <div class="row align-items-center justify-content-between">
       <div class="col-auto" style="cursor: pointer;" *ngIf="profileId < 2">
-        <img [src]="isDarkMode ? 'assets/images/club.svg' : 'assets/images/club.svg'" alt="Logo" (click)="goInicio()"
+        <img [src]="isDarkMode ? 'assets/images/club.svg' : 'assets/images/club.png'" alt="Logo" (click)="goInicio()"
           class="logo-image">
       </div>
       <div class="col-auto" style="cursor: pointer;" *ngIf="profileId === 2">
-        <img [src]="isDarkMode ? 'assets/images/coach.svg' : 'assets/images/coach.svg'" alt="Logo" (click)="goInicio()"
+        <img [src]="isDarkMode ? 'assets/images/coach.svg' : 'assets/images/coach.png'" alt="Logo" (click)="goInicio()"
           class="logo-image">
       </div>
       <div class="col-auto" style="cursor: pointer;" *ngIf="profileId > 2">
-        <img [src]="isDarkMode ? 'assets/images/player.svg' : 'assets/images/player.svg'" alt="Logo"
+        <img [src]="isDarkMode ? 'assets/images/player.svg' : 'assets/images/player.png'" alt="Logo"
           (click)="goInicio()" class="logo-image">
       </div>
 
       <!-- Usuario -->
       <div class="col-auto" style="cursor: pointer; text-align: center;">
         <div class="dropdown">
-          <a class="nav-link dropdown-toggle arrow-none nav-user px-2" data-bs-toggle="dropdown" href="#" role="button"
-            aria-haspopup="false" aria-expanded="false">
+          <a class="nav-link dropdown-toggle arrow-none nav-user px-2 user-container" data-bs-toggle="dropdown" href="#"
+            role="button">
 
-            <!-- Móvil -->
-            <span class="d-lg-none">
-              <span class="account-user-avatar">
-                <ng-container *ngIf="imgUser">
-                  <img [src]="imageBaseUrl + imgUser" alt="user-image" width="32" height="32"
-                    class="rounded-circle me-2">
-                </ng-container>
-                <ng-container *ngIf="!imgUser">
-                  <img src="./../../../assets/images/no-image.png" class="rounded-circle img-custom"
-                    alt="{{ 'PROFILE.NO_IMAGE_ALT' | translate }}">
-                </ng-container>
-              </span>
-              <h5 class="my-0">{{ nameUser }}</h5>
+            <!-- Avatar -->
+            <span class="account-user-avatar">
+              <ng-container *ngIf="imgUser; else noImg">
+                <img [src]="imageBaseUrl + imgUser" alt="user-image" class="rounded-circle" />
+              </ng-container>
+
+              <ng-template #noImg>
+                <img src="./../../../assets/images/no-image.png" class="rounded-circle" alt="No image" />
+              </ng-template>
             </span>
 
-            <!-- Escritorio -->
-            <span class="d-none d-lg-flex flex-column gap-1">
-              <span class="account-user-avatar">
-                <ng-container *ngIf="imgUser">
-                  <img [src]="imageBaseUrl + imgUser" alt="user-image" width="32" height="32"
-                    class="rounded-circle me-2">
-                </ng-container>
-                <ng-container *ngIf="!imgUser">
-                  <img src="./../../../assets/images/no-image.png" class="rounded-circle img-custom"
-                    alt="{{ 'PROFILE.NO_IMAGE_ALT' | translate }}">
-                </ng-container>
-              </span>
-              <h5 class="my-0">{{ nameUser }}</h5>
+            <!-- Nombre -->
+            <span class="user-name">
+              {{ nameUser }}
             </span>
+
+            <!-- Flecha -->
+            <i class="mdi mdi-chevron-down user-arrow"></i>
+
           </a>
+
 
           <!-- SUBMENU -->
           <div id="submenu" class="dropdown-menu dropdown-menu-end dropdown-menu-animated profile-dropdown">
@@ -60,25 +51,25 @@
 
             <!-- Perfil -->
             <a href="javascript:void(0);" class="dropdown-item" (click)="profile()">
-              <i class="mdi mdi-account-circle me-1"></i>
+              <i class="bi bi-person-circle"></i>
               <span>{{ 'HEADER.PROFILE' | translate }}</span>
             </a>
 
             <!-- Idioma -->
             <a href="javascript:void(0);" class="dropdown-item" (click)="abrirModalIdioma()">
-              <i class="mdi mdi-translate me-1"></i>
+              <i class="bi bi-translate"></i>
               <span>{{ 'HEADER.CHANGE_LANG' | translate }}</span>
             </a>
 
             <!-- Suscripción SOLO entrenadores -->
             <a *ngIf="profileId === 2" href="javascript:void(0);" class="dropdown-item" (click)="goSuscripcion()">
-              <i class="mdi mdi-credit-card me-1"></i>
+              <<i class="bi bi-credit-card-fill"></i>
               <span>{{ 'HEADER.SUBSCRIPTION' | translate }}</span>
             </a>
 
             <!-- Cerrar sesión -->
             <a href="javascript:void(0);" class="dropdown-item" (click)="logOut()">
-              <i class="mdi mdi-logout me-1"></i>
+              <i class="bi bi-box-arrow-right"></i>
               <span>{{ 'HEADER.LOGOUT' | translate }}</span>
             </a>
           </div>
@@ -202,11 +193,7 @@
       <div class="modal-body">
         <p class="text-muted">{{ 'LANG.INSTRUCCIONES' | translate }}</p>
 
-        <select
-          class="form-select"
-          [(ngModel)]="selectedLang"
-          (change)="cambiarIdioma()"
-        >
+        <select class="form-select" [(ngModel)]="selectedLang" (change)="cambiarIdioma()">
           <option value="es">🇪🇸 Español</option>
           <option value="en">🇺🇸 English</option>
           <option value="fr">🇫🇷 Français</option>

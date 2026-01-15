@@ -2,7 +2,7 @@
   width: 100%;
   border-top: 1px solid #e5e5e5;
   padding: 12px 0;
-  background-color: #ffffff;
+  background-color: #ffffff00;
   flex-shrink: 0;           /* nunca se comprime */
 }
 
@@ -14,6 +14,7 @@
 
 .footer-content {
   display: flex;
+  background-color: #ffffff00;
   flex-direction: column;
   align-items: center;
   text-align: center;

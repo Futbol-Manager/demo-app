@@ -94,7 +94,7 @@ const routes: Routes = [
       { path: 'notificaciones/:clubId', component: NotificacionesComponent },
       { path: 'notificaciones-federacion', component: NotificacionesFederacionComponent },
       { path: 'listado-clubes', component: ListadoClubesComponent },
-      { path: '**', redirectTo: 'inicio-deportes' },
+      { path: '**', redirectTo: 'inicio' },
     ],
   }
 ];

@@ -96,9 +96,9 @@
   "HEADER": {
     "WELCOME": "Welcome!",
     "PROFILE": "Profile",
-    "CHANGE_LANG": "Change language",
+    "CHANGE_LANG": "Language",
     "SUBSCRIPTION": "Subscription",
-    "LOGOUT": "Log out"
+    "LOGOUT": "Logout"
   },
   "PROFILE": {
     "EDIT_TITLE": "Edit user profile",
@@ -541,5 +541,39 @@
     "AMOUNT": "Amount",
     "METHOD": "Method",
     "TYPE": "Type"
+  },
+   "CLOTHES": {
+    "TABLE": {
+      "ID": "ID",
+      "NAME": "Name",
+      "TEAM": "Team",
+      "SHIRT_NAME": "Shirt name",
+      "NUMBER": "Number",
+
+      "MATCH_SHIRT": "Match shirt",
+      "MATCH_PANTS": "Match pants",
+      "MATCH_SOCKS": "Match socks",
+
+      "MATCH_SHIRT_2": "Second match shirt",
+      "MATCH_PANTS_2": "Second match pants",
+      "MATCH_SOCKS_2": "Second match socks",
+
+      "TRAINING_SHIRT": "Training shirt",
+      "TRAINING_PANTS": "Training pants",
+      "TRAINING_SOCKS": "Training socks",
+      "TRAINING_SWEATSHIRT": "Training sweatshirt",
+
+      "TRACKSUIT_JACKET": "Tracksuit jacket",
+      "TRACKSUIT_PANTS": "Tracksuit pants",
+
+      "POLO": "Casual polo",
+      "CASUAL_PANTS": "Casual pants",
+
+      "COAT": "Team coat",
+      "RAINCOAT": "Raincoat",
+      "BACKPACK": "Backpack",
+
+      "STATUS": "Status"
+    }
   }
 }

@@ -96,9 +96,9 @@
   "HEADER": {
     "WELCOME": "¡Bienvenido!",
     "PROFILE": "Perfil",
-    "CHANGE_LANG": "Cambiar idioma",
+    "CHANGE_LANG": "Idioma",
     "SUBSCRIPTION": "Suscripción",
-    "LOGOUT": "Cerrar sesión"
+    "LOGOUT": "Salir"
   },
   "PROFILE": {
     "EDIT_TITLE": "Editar perfil de usuario",
@@ -957,5 +957,39 @@
     "DELETE": "Eliminar",
     "SEND": "Enviar",
     "CANCEL": "Cancelar"
+  },
+   "CLOTHES": {
+    "TABLE": {
+      "ID": "ID",
+      "NAME": "Nombre",
+      "TEAM": "Equipo",
+      "SHIRT_NAME": "Nombre camiseta",
+      "NUMBER": "Número",
+
+      "MATCH_SHIRT": "Camiseta juego",
+      "MATCH_PANTS": "Pantalón juego",
+      "MATCH_SOCKS": "Medias juego",
+
+      "MATCH_SHIRT_2": "Camiseta 2º juego",
+      "MATCH_PANTS_2": "Pantalón 2º juego",
+      "MATCH_SOCKS_2": "Medias 2º juego",
+
+      "TRAINING_SHIRT": "Camiseta entreno",
+      "TRAINING_PANTS": "Pantalón entreno",
+      "TRAINING_SOCKS": "Medias entreno",
+      "TRAINING_SWEATSHIRT": "Sudadera entreno",
+
+      "TRACKSUIT_JACKET": "Chaqueta chándal",
+      "TRACKSUIT_PANTS": "Pantalón chándal",
+
+      "POLO": "Polo paseo",
+      "CASUAL_PANTS": "Pantalón paseo",
+
+      "COAT": "Abrigo equipo",
+      "RAINCOAT": "Chubasquero",
+      "BACKPACK": "Mochila",
+
+      "STATUS": "Estado"
+    }
   }
 }
