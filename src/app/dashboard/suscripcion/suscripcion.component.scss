@@ -1,80 +1,174 @@
-.card {
-    position: relative;
+/* ===============================
+   COLORES SPHAIRA TECH
+================================ */
+$green: #31b270;
+$blue-dark: #002c40;
+$off-white: #f4f4f4;
+$beige: #efdcb6;
+$danger: #d9534f;
+
+/* ===============================
+   CONTENEDOR
+================================ */
+.subscription-wrapper {
+  background: $off-white;
+  padding: 2rem;
+  border-radius: 16px;
+}
+
+/* ===============================
+   TÍTULO
+================================ */
+.subscription-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: $blue-dark;
+  margin-bottom: 2rem;
+}
+
+/* ===============================
+   CARD BASE
+================================ */
+.subscription-card {
+  background: white;
+  border-radius: 18px;
+  padding: 1.8rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  height: 100%;
+}
+
+/* ===============================
+   ESTADO DE SUSCRIPCIÓN
+================================ */
+.status-card {
+  border-left: 6px solid $green;
+}
+
+.subscription-status {
+  display: inline-block;
+  padding: 0.35rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+
+  &.active {
+    background: rgba($green, 0.15);
+    color: $green;
+  }
+
+  &.inactive {
+    background: rgba($danger, 0.15);
+    color: $danger;
+  }
+}
+
+.subscription-plan {
+  text-align: center;
+  font-weight: 700;
+  color: $blue-dark;
+  margin-bottom: 1.5rem;
+}
+
+.subscription-info {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
     display: flex;
-    flex-direction: column;
-    min-width: 0;
-    color: #6c757d;
-    word-wrap: break-word;
-    background-color: #fff;
-    background-clip: border-box;
-    border: 0px solid #dee2e6;
-    border-radius: 0.25rem;
-    box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
-    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
-    /*cursor: pointer;
-    cursor: not-allowed;
-    opacity: 0.5;*/
-}
+    justify-content: space-between;
+    font-size: 0.9rem;
+    padding: 0.4rem 0;
+    color: #555;
 
-.card:hover {
-    transform: scale(1.05);
-    border-color: #22BF63;
-    background-color: #22BF63;
-    box-shadow: 0px 0px 35px 0px rgba(34, 191, 99, 0.5);
-}
-
-.card-title {
-    font-weight: bold;
-}
-
-.card-text {
-    font-size: 14px;
-}
-
-.proximamente-title {
-    font-size: 3rem;
-    font-weight: bold;
-    color: #343a40;
-    /* Color oscuro moderno */
-    text-align: center;
-    margin-top: 2rem;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    background: linear-gradient(45deg, #202020, #919292);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.spinner {
-    text-align: center;
-    margin-top: 10px;
-}
-
-.double-bounce1,
-.double-bounce2 {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: #00a86b;
-    opacity: 0.6;
-    position: absolute;
-    top: 0;
-    left: 0;
-    animation: bounce 2s infinite ease-in-out;
-}
-
-.double-bounce2 {
-    animation-delay: -1s;
-}
-
-@keyframes bounce {
-
-    0%,
-    100% {
-        transform: scale(0);
+    span {
+      opacity: 0.8;
     }
+  }
+}
 
-    50% {
-        transform: scale(1);
+/* ===============================
+   CAMBIAR SUSCRIPCIÓN
+================================ */
+.change-card {
+  border-top: 6px solid $green;
+}
+
+.change-title {
+  text-align: center;
+  font-weight: 700;
+  color: $blue-dark;
+  margin-bottom: 1.5rem;
+}
+
+/* ===============================
+   INPUTS
+================================ */
+.modern-input {
+  border-radius: 12px;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #ddd;
+
+  &:focus {
+    border-color: $green;
+    box-shadow: 0 0 0 2px rgba($green, 0.2);
+  }
+}
+
+/* ===============================
+   TOTAL
+================================ */
+.total-box {
+  text-align: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: $blue-dark;
+  margin: 1.8rem 0;
+
+  span {
+    color: $green;
+  }
+}
+
+/* ===============================
+   BOTONES
+================================ */
+.btn {
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 0.7rem 1.2rem;
+  border: none;
+
+  &.primary {
+    background: $green;
+    color: white;
+
+    &:hover {
+      background: darken($green, 8%);
     }
+  }
+
+  &.danger {
+    background: transparent;
+    color: $danger;
+  }
+
+  &.success {
+    background: transparent;
+    color: $green;
+  }
+}
+
+/* ===============================
+   RESPONSIVE
+================================ */
+@media (max-width: 768px) {
+  .subscription-wrapper {
+    padding: 1.2rem;
+  }
+
+  .subscription-title {
+    font-size: 1.4rem;
+  }
 }

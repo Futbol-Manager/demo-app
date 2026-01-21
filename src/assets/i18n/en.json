@@ -19,7 +19,12 @@
     "BACK": "Back",
     "DATE": "Date",
     "EXPORT_EXCEL": "Export Excel",
-    "LOADING_LIST": "Loading list..."
+    "LOADING_LIST": "Loading list...",
+    "FEMALE":"Female",
+    "MALE":"Male",
+    "OTHER": "Other",
+    "ID": "Identification",
+    "VIEWPLAYER": "View Player"
   },
   "LOGIN": {
     "EMAIL_PLACEHOLDER": "Email address",
@@ -98,7 +103,18 @@
     "PROFILE": "Profile",
     "CHANGE_LANG": "Language",
     "SUBSCRIPTION": "Subscription",
-    "LOGOUT": "Logout"
+    "LOGOUT": "Logout",
+    "HELP": {
+      "TITLE": "Help",
+      "EMAIL": "Email",
+      "WHATSAPP": "WhatsApp",
+      "CALL": "Call"
+    },
+    "DOWNLOAD": {
+      "TITLE": "Download App",
+      "PLAYSTORE": "Play Store",
+      "APPSTORE": "App Store"
+    }
   },
   "PROFILE": {
     "EDIT_TITLE": "Edit user profile",
@@ -233,10 +249,31 @@
         "SUBTITLE": "Register as coach"
       }
     },
+    "TABS": {
+      "PARENT": "Parent details",
+      "CHILDREN": "Children details"
+    },
+    "PARENT": {
+      "QUESTION": "Are you a parent, guardian or adult player?",
+      "RELATION": "Register as:",
+      "FATHER": "Father",
+      "MOTHER": "Mother",
+      "TUTOR": "Guardian",
+      "ADULT": "Adult player"
+    },
+    "CHILDREN": {
+      "TITLE": "Children information",
+      "COUNT": "How many children play in this club?",
+      "DATA": "Child {{num}} details",
+      "CHECK_PLAYER":"Check if this player exists"
+    },
     "COMMON": {
       "NEXT": "Next",
       "BACK": "Back",
       "EMAIL": "Email",
+      "FINISH": "Finish",
+      "BIRTHDATE": "Birthdate",
+      "EMAIL_REPEAT": "Repeat email",
       "PASSWORD": "Password",
       "NAME": "Name",
       "SURNAME": "Last name",
@@ -260,12 +297,28 @@
     },
     "ERROR": {
       "PASSWORD_MISMATCH": "Passwords do not match.",
-      "INCOMPLETE_FORM": "Please complete all required fields and accept the privacy policy."
+      "INCOMPLETE_FORM": "Please complete all required fields and accept the privacy policy.",
+      "EMAIL_MATCH": "Emails do not match"
     },
     "BUTTONS_MODALS": {
       "ACKNOWLEDGE": "Got it",
       "I_AM_COACH": "I am a coach"
     }
+  },
+   "ERRORS": {
+    "REQUIRED_NAME": "Name is required",
+    "REQUIRED_SURNAME": "Surname is required",
+    "REQUIRED_BIRTHDATE": "Birth date is required",
+    "UNDERAGE": "You must be over 18 years old to register",
+    "REQUIRED_GENDER": "Gender is required",
+    "REQUIRED_EMAIL": "Email is required",
+    "INVALID_EMAIL": "Invalid email format",
+    "REQUIRED_CONFIRM_EMAIL": "Please confirm your email",
+    "EMAIL_MISMATCH": "Emails do not match",
+    "REQUIRED_PHONE": "Phone number is required",
+    "REQUIRED_PASSWORD": "Password is required",
+    "PASSWORD_MISMATCH": "Passwords do not match",
+    "TERMS_REQUIRED": "You must accept the terms and conditions"
   },
   "CUADROMANDO": {
     "SUBMENU": {
@@ -575,5 +628,34 @@
 
       "STATUS": "Status"
     }
+  },
+  "COACH": {
+    "MY_TEAMS": {
+      "TITLE": "My teams",
+      "SUBTITLE": "Manage and access the teams you coach",
+      "TRAINING_SCHEDULE": "Training schedule",
+      "PLAYERS_COUNT": "Number of players",
+      "PLAYERS": "players"
+    }
+  },
+  "SUBSCRIPTION": {
+    "TITLE": "Subscription Details",
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "CODE": "Subscription Code",
+    "YEARLY": "Yearly",
+    "MONTHLY": "Monthly",
+    "START": "Start Date",
+    "RENEW": "Next Renewal",
+    "END": "End of Subscription",
+    "PRICE": "Price",
+    "TEAMS": "Number of Teams",
+    "CANCEL": "Cancel Subscription",
+    "REACTIVATE": "Reactivate Subscription",
+    "CHANGE_TITLE": "Change Subscription",
+    "TYPE": "Subscription Type",
+    "NUM_TEAMS": "Number of Teams",
+    "TOTAL": "Total Amount",
+    "CONFIRM": "Confirm Subscription"
   }
 }

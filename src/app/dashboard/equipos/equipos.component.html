@@ -1,17 +1,14 @@
 <app-logo-spinner *ngIf="datosCargando"></app-logo-spinner>
-
+<app-publicidad></app-publicidad>
 <div [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
-
-  <!-- ================= SUBMENU ORIGINAL ================= -->
-  <div class="back-container">
-    <button class="btn-back-clean" (click)="goBack()">
-      <i class="bi bi-arrow-left"></i>
-      <span>{{ 'COMMON.BACK' | translate }}</span>
-    </button>
-  </div>
-
   <!-- ================= CONTENIDO ================= -->
   <div class="container">
+    <div class="back-container">
+      <button class="btn-back-clean" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        <span>{{ 'COMMON.BACK' | translate }}</span>
+      </button>
+    </div>
 
     <div *ngIf="profileId === 1 || profileId === 2" class="mobile-actions mt-4">
 

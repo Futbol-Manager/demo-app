@@ -110,7 +110,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ListadoClubesComponent,
     EquiposComponent,
     LogoSpinnerComponent,
-    FooterComponent
+    FooterComponent,
   ],
   imports: [
     CommonModule,

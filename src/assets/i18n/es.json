@@ -19,7 +19,12 @@
     "BACK": "Volver",
     "DATE": "Fecha",
     "EXPORT_EXCEL": "Exportar Excel",
-    "LOADING_LIST": "Cargando listado..."
+    "LOADING_LIST": "Cargando listado...",
+    "FEMALE":"Femenino",
+    "MALE":"Masculino",
+    "OTHER": "Otro",
+    "ID": "Identificación",
+    "VIEWPLAYER": "Ver Jugador"
   },
   "LOGIN": {
     "EMAIL_PLACEHOLDER": "Correo electrónico",
@@ -35,6 +40,30 @@
       "RESEND_VERIFICATION": "Reenviar correo de verificación",
       "GENERIC": "No hemos podido iniciar sesión. Inténtalo de nuevo más tarde."
     }
+  },
+  "ERRORS": {
+    "REQUIRED_NAME": "El nombre es obligatorio",
+    "REQUIRED_SURNAME": "Los apellidos son obligatorios",
+    "REQUIRED_BIRTHDATE": "La fecha de nacimiento es obligatoria",
+    "UNDERAGE": "Debes ser mayor de edad para registrarte",
+    "REQUIRED_GENDER": "Debe seleccionar un género",
+    "REQUIRED_EMAIL": "El email es obligatorio",
+    "INVALID_EMAIL": "Formato de email inválido",
+    "REQUIRED_CONFIRM_EMAIL": "Debe confirmar el email",
+    "EMAIL_MISMATCH": "Los emails no coinciden",
+    "REQUIRED_PHONE": "El teléfono es obligatorio",
+    "REQUIRED_PASSWORD": "La contraseña es obligatoria",
+    "PASSWORD_MISMATCH": "Las contraseñas no coinciden",
+    "TERMS_REQUIRED": "Debe aceptar los términos y condiciones"
+  },
+  "DAYS": {
+    "MONDAY": "Lunes",
+    "TUESDAY": "Martes",
+    "WEDNESDAY": "Miércoles",
+    "THURSDAY": "Jueves",
+    "FRIDAY": "Viernes",
+    "SATURDAY": "Sábado",
+    "SUNDAY": "Domingo"
   },
   "TITLES": {
     "USERS": "Usuarios",
@@ -98,7 +127,18 @@
     "PROFILE": "Perfil",
     "CHANGE_LANG": "Idioma",
     "SUBSCRIPTION": "Suscripción",
-    "LOGOUT": "Salir"
+    "LOGOUT": "Salir",
+    "HELP": {
+      "TITLE": "Ayuda",
+      "EMAIL": "Email",
+      "WHATSAPP": "WhatsApp",
+      "CALL": "Llamar"
+    },
+    "DOWNLOAD": {
+      "TITLE": "Descargar App",
+      "PLAYSTORE": "Play Store",
+      "APPSTORE": "App Store"
+    }
   },
   "PROFILE": {
     "EDIT_TITLE": "Editar perfil de usuario",
@@ -645,11 +685,32 @@
         "SUBTITLE": "Registrarse como entrenador"
       }
     },
+    "TABS": {
+        "PARENT": "Datos del padre",
+        "CHILDREN": "Datos de los hijos"
+    },
+    "PARENT": {
+      "QUESTION": "¿Eres padre, madre, tutor o jugador mayor de edad?",
+      "RELATION": "Introduce tus datos como:",
+      "FATHER": "Padre",
+      "MOTHER": "Madre",
+      "TUTOR": "Tutor",
+      "ADULT": "Jugador mayor de edad"
+    },
+    "CHILDREN": {
+      "TITLE": "Datos de los hijos",
+      "COUNT": "¿Cuántos hijos juegan en este club?",
+      "DATA": "Datos del hijo {{num}}",
+      "CHECK_PLAYER":"Comprobar si este jugador existe"
+    },
     "COMMON": {
       "NEXT": "Siguiente",
       "BACK": "Volver",
+      "FINISH": "Finalizar",
       "EMAIL": "Correo electrónico",
+      "EMAIL_REPEAT": "Repite el correo",
       "PASSWORD": "Contraseña",
+      "BIRTHDATE": "Fecha de nacimiento",
       "NAME": "Nombre",
       "SURNAME": "Apellido",
       "GENDER": "Selecciona tu género",
@@ -672,7 +733,8 @@
     },
     "ERROR": {
       "PASSWORD_MISMATCH": "Las contraseñas no coinciden.",
-      "INCOMPLETE_FORM": "Revisa los campos obligatorios y acepta la política de privacidad."
+      "INCOMPLETE_FORM": "Revisa los campos obligatorios y acepta la política de privacidad.",
+      "EMAIL_MATCH": "Los correos electrónicos no coinciden"
     },
     "BUTTONS_MODALS": {
       "ACKNOWLEDGE": "Entendido",
@@ -991,5 +1053,37 @@
 
       "STATUS": "Estado"
     }
+  },
+  "COACH": {
+    "MY_TEAMS": {
+      "TITLE": "Mis equipos",
+      "SUBTITLE": "Gestiona y accede a los equipos que entrenas",
+      "TRAINING_SCHEDULE": "Horarios de entrenamiento",
+      "PLAYERS_COUNT": "Número de jugadores",
+      "NO_TEAMS_FOR_SEASON": "No hay equipos asociados a esta temporada",
+      "NO_SCHEDULE": "Sin horarios asignados",
+      "PLAYERS": "Jugadores"
+    }
+  },
+  "SUBSCRIPTION": {
+    "TITLE": "Datos de la suscripción",
+    "ACTIVE": "Activa",
+    "INACTIVE": "Inactiva",
+    "CODE": "Código se susciripción",
+    "YEARLY": "Anual",
+    "MONTHLY": "Mensual",
+    "START": "Fecha de inicio",
+    "RENEW": "Próxima renovación",
+    "END": "Final de suscripción",
+    "PRICE": "Precio",
+    "TEAMS": "Número de equipos",
+    "CANCEL": "Dar de baja suscripción",
+    "REACTIVATE": "Reactivar suscripción",
+    "CHANGE_TITLE": "Cambiar suscripción",
+    "TYPE": "Tipo de suscripción",
+    "NUM_TEAMS": "Número de equipos",
+    "TOTAL": "Total a pagar",
+    "CONFIRM": "Confirmar suscripción"
   }
+
 }

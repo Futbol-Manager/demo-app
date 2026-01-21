@@ -1,37 +1,54 @@
-import {Component, OnInit} from '@angular/core';
-import {Router} from '@angular/router';
-import {filter, take} from 'rxjs/operators';
-
-import {LoginService} from 'src/app/core/services/login/login.service';
-import {TeamService} from 'src/app/core/services/team/team.service';
-import {User} from 'src/app/core/models/users/user.model';
-import {Response} from 'src/app/core/services/models/response.model';
+import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { distinctUntilChanged, filter, take } from 'rxjs/operators';
+import { forkJoin, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
+import { LoginService } from 'src/app/core/services/login/login.service';
+import { TeamService } from 'src/app/core/services/team/team.service';
+import { User } from 'src/app/core/models/users/user.model';
+import { Response } from 'src/app/core/services/models/response.model';
+import { PlayerService } from 'src/app/core/services/player/player.service';
 
 @Component({
   selector: 'app-inicio',
   templateUrl: './inicio.component.html',
-  styleUrls: ['./inicio.component.scss']
+  styleUrls: ['./inicio.component.scss'],
 })
 export class InicioComponent implements OnInit {
-
   // =========================
   // Estado base
   // =========================
+  teamTrainingCache = new Map<
+    number,
+    {
+      trainingDays: string | null;
+      nameCompleteTeam: string | null;
+      levelLeague: string | null;
+    }
+  >();
+
   usuarioActual!: User;
   userId = 0;
   profileId = 0;
   clubId = 0;
-
+  pictureClub = '';
+  noPicture = false;
   clubOk = false;
   clubLoading = true;
-
+  numEquipos = 0;
   datosCargando = true;
   datosNoCargados = false;
 
   isAndroid = false;
   isiOS = false;
   showAlertAndroid = true;
+  listHijos: any[] = [];
+  listTeam: any[] = [];
+  clubList: any[] = [];
 
+  temporada = '2025';
+  temporadaStoredValue = '2025';
+  federacion: number | null = null;
   // =========================
   // Cache keys
   // =========================
@@ -41,9 +58,9 @@ export class InicioComponent implements OnInit {
   constructor(
     private loginService: LoginService,
     private teamService: TeamService,
-    private router: Router
-  ) {
-  }
+    private router: Router,
+    private playerservice: PlayerService
+  ) {}
 
   // =========================
   // Ciclo de vida
@@ -51,15 +68,82 @@ export class InicioComponent implements OnInit {
   ngOnInit(): void {
     this.detectarPlataforma();
     this.inicializarDesdeCache();
-    this.cargarUsuario();
+    this.cargarTemporadaDesdeStorage();
+    this.inicializarUsuario();
+    this.cargarListadoEquipos();
+    this.cargarJugadores();
+  }
+  private cargarTemporadaDesdeStorage(): void {
+    const temporada = localStorage.getItem('temporada');
+    if (temporada) {
+      this.temporadaStoredValue = temporada;
+      this.temporada = temporada;
+    }
+  }
+  private inicializarUsuario(): void {
+    this.loginService.usuarioActual
+      .pipe(filter(Boolean), take(1))
+      .subscribe((user) => {
+        this.usuarioActual = user!;
+        this.profileId = user!.profileType.profileId;
+        this.userId = this.obtenerUserIdPorPerfil(user!);
+
+        this.resolverCargaInicialPorPerfil();
+      });
+  }
+  private obtenerUserIdPorPerfil(user: any): number {
+    if (user.profileType.profileId === 0) {
+      return Number(localStorage.getItem('userIdClub'));
+    }
+    return user.userId;
+  }
+  private resolverCargaInicialPorPerfil(): void {
+    switch (true) {
+      case this.profileId === 2:
+        this.cargarListadoEquipos();
+        break;
+
+      case this.profileId > 2:
+        this.cargarHijos();
+        break;
+
+      default:
+        this.datosCargando = false;
+        break;
+    }
+  }
+  private cargarHijos(): void {
+    this.datosCargando = true;
+
+    this.teamService
+      .getTeamByPlayer(this.userId.toString(), this.temporadaStoredValue)
+      .pipe(take(1))
+      .subscribe({
+        next: (response: Response) => {
+          this.listHijos = response?.data ?? [];
+          this.datosCargando = false;
+
+          this.redirigirSiDatosIncompletos();
+        },
+        error: (error) => {
+          console.error('Error al cargar hijos', error);
+          this.listHijos = [];
+          this.datosCargando = false;
+        },
+      });
+  }
+  private redirigirSiDatosIncompletos(): void {
+    const hijoIncompleto = this.listHijos.find((h) => !h.apellido);
+    if (hijoIncompleto) {
+      this.router.navigate(['/dashboard/jugadores', hijoIncompleto.teamId]);
+    }
   }
 
   // =========================
   // Plataforma
 
   // =========================
-  irAPantalla(id: number): void {
-
+  irAPantallaClub(id: number): void {
     // ⛔ BLOQUEO ABSOLUTO
     if (!this.clubId) {
       console.warn('Intento de navegación sin clubId');
@@ -89,6 +173,10 @@ export class InicioComponent implements OnInit {
         this.router.navigate(['/dashboard/equipos']);
         break;
     }
+  }
+
+  navegarEquipoEntrenador(team: any): void {
+    this.router.navigate(['/dashboard/menu-entrenador', team.teamId, 0]);
   }
 
   // =========================
@@ -129,11 +217,8 @@ export class InicioComponent implements OnInit {
   // =========================
   private cargarUsuario(): void {
     this.loginService.usuarioActual
-      .pipe(
-        filter(Boolean),
-        take(1)
-      )
-      .subscribe(user => {
+      .pipe(filter(Boolean), take(1))
+      .subscribe((user) => {
         this.usuarioActual = user!;
         this.profileId = user!.profileType.profileId;
         this.userId = user!.userId;
@@ -144,6 +229,9 @@ export class InicioComponent implements OnInit {
         } else {
           this.cargarClubId();
         }
+        if (this.profileId === 3) {
+          this.cargarJugadores();
+        }
       });
   }
 
@@ -152,7 +240,8 @@ export class InicioComponent implements OnInit {
 
   // =========================
   private cargarClubId(): void {
-    this.teamService.getTeamByClub(this.userId.toString(), '2025')
+    this.teamService
+      .getTeamByClub(this.userId.toString(), '2025')
       .pipe(take(1))
       .subscribe({
         next: (response: Response) => {
@@ -173,17 +262,17 @@ export class InicioComponent implements OnInit {
         error: () => {
           this.clubLoading = false;
           this.datosCargando = false;
-        }
+        },
       });
   }
 
   // =========================
   private verificarSuscripcion(): void {
-    this.teamService.getEstadoSuscripcion(this.userId, this.profileId)
+    this.teamService
+      .getEstadoSuscripcion(this.userId, this.profileId)
       .pipe(take(1))
       .subscribe({
         next: (response: Response) => {
-
           if (response.data === 999) {
             this.clubOk = true;
           } else if (response.data < 1) {
@@ -198,7 +287,295 @@ export class InicioComponent implements OnInit {
         error: () => {
           this.clubLoading = false;
           this.datosCargando = false;
-        }
+        },
       });
+  }
+  navegarAOpcionesJugador(teamId: number, playerId: number): void {
+    this.router.navigate(['/dashboard/opcionesjugador', teamId, playerId]);
+  }
+
+  cargarJugadores(): void {
+    this.datosCargando = true;
+
+    localStorage.setItem('temporada', this.temporada);
+    this.temporadaStoredValue = this.temporada;
+
+    this.teamService
+      .getTeamByPlayer(this.userId.toString(), this.temporadaStoredValue)
+      .pipe(take(1))
+      .subscribe({
+        next: (response: Response) => {
+          const hijos = response?.data ?? [];
+          this.listHijos = hijos.map((hijo: any) => ({
+            ...hijo,
+            nextMatch: null,
+            trainingDays: null,
+            teamNameComplete: null,
+            teamLevelLeague: null,
+          }));
+
+          if (!hijos.length) {
+            this.listHijos = [];
+            this.datosCargando = false;
+            return;
+          }
+
+          // Inicializamos estructura
+          this.listHijos = hijos.map((hijo: any) => ({
+            ...hijo,
+            nextMatch: null,
+            trainingDays: null,
+          }));
+
+          // 🔹 Observables por jugador
+          const requests = this.listHijos.map((hijo: any) =>
+            forkJoin({
+              nextMatch: this.playerservice
+                .getListProximosPartidos(hijo.teamId)
+                .pipe(
+                  map((r: Response) =>
+                    r?.data && r.data.length ? r.data[0] : null
+                  ),
+                  catchError(() => of(null))
+                ),
+
+              trainingDays: this.obtenerHorarioEntrenamiento(hijo.teamId),
+            }).pipe(
+              map((result) => ({
+                hijo,
+                ...result,
+              }))
+            )
+          );
+
+          // 🔹 Esperamos TODO
+          forkJoin(requests).subscribe((results) => {
+            results.forEach((res: any) => {
+              res.hijo.nextMatch = res.nextMatch;
+
+              res.hijo.trainingDays = res.trainingDays?.trainingDays ?? null;
+              res.hijo.teamNameComplete =
+                res.trainingDays?.nameCompleteTeam ?? null;
+              res.hijo.teamLevelLeague = res.trainingDays?.levelLeague ?? null;
+            });
+
+            this.datosCargando = false;
+          });
+        },
+        error: () => {
+          this.listHijos = [];
+          this.datosCargando = false;
+        },
+      });
+  }
+
+  cargarProximoPartido(hijo: any): void {
+    this.playerservice.getListProximosPartidos(hijo.teamId).subscribe({
+      next: (response: Response) => {
+        if (response?.data && response.data.length > 0) {
+          // Guardamos solo el próximo partido
+          hijo.nextMatch = response.data[0];
+          console.log('PROX:', hijo.nextMatch);
+        } else {
+          hijo.nextMatch = null;
+        }
+      },
+      error: () => {
+        hijo.nextMatch = null;
+      },
+    });
+  }
+  obtenerHorarioEntrenamiento(teamId: number) {
+    // 🔹 Cache
+    if (this.teamTrainingCache.has(teamId)) {
+      return of(this.teamTrainingCache.get(teamId)!);
+    }
+
+    return this.teamService.getTeamById(teamId.toString()).pipe(
+      map((response: Response) => {
+        const data = response?.data;
+
+        const rawName = data?.nameCompleteTeam?.trim() ?? null;
+
+        let cleanName: string | null = null;
+
+        if (
+          rawName &&
+          !rawName.toLowerCase().includes('null') &&
+          !rawName.toLowerCase().includes('sin equipo')
+        ) {
+          cleanName = rawName;
+        }
+
+        if (!cleanName) {
+          cleanName = 'Sin equipo';
+        }
+
+        const teamInfo = {
+          trainingDays:
+            data?.trainingDays &&
+            !data.trainingDays.toLowerCase().includes('null')
+              ? data.trainingDays.trim()
+              : null,
+
+          nameCompleteTeam: cleanName,
+          levelLeague: data?.levelLeague ?? null,
+        };
+
+        this.teamTrainingCache.set(teamId, teamInfo);
+        return teamInfo;
+      }),
+      catchError(() => {
+        const emptyInfo = {
+          trainingDays: null,
+          nameCompleteTeam: null,
+          levelLeague: null,
+        };
+
+        this.teamTrainingCache.set(teamId, emptyInfo);
+        return of(emptyInfo);
+      })
+    );
+  }
+
+  parseTrainingDays(trainingDays: string | null) {
+    if (!trainingDays) {
+      return null;
+    }
+
+    const dayMap: Record<string, string> = {
+      L: 'DAYS.MONDAY',
+      M: 'DAYS.TUESDAY',
+      X: 'DAYS.WEDNESDAY',
+      J: 'DAYS.THURSDAY',
+      V: 'DAYS.FRIDAY',
+      S: 'DAYS.SATURDAY',
+      D: 'DAYS.SUNDAY',
+    };
+
+    const regex = /([LMXJVSD]):\s*([\d:]+-[\d:]+)/g;
+    const result: { dayLabel: string; hours: string }[] = [];
+
+    let match;
+    while ((match = regex.exec(trainingDays)) !== null) {
+      result.push({
+        dayLabel: dayMap[match[1]],
+        hours: match[2],
+      });
+    }
+
+    return result;
+  }
+
+  cargarListadoEquipos(): void {
+    localStorage.setItem('temporada', this.temporada);
+    this.temporadaStoredValue = this.temporada;
+
+    this.teamService
+      .getTeams(this.userId.toString(), this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          console.log('RESPONSE LIST TEAM', response);
+
+          // Reset por seguridad
+          this.listTeam = [];
+
+          if (response?.data) {
+            // Imagen del club
+            if (response.data.picture) {
+              this.pictureClub = response.data.picture;
+              this.noPicture = true;
+            } else {
+              this.noPicture = false;
+            }
+
+            // Equipos
+            if (
+              Array.isArray(response.data.teams) &&
+              response.data.teams.length > 0
+            ) {
+              this.listTeam = response.data.teams.map(
+                (team: {
+                  trainingDays?: string | null;
+                  jugadoresPorEquipo?: number | null;
+                  [key: string]: any;
+                }) => ({
+                  ...team,
+
+                  trainingDays:
+                    team.trainingDays &&
+                    !team.trainingDays.toLowerCase().includes('null')
+                      ? team.trainingDays
+                      : null,
+
+                  jugadoresPorEquipo: team.jugadoresPorEquipo ?? 0,
+                })
+              );
+            } else {
+              // Temporada sin equipos
+              this.listTeam = [];
+            }
+          } else {
+            console.error(
+              'La respuesta del servicio no tiene la estructura esperada',
+              response
+            );
+          }
+
+          this.checkSuscripcion();
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
+          this.listTeam = [];
+        }
+      );
+  }
+
+  checkSuscripcion() {
+    //acceder a un endpoint que revisa la sus, si es null, ver si está dentro de la semana que se creo la cuenta
+    //si ya paso la semana, se revisara luego la fecha de renovacion, si no paso aun, pues no hacer nada, si paso
+    //revisar en stripe el estado, porque si esta bien, hay que actualizar la fecha y si esta mal, actualizar a F el valido y la fecha, si esta mal
+    // avisar por un alert
+    this.teamService
+      .getEstadoSuscripcion(this.userId, this.profileId)
+      .subscribe(
+        (response: Response) => {
+          this.numEquipos = response.data;
+          if (response.data == 999) {
+            //significa que es un club con plan gratuido
+            //hay que ver si tiene mas de 50 padres que pagan cuota, de ser asi, desbloquear los menus
+            /*this.teamService.getPlayersByTeamByClubVerify(this.userId, this.temporadaStoredValue).subscribe(
+            (resp: Response) => {
+              this.numPadresPagados = response.data;
+              if (resp.data < 49) {
+                //significa que lo puede tener todo
+                this.clubOk = true;
+              } else {
+                //significa que no tiene acceso
+              }
+            },
+            (error) => {
+              console.error('Error al cargar el listado de equipos', error);
+            }
+          );*/
+
+            //significa que lo puede tener todo
+            this.clubOk = true;
+          }
+
+          if (response.data < 1) {
+            //significa que NO es valido el acceso
+            this.datosNoCargados = true;
+          } else {
+            //significa que está solo, sin club
+            this.datosCargando = true;
+            //this.clubOk = true;
+          }
+          this.datosCargando = false;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
+        }
+      );
   }
 }

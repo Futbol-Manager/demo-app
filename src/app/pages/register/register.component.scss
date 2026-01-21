@@ -477,5 +477,73 @@ input.no-calendar-icon::-webkit-calendar-picker-indicator {
     transform: translateY(0) scale(1);
   }
 }
+/* ===== REGISTER WIZARD ===== */
+.register-wizard {
+  padding: 2rem;
+}
+
+/* Steps */
+.wizard-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.step span {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.step.active {
+  color: #22bf63;
+}
+
+.step.active span {
+  background: linear-gradient(135deg, #31b270, #22bf63);
+  color: #fff;
+}
+
+.step-divider {
+  width: 40px;
+  height: 2px;
+  background: #e5e7eb;
+}
+
+/* Inputs responsive */
+.form-register .row {
+  gap: 1rem;
+}
+
+.form-register input,
+.form-register select {
+  height: 44px;
+  border-radius: 10px;
+}
+
+/* Card mobile fix */
+@media (max-width: 576px) {
+  .card {
+    margin: 1rem;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+}
 
 

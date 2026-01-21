@@ -1,202 +1,159 @@
 <app-publicidad></app-publicidad>
 
 <div class="container">
-    <h3 *ngIf="this.usuarioActual!.profileType.profileId < 5 && this.usuarioActual!.profileType.profileId > 5">Perfiles
-    </h3>
-    <div class="row p-3">
-        <!-- Tarjeta de jugador -->
-        <div class="col-12 col-md-6 mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
-            (click)="selectedHijo(hijo.playerId)">
-            <div class="card h-100" style="border: 1px solid black;">
-                <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col" *ngIf="hijo.picturePlayer">
-                            <img [src]="imageBaseUrlUser + hijo.picturePlayer" alt="user-image" width="90" height="90"
-                                style="max-width: 100%;">
-                        </div>
-                        <div class="col d-flex justify-content-center align-items-center" *ngIf="!hijo.picturePlayer">
-                            <ng-container>
-                                <span class="bi bi-person" style="font-size: 4rem;"></span>
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-                        {{ hijo.nombre }} {{ hijo.apellido }}
-                    </h5>
-                </div>
+  <h3 *ngIf="this.usuarioActual!.profileType.profileId < 5 && this.usuarioActual!.profileType.profileId > 5">Perfiles
+  </h3>
+  <div class="row p-3">
+    <!-- Tarjeta de jugador -->
+    <div class="col-12 col-md-6 mb-3" *ngFor="let hijo of listHijos; let i = index" style="cursor: pointer;"
+      (click)="selectedHijo(hijo.playerId)">
+      <div class="card h-100" style="border: 1px solid black;">
+        <div class="card-body d-flex flex-column text-center">
+          <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+            <div class="col" *ngIf="hijo.picturePlayer">
+              <img [src]="imageBaseUrlUser + hijo.picturePlayer" alt="user-image" width="90" height="90"
+                style="max-width: 100%;">
             </div>
+            <div class="col d-flex justify-content-center align-items-center" *ngIf="!hijo.picturePlayer">
+              <ng-container>
+                <span class="bi bi-person" style="font-size: 4rem;"></span>
+              </ng-container>
+            </div>
+          </div>
+          <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
+            {{ hijo.nombre }} {{ hijo.apellido }}
+          </h5>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <div class="container" *ngIf="datosCargados">
-    <h3>Datos de la suscripción</h3>
-    <div class="row p-3">
-        <div class="col-12 col-md-6 mb-3">
-            <div class="card h-100" style="border: 1px solid black;">
-                <div class="card-body d-flex flex-column" *ngIf="yesSus">
-                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'M'" class="card-title mt-3"
-                        style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
-                        Mensual
-                    </h5>
-                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'T'" class="card-title mt-3"
-                        style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
-                        Trimestral
-                    </h5>
-                    <h5 *ngIf="susInfo.suscripcionTipo.tiempo == 'A'" class="card-title mt-3"
-                        style="text-align: center; color: black; white-space: nowrap; text-overflow: ellipsis;">
-                        Anual
-                    </h5>
-                    <p><b>Fecha de inicio:</b> {{ susInfo.dateCreate }}</p>
-                    <p *ngIf="susInfo.renueva === 1"><b>Próxima renovación:</b> {{ susInfo.dateFinal }}</p>
-                    <p style="color: red;" *ngIf="susInfo.renueva === 0"><b>Final de suscripción:</b> {{
-                        susInfo.dateFinal }}</p>
-                    <p><b>Código se susciripción:</b> {{ susInfo.suscripcionTipo.codigo }}</p>
-                    <p><b>Precio de la suscripción:</b> {{ susInfo.suscripcionTipo.precio }} €</p>
-                    <p *ngIf="susInfo.numeroEquipos > 1"><b>Número de equipos:</b> {{ susInfo.numeroEquipos }} (x {{
-                        susInfo.suscripcionTipo.precio }} €)</p>
-                    <a *ngIf="susInfo.renueva === 1" style="color: red;" href="javascript:void(0);"
-                        (click)="confirmCancelarSuscripcion()">
-                        Dar de baja suscripción
-                    </a>
-                    <a *ngIf="susInfo.renueva === 0" style="color: green;" href="javascript:void(0);"
-                        (click)="confirmReactivarSubscription()">
-                        Reactivar suscripción
-                    </a>
-                </div>
-                <div class="card-body d-flex flex-column" *ngIf="noSus">
-                    <p><b>Fecha de inicio:</b> -</p>
-                    <p><b>Próxima renovación:</b> -</p>
-                    <p><b>Código se susciripción:</b> -</p>
-                    <p><b>Precio:</b> -</p>
-                </div>
-            </div>
+  <div class="subscription-wrapper" *ngIf="datosCargados">
+
+    <!-- TÍTULO -->
+    <h2 class="subscription-title">
+      {{ 'SUBSCRIPTION.TITLE' | translate }}
+    </h2>
+
+    <div class="row g-4">
+
+      <!-- ===============================
+         ESTADO DE SUSCRIPCIÓN
+    ================================ -->
+      <div class="col-12 col-md-6">
+
+        <div class="subscription-card status-card" *ngIf="yesSus">
+
+          <div class="subscription-status" [ngClass]="susInfo.renueva === 1 ? 'active' : 'inactive'">
+            {{ susInfo.renueva === 1
+            ? ('SUBSCRIPTION.ACTIVE' | translate)
+            : ('SUBSCRIPTION.INACTIVE' | translate) }}
+          </div>
+
+          <h4 class="subscription-plan">
+            {{
+            susInfo.suscripcionTipo.tiempo === 'A'
+            ? ('SUBSCRIPTION.YEARLY' | translate)
+            : susInfo.suscripcionTipo.tiempo === 'T'
+            ? ('SUBSCRIPTION.QUARTERLY' | translate)
+            : ('SUBSCRIPTION.MONTHLY' | translate)
+            }}
+          </h4>
+
+          <ul class="subscription-info">
+            <li>
+              <span>{{ 'SUBSCRIPTION.START' | translate }}</span>
+              <strong>{{ susInfo.dateCreate }}</strong>
+            </li>
+
+            <li>
+              <span>
+                {{ susInfo.renueva === 1
+                ? ('SUBSCRIPTION.RENEW' | translate)
+                : ('SUBSCRIPTION.END' | translate) }}
+              </span>
+              <strong>{{ susInfo.dateFinal }}</strong>
+            </li>
+
+            <li>
+              <span>{{ 'SUBSCRIPTION.CODE' | translate }}</span>
+              <strong>{{ susInfo.suscripcionTipo.codigo }}</strong>
+            </li>
+
+            <li>
+              <span>{{ 'SUBSCRIPTION.PRICE' | translate }}</span>
+              <strong>{{ susInfo.suscripcionTipo.precio }} €</strong>
+            </li>
+
+            <li *ngIf="susInfo.numeroEquipos > 1">
+              <span>{{ 'SUBSCRIPTION.TEAMS' | translate }}</span>
+              <strong>{{ susInfo.numeroEquipos }}</strong>
+            </li>
+          </ul>
+
+          <button *ngIf="susInfo.renueva === 1" class="btn danger" (click)="confirmCancelarSuscripcion()">
+            {{ 'SUBSCRIPTION.CANCEL' | translate }}
+          </button>
+
+          <button *ngIf="susInfo.renueva === 0" class="btn success" (click)="confirmReactivarSubscription()">
+            {{ 'SUBSCRIPTION.REACTIVATE' | translate }}
+          </button>
+
         </div>
-        <div *ngIf="datosCargadosClub" class="col-12 col-md-6 mb-3">
-            <div class="card h-100" style="border: 1px solid black; padding: 1em;">
-                <!-- precios para scouting -->
-                <h1 class="text-center">Suscripción de Club</h1>
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <!-- Combo para seleccionar el tipo de suscripción -->
-                        <div class="form-group">
-                            <label for="subscriptionType">Tipo de suscripción</label>
-                            <select class="form-control custom-input" id="subscriptionType"
-                                [(ngModel)]="subscriptionType" (change)="calculateTotal()">
-                                <option value="annual">Anual - 59,88€ / año (4,99€ / mes)</option>
-                                <option value="monthly">Mensual - 9,99€ / mes</option>
-                                <option value="free">GRATIS - (Ver condiciones)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <!-- Contenido de la subcolumna -->
-                        <div class="form-group">
-                            <label for="numTeams">Número de equipos</label>
-                            <input type="number" id="numTeams" class="form-control custom-input" [(ngModel)]="numTeams"
-                                (input)="calculateTotal()" min="1" [readonly]="isReadonly" />
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <!-- Contenido de la subcolumna -->
-                        <div class="form-group">
-                            <div class="mt-4">
-                                <h3 class="text-center">Total a pagar: {{ totalPriceClub | currency: 'EUR':'symbol' }}
-                                </h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <!-- Contenido de la subcolumna -->
-                        <div class="form-group text-center">
-                            <button *ngIf="susInfo == null" class="btn btn-success"
-                                (click)="makeFreeSubscription()">Confirmar
-                                suscripción</button>
-                            <!-- <button *ngIf="susInfo != null" class="btn btn-success"
-                                (click)="confirmSubscription2()">Cambiar
-                                suscripción</button> -->
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+      </div>
+
+      <!-- ===============================
+         CAMBIAR SUSCRIPCIÓN
+    ================================ -->
+      <div class="col-12 col-md-6">
+
+        <div class="subscription-card change-card">
+
+          <h4 class="change-title">
+            {{ 'SUBSCRIPTION.CHANGE_TITLE' | translate }}
+          </h4>
+
+          <div class="form-group">
+            <label>{{ 'SUBSCRIPTION.TYPE' | translate }}</label>
+            <select class="form-control modern-input" [(ngModel)]="subscriptionType" (change)="calculateTotal2()">
+              <option value="annual">Anual - 29,99€</option>
+              <option value="monthly">Mensual - 3,99€</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>{{ 'SUBSCRIPTION.NUM_TEAMS' | translate }}</label>
+            <input type="number" class="form-control modern-input" [(ngModel)]="numTeams" min="1"
+              (input)="calculateTotal2()" />
+          </div>
+
+          <div class="total-box">
+            {{ 'SUBSCRIPTION.TOTAL' | translate }}:
+            <span>{{ totalPrice | currency:'EUR' }}</span>
+          </div>
+
+          <button class="btn primary w-100" (click)="susInfo ? confirmSubscription2() : confirmSubscription()">
+            {{ 'SUBSCRIPTION.CONFIRM' | translate }}
+          </button>
+
         </div>
-        <div *ngIf="datosCargadosEntrenador" class="col-12 col-md-6 mb-3">
-            <div class="card h-100" style="border: 1px solid black; padding: 1em;">
-                <!-- precios para scouting -->
-                <h1 class="text-center">Suscripción de Entrenador</h1>
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <!-- Combo para seleccionar el tipo de suscripción -->
-                        <div class="form-group">
-                            <label for="subscriptionType">Tipo de suscripción</label>
-                            <select class="form-control custom-input" id="subscriptionType"
-                                [(ngModel)]="subscriptionType" (change)="calculateTotal2()">
-                                <option value="annual">Anual - 29,99€ / año (2,50€ / mes)</option>
-                                <option value="monthly">Mensual - 3,99€ / mes</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <!-- Contenido de la subcolumna -->
-                        <div class="form-group">
-                            <label for="numTeams">Número de equipos</label>
-                            <input type="number" id="numTeams" class="form-control custom-input" [(ngModel)]="numTeams"
-                                (input)="calculateTotal2()" min="1" />
-                        </div>
-                    </div>
-                </div>
-                <!-- <div class="row mt-3 align-items-center">
-                    <div class="col-8">
-                        <input type="text" id="cupon" class="form-control custom-input" [(ngModel)]="cuponId"
-                            placeholder="Escribe aquí tu cupón" />
-                    </div>
-                    <div class="col-4">
-                        <button class="btn btn-primary" (click)="validateCupon()">Validar
-                            cupón</button>
-                    </div>
-                </div> -->
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <!-- Contenido de la subcolumna -->
-                        <div class="form-group">
-                            <div class="mt-4">
-                                <h3 class="text-center">Total a pagar: {{ totalPrice | currency: 'EUR':'symbol' }}</h3>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-12">
-                        <!-- Contenido de la subcolumna -->
-                        <div class="form-group text-center">
-                            <button *ngIf="susInfo == null" class="btn btn-success"
-                                (click)="confirmSubscription()">Confirmar
-                                suscripción</button>
-                            <button *ngIf="susInfo != null" class="btn btn-success"
-                                (click)="confirmSubscription2()">Cambiar
-                                suscripción</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+      </div>
+
     </div>
+  </div>
 </div>
+
 
 <!-- Precios para player o padre -->
 <div class="container" *ngIf="datosCargadosPlayer">
-    <h1 class="proximamente-title">¡Cuotas!</h1>
-    <!-- Cards con las opciones de suscripción -->
-    <div class="row text-center">
-        <!-- Mensual
+  <h1 class="proximamente-title">¡Cuotas!</h1>
+  <!-- Cards con las opciones de suscripción -->
+  <div class="row text-center">
+    <!-- Mensual
         <div class="col-12 col-md-4 mt-3">
             <div class="card h-100" style="border: 1px solid black;">
                 <div class="card-body d-flex flex-column text-center">
@@ -210,7 +167,7 @@
                 </div>
             </div>
         </div> -->
-        <!-- Trimestral
+    <!-- Trimestral
         <div class="col-12 col-md-4 mt-3">
             <div class="card h-100" style="border: 1px solid black;">
                 <div class="card-body d-flex flex-column text-center">
@@ -224,206 +181,204 @@
                 </div>
             </div>
         </div> -->
-        <!-- Anual -->
-        <div class="col-12 col-md-12 mt-3">
-            <div class="card h-100" style="border: 1px solid black;">
-                <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <h2 class="card-title">Anual</h2>
-                        <p class="card-text">39,99€ / año</p>
-                        <button class="btn btn-primary mt-auto" (click)="select(3, 'price_1QlYWsHzMBDrutQnaSYvqoNJ')">
-                            Seleccionar
-                        </button>
-                    </div>
-                </div>
-            </div>
+    <!-- Anual -->
+    <div class="col-12 col-md-12 mt-3">
+      <div class="card h-100" style="border: 1px solid black;">
+        <div class="card-body d-flex flex-column text-center">
+          <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+            <h2 class="card-title">Anual</h2>
+            <p class="card-text">39,99€ / año</p>
+            <button class="btn btn-primary mt-auto" (click)="select(3, 'price_1QlYWsHzMBDrutQnaSYvqoNJ')">
+              Seleccionar
+            </button>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <!-- Párrafo explicativo -->
-    <div class="row mt-5">
-        <div class="col-12">
-            <p><strong style="color: #22BF63; font-size: 24px;">¿Estás esperando a que te descubran o vas a tomar la
-                    iniciativa?</strong></p>
-            <p style="font-size: 18px;">Lo sabemos, tienes talento, te esfuerzas en cada partido, pero ¿cuántas veces
-                has sentido que <strong style="color: #22BF63; font-size: 24px;">no estás recibiendo la atención que
-                    mereces</strong>? ¿Vas a dejar tu futuro en manos del azar, esperando a que un scout o un club te
-                vean por casualidad?</p>
-            <p><strong style="color: #22BF63; font-size: 24px;">Es hora de que tomes el control de tu carrera</strong>.
-                Con <strong style="color: #22BF63; font-size: 24px;">Sphaira Player</strong>, vas a estar en el <strong
-                    style="color: #22BF63; font-size: 24px;">punto de mira de</strong> <strong
-                    style="color: #22BF63; font-size: 24px;">scouters</strong> <strong
-                    style="color: #22BF63; font-size: 24px;">y clubes</strong>. No se trata solo de jugar bien, se trata
-                de estar en el lugar correcto y en el momento adecuado, para eso, necesitas Sphaira.</p>
-            <p><strong style="color: #22BF63; font-size: 24px;">¿Qué puedes hacer con Sphaira Player?</strong></p>
-            <ul style="font-size: 18px;">
-                <li><strong style="color: #22BF63; font-size: 24px;">Haz que te vean:</strong> Completa tu perfil con
-                    todos los detalles que los clubes y scouters necesitan saber sobre ti: fecha de nacimiento, lugar de
-                    residencia, país de origen, altura, peso, posición, pierna dominante, y tu CV futbolístico completo,
-                    entre otros.</li>
-                <li><strong style="color: #22BF63; font-size: 24px;">Destaca tu talento:</strong> ¿Tienes jugadas que
-                    hablan por sí solas? Haz que los scouters y clubes vean lo que te hace diferente, lo que te
-                    convierte en el jugador que están buscando. Un <strong
-                        style="color: #22BF63; font-size: 24px;">vídeo con recortes de tus mejores momentos</strong>
-                    puede ser la diferencia entre destacar o pasar desapercibido. Este es tu momento para demostrar que
-                    estás listo para dar el salto.</li>
-            </ul>
-            <p><strong style="color: #22BF63; font-size: 24px;">Catapulta tu carrera:</strong></p>
-            <p style="font-size: 18px;">Estar en <strong style="color: #22BF63; font-size: 24px;">Sphaira
-                    Player</strong> te pone en un lugar visible, donde <strong
-                    style="color: #22BF63; font-size: 24px;">clubes y scouters están buscando talento como el
-                    tuyo</strong>.</p>
-            <p><strong style="color: #22BF63; font-size: 24px;">No esperes a que la oportunidad te llegue estando
-                    sentado en el sofá.</strong> <strong style="color: #22BF63; font-size: 24px;">Crea tu
-                    oportunidad.</strong> Con <strong style="color: #22BF63; font-size: 24px;">Sphaira Player</strong>,
-                puedes ganar visibilidad y hacer que los clubes y scouters te tengan en su radar.</p>
-            <p style="font-size: 18px;">¿Preparado para ser el jugador que todos buscan? <strong
-                    style="color: #22BF63; font-size: 24px;">No dejes tu futuro al azar</strong>. Empieza a construirlo
-                hoy.</p>
-        </div>
+  <!-- Párrafo explicativo -->
+  <div class="row mt-5">
+    <div class="col-12">
+      <p><strong style="color: #22BF63; font-size: 24px;">¿Estás esperando a que te descubran o vas a tomar la
+          iniciativa?</strong></p>
+      <p style="font-size: 18px;">Lo sabemos, tienes talento, te esfuerzas en cada partido, pero ¿cuántas veces
+        has sentido que <strong style="color: #22BF63; font-size: 24px;">no estás recibiendo la atención que
+          mereces</strong>? ¿Vas a dejar tu futuro en manos del azar, esperando a que un scout o un club te
+        vean por casualidad?</p>
+      <p><strong style="color: #22BF63; font-size: 24px;">Es hora de que tomes el control de tu carrera</strong>.
+        Con <strong style="color: #22BF63; font-size: 24px;">Sphaira Player</strong>, vas a estar en el <strong
+          style="color: #22BF63; font-size: 24px;">punto de mira de</strong> <strong
+          style="color: #22BF63; font-size: 24px;">scouters</strong> <strong style="color: #22BF63; font-size: 24px;">y
+          clubes</strong>. No se trata solo de jugar bien, se trata
+        de estar en el lugar correcto y en el momento adecuado, para eso, necesitas Sphaira.</p>
+      <p><strong style="color: #22BF63; font-size: 24px;">¿Qué puedes hacer con Sphaira Player?</strong></p>
+      <ul style="font-size: 18px;">
+        <li><strong style="color: #22BF63; font-size: 24px;">Haz que te vean:</strong> Completa tu perfil con
+          todos los detalles que los clubes y scouters necesitan saber sobre ti: fecha de nacimiento, lugar de
+          residencia, país de origen, altura, peso, posición, pierna dominante, y tu CV futbolístico completo,
+          entre otros.</li>
+        <li><strong style="color: #22BF63; font-size: 24px;">Destaca tu talento:</strong> ¿Tienes jugadas que
+          hablan por sí solas? Haz que los scouters y clubes vean lo que te hace diferente, lo que te
+          convierte en el jugador que están buscando. Un <strong style="color: #22BF63; font-size: 24px;">vídeo con
+            recortes de tus mejores momentos</strong>
+          puede ser la diferencia entre destacar o pasar desapercibido. Este es tu momento para demostrar que
+          estás listo para dar el salto.</li>
+      </ul>
+      <p><strong style="color: #22BF63; font-size: 24px;">Catapulta tu carrera:</strong></p>
+      <p style="font-size: 18px;">Estar en <strong style="color: #22BF63; font-size: 24px;">Sphaira
+          Player</strong> te pone en un lugar visible, donde <strong style="color: #22BF63; font-size: 24px;">clubes y
+          scouters están buscando talento como el
+          tuyo</strong>.</p>
+      <p><strong style="color: #22BF63; font-size: 24px;">No esperes a que la oportunidad te llegue estando
+          sentado en el sofá.</strong> <strong style="color: #22BF63; font-size: 24px;">Crea tu
+          oportunidad.</strong> Con <strong style="color: #22BF63; font-size: 24px;">Sphaira Player</strong>,
+        puedes ganar visibilidad y hacer que los clubes y scouters te tengan en su radar.</p>
+      <p style="font-size: 18px;">¿Preparado para ser el jugador que todos buscan? <strong
+          style="color: #22BF63; font-size: 24px;">No dejes tu futuro al azar</strong>. Empieza a construirlo
+        hoy.</p>
     </div>
+  </div>
 </div>
 
 <!-- precios para scouting -->
 <div class="container" *ngIf="datosCargadosScouting">
-    <h1 class="proximamente-title">¡Cuotas!</h1>
-    <!-- Cards con las opciones de suscripción -->
-    <div class="row text-center">
-        <!-- Mensual -->
-        <div class="col-12 col-md-4 mt-3">
-            <div class="card h-100" style="border: 1px solid black;">
-                <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <h2 class="card-title">Mensual</h2>
-                        <p class="card-text">19,99€ / mes</p>
-                        <button class="btn btn-primary mt-auto" (click)="select(4, 'price_1Q9vMwHzMBDrutQn52GvkYnK')">
-                            Seleccionar
-                        </button>
-                    </div>
-                </div>
-            </div>
+  <h1 class="proximamente-title">¡Cuotas!</h1>
+  <!-- Cards con las opciones de suscripción -->
+  <div class="row text-center">
+    <!-- Mensual -->
+    <div class="col-12 col-md-4 mt-3">
+      <div class="card h-100" style="border: 1px solid black;">
+        <div class="card-body d-flex flex-column text-center">
+          <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+            <h2 class="card-title">Mensual</h2>
+            <p class="card-text">19,99€ / mes</p>
+            <button class="btn btn-primary mt-auto" (click)="select(4, 'price_1Q9vMwHzMBDrutQn52GvkYnK')">
+              Seleccionar
+            </button>
+          </div>
         </div>
-        <!-- Trimestral -->
-        <div class="col-12 col-md-4 mt-3">
-            <div class="card h-100" style="border: 1px solid black;">
-                <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <h2 class="card-title">Trimestral</h2>
-                        <p class="card-text">54,99€ / trimestre</p>
-                        <!-- <button class="btn btn-primary mt-auto" (click)="select(2, 'price_1Q5xDSHzMBDrutQnQToE4RdJ')"> -->
-                        <button class="btn btn-primary mt-auto" (click)="select(5, 'price_1Q9vMzHzMBDrutQnXoQQsSsN')">
-                            Seleccionar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- Anual -->
-        <div class="col-12 col-md-4 mt-3">
-            <div class="card h-100" style="border: 1px solid black;">
-                <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <h2 class="card-title">Anual</h2>
-                        <p class="card-text">199,99€ / año</p>
-                        <button class="btn btn-primary mt-auto" (click)="select(6, 'price_1Q9vN2HzMBDrutQndn1P09nY')">
-                            Seleccionar
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
+    <!-- Trimestral -->
+    <div class="col-12 col-md-4 mt-3">
+      <div class="card h-100" style="border: 1px solid black;">
+        <div class="card-body d-flex flex-column text-center">
+          <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+            <h2 class="card-title">Trimestral</h2>
+            <p class="card-text">54,99€ / trimestre</p>
+            <!-- <button class="btn btn-primary mt-auto" (click)="select(2, 'price_1Q5xDSHzMBDrutQnQToE4RdJ')"> -->
+            <button class="btn btn-primary mt-auto" (click)="select(5, 'price_1Q9vMzHzMBDrutQnXoQQsSsN')">
+              Seleccionar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Anual -->
+    <div class="col-12 col-md-4 mt-3">
+      <div class="card h-100" style="border: 1px solid black;">
+        <div class="card-body d-flex flex-column text-center">
+          <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
+            <h2 class="card-title">Anual</h2>
+            <p class="card-text">199,99€ / año</p>
+            <button class="btn btn-primary mt-auto" (click)="select(6, 'price_1Q9vN2HzMBDrutQndn1P09nY')">
+              Seleccionar
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal para editar stripe -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalSus}">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Realizar Pago</h5>
-                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSus()"></button>
-                </div>
-                <div class="modal-body">
-                    <form (ngSubmit)="makePayment()">
-                        <div class="row m-3">
-                            <div id="card-element"></div> <!-- Elemento de tarjeta de Stripe -->
-                        </div>
-                        <div class="row m-3">
-                            <!-- Toggle de visibilidad del partido -->
-                            <div class="form-check">
-                                <input class="form-check-input custom-input" type="checkbox" id="condiciones"
-                                    (change)="changeCheck()">
-                                <label class="form-check-label" for="termsCheckbox2" (change)="changeCheck()">
-                                    Acepto las <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/"
-                                        target="_blank">
-                                        condiciones de contratación</a>
-                                </label>
-                            </div>
-                        </div>
-                        <div class="row m-3" *ngIf="aceptaCondiciones">
-                            <!-- Botón de pagar y spinner -->
-                            <button type="submit" class="btn btn-success" *ngIf="!isLoading">Pagar</button>
-                            <div class="spinner" *ngIf="isLoading">
-                                <div class="double-bounce1"></div>
-                                <div class="double-bounce2"></div>
-                                <span>Procesando pago...</span>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Realizar Pago</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSus()"></button>
         </div>
+        <div class="modal-body">
+          <form (ngSubmit)="makePayment()">
+            <div class="row m-3">
+              <div id="card-element"></div> <!-- Elemento de tarjeta de Stripe -->
+            </div>
+            <div class="row m-3">
+              <!-- Toggle de visibilidad del partido -->
+              <div class="form-check">
+                <input class="form-check-input custom-input" type="checkbox" id="condiciones" (change)="changeCheck()">
+                <label class="form-check-label" for="termsCheckbox2" (change)="changeCheck()">
+                  Acepto las <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
+                    condiciones de contratación</a>
+                </label>
+              </div>
+            </div>
+            <div class="row m-3" *ngIf="aceptaCondiciones">
+              <!-- Botón de pagar y spinner -->
+              <button type="submit" class="btn btn-success" *ngIf="!isLoading">Pagar</button>
+              <div class="spinner" *ngIf="isLoading">
+                <div class="double-bounce1"></div>
+                <div class="double-bounce2"></div>
+                <span>Procesando pago...</span>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Modal para ver el freee -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': openModalFree}">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Realizar Pago</h5>
-                    <button type="button" class="btn-close" aria-label="Close" (click)="closeModalFree()"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="club-info">
-                        <h2>PARA EL CLUB</h2>
-                        <div class="plan gratuito">
-                            <h3>Gratuito:</h3>
-                            <p>
-                                Tu club podrá usar Sphaira de manera gratuita, pero con limitaciones. Estarán
-                                disponibles las funciones de <strong>Información de Jugadores</strong>, donde podrás
-                                tener toda la información personal entregada por los padres para realizar las licencias,
-                                y la parte de <strong>Cuotas</strong>, donde podrás llevar una gestión automática,
-                                semiautomática o manual de las cuotas pagadas por los padres.
-                            </p>
-                        </div>
-                        <div class="plan club-paga">
-                            <h3>El club paga la cuota:</h3>
-                            <p>
-                                Tu club tendrá acceso a todas las funciones de Sphaira, sin limitación alguna para todos
-                                los usuarios (<strong>club, entrenadores y jugadores/padres</strong>), si se realiza el
-                                pago por equipo correspondiente.
-                            </p>
-                        </div>
-                        <div class="plan padres-pagan">
-                            <h3>El padre paga una suscripción:</h3>
-                            <p>
-                                Tu club podrá desbloquear todas las funciones de Sphaira si los padres pagan una cuota
-                                anual de <strong>29,99€</strong>. Para ayudar e impulsar a la economía de tu club, estos
-                                <strong>29,99€</strong> serán repartidos entre <strong>Sphaira Tech</strong> y el club,
-                                obteniendo cada uno el <strong>50%</strong> de cada cuota pagada por los padres.
-                                Se requerirá un mínimo de <strong>100 padres</strong> con suscripción para desbloquear
-                                todas las funciones.
-                            </p>
-                        </div>
-                        <button class="btn btn-primary mt-auto" (click)="closeModalFree()">
-                            Aceptar
-                        </button>
-                    </div>
-                </div>
-            </div>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Realizar Pago</h5>
+          <button type="button" class="btn-close" aria-label="Close" (click)="closeModalFree()"></button>
         </div>
+        <div class="modal-body">
+          <div class="club-info">
+            <h2>PARA EL CLUB</h2>
+            <div class="plan gratuito">
+              <h3>Gratuito:</h3>
+              <p>
+                Tu club podrá usar Sphaira de manera gratuita, pero con limitaciones. Estarán
+                disponibles las funciones de <strong>Información de Jugadores</strong>, donde podrás
+                tener toda la información personal entregada por los padres para realizar las licencias,
+                y la parte de <strong>Cuotas</strong>, donde podrás llevar una gestión automática,
+                semiautomática o manual de las cuotas pagadas por los padres.
+              </p>
+            </div>
+            <div class="plan club-paga">
+              <h3>El club paga la cuota:</h3>
+              <p>
+                Tu club tendrá acceso a todas las funciones de Sphaira, sin limitación alguna para todos
+                los usuarios (<strong>club, entrenadores y jugadores/padres</strong>), si se realiza el
+                pago por equipo correspondiente.
+              </p>
+            </div>
+            <div class="plan padres-pagan">
+              <h3>El padre paga una suscripción:</h3>
+              <p>
+                Tu club podrá desbloquear todas las funciones de Sphaira si los padres pagan una cuota
+                anual de <strong>29,99€</strong>. Para ayudar e impulsar a la economía de tu club, estos
+                <strong>29,99€</strong> serán repartidos entre <strong>Sphaira Tech</strong> y el club,
+                obteniendo cada uno el <strong>50%</strong> de cada cuota pagada por los padres.
+                Se requerirá un mínimo de <strong>100 padres</strong> con suscripción para desbloquear
+                todas las funciones.
+              </p>
+            </div>
+            <button class="btn btn-primary mt-auto" (click)="closeModalFree()">
+              Aceptar
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </div>

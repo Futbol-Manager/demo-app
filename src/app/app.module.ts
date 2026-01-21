@@ -24,6 +24,7 @@ import { ValidationUserComponent } from './pages/validation-user/validation-user
 import { AsistenciaComponent } from './dashboard/asistencia/asistencia.component';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { ParentChildrenComponent } from './pages/register/parent-children/parent-children.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -40,6 +41,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ProfileComponent,
     ClubesListComponent,
     AsistenciaComponent,
+    ParentChildrenComponent,
   ],
   imports: [
     BrowserModule,

@@ -116,6 +116,7 @@ export class LoginComponent implements OnInit {
             } else {
               this.router.navigate(['/dashboard/inicio']);
             }
+
             return;
           }
 
@@ -128,7 +129,6 @@ export class LoginComponent implements OnInit {
             return;
           }
 
-          // ❌ Credenciales incorrectas
           this.loginError = true;
           this.loginErrorKey = 'LOGIN.ERROR.INVALID_CREDENTIALS';
           this.cdr.detectChanges();

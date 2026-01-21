@@ -38,7 +38,7 @@ export class RegisterComponent implements OnInit {
   isReadOnly: boolean = false;
   isReadOnlyMail: boolean = false;
   newRegistro: boolean = false;
-
+  activeTab: 'padre' | 'hijos' = 'padre';
   selectOptions = [
     {value: "0", label: "¿Eres un club o un entrenador?"},
     {value: "1", label: "Club"},

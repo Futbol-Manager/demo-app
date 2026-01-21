@@ -279,178 +279,193 @@
               </div>
 
               <!-- FORMULARIO PADRE/MADRE/TUTOR CON HIJOS -->
-              <div *ngIf="selectedOption == 3 && !newRegistro">
-                <form (ngSubmit)="numHijo()" [formGroup]="registerFormPadre" class="form-register">
-                  <div class="mb-3">
-                    <h4>¿Eres padre, madre tutor o jugador mayor de edad?</h4>
+              <div class="card-body register-wizard">
+
+                <!-- STEPS -->
+                <div class="wizard-steps mb-4">
+                  <div class="step" [class.active]="activeTab === 'padre'">
+                    <span>1</span>
+                    {{ 'REGISTER.TABS.PARENT' | translate }}
                   </div>
 
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <label class="form-label">Introduce tus datos como:</label>
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <select class="form-select input-register" formControlName="parentesco">
-                        <option value="1">Padre</option>
-                        <option value="2">Madre</option>
-                        <option value="0">Tutor</option>
-                        <option value="3">Jugador mayor de edad</option>
+                  <div class="step-divider"></div>
+
+                  <div class="step" [class.active]="activeTab === 'hijos'">
+                    <span>2</span>
+                    {{ 'REGISTER.TABS.CHILDREN' | translate }}
+                  </div>
+                </div>
+
+                <!-- TAB PADRE -->
+                <div *ngIf="activeTab === 'padre'">
+                  <!-- ================= TAB PADRE ================= -->
+                  <div *ngIf="activeTab === 'padre' && selectedOption === 3 && !newRegistro">
+
+                    <form [formGroup]="registerFormPadre" (ngSubmit)="numHijo()" class="form-register">
+
+                      <h4 class="text-center mb-4">
+                        {{ 'REGISTER.PARENT.QUESTION' | translate }}
+                      </h4>
+
+                      <!-- Parentesco -->
+                      <div class="mb-3">
+                        <label class="form-label">
+                          {{ 'REGISTER.PARENT.RELATION' | translate }}
+                        </label>
+                        <select class="form-select input-register" formControlName="parentesco">
+                          <option value="1">{{ 'REGISTER.PARENT.FATHER' | translate }}</option>
+                          <option value="2">{{ 'REGISTER.PARENT.MOTHER' | translate }}</option>
+                          <option value="0">{{ 'REGISTER.PARENT.TUTOR' | translate }}</option>
+                          <option value="3">{{ 'REGISTER.PARENT.ADULT' | translate }}</option>
+                        </select>
+                      </div>
+
+                      <!-- Nombre / Apellidos -->
+                      <div class="row mt-3">
+                        <div class="col-md-6">
+                          <input class="form-control input-register" formControlName="name"
+                            [placeholder]="'REGISTER.COMMON.NAME' | translate">
+                        </div>
+
+                        <div class="col-md-6">
+                          <input class="form-control input-register" formControlName="surname"
+                            [placeholder]="'REGISTER.COMMON.SURNAME' | translate">
+                        </div>
+                      </div>
+
+                      <!-- Fecha / Género -->
+                      <div class="row mt-3">
+                        <div class="col-md-6 position-relative">
+                          <input type="date" class="form-control input-register no-calendar-icon"
+                            formControlName="birthdate">
+                          <i class="bi bi-cake2 date-icon"></i>
+                        </div>
+
+                        <div class="col-md-6">
+                          <select class="form-select input-register" formControlName="genre">
+                            <option value="">{{ 'REGISTER.COMMON.GENDER' | translate }}</option>
+                            <option value="1">{{ 'REGISTER.COMMON.MALE' | translate }}</option>
+                            <option value="2">{{ 'REGISTER.COMMON.FEMALE' | translate }}</option>
+                            <option value="3">{{ 'REGISTER.COMMON.OTHER' | translate }}</option>
+                          </select>
+                        </div>
+                      </div>
+
+                      <!-- Email -->
+                      <div class="row mt-3">
+                        <div class="col-md-6">
+                          <input type="email" class="form-control input-register" formControlName="email"
+                            [placeholder]="'REGISTER.COMMON.EMAIL' | translate">
+                        </div>
+
+                        <div class="col-md-6">
+                          <input type="email" class="form-control input-register" formControlName="confirmEmail"
+                            [placeholder]="'REGISTER.COMMON.EMAIL_REPEAT' | translate">
+                        </div>
+                      </div>
+
+                      <div *ngIf="showEmailAlert" class="alert alert-danger mt-3">
+                        {{ 'REGISTER.ERROR.EMAIL_MATCH' | translate }}
+                      </div>
+
+                      <!-- Contraseñas -->
+                      <div class="row mt-3">
+                        <div class="col-md-6">
+                          <input type="password" class="form-control input-register" formControlName="password"
+                            placeholder="********">
+                        </div>
+
+                        <div class="col-md-6">
+                          <input type="password" class="form-control input-register" formControlName="password2"
+                            placeholder="********">
+                        </div>
+                      </div>
+                      <!-- ===== TÉRMINOS Y PRIVACIDAD ===== -->
+                      <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
+
+                        <label class="form-check-label" for="termsCheckbox">
+                          {{ 'REGISTER.COMMON.TERMS_PREFIX' | translate }}
+                          <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank"
+                            rel="noopener noreferrer">
+                            {{ 'REGISTER.COMMON.TERMS_LINK' | translate }}
+                          </a>
+                        </label>
+                      </div>
+
+                      <div class="form-check mb-4">
+                        <input class="form-check-input" type="checkbox" id="commsCheckbox"
+                          formControlName="comunicaciones">
+
+                        <label class="form-check-label" for="commsCheckbox">
+                          {{ 'REGISTER.COMMON.COMMS_PREFIX' | translate }}
+                          <a href="https://sphairatech.com/comunicaciones-comerciales" target="_blank"
+                            rel="noopener noreferrer">
+                            {{ 'REGISTER.COMMON.COMMS_LINK' | translate }}
+                          </a>
+                        </label>
+                      </div>
+
+                      <button type="submit" class="btn btn-custom w-100 mt-4" [disabled]="passwordsDoNotMatch">
+                        {{ 'REGISTER.COMMON.NEXT' | translate }}
+                      </button>
+
+                    </form>
+                  </div>
+                </div>
+
+                <!-- TAB HIJOS -->
+                <div *ngIf="activeTab === 'hijos'">
+                  <div *ngIf="activeTab === 'hijos' && selectedOption === 3 && newRegistro">
+
+                    <form [formGroup]="registerFormPadreHijos" (ngSubmit)="finalizarRegistroPadre()"
+                      class="form-register">
+
+                      <label class="form-label">
+                        {{ 'REGISTER.CHILDREN.COUNT' | translate }}
+                      </label>
+
+                      <select class="form-select input-register" formControlName="numHijos"
+                        (change)="onParentescoChange()">
+                        <option *ngFor="let n of [1,2,3,4,5]" [value]="n">{{ n }}</option>
                       </select>
-                    </div>
-                  </div>
 
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <input class="form-control input-register" formControlName="name" placeholder="Nombre"
-                        type="text">
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <input class="form-control input-register" formControlName="surname" placeholder="Apellidos"
-                        type="text">
-                    </div>
-                  </div>
+                      <div *ngFor="let index of hijosVisibles" class="mt-4">
+                        <h6 class="fw-bold">
+                          {{ 'REGISTER.CHILDREN.DATA' | translate:{num: index + 1} }}
+                        </h6>
 
-                  <div class="mb-3 d-flex">
-                    <div class="col-6 position-relative">
-                      <input class="form-control input-register no-calendar-icon" formControlName="birthdate"
-                        type="date">
-                      <i class="bi bi-cake2 position-absolute"
-                        style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <select class="form-select input-register" formControlName="genre">
-                        <option disabled hidden selected value="">Selecciona tu género</option>
-                        <option value="1">Masculino</option>
-                        <option value="2">Femenino</option>
-                        <option value="3">Otro</option>
-                      </select>
-                    </div>
-                  </div>
+                        <div class="row mt-2">
+                          <div class="col-md-6">
+                            <input class="form-control input-register" [formControlName]="'hijo' + (index + 1)"
+                              [placeholder]="'REGISTER.COMMON.NAME' | translate">
+                          </div>
 
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <input (blur)="checkEmails()" class="form-control input-register" formControlName="email"
-                        placeholder="Correo electrónico" type="email" />
-                    </div>
+                          <div class="col-md-6">
+                            <input class="form-control input-register" [formControlName]="'ape' + (index + 1)"
+                              [placeholder]="'REGISTER.COMMON.SURNAME' | translate">
+                          </div>
+                        </div>
+                      </div>
 
-                    <div class="col-6" style="margin-left: 10px;">
-                      <input (blur)="checkEmails()" (contextmenu)="$event.preventDefault()"
-                        (copy)="$event.preventDefault()" (cut)="$event.preventDefault()"
-                        (drop)="$event.preventDefault()" (paste)="$event.preventDefault()"
-                        class="form-control input-register" formControlName="confirmEmail"
-                        placeholder="Repite el correo" type="email" />
-                    </div>
-                  </div>
+                      <button *ngIf="btnFinalizar" class="btn btn-custom w-100 mt-4" type="submit">
+                        {{ 'REGISTER.COMMON.FINISH' | translate }}
+                      </button>
 
-                  <!-- Alerta Bootstrap -->
-                  <div *ngIf="showEmailAlert" class="alert alert-danger py-2 mb-3">
-                    Los emails no coinciden.
-                  </div>
+                      <button type="button" class="btn btn-outline-secondary w-100 mt-2" (click)="volver()">
+                        {{ 'REGISTER.COMMON.BACK' | translate }}
+                      </button>
 
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <input class="form-control input-register" formControlName="mobile" placeholder="Teléfono"
-                        type="number">
-                    </div>
+                    </form>
                   </div>
+                </div>
 
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <input (input)="checkPasswordMatchPadre()" class="form-control input-register"
-                        formControlName="password" placeholder="Contraseña" type="password">
-                      <div *ngIf="passwordsDoNotSize" class="text-danger">Mínimo 8 caracteres.</div>
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <input (input)="checkPasswordMatchPadre()" class="form-control input-register"
-                        formControlName="password2" placeholder="Repite contraseña" type="password">
-                      <div *ngIf="passwordsDoNotMatch" class="text-danger">Las contraseñas no coinciden.</div>
-                    </div>
-                  </div>
+                <button type="button" class="btn btn-outline-secondary w-100 mt-2" (click)="volver()">
+                  ← {{ 'REGISTER.COMMON.BACK' | translate }}
+                </button>
 
-                  <div class="mb-3 form-check">
-                    <input class="form-check-input" formControlName="terms" id="termsCheckbox" type="checkbox">
-                    <label class="form-check-label" for="termsCheckbox">
-                      Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
-                        privacidad</a>
-                    </label>
-                  </div>
-
-                  <div class="mb-3 form-check">
-                    <input class="form-check-input" formControlName="comunicaciones" id="comunCheckbox" type="checkbox">
-                    <label class="form-check-label" for="comunCheckbox">
-                      Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
-                        target="_blank">comunicaciones comerciales</a>
-                    </label>
-                  </div>
-
-                  <div class="mb-3">
-                    <button [disabled]="passwordsDoNotMatch" class="btn btn-custom btn-block textoCentrado"
-                      type="submit">{{ texBoton }}</button>
-                  </div>
-                </form>
               </div>
 
-              <!-- FORMULARIO PARA REGISTRAR HASTA 5 HIJOS (parte del padre) -->
-              <div *ngIf="selectedOption == 3 && newRegistro">
-                <form (ngSubmit)="finalizarRegistroPadre()" [formGroup]="registerFormPadreHijos" class="form-register">
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <label class="form-label">¿Cuántos hijos juegan en este club?</label>
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <select (change)="onParentescoChange()" class="form-select input-register"
-                        formControlName="numHijos">
-                        <option *ngFor="let n of [1, 2, 3, 4, 5]" [value]="n">{{ n }}</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <!-- Hijos generados dinámicamente -->
-                  <div *ngFor="let index of hijosVisibles">
-                    <div class="mb-3 d-flex">
-                      <div class="col-12">
-                        <label class="form-label">Introduce los datos de tu hijo {{ index + 1 }}:</label>
-                      </div>
-                    </div>
-
-                    <div class="mb-3 d-flex">
-                      <div class="col-6">
-                        <input [formControlName]="'hijo' + (index + 1)" class="form-control input-register"
-                          placeholder="Nombre" type="text">
-                      </div>
-                      <div class="col-6" style="margin-left: 10px;">
-                        <input [formControlName]="'ape' + (index + 1)" class="form-control input-register"
-                          placeholder="Apellidos" type="text">
-                      </div>
-                    </div>
-
-                    <div class="mb-3 d-flex">
-                      <div class="col-6">
-                        <input [formControlName]="'fech' + (index + 1)" class="form-control input-register" type="date">
-                      </div>
-                      <div class="col-6" style="margin-left: 10px;">
-                        <input [formControlName]="'dni' + (index + 1)" class="form-control input-register"
-                          placeholder="DNI/NIE/Pasaporte" type="text">
-                        <!-- Botón debajo -->
-                        <button (click)="validateHijo(registerFormPadreHijos.get('dni' + (index + 1))?.value, index)"
-                          [ngClass]="{
-                              'btn-warning': estadoValidacionHijos[index] === undefined,
-                              'btn-success': estadoValidacionHijos[index] === true,
-                              'btn-danger': estadoValidacionHijos[index] === false
-                            }" class="btn mt-2" type="button">
-                          <i class="bi bi-person-check"></i> Comprobar si este jugador existe
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div *ngIf="btnFinalizar" class="mb-3">
-                    <button class="btn btn-custom btn-block textoCentrado" type="submit">Finalizar</button>
-                  </div>
-                  <div class="mb-3">
-                    <button (click)="volver()" class="btn btn-primary btn-block textoCentrado">Volver</button>
-                  </div>
-                </form>
-              </div>
 
               <div *ngIf="selectedOption == 4">
                 <!-- Formulario para Entrenador -->
@@ -553,8 +568,8 @@
           <div class="card-footer textoCentrado" style="flex-direction: column; background: #002c40;">
             <div class="row text-center">
               <div class="col-md-12">
-                <p>{{ 'REGISTER.AUTH.ALREADY_HAVE_ACCOUNT' | translate }} <a
-                    (click)="toLogin($event)" href="#">{{ 'REGISTER.AUTH.LOGIN_HERE' | translate }} </a>
+                <p>{{ 'REGISTER.AUTH.ALREADY_HAVE_ACCOUNT' | translate }} <a (click)="toLogin($event)" href="#">{{
+                    'REGISTER.AUTH.LOGIN_HERE' | translate }} </a>
                 </p>
                 <p>{{ 'REGISTER.COMMON.HELP' | translate }} <a href="#"
                     onclick="event.preventDefault()">info&#64;sphairatech.com</a>

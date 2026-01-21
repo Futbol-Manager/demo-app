@@ -4,7 +4,12 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarConfig } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
-import { GenreTypeModel, ProfileTypeModel, RegisterModel, ValidationUserModel } from 'src/app/core/models/users/register.model';
+import {
+  GenreTypeModel,
+  ProfileTypeModel,
+  RegisterModel,
+  ValidationUserModel,
+} from 'src/app/core/models/users/register.model';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { RegisterService } from 'src/app/core/services/register/register.service';
@@ -16,10 +21,9 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.scss']
+  styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit {
-
   isDarkMode: boolean = false;
   usuarioActual!: User | null;
   userForm: FormGroup = this.formBuilder.group({
@@ -32,7 +36,8 @@ export class HeaderComponent implements OnInit {
     mobile: [''],
   });
 
-  private usuarioAutenticado: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
+  private usuarioAutenticado: BehaviorSubject<User | null> =
+    new BehaviorSubject<User | null>(null);
   // Variable para controlar la visibilidad del modal
   showModal: boolean = false;
 
@@ -62,7 +67,8 @@ export class HeaderComponent implements OnInit {
     private renderer: Renderer2,
     private elementRef: ElementRef,
     private trainingService: TrainingService,
-    private translate: TranslateService) {
+    private translate: TranslateService
+  ) {
     const lang = localStorage.getItem('lang');
     if (lang) {
       this.selectedLang = lang;
@@ -83,8 +89,9 @@ export class HeaderComponent implements OnInit {
   }
 
   ngAfterViewInit() {
-    document.querySelectorAll('[data-bs-toggle="dropdown"]')
-      .forEach(el => Dropdown.getOrCreateInstance(el as HTMLElement));
+    document
+      .querySelectorAll('[data-bs-toggle="dropdown"]')
+      .forEach((el) => Dropdown.getOrCreateInstance(el as HTMLElement));
   }
 
   //metodo para el modo oscuro y claro
@@ -96,8 +103,16 @@ export class HeaderComponent implements OnInit {
     const header = document.getElementsByTagName('body')[0];
     const themeElement2 = header.querySelector(themeClass2);
     if (themeElement2) {
-      this.renderer.setStyle(themeElement2, 'color', this.isDarkMode ? 'white' : 'black');
-      this.renderer.setStyle(themeElement2, 'background-color', this.isDarkMode ? '#3a444e' : 'white');
+      this.renderer.setStyle(
+        themeElement2,
+        'color',
+        this.isDarkMode ? 'white' : 'black'
+      );
+      this.renderer.setStyle(
+        themeElement2,
+        'background-color',
+        this.isDarkMode ? '#3a444e' : 'white'
+      );
     }
 
     const submenu = document.getElementById('submenu');
@@ -127,8 +142,16 @@ export class HeaderComponent implements OnInit {
     //cambiamos los card
     const cardElements = document.querySelectorAll('.card');
     cardElements.forEach((card) => {
-      this.renderer.setStyle(card, 'color', this.isDarkMode ? 'white' : 'black');
-      this.renderer.setStyle(card, 'background-color', this.isDarkMode ? '#3a444e' : 'white');
+      this.renderer.setStyle(
+        card,
+        'color',
+        this.isDarkMode ? 'white' : 'black'
+      );
+      this.renderer.setStyle(
+        card,
+        'background-color',
+        this.isDarkMode ? '#3a444e' : 'white'
+      );
     });
     //cambiamos el calendario
     const calendar = document.getElementById('tableCalendar');
@@ -170,16 +193,32 @@ export class HeaderComponent implements OnInit {
   saveChanges() {
     console.log(this.profileId);
     if (this.userForm.valid) {
-      const today: Date = new Date(Date.UTC(new Date().getUTCFullYear(), new Date().getUTCMonth(), new Date().getUTCDate()));
+      const today: Date = new Date(
+        Date.UTC(
+          new Date().getUTCFullYear(),
+          new Date().getUTCMonth(),
+          new Date().getUTCDate()
+        )
+      );
       const isoString: string = today.toISOString();
       const dateOnlyString: string = isoString.split('T')[0];
       const genreType: GenreTypeModel = new GenreTypeModel(
         this.userForm.value.genreType,
-        this.userForm.value.genreType == 1 ? 'Masculino' : (this.userForm.value.genreType == 2 ? 'Femenino' : 'Otro')
+        this.userForm.value.genreType == 1
+          ? 'Masculino'
+          : this.userForm.value.genreType == 2
+          ? 'Femenino'
+          : 'Otro'
       );
 
-      const profileType: ProfileTypeModel = new ProfileTypeModel(this.profileId, 'Entrenador') //hardcodeado
-      const validationUser: ValidationUserModel = new ValidationUserModel(this.idValidation, 'Validado por mail');//hardcodeado
+      const profileType: ProfileTypeModel = new ProfileTypeModel(
+        this.profileId,
+        'Entrenador'
+      ); //hardcodeado
+      const validationUser: ValidationUserModel = new ValidationUserModel(
+        this.idValidation,
+        'Validado por mail'
+      ); //hardcodeado
 
       const register: RegisterModel = new RegisterModel(
         this.userForm.value.mobile,
@@ -196,22 +235,23 @@ export class HeaderComponent implements OnInit {
         this.usuarioActual == null ? '' : this.usuarioActual.nameSon,
         validationUser,
         this.usuarioActual == null ? '' : this.usuarioActual.pictureUser,
-        dateOnlyString,
+        dateOnlyString
       );
-      this.registerService.registerUserV2(register).pipe()
-        .subscribe(
-          (res: { data: any; }) => {
-            if (res.data != null) {
-              //console.log('Guardado con éxito.');
-              this.nameUser = res.data.firstName;
-              this.showModal = false;
-            }
-          })
+      this.registerService
+        .registerUserV2(register)
+        .pipe()
+        .subscribe((res: { data: any }) => {
+          if (res.data != null) {
+            //console.log('Guardado con éxito.');
+            this.nameUser = res.data.firstName;
+            this.showModal = false;
+          }
+        });
     }
   }
 
   profile() {
-    this.abrirModalCrearEquipo();
+    this.showModal = true;
   }
 
   abrirModalIdioma() {
@@ -234,8 +274,10 @@ export class HeaderComponent implements OnInit {
   }
 
   // Método para cerrar el modal
-  cerrarModal(): void {
+  cerrarModal() {
     this.showModal = false;
+    this.showPreview = false;
+    this.showbtnupimg = false;
   }
 
   updateForm() {
@@ -257,7 +299,10 @@ export class HeaderComponent implements OnInit {
   }
 
   onFileSelected(event: any) {
-    if (event.target.files[0].type === 'image/png' || event.target.files[0].type === 'image/jpeg') {
+    if (
+      event.target.files[0].type === 'image/png' ||
+      event.target.files[0].type === 'image/jpeg'
+    ) {
       this.selectedFile = event.target.files[0];
       this.showbtnupimg = true;
       if (this.selectedFile) {
@@ -279,7 +324,8 @@ export class HeaderComponent implements OnInit {
 
       // Simulamos el envío de la imagen al servidor
       const userId = this.usuarioActual?.userId.toString();
-      this.trainingService.createUpdateImgUser(userId!, this.selectedFile)
+      this.trainingService
+        .createUpdateImgUser(userId!, this.selectedFile)
         .subscribe(
           (response) => {
             this.imgUser = response.data;
@@ -287,7 +333,7 @@ export class HeaderComponent implements OnInit {
             this.showPreview = false; // Ocultar vista previa
             this.cerrarModal();
           },
-          error => {
+          (error) => {
             console.error('Error al subir la imagen', error);
             // Aquí puedes manejar el error si la subida de la imagen falla
             this.showPreview = true; // Mantener la vista previa si la subida falla
@@ -302,5 +348,4 @@ export class HeaderComponent implements OnInit {
     this.showModal = false;
     this.router.navigate(['/dashboard/suscripcion', this.userId]);
   }
-
 }

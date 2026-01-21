@@ -78,22 +78,39 @@ export class DocumentosClubComponent implements OnInit {
   }
 
   loadDocuments(): void {
-    console.log('CARGANDO DOCS');
+    console.log('LLEGO');
+    this.loadingData = true;
+
     this.clubService.getlistDocumentosByClub(this.clubId).subscribe({
-      next: (response: Response) => {
-        if (!response?.data?.documentos) {
+      next: (response: any) => {
+        console.log(response);
+
+        const data = response?.data;
+
+        if (!data) {
           this.listDocuments = [];
+          this.loadingData = false;
           return;
         }
-        // ✅ Backend ya trae totalPadres y totalSubidos
-        this.listDocuments = response.data.documentos;
-        this.loadingData = true;
+
+        const documentos = data.documentos ?? [];
+        const totalPadres = data.totalPadres ?? 0;
+        const subidosPorDocumento = data.subidosPorDocumento ?? {};
+
+        // 🔥 ENRIQUECER DOCUMENTOS PARA LA VISTA
+        this.listDocuments = documentos.map((doc: any) => ({
+          ...doc,
+          totalPadres: totalPadres,
+          totalSubidos: subidosPorDocumento[doc.docClubesId] ?? 0,
+        }));
+
         console.log(this.listDocuments);
-        console.log('Documentos:', this.listDocuments);
+        this.loadingData = false;
       },
       error: (err) => {
-        this.loadingData = true;
         console.error('Error cargando documentos', err);
+        this.listDocuments = [];
+        this.loadingData = false;
       },
     });
   }
