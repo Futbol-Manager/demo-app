@@ -40,11 +40,6 @@
               <i class="bi bi-whatsapp"></i>
               {{ 'HEADER.HELP.WHATSAPP' | translate }}
             </a>
-
-            <a class="dropdown-item" href="tel:+34623911772">
-              <i class="bi bi-telephone"></i>
-              {{ 'HEADER.HELP.CALL' | translate }}
-            </a>
           </div>
         </div>
 
@@ -306,7 +301,16 @@
             <span class="flag">🇩🇪</span>
             <span class="label">Deutsch</span>
           </button>
-
+          <button type="button" class="lang-option" [class.active]="selectedLang === 'de'"
+            (click)="selectedLang='de'; cambiarIdioma()">
+            <span class="flag">🇩🇪</span>
+            <span class="label">Deutsch</span>
+          </button>
+          <button type="button" class="lang-option" [class.active]="selectedLang === 'pt'"
+            (click)="selectedLang = 'pt'; cambiarIdioma()">
+            <span class="flag">🇵🇹</span>
+            <span class="label">Português</span>
+          </button>
         </div>
 
       </div>

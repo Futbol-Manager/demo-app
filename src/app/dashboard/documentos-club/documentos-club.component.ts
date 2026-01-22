@@ -78,7 +78,6 @@ export class DocumentosClubComponent implements OnInit {
   }
 
   loadDocuments(): void {
-    console.log('LLEGO');
     this.loadingData = true;
 
     this.clubService.getlistDocumentosByClub(this.clubId).subscribe({

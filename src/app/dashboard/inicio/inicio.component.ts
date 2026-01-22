@@ -66,12 +66,14 @@ export class InicioComponent implements OnInit {
   // Ciclo de vida
   // =========================
   ngOnInit(): void {
+    this.cargarUsuario();
     this.detectarPlataforma();
     this.inicializarDesdeCache();
     this.cargarTemporadaDesdeStorage();
     this.inicializarUsuario();
     this.cargarListadoEquipos();
     this.cargarJugadores();
+
   }
   private cargarTemporadaDesdeStorage(): void {
     const temporada = localStorage.getItem('temporada');
@@ -144,6 +146,7 @@ export class InicioComponent implements OnInit {
 
   // =========================
   irAPantallaClub(id: number): void {
+    this.cargarClubId();
     // ⛔ BLOQUEO ABSOLUTO
     if (!this.clubId) {
       console.warn('Intento de navegación sin clubId');
@@ -246,7 +249,7 @@ export class InicioComponent implements OnInit {
       .subscribe({
         next: (response: Response) => {
           this.clubId = response.data?.club?.clubId ?? 0;
-
+          console.log("CLUBID", this.clubId)
           if (!this.clubId) {
             console.error('ClubId inválido');
             this.clubLoading = false;
@@ -475,7 +478,6 @@ export class InicioComponent implements OnInit {
       .getTeams(this.userId.toString(), this.temporadaStoredValue)
       .subscribe(
         (response: Response) => {
-          console.log('RESPONSE LIST TEAM', response);
 
           // Reset por seguridad
           this.listTeam = [];
