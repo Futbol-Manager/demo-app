@@ -82,37 +82,36 @@ export class DocumentosClubComponent implements OnInit {
 
     this.clubService.getlistDocumentosByClub(this.clubId).subscribe({
       next: (response: any) => {
-        const data = response?.data ?? {};
+        const rawData = response?.data;
 
-        const documentos = Array.isArray(data.documentos)
-          ? data.documentos
+        // ✅ SOPORTA AMBAS RESPUESTAS
+        const documentos = Array.isArray(rawData)
+          ? rawData
+          : Array.isArray(rawData?.documentos)
+          ? rawData.documentos
           : [];
 
-        // 🔐 Normalizar totalPadres
+        // 🟢 totalPadres solo existe en local (en prod no)
         const totalPadres =
-          typeof data.totalPadres === 'number' && !isNaN(data.totalPadres)
-            ? data.totalPadres
+          typeof rawData?.totalPadres === 'number' &&
+          !isNaN(rawData.totalPadres)
+            ? rawData.totalPadres
             : 0;
 
         const subidosPorDocumento =
-          typeof data.subidosPorDocumento === 'object' &&
-          data.subidosPorDocumento !== null
-            ? data.subidosPorDocumento
+          typeof rawData?.subidosPorDocumento === 'object' &&
+          rawData.subidosPorDocumento !== null
+            ? rawData.subidosPorDocumento
             : {};
 
-        // 🔥 Enriquecer documentos para la vista
-        this.listDocuments = documentos.map((doc: any) => {
-          const totalSubidosRaw = subidosPorDocumento[doc.docClubesId];
-
-          return {
-            ...doc,
-            totalPadres,
-            totalSubidos:
-              typeof totalSubidosRaw === 'number' && !isNaN(totalSubidosRaw)
-                ? totalSubidosRaw
-                : 0,
-          };
-        });
+        this.listDocuments = documentos.map((doc: any) => ({
+          ...doc,
+          totalPadres,
+          totalSubidos:
+            typeof subidosPorDocumento[doc.docClubesId] === 'number'
+              ? subidosPorDocumento[doc.docClubesId]
+              : 0,
+        }));
 
         this.loadingData = false;
       },
