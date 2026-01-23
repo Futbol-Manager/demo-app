@@ -17,37 +17,29 @@
     <div class="col-12 col-xl-4 col-lg-5">
       <div class="row g-3">
 
-        <div class="col-6" (click)="irAPantalla(1)">
+        <div class="col-6" (click)="irAPantalla(7)">
           <div class="option-card">
-            <i class="bi bi-cash-coin"></i>
-            <h6>{{ 'CUADROMANDO.OPTIONS.FEES' | translate }}</h6>
-            <small>{{ 'CUADROMANDO.OPTIONS.FEES_DESC' | translate }}</small>
+            <i class="bi bi-person-badge"></i>
+            <h6>{{ 'CUADROMANDO.OPTIONS.PLAYERS' | translate }}</h6>
+            <small>{{ 'CUADROMANDO.OPTIONS.PLAYERS_DESC' | translate }}</small>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="option-card disabled" (click)="null">
+            <i class="bi bi-person-raised-hand"></i>
+            <h6>{{ 'CUADROMANDO.OPTIONS.COACH' | translate }}</h6>
+            <small>{{ 'CUADROMANDO.OPTIONS.COACH_DESC' | translate }}</small>
           </div>
         </div>
 
 
-        <div class="col-6" (click)="irAPantalla(2)">
-          <div class="option-card">
-            <i class="bi bi-file-earmark-bar-graph"></i>
-            <h6>{{ 'CUADROMANDO.OPTIONS.SCORES' | translate }}</h6>
-            <small>{{ 'CUADROMANDO.OPTIONS.SCORES_DESC' | translate }}</small>
-          </div>
-        </div>
 
         <div class="col-6" (click)="irAPantalla(3)">
           <div class="option-card">
             <i class="bi bi-cone-striped"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.TRAINING' | translate }}</h6>
             <small>{{ 'CUADROMANDO.OPTIONS.TRAINING_DESC' | translate }}</small>
-          </div>
-
-        </div>
-
-        <div class="col-6" (click)="irAPantalla(7)">
-          <div class="option-card">
-            <i class="bi bi-person-badge"></i>
-            <h6>{{ 'CUADROMANDO.OPTIONS.PLAYERS' | translate }}</h6>
-            <small>{{ 'CUADROMANDO.OPTIONS.PLAYERS_DESC' | translate }}</small>
           </div>
 
         </div>

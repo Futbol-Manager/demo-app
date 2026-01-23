@@ -1,14 +1,15 @@
 <app-logo-spinner *ngIf="datosCargando"></app-logo-spinner>
 <app-publicidad></app-publicidad>
 <div [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
   <!-- ================= CONTENIDO ================= -->
   <div class="container">
-    <div class="back-container">
-      <button class="btn-back-clean" (click)="goBack()">
-        <i class="bi bi-arrow-left"></i>
-        <span>{{ 'COMMON.BACK' | translate }}</span>
-      </button>
-    </div>
+
 
     <div *ngIf="profileId === 1 || profileId === 2" class="mobile-actions mt-4">
 
@@ -37,12 +38,12 @@
 
       <!-- ================= TEMPORADA (CENTRADA Y PEQUEÑA) ================= -->
       <div class="season-wrapper mb-4">
-        <label class="form-label fw-semibold text-center d-block">
-          <i class="bi bi-calendar-event me-1"></i>
+        <label class="season-label">
+          <i class="bi bi-calendar-event"></i>
           {{ 'TITLES.SEASON' | translate }}
         </label>
 
-        <select class="form-control season-select" [(ngModel)]="temporada"
+        <select class="form-control season-select mx-auto" [(ngModel)]="temporada"
           (change)="profileId === 1 ? cargarListadoEquiposForClub() : cargarListadoEquipos()">
           <option value="2022">{{ 'SELECTS.2022' | translate }}</option>
           <option value="2023">{{ 'SELECTS.2023' | translate }}</option>
@@ -60,78 +61,98 @@
             <span class="team-id">ID: {{ team.teamId }}</span>
           </div>
 
-          <div class="team-info">
-            <i class="bi bi-clock"></i>
-            {{ team.trainingDays || 'Sin horarios definidos' }}
-          </div>
+          <div class="team-info-block team-schedule">
+            <i class="bi bi-clock-history team-info-icon"></i>
 
-          <div class="team-info">
-            <i class="bi bi-people"></i>
-            {{ team.jugadoresPorEquipo || 'No definido' }}
-          </div>
+            <div class="team-info-body">
+              <span class="team-info-label">
+                {{ 'COACH.MY_TEAMS.TRAINING_SCHEDULE' | translate }}
+              </span>
 
-        </div>
-      </div>
+              <ng-container *ngIf="parseTrainingDays(team.trainingDays)?.length; else noSchedule">
+                <div class="team-schedule-grid">
+                  <div *ngFor="let d of parseTrainingDays(team.trainingDays)" class="team-schedule-item">
+                    <span class="team-schedule-day">
+                      {{ d.dayLabel | translate }}:
+                    </span>
+                    <span class="team-schedule-hours">
+                      {{ d.hours }}
+                    </span>
+                  </div>
+                </div>
+              </ng-container>
 
-
-    </div>
-  </div>
-
-
-  <div [ngStyle]="{ display: !datosNoCargados ? 'none' : 'block' }">
-    <div class="d-flex justify-content-center align-items-center mt-3">
-      <div class="card text-center shadow-lg p-4">
-        <div class="card-body">
-          <h5 class="card-title mb-3">{{ 'TITLES.ACCESSREST' | translate }}</h5>
-          <p class="card-text text-muted">
-            {{ 'PHRASES.INICIO2' | translate }}
-          </p>
-          <button (click)="goSuscripcion()" class="btn btn-primary btn-lg">
-            <i class="mdi mdi-account-circle me-2"></i>
-            {{ 'TITLES.GETSUS' | translate }}
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal para la creación de equipo -->
-  <div [ngClass]="{'d-block': showModal}" class="modal" role="dialog" tabindex="-1">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="standard-modalLabel">{{ 'NAV.CREATETEAM' | translate }}</h5>
-          <!-- Botón de cerrar con un icono -->
-          <button (click)="cerrarModal()" aria-label="Close" class="btn-close" type="button"></button>
-        </div>
-        <div class="modal-body">
-          <h6 class="mt-0">{{ 'PROFILE.INSTRUCTIONS_TITLE' | translate }}</h6>
-          <p>{{ 'PHRASES.INICIO3' | translate }}</p>
-          <hr>
-          <!-- Formulario para la creación de equipo con campos separados -->
-          <form (ngSubmit)="crearEquipo()" [formGroup]="crearEquipoForm">
-
-            <div class="mb-3">
-              <label class="form-label" for="categoriaInput">{{ 'TITLES.CATEGORYTEAM' | translate }}</label>
-              <input (blur)="ocultarDropdownConRetraso()" (focus)="mostrarDropdown = true"
-                (input)="onInputCategoria($event)" autocomplete="off" class="form-control"
-                formControlName="categoriaNombre" id="categoriaInput" placeholder="Escribe la categoría de este equipo"
-                type="text">
-
-              <ul *ngIf="mostrarDropdown" class="list-group position-absolute w-100 z-3 mt-1"
-                style="max-height: 200px; overflow-y: auto;">
-                <li (mousedown)="seleccionarCategoria(cat)" *ngFor="let cat of categoriasFiltradas"
-                  class="list-group-item list-group-item-action" style="cursor: pointer;">
-                  {{ cat.categoryName }}
-                </li>
-                <li (mousedown)="crearCategoria(categoriaNombre)" *ngIf="categoriaNombre.length > 3"
-                  class="list-group-item list-group-item-action text-primary" style="cursor: pointer;">
-                  {{ 'NAV.CREATE' | translate }} "{{ categoriaNombre }}"
-                </li>
-              </ul>
+              <ng-template #noSchedule>
+                <span class="team-info-muted">
+                  {{ 'COACH.MY_TEAMS.NO_SCHEDULE' | translate }}
+                </span>
+              </ng-template>
             </div>
+          </div>
 
-            <!-- Federacion (dinámico)
+          <div class="team-info-block team-players">
+            <i class="bi bi-people team-info-icon"></i>
+            <span class="team-players-count">
+              {{ team.jugadoresPorEquipo || '0' }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div [ngStyle]="{ display: !datosNoCargados ? 'none' : 'block' }">
+        <div class="d-flex justify-content-center align-items-center mt-3">
+          <div class="card text-center shadow-lg p-4">
+            <div class="card-body">
+              <h5 class="card-title mb-3">{{ 'TITLES.ACCESSREST' | translate }}</h5>
+              <p class="card-text text-muted">
+                {{ 'PHRASES.INICIO2' | translate }}
+              </p>
+              <button (click)="goSuscripcion()" class="btn btn-primary btn-lg">
+                <i class="mdi mdi-account-circle me-2"></i>
+                {{ 'TITLES.GETSUS' | translate }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal para la creación de equipo -->
+      <div [ngClass]="{'d-block': showModal}" class="modal" role="dialog" tabindex="-1">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="standard-modalLabel">{{ 'NAV.CREATETEAM' | translate }}</h5>
+              <!-- Botón de cerrar con un icono -->
+              <button (click)="cerrarModal()" aria-label="Close" class="btn-close" type="button"></button>
+            </div>
+            <div class="modal-body">
+              <h6 class="mt-0">{{ 'PROFILE.INSTRUCTIONS_TITLE' | translate }}</h6>
+              <p>{{ 'PHRASES.INICIO3' | translate }}</p>
+              <hr>
+              <!-- Formulario para la creación de equipo con campos separados -->
+              <form (ngSubmit)="crearEquipo()" [formGroup]="crearEquipoForm">
+
+                <div class="mb-3">
+                  <label class="form-label" for="categoriaInput">{{ 'TITLES.CATEGORYTEAM' | translate }}</label>
+                  <input (blur)="ocultarDropdownConRetraso()" (focus)="mostrarDropdown = true"
+                    (input)="onInputCategoria($event)" autocomplete="off" class="form-control"
+                    formControlName="categoriaNombre" id="categoriaInput"
+                    placeholder="Escribe la categoría de este equipo" type="text">
+
+                  <ul *ngIf="mostrarDropdown" class="list-group position-absolute w-100 z-3 mt-1"
+                    style="max-height: 200px; overflow-y: auto;">
+                    <li (mousedown)="seleccionarCategoria(cat)" *ngFor="let cat of categoriasFiltradas"
+                      class="list-group-item list-group-item-action" style="cursor: pointer;">
+                      {{ cat.categoryName }}
+                    </li>
+                    <li (mousedown)="crearCategoria(categoriaNombre)" *ngIf="categoriaNombre.length > 3"
+                      class="list-group-item list-group-item-action text-primary" style="cursor: pointer;">
+                      {{ 'NAV.CREATE' | translate }} "{{ categoriaNombre }}"
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Federacion (dinámico)
           <div class="mb-3">
             <label for="federacion" class="form-label">Federación:</label>
             <select [(ngModel)]="federacion" (change)="guardarFederacion()" class="form-select" id="federacion"
@@ -140,7 +161,7 @@
             </select>
           </div> -->
 
-            <!-- Categoría (dinámico)
+                <!-- Categoría (dinámico)
           <div class="mb-3">
             <label for="categoriaEquipo" class="form-label">Categoría del Equipo:</label>
             <select class="form-select" id="categoriaEquipo" formControlName="categoryTypeId">
@@ -148,7 +169,7 @@
             </select>
           </div> -->
 
-            <!-- Nivel (dinámico)
+                <!-- Nivel (dinámico)
           <div class="mb-3">
             <label for="nivelLiga" class="form-label">Nivel:</label>
             <select class="form-select" id="nivelLiga" formControlName="levelLeague">
@@ -156,167 +177,170 @@
             </select>
           </div> -->
 
-            <div class="mb-3">
-              <label class="form-label" for="categoriaInput">{{ 'LABELS.INICIO1' | translate }}</label>
-              <input (blur)="ocultarDropdownConRetrasoNivel()" (focus)="mostrarDropdown2 = true"
-                (input)="onInputNivel($event)" autocomplete="off" class="form-control" formControlName="levelLeague"
-                id="categoriaInput" placeholder="Escribe el nivel de este equipo" type="text">
+                <div class="mb-3">
+                  <label class="form-label" for="categoriaInput">{{ 'LABELS.INICIO1' | translate }}</label>
+                  <input (blur)="ocultarDropdownConRetrasoNivel()" (focus)="mostrarDropdown2 = true"
+                    (input)="onInputNivel($event)" autocomplete="off" class="form-control" formControlName="levelLeague"
+                    id="categoriaInput" placeholder="Escribe el nivel de este equipo" type="text">
 
-              <ul *ngIf="mostrarDropdown2" class="list-group position-absolute w-100 z-3 mt-1"
-                style="max-height: 200px; overflow-y: auto;">
-                <li (mousedown)="seleccionarNivel(n.label)" *ngFor="let n of nivelesVisiblesFiltradas"
-                  class="list-group-item list-group-item-action" style="cursor: pointer;">
-                  {{ n.label }}
-                </li>
-                <li (mousedown)="crearNivel(categoriaNivel)" *ngIf="categoriaNivel && categoriaNivel !== ''"
-                  class="list-group-item list-group-item-action text-primary" style="cursor: pointer;">
-                  {{ 'TITLES.SELECTED' | translate }} "{{ categoriaNivel }}"
-                </li>
-              </ul>
-            </div>
+                  <ul *ngIf="mostrarDropdown2" class="list-group position-absolute w-100 z-3 mt-1"
+                    style="max-height: 200px; overflow-y: auto;">
+                    <li (mousedown)="seleccionarNivel(n.label)" *ngFor="let n of nivelesVisiblesFiltradas"
+                      class="list-group-item list-group-item-action" style="cursor: pointer;">
+                      {{ n.label }}
+                    </li>
+                    <li (mousedown)="crearNivel(categoriaNivel)" *ngIf="categoriaNivel && categoriaNivel !== ''"
+                      class="list-group-item list-group-item-action text-primary" style="cursor: pointer;">
+                      {{ 'TITLES.SELECTED' | translate }} "{{ categoriaNivel }}"
+                    </li>
+                  </ul>
+                </div>
 
-            <div class="mb-3">
-              <label class="form-label" for="nombreEquipo">{{ 'LABELS.INICIO2' | translate }}:</label>
-              <select class="form-select" formControlName="name" id="nombreEquipo" name="nombreEquipo">
-                <option value="">{{ 'SELECTS.NOLETTER' | translate }}</option>
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-                <option value="D">D</option>
-                <option value="E">E</option>
-                <option value="F">F</option>
-                <option value="G">G</option>
-                <option value="H">H</option>
-                <option value="I">I</option>
-                <option value="J">J</option>
-                <option value="K">K</option>
-                <option value="L">L</option>
-                <option value="M">M</option>
-              </select>
-            </div>
-            <div class="modal-footer">
-              <!-- Botón para guardar el nuevo equipo -->
-              <button class="btn btn-success float-end" type="submit">{{ 'APP.BUTTONS.SAVE' | translate }}</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal para subir jugadores desde plantilla -->
-  <div [ngClass]="{'d-block': showModalSubirJugadores}" class="modal" role="dialog" tabindex="-1">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="stripeModalLabel">{{ 'PHRASES.INICIO4' | translate }}</h5>
-            <button (click)="cerrarModalSubirJugadores()" aria-label="Close" class="btn-close" type="button"></button>
-          </div>
-          <div class="modal-body">
-            <p>{{ 'PHRASES.INICIO5' | translate }} <a download="Plantilla.xlsx"
-                href="https://appsphairatech.com/images/docs/Plantilla.xlsx">
-                {{ 'APP.BUTTONS.DOWNLOADTEMPLATE' | translate }}
-              </a></p>
-            <div class="mb-3">
-              <form (ngSubmit)="uploadExcel()" [formGroup]="excelForm" class="form-upload"
-                enctype="multipart/form-data">
-                <div class="mb-3" style="text-align: center;">
-                  <h4>{{ 'TITLES.UPFILEEXCEL' | translate }}</h4>
-                  <div class="form-group">
-                    <label for="excelFile">{{ 'LABELS.SELECTEDFILEXLSX' | translate }}:</label>
-                    <input (change)="onFileSelected($event)" accept=".xlsx" class="form-control-file" id="excelFile"
-                      type="file">
-                    <div *ngIf="fileName" class="mt-2">{{ 'LABELS.FILESELECTED' | translate }}: {{ fileName }}</div>
-                  </div>
-                  <button *ngIf="showUploadButton" class="btn btn-primary" style="margin-top: 1em;" type="submit">{{
-                    'APP.BUTTONS.UPFILE' | translate }}</button>
+                <div class="mb-3">
+                  <label class="form-label" for="nombreEquipo">{{ 'LABELS.INICIO2' | translate }}:</label>
+                  <select class="form-select" formControlName="name" id="nombreEquipo" name="nombreEquipo">
+                    <option value="">{{ 'SELECTS.NOLETTER' | translate }}</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                    <option value="G">G</option>
+                    <option value="H">H</option>
+                    <option value="I">I</option>
+                    <option value="J">J</option>
+                    <option value="K">K</option>
+                    <option value="L">L</option>
+                    <option value="M">M</option>
+                  </select>
+                </div>
+                <div class="modal-footer">
+                  <!-- Botón para guardar el nuevo equipo -->
+                  <button class="btn btn-success float-end" type="submit">{{ 'APP.BUTTONS.SAVE' | translate }}</button>
                 </div>
               </form>
             </div>
-            <div class="modal-footer">
-              <!-- Botón para guardar el nuevo equipo -->
-              <button (click)="cerrarModalSubirJugadores()" class="btn btn-success float-end" type="submit">{{
-                'APP.BUTTONS.CLOSE' | translate }}</button>
-            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Modal para subir jugadores desde plantilla -->
-  <div [ngClass]="{'d-block': showModalSubirJugadoresGesDesk}" class="modal" role="dialog" tabindex="-1">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="stripeModalLabel">{{ 'PHRASES.INICIO6' | translate }}</h5>
-            <button (click)="cerrarModalSubirJugadoresGesDesk()" aria-label="Close" class="btn-close"
-              type="button"></button>
-          </div>
-          <div class="modal-body">
-            <p>{{ 'PHRASES.INICIO7' | translate }}
-            </p>
-            <div class="mb-3">
-              <form (ngSubmit)="uploadExcelGesDesk()" [formGroup]="excelForm" class="form-upload"
-                enctype="multipart/form-data">
-                <div class="mb-3" style="text-align: center;">
-                  <h4>{{ 'TITLES.UPFILEEXCEL' | translate }}</h4>
-                  <div class="form-group">
-                    <label for="excelFile">{{ 'LABELS.SELECTEDFILEXLSX' | translate }}:</label>
-                    <input (change)="onFileSelected($event)" accept=".xlsx" class="form-control-file" id="excelFile"
-                      type="file">
-                    <div *ngIf="fileName" class="mt-2">{{ 'LABELS.FILESELECTED' | translate }}: {{ fileName }}</div>
-                  </div>
-                  <button *ngIf="showUploadButton" class="btn btn-primary" style="margin-top: 1em;" type="submit">Subir
-                    {{ 'APP.BUTTONS.UPFILE' | translate }}</button>
+      <!-- Modal para subir jugadores desde plantilla -->
+      <div [ngClass]="{'d-block': showModalSubirJugadores}" class="modal" role="dialog" tabindex="-1">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="stripeModalLabel">{{ 'PHRASES.INICIO4' | translate }}</h5>
+                <button (click)="cerrarModalSubirJugadores()" aria-label="Close" class="btn-close"
+                  type="button"></button>
+              </div>
+              <div class="modal-body">
+                <p>{{ 'PHRASES.INICIO5' | translate }} <a download="Plantilla.xlsx"
+                    href="https://appsphairatech.com/images/docs/Plantilla.xlsx">
+                    {{ 'APP.BUTTONS.DOWNLOADTEMPLATE' | translate }}
+                  </a></p>
+                <div class="mb-3">
+                  <form (ngSubmit)="uploadExcel()" [formGroup]="excelForm" class="form-upload"
+                    enctype="multipart/form-data">
+                    <div class="mb-3" style="text-align: center;">
+                      <h4>{{ 'TITLES.UPFILEEXCEL' | translate }}</h4>
+                      <div class="form-group">
+                        <label for="excelFile">{{ 'LABELS.SELECTEDFILEXLSX' | translate }}:</label>
+                        <input (change)="onFileSelected($event)" accept=".xlsx" class="form-control-file" id="excelFile"
+                          type="file">
+                        <div *ngIf="fileName" class="mt-2">{{ 'LABELS.FILESELECTED' | translate }}: {{ fileName }}</div>
+                      </div>
+                      <button *ngIf="showUploadButton" class="btn btn-primary" style="margin-top: 1em;" type="submit">{{
+                        'APP.BUTTONS.UPFILE' | translate }}</button>
+                    </div>
+                  </form>
                 </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <!-- Botón para guardar el nuevo equipo -->
-              <button (click)="cerrarModalSubirJugadoresGesDesk()" class="btn btn-success float-end" type="submit">{{
-                'APP.BUTTONS.CLOSE' | translate }}</button>
+                <div class="modal-footer">
+                  <!-- Botón para guardar el nuevo equipo -->
+                  <button (click)="cerrarModalSubirJugadores()" class="btn btn-success float-end" type="submit">{{
+                    'APP.BUTTONS.CLOSE' | translate }}</button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- MODAL -->
-  <div [ngClass]="{'d-block': modalConfirAndroid}" class="modal" role="dialog" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content border-0 shadow">
-        <div class="modal-body p-4">
-          <div class="d-flex align-items-center mb-3">
-            <span class="me-2">⚠️</span>
-            <h5 class="m-0 text-danger fw-bold">{{ 'TITLES.ATENTION' | translate }}</h5>
-          </div>
-
-          <p class="mb-3">
-            {{ 'PHRASES.INICIO8' | translate }}
-          </p>
-          <p class="mb-3">
-            {{ 'PHRASES.INICIO9' | translate }}
-          </p>
-
-          <div class="form-check my-3">
-            <input [(ngModel)]="aceptoGestionNavegador" class="form-check-input" id="chkAceptoGestion"
-              type="checkbox" />
-            <label class="form-check-label" for="chkAceptoGestion">
-              {{ 'PHRASES.INICIO10' | translate }}
-            </label>
-          </div>
-
-          <div class="d-flex justify-content-end gap-2 mt-4">
-            <button (click)="closeModalConfirAndroid()" class="btn btn-outline-secondary" type="button">{{
-              'APP.BUTTONS.CANCEL' | translate }}</button>
-            <button (click)="onAceptarDescarga()" class="btn btn-primary" type="button">{{ 'APP.BUTTONS.ACCEPT' |
-              translate }}</button>
+      <!-- Modal para subir jugadores desde plantilla -->
+      <div [ngClass]="{'d-block': showModalSubirJugadoresGesDesk}" class="modal" role="dialog" tabindex="-1">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="stripeModalLabel">{{ 'PHRASES.INICIO6' | translate }}</h5>
+                <button (click)="cerrarModalSubirJugadoresGesDesk()" aria-label="Close" class="btn-close"
+                  type="button"></button>
+              </div>
+              <div class="modal-body">
+                <p>{{ 'PHRASES.INICIO7' | translate }}
+                </p>
+                <div class="mb-3">
+                  <form (ngSubmit)="uploadExcelGesDesk()" [formGroup]="excelForm" class="form-upload"
+                    enctype="multipart/form-data">
+                    <div class="mb-3" style="text-align: center;">
+                      <h4>{{ 'TITLES.UPFILEEXCEL' | translate }}</h4>
+                      <div class="form-group">
+                        <label for="excelFile">{{ 'LABELS.SELECTEDFILEXLSX' | translate }}:</label>
+                        <input (change)="onFileSelected($event)" accept=".xlsx" class="form-control-file" id="excelFile"
+                          type="file">
+                        <div *ngIf="fileName" class="mt-2">{{ 'LABELS.FILESELECTED' | translate }}: {{ fileName }}</div>
+                      </div>
+                      <button *ngIf="showUploadButton" class="btn btn-primary" style="margin-top: 1em;"
+                        type="submit">Subir
+                        {{ 'APP.BUTTONS.UPFILE' | translate }}</button>
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <!-- Botón para guardar el nuevo equipo -->
+                  <button (click)="cerrarModalSubirJugadoresGesDesk()" class="btn btn-success float-end"
+                    type="submit">{{
+                    'APP.BUTTONS.CLOSE' | translate }}</button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+
+      <!-- MODAL -->
+      <div [ngClass]="{'d-block': modalConfirAndroid}" class="modal" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content border-0 shadow">
+            <div class="modal-body p-4">
+              <div class="d-flex align-items-center mb-3">
+                <span class="me-2">⚠️</span>
+                <h5 class="m-0 text-danger fw-bold">{{ 'TITLES.ATENTION' | translate }}</h5>
+              </div>
+
+              <p class="mb-3">
+                {{ 'PHRASES.INICIO8' | translate }}
+              </p>
+              <p class="mb-3">
+                {{ 'PHRASES.INICIO9' | translate }}
+              </p>
+
+              <div class="form-check my-3">
+                <input [(ngModel)]="aceptoGestionNavegador" class="form-check-input" id="chkAceptoGestion"
+                  type="checkbox" />
+                <label class="form-check-label" for="chkAceptoGestion">
+                  {{ 'PHRASES.INICIO10' | translate }}
+                </label>
+              </div>
+
+              <div class="d-flex justify-content-end gap-2 mt-4">
+                <button (click)="closeModalConfirAndroid()" class="btn btn-outline-secondary" type="button">{{
+                  'APP.BUTTONS.CANCEL' | translate }}</button>
+                <button (click)="onAceptarDescarga()" class="btn btn-primary" type="button">{{ 'APP.BUTTONS.ACCEPT' |
+                  translate }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>

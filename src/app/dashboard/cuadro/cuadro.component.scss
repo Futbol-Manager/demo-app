@@ -74,6 +74,12 @@
   border: 1px solid #e6e6e6;
   margin-bottom: 1.5rem;
 }
+.option-card.disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none; // 🚫 bloquea el click
+}
+
 /* =========================
    SKELETON BASE
 ========================= */
@@ -81,12 +87,7 @@
 .skeleton-line,
 .skeleton-badge,
 .skeleton-hour {
-  background: linear-gradient(
-    90deg,
-    #eeeeee 25%,
-    #f5f5f5 37%,
-    #eeeeee 63%
-  );
+  background: linear-gradient(90deg, #eeeeee 25%, #f5f5f5 37%, #eeeeee 63%);
   background-size: 400% 100%;
   animation: shimmer 1.4s ease infinite;
   border-radius: 6px;
@@ -120,8 +121,12 @@
   height: 14px;
 }
 
-.skeleton-line.w-70 { width: 70%; }
-.skeleton-line.w-40 { width: 40%; }
+.skeleton-line.w-70 {
+  width: 70%;
+}
+.skeleton-line.w-40 {
+  width: 40%;
+}
 
 /* CALENDARIO */
 .skeleton-calendar {
@@ -156,9 +161,15 @@
   border: 2px solid;
 }
 
-.match-card.victoria { border-color: #b7e5c7; }
-.match-card.empate { border-color: #ffd8a8; }
-.match-card.derrota { border-color: #f5b7b1; }
+.match-card.victoria {
+  border-color: #b7e5c7;
+}
+.match-card.empate {
+  border-color: #ffd8a8;
+}
+.match-card.derrota {
+  border-color: #f5b7b1;
+}
 
 .match-header {
   display: flex;
@@ -173,9 +184,18 @@
   font-weight: 600;
 }
 
-.badge.victoria { background: #e6f4ea; color: #1e7e34; }
-.badge.empate { background: #fff3cd; color: #d39e00; }
-.badge.derrota { background: #fdecea; color: #c82333; }
+.badge.victoria {
+  background: #e6f4ea;
+  color: #1e7e34;
+}
+.badge.empate {
+  background: #fff3cd;
+  color: #d39e00;
+}
+.badge.derrota {
+  background: #fdecea;
+  color: #c82333;
+}
 
 .status {
   font-size: 0.75rem;
@@ -207,7 +227,6 @@
   align-items: center;
   text-align: center;
 }
-
 
 /* Wrapper del nombre */
 .team-name-wrapper {
@@ -295,7 +314,6 @@
   color: #495057;
 }
 
-
 /* =========================
    PRÓXIMOS PARTIDOS (REAL)
 ========================= */
@@ -316,7 +334,6 @@
   color: #fff;
 }
 
-
 /* EQUIPOS */
 .team-side {
   display: flex;
@@ -330,6 +347,7 @@
   width: 42px;
   height: 42px;
   border-radius: 50%;
+  flex-shrink: 0;
   background: rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
@@ -350,18 +368,23 @@
 .team-info {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   gap: 0.25rem;
+  width: 140px;
 }
 
 .team-info.align-right {
-  align-items: flex-end;
-  text-align: right;
+  align-items: center;
+  text-align: center;
 }
+
 
 .team-name {
   font-size: 0.85rem;
   font-weight: 600;
   line-height: 1.1;
+  word-break: break-word;
 }
 
 /* BADGES */
@@ -371,6 +394,7 @@
   padding: 0.15rem 0.45rem;
   border-radius: 6px;
   width: fit-content;
+  align-self: center;
 }
 
 /* LOCAL */
@@ -413,12 +437,7 @@
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: linear-gradient(
-    90deg,
-    #e0e0e0 25%,
-    #f3f3f3 37%,
-    #e0e0e0 63%
-  );
+  background: linear-gradient(90deg, #e0e0e0 25%, #f3f3f3 37%, #e0e0e0 63%);
   background-size: 400% 100%;
   animation: shimmer 1.4s infinite linear;
 }

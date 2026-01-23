@@ -428,3 +428,209 @@ body {
 .cursor {
   cursor: pointer;
 }
+/* =====================================================
+   BACKDROP PERSONALIZADO
+===================================================== */
+.modal-backdrop-custom {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 25, 35, 0.65);
+  backdrop-filter: blur(2px);
+  z-index: 1040;
+}
+
+/* Asegura que el modal esté encima */
+.modal {
+  z-index: 1050;
+}
+
+/* =====================================================
+   CONTENEDOR BASE DEL MODAL
+===================================================== */
+.modern-modal {
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+  border: none;
+  background: #ffffff;
+}
+
+/* =====================================================
+   HEADER
+===================================================== */
+.modern-modal-header {
+  background: #002c40;
+  color: #ffffff;
+  padding: 1.25rem 1.5rem;
+  border-bottom: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modern-modal-header .modal-title {
+  font-weight: 700;
+  margin: 0;
+}
+
+.modern-modal-header .modal-subtitle {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+}
+
+/* Botón cerrar */
+.modern-modal-header .btn-close {
+  filter: invert(1);
+  opacity: 0.85;
+}
+
+/* =====================================================
+   BODY
+===================================================== */
+.modern-modal-body {
+  padding: 1.5rem;
+  max-height: 75vh;
+  overflow-y: auto;
+  background: #f8fafc;
+}
+
+/* =====================================================
+   SECCIONES DNI
+===================================================== */
+.dni-section {
+  margin-bottom: 2.5rem;
+}
+
+.section-title {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: #0f172a;
+}
+
+.section-help {
+  font-size: 0.85rem;
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+
+/* =====================================================
+   TARJETAS DNI
+===================================================== */
+.dni-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  height: 100%;
+}
+
+/* LABEL */
+.dni-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  color: #64748b;
+}
+
+/* PREVIEW */
+.dni-preview {
+  width: 100%;
+  height: 160px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+.dni-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* =====================================================
+   DOCUMENTOS
+===================================================== */
+.doc-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.doc-card:hover {
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* INFO */
+.doc-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.doc-title {
+  font-weight: 700;
+  margin: 0;
+}
+
+.doc-desc {
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* ACTIONS */
+.doc-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* =====================================================
+   BOTONES ICONO
+===================================================== */
+.btn-icon {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.btn-icon:hover {
+  transform: translateY(-1px);
+}
+
+.btn-icon.success {
+  background: #22c55e;
+  color: #ffffff;
+}
+
+.btn-icon.secondary {
+  background: #64748b;
+  color: #ffffff;
+}
+
+.btn-icon.info {
+  background: #0ea5e9;
+  color: #ffffff;
+}
+
+.btn-icon.warning {
+  background: #f59e0b;
+  color: #ffffff;
+}

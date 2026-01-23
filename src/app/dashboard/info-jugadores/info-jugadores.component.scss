@@ -1,61 +1,449 @@
-table {
-    width: 100%;
-    /* Ajusta según sea necesario */
-    border-collapse: collapse;
-    /* Para eliminar espacios entre celdas */
+/* =========================================================
+   SUBMENU / BACK
+========================================================= */
+/* BOTÓN VOLVER */
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 16px;
+  margin-left: 24px;
+  background: transparent;
+  border: none;
+  background-color: rgba(15, 163, 232, 0.08);
+  color: #002c40;
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-th,
-td {
-    border: 1px solid black;
-    /* Opcional: para añadir bordes a las celdas */
-    text-align: center;
-    /* Centra horizontalmente */
-    vertical-align: middle;
-    /* Centra verticalmente */
-    padding: 10px;
-    /* Opcional: añade un poco de espacio alrededor del contenido */
-    height: 50px;
-    /* Ajusta la altura según sea necesario */
+/* ICONO */
+.btn-back-clean i {
+  font-size: 1.1rem;
 }
 
-table thead {
-    position: sticky;
-    top: 0;
-    z-index: 100; /* Asegurar que el encabezado se superponga a las filas */
-}
-  
-
-table thead .columna-nombre {
-    position: sticky;
-    left: 0;
-    width: 150px;
-    /* Ajusta el ancho según tu columna */
-    background-color: #58ad6a;
-    /* Color de fondo opcional */
+/* HOVER */
+.btn-back-clean:hover {
+  background-color: rgba(0, 44, 64, 0.08);
+  transform: translateX(-2px);
 }
 
-tbody .fila-completa {
-    position: sticky;
-    left: 0;
-    width: 400px;
-    /* Ajusta el ancho según tu tabla */
-    background-color: #f5f5f5;
-    /* Color de fondo opcional */
+/* ACTIVE */
+.btn-back-clean:active {
+  transform: translateX(0);
+}
+/* TITULOS */
+.section-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
-tbody .fila-completa td {
-    position: sticky;
-    left: 0;
+/* =========================
+   ACCIONES TITULOS
+========================= */
+
+/* TÍTULO */
+.table-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
-tbody .fila-completa .columna-nombre {
-    width: 150px;
-    /* Ajusta el ancho según tu columna */
-    background-color: #e0e0e0;
-    /* Color de fondo opcional */
+/* TOOLBAR */
+.table-toolbar {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-end;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
 }
 
-.borde-izquierdo-gordo {
-    border-left: 4px solid black; /* Ajusta el grosor y color según tus necesidades */
+/* FILTROS */
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+/* LABELS */
+.filter-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #002c40;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* BUSCADOR */
+.search-input {
+  position: relative;
+}
+
+.search-input i {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: #002c40;
+  font-size: 0.9rem;
+}
+
+.search-input input {
+  padding-left: 32px;
+}
+
+/* BOTÓN EXCEL */
+.btn-excel {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  border-radius: 10px;
+  background-color: #31b270;
+}
+
+/* LABEL FANTASMA PARA ALINEAR */
+.invisible-label {
+  visibility: hidden;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .table-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+/* =========================
+   TABLA MODERNA
+========================= */
+
+.table-wrapper {
+  max-height: calc(100vh - 320px);
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+.modern-table {
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  width: 100%;
+
+  justify-content: center;
+}
+
+/* CABECERA */
+.modern-table thead {
+  position: sticky;
+  border-radius: 25%;
+  top: 0;
+  z-index: 20;
+}
+
+.modern-table thead th {
+  font-size: 0.9rem;
+  align-items: center;
+  background-color: #002c40;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #f4f4f4;
+  border: none;
+  padding: 0.75rem;
+  padding-bottom: 1rem;
+  text-align: center;
+  justify-content: center;
+}
+
+.modern-table thead th:first-child {
+  text-align: center;
+}
+
+/* FILAS */
+.modern-table tbody tr {
+  background: #ffffff;
+  border-radius: 14px;
+  height: 72px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.modern-table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+}
+
+/* CELDAS */
+.modern-table tbody td {
+  border: none;
+  padding: 0.85rem;
+  text-align: center;
+  font-size: 0.85rem;
+  position: relative;
+  height: 72px;
+  max-height: 72px;
+  vertical-align: middle;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.modern-table tbody td:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 20%;
+  right: 0;
+  width: 1px;
+  height: 60%;
+  background: rgba(0, 0, 0, 0.185); /* separador suave */
+}
+.modern-table tbody td:first-child {
+  text-align: left;
+}
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+/* CELDA SIN PADDING */
+.image-cell {
+  padding: 0 !important;
+  width: 70px; /* ancho fijo */
+  min-width: 70px;
+}
+
+/* CONTENEDOR DE LA IMAGEN */
+.image-wrapper {
+  width: 100%;
+  height: 100%;
+  min-height: unset; /* controla el alto de la fila */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f4f4f4;
+  border-radius: 6px; /* 🔹 border radius pequeño */
+  overflow: hidden;
+}
+
+/* IMAGEN OCUPA TODO */
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 🔥 clave */
+}
+
+/* ICONO CUANDO NO HAY IMAGEN */
+.image-wrapper i {
+  font-size: 1.8rem;
+  color: #94a3b8;
+}
+
+.btn-icon {
+  border: none;
+  background: #f4f4f4;
+  border-radius: 8px;
+  padding: 6px 8px;
+  cursor: pointer;
+}
+
+.btn-icon.primary {
+  background: #002c40;
+  color: #f4f4f4;
+}
+
+.btn-icon.warning {
+  background: #f59e0b;
+  color: #fff;
+}
+
+.btn-icon.info {
+  background: #002c40;
+  color: #fff;
+}
+
+.btn-icon.success {
+  background: #31b270;
+  color: #fff;
+}
+.team-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.team-cell .actions {
+  display: flex;
+  gap: 6px;
+}
+.modern-table tbody td.col-father,
+.modern-table thead th.col-father {
+  position: relative;
+}
+
+.modern-table tbody td.col-father::before,
+.modern-table thead th.col-father::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 15%;
+  height: 70%;
+  width: 3px;
+  background: rgba(0, 44, 64, 0.45);
+  border-radius: 2px;
+}
+.modern-table tbody td.col-mother,
+.modern-table thead th.col-mother {
+  position: relative;
+}
+
+.modern-table tbody td.col-mother::before,
+.modern-table thead th.col-mother::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 15%;
+  height: 70%;
+  width: 3px;
+  background: rgba(0, 44, 64, 0.45);
+  border-radius: 2px;
+}
+.modern-table tbody td:not(.col-father):not(.col-mother)::after {
+  background: rgba(0,0,0,0.08);
+}
+
+
+/* ===== BACKDROP GLOBAL ===== */
+.modal-backdrop-custom {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 25, 35, 0.65);
+  backdrop-filter: blur(2px);
+  z-index: 1040;
+}
+/* ===== MODAL BASE ===== */
+.modal {
+  z-index: 1050;
+}
+
+.modal-base {
+  border-radius: 18px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+}
+.modal-base__header {
+  background: #002c40;
+  color: #ffffff;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-base__header .modal-title {
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-base__header .btn-close {
+  filter: invert(1);
+  opacity: 0.85;
+}
+.modal-base__body {
+  padding: 1.5rem;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+.modal-base__footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+.modal-section {
+  margin-bottom: 2.5rem;
+}
+
+.modal-section__title {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.modal-section__help {
+  font-size: 0.85rem;
+  color: #dc2626;
+  margin-bottom: 1rem;
+}
+.modal-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1rem;
+  border: 1px solid #e5e7eb;
+  height: 100%;
+}
+.modal-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  color: #64748b;
+}
+.modal-preview {
+  width: 100%;
+  height: 160px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+}
+
+.modal-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.btn-icon {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 10px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.1s ease;
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.btn-icon:hover {
+  transform: translateY(-1px);
+}
+
+/* ESTADOS */
+.btn-icon.success {
+  background: #22c55e;
+  color: #ffffff;
+}
+
+.btn-icon.secondary {
+  background: #64748b;
+  color: #ffffff;
+}
+
+.btn-icon.info {
+  background: #0ea5e9;
+  color: #ffffff;
+}
+
+.btn-icon.warning {
+  background: #f59e0b;
+  color: #ffffff;
 }

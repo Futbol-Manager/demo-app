@@ -1,10 +1,10 @@
 <app-logo-spinner *ngIf="loading"></app-logo-spinner>
 
-<div class="submenu">
-  <div class="submenu-back" (click)="irAPantalla(0)">
-    <i class="bi bi-arrow-left-circle"></i>
-    <span>{{ 'ESTADIS_EQUIPO.BACK' | translate }}</span>
-  </div>
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
 </div>
 
 <app-publicidad></app-publicidad>

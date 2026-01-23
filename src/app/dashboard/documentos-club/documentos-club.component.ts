@@ -82,28 +82,38 @@ export class DocumentosClubComponent implements OnInit {
 
     this.clubService.getlistDocumentosByClub(this.clubId).subscribe({
       next: (response: any) => {
-        console.log(response);
+        const data = response?.data ?? {};
 
-        const data = response?.data;
+        const documentos = Array.isArray(data.documentos)
+          ? data.documentos
+          : [];
 
-        if (!data) {
-          this.listDocuments = [];
-          this.loadingData = false;
-          return;
-        }
+        // 🔐 Normalizar totalPadres
+        const totalPadres =
+          typeof data.totalPadres === 'number' && !isNaN(data.totalPadres)
+            ? data.totalPadres
+            : 0;
 
-        const documentos = data.documentos ?? [];
-        const totalPadres = data.totalPadres ?? 0;
-        const subidosPorDocumento = data.subidosPorDocumento ?? {};
+        const subidosPorDocumento =
+          typeof data.subidosPorDocumento === 'object' &&
+          data.subidosPorDocumento !== null
+            ? data.subidosPorDocumento
+            : {};
 
-        // 🔥 ENRIQUECER DOCUMENTOS PARA LA VISTA
-        this.listDocuments = documentos.map((doc: any) => ({
-          ...doc,
-          totalPadres: totalPadres,
-          totalSubidos: subidosPorDocumento[doc.docClubesId] ?? 0,
-        }));
+        // 🔥 Enriquecer documentos para la vista
+        this.listDocuments = documentos.map((doc: any) => {
+          const totalSubidosRaw = subidosPorDocumento[doc.docClubesId];
 
-        console.log(this.listDocuments);
+          return {
+            ...doc,
+            totalPadres,
+            totalSubidos:
+              typeof totalSubidosRaw === 'number' && !isNaN(totalSubidosRaw)
+                ? totalSubidosRaw
+                : 0,
+          };
+        });
+
         this.loadingData = false;
       },
       error: (err) => {

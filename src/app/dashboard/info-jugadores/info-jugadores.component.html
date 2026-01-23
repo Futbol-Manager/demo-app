@@ -1,465 +1,653 @@
-<div class="submenu">
-    <div class="row">
-        <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(0)">
-                <i class="bi bi-calendar"></i>
-                <span class="d-none d-md-inline">Cuadro de mandos</span>
-            </a>
-        </div>
-    </div>
+<!-- ================= SUBMENU ================= -->
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
 </div>
-
-<div *ngIf="loading" class="spinner-container mt-3">
-    <div class="spinnerLoad"></div>
-</div>
+<app-logo-spinner *ngIf="loading"></app-logo-spinner>
 
 <div *ngIf="datosCargados" class="container">
-    <div style="margin-top: 3em;">
-        <h2 class="text-dark mt-3">Listado de Jugadores</h2>
-        <!-- Botón para exportar a Excel-->
-        <button class="btn btn-success" style="margin-bottom: 2em;" (click)="exportTableToExcel()">
-            <i class="bi bi-file-earmark-spreadsheet-fill"></i> Descargar Excel
-        </button>
-        <div class="row">
-            <div class="col-3">
-                <label for="teamSelected" class="form-label">Selecciona un equipo</label>
-                <select class="form-control me-2" id="teamSelected" name="teamSelected" [(ngModel)]="teamSelected"
-                    (change)="loadPlayersOfTeam()">
-                    <option value="-1">Todos los equipos</option>
-                    <option *ngFor="let team of teams; let i = index" [value]="i">{{ team.nameTeam }}</option>
-                </select>
-            </div>
-            <div class="col-3">
-            </div>
-            <div class="col-3">
-            </div>
-            <div class="col-3">
-                <label for="playerSearch" class="form-label">Buscar cualquier campo</label>
-                <input type="text" class="form-control" id="playerSearch" [(ngModel)]="playerSearch"
-                    (input)="applyFilter()" placeholder="Buscar...">
-            </div>
-        </div>
+  <!-- TÍTULO CENTRADO -->
+  <h2 class="table-title text-center mt-4 mb-3">
+    {{ 'PLAYERS.TITLE' | translate }}
+  </h2>
 
-        <div class="row" style="margin-top: 3em;">
-            <div style="overflow-x: auto; overflow-y: scroll; height: 30em;">
-                <table id="dataTable" class="table table-bordered table-striped text-center">
-                    <thead class="table-custom">
-                        <tr style="border-top: 4px solid black;">
-                            <th class="borde-izquierdo-gordo">IMAGEN</th>
-                            <th>NOMBRE</th>
-                            <th>EQUIPO</th>
-                            <th>FECHA</th>
-                            <th>TELEFONO</th>
-                            <th>DNI</th>
-                            <th>IMG_DNI</th>
-                            <th>DOC</th>
-                            <th class="borde-izquierdo-gordo">PADRE</th>
-                            <th>DNI/NIE</th>
-                            <th>TELEFONO</th>
-                            <th>EMAIL</th>
-                            <th class="borde-izquierdo-gordo">MADRE</th>
-                            <th>DNI/NIE</th>
-                            <th>TELEFONO</th>
-                            <th>EMAIL</th>
-                            <th>IBAN</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let player of filteredPlayers; let i = index">
-                            <td class="borde-izquierdo-gordo" *ngIf="player.picturePlayer">
-                                <div class="container">
-                                    <img [src]="imageBaseUrlUser + player.picturePlayer" alt="user-player" width="50"
-                                        height="50" class="rounded-circle me-2">
-                                </div>
-                            </td>
-                            <td class="borde-izquierdo-gordo" *ngIf="!player.picturePlayer">
-                                <div class="container">
-                                    <span class="bi bi-person" style="font-size: 3rem;"></span>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="d-flex gap-1 justify-content-center">
-                                    {{ player.nombre }} {{ player.apellido }}
-                                </div>
-                            <td>
-                                <div class="mb-1">{{ player.nameTeam }}</div>
-                                <div class="d-flex gap-1 justify-content-center">
-                                    <button class="btn btn-warning btn-sm" title="Mover"
-                                        (click)="openShowModalMover(player.playerId, player)">
-                                        <span class="bi bi-folder-symlink"></span>
-                                    </button>
-                                    <button *ngIf="+temporadaStoredValue < +temporada" class="btn btn-info btn-sm"
-                                        title="Subir" (click)="updateTemporada(player)">
-                                        <span class="bi bi-journal-arrow-up"></span>
-                                    </button>
-                                </div>
-                            </td>
-                            <td>{{ formatFechaEspana(player.fechaDeNacimiento) }}</td>
-                            <td>{{ player.telefono }}</td>
-                            <td>{{ player.dni }}</td>
-                            <td>
-                                <button class="btn"
-                                    [ngClass]="{'btn-primary': !player.imgDniUno || !player.imgDniDos, 'btn-success': player.imgDniUno && player.imgDniDos}"
-                                    (click)="abrirModalDniJugador(player, i)">
-                                    <i class="bi bi-person-badge"></i>
-                                </button>
-                            </td>
-                            <td>
-                                <button class="btn btn-primary" (click)="abrirModalDocJugador(player, i)">
-                                    <i class="bi bi-filetype-doc"></i>
-                                </button>
-                            </td>
-                            <td class="borde-izquierdo-gordo">{{ player.nombrePadre }}</td>
-                            <td>{{ player.dniPadre }}</td>
-                            <td>{{ player.telefonoPadre }}</td>
-                            <td>{{ player.emailPadre }}</td>
-                            <td class="borde-izquierdo-gordo">{{ player.nombreMadre }}</td>
-                            <td>{{ player.dniMadre }}</td>
-                            <td>{{ player.telefonoMadre }}</td>
-                            <td>{{ player.emailMadre }}</td>
-                            <td>{{ player.iban }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+  <!-- BARRA DE CONTROLES -->
+  <div class="table-toolbar justify-content-center">
+    <!-- BUSCADOR -->
+    <div class="filter-group search-group">
+      <label for="playerSearch" class="filter-label">
+        {{ 'PLAYERS.SEARCH_LABEL' | translate }}
+      </label>
+      <div class="search-input">
+        <i class="bi bi-search"></i>
+        <input id="playerSearch" type="text" class="form-control" [(ngModel)]="playerSearch" (input)="applyFilter()"
+          [placeholder]="'PLAYERS.SEARCH_PLACEHOLDER' | translate" />
+      </div>
     </div>
+
+    <!-- SELECT EQUIPO -->
+    <div class="filter-group">
+      <label for="teamSelected" class="filter-label">
+        {{ 'PLAYERS.TEAM_LABEL' | translate }}
+      </label>
+      <select id="teamSelected" class="form-select" [(ngModel)]="teamSelected" (change)="loadPlayersOfTeam()">
+        <option value="-1">
+          {{ 'PLAYERS.ALL_TEAMS' | translate }}
+        </option>
+        <option *ngFor="let team of teams; let i = index" [value]="i">
+          {{ team.nameTeam }}
+        </option>
+      </select>
+    </div>
+
+    <!-- DESCARGAR EXCEL -->
+    <div class="filter-group">
+      <label class="filter-label invisible-label">Excel</label>
+      <button class="btn btn-excel" (click)="exportTableToExcel()">
+        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+        {{ 'PLAYERS.DOWNLOAD_EXCEL' | translate }}
+      </button>
+    </div>
+  </div>
+  <div class="table-wrapper">
+    <table id="dataTable" class="modern-table">
+      <thead>
+        <tr>
+          <th>{{ 'PLAYERS.TABLE.IMAGE' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.NAME' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.TEAM' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.BIRTHDATE' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.PHONE' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.DNI' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.DNI_IMG' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.DOC' | translate }}</th>
+          <th class="col-father">{{ 'PLAYERS.TABLE.FATHER' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.DNI' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.PHONE' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.EMAIL' | translate }}</th>
+          <th class="col-mother">{{ 'PLAYERS.TABLE.MOTHER' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.DNI' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.PHONE' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.EMAIL' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.IBAN' | translate }}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let player of filteredPlayers; let i = index">
+          <!-- IMAGEN -->
+          <td class="image-cell">
+            <div class="image-wrapper">
+              <img *ngIf="player.picturePlayer" [src]="imageBaseUrlUser + player.picturePlayer" alt="player" />
+
+              <i *ngIf="!player.picturePlayer" class="bi bi-person"></i>
+            </div>
+          </td>
+
+          <!-- NOMBRE -->
+          <td class="fw-semibold">
+            {{ player.nombre }} {{ player.apellido }}
+          </td>
+
+          <!-- EQUIPO -->
+          <td>
+            <div class="team-cell">
+              <a>{{ player.nameTeam }}</a>
+              <div class="d-flex gap-1 justify-content-center">
+                <button class="btn btn-warning btn-sm" title="Mover"
+                  (click)="openShowModalMover(player.playerId, player)">
+                  <span class="bi bi-folder-symlink"></span>
+                </button>
+                <button *ngIf="+temporadaStoredValue < +temporada" class="btn btn-info btn-sm" title="Subir"
+                  (click)="updateTemporada(player)">
+                  <span class="bi bi-journal-arrow-up"></span>
+                </button>
+              </div>
+            </div>
+          </td>
+
+          <!-- FECHA -->
+          <td>{{ formatFechaEspana(player.fechaDeNacimiento) }}</td>
+
+          <!-- TEL -->
+          <td>{{ player.telefono }}</td>
+
+          <!-- DNI -->
+          <td>{{ player.dni }}</td>
+
+          <!-- IMG DNI -->
+          <td>
+            <button class="btn btn-sm" [ngClass]="{'btn-success': player.imgDniUno && player.imgDniDos,
+                  'btn-primary': !player.imgDniUno || !player.imgDniDos}" (click)="abrirModalDniJugador(player, i)">
+              <i class="bi bi-person-badge"></i>
+            </button>
+          </td>
+
+          <!-- DOC -->
+          <td>
+            <button class="btn btn-primary btn-sm" (click)="abrirModalDocJugador(player, i)">
+              <i class="bi bi-filetype-doc"></i>
+            </button>
+          </td>
+
+          <!-- PADRE -->
+          <td class="col-father">{{ player.nombrePadre }}</td>
+          <td>{{ player.dniPadre }}</td>
+          <td>{{ player.telefonoPadre }}</td>
+          <td>{{ player.emailPadre }}</td>
+
+          <!-- MADRE -->
+          <td class="col-mother">{{ player.nombreMadre }}</td>
+          <td>{{ player.dniMadre }}</td>
+          <td>{{ player.telefonoMadre }}</td>
+          <td>{{ player.emailMadre }}</td>
+
+          <!-- IBAN -->
+          <td class="fw-semibold">{{ player.iban }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
-<!-- Modal para subir el DNI del jugador -->
+<!-- Modal para subir el DNI -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDniJugador" (click)="cerrarModalDniJugador()">
+</div>
 <div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalDniJugador}"
-    [style.display]="mostrarModalDniJugador ? 'block' : 'none'">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content" style="min-height: 60vh;">
-            <div class="modal-header">
-                <h5 class="modal-title">Subir DNI del Jugador, Padre, Madre o Tutor</h5>
-                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalDniJugador()"></button>
-            </div>
-            <div class="modal-body">
-                <h2>DNI del Jugador</h2>
-                <p style="color: red">Haz clic en "Seleccionar archivo" y elige o haz la foto que desees.
-                    Solo se pueden subir imágenes en formato PNG o JPEG.</p>
-                <div class="row mt-3 mb-3">
-                    <!-- Sección para la primera cara del DNI -->
-                    <div class="col-md-6">
-                        <h6>Primera Cara del DNI</h6>
-                        <div *ngIf="selectedPlayer?.imgDniUno || dniCara1">
-                            <img [src]="dniCara1 ? dniCara1 : imageBaseUrlPlayerDni + selectedPlayer?.imgDniUno"
-                                alt="Primera Cara del DNI" class="img-thumbnail mb-2" />
-                        </div>
-                        <input type="file" (change)="onFileChange($event, 'cara1')" accept="image/*" />
-                        <!--<button style="margin-right: 2em;" class="btn btn-success mt-2"
-                            (click)="subirCaraDni('cara1')">Subir Primera Cara</button> -->
-                        <button *ngIf="selectedPlayer?.imgDniUno" class="form-group btn btn-primary mt-2"
-                            title="Descargar cara 1"
-                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.imgDniUno, 'dni_cara1.jpg')">
-                            Descargar <i class="bi bi-cloud-download"></i>
-                        </button>
-                    </div>
+  [style.display]="mostrarModalDniJugador ? 'block' : 'none'">
 
-                    <!-- Sección para la segunda cara del DNI -->
-                    <div class="col-md-6">
-                        <h6>Segunda Cara del DNI</h6>
-                        <div *ngIf="selectedPlayer?.imgDniDos || dniCara2">
-                            <img [src]="dniCara2 ? dniCara2 : imageBaseUrlPlayerDni + selectedPlayer?.imgDniDos"
-                                alt="Segunda Cara del DNI" class="img-thumbnail mb-2" />
-                        </div>
-                        <input type="file" (change)="onFileChange($event, 'cara2')" accept="image/*" />
-                        <!--<button style="margin-right: 2em;" class="btn btn-success mt-2"
-                            (click)="subirCaraDni('cara2')">Subir Segunda Cara</button> -->
-                        <button *ngIf="selectedPlayer?.imgDniDos" class="form-group btn btn-primary mt-2"
-                            title="Descargar cara 2"
-                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.imgDniDos, 'dni_cara2.jpg')">
-                            Descargar <i class="bi bi-cloud-download"></i>
-                        </button>
-                    </div>
-                </div>
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content modern-modal">
 
-
-                <hr style="margin-top: 2em;">
-                <h2 style="margin-top: 1em;">DNI del Padre, Madre o Tutor 1</h2>
-                <div class="row mt-3 mb-3">
-                    <!-- Sección para la primera cara del DNI -->
-                    <div class="col-md-6">
-                        <h6>Primera Cara del DNI</h6>
-                        <div *ngIf="selectedPlayer?.dniPadre1 || dniCara3">
-                            <img [src]="dniCara3 ? dniCara3 : imageBaseUrlPlayerDni + selectedPlayer?.dniPadre1"
-                                alt="Primera Cara del DNI" class="img-thumbnail mb-2" />
-                        </div>
-                        <input type="file" (change)="onFileChange($event, 'cara3')" accept="image/*" />
-                        <!--<button style="margin-right: 2em;" class="btn btn-success mt-2"
-                            (click)="subirCaraDni('cara3')">Subir Primera Cara</button> -->
-                        <button *ngIf="selectedPlayer?.dniPadre1" class="form-group btn btn-primary mt-2"
-                            title="Descargar cara 1"
-                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniPadre1, 'dni_cara1.jpg')">
-                            Descargar <i class="bi bi-cloud-download"></i>
-                        </button>
-                    </div>
-
-                    <!-- Sección para la segunda cara del DNI -->
-                    <div class="col-md-6">
-                        <h6>Segunda Cara del DNI</h6>
-                        <div *ngIf="selectedPlayer?.dniPadre2 || dniCara4">
-                            <img [src]="dniCara4 ? dniCara4 : imageBaseUrlPlayerDni + selectedPlayer?.dniPadre2"
-                                alt="Segunda Cara del DNI" class="img-thumbnail mb-2" />
-                        </div>
-                        <input type="file" (change)="onFileChange($event, 'cara4')" accept="image/*" />
-                        <!--<button style="margin-right: 2em;" class="btn btn-success mt-2"
-                            (click)="subirCaraDni('cara4')">Subir Segunda Cara</button> -->
-                        <button *ngIf="selectedPlayer?.dniPadre2" class="form-group btn btn-primary mt-2"
-                            title="Descargar cara 2"
-                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniPadre2, 'dni_cara2.jpg')">
-                            Descargar <i class="bi bi-cloud-download"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <hr style="margin-top: 2em;">
-                <h2 style="margin-top: 1em;">DNI del Padre, Madre o Tutor 2</h2>
-                <div class="row mt-3 mb-3">
-                    <!-- Sección para la primera cara del DNI -->
-                    <div class="col-md-6">
-                        <h6>Primera Cara del DNI</h6>
-                        <div *ngIf="selectedPlayer?.dniMadre1 || dniCara5">
-                            <img [src]="dniCara5 ? dniCara5 : imageBaseUrlPlayerDni + selectedPlayer?.dniMadre1"
-                                alt="Primera Cara del DNI" class="img-thumbnail mb-2" />
-                        </div>
-                        <input type="file" (change)="onFileChange($event, 'cara5')" accept="image/*" />
-                        <!--<button style="margin-right: 2em;" class="btn btn-success mt-2"
-                            (click)="subirCaraDni('cara5')">Subir Primera Cara</button> -->
-                        <button *ngIf="selectedPlayer?.dniMadre1" class="form-group btn btn-primary mt-2"
-                            title="Descargar cara 1"
-                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniMadre1, 'dni_cara1.jpg')">
-                            Descargar <i class="bi bi-cloud-download"></i>
-                        </button>
-                    </div>
-
-                    <!-- Sección para la segunda cara del DNI -->
-                    <div class="col-md-6">
-                        <h6>Segunda Cara del DNI</h6>
-                        <div *ngIf="selectedPlayer?.dniMadre2 || dniCara6">
-                            <img [src]="dniCara6 ? dniCara6 : imageBaseUrlPlayerDni + selectedPlayer?.dniMadre2"
-                                alt="Segunda Cara del DNI" class="img-thumbnail mb-2" />
-                        </div>
-                        <input type="file" (change)="onFileChange($event, 'cara6')" accept="image/*" />
-                        <!--<button style="margin-right: 2em;" class="btn btn-success mt-2"
-                            (click)="subirCaraDni('cara6')">Subir Segunda Cara</button> -->
-                        <button *ngIf="selectedPlayer?.dniMadre2" class="form-group btn btn-primary mt-2"
-                            title="Descargar cara 2"
-                            (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniMadre2, 'dni_cara2.jpg')">
-                            Descargar <i class="bi bi-cloud-download"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+      <!-- HEADER -->
+      <div class="modal-header modern-modal-header">
+        <div>
+          <h5 class="modal-title">
+            {{ 'PLAYERS.DNI_MODAL.TITLE' | translate }}
+          </h5>
+          <small class="modal-subtitle">
+            {{ 'PLAYERS.DNI_MODAL.SUBTITLE' | translate }}
+          </small>
         </div>
+
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalDniJugador()">
+        </button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body modern-modal-body">
+
+        <!-- ================= JUGADOR ================= -->
+        <section class="dni-section">
+          <h6 class="section-title">
+            {{ 'PLAYERS.DNI_MODAL.PLAYER.TITLE' | translate }}
+          </h6>
+
+          <p class="section-help">
+            {{ 'PLAYERS.DNI_MODAL.HELP' | translate }}
+          </p>
+
+          <div class="row g-4">
+            <!-- Cara 1 -->
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">
+                  {{ 'PLAYERS.DNI_MODAL.FRONT' | translate }}
+                </span>
+
+                <div class="dni-preview" *ngIf="selectedPlayer?.imgDniUno || dniCara1">
+                  <img [src]="dniCara1 ? dniCara1 : imageBaseUrlPlayerDni + selectedPlayer?.imgDniUno">
+                </div>
+
+                <input type="file" class="form-control" (change)="onFileChange($event, 'cara1')" accept="image/*">
+
+                <button *ngIf="selectedPlayer?.imgDniUno" class="btn btn-outline-primary btn-sm mt-2"
+                  (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.imgDniUno, 'dni_cara1.jpg')">
+                  <i class="bi bi-download"></i>
+                  {{ 'COMMON.DOWNLOAD' | translate }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Cara 2 -->
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">
+                  {{ 'PLAYERS.DNI_MODAL.BACK' | translate }}
+                </span>
+
+                <div class="dni-preview" *ngIf="selectedPlayer?.imgDniDos || dniCara2">
+                  <img [src]="dniCara2 ? dniCara2 : imageBaseUrlPlayerDni + selectedPlayer?.imgDniDos">
+                </div>
+
+                <input type="file" class="form-control" (change)="onFileChange($event, 'cara2')" accept="image/*">
+
+                <button *ngIf="selectedPlayer?.imgDniDos" class="btn btn-outline-primary btn-sm mt-2"
+                  (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.imgDniDos, 'dni_cara2.jpg')">
+                  <i class="bi bi-download"></i>
+                  {{ 'COMMON.DOWNLOAD' | translate }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= PADRE / TUTOR 1 ================= -->
+        <section class="dni-section">
+          <h6 class="section-title">
+            {{ 'PLAYERS.DNI_MODAL.FATHER.TITLE' | translate }}
+          </h6>
+
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">
+                  {{ 'PLAYERS.DNI_MODAL.FRONT' | translate }}
+                </span>
+
+                <div class="dni-preview" *ngIf="selectedPlayer?.dniPadre1 || dniCara3">
+                  <img [src]="dniCara3 ? dniCara3 : imageBaseUrlPlayerDni + selectedPlayer?.dniPadre1">
+                </div>
+
+                <input type="file" class="form-control" (change)="onFileChange($event, 'cara3')" accept="image/*">
+
+                <button *ngIf="selectedPlayer?.dniPadre1" class="btn btn-outline-primary btn-sm mt-2"
+                  (click)="descargarImagen(imageBaseUrlPlayerDni + selectedPlayer.dniPadre1, 'dni_padre_1.jpg')">
+                  <i class="bi bi-download"></i>
+                  {{ 'COMMON.DOWNLOAD' | translate }}
+                </button>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">
+                  {{ 'PLAYERS.DNI_MODAL.BACK' | translate }}
+                </span>
+
+                <div class="dni-preview" *ngIf="selectedPlayer?.dniPadre2 || dniCara4">
+                  <img [src]="dniCara4 ? dniCara4 : imageBaseUrlPlayerDni + selectedPlayer?.dniPadre2">
+                </div>
+
+                <input type="file" class="form-control" (change)="onFileChange($event, 'cara4')" accept="image/*">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ================= MADRE / TUTOR 2 ================= -->
+        <section class="dni-section">
+          <h6 class="section-title">
+            {{ 'PLAYERS.DNI_MODAL.MOTHER.TITLE' | translate }}
+          </h6>
+
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">
+                  {{ 'PLAYERS.DNI_MODAL.FRONT' | translate }}
+                </span>
+
+                <div class="dni-preview" *ngIf="selectedPlayer?.dniMadre1 || dniCara5">
+                  <img [src]="dniCara5 ? dniCara5 : imageBaseUrlPlayerDni + selectedPlayer?.dniMadre1">
+                </div>
+
+                <input type="file" class="form-control" (change)="onFileChange($event, 'cara5')" accept="image/*">
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">
+                  {{ 'PLAYERS.DNI_MODAL.BACK' | translate }}
+                </span>
+
+                <div class="dni-preview" *ngIf="selectedPlayer?.dniMadre2 || dniCara6">
+                  <img [src]="dniCara6 ? dniCara6 : imageBaseUrlPlayerDni + selectedPlayer?.dniMadre2">
+                </div>
+
+                <input type="file" class="form-control" (change)="onFileChange($event, 'cara6')" accept="image/*">
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
     </div>
+  </div>
 </div>
-
-<!-- Modal para ver documentacion del jugador -->
+<!-- Modal para ver documentación del jugador -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDocJugador" (click)="cerrarModalDocJugador()">
+</div>
 <div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalDocJugador}"
-    [style.display]="mostrarModalDocJugador ? 'block' : 'none'">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content" style="min-height: 80vh;">
-            <div class="modal-header">
-                <h5 class="modal-title">Documentación del Jugador</h5>
-                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalDocJugador()"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div *ngFor="let doc of listaDocumentos" class="col-12 mb-3 p-3 rounded"
-                        style="background-color: #212529; border: 1px solid black; color: white;">
-                        <h5 class="fw-bold">{{ doc.nombre }}</h5>
-                        <p *ngIf="doc.requiere < 2">{{ doc.descripcion }}</p>
-                        <div class="d-flex gap-2">
-                            <!-- Botón de descarga (solo si requiere === 0)
-                <button *ngIf="doc.requiere === 0" class="btn btn-light" (click)="descargar(doc)"
-                    title="Descargar documento">
-                    <i class="bi bi-arrow-down-circle"></i>
-                </button> -->
+  [style.display]="mostrarModalDocJugador ? 'block' : 'none'">
 
-                            <!-- Botón de descarga (solo si requiere === 0) -->
-                            <button *ngIf="doc.requiere === 0 || doc.fileClub" class="btn btn-light"
-                                (click)="descargar(doc)" title="Descargar documento" [ngClass]="{
-                    'bg-secondary text-white': doc.descargado === 0,
-                    'bg-success text-white': doc.descargado === 1
-                }">
-                                <i class="bi bi-arrow-down-circle"></i>
-                            </button>
+  <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+    <div class="modal-content modern-modal">
 
-                            <!-- Botón de subida (solo si requiere === 1) -->
-                            <button *ngIf="doc.requiere === 1" class="btn btn-light" (click)="subir(doc)"
-                                title="Subir documento" [ngClass]="{
-                    'bg-secondary text-white': doc.subido === 0,
-                    'bg-success text-white': doc.subido === 1
-                }">
-                                <i class="bi bi-arrow-up-circle"></i>
-                            </button>
-
-                            <!-- Botón de subida (solo si requiere === 1) -->
-                            <button *ngIf="doc.requiere === 1 && doc.subido === 1" class="btn btn-light"
-                                (click)="verDocSubido(doc)" title="Ver documento" [ngClass]="{
-                    'bg-secondary text-white': doc.subido === 0,
-                    'bg-success text-white': doc.subido === 1
-                }">
-                                <i class="bi bi-eye"></i>
-                            </button>
-
-                            <!-- Botón de subida (solo si requiere === 1) -->
-                            <button *ngIf="doc.requiere === 2" class="btn btn-light"
-                                (click)="rellenarPersonalizado(doc)" title="Subir documento" [ngClass]="{
-                    'bg-secondary text-white': doc.subido === 0,
-                    'bg-success text-white': doc.subido === 1
-                }">
-                                <i class="bi bi-card-text"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <!-- HEADER -->
+      <div class="modal-header modern-modal-header">
+        <div>
+          <h5 class="modal-title">
+            {{ 'PLAYERS.DOC_MODAL.TITLE' | translate }}
+          </h5>
+          <small class="modal-subtitle">
+            {{ 'PLAYERS.DOC_MODAL.SUBTITLE' | translate }}
+          </small>
         </div>
+
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalDocJugador()">
+        </button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body modern-modal-body">
+
+        <div class="row g-3">
+          <div *ngFor="let doc of listaDocumentos" class="col-12">
+
+            <div class="doc-card">
+
+              <!-- INFO -->
+              <div class="doc-info">
+                <h6 class="doc-title">
+                  {{ doc.nombre }}
+                </h6>
+
+                <p class="doc-desc" *ngIf="doc.requiere < 2">
+                  {{ doc.descripcion }}
+                </p>
+              </div>
+
+              <!-- ACTIONS -->
+              <div class="doc-actions">
+
+                <!-- DESCARGAR -->
+                <button *ngIf="doc.requiere === 0 || doc.fileClub" class="btn-icon" [ngClass]="{
+                    'success': doc.descargado === 1,
+                    'secondary': doc.descargado === 0
+                  }" (click)="descargar(doc)" title="{{ 'PLAYERS.DOC_MODAL.DOWNLOAD' | translate }}">
+                  <i class="bi bi-arrow-down-circle"></i>
+                </button>
+
+                <!-- SUBIR -->
+                <button *ngIf="doc.requiere === 1" class="btn-icon" [ngClass]="{
+                    'success': doc.subido === 1,
+                    'secondary': doc.subido === 0
+                  }" (click)="subir(doc)" title="{{ 'PLAYERS.DOC_MODAL.UPLOAD' | translate }}">
+                  <i class="bi bi-arrow-up-circle"></i>
+                </button>
+
+                <!-- VER -->
+                <button *ngIf="doc.requiere === 1 && doc.subido === 1" class="btn-icon info" (click)="verDocSubido(doc)"
+                  title="{{ 'PLAYERS.DOC_MODAL.VIEW' | translate }}">
+                  <i class="bi bi-eye"></i>
+                </button>
+
+                <!-- PERSONALIZADO -->
+                <button *ngIf="doc.requiere === 2" class="btn-icon warning" (click)="rellenarPersonalizado(doc)"
+                  title="{{ 'PLAYERS.DOC_MODAL.FILL' | translate }}">
+                  <i class="bi bi-card-text"></i>
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Modal para subir documento del club -->
-<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show': mostrarModalDocumento }"
-    [style.display]="mostrarModalDocumento ? 'block' : 'none'">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Subir Documento (PDF, Word o imagen)</h5>
-                <button type="button" class="btn-close" (click)="cerrarModalDocumento()"></button>
-            </div>
-            <div class="modal-body">
-                <ng-template #subirNuevoArchivo>
-                    <p>Aquí puedes subir el archivo que se está solicitando.</p>
-                </ng-template>
+<!-- BACKDROP -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDocumento" (click)="cerrarModalDocumento()">
+</div>
 
-                <div class="mb-3">
-                    <label>Seleccionar archivo (.png, .jpg, .pdf o .doc/.docx):</label>
-                    <input type="file" class="form-control" (change)="onFileSelected($event)"
-                        accept=".pdf,.doc,.docx,.jpg,.png,.jpeg" />
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" (click)="cerrarModalDocumento()">Cancelar</button>
-                <button class="btn btn-primary" (click)="subirDocumento()">Subir</button>
-            </div>
+<!-- MODAL -->
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show': mostrarModalDocumento }"
+  [style.display]="mostrarModalDocumento ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content modal-base">
+
+      <!-- HEADER -->
+      <div class="modal-base__header">
+        <h5 class="modal-title">
+          {{ 'PLAYERS.PLAYERS.MODAL_UPLOAD_DOC.TITLE' | translate }}
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrarModalDocumento()"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-base__body">
+
+        <p class="mb-3">
+          {{ 'PLAYERS.PLAYERS.MODAL_UPLOAD_DOC.DESCRIPTION' | translate }}
+        </p>
+
+        <div class="modal-card">
+          <label class="modal-label">
+            {{ 'PLAYERS.PLAYERS.MODAL_UPLOAD_DOC.FILE_LABEL' | translate }}
+          </label>
+
+          <input type="file" class="form-control" (change)="onFileSelected($event)"
+            accept=".pdf,.doc,.docx,.jpg,.png,.jpeg" />
         </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-base__footer">
+        <button class="btn btn-secondary" (click)="cerrarModalDocumento()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button class="btn btn-primary" (click)="subirDocumento()">
+          {{ 'COMMON.UPLOAD' | translate }}
+        </button>
+      </div>
+
     </div>
+  </div>
 </div>
 
 <!-- Modal texto personalizado -->
-<div class="modal fade" tabindex="-1" [ngClass]="{ 'show': mostrarModalEditarPersonalizado }"
-    [style.display]="mostrarModalEditarPersonalizado ? 'block' : 'none'">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Requerimiento Personalizado</h5>
-                <button type="button" class="btn-close" (click)="cerrarModalEditarPersonalizado()"></button>
-            </div>
-            <div class="modal-body">
-                <div *ngIf="showDate">
-                    <h3 class="form-label"><b>Modificado y autorizado el día: {{ fechaEditando }}</b></h3>
-                    <hr>
-                </div>
-                <label class="form-label">Contenido del mensaje:</label>
-                <div class="form-group">
-                    <div class="form-control" id="editorPersonalizado" contenteditable="true"
-                        [innerHTML]="contenidoEditando">
-                    </div>
-                </div>
-                <div class="form-check mb-3 mt-3">
-                    <input type="checkbox" class="form-check-input" id="checkboxReq" [(ngModel)]="requiereRespuesta">
-                    <label for="checkboxReq" class="form-check-label"> {{ tituloEditando }}</label>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" (click)="cerrarModalEditarPersonalizado()">Cancelar</button>
-                <button class="btn btn-success" (click)="guardarEdicionPersonalizado()">Guardar cambios</button>
-            </div>
-        </div>
-    </div>
+<!-- BACKDROP -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalEditarPersonalizado" (click)="cerrarModalEditarPersonalizado()">
 </div>
+
+<!-- MODAL -->
+<div class="modal fade" tabindex="-1" [ngClass]="{ 'show': mostrarModalEditarPersonalizado }"
+  [style.display]="mostrarModalEditarPersonalizado ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content modal-base">
+
+      <!-- HEADER -->
+      <div class="modal-base__header">
+        <h5 class="modal-title">
+          {{ 'MODAL_CUSTOM.TITLE' | translate }}
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrarModalEditarPersonalizado()"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-base__body">
+
+        <div *ngIf="showDate" class="mb-3">
+          <strong>
+            {{ 'MODAL_CUSTOM.LAST_UPDATE' | translate:{ date: fechaEditando } }}
+          </strong>
+          <hr />
+        </div>
+
+        <label class="modal-label">
+          {{ 'MODAL_CUSTOM.CONTENT_LABEL' | translate }}
+        </label>
+
+        <div id="editorPersonalizado" class="form-control" contenteditable="true" [innerHTML]="contenidoEditando">
+        </div>
+
+        <div class="form-check mt-3">
+          <input type="checkbox" class="form-check-input" id="checkboxReq" [(ngModel)]="requiereRespuesta" />
+
+          <label for="checkboxReq" class="form-check-label">
+            {{ tituloEditando }}
+          </label>
+        </div>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-base__footer">
+        <button class="btn btn-secondary" (click)="cerrarModalEditarPersonalizado()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button class="btn btn-success" (click)="guardarEdicionPersonalizado()">
+          {{ 'COMMON.SAVE_CHANGES' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
 <!-- Modal para subir documento del club -->
-<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show': mostrarModalDocumentoOjo }"
-    [style.display]="mostrarModalDocumentoOjo ? 'block' : 'none'">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Subir Documento (PDF, Word o imagen)</h5>
-                <button type="button" class="btn-close" (click)="cerrarModalDocumentoOjo()"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3 text-center"
-                    *ngIf="docPadreTemp?.subido === 1 && docPadreTemp?.filePadre; else subirNuevoArchivo">
-                    <ng-container *ngIf="esImagen(docPadreTemp.filePadre); else mostrarBotonDocumento">
-                        <p class="mb-2">Documento ya subido:</p>
-                        <img [src]="'https://appsphairatech.com/images/docs-padres/' + docPadreTemp.filePadre"
-                            alt="Documento subido" class="img-fluid rounded shadow-sm"
-                            style="max-width: 100%; max-height: 350px; object-fit: contain;" />
-                    </ng-container>
-
-                    <ng-template #mostrarBotonDocumento>
-                        <p class="mb-2">Documento ya subido: {{ docPadreTemp.filePadre }}</p>
-                        <a class="btn btn-primary"
-                            [href]="'https://appsphairatech.com/images/docs-padres/' + docPadreTemp.filePadre"
-                            target="_blank" rel="noopener">
-                            Ver / Descargar documento <i class="bi bi-box-arrow-up-right ms-1"></i>
-                        </a>
-                    </ng-template>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" (click)="cerrarModalDocumentoOjo()">Cerrar</button>
-            </div>
-        </div>
-    </div>
+<!-- BACKDROP -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDocumentoOjo" (click)="cerrarModalDocumentoOjo()">
 </div>
 
-<!-- Modal para invitar un jugador por mail -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalMover}">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Vas a mover de equipo a {{ nombreJugador }}</h5>
-                <!-- Botón de cerrar con un icono -->
-                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalMover()"></button>
-            </div>
-            <div class="modal-body">
-                <p>Elige el equipo al que quieres mover el jugador.</p>
-                <form class="form-login" (ngSubmit)="moverJugador()">
-                    <div class="mb-3" style="text-align: center;">
-                        <div class="col">
-                            <label for="teamSelected" class="form-label">Selecciona el equipo:</label>
-                            <select class="form-control" id="teamSelected" name="teamSelected"
-                                [(ngModel)]="teamSelected">
-                                <option value="0">
-                                    Escoge un equipo</option>
-                                <ng-container *ngFor="let team of listTeamsForCombo">
-                                    <option *ngIf="team.value !== teamId" [value]="team.value">
-                                        {{ team.name }}
-                                    </option>
-                                </ng-container>
-                            </select>
-                        </div>
+<!-- MODAL -->
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show': mostrarModalDocumentoOjo }"
+  [style.display]="mostrarModalDocumentoOjo ? 'block' : 'none'">
 
-                        <!-- Checkbox añadido -->
-                        <div class="form-check mt-3">
-                            <input class="form-check-input" type="checkbox" id="addPlayerMoved"
-                                [(ngModel)]="addPlayerMoved" name="addPlayerMoved">
-                            <label class="form-check-label" for="addPlayerMoved" style="color: red">
-                                Si activas el check box, el jugador será añadido al equipo seleccionado, además de permanecer en el que ya está.
-                            </label>
-                        </div>
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content modal-base">
 
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary float-end">Aceptar</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+      <!-- HEADER -->
+      <div class="modal-base__header">
+        <h5 class="modal-title">
+          {{ 'MODAL_VIEW_DOC.TITLE' | translate }}
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrarModalDocumentoOjo()"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-base__body text-center">
+
+        <ng-container *ngIf="docPadreTemp?.subido === 1 && docPadreTemp?.filePadre">
+
+          <ng-container *ngIf="esImagen(docPadreTemp.filePadre); else fileLink">
+
+            <p class="mb-2">
+              {{ 'MODAL_VIEW_DOC.ALREADY_UPLOADED' | translate }}
+            </p>
+
+            <img [src]="'https://appsphairatech.com/images/docs-padres/' + docPadreTemp.filePadre"
+              class="img-fluid rounded shadow-sm" style="max-height: 350px; object-fit: contain;" />
+
+          </ng-container>
+
+          <ng-template #fileLink>
+            <p class="mb-2">
+              {{ 'MODAL_VIEW_DOC.FILE_NAME' | translate }}:
+              {{ docPadreTemp.filePadre }}
+            </p>
+
+            <a class="btn btn-primary" target="_blank" rel="noopener"
+              [href]="'https://appsphairatech.com/images/docs-padres/' + docPadreTemp.filePadre">
+              {{ 'MODAL_VIEW_DOC.OPEN_FILE' | translate }}
+              <i class="bi bi-box-arrow-up-right ms-1"></i>
+            </a>
+          </ng-template>
+
+        </ng-container>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-base__footer">
+        <button class="btn btn-secondary" (click)="cerrarModalDocumentoOjo()">
+          {{ 'COMMON.CLOSE' | translate }}
+        </button>
+      </div>
+
     </div>
+  </div>
+</div>
+
+
+<!-- Modal para invitar un jugador por mail -->
+<!-- BACKDROP -->
+<div class="modal-backdrop-custom" *ngIf="showModalMover" (click)="cerrarModalMover()">
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show': showModalMover }"
+  [style.display]="showModalMover ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content modal-base">
+
+      <!-- HEADER -->
+      <div class="modal-base__header">
+        <h5 class="modal-title">
+          {{ 'MODAL_MOVE_PLAYER.TITLE' | translate:{ name: nombreJugador } }}
+        </h5>
+        <button class="btn-close" (click)="cerrarModalMover()"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-base__body">
+
+        <p>
+          {{ 'MODAL_MOVE_PLAYER.DESCRIPTION' | translate }}
+        </p>
+
+        <form (ngSubmit)="moverJugador()">
+
+          <label class="modal-label">
+            {{ 'MODAL_MOVE_PLAYER.SELECT_TEAM' | translate }}
+          </label>
+
+          <select class="form-select" [(ngModel)]="teamSelected" name="teamSelected">
+            <option value="0">
+              {{ 'MODAL_MOVE_PLAYER.SELECT_PLACEHOLDER' | translate }}
+            </option>
+
+            <ng-container *ngFor="let team of listTeamsForCombo">
+              <option *ngIf="team.value !== teamId" [value]="team.value">
+                {{ team.name }}
+              </option>
+            </ng-container>
+          </select>
+
+          <div class="form-check mt-3">
+            <input type="checkbox" class="form-check-input" id="addPlayerMoved" [(ngModel)]="addPlayerMoved"
+              name="addPlayerMoved" />
+
+            <label class="form-check-label text-danger" for="addPlayerMoved">
+              {{ 'MODAL_MOVE_PLAYER.KEEP_BOTH' | translate }}
+            </label>
+          </div>
+
+        </form>
+
+      </div>
+
+      <!-- FOOTER -->
+      <div class="modal-base__footer">
+        <button class="btn btn-primary" (click)="moverJugador()">
+          {{ 'COMMON.ACCEPT' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
 </div>

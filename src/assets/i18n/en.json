@@ -18,6 +18,12 @@
   "COMMON": {
     "BACK": "Back",
     "DATE": "Date",
+    "CANCEL": "Cancel",
+    "UPLOAD": "Upload",
+    "DOWNLOAD": "Download",
+    "SAVE_CHANGES": "Save changes",
+    "CLOSE": "Close",
+    "ACCEPT": "Accept",
     "EXPORT_EXCEL": "Export Excel",
     "LOADING_LIST": "Loading list...",
     "FEMALE":"Female",
@@ -342,7 +348,10 @@
       "TEAMS_DESC": "Statistics",
 
       "PLAYER": "Player",
-      "PLAYER_DESC": "Metrics"
+      "PLAYER_DESC": "Metrics",
+
+      "COACH": "Coaches",
+      "COACH_DESC": "Information"
     },
 
     "RESULTS": {
@@ -657,5 +666,50 @@
     "NUM_TEAMS": "Number of Teams",
     "TOTAL": "Total Amount",
     "CONFIRM": "Confirm Subscription"
+  },
+  "PLAYERS":{
+    "TITLE": "Players List",
+    "SEARCH_LABEL": "Search any field",
+    "SEARCH_PLACEHOLDER": "Search...",
+    "TEAM_LABEL": "Select a team",
+    "ALL_TEAMS": "All teams",
+    "DOWNLOAD_EXCEL": "Download Excel",
+    "TABLE": {
+      "IMAGE": "Image",
+      "NAME": "Name",
+      "TEAM": "Team",
+      "BIRTHDATE": "Birthdate",
+      "PHONE": "Phone",
+      "DNI": "ID",
+      "DNI_IMG": "ID Img",
+      "DOC": "Document",
+      "FATHER": "Father",
+      "MOTHER": "Mother",
+      "EMAIL": "Email",
+      "IBAN": "IBAN"
+    },
+    "DNI_MODAL": {
+      "TITLE": "Upload ID documentation",
+      "SUBTITLE": "Player · Father · Mother · Guardian",
+      "HELP": "Only PNG or JPEG images are allowed",
+      "FRONT": "Front side",
+      "BACK": "Back side",
+      "PLAYER": { "TITLE": "Player ID" },
+      "FATHER": { "TITLE": "Father or guardian ID" },
+      "MOTHER": { "TITLE": "Mother or guardian ID" }
+    },
+    "DOC_MODAL": {
+      "TITLE": "Player documentation",
+      "SUBTITLE": "Download, upload and review documents",
+      "DOWNLOAD": "Download document",
+      "UPLOAD": "Upload document",
+      "VIEW": "View document",
+      "FILL": "Fill document"
+    },
+    "MODAL_UPLOAD_DOC": {
+      "TITLE": "Upload document",
+      "DESCRIPTION": "Here you can upload the requested file.",
+      "FILE_LABEL": "Select file"
+    }
   }
 }

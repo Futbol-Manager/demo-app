@@ -1,20 +1,20 @@
-import {Component, OnInit} from '@angular/core';
-import {User} from 'src/app/core/models/users/user.model';
-import {LoginService} from 'src/app/core/services/login/login.service';
-import {TeamNew} from 'src/app/core/services/team/team.model';
-import {TeamService} from 'src/app/core/services/team/team.service';
-import {Response} from 'src/app/core/services/models/response.model';
-import {Router} from '@angular/router';
-import {FormBuilder, FormGroup} from '@angular/forms';
-import {ClubService} from 'src/app/core/services/club/club.service';
-import {distinctUntilChanged, filter} from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
+import { User } from 'src/app/core/models/users/user.model';
+import { LoginService } from 'src/app/core/services/login/login.service';
+import { TeamNew } from 'src/app/core/services/team/team.model';
+import { TeamService } from 'src/app/core/services/team/team.service';
+import { Response } from 'src/app/core/services/models/response.model';
+import { Router } from '@angular/router';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ClubService } from 'src/app/core/services/club/club.service';
+import { distinctUntilChanged, filter } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-inicio',
   templateUrl: './equipos.component.html',
-  styleUrls: ['./equipos.component.scss']
+  styleUrls: ['./equipos.component.scss'],
 })
 export class EquiposComponent implements OnInit {
   crearEquipoForm: FormGroup;
@@ -71,19 +71,19 @@ export class EquiposComponent implements OnInit {
 
   // Categorías por defecto (las que ya tienes)
   categoriasDefault = [
-    {value: 27, label: 'Sin equipo'},
-    {value: 15, label: 'Senior'},
-    {value: 16, label: 'Juvenil'},
-    {value: 17, label: 'Juvenil/Cadete Femenina'},
-    {value: 18, label: 'Cadete'},
-    {value: 19, label: 'Cadete/Infantil Femenina'},
-    {value: 20, label: 'Infantil'},
-    {value: 21, label: 'Infantil/Alevín Femenina'},
-    {value: 22, label: 'Alevín'},
-    {value: 23, label: 'Benjamín'},
-    {value: 24, label: 'Benjamín/Prebenjamín Femenina'},
-    {value: 25, label: 'Prebenjamín'},
-    {value: 26, label: 'Debutante'},
+    { value: 27, label: 'Sin equipo' },
+    { value: 15, label: 'Senior' },
+    { value: 16, label: 'Juvenil' },
+    { value: 17, label: 'Juvenil/Cadete Femenina' },
+    { value: 18, label: 'Cadete' },
+    { value: 19, label: 'Cadete/Infantil Femenina' },
+    { value: 20, label: 'Infantil' },
+    { value: 21, label: 'Infantil/Alevín Femenina' },
+    { value: 22, label: 'Alevín' },
+    { value: 23, label: 'Benjamín' },
+    { value: 24, label: 'Benjamín/Prebenjamín Femenina' },
+    { value: 25, label: 'Prebenjamín' },
+    { value: 26, label: 'Debutante' },
   ];
 
   // Categorías específicas para Federación 14 (Cataluña)
@@ -104,51 +104,56 @@ export class EquiposComponent implements OnInit {
   ].map((label, index) => ({ value: 100 + index, label })); // usar valores altos si necesitas diferenciarlos */
 
   categoriasCatalanas = [
-    {value: 28, label: 'Juvenil'},
-    {value: 29, label: 'Cadet'},
-    {value: 30, label: 'Infantil S14'},
-    {value: 31, label: 'Infantil S13'},
-    {value: 32, label: 'Aleví S12'},
-    {value: 33, label: 'Aleví S11'},
-    {value: 34, label: 'Lúdica Aleví'},
-    {value: 35, label: 'Benjamí S10'},
-    {value: 36, label: 'Benjamí S9'},
-    {value: 37, label: 'Lúdica Benjamí'},
-    {value: 38, label: 'Prebenjamí S8'},
-    {value: 39, label: 'Prebenjamí S7'},
-    {value: 40, label: 'Lúdica Prebenjamí'},
-    {value: 41, label: 'Cadet S15'},
-    {value: 42, label: 'Cadet S16'}
+    { value: 28, label: 'Juvenil' },
+    { value: 29, label: 'Cadet' },
+    { value: 30, label: 'Infantil S14' },
+    { value: 31, label: 'Infantil S13' },
+    { value: 32, label: 'Aleví S12' },
+    { value: 33, label: 'Aleví S11' },
+    { value: 34, label: 'Lúdica Aleví' },
+    { value: 35, label: 'Benjamí S10' },
+    { value: 36, label: 'Benjamí S9' },
+    { value: 37, label: 'Lúdica Benjamí' },
+    { value: 38, label: 'Prebenjamí S8' },
+    { value: 39, label: 'Prebenjamí S7' },
+    { value: 40, label: 'Lúdica Prebenjamí' },
+    { value: 41, label: 'Cadet S15' },
+    { value: 42, label: 'Cadet S16' },
   ];
-
 
   // Niveles por defecto
   nivelesDefault = [
-    {value: 'LaLiga EA Sports', label: 'LaLiga EA Sports'},
-    {value: 'Liga F', label: 'Liga F'},
-    {value: 'LaLiga Hypermotion', label: 'LaLiga Hypermotion'},
-    {value: 'Segunda RFEF Femenina', label: 'Segunda RFEF Femenina'},
-    {value: 'Primera RFEF', label: 'Primera RFEF'},
-    {value: 'Segunda RFEF', label: 'Segunda RFEF'},
-    {value: 'Tercera RFEF', label: 'Tercera RFEF'},
-    {value: 'Tercera RFEF Femenina', label: 'Tercera RFEF Femenina'},
-    {value: 'Preferente Autonómica', label: 'Preferente Autonómica'},
-    {value: 'Preferente Autonómica Femenina', label: 'Preferente Autonómica Femenina'},
-    {value: 'Primera Autonómica', label: 'Primera Autonómica'},
-    {value: 'Primera Autonómica Femenina', label: 'Primera Autonómica Femenina'},
-    {value: 'Segunda Autonómica', label: 'Segunda Autonómica'},
-    {value: 'Tercera Autonómica', label: 'Tercera Autonómica'},
-    {value: 'División de Honor', label: 'División de Honor'},
-    {value: 'Liga Nacional', label: 'Liga Nacional'},
-    {value: 'Liga Sub-23', label: 'Liga Sub-23'},
-    {value: 'Superliga', label: 'Superliga'},
-    {value: 'Autonómica', label: 'Autonómica'},
-    {value: 'Preferente', label: 'Preferente'},
-    {value: 'Primera', label: 'Primera'},
-    {value: 'Segunda', label: 'Segunda'},
-    {value: 'Tercera', label: 'Tercera'},
-    {value: 'Fútbol 5', label: 'Fútbol 5'},
-    {value: 'No federado', label: 'No federado'},
+    { value: 'LaLiga EA Sports', label: 'LaLiga EA Sports' },
+    { value: 'Liga F', label: 'Liga F' },
+    { value: 'LaLiga Hypermotion', label: 'LaLiga Hypermotion' },
+    { value: 'Segunda RFEF Femenina', label: 'Segunda RFEF Femenina' },
+    { value: 'Primera RFEF', label: 'Primera RFEF' },
+    { value: 'Segunda RFEF', label: 'Segunda RFEF' },
+    { value: 'Tercera RFEF', label: 'Tercera RFEF' },
+    { value: 'Tercera RFEF Femenina', label: 'Tercera RFEF Femenina' },
+    { value: 'Preferente Autonómica', label: 'Preferente Autonómica' },
+    {
+      value: 'Preferente Autonómica Femenina',
+      label: 'Preferente Autonómica Femenina',
+    },
+    { value: 'Primera Autonómica', label: 'Primera Autonómica' },
+    {
+      value: 'Primera Autonómica Femenina',
+      label: 'Primera Autonómica Femenina',
+    },
+    { value: 'Segunda Autonómica', label: 'Segunda Autonómica' },
+    { value: 'Tercera Autonómica', label: 'Tercera Autonómica' },
+    { value: 'División de Honor', label: 'División de Honor' },
+    { value: 'Liga Nacional', label: 'Liga Nacional' },
+    { value: 'Liga Sub-23', label: 'Liga Sub-23' },
+    { value: 'Superliga', label: 'Superliga' },
+    { value: 'Autonómica', label: 'Autonómica' },
+    { value: 'Preferente', label: 'Preferente' },
+    { value: 'Primera', label: 'Primera' },
+    { value: 'Segunda', label: 'Segunda' },
+    { value: 'Tercera', label: 'Tercera' },
+    { value: 'Fútbol 5', label: 'Fútbol 5' },
+    { value: 'No federado', label: 'No federado' },
   ];
 
   // Niveles específicos para Federación 14
@@ -169,7 +174,7 @@ export class EquiposComponent implements OnInit {
     'Tercera',
     'Quarta',
     'No Federat',
-  ].map(label => ({value: label, label}));
+  ].map((label) => ({ value: label, label }));
 
   // Variables visibles que cambian dinámicamente
   categoriasVisibles = [...this.categoriasDefault];
@@ -180,8 +185,16 @@ export class EquiposComponent implements OnInit {
   isiOS: boolean = false;
 
   categoriaNombre: string = '';
-  categoriasFiltradas: { categoryTypeId: number, categoryName: string, year: number }[] = [];
-  categoriasLista: { categoryTypeId: number, categoryName: string, year: number }[] = [];
+  categoriasFiltradas: {
+    categoryTypeId: number;
+    categoryName: string;
+    year: number;
+  }[] = [];
+  categoriasLista: {
+    categoryTypeId: number;
+    categoryName: string;
+    year: number;
+  }[] = [];
   mostrarDropdown: boolean = false;
   selectedCategoriaId: number | null = null;
 
@@ -190,10 +203,11 @@ export class EquiposComponent implements OnInit {
   nivelesVisiblesFiltradas = [...this.nivelesDefault];
 
   appStoreUrl = 'https://apps.apple.com/es/app/sphaira-tech/id6745791142';
-  playStore = 'https://play.google.com/store/apps/details?id=com.futbol.sphairatech&pcampaignid=web_share';
+  playStore =
+    'https://play.google.com/store/apps/details?id=com.futbol.sphairatech&pcampaignid=web_share';
   aceptoGestionNavegador = false;
   modalConfirAndroid = false;
-  optionTienda = 1
+  optionTienda = 1;
 
   constructor(
     private loginService: LoginService,
@@ -201,10 +215,10 @@ export class EquiposComponent implements OnInit {
     private teamService: TeamService,
     private clubService: ClubService,
     private fb: FormBuilder,
-    private location: Location,
+    private location: Location
   ) {
     this.excelForm = this.fb.group({
-      excelFile: [null]
+      excelFile: [null],
     });
     this.crearEquipoForm = this.fb.group({
       categoryTypeId: [''],
@@ -214,7 +228,7 @@ export class EquiposComponent implements OnInit {
       objectiveTeam: [''],
       trainingDays: [''],
       opinionTeam: [''],
-      categoriaNombre: ['']
+      categoriaNombre: [''],
     });
   }
 
@@ -224,17 +238,20 @@ export class EquiposComponent implements OnInit {
     this.isAndroid = /android/i.test(userAgent);
     this.isiOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window);
     let datosYaCargados = false; // Bandera para evitar múltiples carga
-    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+    if (
+      localStorage.getItem('temporada') != null &&
+      localStorage.getItem('temporada') != undefined
+    ) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
       this.temporada = this.temporadaStoredValue;
     }
 
     this.loginService.usuarioActual
       .pipe(
-        filter(user => !!user), // Solo procede si `user` tiene un valor
+        filter((user) => !!user), // Solo procede si `user` tiene un valor
         distinctUntilChanged() // Asegura que el valor de `user` haya cambiado
       )
-      .subscribe(user => {
+      .subscribe((user) => {
         if (datosYaCargados) return; // Evita múltiples ejecuciones si ya cargó
         this.usuarioActual = user;
         this.profileId = this.usuarioActual!.profileType.profileId;
@@ -250,34 +267,38 @@ export class EquiposComponent implements OnInit {
           this.cargarListadoEquiposForClub();
         } else if (this.profileId > 2) {
           this.datosCargando = false;
-          this.teamService.getTeamByPlayer(this.userId.toString(), this.temporadaStoredValue).subscribe(
-            (response: Response) => {
-              if (response.data !== null) {
-                this.listHijos = response.data;
-                this.datosCargados = true;
+          this.teamService
+            .getTeamByPlayer(this.userId.toString(), this.temporadaStoredValue)
+            .subscribe(
+              (response: Response) => {
+                if (response.data !== null) {
+                  this.listHijos = response.data;
+                  this.datosCargados = true;
 
-                let goToDatos = false;
-                let teamId = 0;
-                for (let a = 0; a < this.listHijos.length; a++) {
-                  if (this.listHijos[a].apellido == null) {
-                    goToDatos = true;
-                    teamId = this.listHijos[a].teamId;
-                    break;
+                  let goToDatos = false;
+                  let teamId = 0;
+                  for (let a = 0; a < this.listHijos.length; a++) {
+                    if (this.listHijos[a].apellido == null) {
+                      goToDatos = true;
+                      teamId = this.listHijos[a].teamId;
+                      break;
+                    }
                   }
-                }
 
-                if (goToDatos) {
-                  this.router.navigate(['/dashboard/jugadores', teamId]);
+                  if (goToDatos) {
+                    this.router.navigate(['/dashboard/jugadores', teamId]);
+                  }
+                } else {
+                  console.error(
+                    'La respuesta del servicio no tiene la estructura esperada',
+                    response
+                  );
                 }
-
-              } else {
-                console.error('La respuesta del servicio no tiene la estructura esperada', response);
+              },
+              (error) => {
+                console.error('Error al cargar el listado de equipos', error);
               }
-            },
-            (error) => {
-              console.error('Error al cargar el listado de equipos', error);
-            }
-          );
+            );
         }
         datosYaCargados = true; // Actualiza la bandera después de la primera carga
       });
@@ -300,10 +321,41 @@ export class EquiposComponent implements OnInit {
       this.onInputCategoria(value);
     });*/
   }
+  parseTrainingDays(trainingDays: string | null) {
+    if (!trainingDays) {
+      return null;
+    }
+
+    const dayMap: Record<string, string> = {
+      L: 'DAYS.MONDAY',
+      M: 'DAYS.TUESDAY',
+      X: 'DAYS.WEDNESDAY',
+      J: 'DAYS.THURSDAY',
+      V: 'DAYS.FRIDAY',
+      S: 'DAYS.SATURDAY',
+      D: 'DAYS.SUNDAY',
+    };
+
+    const regex = /([LMXJVSD]):\s*([\d:]+-[\d:]+)/g;
+    const result: { dayLabel: string; hours: string }[] = [];
+
+    let match;
+    while ((match = regex.exec(trainingDays)) !== null) {
+      result.push({
+        dayLabel: dayMap[match[1]],
+        hours: match[2],
+      });
+    }
+
+    return result;
+  }
 
   guardarFederacion() {
     if (this.federacion !== null) {
-      localStorage.setItem('federacionSeleccionada', this.federacion.toString());
+      localStorage.setItem(
+        'federacionSeleccionada',
+        this.federacion.toString()
+      );
     }
 
     if (this.federacion != null && this.federacion.toString() === '10') {
@@ -319,13 +371,14 @@ export class EquiposComponent implements OnInit {
     const link = 'https://appsphairatech.com/registro-padres/' + this.clubId;
     //const link = 'localhost:4200/registro-padres/' + this.clubId;
 
-    navigator.clipboard.writeText(link)
+    navigator.clipboard
+      .writeText(link)
       .then(() => {
         console.log('Enlace copiado al portapapeles:', link);
         // Opcional: puedes usar un toast o alert para avisar al usuario
         alert('¡Link copiado!');
       })
-      .catch(err => {
+      .catch((err) => {
         console.error('Error al copiar el enlace:', err);
         alert('No se pudo copiar el enlace. Intenta de nuevo.');
       });
@@ -336,13 +389,15 @@ export class EquiposComponent implements OnInit {
     //si ya paso la semana, se revisara luego la fecha de renovacion, si no paso aun, pues no hacer nada, si paso
     //revisar en stripe el estado, porque si esta bien, hay que actualizar la fecha y si esta mal, actualizar a F el valido y la fecha, si esta mal
     // avisar por un alert
-    this.teamService.getEstadoSuscripcion(this.userId, this.profileId).subscribe(
-      (response: Response) => {
-        this.numEquipos = response.data;
-        if (response.data == 999) {
-          //significa que es un club con plan gratuido
-          //hay que ver si tiene mas de 50 padres que pagan cuota, de ser asi, desbloquear los menus
-          /*this.teamService.getPlayersByTeamByClubVerify(this.userId, this.temporadaStoredValue).subscribe(
+    this.teamService
+      .getEstadoSuscripcion(this.userId, this.profileId)
+      .subscribe(
+        (response: Response) => {
+          this.numEquipos = response.data;
+          if (response.data == 999) {
+            //significa que es un club con plan gratuido
+            //hay que ver si tiene mas de 50 padres que pagan cuota, de ser asi, desbloquear los menus
+            /*this.teamService.getPlayersByTeamByClubVerify(this.userId, this.temporadaStoredValue).subscribe(
             (resp: Response) => {
               this.numPadresPagados = response.data;
               if (resp.data < 49) {
@@ -357,24 +412,24 @@ export class EquiposComponent implements OnInit {
             }
           );*/
 
-          //significa que lo puede tener todo
-          this.clubOk = true;
-        }
+            //significa que lo puede tener todo
+            this.clubOk = true;
+          }
 
-        if (response.data < 1) {
-          //significa que NO es valido el acceso
-          this.datosNoCargados = true;
-        } else {
-          //significa que está solo, sin club
-          this.datosCargados = true;
-          //this.clubOk = true;
+          if (response.data < 1) {
+            //significa que NO es valido el acceso
+            this.datosNoCargados = true;
+          } else {
+            //significa que está solo, sin club
+            this.datosCargados = true;
+            //this.clubOk = true;
+          }
+          this.datosCargando = false;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-        this.datosCargando = false;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   // Método para cargar el listado de equipos
@@ -382,26 +437,31 @@ export class EquiposComponent implements OnInit {
     localStorage.setItem('temporada', this.temporada);
     this.temporadaStoredValue = this.temporada;
 
-    this.teamService.getTeams(this.userId.toString(), this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response && response.data) {
-          if (response.data.picture != null) {
-            this.pictureClub = response.data.picture;
-            this.noPicture = true;
+    this.teamService
+      .getTeams(this.userId.toString(), this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response && response.data) {
+            if (response.data.picture != null) {
+              this.pictureClub = response.data.picture;
+              this.noPicture = true;
+            }
+            // Mapea los datos bajo 'data' a instancias del modelo Team
+            this.listTeam = response.data.teams; //.map((team: TeamConJugadores) => new TeamConJugadores(team));
+          } else {
+            console.error(
+              'La respuesta del servicio no tiene la estructura esperada',
+              response
+            );
           }
-          // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.listTeam = response.data.teams; //.map((team: TeamConJugadores) => new TeamConJugadores(team));
-        } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          this.checkSuscripcion();
+          //this.datosCargados = true;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-        this.checkSuscripcion();
-        //this.datosCargados = true;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
   goBack(): void {
     this.location.back();
@@ -410,61 +470,70 @@ export class EquiposComponent implements OnInit {
     localStorage.setItem('temporada', this.temporada);
     this.temporadaStoredValue = this.temporada;
 
-    this.teamService.getTeamByPlayer(this.userId.toString(), this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        if (response.data !== null) {
-          this.listHijos = response.data;
-          this.datosCargados = true;
+    this.teamService
+      .getTeamByPlayer(this.userId.toString(), this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          if (response.data !== null) {
+            this.listHijos = response.data;
+            this.datosCargados = true;
 
-          let goToDatos = false;
-          let teamId = 0;
-          for (let a = 0; a < this.listHijos.length; a++) {
-            if (this.listHijos[a].apellido == null) {
-              goToDatos = true;
-              teamId = this.listHijos[a].teamId;
-              break;
+            let goToDatos = false;
+            let teamId = 0;
+            for (let a = 0; a < this.listHijos.length; a++) {
+              if (this.listHijos[a].apellido == null) {
+                goToDatos = true;
+                teamId = this.listHijos[a].teamId;
+                break;
+              }
             }
-          }
 
-          if (goToDatos) {
-            this.router.navigate(['/dashboard/jugadores', teamId]);
+            if (goToDatos) {
+              this.router.navigate(['/dashboard/jugadores', teamId]);
+            }
+          } else {
+            console.error(
+              'La respuesta del servicio no tiene la estructura esperada',
+              response
+            );
           }
-
-        } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   cargarListadoEquiposForClub(): void {
     localStorage.setItem('temporada', this.temporada);
     this.temporadaStoredValue = this.temporada;
 
-    this.teamService.getTeamByClub(this.userId.toString(), this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response && response.data) {
-          this.clubId = response.data.club.clubId;
-          if (response.data.club.picture != null) {
-            this.pictureClub = response.data.club.picture;
-            this.noPicture = true;
+    this.teamService
+      .getTeamByClub(this.userId.toString(), this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response && response.data) {
+            this.clubId = response.data.club.clubId;
+            if (response.data.club.picture != null) {
+              this.pictureClub = response.data.club.picture;
+              this.noPicture = true;
+            }
+            // Mapea los datos bajo 'data' a instancias del modelo Team
+            this.listTeam = response.data.teams; //.map((team: TeamConJugadores) => new TeamConJugadores(team));
+          } else {
+            console.error(
+              'La respuesta del servicio no tiene la estructura esperada',
+              response
+            );
           }
-          // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.listTeam = response.data.teams; //.map((team: TeamConJugadores) => new TeamConJugadores(team));
-        } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          this.checkSuscripcion();
+          //this.datosCargados = true;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-        this.checkSuscripcion();
-        //this.datosCargados = true;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   // Método para cargar el listado de clubes
@@ -486,9 +555,7 @@ export class EquiposComponent implements OnInit {
     this.loginService.cerrarSesion();
   }
 
-  verPerfil() {
-
-  }
+  verPerfil() {}
 
   // Método para abrir el modal de creación de equipo
   abrirModalCrearEquipo(): void {
@@ -502,13 +569,15 @@ export class EquiposComponent implements OnInit {
       }
     } else if (this.profileId === 1) {
       //comparar con uno menos ya que estara el Sin Equipo
-      if (this.listTeam.length < (this.numEquipos + 1)) {
+      if (this.listTeam.length < this.numEquipos + 1) {
         accessSusOk = true;
       }
     }
 
     if (!accessSusOk) {
-      const confirmacion = confirm('No puedes crear más equipos, necesitas actualizar tu suscripción, ¿quieres ir a la página de suscripción?. Si tu club pertenece a una federación, habla con ellos para que te amplien el límite.');
+      const confirmacion = confirm(
+        'No puedes crear más equipos, necesitas actualizar tu suscripción, ¿quieres ir a la página de suscripción?. Si tu club pertenece a una federación, habla con ellos para que te amplien el límite.'
+      );
       if (confirmacion) {
         this.router.navigate(['/dashboard/suscripcion', this.userId]);
       }
@@ -542,17 +611,17 @@ export class EquiposComponent implements OnInit {
           categoryType: {
             categoryTypeId: this.selectedCategoriaId!,
             year: 0,
-            categoryName: ''
+            categoryName: '',
           },
           clubId: this.clubId || 0,
           userId: 0,
           temporada: this.temporadaStoredValue, //TODO aqui debe de coger el año de la temporada actual
           dateCreate: '',
-          dateUpdate: ''
+          dateUpdate: '',
         };
 
         // Llamada al servicio para crear el equipo
-        this.teamService.createUpdateTeam(this.userId, this.teamNew,).subscribe(
+        this.teamService.createUpdateTeam(this.userId, this.teamNew).subscribe(
           (resp) => {
             // Manejar la respuesta según tus necesidades
             //console.log('Equipo creado con éxito:', response);
@@ -560,8 +629,10 @@ export class EquiposComponent implements OnInit {
             // Cargar nuevamente el listado de equipos después de la creación exitosa
             //this.cargarListadoEquipos();
             const newTeam = {
-              category: this.categoriaNombre, levelLeague: this.categoriaNivel, name: resp.data.name,
-              teamId: resp.data.teamId
+              category: this.categoriaNombre,
+              levelLeague: this.categoriaNivel,
+              name: resp.data.name,
+              teamId: resp.data.teamId,
             };
             this.listTeam.push(newTeam);
 
@@ -574,7 +645,9 @@ export class EquiposComponent implements OnInit {
           }
         );
       } else {
-        alert('Debes seleccionar o crear la categoria. No vale solo con escribirlo.');
+        alert(
+          'Debes seleccionar o crear la categoria. No vale solo con escribirlo.'
+        );
         return;
       }
     }
@@ -584,7 +657,9 @@ export class EquiposComponent implements OnInit {
   confirmarEliminarEquipo(team: any, index: number): void {
     let name = team.category + ' ' + team.name;
     name = name.trim() + ' ' + team.levelLeague;
-    const confirmacion = confirm('¿Estás seguro de que deseas eliminar el equipo ' + name);
+    const confirmacion = confirm(
+      '¿Estás seguro de que deseas eliminar el equipo ' + name
+    );
     if (confirmacion) {
       // Llama al método para eliminar el equipo
       this.eliminarEquipo(team.teamId, index);
@@ -634,9 +709,10 @@ export class EquiposComponent implements OnInit {
   irAPantalla(id: number): void {
     switch (id) {
       case 1:
-        const msg = 'Este apartado de "Cuotas" está obsoleto, solo está disponible para que '
-          + 'aquellos clubs que lo hayan usado previamente puedan visualizar sus datos, por favor, '
-          + 'accede al nuevo apartado "New Cuotas" para llevar un registro de tus pagos';
+        const msg =
+          'Este apartado de "Cuotas" está obsoleto, solo está disponible para que ' +
+          'aquellos clubs que lo hayan usado previamente puedan visualizar sus datos, por favor, ' +
+          'accede al nuevo apartado "New Cuotas" para llevar un registro de tus pagos';
         this.router.navigate(['/dashboard/contabilidad', this.clubId]);
         break;
       case 2:
@@ -675,7 +751,7 @@ export class EquiposComponent implements OnInit {
         this.selectedFile = file;
         this.showUploadButton = true;
         this.excelForm.patchValue({
-          excelFile: file
+          excelFile: file,
         });
       } else {
         this.fileName = null;
@@ -696,7 +772,7 @@ export class EquiposComponent implements OnInit {
           console.log('Archivo subido con éxito', response);
           // Aquí puedes manejar la respuesta del servidor
           this.showModalSubirJugadores = false;
-          alert("Jugadores insertado en los exipos.");
+          alert('Jugadores insertado en los exipos.');
           //this.router.navigate(['/dashboard/inicio']);
         },
         (error) => {
@@ -716,19 +792,21 @@ export class EquiposComponent implements OnInit {
       const formData = new FormData();
       formData.append('excelFile', this.selectedFile);
 
-      this.clubService.uploadExcelGesDesk(this.clubId, this.selectedFile).subscribe(
-        (response: Response) => {
-          console.log('Archivo subido con éxito', response);
-          // Aquí puedes manejar la respuesta del servidor
-          this.showModalSubirJugadores = false;
-          alert("Jugadores insertado en los exipos.");
-          //this.router.navigate(['/dashboard/inicio']);
-        },
-        (error) => {
-          console.error('Error al subir el archivo', error);
-          // Aquí puedes manejar el error
-        }
-      );
+      this.clubService
+        .uploadExcelGesDesk(this.clubId, this.selectedFile)
+        .subscribe(
+          (response: Response) => {
+            console.log('Archivo subido con éxito', response);
+            // Aquí puedes manejar la respuesta del servidor
+            this.showModalSubirJugadores = false;
+            alert('Jugadores insertado en los exipos.');
+            //this.router.navigate(['/dashboard/inicio']);
+          },
+          (error) => {
+            console.error('Error al subir el archivo', error);
+            // Aquí puedes manejar el error
+          }
+        );
 
       console.log('Archivo cargado:', this.selectedFile);
     } else {
@@ -776,7 +854,9 @@ export class EquiposComponent implements OnInit {
   }
 
   buscarCategorias(nombre: string): void {
-    this.categoriasFiltradas = this.categoriasLista.filter(cat => cat.categoryName.toLowerCase().includes(nombre.toLowerCase()));
+    this.categoriasFiltradas = this.categoriasLista.filter((cat) =>
+      cat.categoryName.toLowerCase().includes(nombre.toLowerCase())
+    );
     this.mostrarDropdown = true;
 
     // Aquí harías la llamada real al backend, por ahora lo simulamos:
@@ -784,7 +864,6 @@ export class EquiposComponent implements OnInit {
       { id: 1, text: 'Cadete' },
       { id: 2, text: 'Juvenil' }
     ].filter(cat => cat.text.toLowerCase().includes(nombre.toLowerCase()));*/
-
   }
 
   onInputNivel(event: Event): void {
@@ -802,11 +881,16 @@ export class EquiposComponent implements OnInit {
   }
 
   buscarNivel(nombre: string): void {
-    this.nivelesVisiblesFiltradas = this.nivelesVisibles.filter(n => n.label.toLowerCase().includes(nombre.toLowerCase()));
+    this.nivelesVisiblesFiltradas = this.nivelesVisibles.filter((n) =>
+      n.label.toLowerCase().includes(nombre.toLowerCase())
+    );
     this.mostrarDropdown2 = true;
   }
 
-  seleccionarCategoria(cat: { categoryTypeId: number, categoryName: string }): void {
+  seleccionarCategoria(cat: {
+    categoryTypeId: number;
+    categoryName: string;
+  }): void {
     this.categoriaNombre = cat.categoryName;
     this.selectedCategoriaId = cat.categoryTypeId;
     this.mostrarDropdown = false;
@@ -822,7 +906,7 @@ export class EquiposComponent implements OnInit {
     if (!nombre.trim()) return;
 
     // Aquí iría tu llamada real al backend:
-    const dto = {categoryTypeId: 0, categoryName: nombre, year: 0};
+    const dto = { categoryTypeId: 0, categoryName: nombre, year: 0 };
 
     this.clubService.updateCreateCategoryType(dto).subscribe({
       next: (res) => {
@@ -835,10 +919,9 @@ export class EquiposComponent implements OnInit {
       error: (err) => {
         console.error(err);
         alert('Error al subir el documento');
-      }
+      },
     });
   }
-
 
   dropTeam(event: CdkDragDrop<any[]>) {
     moveItemInArray(this.listTeam, event.previousIndex, event.currentIndex);
@@ -888,14 +971,13 @@ export class EquiposComponent implements OnInit {
     }
     // Cierra el modal y abre la Store
     this.modalConfirAndroid = false;
-    if (this.optionTienda == 1) //1 es android y 2 iphone
+    if (this.optionTienda == 1)
+      //1 es android y 2 iphone
       window.open(this.playStore, '_blank');
-    else
-      window.open(this.appStoreUrl, '_blank');
+    else window.open(this.appStoreUrl, '_blank');
   }
 
   closeModalConfirAndroid() {
     this.modalConfirAndroid = false;
   }
-
 }

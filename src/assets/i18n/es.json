@@ -18,6 +18,12 @@
   "COMMON": {
     "BACK": "Volver",
     "DATE": "Fecha",
+    "CANCEL": "Cancelar",
+    "UPLOAD": "Subir",
+    "DOWNLOAD": "Descargar",
+    "SAVE_CHANGES": "Guardar cambios",
+    "CLOSE": "Cerrar",
+    "ACCEPT": "Aceptar",
     "EXPORT_EXCEL": "Exportar Excel",
     "LOADING_LIST": "Cargando listado...",
     "FEMALE":"Femenino",
@@ -763,7 +769,11 @@
       "TEAMS_DESC": "Estadísticas",
 
       "PLAYER": "Jugador",
-      "PLAYER_DESC": "Métricas"
+      "PLAYER_DESC": "Métricas",
+
+      "COACH": "Entrenadores",
+      "COACH_DESC": "Información"
+
     },
 
     "RESULTS": {
@@ -1084,6 +1094,51 @@
     "NUM_TEAMS": "Número de equipos",
     "TOTAL": "Total a pagar",
     "CONFIRM": "Confirmar suscripción"
-  }
+  },
+  "PLAYERS":{
+    "TITLE": "Listado de Jugadores",
+    "SEARCH_LABEL": "Buscar cualquier campo",
+    "SEARCH_PLACEHOLDER": "Buscar...",
+    "TEAM_LABEL": "Selecciona un equipo",
+    "ALL_TEAMS": "Todos los equipos",
+    "DOWNLOAD_EXCEL": "Descargar Excel",
+    "TABLE": {
+      "IMAGE": "Imagen",
+      "NAME": "Nombre",
+      "TEAM": "Equipo",
+      "BIRTHDATE": "Fecha Nac.",
+      "PHONE": "Teléfono",
+      "DNI": "DNI",
+      "DNI_IMG": "DNI Img",
+      "DOC": "Documento",
+      "FATHER": "Padre",
+      "MOTHER": "Madre",
+      "EMAIL": "Email",
+      "IBAN": "IBAN"
+    },
+    "DNI_MODAL": {
+      "TITLE": "Subir documentación DNI",
+      "SUBTITLE": "Jugador · Padre · Madre · Tutor",
+      "HELP": "Solo se permiten imágenes en formato PNG o JPEG",
+      "FRONT": "Primera cara",
+      "BACK": "Segunda cara",
+      "PLAYER": { "TITLE": "DNI del jugador" },
+      "FATHER": { "TITLE": "DNI del padre o tutor 1" },
+      "MOTHER": { "TITLE": "DNI de la madre o tutor 2" }
+    },
+    "DOC_MODAL": {
+      "TITLE": "Documentación del jugador",
+      "SUBTITLE": "Descarga, subida y revisión de documentos",
+      "DOWNLOAD": "Descargar documento",
+      "UPLOAD": "Subir documento",
+      "VIEW": "Ver documento",
+      "FILL": "Rellenar documento"
+    },
+    "MODAL_UPLOAD_DOC": {
+      "TITLE": "Subir documento",
+      "DESCRIPTION": "Aquí puedes subir el archivo solicitado.",
+      "FILE_LABEL": "Seleccionar archivo"
+    }
 
+  }
 }

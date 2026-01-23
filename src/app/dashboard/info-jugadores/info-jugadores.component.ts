@@ -7,6 +7,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { HttpClient } from '@angular/common/http';
 import * as XLSX from "xlsx";
 import { Player } from 'src/app/core/services/player/player.model';
+import { Location } from '@angular/common';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
@@ -97,6 +98,7 @@ export class InfoJugadoresComponent implements OnInit {
     private snackBar: MatSnackBar,
     private clubService: ClubService,
     private playerService: PlayerService,
+    private location: Location,
     private teamService: TeamService,
     private loginService: LoginService) { }
 
@@ -660,6 +662,9 @@ export class InfoJugadoresComponent implements OnInit {
         alert('Error al subir el documento');
       }
     });
+  }
+    goBack(): void {
+    this.location.back();
   }
 
   moverJugador(): void {

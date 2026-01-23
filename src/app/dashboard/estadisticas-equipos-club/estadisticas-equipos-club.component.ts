@@ -3,7 +3,7 @@ import { Component, ElementRef, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
-
+import { Location } from '@angular/common';
 @Component({
   selector: 'app-estadisticas-equipos-club',
   templateUrl: './estadisticas-equipos-club.component.html',
@@ -28,7 +28,8 @@ export class EstadisticasEquiposClubComponent implements OnInit {
     private route: ActivatedRoute,
     private clubService: ClubService,
     private http: HttpClient,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
@@ -49,7 +50,9 @@ export class EstadisticasEquiposClubComponent implements OnInit {
         break;
     }
   }
-
+  goBack(): void {
+    this.location.back();
+  }
   getListaPostpartidos() {
     this.loading = true;
     this.datosCargados = false;
@@ -79,6 +82,34 @@ export class EstadisticasEquiposClubComponent implements OnInit {
         console.error('Error al cargar el listado de equipos', error);
       }
     );
+  }
+  parseTrainingDays(trainingDays: string | null) {
+    if (!trainingDays) {
+      return null;
+    }
+
+    const dayMap: Record<string, string> = {
+      L: 'DAYS.MONDAY',
+      M: 'DAYS.TUESDAY',
+      X: 'DAYS.WEDNESDAY',
+      J: 'DAYS.THURSDAY',
+      V: 'DAYS.FRIDAY',
+      S: 'DAYS.SATURDAY',
+      D: 'DAYS.SUNDAY',
+    };
+
+    const regex = /([LMXJVSD]):\s*([\d:]+-[\d:]+)/g;
+    const result: { dayLabel: string; hours: string }[] = [];
+
+    let match;
+    while ((match = regex.exec(trainingDays)) !== null) {
+      result.push({
+        dayLabel: dayMap[match[1]],
+        hours: match[2],
+      });
+    }
+
+    return result;
   }
 
   datosResumentTotales(team: any) {
@@ -139,7 +170,7 @@ export class EstadisticasEquiposClubComponent implements OnInit {
     //console.log(this.resumenes[index].teamId);
     //console.log(this.resumenes[index].partidos);
     this.partidosTeamSelected = this.resumenes[index].partidos;
-    console.log(this.partidosTeamSelected)
+    console.log(this.partidosTeamSelected);
     this.filteredPlayers = this.partidosTeamSelected;
     this.equipoSeleccionado = this.resumenes[index].nameTeam;
     this.mostarTabla = true;

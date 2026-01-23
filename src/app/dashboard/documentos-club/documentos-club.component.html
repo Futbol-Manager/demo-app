@@ -9,57 +9,39 @@
 <!-- ================= ACCIONES PRINCIPALES ================= -->
 <div class="container mt-4">
 
-  <div class="row g-3 mb-4">
+  <div class="row g-4 mb-4 action-cards">
 
     <div class="col-12 col-md-4" *ngFor="let action of [
-       {
-         title: 'UPLOAD_NEW',
-         button: 'UPLOAD_DOC',
-         icon: 'bi-upload',
-         click: 'upload'
-       },
-       {
-         title: 'REQUIRE_DOC_TITLE',
-         button: 'REQUIRE_DOC',
-         icon: 'bi-file-earmark-text',
-         click: 'require'
-       },
-       {
-         title: 'CUSTOM_INFO_TITLE',
-         button: 'CUSTOM',
-         icon: 'bi-card-text',
-         click: 'custom'
-       }
-     ]">
+    { title: 'UPLOAD_NEW', button: 'UPLOAD_DOC', icon: 'bi-upload', click: 'upload', variant: 'green' },
+    { title: 'REQUIRE_DOC_TITLE', button: 'REQUIRE_DOC', icon: 'bi-file-earmark-text', click: 'require', variant: 'blue' },
+    { title: 'CUSTOM_INFO_TITLE', button: 'CUSTOM', icon: 'bi-card-text', click: 'custom', variant: 'beige' }
+  ]">
 
-      <div class="card shadow-sm h-100">
-        <div class="card-body text-center">
+      <div class="action-card" [ngClass]="'variant-' + action.variant">
 
-          <!-- TÍTULO -->
-          <p class="fw-bold mb-2">
-            {{ ('DOCS_EQUIPO.DOCS.' + action.title) | translate }}
-          </p>
-
-          <!-- BOTÓN -->
-          <button class="btn btn-success w-100" (click)="
-                action.click === 'upload'
-                  ? openModalSubirDoc()
-                  : action.click === 'require'
-                  ? openModalSubirSinDoc()
-                  : openModalSubirPersonalizado()
-              ">
-
-            <i class="bi me-1" [ngClass]="action.icon"></i>
-
-            {{ ('DOCS_EQUIPO.DOCS.' + action.button) | translate }}
-
-          </button>
-
+        <div class="action-card-icon">
+          <i class="bi" [ngClass]="action.icon"></i>
         </div>
+
+        <h6 class="action-card-title">
+          {{ ('DOCS_EQUIPO.DOCS.' + action.title) | translate }}
+        </h6>
+
+        <button class="action-card-btn" (click)="
+          action.click === 'upload'
+            ? openModalSubirDoc()
+            : action.click === 'require'
+            ? openModalSubirSinDoc()
+            : openModalSubirPersonalizado()
+        ">
+          {{ ('DOCS_EQUIPO.DOCS.' + action.button) | translate }}
+        </button>
+
       </div>
 
     </div>
   </div>
+
 
   <!-- ================= TABLA DOCUMENTOS ================= -->
   <div class="table-responsive table-container">

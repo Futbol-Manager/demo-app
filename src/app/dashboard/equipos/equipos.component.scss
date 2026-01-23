@@ -23,6 +23,41 @@
 .btn-back-clean i {
   font-size: 1.1rem;
 }
+.container {
+  padding-bottom: 120px;
+}
+
+/* ===============================
+   TEMPORADA
+================================ */
+
+.season-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.season-label {
+  font-weight: 600;
+  color: #002c40;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.season-select {
+  max-width: 260px;
+  border-radius: 14px;
+  padding: 0.55rem 0.8rem;
+  text-align: center;
+  border: 1px solid #ddd;
+
+  &:focus {
+    border-color: #31b270; // Verde Sphaira
+    box-shadow: 0 0 0 2px rgba(49, 178, 112, 0.2);
+  }
+}
 
 /* HOVER */
 .btn-back-clean:hover {
@@ -66,11 +101,9 @@
   padding: 2px; /* grosor del borde */
   border-radius: 20px;
   background: linear-gradient(135deg, #31b270, #002c40);
-  -webkit-mask:
-    linear-gradient(#fff 0 0) content-box,
-    linear-gradient(#fff 0 0);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
-          mask-composite: exclude;
+  mask-composite: exclude;
   opacity: 0;
   transition: opacity 0.25s ease;
   z-index: -1;
@@ -84,7 +117,6 @@
 .team-card:hover {
   box-shadow: 0 14px 32px rgba(0, 44, 64, 0.25);
 }
-
 
 .team-card strong {
   display: block;
@@ -125,7 +157,6 @@
   white-space: nowrap;
 }
 
-
 .team-card:hover .team-id {
   background: rgba(255, 255, 255, 0.2);
   color: #000000;
@@ -149,7 +180,7 @@
   color: #31b270;
 }
 
-.team-card:hover .team-info{
+.team-card:hover .team-info {
   color: #000000;
 }
 .team-card:hover .team-info i {
@@ -160,8 +191,6 @@
   text-align: center;
   display: block;
 }
-
-
 
 @media (min-width: 1200px) {
   .teams-mobile {
@@ -235,4 +264,82 @@
 
 .cdk-drag-animating {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+/* === BLOQUE GENERAL DE INFO === */
+.team-info-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  text-align: center;
+}
+
+/* Iconos */
+.team-info-icon {
+  font-size: 1rem;
+  color: #22c55e;
+}
+
+/* === CUERPO === */
+.team-info-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+/* Label pequeño */
+.team-info-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #002057;
+}
+
+/* Texto muted */
+.team-info-muted {
+  color: #adb5bd;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* === GRID DE HORARIOS (CLAVE) === */
+.team-schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: 0.2rem 0.8rem;
+  justify-content: center;
+}
+
+/* Item día + hora (una sola línea) */
+.team-schedule-item {
+  display: flex;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+/* Día */
+.team-schedule-day {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #002c40;
+}
+
+/* Hora */
+.team-schedule-hours {
+  color: #002c40;
+}
+
+/* === BLOQUE JUGADORES === */
+.team-players {
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+}
+
+.team-players-count {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #16a34a;
 }
