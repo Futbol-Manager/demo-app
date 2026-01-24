@@ -54,7 +54,6 @@
   }
 }
 
-
 .textoCentrado {
   display: flex;
   width: 100%;
@@ -83,49 +82,39 @@
   }
 }
 /* ===============================
-   LOGIN – MOBILE
+   LOGIN – MOBILE RESPONSIVE
 ================================ */
 @media (max-width: 768px) {
 
-  /* Contenedor del login */
+  /* FORMULARIO */
   .form-login {
-    max-width: 100%;
-    padding: 1.5rem 1.25rem;   /* 🔥 más aire lateral */
-    margin: 2rem auto 0;       /* separa del top */
+    width: 100%;
+    max-width: 420px;              /* 🔥 ancho real visible */
+    margin: 3rem auto 2.5rem;
+    padding: 0 1.25rem;            /* 🔥 espacio lateral REAL */
+    box-sizing: border-box;
   }
 
-  /* Inputs más anchos y cómodos */
+  /* INPUTS */
   .input-login {
     width: 100%;
-    min-height: 46px;          /* touch friendly */
+    min-height: 48px;
     font-size: 1rem;
-    margin-bottom: 1rem;
     border-radius: 12px;
-  }
-
-  /* Botón login */
-  .btn-custom {
-    width: 100%;
-    height: 48px;
-    margin-top: 1.25rem;
-    font-size: 1rem;
-    border-radius: 14px;
-  }
-
-  /* Links debajo (olvidé contraseña / registro) */
-  .form-login a {
-    display: inline-block;
-    margin-top: 0.75rem;
+    box-sizing: border-box;
   }
 }
 
+/* ===============================
+   SAFE AREA
+================================ */
 @supports (-webkit-touch-callout: none) {
   @media (max-width: 768px) {
 
     .form-login {
       padding-left: calc(1.25rem + env(safe-area-inset-left));
       padding-right: calc(1.25rem + env(safe-area-inset-right));
-      padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+      margin-bottom: calc(2.5rem + env(safe-area-inset-bottom));
     }
 
   }

@@ -148,19 +148,23 @@
   transform: scale(1.06);
   opacity: 0.95;
 }
-
 /* =================================================
-   HEADER MOBILE – RESPONSIVE (FIX iOS SAFARI)
+   HEADER MOBILE – RESPONSIVE
    ================================================= */
 @media (max-width: 767px) {
-  /* ===== HEADER CONTENCIÓN GENERAL ===== */
+  /* ===== HEADER GENERAL ===== */
   .theme-header {
     padding: 0.25rem 0.75rem;
     max-width: 100vw;
-    overflow: hidden; /* 🔥 evita desbordes */
+    box-sizing: border-box;
+
+    /* 🔥 CLAVE: permitir dropdowns */
+    overflow: visible !important;
+    position: relative;
+    z-index: 1050; /* encima del contenido */
   }
 
-  /* Safe area iOS (notch) */
+  /* Safe-area iOS (notch) */
   @supports (-webkit-touch-callout: none) {
     .theme-header {
       padding-left: calc(0.75rem + env(safe-area-inset-left));
@@ -168,17 +172,31 @@
     }
   }
 
-  /* ===== CONTENEDOR DERECHO ===== */
+  /* ===== LOGO ===== */
+  .theme-header .col-auto.me-auto {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .logo-image {
+    height: 52px;
+    max-width: 200px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  /* ===== BLOQUE DERECHO ===== */
   .theme-header .col-auto {
     display: flex;
     align-items: center;
     gap: 0.5rem !important;
-    max-width: 100%;
-    overflow: hidden;
     flex-shrink: 0;
+
+    /* 🔥 permitir clicks */
+    overflow: visible;
   }
 
-  /* ===== AYUDA / DESCARGA (ICON ONLY) ===== */
+  /* ===== ICONOS (AYUDA / DESCARGA) ===== */
   .theme-header .header-action {
     background: transparent !important;
     box-shadow: none !important;
@@ -187,24 +205,18 @@
     padding: 0.25rem;
     margin: 0;
 
-    width: auto;
-    height: auto;
-
     display: flex;
     align-items: center;
     justify-content: center;
 
-    flex-shrink: 0;
-  }
-
-  .theme-header .header-action:hover {
-    background: transparent !important;
-    box-shadow: none !important;
+    /* 🔥 zona clicable real */
+    pointer-events: auto;
+    z-index: 2;
   }
 
   .theme-header .header-action i {
     font-size: 1.25rem;
-    opacity: 0.9;
+    opacity: 0.95;
   }
 
   .theme-header .header-action span {
@@ -224,39 +236,49 @@
     align-items: center;
     justify-content: center;
 
-    flex-shrink: 0;
-    max-width: 44px; /* 🔥 evita que empuje */
-  }
-
-  .theme-header .user-container:hover {
-    background: transparent !important;
-  }
-
-  /* Avatar SIEMPRE contenido */
-  .account-user-avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    max-width: 34px;
+    max-width: 44px;
+    pointer-events: auto;
+    z-index: 2;
   }
 
   .account-user-avatar img {
     width: 34px;
     height: 34px;
-    max-width: 34px;
     object-fit: cover;
     border: none;
   }
 
-  /* Ocultar nombre y flecha */
   .user-name,
   .user-arrow {
     display: none !important;
   }
 
-  /* ===== QUITAR CARET SOLO EN MOBILE ===== */
+  /* ===== DROPDOWNS ===== */
+  .dropdown {
+    position: relative;
+  }
+
+  .dropdown-menu {
+    position: absolute !important;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    left: auto;
+
+    z-index: 1060; /* 🔥 encima del header */
+    pointer-events: auto;
+  }
+
+  /* Quitar caret */
   .dropdown-toggle::after {
     display: none !important;
+  }
+}
+
+/* EXTRA: móviles muy pequeños */
+@media (max-width: 360px) {
+  .logo-image {
+    height: 58px;
+    max-width: 150px;
   }
 }
 
