@@ -1,85 +1,89 @@
-/* SUBMENU BASE */
-.submenu {
-  background: #002c40;
-  padding: 0.6rem 1rem;
+.page-actions {
+  display: grid;
+  grid-template-columns: auto max-content auto;
+  align-items: center;
+  margin: 18px 0 20px;
+}
+.back-container {
   display: flex;
   align-items: center;
 }
 
-/* IZQUIERDA */
-.submenu-left {
-  flex: 0 0 auto;
-}
-
-/* CENTRO */
-.submenu-center {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  gap: 4.5rem;
-}
-
-/* BOTONES GENERALES */
-.submenu-btn {
-  background: none;
+.btn-back-clean {
+  padding: 6px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 15px;
+  margin-left: 40px;
+  background-color: rgba(0, 44, 64, 0.08);
   border: none;
-  color: #f4f4f4;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column; /* ICONO ARRIBA, TEXTO ABAJO */
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 1.5rem;
-}
+  border-radius: 8px;
 
-/* ICONOS */
-.submenu-btn i {
-  font-size: 1.5rem;
-}
-
-/* TEXTO */
-.submenu-btn span {
-  font-size: 1rem;
+  color: #002c40;
+  font-size: 0.9rem;
   font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-/* BOTÓN BACK ESPECIAL */
-.submenu-back {
-  flex-direction: row; /* icono + texto en línea */
-  gap: 0.5rem;
-  font-size: 1.5rem;
-}
-
-.submenu-back span {
+.btn-back-clean i {
   font-size: 1.1rem;
 }
 
-/* HOVER UX */
-.submenu-btn:hover {
-  opacity: 0.85;
-  transform: translateY(-1px);
+.btn-back-clean:hover {
+  background-color: rgba(0, 44, 64, 0.08);
+  transform: translateX(-2px);
 }
-
-.submenu-btn:active {
-  transform: scale(0.96);
-}
-
-
-/* LOADING */
-.loading-state {
+.actions-group {
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: 1rem;
+  gap: 12px;
+}
+.filter-input {
+  width: 260px;
+  height: 38px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+.btn-excel {
+  height: 38px;
+  min-width: 150px;           /* 🔥 clave */
+  padding: 0 16px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  font-weight: 600;
+  border-radius: 10px;
+  background-color: #31b270;
+  color: #002c40;
+  border: none;
 }
 
-/* FILTERS */
-.filters-bar {
-  display: grid;
-  grid-template-columns: 1fr auto auto auto;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+.btn-excel:hover {
+  background-color: #2aa463;
 }
+@media (max-width: 768px) {
+  .page-actions {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .actions-group {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .filter-input {
+    width: 100%;
+    max-width: 320px;
+  }
+}
+
+
 /* ===== TABLE SKELETON ===== */
 .table-skeleton-row {
   display: grid;

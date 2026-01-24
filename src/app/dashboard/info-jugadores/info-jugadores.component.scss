@@ -121,6 +121,41 @@
   }
 }
 /* =========================
+   SKELETON
+========================= */
+.skeleton {
+  width: 100%;
+  height: 14px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 37%, #e5e7eb 63%);
+  background-size: 400% 100%;
+  animation: skeleton-loading 1.4s ease infinite;
+}
+
+.skeleton-header {
+  height: 16px;
+}
+
+.skeleton-cell {
+  height: 14px;
+}
+.image-cell .skeleton {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  margin: auto;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+/* =========================
    TABLA MODERNA
 ========================= */
 
@@ -148,8 +183,10 @@
 
 .modern-table thead th {
   font-size: 0.9rem;
+  position: sticky;
   align-items: center;
   background-color: #002c40;
+  z-index: 1000;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #f4f4f4;
@@ -313,9 +350,57 @@
   border-radius: 2px;
 }
 .modern-table tbody td:not(.col-father):not(.col-mother)::after {
-  background: rgba(0,0,0,0.08);
+  background: rgba(0, 0, 0, 0.08);
+}
+.modern-table thead th:nth-child(1) {
+  position: sticky;
+  left: 0;
+  z-index: 1100;
+  background: #002c40;
 }
 
+.modern-table tbody td:nth-child(1) {
+  position: sticky;
+  left: 0;
+  z-index: 10;
+  background: #ffffff;
+}
+
+.modern-table thead th:nth-child(2) {
+  position: sticky;
+  left: 70px;
+  z-index: 1050;
+  background: #002c40;
+}
+
+.modern-table tbody td:nth-child(2) {
+  position: sticky;
+  left: 70px;
+  z-index: 9;
+  background: #ffffff;
+}
+.modern-table th:nth-child(1),
+.modern-table td:nth-child(1) {
+  width: 70px;
+  min-width: 70px;
+}
+
+.modern-table th:nth-child(2),
+.modern-table td:nth-child(2) {
+  width: 250px;
+  min-width: 250px;
+}
+
+.modern-table thead th:nth-child(2)::after,
+.modern-table tbody td:nth-child(2)::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 15%;
+  width: 2px;
+  height: 70%;
+  background: rgba(0, 0, 0, 0.15);
+}
 
 /* ===== BACKDROP GLOBAL ===== */
 .modal-backdrop-custom {

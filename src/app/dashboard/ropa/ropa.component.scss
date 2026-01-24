@@ -6,101 +6,159 @@
   --border-soft: #e6eaf0;
   --text-muted: #6b7c8f;
 }
-
-/* BOTÓN VOLVER */
-.btn-back-clean {
-  margin-left: 26px;
-  margin-top: 15px;
-  padding: 0.35rem 0.6rem;
-
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-
-  background-color: rgba(15, 163, 232, 0.08);
-  border: none;
-  border-radius: 8px;
-
-  color: #002c40;
-  font-size: 0.9rem;
-  font-weight: 500;
-
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-/* ICONO */
-.btn-back-clean i {
-  font-size: 1.1rem;
-}
-
-/* HOVER */
-.btn-back-clean:hover {
-  background-color: rgba(0, 44, 64, 0.08);
-  transform: translateX(-2px);
-}
-
-/* ACTIVE */
-.btn-back-clean:active {
-  transform: translateX(0);
-}
-
 /* CONTENEDOR GENERAL */
 .table-actions-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin: 1rem 1rem 1.5rem;
+  margin-bottom: 1rem;
+  margin-top: 20px;
+  flex-wrap: nowrap;
 }
 
 /* IZQUIERDA */
 .table-actions-left {
-  flex: 1;
+  display: flex;
+  margin-left: 20px;
+  align-items: center;
+  gap: 1rem;
 }
 
 /* DERECHA */
 .table-actions-right {
   display: flex;
+  margin-right: 20px;
   align-items: center;
   gap: 0.75rem;
 }
 
-/* BOTONES */
+/* ===== BOTÓN VOLVER ===== */
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 8px;
+  background-color: rgba(15, 163, 232, 0.08);
+  color: #002c40;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-back-clean:hover {
+  background-color: rgba(0, 44, 64, 0.08);
+  transform: translateX(-2px);
+}
+
+/* ===== BOTONES DE ACCIÓN ===== */
 .action-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  background: none;
-  border: none;
-  padding: 0.45rem 0.7rem;
-  border-radius: 8px;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
   font-size: 0.9rem;
   font-weight: 500;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
   color: #374151;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-/* ICONOS */
-.action-btn i {
-  font-size: 1.1rem;
-}
-
-/* HOVER */
 .action-btn:hover {
-  background-color: rgba(0, 44, 64, 0.06);
-  transform: translateY(-1px);
+  background-color: #f9fafb;
 }
 
-/* EXCEL */
+/* ===== EXCEL ===== */
 .action-btn.excel {
-  color: #198754;
+  background-color: #2fb36d;
+  border-color: #2fb36d;
+  color: #002c40;
 }
 
 .action-btn.excel:hover {
-  background-color: rgba(25, 135, 84, 0.08);
+  background-color: #26a25f;
+  border-color: #26a25f;
 }
+/* ===== CUSTOM  ===== */
+.action-btn.custom {
+  background-color: #efdcb6;
+  border-color: #efdcb6;
+  color: #002c40;
+}
+
+.action-btn.custom:hover {
+  background-color: #efdcb6af;
+  border-color: #efdcb6af;
+}
+
+/* ICONOS */
+.btn-back-clean i,
+.action-btn i {
+  font-size: 1rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .table-actions-row {
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .table-actions-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* TABLA SKELETON*/
+.table-skeleton {
+  padding: 1rem;
+}
+
+.skeleton-header {
+  height: 40px;
+  background: #e5e7eb;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.skeleton-row {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+#dt-search {
+    display: none;
+  }
+.skeleton-cell {
+  height: 32px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    #e5e7eb 25%,
+    #f3f4f6 37%,
+    #e5e7eb 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
 /* TABLA */
 .modern-table-wrapper {
   background: #ffffff;

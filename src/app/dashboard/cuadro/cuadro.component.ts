@@ -102,6 +102,7 @@ export class CuadroComponent implements OnInit {
       .subscribe({
         next: (response: Response) => {
           if (response?.data) {
+            console.log(response)
             this.listTeams = response.data.teams || [];
             this.listUltimos = response.data.ultimos || [];
             this.listProximos = response.data.proximos || [];

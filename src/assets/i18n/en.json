@@ -26,11 +26,12 @@
     "ACCEPT": "Accept",
     "EXPORT_EXCEL": "Export Excel",
     "LOADING_LIST": "Loading list...",
-    "FEMALE":"Female",
-    "MALE":"Male",
+    "FEMALE": "Female",
+    "MALE": "Male",
     "OTHER": "Other",
     "ID": "Identification",
-    "VIEWPLAYER": "View Player"
+    "VIEWPLAYER": "View Player",
+    "CUSTOM": "Custom"
   },
   "LOGIN": {
     "EMAIL_PLACEHOLDER": "Email address",
@@ -271,7 +272,7 @@
       "TITLE": "Children information",
       "COUNT": "How many children play in this club?",
       "DATA": "Child {{num}} details",
-      "CHECK_PLAYER":"Check if this player exists"
+      "CHECK_PLAYER": "Check if this player exists"
     },
     "COMMON": {
       "NEXT": "Next",
@@ -311,7 +312,7 @@
       "I_AM_COACH": "I am a coach"
     }
   },
-   "ERRORS": {
+  "ERRORS": {
     "REQUIRED_NAME": "Name is required",
     "REQUIRED_SURNAME": "Surname is required",
     "REQUIRED_BIRTHDATE": "Birth date is required",
@@ -330,30 +331,22 @@
     "SUBMENU": {
       "BACK": "Dashboard"
     },
-
     "OPTIONS": {
       "FEES": "Fees",
       "FEES_DESC": "Payment management",
-
       "SCORES": "Team standings",
       "SCORES_DESC": "League table",
-
       "TRAINING": "Training",
       "TRAINING_DESC": "Sessions",
-
       "PLAYERS": "Players",
       "PLAYERS_DESC": "Information",
-
       "TEAMS": "Teams",
       "TEAMS_DESC": "Statistics",
-
       "PLAYER": "Player",
       "PLAYER_DESC": "Metrics",
-
       "COACH": "Coaches",
       "COACH_DESC": "Information"
     },
-
     "RESULTS": {
       "TITLE": "Last matchday results",
       "FINISHED": "Finished",
@@ -363,18 +356,15 @@
       "EMPATE": "DRAW",
       "DERROTA": "LOSS"
     },
-
     "TRAINING_TODAY": {
       "TITLE": "Training today"
     },
-
     "NEXT_MATCHES": {
       "TITLE": "Upcoming matches",
       "LOCAL": "Home",
       "VISITOR": "Away",
       "UNDEFINED": "To be defined"
     },
-
     "COMMON": {
       "VS": "VS"
     }
@@ -382,7 +372,6 @@
   "FOOTER": {
     "RIGHTS": "All rights reserved."
   },
-
   "ESTADIS_EQUIPO": {
     "BACK": "Dashboard",
     "TITLE": "Summary Table",
@@ -398,18 +387,16 @@
       "DG": "GD",
       "LAST": "Last"
     },
-
     "RESULT": {
       "WIN": "W",
       "DRAW": "D",
       "LOSS": "L"
     },
-
     "MODAL": {
       "TITLE": "Match List",
       "SEARCH": "Search rival or result…",
-      "LOCAL_VISITOR":"Local/Visitor",
-      "TYPEMATCH":"Type Match",
+      "LOCAL_VISITOR": "Local/Visitor",
+      "TYPEMATCH": "Type Match",
       "DATE": "Date",
       "RIVAL": "Rival",
       "RESULT": "Result",
@@ -454,21 +441,17 @@
       "UPLOAD_TITLE": "Upload Document (PDF or Word)",
       "REQUIRE_TITLE": "Required document",
       "CUSTOM_TITLE": "Custom Requirement",
-
       "NAME": "Document name",
       "DESCRIPTION": "Description",
       "TYPE": "Type",
       "FILE": "Select file (.pdf or .doc/.docx)",
-
       "VISIBLE": "Visible to players",
       "REQUIRE_UPLOAD_HELP": "Enable this option to allow parents/players to upload the completed document.",
-
       "CUSTOM_CONTENT": "Message content",
       "CUSTOM_HELP": "Here you can write anything you want, including copying and pasting text from Word.",
       "CUSTOM_CHECK": "This will be shown to the player/parent to accept what you write below.",
       "CUSTOM_TITLE_LABEL": "Authorization text",
       "CUSTOM_TITLE_PLACEHOLDER": "e.g. I authorize the club to...",
-
       "UPLOADING": "Uploading document...",
       "UPLOAD_PROGRESS": "Upload progress",
       "UPLOAD_SUCCESS": "Document uploaded successfully",
@@ -584,7 +567,7 @@
     "OPEN_MESSAGE": "Open to view message…",
     "SENT_AT": "Sent at",
     "FROM": "From",
-    "TO":"To",
+    "TO": "To",
     "SUBJECT": "Subject",
     "MESSAGE": "Message",
     "CLOSE": "Close",
@@ -604,37 +587,30 @@
     "METHOD": "Method",
     "TYPE": "Type"
   },
-   "CLOTHES": {
+  "CLOTHES": {
     "TABLE": {
       "ID": "ID",
       "NAME": "Name",
       "TEAM": "Team",
       "SHIRT_NAME": "Shirt name",
       "NUMBER": "Number",
-
       "MATCH_SHIRT": "Match shirt",
       "MATCH_PANTS": "Match pants",
       "MATCH_SOCKS": "Match socks",
-
       "MATCH_SHIRT_2": "Second match shirt",
       "MATCH_PANTS_2": "Second match pants",
       "MATCH_SOCKS_2": "Second match socks",
-
       "TRAINING_SHIRT": "Training shirt",
       "TRAINING_PANTS": "Training pants",
       "TRAINING_SOCKS": "Training socks",
       "TRAINING_SWEATSHIRT": "Training sweatshirt",
-
       "TRACKSUIT_JACKET": "Tracksuit jacket",
       "TRACKSUIT_PANTS": "Tracksuit pants",
-
       "POLO": "Casual polo",
       "CASUAL_PANTS": "Casual pants",
-
       "COAT": "Team coat",
       "RAINCOAT": "Raincoat",
       "BACKPACK": "Backpack",
-
       "STATUS": "Status"
     }
   },
@@ -667,49 +643,70 @@
     "TOTAL": "Total Amount",
     "CONFIRM": "Confirm Subscription"
   },
-  "PLAYERS":{
-    "TITLE": "Players List",
+  "PLAYERS": {
+    "TITLE": "Players list",
     "SEARCH_LABEL": "Search any field",
     "SEARCH_PLACEHOLDER": "Search...",
     "TEAM_LABEL": "Select a team",
     "ALL_TEAMS": "All teams",
     "DOWNLOAD_EXCEL": "Download Excel",
+    "NO_TEAM": "No team",
     "TABLE": {
       "IMAGE": "Image",
       "NAME": "Name",
       "TEAM": "Team",
-      "BIRTHDATE": "Birthdate",
+      "POSITION": "Position",
+      "MATCHES": "Matches",
+      "MINUTES": "Minutes",
+      "MEDIA_MINUTES_MATCH": "Avg min / match",
+      "GOALS": "Goals",
+      "MEDIA_GOALS_MATCH": "Avg goals / match",
+      "ASSISTS": "Assists",
+      "GOALS_ASSISTS": "Goals + assists",
+      "MEDIA_ASSISTS_MATCH": "Avg assists / match",
+      "MEDIA_GOALS_ASSISTS_MATCH": "Avg goals + assists / match",
+      "GOALS_PENALTY": "Penalty goals",
+      "GOALS_FREE_KICK": "Free kick goals",
+      "PENALTIES_MISSED": "Penalties missed",
+      "CARDS": "Cards",
+      "BIRTHDATE": "Birth date",
       "PHONE": "Phone",
       "DNI": "ID",
-      "DNI_IMG": "ID Img",
+      "DNI_IMG": "ID image",
       "DOC": "Document",
       "FATHER": "Father",
       "MOTHER": "Mother",
       "EMAIL": "Email",
       "IBAN": "IBAN"
-    },
-    "DNI_MODAL": {
-      "TITLE": "Upload ID documentation",
-      "SUBTITLE": "Player · Father · Mother · Guardian",
-      "HELP": "Only PNG or JPEG images are allowed",
-      "FRONT": "Front side",
-      "BACK": "Back side",
-      "PLAYER": { "TITLE": "Player ID" },
-      "FATHER": { "TITLE": "Father or guardian ID" },
-      "MOTHER": { "TITLE": "Mother or guardian ID" }
-    },
-    "DOC_MODAL": {
-      "TITLE": "Player documentation",
-      "SUBTITLE": "Download, upload and review documents",
-      "DOWNLOAD": "Download document",
-      "UPLOAD": "Upload document",
-      "VIEW": "View document",
-      "FILL": "Fill document"
-    },
-    "MODAL_UPLOAD_DOC": {
-      "TITLE": "Upload document",
-      "DESCRIPTION": "Here you can upload the requested file.",
-      "FILE_LABEL": "Select file"
     }
+  },
+  "DNI_MODAL": {
+    "TITLE": "Upload ID documentation",
+    "SUBTITLE": "Player · Father · Mother · Guardian",
+    "HELP": "Only PNG or JPEG images are allowed",
+    "FRONT": "Front side",
+    "BACK": "Back side",
+    "PLAYER": {
+      "TITLE": "Player ID"
+    },
+    "FATHER": {
+      "TITLE": "Father or guardian ID"
+    },
+    "MOTHER": {
+      "TITLE": "Mother or guardian ID"
+    }
+  },
+  "DOC_MODAL": {
+    "TITLE": "Player documentation",
+    "SUBTITLE": "Download, upload and review documents",
+    "DOWNLOAD": "Download document",
+    "UPLOAD": "Upload document",
+    "VIEW": "View document",
+    "FILL": "Fill document"
+  },
+  "MODAL_UPLOAD_DOC": {
+    "TITLE": "Upload document",
+    "DESCRIPTION": "Here you can upload the requested file.",
+    "FILE_LABEL": "Select file"
   }
 }

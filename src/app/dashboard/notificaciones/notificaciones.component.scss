@@ -35,7 +35,6 @@
   transition: background-color 0.2s ease;
 }
 
-
 /* ICONO */
 .btn-back-clean i {
   font-size: 1.1rem;
@@ -63,7 +62,6 @@
   display: flex;
   flex-direction: column;
 }
-
 
 /* ===== TOP BAR ===== */
 .topbar-actions {
@@ -139,16 +137,10 @@
 .sk-line {
   height: 14px;
   border-radius: 8px;
-  background: linear-gradient(
-    90deg,
-    #e0e0e0 25%,
-    #f0f0f0 37%,
-    #e0e0e0 63%
-  );
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 37%, #e0e0e0 63%);
   background-size: 400% 100%;
   animation: shimmer 1.4s ease infinite;
 }
-
 
 .sk-from {
   width: 35%;
@@ -162,12 +154,7 @@
   width: 60px;
   height: 12px;
   border-radius: 6px;
-  background: linear-gradient(
-    90deg,
-    #e0e0e0 25%,
-    #f0f0f0 37%,
-    #e0e0e0 63%
-  );
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 37%, #e0e0e0 63%);
   background-size: 400% 100%;
   animation: shimmer 1.4s ease infinite;
 }
@@ -200,7 +187,6 @@
   width: 70%;
 }
 
-
 /* ===== LAYOUT ===== */
 .gmail-layout {
   display: grid;
@@ -210,7 +196,6 @@
   gap: 0; /* importante */
   overflow: hidden;
 }
-
 
 /* ===== SIDEBAR ===== */
 .sidebar-gmail {
@@ -232,7 +217,7 @@
   padding: 0.7rem 1.2rem;
 
   background: #cfe8ff;
-  color: #1967d2;
+  color: #002c40;
 
   border: none;
   border-radius: 999px;
@@ -315,7 +300,6 @@
   border-radius: 999px;
 }
 
-
 /* ===== LISTA ===== */
 .mail-list {
   background: var(--bg-panel);
@@ -342,11 +326,11 @@
   cursor: pointer;
   transition: background 0.2s ease, box-shadow 0.2s ease;
 
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 .mail-item:hover {
   background: #f8f9fb;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 .mail-item.active {
   background: #eaf1ff;
@@ -399,7 +383,6 @@
   border-radius: 50%;
   color: #ea4335;
 }
-
 
 .mail-item.unread {
   background: #f3f7ff;
@@ -464,7 +447,6 @@
   overflow-y: auto;
 }
 
-
 .reader-subject {
   font-size: 1.9rem;
   font-weight: 600;
@@ -509,9 +491,7 @@
   background: #ffffff;
   padding: 2rem 2.25rem;
   border-radius: 18px;
-  box-shadow:
-    0 10px 25px rgba(0, 0, 0, 0.06),
-    0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
 
   font-size: 0.95rem;
   line-height: 1.65;
@@ -560,33 +540,144 @@
   padding-left: 0.25rem;
 }
 
-
-
 .empty-reader {
   color: var(--text-muted);
   font-size: 0.9rem;
   padding-top: 3rem;
   text-align: center;
 }
+/* =========================================================
+   SIDEBAR RESPONSIVE – TABLET Y MOBILE
+   ========================================================= */
+
+/* ---------- TABLET (≤ 992px) ---------- */
+@media (max-width: 992px) {
+
+  .gmail-layout {
+    grid-template-columns: 72px 1fr 1.2fr;
+  }
+
+  .sidebar-gmail {
+    width: 72px;
+    padding: 1rem 0.4rem;
+    align-items: center;
+  }
+
+  /* ===== BOTÓN REDACTAR ===== */
+  .sidebar-gmail .compose-gmail {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    max-width: 44px;
+
+    padding: 0 !important;
+    margin: 0 auto 1rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+    background: #cfe8ff;
+    color: #1967d2;
+
+    gap: 0 !important;
+    overflow: hidden;
+  }
+
+  /* 🔥 OCULTAR TEXTO */
+  .sidebar-gmail .compose-label {
+    display: none !important;
+  }
+
+  /* Icono */
+  .sidebar-gmail .compose-gmail i {
+    font-size: 1.15rem;
+    margin: 0;
+  }
+
+  /* ===== NAV ===== */
+  .nav-item {
+    width: 44px;
+    height: 44px;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .nav-item .label,
+  .nav-item .badge {
+    display: none !important;
+  }
+}
+
+/* ---------- MOBILE (≤ 768px) ---------- */
+@media (max-width: 768px) {
+
+  .gmail-layout {
+    grid-template-columns: 64px 1fr;
+  }
+
+  .sidebar-gmail {
+    width: 64px;
+  }
+
+  .sidebar-gmail .compose-gmail {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    max-width: 48px;
+  }
+
+  .mail-reader {
+    display: none;
+  }
+
+  .gmail-layout.reading {
+    grid-template-columns: 1fr;
+  }
+
+  .gmail-layout.reading .sidebar-gmail,
+  .gmail-layout.reading .mail-list {
+    display: none;
+  }
+
+  .gmail-layout.reading .mail-reader {
+    display: block;
+    padding: 1.25rem;
+  }
+}
+.mobile-back {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background-color: #efdcb6;
+    margin: 0 0 0.75rem 0;
+    padding: 0.35rem 0.6rem;
+
+    align-self: flex-start;
+  }
+}
+
 
 /* ================= MODAL COMPOSE MAIL ================= */
 .modal {
-  background-color: rgba(0, 0, 0, 0.45); /* gris transparente */
+  background-color: rgba(0, 0, 0, 0.45);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px); /* Safari */
 }
-.modal-content {
-  position: relative;
-  z-index: 1;
-  backdrop-filter: none;
-}
+
 .modal-dialog {
-  animation: modalScaleIn 0.25s ease;
+  animation: modalScaleIn 0.25s ease-out;
 }
 
 @keyframes modalScaleIn {
   from {
-    transform: scale(0.95) translateY(10px);
+    transform: scale(0.96) translateY(20px);
     opacity: 0;
   }
   to {
@@ -603,25 +694,18 @@
   z-index: 1040;
 }
 
-.modal-custom {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1050;
+.compose-modal {
+  max-width: 1100px; /* tamaño tipo Gmail */
+  width: 95%;
 }
 
-.modal-content {
-  background: #fff;
-  border-radius: 14px;
-  max-width: 520px;
-  width: 100%;
-  padding: 24px;
+.mail-compose-modal {
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 .mail-compose-modal .modal-body {
-  padding: 1.75rem;
+  padding: 2rem 2.25rem;
 }
 
 .mail-compose-modal .form-label {
@@ -636,15 +720,16 @@
 
 /* Editor tipo Gmail */
 .compose-editor {
-  min-height: 120px;
-  max-height: 200px;
+  min-height: 240px;
+  max-height: 420px;
   overflow-y: auto;
-  border: 1px solid var(--border);
+  border: 1px solid #dcdcdc;
   border-radius: 14px;
-  padding: 0.75rem;
+  padding: 1rem;
   background: #fff;
 }
-.modal-header{
+
+.modal-header {
   background: linear-gradient(90deg, #0b2c3d, #0f4c5c);
   color: white;
 }

@@ -55,6 +55,7 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { EquiposComponent } from './equipos/equipos.component';
 import { LogoSpinnerComponent } from '../shared/logo-spinner/logo-spinner.component';
 import { FooterComponent } from '../shared/footer/footer.component';
+import { InfoEquipoComponent } from './info-equipo/info-equipo.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -72,6 +73,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     EstadisticasEquipoComponent,
     EstadisticasJugadoresComponent,
     InformacionEquipoComponent,
+    InfoEquipoComponent,
     ContabilidadComponent,
     CuotasComponent,
     RopaComponent,

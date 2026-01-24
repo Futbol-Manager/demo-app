@@ -149,53 +149,82 @@
   opacity: 0.95;
 }
 
-/* ========================= */
-/* MOBILE 📱                 */
-/* ========================= */
+/* =================================================
+   HEADER MOBILE - RESPONSIVE
+   ================================================= */
 @media (max-width: 767px) {
 
-  .theme-header {
-    padding: 0.3rem 0;
-    min-height: 52px;
-  }
+  /* Quitar fondo / contorno de ayuda y descarga */
+  .theme-header .header-action {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
 
-  .logo-image {
-    height: 36px;
-  }
-
-  /* Solo iconos */
-  .header-action {
-    padding: 0.35rem;
-    border-radius: 50%;
-  }
-
-  .header-action span {
-    display: none;
-  }
-
-  .header-action i {
-    font-size: 1.2rem;
-  }
-
-  /* Usuario solo avatar */
-  .user-name {
-    display: none;
-  }
-
-  .user-container {
     padding: 0.25rem;
-    border-radius: 50%;
+    margin: 0;
+
+    width: auto;
+    height: auto;
   }
 
+  .theme-header .header-action:hover {
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  /* Iconos un poco más claros */
+  .theme-header .header-action i {
+    font-size: 1.25rem;
+    opacity: 0.9;
+  }
+
+  /* Ocultar texto (ya lo hacías, reforzamos) */
+  .theme-header .header-action span {
+    display: none !important;
+  }
+
+  /* ===== USUARIO ===== */
+  .theme-header .user-container {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+
+    padding: 0.25rem;
+    margin-left: 0.25rem;
+  }
+
+  .theme-header .user-container:hover {
+    background: transparent !important;
+  }
+
+  /* Avatar ligeramente protagonista */
   .account-user-avatar img {
-    width: 32px;
-    height: 32px;
+    width: 34px;
+    height: 34px;
+    border: none;
   }
 
-  .dropdown-menu {
-    min-width: 200px;
+  /* Ocultar nombre y flecha */
+  .user-name,
+  .user-arrow {
+    display: none !important;
+  }
+
+  /* Ajuste fino del contenedor derecho */
+  .theme-header .col-auto {
+    gap: 0.5rem !important;
+  }
+
+  /* Header más aire */
+  .theme-header {
+    padding: 0.25rem 0.75rem;
+  }
+   /* Flechita de Bootstrap en dropdowns */
+  .dropdown-toggle::after {
+    display: none !important;
   }
 }
+
 /* ===== MODAL BASE ===== */
 .profile-modal {
   position: fixed;

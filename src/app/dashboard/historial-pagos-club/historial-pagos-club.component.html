@@ -1,33 +1,32 @@
 <!-- ================= SUBMENU ================= -->
-<div class="submenu">
+<div class="page-actions">
 
-  <!-- IZQUIERDA: VOLVER -->
-  <div class="submenu-left">
-    <button class="submenu-btn submenu-back" (click)="goBack()">
-      <i class="bi bi-arrow-left-circle"></i>
-      <span>{{ 'NAV.BACK' | translate }}</span>
+  <!-- IZQUIERDA -->
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
   </div>
-</div>
 
-<div *ngIf="isLoading" class="loading-state p-4">
-  <div class="spinner-border text-light" role="status"></div>
-  <strong>{{ 'COMMON.LOADING_LIST' | translate }}</strong>
-</div>
+  <!-- CENTRO -->
+  <div class="actions-group">
+    <input type="text" class="form-control filter-input" [placeholder]="'PAYMENTS.FILTER_CLUB' | translate"
+      [(ngModel)]="filtro" (input)="filtrarClubes()" />
 
-<div class="container mt-4">
-
-  <!-- ================= FILTROS ================= -->
-  <div class="filters-bar">
-    <input type="text" class="form-control" [placeholder]="'PAYMENTS.FILTER_CLUB' | translate" [(ngModel)]="filtro"
-      (input)="filtrarClubes()" />
-
-    <button class="btn btn-success" (click)="exportarExcel()">
-      <i class="bi bi-file-earmark-spreadsheet-fill me-1"></i>
+    <button class="btn btn-excel" (click)="exportarExcel()">
+      <i class="bi bi-file-earmark-spreadsheet-fill"></i>
       {{ 'COMMON.EXPORT_EXCEL' | translate }}
     </button>
   </div>
 
+  <!-- DERECHA (ESPACIADOR) -->
+  <div></div>
+
+</div>
+
+
+<div class="container mt-4">
   <!-- ================= TABLA ================= -->
   <div class="table-scroll" [class.no-scroll]="isLoading">
 

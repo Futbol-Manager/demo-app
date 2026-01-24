@@ -5,9 +5,7 @@
     <span>{{ 'COMMON.BACK' | translate }}</span>
   </button>
 </div>
-<app-logo-spinner *ngIf="loading"></app-logo-spinner>
-
-<div *ngIf="datosCargados" class="container">
+<div class="container">
   <!-- TÍTULO CENTRADO -->
   <h2 class="table-title text-center mt-4 mb-3">
     {{ 'PLAYERS.TITLE' | translate }}
@@ -47,7 +45,7 @@
       <label class="filter-label invisible-label">Excel</label>
       <button class="btn btn-excel" (click)="exportTableToExcel()">
         <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-        {{ 'PLAYERS.DOWNLOAD_EXCEL' | translate }}
+        {{ 'COMMON.EXPORT_EXCEL' | translate }}
       </button>
     </div>
   </div>
@@ -55,8 +53,8 @@
     <table id="dataTable" class="modern-table">
       <thead>
         <tr>
-          <th>{{ 'PLAYERS.TABLE.IMAGE' | translate }}</th>
-          <th>{{ 'PLAYERS.TABLE.NAME' | translate }}</th>
+          <th class="sticky-col sticky-img">{{ 'PLAYERS.TABLE.IMAGE' | translate }}</th>
+          <th class="sticky-col sticky-name">{{ 'PLAYERS.TABLE.NAME' | translate }}</th>
           <th>{{ 'PLAYERS.TABLE.TEAM' | translate }}</th>
           <th>{{ 'PLAYERS.TABLE.BIRTHDATE' | translate }}</th>
           <th>{{ 'PLAYERS.TABLE.PHONE' | translate }}</th>
@@ -74,8 +72,14 @@
           <th>{{ 'PLAYERS.TABLE.IBAN' | translate }}</th>
         </tr>
       </thead>
-
-      <tbody>
+      <tbody *ngIf="loading">
+        <tr *ngFor="let _ of [].constructor(7)">
+          <td *ngFor="let __ of [].constructor(17)">
+            <div class="skeleton skeleton-cell"></div>
+          </td>
+        </tr>
+      </tbody>
+      <tbody *ngIf="!loading && datosCargados">
         <tr *ngFor="let player of filteredPlayers; let i = index">
           <!-- IMAGEN -->
           <td class="image-cell">

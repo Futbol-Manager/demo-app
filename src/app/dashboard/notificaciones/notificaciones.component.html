@@ -1,4 +1,3 @@
-<app-publicidad></app-publicidad>
 <div class="back-container">
   <button class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
@@ -8,16 +7,19 @@
 <div class="app-shell">
 
   <!-- ===== LAYOUT 3 COLUMNAS ===== -->
-  <div class="gmail-layout">
+  <div class="gmail-layout" [class.reading]="selectCorreo">
 
     <!-- ===== SIDEBAR ===== -->
     <aside class="sidebar-gmail">
 
       <!-- BOTÓN REDACTAR -->
-      <button class="compose-gmail" *ngIf="usuarioActual!.profileType.profileId < 3" (click)="newCorreo()">
+      <button class="compose-gmail" (click)="newCorreo()">
         <i class="bi bi-pencil"></i>
-        {{ 'NOTIFICATIONS.COMPOSE' | translate }}
+        <span class="compose-label">
+          {{ 'NOTIFICATIONS.COMPOSE' | translate }}
+        </span>
       </button>
+
 
       <!-- NAVEGACIÓN -->
       <nav class="nav-gmail">
@@ -118,7 +120,7 @@
 
     <!-- ===== PANEL DE LECTURA ===== -->
 
-    <!-- 1️⃣ SKELETON (MIENTRAS CARGA) -->
+    <!-- SKELETON (MIENTRAS CARGA) -->
     <section class="mail-reader" *ngIf="loadingCorreos">
       <div class="reader-placeholder">
         <div class="sk-line sk-title"></div>
@@ -128,8 +130,14 @@
       </div>
     </section>
 
-    <!-- 2️⃣ LECTURA REAL -->
+    <!-- LECTURA REAL -->
     <section class="mail-reader" *ngIf="!loadingCorreos && selectCorreo">
+      <!-- 🔙 VOLVER SOLO EN MOBILE -->
+      <button class="btn-back-clean mobile-back" (click)="cerrarLectura()">
+        <i class="bi bi-arrow-left"></i>
+        <span>{{ 'NOTIFICATIONS.MESSAGES' | translate }}</span>
+      </button>
+
       <h1 class="reader-subject">
         {{ correoSelected.asunto }}
       </h1>
@@ -146,7 +154,7 @@
       <div class="reader-body" [innerHTML]="correoSelected.body"></div>
     </section>
 
-    <!-- 3️⃣ EMPTY STATE (CARGADO PERO SIN SELECCIÓN) -->
+    <!-- EMPTY STATE (CARGADO PERO SIN SELECCIÓN) -->
     <section class="mail-reader" *ngIf="!loadingCorreos && !selectCorreo">
       <div class="empty-reader">
         {{ 'NOTIFICATIONS.SELECT_MESSAGE' | translate }}
@@ -154,14 +162,11 @@
     </section>
   </div>
 
-  <!-- ===================================================== -->
-  <!-- ===== MODAL NUEVO CORREO ===== -->
-  <!-- ===================================================== -->
   <!-- ================= MODAL NUEVO CORREO ================= -->
   <div class="modal fade" [ngClass]="{ 'show': showModalNew }" [style.display]="showModalNew ? 'block' : 'none'"
     tabindex="-1" role="dialog">
 
-    <div class="modal-dialog modal-dialog-centered modal-lg compose-modal">
+    <div class="modal-dialog modal-dialog-centered modal-xl compose-modal">
       <div class="modal-content mail-compose-modal">
 
         <!-- HEADER -->

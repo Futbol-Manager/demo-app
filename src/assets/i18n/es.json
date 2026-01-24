@@ -26,11 +26,12 @@
     "ACCEPT": "Aceptar",
     "EXPORT_EXCEL": "Exportar Excel",
     "LOADING_LIST": "Cargando listado...",
-    "FEMALE":"Femenino",
-    "MALE":"Masculino",
+    "FEMALE": "Femenino",
+    "MALE": "Masculino",
     "OTHER": "Otro",
     "ID": "Identificación",
-    "VIEWPLAYER": "Ver Jugador"
+    "VIEWPLAYER": "Ver Jugador",
+    "CUSTOM": "Personalizar"
   },
   "LOGIN": {
     "EMAIL_PLACEHOLDER": "Correo electrónico",
@@ -692,8 +693,8 @@
       }
     },
     "TABS": {
-        "PARENT": "Datos del padre",
-        "CHILDREN": "Datos de los hijos"
+      "PARENT": "Datos del padre",
+      "CHILDREN": "Datos de los hijos"
     },
     "PARENT": {
       "QUESTION": "¿Eres padre, madre, tutor o jugador mayor de edad?",
@@ -707,7 +708,7 @@
       "TITLE": "Datos de los hijos",
       "COUNT": "¿Cuántos hijos juegan en este club?",
       "DATA": "Datos del hijo {{num}}",
-      "CHECK_PLAYER":"Comprobar si este jugador existe"
+      "CHECK_PLAYER": "Comprobar si este jugador existe"
     },
     "COMMON": {
       "NEXT": "Siguiente",
@@ -751,31 +752,22 @@
     "SUBMENU": {
       "BACK": "Panel de Control"
     },
-
     "OPTIONS": {
       "FEES": "Cuotas",
       "FEES_DESC": "Gestión de pagos",
-
       "SCORES": "Puntuación equipos",
       "SCORES_DESC": "Clasificación",
-
       "TRAINING": "Entrenamientos",
       "TRAINING_DESC": "Sesiones",
-
       "PLAYERS": "Jugadores",
       "PLAYERS_DESC": "Información",
-
       "TEAMS": "Equipos",
       "TEAMS_DESC": "Estadísticas",
-
       "PLAYER": "Jugador",
       "PLAYER_DESC": "Métricas",
-
       "COACH": "Entrenadores",
       "COACH_DESC": "Información"
-
     },
-
     "RESULTS": {
       "TITLE": "Resultados última jornada",
       "FINISHED": "Finalizado",
@@ -785,18 +777,15 @@
       "EMPATE": "EMPATE",
       "DERROTA": "DERROTA"
     },
-
     "TRAINING_TODAY": {
       "TITLE": "Entrenando hoy"
     },
-
     "NEXT_MATCHES": {
       "TITLE": "Próximos partidos",
       "LOCAL": "Local",
       "VISITOR": "Visitante",
       "UNDEFINED": "Por definir"
     },
-
     "COMMON": {
       "VS": "VS"
     }
@@ -804,12 +793,9 @@
   "FOOTER": {
     "RIGHTS": "Todos los derechos reservados."
   },
-
   "ESTADIS_EQUIPO": {
     "BACK": "Cuadro de mando",
-
     "TITLE": "Tabla de Resumen",
-
     "TABLE": {
       "TEAM": "Equipo",
       "PJ": "PJ",
@@ -822,18 +808,16 @@
       "DG": "DG",
       "LAST": "Últimos"
     },
-
     "RESULT": {
       "WIN": "G",
       "DRAW": "E",
       "LOSS": "P"
     },
-
     "MODAL": {
       "TITLE": "Listado de Partidos",
       "SEARCH": "Buscar rival o resultado…",
-      "LOCAL_VISITOR":"Local/Visitante",
-      "TYPEMATCH":"Tipo Partido",
+      "LOCAL_VISITOR": "Local/Visitante",
+      "TYPEMATCH": "Tipo Partido",
       "DATE": "Fecha",
       "RIVAL": "Rival",
       "RESULT": "Resultado",
@@ -878,29 +862,24 @@
       "UPLOAD_TITLE": "Subir Documento (PDF o Word)",
       "REQUIRE_TITLE": "Documento que se requiere",
       "CUSTOM_TITLE": "Requerimiento Personalizado",
-
       "NAME": "Nombre del documento",
       "DESCRIPTION": "Descripción",
       "TYPE": "Tipo",
       "FILE": "Seleccionar archivo (.pdf o .doc/.docx)",
-
       "VISIBLE": "Visible para jugadores",
       "REQUIRE_UPLOAD_HELP": "Habilita este botón para permitir a los padres/jugadores subir este documento cumplimentado.",
-
       "CUSTOM_CONTENT": "Contenido del mensaje",
       "CUSTOM_HELP": "Aquí puedes poner lo que quieras, incluido copiar y pegar texto desde Word.",
       "CUSTOM_CHECK": "Esto lo verá el jugador/padre para aceptar lo que pongas debajo.",
       "CUSTOM_TITLE_LABEL": "Texto autorización",
       "CUSTOM_TITLE_PLACEHOLDER": "Ej. Autorizo al club a...",
-
-       "UPLOADING": "Subiendo documento...",
+      "UPLOADING": "Subiendo documento...",
       "UPLOAD_PROGRESS": "Progreso de subida",
       "UPLOAD_SUCCESS": "Documento subido correctamente",
       "UPLOAD_ERROR": "Error al subir el documento",
       "UPLOAD_WAIT": "Por favor espera mientras se completa la subida"
     }
   },
-
   "CUOTAS": {
     "NAV": {
       "BACK": "Volver",
@@ -930,7 +909,6 @@
       "EDIT": "Editar pago del jugador",
       "PAY": "Introducir un pago",
       "HISTORY": "Ver historial de pagos"
-
     },
     "NO_TEAM": "Sin equipo",
     "PAGINATION": {
@@ -1021,46 +999,40 @@
     "OPEN_MESSAGE": "Abrir para ver el mensaje…",
     "SENT_AT": "Enviado el",
     "FROM": "Remitente",
-    "TO":"Destinatarios",
+    "TO": "Destinatarios",
     "SUBJECT": "Asunto",
     "MESSAGE": "Mensaje",
+    "MESSAGES": "Mensajes",
     "CLOSE": "Cerrar",
     "SELECT_MESSAGE": "No ha seleccionado ningún correo.",
     "DELETE": "Eliminar",
     "SEND": "Enviar",
     "CANCEL": "Cancelar"
   },
-   "CLOTHES": {
+  "CLOTHES": {
     "TABLE": {
       "ID": "ID",
       "NAME": "Nombre",
       "TEAM": "Equipo",
       "SHIRT_NAME": "Nombre camiseta",
       "NUMBER": "Número",
-
       "MATCH_SHIRT": "Camiseta juego",
       "MATCH_PANTS": "Pantalón juego",
       "MATCH_SOCKS": "Medias juego",
-
       "MATCH_SHIRT_2": "Camiseta 2º juego",
       "MATCH_PANTS_2": "Pantalón 2º juego",
       "MATCH_SOCKS_2": "Medias 2º juego",
-
       "TRAINING_SHIRT": "Camiseta entreno",
       "TRAINING_PANTS": "Pantalón entreno",
       "TRAINING_SOCKS": "Medias entreno",
       "TRAINING_SWEATSHIRT": "Sudadera entreno",
-
       "TRACKSUIT_JACKET": "Chaqueta chándal",
       "TRACKSUIT_PANTS": "Pantalón chándal",
-
       "POLO": "Polo paseo",
       "CASUAL_PANTS": "Pantalón paseo",
-
       "COAT": "Abrigo equipo",
       "RAINCOAT": "Chubasquero",
       "BACKPACK": "Mochila",
-
       "STATUS": "Estado"
     }
   },
@@ -1095,18 +1067,33 @@
     "TOTAL": "Total a pagar",
     "CONFIRM": "Confirmar suscripción"
   },
-  "PLAYERS":{
-    "TITLE": "Listado de Jugadores",
+  "PLAYERS": {
+    "TITLE": "Listado de jugadores",
     "SEARCH_LABEL": "Buscar cualquier campo",
     "SEARCH_PLACEHOLDER": "Buscar...",
     "TEAM_LABEL": "Selecciona un equipo",
     "ALL_TEAMS": "Todos los equipos",
     "DOWNLOAD_EXCEL": "Descargar Excel",
+    "NO_TEAM": "Sin equipo",
     "TABLE": {
       "IMAGE": "Imagen",
       "NAME": "Nombre",
       "TEAM": "Equipo",
-      "BIRTHDATE": "Fecha Nac.",
+      "POSITION": "Posición",
+      "MATCHES": "Partidos",
+      "MINUTES": "Minutos",
+      "MEDIA_MINUTES_MATCH": "Media min / partido",
+      "GOALS": "Goles",
+      "MEDIA_GOALS_MATCH": "Media goles / partido",
+      "ASSISTS": "Asistencias",
+      "GOALS_ASSISTS": "Goles + asist.",
+      "MEDIA_ASSISTS_MATCH": "Media asist. / partido",
+      "MEDIA_GOALS_ASSISTS_MATCH": "Media goles + asist. / partido",
+      "GOALS_PENALTY": "Goles de penalti",
+      "GOALS_FREE_KICK": "Goles de falta",
+      "PENALTIES_MISSED": "Penaltis fallados",
+      "CARDS": "Tarjetas",
+      "BIRTHDATE": "Fecha nac.",
       "PHONE": "Teléfono",
       "DNI": "DNI",
       "DNI_IMG": "DNI Img",
@@ -1115,30 +1102,35 @@
       "MOTHER": "Madre",
       "EMAIL": "Email",
       "IBAN": "IBAN"
-    },
-    "DNI_MODAL": {
-      "TITLE": "Subir documentación DNI",
-      "SUBTITLE": "Jugador · Padre · Madre · Tutor",
-      "HELP": "Solo se permiten imágenes en formato PNG o JPEG",
-      "FRONT": "Primera cara",
-      "BACK": "Segunda cara",
-      "PLAYER": { "TITLE": "DNI del jugador" },
-      "FATHER": { "TITLE": "DNI del padre o tutor 1" },
-      "MOTHER": { "TITLE": "DNI de la madre o tutor 2" }
-    },
-    "DOC_MODAL": {
-      "TITLE": "Documentación del jugador",
-      "SUBTITLE": "Descarga, subida y revisión de documentos",
-      "DOWNLOAD": "Descargar documento",
-      "UPLOAD": "Subir documento",
-      "VIEW": "Ver documento",
-      "FILL": "Rellenar documento"
-    },
-    "MODAL_UPLOAD_DOC": {
-      "TITLE": "Subir documento",
-      "DESCRIPTION": "Aquí puedes subir el archivo solicitado.",
-      "FILE_LABEL": "Seleccionar archivo"
     }
-
+  },
+  "DNI_MODAL": {
+    "TITLE": "Subir documentación DNI",
+    "SUBTITLE": "Jugador · Padre · Madre · Tutor",
+    "HELP": "Solo se permiten imágenes en formato PNG o JPEG",
+    "FRONT": "Primera cara",
+    "BACK": "Segunda cara",
+    "PLAYER": {
+      "TITLE": "DNI del jugador"
+    },
+    "FATHER": {
+      "TITLE": "DNI del padre o tutor 1"
+    },
+    "MOTHER": {
+      "TITLE": "DNI de la madre o tutor 2"
+    }
+  },
+  "DOC_MODAL": {
+    "TITLE": "Documentación del jugador",
+    "SUBTITLE": "Descarga, subida y revisión de documentos",
+    "DOWNLOAD": "Descargar documento",
+    "UPLOAD": "Subir documento",
+    "VIEW": "Ver documento",
+    "FILL": "Rellenar documento"
+  },
+  "MODAL_UPLOAD_DOC": {
+    "TITLE": "Subir documento",
+    "DESCRIPTION": "Aquí puedes subir el archivo solicitado.",
+    "FILE_LABEL": "Seleccionar archivo"
   }
 }

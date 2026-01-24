@@ -28,6 +28,7 @@ export class NotificacionesComponent implements OnInit {
     destinatario: '',
     fechaCreate: '',
   };
+
   correosEnviadosSinFiltro: any = [];
   correosRecibidosSinFiltro: any = [];
   correosSinFiltro: any = [];
@@ -108,7 +109,7 @@ export class NotificacionesComponent implements OnInit {
           }*/
           console.log(response.data);
           this.receivedCount = this.correosRecibidosSinFiltro.filter(
-            (correo:any) => correo.leido === 0
+            (correo: any) => correo.leido === 0
           ).length;
           console.log(this.receivedCount);
           this.correos = response.data.recibidos;
@@ -363,6 +364,9 @@ export class NotificacionesComponent implements OnInit {
       destinatario: '',
       fechaCreate: '',
     }; // Limpia la selección si es necesario
+  }
+  cerrarLectura() {
+    this.selectCorreo = false;
   }
 
   // Método para codificar en Base64 antes de guardar

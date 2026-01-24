@@ -8,10 +8,9 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 @Component({
   selector: 'app-info-equipo',
   templateUrl: './info-equipo.component.html',
-  styleUrls: ['./info-equipo.component.scss']
+  styleUrls: ['./info-equipo.component.scss'],
 })
 export class InfoEquipoComponent implements OnInit {
-
   teamId!: number;
   team: TeamNew = new TeamNew();
   clubList: any[] = [];
@@ -25,10 +24,19 @@ export class InfoEquipoComponent implements OnInit {
     { label: 'Jueves', property: 'jueves', index: 4 },
     { label: 'Viernes', property: 'viernes', index: 5 },
     { label: 'Sábado', property: 'sabado', index: 6 },
-    { label: 'Domingo', property: 'domingo', index: 7 }
+    { label: 'Domingo', property: 'domingo', index: 7 },
   ];
 
-  horarioTeam: HorarioTeam = new HorarioTeam({});
+  horarioTeam: any = {
+    lunes: 0,
+    martes: 0,
+    miercoles: 0,
+    jueves: 0,
+    viernes: 0,
+    sabado: 0,
+    domingo: 0,
+  };
+
   diasTeam: any;
   temporadaStoredValue = '2025';
 
@@ -36,20 +44,23 @@ export class InfoEquipoComponent implements OnInit {
     private teamService: TeamService,
     private router: Router,
     private route: ActivatedRoute,
-    private clubService: ClubService,
-  ) { }
+    private clubService: ClubService
+  ) {}
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       // Obtener el valor de teamId de los parámetros
-      this.teamId = +params['teamId'];  // El + convierte el valor a número
+      this.teamId = +params['teamId']; // El + convierte el valor a número
       console.log('teamId:', this.teamId);
       this.cargarInfoEquipo();
       this.cargarListadoClubes();
     });
 
-    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+    if (
+      localStorage.getItem('temporada') != null &&
+      localStorage.getItem('temporada') != undefined
+    ) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
   }
@@ -70,16 +81,19 @@ export class InfoEquipoComponent implements OnInit {
             categoryType: {
               categoryTypeId: 1,
               year: 0,
-              categoryName: ''
+              categoryName: '',
             },
             clubId: this.team.clubId,
             userId: this.team.userId,
             temporada: this.temporadaStoredValue,
             dateCreate: this.team.dateCreate,
-            dateUpdate: this.team.dateUpdate
+            dateUpdate: this.team.dateUpdate,
           };
         } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          console.error(
+            'La respuesta del servicio no tiene la estructura esperada',
+            response
+          );
         }
       },
       (error) => {
@@ -107,8 +121,7 @@ export class InfoEquipoComponent implements OnInit {
     this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
   }
 
-  guardarCambios() { }
-
+  guardarCambios() {}
 
   toggleDiaOkDesactivar(property: string, value: number) {
     this.diasTeam[property] = value === 0 ? 1 : 0;
@@ -122,7 +135,10 @@ export class InfoEquipoComponent implements OnInit {
         if (response.data !== null) {
           this.diasTeam = response.data;
         } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          console.error(
+            'La respuesta del servicio no tiene la estructura esperada',
+            response
+          );
         }
         this.showModalHorario = true;
       },
@@ -135,5 +151,4 @@ export class InfoEquipoComponent implements OnInit {
   cerrarModalHorario() {
     this.showModalHorario = false;
   }
-
 }

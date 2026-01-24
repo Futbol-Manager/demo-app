@@ -83,34 +83,6 @@ export class EstadisticasEquiposClubComponent implements OnInit {
       }
     );
   }
-  parseTrainingDays(trainingDays: string | null) {
-    if (!trainingDays) {
-      return null;
-    }
-
-    const dayMap: Record<string, string> = {
-      L: 'DAYS.MONDAY',
-      M: 'DAYS.TUESDAY',
-      X: 'DAYS.WEDNESDAY',
-      J: 'DAYS.THURSDAY',
-      V: 'DAYS.FRIDAY',
-      S: 'DAYS.SATURDAY',
-      D: 'DAYS.SUNDAY',
-    };
-
-    const regex = /([LMXJVSD]):\s*([\d:]+-[\d:]+)/g;
-    const result: { dayLabel: string; hours: string }[] = [];
-
-    let match;
-    while ((match = regex.exec(trainingDays)) !== null) {
-      result.push({
-        dayLabel: dayMap[match[1]],
-        hours: match[2],
-      });
-    }
-
-    return result;
-  }
 
   datosResumentTotales(team: any) {
     let vic = 0;

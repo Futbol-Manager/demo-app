@@ -112,8 +112,8 @@
                       <span>{{ dia.label }}</span>
                       <div class="form-check form-switch">
                           <input class="form-check-input custom-input" type="checkbox" id="{{dia.property}}"
-                              [checked]="HorarioTeam[dia.property] === 0"
-                              (change)="toggleDiaOkDesactivar(dia.property, HorarioTeam[dia.property])">
+                              [checked]="horarioTeam[dia.property] === 0"
+                              (change)="toggleDiaOkDesactivar(dia.property, horarioTeam[dia.property])">
                       </div>
                   </div>
               </div>
