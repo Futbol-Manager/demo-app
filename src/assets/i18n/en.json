@@ -570,6 +570,7 @@
     "TO": "To",
     "SUBJECT": "Subject",
     "MESSAGE": "Message",
+    "MESSAGES": "Mensajes",
     "CLOSE": "Close",
     "SELECT_MESSAGE": "You have not selected any message.",
     "DELETE": "Delete",

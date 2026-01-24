@@ -150,11 +150,35 @@
 }
 
 /* =================================================
-   HEADER MOBILE - RESPONSIVE
+   HEADER MOBILE – RESPONSIVE (FIX iOS SAFARI)
    ================================================= */
 @media (max-width: 767px) {
+  /* ===== HEADER CONTENCIÓN GENERAL ===== */
+  .theme-header {
+    padding: 0.25rem 0.75rem;
+    max-width: 100vw;
+    overflow: hidden; /* 🔥 evita desbordes */
+  }
 
-  /* Quitar fondo / contorno de ayuda y descarga */
+  /* Safe area iOS (notch) */
+  @supports (-webkit-touch-callout: none) {
+    .theme-header {
+      padding-left: calc(0.75rem + env(safe-area-inset-left));
+      padding-right: calc(0.75rem + env(safe-area-inset-right));
+    }
+  }
+
+  /* ===== CONTENEDOR DERECHO ===== */
+  .theme-header .col-auto {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem !important;
+    max-width: 100%;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  /* ===== AYUDA / DESCARGA (ICON ONLY) ===== */
   .theme-header .header-action {
     background: transparent !important;
     box-shadow: none !important;
@@ -165,6 +189,12 @@
 
     width: auto;
     height: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
   }
 
   .theme-header .header-action:hover {
@@ -172,18 +202,16 @@
     box-shadow: none !important;
   }
 
-  /* Iconos un poco más claros */
   .theme-header .header-action i {
     font-size: 1.25rem;
     opacity: 0.9;
   }
 
-  /* Ocultar texto (ya lo hacías, reforzamos) */
   .theme-header .header-action span {
     display: none !important;
   }
 
-  /* ===== USUARIO ===== */
+  /* ===== USUARIO / AVATAR ===== */
   .theme-header .user-container {
     background: transparent !important;
     box-shadow: none !important;
@@ -191,16 +219,32 @@
 
     padding: 0.25rem;
     margin-left: 0.25rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+    max-width: 44px; /* 🔥 evita que empuje */
   }
 
   .theme-header .user-container:hover {
     background: transparent !important;
   }
 
-  /* Avatar ligeramente protagonista */
+  /* Avatar SIEMPRE contenido */
+  .account-user-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 34px;
+  }
+
   .account-user-avatar img {
     width: 34px;
     height: 34px;
+    max-width: 34px;
+    object-fit: cover;
     border: none;
   }
 
@@ -210,16 +254,7 @@
     display: none !important;
   }
 
-  /* Ajuste fino del contenedor derecho */
-  .theme-header .col-auto {
-    gap: 0.5rem !important;
-  }
-
-  /* Header más aire */
-  .theme-header {
-    padding: 0.25rem 0.75rem;
-  }
-   /* Flechita de Bootstrap en dropdowns */
+  /* ===== QUITAR CARET SOLO EN MOBILE ===== */
   .dropdown-toggle::after {
     display: none !important;
   }
@@ -418,4 +453,3 @@ body.modal-open {
     max-width: 90%;
   }
 }
-
