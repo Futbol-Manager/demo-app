@@ -1102,35 +1102,41 @@
       "MOTHER": "Madre",
       "EMAIL": "Email",
       "IBAN": "IBAN"
-    }
-  },
-  "DNI_MODAL": {
-    "TITLE": "Subir documentación DNI",
-    "SUBTITLE": "Jugador · Padre · Madre · Tutor",
-    "HELP": "Solo se permiten imágenes en formato PNG o JPEG",
-    "FRONT": "Primera cara",
-    "BACK": "Segunda cara",
-    "PLAYER": {
-      "TITLE": "DNI del jugador"
     },
-    "FATHER": {
-      "TITLE": "DNI del padre o tutor 1"
+    "BUTTONS": {
+      "ID": "Identificación",
+      "MOVE_PLAYER": "Mover Jugador",
+      "CHANGE_TEMP": "Cambiar Temporada",
+      "UPLOAD_DOC": "Subir documento"
     },
-    "MOTHER": {
-      "TITLE": "DNI de la madre o tutor 2"
+    "DNI_MODAL": {
+      "TITLE": "Subir documentación DNI",
+      "SUBTITLE": "Jugador · Padre · Madre · Tutor",
+      "HELP": "Solo se permiten imágenes en formato PNG o JPEG",
+      "FRONT": "Primera cara",
+      "BACK": "Segunda cara",
+      "PLAYER": {
+        "TITLE": "DNI del jugador"
+      },
+      "FATHER": {
+        "TITLE": "DNI del padre o tutor 1"
+      },
+      "MOTHER": {
+        "TITLE": "DNI de la madre o tutor 2"
+      }
+    },
+    "DOC_MODAL": {
+      "TITLE": "Documentación del jugador",
+      "SUBTITLE": "Descarga, subida y revisión de documentos",
+      "DOWNLOAD": "Descargar documento",
+      "UPLOAD": "Subir documento",
+      "VIEW": "Ver documento",
+      "FILL": "Rellenar documento"
+    },
+    "MODAL_UPLOAD_DOC": {
+      "TITLE": "Subir documento",
+      "DESCRIPTION": "Aquí puedes subir el archivo solicitado.",
+      "FILE_LABEL": "Seleccionar archivo"
     }
-  },
-  "DOC_MODAL": {
-    "TITLE": "Documentación del jugador",
-    "SUBTITLE": "Descarga, subida y revisión de documentos",
-    "DOWNLOAD": "Descargar documento",
-    "UPLOAD": "Subir documento",
-    "VIEW": "Ver documento",
-    "FILL": "Rellenar documento"
-  },
-  "MODAL_UPLOAD_DOC": {
-    "TITLE": "Subir documento",
-    "DESCRIPTION": "Aquí puedes subir el archivo solicitado.",
-    "FILE_LABEL": "Seleccionar archivo"
   }
 }

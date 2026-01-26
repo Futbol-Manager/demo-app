@@ -679,35 +679,41 @@
       "MOTHER": "Mother",
       "EMAIL": "Email",
       "IBAN": "IBAN"
-    }
-  },
-  "DNI_MODAL": {
-    "TITLE": "Upload ID documentation",
-    "SUBTITLE": "Player · Father · Mother · Guardian",
-    "HELP": "Only PNG or JPEG images are allowed",
-    "FRONT": "Front side",
-    "BACK": "Back side",
-    "PLAYER": {
-      "TITLE": "Player ID"
     },
-    "FATHER": {
-      "TITLE": "Father or guardian ID"
+    "BUTTONS": {
+      "ID": "Identification",
+      "MOVE_PLAYER": "Move Player",
+      "CHANGE_TEMP": "Change Season",
+      "UPLOAD_DOC": "Upload Document"
     },
-    "MOTHER": {
-      "TITLE": "Mother or guardian ID"
+     "DNI_MODAL": {
+      "TITLE": "Upload ID documentation",
+      "SUBTITLE": "Player · Father · Mother · Guardian",
+      "HELP": "Only PNG or JPEG images are allowed",
+      "FRONT": "Front side",
+      "BACK": "Back side",
+      "PLAYER": {
+        "TITLE": "Player ID"
+      },
+      "FATHER": {
+        "TITLE": "Father or guardian ID"
+      },
+      "MOTHER": {
+        "TITLE": "Mother or guardian ID"
+      }
+    },
+    "DOC_MODAL": {
+      "TITLE": "Player documentation",
+      "SUBTITLE": "Download, upload and review documents",
+      "DOWNLOAD": "Download document",
+      "UPLOAD": "Upload document",
+      "VIEW": "View document",
+      "FILL": "Fill document"
+    },
+    "MODAL_UPLOAD_DOC": {
+      "TITLE": "Upload document",
+      "DESCRIPTION": "Here you can upload the requested file.",
+      "FILE_LABEL": "Select file"
     }
-  },
-  "DOC_MODAL": {
-    "TITLE": "Player documentation",
-    "SUBTITLE": "Download, upload and review documents",
-    "DOWNLOAD": "Download document",
-    "UPLOAD": "Upload document",
-    "VIEW": "View document",
-    "FILL": "Fill document"
-  },
-  "MODAL_UPLOAD_DOC": {
-    "TITLE": "Upload document",
-    "DESCRIPTION": "Here you can upload the requested file.",
-    "FILE_LABEL": "Select file"
   }
 }

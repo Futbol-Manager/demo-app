@@ -273,6 +273,7 @@
 .form-field {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .form-label {
@@ -287,6 +288,14 @@
   font-size: 0.8rem;
   font-weight: 600;
   color: #475569;
+}
+
+input[type="date"].input-register {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
 /* SELECT NUM HIJOS */
@@ -339,6 +348,8 @@
 /* INPUTS */
 .input-register {
   width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   height: 44px;
   border-radius: 12px;
   padding: 0 1rem;
@@ -393,14 +404,73 @@ input[type="date"] {
   gap: 0.75rem;
 }
 
-.btn-secondary {
-  height: 44px;
-  font-size: 0.9rem;
+.btn-register {
   border-radius: 12px;
+  font-weight: 600;
+  padding: 10px;
+  transition: all 0.2s ease;
+}
+
+.btn-register:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(40, 199, 111, 0.3);
+}
+
+.btn-register:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.btn-register .spinner-border {
+  vertical-align: middle;
+}
+.btn-custom {
+  background: #31b270;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  height: 40px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #31b270, #efdcb6);
+    color: #0f172a; // mejor contraste en hover
+    box-shadow: 0 12px 25px rgba(49, 178, 112, 0.45);
+    transform: translateY(-1px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.35);
+  }
+}
+.btn-outline-secondary {
+  background: #002c40;
+  margin-top: 10px;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  height: 40px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(135deg, #31b270, #002c40);
+    color: #f4f4f4; // mejor contraste en hover
+    box-shadow: 0 12px 25px rgba(49, 178, 112, 0.45);
+    transform: translateY(-1px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.35);
+  }
 }
 
 .btn-primary {
   height: 48px;
+  background-color: #31b270;
   font-size: 1rem;
   font-weight: 700;
   border-radius: 14px;

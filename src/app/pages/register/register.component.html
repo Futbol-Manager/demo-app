@@ -91,9 +91,9 @@
                   </select>
                 </div>
               </div>
-
+              <!-- Formulario para Club -->
               <div *ngIf="selectedOption == 1">
-                <!-- Formulario para Club -->
+
                 <form (ngSubmit)="openModal(1)" [formGroup]="registerFormClub" class="form-register">
                   <div class="mb-3 d-flex">
                     <div class="col-6">
@@ -179,85 +179,128 @@
                 </form>
               </div>
 
+              <!-- Formulario para Entrenador -->
               <div *ngIf="selectedOption == 2 || selectedOption == 5">
-                <!-- Formulario para Entrenador -->
-                <form (ngSubmit)="openModal(2)" [formGroup]="registerFormEntrenador" class="form-register">
+                <form [formGroup]="registerFormEntrenador" (ngSubmit)="submitEntrenador()" class="form-register">
+
+                  <!-- Nombre / Apellido -->
                   <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                      <input [placeholder]="'REGISTER.COMMON.NAME' | translate" class="form-control input-register"
-                        formControlName="name" id="name" type="text">
+                    <div class="col-6 input-wrapper">
+                      <input class="form-control input-register" [class.is-invalid]="isInvalidEntrenador('name')"
+                        formControlName="name" type="text" [placeholder]="'REGISTER.COMMON.NAME' | translate" />
+                      <i *ngIf="isInvalidEntrenador('name')" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('name')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_NAME' | translate }}
+                      </small>
                     </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
-                      <input [placeholder]="'REGISTER.COMMON.SURNAME' | translate" class="form-control input-register"
-                        formControlName="surname" id="surname" type="text">
+
+                    <div class="col-6 ms-2 input-wrapper">
+                      <input class="form-control input-register" [class.is-invalid]="isInvalidEntrenador('surname')"
+                        formControlName="surname" type="text" [placeholder]="'REGISTER.COMMON.SURNAME' | translate" />
+                      <i *ngIf="isInvalidEntrenador('surname')" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('surname')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_SURNAME' | translate }}
+                      </small>
                     </div>
                   </div>
+
+                  <!-- Fecha / Género -->
                   <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <div class="position-relative">
-                        <input class="form-control input-register no-calendar-icon" formControlName="birthdate"
-                          type="date">
-                        <i class="bi bi-cake2 position-absolute"
-                          style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
-                      </div>
+                    <div class="col-6 input-wrapper">
+                      <input class="form-control input-register" [class.is-invalid]="isInvalidEntrenador('birthdate')"
+                        formControlName="birthdate" type="date" />
+                      <i *ngIf="isInvalidEntrenador('birthdate')" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('birthdate')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_BIRTHDATE' | translate }}
+                      </small>
                     </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="genre" class="form-label">Selecciona tu género</label>-->
-                      <select class="form-select input-register" formControlName="genre">
-                        <option disabled hidden selected value="">{{ 'REGISTER.COMMON.GENDER' | translate }}</option>
+
+                    <div class="col-6 ms-2 input-wrapper">
+                      <select class="form-select input-register" [class.is-invalid]="isInvalidEntrenador('genre')"
+                        formControlName="genre">
+                        <option disabled hidden value="">
+                          {{ 'REGISTER.COMMON.GENDER' | translate }}
+                        </option>
                         <option value="1">{{ 'PROFILE.GENDER_M' | translate }}</option>
                         <option value="2">{{ 'PROFILE.GENDER_F' | translate }}</option>
                         <option value="3">{{ 'PROFILE.GENDER_O' | translate }}</option>
                       </select>
+                      <i *ngIf="isInvalidEntrenador('genre')" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('genre')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_GENDER' | translate }}
+                      </small>
                     </div>
                   </div>
+
+                  <!-- Email / Teléfono -->
                   <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
-                      <input [placeholder]="'REGISTER.COMMON.EMAIL' | translate" class="form-control input-register"
-                        formControlName="email" id="email" type="email">
+                    <div class="col-6 input-wrapper">
+                      <input class="form-control input-register" [class.is-invalid]="isInvalidEntrenador('email')"
+                        formControlName="email" type="email" [placeholder]="'REGISTER.COMMON.EMAIL' | translate" />
+                      <i *ngIf="isInvalidEntrenador('email')" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('email')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_EMAIL' | translate }}
+                      </small>
                     </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <input [placeholder]="'REGISTER.COMMON.PHONE' | translate" class="form-control input-register"
-                        formControlName="mobile" id="mobile" type="number">
+
+                    <div class="col-6 ms-2 input-wrapper">
+                      <input class="form-control input-register" [class.is-invalid]="isInvalidEntrenador('mobile')"
+                        formControlName="mobile" type="number" [placeholder]="'REGISTER.COMMON.PHONE' | translate" />
+                      <i *ngIf="isInvalidEntrenador('mobile')" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('mobile')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_PHONE' | translate }}
+                      </small>
                     </div>
                   </div>
+
+                  <!-- Passwords -->
                   <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
-                      <input (input)="checkPasswordMatchEntrenador()"
-                        [placeholder]="'REGISTER.COMMON.PASSWORD' | translate" class="form-control input-register"
-                        formControlName="password" id="password" type="password">
+                    <div class="col-6 input-wrapper">
+                      <input class="form-control input-register"
+                        [class.is-invalid]="isInvalidEntrenador('password') || passwordsDoNotSize"
+                        formControlName="password" type="password"
+                        [placeholder]="'REGISTER.COMMON.PASSWORD' | translate"
+                        (input)="checkPasswordMatchEntrenador()" />
+                      <i *ngIf="isInvalidEntrenador('password') || passwordsDoNotSize"
+                        class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('password')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_PASSWORD' | translate }}
+                      </small>
                     </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
-                      <input (input)="checkPasswordMatchEntrenador()"
+
+                    <div class="col-6 ms-2 input-wrapper">
+                      <input class="form-control input-register" [class.is-invalid]="passwordsDoNotMatch"
+                        formControlName="password2" type="password"
                         [placeholder]="'REGISTER.COMMON.REPEAT_PASSWORD' | translate"
-                        class="form-control input-register" formControlName="password2" id="password2" type="password">
-                      <div *ngIf="passwordsDoNotMatch" class="text-danger">
-                        {{ 'REGISTER.ERROR.PASSWORD_MISMATCH' | translate }}
-                      </div>
+                        (input)="checkPasswordMatchEntrenador()" />
+                      <i *ngIf="passwordsDoNotMatch" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="passwordsDoNotMatch" class="error-text">
+                        {{ 'ERRORS.PASSWORD_MISMATCH' | translate }}
+                      </small>
                     </div>
                   </div>
-                  <div class="mb-3 d-flex">
-                    <div class="form-check">
-                      <input class="form-check-input" formControlName="terms" id="termsCheckbox" type="checkbox">
-                      <label class="form-check-label" for="termsCheckbox">
+
+                  <!-- Política -->
+                  <div class="mb-3">
+                    <div class="form-check custom-check" [class.is-invalid]="isInvalidEntrenador('terms')">
+                      <input class="form-check-input" type="checkbox" formControlName="terms" />
+                      <label class="form-check-label">
                         {{ 'REGISTER.COMMON.TERMS_PREFIX' | translate }}
                         <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">
                           {{ 'REGISTER.COMMON.TERMS_LINK' | translate }}
                         </a>
                       </label>
                     </div>
+                    <small *ngIf="isInvalidEntrenador('terms')" class="error-text">
+                      {{ 'ERRORS.TERMS_REQUIRED' | translate }}
+                    </small>
                   </div>
 
-                  <div class="mb-3 d-flex">
-                    <div class="form-check">
-                      <input class="form-check-input" formControlName="comunicaciones" id="comunCheckbox"
-                        type="checkbox">
-                      <label class="form-check-label" for="comunCheckbox">
+                  <!-- Comunicaciones -->
+                  <div class="mb-3">
+                    <div class="form-check custom-check">
+                      <input class="form-check-input" type="checkbox" formControlName="comunicaciones" />
+                      <label class="form-check-label">
                         {{ 'REGISTER.COMMON.COMMS_PREFIX' | translate }}
                         <a href="https://sphairatech.com/comunicaciones-comerciales" target="_blank">
                           {{ 'REGISTER.COMMON.COMMS_LINK' | translate }}
@@ -266,305 +309,35 @@
                     </div>
                   </div>
 
-                  <div class="mb-3 d-flex">
-                    <div class="col-12">
-                      <button [disabled]="passwordsDoNotMatch" class="btn btn-custom btn-block textoCentrado"
-                        type="submit">{{ 'REGISTER.REGISTER' | translate }}</button>
-                      <button (click)="backRegistro()" *ngIf="btnRegistro"
-                        class="btn btn-outline-secondary btn-block textoCentrado">
-                        {{ 'REGISTER.COMMON.BACK' | translate }} </button>
-                    </div>
-                  </div>
-                </form>
-              </div>
-
-              <!-- FORMULARIO PADRE/MADRE/TUTOR CON HIJOS -->
-              <div class="card-body register-wizard">
-
-                <!-- STEPS -->
-                <div class="wizard-steps mb-4">
-                  <div class="step" [class.active]="activeTab === 'padre'">
-                    <span>1</span>
-                    {{ 'REGISTER.TABS.PARENT' | translate }}
+                  <!-- Error general -->
+                  <div *ngIf="msgForm" class="form-alert">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                    {{ 'REGISTER.ERROR.INCOMPLETE_FORM' | translate }}
                   </div>
 
-                  <div class="step-divider"></div>
+                  <!-- Botones -->
+                  <button class="btn btn-success w-100 btn-register" type="submit" [disabled]="isLoading">
+                    <ng-container *ngIf="!isLoading; else loadingTpl">
+                      {{ 'REGISTER.REGISTER' | translate }}
+                    </ng-container>
 
-                  <div class="step" [class.active]="activeTab === 'hijos'">
-                    <span>2</span>
-                    {{ 'REGISTER.TABS.CHILDREN' | translate }}
-                  </div>
-                </div>
-
-                <!-- TAB PADRE -->
-                <div *ngIf="activeTab === 'padre'">
-                  <!-- ================= TAB PADRE ================= -->
-                  <div *ngIf="activeTab === 'padre' && selectedOption === 3 && !newRegistro">
-
-                    <form [formGroup]="registerFormPadre" (ngSubmit)="numHijo()" class="form-register">
-
-                      <h4 class="text-center mb-4">
-                        {{ 'REGISTER.PARENT.QUESTION' | translate }}
-                      </h4>
-
-                      <!-- Parentesco -->
-                      <div class="mb-3">
-                        <label class="form-label">
-                          {{ 'REGISTER.PARENT.RELATION' | translate }}
-                        </label>
-                        <select class="form-select input-register" formControlName="parentesco">
-                          <option value="1">{{ 'REGISTER.PARENT.FATHER' | translate }}</option>
-                          <option value="2">{{ 'REGISTER.PARENT.MOTHER' | translate }}</option>
-                          <option value="0">{{ 'REGISTER.PARENT.TUTOR' | translate }}</option>
-                          <option value="3">{{ 'REGISTER.PARENT.ADULT' | translate }}</option>
-                        </select>
-                      </div>
-
-                      <!-- Nombre / Apellidos -->
-                      <div class="row mt-3">
-                        <div class="col-md-6">
-                          <input class="form-control input-register" formControlName="name"
-                            [placeholder]="'REGISTER.COMMON.NAME' | translate">
-                        </div>
-
-                        <div class="col-md-6">
-                          <input class="form-control input-register" formControlName="surname"
-                            [placeholder]="'REGISTER.COMMON.SURNAME' | translate">
-                        </div>
-                      </div>
-
-                      <!-- Fecha / Género -->
-                      <div class="row mt-3">
-                        <div class="col-md-6 position-relative">
-                          <input type="date" class="form-control input-register no-calendar-icon"
-                            formControlName="birthdate">
-                          <i class="bi bi-cake2 date-icon"></i>
-                        </div>
-
-                        <div class="col-md-6">
-                          <select class="form-select input-register" formControlName="genre">
-                            <option value="">{{ 'REGISTER.COMMON.GENDER' | translate }}</option>
-                            <option value="1">{{ 'REGISTER.COMMON.MALE' | translate }}</option>
-                            <option value="2">{{ 'REGISTER.COMMON.FEMALE' | translate }}</option>
-                            <option value="3">{{ 'REGISTER.COMMON.OTHER' | translate }}</option>
-                          </select>
-                        </div>
-                      </div>
-
-                      <!-- Email -->
-                      <div class="row mt-3">
-                        <div class="col-md-6">
-                          <input type="email" class="form-control input-register" formControlName="email"
-                            [placeholder]="'REGISTER.COMMON.EMAIL' | translate">
-                        </div>
-
-                        <div class="col-md-6">
-                          <input type="email" class="form-control input-register" formControlName="confirmEmail"
-                            [placeholder]="'REGISTER.COMMON.EMAIL_REPEAT' | translate">
-                        </div>
-                      </div>
-
-                      <div *ngIf="showEmailAlert" class="alert alert-danger mt-3">
-                        {{ 'REGISTER.ERROR.EMAIL_MATCH' | translate }}
-                      </div>
-
-                      <!-- Contraseñas -->
-                      <div class="row mt-3">
-                        <div class="col-md-6">
-                          <input type="password" class="form-control input-register" formControlName="password"
-                            placeholder="********">
-                        </div>
-
-                        <div class="col-md-6">
-                          <input type="password" class="form-control input-register" formControlName="password2"
-                            placeholder="********">
-                        </div>
-                      </div>
-                      <!-- ===== TÉRMINOS Y PRIVACIDAD ===== -->
-                      <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
-
-                        <label class="form-check-label" for="termsCheckbox">
-                          {{ 'REGISTER.COMMON.TERMS_PREFIX' | translate }}
-                          <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank"
-                            rel="noopener noreferrer">
-                            {{ 'REGISTER.COMMON.TERMS_LINK' | translate }}
-                          </a>
-                        </label>
-                      </div>
-
-                      <div class="form-check mb-4">
-                        <input class="form-check-input" type="checkbox" id="commsCheckbox"
-                          formControlName="comunicaciones">
-
-                        <label class="form-check-label" for="commsCheckbox">
-                          {{ 'REGISTER.COMMON.COMMS_PREFIX' | translate }}
-                          <a href="https://sphairatech.com/comunicaciones-comerciales" target="_blank"
-                            rel="noopener noreferrer">
-                            {{ 'REGISTER.COMMON.COMMS_LINK' | translate }}
-                          </a>
-                        </label>
-                      </div>
-
-                      <button type="submit" class="btn btn-custom w-100 mt-4" [disabled]="passwordsDoNotMatch">
-                        {{ 'REGISTER.COMMON.NEXT' | translate }}
-                      </button>
-
-                    </form>
-                  </div>
-                </div>
-
-                <!-- TAB HIJOS -->
-                <div *ngIf="activeTab === 'hijos'">
-                  <div *ngIf="activeTab === 'hijos' && selectedOption === 3 && newRegistro">
-
-                    <form [formGroup]="registerFormPadreHijos" (ngSubmit)="finalizarRegistroPadre()"
-                      class="form-register">
-
-                      <label class="form-label">
-                        {{ 'REGISTER.CHILDREN.COUNT' | translate }}
-                      </label>
-
-                      <select class="form-select input-register" formControlName="numHijos"
-                        (change)="onParentescoChange()">
-                        <option *ngFor="let n of [1,2,3,4,5]" [value]="n">{{ n }}</option>
-                      </select>
-
-                      <div *ngFor="let index of hijosVisibles" class="mt-4">
-                        <h6 class="fw-bold">
-                          {{ 'REGISTER.CHILDREN.DATA' | translate:{num: index + 1} }}
-                        </h6>
-
-                        <div class="row mt-2">
-                          <div class="col-md-6">
-                            <input class="form-control input-register" [formControlName]="'hijo' + (index + 1)"
-                              [placeholder]="'REGISTER.COMMON.NAME' | translate">
-                          </div>
-
-                          <div class="col-md-6">
-                            <input class="form-control input-register" [formControlName]="'ape' + (index + 1)"
-                              [placeholder]="'REGISTER.COMMON.SURNAME' | translate">
-                          </div>
-                        </div>
-                      </div>
-
-                      <button *ngIf="btnFinalizar" class="btn btn-custom w-100 mt-4" type="submit">
-                        {{ 'REGISTER.COMMON.FINISH' | translate }}
-                      </button>
-
-                      <button type="button" class="btn btn-outline-secondary w-100 mt-2" (click)="volver()">
-                        {{ 'REGISTER.COMMON.BACK' | translate }}
-                      </button>
-
-                    </form>
-                  </div>
-                </div>
-
-                <button type="button" class="btn btn-outline-secondary w-100 mt-2" (click)="volver()">
-                  ← {{ 'REGISTER.COMMON.BACK' | translate }}
-                </button>
-
-              </div>
+                    <ng-template #loadingTpl>
+                      <span class="spinner-border spinner-border-sm me-2"></span>
+                      Procesando...
+                    </ng-template>
+                  </button>
 
 
-              <div *ngIf="selectedOption == 4">
-                <!-- Formulario para Entrenador -->
-                <form (ngSubmit)="openModal(2)" [formGroup]="registerFormEntrenador" class="form-register">
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                      <input class="form-control input-register" formControlName="name" id="name" placeholder="Nombre"
-                        type="text">
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
-                      <input class="form-control input-register" formControlName="surname" id="surname"
-                        placeholder="Apellido" type="text">
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <div class="position-relative">
-                        <input class="form-control input-register no-calendar-icon" formControlName="birthdate"
-                          type="date">
-                        <i class="bi bi-cake2 position-absolute"
-                          style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
-                      </div>
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="genre" class="form-label">Selecciona tu género</label>-->
-                      <select class="form-select input-register" formControlName="genre">
-                        <option disabled hidden selected value="">Selecciona tu género</option>
-                        <option value="1">Masculino</option>
-                        <option value="2">Femenino</option>
-                        <option value="3">Otro</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
-                      <input [attr.disabled]="true" class="form-control input-register" formControlName="email"
-                        id="email" placeholder="Correo electrónico" type="email">
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <input class="form-control input-register" formControlName="mobile" id="mobile"
-                        placeholder="Ingresa tu número de teléfono" type="number">
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
-                      <input (input)="checkPasswordMatchEntrenador()" class="form-control input-register"
-                        formControlName="password" id="password" placeholder="Contraseña" type="password">
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
-                      <input (input)="checkPasswordMatchEntrenador()" class="form-control input-register"
-                        formControlName="password2" id="password2" placeholder="Repite la contraseña" type="password">
-                      <div *ngIf="passwordsDoNotMatch" class="text-danger">
-                        Las contraseñas no coinciden.
-                      </div>
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="form-check">
-                      <input class="form-check-input" formControlName="terms" id="termsCheckbox" type="checkbox">
-                      <label class="form-check-label" for="termsCheckbox">
-                        Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
-                          privacidad</a>
-                        <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
-                          condiciones de contratación</a> -->
-                      </label>
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="form-check">
-                      <input class="form-check-input" formControlName="comunicaciones" id="comunCheckbox"
-                        type="checkbox">
-                      <label class="form-check-label" for="comunCheckbox">
-                        Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
-                          target="_blank">comunicaciones comerciales</a>
-                      </label>
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-12">
-                      <button [disabled]="passwordsDoNotMatch" class="btn btn-custom btn-block textoCentrado"
-                        type="submit">Registrarse
-                      </button>
-                    </div>
-                  </div>
+                  <button *ngIf="btnRegistro" type="button" class="btn btn-outline-secondary w-100 mt-2"
+                    (click)="backRegistro()">
+                    {{ 'REGISTER.COMMON.BACK' | translate }}
+                  </button>
+
                 </form>
               </div>
             </div>
           </div>
-          <div *ngIf="msgAge" class="form-control" style="display: block; color: red;">
-            <p>Lo sentimos, pero si eres menor de 14 años, ha de darse de alta uno de tus padres o tutores.</p>
-          </div>
-          <div *ngIf="msgForm" class="form-control" style="display: block; color: red;">
-            {{ 'REGISTER.ERROR.INCOMPLETE_FORM' | translate }}
-          </div>
+
           <div class="card-footer textoCentrado" style="flex-direction: column; background: #002c40;">
             <div class="row text-center">
               <div class="col-md-12">

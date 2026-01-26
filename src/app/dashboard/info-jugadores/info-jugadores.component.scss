@@ -1,6 +1,14 @@
 /* =========================================================
    SUBMENU / BACK
 ========================================================= */
+.page-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
 /* BOTÓN VOLVER */
 .btn-back-clean {
   display: inline-flex;
@@ -37,10 +45,17 @@
 .btn-back-clean:active {
   transform: translateX(0);
 }
-/* TITULOS */
-.section-title {
+/* TÍTULO → centrado REAL */
+.table-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+
+  font-size: 1.6rem;
   font-weight: 600;
-  margin-bottom: 1rem;
+  color: #002c40;
+  text-align: center;
 }
 
 /* =========================
@@ -497,38 +512,81 @@
   height: 100%;
   object-fit: cover;
 }
+/* BASE MODERNA */
 .btn-icon {
   border: none;
-  border-radius: 10px;
-  padding: 8px 10px;
+  border-radius: 12px;
+  padding: 6px 16px;
   font-size: 1.1rem;
+  line-height: 1;
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
-  background: #e5e7eb;
-  color: #374151;
+
+  background: #f4f4f4;
+  color: #002c40;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 44px;
+  height: 36px;
+
+  box-shadow: 0 4px 10px rgba(0, 44, 64, 0.15);
+  transition: all 0.2s ease-in-out;
 }
 
+
+.btn-icon i {
+  pointer-events: none;
+}
+
+/* HOVER / FOCUS */
 .btn-icon:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 18px rgba(0, 44, 64, 0.25);
 }
 
-/* ESTADOS */
-.btn-icon.success {
-  background: #22c55e;
+.btn-icon:active {
+  transform: scale(0.95);
+}
+
+/* 🎨 COLORES PERSONALIZADOS */
+
+/* Verde */
+.btn-success-custom {
+  background: #31b270;
   color: #ffffff;
 }
 
-.btn-icon.secondary {
-  background: #64748b;
+/* Azul noche */
+.btn-primary-custom {
+  background: #002c40;
   color: #ffffff;
 }
 
-.btn-icon.info {
-  background: #0ea5e9;
+/* Info elegante */
+.btn-info-custom {
+  background: #002c40; /* Beige */
   color: #ffffff;
 }
 
-.btn-icon.warning {
-  background: #f59e0b;
+/* Warning refinado */
+.btn-warning-custom {
+  background: #002c40;
   color: #ffffff;
 }
+
+/* Hover colores */
+.btn-success-custom:hover {
+  background: #2aa364;
+}
+
+.btn-primary-custom:hover {
+  background: #001f2d;
+}
+
+.btn-info-custom:hover,
+.btn-warning-custom:hover {
+  background: #e6d2a8;
+}
+

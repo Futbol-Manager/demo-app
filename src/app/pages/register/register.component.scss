@@ -545,5 +545,197 @@ input.no-calendar-icon::-webkit-calendar-picker-indicator {
     padding: 1.5rem;
   }
 }
+/* ===============================
+   INPUTS & VALIDACIONES
+================================ */
 
+.input-wrapper {
+  position: relative;
+}
+
+.input-register {
+  border-radius: 10px;
+  padding-right: 40px;
+  transition: all 0.2s ease;
+}
+
+.input-register:focus {
+  border-color: #28c76f;
+  box-shadow: 0 0 0 0.15rem rgba(40, 199, 111, 0.15);
+}
+
+/* Estado error */
+.input-register.is-invalid,
+.form-select.is-invalid {
+  border-color: #ea5455;
+  background-image: none;
+}
+
+.input-register.is-invalid:focus,
+.form-select.is-invalid:focus {
+  box-shadow: 0 0 0 0.15rem rgba(234, 84, 85, 0.2);
+}
+
+/* Icono de error */
+.error-icon {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  font-size: 0.95rem;
+  color: #ea5455;
+  pointer-events: none;
+}
+
+
+/* Texto de error */
+.error-text {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #ea5455;
+  font-weight: 500;
+  background: rgba(220, 38, 38, 0.08);
+  padding: 6px 10px;
+  border-left: 3px solid #dc2626;
+  border-radius: 4px;
+}
+
+/* ===============================
+   CHECKBOX PERSONALIZADO
+================================ */
+
+.custom-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.custom-check .form-check-input {
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  border-radius: 5px;
+  border: 2px solid #ced4da;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.custom-check .form-check-input:checked {
+  background-color: #28c76f;
+  border-color: #28c76f;
+}
+
+.custom-check .form-check-input:focus {
+  box-shadow: 0 0 0 0.15rem rgba(40, 199, 111, 0.25);
+}
+
+/* Checkbox error */
+.custom-check.is-invalid .form-check-input {
+  border-color: #ea5455;
+}
+
+.custom-check.is-invalid .form-check-label {
+  color: #ea5455;
+}
+
+/* Links dentro del checkbox */
+.form-check-label a {
+  color: #28c76f;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.form-check-label a:hover {
+  text-decoration: underline;
+}
+
+/* ===============================
+   ALERTA GENERAL DEL FORMULARIO
+================================ */
+
+.form-alert {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(234, 84, 85, 0.08);
+  color: #ea5455;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+/* ===============================
+   BOTÓN REGISTRO
+================================ */
+
+.btn-register {
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 10px;
+  transition: all 0.2s ease;
+}
+
+.btn-register:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(40, 199, 111, 0.3);
+}
+
+.btn-register:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.btn-register .spinner-border {
+  vertical-align: middle;
+}
+
+@media (max-width: 400px) {
+
+  /* Fuerza columnas a una sola */
+  .form-register .d-flex {
+    flex-direction: column;
+  }
+
+  .form-register .col-6 {
+    width: 100%;
+  }
+
+  /* Elimina márgenes laterales */
+  .form-register .ms-2 {
+    margin-left: 0 !important;
+    margin-top: 12px;
+  }
+
+  /* Inputs más cómodos */
+  .input-register,
+  .form-select {
+    height: 48px;
+    font-size: 0.95rem;
+  }
+
+  /* Reajuste icono */
+  .error-icon {
+    top: 14px;
+    right: 14px;
+  }
+
+  /* Checkbox más táctil */
+  .custom-check {
+    gap: 12px;
+  }
+
+  .custom-check .form-check-input {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Alerta general */
+  .form-alert {
+    font-size: 0.8rem;
+    padding: 10px;
+  }
+}
 

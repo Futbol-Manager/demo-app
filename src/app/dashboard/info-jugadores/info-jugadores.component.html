@@ -1,16 +1,18 @@
 <!-- ================= SUBMENU ================= -->
-<div class="back-container">
-  <button class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
-  </button>
-</div>
-<div class="container">
-  <!-- TÍTULO CENTRADO -->
-  <h2 class="table-title text-center mt-4 mb-3">
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <h2 class="table-title">
     {{ 'PLAYERS.TITLE' | translate }}
   </h2>
+</div>
 
+<div class="container">
   <!-- BARRA DE CONTROLES -->
   <div class="table-toolbar justify-content-center">
     <!-- BUSCADOR -->
@@ -100,13 +102,15 @@
             <div class="team-cell">
               <a>{{ player.nameTeam }}</a>
               <div class="d-flex gap-1 justify-content-center">
-                <button class="btn btn-warning btn-sm" title="Mover"
+                <button class="btn btn-warning btn-sm btn-icon btn-warning-custom"
+                  title="{{'PLAYERS.BUTTONS.MOVE_PLAYER' | translate}}"
                   (click)="openShowModalMover(player.playerId, player)">
-                  <span class="bi bi-folder-symlink"></span>
+                  <i class="bi bi-arrow-repeat"></i>
                 </button>
-                <button *ngIf="+temporadaStoredValue < +temporada" class="btn btn-info btn-sm" title="Subir"
-                  (click)="updateTemporada(player)">
-                  <span class="bi bi-journal-arrow-up"></span>
+
+                <button *ngIf="+temporadaStoredValue < +temporada" class="btn btn-info btn-sm btn-icon btn-info-custom"
+                  title="{{'PLAYERS.BUTTONS.CHANGE_TEMP' | translate}}" (click)="updateTemporada(player)">
+                  <i class="bi bi-calendar-range"></i>
                 </button>
               </div>
             </div>
@@ -123,16 +127,19 @@
 
           <!-- IMG DNI -->
           <td>
-            <button class="btn btn-sm" [ngClass]="{'btn-success': player.imgDniUno && player.imgDniDos,
-                  'btn-primary': !player.imgDniUno || !player.imgDniDos}" (click)="abrirModalDniJugador(player, i)">
-              <i class="bi bi-person-badge"></i>
+            <button class="btn btn-sm btn-icon" [ngClass]="{
+      'btn-success-custom': player.imgDniUno && player.imgDniDos,
+      'btn-primary-custom': !player.imgDniUno || !player.imgDniDos
+    }" (click)="abrirModalDniJugador(player, i)" title="{{'PLAYERS.BUTTONS.ID' | translate}}">
+              <i class="bi bi-person-vcard"></i>
             </button>
           </td>
 
           <!-- DOC -->
           <td>
-            <button class="btn btn-primary btn-sm" (click)="abrirModalDocJugador(player, i)">
-              <i class="bi bi-filetype-doc"></i>
+            <button class="btn btn-primary btn-sm btn-icon btn-primary-custom" (click)="abrirModalDocJugador(player, i)"
+              title="{{'PLAYERS.BUTTONS.UPLOAD_DOC' | translate}}">
+              <i class="bi bi-cloud-upload"></i>
             </button>
           </td>
 

@@ -204,7 +204,7 @@ export class NewCuotasComponent implements OnInit {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data) {
             this.loadTabla();
-            this.toastr.success('Datos actualzados.');
+            this.toastr.success('Datos actualizados.');
           }
           this.isLoading = false;
         },
