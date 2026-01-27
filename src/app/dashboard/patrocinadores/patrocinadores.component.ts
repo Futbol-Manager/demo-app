@@ -366,6 +366,17 @@ export class PatrocinadoresComponent implements OnInit {
       console.log('Ninguna imagen seleccionada.');
     }
   }
+  fixHttps() {
+    if (!this.patrocinadorObj.web) return;
+
+    let url = this.patrocinadorObj.web.trim();
+
+    if (!/^https:\/\//i.test(url)) {
+      url = 'https://' + url.replace(/^http?:\/\//i, '');
+    }
+
+    this.patrocinadorObj.web = url;
+  }
 
   mostrarId(patrocinador: any): void {
     //alert(`ID del patrocinador: ${id}`);

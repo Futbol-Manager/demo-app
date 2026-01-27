@@ -9,12 +9,12 @@
 <section class="sponsor-hero" *ngIf="listPatrocinadores.length">
   <div class="carousel-track">
     <ng-container *ngFor="let s of listPatrocinadores">
-      <img *ngIf="s.imagen && s.oculto === 1" [src]="imageBaseUrl + s.imagen" class="hero-logo">
+      <img *ngIf="s.imagen && s.oculto === 1" [src]="imageBaseUrl + s.imagen" (click)="mostrarId(s)" class="hero-logo">
     </ng-container>
 
     <!-- Duplicado para scroll infinito -->
     <ng-container *ngFor="let s of listPatrocinadores">
-      <img *ngIf="s.imagen && s.oculto === 1" [src]="imageBaseUrl + s.imagen" class="hero-logo">
+      <img *ngIf="s.imagen && s.oculto === 1" [src]="imageBaseUrl + s.imagen" (click)="mostrarId(s)" class="hero-logo">
     </ng-container>
   </div>
 </section>
@@ -73,7 +73,7 @@
 
 
           <div class="benefits">
-           <strong>{{ 'SPONSOR.BENEFITS_TITLE' | translate }}</strong>
+            <strong>{{ 'SPONSOR.BENEFITS_TITLE' | translate }}</strong>
             <p>{{ patro.beneficios }}</p>
           </div>
         </div>
@@ -83,7 +83,7 @@
           <div class="form-check form-switch" *ngIf="profileId < 3">
             <input class="form-check-input" type="checkbox" [checked]="patro.oculto === 1"
               (change)="toggleChaneOculto(patro.oculto, patro.patrocinadorId)">
-           <label>{{ 'SPONSOR.CAROUSEL' | translate }}</label>
+            <label>{{ 'SPONSOR.CAROUSEL' | translate }}</label>
           </div>
 
           <div class="footer-actions">
@@ -169,7 +169,7 @@
 
             <div class="col-md-6">
               <input type="text" class="form-control sponsor-input" [(ngModel)]="patrocinadorObj.web" name="web"
-                placeholder="{{ 'SPONSOR.WEB' | translate }}">
+                placeholder="{{ 'SPONSOR.WEB' | translate }}" (blur)="fixHttps()" />
             </div>
 
             <div class="col-md-6">

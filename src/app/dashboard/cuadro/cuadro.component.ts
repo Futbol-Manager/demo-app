@@ -54,7 +54,14 @@ export class CuadroComponent implements OnInit {
 
   listTeams: string[] = [];
   listUltimos: string[] = [];
-  listProximos: string[] = [];
+  listProximos: {
+    local: string;
+    visitante: string;
+    dia: string;
+    fecha: string;
+    hora: string;
+  }[] = [];
+
   agendaHoy: AgendaItem[] = [];
 
   /* =========================
@@ -62,7 +69,13 @@ export class CuadroComponent implements OnInit {
   ========================= */
 
   entrenamientosCalendar: CalendarEvent[] = [];
-  parsedResultados: ResultadoUI[] = [];
+  parsedResultados: {
+    estado: 'victoria' | 'empate' | 'derrota';
+    local: string;
+    visitante: string;
+    marcador: string;
+    fecha: string;
+  }[] = [];
 
   /* =========================
      CONSTRUCTOR
@@ -71,7 +84,7 @@ export class CuadroComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private clubService: ClubService
+    private clubService: ClubService,
   ) {}
 
   /* =========================
@@ -102,10 +115,12 @@ export class CuadroComponent implements OnInit {
       .subscribe({
         next: (response: Response) => {
           if (response?.data) {
-            console.log(response)
+            console.log(response);
             this.listTeams = response.data.teams || [];
             this.listUltimos = response.data.ultimos || [];
-            this.listProximos = response.data.proximos || [];
+            this.listProximos = (response.data.proximos || []).map(
+              (p: string) => this.parseProximo(p),
+            );
 
             this.parseResultados();
             this.generarCalendarioEntrenos();
@@ -118,6 +133,40 @@ export class CuadroComponent implements OnInit {
         },
       });
   }
+  parseProximo(raw: string): {
+    local: string;
+    visitante: string;
+    dia: string;
+    fecha: string;
+    hora: string;
+  } {
+    const [teamsPart, datePart] = raw.split(' el ');
+    const [local, visitante] = teamsPart.split(' - ');
+
+    const match = datePart?.match(
+      /(.*?) (\d{1,2}) de (.*?) de (\d{4}) de (\d{2}:\d{2})/,
+    );
+
+    if (!match) {
+      return {
+        local: local?.trim() || '',
+        visitante: visitante?.trim() || '',
+        dia: '',
+        fecha: '',
+        hora: '',
+      };
+    }
+
+    const [, diaSemana, dia, mes, anio, hora] = match;
+
+    return {
+      local: local.trim(),
+      visitante: visitante?.trim() || '',
+      dia: diaSemana,
+      fecha: `${dia} ${mes} ${anio}`,
+      hora,
+    };
+  }
 
   /* =========================
      RESULTADOS (CARD)
@@ -125,25 +174,43 @@ export class CuadroComponent implements OnInit {
 
   parseResultados(): void {
     this.parsedResultados = this.listUltimos.map((r: string) => {
-      // Ejemplo: "V: Cadete Primera 2 - 1 VALENCIA"
+      // Estado
       const estadoChar = r.charAt(0);
 
+      // Marcador
       const marcadorMatch = r.match(/\d+\s-\s\d+/);
       const marcador = marcadorMatch ? marcadorMatch[0] : '';
 
-      const textoLimpio = r.replace(/^.\s*:\s*/, '');
-      const partes = marcador ? textoLimpio.split(marcador) : [textoLimpio, ''];
+      // Fecha (solo número + mes + año, sin el día de la semana)
+      // Ej: "el Domingo 7 de septiembre de 2025"
+      const fechaMatch = r.match(
+        /el\s+\w+\s+(\d+)\s+de\s+(\w+)\s+de\s+(\d{4})/,
+      );
+      let fecha = '';
+      if (fechaMatch) {
+        const [, dia, mes, anio] = fechaMatch;
+        fecha = `${dia} ${mes.substring(0, 3).toUpperCase()} ${anio}`;
+      }
+
+      // Limpiar texto base
+      const textoSinPrefijo = r.replace(/^.\s*:\s*/, '');
+      const textoSinFecha = textoSinPrefijo.replace(/el\s+.*$/, '');
+
+      const partes = marcador
+        ? textoSinFecha.split(marcador)
+        : [textoSinFecha, ''];
 
       return {
         estado:
           estadoChar === 'V'
             ? 'victoria'
             : estadoChar === 'E'
-            ? 'empate'
-            : 'derrota',
+              ? 'empate'
+              : 'derrota',
         local: partes[0]?.trim() || '',
         visitante: partes[1]?.trim() || '',
         marcador,
+        fecha,
       };
     });
   }
@@ -209,7 +276,6 @@ export class CuadroComponent implements OnInit {
       e.top = (e.start - inicioDia) * pxPorMinuto;
       e.height = (e.end - e.start) * pxPorMinuto;
     });
-
 
     eventos.sort((a, b) => a.start - b.start);
     const grupos: CalendarEvent[][] = [];

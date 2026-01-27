@@ -103,11 +103,13 @@
                     <span class="team-role">
                       {{ 'CUADROMANDO.RESULTS.LOCAL' | translate }}
                     </span>
-
                   </div>
 
-                  <!-- MARCADOR -->
-                  <div class="score">{{ r.marcador }}</div>
+                  <!-- MARCADOR + FECHA -->
+                  <div class="score-wrapper">
+                    <span class="match-date">{{ r.fecha }}</span>
+                    <div class="score">{{ r.marcador }}</div>
+                  </div>
 
                   <!-- VISITANTE -->
                   <div class="team team-visitor">
@@ -117,16 +119,11 @@
                     <span class="team-role">
                       {{ 'CUADROMANDO.RESULTS.VISITOR' | translate }}
                     </span>
-
                   </div>
 
                 </div>
-
               </div>
             </ng-template>
-
-
-
           </div>
         </div>
 
@@ -178,7 +175,6 @@
             <!-- CONTENIDO -->
             <ng-template #proximosContent>
               <div class="next-match" *ngFor="let p of listProximos">
-
                 <!-- LOCAL -->
                 <div class="team-side">
                   <div class="team-avatar">
@@ -186,33 +182,31 @@
                   </div>
 
                   <div class="team-info">
-                    <span class="team-name">
-                      {{ p.split(' - ')[0] }}
-                    </span>
+                    <span class="team-name">{{ p.local }}</span>
                     <span class="team-badge local">
                       {{ 'CUADROMANDO.NEXT_MATCHES.LOCAL' | translate }}
                     </span>
-
                   </div>
                 </div>
+                <!-- CENTRO -->
+                <div class="center-box">
+                  <div class="date-badge">
+                    <span class="day">{{ p.dia }}</span>
+                    <span class="date">{{ p.fecha }}</span>
+                    <span class="time">{{ p.hora }}</span>
+                  </div>
 
-                <!-- VS -->
-                <div class="vs-box">
-                  {{ 'CUADROMANDO.COMMON.VS' | translate }}
                 </div>
 
-
                 <!-- VISITANTE -->
-                <div class="team-side">
-                  <div class="team-info align-right">
+                <div class="team-side right">
+                  <div class="team-info">
                     <span class="team-name">
-                      {{ p.split(' - ')[1] || ('CUADROMANDO.NEXT_MATCHES.UNDEFINED' | translate) }}
+                      {{ p.visitante || ('CUADROMANDO.NEXT_MATCHES.UNDEFINED' | translate) }}
                     </span>
-
                     <span class="team-badge visitante">
                       {{ 'CUADROMANDO.NEXT_MATCHES.VISITOR' | translate }}
                     </span>
-
                   </div>
 
                   <div class="team-avatar">
@@ -223,12 +217,8 @@
               </div>
             </ng-template>
           </div>
-
-
         </div>
-
       </div>
     </div>
-
   </div>
 </div>

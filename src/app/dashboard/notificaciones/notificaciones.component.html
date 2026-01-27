@@ -163,82 +163,83 @@
   </div>
 
   <!-- ================= MODAL NUEVO CORREO ================= -->
-  <div class="modal fade" [ngClass]="{ 'show': showModalNew }" [style.display]="showModalNew ? 'block' : 'none'"
-    tabindex="-1" role="dialog">
+  <div *ngIf="showModalNew" class="custom-modal-backdrop" >
 
-    <div class="modal-dialog modal-dialog-centered modal-xl compose-modal">
-      <div class="modal-content mail-compose-modal">
+    <div class="modal fade show d-block" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-xl compose-modal">
+        <div class="modal-content mail-compose-modal">
 
-        <!-- HEADER -->
-        <div class="modal-header">
-          <h5 class="modal-title">
-            <i class="bi bi-envelope-paper me-2"></i>
-            {{ 'NOTIFICATIONS.COMPOSE' | translate }}
-          </h5>
-          <button type="button" class="btn-close" (click)="cerrarModalNew()"></button>
-        </div>
-
-        <!-- BODY -->
-        <div class="modal-body">
-
-          <!-- DESTINATARIOS -->
-          <div class="mb-3">
-            <label class="form-label">
-              {{ 'NOTIFICATIONS.TO' | translate }}
-            </label>
-
-            <select [(ngModel)]="correoNew.destinatarios" class="form-control" id="destinatarios">
-
-              <option *ngIf="usuarioActual!.profileType.profileId == 1" value="0">
-                Para todo el club
-              </option>
-
-              <option *ngIf="usuarioActual!.profileType.profileId == 1" value="1">
-                Para todos los entrenadores
-              </option>
-
-              <option *ngFor="let team of listTeamsForCombo" [value]="team.value">
-                Para el equipo {{ team.name }}
-              </option>
-
-            </select>
+          <!-- HEADER -->
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-envelope-paper me-2"></i>
+              {{ 'NOTIFICATIONS.COMPOSE' | translate }}
+            </h5>
+            <button type="button" class="btn-close" (click)="cerrarModalNew()"></button>
           </div>
 
-          <!-- ASUNTO -->
-          <div class="mb-3">
-            <label class="form-label">
-              {{ 'NOTIFICATIONS.SUBJECT' | translate }}
-            </label>
-            <input type="text" [(ngModel)]="correoNew.asunto" class="form-control" placeholder="Escribe el asunto">
-          </div>
+          <!-- BODY -->
+          <div class="modal-body">
 
-          <!-- MENSAJE -->
-          <div class="mb-3">
-            <label class="form-label">
-              {{ 'NOTIFICATIONS.MESSAGE' | translate }}
-            </label>
+            <!-- DESTINATARIOS -->
+            <div class="mb-3">
+              <label class="form-label">
+                {{ 'NOTIFICATIONS.TO' | translate }}
+              </label>
 
-            <!-- Summernote -->
-            <div id="summernoteNew" class="compose-editor">
+              <select [(ngModel)]="correoNew.destinatarios" class="form-control" id="destinatarios">
+
+                <option *ngIf="usuarioActual!.profileType.profileId == 1" value="0">
+                  Para todo el club
+                </option>
+
+                <option *ngIf="usuarioActual!.profileType.profileId == 1" value="1">
+                  Para todos los entrenadores
+                </option>
+
+                <option *ngFor="let team of listTeamsForCombo" [value]="team.value">
+                  Para el equipo {{ team.name }}
+                </option>
+
+              </select>
             </div>
+
+            <!-- ASUNTO -->
+            <div class="mb-3">
+              <label class="form-label">
+                {{ 'NOTIFICATIONS.SUBJECT' | translate }}
+              </label>
+              <input type="text" [(ngModel)]="correoNew.asunto" class="form-control" placeholder="Escribe el asunto">
+            </div>
+
+            <!-- MENSAJE -->
+            <div class="mb-3">
+              <label class="form-label">
+                {{ 'NOTIFICATIONS.MESSAGE' | translate }}
+              </label>
+
+              <!-- Summernote -->
+              <div id="summernoteNew" class="compose-editor">
+              </div>
+            </div>
+
+          </div>
+
+          <!-- FOOTER -->
+          <div class="modal-footer">
+
+            <button class="btn btn-secondary" (click)="cerrarModalNew()">
+              {{ 'NOTIFICATIONS.CANCEL' | translate }}
+            </button>
+
+            <button class="btn btn-success" (click)="guardarCorreo()" [disabled]="!correoNew.asunto">
+              <i class="bi bi-send me-1"></i>
+              {{ 'NOTIFICATIONS.SEND' | translate }}
+            </button>
+
           </div>
 
         </div>
-
-        <!-- FOOTER -->
-        <div class="modal-footer">
-
-          <button class="btn btn-secondary" (click)="cerrarModalNew()">
-            {{ 'NOTIFICATIONS.CANCEL' | translate }}
-          </button>
-
-          <button class="btn btn-success" (click)="guardarCorreo()" [disabled]="!correoNew.asunto">
-            <i class="bi bi-send me-1"></i>
-            {{ 'NOTIFICATIONS.SEND' | translate }}
-          </button>
-
-        </div>
-
       </div>
     </div>
   </div>

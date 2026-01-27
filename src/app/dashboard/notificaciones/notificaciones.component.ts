@@ -66,7 +66,7 @@ export class NotificacionesComponent implements OnInit {
     private teamService: TeamService,
     private http: HttpClient,
     private clubService: ClubService,
-    private location: Location
+    private location: Location,
   ) {}
 
   ngOnInit(): void {
@@ -109,7 +109,7 @@ export class NotificacionesComponent implements OnInit {
           }*/
           console.log(response.data);
           this.receivedCount = this.correosRecibidosSinFiltro.filter(
-            (correo: any) => correo.leido === 0
+            (correo: any) => correo.leido === 0,
           ).length;
           console.log(this.receivedCount);
           this.correos = response.data.recibidos;
@@ -117,7 +117,7 @@ export class NotificacionesComponent implements OnInit {
         } else {
           console.error(
             'La respuesta del servicio no tiene la estructura esperada',
-            response
+            response,
           );
         }
 
@@ -125,7 +125,7 @@ export class NotificacionesComponent implements OnInit {
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
-      }
+      },
     );
 
     if (this.clubId == 0) {
@@ -138,7 +138,7 @@ export class NotificacionesComponent implements OnInit {
               .getTeamsByClubForCombo2(
                 this.clubId,
                 this.temporadaStoredValue,
-                this.userId
+                this.userId,
               )
               .subscribe(
                 (response: Response) => {
@@ -148,31 +148,31 @@ export class NotificacionesComponent implements OnInit {
                   } else {
                     console.error(
                       'La respuesta del servicio no tiene la estructura esperada',
-                      response
+                      response,
                     );
                   }
                 },
                 (error) => {
                   console.error('Error al cargar el listado de equipos', error);
-                }
+                },
               );
           } else {
             console.error(
               'La respuesta del servicio no tiene la estructura esperada',
-              response
+              response,
             );
           }
         },
         (error) => {
           console.error('Error al cargar el listado de equipos', error);
-        }
+        },
       );
     } else {
       this.teamService
         .getTeamsByClubForCombo2(
           this.clubId,
           this.temporadaStoredValue,
-          this.userId
+          this.userId,
         )
         .subscribe(
           (response: Response) => {
@@ -182,13 +182,13 @@ export class NotificacionesComponent implements OnInit {
             } else {
               console.error(
                 'La respuesta del servicio no tiene la estructura esperada',
-                response
+                response,
               );
             }
           },
           (error) => {
             console.error('Error al cargar el listado de equipos', error);
-          }
+          },
         );
     }
   }
@@ -206,6 +206,8 @@ export class NotificacionesComponent implements OnInit {
     $('#summernote').summernote({
       placeholder: 'Escribe tu mensaje aquí...',
       tabsize: 2,
+      dialogsInBody: true,
+      disableDragAndDrop: true,
       height: 400,
       callbacks: {
         onChange: (contents: string) => {
@@ -229,12 +231,18 @@ export class NotificacionesComponent implements OnInit {
    */
   private initSummernoteNew(): void {
     $('#summernoteNew').summernote({
-      placeholder: 'Escribe tu mensaje aquí...',
-      tabsize: 2,
+      lang: 'es-ES',
       height: 400,
+      dialogsInBody: true,
+      disableDragAndDrop: true,
       callbacks: {
+        onDialogShown: () => {
+          $('.note-modal').css('z-index', 2000);
+          $('.note-modal-backdrop').css('z-index', 1990);
+          $('.note-modal-title').text('Insertar imagen');
+        },
         onChange: (contents: string) => {
-          this.correoSelected.body = contents; // Actualiza el contenido en tiempo real
+          this.correoNew.body = contents;
         },
       },
     });
@@ -244,7 +252,7 @@ export class NotificacionesComponent implements OnInit {
    * Destruye el editor Summernote
    */
   private destroySummernoteNew(): void {
-    if ($('#summernoteNew').data('summernoteNew')) {
+    if ($('#summernoteNew').data('summernote')) {
       $('#summernoteNew').summernote('destroy');
     }
   }
@@ -400,31 +408,38 @@ export class NotificacionesComponent implements OnInit {
         } else {
           console.error(
             'La respuesta del servicio no tiene la estructura esperada',
-            response
+            response,
           );
         }
         this.cerrarEnviando();
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
-      }
+      },
     );
   }
 
   cerrarEnviando() {
     this.cerrarModalNew();
     this.isSending = false; // Oculta el spinner después de enviar
-    this.resetSummerNote();
   }
 
   newCorreo() {
-    this.destroySummernoteNew();
-    this.initSummernoteNew();
     this.showModalNew = true;
+
+    setTimeout(() => {
+      this.initSummernoteNew();
+    }, 0);
   }
 
   cerrarModalNew() {
     this.showModalNew = false;
+
+    setTimeout(() => {
+      this.destroySummernoteNew();
+      $('.note-modal, .note-modal-backdrop').remove();
+    }, 0);
+
     this.correoNew = {
       destinatarios: '0',
       asunto: '',
@@ -437,8 +452,7 @@ export class NotificacionesComponent implements OnInit {
       remitente: '',
       destinatario: '',
       temporada: this.temporadaStoredValue,
-    }; // Limpia la selección si es necesario
-    this.resetSummerNote();
+    };
   }
 
   isBase64(str: string): boolean {
@@ -452,16 +466,6 @@ export class NotificacionesComponent implements OnInit {
 
     // Validamos el patrón y verificamos que no contenga etiquetas HTML
     return base64Regex.test(str) && !str.includes('<');
-  }
-
-  resetSummerNote() {
-    // Limpiar el contenido de Summernote
-    setTimeout(() => {
-      if ($('#summernoteNew').data('summernote')) {
-        $('#summernoteNew').summernote('reset'); // Opción para resetear completamente
-        // $('#summernoteNew').summernote('code', ''); // Alternativa para limpiar solo el contenido
-      }
-    }, 0); // Asegúrate de dar tiempo al DOM para que realice el reset si es necesario
   }
 
   enviarCorreo() {
@@ -492,14 +496,13 @@ export class NotificacionesComponent implements OnInit {
         } else {
           console.error(
             'La respuesta del servicio no tiene la estructura esperada',
-            response
+            response,
           );
         }
-        this.resetSummerNote();
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
-      }
+      },
     );
   }
 }

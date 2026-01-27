@@ -301,10 +301,8 @@
 </div>
 
 <!-- Modal para datos bancarios del club -->
-<!-- Overlay -->
-<div class="modal-overlay" *ngIf="showModalBanco"></div>
 
-<div class="modal d-block" *ngIf="showModalBanco" tabindex="-1">
+<div class="modal d-block modal-overlay" *ngIf="showModalBanco" tabindex="-1">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content modern-modal">
 
@@ -372,9 +370,7 @@
 </div>
 
 <!-- Modal para ver cuotas con filtros -->
-<div class="modal-overlay" *ngIf="showModalCuotas"></div>
-
-<div class="modal d-block" *ngIf="showModalCuotas">
+<div class="modal d-block modal-overlay" *ngIf="showModalCuotas">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content modern-modal">
 
@@ -449,11 +445,8 @@
 </div>
 
 
-
 <!-- Modal crear/editar cuota -->
-<div class="modal-overlay" *ngIf="showModalCuota"></div>
-
-<div class="modal d-block" *ngIf="showModalCuota">
+<div class="modal d-block modal-overlay" *ngIf="showModalCuota">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content modern-modal">
 
@@ -495,31 +488,177 @@
             <input class="form-check-input" type="checkbox" [(ngModel)]="nuevaCuota.obligatorio" name="obligatorio">
             <label class="form-check-label">Obligatoria</label>
           </div>
+          <!-- Dropdown de selección de equipos -->
+          <div class="dropdown mb-3 team-select">
+            <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <i class="bi bi-people"></i>
+              Seleccionar equipos
+              <span class="badge bg-primary ms-2">
+                {{ listTeamsSelecteds.length }}
+              </span>
+            </button>
 
+            <ul class="dropdown-menu p-3 team-dropdown">
+              <li class="mb-2">
+                <div class="form-check select-all">
+                  <input class="form-check-input" type="checkbox" id="selectAll" [checked]="isAllSelected()"
+                    (change)="toggleSelectAll()" />
+                  <label class="form-check-label fw-semibold" for="selectAll">
+                    Seleccionar todos
+                  </label>
+                </div>
+              </li>
+
+              <li *ngFor="let team of listTeams">
+                <div class="form-check team-option">
+                  <input class="form-check-input" type="checkbox" [id]="'team_' + team.value"
+                    (change)="toggleTeamSelection(team.value)" [checked]="listTeamsSelecteds.includes(team.value)" />
+                  <label class="form-check-label" [for]="'team_' + team.value">
+                    {{ team.name }}
+                  </label>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <div class="mb-2 selected-teams">
+            <strong class="d-flex align-items-center gap-1 mb-2">
+              <i class="bi bi-eye"></i>
+              Equipos seleccionados
+            </strong>
+
+            <span *ngIf="listTeamsSelecteds.length === 0" class="text-muted">
+              Ninguno
+            </span>
+
+            <div *ngIf="listTeamsSelecteds.length > 0" class="team-badges">
+              <span *ngFor="let id of listTeamsSelecteds" class="team-badge-pill">
+                {{ getTeamNameById(id) }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Permitir pago con Stripe -->
+          <div *ngIf="cuotaSeleccionada" class="mb-3 form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="stripeToggle" [checked]="nuevaCuota.stripe === 1"
+              (change)="onToggleStripe($event)" />
+            <label class="form-check-label" for="stripeToggle">
+              <i class="bi bi-lightning-charge me-1 text-info"></i>
+              Permitir pago con Stripe
+            </label>
+          </div>
+
+
+          <!-- Configuración Stripe -->
+          <div *ngIf="showStripeConfig" class="border rounded-3 p-4 bg-white mb-3">
+            <!-- Tipo de cobro -->
+            <label class="form-label fw-semibold mb-2 d-block">
+              <i class="bi bi-sliders me-1 text-primary"></i> Tipo de cobro
+            </label>
+
+            <div class="btn-group payment-type" role="group">
+              <input type="radio" class="btn-check" id="tipoPuntual" [checked]="nuevaCuota.tipoPagoStripe === 0"
+                (change)="onTipoPagoChange(0)" />
+              <label class="btn btn-outline-primary" for="tipoPuntual">
+                Pago puntual
+              </label>
+
+              <input type="radio" class="btn-check" id="tipoSuscripcion" [checked]="nuevaCuota.tipoPagoStripe === 1"
+                (change)="onTipoPagoChange(1)" />
+              <label class="btn btn-outline-primary" for="tipoSuscripcion">
+                Suscripción
+              </label>
+            </div>
+
+            <!-- Detalles de suscripción -->
+            <div *ngIf="isSubscription" class="subscription-box mt-4">
+              <div class="row g-3">
+
+                <!-- COLUMNA 1 -->
+                <div class="col-md-6">
+
+                  <!-- Unidad de periodo -->
+                  <label class="form-label fw-semibold">
+                    <i class="bi bi-calendar-range me-1 text-success"></i>
+                    Unidad de periodo
+                  </label>
+                  <select class="form-select mb-2" [(ngModel)]="nuevaCuota.intervalo" name="intervalo">
+                    <option [ngValue]="null" disabled>Selecciona</option>
+                    <option *ngFor="let p of periodos" [ngValue]="p.value">
+                      {{ p.label }}
+                    </option>
+                  </select>
+
+                  <!-- Cada cuántos periodos -->
+                  <label class="form-label fw-semibold">
+                    <i class="bi bi-123 me-1 text-success"></i>
+                    Cada cuántos periodos
+                  </label>
+                  <input type="number" class="form-control" [(ngModel)]="nuevaCuota.intervaloCuenta"
+                    name="intervaloCuenta" min="1" placeholder="Ej: 1, 3, 6" />
+                  <small class="text-muted">
+                    Ej.: 1 = cada mes; 3 = cada 3 meses
+                  </small>
+
+                </div>
+
+                <!-- COLUMNA 2 -->
+                <div class="col-md-6">
+
+                  <!-- Fecha inicio -->
+                  <label class="form-label fw-semibold">
+                    <i class="bi bi-calendar-event me-1 text-danger"></i>
+                    Fecha de inicio
+                  </label>
+                  <input type="date" class="form-control mb-3" [(ngModel)]="nuevaCuota.fechaInicio"
+                    name="fechaInicio" />
+
+                  <!-- Fecha fin -->
+                  <label class="form-label fw-semibold">
+                    <i class="bi bi-calendar2-event me-1 text-danger"></i>
+                    Fecha de fin
+                  </label>
+                  <input type="date" class="form-control" [(ngModel)]="nuevaCuota.fechaFin" name="fechaFin" />
+
+                </div>
+
+              </div>
+
+
+              <div class="alert alert-warning d-flex gap-2 mt-4">
+                <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                <div>
+                  <strong>Atención</strong>
+                  <p class="mb-0">
+                    El padre deberá realizar el primer pago para poder suscribirse y pagar los
+                    meses restantes. Funciona como Netflix: el usuario paga el primer mes y
+                    automáticamente se cobran los siguientes pagos. El club define el importe
+                    y la periodicidad.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
           <div class="modal-footer modern-footer">
             <button class="btn btn-secondary" (click)="cerrarModalCuota()" type="button">
               Cancelar
             </button>
 
-            <button class="btn btn-success" type="submit">
-              Guardar
+            <button type="submit" class="btn btn-success">
+              <i class="bi bi-check-circle me-1"></i>
+              {{ cuotaSeleccionada ? 'Actualizar pago' : 'Guardar pago' }}
             </button>
           </div>
-
         </form>
       </div>
-
     </div>
   </div>
 </div>
 
 
 <!-- Modal para pagar la cuota de un jugador -->
-<!-- Overlay -->
-<div class="modal-overlay" *ngIf="showModalAddPago"></div>
-
 <!-- Modal Agregar Pago -->
-<div class="modal d-block" *ngIf="showModalAddPago" tabindex="-1" role="dialog">
+<div class="modal d-block modal-overlay" *ngIf="showModalAddPago" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content modern-modal">
 
@@ -613,11 +752,9 @@
     </div>
   </div>
 </div>
-<!-- Overlay -->
-<div class="modal-overlay" *ngIf="showModalHistorialPagos"></div>
 
 <!-- Modal Historial de Pagos -->
-<div class="modal d-block" *ngIf="showModalHistorialPagos" tabindex="-1" role="dialog">
+<div class="modal d-block modal-overlay" *ngIf="showModalHistorialPagos" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content modern-modal">
 
@@ -706,11 +843,8 @@
   </div>
 </div>
 
-
 <!-- Modal de confirmación de devolución -->
-<div class="modal-overlay" *ngIf="showConfirmDevolucion"></div>
-
-<div class="modal d-block" *ngIf="showConfirmDevolucion">
+<div class="modal d-block modal-overlay" *ngIf="showConfirmDevolucion">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content modern-modal">
 
@@ -754,13 +888,8 @@
   </div>
 </div>
 
-
 <!-- Modal Pagos asignados -->
-<!-- Overlay -->
-<div class="modal-overlay" *ngIf="showModalCuotasAsignadas"></div>
-
-<!-- Modal Cuotas Asignadas -->
-<div class="modal d-block" *ngIf="showModalCuotasAsignadas" tabindex="-1" role="dialog">
+<div class="modal d-block modal-overlay" *ngIf="showModalCuotasAsignadas" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-xl modal-dialog-centered">
     <div class="modal-content modern-modal">
 
@@ -838,7 +967,6 @@
     </div>
   </div>
 </div>
-
 
 <!-- Modal: Cuotas del jugador -->
 <div class="modal d-block modal-overlay" *ngIf="showModalCuotasJugador" tabindex="-1">
@@ -948,11 +1076,8 @@
   </div>
 </div>
 
-<!-- Overlay -->
-<div class="modal-overlay" *ngIf="showModalEditarCuotaPlayer"></div>
-
 <!-- Modal: Editar cuota del jugador -->
-<div class="modal d-block" *ngIf="showModalEditarCuotaPlayer" tabindex="-1" role="dialog">
+<div class="modal d-block modal-overlay" *ngIf="showModalEditarCuotaPlayer" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
     <div class="modal-content modern-modal">
 
@@ -1025,11 +1150,7 @@
 
 
 <!-- Modal para editar stripe -->
-<!-- Overlay -->
-<div class="modal-overlay" *ngIf="showModalStripe"></div>
-
-<!-- Modal: Configurar Stripe -->
-<div class="modal d-block" *ngIf="showModalStripe" tabindex="-1" role="dialog">
+<div class="modal d-block modal-overlay" *ngIf="showModalStripe" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content modern-modal">
 

@@ -182,6 +182,11 @@
   border-collapse: separate;
   border-spacing: 0 5px;
 }
+.modern-table th,
+.modern-table td {
+  min-width: 125px;
+}
+
 
 .modern-table thead th {
   font-size: 0.9rem;
