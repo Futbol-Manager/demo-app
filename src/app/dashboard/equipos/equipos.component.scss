@@ -431,3 +431,147 @@
   font-weight: 600;
   color: #16a34a;
 }
+/* Overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1040;
+}
+
+
+/* Modal container */
+.modern-modal {
+  border-radius: 14px;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  z-index: 1050;
+}
+
+/* Header */
+.modern-header {
+  background: linear-gradient(135deg, #0f4c5c, #1b6f7a);
+  color: #fff;
+  padding: 1.25rem 1.5rem;
+}
+
+.modern-header .modal-title {
+  font-weight: 600;
+}
+
+/* Body */
+.modern-body {
+  padding: 2rem 2.5rem;
+}
+
+/* Upload title */
+.upload-title {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+/* Upload zone */
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #ced4da;
+  border-radius: 12px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+}
+
+.upload-zone i {
+  font-size: 3rem;
+  color: #198754;
+  margin-bottom: 0.5rem;
+}
+
+.upload-zone span {
+  font-weight: 500;
+}
+
+.upload-zone small {
+  color: #6c757d;
+}
+
+.upload-zone:hover {
+  border-color: #198754;
+  background-color: #eefaf3;
+}
+
+/* File selected */
+.file-selected {
+  margin-top: 1rem;
+  text-align: center;
+  color: #198754;
+  font-size: 0.95rem;
+}
+
+.file-selected i {
+  margin-right: 6px;
+}
+
+/* Upload button */
+.btn-upload {
+  padding: 0.6rem 2rem;
+  font-weight: 500;
+  border-radius: 30px;
+}
+
+/* Footer */
+.modern-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e9ecef;
+}
+/* Inputs */
+.modern-input {
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+}
+
+/* Section title */
+.section-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Dropdown moderno */
+.dropdown-modern {
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  z-index: 10;
+  max-height: 220px;
+  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  margin-top: 4px;
+}
+
+/* Dropdown items */
+.dropdown-modern .list-group-item {
+  cursor: pointer;
+}
+
+/* Save button */
+.btn-save {
+  padding: 0.6rem 2rem;
+  border-radius: 10px;
+  font-weight: 500;
+}
+.btn-secondary {
+  background-color: #efdcb6;
+  color: #002c40;
+  margin-top: 0.5rem;
+  background: transparent;
+  padding: 0.8rem;
+  border-radius: 10px;
+}

@@ -568,13 +568,39 @@ th:hover i {
   display: flex;
   gap: 0.5rem;
 }
-
 .btn-icon {
   width: 36px;
   height: 36px;
   border-radius: 12px;
   border: none;
+  color: #002c40;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  background: #eef0f2;
 }
+
+/* 🔥 CLAVE */
+.btn-icon i {
+  font-size: 16px;
+  line-height: 1;
+  display: block;
+}
+
+
+.btn-icon.edit { background: #e7f1ff; color: #002c40; }
+.btn-icon.pay { background: #efdcb697; color: #002c40; }
+.btn-icon.history { background: #f1f3f5; color: #002c40; }
+
+.btn-icon:hover {
+  filter: brightness(0.95);
+  transform: translateY(-1px);
+}
+
+
 /* Overlay */
 .modal-overlay {
   background: rgba(0, 0, 0, 0.5);
@@ -683,3 +709,285 @@ th:hover i {
   background: #6c757d;
 }
 
+/* MODALES */
+/* Header */
+.modern-header {
+  background: linear-gradient(135deg, #0f4c5c, #1b6f7a);
+  color: #fff;
+  padding: 1.25rem 1.5rem;
+}
+/* Labels */
+.modern-label {
+  font-weight: 500;
+  color: #002c40; /* azul noche */
+  margin-bottom: 0.35rem;
+}
+
+
+/* Inputs */
+.modern-input {
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #dfe3e6;
+  font-size: 0.95rem;
+}
+
+.modern-input:focus {
+  border-color: #31b270;
+  box-shadow: 0 0 0 0.15rem rgba(49, 178, 112, 0.25);
+}
+
+/* Footer buttons spacing */
+.modern-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+/* FILA PRINCIPAL */
+.payment-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  background: #f7f8f9; /* blanco roto */
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #e3e6e8;
+}
+
+/* IZQUIERDA */
+.payment-main {
+  flex: 1;
+}
+
+/* TÍTULO */
+.payment-title {
+  font-weight: 600;
+  color: #002c40;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.payment-title i {
+  color: #31b270;
+}
+
+/* META INFO */
+.payment-meta {
+  display: flex;
+  gap: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.85rem;
+}
+
+.meta-label {
+  color: #6c757d;
+}
+
+.meta-value {
+  color: #002c40;
+  font-weight: 500;
+}
+
+/* DESCRIPCIÓN */
+.payment-desc {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #5f6b73;
+  max-width: 90%;
+}
+
+/* ACCIONES */
+.payment-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* BOTONES ICONO */
+.btn-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* EDITAR */
+.btn-icon.edit {
+  background: #e6f6ef;
+  color: #31b270;
+}
+
+/* ELIMINAR */
+.btn-icon.delete {
+  background: #fdecea;
+  color: #c0392b;
+}
+
+/* BADGES */
+.badge-required {
+  background: #31b270;
+  color: #fff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+}
+
+.badge-optional {
+  background: #efdcb6;
+  color: #002c40;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
+}
+/* Caja informativa Stripe */
+.stripe-info-box {
+  background: #f7f8f9; /* blanco roto */
+  border: 1px solid #e3e6e8;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  max-height: 260px;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  color: #002c40;
+}
+
+.stripe-info-title {
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+  color: #002c40;
+}
+
+.stripe-info-box ol {
+  padding-left: 1.25rem;
+}
+/* ===========================
+   MODAL HISTORIAL DE PAGOS
+=========================== */
+/* =========================
+   HISTORY CARD
+========================= */
+.history-card {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  position: relative;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* =========================
+   HEADER CARD
+========================= */
+.history-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.history-index {
+  background-color: #002c40;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+}
+
+.history-header h6 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #002c40;
+}
+
+/* =========================
+   GRID INFO
+========================= */
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.history-grid .label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 0.2rem;
+}
+
+.history-grid strong {
+  color: #31b270;
+  font-weight: 600;
+}
+
+/* =========================
+   COMMENT
+========================= */
+.history-comment {
+  font-size: 0.9rem;
+  color: #374151;
+}
+
+.history-comment .label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 0.25rem;
+}
+
+.history-comment a {
+  color: #31b270;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.history-comment a:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   ACTIONS
+========================= */
+.history-actions {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+}
+
+.btn-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.btn-icon.delete {
+  background-color: #efdcb6;
+  color: #002c40;
+}
+
+.btn-icon.delete:hover {
+  background-color: #e6cf9d;
+}

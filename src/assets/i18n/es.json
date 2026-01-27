@@ -19,6 +19,8 @@
     "BACK": "Volver",
     "DATE": "Fecha",
     "CANCEL": "Cancelar",
+    "SAVE": "Guardar",
+    "SAVING": "Guardando...",
     "UPLOAD": "Subir",
     "DOWNLOAD": "Descargar",
     "SAVE_CHANGES": "Guardar cambios",
@@ -1137,6 +1139,38 @@
       "TITLE": "Subir documento",
       "DESCRIPTION": "Aquí puedes subir el archivo solicitado.",
       "FILE_LABEL": "Seleccionar archivo"
+    },
+    "MODAL_MOVE_PLAYER": {
+      "TITLE": "Mover Jugador",
+      "DESCRIPTION": "Elige el equipo al que quieres mover el jugador.",
+      "SELECT_TEAM": "Selecciona el equipo",
+      "KEEP_BOTH": "Si activas el check box, el jugador será añadido al equipo seleccionado, además de permanecer en el que ya está."
     }
+  },
+  "SPONSOR": {
+    "TITLE": "Patrocinador",
+    "TITLE_VIEW": "Ver patrocinador",
+    "TITLE_EDIT": "Editar patrocinador",
+    "BACK": "Volver",
+    "NEW": "Nuevo patrocinador",
+    "DATA_TITLE": "Datos del patrocinador",
+    "EDIT_DATA_TITLE": "Editar datos del patrocinador",
+    "NAME": "Nombre",
+    "WEB": "Web",
+    "DESCRIPTION": "Descripción",
+    "BENEFITS": "Beneficios",
+    "BENEFITS_TITLE": "Beneficios",
+    "PHONE": "Teléfono",
+    "EMAIL": "Email",
+    "WEB_LINK": "Web",
+    "EMAIL_LINK": "Email",
+    "PHONE_LINK": "Teléfono",
+    "CAROUSEL": "Carrusel",
+    "VIEW": "Ver",
+    "DELETE": "Eliminar",
+    "UPLOAD_TITLE": "Sube la imagen del patrocinador",
+    "UPLOAD_HINT": "Se recomienda un tamaño de 400 x 150 px",
+    "UPLOAD_FORMAT": "Seleccionar imagen en formato JPG o PNG",
+    "UPLOAD_BUTTON": "Subir imagen"
   }
 }

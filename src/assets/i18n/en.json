@@ -21,6 +21,8 @@
     "CANCEL": "Cancel",
     "UPLOAD": "Upload",
     "DOWNLOAD": "Download",
+    "SAVE": "Save",
+    "SAVING": "Saving...",
     "SAVE_CHANGES": "Save changes",
     "CLOSE": "Close",
     "ACCEPT": "Accept",
@@ -686,7 +688,7 @@
       "CHANGE_TEMP": "Change Season",
       "UPLOAD_DOC": "Upload Document"
     },
-     "DNI_MODAL": {
+    "DNI_MODAL": {
       "TITLE": "Upload ID documentation",
       "SUBTITLE": "Player · Father · Mother · Guardian",
       "HELP": "Only PNG or JPEG images are allowed",
@@ -714,6 +716,38 @@
       "TITLE": "Upload document",
       "DESCRIPTION": "Here you can upload the requested file.",
       "FILE_LABEL": "Select file"
+    },
+    "MODAL_MOVE_PLAYER": {
+      "TITLE": "Move Player",
+      "DESCRIPTION": "Choose the team you want to move the player to.",
+      "SELECT_TEAM": "Select a team",
+      "KEEP_BOTH": "If you enable the checkbox, the player will be added to the selected team while remaining on the current one."
     }
+  },
+  "SPONSOR": {
+    "TITLE": "Sponsor",
+    "TITLE_VIEW": "View sponsor",
+    "TITLE_EDIT": "Edit sponsor",
+    "BACK": "Back",
+    "NEW": "New sponsor",
+    "DATA_TITLE": "Sponsor details",
+    "EDIT_DATA_TITLE": "Edit sponsor details",
+    "NAME": "Name",
+    "WEB": "Website",
+    "DESCRIPTION": "Description",
+    "BENEFITS": "Benefits",
+    "BENEFITS_TITLE": "Benefits",
+    "PHONE": "Phone",
+    "EMAIL": "Email",
+    "WEB_LINK": "Website",
+    "EMAIL_LINK": "Email",
+    "PHONE_LINK": "Phone",
+    "CAROUSEL": "Carousel",
+    "VIEW": "View",
+    "DELETE": "Delete",
+    "UPLOAD_TITLE": "Upload sponsor image",
+    "UPLOAD_HINT": "Recommended size: 400 x 150 px",
+    "UPLOAD_FORMAT": "Select image in JPG or PNG format",
+    "UPLOAD_BUTTON": "Upload image"
   }
 }

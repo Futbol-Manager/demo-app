@@ -594,7 +594,7 @@
 </div>
 
 
-<!-- Modal para invitar un jugador por mail -->
+
 <!-- BACKDROP -->
 <div class="modal-backdrop-custom" *ngIf="showModalMover" (click)="cerrarModalMover()">
 </div>
@@ -609,7 +609,7 @@
       <!-- HEADER -->
       <div class="modal-base__header">
         <h5 class="modal-title">
-          {{ 'MODAL_MOVE_PLAYER.TITLE' | translate:{ name: nombreJugador } }}
+          {{ 'PLAYERS.MODAL_MOVE_PLAYER.TITLE' | translate:{ name: nombreJugador } }}
         </h5>
         <button class="btn-close" (click)="cerrarModalMover()"></button>
       </div>
@@ -618,18 +618,18 @@
       <div class="modal-base__body">
 
         <p>
-          {{ 'MODAL_MOVE_PLAYER.DESCRIPTION' | translate }}
+          {{ 'PLAYERS.MODAL_MOVE_PLAYER.DESCRIPTION' | translate }}
         </p>
 
         <form (ngSubmit)="moverJugador()">
 
           <label class="modal-label">
-            {{ 'MODAL_MOVE_PLAYER.SELECT_TEAM' | translate }}
+            {{ 'PLAYERS.MODAL_MOVE_PLAYER.SELECT_TEAM' | translate }}
           </label>
 
           <select class="form-select" [(ngModel)]="teamSelected" name="teamSelected">
             <option value="0">
-              {{ 'MODAL_MOVE_PLAYER.SELECT_PLACEHOLDER' | translate }}
+              {{ 'PLAYERS.MODAL_MOVE_PLAYER.SELECT_TEAM' | translate }}
             </option>
 
             <ng-container *ngFor="let team of listTeamsForCombo">
@@ -644,7 +644,7 @@
               name="addPlayerMoved" />
 
             <label class="form-check-label text-danger" for="addPlayerMoved">
-              {{ 'MODAL_MOVE_PLAYER.KEEP_BOTH' | translate }}
+              {{ 'PLAYERS.MODAL_MOVE_PLAYER.KEEP_BOTH' | translate }}
             </label>
           </div>
 
@@ -654,7 +654,7 @@
 
       <!-- FOOTER -->
       <div class="modal-base__footer">
-        <button class="btn btn-primary" (click)="moverJugador()">
+        <button class="btn btn-success-custom" (click)="moverJugador()">
           {{ 'COMMON.ACCEPT' | translate }}
         </button>
       </div>

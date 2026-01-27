@@ -772,7 +772,7 @@ export class EquiposComponent implements OnInit {
           console.log('Archivo subido con éxito', response);
           // Aquí puedes manejar la respuesta del servidor
           this.showModalSubirJugadores = false;
-          alert('Jugadores insertado en los exipos.');
+          alert('Jugadores insertado en los equipos.');
           //this.router.navigate(['/dashboard/inicio']);
         },
         (error) => {
