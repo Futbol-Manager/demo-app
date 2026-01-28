@@ -259,7 +259,7 @@
 }
 
 .score-wrapper::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -6px;
   width: 20px;
@@ -267,7 +267,6 @@
   background: #e9ecef;
   border-radius: 2px;
 }
-
 
 .match-date {
   font-size: 0.65rem;
@@ -536,4 +535,61 @@
   color: #31b270;
   margin-top: 2px;
   display: block;
+}
+
+@media (max-width: 450px) {
+
+  .team-avatar {
+    display: none;
+  }
+
+  /* Ajuste fino al layout sin avatar */
+  .team-side {
+    gap: 6px;
+  }
+
+  .team-info {
+    max-width: 100%;
+  }
+
+  .team-name {
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .team-badge {
+    margin-top: 4px;
+  }
+  /* Caja central más ajustada */
+  .center-box {
+    margin-top: 6px;
+  }
+
+  /* Fecha mucho más compacta */
+  .date-badge {
+    padding: 4px 6px;          /* 🔑 menos espacio interno */
+    border-radius: 6px;
+    min-width: unset;
+    max-width: 140px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+
+  .date-badge .day {
+    font-size: 0.65rem;
+    line-height: 1.05;
+    margin-bottom: 1px;
+  }
+
+  .date-badge .date {
+    font-size: 0.6rem;
+    line-height: 1.05;
+  }
+
+  .date-badge .time {
+    font-size: 0.7rem;
+    line-height: 1.1;
+    margin-top: 1px;
+    font-weight: 700;
+  }
+  
 }

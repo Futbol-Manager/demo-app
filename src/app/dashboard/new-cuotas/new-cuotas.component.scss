@@ -1142,3 +1142,61 @@ th:hover i {
   color: #002c40;
   border: 1px solid #002c40;
 }
+@media (max-width: 576px) {
+
+  .filters-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  /* BUSCADOR */
+  .filter-search {
+    width: 100%;
+  }
+
+  .filter-search input {
+    width: 100%;
+  }
+
+  /* BOTÓN RESET */
+  .btn-reset {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* SELECT */
+  .filter-select {
+    width: 100%;
+  }
+
+  .filter-select select {
+    width: 100%;
+  }
+
+  /* BOTÓN INFO */
+  .btn-info-icon {
+    align-self: flex-end;
+    padding: 6px 10px;
+  }
+}
+@media (max-width: 450px) {
+
+  .filter-search i,
+  .filter-select i {
+    display: none;
+  }
+
+  .filters-bar {
+    padding: 0.25rem 0;
+  }
+
+  .btn-reset {
+    font-size: 0.85rem;
+    padding: 8px;
+  }
+
+  .filter-select select {
+    font-size: 0.85rem;
+  }
+}

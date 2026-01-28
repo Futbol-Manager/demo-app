@@ -300,14 +300,14 @@ export class NotificacionesComponent implements OnInit {
    * @param correo - Objeto del correo seleccionado
    */
   openCorreo(correo: any, index: number): void {
-    // 1️⃣ Decodificar el body inmediatamente
+    // Decodificar el body inmediatamente
     let decodedBody = correo.body;
 
     if (this.isBase64(correo.body)) {
       decodedBody = this.decodeBase64(correo.body);
     }
 
-    // 2️⃣ Asignar correo seleccionado YA decodificado
+    //Asignar correo seleccionado YA decodificado
     this.correoSelected = {
       ...correo,
       body: decodedBody,
@@ -315,7 +315,7 @@ export class NotificacionesComponent implements OnInit {
 
     this.selectCorreo = true;
 
-    // 3️⃣ Marcar como leído (NO bloquea la UI)
+    // Marcar como leído (NO bloquea la UI)
     if (correo.leido === 0) {
       this.clubService.openCorreoRecibido(correo.correoRecibidoId).subscribe({
         next: () => {
@@ -405,6 +405,9 @@ export class NotificacionesComponent implements OnInit {
             this.correosEnviadosSinFiltro = [];
           }
           this.correosEnviadosSinFiltro.unshift(this.correoNew);
+          if (this.currentFolder === 'sent') {
+            this.correos = [...this.correosEnviadosSinFiltro];
+          }
         } else {
           console.error(
             'La respuesta del servicio no tiene la estructura esperada',
