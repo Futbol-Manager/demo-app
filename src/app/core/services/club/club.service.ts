@@ -1,19 +1,33 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import {
+  HttpClient,
+  HttpEvent,
+  HttpHeaders,
+  HttpRequest,
+} from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
-import { ClubCuotas, HostoryPagosPlayer, PlayerCuotas, RopaClub, RopaJugador } from '../team/club.model';
-import { Abonado, AbonadoPagoHistorico, CorreoEnviado, CorreoEnviadoFede, Patrocinador } from '../models/club.model';
+import {
+  ClubCuotas,
+  HostoryPagosPlayer,
+  PlayerCuotas,
+  RopaClub,
+  RopaJugador,
+} from '../team/club.model';
+import {
+  Abonado,
+  AbonadoPagoHistorico,
+  CorreoEnviado,
+  CorreoEnviadoFede,
+  Patrocinador,
+} from '../models/club.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ClubService {
-
-  constructor(
-    private http: HttpClient,
-  ) { }
+  constructor(private http: HttpClient) {}
 
   filterClub(filter: string) {
     const url: string = environment.apiUrl + 'user/filterClub';
@@ -27,7 +41,7 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
@@ -55,7 +69,7 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
@@ -69,7 +83,10 @@ export class ClubService {
     }
   }
 
-  getRopaJugadoresByClubForTemp(clubId: string, temporada: string): Observable<Response> {
+  getRopaJugadoresByClubForTemp(
+    clubId: string,
+    temporada: string
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -77,11 +94,13 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getropajugadoresbyclub/${clubId}/${temporada}`;
+      const url: string =
+        environment.apiUrl +
+        `club/getropajugadoresbyclub/${clubId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -99,7 +118,7 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
@@ -111,7 +130,6 @@ export class ClubService {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
       return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
-
   }
 
   getRopaClub(clubId: string, temp: string): Observable<Response> {
@@ -122,11 +140,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getropaclub/${clubId}/${temp}`;
+      const url: string =
+        environment.apiUrl + `club/getropaclub/${clubId}/${temp}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -144,7 +163,7 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
@@ -166,11 +185,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getclubcuotas/${clubId}/${temp}`;
+      const url: string =
+        environment.apiUrl + `club/getclubcuotas/${clubId}/${temp}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -180,8 +200,11 @@ export class ClubService {
     }
   }
 
-
-  getClubCuotaForLoadTeam(clubId: number, temp: string, teamId: number): Observable<Response> {
+  getClubCuotaForLoadTeam(
+    clubId: number,
+    temp: string,
+    teamId: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -189,11 +212,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getclubcuotas/${clubId}/${temp}/${teamId}`;
+      const url: string =
+        environment.apiUrl + `club/getclubcuotas/${clubId}/${temp}/${teamId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -204,18 +228,23 @@ export class ClubService {
   }
 
   // Método para crear o actualizar un equipo
-  updateclubCuotas(clubCuota: ClubCuotas, option: number, value: number): Observable<Response> {
+  updateclubCuotas(
+    clubCuota: ClubCuotas,
+    option: number,
+    value: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/updateclubcuotas/${option}/${value}`;
+      const url: string =
+        environment.apiUrl + `club/updateclubcuotas/${option}/${value}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.post<Response>(url, clubCuota, { headers });
@@ -225,7 +254,11 @@ export class ClubService {
     }
   }
 
-  getHistoryPagosPlayer(clubId: number, playerId: number, temporada: string): Observable<Response> {
+  getHistoryPagosPlayer(
+    clubId: number,
+    playerId: number,
+    temporada: string
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -233,11 +266,13 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/gethistorypagosplayer/${clubId}/${playerId}/${temporada}`;
+      const url: string =
+        environment.apiUrl +
+        `club/gethistorypagosplayer/${clubId}/${playerId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -247,7 +282,11 @@ export class ClubService {
     }
   }
 
-  getPlayerCuota(clubId: number, playerId: number, temporada: string): Observable<Response> {
+  getPlayerCuota(
+    clubId: number,
+    playerId: number,
+    temporada: string
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -255,11 +294,13 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getplayercuota/${clubId}/${playerId}/${temporada}`;
+      const url: string =
+        environment.apiUrl +
+        `club/getplayercuota/${clubId}/${playerId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -269,18 +310,22 @@ export class ClubService {
     }
   }
 
-  updatePlayerCuotas(playerCuota: PlayerCuotas, clubId: number): Observable<Response> {
+  updatePlayerCuotas(
+    playerCuota: PlayerCuotas,
+    clubId: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/updateplayercuotas/${clubId}`;
+      const url: string =
+        environment.apiUrl + `club/updateplayercuotas/${clubId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.post<Response>(url, playerCuota, { headers });
@@ -290,14 +335,16 @@ export class ClubService {
     }
   }
 
-  updatehistorypagosplayer(historyPagos: HostoryPagosPlayer): Observable<Response> {
+  updatehistorypagosplayer(
+    historyPagos: HostoryPagosPlayer
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
@@ -311,18 +358,21 @@ export class ClubService {
     }
   }
 
-  devolverHistoryPagosPlayer(historyPagos: HostoryPagosPlayer): Observable<Response> {
+  devolverHistoryPagosPlayer(
+    historyPagos: HostoryPagosPlayer
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/devolverhistorypagosplayer`;
+      const url: string =
+        environment.apiUrl + `club/devolverhistorypagosplayer`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.post<Response>(url, historyPagos, { headers });
@@ -336,7 +386,7 @@ export class ClubService {
     const token: string | null = localStorage.getItem('token');
     if (token) {
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       const formData: FormData = new FormData();
@@ -353,31 +403,37 @@ export class ClubService {
     const token: string | null = localStorage.getItem('token');
     if (token) {
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       const formData: FormData = new FormData();
       formData.append('file', file, file.name);
 
-      const url: string = environment.apiUrl + `club/uploadExcelgesdesk/${clubId}`;
+      const url: string =
+        environment.apiUrl + `club/uploadExcelgesdesk/${clubId}`;
       return this.http.post<Response>(url, formData, { headers });
     } else {
       return new Observable();
     }
   }
 
-  getListJugadoresByClubForTemp(clubId: number, temporada: string): Observable<Response> {
+  getListJugadoresByClubForTemp(
+    clubId: number,
+    temporada: string
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistplayeroftheclubfortemp/${clubId}/${temporada}`;
+      const url: string =
+        environment.apiUrl +
+        `club/getlistplayeroftheclubfortemp/${clubId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -394,11 +450,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistplayersofclubbystadistics/${clubId}`;
+      const url: string =
+        environment.apiUrl + `club/getlistplayersofclubbystadistics/${clubId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -415,11 +472,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistteamsofclubbystadistics/${clubId}`;
+      const url: string =
+        environment.apiUrl + `club/getlistteamsofclubbystadistics/${clubId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -438,11 +496,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistabonadostemporada/${clubId}`;
+      const url: string =
+        environment.apiUrl + `club/getlistabonadostemporada/${clubId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -452,18 +511,22 @@ export class ClubService {
     }
   }
 
-  getListPagosAbonadoHistorico(abonadosTemporadaId: number): Observable<Response> {
+  getListPagosAbonadoHistorico(
+    abonadosTemporadaId: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistpagosabonadohistorico/${abonadosTemporadaId}`;
+      const url: string =
+        environment.apiUrl +
+        `club/getlistpagosabonadohistorico/${abonadosTemporadaId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -474,18 +537,25 @@ export class ClubService {
   }
 
   // Método para crear o actualizar un equipo
-  createUpdateAbonado(abonado: Abonado, clubId: number, cuota: number, abonadosTemporadaId: number): Observable<Response> {
+  createUpdateAbonado(
+    abonado: Abonado,
+    clubId: number,
+    cuota: number,
+    abonadosTemporadaId: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/createupdateabonado/${clubId}/${cuota}/${abonadosTemporadaId}`;
+      const url: string =
+        environment.apiUrl +
+        `club/createupdateabonado/${clubId}/${cuota}/${abonadosTemporadaId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.post<Response>(url, abonado, { headers });
@@ -496,18 +566,23 @@ export class ClubService {
   }
 
   // Método para crear o actualizar un equipo
-  createPagoAbonado(abonadoPagoHist: AbonadoPagoHistorico, cuota: number, pagado: number): Observable<Response> {
+  createPagoAbonado(
+    abonadoPagoHist: AbonadoPagoHistorico,
+    cuota: number,
+    pagado: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/createpagoabonado/${cuota}/${pagado}`;
+      const url: string =
+        environment.apiUrl + `club/createpagoabonado/${cuota}/${pagado}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.post<Response>(url, abonadoPagoHist, { headers });
@@ -518,14 +593,16 @@ export class ClubService {
   }
 
   // Método para crear o actualizar un equipo
-  insertReembolsoAbonadoPagoHistorico(abonadoPagoHist: AbonadoPagoHistorico): Observable<Response> {
+  insertReembolsoAbonadoPagoHistorico(
+    abonadoPagoHist: AbonadoPagoHistorico
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
@@ -548,7 +625,7 @@ export class ClubService {
       if (token) {
         // Configura las cabeceras con el token para la solicitud HTTP
         const headers = new HttpHeaders({
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         });
 
         // Construye el cuerpo de la solicitud FormData
@@ -556,7 +633,8 @@ export class ClubService {
         formData.append('files', file, file.name);
 
         // Construye la URL para la solicitud
-        const url: string = environment.apiUrl + `club/subirimgabonado/${abonadoId}`;
+        const url: string =
+          environment.apiUrl + `club/subirimgabonado/${abonadoId}`;
 
         // Realiza la solicitud HTTP con las cabeceras y el cuerpo configurados
         return this.http.post<Response>(url, formData, { headers });
@@ -572,7 +650,10 @@ export class ClubService {
 
   //**********************Patrocinadores**************/
 
-  subirImgPatrocinador(patrocinadorId: number, file: File): Observable<Response> {
+  subirImgPatrocinador(
+    patrocinadorId: number,
+    file: File
+  ): Observable<Response> {
     // Verifica si el archivo está presente
     if (file) {
       // Obtén el token almacenado en localStorage
@@ -581,7 +662,7 @@ export class ClubService {
       if (token) {
         // Configura las cabeceras con el token para la solicitud HTTP
         const headers = new HttpHeaders({
-          'Authorization': `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         });
 
         // Construye el cuerpo de la solicitud FormData
@@ -589,7 +670,8 @@ export class ClubService {
         formData.append('files', file, file.name);
 
         // Construye la URL para la solicitud
-        const url: string = environment.apiUrl + `club/subirimgpatrocinador/${patrocinadorId}`;
+        const url: string =
+          environment.apiUrl + `club/subirimgpatrocinador/${patrocinadorId}`;
 
         // Realiza la solicitud HTTP con las cabeceras y el cuerpo configurados
         return this.http.post<Response>(url, formData, { headers });
@@ -610,11 +692,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistpatrocinadoresbyclub/${clubId}`;
+      const url: string =
+        environment.apiUrl + `club/getlistpatrocinadoresbyclub/${clubId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -632,7 +715,7 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
@@ -653,11 +736,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/deletepatrocinadorbyid/${patrocinadorId}`;
+      const url: string =
+        environment.apiUrl + `club/deletepatrocinadorbyid/${patrocinadorId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -667,18 +751,23 @@ export class ClubService {
     }
   }
 
-  avtivePatrocinadorById(patrocinadorId: number, value: number): Observable<Response> {
+  avtivePatrocinadorById(
+    patrocinadorId: number,
+    value: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/avtivepatrocinadorbyid/${patrocinadorId}/${value}`;
+      const url: string =
+        environment.apiUrl +
+        `club/avtivepatrocinadorbyid/${patrocinadorId}/${value}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -688,18 +777,23 @@ export class ClubService {
     }
   }
 
-  getListPatrocinadoresByUser(userId: number, profileId: number): Observable<Response> {
+  getListPatrocinadoresByUser(
+    userId: number,
+    profileId: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistpatrocinadoresbyuser/${userId}/${profileId}`;
+      const url: string =
+        environment.apiUrl +
+        `club/getlistpatrocinadoresbyuser/${userId}/${profileId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -718,11 +812,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistcorreosbyuser/${userId}`;
+      const url: string =
+        environment.apiUrl + `club/getlistcorreosbyuser/${userId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -740,7 +835,7 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
@@ -761,11 +856,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/open-correo-recibido/${correoRecibidoId}`;
+      const url: string =
+        environment.apiUrl + `club/open-correo-recibido/${correoRecibidoId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -782,11 +878,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/delete-correo/${id}/${option}`;
+      const url: string =
+        environment.apiUrl + `club/delete-correo/${id}/${option}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -804,11 +901,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getentrenandoahora/${clubId}/${temporada}`;
+      const url: string =
+        environment.apiUrl + `club/getentrenandoahora/${clubId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -825,11 +923,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getcuotasclub/${clubId}/${temporada}`;
+      const url: string =
+        environment.apiUrl + `club/getcuotasclub/${clubId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -846,7 +945,7 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
@@ -867,11 +966,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getentrenamientos-creados/${clubId}`;
+      const url: string =
+        environment.apiUrl + `club/getentrenamientos-creados/${clubId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -888,11 +988,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getproximos-partidos/${clubId}`;
+      const url: string =
+        environment.apiUrl + `club/getproximos-partidos/${clubId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -902,9 +1003,7 @@ export class ClubService {
     }
   }
 
-
   /**************************DOCUMENTOS************************** */
-
 
   getlistDocumentosByClub(clubId: number): Observable<Response> {
     // Obtén el token almacenado en localStorage
@@ -913,11 +1012,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getdocumentosbyclub/${clubId}`;
+      const url: string =
+        environment.apiUrl + `club/getdocumentosbyclub/${clubId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -925,6 +1025,21 @@ export class ClubService {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
       return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
+  }
+  getConteoPadresPorClub(clubId: number): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+
+    if (!token) {
+      return new Observable();
+    }
+
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+
+    const url: string = environment.apiUrl + `club/documentos/conteo/${clubId}`;
+
+    return this.http.get<Response>(url, { headers });
   }
 
   deleteDocumentoForClub(docClubesId: number): Observable<Response> {
@@ -934,11 +1049,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/deletedocumentoforclub/${docClubesId}`;
+      const url: string =
+        environment.apiUrl + `club/deletedocumentoforclub/${docClubesId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -948,18 +1064,23 @@ export class ClubService {
     }
   }
 
-  setDocumentoVisible(docClubesId: number, visible: number): Observable<Response> {
+  setDocumentoVisible(
+    docClubesId: number,
+    visible: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/setdocumentovisible/${docClubesId}/${visible}`;
+      const url: string =
+        environment.apiUrl +
+        `club/setdocumentovisible/${docClubesId}/${visible}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -969,20 +1090,23 @@ export class ClubService {
     }
   }
 
-
-
-  setDocumentoRequiere(docClubesId: number, requiere: number): Observable<Response> {
+  setDocumentoRequiere(
+    docClubesId: number,
+    requiere: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/setdocumentorequiere/${docClubesId}/${requiere}`;
+      const url: string =
+        environment.apiUrl +
+        `club/setdocumentorequiere/${docClubesId}/${requiere}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -992,20 +1116,32 @@ export class ClubService {
     }
   }
 
-  uploadDocClub(file: File, dto: any): Observable<Response> {
+  uploadDocClub(file: File, dto: any): Observable<HttpEvent<any>> {
     const token = localStorage.getItem('token');
-    if (!token) return new Observable();
+    if (!token) {
+      throw new Error('Token no encontrado');
+    }
 
     const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
 
     const formData = new FormData();
     formData.append('files', file, file.name);
-    formData.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+    formData.append(
+      'dto',
+      new Blob([JSON.stringify(dto)], { type: 'application/json' })
+    );
 
     const url = environment.apiUrl + 'club/uploaddocclub';
-    return this.http.post<Response>(url, formData, { headers });
+
+    const req = new HttpRequest('POST', url, formData, {
+      headers,
+      reportProgress: true,
+      responseType: 'json',
+    });
+
+    return this.http.request(req);
   }
 
   uploadSinDocClub(dto: any): Observable<Response> {
@@ -1013,28 +1149,36 @@ export class ClubService {
     if (!token) return new Observable();
 
     const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
 
     const formData = new FormData();
-    formData.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+    formData.append(
+      'dto',
+      new Blob([JSON.stringify(dto)], { type: 'application/json' })
+    );
 
     const url = environment.apiUrl + 'club/uploadsindocclub';
     return this.http.post<Response>(url, formData, { headers });
   }
 
-  getListDocumentosPlayer(teamId: number, playerId: number): Observable<Response> {
+  getListDocumentosPlayer(
+    teamId: number,
+    playerId: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistdocumentosplayer/${teamId}/${playerId}`;
+      const url: string =
+        environment.apiUrl +
+        `club/getlistdocumentosplayer/${teamId}/${playerId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1050,7 +1194,7 @@ export class ClubService {
 
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     });
 
     const url = environment.apiUrl + 'club/updatedocumentodescargado';
@@ -1062,12 +1206,15 @@ export class ClubService {
     if (!token) return new Observable();
 
     const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
 
     const formData = new FormData();
     formData.append('files', file, file.name ? file.name : '');
-    formData.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+    formData.append(
+      'dto',
+      new Blob([JSON.stringify(dto)], { type: 'application/json' })
+    );
 
     const url = environment.apiUrl + 'club/uploaddocpadres';
     return this.http.post<Response>(url, formData, { headers });
@@ -1078,11 +1225,14 @@ export class ClubService {
     if (!token) return new Observable();
 
     const headers = new HttpHeaders({
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
 
     const formData = new FormData();
-    formData.append('dto', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+    formData.append(
+      'dto',
+      new Blob([JSON.stringify(dto)], { type: 'application/json' })
+    );
 
     const url = environment.apiUrl + 'club/uploaddocpadrespersonalizado';
     return this.http.post<Response>(url, formData, { headers });
@@ -1095,11 +1245,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistcategoriasbyfilter/${filter}`;
+      const url: string =
+        environment.apiUrl + `club/getlistcategoriasbyfilter/${filter}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1116,7 +1267,7 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
@@ -1135,12 +1286,12 @@ export class ClubService {
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
 
     const url = environment.apiUrl + 'club/updatecreatecategorytype';
     return this.http.post<Response>(url, dto, { headers });
-  }  
+  }
 
   getBancoClub(clubId: number, temporada: string): Observable<Response> {
     // Obtén el token almacenado en localStorage
@@ -1150,11 +1301,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getbancoclub/${clubId}/${temporada}`;
+      const url: string =
+        environment.apiUrl + `club/getbancoclub/${clubId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1169,12 +1321,12 @@ export class ClubService {
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
 
     const url = environment.apiUrl + 'club/update-bancoclub';
     return this.http.post<Response>(url, dto, { headers });
-  }  
+  }
 
   getListPagosClub(clubId: number, temporada: string): Observable<Response> {
     // Obtén el token almacenado en localStorage
@@ -1184,11 +1336,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistpagosclub/${clubId}/${temporada}`;
+      const url: string =
+        environment.apiUrl + `club/getlistpagosclub/${clubId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1198,7 +1351,12 @@ export class ClubService {
     }
   }
 
-  getListPagosClubForStripe(clubId: number, temporada: string, teamId: number, playerId: number): Observable<Response> {
+  getListPagosClubForStripe(
+    clubId: number,
+    temporada: string,
+    teamId: number,
+    playerId: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -1206,11 +1364,13 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistpagosclubforstripe/${clubId}/${temporada}/${teamId}/${playerId}`;
+      const url: string =
+        environment.apiUrl +
+        `club/getlistpagosclubforstripe/${clubId}/${temporada}/${teamId}/${playerId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1220,7 +1380,11 @@ export class ClubService {
     }
   }
 
-  getListPagosClubForPlayer(clubId: number, temporada: string, playerId: number): Observable<Response> {
+  getListPagosClubForPlayer(
+    clubId: number,
+    temporada: string,
+    playerId: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -1228,11 +1392,13 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistpagosclubforplayer/${clubId}/${temporada}/${playerId}`;
+      const url: string =
+        environment.apiUrl +
+        `club/getlistpagosclubforplayer/${clubId}/${temporada}/${playerId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1247,14 +1413,17 @@ export class ClubService {
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
 
     const url = environment.apiUrl + 'club/createupdate-pagoclub';
     return this.http.post<Response>(url, dto, { headers });
-  }  
+  }
 
-  getListPlayersPagosClub(clubId: number, temporada: string): Observable<Response> {
+  getListPlayersPagosClub(
+    clubId: number,
+    temporada: string
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -1262,11 +1431,13 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistplayerspagosclub/${clubId}/${temporada}`;
+      const url: string =
+        environment.apiUrl +
+        `club/getlistplayerspagosclub/${clubId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1276,7 +1447,10 @@ export class ClubService {
     }
   }
 
-  updateInfoPagosPlayer(clubId: number, temporada: string): Observable<Response> {
+  updateInfoPagosPlayer(
+    clubId: number,
+    temporada: string
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -1284,11 +1458,13 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/resetpagosclubplayers/${clubId}/${temporada}`;
+      const url: string =
+        environment.apiUrl +
+        `club/resetpagosclubplayers/${clubId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1303,14 +1479,18 @@ export class ClubService {
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
 
     const url = environment.apiUrl + `club/create-pagohistoriplayer`;
     return this.http.post<Response>(url, dto, { headers });
-  } 
+  }
 
-  moverPlayerTemporada(clubId: number, playerId: number, temporada: string): Observable<Response> {
+  moverPlayerTemporada(
+    clubId: number,
+    playerId: number,
+    temporada: string
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -1318,11 +1498,13 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/moverplayertemporada/${clubId}/${playerId}/${temporada}`;
+      const url: string =
+        environment.apiUrl +
+        `club/moverplayertemporada/${clubId}/${playerId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1332,7 +1514,11 @@ export class ClubService {
     }
   }
 
-  getListHistoryPagosByPlayer(clubId: number, temporada: string, playerId: number): Observable<Response> {
+  getListHistoryPagosByPlayer(
+    clubId: number,
+    temporada: string,
+    playerId: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -1340,11 +1526,13 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlishistorypagosbyplayer/${clubId}/${temporada}/${playerId}`;
+      const url: string =
+        environment.apiUrl +
+        `club/getlishistorypagosbyplayer/${clubId}/${temporada}/${playerId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1359,14 +1547,18 @@ export class ClubService {
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
 
     const url = environment.apiUrl + `club/devolverpagoclubbyplayer`;
     return this.http.post<Response>(url, dto, { headers });
-  } 
+  }
 
-  deletePagoClubForPlayer(pagoClubId: number, temporada: string, playerId: number): Observable<Response> {
+  deletePagoClubForPlayer(
+    pagoClubId: number,
+    temporada: string,
+    playerId: number
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -1374,11 +1566,13 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/delete-pagoclub/${pagoClubId}/${playerId}/${temporada}`;
+      const url: string =
+        environment.apiUrl +
+        `club/delete-pagoclub/${pagoClubId}/${playerId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1388,7 +1582,11 @@ export class ClubService {
     }
   }
 
-  addPagoClubForPlayer(pagoClubId: number, playerId: number, temporada: string): Observable<Response> {
+  addPagoClubForPlayer(
+    pagoClubId: number,
+    playerId: number,
+    temporada: string
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -1396,11 +1594,13 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/addpagoclubplayerpersonalizado/${pagoClubId}/${playerId}/${temporada}`;
+      const url: string =
+        environment.apiUrl +
+        `club/addpagoclubplayerpersonalizado/${pagoClubId}/${playerId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1410,17 +1610,20 @@ export class ClubService {
     }
   }
 
-  createUpdatePagoClubForPlayer(dto: any, playerId: number): Observable<Response> {
+  createUpdatePagoClubForPlayer(
+    dto: any,
+    playerId: number
+  ): Observable<Response> {
     const token = localStorage.getItem('token');
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
+      Authorization: `Bearer ${token}`,
     });
 
     const url = environment.apiUrl + `club/editpagoclubforplayer/${playerId}`;
     return this.http.post<Response>(url, dto, { headers });
-  } 
+  }
 
   deletePagoClub(pagoClubId: number): Observable<Response> {
     // Obtén el token almacenado en localStorage
@@ -1430,11 +1633,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/deletepagoclub/${pagoClubId}`;
+      const url: string =
+        environment.apiUrl + `club/deletepagoclub/${pagoClubId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1452,11 +1656,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlisthistoripagos/${clubId}/${temporada}`;
+      const url: string =
+        environment.apiUrl + `club/getlisthistoripagos/${clubId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1474,11 +1679,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistclubes/${userId}/${temporada}`;
+      const url: string =
+        environment.apiUrl + `club/getlistclubes/${userId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1488,7 +1694,11 @@ export class ClubService {
     }
   }
 
-  setNewClubInFederacion(userId: number, mail: string, temporada: string): Observable<Response> {
+  setNewClubInFederacion(
+    userId: number,
+    mail: string,
+    temporada: string
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
 
@@ -1496,11 +1706,13 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/setnewclubInfederacion/${userId}/${mail}/${temporada}`;
+      const url: string =
+        environment.apiUrl +
+        `club/setnewclubInfederacion/${userId}/${mail}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1510,18 +1722,23 @@ export class ClubService {
     }
   }
 
-  getListPlayersForFede(userId: number, temporada: string): Observable<Response> {
+  getListPlayersForFede(
+    userId: number,
+    temporada: string
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistallplayersforfede/${userId}/${temporada}`;
+      const url: string =
+        environment.apiUrl +
+        `club/getlistallplayersforfede/${userId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1539,7 +1756,7 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
@@ -1553,18 +1770,23 @@ export class ClubService {
     }
   }
 
-  getListPlayersForFedeCombo(userId: number, temporada: string): Observable<Response> {
+  getListPlayersForFedeCombo(
+    userId: number,
+    temporada: string
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistallplayersforfedecombo/${userId}/${temporada}`;
+      const url: string =
+        environment.apiUrl +
+        `club/getlistallplayersforfedecombo/${userId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1581,11 +1803,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/deleteclubfede/${clubId}/${temporada}`;
+      const url: string =
+        environment.apiUrl + `club/deleteclubfede/${clubId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1595,18 +1818,23 @@ export class ClubService {
     }
   }
 
-  getListInfoClubesFede(userId: number, temporada: string): Observable<Response> {
+  getListInfoClubesFede(
+    userId: number,
+    temporada: string
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/getlistinfoclubesfede/${userId}/${temporada}`;
+      const url: string =
+        environment.apiUrl +
+        `club/getlistinfoclubesfede/${userId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1623,7 +1851,7 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
@@ -1644,11 +1872,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/setequiposclub/${suscripcionId}/${equipos}`;
+      const url: string =
+        environment.apiUrl + `club/setequiposclub/${suscripcionId}/${equipos}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1665,11 +1894,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/api/rffm-standings/${teamId}/${round}`;
+      const url: string =
+        environment.apiUrl + `club/api/rffm-standings/${teamId}/${round}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1686,11 +1916,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/api/rffm-results/${teamId}/${round}`;
+      const url: string =
+        environment.apiUrl + `club/api/rffm-results/${teamId}/${round}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1700,18 +1931,24 @@ export class ClubService {
     }
   }
 
-  getActa(competicion: string, idGroup: string, codActa: string): Observable<Response> {
+  getActa(
+    competicion: string,
+    idGroup: string,
+    codActa: string
+  ): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
     // Verifica si el token está presente
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/api/rffm-acta/${competicion}/${idGroup}/${codActa}`;
+      const url: string =
+        environment.apiUrl +
+        `club/api/rffm-acta/${competicion}/${idGroup}/${codActa}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1728,11 +1965,12 @@ export class ClubService {
     if (token) {
       // Configura las cabeceras con el token para la solicitud HTTP
       const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
+        Authorization: `Bearer ${token}`,
       });
 
       // Construye la URL para la solicitud
-      const url: string = environment.apiUrl + `club/clasificacion/${teamId}/${codJornada}`;
+      const url: string =
+        environment.apiUrl + `club/clasificacion/${teamId}/${codJornada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
@@ -1741,5 +1979,4 @@ export class ClubService {
       return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
-
 }

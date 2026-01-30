@@ -13,13 +13,12 @@ declare var $: any; // Declaración para usar jQuery
 @Component({
   selector: 'app-notificaciones',
   templateUrl: './notificaciones.component.html',
-  styleUrls: ['./notificaciones.component.scss']
+  styleUrls: ['./notificaciones.component.scss'],
 })
 export class NotificacionesComponent implements OnInit {
-
   datosCargados = false;
   usuarioActual!: User | null;
-  clubId!: number;  // Ajusta el valor según el clubId del equipo actual
+  clubId!: number; // Ajusta el valor según el clubId del equipo actual
   userId!: number;
   correoSelected = {
     destinatarios: '',
@@ -27,13 +26,16 @@ export class NotificacionesComponent implements OnInit {
     body: '',
     remitente: '',
     destinatario: '',
-    fechaCreate: ''
+    fechaCreate: '',
   };
+
   correosEnviadosSinFiltro: any = [];
   correosRecibidosSinFiltro: any = [];
   correosSinFiltro: any = [];
-
+  selectCorreo: boolean = true;
   correos = [...this.correosSinFiltro]; // Inicialmente, muestra todos los correos
+  loadingCorreos: boolean = true;
+  receivedCount: number = 0;
 
   showModal = false;
   showBtn = true;
@@ -52,6 +54,8 @@ export class NotificacionesComponent implements OnInit {
     fechaCreate: ''
   };*/
   isSending: boolean = false;
+  currentFolder: 'inbox' | 'sent' = 'inbox';
+  currentFilter: 'all' | 'read' | 'unread' = 'all';
 
   temporadaStoredValue = '2025';
 
@@ -62,26 +66,32 @@ export class NotificacionesComponent implements OnInit {
     private teamService: TeamService,
     private http: HttpClient,
     private clubService: ClubService,
-    private location: Location) { }
+    private location: Location,
+  ) {}
 
   ngOnInit(): void {
-    this.loginService.usuarioActual.subscribe(user => {
+    this.loginService.usuarioActual.subscribe((user) => {
       this.usuarioActual = user;
       this.userId = this.usuarioActual!.userId;
       // Suscribirse a los cambios en los parámetros de la URL
-      this.route.params.subscribe(params => {
+      this.route.params.subscribe((params) => {
         // Obtener el valor de clubId de los parámetros
-        this.clubId = +params['clubId'];  // El + convierte el valor a número
+        this.clubId = +params['clubId']; // El + convierte el valor a número
         console.log('clubId:', this.clubId);
       });
     });
 
-    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+    if (
+      localStorage.getItem('temporada') != null &&
+      localStorage.getItem('temporada') != undefined
+    ) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
 
     this.clubService.getListCorreos(this.userId).subscribe(
       (response: Response) => {
+        this.loadingCorreos = true;
+        this.selectCorreo = false;
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.correosEnviadosSinFiltro = response.data.enviados;
@@ -97,19 +107,26 @@ export class NotificacionesComponent implements OnInit {
               this.correosRecibidosSinFiltro[index].destinatarios = this.destinatariosString(this.correosRecibidosSinFiltro[index].destinatarios);
             }
           }*/
-
+          console.log(response.data);
+          this.receivedCount = this.correosRecibidosSinFiltro.filter(
+            (correo: any) => correo.leido === 0,
+          ).length;
+          console.log(this.receivedCount);
           this.correos = response.data.recibidos;
+          this.loadingCorreos = false;
         } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          console.error(
+            'La respuesta del servicio no tiene la estructura esperada',
+            response,
+          );
         }
 
         this.initSummernote();
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
-      }
+      },
     );
-
 
     if (this.clubId == 0) {
       this.clubService.getClubByUserId(this.userId).subscribe(
@@ -117,48 +134,71 @@ export class NotificacionesComponent implements OnInit {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== 0) {
             this.clubId = response.data;
-            this.teamService.getTeamsByClubForCombo2(this.clubId, this.temporadaStoredValue, this.userId).subscribe(
-              (response: Response) => {
-                // Verifica que la propiedad 'data' exista en la respuesta
-                if (response.data !== null) {
-                  this.listTeamsForCombo = response.data;
-                } else {
-                  console.error('La respuesta del servicio no tiene la estructura esperada', response);
-                }
-              },
-              (error) => {
-                console.error('Error al cargar el listado de equipos', error);
-              }
-            );
+            this.teamService
+              .getTeamsByClubForCombo2(
+                this.clubId,
+                this.temporadaStoredValue,
+                this.userId,
+              )
+              .subscribe(
+                (response: Response) => {
+                  // Verifica que la propiedad 'data' exista en la respuesta
+                  if (response.data !== null) {
+                    this.listTeamsForCombo = response.data;
+                  } else {
+                    console.error(
+                      'La respuesta del servicio no tiene la estructura esperada',
+                      response,
+                    );
+                  }
+                },
+                (error) => {
+                  console.error('Error al cargar el listado de equipos', error);
+                },
+              );
           } else {
-            console.error('La respuesta del servicio no tiene la estructura esperada', response);
+            console.error(
+              'La respuesta del servicio no tiene la estructura esperada',
+              response,
+            );
           }
         },
         (error) => {
           console.error('Error al cargar el listado de equipos', error);
-        }
+        },
       );
     } else {
-      this.teamService.getTeamsByClubForCombo2(this.clubId, this.temporadaStoredValue, this.userId).subscribe(
-        (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
-          if (response.data !== null) {
-            this.listTeamsForCombo = response.data;
-          } else {
-            console.error('La respuesta del servicio no tiene la estructura esperada', response);
-          }
-        },
-        (error) => {
-          console.error('Error al cargar el listado de equipos', error);
-        }
-      );
+      this.teamService
+        .getTeamsByClubForCombo2(
+          this.clubId,
+          this.temporadaStoredValue,
+          this.userId,
+        )
+        .subscribe(
+          (response: Response) => {
+            // Verifica que la propiedad 'data' exista en la respuesta
+            if (response.data !== null) {
+              this.listTeamsForCombo = response.data;
+            } else {
+              console.error(
+                'La respuesta del servicio no tiene la estructura esperada',
+                response,
+              );
+            }
+          },
+          (error) => {
+            console.error('Error al cargar el listado de equipos', error);
+          },
+        );
     }
   }
 
   goBack(): void {
     this.location.back();
   }
-
+  recalcularNoLeidos() {
+    this.receivedCount = this.correos.filter((c) => c.leido === 0).length;
+  }
   /**
    * Inicializa el editor Summernote
    */
@@ -166,12 +206,14 @@ export class NotificacionesComponent implements OnInit {
     $('#summernote').summernote({
       placeholder: 'Escribe tu mensaje aquí...',
       tabsize: 2,
+      dialogsInBody: true,
+      disableDragAndDrop: true,
       height: 400,
       callbacks: {
         onChange: (contents: string) => {
           this.correoSelected.body = contents; // Actualiza el contenido en tiempo real
-        }
-      }
+        },
+      },
     });
   }
 
@@ -189,14 +231,20 @@ export class NotificacionesComponent implements OnInit {
    */
   private initSummernoteNew(): void {
     $('#summernoteNew').summernote({
-      placeholder: 'Escribe tu mensaje aquí...',
-      tabsize: 2,
+      lang: 'es-ES',
       height: 400,
+      dialogsInBody: true,
+      disableDragAndDrop: true,
       callbacks: {
+        onDialogShown: () => {
+          $('.note-modal').css('z-index', 2000);
+          $('.note-modal-backdrop').css('z-index', 1990);
+          $('.note-modal-title').text('Insertar imagen');
+        },
         onChange: (contents: string) => {
-          this.correoSelected.body = contents; // Actualiza el contenido en tiempo real
-        }
-      }
+          this.correoNew.body = contents;
+        },
+      },
     });
   }
 
@@ -204,7 +252,7 @@ export class NotificacionesComponent implements OnInit {
    * Destruye el editor Summernote
    */
   private destroySummernoteNew(): void {
-    if ($('#summernoteNew').data('summernoteNew')) {
+    if ($('#summernoteNew').data('summernote')) {
       $('#summernoteNew').summernote('destroy');
     }
   }
@@ -232,12 +280,14 @@ export class NotificacionesComponent implements OnInit {
   mostrarEnviados() {
     this.showBtn = false;
     console.log('Mostrando enviados');
+    this.currentFolder = 'sent';
     this.correos = this.correosEnviadosSinFiltro;
   }
 
   mostrarRecibidos() {
     this.showBtn = true;
     console.log('Mostrando recibidos');
+    this.currentFolder = 'inbox';
     this.correos = this.correosRecibidosSinFiltro;
   }
 
@@ -250,46 +300,30 @@ export class NotificacionesComponent implements OnInit {
    * @param correo - Objeto del correo seleccionado
    */
   openCorreo(correo: any, index: number): void {
-    //alert('Correo abierto con ID:' + correo.enviadosId);
-    // Aquí puedes agregar la lógica para abrir o mostrar el correo.
-    this.correoSelected = correo; // Asigna el correo seleccionado  
-    const base = this.correoSelected.body;
+    // Decodificar el body inmediatamente
+    let decodedBody = correo.body;
 
-    // Espera a que el modal y el Summernote estén completamente cargados
-    setTimeout(() => {
-      if ($('#summernote').data('summernote')) {
-        $('#summernote').summernote('reset'); // Resetea Summernote si ya estaba inicializado
-      }
-      console.log(base); // Verifica que el contenido esté correctamente decodificado
+    if (this.isBase64(correo.body)) {
+      decodedBody = this.decodeBase64(correo.body);
+    }
 
-      // Verifica si el contenido es base64 antes de decodificar
-      let decodedBody: string;
-      if (this.isBase64(base || '')) {
-        decodedBody = this.decodeBase64(base || ''); // Decodifica el contenido si es base64
-        console.log("Decodificado:", decodedBody);
-      } else {
-        decodedBody = base; // Si no es base64, usa directamente el contenido
-        console.log("Ya está decodificado:", decodedBody);
-      }
-      $('#summernote').summernote('code', decodedBody); // Carga el contenido decodificado 
+    //Asignar correo seleccionado YA decodificado
+    this.correoSelected = {
+      ...correo,
+      body: decodedBody,
+    };
 
-      this.showModal = true;
-    }, 1000); // Ajusta el tiempo si es necesario para dar suficiente tiempo a la inicialización
+    this.selectCorreo = true;
 
-    if (correo.leido == 0) {
-      this.clubService.openCorreoRecibido(correo.correoRecibidoId).subscribe(
-        (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
-          if (response.data !== null) {
-            this.correos[index].leido = 1;
-          } else {
-            console.error('La respuesta del servicio no tiene la estructura esperada', response);
-          }
+    // Marcar como leído (NO bloquea la UI)
+    if (correo.leido === 0) {
+      this.clubService.openCorreoRecibido(correo.correoRecibidoId).subscribe({
+        next: () => {
+          this.correos[index].leido = 1;
+          this.recalcularNoLeidos();
         },
-        (error) => {
-          console.error('Error al cargar el listado de equipos', error);
-        }
-      );
+        error: (err) => console.error(err),
+      });
     }
   }
 
@@ -308,17 +342,23 @@ export class NotificacionesComponent implements OnInit {
   }
 
   mostrarTodos() {
+    this.currentFilter = 'all';
+    this.currentFolder = 'inbox';
     this.correos = [...this.correosRecibidosSinFiltro];
   }
 
   mostrarLeidos() {
+    this.currentFilter = 'read';
+    this.currentFolder = 'inbox';
     this.correos = [...this.correosRecibidosSinFiltro];
-    this.correos = this.correos.filter(correo => correo.leido === 1);
+    this.correos = this.correos.filter((correo) => correo.leido === 1);
   }
 
   mostrarNoLeidos() {
+    this.currentFilter = 'unread';
+    this.currentFolder = 'inbox';
     this.correos = [...this.correosRecibidosSinFiltro];
-    this.correos = this.correos.filter(correo => correo.leido === 0);
+    this.correos = this.correos.filter((correo) => correo.leido === 0);
   }
 
   cerrarModal() {
@@ -330,8 +370,11 @@ export class NotificacionesComponent implements OnInit {
       body: '',
       remitente: '',
       destinatario: '',
-      fechaCreate: ''
+      fechaCreate: '',
     }; // Limpia la selección si es necesario
+  }
+  cerrarLectura() {
+    this.selectCorreo = false;
   }
 
   // Método para codificar en Base64 antes de guardar
@@ -362,31 +405,44 @@ export class NotificacionesComponent implements OnInit {
             this.correosEnviadosSinFiltro = [];
           }
           this.correosEnviadosSinFiltro.unshift(this.correoNew);
+          if (this.currentFolder === 'sent') {
+            this.correos = [...this.correosEnviadosSinFiltro];
+          }
         } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          console.error(
+            'La respuesta del servicio no tiene la estructura esperada',
+            response,
+          );
         }
         this.cerrarEnviando();
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
-      }
+      },
     );
   }
 
   cerrarEnviando() {
     this.cerrarModalNew();
     this.isSending = false; // Oculta el spinner después de enviar
-    this.resetSummerNote();
   }
 
   newCorreo() {
-    this.destroySummernoteNew();
-    this.initSummernoteNew();
     this.showModalNew = true;
+
+    setTimeout(() => {
+      this.initSummernoteNew();
+    }, 0);
   }
 
   cerrarModalNew() {
     this.showModalNew = false;
+
+    setTimeout(() => {
+      this.destroySummernoteNew();
+      $('.note-modal, .note-modal-backdrop').remove();
+    }, 0);
+
     this.correoNew = {
       destinatarios: '0',
       asunto: '',
@@ -398,9 +454,8 @@ export class NotificacionesComponent implements OnInit {
       fechaCreate: '',
       remitente: '',
       destinatario: '',
-      temporada: this.temporadaStoredValue
-    }; // Limpia la selección si es necesario
-    this.resetSummerNote();
+      temporada: this.temporadaStoredValue,
+    };
   }
 
   isBase64(str: string): boolean {
@@ -409,20 +464,11 @@ export class NotificacionesComponent implements OnInit {
     }
 
     // Base64 típico: letras, números, '+', '/', '=' y longitud múltiplo de 4
-    const base64Regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+    const base64Regex =
+      /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
 
     // Validamos el patrón y verificamos que no contenga etiquetas HTML
     return base64Regex.test(str) && !str.includes('<');
-  }
-
-  resetSummerNote() {
-    // Limpiar el contenido de Summernote
-    setTimeout(() => {
-      if ($('#summernoteNew').data('summernote')) {
-        $('#summernoteNew').summernote('reset'); // Opción para resetear completamente
-        // $('#summernoteNew').summernote('code', ''); // Alternativa para limpiar solo el contenido
-      }
-    }, 0); // Asegúrate de dar tiempo al DOM para que realice el reset si es necesario
   }
 
   enviarCorreo() {
@@ -433,7 +479,6 @@ export class NotificacionesComponent implements OnInit {
       this.cerrarModalNew();
     }, 3000); // Simulación de envío
   }
-
 
   deleteCorreo(correo: any, index: number): void {
     if (confirm('¿Estás seguro de que deseas eliminar este correo?')) {
@@ -452,14 +497,15 @@ export class NotificacionesComponent implements OnInit {
         if (response.data !== 0) {
           this.correos.splice(index, 1);
         } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          console.error(
+            'La respuesta del servicio no tiene la estructura esperada',
+            response,
+          );
         }
-        this.resetSummerNote();
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
-      }
+      },
     );
   }
-
 }

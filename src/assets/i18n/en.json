@@ -1,6 +1,6 @@
 {
   "APP": {
-    "TITLE": "Club management",
+    "TITLE": "Club Management",
     "HELLO": "Hello, {{name}}",
     "EQUIPOS": "Teams",
     "PLAYERS_COUNT": "You have {{count}} player",
@@ -8,18 +8,47 @@
     "BUTTONS": {
       "SAVE": "Save",
       "CANCEL": "Cancel",
-      "LOGIN": "Login",
-      "CLOSE": "Close"
+      "LOGIN": "Log in",
+      "CLOSE": "Close",
+      "UPFILE": "Upload file",
+      "DOWNLOADTEMPLATE": "Download template",
+      "ACCEPT": "Accept"
     }
   },
+  "COMMON": {
+    "BACK": "Back",
+    "DATE": "Date",
+    "CANCEL": "Cancel",
+    "UPLOAD": "Upload",
+    "DOWNLOAD": "Download",
+    "SAVE": "Save",
+    "SAVING": "Saving...",
+    "SAVE_CHANGES": "Save changes",
+    "CLOSE": "Close",
+    "ACCEPT": "Accept",
+    "EXPORT_EXCEL": "Export Excel",
+    "LOADING_LIST": "Loading list...",
+    "FEMALE": "Female",
+    "MALE": "Male",
+    "OTHER": "Other",
+    "ID": "Identification",
+    "VIEWPLAYER": "View Player",
+    "CUSTOM": "Custom"
+  },
   "LOGIN": {
-    "EMAIL_PLACEHOLDER": "Email",
+    "EMAIL_PLACEHOLDER": "Email address",
     "EMAIL_REQUIRED": "Email is required",
-    "EMAIL_INVALID": "Please enter a valid email address",
+    "EMAIL_INVALID": "Enter a valid email address",
     "PASSWORD_PLACEHOLDER": "Password",
     "PASSWORD_REQUIRED": "Password is required",
-    "BLOCKED_MESSAGE": "User is blocked. To unblock, validate the link sent to your email.",
-    "BLOCKED_LINK": "Click here to receive a new email."
+    "BLOCKED_MESSAGE": "User blocked. To unblock it, you must verify it using the link sent to your email address.",
+    "BLOCKED_LINK": "Click here to receive a new email.",
+    "ERROR": {
+      "INVALID_CREDENTIALS": "The email or password is incorrect. Please review them and try again.",
+      "NOT_VERIFIED": "Your account has not been verified yet. Please check your email.",
+      "RESEND_VERIFICATION": "Resend verification email",
+      "GENERIC": "We couldn’t sign you in. Please try again later."
+    }
   },
   "AUTH": {
     "FORGOT_PASSWORD": "I forgot my password",
@@ -37,14 +66,64 @@
     "LOGO": "SphairaTech Logo"
   },
   "NAV": {
-    "BACK": "Back"
+    "BACK": "Back",
+    "INICIO": "Home",
+    "DOCUMENTS": "Documents",
+    "CUADRO": "Sports Dashboard",
+    "TEAMS": "Teams",
+    "PAYS": "Fees",
+    "NEWPAYS": "Payments",
+    "CLOTHES": "Clothing",
+    "SPONSORS": "Sponsors",
+    "NOTIFICATIONS": "Notifications",
+    "CREATETEAM": "Create a Team",
+    "CREATE": "Create"
+  },
+  "TITLES": {
+    "USERS": "Users",
+    "ASSISTANCE": "Attendance",
+    "LOAD": "Loading data...",
+    "LOADLIST": "Loading list...",
+    "DOWNLOAD": "Download",
+    "EXCELLOAD": "Upload players from Excel",
+    "EXCELUP": "Upload Excel",
+    "INVITED": "Invite parents",
+    "COPY": "Copy link",
+    "SEASON": "Season",
+    "CREATETEAM": "Create team",
+    "TEAMTRAINERS": "Coaching staff",
+    "ACCESSREST": "Restricted Access",
+    "GETSUS": "Get Subscription",
+    "CATEGORYTEAM": "Team Category",
+    "SELECTED": "Select",
+    "UPFILEEXCEL": "Upload your Excel file",
+    "ATENTION": "Attention",
+    "STANDINGS": "Standings",
+    "ROUND": "Matchday",
+    "RESULTS": "Results",
+    "TRAINER": "Coach",
+    "TECNICS": "Technical staff",
+    "DELEGADO": "Team Manager",
+    "REFEREE": "Referee",
+    "FIELD": "Field"
   },
   "HEADER": {
     "WELCOME": "Welcome!",
     "PROFILE": "Profile",
-    "CHANGE_LANG": "Change language",
+    "CHANGE_LANG": "Language",
     "SUBSCRIPTION": "Subscription",
-    "LOGOUT": "Log out"
+    "LOGOUT": "Logout",
+    "HELP": {
+      "TITLE": "Help",
+      "EMAIL": "Email",
+      "WHATSAPP": "WhatsApp",
+      "CALL": "Call"
+    },
+    "DOWNLOAD": {
+      "TITLE": "Download App",
+      "PLAYSTORE": "Play Store",
+      "APPSTORE": "App Store"
+    }
   },
   "PROFILE": {
     "EDIT_TITLE": "Edit user profile",
@@ -79,15 +158,23 @@
     "TABLE": {
       "ID": "ID",
       "IMAGE": "Image",
-      "NAME": "Name",
-      "SURNAMES": "Surnames",
+      "NAME": "First name",
+      "SURNAMES": "Last name",
       "EMAIL": "Email",
       "PHONE": "Phone",
       "STATUS": "Status",
       "FEE": "Fee",
       "PAID": "Paid",
       "REMAINING": "Remaining",
-      "ACTIONS": "Actions"
+      "ACTIONS": "Actions",
+      "COMUNICATIONS": "Communications",
+      "VALIDATE": "Validated",
+      "FECDATE": "Birth date",
+      "MOBILE": "Mobile",
+      "PROFILE": "Profile",
+      "CREATE": "Created",
+      "DATE": "Date",
+      "TOTALS": "Totals"
     },
     "STATUS": {
       "NONE": "No payment",
@@ -148,5 +235,519 @@
       "REFUND": "Refund",
       "REFUND_TITLE": "Refund payment"
     }
+  },
+  "REGISTER": {
+    "TITLE": "User registration",
+    "SELECT_USER_TYPE": "Select the user type",
+    "REGISTER": "Sign up",
+    "USER_TYPE": {
+      "CLUB": {
+        "TITLE": "Club",
+        "SUBTITLE": "Register as a sports club",
+        "MODAL": {
+          "WARNING_PREFIX": "This registration is",
+          "WARNING_HIGHLIGHT_1": "EXCLUSIVELY FOR SPORTS ORGANIZATIONS",
+          "WARNING_MIDDLE": "If you are a",
+          "WARNING_HIGHLIGHT_2": "PARENT/GUARDIAN, THIS IS NOT YOUR REGISTRATION",
+          "WARNING_HIGHLIGHT_3": "EXCLUSIVELY FOR COACH",
+          "WARNING_SUFFIX": "Talk to your club to receive the registration link"
+        }
+      },
+      "COACH": {
+        "TITLE": "Coach",
+        "SUBTITLE": "Register as coach"
+      }
+    },
+    "TABS": {
+      "PARENT": "Parent details",
+      "CHILDREN": "Children details"
+    },
+    "PARENT": {
+      "QUESTION": "Are you a parent, guardian or adult player?",
+      "RELATION": "Register as:",
+      "FATHER": "Father",
+      "MOTHER": "Mother",
+      "TUTOR": "Guardian",
+      "ADULT": "Adult player"
+    },
+    "CHILDREN": {
+      "TITLE": "Children information",
+      "COUNT": "How many children play in this club?",
+      "DATA": "Child {{num}} details",
+      "CHECK_PLAYER": "Check if this player exists"
+    },
+    "COMMON": {
+      "NEXT": "Next",
+      "BACK": "Back",
+      "EMAIL": "Email",
+      "FINISH": "Finish",
+      "BIRTHDATE": "Birthdate",
+      "EMAIL_REPEAT": "Repeat email",
+      "PASSWORD": "Password",
+      "NAME": "Name",
+      "SURNAME": "Last name",
+      "GENDER": "Select your gender",
+      "PHONE": "Phone",
+      "REPEAT_PASSWORD": "Repeat password",
+      "TERMS_PREFIX": "I accept the",
+      "TERMS_LINK": "privacy policy",
+      "COMMS_PREFIX": "I accept",
+      "COMMS_LINK": "commercial communications",
+      "HELP": "If you need help, contact",
+      "WHATSAPP": "or WhatsApp"
+    },
+    "AUTH": {
+      "ALREADY_HAVE_ACCOUNT": "Already have an account?",
+      "LOGIN_HERE": "Login here"
+    },
+    "MESSAGE": {
+      "ATTENTION": "Attention",
+      "PLAYER_MS": "If you are a PLAYER, wait for your coach/club to invite you."
+    },
+    "ERROR": {
+      "PASSWORD_MISMATCH": "Passwords do not match.",
+      "INCOMPLETE_FORM": "Please complete all required fields and accept the privacy policy.",
+      "EMAIL_MATCH": "Emails do not match"
+    },
+    "BUTTONS_MODALS": {
+      "ACKNOWLEDGE": "Got it",
+      "I_AM_COACH": "I am a coach"
+    }
+  },
+  "ERRORS": {
+    "REQUIRED_NAME": "Name is required",
+    "REQUIRED_SURNAME": "Surname is required",
+    "REQUIRED_BIRTHDATE": "Birth date is required",
+    "UNDERAGE": "You must be over 18 years old to register",
+    "REQUIRED_GENDER": "Gender is required",
+    "REQUIRED_EMAIL": "Email is required",
+    "INVALID_EMAIL": "Invalid email format",
+    "REQUIRED_CONFIRM_EMAIL": "Please confirm your email",
+    "EMAIL_MISMATCH": "Emails do not match",
+    "REQUIRED_PHONE": "Phone number is required",
+    "REQUIRED_PASSWORD": "Password is required",
+    "PASSWORD_MISMATCH": "Passwords do not match",
+    "TERMS_REQUIRED": "You must accept the terms and conditions"
+  },
+  "CUADROMANDO": {
+    "SUBMENU": {
+      "BACK": "Dashboard"
+    },
+    "OPTIONS": {
+      "FEES": "Fees",
+      "FEES_DESC": "Payment management",
+      "SCORES": "Team standings",
+      "SCORES_DESC": "League table",
+      "TRAINING": "Training",
+      "TRAINING_DESC": "Sessions",
+      "PLAYERS": "Players",
+      "PLAYERS_DESC": "Information",
+      "TEAMS": "Teams",
+      "TEAMS_DESC": "Statistics",
+      "PLAYER": "Player",
+      "PLAYER_DESC": "Metrics",
+      "COACH": "Coaches",
+      "COACH_DESC": "Information"
+    },
+    "RESULTS": {
+      "TITLE": "Last matchday results",
+      "FINISHED": "Finished",
+      "LOCAL": "Home",
+      "VISITOR": "Away",
+      "VICTORIA": "VICTORY",
+      "EMPATE": "DRAW",
+      "DERROTA": "LOSS"
+    },
+    "TRAINING_TODAY": {
+      "TITLE": "Training today"
+    },
+    "NEXT_MATCHES": {
+      "TITLE": "Upcoming matches",
+      "LOCAL": "Home",
+      "VISITOR": "Away",
+      "UNDEFINED": "To be defined"
+    },
+    "COMMON": {
+      "VS": "VS"
+    }
+  },
+  "FOOTER": {
+    "RIGHTS": "All rights reserved."
+  },
+  "ESTADIS_EQUIPO": {
+    "BACK": "Dashboard",
+    "TITLE": "Summary Table",
+    "TABLE": {
+      "TEAM": "Team",
+      "PJ": "MP",
+      "PTS": "PTS",
+      "W": "W",
+      "D": "D",
+      "L": "L",
+      "GF": "GF",
+      "GA": "GA",
+      "DG": "GD",
+      "LAST": "Last"
+    },
+    "RESULT": {
+      "WIN": "W",
+      "DRAW": "D",
+      "LOSS": "L"
+    },
+    "MODAL": {
+      "TITLE": "Match List",
+      "SEARCH": "Search rival or result…",
+      "LOCAL_VISITOR": "Local/Visitor",
+      "TYPEMATCH": "Type Match",
+      "DATE": "Date",
+      "RIVAL": "Rival",
+      "RESULT": "Result",
+      "GF": "GF",
+      "GA": "GA",
+      "SHOTS_FOR": "DF",
+      "SHOTS_AGAINST": "DC",
+      "FOULS_FOR": "FF",
+      "FOULS_AGAINST": "FC",
+      "CORNERS": "Corners",
+      "YELLOW": "TA",
+      "RED": "TR"
+    }
+  },
+  "DOCS_EQUIPO": {
+    "COMMON": {
+      "SAVE": "Save",
+      "CANCEL": "Cancel",
+      "EDIT": "Edit",
+      "DELETE": "Delete",
+      "COPY": "Copy",
+      "ACTIONS": "Action",
+      "BACK": "Back"
+    },
+    "DOCS": {
+      "UPLOAD_NEW": "Upload new document",
+      "UPLOAD_DOC": "Upload document",
+      "REQUIRE_DOC_TITLE": "Require document from the player",
+      "REQUIRE_DOC": "Require document",
+      "CUSTOM_INFO_TITLE": "Request information",
+      "CUSTOM": "Custom",
+      "COMPLETED": "Completed",
+      "NAME": "Name",
+      "DESCRIPTION": "Description",
+      "TYPE": "Type",
+      "DATE": "Date",
+      "VISIBILITY": "Visibility",
+      "REQUIRE_UPLOAD": "Allow upload",
+      "OPEN": "Open document"
+    },
+    "MODAL": {
+      "UPLOAD_TITLE": "Upload Document (PDF or Word)",
+      "REQUIRE_TITLE": "Required document",
+      "CUSTOM_TITLE": "Custom Requirement",
+      "NAME": "Document name",
+      "DESCRIPTION": "Description",
+      "TYPE": "Type",
+      "FILE": "Select file (.pdf or .doc/.docx)",
+      "VISIBLE": "Visible to players",
+      "REQUIRE_UPLOAD_HELP": "Enable this option to allow parents/players to upload the completed document.",
+      "CUSTOM_CONTENT": "Message content",
+      "CUSTOM_HELP": "Here you can write anything you want, including copying and pasting text from Word.",
+      "CUSTOM_CHECK": "This will be shown to the player/parent to accept what you write below.",
+      "CUSTOM_TITLE_LABEL": "Authorization text",
+      "CUSTOM_TITLE_PLACEHOLDER": "e.g. I authorize the club to...",
+      "UPLOADING": "Uploading document...",
+      "UPLOAD_PROGRESS": "Upload progress",
+      "UPLOAD_SUCCESS": "Document uploaded successfully",
+      "UPLOAD_ERROR": "Error uploading document",
+      "UPLOAD_WAIT": "Please wait while the upload completes"
+    }
+  },
+  "CUOTAS": {
+    "NAV": {
+      "BACK": "Back",
+      "PAYMENTS": "Payments",
+      "STRIPE": "Stripe",
+      "HISTORY": "History",
+      "SETTINGS": "Settings"
+    },
+    "LOADING": "Loading data...",
+    "FILTER": {
+      "SEARCH": "Filter by name or team",
+      "RESET": "Reset data",
+      "ONLY_REQUIRED": "Showing only mandatory payments",
+      "INFO": "Non-mandatory payments can be seen in the player's history."
+    },
+    "TABLE": {
+      "NAME": "Name",
+      "TEAM": "Team",
+      "STATUS": "Status",
+      "TOTAL": "Total amount",
+      "PAID": "Paid",
+      "REMAINING": "Remaining",
+      "PAYMENTS": "Payments made",
+      "ACTIONS": "Actions"
+    },
+    "ACTIONS": {
+      "EDIT": "Edit player payment",
+      "PAY": "Add a payment",
+      "HISTORY": "View payment history"
+    },
+    "NO_TEAM": "No team",
+    "PAGINATION": {
+      "SHOWING": "Showing",
+      "OF": "of"
+    },
+    "CUOTAS_ASSIGNED": {
+      "TITLE": "Assigned Payments to Player",
+      "AMOUNT": "Amount",
+      "DESCRIPTION": "Description",
+      "DEADLINE": "Due Date",
+      "MANDATORY": "Mandatory",
+      "YES": "Yes",
+      "NO": "No",
+      "CLOSE": "Close",
+      "EMPTY": "This player has no assigned payments"
+    },
+    "BANK_INFO": {
+      "TITLE": "Club bank information",
+      "BIZUM": "Bizum number",
+      "BIZUM_PLACEHOLDER": "E.g. 666 666 666",
+      "CONTACT": "Contact person",
+      "CONTACT_PLACEHOLDER": "E.g. John Smith, coordinator",
+      "ACCOUNT": "Bank account number",
+      "ACCOUNT_PLACEHOLDER": "E.g. ES76 1234 5678 9012 3456 7890",
+      "INSTRUCTIONS": "Payment instructions",
+      "INSTRUCTIONS_PLACEHOLDER": "E.g. Player name + ID + category",
+      "SAVE": "Save",
+      "CLOSE": "Close"
+    },
+    "PAYMENTS_MODAL": {
+      "TITLE": "Payments management",
+      "ADD": "Add payment",
+      "SEARCH": "Search by title",
+      "SEARCH_PLACEHOLDER": "E.g. September payment",
+      "FILTER": "Filter by mandatory",
+      "ALL": "Show all",
+      "MANDATORY_ONLY": "Mandatory only",
+      "OPTIONAL_ONLY": "Optional only",
+      "EMPTY": "No payments match the filters.",
+      "MANDATORY": "Mandatory",
+      "YES": "Yes",
+      "NO": "No",
+      "AMOUNT": "Amount",
+      "DEADLINE": "Deadline",
+      "EDIT": "Edit payment",
+      "DELETE": "Delete payment",
+      "CLOSE": "Close"
+    },
+    "PAYMENT_FORM": {
+      "CREATE_TITLE": "Create new payment",
+      "EDIT_TITLE": "Edit payment",
+      "TITLE": "Title",
+      "TITLE_PLACEHOLDER": "E.g. September payment",
+      "DESCRIPTION": "Description",
+      "DESCRIPTION_PLACEHOLDER": "Briefly describe this payment...",
+      "AMOUNT": "Amount",
+      "DEADLINE": "Deadline",
+      "MANDATORY": "Is it mandatory?",
+      "TEAMS": "Teams",
+      "SELECT_TEAMS": "Select teams",
+      "SELECT_ALL": "Select all",
+      "STRIPE": "Enable Stripe payments",
+      "SAVE": "Save payment",
+      "UPDATE": "Update payment",
+      "CANCEL": "Cancel"
+    }
+  },
+  "NOTIFICATIONS": {
+    "TITLE": "Notification",
+    "ALL": "All",
+    "READ": "Read",
+    "UNREAD": "Unread",
+    "COMPOSE": "Compose",
+    "INBOX": "Inbox",
+    "SENT": "Sent",
+    "OPEN_MESSAGE": "Open to view message…",
+    "SENT_AT": "Sent at",
+    "FROM": "From",
+    "TO": "To",
+    "SUBJECT": "Subject",
+    "MESSAGE": "Message",
+    "MESSAGES": "Mensajes",
+    "CLOSE": "Close",
+    "SELECT_MESSAGE": "You have not selected any message.",
+    "DELETE": "Delete",
+    "SEND": "Send",
+    "CANCEL": "Cancel"
+  },
+  "PAYMENTS": {
+    "TITLE": "Charges",
+    "TOTAL": "Charges",
+    "FILTER_CLUB": "Filter by club name",
+    "NAME": "Name",
+    "DESCRIPTION": "Payment description",
+    "TITLE_COL": "Title",
+    "AMOUNT": "Amount",
+    "METHOD": "Method",
+    "TYPE": "Type"
+  },
+  "CLOTHES": {
+    "TABLE": {
+      "ID": "ID",
+      "NAME": "Name",
+      "TEAM": "Team",
+      "SHIRT_NAME": "Shirt name",
+      "NUMBER": "Number",
+      "MATCH_SHIRT": "Match shirt",
+      "MATCH_PANTS": "Match pants",
+      "MATCH_SOCKS": "Match socks",
+      "MATCH_SHIRT_2": "Second match shirt",
+      "MATCH_PANTS_2": "Second match pants",
+      "MATCH_SOCKS_2": "Second match socks",
+      "TRAINING_SHIRT": "Training shirt",
+      "TRAINING_PANTS": "Training pants",
+      "TRAINING_SOCKS": "Training socks",
+      "TRAINING_SWEATSHIRT": "Training sweatshirt",
+      "TRACKSUIT_JACKET": "Tracksuit jacket",
+      "TRACKSUIT_PANTS": "Tracksuit pants",
+      "POLO": "Casual polo",
+      "CASUAL_PANTS": "Casual pants",
+      "COAT": "Team coat",
+      "RAINCOAT": "Raincoat",
+      "BACKPACK": "Backpack",
+      "STATUS": "Status"
+    }
+  },
+  "COACH": {
+    "MY_TEAMS": {
+      "TITLE": "My teams",
+      "SUBTITLE": "Manage and access the teams you coach",
+      "TRAINING_SCHEDULE": "Training schedule",
+      "PLAYERS_COUNT": "Number of players",
+      "PLAYERS": "players"
+    }
+  },
+  "SUBSCRIPTION": {
+    "TITLE": "Subscription Details",
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "CODE": "Subscription Code",
+    "YEARLY": "Yearly",
+    "MONTHLY": "Monthly",
+    "START": "Start Date",
+    "RENEW": "Next Renewal",
+    "END": "End of Subscription",
+    "PRICE": "Price",
+    "TEAMS": "Number of Teams",
+    "CANCEL": "Cancel Subscription",
+    "REACTIVATE": "Reactivate Subscription",
+    "CHANGE_TITLE": "Change Subscription",
+    "TYPE": "Subscription Type",
+    "NUM_TEAMS": "Number of Teams",
+    "TOTAL": "Total Amount",
+    "CONFIRM": "Confirm Subscription"
+  },
+  "PLAYERS": {
+    "TITLE": "Players list",
+    "SEARCH_LABEL": "Search any field",
+    "SEARCH_PLACEHOLDER": "Search...",
+    "TEAM_LABEL": "Select a team",
+    "ALL_TEAMS": "All teams",
+    "DOWNLOAD_EXCEL": "Download Excel",
+    "NO_TEAM": "No team",
+    "TABLE": {
+      "IMAGE": "Image",
+      "NAME": "Name",
+      "TEAM": "Team",
+      "POSITION": "Position",
+      "MATCHES": "Matches",
+      "MINUTES": "Minutes",
+      "MEDIA_MINUTES_MATCH": "Avg min / match",
+      "GOALS": "Goals",
+      "MEDIA_GOALS_MATCH": "Avg goals / match",
+      "ASSISTS": "Assists",
+      "GOALS_ASSISTS": "Goals + assists",
+      "MEDIA_ASSISTS_MATCH": "Avg assists / match",
+      "MEDIA_GOALS_ASSISTS_MATCH": "Avg goals + assists / match",
+      "GOALS_PENALTY": "Penalty goals",
+      "GOALS_FREE_KICK": "Free kick goals",
+      "PENALTIES_MISSED": "Penalties missed",
+      "CARDS": "Cards",
+      "BIRTHDATE": "Birth date",
+      "PHONE": "Phone",
+      "DNI": "ID",
+      "DNI_IMG": "ID image",
+      "DOC": "Document",
+      "FATHER": "Father",
+      "MOTHER": "Mother",
+      "EMAIL": "Email",
+      "IBAN": "IBAN"
+    },
+    "BUTTONS": {
+      "ID": "Identification",
+      "MOVE_PLAYER": "Move Player",
+      "CHANGE_TEMP": "Change Season",
+      "UPLOAD_DOC": "Upload Document"
+    },
+    "DNI_MODAL": {
+      "TITLE": "Upload ID documentation",
+      "SUBTITLE": "Player · Father · Mother · Guardian",
+      "HELP": "Only PNG or JPEG images are allowed",
+      "FRONT": "Front side",
+      "BACK": "Back side",
+      "PLAYER": {
+        "TITLE": "Player ID"
+      },
+      "FATHER": {
+        "TITLE": "Father or guardian ID"
+      },
+      "MOTHER": {
+        "TITLE": "Mother or guardian ID"
+      }
+    },
+    "DOC_MODAL": {
+      "TITLE": "Player documentation",
+      "SUBTITLE": "Download, upload and review documents",
+      "DOWNLOAD": "Download document",
+      "UPLOAD": "Upload document",
+      "VIEW": "View document",
+      "FILL": "Fill document"
+    },
+    "MODAL_UPLOAD_DOC": {
+      "TITLE": "Upload document",
+      "DESCRIPTION": "Here you can upload the requested file.",
+      "FILE_LABEL": "Select file"
+    },
+    "MODAL_MOVE_PLAYER": {
+      "TITLE": "Move Player",
+      "DESCRIPTION": "Choose the team you want to move the player to.",
+      "SELECT_TEAM": "Select a team",
+      "KEEP_BOTH": "If you enable the checkbox, the player will be added to the selected team while remaining on the current one."
+    }
+  },
+  "SPONSOR": {
+    "TITLE": "Sponsor",
+    "TITLE_VIEW": "View sponsor",
+    "TITLE_EDIT": "Edit sponsor",
+    "BACK": "Back",
+    "NEW": "New sponsor",
+    "DATA_TITLE": "Sponsor details",
+    "EDIT_DATA_TITLE": "Edit sponsor details",
+    "NAME": "Name",
+    "WEB": "Website",
+    "DESCRIPTION": "Description",
+    "BENEFITS": "Benefits",
+    "BENEFITS_TITLE": "Benefits",
+    "PHONE": "Phone",
+    "EMAIL": "Email",
+    "WEB_LINK": "Website",
+    "EMAIL_LINK": "Email",
+    "PHONE_LINK": "Phone",
+    "CAROUSEL": "Carousel",
+    "VIEW": "View",
+    "DELETE": "Delete",
+    "UPLOAD_TITLE": "Upload sponsor image",
+    "UPLOAD_HINT": "Recommended size: 400 x 150 px",
+    "UPLOAD_FORMAT": "Select image in JPG or PNG format",
+    "UPLOAD_BUTTON": "Upload image"
   }
 }

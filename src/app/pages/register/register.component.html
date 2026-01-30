@@ -1,6 +1,6 @@
 <div class="background">
 
-  <img src="assets/images/fondoLoginV1.png" alt="GIF de jugando" class="video-background">
+  <img alt="GIF de jugando" class="video-background" src="assets/images/fondoLoginV1.png">
 
   <!--REGISTRO-->
   <div class="container  scroll-oculto">
@@ -8,33 +8,42 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h3 class="m-0 textoCentrado flex-grow-1">Registro de usuario</h3>
-            <button *ngIf="!(selectedOption == 3 && !newRegistro)" class="btn btn-close" (click)="toLogin($event)">
+            <h3 class="m-0 textoCentrado flex-grow-1">
+              {{ 'REGISTER.TITLE' | translate }}
+            </h3>
+            <button (click)="toLogin($event)" *ngIf="!(selectedOption == 3 && !newRegistro)" class="btn btn-close">
             </button>
           </div>
           <div class="card-body textoCentrado">
             <div *ngIf="!showRegistro && isMenor === -1">
               <!-- aqui los 4 elementos, 2 por fila -->
 
-              <div class="container" *ngIf="!btnRegistro">
-                <h3>Selecciona el tipo de usuario</h3>
+              <div *ngIf="!btnRegistro" class="container">
+                <h3 class="mb-3 text-center">
+                  {{ 'REGISTER.SELECT_USER_TYPE' | translate }}
+                </h3>
                 <div class="row mt-3">
                   <div class="col-md-12 mb-4">
-                    <div id="club" class="card selection-card" [ngClass]="{'selected': selected === 1}"
-                      (click)="select(1)">
-                      <img src="/assets/images/club-verde.png" class="card-img-top mx-auto d-block p-3" alt="Club Icon">
+                    <div (click)="select(1)" [ngClass]="{'selected': selected === 1}" class="card selection-card"
+                      id="club">
+                      <img alt="Club Icon" class="card-img-top mx-auto d-block p-3" src="/assets/images/club-verde.png">
                       <div class="card-body text-center">
-                        <h5 class="card-title">Club</h5>
+                        <h5 class="card-title">
+                          {{ 'REGISTER.USER_TYPE.CLUB.TITLE' | translate }}
+                        </h5>
+
                       </div>
                     </div>
                   </div>
                   <div class="col-md-12 mb-4">
-                    <div id="coach" class="card selection-card" [ngClass]="{'selected': selected === 2}"
-                      (click)="select(2)">
-                      <img src="/assets/images/coach-verde.png" class="card-img-top mx-auto d-block p-3"
-                        alt="Coach Icon">
+                    <div (click)="select(2)" [ngClass]="{'selected': selected === 2}" class="card selection-card"
+                      id="coach">
+                      <img alt="Coach Icon" class="card-img-top mx-auto d-block p-3"
+                        src="/assets/images/coach-verde.png">
                       <div class="card-body text-center">
-                        <h5 class="card-title">Coach</h5>
+                        <h5 class="card-title">
+                          {{ 'REGISTER.USER_TYPE.COACH.TITLE' | translate }}
+                        </h5>
                       </div>
                     </div>
                   </div>
@@ -63,475 +72,282 @@
                 </div> -->
               </div>
 
-              <button *ngIf="!btnRegistro" [disabled]="selected === 0" class="btn btn-custom btn-block textoCentrado"
-                (click)="nextRegistro()">Siguiente</button>
-              <button *ngIf="btnRegistro" class="btn btn-custom btn-block textoCentrado mt-3 mb-3"
-                (click)="backRegistro()">Volver</button>
+              <button (click)="nextRegistro()" *ngIf="!btnRegistro" [disabled]="selected === 0"
+                class="btn btn-custom btn-block">{{ 'REGISTER.COMMON.NEXT' | translate }}</button>
+
             </div>
             <div *ngIf="showNextRegistro">
-              <div class="d-flex form-register py-0" *ngIf="showPPlayer">
+              <div *ngIf="showPPlayer" class="d-flex form-register py-0">
                 <div class="col-12">
-                  <p style="color: red;">Si eres un JUGADOR, espera a que tu entrenador / club te invite.</p>
+                  <p style="color: red;">{{ 'REGISTER.MESSAGE.PLAYER_MS' | translate }}</p>
                 </div>
               </div>
-              <div class="d-flex form-register py-0" *ngIf="!btnRegistro">
+              <div *ngIf="!btnRegistro" class="d-flex form-register py-0">
                 <div class="col-12">
                   <!--<label class="form-label">Selecciona un perfil</label>-->
-                  <select [(ngModel)]="selectedOption" (change)="onOptionChange($event)"
-                    class="form-select input-register" [disabled]="isReadOnly">
+                  <select (change)="onOptionChange($event)" [(ngModel)]="selectedOption" [disabled]="isReadOnly"
+                    class="form-select input-register">
                     <option *ngFor="let option of selectOptions" [value]="option.value">{{ option.label }}</option>
                   </select>
                 </div>
               </div>
-
+              <!-- Formulario para Club -->
               <div *ngIf="selectedOption == 1">
-                <!-- Formulario para Club -->
-                <form [formGroup]="registerFormClub" (ngSubmit)="openModal(1)" class="form-register">
+
+                <form (ngSubmit)="openModal(1)" [formGroup]="registerFormClub" class="form-register">
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="name" class="form-label">Ingresa el nombre del club</label>-->
-                      <input type="text" class="form-control input-register" id="name" placeholder="Nombre del club"
-                        formControlName="name">
+                      <input [placeholder]="'REGISTER.USER_TYPE.CLUB.NAME' | translate"
+                        class="form-control input-register" formControlName="name" id="name" type="text">
                     </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="name" class="form-label">O selecciona un club</label>
-                      <button class="btn btn-outline-primary btn-block textoCentrado" (click)="selectClub()">Aquí</button>-->
+                    <!--<div class="col-6" style="margin-left: 10px;">
+                      <label for="name" class="form-label">O selecciona un club</label>
+                      <button class="btn btn-outline-primary btn-block textoCentrado" (click)="selectClub()">Aquí</button>
+                    </div>-->
+                    <div class="col-6 ms-2">
+                      <div class="position-relative">
+                        <input class="form-control input-register no-calendar-icon" formControlName="foundationDate"
+                          id="foundationDate" name="foundationDate" type="date">
+
+                        <i class="bi bi-cake2 date-icon"></i>
+                      </div>
                     </div>
                   </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-6 position-relative">
-                      <input type="date" class="form-control input-register no-calendar-icon" id="foundationDate"
-                        formControlName="foundationDate" name="foundationDate">
-                      <i class="bi bi-cake2 position-absolute"
-                        style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
+
+                  <div class="mb-3 d-flex ">
                     <div class="col-6">
                       <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
-                      <input type="email" class="form-control input-register" id="email"
-                        placeholder="Correo electrónico" formControlName="email">
+                      <input [placeholder]="'REGISTER.COMMON.EMAIL' | translate" class="form-control input-register"
+                        formControlName="email" id="email" type="email">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
-                      <input type="number" class="form-control input-register" id="mobile" placeholder="Teléfono"
-                        formControlName="mobile">
+                      <input [placeholder]="'REGISTER.COMMON.PHONE' | translate" class="form-control input-register"
+                        formControlName="mobile" id="mobile" type="number">
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="col-6">
                       <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
-                      <input type="password" class="form-control input-register" id="password"
-                        formControlName="password" placeholder="Contraseña" (input)="checkPasswordMatchClub()">
+                      <input (input)="checkPasswordMatchClub()" [placeholder]="'REGISTER.COMMON.PASSWORD' | translate"
+                        class="form-control input-register" formControlName="password" id="password" type="password">
                     </div>
                     <div class="col-6" style="margin-left: 10px;">
                       <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
-                      <input type="password" class="form-control input-register" id="password2"
-                        formControlName="password2" placeholder="Repite la contraseña"
-                        (input)="checkPasswordMatchClub()">
+                      <input (input)="checkPasswordMatchClub()"
+                        [placeholder]="'REGISTER.COMMON.REPEAT_PASSWORD' | translate"
+                        class="form-control input-register" formControlName="password2" id="password2" type="password">
                       <div *ngIf="passwordsDoNotMatch" class="text-danger">
-                        Las contraseñas no coinciden.
+                        {{ 'REGISTER.ERROR.PASSWORD_MISMATCH' | translate }}
                       </div>
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
+                      <input class="form-check-input" formControlName="terms" id="termsCheckbox" type="checkbox">
                       <label class="form-check-label" for="termsCheckbox">
-                        Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
-                          privacidad</a>
-                        <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
-                          condiciones de contratación</a> -->
+                        {{ 'REGISTER.COMMON.TERMS_PREFIX' | translate }}
+                        <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">
+                          {{ 'REGISTER.COMMON.TERMS_LINK' | translate }}
+                        </a>
                       </label>
                     </div>
                   </div>
+
                   <div class="mb-3 d-flex">
                     <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="comunCheckbox"
-                        formControlName="comunicaciones">
+                      <input class="form-check-input" formControlName="comunicaciones" id="comunCheckbox"
+                        type="checkbox">
                       <label class="form-check-label" for="comunCheckbox">
-                        Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
-                          target="_blank">comunicaciones comerciales</a>
+                        {{ 'REGISTER.COMMON.COMMS_PREFIX' | translate }}
+                        <a href="https://sphairatech.com/comunicaciones-comerciales" target="_blank">
+                          {{ 'REGISTER.COMMON.COMMS_LINK' | translate }}
+                        </a>
                       </label>
                     </div>
                   </div>
                   <div class="mb-3 d-flex">
                     <div class="col-12">
-                      <button type="submit" [disabled]="passwordsDoNotMatch"
-                        class="btn btn-custom btn-block textoCentrado">Registrarse</button>
+                      <button [disabled]="passwordsDoNotMatch" class="btn btn-custom btn-block textoCentrado"
+                        type="submit">{{ 'REGISTER.REGISTER' | translate }}</button>
+                      <button (click)="backRegistro()" *ngIf="btnRegistro"
+                        class="btn btn-outline-secondary btn-block textoCentrado">
+                        {{ 'REGISTER.COMMON.BACK' | translate }}
+                      </button>
                     </div>
                   </div>
                 </form>
               </div>
 
+              <!-- Formulario para Entrenador -->
               <div *ngIf="selectedOption == 2 || selectedOption == 5">
-                <!-- Formulario para Entrenador -->
-                <form [formGroup]="registerFormEntrenador" (ngSubmit)="openModal(2)" class="form-register">
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                      <input type="text" class="form-control input-register" id="name" placeholder="Nombre"
-                        formControlName="name">
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
-                      <input type="text" class="form-control input-register" id="surname" placeholder="Apellido"
-                        formControlName="surname">
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <div class="position-relative">
-                        <input type="date" class="form-control input-register no-calendar-icon"
-                          formControlName="birthdate">
-                        <i class="bi bi-cake2 position-absolute"
-                          style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
-                      </div>
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="genre" class="form-label">Selecciona tu género</label>-->
-                      <select class="form-select input-register" formControlName="genre">
-                        <option value="" disabled selected hidden>Selecciona tu género</option>
-                        <option value="1">Masculino</option>
-                        <option value="2">Femenino</option>
-                        <option value="3">Otro</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
-                      <input type="email" class="form-control input-register" id="email"
-                        placeholder="Correo electrónico" formControlName="email">
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <input type="number" class="form-control input-register" id="mobile" placeholder="Teléfono"
-                        formControlName="mobile">
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
-                      <input type="password" class="form-control input-register" id="password"
-                        formControlName="password" placeholder="Contraseña" (input)="checkPasswordMatchEntrenador()">
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
-                      <input type="password" class="form-control input-register" id="password2"
-                        formControlName="password2" placeholder="Repite la contraseña"
-                        (input)="checkPasswordMatchEntrenador()">
-                      <div *ngIf="passwordsDoNotMatch" class="text-danger">
-                        Las contraseñas no coinciden.
-                      </div>
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
-                      <label class="form-check-label" for="termsCheckbox">
-                        Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
-                          privacidad</a>
-                        <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
-                          condiciones de contratación</a> -->
-                      </label>
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="comunCheckbox"
-                        formControlName="comunicaciones">
-                      <label class="form-check-label" for="comunCheckbox">
-                        Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
-                          target="_blank">comunicaciones comerciales</a>
-                      </label>
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-12">
-                      <button type="submit" [disabled]="passwordsDoNotMatch"
-                        class="btn btn-custom btn-block textoCentrado">Registrarse</button>
-                    </div>
-                  </div>
-                </form>
-              </div>
+                <form [formGroup]="registerFormEntrenador" (ngSubmit)="submitEntrenador()" class="form-register">
 
-              <!-- FORMULARIO PADRE/MADRE/TUTOR CON HIJOS -->
-              <div *ngIf="selectedOption == 3 && !newRegistro">
-                <form [formGroup]="registerFormPadre" (ngSubmit)="numHijo()" class="form-register">
+                  <!-- Nombre / Apellido -->
+                  <div class="mb-3 d-flex">
+                    <div class="col-6 input-wrapper">
+                      <input class="form-control input-register" [class.is-invalid]="isInvalidEntrenador('name')"
+                        formControlName="name" type="text" [placeholder]="'REGISTER.COMMON.NAME' | translate" />
+                      <i *ngIf="isInvalidEntrenador('name')" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('name')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_NAME' | translate }}
+                      </small>
+                    </div>
+
+                    <div class="col-6 ms-2 input-wrapper">
+                      <input class="form-control input-register" [class.is-invalid]="isInvalidEntrenador('surname')"
+                        formControlName="surname" type="text" [placeholder]="'REGISTER.COMMON.SURNAME' | translate" />
+                      <i *ngIf="isInvalidEntrenador('surname')" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('surname')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_SURNAME' | translate }}
+                      </small>
+                    </div>
+                  </div>
+
+                  <!-- Fecha / Género -->
+                  <div class="mb-3 d-flex">
+                    <div class="col-6 input-wrapper">
+                      <input class="form-control input-register" [class.is-invalid]="isInvalidEntrenador('birthdate')"
+                        formControlName="birthdate" type="date" />
+                      <i *ngIf="isInvalidEntrenador('birthdate')" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('birthdate')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_BIRTHDATE' | translate }}
+                      </small>
+                    </div>
+
+                    <div class="col-6 ms-2 input-wrapper">
+                      <select class="form-select input-register" [class.is-invalid]="isInvalidEntrenador('genre')"
+                        formControlName="genre">
+                        <option disabled hidden value="">
+                          {{ 'REGISTER.COMMON.GENDER' | translate }}
+                        </option>
+                        <option value="1">{{ 'PROFILE.GENDER_M' | translate }}</option>
+                        <option value="2">{{ 'PROFILE.GENDER_F' | translate }}</option>
+                        <option value="3">{{ 'PROFILE.GENDER_O' | translate }}</option>
+                      </select>
+                      <i *ngIf="isInvalidEntrenador('genre')" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('genre')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_GENDER' | translate }}
+                      </small>
+                    </div>
+                  </div>
+
+                  <!-- Email / Teléfono -->
+                  <div class="mb-3 d-flex">
+                    <div class="col-6 input-wrapper">
+                      <input class="form-control input-register" [class.is-invalid]="isInvalidEntrenador('email')"
+                        formControlName="email" type="email" [placeholder]="'REGISTER.COMMON.EMAIL' | translate" />
+                      <i *ngIf="isInvalidEntrenador('email')" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('email')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_EMAIL' | translate }}
+                      </small>
+                    </div>
+
+                    <div class="col-6 ms-2 input-wrapper">
+                      <input class="form-control input-register" [class.is-invalid]="isInvalidEntrenador('mobile')"
+                        formControlName="mobile" type="number" [placeholder]="'REGISTER.COMMON.PHONE' | translate" />
+                      <i *ngIf="isInvalidEntrenador('mobile')" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('mobile')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_PHONE' | translate }}
+                      </small>
+                    </div>
+                  </div>
+
+                  <!-- Passwords -->
+                  <div class="mb-3 d-flex">
+                    <div class="col-6 input-wrapper">
+                      <input class="form-control input-register"
+                        [class.is-invalid]="isInvalidEntrenador('password') || passwordsDoNotSize"
+                        formControlName="password" type="password"
+                        [placeholder]="'REGISTER.COMMON.PASSWORD' | translate"
+                        (input)="checkPasswordMatchEntrenador()" />
+                      <i *ngIf="isInvalidEntrenador('password') || passwordsDoNotSize"
+                        class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="isInvalidEntrenador('password')" class="error-text">
+                        {{ 'ERRORS.REQUIRED_PASSWORD' | translate }}
+                      </small>
+                    </div>
+
+                    <div class="col-6 ms-2 input-wrapper">
+                      <input class="form-control input-register" [class.is-invalid]="passwordsDoNotMatch"
+                        formControlName="password2" type="password"
+                        [placeholder]="'REGISTER.COMMON.REPEAT_PASSWORD' | translate"
+                        (input)="checkPasswordMatchEntrenador()" />
+                      <i *ngIf="passwordsDoNotMatch" class="bi bi-exclamation-circle-fill error-icon"></i>
+                      <small *ngIf="passwordsDoNotMatch" class="error-text">
+                        {{ 'ERRORS.PASSWORD_MISMATCH' | translate }}
+                      </small>
+                    </div>
+                  </div>
+
+                  <!-- Política -->
                   <div class="mb-3">
-                    <h4>¿Eres padre, madre tutor o jugador mayor de edad?</h4>
+                    <div class="form-check custom-check" [class.is-invalid]="isInvalidEntrenador('terms')">
+                      <input class="form-check-input" type="checkbox" formControlName="terms" />
+                      <label class="form-check-label">
+                        {{ 'REGISTER.COMMON.TERMS_PREFIX' | translate }}
+                        <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">
+                          {{ 'REGISTER.COMMON.TERMS_LINK' | translate }}
+                        </a>
+                      </label>
+                    </div>
+                    <small *ngIf="isInvalidEntrenador('terms')" class="error-text">
+                      {{ 'ERRORS.TERMS_REQUIRED' | translate }}
+                    </small>
                   </div>
 
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <label class="form-label">Introduce tus datos como:</label>
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <select class="form-select input-register" formControlName="parentesco">
-                        <option value="1">Padre</option>
-                        <option value="2">Madre</option>
-                        <option value="0">Tutor</option>
-                        <option value="3">Jugador mayor de edad</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <input type="text" class="form-control input-register" placeholder="Nombre"
-                        formControlName="name">
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <input type="text" class="form-control input-register" placeholder="Apellidos"
-                        formControlName="surname">
-                    </div>
-                  </div>
-
-                  <div class="mb-3 d-flex">
-                    <div class="col-6 position-relative">
-                      <input type="date" class="form-control input-register no-calendar-icon"
-                        formControlName="birthdate">
-                      <i class="bi bi-cake2 position-absolute"
-                        style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <select class="form-select input-register" formControlName="genre">
-                        <option value="" disabled selected hidden>Selecciona tu género</option>
-                        <option value="1">Masculino</option>
-                        <option value="2">Femenino</option>
-                        <option value="3">Otro</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <input type="email" class="form-control input-register" placeholder="Correo electrónico"
-                        formControlName="email" (blur)="checkEmails()" />
-                    </div>
-
-                    <div class="col-6" style="margin-left: 10px;">
-                      <input type="email" class="form-control input-register" placeholder="Repite el correo"
-                        formControlName="confirmEmail" (blur)="checkEmails()" (paste)="$event.preventDefault()"
-                        (drop)="$event.preventDefault()" (copy)="$event.preventDefault()"
-                        (cut)="$event.preventDefault()" (contextmenu)="$event.preventDefault()" />
-                    </div>
-                  </div>
-
-                  <!-- Alerta Bootstrap -->
-                  <div *ngIf="showEmailAlert" class="alert alert-danger py-2 mb-3">
-                    Los emails no coinciden.
-                  </div>
-
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <input type="number" class="form-control input-register" placeholder="Teléfono"
-                        formControlName="mobile">
-                    </div>
-                  </div>
-
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <input type="password" class="form-control input-register" placeholder="Contraseña"
-                        formControlName="password" (input)="checkPasswordMatchPadre()">
-                      <div *ngIf="passwordsDoNotSize" class="text-danger">Mínimo 8 caracteres.</div>
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <input type="password" class="form-control input-register" placeholder="Repite contraseña"
-                        formControlName="password2" (input)="checkPasswordMatchPadre()">
-                      <div *ngIf="passwordsDoNotMatch" class="text-danger">Las contraseñas no coinciden.</div>
-                    </div>
-                  </div>
-
-                  <div class="mb-3 form-check">
-                    <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
-                    <label class="form-check-label" for="termsCheckbox">
-                      Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
-                        privacidad</a>
-                    </label>
-                  </div>
-
-                  <div class="mb-3 form-check">
-                    <input class="form-check-input" type="checkbox" id="comunCheckbox" formControlName="comunicaciones">
-                    <label class="form-check-label" for="comunCheckbox">
-                      Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
-                        target="_blank">comunicaciones comerciales</a>
-                    </label>
-                  </div>
-
+                  <!-- Comunicaciones -->
                   <div class="mb-3">
-                    <button type="submit" class="btn btn-custom btn-block textoCentrado"
-                      [disabled]="passwordsDoNotMatch">{{ texBoton }}</button>
-                  </div>
-                </form>
-              </div>
-
-              <!-- FORMULARIO PARA REGISTRAR HASTA 5 HIJOS (parte del padre) -->
-              <div *ngIf="selectedOption == 3 && newRegistro">
-                <form [formGroup]="registerFormPadreHijos" (ngSubmit)="finalizarRegistroPadre()" class="form-register">
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <label class="form-label">¿Cuántos hijos juegan en este club?</label>
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <select class="form-select input-register" formControlName="numHijos"
-                        (change)="onParentescoChange()">
-                        <option *ngFor="let n of [1, 2, 3, 4, 5]" [value]="n">{{ n }}</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <!-- Hijos generados dinámicamente -->
-                  <div *ngFor="let index of hijosVisibles">
-                    <div class="mb-3 d-flex">
-                      <div class="col-12">
-                        <label class="form-label">Introduce los datos de tu hijo {{ index + 1 }}:</label>
-                      </div>
-                    </div>
-
-                    <div class="mb-3 d-flex">
-                      <div class="col-6">
-                        <input type="text" class="form-control input-register" [formControlName]="'hijo' + (index + 1)"
-                          placeholder="Nombre">
-                      </div>
-                      <div class="col-6" style="margin-left: 10px;">
-                        <input type="text" class="form-control input-register" [formControlName]="'ape' + (index + 1)"
-                          placeholder="Apellidos">
-                      </div>
-                    </div>
-
-                    <div class="mb-3 d-flex">
-                      <div class="col-6">
-                        <input type="date" class="form-control input-register" [formControlName]="'fech' + (index + 1)">
-                      </div>
-                      <div class="col-6" style="margin-left: 10px;">
-                        <input type="text" class="form-control input-register" [formControlName]="'dni' + (index + 1)"
-                          placeholder="DNI/NIE/Pasaporte">
-                        <!-- Botón debajo -->
-                        <button type="button" class="btn mt-2" [ngClass]="{
-                              'btn-warning': estadoValidacionHijos[index] === undefined,
-                              'btn-success': estadoValidacionHijos[index] === true,
-                              'btn-danger': estadoValidacionHijos[index] === false
-                            }" (click)="validateHijo(registerFormPadreHijos.get('dni' + (index + 1))?.value, index)">
-                          <i class="bi bi-person-check"></i> Comprobar si este jugador existe
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="mb-3" *ngIf="btnFinalizar">
-                    <button type="submit" class="btn btn-custom btn-block textoCentrado">Finalizar</button>
-                  </div>
-                  <div class="mb-3">
-                    <button (click)="volver()" class="btn btn-primary btn-block textoCentrado">Volver</button>
-                  </div>
-                </form>
-              </div>
-
-              <div *ngIf="selectedOption == 4">
-                <!-- Formulario para Entrenador -->
-                <form [formGroup]="registerFormEntrenador" (ngSubmit)="openModal(2)" class="form-register">
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <!--<label for="name" class="form-label">Ingresa tu nombre</label>-->
-                      <input type="text" class="form-control input-register" id="name" placeholder="Nombre"
-                        formControlName="name">
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="surname" class="form-label">Ingresa tu apellido</label>-->
-                      <input type="text" class="form-control input-register" id="surname" placeholder="Apellido"
-                        formControlName="surname">
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <div class="position-relative">
-                        <input type="date" class="form-control input-register no-calendar-icon"
-                          formControlName="birthdate">
-                        <i class="bi bi-cake2 position-absolute"
-                          style="right: 10px; top: 50%; transform: translateY(-50%); pointer-events: none;"></i>
-                      </div>
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="genre" class="form-label">Selecciona tu género</label>-->
-                      <select class="form-select input-register" formControlName="genre">
-                        <option value="" disabled selected hidden>Selecciona tu género</option>
-                        <option value="1">Masculino</option>
-                        <option value="2">Femenino</option>
-                        <option value="3">Otro</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <!--<label for="email" class="form-label">Ingresa tu correo electrónico</label>-->
-                      <input type="email" class="form-control input-register" id="email"
-                        placeholder="Correo electrónico" formControlName="email" [attr.disabled]="true">
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <input type="number" class="form-control input-register" id="mobile"
-                        placeholder="Ingresa tu número de teléfono" formControlName="mobile">
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-6">
-                      <!--<label for="password" class="form-label">Ingresa tu contraseña</label>-->
-                      <input type="password" class="form-control input-register" id="password"
-                        formControlName="password" placeholder="Contraseña" (input)="checkPasswordMatchEntrenador()">
-                    </div>
-                    <div class="col-6" style="margin-left: 10px;">
-                      <!--<label for="password2" class="form-label">Repite la contraseña</label>-->
-                      <input type="password" class="form-control input-register" id="password2"
-                        formControlName="password2" placeholder="Repite la contraseña"
-                        (input)="checkPasswordMatchEntrenador()">
-                      <div *ngIf="passwordsDoNotMatch" class="text-danger">
-                        Las contraseñas no coinciden.
-                      </div>
-                    </div>
-                  </div>
-                  <div class="mb-3 d-flex">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="termsCheckbox" formControlName="terms">
-                      <label class="form-check-label" for="termsCheckbox">
-                        Acepto la <a href="https://sphairatech.com/politica-de-privacidad/" target="_blank">política de
-                          privacidad</a>
-                        <!-- <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
-                          condiciones de contratación</a> -->
+                    <div class="form-check custom-check">
+                      <input class="form-check-input" type="checkbox" formControlName="comunicaciones" />
+                      <label class="form-check-label">
+                        {{ 'REGISTER.COMMON.COMMS_PREFIX' | translate }}
+                        <a href="https://sphairatech.com/comunicaciones-comerciales" target="_blank">
+                          {{ 'REGISTER.COMMON.COMMS_LINK' | translate }}
+                        </a>
                       </label>
                     </div>
                   </div>
-                  <div class="mb-3 d-flex">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="comunCheckbox"
-                        formControlName="comunicaciones">
-                      <label class="form-check-label" for="comunCheckbox">
-                        Acepto las <a href="https://sphairatech.com/comunicaciones-comerciales"
-                          target="_blank">comunicaciones comerciales</a>
-                      </label>
-                    </div>
+
+                  <!-- Error general -->
+                  <div *ngIf="msgForm" class="form-alert">
+                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                    {{ 'REGISTER.ERROR.INCOMPLETE_FORM' | translate }}
                   </div>
-                  <div class="mb-3 d-flex">
-                    <div class="col-12">
-                      <button type="submit" [disabled]="passwordsDoNotMatch"
-                        class="btn btn-custom btn-block textoCentrado">Registrarse</button>
-                    </div>
-                  </div>
+
+                  <!-- Botones -->
+                  <button class="btn btn-success w-100 btn-register" type="submit" [disabled]="isLoading">
+                    <ng-container *ngIf="!isLoading; else loadingTpl">
+                      {{ 'REGISTER.REGISTER' | translate }}
+                    </ng-container>
+
+                    <ng-template #loadingTpl>
+                      <span class="spinner-border spinner-border-sm me-2"></span>
+                      Procesando...
+                    </ng-template>
+                  </button>
+
+
+                  <button *ngIf="btnRegistro" type="button" class="btn btn-outline-secondary w-100 mt-2"
+                    (click)="backRegistro()">
+                    {{ 'REGISTER.COMMON.BACK' | translate }}
+                  </button>
+
                 </form>
               </div>
             </div>
           </div>
-          <div class="form-control" *ngIf="msgAge" style="display: block; color: red;">
-            <p>Lo sentimos, pero si eres menor de 14 años, ha de darse de alta uno de tus padres o tutores.</p>
-          </div>
-          <div class="form-control" *ngIf="msgForm" style="display: block; color: red;">
-            <p>Revisa los campos que te falten por rellenar y acepta política de privacidad.</p>
-          </div>
+
           <div class="card-footer textoCentrado" style="flex-direction: column; background: #002c40;">
             <div class="row text-center">
               <div class="col-md-12">
-                <p style="color: white">¿Ya tienes una cuenta? <a style="color: #1e8832" href="#"
-                    (click)="toLogin($event)">Inicia sesión aquí</a></p>
-                <p style="color: white">Si tienes alguna duda, contacta a <a style="color: #1e8832" href="#"
-                    onclick="event.preventDefault()">info&#64;sphairatech.com</a> </p>
-                <p style="color: white">o al WhatsApp +34 623 91 17 72</p>
+                <p>{{ 'REGISTER.AUTH.ALREADY_HAVE_ACCOUNT' | translate }} <a (click)="toLogin($event)" href="#">{{
+                    'REGISTER.AUTH.LOGIN_HERE' | translate }} </a>
+                </p>
+                <p>{{ 'REGISTER.COMMON.HELP' | translate }} <a href="#"
+                    onclick="event.preventDefault()">info&#64;sphairatech.com</a>
+                </p>
+                <p>{{ 'REGISTER.COMMON.WHATSAPP' | translate }} +34 623 91 17 72</p>
               </div>
             </div>
           </div>
@@ -543,7 +359,7 @@
 
 
 <!-- Modal para la creación de equipo -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
+<div [ngClass]="{'d-block': showModal}" class="modal" role="dialog" tabindex="-1">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-body">
@@ -568,13 +384,13 @@
             <li>✔ Colaboración Ampliada</li>
           </ul>
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="termsCheckbox2" checked disabled>
+            <input checked class="form-check-input" disabled id="termsCheckbox2" type="checkbox">
             <label class="form-check-label" for="termsCheckbox2">
               Acepto las <a href="https://sphairatech.com/condiciones-de-contratacion-de-1-ano/" target="_blank">
                 condiciones de contratación</a>
             </label>
           </div>
-          <button class="cta-button" (click)="goLogin()">Empezar semana gratis</button>
+          <button (click)="goLogin()" class="cta-button">Empezar semana gratis</button>
         </div>
       </div>
     </div>
@@ -582,21 +398,24 @@
 </div>
 
 <!-- Modal CLUB-->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalClub}">
+<div [ngClass]="{'d-block': showModalClub}" class="modal" role="dialog" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title">Confirmación requerida</h5>
-        <button style="background-color: white;" type="button" class="btn-close" (click)="cerrarModalClub()"></button>
+        <button (click)="cerrarModalClub()" class="btn-close" style="background-color: white;" type="button"></button>
       </div>
 
       <div class="modal-body">
-        <h2>⚠️ Atención.</h2>
+        <h2>⚠️ {{ 'REGISTER.MESSAGE.ATTENTION' | translate }}.</h2>
         <p class="mb-3" style="color: red;">
-          Este registro es <strong>EXCLUSIVAMENTE PARA ENTIDADES DEPORTIVAS</strong>. Si eres un
-          <strong>PADRE/MADRE/TUTOR, ESTE NO ES TU
-            REGISTRO</strong>. Habla con tu club para recibir el enlace de registro.
+          {{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_PREFIX' | translate }}
+          <strong>{{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_HIGHLIGHT_1' | translate }}</strong>.
+          {{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_MIDDLE' | translate }}
+          <strong>{{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_HIGHLIGHT_2' | translate }}</strong>.
+          {{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_SUFFIX' | translate }}
         </p>
+
         <strong>Por seguridad</strong>, el registro de clubes requiere una contraseña de acceso.
         <br>Si aún no la tienes, solicítala antes de continuar:
         <ul class="list-unstyled mb-4">
@@ -605,14 +424,24 @@
         </ul>
 
         <div class="mb-3">
-          <label for="passwordInput" class="form-label">Introduce la contraseña</label>
-          <input type="password" id="passwordInput" class="form-control" [(ngModel)]="inputPassword" />
+          <label class="form-label" for="passwordInput">Introduce la contraseña</label>
+          <input (keyup.enter)="validatePassword()" [(ngModel)]="inputPassword" class="form-control" id="passwordInput"
+            type="password" />
+
+          <!-- Mensaje -->
+          <div *ngIf="mensajePassword" [ngClass]="{
+             'alert-success': passwordValida,
+             'alert-danger': passwordValida === false
+           }" class="mt-2 alert">
+            {{ mensajePassword }}
+          </div>
         </div>
 
+
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-            (click)="cerrarModalClub()">Cancelar</button>
-          <button type="button" class="btn btn-success" (click)="validatePassword()">Aceptar</button>
+          <button (click)="cerrarModalClub()" class="btn btn-secondary" data-bs-dismiss="modal" type="button">Cancelar
+          </button>
+          <button (click)="validatePassword()" class="btn btn-success" type="button">Aceptar</button>
         </div>
       </div>
     </div>
@@ -620,23 +449,29 @@
 </div>
 
 <!-- Modal COACH-->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalCoach}">
+<div [ngClass]="{'d-block': showModalCoach}" class="modal" role="dialog" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">⚠️ Atención.</h5>
+        <h5 class="modal-title">⚠️ {{ 'REGISTER.MESSAGE.ATTENTION' | translate }}.</h5>
       </div>
       <div class="modal-body">
         <p class="mb-3" style="color: red;">
-          Este registro es <strong>EXCLUSIVAMENTE PARA ENTRENADORES</strong>. Si eres un
-          <strong>PADRE/MADRE/TUTOR, ESTE NO ES TU
-            REGISTRO</strong>. Habla con tu club para recibir el enlace de registro.
+          {{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_PREFIX' | translate }}
+          <strong>{{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_HIGHLIGHT_3' | translate }}</strong>.
+          {{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_MIDDLE' | translate }}
+          <strong>{{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_HIGHLIGHT_2' | translate }}</strong>.
+          {{ 'REGISTER.USER_TYPE.CLUB.MODAL.WARNING_SUFFIX' | translate }}
         </p>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
-            (click)="cerrarModalCoach()">Entendido</button>
-          <button type="button" class="btn btn-success" (click)="openConfirmCoach()">Soy entrenador</button>
+          <button (click)="cerrarModalCoach()" class="btn btn-secondary" data-bs-dismiss="modal" type="button">
+            {{ 'REGISTER.BUTTONS_MODALS.ACKNOWLEDGE' | translate }}
+          </button>
+          <button (click)="openConfirmCoach()" class="btn btn-success" type="button">
+            {{ 'REGISTER.BUTTONS_MODALS.I_AM_COACH' | translate }}
+          </button>
         </div>
+
       </div>
     </div>
   </div>

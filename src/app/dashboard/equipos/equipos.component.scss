@@ -1,0 +1,577 @@
+/* BOTÓN VOLVER */
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 16px;
+  margin-left: 24px;
+  background: transparent;
+  border: none;
+  background-color: rgba(15, 163, 232, 0.08);
+  color: #002c40;
+  font-size: 0.9rem;
+  font-weight: 500;
+
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+/* ICONO */
+.btn-back-clean i {
+  font-size: 1.1rem;
+}
+.container {
+  padding-bottom: 120px;
+}
+
+/* ===============================
+   TEMPORADA
+================================ */
+
+.season-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.season-label {
+  font-weight: 600;
+  color: #002c40;
+  margin-bottom: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.season-select {
+  max-width: 260px;
+  border-radius: 14px;
+  padding: 0.55rem 0.8rem;
+  text-align: center;
+  border: 1px solid #ddd;
+
+  &:focus {
+    border-color: #31b270; // Verde Sphaira
+    box-shadow: 0 0 0 2px rgba(49, 178, 112, 0.2);
+  }
+}
+
+/* HOVER */
+.btn-back-clean:hover {
+  background-color: rgba(0, 44, 64, 0.08);
+  transform: translateX(-2px);
+}
+
+/* ACTIVE */
+.btn-back-clean:active {
+  transform: translateX(0);
+}
+/* TITULOS */
+.section-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.teams-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.team-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid transparent;
+  box-shadow: 0 8px 24px rgba(0, 44, 64, 0.08);
+  transition: box-shadow 0.25s ease;
+  text-align: center;
+  cursor: pointer;
+  z-index: 0;
+}
+
+/* Pseudo-elemento para el borde gradiente */
+.team-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px; /* grosor del borde */
+  border-radius: 20px;
+  background: linear-gradient(135deg, #31b270, #002c40);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: -1;
+}
+
+/* Hover */
+.team-card:hover::before {
+  opacity: 1;
+}
+
+.team-card:hover {
+  box-shadow: 0 14px 32px rgba(0, 44, 64, 0.25);
+}
+
+.team-card strong {
+  display: block;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #002c40;
+  margin-bottom: 4px;
+}
+
+.team-card:hover strong {
+  color: #060606;
+}
+
+.team-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.team-name {
+  text-align: center;
+  font-weight: 700;
+  color: #002c40;
+}
+
+.team-id {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.7rem;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #5c6f7a38;
+  color: #002c40;
+  white-space: nowrap;
+}
+
+.team-card:hover .team-id {
+  background: rgba(255, 255, 255, 0.2);
+  color: #000000;
+}
+
+.team-info {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 0.9rem;
+  color: #5c6f7a;
+  line-height: 1.4;
+  flex-wrap: wrap;
+  word-break: break-word;
+}
+
+.team-info i {
+  font-size: 1.15rem;
+  color: #31b270;
+}
+
+.team-card:hover .team-info {
+  color: #000000;
+}
+.team-card:hover .team-info i {
+  color: #31b270;
+}
+
+.team-card strong {
+  text-align: center;
+  display: block;
+}
+
+@media (min-width: 1200px) {
+  .teams-mobile {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+/* =====================================================
+   DESKTOP GRANDE → 2 COLUMNAS
+   ===================================================== */
+@media (min-width: 1200px) {
+  .teams-mobile {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+.btn.btn-invite {
+  background-color: #002c40 !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.btn.btn-invite:hover {
+  background-color: #001f2e !important;
+}
+.btn.btn-create-team {
+  background: linear-gradient(135deg, #31b270, #002c40) !important;
+  color: #ffffff !important;
+  border: none !important;
+}
+
+.btn.btn-create-team:hover {
+  background: linear-gradient(135deg, #002c40, #31b270) !important;
+}
+
+/* =====================================================
+   LIMPIAR EFECTOS ANTIGUOS
+   ===================================================== */
+.card,
+.card:hover {
+  transform: none !important;
+  background-color: #ffffff !important;
+}
+/* ===============================
+   GRID CONTENEDOR
+================================ */
+.sphaira-action-cards {
+  justify-content: center;
+}
+
+/* ===============================
+   CARD
+================================ */
+.sphaira-action-card {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 22px 18px 20px;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 44, 64, 0.08);
+  transition: all 0.25s ease;
+  height: 100%;
+}
+
+.sphaira-action-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 32px rgba(0, 44, 64, 0.18);
+}
+
+/* ===============================
+   ICONO SUPERIOR
+================================ */
+.sphaira-action-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 14px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sphaira-action-icon i {
+  font-size: 1.4rem;
+}
+
+/* Colores icono */
+.sphaira-action-icon.green {
+  background: rgba(49, 178, 112, 0.15);
+  color: #31b270;
+}
+
+.sphaira-action-icon.blue {
+  background: rgba(0, 44, 64, 0.12);
+  color: #002c40;
+}
+
+.sphaira-action-icon.beige {
+  background: rgba(239, 220, 182, 0.6);
+  color: #7a5c1e;
+}
+
+/* ===============================
+   BOTÓN
+================================ */
+.sphaira-action-btn {
+  width: 100%;
+  border: none;
+  border-radius: 14px;
+  padding: 10px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Botón verde */
+.sphaira-action-btn.green {
+  background: #31b270;
+  color: #ffffff;
+}
+
+.sphaira-action-btn.green:hover {
+  background: #2aa463;
+  box-shadow: 0 0 0 4px rgba(49, 178, 112, 0.25);
+}
+
+/* Botón azul */
+.sphaira-action-btn.blue {
+  background: #002c40;
+  color: #ffffff;
+}
+
+.sphaira-action-btn.blue:hover {
+  background: #013d57;
+  box-shadow: 0 0 0 4px rgba(0, 44, 64, 0.25);
+}
+
+/* Botón beige */
+.sphaira-action-btn.beige {
+  background: #efdcb6;
+  color: #5a4310;
+}
+
+.sphaira-action-btn.beige:hover {
+  background: #e4cf9e;
+  box-shadow: 0 0 0 4px rgba(239, 220, 182, 0.6);
+}
+
+.cdk-drag-preview {
+  border-radius: 20px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.25);
+}
+
+.cdk-drag-placeholder {
+  opacity: 0;
+}
+
+.cdk-drag-animating {
+  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
+}
+/* === BLOQUE GENERAL DE INFO === */
+.team-info-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.4rem;
+  text-align: center;
+}
+
+/* Iconos */
+.team-info-icon {
+  font-size: 1rem;
+  color: #22c55e;
+}
+
+/* === CUERPO === */
+.team-info-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+/* Label pequeño */
+.team-info-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #002057;
+}
+
+/* Texto muted */
+.team-info-muted {
+  color: #adb5bd;
+  font-size: 0.85rem;
+  font-style: italic;
+}
+
+/* === GRID DE HORARIOS (CLAVE) === */
+.team-schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  gap: 0.2rem 0.8rem;
+  justify-content: center;
+}
+
+/* Item día + hora (una sola línea) */
+.team-schedule-item {
+  display: flex;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+/* Día */
+.team-schedule-day {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #002c40;
+}
+
+/* Hora */
+.team-schedule-hours {
+  color: #002c40;
+}
+
+/* === BLOQUE JUGADORES === */
+.team-players {
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+}
+
+.team-players-count {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #16a34a;
+}
+/* Overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1040;
+}
+
+
+/* Modal container */
+.modern-modal {
+  border-radius: 14px;
+  overflow: hidden;
+  border: none;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  z-index: 1050;
+}
+
+/* Header */
+.modern-header {
+  background: linear-gradient(135deg, #0f4c5c, #1b6f7a);
+  color: #fff;
+  padding: 1.25rem 1.5rem;
+}
+
+.modern-header .modal-title {
+  font-weight: 600;
+}
+
+/* Body */
+.modern-body {
+  padding: 2rem 2.5rem;
+}
+
+/* Upload title */
+.upload-title {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+/* Upload zone */
+.upload-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #ced4da;
+  border-radius: 12px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background-color: #f8f9fa;
+}
+
+.upload-zone i {
+  font-size: 3rem;
+  color: #198754;
+  margin-bottom: 0.5rem;
+}
+
+.upload-zone span {
+  font-weight: 500;
+}
+
+.upload-zone small {
+  color: #6c757d;
+}
+
+.upload-zone:hover {
+  border-color: #198754;
+  background-color: #eefaf3;
+}
+
+/* File selected */
+.file-selected {
+  margin-top: 1rem;
+  text-align: center;
+  color: #198754;
+  font-size: 0.95rem;
+}
+
+.file-selected i {
+  margin-right: 6px;
+}
+
+/* Upload button */
+.btn-upload {
+  padding: 0.6rem 2rem;
+  font-weight: 500;
+  border-radius: 30px;
+}
+
+/* Footer */
+.modern-footer {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e9ecef;
+}
+/* Inputs */
+.modern-input {
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+}
+
+/* Section title */
+.section-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Dropdown moderno */
+.dropdown-modern {
+  position: absolute;
+  top: 100%;
+  width: 100%;
+  z-index: 10;
+  max-height: 220px;
+  overflow-y: auto;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+  margin-top: 4px;
+}
+
+/* Dropdown items */
+.dropdown-modern .list-group-item {
+  cursor: pointer;
+}
+
+/* Save button */
+.btn-save {
+  padding: 0.6rem 2rem;
+  border-radius: 10px;
+  font-weight: 500;
+}
+.btn-secondary {
+  background-color: #efdcb6;
+  color: #002c40;
+  margin-top: 0.5rem;
+  background: transparent;
+  padding: 0.8rem;
+  border-radius: 10px;
+}

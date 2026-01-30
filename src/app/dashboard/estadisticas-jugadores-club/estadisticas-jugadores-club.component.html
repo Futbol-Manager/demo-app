@@ -1,80 +1,136 @@
-<div class="submenu">
-    <div class="row">
-        <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(0)">
-                <i class="bi bi-calendar"></i>
-                <span class="d-none d-md-inline">Cuadro de mandos</span>
-            </a>
-        </div>
-    </div>
+<div class="back-container">
+  <div class="btn-back-clean" href="javascript:void(0)" (click)="irAPantalla(0)">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </div>
 </div>
 
-<div *ngIf="loading" class="spinner-container mt-3">
-    <div class="spinnerLoad"></div>
-</div>
 
-<div *ngIf="datosCargados" class="container">
-    <!-- Contenido para el dataTable -->
-    <div class="container mt-4">
-        <h2>Tabla Jugadores</h2>
-        <div class="row justify-content-between div-headdatatable">
-            <div class="col-md-auto mr-auto" id="dt-length">
-                <!-- Contenido para el dt-length -->
-            </div>
-            <div class="col-md-auto ml-auto" id="dt-search">
-            </div>
-        </div>
-        <div style="overflow-x: auto;">
-            <table id="dataTable" class="table table-bordered table-striped text-center">
-                <thead class="table-custom">
-                    <tr>
-                        <th>ID</th>
-                        <th>NOMBRE</th>
-                        <th>EQUIPO</th>
-                        <th>POSICION</th>
-                        <th>FECHA_NACIMIENTO</th>
-                        <th>PARTIDOS_JUGADOS</th>
-                        <th>MINUTOS_TOTALES</th>
-                        <th>MEDIA_MINUTOS_PARTIDO</th>
-                        <th>GOLES</th>
-                        <th>MEDIA_GOLES_PARTIDO</th>
-                        <th>ASISTENCIA</th>
-                        <th>GOLES_ASISTENCIAS</th>
-                        <th>MEDIA_ASISTENCIA_PARTIDO</th>
-                        <th>MEDIA_GOLES_ASISTENCIA_PARTIDO</th>
-                        <th>GOLES_PENALTI</th>
-                        <th>GOLES_FALTA</th>
-                        <th>PENALTIS_FALLADOS</th>
-                        <th>TARJETAS_AMARILLAS</th>
-                        <th>TARJETAS_ROJAS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let player of players; let i = index">
-                        <td>{{ player.playerId }}</td>
-                        <td>{{ player.nombre }}</td>
-                        <td>{{ player.nameTeam }}</td>
-                        <td>{{ player.posicion }}</td>
-                        <td>{{ player.fecha }}</td>
-                        <td>{{ player.partidosJugados }} de {{ player.totalMatchesPlayer }}</td>
-                        <td>{{ player.minTotales }}</td>
-                        <td>{{ player.mediaMinPorPartido }}</td>
-                        <td>{{ player.goles }}</td>
-                        <td>{{ player.mediaGolesPorPartido }}</td>
-                        <td>{{ player.asistencias }}</td>
-                        <td>{{ player.golesAsistencias }}</td>
-                        <td>{{ player.mediaAsistPorPartido }}</td>
-                        <td>{{ player.mediaGolesAsistenciasPorPartido }}</td>
-                        <td>{{ player.golesPenalti }}</td>
-                        <td>{{ player.golesFalta }}</td>
-                        <td>{{ player.penaltisFallados }}</td>
-                        <td>{{ player.tarAmarilla }}</td>
-                        <td>{{ player.tarRojas }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+<!-- SKELETON -->
+<div *ngIf="!datosCargados" class="table-skeleton">
+  <div class="skeleton-header"></div>
+
+  <div class="skeleton-row" *ngFor="let i of [].constructor(8)">
+    <div class="skeleton-cell" *ngFor="let j of [].constructor(9)"></div>
+  </div>
+</div>
+<div class="modern-table-wrapper" *ngIf="datosCargados">
+
+  <h2 class="datatable-title">
+    {{ 'PLAYERS.TITLE' | translate }}
+  </h2>
+
+  <div class="table-scroll">
+    <table class="modern-table">
+
+
+      <thead>
+        <tr>
+          <th class="columna-nombre">{{ 'PLAYERS.TABLE.NAME' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.TEAM' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.POSITION' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.MATCHES' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.MINUTES' | translate }}</th>
+
+          <th>{{ 'PLAYERS.TABLE.MEDIA_MINUTES_MATCH' | translate }}</th>
+
+          <th>{{ 'PLAYERS.TABLE.GOALS' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.MEDIA_GOALS_MATCH' | translate }}</th>
+
+          <th>{{ 'PLAYERS.TABLE.ASSISTS' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.GOALS_ASSISTS' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.MEDIA_ASSISTS_MATCH' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.MEDIA_GOALS_ASSISTS_MATCH' | translate }}</th>
+
+          <th>{{ 'PLAYERS.TABLE.GOALS_PENALTY' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.GOALS_FREE_KICK' | translate }}</th>
+          <th>{{ 'PLAYERS.TABLE.PENALTIES_MISSED' | translate }}</th>
+
+          <th>{{ 'PLAYERS.TABLE.CARDS' | translate }}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let player of playersPaged; trackBy: trackByPlayer">
+
+          <td class="fila-completa">
+            {{ player.nombre }}
+          </td>
+
+          <td>
+            <span class="badge badge-team">
+              {{ player.nameTeam || ('PLAYERS.NO_TEAM' | translate) }}
+            </span>
+          </td>
+
+          <td>{{ player.posicion }}</td>
+
+          <td>
+            {{ player.partidosJugados }} / {{ player.totalMatchesPlayer }}
+          </td>
+
+          <td>{{ player.minTotales }}</td>
+
+          <td>{{ player.mediaMinPorPartido }}</td>
+
+          <td>{{ player.goles }}</td>
+
+          <td>{{ player.mediaGolesPorPartido }}</td>
+
+          <td>{{ player.asistencias }}</td>
+
+          <td>{{ player.golesAsistencias }}</td>
+
+          <td>{{ player.mediaAsistPorPartido }}</td>
+
+          <td>{{ player.mediaGolesAsistenciasPorPartido }}</td>
+
+          <td>{{ player.golesPenalti }}</td>
+
+          <td>{{ player.golesFalta }}</td>
+
+          <td>{{ player.penaltisFallados }}</td>
+
+          <td class="cards-cell">
+            <span class="badge badge-yellow">{{ player.tarAmarilla }}</span>
+            <span class="badge badge-red">{{ player.tarRojas }}</span>
+          </td>
+
+        </tr>
+      </tbody>
+
+    </table>
+  </div>
+
+  <!-- PAGINACIÓN CUSTOM -->
+  <div class="pagination-wrapper">
+    <div class="pagination-content">
+
+      <span class="pagination-info">
+        {{ paginationInfo }}
+      </span>
+
+      <select class="pagination-select" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+        <option *ngFor="let size of pageSizes" [value]="size">
+          {{ size }}
+        </option>
+      </select>
+
+
+      <div class="pagination-controls">
+        <button class="page-btn" (click)="prevPage()" [disabled]="page === 1">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <span class="page-indicator">
+          {{ page }} / {{ totalPages }}
+        </span>
+
+        <button class="page-btn" (click)="nextPage()" [disabled]="page === totalPages">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
     </div>
-    <div id="button_datatable">
-    </div>
+  </div>
 </div>

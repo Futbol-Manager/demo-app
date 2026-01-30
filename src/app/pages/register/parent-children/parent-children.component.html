@@ -1,0 +1,293 @@
+<div class="background">
+  <div class="overlay">
+    <div class="register-page">
+      <div class="register-card">
+
+        <!-- HEADER -->
+        <h2 class="title">
+          {{ 'REGISTER.TITLE' | translate }}
+        </h2>
+
+        <!-- STEPS -->
+        <div class="wizard">
+          <div class="step" [class.active]="activeTab === 'padre'">
+            <span>1</span> {{ 'REGISTER.TABS.PARENT' | translate }}
+          </div>
+          <div class="line"></div>
+          <div class="step" [class.active]="activeTab === 'hijos'">
+            <span>2</span> {{ 'REGISTER.TABS.CHILDREN' | translate }}
+          </div>
+        </div>
+
+        <!-- ================= TAB PADRE ================= -->
+        <form *ngIf="activeTab === 'padre'" [formGroup]="parentForm" (ngSubmit)="next()" class="form-register">
+
+          <h4 class="subtitle">
+            {{ 'REGISTER.PARENT.QUESTION' | translate }}
+          </h4>
+
+          <!-- Parentesco -->
+          <select class="input" formControlName="parentesco">
+            <option value="1">{{ 'REGISTER.PARENT.FATHER' | translate }}</option>
+            <option value="2">{{ 'REGISTER.PARENT.MOTHER' | translate }}</option>
+            <option value="0">{{ 'REGISTER.PARENT.TUTOR' | translate }}</option>
+            <option value="3">{{ 'REGISTER.PARENT.ADULT' | translate }}</option>
+          </select>
+
+          <!-- NOMBRE / APELLIDOS -->
+          <div class="grid">
+            <div>
+              <input class="input" formControlName="name" [placeholder]="'REGISTER.COMMON.NAME' | translate" />
+              <small class="error" *ngIf="parentForm.get('name')?.touched && parentForm.get('name')?.errors">
+                {{ 'ERRORS.REQUIRED_NAME' | translate }}
+              </small>
+            </div>
+
+            <div>
+              <input class="input" formControlName="surname" [placeholder]="'REGISTER.COMMON.SURNAME' | translate" />
+              <small class="error" *ngIf="parentForm.get('surname')?.touched && parentForm.get('surname')?.errors">
+                {{ 'ERRORS.REQUIRED_SURNAME' | translate }}
+              </small>
+            </div>
+          </div>
+
+          <!-- FECHA / GÉNERO -->
+          <div class="grid">
+            <div>
+              <input type="date" class="input" formControlName="birthdate" />
+              <small class="error" *ngIf="parentForm.get('birthdate')?.touched && parentForm.get('birthdate')?.errors">
+                <span *ngIf="parentForm.get('birthdate')?.errors?.['required']">
+                  {{ 'ERRORS.REQUIRED_BIRTHDATE' | translate }}
+                </span>
+
+                <span *ngIf="parentForm.get('birthdate')?.errors?.['underage']">
+                  {{ 'ERRORS.UNDERAGE' | translate }}
+                </span>
+              </small>
+            </div>
+
+            <div>
+              <select class="input" formControlName="genre">
+                <option value="">{{ 'REGISTER.COMMON.GENDER' | translate }}</option>
+                <option value="1">{{ 'COMMON.MALE' | translate }}</option>
+                <option value="2">{{ 'COMMON.FEMALE' | translate }}</option>
+                <option value="3">{{ 'COMMON.OTHER' | translate }}</option>
+              </select>
+
+              <small class="error" *ngIf="parentForm.get('genre')?.touched && parentForm.get('genre')?.errors">
+                {{ 'ERRORS.REQUIRED_GENDER' | translate }}
+              </small>
+            </div>
+          </div>
+
+          <!-- EMAIL -->
+          <div class="grid">
+            <div>
+              <input class="input" formControlName="email" [placeholder]="'REGISTER.COMMON.EMAIL' | translate" />
+              <small class="error" *ngIf="parentForm.get('email')?.touched && parentForm.get('email')?.errors">
+                <span *ngIf="parentForm.get('email')?.errors?.['required']">
+                  {{ 'ERRORS.REQUIRED_EMAIL' | translate }}
+                </span>
+                <span *ngIf="parentForm.get('email')?.errors?.['email']">
+                  {{ 'ERRORS.INVALID_EMAIL' | translate }}
+                </span>
+              </small>
+            </div>
+
+            <div>
+              <input class="input" formControlName="confirmEmail"
+                [placeholder]="'REGISTER.COMMON.EMAIL_REPEAT' | translate" />
+              <small class="error"
+                *ngIf="parentForm.get('confirmEmail')?.touched && parentForm.get('confirmEmail')?.errors">
+                <span *ngIf="parentForm.get('confirmEmail')?.errors?.['required']">
+                  {{ 'ERRORS.REQUIRED_CONFIRM_EMAIL' | translate }}
+                </span>
+                <span *ngIf="parentForm.get('confirmEmail')?.errors?.['mismatch']">
+                  {{ 'ERRORS.EMAIL_MISMATCH' | translate }}
+                </span>
+              </small>
+            </div>
+          </div>
+
+          <!-- TELÉFONO -->
+          <div class="grid">
+            <input class="input" formControlName="phone" [placeholder]="'REGISTER.COMMON.PHONE' | translate" />
+            <small class="error" *ngIf="parentForm.get('phone')?.touched && parentForm.get('phone')?.errors">
+              {{ 'ERRORS.REQUIRED_PHONE' | translate }}
+            </small>
+          </div>
+
+          <!-- CONTRASEÑA -->
+          <div class="grid">
+            <div>
+              <input type="password" class="input" formControlName="password"
+                [placeholder]="'REGISTER.COMMON.PASSWORD' | translate" />
+              <small class="error" *ngIf="parentForm.get('password')?.touched && parentForm.get('password')?.errors">
+                {{ 'ERRORS.REQUIRED_PASSWORD' | translate }}
+              </small>
+            </div>
+
+            <div>
+              <input type="password" class="input" formControlName="password2"
+                [placeholder]="'REGISTER.COMMON.REPEAT_PASSWORD' | translate" />
+              <small class="error" *ngIf="parentForm.get('password2')?.touched && parentForm.get('password2')?.errors">
+                {{ 'ERRORS.PASSWORD_MISMATCH' | translate }}
+              </small>
+            </div>
+          </div>
+          <!-- FOOTER CHECKS -->
+          <div class="checks">
+            <label class="check-item">
+              <input type="checkbox" formControlName="terms" />
+              <span class="check-custom"></span>
+              <span class="check-text">
+                {{ 'REGISTER.COMMON.TERMS_PREFIX' | translate }}
+                <a href="#" target="_blank">
+                  {{ 'REGISTER.COMMON.TERMS_LINK' | translate }}
+                </a>
+              </span>
+            </label>
+             <!-- ERROR -->
+            <small class="error" *ngIf="parentForm.get('terms')?.touched && parentForm.get('terms')?.invalid">
+              {{ 'ERRORS.TERMS_REQUIRED' | translate }}
+            </small>
+            <label class="check-item">
+              <input type="checkbox" formControlName="comunicaciones" />
+              <span class="check-custom"></span>
+              <span class="check-text">
+                {{ 'REGISTER.COMMON.COMMS_PREFIX' | translate }}
+                <a href="#" target="_blank">
+                  {{ 'REGISTER.COMMON.COMMS_LINK' | translate }}
+                </a>
+              </span>
+            </label>
+
+
+          </div>
+
+
+          <button type="submit" class="btn-primary">
+            {{ 'REGISTER.COMMON.NEXT' | translate }}
+          </button>
+        </form>
+
+        <div *ngIf="activeTab === 'hijos'" class="tab-content">
+
+          <form [formGroup]="childrenForm" (ngSubmit)="finish()" class="form-register">
+
+            <!-- TITULO TAB -->
+            <h4 class="section-title">
+              {{ 'REGISTER.CHILDREN.TITLE' | translate }}
+            </h4>
+
+            <!-- Nº HIJOS -->
+            <div class="form-group mb-4">
+              <label class="form-label">
+                {{ 'REGISTER.CHILDREN.COUNT' | translate }}
+              </label>
+
+              <select class="input-register" formControlName="numHijos" (change)="updateChildren()">
+                <option *ngFor="let n of [1,2,3,4,5]" [value]="n">
+                  {{ n }}
+                </option>
+              </select>
+            </div>
+
+            <!-- DATOS HIJOS -->
+            <div *ngFor="let index of hijosVisibles; trackBy: trackByIndex" class="child-card">
+
+
+              <div class="child-header">
+                <span class="child-badge">{{ index + 1 }}</span>
+                <h6 class="child-title">
+                  {{ 'REGISTER.CHILDREN.DATA' | translate:{ num: index + 1 } }}
+                </h6>
+              </div>
+
+              <div class="grid">
+                <div class="form-field">
+                  <label class="form-label">
+                    {{ 'REGISTER.COMMON.NAME' | translate }}
+                  </label>
+                  <input class="input-register" [formControlName]="'hijo' + (index + 1)" />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label">
+                    {{ 'REGISTER.COMMON.SURNAME' | translate }}
+                  </label>
+                  <input class="input-register" [formControlName]="'ape' + (index + 1)" />
+                </div>
+              </div>
+
+              <div class="grid mt-3">
+                <div class="form-field">
+                  <label class="form-label">
+                    {{ 'REGISTER.COMMON.BIRTHDATE' | translate }}
+                  </label>
+                  <input type="date" class="input-register" [formControlName]="'fech' + (index + 1)" />
+                </div>
+
+                <div class="form-field">
+                  <label class="form-label">
+                    {{ 'COMMON.ID' | translate }}
+                  </label>
+                  <input class="input-register" [formControlName]="'dni' + (index + 1)"
+                    (blur)="validateHijo(childrenForm.get('dni' + (index + 1))?.value, index)" />
+
+                </div>
+              </div>
+
+              <div class="validation-result success" *ngIf="estadoValidacionHijos[index] === true">
+                ✔ Jugador validado
+              </div>
+
+              <div class="validation-result error" *ngIf="estadoValidacionHijos[index] === false">
+                ✖ El jugador ya existe!
+              </div>
+
+
+            </div>
+
+            <!-- BOTONES -->
+            <div class="actions">
+
+              <button type="submit" class="btn btn-success w-100 btn-register" [disabled]="isLoading">
+                <ng-container *ngIf="!isLoading; else loadingTpl">
+                  {{ 'REGISTER.COMMON.FINISH' | translate }}
+                </ng-container>
+
+                <ng-template #loadingTpl>
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  Procesando...
+                </ng-template>
+              </button>
+
+              <button type="button" class="btn btn-outline-secondary" (click)="back()">
+                {{ 'REGISTER.COMMON.BACK' | translate }}
+              </button>
+
+            </div>
+
+          </form>
+        </div>
+
+
+        <!-- FOOTER -->
+        <div class="card-footer">
+          <div class="row text-center">
+            <div class="col-md-12">
+              <p>{{ 'REGISTER.AUTH.ALREADY_HAVE_ACCOUNT' | translate }} <a (click)="toLogin($event)" href="#">{{
+                  'REGISTER.AUTH.LOGIN_HERE' | translate }} </a>
+              </p>
+              <p>{{ 'REGISTER.COMMON.HELP' | translate }} <a href="#"
+                  onclick="event.preventDefault()">info&#64;sphairatech.com</a>
+              </p>
+              <p>{{ 'REGISTER.COMMON.WHATSAPP' | translate }} +34 623 91 17 72</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

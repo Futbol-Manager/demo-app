@@ -1,135 +1,221 @@
-<div class="submenu">
-  <div class="row">
-    <div class="col text-center">
-      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(0)">
-        <i class="bi bi-house"></i>
-        <span class="d-none d-md-inline">Inicio</span>
-      </a>
-    </div>
-    <div class="col">
-      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(7)">
-        <i class="bi bi-info-circle"></i>
-        <span class="d-none d-md-inline">Información Jugadores</span>
-      </a>
-    </div>
-    <div class="col">
-      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(8)">
-        <span class="icon-container d-none d-md-flex">
-          <i class="bi bi-bar-chart-line"></i>
-          <i class="bi bi-shield"></i>
-        </span>
-        <i class="bi bi-shield d-md-none"></i>
-        <span class="d-none d-md-inline">Estadísticas de Equipos</span>
-      </a>
-    </div>
-    <div class="col">
-      <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(9)">
-        <span class="icon-container d-none d-md-flex">
-          <i class="bi bi-bar-chart-line"></i>
-          <i class="bi bi-person"></i>
-        </span>
-        <i class="bi bi-person d-md-none"></i>
-        <span class="d-none d-md-inline">Estadísticas por Jugador</span>
-      </a>
-    </div>
+<div class="back-container">
+  <div class="btn-back-clean" href="javascript:void(0)" (click)="irAPantalla(0)">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
   </div>
 </div>
+<!-- ========================= -->
+<!-- CONTENEDOR PRINCIPAL -->
+<!-- ========================= -->
+<div class="container-fluid cuadro-dashboard">
+  <div class="row g-4">
 
-<div class="container">
-  <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
-    <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(1)">
-      <div class="card fixed-card" style="border: 1px solid black;">
-        <div class="card-body d-flex flex-column text-center">
-          <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-            Cuotas
-          </h5>
-          <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-            <div class="col d-flex justify-content-center align-items-center">
-              <img style="width: 10em;" src="/assets/iconos/cuotas.svg" class="card-img-top mx-auto d-block p-3"
-                alt="Icon">
-            </div>
+    <!-- ========================= -->
+    <!-- COLUMNA IZQUIERDA -->
+    <!-- OPCIONES -->
+    <!-- ========================= -->
+    <div class="col-12 col-xl-4 col-lg-5">
+      <div class="row g-3">
+
+        <div class="col-6" (click)="irAPantalla(7)">
+          <div class="option-card">
+            <i class="bi bi-person-badge"></i>
+            <h6>{{ 'CUADROMANDO.OPTIONS.PLAYERS' | translate }}</h6>
+            <small>{{ 'CUADROMANDO.OPTIONS.PLAYERS_DESC' | translate }}</small>
+          </div>
+        </div>
+
+        <div class="col-6" (click)="irAPantalla(8)">
+          <div class="option-card">
+            <i class="bi bi-diagram-3"></i>
+            <h6>{{ 'CUADROMANDO.OPTIONS.TEAMS' | translate }}</h6>
+            <small>{{ 'CUADROMANDO.OPTIONS.TEAMS_DESC' | translate }}</small>
+          </div>
+        </div>
+
+        <div class="col-6" (click)="irAPantalla(9)">
+          <div class="option-card">
+            <i class="bi bi-clipboard-data"></i>
+            <h6>{{ 'CUADROMANDO.OPTIONS.PLAYER' | translate }}</h6>
+            <small>{{ 'CUADROMANDO.OPTIONS.PLAYER_DESC' | translate }}</small>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="option-card disabled" (click)="null">
+            <i class="bi bi-person-raised-hand"></i>
+            <h6>{{ 'CUADROMANDO.OPTIONS.COACH' | translate }}</h6>
+            <small>{{ 'CUADROMANDO.OPTIONS.COACH_DESC' | translate }}</small>
+          </div>
+        </div>
+
+        <div class="col-6" (click)="irAPantalla(3)">
+          <div class="option-card disabled" (click)="null">
+            <i class="bi bi-cone-striped"></i>
+            <h6>{{ 'CUADROMANDO.OPTIONS.TRAINING' | translate }}</h6>
+            <small>{{ 'CUADROMANDO.OPTIONS.TRAINING_DESC' | translate }}</small>
           </div>
         </div>
       </div>
+
     </div>
-    <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(2)">
-      <div class="card fixed-card" style="border: 1px solid black;">
-        <div class="card-body d-flex flex-column text-center">
-          <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-            Puntuación equipos
-          </h5>
-          <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-            <div class="col d-flex justify-content-center align-items-center">
-              <img style="width: 10em;" src="/assets/iconos/puntos.svg" class="card-img-top mx-auto d-block p-3"
-                alt="Icon">
-            </div>
+
+    <!-- ========================= -->
+    <!-- COLUMNA DERECHA -->
+    <!-- ========================= -->
+    <div class="col-12 col-xl-8 col-lg-7">
+      <div class="row g-4">
+
+        <!-- RESULTADOS -->
+        <div class="col-12 col-xl-6">
+          <div class="info-card h-100">
+            <h5>{{ 'CUADROMANDO.RESULTS.TITLE' | translate }}</h5>
+
+            <!-- SKELETON -->
+            <ng-container *ngIf="loadingDashboard; else resultadosContent">
+              <div class="skeleton-card" *ngFor="let i of [1,2,3,4]">
+                <div class="skeleton-badge"></div>
+                <div class="skeleton-line w-70"></div>
+                <div class="skeleton-line w-40"></div>
+              </div>
+            </ng-container>
+
+            <!-- CONTENIDO REAL -->
+            <ng-template #resultadosContent>
+              <div class="match-card" *ngFor="let r of parsedResultados" [ngClass]="r.estado">
+                <div class="match-header">
+                  <span class="badge" [ngClass]="r.estado">
+                    {{ ('CUADROMANDO.RESULTS.' + r.estado | uppercase) | translate }}
+                  </span>
+                  <span class="status">
+                    {{ 'CUADROMANDO.RESULTS.FINISHED' | translate }}
+                  </span>
+
+                </div>
+
+                <div class="match-body">
+
+                  <!-- LOCAL -->
+                  <div class="team">
+                    <div class="team-name-wrapper">
+                      <span class="team-name">{{ r.local }}</span>
+                    </div>
+                    <span class="team-role">
+                      {{ 'CUADROMANDO.RESULTS.LOCAL' | translate }}
+                    </span>
+                  </div>
+
+                  <!-- MARCADOR + FECHA -->
+                  <div class="score-wrapper">
+                    <span class="match-date">{{ r.fecha }}</span>
+                    <div class="score">{{ r.marcador }}</div>
+                  </div>
+
+                  <!-- VISITANTE -->
+                  <div class="team team-visitor">
+                    <div class="team-name-wrapper">
+                      <span class="team-name">{{ r.visitante }}</span>
+                    </div>
+                    <span class="team-role">
+                      {{ 'CUADROMANDO.RESULTS.VISITOR' | translate }}
+                    </span>
+                  </div>
+
+                </div>
+              </div>
+            </ng-template>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(3)">
-      <div class="card fixed-card" style="border: 1px solid black;">
-        <div class="card-body d-flex flex-column text-center">
-          <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-            Entrenamientos creados
-          </h5>
-          <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-            <div class="col d-flex justify-content-center align-items-center">
-              <img style="width: 10em;" src="/assets/iconos/entrenamientos.svg" class="card-img-top mx-auto d-block p-3"
-                alt="Icon">
-            </div>
+
+        <div class="col-12 col-xl-6">
+
+          <div class="info-card calendar-card">
+            <h5>{{ 'CUADROMANDO.TRAINING_TODAY.TITLE' | translate }}</h5>
+
+            <ng-container *ngIf="loadingDashboard; else calendarContent">
+              <div class="skeleton-calendar">
+                <div class="skeleton-hour" *ngFor="let i of [1,2,3]"></div>
+              </div>
+            </ng-container>
+
+            <ng-template #calendarContent>
+              <div class="calendar">
+
+                <!-- Columna horas -->
+                <div class="calendar-hours">
+                  <div *ngFor="let h of horas" class="hour">
+                    {{ h }}
+                  </div>
+                </div>
+
+                <!-- Área eventos -->
+                <div class="calendar-body">
+                  <div class="calendar-event" *ngFor="let e of entrenamientosCalendar" [style.top.px]="e.top"
+                    [style.height.px]="e.height" [style.left.%]="e.left" [style.width.%]="e.width">
+                    <strong>{{ e.equipo }}</strong>
+                    <small>{{ e.hora }}</small>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+
           </div>
-        </div>
-      </div>
-    </div>
-    <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(4)">
-      <div class="card fixed-card" style="border: 1px solid black;">
-        <div class="card-body d-flex flex-column text-center">
-          <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-            Entrenando hoy:
-          </h5>
-          <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-            <div class="col d-flex justify-content-center align-items-center">
-              <ul class="scrollable-list">
-                <li *ngFor="let equipo of listTeams">{{ equipo }}</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(5)">
-      <div class="card fixed-card" style="border: 1px solid black;">
-        <div class="card-body d-flex flex-column text-center">
-          <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-            Resultados última jornada
-          </h5>
-          <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-            <div class="col d-flex justify-content-center align-items-center">
-              <ul class="scrollable-list">
-                <li *ngFor="let equipo of listUltimos" [ngClass]="{'text-success': equipo.startsWith('V'), 
-                                'text-danger': equipo.startsWith('D'), 
-                                'text-secondary': equipo.startsWith('E')}">
-                  {{ equipo }}
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="col mb-3" style="cursor: pointer;">
-      <div class="card fixed-card" style="border: 1px solid black;">
-        <div class="card-body d-flex flex-column text-center">
-          <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-            Proximos partidos
-          </h5>
-          <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-            <div class="col d-flex justify-content-center align-items-center">
-              <ul class="scrollable-list">
-                <li *ngFor="let equipo of listProximos">{{ equipo }}</li>
-              </ul>
-            </div>
+          <div class="info-card next-matches-card">
+            <h5>{{ 'CUADROMANDO.NEXT_MATCHES.TITLE' | translate }}</h5>
+
+            <!-- SKELETON -->
+            <ng-container *ngIf="loadingDashboard; else proximosContent">
+              <div class="match-skeleton" *ngFor="let i of [1,2]">
+                <div class="skeleton-circle"></div>
+                <div class="skeleton-vs"></div>
+                <div class="skeleton-circle"></div>
+              </div>
+            </ng-container>
+
+            <!-- CONTENIDO -->
+            <ng-template #proximosContent>
+              <div class="next-match" *ngFor="let p of listProximos">
+                <!-- LOCAL -->
+                <div class="team-side">
+                  <div class="team-avatar">
+                    <i class="bi bi-dribbble"></i>
+                  </div>
+
+                  <div class="team-info">
+                    <span class="team-name">{{ p.local }}</span>
+                    <span class="team-badge local">
+                      {{ 'CUADROMANDO.NEXT_MATCHES.LOCAL' | translate }}
+                    </span>
+                  </div>
+                </div>
+                <!-- CENTRO -->
+                <div class="center-box">
+                  <div class="date-badge">
+                    <span class="day">{{ p.dia }}</span>
+                    <span class="date">{{ p.fecha }}</span>
+                    <span class="time">{{ p.hora }}</span>
+                  </div>
+
+                </div>
+
+                <!-- VISITANTE -->
+                <div class="team-side right">
+                  <div class="team-info">
+                    <span class="team-name">
+                      {{ p.visitante || ('CUADROMANDO.NEXT_MATCHES.UNDEFINED' | translate) }}
+                    </span>
+                    <span class="team-badge visitante">
+                      {{ 'CUADROMANDO.NEXT_MATCHES.VISITOR' | translate }}
+                    </span>
+                  </div>
+
+                  <div class="team-avatar">
+                    <i class="bi bi-dribbble"></i>
+                  </div>
+                </div>
+
+              </div>
+            </ng-template>
           </div>
         </div>
       </div>

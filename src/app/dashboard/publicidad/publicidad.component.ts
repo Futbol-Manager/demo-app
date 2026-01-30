@@ -21,7 +21,7 @@ declare var bootstrap: any;
   styleUrls: ['./publicidad.component.scss']
 })
 export class PublicidadComponent implements OnInit {
-  
+
   listPatrocinadores: any[] = [];
   patrocinadorUpdate: Patrocinador = new Patrocinador({});
   showModalVerPatrocinador = false;
@@ -41,12 +41,12 @@ export class PublicidadComponent implements OnInit {
       this.profileId = this.usuarioActual!.profileType.profileId;
 
       //llamar a endpoint que de userId y profileId
-      if(this.profileId == 2 || this.profileId == 3){        
+      if(this.profileId == 2 || this.profileId == 3){
         this.clubService.getListPatrocinadoresByUser(this.userId, this.profileId).subscribe(
           (response: Response) => {
             if (response.data !== null) {
               this.listPatrocinadores = response.data;
-    
+
               const carouselElement = document.getElementById('carouselPatrocinadores');
               if (carouselElement) {
                 let num = this.listPatrocinadores.length * 1000;

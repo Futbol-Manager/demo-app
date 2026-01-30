@@ -1,236 +1,245 @@
-<div>
-    <div class="submenu">
-        <div class="row">
-            <div class="col">
-                <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
-                    <i class="bi bi-arrow-left-square-fill"></i>
-                    <span class="d-none d-md-inline">Volver</span>
-                </a>
-            </div>
-        </div>
-    </div>
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
 </div>
+<div class="app-shell">
 
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <div style="width: 10em;" class="col-12 col-md-3 bg-light p-3">
-            <!-- Botón de Redactar -->
-            <div *ngIf="usuarioActual!.profileType.profileId < 3" class="mb-3" (click)="newCorreo()">
-                <button style="background-color: white; height: 4em;"
-                    class="btn w-100 d-flex align-items-center border border-1">
-                    <i class="bi bi-pencil me-2 text-secondary"></i>
-                    <span class="text-secondary">Redactar</span>
-                </button>
-            </div>
+  <!-- ===== LAYOUT 3 COLUMNAS ===== -->
+  <div class="gmail-layout" [class.reading]="selectCorreo">
 
-            <!-- Menú de navegación -->
-            <ul class="list-unstyled">
-                <li class="mb-2">
-                    <a href="javascript:void(0);" class="d-flex align-items-center text-decoration-none text-dark"
-                        (click)="mostrarRecibidos()">
-                        <i class="bi bi-inbox me-2"></i>
-                        <span>Recibidos</span>
-                    </a>
-                </li>
-                <li *ngIf="usuarioActual!.profileType.profileId < 3">
-                    <a href="javascript:void(0);" class="d-flex align-items-center text-decoration-none text-dark"
-                        (click)="mostrarEnviados()">
-                        <i class="bi bi-send me-2"></i>
-                        <span>Enviados</span>
-                    </a>
-                </li>
-            </ul>
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar-gmail">
+
+      <!-- BOTÓN REDACTAR -->
+      <button class="compose-gmail" (click)="newCorreo()">
+        <i class="bi bi-pencil"></i>
+        <span class="compose-label">
+          {{ 'NOTIFICATIONS.COMPOSE' | translate }}
+        </span>
+      </button>
+
+
+      <!-- NAVEGACIÓN -->
+      <nav class="nav-gmail">
+
+        <a class="nav-item active" [class.active]="currentFolder === 'inbox'" (click)="mostrarRecibidos()">
+          <i class="bi bi-inbox"></i>
+          <span class="label">
+            {{ 'NOTIFICATIONS.INBOX' | translate }}
+          </span>
+
+          <!-- CONTADOR -->
+          <span class="badge" *ngIf="receivedCount  > 0">
+            {{ receivedCount }}
+          </span>
+        </a>
+
+        <a class="nav-item" [class.active]="currentFolder === 'sent'" (click)="mostrarEnviados()">
+          <i class="bi bi-send"></i>
+          <span class="label">
+            {{ 'NOTIFICATIONS.SENT' | translate }}
+          </span>
+        </a>
+
+      </nav>
+
+    </aside>
+
+
+    <!-- ===== LISTA DE CORREOS ===== -->
+    <section class="mail-list">
+      <!-- 🔥 SKELETON -->
+      <ng-container *ngIf="loadingCorreos; else correoList">
+
+        <div class="mail-skeleton" *ngFor="let sk of [1,2,3,4,5,6,7,8]">
+          <div class="sk-left">
+            <div class="sk-line sk-from"></div>
+            <div class="sk-line sk-subject"></div>
+          </div>
+          <div class="sk-date"></div>
+        </div>
+      </ng-container>
+
+      <!-- ===== LISTA REAL ===== -->
+      <ng-template #correoList>
+
+        <!-- FILTROS -->
+        <div class="filters" *ngIf="currentFolder === 'inbox'">
+          <button class="filter-btn" [class.active]="currentFilter === 'all'" (click)="mostrarTodos()">
+            {{ 'NOTIFICATIONS.ALL' | translate }}
+          </button>
+
+          <button class="filter-btn" [class.active]="currentFilter === 'read'" (click)="mostrarLeidos()">
+            {{ 'NOTIFICATIONS.READ' | translate }}
+          </button>
+
+          <button class="filter-btn" [class.active]="currentFilter === 'unread'" (click)="mostrarNoLeidos()">
+            {{ 'NOTIFICATIONS.UNREAD' | translate }}
+          </button>
         </div>
 
-        <!-- Main Content -->
-        <div class="col-12 col-md-9 p-3" style="height: 100vh;">
-            <!-- Filters -->
-            <!-- Filters -->
-            <div class="d-flex mb-3">
-                <button style="margin-right: 2em;" class="btn btn-outline-primary" (click)="mostrarTodos()"
-                    *ngIf="showBtn">Todos</button>
-                <button style="margin-right: 2em;" class="btn btn-outline-success" (click)="mostrarLeidos()"
-                    *ngIf="showBtn">Leídos</button>
-                <button class="btn btn-outline-danger" (click)="mostrarNoLeidos()" *ngIf="showBtn">No Leídos</button>
-            </div>
-            <!-- Email List with Scroll -->
-            <div class="list-group" style="height: calc(70% - 3rem); overflow-y: auto;">
-                <div class="list-group-item d-flex align-items-center" *ngFor="let correo of correos; let i = index"
-                    [ngStyle]="{
-              'background-color': correo.leido ? 'rgba(211, 211, 211, 0.5)' : 'rgba(255, 255, 255, 0.5)',
-              'cursor': 'pointer'
-            }" (click)="openCorreo(correo, i)">
-                    <div class="d-flex align-items-center flex-wrap w-100" style="gap: 1rem;">
-                        <!-- Destinatario -->
-                        <span *ngIf="showBtn" class="text-primary"><strong>Remitente:</strong> {{ correo.remitente
-                            }}</span>
-                        <span *ngIf="!showBtn" class="text-primary"><strong>Para:</strong> {{ correo.destinatario
-                            }}</span>
-                        <!-- Asunto -->
-                        <span class="fw-bold">{{ correo.asunto }}</span>
-                        <!-- Cuerpo -->
-                        <span class="text-muted text-truncate" style="flex: 1;">Abrir para ver el mensaje...</span>
-                        <!-- fecha -->
-                        <span class="text-muted text-truncate" style="flex: 1; text-align: end; margin-right: 2em;">{{
-                            correo.fechaCreate }}</span>
-                    </div>
-                    <!-- Ícono de papelera -->
-                    <button class="btn btn-link text-danger p-0 ms-auto"
-                        (click)="deleteCorreo(correo, i); $event.stopPropagation()" title="Eliminar correo">
-                        <i class="bi bi-trash3-fill" style="font-size: 1.2rem;"></i>
-                    </button>
-                </div>
-            </div>
+        <div class="mail-item" *ngFor="let correo of correos; let i = index" [class.unread]="!correo.leido && showBtn"
+          [class.sent]="!showBtn" [class.active]="correo === correoSelected" (click)="openCorreo(correo, i)">
+
+
+          <!-- IZQUIERDA -->
+          <div class="mail-main">
+            <span class="from">
+              <span class="unread-dot" *ngIf="showBtn && correo.leido === 0"></span>
+              {{ showBtn ? correo.remitente : correo.destinatario }}
+            </span>
+
+            <span class="subject">
+              {{ correo.asunto }}
+              <span class="preview">
+                – {{ 'NOTIFICATIONS.OPEN_MESSAGE' | translate }}
+              </span>
+            </span>
+          </div>
+
+          <!-- DERECHA -->
+          <div class="mail-actions">
+            <span class="date">
+              {{ correo.fechaCreate }}
+            </span>
+
+            <button class="delete-btn" (click)="deleteCorreo(correo, i); $event.stopPropagation()"
+              title="{{ 'NOTIFICATIONS.DELETE' | translate }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+
         </div>
+
+
+      </ng-template>
+
+    </section>
+
+    <!-- ===== PANEL DE LECTURA ===== -->
+
+    <!-- SKELETON (MIENTRAS CARGA) -->
+    <section class="mail-reader" *ngIf="loadingCorreos">
+      <div class="reader-placeholder">
+        <div class="sk-line sk-title"></div>
+        <div class="sk-line sk-paragraph"></div>
+        <div class="sk-line sk-paragraph"></div>
+        <div class="sk-line sk-paragraph short"></div>
+      </div>
+    </section>
+
+    <!-- LECTURA REAL -->
+    <section class="mail-reader" *ngIf="!loadingCorreos && selectCorreo">
+      <!-- 🔙 VOLVER SOLO EN MOBILE -->
+      <button class="btn-back-clean mobile-back" (click)="cerrarLectura()">
+        <i class="bi bi-arrow-left"></i>
+        <span>{{ 'NOTIFICATIONS.MESSAGES' | translate }}</span>
+      </button>
+
+      <h1 class="reader-subject">
+        {{ correoSelected.asunto }}
+      </h1>
+
+      <div class="reader-meta">
+        <strong>{{ correoSelected.remitente }}</strong>
+      </div>
+      <div class="reader-meta">
+        {{ 'NOTIFICATIONS.SENT_AT' | translate }}
+        {{ correoSelected.fechaCreate }}
+      </div>
+      <hr>
+
+      <div class="reader-body" [innerHTML]="correoSelected.body"></div>
+    </section>
+
+    <!-- EMPTY STATE (CARGADO PERO SIN SELECCIÓN) -->
+    <section class="mail-reader" *ngIf="!loadingCorreos && !selectCorreo">
+      <div class="empty-reader">
+        {{ 'NOTIFICATIONS.SELECT_MESSAGE' | translate }}
+      </div>
+    </section>
+  </div>
+
+  <!-- ================= MODAL NUEVO CORREO ================= -->
+  <div *ngIf="showModalNew" class="custom-modal-backdrop" >
+
+    <div class="modal fade show d-block" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-xl compose-modal">
+        <div class="modal-content mail-compose-modal">
+
+          <!-- HEADER -->
+          <div class="modal-header">
+            <h5 class="modal-title">
+              <i class="bi bi-envelope-paper me-2"></i>
+              {{ 'NOTIFICATIONS.COMPOSE' | translate }}
+            </h5>
+            <button type="button" class="btn-close" (click)="cerrarModalNew()"></button>
+          </div>
+
+          <!-- BODY -->
+          <div class="modal-body">
+
+            <!-- DESTINATARIOS -->
+            <div class="mb-3">
+              <label class="form-label">
+                {{ 'NOTIFICATIONS.TO' | translate }}
+              </label>
+
+              <select [(ngModel)]="correoNew.destinatarios" class="form-control" id="destinatarios">
+
+                <option *ngIf="usuarioActual!.profileType.profileId == 1" value="0">
+                  Para todo el club
+                </option>
+
+                <option *ngIf="usuarioActual!.profileType.profileId == 1" value="1">
+                  Para todos los entrenadores
+                </option>
+
+                <option *ngFor="let team of listTeamsForCombo" [value]="team.value">
+                  Para el equipo {{ team.name }}
+                </option>
+
+              </select>
+            </div>
+
+            <!-- ASUNTO -->
+            <div class="mb-3">
+              <label class="form-label">
+                {{ 'NOTIFICATIONS.SUBJECT' | translate }}
+              </label>
+              <input type="text" [(ngModel)]="correoNew.asunto" class="form-control" placeholder="Escribe el asunto">
+            </div>
+
+            <!-- MENSAJE -->
+            <div class="mb-3">
+              <label class="form-label">
+                {{ 'NOTIFICATIONS.MESSAGE' | translate }}
+              </label>
+
+              <!-- Summernote -->
+              <div id="summernoteNew" class="compose-editor">
+              </div>
+            </div>
+
+          </div>
+
+          <!-- FOOTER -->
+          <div class="modal-footer">
+
+            <button class="btn btn-secondary" (click)="cerrarModalNew()">
+              {{ 'NOTIFICATIONS.CANCEL' | translate }}
+            </button>
+
+            <button class="btn btn-success" (click)="guardarCorreo()" [disabled]="!correoNew.asunto">
+              <i class="bi bi-send me-1"></i>
+              {{ 'NOTIFICATIONS.SEND' | translate }}
+            </button>
+
+          </div>
+
+        </div>
+      </div>
     </div>
-</div>
-
-<!-- Modal para ver el correo -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">Correo</h5>
-                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <!-- poner aqui el contenido -->
-                        <div class="row mb-3" *ngIf="!this.showBtn">
-                            <!-- fecha -->
-                            <span class="text-muted text-truncate" style="flex: 1;">Enviado el: {{
-                                correoSelected.fechaCreate }}</span>
-                            <div class="col-12 col-md-12">
-                                <div class="col-12 col-md-12">
-                                    <label for="correoTo" class="form-label"><strong>Para:</strong></label>
-                                    <input type="text" id="correoTo" class="form-control custom-input"
-                                        [(ngModel)]="correoSelected.destinatario" readonly>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row mb-3" *ngIf="this.showBtn">
-                            <!-- fecha -->
-                            <span class="text-muted text-truncate" style="flex: 1;">Enviado el: {{
-                                correoSelected.fechaCreate }}</span>
-                            <!-- Destinatario -->
-                            <div class="col-12 col-md-12">
-                                <label for="correoTo" class="form-label"><strong>Remitente:</strong></label>
-                                <input type="text" id="correoTo" class="form-control custom-input"
-                                    [(ngModel)]="correoSelected.remitente" readonly>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <!-- Destinatario -->
-                            <div class="col-12 col-md-12">
-                                <label for="asunto" class="form-label"><strong>Asunto:</strong></label>
-                                <input type="text" id="asunto" class="form-control custom-input"
-                                    [(ngModel)]="correoSelected.asunto" readonly>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12 col-md-12">
-                                <label for="correoBody" class="form-label"><strong>Mensaje:</strong></label>
-                                <!-- Contenedor para Summernote -->
-                                <div class="form-control custom-input" id="summernote"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <!-- Botón para guardar el nuevo equipo -->
-                        <button type="submit" class="btn btn-success float-end" (click)="cerrarModal()">Cerrar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-<!-- Modal para crear un nuevo correo -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalNew}">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">Correo</h5>
-                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalNew()"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3">
-                        <!-- poner aqui el contenido -->
-                        <div class="row mb-3">
-                            <!-- Destinatario
-                            <div class="col-12">
-                                <label for="correoTo" class="form-label"><strong>Para:</strong></label>
-                                <input type="text" id="correoTo" class="form-control custom-input"
-                                    [(ngModel)]="correoSelected.c">
-                            </div> -->
-                            <div class="col-12 col-md-12">
-                                <select class="form-control custom-input" id="destinatarios" name="destinatarios"
-                                    [(ngModel)]="correoNew.destinatarios">
-                                    <option *ngIf="this.usuarioActual!.profileType.profileId == 1" value="0">Para todo
-                                        el club</option>
-                                    <option *ngIf="this.usuarioActual!.profileType.profileId == 1" value="1">Para todos
-                                        los entrenadores</option>
-                                    <option *ngFor="let team of listTeamsForCombo" [value]="team.value">Para el
-                                        equipo
-                                        {{ team.name }}</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row mb-3">
-                            <!-- Destinatario -->
-                            <div class="col-12">
-                                <label for="asunto" class="form-label"><strong>Asunto:</strong></label>
-                                <input type="text" id="asunto" class="form-control custom-input"
-                                    [(ngModel)]="correoNew.asunto">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-12">
-                                <label for="correoBody" class="form-label"><strong>Mensaje:</strong></label>
-                                <!-- Contenedor para Summernote -->
-                                <div class="form-control custom-input" id="summernoteNew"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <!-- Botón para guardar el nuevo equipo -->
-                        <button type="submit" class="btn btn-danger float-end"
-                            (click)="cerrarModalNew()">Cancelar</button>
-                        <button *ngIf="correoSelected.asunto == ''" type="submit" class="btn btn-custom float-end"
-                            (click)="guardarCorreo()">Enviar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para ver el correo -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': isSending}">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">Correo</h5>
-                    <button type="button" class="btn-close" aria-label="Close" (click)="cerrarEnviando()"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="spinner-container">
-                        <!-- Aquí va el HTML del spinner -->
-                        <div class="envelope">
-                            <div class="flap"></div>
-                            <div class="paper"></div>
-                        </div>
-                        <p class="spinner-text">Enviando... Puedes esperar a que termine o cerrar la ventana.</p>
-                    </div>
-                    <button class="btn btn-custom float-end" (click)="cerrarEnviando()">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+  </div>

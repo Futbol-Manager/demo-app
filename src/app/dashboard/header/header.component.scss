@@ -1,45 +1,477 @@
-.nav-link {
-  font-weight: bold;
+/* ========================= */
+/* HEADER BASE               */
+/* ========================= */
+.theme-header {
+  background: linear-gradient(135deg, #31b270 0%, #1f8f8a 45%, #002c40 100%);
+  padding: 0.4rem 0;
+  min-height: 68px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
 }
 
-.dropdown {
-  list-style: none;
+.theme-header,
+.theme-header a,
+.theme-header h5,
+.theme-header i {
+  color: #ffffff;
 }
 
-a {
+/* ========================= */
+/* FLEX LAYOUT CONTROL       */
+/* ========================= */
+.theme-header .container-fluid .row {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+/* LOGO SIEMPRE A LA IZQUIERDA */
+.theme-header .logo-image {
+  order: 1;
+  margin-right: auto;
+}
+
+/* AYUDA */
+.theme-header .header-action {
+  order: 2;
+}
+
+/* DESCARGAR APP */
+.theme-header .header-action + .header-action {
+  order: 3;
+}
+
+/* PERFIL (USUARIO) SIEMPRE AL FINAL */
+.theme-header .nav-user,
+.theme-header .user-container {
+  order: 4;
+}
+
+/* ========================= */
+/* BOTONES AYUDA / DESCARGA  */
+/* ========================= */
+.header-action {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  font-weight: 600;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+  margin-left: 0.4rem;
+}
+
+.header-action:hover {
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.header-action i {
+  font-size: 1.1rem;
+}
+
+/* ========================= */
+/* USUARIO                   */
+/* ========================= */
+.user-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+  margin-left: 0.4rem;
+}
+
+.user-container:hover {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.account-user-avatar img {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+}
+
+.user-name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.user-arrow {
+  font-size: 1.1rem;
+  opacity: 0.75;
+}
+
+/* ========================= */
+/* DROPDOWNS                 */
+/* ========================= */
+.dropdown-menu {
+  margin-top: 0.6rem;
+  border-radius: 14px;
+  border: none;
+  background-color: #002c40;
+  min-width: 220px;
+  padding: 0.5rem 0;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+}
+
+.dropdown-item {
+  padding: 0.6rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  transition: background 0.2s ease, padding-left 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(155, 158, 156, 0.5);
+  padding-left: 1.4rem;
+}
+
+/* ========================= */
+/* LOGO                      */
+/* ========================= */
+.logo-image {
+  height: 48px;
+  width: auto;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.logo-image:hover {
+  transform: scale(1.06);
+  opacity: 0.95;
+}
+/* =================================================
+   HEADER MOBILE – RESPONSIVE
+   ================================================= */
+@media (max-width: 767px) {
+  /* ===== HEADER GENERAL ===== */
+  .theme-header {
+    padding: 0.25rem 0.75rem;
+    max-width: 100vw;
+    box-sizing: border-box;
+
+    /* 🔥 CLAVE: permitir dropdowns */
+    overflow: visible !important;
+    position: relative;
+    z-index: 1050; /* encima del contenido */
+  }
+
+  /* Safe-area iOS (notch) */
+  @supports (-webkit-touch-callout: none) {
+    .theme-header {
+      padding-left: calc(0.75rem + env(safe-area-inset-left));
+      padding-right: calc(0.75rem + env(safe-area-inset-right));
+    }
+  }
+
+  /* ===== LOGO ===== */
+  .theme-header .col-auto.me-auto {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .logo-image {
+    height: 52px;
+    max-width: 200px;
+    width: auto;
+    object-fit: contain;
+  }
+
+  /* ===== BLOQUE DERECHO ===== */
+  .theme-header .col-auto {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem !important;
+    flex-shrink: 0;
+
+    /* 🔥 permitir clicks */
+    overflow: visible;
+  }
+
+  /* ===== ICONOS (AYUDA / DESCARGA) ===== */
+  .theme-header .header-action {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+
+    padding: 0.25rem;
+    margin: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* 🔥 zona clicable real */
+    pointer-events: auto;
+    z-index: 2;
+  }
+
+  .theme-header .header-action i {
+    font-size: 1.25rem;
+    opacity: 0.95;
+  }
+
+  .theme-header .header-action span {
+    display: none !important;
+  }
+
+  /* ===== USUARIO / AVATAR ===== */
+  .theme-header .user-container {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+
+    padding: 0.25rem;
+    margin-left: 0.25rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    max-width: 44px;
+    pointer-events: auto;
+    z-index: 2;
+  }
+
+  .account-user-avatar img {
+    width: 34px;
+    height: 34px;
+    object-fit: cover;
+    border: none;
+  }
+
+  .user-name,
+  .user-arrow {
+    display: none !important;
+  }
+
+  /* ===== DROPDOWNS ===== */
+  .dropdown {
+    position: relative;
+  }
+
+  .dropdown-menu {
+    position: absolute !important;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    left: auto;
+
+    z-index: 1060; /* 🔥 encima del header */
+    pointer-events: auto;
+  }
+
+  /* Quitar caret */
+  .dropdown-toggle::after {
+    display: none !important;
+  }
+}
+
+/* EXTRA: móviles muy pequeños */
+@media (max-width: 360px) {
+  .logo-image {
+    height: 58px;
+    max-width: 150px;
+  }
+}
+
+/* ===== MODAL BASE ===== */
+.profile-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1055;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+/* Evita scroll del body detrás */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* ===== CONTENIDO ===== */
+.profile-modal-content {
+  border-radius: 16px;
+  border: none;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+/* ===== HEADER ===== */
+.profile-modal-header {
+  padding: 1.2rem 1.5rem;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.profile-modal-header h5 {
+  margin: 0;
+  font-weight: 700;
+}
+
+/* ===== BODY ===== */
+.profile-modal-body {
+  padding: 1.5rem;
+}
+
+/* ===== AVATAR ===== */
+.profile-avatar-section {
+  text-align: center;
+}
+
+.avatar-wrapper {
+  width: 130px;
+  height: 130px;
+  margin: auto;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #31b270, #1f8f8a);
+  padding: 4px;
+}
+
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  background: white;
+}
+
+.upload-label {
+  display: inline-block;
+  margin-top: 0.6rem;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  border-radius: 20px;
+  background: rgba(49, 178, 112, 0.15);
+  color: #1f8f8a;
   cursor: pointer;
 }
 
-.nav-link.dropdown-toggle.arrow-none.nav-user.px-2::after {
-  display: none;
+/* ===== FORM ===== */
+.profile-form .form-label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #002c40;
 }
 
-.nav-link .d-lg-flex {
-  display: flex;
-  /* Muestra los elementos en fila */
-  align-items: center;
-  /* Alinea el contenido verticalmente */
+.profile-form .form-control {
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid #d1d5db;
 }
 
-.img-custom {
-  width: auto;
-  height: 3em;
+.profile-form .form-control:focus {
+  border-color: #31b270;
+  box-shadow: 0 0 0 0.2rem rgba(49, 178, 112, 0.2);
 }
 
-/* Estilos para móvil */
+/* ===== FOOTER ===== */
+.profile-modal-footer {
+  padding: 1rem 1.5rem;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+}
+
+/* ===== MOBILE ===== */
 @media (max-width: 767px) {
-  .logo-image {
-    width: 8em;
-    /* Ancho de la imagen en móvil */
+  .avatar-wrapper {
+    width: 110px;
+    height: 110px;
+  }
+
+  .profile-modal-body {
+    padding: 1rem;
   }
 }
-
-/* Estilos para PC */
-@media (min-width: 768px) {
-  .logo-image {
-    width: 19em;
-    /* Ancho de la imagen en PC */
-  }
+/* ===== MODAL BASE ===== */
+.lang-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1055;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
 }
 
-.dropdown-menu { z-index: 2000; }
+/* ===== CONTENIDO ===== */
+.lang-modal-content {
+  width: 100%;
+  max-width: 380px;
+  border-radius: 16px;
+  border: none;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+}
+
+/* ===== HEADER ===== */
+.lang-modal-header {
+  padding: 1.2rem 1.4rem;
+  background: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.lang-modal-header h5 {
+  margin: 0;
+  font-weight: 700;
+}
+
+/* ===== BODY ===== */
+.lang-modal-body {
+  padding: 1.2rem 1.4rem 1.4rem;
+}
+
+/* ===== IDIOMAS ===== */
+.lang-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.lang-option {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.65rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 600;
+}
+
+.lang-option:hover {
+  background: #f3f4f6;
+}
+
+.lang-option.active {
+  border-color: #31b270;
+  background: rgba(49, 178, 112, 0.12);
+  box-shadow: 0 0 0 2px rgba(49, 178, 112, 0.25);
+}
+
+.lang-option .flag {
+  font-size: 1.4rem;
+}
+
+.lang-option .label {
+  font-size: 0.95rem;
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 480px) {
+  .lang-modal-content {
+    max-width: 90%;
+  }
+}

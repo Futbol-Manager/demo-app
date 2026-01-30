@@ -6,16 +6,15 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { TranslateService } from '@ngx-translate/core';
-
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-new-cuotas',
   templateUrl: './new-cuotas.component.html',
-  styleUrls: ['./new-cuotas.component.scss']
+  styleUrls: ['./new-cuotas.component.scss'],
 })
 export class NewCuotasComponent implements OnInit {
-
-  datosCargados = false;
+  datosCargados = true;
   temporadaStoredValue = '2025';
   clubId = 0;
   showModalBanco = false;
@@ -27,6 +26,8 @@ export class NewCuotasComponent implements OnInit {
   showModalCuota = false;
   cuotaSeleccionada = false;
   nuevaCuota: any = {};
+  columnaActual: string = '';
+  ordenAscendente: boolean = true;
 
   listTeams: any[] = [];
   /*{ value: number; name: string }[] = [
@@ -60,6 +61,8 @@ export class NewCuotasComponent implements OnInit {
   aceptStripe = false;
   showModalStripe = false;
   infoClub: any = {};
+  paginaActual = 1;
+  itemsPorPagina = 50;
 
   // Modal state
   showModalCuotasJugador = false;
@@ -78,7 +81,7 @@ export class NewCuotasComponent implements OnInit {
     descripcion: '',
     importe: '',
     fechaLimite: '',
-    obligatorio: 0 // o boolean si lo manejas como boolean
+    obligatorio: 0, // o boolean si lo manejas como boolean
   };
 
   playerIndex = 0;
@@ -92,7 +95,7 @@ export class NewCuotasComponent implements OnInit {
     { value: 'day', label: 'Día' },
     { value: 'week', label: 'Semana' },
     { value: 'month', label: 'Mes' },
-    { value: 'year', label: 'Año' }
+    { value: 'year', label: 'Año' },
   ];
 
   soloLectura = false;
@@ -104,19 +107,24 @@ export class NewCuotasComponent implements OnInit {
     private location: Location,
     private clubService: ClubService,
     private teamService: TeamService,
-    private translate: TranslateService) { }
+    private translate: TranslateService,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit(): void {
-    this.loginService.usuarioActual.subscribe(user => {
+    this.loginService.usuarioActual.subscribe((user) => {
       // Suscribirse a los cambios en los parámetros de la URL
-      this.route.params.subscribe(params => {
+      this.route.params.subscribe((params) => {
         // Obtener el valor de clubId de los parámetros
-        this.clubId = +params['clubId'];  // El + convierte el valor a número
+        this.clubId = +params['clubId']; // El + convierte el valor a número
         //console.log('clubId:', this.clubId);
       });
     });
 
-    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+    if (
+      localStorage.getItem('temporada') != null &&
+      localStorage.getItem('temporada') != undefined
+    ) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
 
@@ -124,97 +132,173 @@ export class NewCuotasComponent implements OnInit {
   }
 
   loadTabla() {
-    this.clubService.getListPlayersPagosClub(this.clubId, this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // eliminar duplicados por playerId
-        const uniquePlayers = Array.from(
-          new Map(response.data.map((p: any) => [p.playerId, p])).values()
-        );
+    this.isLoading = true;
+    this.clubService
+      .getListPlayersPagosClub(this.clubId, this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          console.log(response.data);
+          // eliminar duplicados por playerId
+          const uniquePlayers = Array.from(
+            new Map(response.data.map((p: any) => [p.playerId, p])).values()
+          );
 
-        this.listaPlayers = uniquePlayers;
-        this.listaPlayersFiltrados = [...this.listaPlayers];
-        this.isLoading = false;
-        //this.datosCargados = true;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+          this.listaPlayers = uniquePlayers;
+          this.listaPlayersFiltrados = [...this.listaPlayers];
+          this.isLoading = false;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
+        }
+      );
+  }
+  calcularProgreso(player: any): number {
+    if (!player.totalAPagar || player.totalAPagar === 0) {
+      return 0;
+    }
+
+    return Math.min((player.totalPagado / player.totalAPagar) * 100, 100);
+  }
+
+  get totalPaginas(): number {
+    return Math.ceil(this.listaPlayersFiltrados.length / this.itemsPorPagina);
+  }
+
+  get paginaInicio(): number {
+    return (this.paginaActual - 1) * this.itemsPorPagina;
+  }
+
+  get paginaFin(): number {
+    const fin = this.paginaInicio + this.itemsPorPagina;
+    return fin > this.listaPlayersFiltrados.length
+      ? this.listaPlayersFiltrados.length
+      : fin;
+  }
+
+  get playersPaginados() {
+    return this.listaPlayersFiltrados.slice(this.paginaInicio, this.paginaFin);
+  }
+  paginaSiguiente() {
+    if (this.paginaActual < this.totalPaginas) {
+      this.paginaActual++;
+    }
+  }
+
+  paginaAnterior() {
+    if (this.paginaActual > 1) {
+      this.paginaActual--;
+    }
+  }
+
+  cambiarItemsPorPagina() {
+    this.itemsPorPagina = Number(this.itemsPorPagina);
+    this.paginaActual = 1;
   }
 
   resetPagosPlayers() {
     this.isLoading = true;
-    this.clubService.updateInfoPagosPlayer(this.clubId, this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data) {
-          this.loadTabla();
-          alert('Datos actualzados.');
+    this.clubService
+      .updateInfoPagosPlayer(this.clubId, this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data) {
+            this.loadTabla();
+            this.toastr.success('Datos actualizados.');
+          }
+          this.isLoading = false;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
+          this.toastr.error('Error al cargar el listado de equipos');
         }
-        this.isLoading = false;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   filtrarJugadores() {
     const texto = this.filtro.toLowerCase();
-    this.listaPlayersFiltrados = this.listaPlayers.filter(p =>
-    (`${p.nombre} ${p.apellido}`.toLowerCase().includes(texto) ||
-      p.nameTeam.toLowerCase().includes(texto))
+    this.listaPlayersFiltrados = this.listaPlayers.filter(
+      (p) =>
+        `${p.nombre} ${p.apellido}`.toLowerCase().includes(texto) ||
+        p.nameTeam.toLowerCase().includes(texto)
     );
   }
 
   ordenarPor(campo: string) {
-    if (this.ordenActual === campo) {
-      this.ascendente = !this.ascendente;
+    if (this.columnaActual === campo) {
+      this.ordenAscendente = !this.ordenAscendente;
     } else {
-      this.ordenActual = campo;
-      this.ascendente = true;
+      this.columnaActual = campo;
+      this.ordenAscendente = true;
     }
 
-    this.listaPlayersFiltrados.sort((a, b) => {
-      const valA = a[campo] || '';
-      const valB = b[campo] || '';
-      return this.ascendente ? valA.localeCompare(valB) : valB.localeCompare(valA);
+    this.listaPlayersFiltrados.sort((a: any, b: any) => {
+      const valorA = a[campo];
+      const valorB = b[campo];
+
+      // Si ambos son números
+      if (!isNaN(valorA) && !isNaN(valorB)) {
+        return this.ordenAscendente ? valorA - valorB : valorB - valorA;
+      }
+
+      // Comparación como texto
+      const textoA = valorA?.toString().toLowerCase() || '';
+      const textoB = valorB?.toString().toLowerCase() || '';
+
+      if (textoA < textoB) return this.ordenAscendente ? -1 : 1;
+      if (textoA > textoB) return this.ordenAscendente ? 1 : -1;
+      return 0;
     });
+
+    // IMPORTANTE: volver a la primera página
+    this.paginaActual = 1;
   }
 
-  openModalPago(player: any, index: number) {
+  openModalPago(player: any) {
     this.playerSelected = player.playerId;
     this.addPago = {};
     this.textoInfoTitlePagoPlayer = player.nombre;
-    this.clubService.getListPagosClubForPlayer(this.clubId, this.temporadaStoredValue, player.playerId).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.listaCuotas = response.data;
+    this.clubService
+      .getListPagosClubForPlayer(
+        this.clubId,
+        this.temporadaStoredValue,
+        player.playerId
+      )
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.listaCuotas = response.data;
+          }
+          this.showModalAddPago = true;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-        this.showModalAddPago = true;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
-  openModalVerPagosPlayer(player: any, index: number) {
-    this.clubService.getListHistoryPagosByPlayer(this.clubId, this.temporadaStoredValue, player.playerId).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.listHistoryPagos = response.data;
-          this.showModalHistorialPagos = true;
+  openModalVerPagosPlayer(player: any) {
+    this.clubService
+      .getListHistoryPagosByPlayer(
+        this.clubId,
+        this.temporadaStoredValue,
+        player.playerId
+      )
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.listHistoryPagos = response.data;
+            this.showModalHistorialPagos = true;
+          }
+          this.isLoading = false;
+          //this.datosCargados = true;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-        this.isLoading = false;
-        //this.datosCargados = true;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   cerrarModalHistorialPagos() {
@@ -224,29 +308,37 @@ export class NewCuotasComponent implements OnInit {
 
   openModalEditar(player: any) {
     this.playerSelected = player.playerId;
-    this.clubService.getListPagosClubForPlayer(this.clubId, this.temporadaStoredValue, player.playerId).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.listCuotasPlayerPersonal = response.data;
-        }
-        this.clubService.getListPagosClub(this.clubId, this.temporadaStoredValue).subscribe(
-          (response: Response) => {
-            // Verifica que la propiedad 'data' exista en la respuesta
-            if (response.data !== null) {
-              this.listAllCuotas = response.data;
-            }
-            this.showModalCuotasJugador = true;
-          },
-          (error) => {
-            console.error('Error al cargar el listado de equipos', error);
+    this.clubService
+      .getListPagosClubForPlayer(
+        this.clubId,
+        this.temporadaStoredValue,
+        player.playerId
+      )
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.listCuotasPlayerPersonal = response.data;
           }
-        );
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+          this.clubService
+            .getListPagosClub(this.clubId, this.temporadaStoredValue)
+            .subscribe(
+              (response: Response) => {
+                // Verifica que la propiedad 'data' exista en la respuesta
+                if (response.data !== null) {
+                  this.listAllCuotas = response.data;
+                }
+                this.showModalCuotasJugador = true;
+              },
+              (error) => {
+                console.error('Error al cargar el listado de equipos', error);
+              }
+            );
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
+        }
+      );
   }
 
   goBack(): void {
@@ -258,20 +350,22 @@ export class NewCuotasComponent implements OnInit {
   }
 
   openModalBancoClub() {
-    this.clubService.getBancoClub(this.clubId, this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.bancoClubData = response.data;
-          //this.infoClub = response.data.infoClub;
-          //this.clubCuotas.temporada = response.data.temporada === null ? temporada : response.data.temporada;
+    this.clubService
+      .getBancoClub(this.clubId, this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.bancoClubData = response.data;
+            //this.infoClub = response.data.infoClub;
+            //this.clubCuotas.temporada = response.data.temporada === null ? temporada : response.data.temporada;
+          }
+          this.showModalBanco = true;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-        this.showModalBanco = true;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   cerrarModalBancoClub() {
@@ -284,11 +378,12 @@ export class NewCuotasComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.bancoClubData = response.data;
-          alert('Datos guardados correctamente');
+          this.toastr.success('Datos guardados correctamente.');
         }
       },
       (error) => {
-        console.error('Error al cargar el listado de equipos', error);
+        this.toastr.error('Error al cargar el listado de equipos.');
+        console.error('', error);
       }
     );
   }
@@ -296,23 +391,26 @@ export class NewCuotasComponent implements OnInit {
   openModalCuotas() {
     this.cerrarDatosStripe();
     this.soloLectura = false;
-    this.clubService.getListPagosClub(this.clubId, this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.listaCuotas = response.data;
+    this.clubService
+      .getListPagosClub(this.clubId, this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.listaCuotas = response.data;
+          }
+          this.showModalCuotas = true;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-        this.showModalCuotas = true;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   cuotasFiltradas(): any[] {
-    return this.listaCuotas.filter(cuota => {
-      const coincideTitulo = this.filtroTitulo.trim() === '' ||
+    return this.listaCuotas.filter((cuota) => {
+      const coincideTitulo =
+        this.filtroTitulo.trim() === '' ||
         cuota.titulo.toLowerCase().includes(this.filtroTitulo.toLowerCase());
 
       const coincideObligatoria =
@@ -343,8 +441,7 @@ export class NewCuotasComponent implements OnInit {
       if (cuota.tipoPagoStripe == 1) {
         this.isSubscription = true;
         this.soloLectura = true;
-      } else
-        this.isSubscription = false;
+      } else this.isSubscription = false;
     }
     this.showModalCuota = true;
   }
@@ -353,7 +450,10 @@ export class NewCuotasComponent implements OnInit {
     const ok = confirm(`¿Eliminar el pago "${cuota.titulo}"?`);
     if (!ok) return;
 
-    let pago = cuota.PagoClubId != null && cuota.PagoClubId != undefined ? cuota.PagoClubId : cuota.pagoClubId;
+    let pago =
+      cuota.PagoClubId != null && cuota.PagoClubId != undefined
+        ? cuota.PagoClubId
+        : cuota.pagoClubId;
 
     this.clubService.deletePagoClub(pago).subscribe(
       (response: Response) => {
@@ -362,8 +462,11 @@ export class NewCuotasComponent implements OnInit {
           this.listaCuotas.splice(index, 1);
           this.reloadTabla();
         } else {
-          alert(response.error.msg);
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          this.toastr.error('Error: ', response.error.msg);
+          console.error(
+            'La respuesta del servicio no tiene la estructura esperada',
+            response
+          );
         }
       },
       (error) => {
@@ -376,9 +479,17 @@ export class NewCuotasComponent implements OnInit {
     this.listTeamsSelecteds = [];
     this.cuotaSeleccionada = false;
     this.nuevaCuota = {
-      pagoClubId: 0, clubId: this.clubId, temporada: this.temporadaStoredValue,
-      dateCreate: null, dateEdit: null, titulo: null, descripcion: null, obligatorio: 0, importe: null,
-      fechaLimite: null, stripe: null
+      pagoClubId: 0,
+      clubId: this.clubId,
+      temporada: this.temporadaStoredValue,
+      dateCreate: null,
+      dateEdit: null,
+      titulo: null,
+      descripcion: null,
+      obligatorio: 0,
+      importe: null,
+      fechaLimite: null,
+      stripe: null,
     };
 
     this.rellenarCombo(null);
@@ -390,27 +501,46 @@ export class NewCuotasComponent implements OnInit {
 
   guardarCuota() {
     const err = this.validarStripe();
-    if (err) { alert(err); return; }
+    if (err) {
+      this.toastr.error('Error: ', err);
+
+      return;
+    }
 
     if (this.listTeamsSelecteds.length == 0) {
-      alert('Por favor, selecciona mínimo un equipo.');
+       this.toastr.error('Por favor, selecciona mínimo un equipo.');
       return;
     } else {
-      if (this.nuevaCuota.titulo && this.nuevaCuota.titulo != ''
-        && this.nuevaCuota.descripcion && this.nuevaCuota.descripcion != ''
-        && this.nuevaCuota.importe && this.nuevaCuota.importe != ''
-        && this.nuevaCuota.fechaLimite && this.nuevaCuota.fechaLimite != '') {
-
+      if (
+        this.nuevaCuota.titulo &&
+        this.nuevaCuota.titulo != '' &&
+        this.nuevaCuota.descripcion &&
+        this.nuevaCuota.descripcion != '' &&
+        this.nuevaCuota.importe &&
+        this.nuevaCuota.importe != '' &&
+        this.nuevaCuota.fechaLimite &&
+        this.nuevaCuota.fechaLimite != ''
+      ) {
         // 🔁 Conversión explícita
         this.nuevaCuota.importe = String(this.nuevaCuota.importe);
         this.nuevaCuota.obligatorio = this.nuevaCuota.obligatorio ? 1 : 0;
         this.nuevaCuota.listTeams = this.listTeamsSelecteds;
 
-        if (this.nuevaCuota.stripe == 1 && this.nuevaCuota.tipoPagoStripe == 1) {
-          if (this.nuevaCuota.fechaInicio == null || this.nuevaCuota.fechaInicio == undefined || this.nuevaCuota.fechaInicio == ''
-            || this.nuevaCuota.fechaFin == null || this.nuevaCuota.fechaFin == undefined || this.nuevaCuota.fechaFin == ''
+        if (
+          this.nuevaCuota.stripe == 1 &&
+          this.nuevaCuota.tipoPagoStripe == 1
+        ) {
+          if (
+            this.nuevaCuota.fechaInicio == null ||
+            this.nuevaCuota.fechaInicio == undefined ||
+            this.nuevaCuota.fechaInicio == '' ||
+            this.nuevaCuota.fechaFin == null ||
+            this.nuevaCuota.fechaFin == undefined ||
+            this.nuevaCuota.fechaFin == ''
           ) {
-            alert('Por favor, Para una suscripción con Stripe, es obligatorio poner las fechas de inicio y de fin.');
+             this.toastr.error(
+              'Por favor, Para una suscripción con Stripe, es obligatorio poner las fechas de inicio y de fin.'
+            );
             return;
           }
         }
@@ -422,82 +552,89 @@ export class NewCuotasComponent implements OnInit {
               if (!this.cuotaSeleccionada) this.listaCuotas.push(response.data);
 
               this.reloadTabla();
-              alert('Datos guardados correctamente');
+              this.toastr.success('Datos guardados correctamente.');
               this.cerrarModalCuota();
             }
           },
           (error) => {
+            this.toastr.error('Error al cargar el listado de equipos.', error);
             console.error('Error al cargar el listado de equipos', error);
           }
         );
       } else {
-        alert('Rellena todos los campos.');
+         this.toastr.error('Rellena todos los campos.');
       }
     }
   }
 
-
-
   crearSuscripcion() {
-    if (this.nuevaCuota?.stripe !== 1 || this.nuevaCuota?.tipoPagoStripe !== 1) return;
+    if (this.nuevaCuota?.stripe !== 1 || this.nuevaCuota?.tipoPagoStripe !== 1)
+      return;
 
-    let pago = this.nuevaCuota.PagoClubId != null && this.nuevaCuota.PagoClubId != undefined ? this.nuevaCuota.PagoClubId : this.nuevaCuota.pagoClubId;
+    let pago =
+      this.nuevaCuota.PagoClubId != null &&
+      this.nuevaCuota.PagoClubId != undefined
+        ? this.nuevaCuota.PagoClubId
+        : this.nuevaCuota.pagoClubId;
 
     const body = {
-      pagoClubId: pago,   // el ID devuelto al guardar
-      clubId: this.clubId,                      // o desde la cuota
-      accountId: this.accountIdDelClub,         // acct_xxx del club
+      pagoClubId: pago, // el ID devuelto al guardar
+      clubId: this.clubId, // o desde la cuota
+      accountId: this.accountIdDelClub, // acct_xxx del club
       titulo: this.nuevaCuota.titulo,
       descripcion: this.nuevaCuota.descripcion,
       importe: Number(this.nuevaCuota.importe),
       currency: 'eur',
-      intervalo: this.nuevaCuota.intervalo,           // 'month' por defecto
+      intervalo: this.nuevaCuota.intervalo, // 'month' por defecto
       intervaloCuenta: this.nuevaCuota.intervaloCuenta, // 1 por defecto
       fechaInicio: this.nuevaCuota.fechaInicio || null,
-      fechaFin: this.nuevaCuota.fechaFin || null
+      fechaFin: this.nuevaCuota.fechaFin || null,
     };
 
-    this.teamService.createSubscriptionPlan(body)
-      .subscribe({
-        next: (resp) => {
-          if (resp.status === 200) {
-            // puedes guardar stripePriceId/productId en tu modelo si te los devuelve también el clubService
-            console.log('Plan creado:', resp.data);
-          } else {
-            alert('Error creando plan de suscripción');
-          }
-        },
-        error: (err) => {
-          console.error(err);
-          alert('Error creando plan de suscripción');
+    this.teamService.createSubscriptionPlan(body).subscribe({
+      next: (resp) => {
+        if (resp.status === 200) {
+          // puedes guardar stripePriceId/productId en tu modelo si te los devuelve también el clubService
+          console.log('Plan creado:', resp.data);
+        } else {
+          this.toastr.error('Error creando plan de suscripción.');
         }
-      });
+      },
+      error: (err) => {
+        console.error(err);
+        this.toastr.error('Error creando plan de suscripción.');
+      },
+    });
   }
 
   rellenarCombo(cuota: any) {
-    this.teamService.getTeamsByClubForCombo(this.clubId, this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.listTeams = response.data;
-          if (cuota) {
-            this.listTeamsSelecteds = cuota.listTeams;
+    this.teamService
+      .getTeamsByClubForCombo(this.clubId, this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.listTeams = response.data;
+            if (cuota) {
+              this.listTeamsSelecteds = cuota.listTeams;
+            }
+            this.showModalCuota = true;
+          } else {
+            console.error(
+              'La respuesta del servicio no tiene la estructura esperada',
+              response
+            );
           }
-          this.showModalCuota = true;
-
-        } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   // Opcional: para mostrar los nombres de los equipos seleccionados
   getTeamNameById(id: number): string {
-    const found = this.listTeams.find(t => t.value === id);
+    const found = this.listTeams.find((t) => t.value === id);
     return found ? found.name : 'Desconocido';
   }
 
@@ -518,13 +655,17 @@ export class NewCuotasComponent implements OnInit {
     if (this.isAllSelected()) {
       this.listTeamsSelecteds = [];
     } else {
-      this.listTeamsSelecteds = this.listTeams.map(t => t.value);
+      this.listTeamsSelecteds = this.listTeams.map((t) => t.value);
     }
   }
 
   createUpdateHistoryCuotaJugador() {
     if (this.addPago) {
-      if (this.addPago.importe && this.addPago.metodo && this.addPago.datePago) {
+      if (
+        this.addPago.importe &&
+        this.addPago.metodo &&
+        this.addPago.datePago
+      ) {
         this.addPago.temporada = this.temporadaStoredValue;
         this.addPago.playerId = this.playerSelected;
         this.addPago.clubId = this.clubId;
@@ -534,9 +675,10 @@ export class NewCuotasComponent implements OnInit {
             if (response.data !== null && response.status == 200) {
               this.addPago = {};
               this.reloadTabla();
-              alert('Datos guardados correctamente');
+              this.toastr.success('Datos guardados correctamente.');
+
             } else {
-              alert(response.error.msg);
+              this.toastr.error('Error: ',response.error.msg);
             }
           },
           (error) => {
@@ -544,10 +686,10 @@ export class NewCuotasComponent implements OnInit {
           }
         );
       } else {
-        alert('Rellena minimo el importe, la fecha y el método de pago.');
+         this.toastr.error('Rellena minimo el importe, la fecha y el método de pago.');
       }
     } else {
-      alert('Rellena los campos.');
+       this.toastr.error('Rellena los campos.');
     }
   }
 
@@ -556,7 +698,9 @@ export class NewCuotasComponent implements OnInit {
   }
 
   actualizarImporte(): void {
-    const cuotaSeleccionada = this.listaCuotas.find(c => c.pagoClubId === +this.addPago.pagoClubId);
+    const cuotaSeleccionada = this.listaCuotas.find(
+      (c) => c.pagoClubId === +this.addPago.pagoClubId
+    );
     if (cuotaSeleccionada) {
       this.addPago.importe = cuotaSeleccionada.importe;
       this.addPago.totalPagado = cuotaSeleccionada.importe;
@@ -577,8 +721,13 @@ export class NewCuotasComponent implements OnInit {
   }
 
   okDevolverPagoClub() {
-    if (!this.metodoDevolucion || this.comentarioDevolucion == null || this.comentarioDevolucion == undefined || this.comentarioDevolucion == '') {
-      alert('Debes seleccionar un método de devolución y explicar por qué.');
+    if (
+      !this.metodoDevolucion ||
+      this.comentarioDevolucion == null ||
+      this.comentarioDevolucion == undefined ||
+      this.comentarioDevolucion == ''
+    ) {
+       this.toastr.error('Debes seleccionar un método de devolución y explicar por qué.');
       return;
     }
 
@@ -588,7 +737,7 @@ export class NewCuotasComponent implements OnInit {
       playerId: this.playerSelected,
       pagoClubId: this.pagoDevolucion.pagoClubId,
       comentario: this.comentarioDevolucion,
-      metodo: this.metodoDevolucion
+      metodo: this.metodoDevolucion,
     };
 
     this.clubService.devolverPagoClubById(pago).subscribe(
@@ -603,9 +752,9 @@ export class NewCuotasComponent implements OnInit {
           this.isLoading = true;
           this.reloadTabla();
           this.showConfirmDevolucion = false;
-          alert('Devolución hecha correctamente');
+          this.toastr.success('Devolución hecha correctamente.');
         } else {
-          alert(response.error.msg);
+          this.toastr.error('Error: ', response.error.msg);
         }
       },
       (error) => {
@@ -616,35 +765,43 @@ export class NewCuotasComponent implements OnInit {
 
   reloadTabla() {
     this.isLoading = true;
-    this.clubService.getListPlayersPagosClub(this.clubId, this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.listaPlayers = response.data;
-          this.listaPlayersFiltrados = [...this.listaPlayers];
+    this.clubService
+      .getListPlayersPagosClub(this.clubId, this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.listaPlayers = response.data;
+            this.listaPlayersFiltrados = [...this.listaPlayers];
+          }
+          this.isLoading = false;
+          //this.datosCargados = true;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-        this.isLoading = false;
-        //this.datosCargados = true;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   openModalCuotasAsignadas(player: any) {
-    this.clubService.getListPagosClubForPlayer(this.clubId, this.temporadaStoredValue, player.playerId).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.listaCuotasAsignadas = response.data;
+    this.clubService
+      .getListPagosClubForPlayer(
+        this.clubId,
+        this.temporadaStoredValue,
+        player.playerId
+      )
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.listaCuotasAsignadas = response.data;
+          }
+          this.showModalCuotasAsignadas = true;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-        this.showModalCuotasAsignadas = true;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   cerrarModalCuotasAsignadas() {
@@ -667,11 +824,11 @@ export class NewCuotasComponent implements OnInit {
           if (response.data) {
             window.open(response.data.url, '_blank');
           } else {
-            alert('Error: ' + response.error);
+            this.toastr.error('Error: ' + response.error);
           }
         },
         (error) => {
-          alert('An error occurred: ' + error.message);
+           this.toastr.error('An error occurred: ' + error.message);
           console.log(error);
         }
       );
@@ -683,24 +840,28 @@ export class NewCuotasComponent implements OnInit {
   }
 
   getInfoClub() {
-    this.clubService.getBancoClub(this.clubId, this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.infoClub = response.data;
-          if (this.infoClub.banco != null && this.infoClub.banco != '') {
-            this.showModalStripe = true;
-          } else {
-            alert('Por favor, completa esta información para poder acceder a Stripe.');
-            this.showModalBanco = true;
+    this.clubService
+      .getBancoClub(this.clubId, this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.infoClub = response.data;
+            if (this.infoClub.banco != null && this.infoClub.banco != '') {
+              this.showModalStripe = true;
+            } else {
+               this.toastr.error(
+                'Por favor, completa esta información para poder acceder a Stripe.'
+              );
+              this.showModalBanco = true;
+            }
+            console.log(this.infoClub.urlStripe);
           }
-          console.log(this.infoClub.urlStripe);
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   cerrarModalCuotasJugador(): void {
@@ -709,34 +870,44 @@ export class NewCuotasComponent implements OnInit {
 
   addCuotaPlayer(): void {
     if (!this.cuotaSeleccionadaId) {
-      alert('Selecciona una cuota primero.');
+       this.toastr.error('Selecciona una cuota primero.');
       return;
     }
 
     const ok = confirm(`¿Añadir el pago del jugador?`);
     if (!ok) return;
 
-    this.clubService.addPagoClubForPlayer(this.cuotaSeleccionadaId, this.playerSelected, this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data) {
-          this.listCuotasPlayerPersonal.push(response.data);
-          this.reloadTabla();
+    this.clubService
+      .addPagoClubForPlayer(
+        this.cuotaSeleccionadaId,
+        this.playerSelected,
+        this.temporadaStoredValue
+      )
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data) {
+            this.listCuotasPlayerPersonal.push(response.data);
+            this.reloadTabla();
+          }
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
+      );
+    console.log(
+      'Añadir cuota al jugador -> pagoClubId:',
+      this.cuotaSeleccionadaId
     );
-    console.log('Añadir cuota al jugador -> pagoClubId:', this.cuotaSeleccionadaId);
 
     // Aquí haces la llamada al servicio para asignar la cuota al jugador.
     // this.tuService.asignarCuotaAJugador(playerId, this.cuotaSeleccionadaId).subscribe(...)
   }
 
   editarCuotaPlayer(pago: any, index: number): void {
-    const msg = 'Esto no modifica el pago, crea uno nuevo con los datos modificados para poder usar los 2 en un futuro. '
-      + 'Para modificar un pago, ir al menú de Pagos.';
+    const msg =
+      'Esto no modifica el pago, crea uno nuevo con los datos modificados para poder usar los 2 en un futuro. ' +
+      'Para modificar un pago, ir al menú de Pagos.';
 
     const ok = confirm(`"${msg}" ¿Ok?`);
     if (!ok) return;
@@ -753,41 +924,49 @@ export class NewCuotasComponent implements OnInit {
     if (!ok) return;
     this.playerIndex = index;
 
-    this.clubService.deletePagoClubForPlayer(cuota.pagoClubId, this.temporadaStoredValue, this.playerSelected).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data) {
-          this.listCuotasPlayerPersonal.splice(this.playerIndex, 1);
-          this.reloadTabla();
-        } else {
-          const mensaje = this.translate.instant('CAL.TEXT_363');
-          alert(mensaje);
-          this.listCuotasPlayerPersonal.splice(this.playerIndex, 1);
-          this.reloadTabla();
+    this.clubService
+      .deletePagoClubForPlayer(
+        cuota.pagoClubId,
+        this.temporadaStoredValue,
+        this.playerSelected
+      )
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data) {
+            this.listCuotasPlayerPersonal.splice(this.playerIndex, 1);
+            this.reloadTabla();
+          } else {
+            const mensaje = this.translate.instant('CAL.TEXT_363');
+             this.toastr.error(mensaje);
+            this.listCuotasPlayerPersonal.splice(this.playerIndex, 1);
+            this.reloadTabla();
+          }
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
 
     console.log('Eliminar cuota del jugador:', cuota);
     // this.tuService.eliminarCuotaDeJugador(playerId, cuota.pagoClubId).subscribe(...)
   }
 
   guardarEdicionCuotaPlayer() {
-    this.clubService.createUpdatePagoClubForPlayer(this.cuotaPlayerEdit, this.playerSelected).subscribe({
-      next: (res) => {
-        this.reloadTabla();
-        alert('Pago modificado correctamente');
-        this.showModalEditarCuotaPlayer = false;
-        // refrescar lista si hace falta
-      },
-      error: (err) => {
-        console.error(err);
-        alert('Error al subir el documento');
-      }
-    });
+    this.clubService
+      .createUpdatePagoClubForPlayer(this.cuotaPlayerEdit, this.playerSelected)
+      .subscribe({
+        next: (res) => {
+          this.reloadTabla();
+           this.toastr.success('Pago modificado correctamente');
+          this.showModalEditarCuotaPlayer = false;
+          // refrescar lista si hace falta
+        },
+        error: (err) => {
+          console.error(err);
+           this.toastr.error('Error al subir el documento');
+        },
+      });
   }
 
   cerrarModalEditarCuotaPlayer() {
@@ -801,25 +980,37 @@ export class NewCuotasComponent implements OnInit {
   // Llama a esto cuando abras el modal para editar/crear, para sincronizar el UI
   initStripeUIFromModel() {
     this.showStripeConfig = this.nuevaCuota?.stripe === 1;
-    this.isSubscription = this.showStripeConfig && this.nuevaCuota?.tipoPagoStripe === 1;
+    this.isSubscription =
+      this.showStripeConfig && this.nuevaCuota?.tipoPagoStripe === 1;
 
     // Defaults sensatos si vienen nulos
     if (!this.nuevaCuota) return;
-    if (this.nuevaCuota.tipoPagoStripe === undefined || this.nuevaCuota.tipoPagoStripe === null) {
+    if (
+      this.nuevaCuota.tipoPagoStripe === undefined ||
+      this.nuevaCuota.tipoPagoStripe === null
+    ) {
       this.nuevaCuota.tipoPagoStripe = 0; // puntual por defecto
     }
     if (!this.nuevaCuota.intervalo) {
       this.nuevaCuota.intervalo = 'month';
     }
-    if (!this.nuevaCuota.intervaloCuenta || this.nuevaCuota.intervaloCuenta < 1) {
+    if (
+      !this.nuevaCuota.intervaloCuenta ||
+      this.nuevaCuota.intervaloCuenta < 1
+    ) {
       this.nuevaCuota.intervaloCuenta = 1;
     }
+  }
+  trackByPlayerId(index: number, player: any) {
+    return player.playerId;
   }
 
   // Toggle principal: 0/1 en el modelo
   onToggleStripe(ev: Event) {
     if (this.nuevaCuota.pagoClubId == 0) {
-      alert('Para habilitar Stripe sobre este pago, primero créalo y después lo buscas y desde edición, lo habilitas.');
+       this.toastr.error(
+        'Para habilitar Stripe sobre este pago, primero créalo y después lo buscas y desde edición, lo habilitas.'
+      );
       this.nuevaCuota.stripe = 0;
       return;
     }
@@ -828,47 +1019,58 @@ export class NewCuotasComponent implements OnInit {
     if (!checked) {
       //this.cerrarDatosStripe();
       return;
-    };
+    }
 
     //vamos a comprobar que tiene stripe configurado
-    this.clubService.getBancoClub(this.clubId, this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.infoClub = response.data;
-          //si no hay datos bancarios, que los ponga
-          if (this.infoClub.banco == null && this.infoClub.banco == undefined) {
-            alert('Por favor, completa esta información para poder acceder a Stripe.');
-            this.cerrarDatosStripe();
-            this.showModalBanco = true;
-            return;
-          }
+    this.clubService
+      .getBancoClub(this.clubId, this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.infoClub = response.data;
+            //si no hay datos bancarios, que los ponga
+            if (
+              this.infoClub.banco == null &&
+              this.infoClub.banco == undefined
+            ) {
+               this.toastr.error(
+                'Por favor, completa esta información para poder acceder a Stripe.'
+              );
+              this.cerrarDatosStripe();
+              this.showModalBanco = true;
+              return;
+            }
 
-          if (this.infoClub.stripeId !== null && this.infoClub.stripeId !== undefined && this.infoClub.stripeId !== '') {
-            this.accountIdDelClub = this.infoClub.stripeId;
-            //carga bien            
-            this.nuevaCuota.stripe = checked ? 1 : 0;
-            this.mostrarDatosStripe();
+            if (
+              this.infoClub.stripeId !== null &&
+              this.infoClub.stripeId !== undefined &&
+              this.infoClub.stripeId !== ''
+            ) {
+              this.accountIdDelClub = this.infoClub.stripeId;
+              //carga bien
+              this.nuevaCuota.stripe = checked ? 1 : 0;
+              this.mostrarDatosStripe();
+            } else {
+              this.cerrarDatosStripe();
+               this.toastr.error('Por favor, crea primero la cuenta en Stripe.');
+              this.showModalStripe = true;
+            }
           } else {
             this.cerrarDatosStripe();
-            alert('Por favor, crea primero la cuenta en Stripe.');
-            //se muestra alert y se abre modal stripe
-            this.showModalStripe = true;
           }
-        } else {
-          this.cerrarDatosStripe();
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   // Pediste que al cambiar llame a este método
   mostrarDatosStripe() {
     this.showStripeConfig = this.nuevaCuota.stripe === 1;
-    this.isSubscription = this.showStripeConfig && this.nuevaCuota.tipoPagoStripe === 1;
+    this.isSubscription =
+      this.showStripeConfig && this.nuevaCuota.tipoPagoStripe === 1;
 
     // Si desactivas Stripe, limpia campos de suscripción
     if (!this.showStripeConfig) {
@@ -899,7 +1101,7 @@ export class NewCuotasComponent implements OnInit {
   // Cambiar tipo puntual/suscripción
   onTipoPagoChange(tipo: 0 | 1) {
     this.nuevaCuota.tipoPagoStripe = tipo;
-    this.isSubscription = (tipo === 1);
+    this.isSubscription = tipo === 1;
 
     if (tipo === 0) {
       // Si vuelven a puntual, oculta y limpia fechas/periodicidad
@@ -921,13 +1123,14 @@ export class NewCuotasComponent implements OnInit {
         return 'La “cantidad de periodos” debe ser al menos 1.';
       }
       // Fechas son opcionales; si las usas, asegúrate de que inicio <= fin
-      if (this.nuevaCuota.fechaInicio && this.nuevaCuota.fechaFin &&
-        this.nuevaCuota.fechaInicio > this.nuevaCuota.fechaFin) {
+      if (
+        this.nuevaCuota.fechaInicio &&
+        this.nuevaCuota.fechaFin &&
+        this.nuevaCuota.fechaInicio > this.nuevaCuota.fechaFin
+      ) {
         return 'La fecha de inicio no puede ser posterior a la fecha de fin.';
       }
     }
     return null;
   }
-
-
 }

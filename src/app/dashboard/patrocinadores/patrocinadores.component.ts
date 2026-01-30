@@ -15,18 +15,18 @@ declare var bootstrap: any;
 @Component({
   selector: 'app-patrocinadores',
   templateUrl: './patrocinadores.component.html',
-  styleUrls: ['./patrocinadores.component.scss']
+  styleUrls: ['./patrocinadores.component.scss'],
 })
 export class PatrocinadoresComponent implements OnInit {
-
   datosCargados: boolean = false;
   usuarioActual!: User | null;
   clubId = 0;
-
+  selectedImageFile: File | null = null;
   datosCargando = false;
   listPatrocinadores: any[] = [];
   showModalCrearPatro = false;
   showModalUpdatePatrocinador = false;
+  isSaving = false;
 
   patrocinadorObj: Patrocinador = new Patrocinador({});
   patrocinadorUpdate: Patrocinador = new Patrocinador({});
@@ -48,94 +48,115 @@ export class PatrocinadoresComponent implements OnInit {
     private clubService: ClubService,
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private location: Location) { }
+    private location: Location,
+  ) {}
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       // Obtener el valor de teamId de los parámetros
-      this.clubId = +params['clubId'];  // El + convierte el valor a número
+      this.clubId = +params['clubId']; // El + convierte el valor a número
       console.log('clubId:', this.clubId);
     });
 
-    this.loginService.usuarioActual.subscribe(user => {
+    this.loginService.usuarioActual.subscribe((user) => {
       this.usuarioActual = user;
       this.userId = user?.userId;
       this.profileId = this.usuarioActual!.profileType.profileId;
 
       //llamar a endpoint que de userId y profileId
       if (this.profileId == 0) {
-        this.clubService.getListPatrocinadoresByUser(this.userId, this.profileId).subscribe(
-          (response: Response) => {
-            if (response.data !== null) {
-              this.listPatrocinadores = response.data;
-
-              const carouselElement = document.getElementById('carouselPatrocinadores');
-              if (carouselElement) {
-                let num = this.listPatrocinadores.length * 1000;
-                const carousel = new bootstrap.Carousel(carouselElement, {
-                  interval: num, // Cambia el tiempo de transición (ms)
-                  wrap: true
-                });
+        this.clubService
+          .getListPatrocinadoresByUser(this.userId, this.profileId)
+          .subscribe(
+            (response: Response) => {
+              if (response.data !== null) {
+                this.listPatrocinadores = response.data;
+                console.log(this.listPatrocinadores);
+                const carouselElement = document.getElementById(
+                  'carouselPatrocinadores',
+                );
+                if (carouselElement) {
+                  let num = this.listPatrocinadores.length * 1000;
+                  const carousel = new bootstrap.Carousel(carouselElement, {
+                    interval: num, // Cambia el tiempo de transición (ms)
+                    wrap: true,
+                  });
+                }
+                this.datosCargados = true;
+              } else {
+                console.error(
+                  'La respuesta del servicio no tiene la estructura esperada',
+                  response,
+                );
               }
-              this.datosCargados = true;
-            } else {
-              console.error('La respuesta del servicio no tiene la estructura esperada', response);
-            }
-          },
-          (error) => {
-            console.error('Error al cargar el listado de equipos', error);
-          }
-        );
+            },
+            (error) => {
+              console.error('Error al cargar el listado de equipos', error);
+            },
+          );
       } else if (this.profileId == 2 || this.profileId == 3) {
-        this.clubService.getListPatrocinadoresByUser(this.userId, this.profileId).subscribe(
-          (response: Response) => {
-            if (response.data !== null) {
-              this.listPatrocinadores = response.data;
+        this.clubService
+          .getListPatrocinadoresByUser(this.userId, this.profileId)
+          .subscribe(
+            (response: Response) => {
+              if (response.data !== null) {
+                this.listPatrocinadores = response.data;
 
-              const carouselElement = document.getElementById('carouselPatrocinadores');
-              if (carouselElement) {
-                let num = this.listPatrocinadores.length * 1000;
-                const carousel = new bootstrap.Carousel(carouselElement, {
-                  interval: num, // Cambia el tiempo de transición (ms)
-                  wrap: true
-                });
+                const carouselElement = document.getElementById(
+                  'carouselPatrocinadores',
+                );
+                if (carouselElement) {
+                  let num = this.listPatrocinadores.length * 1000;
+                  const carousel = new bootstrap.Carousel(carouselElement, {
+                    interval: num, // Cambia el tiempo de transición (ms)
+                    wrap: true,
+                  });
+                }
+                this.datosCargados = true;
+              } else {
+                console.error(
+                  'La respuesta del servicio no tiene la estructura esperada',
+                  response,
+                );
               }
-              this.datosCargados = true;
-            } else {
-              console.error('La respuesta del servicio no tiene la estructura esperada', response);
-            }
-          },
-          (error) => {
-            console.error('Error al cargar el listado de equipos', error);
-          }
-        );
+            },
+            (error) => {
+              console.error('Error al cargar el listado de equipos', error);
+            },
+          );
       } else {
         this.clubService.getListPatrocinadoresByClub(this.clubId).subscribe(
           (response: Response) => {
             if (response.data !== null) {
               this.listPatrocinadores = response.data;
 
-              const carouselElement = document.getElementById('carouselPatrocinadores');
+              const carouselElement = document.getElementById(
+                'carouselPatrocinadores',
+              );
               if (carouselElement) {
                 let num = this.listPatrocinadores.length * 1000;
                 const carousel = new bootstrap.Carousel(carouselElement, {
                   interval: num, // Cambia el tiempo de transición (ms)
-                  wrap: true
+                  wrap: true,
                 });
               }
               this.datosCargados = true;
             } else {
-              console.error('La respuesta del servicio no tiene la estructura esperada', response);
+              console.error(
+                'La respuesta del servicio no tiene la estructura esperada',
+                response,
+              );
             }
             this.datosCargando = false;
           },
           (error) => {
             console.error('Error al cargar el listado de equipos', error);
-          }
+          },
         );
       }
     });
+    console.log(this.listPatrocinadores);
   }
 
   irAPantalla(id: number): void {
@@ -167,7 +188,11 @@ export class PatrocinadoresComponent implements OnInit {
   }
 
   confirmDeletePatrocinador(id: number, index: number, nombre: string) {
-    const confirmacion = confirm('AVISO: Vas a eliminar para siempre este patrocinador de nombre: ' + nombre + '. ¿Estás seguro?');
+    const confirmacion = confirm(
+      'AVISO: Vas a eliminar para siempre este patrocinador de nombre: ' +
+        nombre +
+        '. ¿Estás seguro?',
+    );
 
     if (confirmacion) {
       this.deletePatrocinador(id, index);
@@ -180,12 +205,15 @@ export class PatrocinadoresComponent implements OnInit {
         if (response.data !== null) {
           this.listPatrocinadores.splice(index);
         } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          console.error(
+            'La respuesta del servicio no tiene la estructura esperada',
+            response,
+          );
         }
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
-      }
+      },
     );
   }
 
@@ -195,12 +223,15 @@ export class PatrocinadoresComponent implements OnInit {
       (response: Response) => {
         if (response.data !== null) {
         } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          console.error(
+            'La respuesta del servicio no tiene la estructura esperada',
+            response,
+          );
         }
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
-      }
+      },
     );
   }
 
@@ -209,36 +240,80 @@ export class PatrocinadoresComponent implements OnInit {
   }
 
   createUpdatePatrocinador(opcion: number) {
-    this.patrocinadorObj.clubId = this.clubId;
-    if(this.profileId == 0) this.patrocinadorObj.federacionId = this.userId;
+    if (this.isSaving) return;
 
-    if (opcion === 2) {
-      this.patrocinadorObj = this.patrocinadorUpdate;
+    let patrocinador =
+      opcion === 2
+        ? { ...this.patrocinadorUpdate }
+        : { ...this.patrocinadorObj };
+
+    patrocinador.clubId = this.clubId;
+    if (this.profileId === 0) {
+      patrocinador.federacionId = this.userId;
     }
 
-    if (this.patrocinadorObj.nombre !== '' && this.patrocinadorObj.beneficios !== '' && this.patrocinadorObj.descripcion !== '' && this.patrocinadorObj.mail !== ''
-      && this.patrocinadorObj.telefono !== '' && this.patrocinadorObj.web !== '') {
-      this.clubService.createUpdatePatrocinador(this.patrocinadorObj).subscribe(
-        (response: Response) => {
-          if (response.data !== null) {
-            if (opcion === 2) {
-              this.listPatrocinadores[this.selectedPatro] = this.patrocinadorUpdate;
-              this.cerrarPatrocinador();
-            } else {
-              this.listPatrocinadores.push(response.data);
-              this.cerrarModalCrearPatro();
-            }
+    if (
+      patrocinador.nombre &&
+      patrocinador.beneficios &&
+      patrocinador.descripcion &&
+      patrocinador.mail &&
+      patrocinador.telefono &&
+      patrocinador.web
+    ) {
+      this.isSaving = true;
+
+      this.clubService.createUpdatePatrocinador(patrocinador).subscribe({
+        next: (response: any) => {
+          if (!response?.data) {
+            this.isSaving = false;
+            return;
+          }
+
+          const patrocinadorCreado = response.data;
+          const patrocinadorId = patrocinadorCreado.patrocinadorId;
+
+          // 👉 Si hay imagen, la subimos
+          if (this.selectedImageFile) {
+            this.clubService
+              .subirImgPatrocinador(patrocinadorId, this.selectedImageFile)
+              .subscribe({
+                next: (imgResponse: any) => {
+                  patrocinadorCreado.imagen = imgResponse.data;
+                  this.finalizarGuardado(opcion, patrocinadorCreado);
+                },
+                error: (err) => {
+                  console.error('Error al subir imagen', err);
+                  this.isSaving = false;
+                },
+              });
           } else {
-            console.error('La respuesta del servicio no tiene la estructura esperada', response);
+            this.finalizarGuardado(opcion, patrocinadorCreado);
           }
         },
-        (error) => {
-          console.error('Error al cargar el listado de equipos', error);
-        }
-      );
+        error: (err) => {
+          console.error('Error al guardar patrocinador', err);
+          this.isSaving = false;
+        },
+      });
     } else {
       alert('Por favor, rellena todos los campos.');
     }
+  }
+
+  finalizarGuardado(opcion: number, patrocinador: any) {
+    if (opcion === 2) {
+      this.listPatrocinadores[this.selectedPatro] = patrocinador;
+    } else {
+      this.listPatrocinadores = [...this.listPatrocinadores, patrocinador];
+    }
+
+    this.isSaving = false;
+
+    opcion === 2 ? this.cerrarPatrocinador() : this.cerrarModalCrearPatro();
+
+    this.selectedImageFile = null;
+    this.showPreview = false;
+    this.imagePreviewUrl = null;
   }
 
   cerrarVerPatrocinador() {
@@ -251,19 +326,22 @@ export class PatrocinadoresComponent implements OnInit {
   }
 
   onFileSelected(event: any) {
-    if (event.target.files[0].type === 'image/png' || event.target.files[0].type === 'image/jpeg') {
-      this.selectedFile = event.target.files[0];
-      this.showbtnupimg = true;
-      if (this.selectedFile) {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          this.imagePreviewUrl = e.target.result;
-          this.showPreview = true; // Mostrar vista previa
-        };
-        reader.readAsDataURL(this.selectedFile);
-      }
+    const file = event.target.files?.[0];
+
+    if (!file) return;
+
+    if (file.type === 'image/png' || file.type === 'image/jpeg') {
+      this.selectedImageFile = file;
+
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreviewUrl = e.target.result;
+        this.showPreview = true;
+      };
+      reader.readAsDataURL(file);
     } else {
-      this.showbtnupimg = false;
+      this.selectedImageFile = null;
+      alert('Solo JPG o PNG');
     }
   }
 
@@ -272,20 +350,32 @@ export class PatrocinadoresComponent implements OnInit {
     if (this.selectedFile) {
       //console.log('Imagen seleccionada:', this.selectedFile);
 
-      this.clubService.subirImgPatrocinador(patrocinadorId, this.selectedFile)
+      this.clubService
+        .subirImgPatrocinador(patrocinadorId, this.selectedFile)
         .subscribe(
           (response) => {
             this.patrocinadorUpdate.imagen = response.data;
             this.cerrarPatrocinador();
           },
-          error => {
+          (error) => {
             console.error('Error al subir la imagen', error);
             // Aquí puedes manejar el error si la subida de la imagen falla
-          }
+          },
         );
     } else {
       console.log('Ninguna imagen seleccionada.');
     }
+  }
+  fixHttps() {
+    if (!this.patrocinadorObj.web) return;
+
+    let url = this.patrocinadorObj.web.trim();
+
+    if (!/^https:\/\//i.test(url)) {
+      url = 'https://' + url.replace(/^http?:\/\//i, '');
+    }
+
+    this.patrocinadorObj.web = url;
   }
 
   mostrarId(patrocinador: any): void {
@@ -293,5 +383,4 @@ export class PatrocinadoresComponent implements OnInit {
     this.patrocinadorUpdate = patrocinador;
     this.showModalVerPatrocinador = true;
   }
-
 }

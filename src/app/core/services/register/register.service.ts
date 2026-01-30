@@ -25,12 +25,12 @@ export class RegisterService {
   registerPadreHijos(data: any) {
     const url: string = environment.apiUrl + 'user/createupdateuserpadrehijos';
     return this.http.post<any>(url, data);
-  }  
+  }
 
   validateMail(mail: string) {
     const url: string = environment.apiUrl + 'user/validateMail';
     return this.http.post<any>(url, { mail });
-  }  
+  }
 
   checkPlayerForDni(dni: string){
     const url: string = environment.apiUrl + `user/checkplayerfordni/${dni}`;

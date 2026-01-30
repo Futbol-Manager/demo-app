@@ -9,7 +9,7 @@ import * as $ from 'jquery';
 @Component({
   selector: 'app-estadisticas-jugadores-club',
   templateUrl: './estadisticas-jugadores-club.component.html',
-  styleUrls: ['./estadisticas-jugadores-club.component.scss']
+  styleUrls: ['./estadisticas-jugadores-club.component.scss'],
 })
 export class EstadisticasJugadoresClubComponent implements OnInit {
   clubId = 0;
@@ -20,19 +20,29 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
   golesTodosAvanzadoAFavor: any[] = [];
   golesAvanzadoAFavor: any[] = [];
   loading = true;
+  // PAGINACIÓN
+  page = 1;
+  pageSize = 25;
+  pageSizes = [10, 25, 50, 100];
+
+  totalRecords = 0;
+  totalPages = 0;
+
+  playersPaged: any[] = [];
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private clubService: ClubService,
     private http: HttpClient,
-    private elementRef: ElementRef) { }
+    private elementRef: ElementRef
+  ) {}
 
   ngOnInit(): void {
     // Suscribirse a los cambios en los parámetros de la URL
-    this.route.params.subscribe(params => {
+    this.route.params.subscribe((params) => {
       // Obtener el valor de teamId de los parámetros
-      this.clubId = +params['clubId'];  // El + convierte el valor a número
+      this.clubId = +params['clubId']; // El + convierte el valor a número
       console.log('clubId:', this.clubId);
     });
     this.cargarTablaJugadores();
@@ -61,13 +71,15 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
           let resp = response;
           let list = (resp.data as { listDto: PlayerEstadistica[] }).listDto;
           // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.players = list; //.map((post: PostPartido) => new PostPartido(post));
-          //this.totalMatchs = resp.data.matchs;
-          // Inicializar el DataTable después de cargar los datos
-          this.inicializarDataTable();
+          this.players = list;
+          this.page = 1;
+          this.actualizarPaginacion();
           this.datosCargados = true;
         } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          console.error(
+            'La respuesta del servicio no tiene la estructura esperada',
+            response
+          );
         }
         this.loading = false;
       },
@@ -75,6 +87,52 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
         console.error('Error al cargar el listado de equipos', error);
       }
     );
+  }
+  private actualizarPaginacion(): void {
+    this.totalRecords = this.players.length;
+
+    this.totalPages = Math.max(1, Math.ceil(this.totalRecords / this.pageSize));
+
+    if (this.page > this.totalPages) {
+      this.page = this.totalPages;
+    }
+
+    const start = (this.page - 1) * this.pageSize;
+    const end = start + this.pageSize;
+
+    this.playersPaged = [...this.players.slice(start, end)];
+  }
+
+  nextPage(): void {
+    if (this.page < this.totalPages) {
+      this.page++;
+      this.actualizarPaginacion();
+    }
+  }
+
+  prevPage(): void {
+    if (this.page > 1) {
+      this.page--;
+      this.actualizarPaginacion();
+    }
+  }
+  onPageSizeChange(): void {
+    this.pageSize = Number(this.pageSize);
+    this.page = 1;
+    this.actualizarPaginacion();
+  }
+
+  get paginationInfo(): string {
+    if (this.totalRecords === 0) return '';
+
+    const start = (this.page - 1) * this.pageSize + 1;
+    const end = Math.min(this.page * this.pageSize, this.totalRecords);
+
+    return `Mostrando ${start}–${end} de ${this.totalRecords}`;
+  }
+
+  trackByPlayer(index: number, player: any): number {
+    return player.playerId;
   }
 
   // Método para inicializar el DataTable
@@ -96,10 +154,10 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
           columnDefs: [
             {
               targets: [0],
-              visible: false
-            }
+              visible: false,
+            },
           ],
-          language: translation
+          language: translation,
         });
       });
     });
@@ -107,13 +165,16 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
     this.moverElementosDataTable('dataTable');
   }
 
-
   moverElementosDataTable(name: string) {
     // **Move buttons outside the table after initialization**
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        const layoutRowElements = this.elementRef.nativeElement.querySelectorAll('.dt-layout-row:not(.dt-layout-table)');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#button_datatable');
+        const layoutRowElements =
+          this.elementRef.nativeElement.querySelectorAll(
+            '.dt-layout-row:not(.dt-layout-table)'
+          );
+        const buttonDatatableElement =
+          this.elementRef.nativeElement.querySelector('#button_datatable');
 
         if (layoutRowElements.length >= 2 && buttonDatatableElement) {
           const layoutRowElement = layoutRowElements[1]; // Obtener el segundo elemento
@@ -123,7 +184,10 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
       });
     });
 
-    observer.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+    observer.observe(this.elementRef.nativeElement, {
+      childList: true,
+      subtree: true,
+    });
 
     //esto es para agregar una clase
     const textcenter = new MutationObserver((mutations) => {
@@ -139,12 +203,13 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
 
     textcenter.observe(document.body, { childList: true, subtree: true });
 
-
     //esto es para la parte donde pones las filas a ver
     const length = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-length');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-length');
+        const layoutRowElement =
+          this.elementRef.nativeElement.querySelector('.dt-length');
+        const buttonDatatableElement =
+          this.elementRef.nativeElement.querySelector('#dt-length');
 
         if (layoutRowElement && buttonDatatableElement) {
           $(layoutRowElement).appendTo(buttonDatatableElement);
@@ -153,13 +218,18 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
       });
     });
 
-    length.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+    length.observe(this.elementRef.nativeElement, {
+      childList: true,
+      subtree: true,
+    });
 
     //esto es para el input del buscador
     const search = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-search');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-search');
+        const layoutRowElement =
+          this.elementRef.nativeElement.querySelector('.dt-search');
+        const buttonDatatableElement =
+          this.elementRef.nativeElement.querySelector('#dt-search');
 
         if (layoutRowElement && buttonDatatableElement) {
           $(layoutRowElement).appendTo(buttonDatatableElement);
@@ -168,7 +238,9 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
       });
     });
 
-    search.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+    search.observe(this.elementRef.nativeElement, {
+      childList: true,
+      subtree: true,
+    });
   }
-
 }

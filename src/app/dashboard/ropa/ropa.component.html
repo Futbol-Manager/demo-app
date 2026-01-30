@@ -1,68 +1,80 @@
-<div [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
-    <div class="submenu">
-        <div class="row">
-            <div class="col">
-                <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
-                    <i class="bi bi-arrow-left-square-fill"></i>
-                    <span class="d-none d-md-inline">Volver</span>
-                </a>
-            </div>
-            <div class="col">
-                <a class="no-underline" href="javascript:void(0);" (click)="abrirModal()">
-                    <i class="bi bi-pencil"></i>
-                    <span class="d-none d-md-inline">Personalizar</span>
-                </a>
-            </div>
-        </div>
-    </div>
-    <!-- Contenido para el dataTable -->
-    <div style="margin: 1em 1em 1em; text-align: center;">
-        <h2>Ropa Jugadores</h2>
-        <!-- Botón para exportar a Excel-->
-        <button class="btn btn-success" style="margin-bottom: 2em;" (click)="exportTableToExcel()">
-            <i class="bi bi-file-earmark-spreadsheet-fill"></i> Descargar Excel
-        </button>
-        <div class="row justify-content-between div-headdatatable">
-            <div class="col-md-auto mr-auto" id="dt-length">
-                <!-- Contenido para el dt-length -->
-            </div>
-            <div class="col-md-auto ml-auto" id="dt-search">
-            </div>
-        </div>
-        <div style="overflow-x: auto; overflow-y: scroll; height: 30em;">
-            <table id="dataTable" class="table table-bordered table-striped text-center">
-                <thead class="table-custom">
-                    <tr>
-                        <th>ID</th>
-                        <!-- <th>IMAGEN</th> -->
-                        <th class="columna-nombre">NOMBRE</th>
-                        <th>EQUIPO</th>
-                        <th>NOMBRE_CAMISETA</th>
-                        <th>NUMERO</th>
-                        <th>CAMISETA_JUEGO</th>
-                        <th>PANTALON_JUEGO</th>
-                        <th>MEDIAS_JUEGO</th>
-                        <th>CAMISETA_2_JUEGO</th>
-                        <th>PANTALON_2_JUEGO</th>
-                        <th>MEDIAS_2_JUEGO</th>
-                        <th>CAMISETA_ENTRENO</th>
-                        <th>PANTALON_ENTRENO</th>
-                        <th>MEDIAS_ENTRENO</th>
-                        <th>SUDADERA_ENTRENO</th>
-                        <th>CHAQUETA_CHANDAL</th>
-                        <th>PANTALON_CHANDAL</th>
-                        <th>POLO_PASEO</th>
-                        <th>PANTALON_PASEO</th>
-                        <th>ABRIGO_EQUIPO</th>
-                        <th>CHUBASQUERO</th>
-                        <th>MOCHILA</th>
-                        <th>ESTADO</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let ropa of ropaPlayers; let i = index">
-                        <td>{{ ropa.player.playerId }}</td>
-                        <!-- <td *ngIf="ropa.player.picturePlayer">
+<div class="table-actions-row">
+  <!-- IZQUIERDA -->
+  <div class="table-actions-left">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>Volver</span>
+    </button>
+
+    <!-- Buscador DataTable -->
+    <div id="dt-search"></div>
+  </div>
+
+  <!-- DERECHA -->
+  <div class="table-actions-right">
+    <button class="action-btn excel" (click)="exportTableToExcel()">
+      <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+      <span class="d-none d-md-inline">{{ 'COMMON.EXPORT_EXCEL' | translate }}</span>
+    </button>
+
+    <button class="action-btn custom" (click)="abrirModal()">
+      <i class="bi bi-pencil"></i>
+      <span class="d-none d-md-inline">{{ 'COMMON.CUSTOM' | translate }}</span>
+    </button>
+  </div>
+</div>
+
+<!-- SKELETON -->
+<div *ngIf="!datosCargados" class="table-skeleton">
+  <div class="skeleton-header"></div>
+
+  <div class="skeleton-row" *ngFor="let i of [].constructor(8)">
+    <div class="skeleton-cell" *ngFor="let j of [].constructor(10)"></div>
+  </div>
+</div>
+
+<div class="modern-table-wrapper" *ngIf="datosCargados">
+  <div class="table-scroll">
+    <table id="dataTable" class="modern-table">
+      <thead class="table-custom">
+        <tr>
+          <th>{{ 'CLOTHES.TABLE.ID' | translate }}</th>
+          <th class="columna-nombre">{{ 'CLOTHES.TABLE.NAME' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.TEAM' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.SHIRT_NAME' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.NUMBER' | translate }}</th>
+
+          <th>{{ 'CLOTHES.TABLE.MATCH_SHIRT' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.MATCH_PANTS' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.MATCH_SOCKS' | translate }}</th>
+
+          <th>{{ 'CLOTHES.TABLE.MATCH_SHIRT_2' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.MATCH_PANTS_2' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.MATCH_SOCKS_2' | translate }}</th>
+
+          <th>{{ 'CLOTHES.TABLE.TRAINING_SHIRT' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.TRAINING_PANTS' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.TRAINING_SOCKS' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.TRAINING_SWEATSHIRT' | translate }}</th>
+
+          <th>{{ 'CLOTHES.TABLE.TRACKSUIT_JACKET' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.TRACKSUIT_PANTS' | translate }}</th>
+
+          <th>{{ 'CLOTHES.TABLE.POLO' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.CASUAL_PANTS' | translate }}</th>
+
+          <th>{{ 'CLOTHES.TABLE.COAT' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.RAINCOAT' | translate }}</th>
+          <th>{{ 'CLOTHES.TABLE.BACKPACK' | translate }}</th>
+
+          <th>{{ 'CLOTHES.TABLE.STATUS' | translate }}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let ropa of ropaPlayers; let i = index">
+          <td>{{ ropa.player.playerId }}</td>
+          <!-- <td *ngIf="ropa.player.picturePlayer">
                                     <div class="container">
                                         <img src="https://appsphairatech.com/images/user/{{ ropa.player.picturePlayer }}"
                                             alt="user-player" width="50" height="50" class="rounded-circle me-2">
@@ -73,417 +85,421 @@
                                         <span class="bi bi-person" style="font-size: 3rem;"></span>
                                     </div>
                                 </td> -->
-                        <td class="fila-completa">{{ ropa.player.nombre }} {{ ropa.player.apellido }}</td>
-                        <td>{{ ropa.team.category }} {{ ropa.team.name }} {{ ropa.team.levelLeague }}</td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <input type="text" class="form-control" [(ngModel)]="ropa.nick"
-                                    (ngModelChange)="onAbrigoChange(ropa)">
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center">
-                                <input type="number" class="form-control" [(ngModel)]="ropa.numero"
-                                    (ngModelChange)="onAbrigoChange(ropa)">
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.camisetaJuego"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.camisetaJuegoOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 2)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.camisetaJuegoOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 2)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div *ngIf="ropa.pantalonJuegoOk === 0 || ropa.pantalonJuegoOk === 1"
-                                class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.pantalonJuego"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.pantalonJuegoOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 3)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.pantalonJuegoOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 3)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.medias"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizesMedias" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.mediasOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 11)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.mediasOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 11)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.camisetaJuegoDos"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.camisetaJuegoDosOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 14)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.camisetaJuegoDosOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 14)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.pantalonJuegoDos"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.pantalonJuegoDosOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 15)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.pantalonJuegoDosOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 15)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.mediasDos"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizesMedias" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.mediasDosOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 16)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.mediasDosOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 16)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.camisetaEntreno"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.camisetaEntrenoOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 4)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.camisetaEntrenoOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 4)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.pantalonEntreno"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.pantalonEntrenoOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 5)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.pantalonEntrenoOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 5)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.mediasTres"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizesMedias" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.mediasTresOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 17)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.mediasTresOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 17)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.sudaderaEntreno"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.sudaderaEntrenoOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 6)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.sudaderaEntrenoOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 6)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.chaquetaChandal"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.chaquetaChandalOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 7)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.chaquetaChandalOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 7)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.pantalonChandal"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.pantalonChandalOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 8)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.pantalonChandalOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 8)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.poloPaseo"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.poloPaseoOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 9)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.poloPaseoOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 9)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.pantalonPaseo"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.pantalonPaseoOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 10)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.pantalonPaseoOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 10)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td style="width: 50em;">
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.abrigo"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.abrigoOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 1)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.abrigoOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 1)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <select class="form-control me-2" [(ngModel)]="ropa.chubasquero"
-                                    (click)="updateRopaJugador(ropa)" style="max-width: 100px;">
-                                    <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
-                                </select>
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.chubasqueroOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 12)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.chubasqueroOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 12)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="d-flex align-items-center" style="width: 100%;">
-                                <div class="d-flex">
-                                    <button *ngIf="ropa.mochilaOk === 0" class="btn btn-danger me-1"
-                                        (click)="togglePrendaOk(ropa, 13)">
-                                        <i class="bi bi-hand-thumbs-down"></i>
-                                    </button>
-                                    <button *ngIf="ropa.mochilaOk === 1" class="btn btn-success"
-                                        (click)="togglePrendaOk(ropa, 13)">
-                                        <i class="bi bi-hand-thumbs-up"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </td>
-                        <td>{{ ropa.estado }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+          <td class="fila-completa">{{ ropa.player.nombre }} {{ ropa.player.apellido }}</td>
+          <td>{{ ropa.team.category }} {{ ropa.team.name }} {{ ropa.team.levelLeague }}</td>
+          <td>
+            <div class="d-flex align-items-center">
+              <input type="text" class="form-control" [(ngModel)]="ropa.nick" (ngModelChange)="onAbrigoChange(ropa)">
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center">
+              <input type="number" class="form-control" [(ngModel)]="ropa.numero"
+                (ngModelChange)="onAbrigoChange(ropa)">
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.camisetaJuego" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.camisetaJuegoOk === 0" class="btn btn-danger me-1"
+                  (click)="togglePrendaOk(ropa, 2)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.camisetaJuegoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 2)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div *ngIf="ropa.pantalonJuegoOk === 0 || ropa.pantalonJuegoOk === 1" class="d-flex align-items-center"
+              style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.pantalonJuego" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.pantalonJuegoOk === 0" class="btn btn-danger me-1"
+                  (click)="togglePrendaOk(ropa, 3)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.pantalonJuegoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 3)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.medias" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizesMedias" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.mediasOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 11)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.mediasOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 11)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.camisetaJuegoDos" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.camisetaJuegoDosOk === 0" class="btn btn-danger me-1"
+                  (click)="togglePrendaOk(ropa, 14)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.camisetaJuegoDosOk === 1" class="btn btn-success"
+                  (click)="togglePrendaOk(ropa, 14)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.pantalonJuegoDos" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.pantalonJuegoDosOk === 0" class="btn btn-danger me-1"
+                  (click)="togglePrendaOk(ropa, 15)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.pantalonJuegoDosOk === 1" class="btn btn-success"
+                  (click)="togglePrendaOk(ropa, 15)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.mediasDos" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizesMedias" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.mediasDosOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 16)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.mediasDosOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 16)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.camisetaEntreno" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.camisetaEntrenoOk === 0" class="btn btn-danger me-1"
+                  (click)="togglePrendaOk(ropa, 4)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.camisetaEntrenoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 4)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.pantalonEntreno" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.pantalonEntrenoOk === 0" class="btn btn-danger me-1"
+                  (click)="togglePrendaOk(ropa, 5)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.pantalonEntrenoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 5)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.mediasTres" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizesMedias" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.mediasTresOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 17)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.mediasTresOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 17)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.sudaderaEntreno" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.sudaderaEntrenoOk === 0" class="btn btn-danger me-1"
+                  (click)="togglePrendaOk(ropa, 6)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.sudaderaEntrenoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 6)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.chaquetaChandal" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.chaquetaChandalOk === 0" class="btn btn-danger me-1"
+                  (click)="togglePrendaOk(ropa, 7)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.chaquetaChandalOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 7)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.pantalonChandal" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.pantalonChandalOk === 0" class="btn btn-danger me-1"
+                  (click)="togglePrendaOk(ropa, 8)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.pantalonChandalOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 8)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.poloPaseo" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.poloPaseoOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 9)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.poloPaseoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 9)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.pantalonPaseo" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.pantalonPaseoOk === 0" class="btn btn-danger me-1"
+                  (click)="togglePrendaOk(ropa, 10)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.pantalonPaseoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 10)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td style="width: 50em;">
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.abrigo" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.abrigoOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 1)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.abrigoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 1)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <select class="form-control me-2" [(ngModel)]="ropa.chubasquero" (click)="updateRopaJugador(ropa)"
+                style="max-width: 100px;">
+                <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
+              </select>
+              <div class="d-flex">
+                <button *ngIf="ropa.chubasqueroOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 12)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.chubasqueroOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 12)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="d-flex align-items-center" style="width: 100%;">
+              <div class="d-flex">
+                <button *ngIf="ropa.mochilaOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 13)">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button *ngIf="ropa.mochilaOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 13)">
+                  <i class="bi bi-check2-circle"></i>
+                </button>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="status-badge" [ngClass]="ropa.estado === 'OK' ? 'status-ok' : 'status-pending'">
+              {{ ropa.estado }}
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="pagination-wrapper">
+    <div class="pagination-content">
+
+      <span class="pagination-info"></span>
+
+      <select class="pagination-select">
+        <option>10</option>
+        <option selected>50</option>
+        <option>100</option>
+      </select>
+
+      <div class="pagination-controls">
+        <button class="page-btn prev">
+          <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <span class="page-indicator"></span>
+
+        <button class="page-btn next">
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
     </div>
-    <div id="button_datatable">
-    </div>
+  </div>
+
 </div>
+
 
 <!-- tabla para imprimir en excel -->
 <div style="display: none;">
-    <table id="tablaExcel" class="table table-bordered table-striped text-center" #table1>
-        <thead class="table-custom">
-            <tr>
-                <th>NOMBRE</th>
-                <th>APELLIDO</th>
-                <th>NOMBRE CAMISETA</th>
-                <th>NUMERO</th>
-                <th>EQUIPO</th>
-                <th>CATEGORIA</th>
-                <th>ABRIGO</th>
-                <th>CAMISETA JUEGO</th>
-                <th>CAMISETA 2 JUEGO</th>
-                <th>PANTALON JUEGO</th>
-                <th>PANTALON 2 JUEGO</th>
-                <th>MEDIAS JUEGO</th>
-                <th>MEDIAS 2 JUEGO</th>
-                <th>CAMISETA ENTRENO</th>
-                <th>PANTALON ENTRENO</th>
-                <th>SUDADERA ENTRENO</th>
-                <th>CHAQUETA CHANDAL</th>
-                <th>PANTALON CHANDAL</th>
-                <th>POLO PASEO</th>
-                <th>PANTALON PASEO</th>
-                <th>CHUBASQUERO</th>
-                <th>ESTADO</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let ropa of ropaPlayers; let i = index">
-                <td>{{ ropa.player.nombre }}</td>
-                <td>{{ ropa.player.apellido }}</td>
-                <td>{{ ropa.nick }}</td>
-                <td>{{ ropa.numero }}</td>
-                <td>{{ ropa.team.category }} {{ ropa.team.name }}</td>
-                <td>{{ ropa.team.levelLeague }}</td>
-                <td>{{ ropa.abrigo }}</td>
-                <td>{{ ropa.camisetaJuego }}</td>
-                <td>{{ ropa.camisetaJuegoDos }}</td>
-                <td>{{ ropa.pantalonJuego }}</td>
-                <td>{{ ropa.pantalonJuegoDos }}</td>
-                <td>{{ ropa.medias }}</td>
-                <td>{{ ropa.mediasDos }}</td>
-                <td>{{ ropa.camisetaEntreno }}</td>
-                <td>{{ ropa.pantalonEntreno }}</td>
-                <td>{{ ropa.sudaderaEntreno }}</td>
-                <td>{{ ropa.chaquetaChandal }}</td>
-                <td>{{ ropa.pantalonChandal }}</td>
-                <td>{{ ropa.poloPaseo }}</td>
-                <td>{{ ropa.pantalonPaseo }}</td>
-                <td>{{ ropa.chubasquero }}</td>
-                <td>{{ ropa.estado }}</td>
-            </tr>
-        </tbody>
-    </table>
+  <table id="tablaExcel" class="table table-bordered table-striped text-center" #table1>
+    <thead class="table-custom">
+      <tr>
+        <th>NOMBRE</th>
+        <th>APELLIDO</th>
+        <th>NOMBRE CAMISETA</th>
+        <th>NUMERO</th>
+        <th>EQUIPO</th>
+        <th>CATEGORIA</th>
+        <th>ABRIGO</th>
+        <th>CAMISETA JUEGO</th>
+        <th>CAMISETA 2 JUEGO</th>
+        <th>PANTALON JUEGO</th>
+        <th>PANTALON 2 JUEGO</th>
+        <th>MEDIAS JUEGO</th>
+        <th>MEDIAS 2 JUEGO</th>
+        <th>CAMISETA ENTRENO</th>
+        <th>PANTALON ENTRENO</th>
+        <th>SUDADERA ENTRENO</th>
+        <th>CHAQUETA CHANDAL</th>
+        <th>PANTALON CHANDAL</th>
+        <th>POLO PASEO</th>
+        <th>PANTALON PASEO</th>
+        <th>CHUBASQUERO</th>
+        <th>ESTADO</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let ropa of ropaPlayers; let i = index">
+        <td>{{ ropa.player.nombre }}</td>
+        <td>{{ ropa.player.apellido }}</td>
+        <td>{{ ropa.nick }}</td>
+        <td>{{ ropa.numero }}</td>
+        <td>{{ ropa.team.category }} {{ ropa.team.name }}</td>
+        <td>{{ ropa.team.levelLeague }}</td>
+        <td>{{ ropa.abrigo }}</td>
+        <td>{{ ropa.camisetaJuego }}</td>
+        <td>{{ ropa.camisetaJuegoDos }}</td>
+        <td>{{ ropa.pantalonJuego }}</td>
+        <td>{{ ropa.pantalonJuegoDos }}</td>
+        <td>{{ ropa.medias }}</td>
+        <td>{{ ropa.mediasDos }}</td>
+        <td>{{ ropa.camisetaEntreno }}</td>
+        <td>{{ ropa.pantalonEntreno }}</td>
+        <td>{{ ropa.sudaderaEntreno }}</td>
+        <td>{{ ropa.chaquetaChandal }}</td>
+        <td>{{ ropa.pantalonChandal }}</td>
+        <td>{{ ropa.poloPaseo }}</td>
+        <td>{{ ropa.pantalonPaseo }}</td>
+        <td>{{ ropa.chubasquero }}</td>
+        <td>{{ ropa.estado }}</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <!-- Modal para la creación de equipo -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="standard-modalLabel">Prendas del club</h5>
-                <!-- Botón de cerrar con un icono -->
-                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="standard-modalLabel">Prendas del club</h5>
+        <!-- Botón de cerrar con un icono -->
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p>Habilita o deshabilítala aquellas prendas del que el club disponga. Si por ejemplo el club no dispone
+          de mochila, deshabilítala aquí para que no aparezca en la tabla.</p>
+        <div *ngFor="let prenda of prendas">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <span>{{ prenda.label }}</span>
+            <div class="form-check form-switch">
+              <input class="form-check-input custom-input" type="checkbox" id="{{prenda.property}}"
+                [checked]="ropaClub[prenda.property] === 0"
+                (change)="togglePrendaOkDesactivar(prenda.property, ropaClub[prenda.property])">
             </div>
-            <div class="modal-body">
-                <p>Habilita o deshabilítala aquellas prendas del que el club disponga. Si por ejemplo el club no dispone
-                    de mochila, deshabilítala aquí para que no aparezca en la tabla.</p>
-                <div *ngFor="let prenda of prendas">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <span>{{ prenda.label }}</span>
-                        <div class="form-check form-switch">
-                            <input class="form-check-input custom-input" type="checkbox" id="{{prenda.property}}"
-                                [checked]="ropaClub[prenda.property] === 0"
-                                (change)="togglePrendaOkDesactivar(prenda.property, ropaClub[prenda.property])">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
-            </div>
+          </div>
         </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
+      </div>
     </div>
+  </div>
 </div>

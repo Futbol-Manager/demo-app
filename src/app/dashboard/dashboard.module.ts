@@ -51,6 +51,11 @@ import { ListadoClubesComponent } from './listado-clubes/listado-clubes.componen
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { TranslateModule } from '@ngx-translate/core';
+import { DragDropModule } from '@angular/cdk/drag-drop';
+import { EquiposComponent } from './equipos/equipos.component';
+import { LogoSpinnerComponent } from '../shared/logo-spinner/logo-spinner.component';
+import { FooterComponent } from '../shared/footer/footer.component';
+import { InfoEquipoComponent } from './info-equipo/info-equipo.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -68,6 +73,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     EstadisticasEquipoComponent,
     EstadisticasJugadoresComponent,
     InformacionEquipoComponent,
+    InfoEquipoComponent,
     ContabilidadComponent,
     CuotasComponent,
     RopaComponent,
@@ -88,6 +94,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HorariosequiposComponent,
     EntrenamientosCreadosComponent,
     PuntuacionEquipsComponent,
+    PublicidadComponent,
     GraficaCuotasComponent,
     GoleadoresComponent,
     MenuEntrenadorComponent,
@@ -102,7 +109,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     InicioFederacionComponent,
     InfoJugadoresFederacionComponent,
     NotificacionesFederacionComponent,
-    ListadoClubesComponent
+    ListadoClubesComponent,
+    EquiposComponent,
+    LogoSpinnerComponent,
+    FooterComponent,
   ],
   imports: [
     CommonModule,
@@ -111,7 +121,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 		ReactiveFormsModule,
     NgxDatatableModule,
     HttpClientModule,
-    TranslateModule
+    TranslateModule,
+    DragDropModule
   ]
 })
 export class DashboardModule { }

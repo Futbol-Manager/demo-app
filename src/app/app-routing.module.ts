@@ -6,6 +6,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { AuthGuard } from './auth.guard';
 import { ChangePasswordComponent } from './pages/change-password/change-password.component';
 import { ValidationUserComponent } from './pages/validation-user/validation-user.component';
+import { ParentChildrenComponent } from './pages/register/parent-children/parent-children.component';
 
 const appRoutes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
@@ -13,7 +14,7 @@ const appRoutes: Routes = [
   { path: 'login/:token', component: LoginComponent },
   { path: 'registro', component: RegisterComponent },
   { path: 'registro/:playerId/:email/:isMenor', component: RegisterComponent },
-  { path: 'registro-padres/:clubId', component: RegisterComponent },
+  { path: 'registro-padres/:clubId', component: ParentChildrenComponent },
   { path: 'change-password', component: ChangePasswordComponent },
   { path: 'validationUser', component: ValidationUserComponent },
   {

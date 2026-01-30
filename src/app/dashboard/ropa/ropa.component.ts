@@ -11,29 +11,44 @@ import { Response } from 'src/app/core/services/models/response.model';
 import * as $ from 'jquery';
 import 'datatables.net';
 import { RopaClub, RopaJugador } from 'src/app/core/services/team/club.model';
-import * as XLSX from "xlsx";
+import * as XLSX from 'xlsx';
 import { Subject, debounceTime } from 'rxjs';
 import { Location } from '@angular/common';
-
 
 @Component({
   selector: 'app-ropa',
   templateUrl: './ropa.component.html',
-  styleUrls: ['./ropa.component.scss']
+  styleUrls: ['./ropa.component.scss'],
 })
 export class RopaComponent implements OnInit {
   usuarioActual!: User | null;
-  clubId!: number;  // Ajusta el valor según el clubId del equipo actual
+  clubId!: number; // Ajusta el valor según el clubId del equipo actual
   userId!: number;
   ropaPlayers: any[] = [];
   datosCargados = false;
 
-  abrigoSizes: string[] = ['', '4', '6', '8', '10', '12', '14', '16', '2XS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'];
+  abrigoSizes: string[] = [
+    '',
+    '4',
+    '6',
+    '8',
+    '10',
+    '12',
+    '14',
+    '16',
+    '2XS',
+    'XS',
+    'S',
+    'M',
+    'L',
+    'XL',
+    '2XL',
+    '3XL',
+  ];
   abrigoSizesMedias: string[] = ['', 'XS', 'S', 'M', 'L'];
   private abrigoSubject = new Subject<RopaJugador>();
   showModal = false;
   ropaClub: any;
-
   reloadPage = false;
 
   prendas = [
@@ -53,7 +68,7 @@ export class RopaComponent implements OnInit {
     { label: 'Pantalón de Paseo', property: 'pantalonPaseo', index: 18 },
     { label: 'Abrigo', property: 'abrigo', index: 19 },
     { label: 'Chubasquero', property: 'chubasquero', index: 20 },
-    { label: 'Mochila', property: 'mochila', index: 21 }
+    { label: 'Mochila', property: 'mochila', index: 21 },
   ];
 
   prendasOcultar: number[] = [0];
@@ -68,64 +83,82 @@ export class RopaComponent implements OnInit {
     private clubService: ClubService,
     private elementRef: ElementRef,
     private http: HttpClient,
-    private location: Location) {
-    this.abrigoSubject.pipe(
-      debounceTime(500) // Tiempo de espera en milisegundos
-    ).subscribe(value => {
-      this.updateRopaJugador(value);
-    });
+    private location: Location
+  ) {
+    this.abrigoSubject
+      .pipe(
+        debounceTime(500) // Tiempo de espera en milisegundos
+      )
+      .subscribe((value) => {
+        this.updateRopaJugador(value);
+      });
   }
 
   ngOnInit(): void {
-    this.loginService.usuarioActual.subscribe(user => {
+    this.loginService.usuarioActual.subscribe((user) => {
       this.usuarioActual = user;
       this.userId = this.usuarioActual!.userId;
       // Suscribirse a los cambios en los parámetros de la URL
-      this.route.params.subscribe(params => {
+      this.route.params.subscribe((params) => {
         // Obtener el valor de clubId de los parámetros
-        this.clubId = +params['clubId'];  // El + convierte el valor a número
+        this.clubId = +params['clubId']; // El + convierte el valor a número
       });
-    });    
+    });
 
-    if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
+    if (
+      localStorage.getItem('temporada') != null &&
+      localStorage.getItem('temporada') != undefined
+    ) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
 
-    this.clubService.getRopaClub(this.clubId.toString(), this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.ropaClub = response.data;
-          this.ropaClub.clubId = this.clubId;
-          this.ropaClub.temporada = this.temporadaStoredValue;
-          //recuperar las prendas que han de verse y las que no
-          this.ocultarColumnasRopa();
-          this.clubService.getRopaJugadoresByClubForTemp(this.clubId.toString(), this.temporadaStoredValue).subscribe(
-            (response: Response) => {
-              // Verifica que la propiedad 'data' exista en la respuesta
-              if (response.data !== null) {
-                this.ropaPlayers = response.data;
-                setTimeout(() => {
-                  this.inicializarDataTable();
-                  this.datosCargados = true;
-                }, 1000);
-              } else {
-                console.error('La respuesta del servicio no tiene la estructura esperada', response);
-              }
-            },
-            (error) => {
-              console.error('Error al cargar el listado de equipos', error);
-            }
-          );
-
-        } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+    this.clubService
+      .getRopaClub(this.clubId.toString(), this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.ropaClub = response.data;
+            this.ropaClub.clubId = this.clubId;
+            this.ropaClub.temporada = this.temporadaStoredValue;
+            //recuperar las prendas que han de verse y las que no
+            this.ocultarColumnasRopa();
+            this.clubService
+              .getRopaJugadoresByClubForTemp(
+                this.clubId.toString(),
+                this.temporadaStoredValue
+              )
+              .subscribe(
+                (response: Response) => {
+                  // Verifica que la propiedad 'data' exista en la respuesta
+                  if (response.data !== null) {
+                    this.ropaPlayers = response.data;
+                    setTimeout(() => {
+                      this.inicializarDataTable();
+                      this.datosCargados = true;
+                    }, 1000);
+                  } else {
+                    console.error(
+                      'La respuesta del servicio no tiene la estructura esperada',
+                      response
+                    );
+                  }
+                },
+                (error) => {
+                  console.error('Error al cargar el listado de equipos', error);
+                }
+              );
+          } else {
+            console.error(
+              'La respuesta del servicio no tiene la estructura esperada',
+              response
+            );
+          }
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   goBack(): void {
@@ -164,41 +197,88 @@ export class RopaComponent implements OnInit {
 
   // Método para inicializar el DataTable
   inicializarDataTable(): void {
-    // Destruir el DataTable si ya existe
     const $dataTable = $('#dataTable');
-    if ($dataTable.hasClass('dataTable')) {
+
+    if ($.fn.DataTable.isDataTable('#dataTable')) {
       $dataTable.DataTable().destroy();
     }
 
     this.http.get('assets/dataTable/Spanish.json').subscribe((translation) => {
       $(document).ready(() => {
-        $('#dataTable').DataTable({
+        const table = $('#dataTable').DataTable({
           paging: true,
-          pageLength: 100,
+          pagingType: 'simple',
           searching: true,
           ordering: true,
           order: [[0, 'desc']],
+          pageLength: 50,
+          lengthChange: false,
+          info: false,
+          dom: 't',
           columnDefs: [
             {
               targets: this.prendasOcultar,
-              visible: false
-            }
+              visible: false,
+            },
           ],
-          language: translation
+          language: translation,
         });
+
+        // Inicializar paginación custom
+        this.inicializarPaginacionCustom(table);
       });
     });
-
-    this.moverElementosDataTable('dataTable');
   }
+  inicializarPaginacionCustom(table: any): void {
+    const actualizarInfo = () => {
+      const info = table.page.info();
 
+      $('.pagination-info').text(
+        `Mostrando ${info.start + 1}–${info.end} de ${info.recordsTotal}`
+      );
+
+      $('.page-indicator').text(`${info.page + 1} / ${info.pages}`);
+
+      $('.page-btn.prev').prop('disabled', info.page === 0);
+      $('.page-btn.next').prop('disabled', info.page === info.pages - 1);
+    };
+
+    // Botones
+    $('.page-btn.prev').on('click', () => {
+      table.page('previous').draw('page');
+      actualizarInfo();
+    });
+
+    $('.page-btn.next').on('click', () => {
+      table.page('next').draw('page');
+      actualizarInfo();
+    });
+
+    // Selector de tamaño
+    $('.pagination-select').on('change', (e: any) => {
+      const value = parseInt(e.target.value, 10);
+      table.page.len(value).draw();
+      actualizarInfo();
+    });
+
+    // Actualizar al inicio y en cada redraw
+    table.on('draw', () => {
+      actualizarInfo();
+    });
+
+    actualizarInfo();
+  }
 
   moverElementosDataTable(name: string) {
     // **Move buttons outside the table after initialization**
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        const layoutRowElements = this.elementRef.nativeElement.querySelectorAll('.dt-layout-row:not(.dt-layout-table)');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#button_datatable');
+        const layoutRowElements =
+          this.elementRef.nativeElement.querySelectorAll(
+            '.dt-layout-row:not(.dt-layout-table)'
+          );
+        const buttonDatatableElement =
+          this.elementRef.nativeElement.querySelector('#button_datatable');
 
         if (layoutRowElements.length >= 2 && buttonDatatableElement) {
           const layoutRowElement = layoutRowElements[1]; // Obtener el segundo elemento
@@ -208,7 +288,10 @@ export class RopaComponent implements OnInit {
       });
     });
 
-    observer.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+    observer.observe(this.elementRef.nativeElement, {
+      childList: true,
+      subtree: true,
+    });
 
     //esto es para agregar una clase
     const textcenter = new MutationObserver((mutations) => {
@@ -224,12 +307,13 @@ export class RopaComponent implements OnInit {
 
     textcenter.observe(document.body, { childList: true, subtree: true });
 
-
     //esto es para la parte donde pones las filas a ver
     const length = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-length');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-length');
+        const layoutRowElement =
+          this.elementRef.nativeElement.querySelector('.dt-length');
+        const buttonDatatableElement =
+          this.elementRef.nativeElement.querySelector('#dt-length');
 
         if (layoutRowElement && buttonDatatableElement) {
           $(layoutRowElement).appendTo(buttonDatatableElement);
@@ -238,13 +322,18 @@ export class RopaComponent implements OnInit {
       });
     });
 
-    length.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+    length.observe(this.elementRef.nativeElement, {
+      childList: true,
+      subtree: true,
+    });
 
     //esto es para el input del buscador
     const search = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-search');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-search');
+        const layoutRowElement =
+          this.elementRef.nativeElement.querySelector('.dt-search');
+        const buttonDatatableElement =
+          this.elementRef.nativeElement.querySelector('#dt-search');
 
         if (layoutRowElement && buttonDatatableElement) {
           $(layoutRowElement).appendTo(buttonDatatableElement);
@@ -253,7 +342,10 @@ export class RopaComponent implements OnInit {
       });
     });
 
-    search.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+    search.observe(this.elementRef.nativeElement, {
+      childList: true,
+      subtree: true,
+    });
   }
 
   updateRopaJugador(ropa: RopaJugador) {
@@ -387,7 +479,7 @@ export class RopaComponent implements OnInit {
     return status;
   }
 
-  @ViewChild("table1") table: ElementRef | undefined;
+  @ViewChild('table1') table: ElementRef | undefined;
   exportTableToExcel(): void {
     // Comprobar si el elemento existe antes de usar su ID
     const tableElement = document.getElementById('tablaExcel');
@@ -400,10 +492,10 @@ export class RopaComponent implements OnInit {
 
       // Crear y guardar libro de trabajo
       const wb: XLSX.WorkBook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+      XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
 
       // Personalizar nombre de archivo y opciones de guardado (opcional)
-      const fileName = "tabla_exportada.xlsx"; // Ajustar según tus necesidades
+      const fileName = 'tabla_exportada.xlsx'; // Ajustar según tus necesidades
       XLSX.writeFile(wb, fileName, { bookType: 'xlsx' });
     } else {
       console.error("¡Elemento 'tablaExcel' no encontrado!");
@@ -414,22 +506,27 @@ export class RopaComponent implements OnInit {
 
   // Método para abrir el modal de creación de equipo
   abrirModal(): void {
-    this.clubService.getRopaClub(this.clubId.toString(), this.temporadaStoredValue).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.ropaClub = response.data;
-          this.ropaClub.clubId = this.clubId;
-          this.ropaClub.temporada = this.temporadaStoredValue;
-        } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+    this.clubService
+      .getRopaClub(this.clubId.toString(), this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response.data !== null) {
+            this.ropaClub = response.data;
+            this.ropaClub.clubId = this.clubId;
+            this.ropaClub.temporada = this.temporadaStoredValue;
+          } else {
+            console.error(
+              'La respuesta del servicio no tiene la estructura esperada',
+              response
+            );
+          }
+          this.showModal = true;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
         }
-        this.showModal = true;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+      );
   }
 
   // Método para cerrar el modal de creación de equipo
@@ -456,5 +553,4 @@ export class RopaComponent implements OnInit {
       }
     );
   }
-
 }

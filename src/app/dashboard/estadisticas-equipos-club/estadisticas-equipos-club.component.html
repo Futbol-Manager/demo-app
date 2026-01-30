@@ -1,133 +1,162 @@
-<div class="submenu">
-    <div class="row">
-        <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(0)">
-                <i class="bi bi-calendar"></i>
-                <span class="d-none d-md-inline">Cuadro de mandos</span>
-            </a>
-        </div>
-    </div>
+<app-logo-spinner *ngIf="loading"></app-logo-spinner>
+
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
 </div>
 
 <app-publicidad></app-publicidad>
 
-<div *ngIf="loading" class="spinner-container mt-3">
-    <div class="spinnerLoad"></div>
-</div>
-
 <div *ngIf="datosCargados" class="container">
-    <div style="margin-top: 3em; overflow-x: auto; text-align: center;">
-        <h2>Tabla de Resumen</h2>
-        <table class="table table-bordered table-striped">
-            <thead class="table-custom">
-                <tr>
-                    <th>Equipo</th>
-                    <th>Partidos</th>
-                    <th>Puntos</th>
-                    <th>Victorias</th>
-                    <th>Empates</th>
-                    <th>Derrotas</th>
-                    <th>GF</th>
-                    <th>GC</th>
-                    <th>DG</th>
-                    <th>5 Últimos</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let resumen of resumentotales; let i = index">
-                    <td *ngIf="resumen.partidos === 0">{{ resumen.equipo }}</td>
-                    <td *ngIf="resumen.partidos != 0"><a href="javascript:void(0);" (click)="verTablaequipo(i)">{{
-                            resumen.equipo }}</a></td>
-                    <td>{{ resumen.partidos }}</td>
-                    <td>{{ resumen.puntos }}</td>
-                    <td>{{ resumen.victorias }}</td>
-                    <td>{{ resumen.empates }}</td>
-                    <td>{{ resumen.derrotas }}</td>
-                    <td>{{ resumen.gf }}</td>
-                    <td>{{ resumen.gc }}</td>
-                    <td>{{ resumen.dg }}</td>                    
-                    <td>
-                        <span *ngFor="let resultado of resumen.ultimos">
-                            {{ getIcono(resultado) }}
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+  <!-- SKELETON -->
+  <ng-container *ngIf="loading">
+    <div class="table-skeleton">
+      <div class="skeleton-row header"></div>
+      <div class="skeleton-row" *ngFor="let i of [1,2,3,4,5,6]"></div>
     </div>
-</div>
+  </ng-container>
 
-<div *ngIf="mostarTabla" class="container">
-    <div style="margin-top: 3em;">
-        <h2 class="text-dark mt-3">Listado de Partidos</h2>
-        <!-- Botón para exportar a Exce
-        <button class="btn btn-success" style="margin-bottom: 2em;" (click)="exportTableToExcel()">
-            <i class="bi bi-file-earmark-spreadsheet-fill"></i> Descargar Excel
-        </button>l-->
-        <div class="row justify-content-end">
-            <div class="col-12 col-md-3">
-                <label for="playerSearch" class="form-label">Buscar cualquier campo</label>
-                <input type="text" class="form-control" id="playerSearch" [(ngModel)]="playerSearch"
-                    (input)="applyFilter()" placeholder="Buscar...">
-            </div>
-        </div>
-        <div class="row" style="margin-top: 3em;">
-            <div style="overflow-x: auto; overflow-y: scroll; height: 30em;">
-                <table id="dataTable" class="table table-bordered table-striped text-center">
-                    <thead class="table-custom">
-                        <tr style="border-top: 4px solid black;">
-                            <th>FECHA</th>
-                            <!-- <th>Partido ID</th> -->
-                            <th>NOMBRE_RIVAL</th>
-                            <th>RESULTADO</th>
-                            <th>GOLES_FAVOR</th>
-                            <th>GOLES_CONTRA</th>
-                            <th>DISPAROS_FAVOR</th>
-                            <th>DISPAROS_CONTRA</th>
-                            <th>FALTAS_FAVOR</th>
-                            <th>FALTAS_CONTRA</th>
-                            <th>CORNER_FAVOR</th>
-                            <th>CORNER_CONTRA</th>
-                            <th>RECUPERACIONES</th>
-                            <th>PERDIDAS</th>
-                            <th>TARJETAS_AMARILLAS</th>
-                            <th>TARJETAS_ROJAS</th>
-                            <th title="Llegadas con peligro a favor">LLEGADAS_FAVOR</th>
-                            <th title="Llegadas con peligro en contra">LLEGADAS_CONTRA</th>
-                            <th>PENALTIS_FAVOR</th>
-                            <th>PENALTIS_CONTRA</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let partido of filteredPlayers; let i = index">
-                            <td>{{ partido.matchPreparation.matchDate }}</td>
-                            <!-- <td>{{ partido.postPartidoId }}</td> -->
-                            <td>
-                                <div class="simular-enlace" (click)="openInfoPostPartido(partido.postPartidoId)">
-                                    {{ partido.matchPreparation.rivalName }}
-                                </div>
-                            </td>
-                            <td>{{ partido.resultado }}</td>
-                            <td>{{ partido.golesAFavor }}</td>
-                            <td>{{ partido.golesEnContra }}</td>
-                            <td>{{ partido.disparosAFavor }}</td>
-                            <td>{{ partido.disparosEnContra }}</td>
-                            <td>{{ partido.faltasRecibidas }}</td>
-                            <td>{{ partido.faltasCometidas }}</td>
-                            <td>{{ partido.cornersAFavor }}</td>
-                            <td>{{ partido.cornersEnContra }}</td>
-                            <td>{{ partido.recuperaciones }}</td>
-                            <td>{{ partido.perdidas }}</td>
-                            <td>{{ partido.tarjetasAmarillas }}</td>
-                            <td>{{ partido.tarjetasRojas }}</td>
-                            <td>{{ partido.llegadasPeligroAFavor }}</td>
-                            <td>{{ partido.llegadasPeligroEnContra }}</td>
-                            <td>{{ partido.penaltisAFavor }}</td>
-                            <td>{{ partido.penaltisEnContra }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+  <!-- TABLA REAL -->
+  <ng-container *ngIf="!loading">
+    <div style="margin-top: 3em; overflow-x: auto;">
+      <h2 class="mb-3"> {{ 'ESTADIS_EQUIPO.TITLE' | translate }}</h2>
+
+      <table class="table modern-table">
+        <thead>
+          <tr>
+            <th>{{ 'ESTADIS_EQUIPO.TABLE.TEAM' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.TABLE.PJ' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.TABLE.PTS' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.TABLE.W' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.TABLE.D' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.TABLE.L' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.TABLE.GF' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.TABLE.GA' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.TABLE.DG' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.TABLE.LAST' | translate }}</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let resumen of resumentotales; let i = index">
+            <td class="team-cell">
+              <a (click)="verTablaequipo(i)">
+                {{ resumen.equipo }}
+              </a>
+            </td>
+
+            <td>{{ resumen.partidos }}</td>
+            <td class="pts">{{ resumen.puntos }}</td>
+            <td>{{ resumen.victorias }}</td>
+            <td>{{ resumen.empates }}</td>
+            <td>{{ resumen.derrotas }}</td>
+            <td>{{ resumen.gf }}</td>
+            <td>{{ resumen.gc }}</td>
+            <td [ngClass]="{'dg-positive': resumen.dg > 0, 'dg-negative': resumen.dg < 0}">
+              {{ resumen.dg }}
+            </td>
+
+            <td>
+              <div class="last-results">
+                <span *ngFor="let r of resumen.ultimos" class="result-badge" [ngClass]="{
+                  'win': r === 'V',
+                  'draw': r === 'E',
+                  'loss': r === 'D'
+                }">
+                  {{ r === 'V'
+                  ? ('ESTADIS_EQUIPO.RESULT.WIN' | translate)
+                  : r === 'E'
+                  ? ('ESTADIS_EQUIPO.RESULT.DRAW' | translate)
+                  : ('ESTADIS_EQUIPO.RESULT.LOSS' | translate)}}
+                </span>
+              </div>
+
+
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
     </div>
+  </ng-container>
+</div>
+<!-- =========================
+     MODAL PARTIDOS
+========================= -->
+<div class="modal-backdrop-custom" *ngIf="mostarTabla">
+
+  <div class="modal-card">
+
+    <!-- HEADER -->
+    <div class="modal-header">
+      <div>
+        <h5>{{ 'ESTADIS_EQUIPO.MODAL.TITLE' | translate }}</h5>
+        <span class="modal-subtitle">{{ equipoSeleccionado }}</span>
+      </div>
+
+      <button class="btn-close-modal" (click)="cerrarModal()">✕</button>
+    </div>
+
+    <!-- FILTRO -->
+    <div class="modal-filter">
+      <input type="text" class="form-control" [placeholder]="'ESTADIS_EQUIPO.MODAL.SEARCH' | translate"
+        [(ngModel)]="playerSearch" (input)="applyFilter()" />
+
+    </div>
+
+    <!-- TABLA -->
+    <div class="modal-table-wrapper">
+      <table class="table modal-table">
+        <thead>
+          <tr>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.DATE' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.RIVAL' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.RESULT' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.LOCAL_VISITOR' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.TYPEMATCH' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.GF' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.GA' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.SHOTS_FOR' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.SHOTS_AGAINST' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.FOULS_FOR' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.FOULS_AGAINST' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.CORNERS' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.YELLOW' | translate }}</th>
+            <th>{{ 'ESTADIS_EQUIPO.MODAL.RED' | translate }}</th>
+
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let partido of filteredPlayers">
+            <td>{{ partido.matchPreparation.matchDate | date:'dd/MM/yyyy' }}</td>
+            <td class="link">{{ partido.matchPreparation.rivalName }}</td>
+            <td>
+              <span class="result-badge" [ngClass]="{
+                  'win': partido.resultado === 'V',
+                  'draw': partido.resultado === 'E',
+                  'loss': partido.resultado === 'D'
+                }">
+                {{ partido.resultado }}
+              </span>
+            </td>
+            <td>{{ partido.matchPreparation.terreno }}</td>
+            <td>{{ partido.matchPreparation.tipoPartido }}</td>
+            <td>{{ partido.golesAFavor }}</td>
+            <td>{{ partido.golesEnContra }}</td>
+            <td>{{ partido.disparosAFavor }} </td>
+            <td>{{ partido.disparosEnContra }}</td>
+            <td>{{ partido.faltasRecibidas }} </td>
+            <td>{{ partido.faltasCometidas }} </td>
+            <td>{{ partido.cornersAFavor }} </td>
+            <td>{{ partido.tarjetasAmarillas }}</td>
+            <td>{{ partido.tarjetasRojas }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
 </div>
