@@ -67,7 +67,7 @@ export class NotificacionesComponent implements OnInit {
     private http: HttpClient,
     private clubService: ClubService,
     private location: Location,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe((user) => {
@@ -88,6 +88,9 @@ export class NotificacionesComponent implements OnInit {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
 
+    if (this.userId == 9) {
+      this.userId = Number(localStorage.getItem('userId'));
+    }
     this.clubService.getListCorreos(this.userId).subscribe(
       (response: Response) => {
         this.loadingCorreos = true;
@@ -108,10 +111,10 @@ export class NotificacionesComponent implements OnInit {
             }
           }*/
           console.log(response.data);
-          this.receivedCount = this.correosRecibidosSinFiltro.filter(
+          /*this.receivedCount = this.correosRecibidosSinFiltro.filter(
             (correo: any) => correo.leido === 0,
           ).length;
-          console.log(this.receivedCount);
+          console.log(this.receivedCount);*/
           this.correos = response.data.recibidos;
           this.loadingCorreos = false;
         } else {

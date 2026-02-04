@@ -98,6 +98,19 @@
   <main *ngIf="profileId === 2" class="dashboard-main coach-view">
     <div class="container dashboard-mobile">
 
+      <!-- CUADRO DE MANDO -->
+      <div *ngIf="userId === 9" class="row justify-content-center text-center mb-5">
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(10)" class="dashboard-card">
+            <img src="assets/images/estadisticas2.jpg">
+            <div class="overlay">
+              <i class="bi bi-clipboard2-data"></i>
+              <span>{{ 'NAV.CUADRO' | translate }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- HEADER CENTRADO -->
       <div class="row justify-content-center text-center mb-5">
         <div class="col-12 col-md-6">

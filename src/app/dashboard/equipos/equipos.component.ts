@@ -261,6 +261,11 @@ export class EquiposComponent implements OnInit {
           this.userId = Number(localStorage.getItem('userIdClub'));
         }
 
+        if (this.userId == 9) {
+          this.userId = Number(localStorage.getItem('userId'));
+          this.profileId = 1;
+        }
+
         if (this.profileId === 2) {
           this.cargarListadoEquipos();
         } else if (this.profileId < 2) {
@@ -502,6 +507,7 @@ export class EquiposComponent implements OnInit {
           console.error('Error al cargar el listado de equipos', error);
         }
       );
+
   }
 
   cargarListadoEquiposForClub(): void {
@@ -555,7 +561,7 @@ export class EquiposComponent implements OnInit {
     this.loginService.cerrarSesion();
   }
 
-  verPerfil() {}
+  verPerfil() { }
 
   // Método para abrir el modal de creación de equipo
   abrirModalCrearEquipo(): void {

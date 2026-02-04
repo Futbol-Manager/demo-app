@@ -45,6 +45,8 @@ import { InfoJugadoresFederacionComponent } from './info-jugadores-federacion/in
 import { NotificacionesFederacionComponent } from './notificaciones-federacion/notificaciones-federacion.component';
 import { ListadoClubesComponent } from './listado-clubes/listado-clubes.component';
 import { EquiposComponent } from './equipos/equipos.component';
+import { AdminClubesComponent } from './admin-clubes/admin-clubes.component';
+import { AdminInicioComponent } from './admin-inicio/admin-inicio.component';
 
 const routes: Routes = [
   {
@@ -94,6 +96,8 @@ const routes: Routes = [
       { path: 'notificaciones/:clubId', component: NotificacionesComponent },
       { path: 'notificaciones-federacion', component: NotificacionesFederacionComponent },
       { path: 'listado-clubes', component: ListadoClubesComponent },
+      { path: 'admin-clubes', component: AdminClubesComponent },
+      { path: 'admin-inicio/:clubId/:userId', component: AdminInicioComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
   }

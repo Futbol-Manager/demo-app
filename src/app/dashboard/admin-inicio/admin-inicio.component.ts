@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { distinctUntilChanged, filter, take } from 'rxjs/operators';
 import { forkJoin, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
@@ -10,11 +10,12 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 
 @Component({
-  selector: 'app-inicio',
-  templateUrl: './inicio.component.html',
-  styleUrls: ['./inicio.component.scss'],
+  selector: 'app-admin-inicio',
+  templateUrl: './admin-inicio.component.html',
+  styleUrls: ['./admin-inicio.component.scss']
 })
-export class InicioComponent implements OnInit {
+export class AdminInicioComponent implements OnInit {
+
   // =========================
   // Estado base
   // =========================
@@ -29,7 +30,7 @@ export class InicioComponent implements OnInit {
 
   usuarioActual!: User;
   userId = 0;
-  profileId = 0;
+  profileId = 1;
   clubId = 0;
   pictureClub = '';
   noPicture = false;
@@ -59,6 +60,7 @@ export class InicioComponent implements OnInit {
     private loginService: LoginService,
     private teamService: TeamService,
     private router: Router,
+    private route: ActivatedRoute,
     private playerservice: PlayerService
   ) { }
 
@@ -66,13 +68,17 @@ export class InicioComponent implements OnInit {
   // Ciclo de vida
   // =========================
   ngOnInit(): void {
-    this.cargarUsuario();
-    this.detectarPlataforma();
-    this.inicializarDesdeCache();
+    this.route.params.subscribe((params) => {
+      this.clubId = +params['clubId'];
+      this.userId = +params['userId'];
+    });
+    //this.cargarUsuario();
+    //this.detectarPlataforma();
+    //this.inicializarDesdeCache();
     this.cargarTemporadaDesdeStorage();
-    this.inicializarUsuario();
-    this.cargarListadoEquipos();
-    this.cargarJugadores();
+    //this.inicializarUsuario();
+    //this.cargarListadoEquipos();
+    //this.cargarJugadores();
 
   }
   private cargarTemporadaDesdeStorage(): void {
@@ -82,74 +88,12 @@ export class InicioComponent implements OnInit {
       this.temporada = temporada;
     }
   }
-  private inicializarUsuario(): void {
-    this.loginService.usuarioActual
-      .pipe(filter(Boolean), take(1))
-      .subscribe((user) => {
-        this.usuarioActual = user!;
-        this.profileId = user!.profileType.profileId;
-        this.userId = this.obtenerUserIdPorPerfil(user!);
-
-        //controlamos que sea espinosa el admin
-        localStorage.setItem('userId', this.userId == 9 ? this.userId.toString() : '0');
-
-        this.resolverCargaInicialPorPerfil();
-      });
-  }
-  private obtenerUserIdPorPerfil(user: any): number {
-    if (user.profileType.profileId === 0) {
-      return Number(localStorage.getItem('userIdClub'));
-    }
-    return user.userId;
-  }
-  private resolverCargaInicialPorPerfil(): void {
-    switch (true) {
-      case this.profileId === 2:
-        this.cargarListadoEquipos();
-        break;
-
-      case this.profileId > 2:
-        this.cargarHijos();
-        break;
-
-      default:
-        this.datosCargando = false;
-        break;
-    }
-  }
-  private cargarHijos(): void {
-    this.datosCargando = true;
-
-    this.teamService
-      .getTeamByPlayer(this.userId.toString(), this.temporadaStoredValue)
-      .pipe(take(1))
-      .subscribe({
-        next: (response: Response) => {
-          this.listHijos = response?.data ?? [];
-          this.datosCargando = false;
-
-          this.redirigirSiDatosIncompletos();
-        },
-        error: (error) => {
-          console.error('Error al cargar hijos', error);
-          this.listHijos = [];
-          this.datosCargando = false;
-        },
-      });
-  }
-  private redirigirSiDatosIncompletos(): void {
-    const hijoIncompleto = this.listHijos.find((h) => !h.apellido);
-    if (hijoIncompleto) {
-      this.router.navigate(['/dashboard/jugadores', hijoIncompleto.teamId]);
-    }
-  }
 
   // =========================
   // Plataforma
 
   // =========================
   irAPantallaClub(id: number): void {
-    this.cargarClubId();
     if (this.userId != 9) {
       // ⛔ BLOQUEO ABSOLUTO
       if (!this.clubId) {
@@ -222,88 +166,6 @@ export class InicioComponent implements OnInit {
     }
   }
 
-  // =========================
-  // Suscripción
-
-  // =========================
-  private cargarUsuario(): void {
-    //seteamos a 0 para reiniciar el valor    
-    localStorage.setItem('userId', '0');
-
-    this.loginService.usuarioActual
-      .pipe(filter(Boolean), take(1))
-      .subscribe((user) => {
-        this.usuarioActual = user!;
-        this.profileId = user!.profileType.profileId;
-        this.userId = user!.userId;
-
-        // Si ya tenemos clubId desde cache, no repetir llamadas
-        if (this.clubId > 0) {
-          this.verificarSuscripcion();
-        } else {
-          this.cargarClubId();
-        }
-        if (this.profileId === 3) {
-          this.cargarJugadores();
-        }
-      });
-  }
-
-  // =========================
-  // Navegación (SEGURA)
-
-  // =========================
-  private cargarClubId(): void {
-    this.teamService
-      .getTeamByClub(this.userId.toString(), '2025')
-      .pipe(take(1))
-      .subscribe({
-        next: (response: Response) => {
-          this.clubId = response.data?.club?.clubId ?? 0;
-          console.log("CLUBID", this.clubId)
-          if (!this.clubId) {
-            console.error('ClubId inválido');
-            this.clubLoading = false;
-            this.datosCargando = false;
-            return;
-          }
-
-          // Cachear SIEMPRE
-          sessionStorage.setItem(this.CLUB_ID_KEY, String(this.clubId));
-
-          this.verificarSuscripcion();
-        },
-        error: () => {
-          this.clubLoading = false;
-          this.datosCargando = false;
-        },
-      });
-  }
-
-  // =========================
-  private verificarSuscripcion(): void {
-    this.teamService
-      .getEstadoSuscripcion(this.userId, this.profileId)
-      .pipe(take(1))
-      .subscribe({
-        next: (response: Response) => {
-          if (response.data === 999) {
-            this.clubOk = true;
-          } else if (response.data < 1) {
-            this.datosNoCargados = true;
-          }
-
-          sessionStorage.setItem(this.CLUB_OK_KEY, String(this.clubOk));
-
-          this.clubLoading = false;
-          this.datosCargando = false;
-        },
-        error: () => {
-          this.clubLoading = false;
-          this.datosCargando = false;
-        },
-      });
-  }
   navegarAOpcionesJugador(teamId: number, playerId: number): void {
     this.router.navigate(['/dashboard/opcionesjugador', teamId, playerId]);
   }
