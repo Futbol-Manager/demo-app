@@ -8,6 +8,7 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { Response } from 'src/app/core/services/models/response.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-admin-inicio',
@@ -61,6 +62,7 @@ export class AdminInicioComponent implements OnInit {
     private teamService: TeamService,
     private router: Router,
     private route: ActivatedRoute,
+    private location: Location,
     private playerservice: PlayerService
   ) { }
 
@@ -81,6 +83,11 @@ export class AdminInicioComponent implements OnInit {
     //this.cargarJugadores();
 
   }
+
+  goBack(): void {
+    this.location.back();
+  }
+
   private cargarTemporadaDesdeStorage(): void {
     const temporada = localStorage.getItem('temporada');
     if (temporada) {

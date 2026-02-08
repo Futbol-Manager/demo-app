@@ -824,4 +824,11 @@ export class TeamService {
         }
     }
 
+    changeSusClubAdmin(body: any, option: number): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        const url = `${this.base}club/changeSuscriptionClubAdmin/${option}`;
+        return this.http.post<any>(url, body, { headers });
+    }
+
 }
