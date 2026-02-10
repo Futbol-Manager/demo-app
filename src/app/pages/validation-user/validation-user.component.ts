@@ -1,8 +1,19 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ValidatorFn,
+  AbstractControl,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoginModel } from 'src/app/core/models/users/login.model';
-import { GenreTypeModel, ProfileTypeModel, RegisterModel, ValidationUserModel } from 'src/app/core/models/users/register.model';
+import {
+  GenreTypeModel,
+  ProfileTypeModel,
+  RegisterModel,
+  ValidationUserModel,
+} from 'src/app/core/models/users/register.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { RegisterService } from 'src/app/core/services/register/register.service';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
@@ -15,10 +26,9 @@ import { User } from 'src/app/core/models/users/user.model';
 @Component({
   selector: 'app-validation-user',
   templateUrl: './validation-user.component.html',
-  styleUrls: ['./validation-user.component.scss']
+  styleUrls: ['./validation-user.component.scss'],
 })
 export class ValidationUserComponent implements OnInit {
-
   private userId: number = 0;
 
   constructor(
@@ -36,32 +46,45 @@ export class ValidationUserComponent implements OnInit {
   }
 
   getQueryParams() {
-    this.activatedRoute.queryParams.subscribe(params => {
+    this.activatedRoute.queryParams.subscribe((params) => {
       this.userId = +params['userId'] || 0;
     });
-    console.log(this.userId);
   }
 
   validarUsuario() {
-    this.registerService.validateUser(this.userId).subscribe(
-      res => {
-        if(res.data) {
-          const snackBarConfig = new MatSnackBarConfig();
-          snackBarConfig.duration = 5000;
-          snackBarConfig.horizontalPosition = 'center';
-          snackBarConfig.verticalPosition = 'bottom';
-          this.snackBar.open('Validacion de usuario, inicia sesión para utilizar los servicios de Sphaira Tech', 'Cerrar', snackBarConfig);
+    this.registerService.validateUser(this.userId).subscribe({
+      next: (res) => {
+        if (res.data) {
+          this.showSnack(
+            'Usuario validado correctamente. Ya puedes iniciar sesión.',
+            'success',
+          );
           this.dialog.closeAll();
           this.router.navigate(['/home']);
-        } else{
-          const snackBarConfig = new MatSnackBarConfig();
-          snackBarConfig.duration = 5000;
-          snackBarConfig.horizontalPosition = 'center';
-          snackBarConfig.verticalPosition = 'bottom';
-          this.snackBar.open('Error al validar el usuario. Vuelve a intentarlo.', 'Cerrar', snackBarConfig);
+        } else {
+          this.showSnack(
+            'No se ha podido validar el usuario. Inténtalo de nuevo.',
+            'error',
+          );
         }
-      }
-    )
+      },
+      error: () => {
+        this.showSnack(
+          'Error de conexión. Por favor, inténtalo más tarde.',
+          'error',
+        );
+      },
+    });
   }
 
+  private showSnack(message: string, type: 'success' | 'error'): void {
+    const config = new MatSnackBarConfig();
+    config.duration = 5000;
+    config.horizontalPosition = 'center';
+    config.verticalPosition = 'bottom';
+    config.panelClass =
+      type === 'success' ? ['snackbar-success'] : ['snackbar-error'];
+
+    this.snackBar.open(message, 'Cerrar', config);
+  }
 }

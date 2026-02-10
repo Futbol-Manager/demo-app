@@ -434,14 +434,18 @@
 /* Overlay */
 .modal-overlay {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: 100vh;
   background: rgba(0, 0, 0, 0.55);
   z-index: 1040;
 }
-
-
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+}
 /* Modal container */
 .modern-modal {
   border-radius: 14px;

@@ -3,7 +3,7 @@
   <div class="table-actions-left">
     <button class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
-      <span>Volver</span>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
 
     <!-- Buscador DataTable -->
@@ -11,17 +11,47 @@
   </div>
 
   <!-- DERECHA -->
-  <div class="table-actions-right">
-    <button class="action-btn excel" (click)="exportTableToExcel()">
-      <i class="bi bi-file-earmark-spreadsheet-fill"></i>
-      <span class="d-none d-md-inline">{{ 'COMMON.EXPORT_EXCEL' | translate }}</span>
-    </button>
+<div class="table-actions-right position-relative">
 
-    <button class="action-btn custom" (click)="abrirModal()">
-      <i class="bi bi-pencil"></i>
-      <span class="d-none d-md-inline">{{ 'COMMON.CUSTOM' | translate }}</span>
-    </button>
+  <button class="action-btn excel" (click)="exportTableToExcel()">
+    <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+    <span class="d-none d-md-inline">{{ 'COMMON.EXPORT_EXCEL' | translate }}</span>
+  </button>
+
+  <button class="action-btn custom" (click)="toggleDropdown()">
+    <i class="bi bi-sliders"></i>
+    <span class="d-none d-md-inline">{{ 'COMMON.CUSTOM' | translate }}</span>
+  </button>
+
+  <!-- DROPDOWN -->
+  <div class="custom-dropdown" *ngIf="showDropdown">
+    <div class="dropdown-header">
+      <span>{{ 'CLOTHES.TITLE' | translate }}</span>
+      <button class="btn-close" (click)="closeDropdown()"></button>
+    </div>
+
+    <div class="dropdown-body">
+      <p class="dropdown-description">
+        {{ 'CLOTHES.DESCRIPTION' | translate }}
+      </p>
+
+      <div *ngFor="let prenda of prendas" class="dropdown-item">
+        <span>{{ prenda.label }}</span>
+        <div class="form-check form-switch">
+          <input
+            class="form-check-input custom-input"
+            type="checkbox"
+            [checked]="ropaClub[prenda.property] === 0"
+            (change)="togglePrendaOkDesactivar(prenda.property, ropaClub[prenda.property])">
+        </div>
+      </div>
+    </div>
+
+
   </div>
+
+</div>
+
 </div>
 
 <!-- SKELETON -->
@@ -474,32 +504,3 @@
   </table>
 </div>
 
-<!-- Modal para la creación de equipo -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModal}">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="standard-modalLabel">Prendas del club</h5>
-        <!-- Botón de cerrar con un icono -->
-        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
-      </div>
-      <div class="modal-body">
-        <p>Habilita o deshabilítala aquellas prendas del que el club disponga. Si por ejemplo el club no dispone
-          de mochila, deshabilítala aquí para que no aparezca en la tabla.</p>
-        <div *ngFor="let prenda of prendas">
-          <div class="d-flex align-items-center justify-content-between mb-3">
-            <span>{{ prenda.label }}</span>
-            <div class="form-check form-switch">
-              <input class="form-check-input custom-input" type="checkbox" id="{{prenda.property}}"
-                [checked]="ropaClub[prenda.property] === 0"
-                (change)="togglePrendaOkDesactivar(prenda.property, ropaClub[prenda.property])">
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="cerrarModal()">Cerrar</button>
-      </div>
-    </div>
-  </div>
-</div>

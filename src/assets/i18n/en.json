@@ -294,7 +294,16 @@
       "COMMS_PREFIX": "I accept",
       "COMMS_LINK": "commercial communications",
       "HELP": "If you need help, contact",
-      "WHATSAPP": "or WhatsApp"
+      "WHATSAPP": "or WhatsApp",
+      "GENDER_OPTIONS": {
+        "MALE": "Male",
+        "FEMALE": "Female",
+        "OTHER": "Other"
+      }
+    },
+    "VALIDATION": {
+      "PLAYER_VALID": "Player validated",
+      "PLAYER_EXISTS": "The player already exists!"
     },
     "AUTH": {
       "ALREADY_HAVE_ACCOUNT": "Already have an account?",
@@ -591,6 +600,8 @@
     "TYPE": "Type"
   },
   "CLOTHES": {
+    "TITLE": "Club apparel",
+    "DESCRIPTION": "Enable or disable the apparel available for the club.",
     "TABLE": {
       "ID": "ID",
       "NAME": "Name",
@@ -749,5 +760,33 @@
     "UPLOAD_HINT": "Recommended size: 400 x 150 px",
     "UPLOAD_FORMAT": "Select image in JPG or PNG format",
     "UPLOAD_BUTTON": "Upload image"
+  },
+  "MENU_CLUB": {
+    "CALENDAR": "Calendar",
+    "PLAYERS": "Players",
+    "STATS_PLAYERS": "Player statistics",
+    "STATS_TEAM": "Team statistics",
+    "RANKING_RESULTS": "Standings and results",
+    "GALLERY": "Gallery",
+    "TEAM_INFO": "Team information"
+  },
+  "VALIDATION": {
+    "TITLE": "Validate your account",
+    "DESCRIPTION": "You are about to validate your account. Click the button below to continue using Sphaira Tech services.",
+    "BUTTON": "Validate account",
+    "FOOTER": "Thank you for trusting Sphaira Tech"
+  },
+   "DASHBOARD_COACH": {
+    "TRAINING": "Create training",
+    "TASKS": "Tasks",
+    "MATCH": "Create match",
+    "CALENDAR": "Calendar",
+    "TEAM_STATS": "Team statistics",
+    "PLAYER_STATS": "Player statistics",
+    "PLAYERS": "Players",
+    "TEAM_INFO": "Team information",
+    "GALLERY": "Gallery",
+    "RANKINGS": "Standings & results",
+    "NOTIFICATIONS": "Notifications"
   }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -11,6 +11,7 @@ import { RegisterService } from 'src/app/core/services/register/register.service
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { LoginModel } from 'src/app/core/models/users/login.model';
+import { TranslateService } from '@ngx-translate/core';
 
 type Step = 'padre' | 'hijos';
 
@@ -21,39 +22,81 @@ type Step = 'padre' | 'hijos';
 })
 export class ParentChildrenComponent implements OnInit {
   activeTab: 'padre' | 'hijos' = 'padre';
+  modo: 'club' | 'email' = 'club';
   clubId = 0;
+
+  playerId!: number;
+  emailFromUrl!: string;
+  isMenor!: boolean;
+  vieneDeInvitacion = false;
+  esPadreAsociadoAJugador = false;
+
   parentForm!: FormGroup;
   childrenForm!: FormGroup;
   estadoValidacionHijos: (boolean | undefined)[] = [];
   hijosVisibles: number[] = [];
   registerFormPadreHijos!: FormGroup;
   isLoading: boolean = false;
+  showLangDropdown = false;
+  selectedLang = localStorage.getItem('lang') || 'es';
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private registerService: RegisterService,
     private router: Router,
     private snackBar: MatSnackBar,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private translate: TranslateService,
   ) {}
 
+  // ======================================================
+  // INIT
+  // ======================================================
   ngOnInit(): void {
-    this.route.params.subscribe((params) => {
-      this.clubId = +params['clubId'];
-    });
+    this.detectarOrigen();
     this.initForms();
     this.updateChildren();
+
+    // 📧 Precargar email solo si viene del EMAIL
+    if (this.modo === 'email' && this.emailFromUrl) {
+      this.parentForm.patchValue({
+        email: this.emailFromUrl,
+        confirmEmail: this.emailFromUrl,
+      });
+    }
   }
+  // ======================================================
+  // DETECTAR ORIGEN DE LA RUTA
+  // ======================================================
+  private detectarOrigen(): void {
+    this.route.paramMap.subscribe((params) => {
+      // EMAIL
+      if (params.has('playerId')) {
+        this.modo = 'email';
+        this.playerId = +params.get('playerId')!;
+        this.emailFromUrl = params.get('email')!;
+        this.isMenor = params.get('isMenor') === '1';
+
+        this.esPadreAsociadoAJugador = this.isMenor;
+        this.activeTab = 'padre';
+      }
+
+      // CLUB
+      else if (params.has('clubId')) {
+        this.modo = 'club';
+        this.clubId = +params.get('clubId')!;
+        this.activeTab = 'padre';
+      }
+    });
+  }
+
   private initForms(): void {
     this.parentForm = this.fb.group(
       {
         parentesco: [1, Validators.required],
         name: ['', Validators.required],
         surname: ['', Validators.required],
-        birthdate: [
-          '',
-          [Validators.required, this.adultValidator.bind(this)],
-        ],
+        birthdate: ['', [Validators.required, this.adultValidator.bind(this)]],
         genre: ['', Validators.required],
         email: ['', [Validators.required, Validators.email]],
         confirmEmail: ['', [Validators.required, Validators.email]],
@@ -68,7 +111,7 @@ export class ParentChildrenComponent implements OnInit {
           this.matchFields('email', 'confirmEmail'),
           this.matchFields('password', 'password2'),
         ],
-      }
+      },
     );
 
     this.childrenForm = this.fb.group({
@@ -112,12 +155,19 @@ export class ParentChildrenComponent implements OnInit {
     return age >= 18 ? null : { underage: true };
   }
 
-  next() {
+  onSubmitPadre(): void {
     if (this.parentForm.invalid) {
-      console.log(this.parentForm);
       this.parentForm.markAllAsTouched();
       return;
     }
+    console.log(this.modo, this.esPadreAsociadoAJugador)
+    // 🟡 CASO EMAIL → FINALIZAR DIRECTO
+    if (this.modo === 'email' && this.esPadreAsociadoAJugador) {
+      this.finish(); // 👉 registerPadreAsociadoAJugador()
+      return;
+    }
+
+    // 🟢 CASO NORMAL (club o email menor)
     this.activeTab = 'hijos';
   }
 
@@ -167,7 +217,7 @@ export class ParentChildrenComponent implements OnInit {
       if (!this.childrenForm.contains(controlName)) {
         this.childrenForm.addControl(
           controlName,
-          this.fb.control('', Validators.required)
+          this.fb.control('', Validators.required),
         );
       }
     });
@@ -230,13 +280,17 @@ export class ParentChildrenComponent implements OnInit {
     });
   }
   async finish(): Promise<void> {
+    if (this.modo === 'email' && this.esPadreAsociadoAJugador) {
+      this.registerPadreAsociadoAJugador();
+      return;
+    }
     const text =
       this.hijosVisibles.length === 1
         ? '1 hijo.'
         : `${this.hijosVisibles.length} hijos.`;
 
     const confirmacion = confirm(
-      `Vas a crear ${text} Si esto es correcto, dale a confirmar.`
+      `Vas a crear ${text} Si esto es correcto, dale a confirmar.`,
     );
 
     if (!confirmacion) return;
@@ -301,6 +355,53 @@ export class ParentChildrenComponent implements OnInit {
         },
       });
   }
+  private registerPadreAsociadoAJugador(): void {
+    if (this.parentForm.invalid) {
+      this.parentForm.markAllAsTouched();
+      return;
+    }
+
+    const padreData = {
+      parentesco: this.parentForm.get('parentesco')?.value,
+      firstName: this.parentForm.get('name')?.value,
+      secondName: this.parentForm.get('surname')?.value,
+      birthdate: this.parentForm.get('birthdate')?.value,
+      genre: this.parentForm.get('genre')?.value,
+      mail: this.parentForm.get('email')?.value,
+      mobile: this.parentForm.get('phone')?.value,
+      password: this.parentForm.get('password')?.value,
+      comunicaciones: this.parentForm.get('comunicaciones')?.value ? 1 : 0,
+
+      // 🔑 CLAVES IMPORTANTES
+      clubId: 0,
+      playerId: this.playerId,
+    };
+
+    // hijo ficticio (como antes)
+    const hijosData = [{}];
+
+    this.isLoading = true;
+
+    this.registerService
+      .registerPadreHijos({
+        padre: padreData,
+        hijos: hijosData,
+      })
+      .subscribe({
+        next: () => {
+          this.isLoading = false;
+          this.snackBar.open('Registro exitoso.', 'Cerrar', { duration: 5000 });
+          this.autoLogin();
+        },
+        error: () => {
+          this.isLoading = false;
+          this.snackBar.open('Error al registrar.', 'Cerrar', {
+            duration: 5000,
+          });
+        },
+      });
+  }
+
   private autoLogin(): void {
     const email = this.parentForm.get('email')?.value;
     const password = this.parentForm.get('password')?.value;
@@ -321,6 +422,28 @@ export class ParentChildrenComponent implements OnInit {
         this.router.navigate(['/home']);
       },
     });
+  }
+  toggleLangDropdown(event: Event) {
+    event.stopPropagation();
+    this.showLangDropdown = !this.showLangDropdown;
+  }
+
+  selectLang(lang: string) {
+    this.selectedLang = lang;
+    this.cambiarIdioma();
+    this.showLangDropdown = false;
+  }
+
+  // 👉 MISMA lógica que el header
+  cambiarIdioma() {
+    localStorage.setItem('lang', this.selectedLang);
+    this.translate.use(this.selectedLang);
+  }
+
+  // Opcional: cerrar al hacer click fuera
+  @HostListener('document:click')
+  closeLangDropdown() {
+    this.showLangDropdown = false;
   }
   trackByIndex(index: number): number {
     return index;

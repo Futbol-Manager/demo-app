@@ -1,15 +1,36 @@
 <div class="background">
+
+
   <div class="overlay">
     <div class="register-page">
-      <div class="register-card">
 
+      <div class="register-card">
+        <!-- LANGUAGE DROPDOWN -->
+        <div class="lang-dropdown" (clickOutside)="closeLangDropdown()">
+
+          <button class="lang-toggle" (click)="toggleLangDropdown($event)">
+            <i class="bi bi-translate"></i>
+            <span class="lang-text">
+              {{ 'HEADER.CHANGE_LANG' | translate }}
+            </span>
+            <i class="bi bi-chevron-down"></i>
+          </button>
+
+          <ul class="lang-menu" *ngIf="showLangDropdown">
+            <li (click)="selectLang('es')">ES · Español</li>
+            <li (click)="selectLang('en')">EN · English</li>
+            <li (click)="selectLang('fr')">FR · Français</li>
+
+          </ul>
+
+        </div>
         <!-- HEADER -->
         <h2 class="title">
           {{ 'REGISTER.TITLE' | translate }}
         </h2>
 
         <!-- STEPS -->
-        <div class="wizard">
+        <div class="wizard" *ngIf="modo === 'club'">
           <div class="step" [class.active]="activeTab === 'padre'">
             <span>1</span> {{ 'REGISTER.TABS.PARENT' | translate }}
           </div>
@@ -19,8 +40,9 @@
           </div>
         </div>
 
+
         <!-- ================= TAB PADRE ================= -->
-        <form *ngIf="activeTab === 'padre'" [formGroup]="parentForm" (ngSubmit)="next()" class="form-register">
+        <form *ngIf="activeTab === 'padre'" [formGroup]="parentForm" (ngSubmit)="onSubmitPadre()" class="form-register">
 
           <h4 class="subtitle">
             {{ 'REGISTER.PARENT.QUESTION' | translate }}
@@ -69,9 +91,9 @@
             <div>
               <select class="input" formControlName="genre">
                 <option value="">{{ 'REGISTER.COMMON.GENDER' | translate }}</option>
-                <option value="1">{{ 'COMMON.MALE' | translate }}</option>
-                <option value="2">{{ 'COMMON.FEMALE' | translate }}</option>
-                <option value="3">{{ 'COMMON.OTHER' | translate }}</option>
+                <option value="1">{{ 'REGISTER.COMMON.GENDER_OPTIONS.MALE' | translate }}</option>
+                <option value="2">{{ 'REGISTER.COMMON.GENDER_OPTIONS.FEMALE' | translate }}</option>
+                <option value="3">{{ 'REGISTER.COMMON.GENDER_OPTIONS.OTHER' | translate }}</option>
               </select>
 
               <small class="error" *ngIf="parentForm.get('genre')?.touched && parentForm.get('genre')?.errors">
@@ -83,7 +105,8 @@
           <!-- EMAIL -->
           <div class="grid">
             <div>
-              <input class="input" formControlName="email" [placeholder]="'REGISTER.COMMON.EMAIL' | translate" />
+              <input class="input" formControlName="email" [placeholder]="'REGISTER.COMMON.EMAIL' | translate"
+                [readonly]="modo === 'email'" />
               <small class="error" *ngIf="parentForm.get('email')?.touched && parentForm.get('email')?.errors">
                 <span *ngIf="parentForm.get('email')?.errors?.['required']">
                   {{ 'ERRORS.REQUIRED_EMAIL' | translate }}
@@ -96,7 +119,7 @@
 
             <div>
               <input class="input" formControlName="confirmEmail"
-                [placeholder]="'REGISTER.COMMON.EMAIL_REPEAT' | translate" />
+                [placeholder]="'REGISTER.COMMON.EMAIL_REPEAT' | translate" [readonly]="modo === 'email'" />
               <small class="error"
                 *ngIf="parentForm.get('confirmEmail')?.touched && parentForm.get('confirmEmail')?.errors">
                 <span *ngIf="parentForm.get('confirmEmail')?.errors?.['required']">
@@ -147,7 +170,7 @@
                 </a>
               </span>
             </label>
-             <!-- ERROR -->
+            <!-- ERROR -->
             <small class="error" *ngIf="parentForm.get('terms')?.touched && parentForm.get('terms')?.invalid">
               {{ 'ERRORS.TERMS_REQUIRED' | translate }}
             </small>
@@ -167,11 +190,16 @@
 
 
           <button type="submit" class="btn-primary">
-            {{ 'REGISTER.COMMON.NEXT' | translate }}
+            {{
+            modo === 'email' && esPadreAsociadoAJugador
+            ? ('REGISTER.COMMON.FINISH' | translate)
+            : ('REGISTER.COMMON.NEXT' | translate)
+            }}
           </button>
+
         </form>
 
-        <div *ngIf="activeTab === 'hijos'" class="tab-content">
+        <div *ngIf="activeTab === 'hijos' && modo === 'club'" class="tab-content">
 
           <form [formGroup]="childrenForm" (ngSubmit)="finish()" class="form-register">
 
@@ -239,13 +267,12 @@
               </div>
 
               <div class="validation-result success" *ngIf="estadoValidacionHijos[index] === true">
-                ✔ Jugador validado
+                ✔ {{ 'REGISTER.VALIDATION.PLAYER_VALID' | translate }}
               </div>
 
               <div class="validation-result error" *ngIf="estadoValidacionHijos[index] === false">
-                ✖ El jugador ya existe!
+                ✖ {{ 'REGISTER.VALIDATION.PLAYER_EXISTS' | translate }}
               </div>
-
 
             </div>
 

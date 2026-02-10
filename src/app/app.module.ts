@@ -82,7 +82,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 export class AppModule {
   constructor(private translate: TranslateService) {
     // Idiomas soportados
-    const supportedLangs = ['es', 'en'];
+    const supportedLangs = ['es', 'en', 'fr'];
 
     // 1. Idioma guardado anteriormente
     const savedLang = localStorage.getItem('lang');

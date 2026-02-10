@@ -5,6 +5,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { Location } from '@angular/common';
 import { AsistenciaTraining, Task, Training } from 'src/app/core/services/models/training.models';
 import { Response } from 'src/app/core/services/models/response.model';
 import { MatchPreparation } from 'src/app/core/services/models/match.model';
@@ -82,7 +83,11 @@ export class MenuEntrenadorComponent implements OnInit {
     private trainingService: TrainingService,
     private playerService: PlayerService,
     private teamService: TeamService,
-    private cdr: ChangeDetectorRef,) { }
+    private cdr: ChangeDetectorRef,
+    private location: Location,
+  ) {
+
+  }
 
   ngOnInit(): void {
     // Suscríbete al observable del servicio para obtener el usuario actual
@@ -126,7 +131,7 @@ export class MenuEntrenadorComponent implements OnInit {
     } else if (id === 8) {
       this.router.navigate(['/dashboard/informacion_equipo', this.teamId]);
     } else if (id === 9) {
-      this.router.navigate(['/dashboard/notificaciones', this.clubId]);
+      this.router.navigate(['/dashboard/notificaciones', this.userId]);
     } else if (id === 10) {
       this.router.navigate(['/dashboard/patrocinadores', 0]);
     } else if (id === 11) {
@@ -437,5 +442,7 @@ export class MenuEntrenadorComponent implements OnInit {
   cerrarModalPartido() {
     this.showModalPartido = false;
   }
-
+  goBack(): void {
+    this.location.back();
+  }
 }

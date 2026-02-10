@@ -1,52 +1,112 @@
-.colored-column {
-  background-color: #004a45;
-  justify-content: center;
-  width: 100%;
-  display: flex;
-}
-
-.textoCentrado{
-  width: 100%;
-  justify-content: center;
-}
-
-.form-register{
-  padding: 2rem;
-}
-
-.input-register{
-  margin-bottom: 4%;
-}
-
-.nb1-layout {
-  position: fixed;
-  height: calc(100% - 10em); /* Restar 10em al 100% para acomodar el margen en la parte superior e inferior */
-  margin: 5em;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  z-index: 1;
-  overflow: hidden;
-  width: 30%;
-}
-
+/* CONTENEDOR PRINCIPAL */
 .background {
-  position: fixed;
-  top: 0;
-  left: 0;
+  position: relative;
+  min-height: 100vh;
+  background-image: url("/assets/images/fondoLoginV1.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* OVERLAY OSCURO PARA LEGIBILIDAD */
+.overlay {
+  min-height: 100vh;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+/* CENTRADO */
+.validate-container {
   width: 100%;
-  height: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* TARJETA */
+.validate-card {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
   overflow: hidden;
-  z-index: 0;
+  animation: fadeIn 0.4s ease-in-out;
 }
 
-.video-background {
+/* HEADER */
+.validate-header {
+  background: #31b270;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.validate-logo {
+  max-width: 160px;
+}
+
+/* BODY */
+.validate-body {
+  padding: 2rem;
+  text-align: center;
+}
+
+.validate-title {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #0f172a;
+  margin-bottom: 1rem;
+}
+
+.validate-text {
+  font-size: 1rem;
+  color: #475569;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+/* BOTÓN */
+.btn-validate {
   width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
+  padding: 0.9rem 1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  background: #002c40;
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.25s ease;
 }
 
+.btn-validate:hover {
+  background: linear-gradient(135deg, #31b270 0%, #1f6f63 35%, #002c40 100%);
+  transform: translateY(-1px);
+}
+
+/* FOOTER */
+.validate-footer {
+  padding: 1rem;
+  background: #f8fafc;
+  text-align: center;
+}
+
+.validate-footer-text {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+/* ANIMACIÓN */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

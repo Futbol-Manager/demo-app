@@ -293,7 +293,7 @@
     "FILESELECTED": "Seleccionar archivo en formato XLSX"
   },
   "TASKS": {
-    "MODAL_TITLE": "Selecciona una tarea para descargarla",
+    "MODAL_TITLE": "Selecciona una tarea para agregarla",
     "SEARCH_PLACEHOLDER": "Buscar por título...",
     "SELECT_STRATEGY": "Selecciona estrategia...",
     "SELECT_INTENTION": "Selecciona intención...",
@@ -405,7 +405,7 @@
     "TEXT_099": "Convocatoria",
     "TEXT_100": "Post Partido",
     "TEXT_101": "Imprimir",
-    "TEXT_102": "No visible / Visible",
+    "TEXT_102": "Visible/No Visible",
     "TEXT_103": "Abrir en Google Maps",
     "TEXT_104": "Quedada:",
     "TEXT_105": "Partido:",
@@ -669,7 +669,10 @@
     "TEXT_363": "Se ha eliminado el pago, pero existen registros en el historial, se eliminan todos los registros realizados de ese pago.",
     "TEXT_364": "La federación no ha servido los datos, espera y vuelve a intentarlo más tarde.",
     "TEXT_365": "Por favor, rellena todos los campos.",
-    "TEXT_366": "Ese email ya está dado de alta, prueba a iniciar sesión o date de alta con un email diferente."
+    "TEXT_366": "Ese email ya está dado de alta, prueba a iniciar sesión o date de alta con un email diferente.",
+    "TEXT_367": "Permite mostrar esta información a los jugadores",
+    "TEXT_368": "Información visible para jugadores",
+    "TEXT_369": "Información Rival/Mi equipo visible para jugadores"
   },
   "REGISTER": {
     "TITLE": "Registro de usuario",
@@ -730,7 +733,16 @@
       "TERMS_LINK": "política de privacidad",
       "COMMS_PREFIX": "Acepto las",
       "COMMS_LINK": "comunicaciones comerciales",
-      "WHATSAPP": "o al WhatsApp"
+      "WHATSAPP": "o al WhatsApp",
+      "GENDER_OPTIONS": {
+        "MALE": "Masculino",
+        "FEMALE": "Femenino",
+        "OTHER": "Otro"
+      }
+    },
+    "VALIDATION": {
+      "PLAYER_VALID": "Jugador validado",
+      "PLAYER_EXISTS": "¡El jugador ya existe!"
     },
     "AUTH": {
       "ALREADY_HAVE_ACCOUNT": "¿Ya tienes una cuenta?",
@@ -1012,6 +1024,8 @@
     "CANCEL": "Cancelar"
   },
   "CLOTHES": {
+    "TITLE": "Prendas del club",
+    "DESCRIPTION": "Habilita o deshabilita las prendas disponibles para el club.",
     "TABLE": {
       "ID": "ID",
       "NAME": "Nombre",
@@ -1172,5 +1186,33 @@
     "UPLOAD_HINT": "Se recomienda un tamaño de 400 x 150 px",
     "UPLOAD_FORMAT": "Seleccionar imagen en formato JPG o PNG",
     "UPLOAD_BUTTON": "Subir imagen"
+  },
+  "MENU_CLUB": {
+    "CALENDAR": "Calendario",
+    "PLAYERS": "Jugadores",
+    "STATS_PLAYERS": "Estadísticas de jugadores",
+    "STATS_TEAM": "Estadísticas del equipo",
+    "RANKING_RESULTS": "Clasificación y resultados",
+    "GALLERY": "Galería",
+    "TEAM_INFO": "Información del equipo"
+  },
+  "VALIDATION": {
+    "TITLE": "Valida tu usuario",
+    "DESCRIPTION": "Estás a punto de validar tu usuario. Haz clic en el botón inferior para continuar utilizando los servicios de Sphaira Tech.",
+    "BUTTON": "Validar usuario",
+    "FOOTER": "Gracias por confiar en Sphaira Tech"
+  },
+  "DASHBOARD_COACH": {
+    "TRAINING": "Crear entrenamiento",
+    "TASKS": "Tareas",
+    "MATCH": "Crear partido",
+    "CALENDAR": "Calendario",
+    "TEAM_STATS": "Estadísticas del equipo",
+    "PLAYER_STATS": "Estadísticas de jugadores",
+    "PLAYERS": "Jugadores",
+    "TEAM_INFO": "Información del equipo",
+    "GALLERY": "Galería",
+    "RANKINGS": "Clasificación y resultados",
+    "NOTIFICATIONS": "Notificaciones"
   }
 }

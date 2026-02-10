@@ -1,57 +1,172 @@
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
+/* ===============================
+   TASK SHOP PANEL
+================================ */
+
+.task-shop-panel {
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(0, 44, 64, 0.08);
+}
+
+/* ===============================
+   HEADER
+================================ */
+
+.task-shop-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.task-shop-header h2 {
+  font-weight: 500;
+  color: #002c40;
+}
+
+/* ===============================
+   FILTERS
+================================ */
+
+.task-filters {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto auto;
+  gap: 14px;
+  margin-bottom: 28px;
+  align-items: center;
+}
+
+@media (max-width: 992px) {
+  .task-filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===============================
+   INPUTS
+================================ */
+
+.saas-input {
+  border-radius: 12px;
+  border: 1.5px solid #31b270;
+  padding: 10px 14px;
+  font-size: 0.9rem;
+}
+
+.saas-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(49, 178, 112, 0.25);
+}
+
+/* ===============================
+   BUTTONS
+================================ */
+
+.btn-primary-saas {
+  background: #002c40;
+  color: #ffffff;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 600;
+  border: none;
+}
+
+.btn-primary-saas:hover {
+  background: #001f2d;
+}
+
+.btn-outline-saas {
+  background: #ffffff;
+  color: #002c40;
+  border: 1.5px solid #002c40;
+  border-radius: 12px;
+  padding: 10px 20px;
+  font-weight: 600;
+}
+
+.btn-outline-saas:hover {
+  background: #002c40;
+  color: #ffffff;
+}
+
+.btn-success-saas {
+  background: #31b270;
+  color: #ffffff;
+  border-radius: 10px;
+  border: none;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* ===============================
+   TASK GRID
+================================ */
+
+.task-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 22px;
+}
+
+/* ===============================
+   TASK CARD
+================================ */
+
+.task-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 44, 64, 0.08);
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.task-card:hover {
+  transform: translateY(-4px);
+}
+
+.task-card.selected {
+  outline: 3px solid #31b270;
+}
+
+/* ===============================
+   IMAGE
+================================ */
+
+.task-image img {
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  /* Fondo oscuro semitransparente */
+  height: 160px;
+  object-fit: cover;
+}
+
+/* ===============================
+   CONTENT
+================================ */
+
+.task-content {
+  padding: 16px;
+}
+
+.task-id {
+  font-size: 0.75rem;
+  color: #9aa6ac;
+}
+
+.task-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #002c40;
+  margin: 6px 0;
+}
+
+.task-tags {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  /* Asegura que el modal esté sobre todo */
+  gap: 6px;
+  margin-bottom: 8px;
 }
 
-.modal-dialog {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.modal-body {
-  padding: 10px 0;
-}
-
-.card.selected {
-  border: 2px solid rgb(0, 87, 43);
-  background-color: rgba(0, 87, 43, 0.2);
-}
-
-.custom-card-body {
-  max-height: 250px;
-  /* Adjust as needed */
-  min-height: 150px;
-  /* Adjust as needed */
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.card-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.tags-container {
-  margin-top: 10px;
+.task-desc {
+  font-size: 0.85rem;
+  color: #7a8a93;
+  min-height: 42px;
 }

@@ -1,140 +1,91 @@
-<div class="submenu">
-    <div class="row">
-        <div class="col text-center">
-            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
-                <i class="bi bi-house"></i>
-                <span class="d-none d-md-inline">Inicio</span>
-            </a>
-        </div>
-    </div>
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
 </div>
 
 <app-publicidad></app-publicidad>
 
-<div class="container">
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
-        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(2)">
-            <div class="card h-100" style="border: 1px solid black;">
-                <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/fecha-del-calendario.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-                        Calendario
-                    </h5>
-                </div>
-            </div>
+<div class="container dashboard-container">
+  <div class="dashboard-grid">
+
+    <div class="dashboard-item" (click)="irAPantalla(2)">
+      <div class="dashboard-card bg-calendar">
+        <div class="dashboard-content">
+          <i class="bi bi-calendar4-week dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.CALENDAR' | translate }}
+          </span>
         </div>
-        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(3)">
-            <div class="card h-100" style="border: 1px solid black;">
-                <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/grafico.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-                        Estadísticas Equipo
-                    </h5>
-                </div>
-            </div>
-        </div>
-        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(4)">
-            <div class="card h-100" style="border: 1px solid black;">
-                <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/grafico-de-barras.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-                        Estadísticas Jugadores
-                    </h5>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
-        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(5)">
-            <div class="card h-100" style="border: 1px solid black;">
-                <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/jugador-de-futbol.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-                        Jugadores
-                    </h5>
-                </div>
-            </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(5)">
+      <div class="dashboard-card bg-players">
+        <div class="dashboard-content">
+          <i class="bi bi-people-fill dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.PLAYERS' | translate }}
+          </span>
         </div>
-        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(6)">
-            <div class="card h-100" style="border: 1px solid black;">
-                <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/informacion.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-                        Información del equipo
-                    </h5>
-                </div>
-            </div>
-        </div>
-        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(7)">
-            <div class="card h-100" style="border: 1px solid black;">
-                <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/reproductor-de-video.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-                        Galería
-                    </h5>
-                </div>
-            </div>
-        </div>
+      </div>
     </div>
-    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-3 p-3" style="margin-top: 3em;">
-        <div class="col mb-3" style="cursor: pointer;" (click)="irAPantalla(8)">
-            <div class="card h-100" style="border: 1px solid black;">
-                <div class="card-body d-flex flex-column text-center">
-                    <div class="row mb-2 flex-grow-1 d-flex justify-content-center align-items-center">
-                        <div class="col d-flex justify-content-center align-items-center">
-                            <ng-container>
-                                <img style="width: 10em;" src="/assets/iconos/grafico-de-barras.svg"
-                                    class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                            </ng-container>
-                        </div>
-                    </div>
-                    <h5 class="card-title mt-auto" style="color: black; white-space: nowrap; text-overflow: ellipsis;">
-                        Clasificación y resultado
-                    </h5>
-                </div>
-            </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(4)">
+      <div class="dashboard-card bg-stats-player">
+        <div class="dashboard-content">
+          <i class="bi bi-graph-up dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.STATS_PLAYERS' | translate }}
+          </span>
         </div>
+      </div>
     </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(3)">
+      <div class="dashboard-card bg-stats-team">
+        <div class="dashboard-content">
+          <i class="bi bi-bar-chart dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.STATS_TEAM' | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(8)">
+      <div class="dashboard-card bg-ranking">
+        <div class="dashboard-content">
+          <i class="bi bi-trophy dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.RANKING_RESULTS' | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(7)">
+      <div class="dashboard-card bg-gallery">
+        <div class="dashboard-content">
+          <i class="bi bi-collection-play dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.GALLERY' | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(6)">
+      <div class="dashboard-card bg-info">
+        <div class="dashboard-content">
+          <i class="bi bi-info-circle dashboard-icon"></i>
+          <span class="dashboard-title">
+            {{ 'MENU_CLUB.TEAM_INFO' | translate }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>

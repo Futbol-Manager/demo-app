@@ -133,8 +133,7 @@
         </div>
       </div>
     </div>
-
-    <div class="modal d-block modal-overlay" *ngIf="showModal" tabindex="-1" role="dialog">
+    <div class="modal d-block" *ngIf="showModal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content modern-modal">
 
@@ -222,7 +221,7 @@
               <!-- FOOTER -->
               <div class="modal-footer modern-footer">
                 <button type="submit" class="btn btn-success btn-save">
-                  {{ 'APP.BUTTONS.SAVE' | translate }}
+                  {{ 'TITLES.CREATETEAM' | translate }}
                 </button>
               </div>
 
@@ -231,174 +230,181 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
 
 
-    <!-- Modal para subir jugadores desde plantilla -->
-    <div class="modal d-block modal-overlay" *ngIf="showModalSubirJugadores" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content modern-modal">
+<!-- OVERLAY GLOBAL -->
+<div class="modal-overlay" *ngIf="
+  showModal ||
+  showModalSubirJugadores ||
+  showModalSubirJugadoresGesDesk ||
+  modalConfirAndroid
+"></div>
+<!-- Modal para subir jugadores desde plantilla -->
+<div class="modal d-block" *ngIf="showModalSubirJugadores" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content modern-modal">
 
-          <!-- HEADER -->
-          <div class="modal-header modern-header">
-            <h5 class="modal-title">
-              {{ 'PHRASES.INICIO4' | translate }}
-            </h5>
-            <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSubirJugadores()"></button>
+      <!-- HEADER -->
+      <div class="modal-header modern-header">
+        <h5 class="modal-title">
+          {{ 'PHRASES.INICIO4' | translate }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSubirJugadores()"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body modern-body">
+
+        <p class="text-muted mb-4">
+          {{ 'PHRASES.INICIO5' | translate }}
+          <a class="ms-1 fw-semibold link-success" href="https://appsphairatech.com/images/docs/Plantilla.xlsx"
+            download="Plantilla.xlsx">
+            {{ 'APP.BUTTONS.DOWNLOADTEMPLATE' | translate }}
+          </a>
+        </p>
+
+        <form [formGroup]="excelForm" (ngSubmit)="uploadExcel()" enctype="multipart/form-data" class="upload-form">
+
+          <h4 class="upload-title">
+            {{ 'TITLES.UPFILEEXCEL' | translate }}
+          </h4>
+
+          <!-- Zona de subida -->
+          <label for="excelFile" class="upload-zone">
+            <i class="bi bi-file-earmark-excel"></i>
+            <span>{{ 'LABELS.SELECTEDFILEXLSX' | translate }}</span>
+            <small>.xlsx</small>
+
+            <input id="excelFile" type="file" accept=".xlsx" hidden (change)="onFileSelected($event)" />
+          </label>
+
+          <!-- Archivo seleccionado -->
+          <div *ngIf="fileName" class="file-selected">
+            <i class="bi bi-check-circle"></i>
+            {{ 'LABELS.FILESELECTED' | translate }}:
+            <strong>{{ fileName }}</strong>
           </div>
 
-          <!-- BODY -->
-          <div class="modal-body modern-body">
-
-            <p class="text-muted mb-4">
-              {{ 'PHRASES.INICIO5' | translate }}
-              <a class="ms-1 fw-semibold link-success" href="https://appsphairatech.com/images/docs/Plantilla.xlsx"
-                download="Plantilla.xlsx">
-                {{ 'APP.BUTTONS.DOWNLOADTEMPLATE' | translate }}
-              </a>
-            </p>
-
-            <form [formGroup]="excelForm" (ngSubmit)="uploadExcel()" enctype="multipart/form-data" class="upload-form">
-
-              <h4 class="upload-title">
-                {{ 'TITLES.UPFILEEXCEL' | translate }}
-              </h4>
-
-              <!-- Zona de subida -->
-              <label for="excelFile" class="upload-zone">
-                <i class="bi bi-file-earmark-excel"></i>
-                <span>{{ 'LABELS.SELECTEDFILEXLSX' | translate }}</span>
-                <small>.xlsx</small>
-
-                <input id="excelFile" type="file" accept=".xlsx" hidden (change)="onFileSelected($event)" />
-              </label>
-
-              <!-- Archivo seleccionado -->
-              <div *ngIf="fileName" class="file-selected">
-                <i class="bi bi-check-circle"></i>
-                {{ 'LABELS.FILESELECTED' | translate }}:
-                <strong>{{ fileName }}</strong>
-              </div>
-
-              <!-- Botón subir -->
-              <div class="text-center mt-4">
-                <button *ngIf="showUploadButton" type="submit" class="btn btn-primary btn-upload">
-                  <i class="bi bi-upload me-2"></i>
-                  {{ 'APP.BUTTONS.UPFILE' | translate }}
-                </button>
-              </div>
-
-            </form>
-          </div>
-
-          <!-- FOOTER -->
-          <div class="modal-footer modern-footer">
-            <button type="button" class="btn btn-secondary" (click)="cerrarModalSubirJugadores()">
-              {{ 'APP.BUTTONS.CLOSE' | translate }}
+          <!-- Botón subir -->
+          <div class="text-center mt-4">
+            <button *ngIf="showUploadButton" type="submit" class="btn btn-primary btn-upload">
+              <i class="bi bi-upload me-2"></i>
+              {{ 'APP.BUTTONS.UPFILE' | translate }}
             </button>
           </div>
 
-        </div>
+        </form>
       </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer modern-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalSubirJugadores()">
+          {{ 'APP.BUTTONS.CLOSE' | translate }}
+        </button>
+      </div>
+
     </div>
+  </div>
+</div>
 
 
-    <!-- Modal para subir jugadores desde plantilla -->
-    <div class="modal-overlay" *ngIf="showModalSubirJugadoresGesDesk"></div>
-    <div class="modal d-block " *ngIf="showModalSubirJugadoresGesDesk" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content modern-modal">
+<!-- Modal para subir jugadores desde plantilla -->
+<div class="modal-overlay" *ngIf="showModalSubirJugadoresGesDesk"></div>
+<div class="modal d-block " *ngIf="showModalSubirJugadoresGesDesk" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content modern-modal">
 
-          <!-- HEADER -->
-          <div class="modal-header modern-header">
-            <h5 class="modal-title">
-              {{ 'PHRASES.INICIO6' | translate }}
-            </h5>
-            <button type="button" class="btn-close" (click)="cerrarModalSubirJugadoresGesDesk()"></button>
+      <!-- HEADER -->
+      <div class="modal-header modern-header">
+        <h5 class="modal-title">
+          {{ 'PHRASES.INICIO6' | translate }}
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrarModalSubirJugadoresGesDesk()"></button>
+      </div>
+
+      <!-- BODY -->
+      <div class="modal-body modern-body">
+
+        <p class="text-muted mb-4">
+          {{ 'PHRASES.INICIO7' | translate }}
+        </p>
+
+        <form [formGroup]="excelForm" (ngSubmit)="uploadExcelGesDesk()" enctype="multipart/form-data"
+          class="upload-form">
+
+          <h4 class="upload-title">
+            {{ 'TITLES.UPFILEEXCEL' | translate }}
+          </h4>
+
+          <!-- Dropzone -->
+          <label for="excelFile" class="upload-zone">
+            <i class="bi bi-file-earmark-excel"></i>
+            <span>{{ 'LABELS.SELECTEDFILEXLSX' | translate }}</span>
+            <small>.xlsx</small>
+            <input id="excelFile" type="file" accept=".xlsx" hidden (change)="onFileSelected($event)" />
+          </label>
+
+          <!-- Archivo seleccionado -->
+          <div *ngIf="fileName" class="file-selected">
+            <i class="bi bi-check-circle"></i>
+            {{ 'LABELS.FILESELECTED' | translate }}: <strong>{{ fileName }}</strong>
           </div>
 
-          <!-- BODY -->
-          <div class="modal-body modern-body">
-
-            <p class="text-muted mb-4">
-              {{ 'PHRASES.INICIO7' | translate }}
-            </p>
-
-            <form [formGroup]="excelForm" (ngSubmit)="uploadExcelGesDesk()" enctype="multipart/form-data"
-              class="upload-form">
-
-              <h4 class="upload-title">
-                {{ 'TITLES.UPFILEEXCEL' | translate }}
-              </h4>
-
-              <!-- Dropzone -->
-              <label for="excelFile" class="upload-zone">
-                <i class="bi bi-file-earmark-excel"></i>
-                <span>{{ 'LABELS.SELECTEDFILEXLSX' | translate }}</span>
-                <small>.xlsx</small>
-                <input id="excelFile" type="file" accept=".xlsx" hidden (change)="onFileSelected($event)" />
-              </label>
-
-              <!-- Archivo seleccionado -->
-              <div *ngIf="fileName" class="file-selected">
-                <i class="bi bi-check-circle"></i>
-                {{ 'LABELS.FILESELECTED' | translate }}: <strong>{{ fileName }}</strong>
-              </div>
-
-              <!-- Botón subir -->
-              <div class="text-center mt-4">
-                <button *ngIf="showUploadButton" type="submit" class="btn btn-primary btn-upload">
-                  <i class="bi bi-upload me-2"></i>
-                  {{ 'APP.BUTTONS.UPFILE' | translate }}
-                </button>
-              </div>
-
-            </form>
-          </div>
-
-          <!-- FOOTER -->
-          <div class="modal-footer modern-footer">
-            <button type="button" class="btn btn-secondary" (click)="cerrarModalSubirJugadoresGesDesk()">
-              {{ 'APP.BUTTONS.CLOSE' | translate }}
+          <!-- Botón subir -->
+          <div class="text-center mt-4">
+            <button *ngIf="showUploadButton" type="submit" class="btn btn-primary btn-upload">
+              <i class="bi bi-upload me-2"></i>
+              {{ 'APP.BUTTONS.UPFILE' | translate }}
             </button>
           </div>
 
-        </div>
+        </form>
       </div>
+
+      <!-- FOOTER -->
+      <div class="modal-footer modern-footer">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalSubirJugadoresGesDesk()">
+          {{ 'APP.BUTTONS.CLOSE' | translate }}
+        </button>
+      </div>
+
     </div>
+  </div>
+</div>
 
 
-    <!-- MODAL -->
-    <div [ngClass]="{'d-block': modalConfirAndroid}" class="modal" role="dialog" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
-          <div class="modal-body p-4">
-            <div class="d-flex align-items-center mb-3">
-              <span class="me-2">⚠️</span>
-              <h5 class="m-0 text-danger fw-bold">{{ 'TITLES.ATENTION' | translate }}</h5>
-            </div>
+<!-- MODAL -->
+<div class="modal-overlay" *ngIf="showModalSubirJugadores"></div>
+<div [ngClass]="{'d-block': modalConfirAndroid}" class="modal" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body p-4">
+        <div class="d-flex align-items-center mb-3">
+          <span class="me-2">⚠️</span>
+          <h5 class="m-0 text-danger fw-bold">{{ 'TITLES.ATENTION' | translate }}</h5>
+        </div>
 
-            <p class="mb-3">
-              {{ 'PHRASES.INICIO8' | translate }}
-            </p>
-            <p class="mb-3">
-              {{ 'PHRASES.INICIO9' | translate }}
-            </p>
+        <p class="mb-3">
+          {{ 'PHRASES.INICIO8' | translate }}
+        </p>
+        <p class="mb-3">
+          {{ 'PHRASES.INICIO9' | translate }}
+        </p>
 
-            <div class="form-check my-3">
-              <input [(ngModel)]="aceptoGestionNavegador" class="form-check-input" id="chkAceptoGestion"
-                type="checkbox" />
-              <label class="form-check-label" for="chkAceptoGestion">
-                {{ 'PHRASES.INICIO10' | translate }}
-              </label>
-            </div>
+        <div class="form-check my-3">
+          <input [(ngModel)]="aceptoGestionNavegador" class="form-check-input" id="chkAceptoGestion" type="checkbox" />
+          <label class="form-check-label" for="chkAceptoGestion">
+            {{ 'PHRASES.INICIO10' | translate }}
+          </label>
+        </div>
 
-            <div class="d-flex justify-content-end gap-2 mt-4">
-              <button (click)="closeModalConfirAndroid()" class="btn btn-outline-secondary" type="button">{{
-                'APP.BUTTONS.CANCEL' | translate }}</button>
-              <button (click)="onAceptarDescarga()" class="btn btn-primary" type="button">{{ 'APP.BUTTONS.ACCEPT' |
-                translate }}</button>
-            </div>
-          </div>
+        <div class="d-flex justify-content-end gap-2 mt-4">
+          <button (click)="closeModalConfirAndroid()" class="btn btn-outline-secondary" type="button">{{
+            'APP.BUTTONS.CANCEL' | translate }}</button>
+          <button (click)="onAceptarDescarga()" class="btn btn-primary" type="button">{{ 'APP.BUTTONS.ACCEPT' |
+            translate }}</button>
         </div>
       </div>
     </div>

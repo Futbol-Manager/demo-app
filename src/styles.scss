@@ -631,3 +631,30 @@ body {
   background: #f59e0b;
   color: #ffffff;
 }
+/* === SNACKBAR SUCCESS === */
+.snackbar-success {
+  background-color: #16a34a !important; /* verde profesional */
+  color: #ffffff !important;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+/* === SNACKBAR ERROR === */
+.snackbar-error {
+  background-color: #dc2626 !important; /* rojo moderno */
+  color: #ffffff !important;
+  font-weight: 500;
+  border-radius: 8px;
+}
+
+/* Texto */
+.snackbar-success .mat-simple-snackbar,
+.snackbar-error .mat-simple-snackbar {
+  color: #ffffff !important;
+}
+
+/* Botón */
+.snackbar-success .mat-simple-snackbar-action,
+.snackbar-error .mat-simple-snackbar-action {
+  color: #e5e7eb !important;
+}

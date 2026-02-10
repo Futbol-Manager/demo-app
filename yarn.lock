@@ -6472,6 +6472,11 @@ stylus@>=0.52.4, stylus@0.56.0:
     sax "~1.2.4"
     source-map "^0.7.3"
 
+summernote@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.npmjs.org/summernote/-/summernote-0.9.1.tgz"
+  integrity sha512-5Hfuey6+N0XIbk8ZpkGEVDmrkRVRHZWKBhw/072i9/TJLaWUKboB+KOyyd6AzDP2CQs1O6or4zRTU8HY30kt4w==
+
 supports-color@^7.1.0:
   version "7.2.0"
   resolved "https://registry.npmjs.org/supports-color/-/supports-color-7.2.0.tgz"

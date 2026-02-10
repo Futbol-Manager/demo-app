@@ -1,0 +1,126 @@
+{
+  "HEADER": {
+    "CHANGE_LANG": "Langue"
+  },
+  "REGISTER": {
+    "TITLE": "Inscription de l’utilisateur",
+    "SELECT_USER_TYPE": "Sélectionnez le type d’utilisateur",
+    "REGISTER": "S’inscrire",
+    "USER_TYPE": {
+      "CLUB": {
+        "TITLE": "Club",
+        "SUBTITLE": "S’inscrire en tant que club sportif",
+        "MODAL": {
+          "WARNING_PREFIX": "Cette inscription est",
+          "WARNING_HIGHLIGHT_1": "EXCLUSIVEMENT RÉSERVÉE AUX ORGANISATIONS SPORTIVES",
+          "WARNING_MIDDLE": "Si vous êtes",
+          "WARNING_HIGHLIGHT_2": "PARENT / TUTEUR, CE N’EST PAS VOTRE INSCRIPTION",
+          "WARNING_HIGHLIGHT_3": "EXCLUSIVEMENT RÉSERVÉE AUX ENTRAÎNEURS",
+          "WARNING_SUFFIX": "Contactez votre club pour recevoir le lien d’inscription"
+        }
+      },
+      "COACH": {
+        "TITLE": "Entraîneur",
+        "SUBTITLE": "S’inscrire en tant qu’entraîneur"
+      }
+    },
+    "TABS": {
+      "PARENT": "Informations du parent",
+      "CHILDREN": "Informations des enfants"
+    },
+    "PARENT": {
+      "QUESTION": "Êtes-vous parent, tuteur ou joueur adulte ?",
+      "RELATION": "S’inscrire en tant que :",
+      "FATHER": "Père",
+      "MOTHER": "Mère",
+      "TUTOR": "Tuteur",
+      "ADULT": "Joueur adulte"
+    },
+    "CHILDREN": {
+      "TITLE": "Informations des enfants",
+      "COUNT": "Combien d’enfants jouent dans ce club ?",
+      "DATA": "Informations de l’enfant {{num}}",
+      "CHECK_PLAYER": "Vérifier si ce joueur existe"
+    },
+    "COMMON": {
+      "NEXT": "Suivant",
+      "BACK": "Retour",
+      "EMAIL": "E-mail",
+      "FINISH": "Terminer",
+      "BIRTHDATE": "Date de naissance",
+      "EMAIL_REPEAT": "Répéter l’e-mail",
+      "PASSWORD": "Mot de passe",
+      "NAME": "Prénom",
+      "SURNAME": "Nom",
+      "GENDER": "Sélectionnez votre genre",
+      "GENDER_OPTIONS": {
+        "MALE": "Masculin",
+        "FEMALE": "Féminin",
+        "OTHER": "Autre"
+      },
+      "PHONE": "Téléphone",
+      "REPEAT_PASSWORD": "Répéter le mot de passe",
+      "TERMS_PREFIX": "J’accepte la",
+      "TERMS_LINK": "politique de confidentialité",
+      "COMMS_PREFIX": "J’accepte les",
+      "COMMS_LINK": "communications commerciales",
+      "HELP": "Si vous avez besoin d’aide, contactez",
+      "WHATSAPP": "ou WhatsApp"
+    },
+     "VALIDATION": {
+      "PLAYER_VALID": "Joueur validé",
+      "PLAYER_EXISTS": "Le joueur existe déjà !"
+    },
+    "AUTH": {
+      "ALREADY_HAVE_ACCOUNT": "Vous avez déjà un compte ?",
+      "LOGIN_HERE": "Connectez-vous ici"
+    },
+    "MESSAGE": {
+      "ATTENTION": "Attention",
+      "PLAYER_MS": "Si vous êtes un JOUEUR, attendez que votre entraîneur ou votre club vous invite."
+    },
+    "ERROR": {
+      "PASSWORD_MISMATCH": "Les mots de passe ne correspondent pas.",
+      "INCOMPLETE_FORM": "Veuillez compléter tous les champs obligatoires et accepter la politique de confidentialité.",
+      "EMAIL_MATCH": "Les e-mails ne correspondent pas"
+    },
+    "BUTTONS_MODALS": {
+      "ACKNOWLEDGE": "J’ai compris",
+      "I_AM_COACH": "Je suis entraîneur"
+    }
+  },
+  "ERRORS": {
+    "REQUIRED_NAME": "Le prénom est obligatoire",
+    "REQUIRED_SURNAME": "Le nom est obligatoire",
+    "REQUIRED_BIRTHDATE": "La date de naissance est obligatoire",
+    "UNDERAGE": "Vous devez avoir plus de 18 ans pour vous inscrire",
+    "REQUIRED_GENDER": "Le genre est obligatoire",
+    "REQUIRED_EMAIL": "L’adresse e-mail est obligatoire",
+    "INVALID_EMAIL": "Format d’e-mail invalide",
+    "REQUIRED_CONFIRM_EMAIL": "Veuillez confirmer votre e-mail",
+    "EMAIL_MISMATCH": "Les e-mails ne correspondent pas",
+    "REQUIRED_PHONE": "Le numéro de téléphone est obligatoire",
+    "REQUIRED_PASSWORD": "Le mot de passe est obligatoire",
+    "PASSWORD_MISMATCH": "Les mots de passe ne correspondent pas",
+    "TERMS_REQUIRED": "Vous devez accepter les conditions générales"
+  },
+  "VALIDATION": {
+    "TITLE": "Validez de votre compte",
+    "DESCRIPTION": "Vous êtes sur le point de valider votre compte. Cliquez sur le bouton ci-dessous pour continuer à utiliser les services de Sphaira Tech.",
+    "BUTTON": "Valider le compte",
+    "FOOTER": "Merci de faire confiance à Sphaira Tech"
+  },
+  "DASHBOARD_COACH": {
+    "TRAINING": "Créer un entraînement",
+    "TASKS": "Tâches",
+    "MATCH": "Créer un match",
+    "CALENDAR": "Calendrier",
+    "TEAM_STATS": "Statistiques de l'équipe",
+    "PLAYER_STATS": "Statistiques des joueurs",
+    "PLAYERS": "Joueurs",
+    "TEAM_INFO": "Informations de l'équipe",
+    "GALLERY": "Galerie",
+    "RANKINGS": "Classement et résultats",
+    "NOTIFICATIONS": "Notifications"
+  }
+}

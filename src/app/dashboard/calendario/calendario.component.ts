@@ -1,17 +1,41 @@
-import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AsistenciaTraining, Task, Training } from 'src/app/core/services/models/training.models';
+import {
+  AsistenciaTraining,
+  Task,
+  Training,
+} from 'src/app/core/services/models/training.models';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import { ConvocatoriaUI, MatchPreparation, PlayerPostPartido, PostPartido, PostPartidoId } from 'src/app/core/services/models/match.model';
+import {
+  ConvocatoriaUI,
+  MatchPreparation,
+  PlayerPostPartido,
+  PostPartido,
+  PostPartidoId,
+} from 'src/app/core/services/models/match.model';
 import { MatDialog } from '@angular/material/dialog';
 import { PlayerService } from 'src/app/core/services/player/player.service';
-import { NotificatePlayerUI, PlayerId } from 'src/app/core/services/player/player.model';
+import {
+  NotificatePlayerUI,
+  PlayerId,
+} from 'src/app/core/services/player/player.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
-import { RespPostEntreno, RespPostPartido, RespPreEntreno, RespPrePartido } from 'src/app/core/services/player/respuestas.model';
+import {
+  RespPostEntreno,
+  RespPostPartido,
+  RespPreEntreno,
+  RespPrePartido,
+} from 'src/app/core/services/player/respuestas.model';
 import { GolPostPartido } from 'src/app/core/services/team/team.model';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
@@ -41,14 +65,13 @@ interface Category {
 @Component({
   selector: 'app-calendario',
   templateUrl: './calendario.component.html',
-  styleUrls: ['./calendario.component.scss']
+  styleUrls: ['./calendario.component.scss'],
 })
 export class CalendarioComponent implements OnInit {
-
   @ViewChild('endOfModal', { static: false }) endOfModal!: ElementRef;
 
   datosCargados: boolean = false;
-  teamId!: number;  // Ajusta el valor según el teamId del equipo actual
+  teamId!: number; // Ajusta el valor según el teamId del equipo actual
   calendario: any[][] = [];
   mesActual: Date = new Date();
   // Variable para almacenar el nombre del mes y el año actual
@@ -56,10 +79,30 @@ export class CalendarioComponent implements OnInit {
   showModal = false;
   showModalEntrenamiento = false;
   trainingSession: Training = new Training({});
+  private initTrainingSession(): Training {
+    return new Training({
+      trainingSessionId: 0,
+      objectiveSession: '',
+      warmUp: '',
+      addressSession: '',
+      visible: 1,
+      tasks: []
+    });
+  }
+
   daySession!: string;
   listTraining: any[] = []; // Define una variable para almacenar el listado de equipos
   listMatchPreparation: any[] = [];
+  today: Date = (() => {
+    const d = new Date();
+    d.setHours(12, 0, 0, 0);
+    return d;
+  })();
+  todayNumber = this.today.getDate();
+  todayMonth = this.today.getMonth();
+  todayYear = this.today.getFullYear();
 
+  mostrarModal = false;
   nuevaTarea: Task = new Task();
   showAddTaskForm = false;
   trainingId!: number;
@@ -67,6 +110,115 @@ export class CalendarioComponent implements OnInit {
 
   showModalPartido: boolean = false;
   match: MatchPreparation = new MatchPreparation({});
+  selectedActivity: 'entrenamiento' | 'partido' | 'otra' | '' = '';
+  selectedItem: {
+    type: 'entrenamiento' | 'partido' | 'otra' | null;
+    id: number | null;
+  } = { type: null, id: null };
+  mode:
+    | 'empty'
+    | 'view-entrenamiento'
+    | 'view-partido'
+    | 'create-entrenamiento'
+    | 'create-partido'
+    | 'create-otra' = 'empty';
+  /* ===== FLAGS DERIVADOS ===== */
+  get isEmpty(): boolean {
+    return this.mode === 'empty';
+  }
+  get isCreate(): boolean {
+    return this.mode === 'create-partido';
+  }
+
+  get isView(): boolean {
+    return this.mode === 'view-partido';
+  }
+
+  get isEdit(): boolean {
+    return !!this.usuarioActual && this.usuarioActual.profileType.profileId < 3;
+  }
+  get canShowTabs(): boolean {
+
+    //Solo en VIEW o CREATE
+    if (!this.isView && !this.isCreate) {
+      return false;
+    }
+
+    //Entrenador / Admin (NO jugador)
+    if (this.isEdit) {
+      return true;
+    }
+
+    // Jugador → depende de infoVisible
+    return this.match?.infoVisible === 1;
+  }
+  get canShowTasks(): boolean {
+    // En CREATE siempre se ve
+    if (this.mode === 'create-entrenamiento') {
+      return true;
+    }
+
+    // En VIEW
+    if (this.mode === 'view-entrenamiento') {
+      // No jugador (coach / admin)
+      if (this.profileId !== 3) {
+        return true;
+      }
+
+      // Jugador → solo si infoVisible = 1
+      return this.trainingSession?.infoVisible === 1;
+    }
+
+    return false;
+  }
+  get infoVisibleModel(): boolean {
+    return this.trainingSession?.infoVisible === 1;
+  }
+
+  set infoVisibleModel(value: boolean) {
+    if (this.trainingSession) {
+      this.trainingSession.infoVisible = value ? 1 : 0;
+    }
+  }
+  // Nuevas variables para campo - Convocatoria
+  // ================== FORMACIONES ==================
+  formacionSeleccionada = '4-4-2';
+
+  slotsFormacion: any[] = [];
+  slotActivoDrag: number | null = null;
+
+  FORMACIONES: any = {
+    '4-4-2': [
+      { id: 1, x: 50, y: 90 },
+      { id: 2, x: 15, y: 70 },
+      { id: 3, x: 38, y: 70 },
+      { id: 4, x: 62, y: 70 },
+      { id: 5, x: 85, y: 70 },
+      { id: 6, x: 20, y: 45 },
+      { id: 7, x: 40, y: 45 },
+      { id: 8, x: 60, y: 45 },
+      { id: 9, x: 80, y: 45 },
+      { id: 10, x: 40, y: 20 },
+      { id: 11, x: 60, y: 20 }
+    ],
+    '4-3-3': [
+      { id: 1, x: 50, y: 90 },
+      { id: 2, x: 15, y: 70 },
+      { id: 3, x: 38, y: 70 },
+      { id: 4, x: 62, y: 70 },
+      { id: 5, x: 85, y: 70 },
+      { id: 6, x: 30, y: 48 },
+      { id: 7, x: 50, y: 48 },
+      { id: 8, x: 70, y: 48 },
+      { id: 9, x: 20, y: 20 },
+      { id: 10, x: 50, y: 18 },
+      { id: 11, x: 80, y: 20 }
+    ]
+  };
+
+
+
+  showNewActivityMenu = false;
 
   taskList: any[] = [];
   viewShop: boolean = false;
@@ -80,7 +232,6 @@ export class CalendarioComponent implements OnInit {
 
   cerrarPlayer: PlayerId = new PlayerId({});
   selectedFile!: File;
-
 
   showModalBoard: boolean = false;
   iframeSrc: string = 'https://tacticalboard.sphairatech.com/';
@@ -99,8 +250,8 @@ export class CalendarioComponent implements OnInit {
             'Partidos reducidos',
             'Partidos condicionados',
             'Acciones combinadas',
-            'Finalizaciones'
-          ]
+            'Finalizaciones',
+          ],
         },
         {
           name: 'Fuerza',
@@ -108,90 +259,90 @@ export class CalendarioComponent implements OnInit {
             'Circuitos Físicos',
             'Juego de Posesión',
             'Ataque – Defensa',
-            'Finalizaciones'
-          ]
+            'Finalizaciones',
+          ],
         },
         {
           name: 'Velocidad',
-          options: []
-        }
-      ]
+          options: [],
+        },
+      ],
     },
     {
       name: 'Trabajo Táctico',
       subcategories: [
         {
           name: 'Trabajo por posiciones',
-          options: []
+          options: [],
         },
         {
           name: 'Trabajo por líneas',
-          options: []
+          options: [],
         },
         {
           name: 'Específicos',
-          options: []
-        }
-      ]
+          options: [],
+        },
+      ],
     },
     {
       name: 'Tecnificación',
-      subcategories: []
+      subcategories: [],
     },
     {
       name: 'ABP',
       subcategories: [
         {
           name: 'Faltas laterales',
-          options: []
+          options: [],
         },
         {
           name: 'Faltas frontales',
-          options: []
+          options: [],
         },
         {
           name: 'Corners',
-          options: []
-        }
-      ]
+          options: [],
+        },
+      ],
     },
     {
       name: 'Trabajo Preventivo',
       subcategories: [
         {
           name: 'Core',
-          options: []
+          options: [],
         },
         {
           name: 'Estabilización de rodilla',
-          options: []
+          options: [],
         },
         {
           name: 'Glúteos',
-          options: []
+          options: [],
         },
         {
           name: 'Cuádriceps',
-          options: []
+          options: [],
         },
         {
           name: 'Aductores',
-          options: []
+          options: [],
         },
         {
           name: 'Isquiotibiales',
-          options: []
+          options: [],
         },
         {
           name: 'Gemelos',
-          options: []
+          options: [],
         },
         {
           name: 'Propiocepción',
-          options: []
-        }
-      ]
-    }
+          options: [],
+        },
+      ],
+    },
   ];
 
   cat1: string = '';
@@ -230,235 +381,234 @@ export class CalendarioComponent implements OnInit {
 
   golTypes = [
     {
-      "name": "En propia",
-      "subcategories": []
+      name: 'En propia',
+      subcategories: [],
     },
     {
-      "name": "Jugada combinativa",
-      "subcategories": [
+      name: 'Jugada combinativa',
+      subcategories: [
         {
-          "name": "Banda Izquierda",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Banda Izquierda',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Banda Derecha",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Banda Derecha',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Zona interior",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Zona interior',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Dentro del área",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Dentro del área',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Fuera del área",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
-        }
-      ]
+          name: 'Fuera del área',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
+        },
+      ],
     },
     {
-      "name": "Pérdida/Recuperación",
-      "subcategories": [
+      name: 'Pérdida/Recuperación',
+      subcategories: [
         {
-          "name": "Banda Izquierda",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Banda Izquierda',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Banda Derecha",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Banda Derecha',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Zona interior",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Zona interior',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Dentro del área",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Dentro del área',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Fuera del área",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
-        }
-      ]
+          name: 'Fuera del área',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
+        },
+      ],
     },
     {
-      "name": "Córner",
-      "subcategories": [
+      name: 'Córner',
+      subcategories: [
         {
-          "name": "Izquierda",
-          "options": [
-            "Olímpico 1er palo",
-            "Olímpico 2do palo",
-            "De cabeza 1er palo",
-            "De cabeza punto de penalti",
-            "De cabeza 2nd palo",
-            "Con otra parte 1er palo",
-            "Con otra parte punto de penalti",
-            "Con otra parte 2do palo"
-          ]
+          name: 'Izquierda',
+          options: [
+            'Olímpico 1er palo',
+            'Olímpico 2do palo',
+            'De cabeza 1er palo',
+            'De cabeza punto de penalti',
+            'De cabeza 2nd palo',
+            'Con otra parte 1er palo',
+            'Con otra parte punto de penalti',
+            'Con otra parte 2do palo',
+          ],
         },
         {
-          "name": "Derecha",
-          "options": [
-            "Olímpico 1er palo",
-            "Olímpico 2do palo",
-            "De cabeza 1er palo",
-            "De cabeza punto de penalti",
-            "De cabeza 2nd palo",
-            "Con otra parte 1er palo",
-            "Con otra parte punto de penalti",
-            "Con otra parte 2do palo"
-          ]
-        }
-      ]
+          name: 'Derecha',
+          options: [
+            'Olímpico 1er palo',
+            'Olímpico 2do palo',
+            'De cabeza 1er palo',
+            'De cabeza punto de penalti',
+            'De cabeza 2nd palo',
+            'Con otra parte 1er palo',
+            'Con otra parte punto de penalti',
+            'Con otra parte 2do palo',
+          ],
+        },
+      ],
     },
     {
-      "name": "Falta disparo directo",
-      "subcategories": []
+      name: 'Falta disparo directo',
+      subcategories: [],
     },
     {
-      "name": "Falta",
-      "subcategories": [
+      name: 'Falta',
+      subcategories: [
         {
-          "name": "Banda Izquierda",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Banda Izquierda',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Banda Derecha",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Banda Derecha',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Zona Interior",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Zona Interior',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Dentro del área",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Dentro del área',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Fuera del área",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
-        }
-      ]
+          name: 'Fuera del área',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
+        },
+      ],
     },
     {
-      "name": "Saque de banda",
-      "subcategories": [
+      name: 'Saque de banda',
+      subcategories: [
         {
-          "name": "Banda Izquierda",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Banda Izquierda',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Banda Derecha",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Banda Derecha',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Zona interior",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Zona interior',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Dentro del área",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
+          name: 'Dentro del área',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
         },
         {
-          "name": "Fuera del área",
-          "options": [
-            "Tiro a portería",
-            "Remate de cabeza",
-            "Otra parte del cuerpo"
-          ]
-        }
-      ]
+          name: 'Fuera del área',
+          options: [
+            'Tiro a portería',
+            'Remate de cabeza',
+            'Otra parte del cuerpo',
+          ],
+        },
+      ],
     },
     {
-      "name": "Penalti",
-      "subcategories": []
-    }
-  ]
+      name: 'Penalti',
+      subcategories: [],
+    },
+  ];
 
   selectedGolTypes: string = '';
   selectedSubGolTypes: string = '';
   selectedOptionGolTypes: string = '';
   selectedGolTypesCombi: string = '';
-
 
   cat11: string = '';
   cat22: string = '';
@@ -490,24 +640,75 @@ export class CalendarioComponent implements OnInit {
   subirTarea = 0;
 
   estrategias: string[] = [
-    'Acciones a Balón Parado', 'Acciones Combinadas', 'Circuito', 'Conservación', 'Juego Adaptado al Fútbol', 'Juego de Posición',
-    'Juego de Posición Específico', 'Oleadas', 'Partidos', 'Posesión', 'Rueda de Pases', 'Situaciones Reducidas', 'Trabajo de Líneas'
+    'Acciones a Balón Parado',
+    'Acciones Combinadas',
+    'Circuito',
+    'Conservación',
+    'Juego Adaptado al Fútbol',
+    'Juego de Posición',
+    'Juego de Posición Específico',
+    'Oleadas',
+    'Partidos',
+    'Posesión',
+    'Rueda de Pases',
+    'Situaciones Reducidas',
+    'Trabajo de Líneas',
   ];
 
   intenciones: string[] = [
-    '1 vs 1', '2 vs 1', '2 vs 2', '3 vs 3', '4 vs 4', 'ABP Defensiva', 'ABP Ofensiva', 'Amplitud', 'Apoyos', 'Ataque Organizado', 'Ataque-Defensa',
-    'Cobertura', 'Conservar', 'Contraataque', 'Defensa Inicio de Juego', 'Defensa de Juego Directo', 'Defensa Organizada',
-    'Desmarques', 'Dividir', 'Evitar Progresión', 'Fase Defensiva', 'Fase Ofensiva', 'Fijar', 'Finalizar', 'Inicio de Juego',
-    'Juego Directo', 'Mantener', 'Marcaje', 'Orientar', 'Permuta', 'Presionar', 'Primer Atacante', 'Primer Defensor',
-    'Profundidad', 'Progresar', 'Proteger Portería', 'Recuperar', 'Reinicio de Juego', 'Replegar', 'Segundo Atacante',
-    'Segundo Defensor', 'Temporizar', 'Tercer Atacante', 'Tercer Defensor',
-    'Transición Defensiva', 'Transición Ofensiva', 'Transiciones',
+    '1 vs 1',
+    '2 vs 1',
+    '2 vs 2',
+    '3 vs 3',
+    '4 vs 4',
+    'ABP Defensiva',
+    'ABP Ofensiva',
+    'Amplitud',
+    'Apoyos',
+    'Ataque Organizado',
+    'Ataque-Defensa',
+    'Cobertura',
+    'Conservar',
+    'Contraataque',
+    'Defensa Inicio de Juego',
+    'Defensa de Juego Directo',
+    'Defensa Organizada',
+    'Desmarques',
+    'Dividir',
+    'Evitar Progresión',
+    'Fase Defensiva',
+    'Fase Ofensiva',
+    'Fijar',
+    'Finalizar',
+    'Inicio de Juego',
+    'Juego Directo',
+    'Mantener',
+    'Marcaje',
+    'Orientar',
+    'Permuta',
+    'Presionar',
+    'Primer Atacante',
+    'Primer Defensor',
+    'Profundidad',
+    'Progresar',
+    'Proteger Portería',
+    'Recuperar',
+    'Reinicio de Juego',
+    'Replegar',
+    'Segundo Atacante',
+    'Segundo Defensor',
+    'Temporizar',
+    'Tercer Atacante',
+    'Tercer Defensor',
+    'Transición Defensiva',
+    'Transición Ofensiva',
+    'Transiciones',
   ];
 
   userId: any = 0;
 
-  showModalTask: boolean = false;  // Controla la visibilidad del modal
-  tareaSeleccionada: any;  // Almacena la tarea seleccionada
+  showModalTask: boolean = false; // Controla la visibilidad del modal
+  tareaSeleccionada: any; // Almacena la tarea seleccionada
 
   // Genera un array con los números del 0 al 1000
   numeros: number[] = [0, ...Array.from({ length: 1000 }, (_, i) => i + 1)];
@@ -516,7 +717,7 @@ export class CalendarioComponent implements OnInit {
   trainingSessionIdSelected = 0;
 
   match1: Match = {
-    lugar: ''
+    lugar: '',
     // Asegúrate de inicializar otras propiedades de MatchPreparation si las tiene
   };
 
@@ -530,6 +731,7 @@ export class CalendarioComponent implements OnInit {
   showNotificar = false;
 
   playersConvo: any[] = [];
+  horas: string[] = [];
 
   showConvocados: any = [];
   showNoConvocados: any = [];
@@ -560,43 +762,51 @@ export class CalendarioComponent implements OnInit {
     private teamService: TeamService,
     private cdr: ChangeDetectorRef,
     private loginService: LoginService,
-    private location: Location
-  ) {
-  }
+    private location: Location,
+  ) { }
 
   ngOnInit(): void {
-
     // Suscríbete al observable del servicio para obtener el usuario actual
-    this.loginService.usuarioActual.subscribe(user => {
+    console.log(this.today);
+    this.loginService.usuarioActual.subscribe((user) => {
       this.usuarioActual = user;
       this.userId = user?.userId;
-      this.profileId = user?.profileType.profileId != null ? user?.profileType.profileId : 0;
+      this.profileId =
+        user?.profileType.profileId != null ? user?.profileType.profileId : 0;
       // Suscribirse a los cambios en los parámetros de la URL
-      this.route.params.subscribe(params => {
+      this.route.params.subscribe((params) => {
         // Obtener el valor de teamId de los parámetros
-        this.teamId = +params['teamId'];  // El + convierte el valor a número
-        this.playerId = +params['playerId'];  // El + convierte el valor a número
+        this.teamId = +params['teamId']; // El + convierte el valor a número
+        this.playerId = +params['playerId']; // El + convierte el valor a número
         //console.log('teamId:', this.teamId);
       });
       this.teamService.getTeamById(this.teamId.toString()).subscribe(
         (response: Response) => {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
-            this.nombreEquipo = response.data.categoryType.categoryName + ' ' + response.data.levelLeague;
+            this.nombreEquipo =
+              response.data.categoryType.categoryName +
+              ' ' +
+              response.data.levelLeague;
             this.categoryTeam = response.data.categoryTypeId;
             this.imgClub = response.data.imgClub;
-            this.match2.imgClub = this.imageBaseUrl + 'user/' + response.data.imgClub;
+            this.match2.imgClub =
+              this.imageBaseUrl + 'user/' + response.data.imgClub;
             if (this.categoryTeam === 14) this.irAPantalla(2);
             this.getListaEntrenamientos();
           } else {
-            console.error('La respuesta del servicio no tiene la estructura esperada', response);
+            console.error(
+              'La respuesta del servicio no tiene la estructura esperada',
+              response,
+            );
           }
         },
         (error) => {
           console.error('Error al cargar el listado de equipos', error);
-        }
+        },
       );
     });
+    this.horas = this.generarHoras(8, 21);
   }
 
   goBack(): void {
@@ -609,65 +819,72 @@ export class CalendarioComponent implements OnInit {
 
   // Método para generar el calendario para el mes especificado
   private generarCalendarioV2(mes: Date): void {
-    // Obtener el primer día del mes
     const primerDiaMes = new Date(mes.getFullYear(), mes.getMonth(), 1);
-    // Obtener el día de la semana en el que empieza el mes (0 para domingo, 1 para lunes, etc.)
     let primerDiaSemana = primerDiaMes.getDay();
-    // Ajustar primerDiaSemana para que sea 0 para domingo, 1 para lunes, etc.
-    primerDiaSemana = (primerDiaSemana === 0) ? 6 : primerDiaSemana - 1;
+    primerDiaSemana = primerDiaSemana === 0 ? 6 : primerDiaSemana - 1;
 
-    // Obtener el número de días en el mes actual
-    const ultimoDiaMes = new Date(mes.getFullYear(), mes.getMonth() + 1, 0).getDate();
+    const ultimoDiaMes = new Date(
+      mes.getFullYear(),
+      mes.getMonth() + 1,
+      0
+    ).getDate();
 
-    // Generar los datos del calendario
     this.calendario = [];
     let dia = 1;
+
     for (let i = 0; i < 6; i++) {
       this.calendario[i] = [];
+
       for (let j = 0; j < 7; j++) {
         if ((i === 0 && j < primerDiaSemana) || dia > ultimoDiaMes) {
           this.calendario[i][j] = '';
-        } else {
-          const fecha = new Date(mes.getFullYear(), mes.getMonth(), dia);
-          fecha.setDate(fecha.getDate() + 1); // Añadir 1 día para obtener el día correcto
-          const daysession = fecha.toISOString().split('T')[0];
-          const training = this.listTraining.find(training => training.daySession === daysession);
-          const matchPreparation = this.listMatchPreparation.find(match => match.matchDate === daysession);
-
-          if (training && matchPreparation) {
-            const maxLength = 16;
-            const rivalNameConst = matchPreparation.rivalName.length > maxLength
-              ? matchPreparation.rivalName.substring(0, maxLength) + '...'
-              : matchPreparation.rivalName;
-            // Si hay tanto entrenamiento como partido, se pueden asignar ambos al mismo día
-            this.calendario[i][j] = {
-              numero: dia, daysession, trainingId: training.trainingSessionId, matchPreparationId: matchPreparation.matchPreparationId,
-              traininVisible: training.visible, matchVisible: matchPreparation.visible, rivalName: rivalNameConst, terreno: matchPreparation.terreno
-            };
-          } else if (training) {
-            this.calendario[i][j] = { numero: dia, daysession, trainingId: training.trainingSessionId, traininVisible: training.visible };
-          } else if (matchPreparation) {
-            const maxLength = 16;
-            const rivalNameConst = matchPreparation.rivalName.length > maxLength
-              ? matchPreparation.rivalName.substring(0, maxLength) + '...'
-              : matchPreparation.rivalName;
-            this.calendario[i][j] = {
-              numero: dia, daysession, matchPreparationId: matchPreparation.matchPreparationId,
-              matchVisible: matchPreparation.visible, rivalName: rivalNameConst, terreno: matchPreparation.terreno
-            };
-          } else {
-            this.calendario[i][j] = { numero: dia, daysession };
-          }
-
-          dia++;
+          continue;
         }
+
+        const fecha = new Date(mes.getFullYear(), mes.getMonth(), dia, 12);
+        const daysession =
+          fecha.getFullYear() +
+          '-' +
+          String(fecha.getMonth() + 1).padStart(2, '0') +
+          '-' +
+          String(fecha.getDate()).padStart(2, '0');
+
+        const training = this.listTraining.find(
+          t => t.daySession === daysession
+        );
+
+        const match = this.listMatchPreparation.find(
+          m => m.matchDate === daysession
+        );
+
+        this.calendario[i][j] = {
+          numero: dia,
+          daysession,
+
+          trainingId: training?.trainingSessionId ?? null,
+          trainingVisible: training?.visible ?? 0,
+
+          matchPreparationId: match?.matchPreparationId ?? null,
+          matchVisible: match?.visible ?? 0,
+
+          rivalName: match
+            ? match.rivalName.length > 16
+              ? match.rivalName.substring(0, 16) + '...'
+              : match.rivalName
+            : null,
+
+          terreno: match?.terreno ?? null
+        };
+
+        dia++;
       }
     }
 
-    // Actualizar el título del mes y el año
-    const opcionesFecha: OpcionesFormatoFecha = { month: 'long', year: 'numeric' };
-    this.tituloMesAnio = mes.toLocaleDateString('es-ES', opcionesFecha).toUpperCase();
+    this.tituloMesAnio = mes
+      .toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
+      .toUpperCase();
   }
+
 
   // Método para redirigir a la pantalla de jugadores con el teamId
   irAPantalla(id: number): void {
@@ -710,117 +927,265 @@ export class CalendarioComponent implements OnInit {
 
   // Método para abrir el modal de creación de equipo
   abrirModal(day: string): void {
+    this.resetModalState();
     this.daySession = day;
-    this.trainingSession = new Training({}); // Restablecer a un objeto vacío  
+    this.trainingSession = this.initTrainingSession();
 
     this.match = new MatchPreparation({});
 
     this.match.hora = this.match.hora != '' ? this.match.hora : '08';
     this.match.minutos = this.match.minutos != '' ? this.match.minutos : '15';
 
-    this.match.horaEmpieza = this.match.horaEmpieza != '' ? this.match.horaEmpieza : '09';
-    this.match.minutosEmpieza = this.match.minutosEmpieza != '' ? this.match.minutosEmpieza : '15';
+    this.match.horaEmpieza =
+      this.match.horaEmpieza != '' ? this.match.horaEmpieza : '09';
+    this.match.minutosEmpieza =
+      this.match.minutosEmpieza != '' ? this.match.minutosEmpieza : '15';
     this.showModal = true;
+  }
+  resetModalState() {
+    this.mode = 'empty';
+
+    this.selectedItem = { type: null, id: null };
+    this.showAddTaskForm = false;
+    this.showNewActivityMenu = false;
+    this.trainingSession = this.initTrainingSession();
+    this.match = {} as any;
   }
 
   // Método para cerrar el modal de creación de equipo
   cerrarModal(): void {
-    this.daySession = '';
     this.showModal = false;
+
+    // Día
+    this.daySession = '';
+
+    // Estado visual
+    this.mode = 'empty';
+
     this.showAddTaskForm = false;
-    this.selected = '';
+    this.showNewActivityMenu = false;
+
+    // Selección
+    this.selectedItem = { type: null, id: null };
+    this.selectedActivity = '';
+    // Datos
+    this.trainingSession = this.initTrainingSession();
+
+    this.match = {} as any;
+
+    // Extra seguridad
+    this.viewShop = false;
   }
 
+  toggleNewActivityMenu(event: MouseEvent) {
+    event.stopPropagation();
+    this.showNewActivityMenu = !this.showNewActivityMenu;
+  }
+  private generarHoras(inicio: number, fin: number): string[] {
+    const resultado: string[] = [];
+    for (let i = inicio; i <= fin; i++) {
+      resultado.push(i.toString().padStart(2, '0'));
+    }
+    return resultado;
+  }
+
+
   crearEntrenamiento() {
-    this.trainingSession.daySession = this.daySession;
-    this.trainingService.createUpdateTrainingSession(this.teamId.toString(), this.trainingSession).subscribe(
-      (response) => {
-        //console.log('Sesión de entrenamiento guardada con éxito:', response);
-        // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
-        this.getListaEntrenamientos();
-        // Cerrar el modal después de crear el equipo
-        if (this.trainingSession.trainingSessionId === 0)
-          this.cerrarModal();
-        else
-          this.cerrarModalEntrenamiento();
-      },
-      (error) => {
-        console.error('Error al guardar la sesión de entrenamiento:', error);
-        // Aquí puedes manejar el error, si es necesario
-      }
-    );
+    this.trainingSession.daySession = this.daySession + 'T12:00:00';
+
+    console.log(this.trainingSession)
+    if (
+      this.trainingSession.infoVisible === undefined ||
+      this.trainingSession.infoVisible === null
+    ) {
+      this.trainingSession.infoVisible = 0;
+    }
+    console.log("TRAI", this.trainingSession)
+    this.trainingService
+      .createUpdateTrainingSession(this.teamId.toString(), this.trainingSession)
+      .subscribe(
+        (response) => {
+          // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
+          this.getListaEntrenamientos();
+          // Cerrar el modal después de crear el equipo
+          // NUEVO: decidir cierre según modo
+          if (this.mode === 'create-entrenamiento') {
+            this.cerrarModal();
+          } else {
+            this.cerrarModalEntrenamiento();
+          }
+        },
+        (error) => {
+          console.error('Error al guardar la sesión de entrenamiento:', error);
+          // Aquí puedes manejar el error, si es necesario
+        },
+      );
   }
 
   eliminarEntrenamiento() {
     this.trainingSession.daySession = this.daySession;
-    this.trainingService.deleteTrainingSession(this.teamId.toString(), this.trainingSession).subscribe(
-      (response) => {
-        console.log('Sesión de entrenamiento eliminada con éxito:', response);
-        // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
-        this.getListaEntrenamientos();
-        // Cerrar el modal después de crear el equipo
-        if (this.trainingSession.trainingSessionId === 0)
-          this.cerrarModal();
-        else
-          this.cerrarModalEntrenamiento();
-
-      },
-      (error) => {
-        console.error('Error al eliminar la sesión de entrenamiento:', error);
-        // Aquí puedes manejar el error, si es necesario
-      }
-    );
+    this.trainingService
+      .deleteTrainingSession(this.teamId.toString(), this.trainingSession)
+      .subscribe(
+        (response) => {
+          console.log('Sesión de entrenamiento eliminada con éxito:', response);
+          // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
+          this.getListaEntrenamientos();
+          // Cerrar el modal después de crear el equipo
+          if (this.trainingSession.trainingSessionId === 0) this.cerrarModal();
+          else this.cerrarModalEntrenamiento();
+        },
+        (error) => {
+          console.error('Error al eliminar la sesión de entrenamiento:', error);
+          // Aquí puedes manejar el error, si es necesario
+        },
+      );
   }
 
   getListaEntrenamientos() {
     this.trainingService.getTrainingSessions(this.teamId.toString()).subscribe(
       (response: Response) => {
+        console.log("ENTRENAMIENTOS:", response)
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data && Array.isArray(response.data)) {
           // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.listTraining = response.data.map((team: Training) => new Training(team));
+          this.listTraining = response.data.map(
+            (team: Training) => new Training(team),
+          );
           // Lógica para obtener o generar la información del calendario
           this.getListaPrePartido();
           //this.generarCalendarioV2(new Date());
         } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          console.error(
+            'La respuesta del servicio no tiene la estructura esperada',
+            response,
+          );
         }
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
-      }
+      },
     );
   }
 
   getListaPrePartido() {
-    this.trainingService.getListPrePartidoByTeam(this.teamId.toString()).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response && response.data && Array.isArray(response.data)) {
-          // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.listMatchPreparation = response.data.map((match: MatchPreparation) => new MatchPreparation(match));
-          // Lógica para obtener o generar la información del calendario
-          this.generarCalendarioV2(this.mesActual);
-        } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
-        }
-        this.datosCargados = true;
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      }
-    );
+    this.trainingService
+      .getListPrePartidoByTeam(this.teamId.toString())
+      .subscribe(
+        (response: Response) => {
+          console.log("PRE_PARTIDO", response)
+          // Verifica que la propiedad 'data' exista en la respuesta
+          if (response && response.data && Array.isArray(response.data)) {
+            // Mapea los datos bajo 'data' a instancias del modelo Team
+            this.listMatchPreparation = response.data.map(
+              (match: MatchPreparation) => new MatchPreparation(match),
+            );
+            // Lógica para obtener o generar la información del calendario
+            this.generarCalendarioV2(this.mesActual);
+          } else {
+            console.error(
+              'La respuesta del servicio no tiene la estructura esperada',
+              response,
+            );
+          }
+          this.datosCargados = true;
+        },
+        (error) => {
+          console.error('Error al cargar el listado de equipos', error);
+        },
+      );
+  }
+  puedeVerPartido(dia: any): boolean {
+    const perfil = this.usuarioActual?.profileType?.profileId;
+
+    if (!dia.matchPreparationId) return false;
+
+    if (perfil === 1 || perfil === 2) return true;
+
+    if (perfil === 3) {
+      return dia.matchVisible === 1;
+    }
+
+    return false;
   }
 
+
+  puedeVerPartidoEnLista(m: any): boolean {
+    const perfil = this.usuarioActual?.profileType?.profileId;
+
+    const esVisible =
+      m.visible === 1 ||
+      m.visible === '1' ||
+      m.visible === true;
+
+    // Club y Coach → siempre
+    if (perfil === 1 || perfil === 2) {
+      return true;
+    }
+
+    // Jugador → solo visibles
+    if (perfil === 3) {
+      return esVisible;
+    }
+
+    return false;
+  }
+  puedeVerEntrenamientoEnLista(t: any): boolean {
+    const perfil = this.usuarioActual?.profileType?.profileId;
+
+    const esVisible =
+      t.visible === 1 ||
+      t.visible === '1' ||
+      t.visible === true;
+
+    // Club y Coach → siempre
+    if (perfil === 1 || perfil === 2) {
+      return true;
+    }
+
+    // Jugador → solo visibles
+    if (perfil === 3) {
+      return esVisible;
+    }
+
+    return false;
+  }
+
+  puedeVerEntrenamiento(dia: any): boolean {
+    const perfil = this.usuarioActual?.profileType?.profileId;
+
+    if (!dia.trainingId) return false;
+
+    if (perfil === 1 || perfil === 2) return true;
+
+    if (perfil === 3) {
+      return dia.trainingVisible === 1;
+    }
+
+    return false;
+  }
+
+
   openEntrenamiento(id: any, day: string): void {
+    this.mode = 'view-entrenamiento';
     this.daySession = day;
     this.trainingId = id;
+
+    const entrenamiento = this.listTraining.find(
+      t => t.trainingSessionId === id
+    );
+
+    if (!entrenamiento) return;
+
+    this.trainingSession = entrenamiento;
     this.trainingService.getTasksByTraining(id.toString()).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data && Array.isArray(response.data)) {
           // Buscar el entrenamiento por su ID en la lista de entrenamientos
-          const entrenamientoSeleccionado = this.listTraining.find(training => training.trainingSessionId === id);
+          const entrenamientoSeleccionado = this.listTraining.find(
+            (training) => training.trainingSessionId === id,
+          );
           if (entrenamientoSeleccionado) {
             // Asignar el entrenamiento seleccionado a la variable trainingSession
             this.trainingSession = entrenamientoSeleccionado;
@@ -829,18 +1194,26 @@ export class CalendarioComponent implements OnInit {
             this.showModalEntrenamiento = true;
           }
 
-          this.toggleVisible = entrenamientoSeleccionado.visible === 0 || !entrenamientoSeleccionado.visible ? 0 : 1;
+          this.toggleVisible =
+            entrenamientoSeleccionado.visible === 0 ||
+              !entrenamientoSeleccionado.visible
+              ? 0
+              : 1;
         } else {
-          console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          console.error(
+            'La respuesta del servicio no tiene la estructura esperada',
+            response,
+          );
         }
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
-      }
+      },
     );
   }
 
   openPartido(id: any, day: string): void {
+    this.mode = 'view-partido';
     //se vacia para reiniciarla
     this.jugadoresNoConvocados = [];
     this.jugadoresSuplentes = [];
@@ -855,10 +1228,14 @@ export class CalendarioComponent implements OnInit {
         if (response.data) {
           // Asignar los datos del partido al objeto 'partido'
           this.match = response.data;
-          this.togglePartidoVisible = response.data.visible === 0 || !response.data.visible ? 0 : 1;
+          this.togglePartidoVisible =
+            response.data.visible === 0 || !response.data.visible ? 0 : 1;
           this.playersConvo = response.data.players;
 
-          if (this.match.convocatoria != null && this.match.convocatoria !== '') {
+          if (
+            this.match.convocatoria != null &&
+            this.match.convocatoria !== ''
+          ) {
             // Parse convocatoria
             const convocatoria = JSON.parse(this.match.convocatoria || '{}');
 
@@ -870,7 +1247,9 @@ export class CalendarioComponent implements OnInit {
                 const ids: any = JSON.parse(siAsistenStr); // p.ej. "[741,456,453]"
                 if (Array.isArray(ids)) {
                   asistentesSet = new Set(
-                    ids.map((x: any) => Number(x)).filter((n: number) => Number.isFinite(n))
+                    ids
+                      .map((x: any) => Number(x))
+                      .filter((n: number) => Number.isFinite(n)),
                   );
                 }
               } catch (e) {
@@ -882,7 +1261,7 @@ export class CalendarioComponent implements OnInit {
             const filtrarPorAsistentes = (arr: any[]): any[] => {
               if (!Array.isArray(arr)) return [];
               if (!asistentesSet || asistentesSet.size === 0) return arr;
-              return arr.filter(p => asistentesSet!.has(Number(p?.playerId)));
+              return arr.filter((p) => asistentesSet!.has(Number(p?.playerId)));
             };
 
             // Aplica el filtrado ANTES de asignar a las variables del componente
@@ -891,22 +1270,31 @@ export class CalendarioComponent implements OnInit {
             this.jugadoresSuplentes = convocatoria?.suplentes ?? [];
             this.jugadoresTitulares = convocatoria?.titulares ?? [];
 
-            if ((this.jugadoresTitulares.length > 0) || (this.jugadoresSuplentes.length > 0)) {
+            if (
+              this.jugadoresTitulares.length > 0 ||
+              this.jugadoresSuplentes.length > 0
+            ) {
               this.showNotificar = true;
             }
 
             // Copia base de todos los jugadores (como no convocados iniciales)
             if (this.playersConvo) {
-              const nuevosNoConvocados = this.playersConvo.map((player: any, index: number) =>
-                new ConvocatoriaUI({
-                  id: index,
-                  playerId: player.playerId,
-                  nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
-                  img: player.picturePlayer ? this.imageBaseUrlUser + player.picturePlayer : '',
-                  posicion_x: player.posicion_x || null,
-                  posicion_y: player.posicion_y || null,
-                  confirmacion: player.confirmacion
-                })
+              const nuevosNoConvocados = this.playersConvo.map(
+                (player: any, index: number) =>
+                  new ConvocatoriaUI({
+                    id: index,
+                    playerId: player.playerId,
+                    nombre:
+                      (player.nick ? player.nick : player.nombre) +
+                      ' ' +
+                      (player.numero != null ? player.numero : ''),
+                    img: player.picturePlayer
+                      ? this.imageBaseUrlUser + player.picturePlayer
+                      : '',
+                    posicion_x: player.posicion_x || null,
+                    posicion_y: player.posicion_y || null,
+                    confirmacion: player.confirmacion,
+                  }),
               );
               this.startConvocarotia = [...nuevosNoConvocados];
             }
@@ -914,15 +1302,24 @@ export class CalendarioComponent implements OnInit {
             this.showNotificar = false;
 
             if (this.playersConvo) {
-              this.jugadoresNoConvocados = this.playersConvo.map((player: any, index: number) => new ConvocatoriaUI({
-                id: index,
-                playerId: player.playerId,
-                nombre: (player.nick ? player.nick : player.nombre) + ' ' + (player.numero != null ? player.numero : ''),
-                img: player.picturePlayer != null && player.picturePlayer != '' ? this.imageBaseUrlUser + player.picturePlayer : '',
-                posicion_x: player.posicion_x || null,
-                posicion_y: player.posicion_y || null,
-                confirmacion: player.confirmacion
-              }));
+              this.jugadoresNoConvocados = this.playersConvo.map(
+                (player: any, index: number) =>
+                  new ConvocatoriaUI({
+                    id: index,
+                    playerId: player.playerId,
+                    nombre:
+                      (player.nick ? player.nick : player.nombre) +
+                      ' ' +
+                      (player.numero != null ? player.numero : ''),
+                    img:
+                      player.picturePlayer != null && player.picturePlayer != ''
+                        ? this.imageBaseUrlUser + player.picturePlayer
+                        : '',
+                    posicion_x: player.posicion_x || null,
+                    posicion_y: player.posicion_y || null,
+                    confirmacion: player.confirmacion,
+                  }),
+              );
 
               this.startConvocarotia = [...this.jugadoresNoConvocados];
             }
@@ -931,12 +1328,15 @@ export class CalendarioComponent implements OnInit {
           // Abrir el modal
           this.showModalPartido = true;
         } else {
-          console.error('Error al obtener la información del partido:', response.error.msg);
+          console.error(
+            'Error al obtener la información del partido:',
+            response.error.msg,
+          );
         }
       },
       (error) => {
         console.error('Error en la solicitud:', error);
-      }
+      },
     );
   }
 
@@ -958,23 +1358,30 @@ export class CalendarioComponent implements OnInit {
   crearTarea(): void {
     this.nuevaTarea.work = '';
     // Llamada al servicio para crear el equipo
-    this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea, this.subirTarea, this.userId).subscribe(
-      (response) => {
-        // Agregar la nueva tarea a la lista de tareas del entrenamiento
-        this.trainingSession.tasks.push(response.data);
-        // Limpiar el formulario de nueva tarea
-        this.nuevaTarea = new Task();
-        // Ocultar el formulario de nueva tarea
-        this.showAddTaskForm = false;
-        //dejamos limpio los combos work
-        this.selectedCategory = '';
-        this.selectedSubcategory = '';
-        this.selectedOption = '';
-      },
-      (error) => {
-        console.error('Error al crear el equipo:', error);
-      }
-    );
+    this.trainingService
+      .createUpdateTask(
+        this.trainingId.toString(),
+        this.nuevaTarea,
+        this.subirTarea,
+        this.userId,
+      )
+      .subscribe(
+        (response) => {
+          // Agregar la nueva tarea a la lista de tareas del entrenamiento
+          this.trainingSession.tasks.push(response.data);
+          // Limpiar el formulario de nueva tarea
+          this.nuevaTarea = new Task();
+          // Ocultar el formulario de nueva tarea
+          this.showAddTaskForm = false;
+          //dejamos limpio los combos work
+          this.selectedCategory = '';
+          this.selectedSubcategory = '';
+          this.selectedOption = '';
+        },
+        (error) => {
+          console.error('Error al crear el equipo:', error);
+        },
+      );
   }
 
   toggleAddTaskForm(): void {
@@ -992,8 +1399,8 @@ export class CalendarioComponent implements OnInit {
     // Si la tarea se abre, cerrar el resto de las tareas
     if (tarea.collapsed) {
       this.trainingSession.tasks
-        .filter(t => t !== tarea) // Filtrar todas las tareas que no sean la seleccionada
-        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+        .filter((t) => t !== tarea) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach((t) => (t.collapsed = false)); // Cerrar cada tarea
     }
   }
 
@@ -1010,7 +1417,7 @@ export class CalendarioComponent implements OnInit {
       (error) => {
         console.error('Error al eliminar la tarea:', error);
         // Puedes manejar el error según tus necesidades
-      }
+      },
     );
   }
 
@@ -1027,54 +1434,81 @@ export class CalendarioComponent implements OnInit {
 
   crearPartido(): void {
     let id = this.match.matchPreparationId;
-    this.match.matchDate = this.daySession;
+    this.match.matchDate = this.daySession + 'T12:00:00';
     this.match.visible = this.togglePartidoVisible;
     this.match.convocatoria = this.convocatoriaJSON ?? this.match.convocatoria;
+    console.log('infoVisible ANTES payload:', this.match.infoVisible);
+    const payload = {
+      ...this.match
+    };
+    console.log("PAYY", payload)
     // Lógica para crear el partido usando this.partido y enviarlo al servicio
-    this.trainingService.createUpdatePartido(this.teamId.toString(), this.match).subscribe(
-      (response) => {
-        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
-        if (response.data) {
-          if (id == 0) this.match = new MatchPreparation({});
-          // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
-          this.getListaPrePartido();
-          if (this.match.matchPreparationId === 0)
-            this.cerrarModal();
-          else
-            this.cerrarModalPartido();
-
-        } else {
-          console.error('Error al crear el partido:', response.error.msg);
-        }
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
+    this.trainingService
+      .createUpdatePartido(this.teamId.toString(), payload)
+      .subscribe(
+        (response) => {
+          // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
+          if (response.data) {
+            if (id == 0) this.match = new MatchPreparation({});
+            // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
+            this.getListaPrePartido();
+            if (this.match.matchPreparationId === 0) this.cerrarModal();
+            else this.cerrarModalPartido();
+          } else {
+            console.error('Error al crear el partido:', response.error.msg);
+          }
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        },
+      );
   }
+  onInfoVisibleChange(value: boolean): void {
+    const newValue = value ? 1 : 0;
+
+    // Actualiza en frontend (optimista)
+    this.match.infoVisible = newValue;
+
+    // Llama al backend
+    this.trainingService
+      .updateMatchInfoVisibility(
+        this.match.matchPreparationId,
+        newValue
+      )
+      .subscribe({
+        next: () => {
+          console.log('infoVisible actualizado correctamente:', newValue);
+        },
+        error: (err) => {
+          console.error('Error actualizando infoVisible', err);
+          // rollback si falla
+          this.match.infoVisible = newValue === 1 ? 0 : 1;
+        }
+      });
+  }
+
 
   eliminarPartido(): void {
     this.match.matchDate = this.daySession;
     // Lógica para crear el partido usando this.partido y enviarlo al servicio
-    this.trainingService.deletePartido(this.teamId.toString(), this.match).subscribe(
-      (response) => {
-        // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
-        if (response.data) {
-          // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
-          this.getListaPrePartido();
-          if (this.match.matchPreparationId === 0)
-            this.cerrarModal();
-          else
-            this.cerrarModalPartido();
-
-        } else {
-          console.error('Error al crear el partido:', response.error.msg);
-        }
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
+    this.trainingService
+      .deletePartido(this.teamId.toString(), this.match)
+      .subscribe(
+        (response) => {
+          // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
+          if (response.data) {
+            // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
+            this.getListaPrePartido();
+            if (this.match.matchPreparationId === 0) this.cerrarModal();
+            else this.cerrarModalPartido();
+          } else {
+            console.error('Error al crear el partido:', response.error.msg);
+          }
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        },
+      );
   }
 
   verTienda() {
@@ -1111,60 +1545,70 @@ export class CalendarioComponent implements OnInit {
           this.postPartido = response.data;
           this.postPartidoId = response.data.postPartidoId;
         }
-        this.playerService.getPlayersPostPartido(this.teamId.toString(), this.postPartidoId.toString()).subscribe(
-          (response) => {
-
-            // Verificar si se obtuvo correctamente la información del partido
-            if (response.data) {
-              // Asignar los datos del partido al objeto 'partido'
-              this.playerPostPartido = response.data;
-              // Abrir el modal
-              this.showModalPartido = false;
-              this.showModalPostPartido = true;
-            }
-
-            this.trainingService.getListGolesAvanzado(this.postPartidoId).subscribe(
-              (resp) => {
-                if (resp.data) {
-                  this.golesAvanzadoAFavor = resp.data.golesAFavor;
-                  this.golesAvanzadoEnContra = resp.data.golesEnContra;
-                  let afavor = this.golesAvanzadoAFavor.length;
-                  let encontra = this.golesAvanzadoEnContra.length;
-
-                  if (this.golesAvanzadoAFavor.length !== 0) {
-                    this.postPartido.golesAFavor = afavor;
-                  }
-                  if (this.golesAvanzadoEnContra.length !== 0) {
-                    this.postPartido.golesEnContra = encontra;
-                  }
-
-                  if (this.golesAvanzadoAFavor.length !== 0 || this.golesAvanzadoEnContra.length !== 0) {
-                    setTimeout(() => {
-                      const i = this.indexGolAvanza !== 0 ? this.indexGolAvanza : 0;
-                      this.toggleGolAvanzado(true, i);
-                    }, 1000);
-                  }
-                }
-              },
-              (error) => {
-                console.error('Error en la solicitud:', error);
+        this.playerService
+          .getPlayersPostPartido(
+            this.teamId.toString(),
+            this.postPartidoId.toString(),
+          )
+          .subscribe(
+            (response) => {
+              // Verificar si se obtuvo correctamente la información del partido
+              if (response.data) {
+                // Asignar los datos del partido al objeto 'partido'
+                this.playerPostPartido = response.data;
+                // Abrir el modal
+                this.showModalPartido = false;
+                this.showModalPostPartido = true;
               }
-            );
-          },
-          (error) => {
-            console.error('Error en la solicitud:', error);
-          }
-        );
+
+              this.trainingService
+                .getListGolesAvanzado(this.postPartidoId)
+                .subscribe(
+                  (resp) => {
+                    if (resp.data) {
+                      this.golesAvanzadoAFavor = resp.data.golesAFavor;
+                      this.golesAvanzadoEnContra = resp.data.golesEnContra;
+                      let afavor = this.golesAvanzadoAFavor.length;
+                      let encontra = this.golesAvanzadoEnContra.length;
+
+                      if (this.golesAvanzadoAFavor.length !== 0) {
+                        this.postPartido.golesAFavor = afavor;
+                      }
+                      if (this.golesAvanzadoEnContra.length !== 0) {
+                        this.postPartido.golesEnContra = encontra;
+                      }
+
+                      if (
+                        this.golesAvanzadoAFavor.length !== 0 ||
+                        this.golesAvanzadoEnContra.length !== 0
+                      ) {
+                        setTimeout(() => {
+                          const i =
+                            this.indexGolAvanza !== 0 ? this.indexGolAvanza : 0;
+                          this.toggleGolAvanzado(true, i);
+                        }, 1000);
+                      }
+                    }
+                  },
+                  (error) => {
+                    console.error('Error en la solicitud:', error);
+                  },
+                );
+            },
+            (error) => {
+              console.error('Error en la solicitud:', error);
+            },
+          );
       },
       (error) => {
         console.error('Error en la solicitud:', error);
-      }
+      },
     );
   }
 
   // Método para verificar si hay algún dato en la semana
   tieneDatosEnSemana(semana: any[]): boolean {
-    return semana.some(dia => dia !== '');
+    return semana.some((dia) => dia !== '');
   }
 
   cerrarModalPostPartido() {
@@ -1175,7 +1619,8 @@ export class CalendarioComponent implements OnInit {
   }
 
   guardarPostPartidoSimple() {
-    this.postPartido.matchPreparation.matchPreparationId = this.matchPreparationId;
+    this.postPartido.matchPreparation.matchPreparationId =
+      this.matchPreparationId;
     this.trainingService.createUpdatePostPartido(this.postPartido).subscribe(
       (response) => {
         // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
@@ -1187,12 +1632,13 @@ export class CalendarioComponent implements OnInit {
       },
       (error) => {
         console.error('Error en la solicitud:', error);
-      }
+      },
     );
   }
 
   guardarPostPartidoAvanzado() {
-    this.postPartido.matchPreparation.matchPreparationId = this.matchPreparationId;
+    this.postPartido.matchPreparation.matchPreparationId =
+      this.matchPreparationId;
     this.trainingService.createUpdatePostPartido(this.postPartido).subscribe(
       (response) => {
         // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
@@ -1204,7 +1650,7 @@ export class CalendarioComponent implements OnInit {
       },
       (error) => {
         console.error('Error en la solicitud:', error);
-      }
+      },
     );
   }
 
@@ -1213,7 +1659,9 @@ export class CalendarioComponent implements OnInit {
     player.collapsed = !player.collapsed;
     this.cerrarPlayer = player;
 
-    let playerInfo = this.playerPostPartido.find(jugador => jugador.playerId === player.playerId);
+    let playerInfo = this.playerPostPartido.find(
+      (jugador) => jugador.playerId === player.playerId,
+    );
     if (playerInfo?.info !== undefined && playerInfo?.info !== null) {
       this.playerInfoPostPartido = playerInfo.info;
     } else {
@@ -1224,8 +1672,8 @@ export class CalendarioComponent implements OnInit {
     // Si la tarea se abre, cerrar el resto de las tareas
     if (player.collapsed) {
       this.playerPostPartido
-        .filter(t => t !== player) // Filtrar todas las tareas que no sean la seleccionada
-        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+        .filter((t) => t !== player) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach((t) => (t.collapsed = false)); // Cerrar cada tarea
     }
   }
 
@@ -1234,8 +1682,8 @@ export class CalendarioComponent implements OnInit {
     // Si la tarea se abre, cerrar el resto de las tareas
     if (player.collapsed) {
       this.playerPostPartido
-        .filter(t => t !== player) // Filtrar todas las tareas que no sean la seleccionada
-        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+        .filter((t) => t !== player) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach((t) => (t.collapsed = false)); // Cerrar cada tarea
     }
   }
 
@@ -1245,23 +1693,27 @@ export class CalendarioComponent implements OnInit {
     } else {
       this.playerInfoPostPartido.player.playerId = playerId;
       this.playerInfoPostPartido.postPartido.postPartidoId = this.postPartidoId;
-      this.playerService.createUpdateInfoPlayerPostPartido(this.playerInfoPostPartido).subscribe(
-        (response) => {
-          // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
-          if (response.data) {
-            // Encontrar el índice del elemento a actualizar
-            const index = this.playerPostPartido.findIndex(player => player.playerId === response.data.player.playerId);
-            this.playerPostPartido[index].info = response.data;
-            //esto cerraria la pestaña de jugador para poder introducir los datos de otros
-            this.togglePlayer(this.cerrarPlayer);
-          } else {
-            console.error('Error al crear el partido:', response.error.msg);
-          }
-        },
-        (error) => {
-          console.error('Error en la solicitud:', error);
-        }
-      );
+      this.playerService
+        .createUpdateInfoPlayerPostPartido(this.playerInfoPostPartido)
+        .subscribe(
+          (response) => {
+            // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
+            if (response.data) {
+              // Encontrar el índice del elemento a actualizar
+              const index = this.playerPostPartido.findIndex(
+                (player) => player.playerId === response.data.player.playerId,
+              );
+              this.playerPostPartido[index].info = response.data;
+              //esto cerraria la pestaña de jugador para poder introducir los datos de otros
+              this.togglePlayer(this.cerrarPlayer);
+            } else {
+              console.error('Error al crear el partido:', response.error.msg);
+            }
+          },
+          (error) => {
+            console.error('Error en la solicitud:', error);
+          },
+        );
     }
   }
 
@@ -1272,14 +1724,22 @@ export class CalendarioComponent implements OnInit {
       //console.log('Imagen seleccionada:', this.selectedFile);
 
       // Llama al método createUpdateImgTask del servicio para subir la imagen
-      this.trainingService.createUpdateImgTask(task.tasksShopId, taskId, this.selectedFile, this.userId)
+      this.trainingService
+        .createUpdateImgTask(
+          task.tasksShopId,
+          taskId,
+          this.selectedFile,
+          this.userId,
+        )
         .subscribe(
           (response) => {
             // Construir el id completo de la imagen
             const imageId = 'imagen_tarea_' + taskId;
 
             // Obtener la imagen por su id
-            const imgElement = document.getElementById(imageId) as HTMLImageElement;
+            const imgElement = document.getElementById(
+              imageId,
+            ) as HTMLImageElement;
 
             if (imgElement) {
               // Asignar la nueva URL de la imagen al atributo src
@@ -1288,7 +1748,9 @@ export class CalendarioComponent implements OnInit {
               console.error('No se encontró la imagen con el id:', imageId);
 
               // Crear un nuevo elemento img
-              const newImgElement = document.createElement('img') as HTMLImageElement;
+              const newImgElement = document.createElement(
+                'img',
+              ) as HTMLImageElement;
               newImgElement.src = this.imageBaseUrlTask + response.data;
               newImgElement.alt = 'Imagen de la tarea';
               newImgElement.className = 'imgBoard';
@@ -1300,20 +1762,22 @@ export class CalendarioComponent implements OnInit {
               if (divElement) {
                 divElement.appendChild(newImgElement);
               } else {
-                console.error('No se encontró el div con el id:', 'div_tarea_' + taskId);
+                console.error(
+                  'No se encontró el div con el id:',
+                  'div_tarea_' + taskId,
+                );
               }
             }
           },
-          error => {
+          (error) => {
             console.error('Error al subir la imagen', error);
             // Aquí puedes manejar el error si la subida de la imagen falla
-          }
+          },
         );
     } else {
       console.log('Ninguna imagen seleccionada.');
     }
   }
-
 
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0];
@@ -1356,7 +1820,10 @@ export class CalendarioComponent implements OnInit {
   }
 
   onSelectSubcategory(event: any): void {
-    if (event.target.value === 'Resistencia' || event.target.value === 'Fuerza') {
+    if (
+      event.target.value === 'Resistencia' ||
+      event.target.value === 'Fuerza'
+    ) {
       this.selectedSubcategory = event.target.value;
       this.selectedOption = '';
     } else {
@@ -1374,13 +1841,19 @@ export class CalendarioComponent implements OnInit {
   }
 
   getSubcategories(): any[] {
-    const selectedCategory = this.categories.find(cat => cat.name === this.selectedCategory);
+    const selectedCategory = this.categories.find(
+      (cat) => cat.name === this.selectedCategory,
+    );
     return selectedCategory ? selectedCategory.subcategories : [];
   }
 
   getOptions(): string[] {
-    const selectedCategory = this.categories.find(cat => cat.name === this.selectedCategory);
-    const selectedSubcategory = selectedCategory?.subcategories.find(subcat => subcat.name === this.selectedSubcategory);
+    const selectedCategory = this.categories.find(
+      (cat) => cat.name === this.selectedCategory,
+    );
+    const selectedSubcategory = selectedCategory?.subcategories.find(
+      (subcat) => subcat.name === this.selectedSubcategory,
+    );
     return selectedSubcategory ? selectedSubcategory.options : [];
   }
 
@@ -1401,11 +1874,15 @@ export class CalendarioComponent implements OnInit {
             <p><b>Video YouTube:</b> ${tarea.video}</p>
             <br>
             ${tarea.imagenBoard ? `<img src="${this.imageBaseUrlTask}${tarea.imagenBoard}" alt="Imagen de la tarea">` : ''}
-            
+
         </div>
     `;
 
-    const popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+    const popupWin = window.open(
+      '',
+      '_blank',
+      'top=0,left=0,height=100%,width=auto',
+    );
 
     if (popupWin) {
       popupWin.document.open();
@@ -1426,18 +1903,22 @@ export class CalendarioComponent implements OnInit {
   }
 
   openTaskModal(tarea: any): void {
-    this.tareaSeleccionada = tarea;  // Almacena la tarea seleccionada
-    this.showModalTask = true;  // Muestra el modal
+    this.tareaSeleccionada = tarea; // Almacena la tarea seleccionada
+    this.showModalTask = true; // Muestra el modal
   }
 
   closeTaskModal(): void {
-    this.showModalTask = false;  // Oculta el modal
+    this.showModalTask = false; // Oculta el modal
   }
 
   printDivPostPartido(divId: string): void {
     let printContents = document.getElementById(divId)?.innerHTML;
     let originalTitle = document.title;
-    let popupWin = window.open('', '_blank', 'top=0,left=0,height=100%,width=auto');
+    let popupWin = window.open(
+      '',
+      '_blank',
+      'top=0,left=0,height=100%,width=auto',
+    );
 
     popupWin?.document.open();
     popupWin?.document.write(`
@@ -1460,24 +1941,29 @@ export class CalendarioComponent implements OnInit {
     this.toggleVisible = event.target.checked ? 1 : 0;
 
     // Método para cambiar la visibilidad de una sesión de entrenamiento
-    this.trainingService.getTrainingSessionVisibility(id, this.toggleVisible)
+    this.trainingService
+      .getTrainingSessionVisibility(id, this.toggleVisible)
       .subscribe(
-        response => {
+        (response) => {
           console.log('Visibilidad actualizada:', response);
-          const entrenamientoSeleccionado = this.listTraining.find(training => training.trainingSessionId === id);
+          const entrenamientoSeleccionado = this.listTraining.find(
+            (training) => training.trainingSessionId === id,
+          );
           if (entrenamientoSeleccionado) {
             entrenamientoSeleccionado.visible = this.toggleVisible;
             // Actualizar el elemento en this.listTraining
-            const index = this.listTraining.findIndex(training => training.trainingSessionId === id);
+            const index = this.listTraining.findIndex(
+              (training) => training.trainingSessionId === id,
+            );
             if (index !== -1) {
               this.listTraining[index] = entrenamientoSeleccionado;
             }
           }
         },
-        error => {
+        (error) => {
           console.error('Error al actualizar la visibilidad:', error);
           // Manejo de errores
-        }
+        },
       );
   }
 
@@ -1485,36 +1971,39 @@ export class CalendarioComponent implements OnInit {
     this.togglePartidoVisible = event.target.checked ? 1 : 0;
 
     // Método para cambiar la visibilidad de una sesión de entrenamiento
-    this.trainingService.getMatchVisibility(id, this.togglePartidoVisible)
+    this.trainingService
+      .getMatchVisibility(id, this.togglePartidoVisible)
       .subscribe(
-        response => {
+        (response) => {
           console.log('Visibilidad actualizada:', response);
         },
-        error => {
+        (error) => {
           console.error('Error al actualizar la visibilidad:', error);
           // Manejo de errores
-        }
+        },
       );
   }
 
   // AQUI EMPIEZAN LOS FORMULARIOS
 
   openModalFormPreEntreno(trainingSessionId: number) {
-    this.trainingService.getFormPreTraining(trainingSessionId, this.playerId).subscribe(
-      (response) => {
-        if (response.data) {
-          this.respPreEntreno = response.data;
-          this.disableFormElements('formularioPreEntreno');
-        } else {
-          this.respPreEntreno = new RespPreEntreno({});
-          this.enableFormElements('formularioPreEntreno');
-        }
-        this.showModalFormPreEntreno = true;
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
+    this.trainingService
+      .getFormPreTraining(trainingSessionId, this.playerId)
+      .subscribe(
+        (response) => {
+          if (response.data) {
+            this.respPreEntreno = response.data;
+            this.disableFormElements('formularioPreEntreno');
+          } else {
+            this.respPreEntreno = new RespPreEntreno({});
+            this.enableFormElements('formularioPreEntreno');
+          }
+          this.showModalFormPreEntreno = true;
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        },
+      );
   }
 
   cerrarModalFormPreEntreno() {
@@ -1536,7 +2025,7 @@ export class CalendarioComponent implements OnInit {
       },
       (error) => {
         console.error('Error al guardar la sesión de entrenamiento:', error);
-      }
+      },
     );
   }
 
@@ -1558,25 +2047,26 @@ export class CalendarioComponent implements OnInit {
     }
   }
 
-
   //----------------------------------
 
   openModalFormPostEntreno(trainingSessionId: number) {
-    this.trainingService.getFormPostTraining(trainingSessionId, this.playerId).subscribe(
-      (response) => {
-        if (response.data) {
-          this.respPostEntreno = response.data;
-          this.disableFormElements('formularioPostEntreno');
-        } else {
-          this.respPostEntreno = new RespPostEntreno({});
-          this.enableFormElements('formularioPostEntreno');
-        }
-        this.showModalFormPostEntreno = true;
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
+    this.trainingService
+      .getFormPostTraining(trainingSessionId, this.playerId)
+      .subscribe(
+        (response) => {
+          if (response.data) {
+            this.respPostEntreno = response.data;
+            this.disableFormElements('formularioPostEntreno');
+          } else {
+            this.respPostEntreno = new RespPostEntreno({});
+            this.enableFormElements('formularioPostEntreno');
+          }
+          this.showModalFormPostEntreno = true;
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        },
+      );
   }
 
   cerrarModalFormPostEntreno() {
@@ -1598,7 +2088,7 @@ export class CalendarioComponent implements OnInit {
       },
       (error) => {
         console.error('Error al guardar la sesión de entrenamiento:', error);
-      }
+      },
     );
   }
 
@@ -1606,21 +2096,23 @@ export class CalendarioComponent implements OnInit {
 
   openModalFormPrePartido(matchPreparationId: number) {
     this.matchPreparationId = matchPreparationId;
-    this.trainingService.getFormPrePartido(matchPreparationId, this.playerId).subscribe(
-      (response) => {
-        if (response.data) {
-          this.respPrePartido = response.data;
-          this.disableFormElements('formularioPrePartido');
-        } else {
-          this.respPrePartido = new RespPrePartido({});
-          this.enableFormElements('formularioPrePartido');
-        }
-        this.showModalFormPrePartido = true;
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
+    this.trainingService
+      .getFormPrePartido(matchPreparationId, this.playerId)
+      .subscribe(
+        (response) => {
+          if (response.data) {
+            this.respPrePartido = response.data;
+            this.disableFormElements('formularioPrePartido');
+          } else {
+            this.respPrePartido = new RespPrePartido({});
+            this.enableFormElements('formularioPrePartido');
+          }
+          this.showModalFormPrePartido = true;
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        },
+      );
   }
 
   cerrarModalFormPrePartido() {
@@ -1642,7 +2134,7 @@ export class CalendarioComponent implements OnInit {
       },
       (error) => {
         console.error('Error al guardar la sesión de entrenamiento:', error);
-      }
+      },
     );
   }
 
@@ -1650,21 +2142,23 @@ export class CalendarioComponent implements OnInit {
 
   openModalFormPostPartido(matchPreparationId: number) {
     this.matchPreparationId = matchPreparationId;
-    this.trainingService.getFormPostPartido(matchPreparationId, this.playerId).subscribe(
-      (response) => {
-        if (response.data) {
-          this.respPostPartido = response.data;
-          this.disableFormElements('formularioPostPartido');
-        } else {
-          this.respPostPartido = new RespPostPartido({});
-          this.enableFormElements('formularioPostPartido');
-        }
-        this.showModalFormPostPartido = true;
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
+    this.trainingService
+      .getFormPostPartido(matchPreparationId, this.playerId)
+      .subscribe(
+        (response) => {
+          if (response.data) {
+            this.respPostPartido = response.data;
+            this.disableFormElements('formularioPostPartido');
+          } else {
+            this.respPostPartido = new RespPostPartido({});
+            this.enableFormElements('formularioPostPartido');
+          }
+          this.showModalFormPostPartido = true;
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        },
+      );
   }
 
   cerrarModalFormPostPartido() {
@@ -1684,17 +2178,18 @@ export class CalendarioComponent implements OnInit {
         this.respPostPartido = new RespPostPartido({});
         this.showModalFormPostPartido = false;
         if (!response.data) {
-          alert('No se han enviado las respuestas porque ya se rellenó anteriormente y solo se puede una vez por partido.');
+          alert(
+            'No se han enviado las respuestas porque ya se rellenó anteriormente y solo se puede una vez por partido.',
+          );
         } else {
           alert('Respuestas enviadas correctamente.');
         }
       },
       (error) => {
         console.error('Error al guardar la sesión de entrenamiento:', error);
-      }
+      },
     );
   }
-
 
   // AQUI TERMINAN LOS FORMULARIOS
   // AQUI VER LOS FORMULARIOS COMO ENTRENADOR O CLUB
@@ -1709,15 +2204,13 @@ export class CalendarioComponent implements OnInit {
       },
       (error) => {
         console.error('Error en la solicitud:', error);
-      }
+      },
     );
   }
 
   cerrarModalPreEntrenamiento() {
     this.showModalPreEntrenamiento = false;
   }
-
-
 
   toggleTaskPreEn(pre: RespPreEntreno): void {
     // Cambiar el estado isOpen de la tarea seleccionada
@@ -1726,8 +2219,8 @@ export class CalendarioComponent implements OnInit {
     // Si la tarea se abre, cerrar el resto de las tareas
     if (pre.collapsed) {
       this.respListPreEntreno
-        .filter(t => t !== pre) // Filtrar todas las tareas que no sean la seleccionada
-        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+        .filter((t) => t !== pre) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach((t) => (t.collapsed = false)); // Cerrar cada tarea
     }
   }
 
@@ -1743,7 +2236,7 @@ export class CalendarioComponent implements OnInit {
       },
       (error) => {
         console.error('Error en la solicitud:', error);
-      }
+      },
     );
   }
 
@@ -1758,8 +2251,8 @@ export class CalendarioComponent implements OnInit {
     // Si la tarea se abre, cerrar el resto de las tareas
     if (post.collapsed) {
       this.respListPostEntreno
-        .filter(t => t !== post) // Filtrar todas las tareas que no sean la seleccionada
-        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+        .filter((t) => t !== post) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach((t) => (t.collapsed = false)); // Cerrar cada tarea
     }
   }
 
@@ -1775,7 +2268,7 @@ export class CalendarioComponent implements OnInit {
       },
       (error) => {
         console.error('Error en la solicitud:', error);
-      }
+      },
     );
   }
 
@@ -1790,8 +2283,8 @@ export class CalendarioComponent implements OnInit {
     // Si la tarea se abre, cerrar el resto de las tareas
     if (pre.collapsed) {
       this.respListPreMatch
-        .filter(t => t !== pre) // Filtrar todas las tareas que no sean la seleccionada
-        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+        .filter((t) => t !== pre) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach((t) => (t.collapsed = false)); // Cerrar cada tarea
     }
   }
 
@@ -1807,7 +2300,7 @@ export class CalendarioComponent implements OnInit {
       },
       (error) => {
         console.error('Error en la solicitud:', error);
-      }
+      },
     );
   }
 
@@ -1819,17 +2312,19 @@ export class CalendarioComponent implements OnInit {
 
   openModalAsistencia(id: number, date: any) {
     this.trainingSessionIdSelected = id;
-    this.trainingService.getListAsistenciaByTraining(id, this.teamId, date).subscribe(
-      (response) => {
-        if (response.data) {
-          this.listAsistencia = response.data;
-          this.showModalAsistencia = true;
-        }
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
+    this.trainingService
+      .getListAsistenciaByTraining(id, this.teamId, date)
+      .subscribe(
+        (response) => {
+          if (response.data) {
+            this.listAsistencia = response.data;
+            this.showModalAsistencia = true;
+          }
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        },
+      );
   }
 
   cerrarModalAsistencia() {
@@ -1862,7 +2357,7 @@ export class CalendarioComponent implements OnInit {
       (error) => {
         console.error('Error al crear el equipo:', error);
         // Puedes manejar el error según tus necesidades
-      }
+      },
     );
   }
 
@@ -1873,13 +2368,16 @@ export class CalendarioComponent implements OnInit {
     // Si la tarea se abre, cerrar el resto de las tareas
     if (post.collapsed) {
       this.respListPostMatch
-        .filter(t => t !== post) // Filtrar todas las tareas que no sean la seleccionada
-        .forEach(t => t.collapsed = false); // Cerrar cada tarea
+        .filter((t) => t !== post) // Filtrar todas las tareas que no sean la seleccionada
+        .forEach((t) => (t.collapsed = false)); // Cerrar cada tarea
     }
   }
 
   onSelectGolTypes(event: any): void {
-    if (event.target.value === 'Falta disparo directo' || event.target.value === 'Penalti') {
+    if (
+      event.target.value === 'Falta disparo directo' ||
+      event.target.value === 'Penalti'
+    ) {
       //no va haber nada mas
       this.selectedGolTypes = '';
       this.selectedSubGolTypes = '';
@@ -1891,15 +2389,17 @@ export class CalendarioComponent implements OnInit {
       this.cat22 = '';
     }
 
-    if (event.target.value === 'Jugada combinativa' || event.target.value === 'Pérdida/Recuperación'
-      || event.target.value === 'Falta') {
+    if (
+      event.target.value === 'Jugada combinativa' ||
+      event.target.value === 'Pérdida/Recuperación' ||
+      event.target.value === 'Falta'
+    ) {
       this.showSelectedOptional = true;
     } else {
       this.showSelectedOptional = false;
     }
     this.cat11 = event.target.value;
     this.cdr.detectChanges(); // Forzar la detección de cambios
-
   }
 
   onSelectSubGolTypes(event: any): void {
@@ -1915,13 +2415,19 @@ export class CalendarioComponent implements OnInit {
   }
 
   getSubGolTypes(): any[] {
-    const selectedGolTypes = this.golTypes.find(cat => cat.name === this.selectedGolTypes);
+    const selectedGolTypes = this.golTypes.find(
+      (cat) => cat.name === this.selectedGolTypes,
+    );
     return selectedGolTypes ? selectedGolTypes.subcategories : [];
   }
 
   getOptionsGolTypes(): string[] {
-    const selectedGolTypes = this.golTypes.find(cat => cat.name === this.selectedGolTypes);
-    const selectedSubGolTypes = selectedGolTypes?.subcategories.find(subcat => subcat.name === this.selectedSubGolTypes);
+    const selectedGolTypes = this.golTypes.find(
+      (cat) => cat.name === this.selectedGolTypes,
+    );
+    const selectedSubGolTypes = selectedGolTypes?.subcategories.find(
+      (subcat) => subcat.name === this.selectedSubGolTypes,
+    );
     return selectedSubGolTypes ? selectedSubGolTypes.options : [];
   }
 
@@ -1979,8 +2485,11 @@ export class CalendarioComponent implements OnInit {
     }
 
     if (access) {
-      if (this.selectedGolTypes === 'Jugada combinativa' || this.selectedGolTypes === 'Pérdida/Recuperación'
-        || this.selectedGolTypes === 'Falta') {
+      if (
+        this.selectedGolTypes === 'Jugada combinativa' ||
+        this.selectedGolTypes === 'Pérdida/Recuperación' ||
+        this.selectedGolTypes === 'Falta'
+      ) {
         this.showSelectedOptional = true;
       } else {
         this.showSelectedOptional = false;
@@ -2007,35 +2516,38 @@ export class CalendarioComponent implements OnInit {
     gol.category = this.cat11 === '' ? gol.category : this.cat11;
     gol.subCategory = this.cat22 === '' ? gol.subCategory : this.cat22;
     gol.option = this.cat33 === '' ? gol.option : this.cat33;
-    gol.combinado = this.selectedGolTypesCombi === '' ? '0' : this.selectedGolTypesCombi;
+    gol.combinado =
+      this.selectedGolTypesCombi === '' ? '0' : this.selectedGolTypesCombi;
     gol.teamId = this.teamId;
 
-    this.trainingService.createUpdateGolPostPartidoAvanzado(gol, this.postPartidoId).subscribe(
-      (resp) => {
-        if (resp.data) {
-          this.golesAvanzadoAFavor = resp.data.golesAFavor;
-          this.golesAvanzadoEnContra = resp.data.golesEnContra;
-          let afavor = this.golesAvanzadoAFavor.length;
-          let encontra = this.golesAvanzadoEnContra.length;
+    this.trainingService
+      .createUpdateGolPostPartidoAvanzado(gol, this.postPartidoId)
+      .subscribe(
+        (resp) => {
+          if (resp.data) {
+            this.golesAvanzadoAFavor = resp.data.golesAFavor;
+            this.golesAvanzadoEnContra = resp.data.golesEnContra;
+            let afavor = this.golesAvanzadoAFavor.length;
+            let encontra = this.golesAvanzadoEnContra.length;
 
-          //this.playerInfoPostPartido = resp.data.info;
+            //this.playerInfoPostPartido = resp.data.info;
 
-          if (this.golesAvanzadoAFavor.length !== 0) {
-            this.postPartido.golesAFavor = afavor;
+            if (this.golesAvanzadoAFavor.length !== 0) {
+              this.postPartido.golesAFavor = afavor;
+            }
+            if (this.golesAvanzadoEnContra.length !== 0) {
+              this.postPartido.golesEnContra = encontra;
+            }
+
+            this.guardar();
+
+            //if (this.golesAvanzadoAFavor.length !== 0 || this.golesAvanzadoEnContra.length !== 0) this.toggleGolAvanzado(true, 0);
           }
-          if (this.golesAvanzadoEnContra.length !== 0) {
-            this.postPartido.golesEnContra = encontra;
-          }
-
-          this.guardar();
-
-          //if (this.golesAvanzadoAFavor.length !== 0 || this.golesAvanzadoEnContra.length !== 0) this.toggleGolAvanzado(true, 0);
-        }
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        },
+      );
   }
 
   borrarGol(isAFavor: number) {
@@ -2053,23 +2565,25 @@ export class CalendarioComponent implements OnInit {
     this.selectedOptionGolTypes = '';
     this.selectedGolTypesCombi = '';
 
-    this.trainingService.deleteGolPostPartidoAvanzado(gol.golPostPartidoId, this.postPartidoId).subscribe(
-      (resp) => {
-        if (resp.data) {
-          this.golesAvanzadoAFavor = resp.data.golesAFavor;
-          this.golesAvanzadoEnContra = resp.data.golesEnContra;
-          this.postPartido.golesAFavor = this.golesAvanzadoAFavor.length;
-          this.postPartido.golesEnContra = this.golesAvanzadoEnContra.length;
+    this.trainingService
+      .deleteGolPostPartidoAvanzado(gol.golPostPartidoId, this.postPartidoId)
+      .subscribe(
+        (resp) => {
+          if (resp.data) {
+            this.golesAvanzadoAFavor = resp.data.golesAFavor;
+            this.golesAvanzadoEnContra = resp.data.golesEnContra;
+            this.postPartido.golesAFavor = this.golesAvanzadoAFavor.length;
+            this.postPartido.golesEnContra = this.golesAvanzadoEnContra.length;
 
-          this.borrar();
+            this.borrar();
 
-          //if (this.golesAvanzadoAFavor.length !== 0 || this.golesAvanzadoEnContra.length !== 0) this.toggleGolAvanzado(true, 0);
-        }
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
+            //if (this.golesAvanzadoAFavor.length !== 0 || this.golesAvanzadoEnContra.length !== 0) this.toggleGolAvanzado(true, 0);
+          }
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        },
+      );
   }
 
   // Método para mostrar el alert y ocultarlo después de 2 segundos
@@ -2090,16 +2604,19 @@ export class CalendarioComponent implements OnInit {
 
   toggleChangeSubirTarea(actualValue: number) {
     const nuevoValor = actualValue === 0 ? 1 : 0;
-    const confirmacion = confirm('AVISO: Al activar esta opción, su tarea de entrenamiento será pública y visible para otros entrenadores. ' +
+    const confirmacion = confirm(
+      'AVISO: Al activar esta opción, su tarea de entrenamiento será pública y visible para otros entrenadores. ' +
       'Cualquier dato ingresado será accesible. No está permitido publicar información, datos o imágenes con derechos de autor sin el permiso del autor. ' +
-      'Cualquier contenido que infrinja esta norma será eliminado. ¿Estás seguro?');
+      'Cualquier contenido que infrinja esta norma será eliminado. ¿Estás seguro?',
+    );
 
     if (confirmacion) {
       this.subirTarea = nuevoValor;
     } else {
       // Si el usuario cancela, restablece el valor original del switch
       setTimeout(() => {
-        (document.getElementById('subirTarea') as HTMLInputElement).checked = actualValue === 1;
+        (document.getElementById('subirTarea') as HTMLInputElement).checked =
+          actualValue === 1;
       }, 0);
     }
   }
@@ -2144,6 +2661,11 @@ export class CalendarioComponent implements OnInit {
       this.moverJugador(jugador, estado);
     }
   }
+  onToggleVisible(event: Event): void {
+    const input = event.target as HTMLInputElement | null;
+    if (!input) return;
+    this.match.visible = input.checked ? 1 : 0;
+  }
 
   // Eventos táctiles para soportar arrastrar con el dedo (móviles y tablets)
   onTouchStart(event: TouchEvent, jugador: any): void {
@@ -2156,12 +2678,16 @@ export class CalendarioComponent implements OnInit {
   onTouchMove(event: TouchEvent): void {
     if (this.touchJugador) {
       const touch = event.touches[0];
-      const fieldRect = (document.querySelector('.field') as HTMLElement).getBoundingClientRect();
+      const fieldRect = (
+        document.querySelector('.field') as HTMLElement
+      ).getBoundingClientRect();
       this.touchJugador.posicion_x = touch.clientX - fieldRect.left;
       this.touchJugador.posicion_y = touch.clientY - fieldRect.top;
 
       // Actualiza la posición del jugador en el DOM
-      const playerElement = document.querySelector(`.player[data-id="${this.touchJugador.id}"]`) as HTMLElement;
+      const playerElement = document.querySelector(
+        `.player[data-id="${this.touchJugador.id}"]`,
+      ) as HTMLElement;
       if (playerElement) {
         playerElement.style.left = `${this.touchJugador.posicion_x}px`;
         playerElement.style.top = `${this.touchJugador.posicion_y}px`;
@@ -2173,12 +2699,16 @@ export class CalendarioComponent implements OnInit {
 
   onTouchEnd(event: TouchEvent, estado: string): void {
     if (this.touchJugador) {
-      const fieldRect = (document.querySelector('.field') as HTMLElement).getBoundingClientRect();
+      const fieldRect = (
+        document.querySelector('.field') as HTMLElement
+      ).getBoundingClientRect();
 
       // Ajustar las coordenadas si se suelta en titulares
       if (estado === 'titular') {
-        this.touchJugador.posicion_x = this.touchJugador.posicion_x - fieldRect.left;
-        this.touchJugador.posicion_y = this.touchJugador.posicion_y - fieldRect.top;
+        this.touchJugador.posicion_x =
+          this.touchJugador.posicion_x - fieldRect.left;
+        this.touchJugador.posicion_y =
+          this.touchJugador.posicion_y - fieldRect.top;
       }
 
       this.actualizarEstadoJugador(this.touchJugador, estado);
@@ -2216,39 +2746,50 @@ export class CalendarioComponent implements OnInit {
   }
 
   removeJugador(jugador: any) {
-    this.jugadoresNoConvocados = this.jugadoresNoConvocados.filter(j => j.id !== jugador.id);
-    this.jugadoresSuplentes = this.jugadoresSuplentes.filter(j => j.id !== jugador.id);
-    this.jugadoresTitulares = this.jugadoresTitulares.filter(j => j.id !== jugador.id);
+    this.jugadoresNoConvocados = this.jugadoresNoConvocados.filter(
+      (j) => j.id !== jugador.id,
+    );
+    this.jugadoresSuplentes = this.jugadoresSuplentes.filter(
+      (j) => j.id !== jugador.id,
+    );
+    this.jugadoresTitulares = this.jugadoresTitulares.filter(
+      (j) => j.id !== jugador.id,
+    );
   }
 
   guardarConvocatoria() {
+
+    // traducir slot → coordenadas
+    this.jugadoresTitulares.forEach(j => {
+      const slot = this.slotsFormacion.find(s => s.id === j.posicion_slot);
+      if (slot) {
+        j.posicion_x = slot.x;
+        j.posicion_y = slot.y;
+      }
+    });
+
     const convocatoria = {
       noConvocados: this.jugadoresNoConvocados,
       suplentes: this.jugadoresSuplentes,
-      titulares: this.jugadoresTitulares.map(j => ({
-        id: j.id,
-        playerId: j.playerId,
-        nombre: j.nombre,
-        img: j.img,
-        posicion_x: j.posicion_x,
-        posicion_y: j.posicion_y,
-        confirmacion: j.confirmacion
-      }))
+      titulares: this.jugadoresTitulares
     };
 
-    // Convertir la convocatoria a una cadena JSON
     this.convocatoriaJSON = JSON.stringify(convocatoria);
 
-    this.playerService.updateConvocatoria(this.convocatoriaJSON, this.matchPreparationId).subscribe(response => {
-      alert('Convocatoria guardada con éxito.');
-      this.showNotificar = true;
-    });
+    this.playerService
+      .updateConvocatoria(this.convocatoriaJSON, this.matchPreparationId)
+      .subscribe(() => {
+        alert('Convocatoria guardada');
+        this.showNotificar = true;
+      });
   }
 
+
   abrirModalConvocatoria() {
-    if(this.match.convocatoria == null || this.match.convocatoria == '' ){
+    if (this.match.convocatoria == null || this.match.convocatoria == '') {
       this.resetConvocatoria();
     }
+    this.generarSlotsFormacion();
     this.mostrarModalConvocatoria = true;
   }
 
@@ -2257,33 +2798,41 @@ export class CalendarioComponent implements OnInit {
   }
 
   abrirModalConvocatoriaLista(matchPreparationId: number) {
-    this.playerService.getAsistenciaPartido(matchPreparationId, this.playerId).subscribe(
-      (resp) => {
-        if (resp.data) {
-          this.playerAsistencia = true;
-        } else {
-          this.playerAsistencia = false;
-        }
+    this.playerService
+      .getAsistenciaPartido(matchPreparationId, this.playerId)
+      .subscribe(
+        (resp) => {
+          if (resp.data) {
+            this.playerAsistencia = true;
+          } else {
+            this.playerAsistencia = false;
+          }
 
-        let ui = new NotificatePlayerUI({});
-        ui.players = this.playersConvo;
-        // Asignar los nombres de jugadores no convocados
-        ui.noConvocados = this.jugadoresNoConvocados.map((jugador: ConvocatoriaUI) => jugador.nombre);
+          let ui = new NotificatePlayerUI({});
+          ui.players = this.playersConvo;
+          // Asignar los nombres de jugadores no convocados
+          ui.noConvocados = this.jugadoresNoConvocados.map(
+            (jugador: ConvocatoriaUI) => jugador.nombre,
+          );
 
-        // Asignar los nombres de jugadores suplentes y titulares a convocados
-        ui.convocados = [
-          ...this.jugadoresSuplentes.map((jugador: ConvocatoriaUI) => jugador.nombre),
-          ...this.jugadoresTitulares.map((jugador: ConvocatoriaUI) => jugador.nombre)
-        ];
+          // Asignar los nombres de jugadores suplentes y titulares a convocados
+          ui.convocados = [
+            ...this.jugadoresSuplentes.map(
+              (jugador: ConvocatoriaUI) => jugador.nombre,
+            ),
+            ...this.jugadoresTitulares.map(
+              (jugador: ConvocatoriaUI) => jugador.nombre,
+            ),
+          ];
 
-        this.showConvocados = ui.convocados;
-        this.showNoConvocados = ui.noConvocados;
-        this.mostrarModalConvocatoriaLista = true;
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
+          this.showConvocados = ui.convocados;
+          this.showNoConvocados = ui.noConvocados;
+          this.mostrarModalConvocatoriaLista = true;
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        },
+      );
   }
 
   cerrarModalConvocatoriaLista() {
@@ -2307,42 +2856,52 @@ export class CalendarioComponent implements OnInit {
     ui.fechaPartido = partido.matchDate;
 
     // Asignar los nombres de jugadores no convocados
-    ui.noConvocados = this.jugadoresNoConvocados.map((jugador: ConvocatoriaUI) => jugador.nombre);
+    ui.noConvocados = this.jugadoresNoConvocados.map(
+      (jugador: ConvocatoriaUI) => jugador.nombre,
+    );
 
     // Asignar los nombres de jugadores suplentes y titulares a convocados
     ui.convocados = [
-      ...this.jugadoresTitulares.map((jugador: ConvocatoriaUI) => jugador.nombre),
-      ...this.jugadoresSuplentes.map((jugador: ConvocatoriaUI) => jugador.nombre)
-    ].sort((a, b) => a.localeCompare(b)); // Ordenar alfabéticamente    
+      ...this.jugadoresTitulares.map(
+        (jugador: ConvocatoriaUI) => jugador.nombre,
+      ),
+      ...this.jugadoresSuplentes.map(
+        (jugador: ConvocatoriaUI) => jugador.nombre,
+      ),
+    ].sort((a, b) => a.localeCompare(b)); // Ordenar alfabéticamente
 
-    ui.mailEntrenador = this.usuarioActual?.mail !== undefined ? this.usuarioActual?.mail : '';
+    ui.mailEntrenador =
+      this.usuarioActual?.mail !== undefined ? this.usuarioActual?.mail : '';
     //console.log(ui);
 
-    this.playerService.notificateMatchPlayer(ui, this.teamId).subscribe(response => {
-      alert('Notificados con éxito.');
-    });
+    this.playerService
+      .notificateMatchPlayer(ui, this.teamId)
+      .subscribe((response) => {
+        alert('Notificados con éxito.');
+      });
   }
 
-  preavisoConvocatoria() {    
+  preavisoConvocatoria() {
     const convocatoria = {
       noConvocados: this.jugadoresNoConvocados,
       suplentes: this.jugadoresSuplentes,
-      titulares: this.jugadoresTitulares.map(j => ({
+      titulares: this.jugadoresTitulares.map((j) => ({
         id: j.id,
         playerId: j.playerId,
         nombre: j.nombre,
         img: j.img,
         posicion_x: j.posicion_x,
         posicion_y: j.posicion_y,
-        confirmacion: j.confirmacion
-      }))
+        confirmacion: j.confirmacion,
+      })),
     };
 
     // Convertir la convocatoria a una cadena JSON
     this.convocatoriaJSON = JSON.stringify(convocatoria);
 
-    this.playerService.updateConvocatoria(this.convocatoriaJSON, this.matchPreparationId).subscribe(response => {
-    });
+    this.playerService
+      .updateConvocatoria(this.convocatoriaJSON, this.matchPreparationId)
+      .subscribe((response) => { });
 
     let partido = this.match;
     //crear el objeto para enviarlo
@@ -2360,14 +2919,21 @@ export class CalendarioComponent implements OnInit {
     ui.fechaPartido = partido.matchDate;
 
     // Asignar los nombres de jugadores no convocados
-    ui.noConvocados = this.jugadoresNoConvocados.map((jugador: ConvocatoriaUI) => jugador.nombre);
+    ui.noConvocados = this.jugadoresNoConvocados.map(
+      (jugador: ConvocatoriaUI) => jugador.nombre,
+    );
 
-    ui.mailEntrenador = this.usuarioActual?.mail !== undefined ? this.usuarioActual?.mail : '';
+    ui.mailEntrenador =
+      this.usuarioActual?.mail !== undefined ? this.usuarioActual?.mail : '';
     //console.log(ui);
 
-    this.playerService.notificateMatchPlayer(ui, this.teamId).subscribe(response => {
-      alert('Pre-aviso enviado a los padres, en No convocados solo veras a los juagdores que han confirmado asistencia.');
-    });
+    this.playerService
+      .notificateMatchPlayer(ui, this.teamId)
+      .subscribe((response) => {
+        alert(
+          'Pre-aviso enviado a los padres, en No convocados solo veras a los juagdores que han confirmado asistencia.',
+        );
+      });
   }
 
   match2: any = {
@@ -2397,21 +2963,27 @@ export class CalendarioComponent implements OnInit {
     abpsDefensivas: '',
     rolesEspecificos: '',
     ajustesTacticos: '',
-    refereeName: ''
+    refereeName: '',
   };
 
   onChangeToggleAsistencia(matchPreparationId: number) {
-    this.playerAsistencia = !this.playerAsistencia;      // si no asiste → mostrar textarea
-    this.playerService.setAsistenciaPartido(matchPreparationId, this.playerId, this.playerAsistencia == true ? 1 : 0).subscribe(
-      (resp) => {
-        if (resp.data) {
-          alert("Cambio guardado.");
-        }
-      },
-      (error) => {
-        console.error('Error en la solicitud:', error);
-      }
-    );
+    this.playerAsistencia = !this.playerAsistencia; // si no asiste → mostrar textarea
+    this.playerService
+      .setAsistenciaPartido(
+        matchPreparationId,
+        this.playerId,
+        this.playerAsistencia == true ? 1 : 0,
+      )
+      .subscribe(
+        (resp) => {
+          if (resp.data) {
+            alert('Cambio guardado.');
+          }
+        },
+        (error) => {
+          console.error('Error en la solicitud:', error);
+        },
+      );
   }
 
   convertImgToBase64URL(url: string): Promise<string> {
@@ -2445,13 +3017,15 @@ export class CalendarioComponent implements OnInit {
     this.match2.terreno = this.match.terreno;
     this.match2.lugar = this.match.lugar;
     this.match2.horaQuedada = this.match.hora + ':' + this.match.minutos;
-    this.match2.horaPartido = this.match.horaEmpieza + ':' + this.match.minutosEmpieza;
+    this.match2.horaPartido =
+      this.match.horaEmpieza + ':' + this.match.minutosEmpieza;
     this.match2.puntosFuertesRival = this.match.puntosFuertesRival;
     this.match2.puntosDebilesRival = this.match.puntosDebilesRival;
     this.match2.jugadoresClaveRival = this.match.jugadoresClaveRival;
     this.match2.estiloJuegoRival = this.match.estiloJuegoRival;
     this.match2.ultimosResultadosRival = this.match.ultimosResultadosRival;
-    this.match2.formacionesRecientesRival = this.match.formacionesRecientesRival;
+    this.match2.formacionesRecientesRival =
+      this.match.formacionesRecientesRival;
     this.match2.patronesOfensivosRival = this.match.patronesOfensivosRival;
     this.match2.patronesDefensivosRival = this.match.patronesDefensivosRival;
     this.match2.tendenciasTacticasRival = this.match.tendenciasTacticasRival;
@@ -2474,7 +3048,7 @@ export class CalendarioComponent implements OnInit {
     } catch (error) {
       console.error('Failed to convert image to Base64:', error);
       // Establecer una imagen de respaldo o proceder sin la imagen
-      this.match2.imgClub = 'assets/images/512.png';  // Cambia a una imagen predeterminada si es necesario
+      this.match2.imgClub = 'assets/images/512.png'; // Cambia a una imagen predeterminada si es necesario
     }
 
     const element = document.getElementById('pdf-content');
@@ -2483,7 +3057,7 @@ export class CalendarioComponent implements OnInit {
       filename: 'informe-partido.pdf',
       image: { type: 'jpeg', quality: 0.98 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
     };
 
     html2pdf().from(element).set(options).save();
@@ -2503,15 +3077,131 @@ export class CalendarioComponent implements OnInit {
       playerId: this.playerId,
       motivo: this.motivoNoAsistencia,
       teamId: this.teamId,
-      userId: this.userId
-    }
+      userId: this.userId,
+    };
 
-    this.playerService.notificarNoAsistencia(dto).subscribe(response => {
+    this.playerService.notificarNoAsistencia(dto).subscribe((response) => {
       alert('Notificación enviada.');
       this.motivoNoAsistencia = '';
     });
   }
+  newTask() {
+    this.selected = '';
+    this.mostrarModal = true;
+  }
+  cerrarnewTask() {
+    this.mostrarModal = false;
+  }
+  isToday(dayString: string): boolean {
+    if (!dayString) return false;
 
+    const day = new Date(dayString + 'T12:00:00');
 
+    const today = new Date();
+    today.setHours(12, 0, 0, 0);
+
+    return (
+      day.getDate() === today.getDate() &&
+      day.getMonth() === today.getMonth() &&
+      day.getFullYear() === today.getFullYear()
+    );
+  }
+  selectNewActivity(type: 'entrenamiento' | 'partido' | 'otra') {
+    this.mode = `create-${type}` as any;
+    this.selectedActivity = type;
+    this.selected = type; // si ya usas selected en más sitios
+    this.showNewActivityMenu = false;
+
+    // Reset de modelos
+    if (type === 'entrenamiento') {
+      this.trainingSession = this.initTrainingSession();
+    }
+
+    if (type === 'partido') {
+      this.match = new MatchPreparation({});
+    }
+  }
+  onSelectPartido(match: MatchPreparation) {
+    this.match = match;
+    this.mode = 'view-partido';
+  }
+  onSelectEntrenamiento(training: Training) {
+    this.trainingSession = training;
+    this.mode = 'view-entrenamiento';
+  }
+  selectActivity(
+    type: 'entrenamiento' | 'partido',
+    id: number,
+    data: any
+  ): void {
+
+    this.selectedItem = { type, id };
+
+    if (type === 'entrenamiento') {
+      this.trainingSession = data;
+      this.openEntrenamiento(id, this.daySession);
+      this.mode = 'view-entrenamiento';
+    }
+
+    if (type === 'partido') {
+      this.openPartido(id, this.daySession);
+      this.mode = 'view-partido';
+    }
+  }
+
+  autoGrow(event: Event): void {
+    const textarea = event.target as HTMLTextAreaElement | null;
+    if (!textarea) return;
+
+    textarea.style.height = 'auto';                 // reset
+    textarea.style.height = textarea.scrollHeight + 'px';
+  }
+
+  generarSlotsFormacion() {
+  this.slotsFormacion = this.FORMACIONES[this.formacionSeleccionada]
+    .map((s: any) => ({
+      ...s,
+      jugador: null
+    }));
+
+  // recolocar titulares ya asignados
+  this.jugadoresTitulares.forEach(j => {
+    if (j.posicion_slot) {
+      const slot = this.slotsFormacion.find(s => s.id === j.posicion_slot);
+      if (slot) slot.jugador = j;
+    }
+  });
 }
 
+  onDropSlot(event: DragEvent, slot: any) {
+    event.preventDefault();
+
+    const data = event.dataTransfer?.getData('jugador');
+    if (!data || slot.jugador) return;
+
+    const jugador = JSON.parse(data);
+
+    // liberar slot anterior
+    this.slotsFormacion.forEach(s => {
+      if (s.jugador?.id === jugador.id) s.jugador = null;
+    });
+
+    this.removeJugador(jugador);
+
+    jugador.posicion_slot = slot.id;
+    slot.jugador = jugador;
+    this.jugadoresTitulares.push(jugador);
+  }
+
+  onTouchEndSlot(slot: any) {
+    if (!this.touchJugador || slot.jugador) return;
+
+    this.removeJugador(this.touchJugador);
+    this.touchJugador.posicion_slot = slot.id;
+    slot.jugador = this.touchJugador;
+    this.jugadoresTitulares.push(this.touchJugador);
+
+    this.touchJugador = null;
+  }
+
+}
