@@ -1,0 +1,452 @@
+:host {
+  --fifa-green: #31b270;
+  --fifa-night: #002c40;
+  --fifa-border: rgba(0, 44, 64, 0.12);
+  --fifa-shadow: 0 4px 20px rgba(0, 44, 64, 0.08);
+}
+
+.back-container { margin-bottom: 0.5rem; }
+
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(0, 44, 64, 0.08);
+  color: var(--fifa-night);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+
+.btn-back-clean:hover {
+  background: rgba(0, 44, 64, 0.14);
+  transform: translateX(-2px);
+}
+
+.info-equipo-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem 0 2rem;
+}
+
+.card-pro {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--fifa-border);
+  box-shadow: var(--fifa-shadow);
+  overflow: hidden;
+}
+
+.fifa-header {
+  background: linear-gradient(135deg, var(--fifa-night) 0%, #0a3d52 100%);
+  color: #fff;
+  padding: 1.25rem 1.5rem;
+}
+
+.card-pro-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.card-pro-body {
+  padding: 1.5rem 1.75rem;
+}
+
+.section-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--fifa-night);
+  margin-bottom: 0.75rem;
+}
+
+.logo-section {
+  margin-bottom: 1.75rem;
+}
+
+.logo-upload-wrap {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.logo-preview-wrap {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border: 2px dashed var(--fifa-border);
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(0, 44, 64, 0.03);
+}
+
+.logo-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.logo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--fifa-night);
+  opacity: 0.5;
+  font-size: 0.8rem;
+}
+
+.logo-placeholder i { font-size: 2rem; margin-bottom: 0.25rem; }
+
+.logo-loading {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: var(--fifa-night);
+}
+
+.btn-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--fifa-green);
+  border-radius: 10px;
+  background: rgba(49, 178, 112, 0.1);
+  color: var(--fifa-green);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-logo:hover {
+  background: rgba(49, 178, 112, 0.2);
+}
+
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 0;
+}
+
+.form-group.half { flex: 1 1 calc(50% - 0.5rem); min-width: 200px; }
+
+.form-label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--fifa-night);
+  margin-bottom: 0.35rem;
+}
+
+.form-input-pro {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--fifa-border);
+  font-size: 0.9rem;
+}
+
+.form-input-pro:focus {
+  border-color: var(--fifa-green);
+  box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+  outline: none;
+}
+
+.dropdown-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--fifa-border);
+  border-radius: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(0, 44, 64, 0.12);
+  position: absolute;
+  z-index: 10;
+  min-width: 200px;
+}
+
+.dropdown-item {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.dropdown-item:hover { background: rgba(49, 178, 112, 0.1); }
+
+.dropdown-item.create { color: var(--fifa-green); font-weight: 600; }
+
+.btn-horario {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--fifa-border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--fifa-night);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-horario:hover {
+  border-color: var(--fifa-green);
+  background: rgba(49, 178, 112, 0.08);
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.btn-save-pro {
+  padding: 0.5rem 1.5rem;
+  border-radius: 10px;
+  border: none;
+  background: var(--fifa-green);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+  box-shadow: 0 4px 14px rgba(49, 178, 112, 0.3);
+}
+
+.btn-save-pro:hover { background: #2aa463; }
+
+.btn-delete-pro {
+  padding: 0.5rem 1.25rem;
+  border-radius: 10px;
+  border: none;
+  background: #dc3545;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-delete-pro:hover { background: #c82333; }
+
+.divider {
+  border: none;
+  height: 1px;
+  background: var(--fifa-border);
+  margin: 1.5rem 1.75rem;
+}
+
+.coaches-section { padding: 0 1.75rem 1.5rem; }
+
+.coaches-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.section-title { margin: 0; font-size: 1.15rem; font-weight: 700; color: var(--fifa-night); }
+
+.btn-invite {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--fifa-green);
+  border-radius: 10px;
+  background: rgba(49, 178, 112, 0.1);
+  color: var(--fifa-green);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-invite:hover { background: rgba(49, 178, 112, 0.2); }
+
+.coaches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.coach-card-inner {
+  background: rgba(0, 44, 64, 0.04);
+  border: 1px solid var(--fifa-border);
+  border-radius: 12px;
+  padding: 1.25rem;
+  text-align: center;
+}
+
+.coach-avatar {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 0.75rem;
+  border-radius: 50%;
+  overflow: hidden;
+  background: rgba(0, 44, 64, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  color: var(--fifa-night);
+}
+
+.coach-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.coach-name { font-size: 0.95rem; font-weight: 600; margin: 0 0 0.5rem 0; color: var(--fifa-night); }
+
+.btn-coach-delete {
+  padding: 0.35rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(220, 53, 69, 0.1);
+  color: #dc3545;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-coach-delete:hover { background: rgba(220, 53, 69, 0.2); }
+
+/* Modales */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 44, 64, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1040;
+}
+
+.modal-pro {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1041;
+  padding: 1rem;
+}
+
+.modal-content-pro {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid var(--fifa-border);
+  box-shadow: 0 20px 50px rgba(0, 44, 64, 0.2);
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-horario { max-width: 520px; }
+
+.modal-header-pro {
+  background: linear-gradient(135deg, var(--fifa-night), #0a3d52);
+  color: #fff;
+  padding: 1rem 1.25rem;
+  border-radius: 16px 16px 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-header-pro .modal-title { margin: 0; font-size: 1.1rem; font-weight: 700; }
+
+.btn-close-white { filter: brightness(0) invert(1); background: transparent; border: none; opacity: 0.9; }
+
+.modal-body { padding: 1.25rem 1.5rem; }
+
+.modal-p { font-size: 0.9rem; color: #555; margin: 0 0 1rem 0; }
+
+.modal-footer-pro {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--fifa-border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.btn-cancel-pro {
+  padding: 0.5rem 1.25rem;
+  border-radius: 10px;
+  border: 1px solid var(--fifa-border);
+  background: #fff;
+  color: var(--fifa-night);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-cancel-pro:hover { background: rgba(0, 44, 64, 0.06); }
+
+.horario-dias { margin-bottom: 1rem; }
+
+.horario-dia-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.dia-label { font-size: 0.9rem; }
+
+.horario-time-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  padding-left: 0.5rem;
+}
+
+.time-field { flex: 1; min-width: 0; }
+
+.modal-confirm .modal-content-pro { max-width: 400px; text-align: center; }
+
+.modal-confirm-content { padding: 2rem; }
+
+.modal-confirm-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: rgba(220, 53, 69, 0.12);
+  color: #dc3545;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.75rem;
+}
+
+.modal-confirm-title { font-size: 1.2rem; font-weight: 700; margin: 0 0 0.5rem 0; color: var(--fifa-night); }
+
+.modal-confirm-message { font-size: 0.9rem; color: #666; margin: 0 0 1.5rem 0; }
+
+.modal-confirm-actions { display: flex; justify-content: center; gap: 0.75rem; }
+
+@media (max-width: 768px) {
+  .form-group.half { flex: 1 1 100%; }
+  .logo-upload-wrap { flex-direction: column; align-items: flex-start; }
+}

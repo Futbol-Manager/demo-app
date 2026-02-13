@@ -74,6 +74,14 @@ export class CalendarioComponent implements OnInit {
   teamId!: number; // Ajusta el valor según el teamId del equipo actual
   calendario: any[][] = [];
   mesActual: Date = new Date();
+  /** Vista actual: año (grid 12 meses), mes (tabla), semana (7 días) */
+  vistaCalendario: 'year' | 'month' | 'week' = 'month';
+  /** Año mostrado en vista año */
+  anioActual: number = new Date().getFullYear();
+  /** Semana actual para vista semana (array de 7 días, lun-dom) */
+  semanaActual: any[] = [];
+  /** Título para vista semana, ej. "9 - 15 Feb 2026" */
+  tituloSemana: string = '';
   // Variable para almacenar el nombre del mes y el año actual
   tituloMesAnio!: string;
   showModal = false;
@@ -86,7 +94,7 @@ export class CalendarioComponent implements OnInit {
       warmUp: '',
       addressSession: '',
       visible: 1,
-      tasks: []
+      tasks: [],
     });
   }
 
@@ -187,35 +195,115 @@ export class CalendarioComponent implements OnInit {
   slotsFormacion: any[] = [];
   slotActivoDrag: number | null = null;
 
+  /* Posiciones con buen espacio entre slots (x más separados en cada línea) */
   FORMACIONES: any = {
     '4-4-2': [
       { id: 1, x: 50, y: 90 },
-      { id: 2, x: 15, y: 70 },
-      { id: 3, x: 38, y: 70 },
-      { id: 4, x: 62, y: 70 },
-      { id: 5, x: 85, y: 70 },
-      { id: 6, x: 20, y: 45 },
-      { id: 7, x: 40, y: 45 },
-      { id: 8, x: 60, y: 45 },
-      { id: 9, x: 80, y: 45 },
-      { id: 10, x: 40, y: 20 },
-      { id: 11, x: 60, y: 20 }
+      { id: 2, x: 12, y: 72 },
+      { id: 3, x: 32, y: 72 },
+      { id: 4, x: 68, y: 72 },
+      { id: 5, x: 88, y: 72 },
+      { id: 6, x: 15, y: 48 },
+      { id: 7, x: 38, y: 48 },
+      { id: 8, x: 62, y: 48 },
+      { id: 9, x: 85, y: 48 },
+      { id: 10, x: 35, y: 18 },
+      { id: 11, x: 65, y: 18 }
     ],
     '4-3-3': [
       { id: 1, x: 50, y: 90 },
-      { id: 2, x: 15, y: 70 },
-      { id: 3, x: 38, y: 70 },
-      { id: 4, x: 62, y: 70 },
-      { id: 5, x: 85, y: 70 },
-      { id: 6, x: 30, y: 48 },
-      { id: 7, x: 50, y: 48 },
-      { id: 8, x: 70, y: 48 },
-      { id: 9, x: 20, y: 20 },
-      { id: 10, x: 50, y: 18 },
-      { id: 11, x: 80, y: 20 }
+      { id: 2, x: 12, y: 72 },
+      { id: 3, x: 32, y: 72 },
+      { id: 4, x: 68, y: 72 },
+      { id: 5, x: 88, y: 72 },
+      { id: 6, x: 25, y: 50 },
+      { id: 7, x: 50, y: 50 },
+      { id: 8, x: 75, y: 50 },
+      { id: 9, x: 18, y: 18 },
+      { id: 10, x: 50, y: 14 },
+      { id: 11, x: 82, y: 18 }
+    ],
+    '4-2-3-1': [
+      { id: 1, x: 50, y: 90 },
+      { id: 2, x: 12, y: 72 },
+      { id: 3, x: 32, y: 72 },
+      { id: 4, x: 68, y: 72 },
+      { id: 5, x: 88, y: 72 },
+      { id: 6, x: 32, y: 58 },
+      { id: 7, x: 68, y: 58 },
+      { id: 8, x: 18, y: 34 },
+      { id: 9, x: 50, y: 32 },
+      { id: 10, x: 82, y: 34 },
+      { id: 11, x: 50, y: 10 }
+    ],
+    '4-5-1': [
+      { id: 1, x: 50, y: 90 },
+      { id: 2, x: 12, y: 72 },
+      { id: 3, x: 32, y: 72 },
+      { id: 4, x: 68, y: 72 },
+      { id: 5, x: 88, y: 72 },
+      { id: 6, x: 12, y: 48 },
+      { id: 7, x: 30, y: 48 },
+      { id: 8, x: 50, y: 48 },
+      { id: 9, x: 70, y: 48 },
+      { id: 10, x: 88, y: 48 },
+      { id: 11, x: 50, y: 12 }
+    ],
+    '3-5-2': [
+      { id: 1, x: 50, y: 90 },
+      { id: 2, x: 22, y: 72 },
+      { id: 3, x: 50, y: 72 },
+      { id: 4, x: 78, y: 72 },
+      { id: 5, x: 12, y: 50 },
+      { id: 6, x: 30, y: 50 },
+      { id: 7, x: 50, y: 50 },
+      { id: 8, x: 70, y: 50 },
+      { id: 9, x: 88, y: 50 },
+      { id: 10, x: 35, y: 16 },
+      { id: 11, x: 65, y: 16 }
+    ],
+    '3-4-3': [
+      { id: 1, x: 50, y: 90 },
+      { id: 2, x: 22, y: 72 },
+      { id: 3, x: 50, y: 72 },
+      { id: 4, x: 78, y: 72 },
+      { id: 5, x: 18, y: 48 },
+      { id: 6, x: 38, y: 48 },
+      { id: 7, x: 62, y: 48 },
+      { id: 8, x: 82, y: 48 },
+      { id: 9, x: 18, y: 16 },
+      { id: 10, x: 50, y: 12 },
+      { id: 11, x: 82, y: 16 }
+    ],
+    '5-3-2': [
+      { id: 1, x: 50, y: 90 },
+      { id: 2, x: 8, y: 72 },
+      { id: 3, x: 25, y: 72 },
+      { id: 4, x: 50, y: 72 },
+      { id: 5, x: 75, y: 72 },
+      { id: 6, x: 92, y: 72 },
+      { id: 7, x: 32, y: 48 },
+      { id: 8, x: 50, y: 48 },
+      { id: 9, x: 68, y: 48 },
+      { id: 10, x: 35, y: 16 },
+      { id: 11, x: 65, y: 16 }
+    ],
+    '5-4-1': [
+      { id: 1, x: 50, y: 90 },
+      { id: 2, x: 8, y: 72 },
+      { id: 3, x: 25, y: 72 },
+      { id: 4, x: 50, y: 72 },
+      { id: 5, x: 75, y: 72 },
+      { id: 6, x: 92, y: 72 },
+      { id: 7, x: 18, y: 48 },
+      { id: 8, x: 38, y: 48 },
+      { id: 9, x: 62, y: 48 },
+      { id: 10, x: 82, y: 48 },
+      { id: 11, x: 50, y: 12 }
     ]
   };
 
+  private autoSelectionDone = false;
 
 
   showNewActivityMenu = false;
@@ -634,6 +722,15 @@ export class CalendarioComponent implements OnInit {
   indexGolAvanza: number = 0;
   isSelectDisabled: boolean = true;
 
+  /** Slots dinámicos: solo se muestran los formularios que el usuario va agregando */
+  goalSlotsAFavor: number[] = [0];
+  goalSlotsEnContra: number[] = [0];
+  readonly maxGolesSlots: number = 10;
+  readonly goalSlotLabels: string[] = [
+    'CAL.TEXT_136', 'CAL.TEXT_153', 'CAL.TEXT_154', 'CAL.TEXT_155', 'CAL.TEXT_156',
+    'CAL.TEXT_157', 'CAL.TEXT_158', 'CAL.TEXT_159', 'CAL.TEXT_160', 'CAL.TEXT_161'
+  ];
+
   showAlert: boolean = false;
   showAlert2: boolean = false;
   categoryTeam = 0;
@@ -724,6 +821,7 @@ export class CalendarioComponent implements OnInit {
   jugadoresNoConvocados: ConvocatoriaUI[] = [];
   startConvocarotia: ConvocatoriaUI[] = [];
   jugadoresSuplentes: ConvocatoriaUI[] = [];
+  jugadoresLesionados: ConvocatoriaUI[] = [];
   jugadoresTitulares: ConvocatoriaUI[] = [];
 
   mostrarModalConvocatoria = false;
@@ -732,6 +830,8 @@ export class CalendarioComponent implements OnInit {
 
   playersConvo: any[] = [];
   horas: string[] = [];
+  /** Opciones para minutos (quedada y partido): 00, 15, 30, 45 */
+  minutosOpciones: string[] = ['00', '15', '30', '45'];
 
   showConvocados: any = [];
   showNoConvocados: any = [];
@@ -916,13 +1016,116 @@ export class CalendarioComponent implements OnInit {
   agregarEvento(dia: number) { }
 
   mesAnterior() {
+    if (this.vistaCalendario === 'week') {
+      const d = new Date(this.mesActual);
+      d.setDate(d.getDate() - 7);
+      this.mesActual = d;
+      this.generarVistaSemana();
+      return;
+    }
     this.mesActual.setMonth(this.mesActual.getMonth() - 1);
     this.generarCalendarioV2(this.mesActual);
   }
 
   mesSiguiente() {
+    if (this.vistaCalendario === 'week') {
+      const d = new Date(this.mesActual);
+      d.setDate(d.getDate() + 7);
+      this.mesActual = d;
+      this.generarVistaSemana();
+      return;
+    }
     this.mesActual.setMonth(this.mesActual.getMonth() + 1);
     this.generarCalendarioV2(this.mesActual);
+  }
+
+  anioAnterior() {
+    this.anioActual--;
+  }
+
+  anioSiguiente() {
+    this.anioActual++;
+  }
+
+  /** Cambiar a vista año y sincronizar año con mes actual */
+  irAVistaAnio() {
+    this.vistaCalendario = 'year';
+    this.anioActual = this.mesActual.getFullYear();
+  }
+
+  irAVistaMes() {
+    this.vistaCalendario = 'month';
+    this.generarCalendarioV2(this.mesActual);
+  }
+
+  /** Ir a vista semana: semana que contiene mesActual */
+  irAVistaSemana() {
+    this.vistaCalendario = 'week';
+    this.generarVistaSemana();
+  }
+
+  /** Construye semanaActual (lun-dom) que contiene la fecha de referencia */
+  generarVistaSemana(): void {
+    const ref = new Date(this.mesActual);
+    ref.setHours(12, 0, 0, 0);
+    let dayOfWeek = ref.getDay();
+    dayOfWeek = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+    const lunes = new Date(ref);
+    lunes.setDate(ref.getDate() - dayOfWeek);
+    this.semanaActual = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(lunes);
+      d.setDate(lunes.getDate() + i);
+      const daysession =
+        d.getFullYear() +
+        '-' +
+        String(d.getMonth() + 1).padStart(2, '0') +
+        '-' +
+        String(d.getDate()).padStart(2, '0');
+      const training = this.listTraining.find(t => t.daySession === daysession);
+      const match = this.listMatchPreparation.find(m => m.matchDate === daysession);
+      this.semanaActual.push({
+        numero: d.getDate(),
+        daysession,
+        trainingId: training?.trainingSessionId ?? null,
+        trainingVisible: training?.visible ?? 0,
+        matchPreparationId: match?.matchPreparationId ?? null,
+        matchVisible: match?.visible ?? 0,
+        rivalName: match
+          ? match.rivalName?.length > 20
+            ? match.rivalName.substring(0, 20) + '...'
+            : match.rivalName
+          : null,
+        terreno: match?.terreno ?? null
+      });
+    }
+    const domingo = new Date(lunes);
+    domingo.setDate(lunes.getDate() + 6);
+    this.tituloSemana =
+      lunes.getDate() +
+      ' - ' +
+      domingo.getDate() +
+      ' ' +
+      domingo.toLocaleDateString('es-ES', { month: 'short' }) +
+      ' ' +
+      domingo.getFullYear();
+  }
+
+  /** Nombre del mes para vista año (0-11), primera letra en mayúscula */
+  getNombreMes(mesIndex: number): string {
+    const name = new Date(2026, mesIndex, 1).toLocaleDateString('es-ES', { month: 'long' });
+    return name.charAt(0).toUpperCase() + name.slice(1);
+  }
+
+  /** Al elegir un mes en vista año, pasar a mes y generar calendario */
+  seleccionarMesEnVistaAnio(mesIndex: number): void {
+    this.mesActual = new Date(this.anioActual, mesIndex, 1);
+    this.vistaCalendario = 'month';
+    this.generarCalendarioV2(this.mesActual);
+  }
+
+  trackByIndex(index: number): number {
+    return index;
   }
 
   // Método para abrir el modal de creación de equipo
@@ -941,7 +1144,41 @@ export class CalendarioComponent implements OnInit {
     this.match.minutosEmpieza =
       this.match.minutosEmpieza != '' ? this.match.minutosEmpieza : '15';
     this.showModal = true;
+    setTimeout(() => {
+      this.seleccionarPrimerItemDelDia();
+    });
   }
+
+  seleccionarPrimerItemDelDia() {
+
+    const entrenamientos = this.listTraining
+      .filter(t => t.daySession === this.daySession && this.puedeVerEntrenamientoEnLista(t));
+
+    if (entrenamientos.length > 0) {
+      const t = entrenamientos[0];
+
+      this.selectActivity(
+        'entrenamiento',
+        t.trainingSessionId,
+        t
+      );
+      return;
+    }
+
+    const partidos = this.listMatchPreparation
+      .filter(m => m.matchDate === this.daySession && this.puedeVerPartidoEnLista(m));
+
+    if (partidos.length > 0) {
+      const m = partidos[0];
+
+      this.selectActivity(
+        'partido',
+        m.matchPreparationId,
+        m
+      );
+    }
+  }
+
   resetModalState() {
     this.mode = 'empty';
 
@@ -1082,6 +1319,7 @@ export class CalendarioComponent implements OnInit {
             );
             // Lógica para obtener o generar la información del calendario
             this.generarCalendarioV2(this.mesActual);
+            if (this.vistaCalendario === 'week') this.generarVistaSemana();
           } else {
             console.error(
               'La respuesta del servicio no tiene la estructura esperada',
@@ -1268,6 +1506,7 @@ export class CalendarioComponent implements OnInit {
             // this.jugadoresNoConvocados = filtrarPorAsistentes(convocatoria?.noConvocados ?? []);
             this.jugadoresNoConvocados = convocatoria?.noConvocados ?? [];
             this.jugadoresSuplentes = convocatoria?.suplentes ?? [];
+            this.jugadoresLesionados = convocatoria?.lesionados ?? [];
             this.jugadoresTitulares = convocatoria?.titulares ?? [];
 
             if (
@@ -1566,10 +1805,11 @@ export class CalendarioComponent implements OnInit {
                 .subscribe(
                   (resp) => {
                     if (resp.data) {
-                      this.golesAvanzadoAFavor = resp.data.golesAFavor;
-                      this.golesAvanzadoEnContra = resp.data.golesEnContra;
-                      let afavor = this.golesAvanzadoAFavor.length;
-                      let encontra = this.golesAvanzadoEnContra.length;
+                      this.golesAvanzadoAFavor = resp.data.golesAFavor ?? [];
+                      this.golesAvanzadoEnContra = resp.data.golesEnContra ?? [];
+                      this.initGoalSlotsFromData();
+                      const afavor = this.golesAvanzadoAFavor.length;
+                      const encontra = this.golesAvanzadoEnContra.length;
 
                       if (this.golesAvanzadoAFavor.length !== 0) {
                         this.postPartido.golesAFavor = afavor;
@@ -1613,6 +1853,9 @@ export class CalendarioComponent implements OnInit {
 
   cerrarModalPostPartido() {
     this.showModalPostPartido = false;
+    this.goalSlotsAFavor = [0];
+    this.goalSlotsEnContra = [0];
+    this.indexGolAvanza = 0;
     // Limpiar los campos del partido
     this.match = new MatchPreparation({});
     this.postPartido = new PostPartido({});
@@ -2451,6 +2694,49 @@ export class CalendarioComponent implements OnInit {
     }
   }
 
+  /**
+   * Inicializa los slots de formularios según los goles ya guardados (al cargar el modal).
+   */
+  initGoalSlotsFromData(): void {
+    const nAFavor = Math.min(
+      this.maxGolesSlots,
+      Math.max(1, this.golesAvanzadoAFavor.length)
+    );
+    const nEnContra = Math.min(
+      this.maxGolesSlots,
+      Math.max(1, this.golesAvanzadoEnContra.length)
+    );
+    this.goalSlotsAFavor = Array.from({ length: nAFavor }, (_, i) => i);
+    this.goalSlotsEnContra = Array.from({ length: nEnContra }, (_, i) => i);
+  }
+
+  /**
+   * Añade un nuevo formulario de "gol a favor" y lo abre.
+   */
+  addGolFormAFavor(): void {
+    if (this.goalSlotsAFavor.length >= this.maxGolesSlots) return;
+    const newIndex = this.goalSlotsAFavor.length;
+    this.goalSlotsAFavor = [...this.goalSlotsAFavor, newIndex];
+    this.indexGolAvanza = newIndex;
+    this.toggleGolAvanzado(true, newIndex);
+  }
+
+  /**
+   * Añade un nuevo formulario de "gol en contra" y lo abre.
+   */
+  addGolFormEnContra(): void {
+    if (this.goalSlotsEnContra.length >= this.maxGolesSlots) return;
+    const newIndex = this.goalSlotsEnContra.length;
+    this.goalSlotsEnContra = [...this.goalSlotsEnContra, newIndex];
+    this.indexGolAvanza = newIndex;
+    this.toggleGolAvanzado(false, newIndex);
+  }
+
+  /** Devuelve la clave de traducción para la etiqueta "Descripción gol N". */
+  getGoalSlotLabel(index: number): string {
+    return this.goalSlotLabels[index] ?? this.goalSlotLabels[0];
+  }
+
   toggleGolAvanzado(isAFavor: boolean, index: number): void {
     this.indexGolAvanza = index;
     let access = false;
@@ -2565,19 +2851,45 @@ export class CalendarioComponent implements OnInit {
     this.selectedOptionGolTypes = '';
     this.selectedGolTypesCombi = '';
 
+    const indexToRemove = this.indexGolAvanza;
+    const isSaved = gol?.golPostPartidoId != null && gol.golPostPartidoId > 0;
+
+    if (!isSaved) {
+      // Gol no guardado: solo quitar el panel del formulario sin llamar al API
+      if (isAFavor === 0) {
+        const newLength = Math.max(1, this.goalSlotsAFavor.length - 1);
+        this.goalSlotsAFavor = Array.from({ length: newLength }, (_, i) => i);
+        this.indexGolAvanza = Math.min(indexToRemove, newLength - 1);
+        this.toggleGolAvanzado(true, this.indexGolAvanza);
+      } else {
+        const newLength = Math.max(1, this.goalSlotsEnContra.length - 1);
+        this.goalSlotsEnContra = Array.from({ length: newLength }, (_, i) => i);
+        this.indexGolAvanza = Math.min(indexToRemove, newLength - 1);
+        this.toggleGolAvanzado(false, this.indexGolAvanza);
+      }
+      return;
+    }
+
     this.trainingService
       .deleteGolPostPartidoAvanzado(gol.golPostPartidoId, this.postPartidoId)
       .subscribe(
         (resp) => {
           if (resp.data) {
-            this.golesAvanzadoAFavor = resp.data.golesAFavor;
-            this.golesAvanzadoEnContra = resp.data.golesEnContra;
+            this.golesAvanzadoAFavor = resp.data.golesAFavor ?? [];
+            this.golesAvanzadoEnContra = resp.data.golesEnContra ?? [];
             this.postPartido.golesAFavor = this.golesAvanzadoAFavor.length;
             this.postPartido.golesEnContra = this.golesAvanzadoEnContra.length;
 
-            this.borrar();
+            // Actualizar los slots para que el panel desaparezca del formulario
+            const nAFavor = Math.max(1, this.golesAvanzadoAFavor.length);
+            const nEnContra = Math.max(1, this.golesAvanzadoEnContra.length);
+            this.goalSlotsAFavor = Array.from({ length: Math.min(this.maxGolesSlots, nAFavor) }, (_, i) => i);
+            this.goalSlotsEnContra = Array.from({ length: Math.min(this.maxGolesSlots, nEnContra) }, (_, i) => i);
+            const maxIndex = isAFavor === 0 ? nAFavor - 1 : nEnContra - 1;
+            this.indexGolAvanza = Math.min(this.indexGolAvanza, Math.max(0, maxIndex));
+            this.toggleGolAvanzado(isAFavor === 0, this.indexGolAvanza);
 
-            //if (this.golesAvanzadoAFavor.length !== 0 || this.golesAvanzadoEnContra.length !== 0) this.toggleGolAvanzado(true, 0);
+            this.borrar();
           }
         },
         (error) => {
@@ -2643,24 +2955,28 @@ export class CalendarioComponent implements OnInit {
   // Evento para soltar en la zona correspondiente con el ratón (PC)
   onDrop2(event: DragEvent, estado: string) {
     event.preventDefault();
-    const jugadorData = event.dataTransfer?.getData('jugador');
-    if (jugadorData) {
-      const jugador = JSON.parse(jugadorData);
 
-      // Actualiza el estado del jugador
-      this.actualizarEstadoJugador(jugador, estado);
+    const data = event.dataTransfer?.getData('jugador');
+    if (!data) return;
 
-      // Si se suelta en titulares, actualizamos las coordenadas del jugador
-      if (estado === 'titular') {
-        const fieldRect = (event.target as HTMLElement).getBoundingClientRect();
-        jugador.posicion_x = event.clientX - fieldRect.left;
-        jugador.posicion_y = event.clientY - fieldRect.top;
-      }
+    const jugador = JSON.parse(data);
 
-      // Mueve al jugador a la nueva lista
-      this.moverJugador(jugador, estado);
+    // 🔥 elimina de slots y arrays
+    this.removeJugador(jugador);
+
+    if (estado === 'no_convocado') {
+      this.jugadoresNoConvocados.push(jugador);
+    }
+
+    if (estado === 'suplente') {
+      this.jugadoresSuplentes.push(jugador);
+    }
+
+    if (estado === 'lesionado') {
+      this.jugadoresLesionados.push(jugador);
     }
   }
+
   onToggleVisible(event: Event): void {
     const input = event.target as HTMLInputElement | null;
     if (!input) return;
@@ -2731,6 +3047,9 @@ export class CalendarioComponent implements OnInit {
       case 'suplente':
         this.jugadoresSuplentes.push(player);
         break;
+      case 'lesionado':
+        this.jugadoresLesionados.push(player);
+        break;
       case 'titular':
         this.jugadoresTitulares.push(player);
         break;
@@ -2740,21 +3059,40 @@ export class CalendarioComponent implements OnInit {
   resetConvocatoria() {
     this.jugadoresNoConvocados = this.startConvocarotia;
     this.jugadoresSuplentes = [];
+    this.jugadoresLesionados = [];
     this.jugadoresTitulares = [];
     this.guardarConvocatoria();
     this.mostrarModalConvocatoria = false;
   }
 
   removeJugador(jugador: any) {
-    this.jugadoresNoConvocados = this.jugadoresNoConvocados.filter(
-      (j) => j.id !== jugador.id,
-    );
-    this.jugadoresSuplentes = this.jugadoresSuplentes.filter(
-      (j) => j.id !== jugador.id,
-    );
-    this.jugadoresTitulares = this.jugadoresTitulares.filter(
-      (j) => j.id !== jugador.id,
-    );
+    // 🔥 liberar slot SIEMPRE
+    this.liberarSlotJugador(jugador);
+
+    this.jugadoresNoConvocados =
+      this.jugadoresNoConvocados.filter(j => j.id !== jugador.id);
+
+    this.jugadoresSuplentes =
+      this.jugadoresSuplentes.filter(j => j.id !== jugador.id);
+
+    this.jugadoresLesionados =
+      this.jugadoresLesionados.filter(j => j.id !== jugador.id);
+
+    this.jugadoresTitulares =
+      this.jugadoresTitulares.filter(j => j.id !== jugador.id);
+  }
+
+
+  /** Objeto solo con campos que el backend PlayerConvUI acepta (sin confirmacion para no romper deserialización). */
+  private convocatoriaItemToBackend(j: ConvocatoriaUI): { id: number; playerId: number; nombre: string; img: string; posicion_x: any; posicion_y: any } {
+    return {
+      id: j.id,
+      playerId: j.playerId,
+      nombre: j.nombre,
+      img: j.img,
+      posicion_x: j.posicion_x,
+      posicion_y: j.posicion_y,
+    };
   }
 
   guardarConvocatoria() {
@@ -2769,9 +3107,10 @@ export class CalendarioComponent implements OnInit {
     });
 
     const convocatoria = {
-      noConvocados: this.jugadoresNoConvocados,
-      suplentes: this.jugadoresSuplentes,
-      titulares: this.jugadoresTitulares
+      noConvocados: this.jugadoresNoConvocados.map((j) => this.convocatoriaItemToBackend(j)),
+      suplentes: this.jugadoresSuplentes.map((j) => this.convocatoriaItemToBackend(j)),
+      lesionados: this.jugadoresLesionados.map((j) => this.convocatoriaItemToBackend(j)),
+      titulares: this.jugadoresTitulares.map((j) => this.convocatoriaItemToBackend(j)),
     };
 
     this.convocatoriaJSON = JSON.stringify(convocatoria);
@@ -2883,17 +3222,10 @@ export class CalendarioComponent implements OnInit {
 
   preavisoConvocatoria() {
     const convocatoria = {
-      noConvocados: this.jugadoresNoConvocados,
-      suplentes: this.jugadoresSuplentes,
-      titulares: this.jugadoresTitulares.map((j) => ({
-        id: j.id,
-        playerId: j.playerId,
-        nombre: j.nombre,
-        img: j.img,
-        posicion_x: j.posicion_x,
-        posicion_y: j.posicion_y,
-        confirmacion: j.confirmacion,
-      })),
+      noConvocados: this.jugadoresNoConvocados.map((j) => this.convocatoriaItemToBackend(j)),
+      suplentes: this.jugadoresSuplentes.map((j) => this.convocatoriaItemToBackend(j)),
+      lesionados: this.jugadoresLesionados.map((j) => this.convocatoriaItemToBackend(j)),
+      titulares: this.jugadoresTitulares.map((j) => this.convocatoriaItemToBackend(j)),
     };
 
     // Convertir la convocatoria a una cadena JSON
@@ -3138,14 +3470,16 @@ export class CalendarioComponent implements OnInit {
     this.selectedItem = { type, id };
 
     if (type === 'entrenamiento') {
+      this.mode = 'view-entrenamiento';
       this.trainingSession = data;
       this.openEntrenamiento(id, this.daySession);
-      this.mode = 'view-entrenamiento';
+
     }
 
     if (type === 'partido') {
-      this.openPartido(id, this.daySession);
       this.mode = 'view-partido';
+      this.openPartido(id, this.daySession);
+
     }
   }
 
@@ -3158,20 +3492,35 @@ export class CalendarioComponent implements OnInit {
   }
 
   generarSlotsFormacion() {
-  this.slotsFormacion = this.FORMACIONES[this.formacionSeleccionada]
-    .map((s: any) => ({
-      ...s,
-      jugador: null
-    }));
+    this.slotsFormacion = this.FORMACIONES[this.formacionSeleccionada]
+      .map((s: any) => ({
+        ...s,
+        jugador: null
+      }));
 
-  // recolocar titulares ya asignados
-  this.jugadoresTitulares.forEach(j => {
-    if (j.posicion_slot) {
-      const slot = this.slotsFormacion.find(s => s.id === j.posicion_slot);
-      if (slot) slot.jugador = j;
-    }
-  });
-}
+    // recolocar titulares ya asignados
+    this.jugadoresTitulares.forEach(j => {
+      if (j.posicion_slot) {
+        const slot = this.slotsFormacion.find(s => s.id === j.posicion_slot);
+        if (slot) slot.jugador = j;
+      }
+    });
+  }
+  ajustarY(y: number): number {
+    const factor = 0.75; // cuánto se comprime arriba
+    return y * factor + (100 - 100 * factor);
+  }
+  ajustarX(x: number): number {
+    const campoWidth = 70;
+    const paddingCampo = 8;
+
+    const margenExterno = (100 - campoWidth) / 2;
+    const anchoUtil = campoWidth - paddingCampo * 2;
+
+    return margenExterno + paddingCampo + (x * anchoUtil) / 100;
+  }
+
+
 
   onDropSlot(event: DragEvent, slot: any) {
     event.preventDefault();
@@ -3181,27 +3530,41 @@ export class CalendarioComponent implements OnInit {
 
     const jugador = JSON.parse(data);
 
-    // liberar slot anterior
-    this.slotsFormacion.forEach(s => {
-      if (s.jugador?.id === jugador.id) s.jugador = null;
-    });
+    // 🔥 limpia slot anterior
+    this.liberarSlotJugador(jugador);
 
+    // 🔥 limpia listas
     this.removeJugador(jugador);
 
     jugador.posicion_slot = slot.id;
     slot.jugador = jugador;
+
     this.jugadoresTitulares.push(jugador);
   }
+
 
   onTouchEndSlot(slot: any) {
     if (!this.touchJugador || slot.jugador) return;
 
+    this.liberarSlotJugador(this.touchJugador);
     this.removeJugador(this.touchJugador);
+
     this.touchJugador.posicion_slot = slot.id;
     slot.jugador = this.touchJugador;
-    this.jugadoresTitulares.push(this.touchJugador);
 
+    this.jugadoresTitulares.push(this.touchJugador);
     this.touchJugador = null;
   }
+
+  liberarSlotJugador(jugador: any) {
+    this.slotsFormacion.forEach(slot => {
+      if (slot.jugador?.id === jugador.id) {
+        slot.jugador = null;
+      }
+    });
+
+    jugador.posicion_slot = null;
+  }
+
 
 }

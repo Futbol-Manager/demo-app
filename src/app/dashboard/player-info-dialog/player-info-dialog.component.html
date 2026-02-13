@@ -1,0 +1,189 @@
+<div class="player-info-dialog-wrap modal-content-fifa player-info-modal-content">
+  <div class="modal-header modal-header-fifa">
+    <h5 class="modal-title">Información del Jugador</h5>
+    <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrar()"></button>
+  </div>
+  <div class="modal-body modal-body-fifa player-info-modal-body">
+    <div class="player-info-hero">
+      <div class="player-info-hero-inner">
+        <div class="player-info-profile">
+          <ng-container *ngIf="!selectedPlayer?.picturePlayer">
+            <span class="bi bi-person player-info-avatar-placeholder"></span>
+          </ng-container>
+          <ng-container *ngIf="selectedPlayer?.picturePlayer">
+            <div class="player-info-avatar-wrap">
+              <img [src]="imageBaseUrlUser + selectedPlayer.picturePlayer" alt="Jugador" class="player-info-avatar">
+            </div>
+          </ng-container>
+          <h4 class="player-info-name mb-0">{{ selectedPlayer?.nombre }} {{ selectedPlayer?.apellido }}</h4>
+          <ul class="player-info-meta list-unstyled small text-muted mb-0">
+            <li>Edad: {{ edadSeleccionada }} · {{ selectedPlayer?.posicion }} · {{ selectedPlayer?.piernaNatural }}</li>
+          </ul>
+        </div>
+        <div class="player-info-radar player-info-radar-hero">
+          <canvas #radarCanvas></canvas>
+        </div>
+      </div>
+    </div>
+
+    <ul class="nav nav-tabs player-info-tabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button type="button" class="nav-link" [class.active]="infoModalActiveTab === 'personal'" (click)="setInfoModalTab('personal')">
+          <i class="bi bi-person-vcard me-1"></i> Información personal
+        </button>
+      </li>
+      <li class="nav-item" role="presentation" *ngIf="(usuarioActual?.profileType?.profileId ?? 0) === 1">
+        <button type="button" class="nav-link" [class.active]="infoModalActiveTab === 'financiera'" (click)="setInfoModalTab('financiera')">
+          <i class="bi bi-bank me-1"></i> Información financiera
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button type="button" class="nav-link" [class.active]="infoModalActiveTab === 'deportiva'" (click)="setInfoModalTab('deportiva')">
+          <i class="bi bi-graph-up-arrow me-1"></i> Información deportiva
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button type="button" class="nav-link" [class.active]="infoModalActiveTab === 'lesiones'" (click)="setInfoModalTab('lesiones')">
+          <i class="bi bi-heart-pulse me-1"></i> Lesiones
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content player-info-tab-content">
+      <div class="tab-pane" [class.active]="infoModalActiveTab === 'personal'" role="tabpanel">
+        <div class="row g-3">
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Nombre</span><span class="value">{{ selectedPlayer?.nombre }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Apellido</span><span class="value">{{ selectedPlayer?.apellido }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Fecha nacimiento</span><span class="value">{{ selectedPlayer?.fechaDeNacimiento | date }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">DNI/NIE</span><span class="value">{{ selectedPlayer?.dni || '—' }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Teléfono</span><span class="value">{{ selectedPlayer?.telefono || '—' }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Email</span><span class="value">{{ selectedPlayer?.email || '—' }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Nombre camiseta</span><span class="value">{{ selectedPlayer?.nick || '—' }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Nº camiseta</span><span class="value">{{ selectedPlayer?.numero || '—' }}</span></div></div>
+          <div class="col-12"><div class="info-readonly-field"><span class="label">Dirección</span><span class="value">{{ selectedPlayer?.direccion || '—' }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Municipio</span><span class="value">{{ selectedPlayer?.municipio || '—' }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Nacionalidad</span><span class="value">{{ selectedPlayer?.nacionalidad || '—' }}</span></div></div>
+          <div class="col-12"><hr class="my-2"></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Tutor 1 / Padre</span><span class="value">{{ selectedPlayer?.nombrePadre || '—' }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">DNI</span><span class="value">{{ selectedPlayer?.dniPadre || '—' }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Teléfono</span><span class="value">{{ selectedPlayer?.telefonoPadre || '—' }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Email</span><span class="value">{{ selectedPlayer?.emailPadre || '—' }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Tutor 2 / Madre</span><span class="value">{{ selectedPlayer?.nombreMadre || '—' }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">DNI</span><span class="value">{{ selectedPlayer?.dniMadre || '—' }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Teléfono</span><span class="value">{{ selectedPlayer?.telefonoMadre || '—' }}</span></div></div>
+          <div class="col-md-6"><div class="info-readonly-field"><span class="label">Email</span><span class="value">{{ selectedPlayer?.emailMadre || '—' }}</span></div></div>
+        </div>
+      </div>
+
+      <div class="tab-pane" [class.active]="infoModalActiveTab === 'financiera'" role="tabpanel" *ngIf="(usuarioActual?.profileType?.profileId ?? 0) === 1">
+        <div *ngIf="pagosCuotasLoading" class="text-center py-5 text-muted">
+          <span class="spinner-border spinner-border-sm me-2"></span> Cargando movimientos…
+        </div>
+        <div *ngIf="pagosCuotasError" class="alert alert-warning mb-3">No se pudieron cargar los datos de pagos y cuotas.</div>
+        <ng-container *ngIf="!pagosCuotasLoading && !pagosCuotasError && pagosCuotasData">
+          <div class="financiera-progreso-card mb-4">
+            <h3 class="financiera-progreso-title">Progreso</h3>
+            <div class="financiera-progreso-bar-wrap">
+              <div class="financiera-progreso-bar" [style.width.%]="progresoFinancieroPorcentaje"></div>
+            </div>
+            <div class="financiera-progreso-stats">
+              <span class="financiera-progreso-stat"><i class="bi bi-check-circle-fill text-success me-1"></i>Completado {{ pagosCuotasData.totalPagado || '0' }} €</span>
+              <span class="financiera-progreso-stat"><i class="bi bi-clock-fill text-warning me-1"></i>Pendiente {{ pagosCuotasData.pendiente || '0' }} €</span>
+            </div>
+          </div>
+          <div class="financiera-seccion mb-4" *ngIf="pagosCuotasData.obligatorios?.length">
+            <div class="financiera-seccion-header obligatorios">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i><span>Obligatorios</span>
+            </div>
+            <p class="financiera-seccion-count">{{ pagosCuotasData.obligatorios.length }} movimientos</p>
+            <div class="financiera-movimientos">
+              <div class="financiera-movimiento" *ngFor="let m of pagosCuotasData.obligatorios" [class.pagado]="m.pagado === '1'">
+                <i class="bi me-2" [ngClass]="m.pagado === '1' ? 'bi-check-circle-fill text-success' : 'bi-clock-fill text-warning'"></i>
+                <div class="financiera-movimiento-body">
+                  <div class="financiera-movimiento-nombre">{{ m.nombre }}</div>
+                  <div class="financiera-movimiento-meta">Plazo: {{ formatearPlazo(m.plazo) }}</div>
+                  <div class="financiera-movimiento-pagado text-success" *ngIf="m.pagado === '1'">Pagado: {{ m.fechaPago }}</div>
+                </div>
+                <div class="financiera-movimiento-importe">{{ m.importe }} €</div>
+              </div>
+            </div>
+          </div>
+          <div class="financiera-seccion mb-4" *ngIf="pagosCuotasData.noObligatorios?.length">
+            <div class="financiera-seccion-header no-obligatorios">
+              <i class="bi bi-info-circle-fill me-2"></i><span>No obligatorios</span>
+            </div>
+            <p class="financiera-seccion-count">{{ pagosCuotasData.noObligatorios.length }} movimientos</p>
+            <div class="financiera-movimientos">
+              <div class="financiera-movimiento" *ngFor="let m of pagosCuotasData.noObligatorios" [class.pagado]="m.pagado === '1'">
+                <i class="bi me-2" [ngClass]="m.pagado === '1' ? 'bi-check-circle-fill text-success' : 'bi-clock-fill text-warning'"></i>
+                <div class="financiera-movimiento-body">
+                  <div class="financiera-movimiento-nombre">{{ m.nombre }}</div>
+                  <div class="financiera-movimiento-meta">Plazo: {{ formatearPlazo(m.plazo) }}</div>
+                  <div class="financiera-movimiento-pagado text-success" *ngIf="m.pagado === '1'">Pagado: {{ m.fechaPago }}</div>
+                </div>
+                <div class="financiera-movimiento-importe">{{ m.importe }} €</div>
+              </div>
+            </div>
+          </div>
+        </ng-container>
+        <div *ngIf="!pagosCuotasLoading && !pagosCuotasError && !pagosCuotasData" class="text-center py-4 text-muted">No hay datos de pagos disponibles.</div>
+      </div>
+
+      <div class="tab-pane" [class.active]="infoModalActiveTab === 'deportiva'" role="tabpanel">
+        <div class="row mb-3" *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3">
+          <div class="col-12">
+            <div class="player-info-opinion">
+              <strong>Opinión Entrenador:</strong> {{ selectedPlayer?.opinionDelEntrenador || '—' }}
+            </div>
+          </div>
+        </div>
+        <h2 class="modal-section-heading">Datos deportivos</h2>
+        <div class="row g-2 mb-3">
+          <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Posición</span><span class="value">{{ selectedPlayer?.posicion || '—' }}</span></div></div>
+          <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Posición 2</span><span class="value">{{ selectedPlayer?.posicionDos || '—' }}</span></div></div>
+          <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Pierna natural</span><span class="value">{{ selectedPlayer?.piernaNatural || '—' }}</span></div></div>
+          <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Altura (cm)</span><span class="value">{{ selectedPlayer?.altura || '—' }}</span></div></div>
+          <div class="col-6 col-md"><div class="info-readonly-field info-readonly-compact"><span class="label">Peso (Kg)</span><span class="value">{{ selectedPlayer?.peso || '—' }}</span></div></div>
+        </div>
+        <h2 class="modal-section-heading">Estadísticas de partidos</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+          <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Partidos jugados</span><span class="stat-card-value">{{ partidosJugados }}</span></div></div>
+          <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Titularidades</span><span class="stat-card-value">{{ numTitulares }}</span></div></div>
+          <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Minutos jugados</span><span class="stat-card-value">{{ minutosJugados }}</span></div></div>
+          <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Goles</span><span class="stat-card-value">{{ goles }}</span></div></div>
+          <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Tarjetas Amarillas</span><span class="stat-card-value">{{ tarjetasAmarillas }}</span></div></div>
+          <div class="col"><div class="stat-card-pro"><span class="stat-card-label">Tarjetas Rojas</span><span class="stat-card-value">{{ tarjetasRojas }}</span></div></div>
+        </div>
+        <h2 class="modal-section-heading">Asistencia a entrenamientos</h2>
+        <div class="table-responsive">
+          <table class="table table-fifa-pro">
+            <thead>
+              <tr><th>Fecha</th><th>Asistencia</th><th>Retraso</th></tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!listAsistencia?.length"><td colspan="3" class="text-center text-muted py-4">No hay registros</td></tr>
+              <tr *ngFor="let p of listAsistencia">
+                <td>{{ p.fecha }}</td>
+                <td>
+                  <span *ngIf="p.asistencia === 1" class="text-success"><i class="bi bi-check-circle-fill"></i></span>
+                  <span *ngIf="p.asistencia === 0" class="text-danger"><i class="bi bi-x-circle-fill"></i></span>
+                </td>
+                <td>
+                  <span *ngIf="p.retraso === 1" class="text-success"><i class="bi bi-check-circle-fill"></i></span>
+                  <span *ngIf="p.retraso === 0" class="text-danger"><i class="bi bi-x-circle-fill"></i></span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="tab-pane" [class.active]="infoModalActiveTab === 'lesiones'" role="tabpanel">
+        <div class="text-center py-5 text-muted">
+          <i class="bi bi-heart-pulse display-4 opacity-50 d-block mb-3"></i>
+          <p class="mb-0">No hay registros de lesiones para este jugador.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

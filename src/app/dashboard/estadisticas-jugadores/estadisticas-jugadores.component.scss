@@ -1,20 +1,301 @@
-table {
-    width: 100%;
-    /* Ajusta según sea necesario */
-    border-collapse: collapse;
-    /* Para eliminar espacios entre celdas */
+:host {
+  --sphaira-green: #31b270;
+  --sphaira-night: #002c40;
+  --sphaira-ivory: #f4f4f4;
+  --sphaira-card-bg: #ffffff;
+  --sphaira-border: rgba(0, 44, 64, 0.12);
+  --sphaira-shadow: 0 4px 20px rgba(0, 44, 64, 0.08);
+  --sphaira-shadow-hover: 0 8px 28px rgba(0, 44, 64, 0.12);
 }
 
-th,
-td {
-    border: 1px solid black;
-    /* Opcional: para añadir bordes a las celdas */
-    text-align: center;
-    /* Centra horizontalmente */
-    vertical-align: middle;
-    /* Centra verticalmente */
-    padding: 10px;
-    /* Opcional: añade un poco de espacio alrededor del contenido */
-    height: 50px;
-    /* Ajusta la altura según sea necesario */
+/* ========== Volver ========== */
+.back-container {
+  margin-bottom: 0.5rem;
+}
+
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(0, 44, 64, 0.08);
+  color: var(--sphaira-night);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-back-clean i {
+  font-size: 1.1rem;
+}
+
+.btn-back-clean:hover {
+  background: rgba(0, 44, 64, 0.14);
+  transform: translateX(-2px);
+}
+
+/* ========== Página ========== */
+.stats-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+
+.stats-header {
+  margin-bottom: 1.5rem;
+}
+
+.stats-title {
+  color: var(--sphaira-night);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 1rem 0;
+}
+
+/* ========== Card premium ========== */
+.card-pro {
+  background: var(--sphaira-card-bg);
+  border-radius: 16px;
+  border: 1px solid var(--sphaira-border);
+  box-shadow: var(--sphaira-shadow);
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  transition: box-shadow 0.2s ease;
+}
+
+.card-pro:hover {
+  box-shadow: var(--sphaira-shadow-hover);
+}
+
+.card-pro-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--sphaira-border);
+  background: linear-gradient(180deg, rgba(0, 44, 64, 0.03) 0%, transparent 100%);
+}
+
+.card-pro-title {
+  color: var(--sphaira-night);
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+  flex: 1;
+  min-width: 180px;
+}
+
+/* ========== Filtros ========== */
+.stats-filters.card-pro {
+  padding: 1rem 1.5rem;
+}
+
+.stats-filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1.25rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.filter-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--sphaira-night);
+  opacity: 0.85;
+}
+
+.form-select-pro {
+  min-width: 160px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid var(--sphaira-border);
+  background: #fff;
+  color: var(--sphaira-night);
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-select-pro:focus {
+  border-color: var(--sphaira-green);
+  box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.2);
+  outline: none;
+}
+
+/* Toggle Tabla / Gráficas ========== */
+.view-toggle {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--sphaira-border);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--sphaira-night);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn:hover {
+  background: rgba(0, 44, 64, 0.04);
+  border-color: rgba(0, 44, 64, 0.2);
+}
+
+.toggle-btn.active {
+  background: linear-gradient(180deg, rgba(49, 178, 112, 0.2), rgba(49, 178, 112, 0.08));
+  border-color: var(--sphaira-green);
+  color: var(--sphaira-night);
+}
+
+.toggle-btn i {
+  font-size: 1.1rem;
+}
+
+/* ========== Controles DataTable ========== */
+.datatable-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+#dt-length,
+#dt-search {
+  display: flex;
+  align-items: center;
+}
+
+/* ========== Tabla premium ========== */
+.stats-section {
+  margin-top: 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-pro {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table-pro thead {
+  background: var(--sphaira-night);
+  color: #fff;
+}
+
+.table-pro th {
+  padding: 0.75rem 0.6rem;
+  text-align: center;
+  font-weight: 600;
+  white-space: nowrap;
+  border: none;
+}
+
+.table-pro tbody tr {
+  transition: background 0.15s ease;
+}
+
+.table-pro tbody tr:nth-child(even) {
+  background: rgba(0, 44, 64, 0.03);
+}
+
+.table-pro tbody tr:hover {
+  background: rgba(49, 178, 112, 0.08);
+}
+
+.table-pro td {
+  padding: 0.65rem 0.6rem;
+  border-bottom: 1px solid var(--sphaira-border);
+  color: var(--sphaira-night);
+  vertical-align: middle;
+}
+
+.table-pro.text-center th,
+.table-pro.text-center td {
+  text-align: center;
+}
+
+/* ========== Gráfica ========== */
+.chart-card .card-pro-header {
+  flex-wrap: wrap;
+}
+
+.chart-type-select {
+  min-width: 220px;
+}
+
+.chart-container {
+  padding: 1.5rem;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-container canvas {
+  max-height: 420px;
+}
+
+/* ========== Card goles ========== */
+.goals-card .card-pro-header {
+  flex-wrap: wrap;
+}
+
+/* ========== DataTable paginación (contenedor movido por TS) ========== */
+#button_datatable {
+  padding: 0.75rem 1.5rem;
+  border-top: 1px solid var(--sphaira-border);
+  background: rgba(0, 44, 64, 0.02);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Responsive ========== */
+@media (max-width: 768px) {
+  .stats-title {
+    font-size: 1.4rem;
+  }
+
+  .view-toggle {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .toggle-btn {
+    flex: 1;
+  }
+
+  .card-pro-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .table-pro th,
+  .table-pro td {
+    padding: 0.5rem 0.4rem;
+    font-size: 0.8rem;
+  }
 }

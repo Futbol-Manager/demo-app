@@ -1,192 +1,175 @@
-<div class="submenu">
-    <div class="row">
-        <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
-                <i class="bi bi-arrow-left-square-fill"></i>
-                <span class="d-none d-md-inline">Volver</span>
-            </a>
-        </div>
-    </div>
-</div>
-
 <app-publicidad></app-publicidad>
 
-<div *ngIf="datosCargados" class="container">
-    <div class="btn-container mt-3" style="margin-top: 3em;">
-        <div class="row mt-3">
-            <div class="col">
-                <button class="btn btn-custom" (click)="verGraficaPlayers()">
-                    <i class="bi bi-bar-chart-line"></i>
-                </button>
-                <div class="hint">Ver gráficas jugadores</div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-2">
-                <label for="tipoPartidoSelected" class="form-label">Selecciona un equipo</label>
-                <select class="form-control me-2" id="tipoPartidoSelected" name="tipoPartidoSelected"
-                    [(ngModel)]="tipoPartidoSelected" (change)="selectedTipoPartido()">
-                    <option value="Liga">Liga</option>
-                    <option value="Amistoso">Amistoso</option>
-                    <option value="Torneo">Torneo</option>
-                </select>
-            </div>
-        </div>
-    </div>
-
-    <!-- Contenido para el dataTable -->
-    <div class="container mt-4">
-        <h2>Tabla Jugadores</h2>
-        <div class="row justify-content-between div-headdatatable">
-            <div class="col-md-auto mr-auto" id="dt-length">
-                <!-- Contenido para el dt-length -->
-            </div>
-            <div class="col-md-auto ml-auto" id="dt-search">
-            </div>
-        </div>
-        <div style="overflow-x: auto;">
-            <table id="dataTable" class="table table-bordered table-striped text-center">
-                <thead class="table-custom">
-                    <tr>
-                        <th>ID</th>
-                        <th>NOMBRE</th>
-                        <th>POSICION</th>
-                        <th>FECHA_NACIMIENTO</th>
-                        <th>PARTIDOS_JUGADOS</th>
-                        <th>MINUTOS_TOTALES</th>
-                        <th>MEDIA_MINUTOS_PARTIDO</th>
-                        <th>GOLES</th>
-                        <th>MEDIA_GOLES_PARTIDO</th>
-                        <th>ASISTENCIA</th>
-                        <th>GOLES_ASISTENCIAS</th>
-                        <th>MEDIA_ASISTENCIA_PARTIDO</th>
-                        <th>MEDIA_GOLES_ASISTENCIA_PARTIDO</th>
-                        <th>GOLES_PENALTI</th>
-                        <th>GOLES_FALTA</th>
-                        <th>PENALTIS_FALLADOS</th>
-                        <th>TARJETAS_AMARILLAS</th>
-                        <th>TARJETAS_ROJAS</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let player of players; let i = index">
-                        <td>{{ player.playerId }}</td>
-                        <td>{{ player.nombre }}</td>
-                        <td>{{ player.posicion }}</td>
-                        <td>{{ player.fecha }}</td>
-                        <td>{{ player.partidosJugados }} de {{ totalMatchs }}</td>
-                        <td>{{ player.minTotales }}</td>
-                        <td>{{ player.mediaMinPorPartido }}</td>
-                        <td>{{ player.goles }}</td>
-                        <td>{{ player.mediaGolesPorPartido }}</td>
-                        <td>{{ player.asistencias }}</td>
-                        <td>{{ player.golesAsistencias }}</td>
-                        <td>{{ player.mediaAsistPorPartido }}</td>
-                        <td>{{ player.mediaGolesAsistenciasPorPartido }}</td>
-                        <td>{{ player.golesPenalti }}</td>
-                        <td>{{ player.golesFalta }}</td>
-                        <td>{{ player.penaltisFallados }}</td>
-                        <td>{{ player.tarAmarilla }}</td>
-                        <td>{{ player.tarRojas }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <div id="button_datatable">
-    </div>
+<div class="back-container">
+  <button type="button" class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
 </div>
 
-
-
-<!-- aqui las graficas de los jugadores -->
-
-<div *ngIf="graficasPlayers" class="container">
-    <div class="btn-container mt-3" style="margin-top: 3em;">
-        <div class="row mt-3">
-            <div class="col">
-                <button class="btn btn-custom" (click)="verTablaPlayers()">
-                    <i class="bi bi-table"></i>
-                </button>
-                <div class="hint">Ver tabla jugadores</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Contenido para el dataTable -->
-    <div class="container mt-4">
-        <h2>Gráfica Jugadores</h2>
-
-        <div class="row mb-3">
-            <label for="grafica" class="form-label">Selecciona el tipo de gráfica:</label>
-            <select class="form-control" id="selectGrafica" (change)="changeGrafic($event)">
-                <option value="1">Minutos totales</option>
-                <option value="2">Goles totales</option>
-                <option value="3">Asistencias totales</option>
-                <option value="4">Partidos jugados</option>
-                <option value="5">Goles de penalti</option>
-                <option value="6">Penaltis fallados</option>
-                <option value="7">Tarjetas amarillas</option>
-                <option value="8">Tarjetas rojas</option>
+<ng-container *ngIf="datosCargados || graficasPlayers">
+  <div class="stats-page">
+    <!-- Header y filtros -->
+    <header class="stats-header">
+      <h1 class="stats-title">{{ 'ESTADIS_JUGADORES.TITLE' | translate }}</h1>
+      <div class="stats-filters card-pro">
+        <div class="stats-filters-row">
+          <div class="filter-group">
+            <label for="tipoPartidoSelected" class="filter-label">{{ 'ESTADIS_JUGADORES.TIPO_PARTIDO' | translate }}</label>
+            <select class="form-select form-select-pro" id="tipoPartidoSelected" name="tipoPartidoSelected"
+              [(ngModel)]="tipoPartidoSelected" (change)="selectedTipoPartido()">
+              <option value="Liga">{{ 'ESTADIS_JUGADORES.LIGA' | translate }}</option>
+              <option value="Amistoso">{{ 'ESTADIS_JUGADORES.AMISTOSO' | translate }}</option>
+              <option value="Torneo">{{ 'ESTADIS_JUGADORES.TORNEO' | translate }}</option>
             </select>
+          </div>
+          <div class="view-toggle">
+            <button type="button" class="toggle-btn" [class.active]="!graficasPlayers" (click)="verTablaPlayers()">
+              <i class="bi bi-table"></i>
+              <span>{{ 'ESTADIS_JUGADORES.VER_TABLA' | translate }}</span>
+            </button>
+            <button type="button" class="toggle-btn" [class.active]="graficasPlayers" (click)="verGraficaPlayers()">
+              <i class="bi bi-bar-chart-line"></i>
+              <span>{{ 'ESTADIS_JUGADORES.VER_GRAFICAS' | translate }}</span>
+            </button>
+          </div>
         </div>
-        <div class="row mb-3">
-            <div class="scroll: auto">
-                <div class="col-md-12">
-                    <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;"
-                        height="200" id="barChartUnica"></canvas>
-                </div>
-            </div>
-        </div>
+      </div>
+    </header>
 
-        <h2>Goles Jugadores</h2>
-        <div class=" row mb-3">
-            <label for="grafica" class="form-label">Selecciona un jugador:</label>
-            <select class="form-control" id="selectGrafica" (change)="seleccionarIndices($event)">
-                <option value="0">Ver todos</option>
-                <option *ngFor="let player of players" [value]="player.playerId">{{ player.nombre }}
-                </option>
+    <!-- Vista Tabla -->
+    <section *ngIf="datosCargados" class="stats-section">
+      <div class="card-pro table-card">
+        <div class="card-pro-header">
+          <h2 class="card-pro-title">{{ 'ESTADIS_JUGADORES.TABLA_JUGADORES' | translate }}</h2>
+          <div class="datatable-controls">
+            <div id="dt-length"></div>
+            <div id="dt-search"></div>
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table id="dataTable" class="table-pro text-center">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>{{ 'ESTADIS_JUGADORES.NOMBRE' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.POSICION' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.FECHA_NAC' | translate }}</th>
+                <th>PJ</th>
+                <th>{{ 'ESTADIS_JUGADORES.MIN_TOTALES' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.MEDIA_MIN' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.GOLES' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.MEDIA_GOLES' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.ASISTENCIA' | translate }}</th>
+                <th>G+A</th>
+                <th>{{ 'ESTADIS_JUGADORES.MEDIA_ASIST' | translate }}</th>
+                <th>Med. G+A</th>
+                <th>{{ 'ESTADIS_JUGADORES.GOLES_PENALTI' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.GOLES_FALTA' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.PENALTIS_FALLADOS' | translate }}</th>
+                <th>TA</th>
+                <th>TR</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let player of players; let i = index">
+                <td>{{ player.playerId }}</td>
+                <td>{{ player.nombre }}</td>
+                <td>{{ player.posicion }}</td>
+                <td>{{ player.fecha }}</td>
+                <td>{{ player.partidosJugados }} / {{ totalMatchs }}</td>
+                <td>{{ player.minTotales }}</td>
+                <td>{{ player.mediaMinPorPartido }}</td>
+                <td>{{ player.goles }}</td>
+                <td>{{ player.mediaGolesPorPartido }}</td>
+                <td>{{ player.asistencias }}</td>
+                <td>{{ player.golesAsistencias }}</td>
+                <td>{{ player.mediaAsistPorPartido }}</td>
+                <td>{{ player.mediaGolesAsistenciasPorPartido }}</td>
+                <td>{{ player.golesPenalti }}</td>
+                <td>{{ player.golesFalta }}</td>
+                <td>{{ player.penaltisFallados }}</td>
+                <td>{{ player.tarAmarilla }}</td>
+                <td>{{ player.tarRojas }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="button_datatable"></div>
+      </div>
+    </section>
+
+    <!-- Vista Gráficas -->
+    <section *ngIf="graficasPlayers" class="stats-section">
+      <div class="card-pro chart-card">
+        <div class="card-pro-header">
+          <h2 class="card-pro-title">{{ 'ESTADIS_JUGADORES.GRAFICA_JUGADORES' | translate }}</h2>
+          <div class="filter-group chart-type-select">
+            <label for="selectGrafica" class="filter-label">{{ 'ESTADIS_JUGADORES.SELECCIONA_GRAFICA' | translate }}</label>
+            <select class="form-select form-select-pro" id="selectGrafica" (change)="changeGrafic($event)">
+              <option value="1">{{ 'ESTADIS_JUGADORES.MINUTOS_TOTALES' | translate }}</option>
+              <option value="2">{{ 'ESTADIS_JUGADORES.GOLES_TOTALES' | translate }}</option>
+              <option value="3">{{ 'ESTADIS_JUGADORES.ASISTENCIAS_TOTALES' | translate }}</option>
+              <option value="4">{{ 'ESTADIS_JUGADORES.PARTIDOS_JUGADOS' | translate }}</option>
+              <option value="5">{{ 'ESTADIS_JUGADORES.GOLES_PENALTI' | translate }}</option>
+              <option value="6">{{ 'ESTADIS_JUGADORES.PENALTIS_FALLADOS' | translate }}</option>
+              <option value="7">{{ 'ESTADIS_JUGADORES.TARJETAS_AMARILLAS' | translate }}</option>
+              <option value="8">{{ 'ESTADIS_JUGADORES.TARJETAS_ROJAS' | translate }}</option>
             </select>
+          </div>
         </div>
-        <div class=" row mb-3" style="overflow-x: auto;">
-            <table id="dataTableGoles" class="table table-bordered table-striped text-center">
-                <thead class="table-custom">
-                    <tr>
-                        <th>Nº_DE_GOL</th>
-                        <th>GOL_DE</th>
-                        <th>ASISTENCIA_DE</th>
-                        <th>RIVAL</th>
-                        <th>MINUTO</th>
-                        <th>FECHA</th>
-                        <th>CATEGORIA</th>
-                        <th>SUB_CATEGORIA</th>
-                        <th>OPCION</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let player of golesAvanzadoAFavor; let i = index">
-                        <td>{{ i+1 }}</td>
-                        <td>{{ player.nombreGoleador }}</td>
-                        <td>{{ player.nombreAsistente }}</td>
-                        <td>{{ player.postPartido.matchPreparation.rivalName }}</td>
-                        <td>{{ player.minuto }}</td>
-                        <td>{{ player.postPartido.matchPreparation.matchDate }}</td>
-                        <td>{{ player.category }}</td>
-                        <td>{{ player.subCategory }}</td>
-                        <td>{{ player.option }}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="chart-container">
+          <canvas #barChartCanvas id="barChartUnica"></canvas>
         </div>
+      </div>
 
-        <!-- de momento no se usa-->
-        <div class="row">
-            <div style="width: 50em; height: 30em;" class="col-md-12 mb-4">
-                <canvas id="barrasChartMinutos"></canvas>
-            </div>
-            <div style="width: 50em; height: 30em;" class="col-md-6 mb-4">
-                <canvas id="barrasChartGoles"></canvas>
-            </div>
+      <div class="card-pro goals-card">
+        <div class="card-pro-header">
+          <h2 class="card-pro-title">{{ 'ESTADIS_JUGADORES.GOLES_JUGADORES' | translate }}</h2>
+          <div class="filter-group">
+            <label for="selectJugadorGoles" class="filter-label">{{ 'ESTADIS_JUGADORES.SELECCIONA_JUGADOR' | translate }}</label>
+            <select class="form-select form-select-pro" id="selectJugadorGoles" (change)="seleccionarIndices($event)">
+              <option value="0">{{ 'ESTADIS_JUGADORES.VER_TODOS' | translate }}</option>
+              <option *ngFor="let player of players" [value]="player.playerId">{{ player.nombre }}</option>
+            </select>
+          </div>
+          <div class="datatable-controls">
+            <div id="dt-length"></div>
+            <div id="dt-search"></div>
+          </div>
         </div>
-    </div>
-</div>
+        <div class="table-wrapper">
+          <table id="dataTableGoles" class="table-pro text-center">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>{{ 'ESTADIS_JUGADORES.GOL_DE' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.ASISTENCIA_DE' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.RIVAL' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.MINUTO' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.FECHA' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.CATEGORIA' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.SUB_CATEGORIA' | translate }}</th>
+                <th>{{ 'ESTADIS_JUGADORES.OPCION' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let gol of golesAvanzadoAFavor; let i = index">
+                <td>{{ i + 1 }}</td>
+                <td>{{ gol.nombreGoleador }}</td>
+                <td>{{ gol.nombreAsistente }}</td>
+                <td>{{ gol.postPartido?.matchPreparation?.rivalName }}</td>
+                <td>{{ gol.minuto }}</td>
+                <td>{{ gol.postPartido?.matchPreparation?.matchDate }}</td>
+                <td>{{ gol.category }}</td>
+                <td>{{ gol.subCategory }}</td>
+                <td>{{ gol.option }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="button_datatable"></div>
+      </div>
+    </section>
+  </div>
+</ng-container>

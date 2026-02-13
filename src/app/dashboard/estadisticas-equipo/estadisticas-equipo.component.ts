@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
@@ -6,12 +6,15 @@ import { PostPartido } from 'src/app/core/services/models/match.model';
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { HttpClient } from '@angular/common/http';
-import { Chart, ChartType, registerables } from 'chart.js/auto';
+import { Chart, registerables } from 'chart.js/auto';
 import { GolPostPartido } from 'src/app/core/services/team/team.model';
 import { Location } from '@angular/common';
 Chart.register(...registerables);
 import * as $ from 'jquery';
 import 'datatables.net';
+
+const CHART_COLOR_PRIMARY = '#31b270';
+const CHART_COLOR_NIGHT = '#002c40';
 
 interface DatasetIF {
   label: string;
@@ -25,7 +28,7 @@ interface DatasetIF {
   templateUrl: './estadisticas-equipo.component.html',
   styleUrls: ['./estadisticas-equipo.component.scss']
 })
-export class EstadisticasEquipoComponent implements OnInit {
+export class EstadisticasEquipoComponent implements OnInit, OnDestroy {
   datosCargados: boolean = false;
   nombreEquipo: string = '';
   team: any;
@@ -34,6 +37,9 @@ export class EstadisticasEquipoComponent implements OnInit {
   partidosReverse: any[] = [];
   showModalPostPartido: boolean = false;
   postPartido: PostPartido = new PostPartido({});
+
+  private pieChartResultados: Chart | null = null;
+  private lineChartPuntos: Chart | null = null;
 
   resumentotales: any = {
     equipo: '',
@@ -306,13 +312,25 @@ export class EstadisticasEquipoComponent implements OnInit {
     private location: Location) { }
 
   ngOnInit(): void {
-    // Suscribirse a los cambios en los parámetros de la URL
     this.route.params.subscribe(params => {
-      // Obtener el valor de teamId de los parámetros
-      this.teamId = +params['teamId'];  // El + convierte el valor a número
-      console.log('teamId:', this.teamId);
+      this.teamId = +params['teamId'];
     });
     this.cargarNombreEquipo();
+  }
+
+  ngOnDestroy(): void {
+    const charts: (Chart | null)[] = [
+      this.pieChartResultados,
+      this.lineChartPuntos,
+      this.barChartSegunda,
+      this.barChartCuarta,
+      this.barChartQuinta,
+      this.barChartSexta,
+      this.barChartSeptima
+    ];
+    charts.forEach(chart => {
+      if (chart) chart.destroy();
+    });
   }
 
   // Método para navegar a la pantalla de calendario
@@ -621,7 +639,7 @@ export class EstadisticasEquipoComponent implements OnInit {
         text = 'Llegadas con peligro en contra';
         label = 'Nº de llegadas con peligro';
         break;
-      case "1":
+      case "11":
         data = this.partidosReverse.map(partido => partido.penaltisAFavor);
         text = 'Penaltis a favor';
         label = 'Nº de penaltis';
@@ -651,52 +669,58 @@ export class EstadisticasEquipoComponent implements OnInit {
 
   graficaUnica(data: any, text: string, label: string) {
     const canvas = document.getElementById('barChartSegunda') as HTMLCanvasElement;
-    if (!canvas) {
-      console.error('No se encontró el elemento canvas');
-      return;
-    }
-
-    // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
+    if (!canvas) return;
     if (this.barChartSegunda) {
-      this.barChartSegunda.destroy(); // Destruye el gráfico existente
+      this.barChartSegunda.destroy();
+      this.barChartSegunda = null;
     }
-
     const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      console.error('No se pudo obtener el contexto del elemento canvas');
-      return;
-    }
+    if (!ctx) return;
 
-    // Crear arrays de datos y etiquetas desde this.players
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(49, 178, 112, 0.92)');
+    gradient.addColorStop(0.6, 'rgba(49, 178, 112, 0.75)');
+    gradient.addColorStop(1, 'rgba(0, 44, 64, 0.7)');
+
     const labels = this.partidosReverse.map(partido => partido.matchPreparation.rivalName);
-
-    // Asignar colores consistentes basados en el playerId
-    const backgroundColors = this.partidosReverse.map(partido => this.getEquipoColor(partido.postPartidoId, 0.2));
-    const borderColors = this.partidosReverse.map(partido => this.getEquipoColor(partido.postPartidoId, 1));
 
     this.barChartSegunda = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: labels,
+        labels,
         datasets: [{
-          label: label,
-          data: data,
-          backgroundColor: '#22bf63', //backgroundColors,
-          borderColor: '#22bf63', //borderColors,
-          borderWidth: 1
+          label,
+          data,
+          backgroundColor: gradient,
+          borderColor: CHART_COLOR_PRIMARY,
+          borderWidth: 1,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2.2,
         plugins: {
           title: {
             display: true,
-            text: text
-          }
+            text,
+            font: { size: 16, weight: 'bold' },
+            color: CHART_COLOR_NIGHT,
+            padding: { bottom: 16 }
+          },
+          legend: { display: false }
         },
         scales: {
           y: {
-            beginAtZero: true
+            beginAtZero: true,
+            grid: { color: 'rgba(0, 44, 64, 0.08)' },
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 } }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 }, maxRotation: 45, minRotation: 0 }
           }
         }
       }
@@ -704,64 +728,63 @@ export class EstadisticasEquipoComponent implements OnInit {
   }
 
   graficaPrimera() {
-    const ctx = document.getElementById('pieChart') as HTMLCanvasElement;
-    const pieChart = new Chart(ctx, {
+    if (this.pieChartResultados) {
+      this.pieChartResultados.destroy();
+      this.pieChartResultados = null;
+    }
+    const chartLabelsEl = document.getElementById('chartLabels');
+    if (chartLabelsEl) chartLabelsEl.innerHTML = '';
+
+    const canvas = document.getElementById('pieChart') as HTMLCanvasElement;
+    if (!canvas || !canvas.getContext('2d')) return;
+
+    const colors = [
+      'rgba(49, 178, 112, 0.85)',   // victorias - verde
+      'rgba(220, 53, 69, 0.85)',   // derrotas - rojo
+      'rgba(108, 117, 125, 0.85)'  // empates - gris
+    ];
+    const borders = ['rgba(49, 178, 112, 1)', 'rgba(220, 53, 69, 1)', 'rgba(108, 117, 125, 1)'];
+
+    this.pieChartResultados = new Chart(canvas, {
       type: 'pie',
       data: {
         labels: ['Victorias', 'Derrotas', 'Empates'],
         datasets: [{
-          label: 'Dataset',
           data: [this.resumentotales.victorias, this.resumentotales.derrotas, this.resumentotales.empates],
-          backgroundColor: [
-            'rgba(27, 255, 0, 0.5)',
-            'rgba(255, 45, 0, 0.5)',
-            'rgba(169, 169, 169, 0.5)'
-          ],
-          borderColor: [
-            'rgba(27, 255, 0, 1)',
-            'rgba(255, 45, 0, 1)',
-            'rgba(169, 169, 169, 1)'
-          ],
-          borderWidth: 1
+          backgroundColor: colors,
+          borderColor: borders,
+          borderWidth: 2
         }]
       },
       options: {
         responsive: true,
         plugins: {
-          legend: {
-            position: 'top',
-          },
+          legend: { position: 'top' },
           title: {
             display: true,
-            text: 'Resultados de partidos'
+            text: 'Resultados de partidos',
+            font: { size: 16, weight: 'bold' },
+            color: CHART_COLOR_NIGHT,
+            padding: { bottom: 12 }
           }
         }
       }
     });
 
-    // Agregar etiquetas de porcentaje
-    const pieChartData = pieChart.config.data.datasets[0].data;
-    const pieChartLabels = pieChart.config.data.labels;
-
-    pieChartData.forEach((value, index) => {
-      const percent = Math.round(value / pieChartData.reduce((a, b) => a + b, 0) * 100);
-      const label = `${pieChartLabels![index]}: ${percent}%`;
-
-      const div = document.createElement('div');
-      div.textContent = label;
-      const datasets = pieChart.config.data.datasets;
-      if (datasets.length > 0) {
-        const backgroundColor = datasets[0].backgroundColor as string[];
-        if (backgroundColor && backgroundColor[index]) {
-          div.style.color = backgroundColor[index];
-        }
-      }
-
-      div.style.marginBottom = '5px';
-
-      document.getElementById('chartLabels')!.appendChild(div);
-
-    });
+    const pieChartData = this.pieChartResultados.config.data.datasets[0].data;
+    const total = (pieChartData as number[]).reduce((a, b) => a + b, 0);
+    const pieChartLabels = this.pieChartResultados.config.data.labels;
+    if (total > 0 && chartLabelsEl && pieChartLabels) {
+      (pieChartData as number[]).forEach((value, index) => {
+        const percent = Math.round((value / total) * 100);
+        const div = document.createElement('div');
+        div.textContent = `${pieChartLabels[index]}: ${percent}%`;
+        div.style.color = borders[index];
+        div.style.marginBottom = '6px';
+        div.style.fontWeight = '600';
+        chartLabelsEl.appendChild(div);
+      });
+    }
   }
 
   getEquipoColor(index: number, alpha: number): string {
@@ -802,42 +825,63 @@ export class EstadisticasEquipoComponent implements OnInit {
   }
 
   createChart() {
-    let labels: any = [];
-    let points: any = [];
+    if (this.lineChartPuntos) {
+      this.lineChartPuntos.destroy();
+      this.lineChartPuntos = null;
+    }
+    const labels: string[] = [];
+    const points: number[] = [];
     let sum = 0;
-    //for (let index = 0; index < this.partidos.length; index++) {
     for (let index = this.partidos.length - 1; index >= 0; index--) {
       labels.push(this.partidos[index].matchPreparation.rivalName);
-
-      if (this.partidos[index].resultado === 'V') {
-        sum = sum + 3;
-      } else if (this.partidos[index].resultado === 'E') {
-        sum = sum + 1;
-      }
-
+      if (this.partidos[index].resultado === 'V') sum += 3;
+      else if (this.partidos[index].resultado === 'E') sum += 1;
       points.push(sum);
     }
+    const canvas = document.getElementById('myChart') as HTMLCanvasElement;
+    if (!canvas || !canvas.getContext('2d')) return;
+    const ctx = canvas.getContext('2d')!;
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(49, 178, 112, 0.4)');
+    gradient.addColorStop(1, 'rgba(0, 44, 64, 0.1)');
 
-    const data = {
-      labels: labels,
-      datasets: [{
-        label: 'Puntos por partido',
-        backgroundColor: 'rgba(54, 162, 235, 0.5)',
-        borderColor: 'rgb(54, 162, 235)',
-        borderWidth: 1,
-        data: points,
-      }]
-    };
-    const ctx = document.getElementById('myChart') as HTMLCanvasElement;
-    new Chart(ctx, {
+    this.lineChartPuntos = new Chart(ctx, {
       type: 'line',
-      data,
+      data: {
+        labels,
+        datasets: [{
+          label: 'Puntos acumulados',
+          data: points,
+          backgroundColor: gradient,
+          borderColor: CHART_COLOR_PRIMARY,
+          borderWidth: 2,
+          fill: true,
+          tension: 0.3
+        }]
+      },
       options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
+        plugins: {
+          title: {
+            display: true,
+            text: 'Puntos por partido',
+            font: { size: 16, weight: 'bold' },
+            color: CHART_COLOR_NIGHT,
+            padding: { bottom: 12 }
+          },
+          legend: { display: false }
+        },
         scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(0, 44, 64, 0.08)' },
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 } }
+          },
           x: {
-            border: {
-              color: 'red'
-            }
+            grid: { display: false },
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 }, maxRotation: 45, minRotation: 0 }
           }
         }
       }
@@ -1003,19 +1047,29 @@ export class EstadisticasEquipoComponent implements OnInit {
       type: 'bar',
       data: data,
       options: {
+        responsive: true,
+        maintainAspectRatio: true,
         plugins: {
           title: {
             display: true,
-            text: 'Goles a favor'
+            text: 'Goles a favor',
+            font: { size: 16, weight: 'bold' },
+            color: CHART_COLOR_NIGHT,
+            padding: { bottom: 12 }
           },
+          legend: { position: 'top' }
         },
-        responsive: true,
         scales: {
           x: {
             stacked: true,
+            grid: { display: false },
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 }, maxRotation: 45 }
           },
           y: {
-            stacked: true
+            stacked: true,
+            beginAtZero: true,
+            grid: { color: 'rgba(0, 44, 64, 0.08)' },
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 } }
           }
         }
       }
@@ -1158,19 +1212,29 @@ export class EstadisticasEquipoComponent implements OnInit {
       type: 'bar',
       data: data,
       options: {
+        responsive: true,
+        maintainAspectRatio: true,
         plugins: {
           title: {
             display: true,
-            text: 'Goles en contra'
+            text: 'Goles en contra',
+            font: { size: 16, weight: 'bold' },
+            color: CHART_COLOR_NIGHT,
+            padding: { bottom: 12 }
           },
+          legend: { position: 'top' }
         },
-        responsive: true,
         scales: {
           x: {
             stacked: true,
+            grid: { display: false },
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 }, maxRotation: 45 }
           },
           y: {
-            stacked: true
+            stacked: true,
+            beginAtZero: true,
+            grid: { color: 'rgba(0, 44, 64, 0.08)' },
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 } }
           }
         }
       }
@@ -1208,33 +1272,47 @@ export class EstadisticasEquipoComponent implements OnInit {
       goles.push(gol);
     }
 
-    // Asignar colores consistentes basados en el playerId
-    const backgroundColors = this.golesAvanzadoAFavor.map(partido => this.getEquipoColor(partido.golPostPartidoId, 0.2));
-    const borderColors = this.golesAvanzadoAFavor.map(partido => this.getEquipoColor(partido.golPostPartidoId, 1));
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(49, 178, 112, 0.9)');
+    gradient.addColorStop(1, 'rgba(0, 44, 64, 0.75)');
 
     this.barChartSexta = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: labels,
+        labels,
         datasets: [{
           label: 'Nº de goles',
           data: goles,
-          backgroundColor: '#22bf63', //backgroundColors,
-          borderColor: '#22bf63', //borderColors,
-          borderWidth: 1
+          backgroundColor: gradient,
+          borderColor: CHART_COLOR_PRIMARY,
+          borderWidth: 1,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
         plugins: {
           title: {
             display: true,
-            text: 'Goles a Favor'
-          }
+            text: 'Goles a Favor',
+            font: { size: 16, weight: 'bold' },
+            color: CHART_COLOR_NIGHT,
+            padding: { bottom: 12 }
+          },
+          legend: { display: false }
         },
         scales: {
           y: {
-            beginAtZero: true
+            beginAtZero: true,
+            grid: { color: 'rgba(0, 44, 64, 0.08)' },
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 } }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 }, maxRotation: 45, minRotation: 0 }
           }
         }
       }
@@ -1272,33 +1350,47 @@ export class EstadisticasEquipoComponent implements OnInit {
       goles.push(gol);
     }
 
-    // Asignar colores consistentes basados en el playerId
-    const backgroundColors = this.golesAvanzadoEnContra.map(partido => this.getEquipoColor(partido.golPostPartidoId, 0.2));
-    const borderColors = this.golesAvanzadoEnContra.map(partido => this.getEquipoColor(partido.golPostPartidoId, 1));
+    const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+    gradient.addColorStop(0, 'rgba(220, 53, 69, 0.85)');
+    gradient.addColorStop(1, 'rgba(0, 44, 64, 0.7)');
 
     this.barChartSeptima = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: labels,
+        labels,
         datasets: [{
           label: 'Nº de goles',
           data: goles,
-          backgroundColor: '#22bf63', //backgroundColors,
-          borderColor: '#22bf63', //borderColors,
-          borderWidth: 1
+          backgroundColor: gradient,
+          borderColor: '#dc3545',
+          borderWidth: 1,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2,
         plugins: {
           title: {
             display: true,
-            text: 'Goles en Contra'
-          }
+            text: 'Goles en Contra',
+            font: { size: 16, weight: 'bold' },
+            color: CHART_COLOR_NIGHT,
+            padding: { bottom: 12 }
+          },
+          legend: { display: false }
         },
         scales: {
           y: {
-            beginAtZero: true
+            beginAtZero: true,
+            grid: { color: 'rgba(0, 44, 64, 0.08)' },
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 } }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 }, maxRotation: 45, minRotation: 0 }
           }
         }
       }

@@ -243,30 +243,121 @@
 
 /* Evita que la tabla se “encoga” */
 .modern-table {
-  min-width: 1600px;
+  min-width: 1400px;
   width: 100%;
   border-collapse: separate;
   border-spacing: 0 5px;
 }
-.modern-table th,
-.modern-table td {
-  min-width: 125px;
+
+/* Solo la columna NOMBRE es fija al hacer scroll horizontal */
+.modern-table .sticky-col.col-nombre {
+  position: sticky;
+  left: 0;
+  z-index: 5;
+  background: #fff;
+  box-shadow: 2px 0 4px -1px rgba(0, 0, 0, 0.1);
+}
+.modern-table thead th.sticky-col.col-nombre {
+  background-color: #002c40 !important;
+  z-index: 11;
+  box-shadow: 2px 0 4px -1px rgba(0, 0, 0, 0.2);
+  border: none !important;
+  outline: none !important;
+}
+.modern-table tbody td.sticky-col.col-nombre {
+  background: white;
+}
+.modern-table tbody tr:hover td.sticky-col.col-nombre {
+  background: #f8fafc;
 }
 
+/* Anchos de columnas (solo nombre con ancho fijo para sticky; el resto fluye) */
+.col-id { min-width: 52px; width: 52px; }
+.col-nombre { min-width: 200px; width: 200px; }
+.col-team { min-width: 140px; }
+.col-shirt { min-width: 90px; }
+.col-num { min-width: 70px; }
+
+/* Cabecera uniforme: mismo azul en todas las celdas, sin barras verdes ni bordes raros */
+.modern-table thead th {
+  background-color: #002c40 !important;
+  border: none !important;
+  outline: none !important;
+}
+.modern-table thead th::before,
+.modern-table thead th::after {
+  display: none !important;
+}
+.modern-table thead th.sorting_asc,
+.modern-table thead th.sorting_desc,
+.modern-table thead th.sorting,
+.modern-table thead th.order-column {
+  background-color: #002c40 !important;
+}
+/* Sombra solo en el borde derecho de la columna nombre fija */
+.modern-table thead th.sticky-col.col-nombre {
+  box-shadow: 2px 0 4px -1px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Columna nombre: texto completo visible (sin cortar) */
+.modern-table td.col-nombre {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  text-align: left;
+  padding: 0.5rem 0.75rem;
+}
+.modern-table td.col-nombre .btn-link-name {
+  display: inline-block;
+  max-width: 100%;
+  word-break: break-word;
+  line-height: 1.35;
+}
+
+/* Nombre clickeable (abre modal info jugador) */
+.btn-link-name {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #0fa3e8;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-align: left;
+}
+.btn-link-name:hover {
+  color: #002c40;
+}
+
+.modern-table th,
+.modern-table td {
+  min-width: 92px;
+}
+.modern-table th.sticky-col,
+.modern-table td.sticky-col {
+  min-width: auto;
+}
 
 .modern-table thead th {
   font-size: 0.9rem;
-  background-color: #002c40;
+  background-color: #002c40 !important;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #ffffff;
-  border: none;
+  border: none !important;
+  outline: none !important;
   padding: 0.75rem 1rem 1rem;
   text-align: center;
   position: sticky;
   top: 0;
   z-index: 10;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+.modern-table thead th.sorting_asc,
+.modern-table thead th.sorting_desc,
+.modern-table thead th.sorting {
+  background-color: #002c40 !important;
 }
 
 .modern-table tbody tr {
@@ -277,9 +368,21 @@
 
 .modern-table tbody td {
   border: none;
-  padding: 0.85rem;
+  padding: 0.5rem 0.6rem;
   text-align: center;
+  font-size: 0.8rem;
+}
+.modern-table tbody td.sticky-col {
+  padding: 0.5rem 0.75rem;
   font-size: 0.85rem;
+}
+.modern-table thead th {
+  font-size: 0.75rem;
+  padding: 0.5rem 0.4rem;
+}
+.modern-table thead th.sticky-col {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.8rem;
 }
 
 

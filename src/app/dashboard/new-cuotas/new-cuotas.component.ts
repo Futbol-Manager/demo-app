@@ -7,6 +7,10 @@ import { ClubService } from 'src/app/core/services/club/club.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
+import { MatDialog } from '@angular/material/dialog';
+import { PlayerInfoDialogComponent, PlayerInfoDialogData } from '../player-info-dialog/player-info-dialog.component';
+import { combineLatest } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-cuotas',
@@ -108,19 +112,11 @@ export class NewCuotasComponent implements OnInit {
     private clubService: ClubService,
     private teamService: TeamService,
     private translate: TranslateService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
-    this.loginService.usuarioActual.subscribe((user) => {
-      // Suscribirse a los cambios en los parámetros de la URL
-      this.route.params.subscribe((params) => {
-        // Obtener el valor de clubId de los parámetros
-        this.clubId = +params['clubId']; // El + convierte el valor a número
-        //console.log('clubId:', this.clubId);
-      });
-    });
-
     if (
       localStorage.getItem('temporada') != null &&
       localStorage.getItem('temporada') != undefined
@@ -128,29 +124,69 @@ export class NewCuotasComponent implements OnInit {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
 
-    this.loadTabla();
+    combineLatest([
+      this.route.params.pipe(take(1)),
+      this.loginService.usuarioActual.pipe(filter((u) => !!u), take(1)),
+    ]).subscribe(([params]) => {
+      this.clubId = +params['clubId'];
+
+      const cached = this.clubService.getNewCuotasCache(this.clubId, this.temporadaStoredValue);
+      if (cached?.listaPlayers?.length) {
+        this.listaPlayers = [...cached.listaPlayers];
+        this.listaPlayersFiltrados = [...this.listaPlayers];
+        this.isLoading = false;
+      }
+
+      this.loadTabla();
+    });
   }
 
   loadTabla() {
     this.isLoading = true;
     this.clubService
       .getListPlayersPagosClub(this.clubId, this.temporadaStoredValue)
-      .subscribe(
-        (response: Response) => {
-          console.log(response.data);
-          // eliminar duplicados por playerId
+      .subscribe({
+        next: (response: Response) => {
           const uniquePlayers = Array.from(
             new Map(response.data.map((p: any) => [p.playerId, p])).values()
           );
-
           this.listaPlayers = uniquePlayers;
           this.listaPlayersFiltrados = [...this.listaPlayers];
+          this.clubService.setNewCuotasCache(this.clubId, this.temporadaStoredValue, {
+            listaPlayers: this.listaPlayers,
+          });
+          this.enrichPlayersWithTeamId();
           this.isLoading = false;
         },
-        (error) => {
+        error: (error) => {
           console.error('Error al cargar el listado de equipos', error);
+          this.isLoading = false;
+        },
+      });
+  }
+
+  /** Asegura que cada jugador tenga teamId (para navegar a Ver información). Si la API de pagos no lo devuelve, se obtiene del listado por club. */
+  private enrichPlayersWithTeamId(): void {
+    const sinTeamId = this.listaPlayers.filter((p: any) => p.teamId == null || p.teamId === undefined);
+    if (sinTeamId.length === 0) return;
+    this.clubService
+      .getListJugadoresByClubForTemp(this.clubId, this.temporadaStoredValue)
+      .subscribe((res: Response) => {
+        if (!res?.data?.teams) return;
+        const mapPlayerToTeamId: Record<number, number> = {};
+        for (const team of res.data.teams) {
+          const tid = team.teamId;
+          for (const pl of team.players || []) {
+            if (pl.playerId != null) mapPlayerToTeamId[pl.playerId] = tid;
+          }
         }
-      );
+        this.listaPlayers.forEach((p: any) => {
+          if ((p.teamId == null || p.teamId === undefined) && mapPlayerToTeamId[p.playerId] != null) {
+            p.teamId = mapPlayerToTeamId[p.playerId];
+          }
+        });
+        this.listaPlayersFiltrados = [...this.listaPlayers];
+      });
   }
   calcularProgreso(player: any): number {
     if (!player.totalAPagar || player.totalAPagar === 0) {
@@ -195,6 +231,24 @@ export class NewCuotasComponent implements OnInit {
     this.paginaActual = 1;
   }
 
+  /** Abre el modal de ver información del jugador en esta misma página con la pestaña Información financiera. */
+  abrirModalInfoJugador(player: any): void {
+    const teamId = player.teamId;
+    if (teamId == null) {
+      this.toastr.warning(this.translate.instant('CUOTAS.NO_TEAM') || 'Sin equipo asignado');
+      return;
+    }
+    const data: PlayerInfoDialogData = { player, teamId, initialTab: 'financiera' };
+    this.dialog.open(PlayerInfoDialogComponent, {
+      data,
+      width: '95%',
+      maxWidth: '900px',
+      maxHeight: '90vh',
+      panelClass: 'player-info-dialog-panel',
+      backdropClass: 'player-info-dialog-backdrop',
+    });
+  }
+
   resetPagosPlayers() {
     this.isLoading = true;
     this.clubService
@@ -219,8 +273,8 @@ export class NewCuotasComponent implements OnInit {
     const texto = this.filtro.toLowerCase();
     this.listaPlayersFiltrados = this.listaPlayers.filter(
       (p) =>
-        `${p.nombre} ${p.apellido}`.toLowerCase().includes(texto) ||
-        p.nameTeam.toLowerCase().includes(texto)
+        `${p.nombre || ''} ${p.apellido || ''}`.toLowerCase().includes(texto) ||
+        (p.nameTeam && p.nameTeam.toLowerCase().includes(texto))
     );
   }
 

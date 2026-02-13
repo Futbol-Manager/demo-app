@@ -1,8 +1,7 @@
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import { PostPartido } from 'src/app/core/services/models/match.model';
 import { PlayerEstadistica } from 'src/app/core/services/player/player.model';
 import * as $ from 'jquery';
 import 'datatables.net';
@@ -12,12 +11,17 @@ import { TrainingService } from 'src/app/core/services/training/training.service
 import { Location } from '@angular/common';
 Chart.register(...registerables);
 
+const CHART_COLOR_PRIMARY = '#31b270';
+const CHART_COLOR_NIGHT = '#002c40';
+
 @Component({
   selector: 'app-estadisticas-jugadores',
   templateUrl: './estadisticas-jugadores.component.html',
   styleUrls: ['./estadisticas-jugadores.component.scss']
 })
-export class EstadisticasJugadoresComponent implements OnInit {
+export class EstadisticasJugadoresComponent implements OnInit, OnDestroy {
+
+  @ViewChild('barChartCanvas') barChartCanvasRef: ElementRef<HTMLCanvasElement> | null = null;
 
   datosCargados: boolean = false;
   graficasPlayers: boolean = false;
@@ -43,13 +47,18 @@ export class EstadisticasJugadoresComponent implements OnInit {
     private location: Location) { }
 
   ngOnInit(): void {
-    // Suscribirse a los cambios en los parámetros de la URL
     this.route.params.subscribe(params => {
-      // Obtener el valor de teamId de los parámetros
-      this.teamId = +params['teamId'];  // El + convierte el valor a número
-      console.log('teamId:', this.teamId);
+      this.teamId = +params['teamId'];
     });
     this.cargarTablaJugadores('Liga');
+  }
+
+  ngOnDestroy(): void {
+    [this.barChartMinutos, this.barChartGoles, this.barChartUnica].forEach(chart => {
+      if (chart) {
+        chart.destroy();
+      }
+    });
   }
 
   // Método para navegar a la pantalla de calendario
@@ -420,53 +429,72 @@ export class EstadisticasJugadoresComponent implements OnInit {
   }
 
   graficaUnica(data: any, text: string, label: string) {
-    const canvas = document.getElementById('barChartUnica') as HTMLCanvasElement;
+    const canvas = (this.barChartCanvasRef?.nativeElement ?? document.getElementById('barChartUnica')) as HTMLCanvasElement;
     if (!canvas) {
-      console.error('No se encontró el elemento canvas');
       return;
     }
 
-    // Antes de crear el nuevo gráfico, destruye el gráfico existente si es necesario
     if (this.barChartUnica) {
-      this.barChartUnica.destroy(); // Destruye el gráfico existente
+      this.barChartUnica.destroy();
+      this.barChartUnica = null;
     }
 
     const ctx = canvas.getContext('2d');
     if (!ctx) {
-      console.error('No se pudo obtener el contexto del elemento canvas');
       return;
     }
 
-    // Crear arrays de datos y etiquetas desde this.players
-    const labels = this.players.map(player => player.nombre);
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(49, 178, 112, 0.92)');
+    gradient.addColorStop(0.6, 'rgba(49, 178, 112, 0.75)');
+    gradient.addColorStop(1, 'rgba(0, 44, 64, 0.7)');
 
-    // Asignar colores consistentes basados en el playerId
-    const backgroundColors = this.players.map(player => this.getPlayerColor(player.playerId, 0.2));
-    const borderColors = this.players.map(player => this.getPlayerColor(player.playerId, 1));
+    const labels = this.players.map(player => player.nombre);
 
     this.barChartUnica = new Chart(ctx, {
       type: 'bar',
       data: {
-        labels: labels,
+        labels,
         datasets: [{
-          label: label,
-          data: data,
-          backgroundColor: '#22bf63', //backgroundColors,
-          borderColor: '#22bf63',//borderColors,
-          borderWidth: 1
+          label,
+          data,
+          backgroundColor: gradient,
+          borderColor: CHART_COLOR_PRIMARY,
+          borderWidth: 1,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: true,
+        aspectRatio: 2.2,
         plugins: {
           title: {
             display: true,
-            text: text
+            text,
+            font: { size: 16, weight: 'bold' },
+            color: CHART_COLOR_NIGHT,
+            padding: { bottom: 16 }
+          },
+          legend: {
+            display: false
           }
         },
         scales: {
           y: {
-            beginAtZero: true
+            beginAtZero: true,
+            grid: { color: 'rgba(0, 44, 64, 0.08)' },
+            ticks: { color: CHART_COLOR_NIGHT, font: { size: 11 } }
+          },
+          x: {
+            grid: { display: false },
+            ticks: {
+              color: CHART_COLOR_NIGHT,
+              font: { size: 11 },
+              maxRotation: 45,
+              minRotation: 0
+            }
           }
         }
       }

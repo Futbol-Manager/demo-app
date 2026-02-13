@@ -1,382 +1,333 @@
-<div class="submenu">
-    <div class="row">
-        <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
-                <i class="bi bi-arrow-left-circle"></i>
-                <span class="d-none d-md-inline">Volver</span>
-            </a>
-        </div>
-    </div>
-</div>
-
 <app-publicidad></app-publicidad>
 
-<div *ngIf="datosCargados" class="container">
-    <div class="btn-container mt-3" style="margin-top: 3em;">
-        <div class="row mt-3">
-            <div class="col">
-                <button class="btn btn-custom" (click)="verGraficaEquipo()">
-                    <i class="bi bi-bar-chart-line"></i>
-                </button>
-                <div class="hint">Ver gráficas Equipo</div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-2">
-                <label for="tipoPartidoSelected" class="form-label">Selecciona un equipo</label>
-                <select class="form-control me-2" id="tipoPartidoSelected" name="tipoPartidoSelected"
-                    [(ngModel)]="tipoPartidoSelected" (change)="selectedTipoPartido()">
-                    <option value="Liga">Liga</option>
-                    <option value="Amistoso">Amistoso</option>
-                    <option value="Torneo">Torneo</option>
-                </select>
-            </div>
-        </div>
-    </div>
+<div class="back-container">
+  <button type="button" class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
 
-    <div style="margin-top: 3em; overflow-x: auto; text-align: center;">
-        <h2>Tabla de Resumen</h2>
-        <table class="table table-bordered table-striped">
-            <thead class="table-custom">
-                <tr>
-                    <th>Equipo</th>
-                    <th>Partidos</th>
-                    <th>Puntos</th>
-                    <th>Victorias</th>
-                    <th>Empates</th>
-                    <th>Derrotas</th>
-                    <th>GF</th>
-                    <th>GC</th>
-                    <th>DG</th>
-                    <th>5 Últimos</th>
-                </tr>
+<ng-container *ngIf="datosCargados || graficasEquipo">
+  <div class="stats-page">
+    <header class="stats-header">
+      <h1 class="stats-title">{{ nombreEquipo }} – {{ 'ESTADIS_EQUIPO.PAGE_TITLE' | translate }}</h1>
+      <div class="stats-filters card-pro">
+        <div class="stats-filters-row">
+          <div class="filter-group">
+            <label for="tipoPartidoSelected" class="filter-label">{{ 'ESTADIS_EQUIPO.TIPO_PARTIDO' | translate }}</label>
+            <select class="form-select form-select-pro" id="tipoPartidoSelected" name="tipoPartidoSelected"
+              [(ngModel)]="tipoPartidoSelected" (change)="selectedTipoPartido()">
+              <option value="Liga">{{ 'ESTADIS_EQUIPO.LIGA' | translate }}</option>
+              <option value="Amistoso">{{ 'ESTADIS_EQUIPO.AMISTOSO' | translate }}</option>
+              <option value="Torneo">{{ 'ESTADIS_EQUIPO.TORNEO' | translate }}</option>
+            </select>
+          </div>
+          <div class="view-toggle">
+            <button type="button" class="toggle-btn" [class.active]="!graficasEquipo" (click)="verTablaPlayers()">
+              <i class="bi bi-table"></i>
+              <span>{{ 'ESTADIS_EQUIPO.VER_TABLA' | translate }}</span>
+            </button>
+            <button type="button" class="toggle-btn" [class.active]="graficasEquipo" (click)="verGraficaEquipo()">
+              <i class="bi bi-bar-chart-line"></i>
+              <span>{{ 'ESTADIS_EQUIPO.VER_GRAFICAS' | translate }}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Vista Tabla -->
+    <section *ngIf="datosCargados" class="stats-section">
+      <div class="card-pro table-card">
+        <div class="card-pro-header">
+          <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.TITLE' | translate }}</h2>
+        </div>
+        <div class="table-wrapper">
+          <table class="table-pro text-center">
+            <thead>
+              <tr>
+                <th>{{ 'ESTADIS_EQUIPO.TABLE.TEAM' | translate }}</th>
+                <th>{{ 'ESTADIS_EQUIPO.TABLE.PJ' | translate }}</th>
+                <th>{{ 'ESTADIS_EQUIPO.TABLE.PTS' | translate }}</th>
+                <th>{{ 'ESTADIS_EQUIPO.TABLE.W' | translate }}</th>
+                <th>{{ 'ESTADIS_EQUIPO.TABLE.D' | translate }}</th>
+                <th>{{ 'ESTADIS_EQUIPO.TABLE.L' | translate }}</th>
+                <th>{{ 'ESTADIS_EQUIPO.TABLE.GF' | translate }}</th>
+                <th>{{ 'ESTADIS_EQUIPO.TABLE.GA' | translate }}</th>
+                <th>{{ 'ESTADIS_EQUIPO.TABLE.DG' | translate }}</th>
+                <th>{{ 'ESTADIS_EQUIPO.TABLE.LAST' | translate }}</th>
+              </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>{{ resumentotales.equipo }}</td>
-                    <td>{{ resumentotales.partidos }}</td>
-                    <td>{{ resumentotales.puntos }}</td>
-                    <td>{{ resumentotales.victorias }}</td>
-                    <td>{{ resumentotales.empates }}</td>
-                    <td>{{ resumentotales.derrotas }}</td>
-                    <td>{{ resumentotales.gf }}</td>
-                    <td>{{ resumentotales.gc }}</td>
-                    <td>{{ resumentotales.dg }}</td>
-                    <td>
-                        <span *ngFor="let resultado of resumentotales.ultimos">
-                            {{ getIcono(resultado) }}
-                        </span>
-                    </td>
-                </tr>
+              <tr>
+                <td>{{ resumentotales.equipo }}</td>
+                <td>{{ resumentotales.partidos }}</td>
+                <td>{{ resumentotales.puntos }}</td>
+                <td>{{ resumentotales.victorias }}</td>
+                <td>{{ resumentotales.empates }}</td>
+                <td>{{ resumentotales.derrotas }}</td>
+                <td>{{ resumentotales.gf }}</td>
+                <td>{{ resumentotales.gc }}</td>
+                <td>{{ resumentotales.dg }}</td>
+                <td>
+                  <span *ngFor="let resultado of resumentotales.ultimos">{{ getIcono(resultado) }}</span>
+                </td>
+              </tr>
             </tbody>
-        </table>
-    </div>
-
-    <!-- Contenido para el dataTable -->
-    <div class="container mt-4">
-        <h2>Partidos</h2>
-        <div class="row justify-content-between div-headdatatable">
-            <div class="col-md-auto mr-auto" id="dt-length">
-                <!-- Contenido para el dt-length -->
-            </div>
-            <div class="col-md-auto ml-auto" id="dt-search">
-            </div>
+          </table>
         </div>
-        <div style="margin-top: 3em; overflow-x: auto; text-align: center;">
-            <table id="dataTable" class="table table-bordered table-striped">
-                <thead class="table-custom">
-                    <tr>
-                        <th>FECHA</th>
-                        <!--  <th>Partido ID</th> -->
-                        <th>NOMBRE_RIVAL</th>
-                        <th>RESULTADO</th>
-                        <th>GOLES_FAVOR</th>
-                        <th>GOLES_CONTRA</th>
-                        <th>DISPAROS_FAVOR</th>
-                        <th>DISPAROS_CONTRA</th>
-                        <th>FALTAS_FAVOR</th>
-                        <th>FALTAS_CONTRA</th>
-                        <th>CORNER_FAVOR</th>
-                        <th>CORNER_CONTRA</th>
-                        <th>RECUPERACIONES</th>
-                        <th>PERDIDAS</th>
-                        <th>TARJETAS_AMARILLAS</th>
-                        <th>TARJETAS_ROJAS</th>
-                        <th title="Llegadas con peligro a favor">LLEGADAS_FAVOR</th>
-                        <th title="Llegadas con peligro en contra">LLEGADAS_CONTRA</th>
-                        <th>PENALTIS_FAVOR</th>
-                        <th>PENALTIS_CONTRA</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let partido of partidos; let i = index">
-                        <td>{{ partido.matchPreparation.matchDate }}</td>
-                        <!-- <td>{{ partido.postPartidoId }}</td> -->
-                        <td>
-                            <div class="simular-enlace" (click)="openInfoPostPartido(partido.postPartidoId)">
-                                {{ partido.matchPreparation.rivalName }}
-                            </div>
+      </div>
 
-                        </td>
-                        <td>
-                            {{ getIconoTerreno(partido.matchPreparation.terreno) }}
-                             -
-                            {{ getIcono(partido.resultado) }}
-                        </td>
-                        <td>{{ partido.golesAFavor }}</td>
-                        <td>{{ partido.golesEnContra }}</td>
-                        <td>{{ partido.disparosAFavor }}</td>
-                        <td>{{ partido.disparosEnContra }}</td>
-                        <td>{{ partido.faltasRecibidas }}</td>
-                        <td>{{ partido.faltasCometidas }}</td>
-                        <td>{{ partido.cornersAFavor }}</td>
-                        <td>{{ partido.cornersEnContra }}</td>
-                        <td>{{ partido.recuperaciones }}</td>
-                        <td>{{ partido.perdidas }}</td>
-                        <td>{{ partido.tarjetasAmarillas }}</td>
-                        <td>{{ partido.tarjetasRojas }}</td>
-                        <td>{{ partido.llegadasPeligroAFavor }}</td>
-                        <td>{{ partido.llegadasPeligroEnContra }}</td>
-                        <td>{{ partido.penaltisAFavor }}</td>
-                        <td>{{ partido.penaltisEnContra }}</td>
-                    </tr>
-                </tbody>
-            </table>
+      <div class="card-pro table-card">
+        <div class="card-pro-header">
+          <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.PARTIDOS' | translate }}</h2>
+          <div class="datatable-controls">
+            <div id="dt-length"></div>
+            <div id="dt-search"></div>
+          </div>
         </div>
-    </div>
-    <div id="button_datatable">
-    </div>
-</div>
-
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPostPartido}">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Información Post Partido</h5>
-                <button type="button" class="btn-close" aria-label="Close"
-                    (click)="cerrarModalInfoPostPartido()"></button>
-            </div>
-            <div class="modal-body">
-                <h6 class="mt-0">Instrucciones</h6>
-                <p>Aquí puedes ver toda la información del post partido.</p>
-                <hr>
-                <div class="mb-3 d-flex">
-                    <div class="col-6">
-                        <label class="form-label">Goles a favor:</label>
-                        <div class="form-control">{{ postPartido.golesAFavor }}</div>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label">Goles en contra:</label>
-                        <div class="form-control">{{ postPartido.golesEnContra }}</div>
-                    </div>
-                </div>
-                <div class="mb-3 d-flex">
-                    <div class="col-6">
-                        <label class="form-label">Resultado:</label>
-                        <div class="form-control">{{ postPartido.resultado }}</div>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label">Paradas del portero:</label>
-                        <div class="form-control">{{ postPartido.paradasPortero }}</div>
-                    </div>
-                </div>
-                <div class="mb-3 d-flex">
-                    <div class="col-6">
-                        <label class="form-label">Disparos a favor:</label>
-                        <div class="form-control">{{ postPartido.disparosAFavor }}</div>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label">Disparos en contra:</label>
-                        <div class="form-control">{{ postPartido.disparosEnContra }}</div>
-                    </div>
-                </div>
-                <div class="mb-3 d-flex">
-                    <div class="col-6">
-                        <label class="form-label">Faltas cometidas:</label>
-                        <div class="form-control">{{ postPartido.faltasCometidas }}</div>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label">Faltas recibidas:</label>
-                        <div class="form-control">{{ postPartido.faltasRecibidas }}</div>
-                    </div>
-                </div>
-                <div class="mb-3 d-flex">
-                    <div class="col-6">
-                        <label class="form-label">Córneres a favor:</label>
-                        <div class="form-control">{{ postPartido.cornersAFavor }}</div>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label">Córneres en contra:</label>
-                        <div class="form-control">{{ postPartido.cornersEnContra }}</div>
-                    </div>
-                </div>
-                <div class="mb-3 d-flex">
-                    <div class="col-6">
-                        <label class="form-label">Penaltis a favor:</label>
-                        <div class="form-control">{{ postPartido.penaltisAFavor }}</div>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label">Penaltis en contra:</label>
-                        <div class="form-control">{{ postPartido.penaltisEnContra }}</div>
-                    </div>
-                </div>
-                <div class="mb-3 d-flex">
-                    <div class="col-6">
-                        <label class="form-label">Recuperaciones:</label>
-                        <div class="form-control">{{ postPartido.recuperaciones }}</div>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label">Pérdidas:</label>
-                        <div class="form-control">{{ postPartido.perdidas }}</div>
-                    </div>
-                </div>
-                <div class="mb-3 d-flex">
-                    <div class="col-6">
-                        <label class="form-label">Tarjetas Amarillas:</label>
-                        <div class="form-control">{{ postPartido.tarjetasAmarillas }}</div>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label">Tarjetas Rojas:</label>
-                        <div class="form-control">{{ postPartido.tarjetasRojas }}</div>
-                    </div>
-                </div>
-                <div class="mb-3 d-flex">
-                    <div class="col-6">
-                        <label class="form-label">Llegadas con peligro a favor:</label>
-                        <div class="form-control">{{ postPartido.llegadasPeligroAFavor }}</div>
-                    </div>
-                    <div class="col-6">
-                        <label class="form-label">Llegadas con peligro en contra:</label>
-                        <div class="form-control">{{ postPartido.llegadasPeligroEnContra }}</div>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Anotaciones:</label>
-                    <textarea class="form-control" rows="5" readonly>{{ postPartido.anotaciones }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Video YouTube:</label>
-                    <textarea class="form-control" rows="3" readonly>{{ postPartido.video }}</textarea>
-                </div>
-                <div class="mb-3">
-                    <button type="button" class="btn btn-primary float-end"
-                        (click)="cerrarModalInfoPostPartido()">Cerrar</button>
-                </div>
-            </div>
-
+        <div class="table-wrapper">
+          <table id="dataTable" class="table-pro text-center">
+            <thead>
+              <tr>
+                <th>{{ 'ESTADIS_EQUIPO.MODAL.DATE' | translate }}</th>
+                <th>{{ 'ESTADIS_EQUIPO.MODAL.RIVAL' | translate }}</th>
+                <th>{{ 'ESTADIS_EQUIPO.MODAL.RESULT' | translate }}</th>
+                <th>GF</th>
+                <th>GC</th>
+                <th>DF</th>
+                <th>DC</th>
+                <th>FF</th>
+                <th>FC</th>
+                <th>CF</th>
+                <th>CC</th>
+                <th>Rec.</th>
+                <th>Pérd.</th>
+                <th>TA</th>
+                <th>TR</th>
+                <th>Lleg.F</th>
+                <th>Lleg.C</th>
+                <th>Pen.F</th>
+                <th>Pen.C</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let partido of partidos; let i = index">
+                <td>{{ partido.matchPreparation.matchDate }}</td>
+                <td>
+                  <span class="simular-enlace" (click)="openInfoPostPartido(partido.postPartidoId)">
+                    {{ partido.matchPreparation.rivalName }}
+                  </span>
+                </td>
+                <td>{{ getIconoTerreno(partido.matchPreparation.terreno) }} {{ getIcono(partido.resultado) }}</td>
+                <td>{{ partido.golesAFavor }}</td>
+                <td>{{ partido.golesEnContra }}</td>
+                <td>{{ partido.disparosAFavor }}</td>
+                <td>{{ partido.disparosEnContra }}</td>
+                <td>{{ partido.faltasRecibidas }}</td>
+                <td>{{ partido.faltasCometidas }}</td>
+                <td>{{ partido.cornersAFavor }}</td>
+                <td>{{ partido.cornersEnContra }}</td>
+                <td>{{ partido.recuperaciones }}</td>
+                <td>{{ partido.perdidas }}</td>
+                <td>{{ partido.tarjetasAmarillas }}</td>
+                <td>{{ partido.tarjetasRojas }}</td>
+                <td>{{ partido.llegadasPeligroAFavor }}</td>
+                <td>{{ partido.llegadasPeligroEnContra }}</td>
+                <td>{{ partido.penaltisAFavor }}</td>
+                <td>{{ partido.penaltisEnContra }}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-    </div>
-</div>
+        <div id="button_datatable"></div>
+      </div>
+    </section>
 
-<!-- aqui las graficas de los jugadores -->
-
-<div *ngIf="graficasEquipo" class="container">
-    <div class="btn-container mt-3" style="margin-top: 3em;">
-        <div class="row mt-3">
-            <div class="col">
-                <button class="btn btn-custom" (click)="verTablaPlayers()">
-                    <i class="bi bi-table"></i>
-                </button>
-                <div class="hint">Ver tablas equipo</div>
-            </div>
+    <!-- Vista Gráficas -->
+    <section *ngIf="graficasEquipo" class="stats-section">
+      <div class="card-pro chart-card">
+        <div class="card-pro-header">
+          <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.GRAFICA_RESULTADOS' | translate }}</h2>
         </div>
-    </div>
-
-    <!-- Contenido para el dataTable -->
-    <div class="container mt-4">
-        <h2>Gráfica resultados</h2>
-
-        <div class="row mb-3">
-            <div class="col-12 col-md-6" style="text-align: -webkit-center;">
-                <div style="display: inline-block; vertical-align: top;">
-                    <canvas id="pieChart"></canvas>
-                </div>
-                <div id="chartLabels" style="display: inline-block; vertical-align: top; padding-left: 10px;"></div>
-            </div>
-            <div class="col-12 col-md-6" style="text-align: -webkit-center;">
-                <div style="width: 100%; max-width: 600px; margin: auto;">
-                    <canvas id="myChart"></canvas>
-                </div>
-            </div>
+        <div class="chart-row">
+          <div class="chart-box">
+            <canvas id="pieChart"></canvas>
+            <div id="chartLabels" class="chart-labels"></div>
+          </div>
+          <div class="chart-box chart-box-line">
+            <canvas id="myChart"></canvas>
+          </div>
         </div>
+      </div>
 
-        <h2>Gráfica estadísticas</h2>
-        <div class="row mb-3">
-            <label for="grafica" class="form-label">Selecciona el tipo de gráfica:</label>
-            <select class="form-control" id="selectGrafica" (change)="changeGrafic($event)">
-                <option value="1">Goles a favor</option>
-                <option value="2">Goles en contra</option>
-                <option value="3">Disparos a favor</option>
-                <option value="4">Disparos en contra</option>
-                <option value="5">Faltas a favor</option>
-                <option value="6">Faltas en contra</option>
-                <option value="7">Corners a favor</option>
-                <option value="8">Corners en contra</option>
-                <option value="9">Llegadas con peligro a favor</option>
-                <option value="10">Llegadas con peligro en contra</option>
-                <option value="11">Penaltis a favor</option>
-                <option value="12">Penaltis en contra</option>
-                <option value="13">Tarjetas amarillas</option>
-                <option value="14">Tarjetas rojas</option>
+      <div class="card-pro chart-card">
+        <div class="card-pro-header">
+          <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.GRAFICA_ESTADISTICAS' | translate }}</h2>
+          <div class="filter-group chart-type-select">
+            <label for="selectGrafica" class="filter-label">{{ 'ESTADIS_EQUIPO.SELECCIONA_GRAFICA' | translate }}</label>
+            <select class="form-select form-select-pro" id="selectGrafica" (change)="changeGrafic($event)">
+              <option value="1">Goles a favor</option>
+              <option value="2">Goles en contra</option>
+              <option value="3">Disparos a favor</option>
+              <option value="4">Disparos en contra</option>
+              <option value="5">Faltas a favor</option>
+              <option value="6">Faltas en contra</option>
+              <option value="7">Corners a favor</option>
+              <option value="8">Corners en contra</option>
+              <option value="9">Llegadas con peligro a favor</option>
+              <option value="10">Llegadas con peligro en contra</option>
+              <option value="11">Penaltis a favor</option>
+              <option value="12">Penaltis en contra</option>
+              <option value="13">Tarjetas amarillas</option>
+              <option value="14">Tarjetas rojas</option>
             </select>
+          </div>
         </div>
-        <div class="row mb-3" id="segundo">
-            <div class="scroll: auto">
-                <div class="col-md-12">
-                    <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;"
-                        height="200" id="barChartSegunda"></canvas>
-                </div>
-            </div>
+        <div class="chart-container">
+          <canvas id="barChartSegunda"></canvas>
         </div>
+      </div>
 
-
-        <h2>Gráfica goles Categoría</h2>
-
-        <div class="row mb-3">
-            <div class="col-12 col-md-6" style="text-align: center;">
-                <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;"
-                    height="200" id="barChartCategoria00"></canvas>
-            </div>
-            <div class="col-12 col-md-6" style="text-align: center;">
-                <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;"
-                    height="200" id="barChartCategoria01"></canvas>
-            </div>
+      <div class="card-pro chart-card">
+        <div class="card-pro-header">
+          <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.GRAFICA_GOLES_CATEGORIA' | translate }}</h2>
         </div>
+        <div class="chart-row two-cols">
+          <div class="chart-container">
+            <canvas id="barChartCategoria00"></canvas>
+          </div>
+          <div class="chart-container">
+            <canvas id="barChartCategoria01"></canvas>
+          </div>
+        </div>
+      </div>
 
+      <div class="card-pro chart-card">
+        <div class="card-pro-header">
+          <h2 class="card-pro-title">{{ 'ESTADIS_EQUIPO.GRAFICA_GOLES_SUBCATEGORIA' | translate }}</h2>
+          <div class="filter-group">
+            <label for="categoryGolTypes" class="filter-label">{{ 'ESTADIS_EQUIPO.CATEGORIA' | translate }}</label>
+            <select class="form-select form-select-pro" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
+              name="categoryGolTypes" (change)="onSelectGolTypes($event)">
+              <option value="">Seleccionar categoría</option>
+              <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="chart-row two-cols">
+          <div class="chart-container">
+            <canvas id="barChartCategoria"></canvas>
+          </div>
+          <div class="chart-container">
+            <canvas id="barChartCategoria2"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</ng-container>
 
-        <h2>Gráfica goles Sub Categoría</h2>
-        <div class="row mb-3">
-            <div class="col-12">
-                <label for="categorygolTypes">Categoría:</label>
-                <select class="form-control" id="categoryGolTypes" [(ngModel)]="selectedGolTypes"
-                    name="categoryGolTypes" (change)="onSelectGolTypes($event)">
-                    <option value="">Pulsa para cargar las categorias</option>
-                    <option *ngFor="let category of golTypes" [value]="category.name">{{ category.name }}
-                    </option>
-                </select>
-            </div>
-            <!-- <div class="col-6" *ngIf="selectedGolTypes">
-                <label for="subgolTypes">Subcategoría:</label>
-                <select class="form-control" id="subgolTypes" [(ngModel)]="selectedSubGolTypes" name="subgolTypes"
-                    (change)="onSelectSubGolTypes($event)">
-                    <option value="">Seleccionar subcategoría</option>
-                    <option *ngFor="let subcategory of getSubGolTypes()" [value]="subcategory.name">{{
-                        subcategory.name }}</option>
-                </select>
-            </div> -->
+<!-- Modal Post Partido -->
+<div class="modal modal-pro" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPostPartido}">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content modal-content-pro">
+      <div class="modal-header modal-header-pro">
+        <h5 class="modal-title">{{ 'ESTADIS_EQUIPO.MODAL.POST_TITLE' | translate }}</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalInfoPostPartido()"></button>
+      </div>
+      <div class="modal-body">
+        <h6 class="mt-0">Instrucciones</h6>
+        <p>Aquí puedes ver toda la información del post partido.</p>
+        <hr>
+        <div class="mb-3 d-flex flex-wrap">
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Goles a favor:</label>
+            <div class="form-control">{{ postPartido.golesAFavor }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Goles en contra:</label>
+            <div class="form-control">{{ postPartido.golesEnContra }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Resultado:</label>
+            <div class="form-control">{{ postPartido.resultado }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Paradas del portero:</label>
+            <div class="form-control">{{ postPartido.paradasPortero }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Disparos a favor:</label>
+            <div class="form-control">{{ postPartido.disparosAFavor }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Disparos en contra:</label>
+            <div class="form-control">{{ postPartido.disparosEnContra }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Faltas cometidas:</label>
+            <div class="form-control">{{ postPartido.faltasCometidas }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Faltas recibidas:</label>
+            <div class="form-control">{{ postPartido.faltasRecibidas }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Córneres a favor:</label>
+            <div class="form-control">{{ postPartido.cornersAFavor }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Córneres en contra:</label>
+            <div class="form-control">{{ postPartido.cornersEnContra }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Penaltis a favor:</label>
+            <div class="form-control">{{ postPartido.penaltisAFavor }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Penaltis en contra:</label>
+            <div class="form-control">{{ postPartido.penaltisEnContra }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Recuperaciones:</label>
+            <div class="form-control">{{ postPartido.recuperaciones }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Pérdidas:</label>
+            <div class="form-control">{{ postPartido.perdidas }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Tarjetas Amarillas:</label>
+            <div class="form-control">{{ postPartido.tarjetasAmarillas }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Tarjetas Rojas:</label>
+            <div class="form-control">{{ postPartido.tarjetasRojas }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Llegadas con peligro a favor:</label>
+            <div class="form-control">{{ postPartido.llegadasPeligroAFavor }}</div>
+          </div>
+          <div class="col-6 col-md-4 mb-2">
+            <label class="form-label">Llegadas con peligro en contra:</label>
+            <div class="form-control">{{ postPartido.llegadasPeligroEnContra }}</div>
+          </div>
         </div>
-        <div class="row mb-3">
-            <div class="col-12 col-md-6" style="text-align: center;">
-                <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;"
-                    height="200" id="barChartCategoria"></canvas>
-            </div>
-            <div class="col-12 col-md-6" style="text-align: center;">
-                <canvas style="display: block; box-sizing: border-box; min-height: 200px; max-height: 500px;"
-                    height="200" id="barChartCategoria2"></canvas>
-            </div>
+        <div class="mb-3">
+          <label class="form-label">Anotaciones:</label>
+          <textarea class="form-control" rows="4" readonly>{{ postPartido.anotaciones }}</textarea>
         </div>
-        <div class="row mb-3" style="margin-bottom: 5em; margin-top: 5em;">
-            <!-- <div -->
+        <div class="mb-3">
+          <label class="form-label">Video YouTube:</label>
+          <textarea class="form-control" rows="2" readonly>{{ postPartido.video }}</textarea>
         </div>
+        <div class="mb-3">
+          <button type="button" class="btn btn-pro-close" (click)="cerrarModalInfoPostPartido()">
+            {{ 'ESTADIS_EQUIPO.MODAL.CLOSE' | translate }}
+          </button>
+        </div>
+      </div>
     </div>
+  </div>
 </div>

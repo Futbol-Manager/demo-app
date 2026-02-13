@@ -1,31 +1,749 @@
-/* styles.scss */
-.card {
-  position: relative;
+:host {
+  --sphaira-green: #31b270;
+  --sphaira-night: #002c40;
+  --sphaira-ivory: #f4f4f4;
+  --sphaira-beige: #efdcb6;
+}
+
+/* ========== VOLVER al lado izquierdo de la pantalla ========== */
+.players-volver-bar {
+  width: 100%;
+  padding-left: 1rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.6rem;
+  border: none;
+  border-radius: 8px;
+  background: rgba(0, 44, 64, 0.08);
+  color: var(--sphaira-night);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.btn-back-clean i {
+  font-size: 1.1rem;
+}
+
+.btn-back-clean:hover {
+  background: rgba(0, 44, 64, 0.14);
+  transform: translateX(-2px);
+}
+
+.btn-back-clean:active {
+  transform: translateX(0);
+}
+
+/* ========== CABECERA: título a la izquierda, Crear jugador a la derecha ========== */
+.players-page-header {
   display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  -ms-flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.players-header-actions {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.btn-crear-jugador.sphaira-pro-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 12px;
+  background: var(--sphaira-green);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 14px rgba(49, 178, 112, 0.35);
+}
+
+.btn-crear-jugador.sphaira-pro-btn i {
+  font-size: 1.1rem;
+}
+
+.btn-crear-jugador.sphaira-pro-btn:hover {
+  background: #2aa463;
+  box-shadow: 0 6px 20px rgba(49, 178, 112, 0.4);
+}
+
+.players-fifa-page {
+  margin-top: 0.5rem;
+}
+
+.players-fifa-content {
+  margin-top: 0;
+}
+
+.players-fifa-title {
+  color: var(--sphaira-night);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.players-tabs {
+  border-bottom: 1px solid rgba(0, 44, 64, 0.15);
+  gap: 0.5rem;
+}
+
+.players-tabs .nav-link {
+  border: none;
+  color: var(--sphaira-night);
+  font-weight: 600;
+  border-radius: 10px 10px 0 0;
+  transition: all 0.2s ease;
+}
+
+.players-tabs .nav-link.active {
+  background: linear-gradient(180deg, rgba(49, 178, 112, 0.2), rgba(49, 178, 112, 0.06));
+  color: var(--sphaira-night);
+  border-bottom: 3px solid var(--sphaira-green);
+}
+
+.players-tab-content {
+  border-radius: 0 0 16px 16px;
+}
+
+.cards-pane-wrapper,
+.table-pane-wrapper {
+  padding: 1.5em 1.2em 0.5em;
+}
+
+/* ===== Barra de herramientas tabla (búsqueda + Excel) ===== */
+.players-table-toolbar {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.players-table-toolbar .filter-group {
+  display: flex;
   flex-direction: column;
-  min-width: 0;
-  color: #6c757d;
-  word-wrap: break-word;
-  background-color: #fff;
-  background-clip: border-box;
-  border: 0px solid #dee2e6;
-  border-radius: 0.25rem;
-  box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
+  gap: 0.25rem;
 }
 
-.card-title {
-  font-weight: bold;
+.players-table-toolbar .filter-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--sphaira-night);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.card-text {
-  font-size: 14px;
+.players-table-toolbar .search-input {
+  position: relative;
 }
 
-.btn-danger {
-  margin-right: 10px;
+.players-table-toolbar .search-input i {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  transform: translateY(-50%);
+  color: var(--sphaira-night);
+  font-size: 0.9rem;
+}
+
+.players-table-toolbar .search-input input {
+  padding-left: 32px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 44, 64, 0.2);
+  min-height: 38px;
+  font-size: 0.9rem;
+}
+
+.players-table-toolbar .invisible-label {
+  visibility: hidden;
+}
+
+.players-table-toolbar .btn-excel {
+  height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  background: var(--sphaira-green);
+  color: #fff;
+  padding: 0 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.players-table-toolbar .btn-excel:hover {
+  background: #2aa463;
+}
+
+/* ========== TARJETAS PRO TIPO FIFA 27 ========== */
+.fifa-player-card {
+  border: 1px solid rgba(0, 44, 64, 0.08);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.06),
+    0 10px 20px -4px rgba(0, 0, 0, 0.08),
+    0 0 0 1px rgba(0, 44, 64, 0.04);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease;
+  overflow: hidden;
+  position: relative;
+}
+
+.fifa-pro-card__accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--sphaira-night) 0%, #004060 50%, var(--sphaira-green) 100%);
+  opacity: 0.95;
+}
+
+.fifa-player-card .card-body {
+  text-align: center;
+  padding: 1.35rem 1rem 1rem;
+  position: relative;
+}
+
+.fifa-player-card:hover {
+  transform: translateY(-6px) scale(1.01);
+  border-color: rgba(49, 178, 112, 0.35);
+  box-shadow:
+    0 20px 40px -12px rgba(0, 44, 64, 0.2),
+    0 0 0 1px rgba(49, 178, 112, 0.2);
+}
+
+.player-top-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.4rem;
+}
+
+/* ========== BOTONES PRO FIFA (Sphaira) ========== */
+.fifa-pro-btn {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.fifa-pro-btn i {
+  font-size: 1rem;
+}
+
+.fifa-pro-btn:hover {
+  transform: translateY(-2px);
+}
+
+.fifa-pro-btn-invite {
+  background: var(--sphaira-green);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(49, 178, 112, 0.35);
+}
+
+.fifa-pro-btn-invite:hover {
+  background: #2aa463;
+  box-shadow: 0 4px 12px rgba(49, 178, 112, 0.4);
+}
+
+.fifa-pro-btn-info {
+  background: var(--sphaira-night);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 44, 64, 0.25);
+}
+
+.fifa-pro-btn-info:hover {
+  background: #013d57;
+  box-shadow: 0 4px 12px rgba(0, 44, 64, 0.35);
+}
+
+.fifa-pro-btn-primary {
+  background: var(--sphaira-green);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(49, 178, 112, 0.3);
+}
+
+.fifa-pro-btn-primary:hover {
+  background: #2aa463;
+  box-shadow: 0 4px 12px rgba(49, 178, 112, 0.4);
+}
+
+.fifa-pro-btn-secondary {
+  background: #64748b;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(100, 116, 139, 0.25);
+}
+
+.fifa-pro-btn-secondary:hover {
+  background: #475569;
+  box-shadow: 0 4px 12px rgba(100, 116, 139, 0.35);
+}
+
+.fifa-pro-btn-beige {
+  background: var(--sphaira-beige);
+  color: #5a4310;
+  box-shadow: 0 2px 8px rgba(239, 220, 182, 0.5);
+}
+
+.fifa-pro-btn-beige:hover {
+  background: #e4cf9e;
+  box-shadow: 0 4px 12px rgba(239, 220, 182, 0.6);
+}
+
+.fifa-pro-btn-danger {
+  background: #dc2626;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.3);
+}
+
+.fifa-pro-btn-danger:hover {
+  background: #b91c1c;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+
+.player-main-head {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  margin-bottom: 0.85rem;
+}
+
+.player-avatar-wrapper {
+  position: relative;
+  width: 82px;
+  height: 82px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid #fff;
+  box-shadow:
+    0 0 0 2px var(--sphaira-green),
+    0 8px 20px rgba(0, 44, 64, 0.15);
+  background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-avatar-wrapper-with-badge {
+  overflow: visible;
+}
+
+.player-avatar-inner {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Fila de badges: número + posición juntos, una sola pastilla con poco radius */
+.player-badges-row {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  z-index: 2;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.player-badge-numero {
+  background: linear-gradient(135deg, var(--sphaira-night) 0%, #003550 100%);
+  color: #fff;
+  padding: 0.2rem 0.4rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.player-badge-posicion {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fff;
+  text-transform: uppercase;
+}
+
+.player-avatar-icon {
+  font-size: 2.75rem;
+  color: #94a3b8;
+}
+
+.player-position-badge {
+  border-radius: 20px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #fff;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.position-por {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+}
+
+.position-def {
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+}
+
+.position-med {
+  background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);
+  color: #111827;
+}
+
+.position-del {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+}
+
+.position-default {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+}
+
+.player-rating-circle {
+  --rating: 0;
+  --progress-angle: calc((var(--rating) * 36) * 1deg);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  position: relative;
+  background: conic-gradient(
+    var(--sphaira-green) 0deg var(--progress-angle),
+    rgba(0, 44, 64, 0.08) var(--progress-angle) 360deg
+  );
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 14px rgba(49, 178, 112, 0.25);
+}
+
+.player-rating-circle::before {
+  content: "";
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.player-rating-circle span {
+  position: relative;
+  z-index: 1;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--sphaira-night);
+  letter-spacing: -0.02em;
+}
+
+.fifa-player-title {
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 1.05rem;
+  margin-bottom: 0.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+.player-subtitle {
+  margin-bottom: 0.65rem;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-align: center;
+  letter-spacing: 0.02em;
+}
+
+.player-mini-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem 0.85rem;
+  margin-bottom: 0.95rem;
+  padding: 0.6rem 0.5rem;
+  background: linear-gradient(180deg, rgba(0, 44, 64, 0.03) 0%, transparent 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(0, 44, 64, 0.06);
+}
+
+.mini-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.2rem 0;
+  border-bottom: 1px dashed rgba(0, 44, 64, 0.08);
+}
+
+.mini-stat:last-child,
+.mini-stat:nth-last-child(2) {
+  border-bottom: none;
+}
+
+.mini-stat .label {
+  font-size: 0.65rem;
+  color: #64748b;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.mini-stat .value {
+  font-size: 0.8rem;
+  color: var(--sphaira-night);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.player-action-row {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  padding-top: 0.25rem;
+}
+
+/* ===== Tabla FIFA PRO SaaS ===== */
+.players-table-scroll {
+  max-height: 65vh;
+  overflow-y: auto;
+  overflow-x: auto;
+  border-radius: 16px;
+  border: 1px solid rgba(0, 44, 64, 0.1);
+  background: #f8fafc;
+  box-shadow: 0 4px 24px rgba(0, 44, 64, 0.08), 0 0 0 1px rgba(0, 44, 64, 0.04);
+}
+
+.players-modern-table.players-table-fifa {
+  min-width: 1100px;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 8px;
+  margin-bottom: 0;
+}
+
+.players-table-fifa thead th {
+  background: linear-gradient(180deg, #002c40 0%, #001a28 100%);
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.9rem 0.75rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border: none;
+  white-space: nowrap;
+  box-shadow: 0 2px 0 rgba(49, 178, 112, 0.25);
+}
+
+.players-table-fifa thead th.th-img {
+  width: 90px;
+  min-width: 90px;
+}
+
+.players-table-fifa thead th.th-actions {
+  min-width: 180px;
+}
+
+.players-table-fifa thead th,
+.players-table-fifa tbody td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.players-table-fifa tbody tr {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 44, 64, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.players-table-fifa tbody tr:hover {
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(0, 44, 64, 0.1), 0 0 0 1px rgba(49, 178, 112, 0.2);
+  transform: translateY(-1px);
+}
+
+.players-table-fifa tbody td {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: #0f172a;
+}
+
+.players-table-fifa tbody td.col-name {
+  font-weight: 700;
+  color: #002c40;
+}
+
+/* Columna IMAGEN: ancho completo de celda, semi-radius, altura fija */
+.player-table-img-cell {
+  width: 90px;
+  min-width: 90px;
+  padding: 0.5rem !important;
+  vertical-align: middle;
+}
+
+.player-table-img-wrap {
+  width: 100%;
+  height: 56px;
+  min-height: 56px;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #f1f5f9 0%, #e2e8f0 100%);
+  border: 1px solid rgba(0, 44, 64, 0.08);
+}
+
+.player-table-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+  display: block;
+}
+
+.player-table-no-img {
+  font-size: 1.75rem;
+  color: rgba(0, 44, 64, 0.3);
+}
+
+/* Acciones en horizontal */
+.player-table-actions-cell {
+  padding: 0.5rem 0.75rem !important;
+}
+
+.player-table-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+}
+
+.player-table-actions .fifa-pro-btn {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+}
+
+.player-table-actions .fifa-pro-btn i {
+  font-size: 0.9rem;
+}
+
+/* ===== Paginación custom ===== */
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+.pagination-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1.25rem;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+}
+
+.pagination-info {
+  font-size: 0.85rem;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.pagination-select {
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.85rem;
+  background: #f9fafb;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.page-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: #f3f4f6;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.page-btn:hover:not(:disabled) {
+  background: var(--sphaira-green);
+  color: #ffffff;
+}
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.page-indicator {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sphaira-night);
+  min-width: 50px;
+  text-align: center;
+}
+
+.title-negro,
+.text-negro {
+  color: #000;
 }
 
 .img-half-size {
@@ -46,48 +764,859 @@
   background-size: 400% 400%;
 }
 
-table {
-  width: 100%;
-  /* Ajusta según sea necesario */
-  border-collapse: collapse;
-  /* Para eliminar espacios entre celdas */
-}
-
-th,
-td {
-  border: 1px solid black;
-  /* Opcional: para añadir bordes a las celdas */
-  text-align: center;
-  /* Centra horizontalmente */
-  vertical-align: middle;
-  /* Centra verticalmente */
-  padding: 10px;
-  /* Opcional: añade un poco de espacio alrededor del contenido */
-  height: 50px;
-  /* Ajusta la altura según sea necesario */
-}
-
-/* Estilo básico para el input file */
 input#file-upload-button {
   display: inline-block;
   padding: 6px 12px;
   cursor: pointer;
   background-color: #28a745;
-  /* Color de fondo verde */
-  color: white;
-  /* Color del texto */
+  color: #fff;
   border: 2px solid #28a745;
-  /* Borde del mismo color que el fondo */
   border-radius: 4px;
-  /* Bordes redondeados */
   font-size: 14px;
-  /* Tamaño de fuente */
 }
 
-/* Cambiar el fondo al pasar el mouse */
 input#file-upload-button:hover {
   background-color: #218838;
   border-color: #218838;
+}
+
+.mi-div {
+  height: 300px;
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mi-div::-webkit-scrollbar {
+  display: none;
+}
+
+.bordeYsombra {
+  border: 1px solid #000;
+  box-shadow: 2px 2px 2px #000;
+}
+
+/* ========== OVERLAY MODERNO PARA TODOS LOS MODALES (player) ========== */
+:host ::ng-deep .modal,
+.modal {
+  background: rgba(0, 44, 64, 0.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+:host ::ng-deep .modal.d-block,
+:host ::ng-deep .modal.show,
+.modal.d-block,
+.modal.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+:host ::ng-deep .modal .modal-dialog,
+.modal .modal-dialog {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+:host ::ng-deep .modal.d-block .modal-dialog,
+:host ::ng-deep .modal.show .modal-dialog,
+.modal.d-block .modal-dialog,
+.modal.show .modal-dialog {
+  transform: scale(1);
+  opacity: 1;
+}
+
+/* Apertura suave: opacidad del overlay y escala del diálogo */
+:host ::ng-deep .modal.modal-fifa-pro .modal-content,
+.modal.modal-fifa-pro .modal-content,
+:host ::ng-deep .modal .modal-content,
+.modal .modal-content {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+/* ========== MODALES PRO SaaS FIFA ========== */
+.modal-fifa-pro .modal-content-fifa {
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 24px 48px rgba(0, 44, 64, 0.2), 0 0 0 1px rgba(0, 44, 64, 0.06);
+  overflow: hidden;
+}
+
+.modal-fifa-pro .modal-header-fifa {
+  background: linear-gradient(135deg, var(--sphaira-night) 0%, #001a28 100%);
+  color: #fff;
+  border-bottom: 3px solid var(--sphaira-green);
+  padding: 1rem 1.25rem;
+}
+
+.modal-fifa-pro .modal-header-fifa .modal-title {
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.modal-fifa-pro .btn-close-white {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
+.modal-fifa-pro .modal-body-fifa {
+  background: #f8fafc;
+  padding: 1.25rem 1.5rem;
+}
+
+.modal-section {
+  margin-bottom: 0.5rem;
+}
+
+.modal-section-photo {
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(0, 44, 64, 0.08);
+}
+
+.modal-section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sphaira-night);
+  margin-top: 0.5rem;
+  display: block;
+}
+
+.modal-block {
+  margin-bottom: 0.5rem;
+}
+
+.modal-block-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--sphaira-night);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.player-modal-avatar-wrap,
+.player-modal-avatar-placeholder {
+  display: inline-block;
+}
+
+.player-modal-avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(0, 44, 64, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 44, 64, 0.12);
+}
+
+.player-modal-avatar-placeholder {
+  font-size: 3rem;
+  color: rgba(0, 44, 64, 0.3);
+}
+
+.player-modal-avatar-preview {
+  width: 100px;
+  height: 100px;
+}
+
+.modal-fifa-pro .custom-input {
+  border-radius: 10px;
+  border: 1px solid rgba(0, 44, 64, 0.15);
+  font-size: 0.9rem;
+}
+
+.modal-fifa-pro .custom-input:focus {
+  border-color: var(--sphaira-green);
+  box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+}
+
+.modal-footer-fifa {
+  background: #fff;
+  border-top: 1px solid rgba(0, 44, 64, 0.08);
+  padding: 1rem 1.25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn-fifa {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.btn-fifa:hover {
+  transform: translateY(-1px);
+}
+
+.btn-fifa-primary {
+  background: var(--sphaira-green);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(49, 178, 112, 0.35);
+}
+
+.btn-fifa-primary:hover {
+  background: #2aa463;
+  box-shadow: 0 6px 20px rgba(49, 178, 112, 0.4);
+}
+
+.btn-fifa-secondary {
+  background: var(--sphaira-night);
+  color: #fff;
+}
+
+.btn-fifa-secondary:hover {
+  background: #013d57;
+}
+
+.btn-fifa-outline {
+  background: transparent;
+  color: var(--sphaira-night);
+  border: 2px solid rgba(0, 44, 64, 0.25);
+}
+
+.btn-fifa-outline:hover {
+  border-color: var(--sphaira-night);
+  background: rgba(0, 44, 64, 0.06);
+}
+
+.btn-fifa-outline-warn {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.btn-fifa-outline-warn:hover {
+  background: rgba(220, 38, 38, 0.08);
+}
+
+/* Modal Información del jugador */
+.player-info-modal-content {
+  min-height: 80vh;
+}
+
+.player-info-modal-body {
+  padding: 1.5rem;
+}
+
+/* Hero del modal: bloque imagen + gráfica centrado */
+.player-info-hero {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(0, 44, 64, 0.08);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.player-info-hero-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.player-info-profile {
+  text-align: center;
+  flex: 0 0 auto;
+}
+
+.player-info-avatar-wrap {
+  margin: 0 auto 0.75rem;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #fff;
+  box-shadow: 0 8px 24px rgba(0, 44, 64, 0.15);
+  background: linear-gradient(145deg, #f1f5f9, #e2e8f0);
+  flex-shrink: 0;
+}
+
+.player-info-avatar {
+  width: 140px;
+  height: 140px;
+  object-fit: cover;
+  object-position: center;
+  image-rendering: high-quality;
+  image-rendering: -webkit-optimize-contrast;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+.player-info-avatar-placeholder {
+  font-size: 3rem;
+  color: rgba(0, 44, 64, 0.3);
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.player-info-name {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--sphaira-night);
+  margin-bottom: 0.5rem;
+}
+
+.player-info-meta {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.player-info-meta li + li {
+  margin-top: 0.25rem;
+}
+
+.player-info-opinion {
+  font-size: 0.85rem;
+  color: #475569;
+  text-align: left;
+  padding: 0.5rem;
+  background: rgba(0, 44, 64, 0.04);
+  border-radius: 10px;
+}
+
+.player-info-radar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+}
+
+/* Gráfica radar al lado de la imagen del jugador: tamaño fijo para visualización óptima */
+.player-info-radar-hero {
+  flex: 0 0 auto;
+  width: 300px;
+  max-width: 300px;
+  height: 300px;
+  min-height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.player-info-radar-hero canvas {
+  width: 300px !important;
+  height: 300px !important;
+  display: block;
+}
+
+/* Información deportiva: imagen izquierda + radar derecha */
+.deportiva-hero {
+  padding: 0.5rem 0;
+}
+
+.deportiva-img-col {
+  flex: 0 0 auto;
+}
+
+.deportiva-avatar-wrap {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid #fff;
+  box-shadow: 0 8px 24px rgba(0, 44, 64, 0.15);
+  background: linear-gradient(145deg, #f1f5f9, #e2e8f0);
+}
+
+.deportiva-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.deportiva-avatar-placeholder {
+  display: inline-block;
+  width: 140px;
+  height: 140px;
+  line-height: 140px;
+  font-size: 4rem;
+  color: rgba(0, 44, 64, 0.3);
+  border-radius: 50%;
+  background: linear-gradient(145deg, #f1f5f9, #e2e8f0);
+}
+
+.deportiva-radar-col {
+  min-height: 220px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.info-block-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--sphaira-night);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.info-readonly-compact {
+  padding: 0.4rem 0.6rem;
+}
+
+.info-readonly-compact .label {
+  font-size: 0.65rem;
+  margin-bottom: 0.15rem;
+}
+
+.info-readonly-compact .value {
+  font-size: 0.85rem;
+}
+
+/* Pestañas modal info jugador */
+.player-info-tabs {
+  border-bottom: 2px solid rgba(0, 44, 64, 0.1);
+  margin-bottom: 1rem;
+  gap: 0.25rem;
+}
+
+.player-info-tabs .nav-link {
+  border: none;
+  border-radius: 10px 10px 0 0;
+  padding: 0.6rem 1rem;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #fff;
+  background: #002c40;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.player-info-tabs .nav-link:hover {
+  color: #fff;
+  background: #003550;
+}
+
+.player-info-tabs .nav-link.active {
+  color: #fff;
+  background: #31b270;
+  border-bottom: 2px solid #31b270;
+  margin-bottom: -2px;
+}
+
+.player-info-tab-content .tab-pane {
+  display: none;
+  padding-top: 0.5rem;
+}
+
+.player-info-tab-content .tab-pane.active {
+  display: block;
+}
+
+/* ========== Modal Crear/Editar Jugador: pestañas y secciones ========== */
+.form-modal-tabs {
+  border-bottom: 2px solid rgba(0, 44, 64, 0.1);
+  margin: 0 0 1.25rem;
+  gap: 0.25rem;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.form-modal-tabs .nav-link {
+  border: none;
+  border-radius: 10px 10px 0 0;
+  padding: 0.65rem 1.1rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #fff;
+  background: var(--sphaira-night);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.form-modal-tabs .nav-link:hover {
+  color: #fff;
+  background: #003550;
+}
+
+.form-modal-tabs .nav-link.active {
+  color: #fff;
+  background: var(--sphaira-green);
+  border-bottom: 2px solid var(--sphaira-green);
+  margin-bottom: -2px;
+}
+
+.form-modal-tab-content .tab-pane {
+  display: none;
+  padding-top: 0.25rem;
+}
+
+.form-modal-tab-content .tab-pane.active {
+  display: block;
+}
+
+.form-modal-section-heading {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--sphaira-night);
+  margin: 1rem 0 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid rgba(49, 178, 112, 0.35);
+  letter-spacing: -0.01em;
+}
+
+.form-modal-section-heading:first-child {
+  margin-top: 0;
+}
+
+.form-modal-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.35rem;
+}
+
+.form-modal-input {
+  border-radius: 10px;
+  border: 1px solid rgba(0, 44, 64, 0.12);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-modal-input:focus {
+  border-color: var(--sphaira-green);
+  box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+  outline: none;
+}
+
+.form-modal-fields {
+  margin-bottom: 0.5rem;
+}
+
+.form-modal-tutor-section,
+.form-modal-bank-section {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(0, 44, 64, 0.08);
+}
+
+.form-modal-tutor-block {
+  margin-top: 1rem;
+}
+
+.player-info-opinion-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.partido-card-sm .card-body {
+  padding: 0.5rem 0.75rem;
+}
+
+/* Campos solo lectura en pestañas */
+.info-readonly-field {
+  background: #fff;
+  border-radius: 10px;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid rgba(0, 44, 64, 0.08);
+}
+
+.info-readonly-field .label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.2rem;
+}
+
+.info-readonly-field .value {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--sphaira-night);
+}
+
+.modal-section-heading {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--sphaira-night);
+  margin: 1.25rem 0 0.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid rgba(49, 178, 112, 0.3);
+}
+
+.stat-card-pro {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  text-align: center;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 44, 64, 0.06);
+  transition: box-shadow 0.2s ease;
+}
+
+.stat-card-pro:hover {
+  box-shadow: 0 6px 20px rgba(0, 44, 64, 0.08), 0 0 0 1px rgba(49, 178, 112, 0.2);
+}
+
+.stat-card-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 0.25rem;
+}
+
+.stat-card-value {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--sphaira-night);
+}
+
+/* Pestaña Información financiera */
+.financiera-progreso-card {
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(0, 44, 64, 0.08);
+}
+
+.financiera-progreso-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sphaira-night);
+  margin: 0 0 0.75rem;
+}
+
+.financiera-progreso-bar-wrap {
+  height: 10px;
+  background: rgba(0, 44, 64, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.financiera-progreso-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sphaira-green), #2aa463);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.financiera-progreso-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.financiera-seccion-header {
+  display: inline-flex;
+  align-items: center;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.35rem 0.75rem;
+  border-radius: 10px;
+  margin-bottom: 0.35rem;
+
+  &.obligatorios {
+    color: #c2410c;
+    background: rgba(194, 65, 12, 0.12);
+  }
+
+  &.no-obligatorios {
+    color: #0369a1;
+    background: rgba(3, 105, 161, 0.12);
+  }
+}
+
+.financiera-seccion-count {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin: 0 0 0.75rem;
+}
+
+.financiera-movimientos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.financiera-movimiento {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(251, 146, 60, 0.4);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+
+  &.pagado {
+    border-color: rgba(49, 178, 112, 0.5);
+  }
+}
+
+.financiera-movimiento-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.financiera-movimiento-nombre {
+  font-weight: 600;
+  color: var(--sphaira-night);
+  font-size: 0.9rem;
+}
+
+.financiera-movimiento-meta {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.financiera-movimiento-pagado {
+  font-size: 0.8rem;
+  margin-top: 0.15rem;
+}
+
+.financiera-movimiento-importe {
+  font-weight: 700;
+  color: var(--sphaira-night);
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.financiera-contacto-card {
+  background: #f8fafc;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  border: 1px solid rgba(0, 44, 64, 0.08);
+}
+
+.financiera-contacto-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sphaira-night);
+  margin: 0 0 0.75rem;
+}
+
+.financiera-contacto-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  font-size: 0.9rem;
+  border-bottom: 1px solid rgba(0, 44, 64, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.financiera-contacto-value {
+  font-weight: 600;
+  color: var(--sphaira-night);
+  margin-left: auto;
+}
+
+.table-wrap-fifa {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 44, 64, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.table-fifa-pro {
+  margin-bottom: 0;
+  background: #fff;
+}
+
+.table-fifa-pro thead th {
+  background: linear-gradient(180deg, var(--sphaira-night) 0%, #001a28 100%);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.75rem 1rem;
+  border: none;
+}
+
+.table-fifa-pro tbody td {
+  padding: 0.65rem 1rem;
+  font-size: 0.88rem;
+  border-color: rgba(0, 44, 64, 0.06);
+}
+
+.table-fifa-pro tbody tr:hover {
+  background: rgba(49, 178, 112, 0.05);
+}
+
+/* Modal Asistencia PRO */
+.modal-asistencia-content .modal-body-fifa {
+  padding: 0;
+  background: #fff;
+}
+
+.modal-asistencia-table-wrap {
+  margin: 0;
+  border-radius: 0;
+  border: none;
+  box-shadow: none;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.modal-asistencia-table {
+  margin-bottom: 0;
+}
+
+.modal-asistencia-table thead th {
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.modal-asistencia-table tbody td {
+  vertical-align: middle;
+}
+
+.modal-footer-asistencia {
+  justify-content: flex-end;
+}
+
+.badge-asistencia {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge-asistencia-ok {
+  background: rgba(49, 178, 112, 0.15);
+  color: #15803d;
+}
+
+.badge-asistencia-no {
+  background: rgba(220, 38, 38, 0.1);
+  color: #b91c1c;
 }
 
 @media (max-width: 768px) {
@@ -99,89 +1628,13 @@ input#file-upload-button:hover {
   .modal-content {
     padding: 10px;
   }
-}
 
-.card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  color: #6c757d;
-  word-wrap: break-word;
-  background-color: #fff;
-  background-clip: border-box;
-  border: 0px solid #dee2e6;
-  border-radius: 0.25rem;
-  box-shadow: 0px 0px 35px 0px rgba(154, 161, 171, 0.15);
-  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s, background-color 0.3s;
-}
+  .cards-pane-wrapper,
+  .table-pane-wrapper {
+    padding: 1rem 0.6rem 0.25rem;
+  }
 
-.card:hover {
-  transform: scale(1.05);
-  border-color: #22BF63;
-  background-color: #22BF63;
-  box-shadow: 0px 0px 35px 0px rgba(34, 191, 99, 0.5);
-}
-
-.card-title {
-  font-weight: bold;
-}
-
-.card-text {
-  font-size: 14px;
-}
-
-.title-negro {
-  color: black;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.text-negro {
-  color: black;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-table {
-  width: 100%;
-  /* Ajusta según sea necesario */
-  border-collapse: collapse;
-  /* Para eliminar espacios entre celdas */
-}
-
-th,
-td {
-  border: 1px solid black;
-  /* Opcional: para añadir bordes a las celdas */
-  text-align: center;
-  /* Centra horizontalmente */
-  vertical-align: middle;
-  /* Centra verticalmente */
-  padding: 10px;
-  /* Opcional: añade un poco de espacio alrededor del contenido */
-  height: 50px;
-  /* Ajusta la altura según sea necesario */
-}
-
-.mi-div {
-  height: 300px;
-  overflow: auto;
-  /* o scroll */
-  scrollbar-width: none;
-  /* Para Firefox */
-  -ms-overflow-style: none;
-  /* Para Internet Explorer y Edge */
-}
-
-.mi-div::-webkit-scrollbar {
-  display: none;
-  /* Para Chrome, Safari y Opera */
-}
-
-.bordeYsombra {
-  border: 1px solid black;
-  box-shadow: 2px 2px 2px black;
+  .player-main-head {
+    align-items: center;
+  }
 }

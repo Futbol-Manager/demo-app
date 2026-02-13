@@ -58,6 +58,8 @@ import { FooterComponent } from '../shared/footer/footer.component';
 import { InfoEquipoComponent } from './info-equipo/info-equipo.component';
 import { AdminClubesComponent } from './admin-clubes/admin-clubes.component';
 import { AdminInicioComponent } from './admin-inicio/admin-inicio.component';
+import { PlayerInfoDialogComponent } from './player-info-dialog/player-info-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -117,16 +119,18 @@ export function HttpLoaderFactory(http: HttpClient) {
     FooterComponent,
     AdminClubesComponent,
     AdminInicioComponent,
+    PlayerInfoDialogComponent,
   ],
   imports: [
     CommonModule,
     DashboardRoutingModule,
     FormsModule,
-		ReactiveFormsModule,
+    ReactiveFormsModule,
     NgxDatatableModule,
     HttpClientModule,
     TranslateModule,
-    DragDropModule
+    DragDropModule,
+    MatDialogModule,
   ]
 })
 export class DashboardModule { }

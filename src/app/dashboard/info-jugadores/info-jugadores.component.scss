@@ -242,13 +242,29 @@
   text-align: center;
   font-size: 0.85rem;
   position: relative;
+  min-height: 72px;
   height: 72px;
-  max-height: 72px;
+  max-height: none;
   vertical-align: middle;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+/* Nombre clickeable (abre modal info jugador) */
+.btn-link-name {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: #0fa3e8;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.btn-link-name:hover {
+  color: #002c40;
+}
+
 .modern-table tbody td:not(:last-child)::after {
   content: "";
   position: absolute;
@@ -418,8 +434,26 @@
 
 .modern-table th:nth-child(2),
 .modern-table td:nth-child(2) {
-  width: 250px;
-  min-width: 250px;
+  width: 280px;
+  min-width: 280px;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  max-height: none;
+  vertical-align: middle;
+}
+.modern-table tbody td:nth-child(2) {
+  height: auto;
+  min-height: 72px;
+  padding: 0.6rem 0.75rem;
+  text-align: left;
+}
+.modern-table tbody td:nth-child(2) .btn-link-name {
+  display: inline-block;
+  max-width: 100%;
+  word-break: break-word;
+  text-align: left;
+  line-height: 1.35;
 }
 
 .modern-table thead th:nth-child(2)::after,

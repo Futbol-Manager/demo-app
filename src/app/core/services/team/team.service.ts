@@ -19,14 +19,54 @@ export interface VerifySubPayload {
     pagoClubId?: number;
 }
 
+/** Caché del listado de equipos para no recargar al volver a la vista */
+export interface EquiposListCache {
+    listTeam: any[];
+    pictureClub: string;
+    noPicture: boolean;
+    clubId?: number;
+    numEquipos?: number;
+    datosNoCargados?: boolean;
+    clubOk?: boolean;
+}
+
 @Injectable({
     providedIn: 'root'
 })
 export class TeamService {
 
     private base = environment.apiUrl;
+    private equiposCache: Map<string, EquiposListCache> = new Map();
 
     constructor(private http: HttpClient) { }
+
+    private equiposCacheKey(userId: number, temporada: string, profileId: number): string {
+        return `equipos-${userId}-${temporada}-${profileId}`;
+    }
+
+    getEquiposCache(userId: number, temporada: string, profileId: number): EquiposListCache | null {
+        return this.equiposCache.get(this.equiposCacheKey(userId, temporada, profileId)) ?? null;
+    }
+
+    setEquiposCache(userId: number, temporada: string, profileId: number, data: Partial<EquiposListCache>): void {
+        const key = this.equiposCacheKey(userId, temporada, profileId);
+        const existing = this.equiposCache.get(key) ?? {
+            listTeam: [],
+            pictureClub: '',
+            noPicture: false,
+        };
+        this.equiposCache.set(key, { ...existing, ...data });
+    }
+
+    clearEquiposCache(userId?: number, temporada?: string, profileId?: number): void {
+        if (userId == null && temporada == null && profileId == null) {
+            this.equiposCache.clear();
+            return;
+        }
+        if (userId != null && temporada != null && profileId != null) {
+            this.equiposCache.delete(this.equiposCacheKey(userId, temporada, profileId));
+        }
+    }
 
     private authHeaders(): HttpHeaders | undefined {
         const token = localStorage.getItem('token');
@@ -120,6 +160,21 @@ export class TeamService {
             return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
 
+    }
+
+    /**
+     * Sube el logo del equipo. El backend debe exponer POST team/upload-logo/{teamId} con multipart/form-data (file).
+     */
+    uploadTeamLogo(teamId: number, file: File): Observable<Response> {
+        const token: string | null = localStorage.getItem('token');
+        if (!token) return new Observable();
+        const formData = new FormData();
+        formData.append('file', file, file.name);
+        const headers = new HttpHeaders({
+            'Authorization': `Bearer ${token}`
+        });
+        const url: string = environment.apiUrl + `team/upload-logo/${teamId}`;
+        return this.http.post<Response>(url, formData, { headers });
     }
 
     deleteTeam(teamId: string): Observable<Response> {

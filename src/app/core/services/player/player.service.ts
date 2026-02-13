@@ -1,10 +1,10 @@
 // player.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
-import { NotificatePlayerUI, Player, ScoutingPlayer } from './player.model';
+import { NotificatePlayerUI, PagocuotasPlayerResponse, Player, ScoutingPlayer } from './player.model';
 import { PlayerPostPartido } from '../models/match.model';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
 
@@ -33,8 +33,8 @@ export class PlayerService {
             // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
         } else {
-            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            // Sin token: emitir respuesta vacía para que el componente pueda mostrar la UI
+            return of({ data: { players: [] }, status: 401, error: {} } as any);
         }
     }
 
@@ -80,6 +80,18 @@ export class PlayerService {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
             return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
+    }
+
+    getPagocuotasPlayer(teamId: number, playerId: number): Observable<Response> {
+        const token: string | null = localStorage.getItem('token');
+        if (token) {
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+            const url: string = environment.apiUrl + `player/getpagocuotasplayer/${teamId}/${playerId}`;
+            return this.http.get<Response>(url, { headers });
+        }
+        return of({ data: null, status: 401, error: {} } as any);
     }
 
     // Método para crear o actualizar un jugador

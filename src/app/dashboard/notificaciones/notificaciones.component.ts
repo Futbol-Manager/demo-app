@@ -56,7 +56,12 @@ export class NotificacionesComponent implements OnInit {
   isSending: boolean = false;
   currentFolder: 'inbox' | 'sent' = 'inbox';
   currentFilter: 'all' | 'read' | 'unread' = 'all';
-
+  searchQuery = '';
+  showDeleteConfirm = false;
+  correoToDelete: any = null;
+  deleteIndex = -1;
+  deleteOption = 0; // 0 = enviado, 1 = recibido
+  sendSuccess = false;
   temporadaStoredValue = '2025';
 
   constructor(
@@ -97,25 +102,16 @@ export class NotificacionesComponent implements OnInit {
         this.selectCorreo = false;
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
-          this.correosEnviadosSinFiltro = response.data.enviados;
+          this.correosEnviadosSinFiltro = response.data.enviados ?? [];
           /*if (this.correosEnviadosSinFiltro != null) {
             for (let index = 0; index < this.correosEnviadosSinFiltro.length; index++) {
               this.correosEnviadosSinFiltro[index].destinatarios = this.destinatariosString(this.correosEnviadosSinFiltro[index].destinatarios);
             }
           }*/
 
-          this.correosRecibidosSinFiltro = response.data.recibidos;
-          /*if (this.correosRecibidosSinFiltro != null) {
-            for (let index = 0; index < this.correosRecibidosSinFiltro.length; index++) {
-              this.correosRecibidosSinFiltro[index].destinatarios = this.destinatariosString(this.correosRecibidosSinFiltro[index].destinatarios);
-            }
-          }*/
-          console.log(response.data);
-          /*this.receivedCount = this.correosRecibidosSinFiltro.filter(
-            (correo: any) => correo.leido === 0,
-          ).length;
-          console.log(this.receivedCount);*/
-          this.correos = response.data.recibidos;
+          this.correosRecibidosSinFiltro = response.data.recibidos ?? [];
+          this.correos = response.data.recibidos ?? [];
+          this.receivedCount = this.correosRecibidosSinFiltro.filter((c: any) => c.leido === 0).length;
           this.loadingCorreos = false;
         } else {
           console.error(
@@ -200,7 +196,112 @@ export class NotificacionesComponent implements OnInit {
     this.location.back();
   }
   recalcularNoLeidos() {
-    this.receivedCount = this.correos.filter((c) => c.leido === 0).length;
+    this.receivedCount = this.correosRecibidosSinFiltro.filter((c: any) => c.leido === 0).length;
+  }
+
+  /** Lista de correos filtrada por búsqueda (asunto, remitente/destinatario) */
+  get correosFiltered(): any[] {
+    if (!this.searchQuery.trim()) return this.correos;
+    const q = this.searchQuery.trim().toLowerCase();
+    return this.correos.filter((c: any) => {
+      const from = (this.currentFolder === 'inbox' ? c.remitente : c.destinatario) || '';
+      return (c.asunto || '').toLowerCase().includes(q) || from.toLowerCase().includes(q);
+    });
+  }
+
+  /** Si hay no leídos en inbox (para mostrar "Marcar todos como leídos") */
+  get hasUnreadInInbox(): boolean {
+    return this.currentFolder === 'inbox' && this.receivedCount > 0;
+  }
+
+  /** Formato de fecha relativo: Hoy HH:mm, Ayer, o día mes */
+  formatDate(fechaStr: string): string {
+    if (!fechaStr) return '';
+    const d = new Date(fechaStr);
+    if (isNaN(d.getTime())) return fechaStr;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const dOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    if (dOnly.getTime() === today.getTime()) {
+      return `Hoy ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+    if (dOnly.getTime() === yesterday.getTime()) return 'Ayer';
+    const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    return `${d.getDate()} ${months[d.getMonth()]}`;
+  }
+
+  /** Marcar todos los recibidos como leídos */
+  markAllAsRead(): void {
+    const unread = this.correosRecibidosSinFiltro.filter((c: any) => c.leido === 0);
+    if (unread.length === 0) return;
+    let done = 0;
+    unread.forEach((c: any) => {
+      this.clubService.openCorreoRecibido(c.correoRecibidoId).subscribe({
+        next: () => {
+          c.leido = 1;
+          if (++done === unread.length) this.recalcularNoLeidos();
+        },
+        error: () => { if (++done === unread.length) this.recalcularNoLeidos(); }
+      });
+    });
+  }
+
+  /** Marcar un mensaje como leído sin abrirlo (solo inbox) */
+  markAsRead(correo: any, event: Event): void {
+    event.stopPropagation();
+    if (this.currentFolder !== 'inbox' || correo.leido === 1) return;
+    this.clubService.openCorreoRecibido(correo.correoRecibidoId).subscribe({
+      next: () => {
+        const idx = this.correos.findIndex((c: any) => c.correoRecibidoId === correo.correoRecibidoId);
+        if (idx !== -1) this.correos[idx].leido = 1;
+        this.recalcularNoLeidos();
+      },
+      error: (err) => console.error(err)
+    });
+  }
+
+  /** Abre el modal de confirmación de eliminación */
+  openDeleteConfirm(correo: any, index: number, event: Event): void {
+    event.stopPropagation();
+    this.correoToDelete = correo;
+    this.deleteIndex = index;
+    this.deleteOption = this.showBtn ? 1 : 0;
+    this.showDeleteConfirm = true;
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirm = false;
+    this.correoToDelete = null;
+    this.deleteIndex = -1;
+  }
+
+  /** Indica si el correo es el actualmente seleccionado en el panel de lectura */
+  isActiveCorreo(correo: any): boolean {
+    if (!this.correoSelected) return false;
+    const sel = this.correoSelected as any;
+    if (this.currentFolder === 'inbox') return correo.correoRecibidoId === sel.correoRecibidoId;
+    return correo.correoEnviadoId === sel.correoEnviadoId;
+  }
+
+  confirmDelete(): void {
+    if (this.correoToDelete == null) return;
+    const id = this.deleteOption === 1 ? this.correoToDelete.correoRecibidoId : this.correoToDelete.correoEnviadoId;
+    this.clubService.deleteCorreo(id, this.deleteOption).subscribe({
+      next: (response: Response) => {
+        if (response.data !== 0) {
+          const idx = this.correos.findIndex((c: any) =>
+            this.deleteOption === 1 ? c.correoRecibidoId === this.correoToDelete.correoRecibidoId : c.correoEnviadoId === this.correoToDelete.correoEnviadoId
+          );
+          if (idx !== -1) this.correos.splice(idx, 1);
+          if (this.deleteOption === 1) this.recalcularNoLeidos();
+        }
+        this.cancelDelete();
+      },
+      error: () => this.cancelDelete()
+    });
   }
   /**
    * Inicializa el editor Summernote
@@ -302,27 +403,17 @@ export class NotificacionesComponent implements OnInit {
    * Abre el correo y carga el contenido en Summernote
    * @param correo - Objeto del correo seleccionado
    */
-  openCorreo(correo: any, index: number): void {
-    // Decodificar el body inmediatamente
+  openCorreo(correo: any): void {
     let decodedBody = correo.body;
-
-    if (this.isBase64(correo.body)) {
-      decodedBody = this.decodeBase64(correo.body);
-    }
-
-    //Asignar correo seleccionado YA decodificado
-    this.correoSelected = {
-      ...correo,
-      body: decodedBody,
-    };
-
+    if (this.isBase64(correo.body)) decodedBody = this.decodeBase64(correo.body);
+    this.correoSelected = { ...correo, body: decodedBody };
     this.selectCorreo = true;
 
-    // Marcar como leído (NO bloquea la UI)
-    if (correo.leido === 0) {
+    if (this.currentFolder === 'inbox' && correo.leido === 0) {
       this.clubService.openCorreoRecibido(correo.correoRecibidoId).subscribe({
         next: () => {
-          this.correos[index].leido = 1;
+          const idx = this.correos.findIndex((c: any) => c.correoRecibidoId === correo.correoRecibidoId);
+          if (idx !== -1) this.correos[idx].leido = 1;
           this.recalcularNoLeidos();
         },
         error: (err) => console.error(err),
@@ -398,24 +489,13 @@ export class NotificacionesComponent implements OnInit {
 
     this.clubService.createCorreo(this.correoNew).subscribe(
       (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== 0) {
           this.correoNew = response.data;
-
-          // guardar el correo
-          //agregarlo al listado de enviados
-          if (this.correosEnviadosSinFiltro == null) {
-            this.correosEnviadosSinFiltro = [];
-          }
+          if (!this.correosEnviadosSinFiltro) this.correosEnviadosSinFiltro = [];
           this.correosEnviadosSinFiltro.unshift(this.correoNew);
-          if (this.currentFolder === 'sent') {
-            this.correos = [...this.correosEnviadosSinFiltro];
-          }
-        } else {
-          console.error(
-            'La respuesta del servicio no tiene la estructura esperada',
-            response,
-          );
+          if (this.currentFolder === 'sent') this.correos = [...this.correosEnviadosSinFiltro];
+          this.sendSuccess = true;
+          setTimeout(() => { this.sendSuccess = false; }, 3500);
         }
         this.cerrarEnviando();
       },
@@ -483,32 +563,4 @@ export class NotificacionesComponent implements OnInit {
     }, 3000); // Simulación de envío
   }
 
-  deleteCorreo(correo: any, index: number): void {
-    if (confirm('¿Estás seguro de que deseas eliminar este correo?')) {
-      if (this.showBtn) {
-        this.deleteCorreoOK(correo.correoRecibidoId, 1, index);
-      } else {
-        this.deleteCorreoOK(correo.correoEnviadoId, 0, index);
-      }
-    }
-  }
-
-  deleteCorreoOK(id: number, option: number, index: number) {
-    this.clubService.deleteCorreo(id, option).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== 0) {
-          this.correos.splice(index, 1);
-        } else {
-          console.error(
-            'La respuesta del servicio no tiene la estructura esperada',
-            response,
-          );
-        }
-      },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      },
-    );
-  }
 }

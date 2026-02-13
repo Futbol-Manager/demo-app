@@ -129,6 +129,11 @@ export class InformacionEquipoComponent implements OnInit {
   nivelesVisiblesFiltradas = [...this.levelOptions];
   nivelesVisibles = [...this.levelOptions];
   datosCargados: boolean = false;
+  showDeleteConfirm = false;
+  teamLogoUrl: string | null = null;
+  logoPreview: string | null = null;
+  logoFile: File | null = null;
+  logoUploading = false;
 
   constructor(
     private fb: FormBuilder,
@@ -239,6 +244,7 @@ export class InformacionEquipoComponent implements OnInit {
             trainingDays: this.teamInfo.trainingDays,
             opinionTeam: this.teamInfo.opinionTeam
           });
+          this.teamLogoUrl = (response.data as any).logoUrl || null;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -338,31 +344,70 @@ export class InformacionEquipoComponent implements OnInit {
       })
   }
 
-  // Método para confirmar la eliminación del equipo
   confirmarEliminarEquipo(): void {
     if (this.team.categoryType.categoryTypeId == 27) {
-      alert('Este equipo no puede ser eliminado ya que todos los nuevos jugadores registrados son añadidos al mismo');
-    } else {
-      const confirmacion = confirm('¿Estás seguro de que deseas eliminar el equipo?');
-      if (confirmacion) {
-        // Llama al método para eliminar el equipo
-        this.eliminarEquipo();
-      }
+      this.snackBar.open('Este equipo no puede eliminarse (equipo por defecto de nuevos jugadores).', 'Cerrar', { duration: 5000 });
+      return;
     }
+    this.showDeleteConfirm = true;
   }
 
-  // Método para eliminar el equipo
+  cancelarEliminarEquipo(): void {
+    this.showDeleteConfirm = false;
+  }
+
   eliminarEquipo(): void {
-    //hacemos un borrado logico
-    this.teamService.deleteLogicTeam(this.teamId.toString()).subscribe(
-      (response) => {
+    this.teamService.deleteLogicTeam(this.teamId.toString()).subscribe({
+      next: () => {
+        this.showDeleteConfirm = false;
         this.router.navigate(['/dashboard/inicio']);
       },
-      (error) => {
-        console.error('Error al eliminar el equipo:', error);
+      error: (err) => console.error('Error al eliminar el equipo:', err)
+    });
+  }
+
+  onLogoSelected(event: Event): void {
+    if (this.usuarioActual?.profileType?.profileId !== 1) return;
+    const input = event.target as HTMLInputElement;
+    const file = input?.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      this.snackBar.open('Selecciona una imagen (JPG, PNG, etc.).', 'Cerrar', { duration: 3000 });
+      return;
+    }
+    this.logoFile = file;
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.logoPreview = reader.result as string;
+    };
+    reader.readAsDataURL(file);
+    this.uploadLogo(file);
+  }
+
+  uploadLogo(file: File): void {
+    this.logoUploading = true;
+    this.teamService.uploadTeamLogo(this.teamId, file).subscribe({
+      next: (res) => {
+        this.logoUploading = false;
+        if (res?.data) {
+          this.teamLogoUrl = (res.data as any).url || (res.data as any).logoUrl || this.logoPreview || null;
+          this.snackBar.open('Logo actualizado correctamente.', 'Cerrar', { duration: 3000 });
+        }
+        this.logoFile = null;
+      },
+      error: () => {
+        this.logoUploading = false;
+        this.teamLogoUrl = this.logoPreview;
+        this.snackBar.open('Logo guardado localmente. El servidor puede no soportar aún la subida.', 'Cerrar', { duration: 4000 });
       }
-    );
-  } guardarCambios() { }
+    });
+  }
+
+  clearLogoPreview(): void {
+    this.logoPreview = null;
+    this.logoFile = null;
+    (document.getElementById('teamLogoInput') as HTMLInputElement)?.setAttribute('value', '');
+  }
 
 
   toggleDiaOkDesactivar(property: string, value: number) {

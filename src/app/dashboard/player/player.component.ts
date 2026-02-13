@@ -1,11 +1,9 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import { Player } from 'src/app/core/services/player/player.model';
-import * as $ from 'jquery';
-import 'datatables.net';
+import { PagocuotasPlayerResponse, Player } from 'src/app/core/services/player/player.model';
 
 import { Chart, registerables } from 'chart.js/auto';
 import { HttpClient } from '@angular/common/http';
@@ -18,6 +16,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 import { ClubService } from 'src/app/core/services/club/club.service';
+import * as XLSX from 'xlsx';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -47,15 +46,29 @@ export class PlayerComponent implements OnInit {
   showModal = false;
   showModalInvitar = false;
   mostrarModalInfoJugador = false;
+  infoModalActiveTab = 'personal';
+  /** Pestaña activa en el modal de crear/editar jugador */
+  formModalActiveTab: 'personal' | 'deportiva' = 'personal';
   selectedPlayer: Player = new Player({});
+  pagosCuotasData: PagocuotasPlayerResponse | null = null;
+  pagosCuotasLoading = false;
+  pagosCuotasError = false;
   player: Player = new Player({});
   radarChart: Chart | null = null; // Inicializar la variable radarChart
   mostrarEdad: boolean = false;
   edadSeleccionada!: string;
 
   players: any[] = [];
+  filteredPlayers: any[] = [];
+  playersPaged: any[] = [];
+  playerSearch = '';
+  page = 1;
+  pageSize = 25;
+  pageSizes = [10, 25, 50, 100];
+  totalRecords = 0;
+  totalPages = 0;
   imgPlayer: string = '';
-  selectedFile!: File;
+  selectedFile: File | null = null;
 
   nombreJugador: string = '';
   isMenor: boolean = false;
@@ -171,6 +184,7 @@ export class PlayerComponent implements OnInit {
   temporadaStoredValue = '2025';
 
   addPlayerMoved: boolean = false;
+
   constructor(private playerservice: PlayerService,
     private router: Router,
     private route: ActivatedRoute,
@@ -184,20 +198,172 @@ export class PlayerComponent implements OnInit {
     private loginService: LoginService,
     private playerService: PlayerService,
     private clubService: ClubService,
-    private location: Location) { }
+    private location: Location,
+    private cdr: ChangeDetectorRef) { }
+
+  getPositionShort(position: string | null | undefined): string {
+    const pos = (position || '').toLowerCase().trim();
+
+    if (pos.includes('portero')) return 'POR';
+    if (pos.includes('defensa central')) return 'DFC';
+    if (pos.includes('defensa lateral')) return 'LAT';
+    if (pos.includes('carrilero')) return 'CAD';
+    if (pos.includes('centrocampista defensivo')) return 'MCD';
+    if (pos.includes('centrocampista ofensivo')) return 'MCO';
+    if (pos.includes('centrocampista')) return 'MC';
+    if (pos.includes('mediapunta')) return 'MP';
+    if (pos.includes('extremo')) return 'EI';
+    if (pos.includes('delantero centro')) return 'DC';
+    if (pos.includes('sin definir')) return 'N/A';
+
+    return (position || 'N/A').toUpperCase();
+  }
+
+  getPositionBadgeClass(position: string | null | undefined): string {
+    const pos = (position || '').toUpperCase();
+
+    if (pos.includes('POR')) return 'position-por';
+    if (pos.includes('DEF') || pos.includes('LAT') || pos.includes('DFC')) return 'position-def';
+    if (pos.includes('MED') || pos.includes('MCD') || pos.includes('MC') || pos.includes('MCO')) return 'position-med';
+    if (pos.includes('DEL') || pos.includes('EXT') || pos.includes('DC')) return 'position-del';
+
+    return 'position-default';
+  }
+
+  getOverallRating(player: any): number {
+    const stats = [
+      Number(player?.habilidadConBalon) || 0,
+      Number(player?.pase) || 0,
+      Number(player?.tiro) || 0,
+      Number(player?.defensa) || 0,
+      Number(player?.fisico) || 0,
+      Number(player?.mentalidad) || 0
+    ];
+
+    const total = stats.reduce((acc, value) => acc + value, 0);
+    const average = total / stats.length;
+
+    if (!Number.isFinite(average)) return 0;
+
+    return Math.max(0, Math.min(10, average));
+  }
+
+  /** Habilidad real 0–10 para el círculo de rating, normalizando si los datos vienen en escala 0–100 */
+  getRealOverallRating(player: any): number {
+    try {
+      if (!player || typeof player !== 'object') return 0;
+      const stats = [
+        this.parseNumeric(player.habilidadConBalon),
+        this.parseNumeric(player.pase),
+        this.parseNumeric(player.tiro),
+        this.parseNumeric(player.defensa),
+        this.parseNumeric(player.fisico),
+        this.parseNumeric(player.mentalidad)
+      ];
+      const total = stats.reduce((acc, value) => acc + value, 0);
+      const average = total / stats.length;
+      if (!Number.isFinite(average)) return 0;
+      const normalized = average > 10 ? average / 10 : average;
+      return Math.max(0, Math.min(10, Number(normalized.toFixed(1))));
+    } catch {
+      return 0;
+    }
+  }
+
+  /** Número de camiseta para mostrar en la tarjeta (soporta numero, number, numeroCamiseta y valor 0) */
+  getNumeroCamiseta(player: any): string {
+    if (!player) return '-';
+    const raw = player.numero ?? player.number ?? player.numeroCamiseta;
+    if (raw === null || raw === undefined) return '-';
+    const s = String(raw).trim();
+    return s === '' ? '-' : s;
+  }
+
+  /** Texto para el badge unificado: "19 · LAT" o solo "LAT" si no hay número */
+  getNumeroPosicionTexto(player: any): string {
+    if (!player) return '';
+    const pos = this.getPositionShort(player.posicion);
+    const num = this.getNumeroCamiseta(player);
+    return num === '-' ? pos : num + ' · ' + pos;
+  }
+
+  /** Valor numérico para mostrar en tarjeta (entero, soporta 0–10 o 0–100) */
+  getStatValue(value: any): string | number {
+    try {
+      const n = this.parseNumeric(value);
+      if (!Number.isFinite(n)) return '0';
+      if (n <= 10) return Number(n.toFixed(1));
+      return Math.round(n);
+    } catch {
+      return '0';
+    }
+  }
+
+  private parseNumeric(value: any): number {
+    if (value === null || value === undefined || value === '') return 0;
+    const parsed = Number(String(value).replace(',', '.'));
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  getCardStat(player: any, keys: string[], fallback: number = 0): number {
+    for (const key of keys) {
+      if (player && player[key] !== null && player[key] !== undefined && player[key] !== '') {
+        return this.parseNumeric(player[key]);
+      }
+    }
+    return fallback;
+  }
+
+  getCardRating(player: any): number {
+    const apiRating = this.getCardStat(player, ['calificacion', 'rating', 'mediaCalificacion'], -1);
+    if (apiRating >= 0) {
+      return Math.max(0, Math.min(10, apiRating));
+    }
+
+    const goals = this.getCardStat(player, ['goles'], 0);
+    const assists = this.getCardStat(player, ['asistencias'], 0);
+    const minutes = this.getCardStat(player, ['minTotales', 'minutosJugados', 'min'], 0);
+    const yellow = this.getCardStat(player, ['tarAmarilla', 'tarjetasAmarillas', 'amarillas'], 0);
+    const red = this.getCardStat(player, ['tarRojas', 'tarjetasRojas', 'rojas'], 0);
+
+    const computed = 6 + goals * 0.25 + assists * 0.2 + Math.min(2, minutes / 900) - yellow * 0.08 - red * 0.35;
+
+    return Math.max(0, Math.min(10, Number(computed.toFixed(1))));
+  }
+
+  getMinutesPct(player: any): number {
+    const pct = this.getCardStat(player, ['porcentajeMin', 'porcentajeMinutos', 'porcMin'], -1);
+    if (pct >= 0) return Math.max(0, Math.min(100, pct));
+
+    const minutes = this.getCardStat(player, ['minTotales', 'minutosJugados', 'min'], 0);
+    const matchesRaw = player?.partidosJugados;
+
+    if (typeof matchesRaw === 'string' && matchesRaw.includes('/')) {
+      const values = matchesRaw.split('/');
+      const played = this.parseNumeric(values[0]);
+      if (played > 0) {
+        const pctComputed = (minutes / (played * 90)) * 100;
+        return Math.max(0, Math.min(100, Number(pctComputed.toFixed(0))));
+      }
+    }
+
+    return 0;
+  }
+
+  getAbsencePct(player: any): number {
+    const pct = this.getCardStat(player, ['porcentajeAbs', 'porcentajeAusencias', 'porcAbs'], -1);
+    if (pct >= 0) return Math.max(0, Math.min(100, pct));
+    return 0;
+  }
 
   ngOnInit(): void {
     const userAgent = navigator.userAgent || navigator.vendor;
 
     this.isAndroid = /android/i.test(userAgent);
     this.isiOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window);
-    // Suscribirse a los cambios en los parámetros de la URL
     this.route.params.subscribe(params => {
-      // Obtener el valor de teamId de los parámetros
-      this.teamId = +params['teamId'];  // El + convierte el valor a número
-      //console.log('teamId:', this.teamId);
+      this.teamId = +params['teamId'];
       this.cargarListadoJugadores();
-      // Luego puedes realizar acciones con el teamId según tus necesidades
     });
 
     if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
@@ -220,26 +386,41 @@ export class PlayerComponent implements OnInit {
 
   // Método para cargar el listado de equipos
   cargarListadoJugadores(): void {
-    this.playerservice.getPlayers(this.teamId.toString()).subscribe(
+    const teamIdStr = this.teamId != null && !Number.isNaN(this.teamId) ? this.teamId.toString() : '';
+    if (!teamIdStr || teamIdStr === 'NaN') {
+      this.players = [];
+      this.datosCargados = true;
+      this.cdr.detectChanges();
+      return;
+    }
+    this.playerservice.getPlayers(teamIdStr).subscribe(
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data) {
-          // Mapea los datos bajo 'data' a instancias del modelo Team
-          this.players = response.data.players; //.map((player: Player) => new Player(player));
-          this.clubId = response.data.clubId;
+          const data = response.data;
+          // Aceptar response.data.players O response.data como array (según API)
+          let rawPlayers = data.players;
+          if (!Array.isArray(rawPlayers) && Array.isArray(data)) {
+            rawPlayers = data;
+          }
+          this.players = Array.isArray(rawPlayers) ? [...rawPlayers] : [];
+          this.clubId = data.clubId ?? this.clubId;
+          this.applyFilter();
+          this.cdr.detectChanges();
 
           // Si el perfil es > 2, filtra los jugadores según los playerIds del usuario actual
-          if (this.profileId > 2 && this.usuarioActual && this.usuarioActual!.playerIds) {
+          if (this.profileId > 2 && this.usuarioActual?.playerIds && this.players.length > 0) {
             this.players = this.players.filter(player =>
-              this.usuarioActual!.playerIds.includes(player.playerId)
+              this.usuarioActual!.playerIds!.includes(player.playerId)
             );
+            this.applyFilter();
           }
-          // Inicializar el DataTable después de cargar los datos
-          this.inicializarDataTable();
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
+          this.players = [];
         }
         this.datosCargados = true;
+        this.cdr.detectChanges();
 
         let goToDatos = false;
         let playerId = 0;
@@ -256,124 +437,118 @@ export class PlayerComponent implements OnInit {
           alert('Rellena estos datos para que el Club pueda acceder a los datos de tu hij@. '
             + 'Si sigues viendo esta pantalla, revisa que has puesto el apellido correctamente y no está todo puesto en el campo del nombre.');
         }
+
+        // Si se navegó con ?openInfo=playerId (ej. desde info-jugadores o new-cuotas), abrir modal de ver información
+        const q = this.route.snapshot.queryParams;
+        const openInfoId = q['openInfo'] != null && q['openInfo'] !== '' ? +q['openInfo'] : null;
+        const openInfoTab = (q['tab'] != null && q['tab'] !== '') ? q['tab'] : null;
+        if (openInfoId != null) {
+          const pl = this.players.find(p => p.playerId === openInfoId);
+          if (pl) {
+            this.verInfoJugador(pl);
+            if (openInfoTab === 'financiera' && (this.usuarioActual?.profileType?.profileId ?? 0) === 1) {
+              this.infoModalActiveTab = 'financiera';
+              this.loadPagosCuotasIfNeeded();
+            }
+            this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
+          }
+        }
       },
       (error) => {
         console.error('Error al cargar el listado de jugadores', error);
+        this.players = [];
+        this.datosCargados = true;
+        this.cdr.detectChanges();
       }
     );
   }
 
-  // Método para inicializar el DataTable
-  inicializarDataTable(): void {
-    // Destruir el DataTable si ya existe
-    const $dataTable = $('#dataTable');
-    if ($dataTable.hasClass('dataTable')) {
-      $dataTable.DataTable().destroy();
+  private actualizarPaginacion(): void {
+    this.totalRecords = this.filteredPlayers.length;
+    this.totalPages = Math.max(1, Math.ceil(this.totalRecords / this.pageSize));
+    if (this.page > this.totalPages) this.page = this.totalPages;
+    const start = (this.page - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.playersPaged = [...this.filteredPlayers.slice(start, end)];
+  }
+
+  normalizeText(text: string): string {
+    if (!text) return '';
+    return String(text).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
+  }
+
+  applyFilter(): void {
+    const filter = this.normalizeText(this.playerSearch);
+    if (!filter) {
+      this.filteredPlayers = [...this.players];
+    } else {
+      this.filteredPlayers = this.players.filter(player => {
+        const fullName = this.normalizeText(`${player.nombre || ''} ${player.apellido || ''}`);
+        return fullName.includes(filter);
+      });
     }
-
-    this.http.get('assets/dataTable/Spanish.json').subscribe((translation) => {
-      $(document).ready(function () {
-        $('#dataTable').DataTable({
-          paging: true,
-          pageLength: 25,
-          searching: true,
-          ordering: true,
-          order: [[0, 'desc']],
-          columnDefs: [
-            {
-              targets: [0],
-              visible: false
-            }
-          ],
-          language: translation
-        });
-      });
-    });
-
-    this.moverElementosDataTable();
+    this.page = 1;
+    this.actualizarPaginacion();
+    this.cdr.detectChanges();
   }
 
-
-  moverElementosDataTable() {
-    // **Move buttons outside the table after initialization**
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElements = this.elementRef.nativeElement.querySelectorAll('.dt-layout-row:not(.dt-layout-table)');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#button_datatable');
-
-        if (layoutRowElements.length >= 2 && buttonDatatableElement) {
-          const layoutRowElement = layoutRowElements[1]; // Obtener el segundo elemento
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          observer.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
-    });
-
-    observer.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
-
-    //esto es para agregar una clase
-    const textcenter = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const dataTableElement = document.querySelector('#dataTable');
-
-        if (dataTableElement) {
-          dataTableElement.classList.add('text-center');
-          textcenter.disconnect(); // Detiene la observación después de encontrar el elemento
-        }
-      });
-    });
-
-    textcenter.observe(document.body, { childList: true, subtree: true });
-
-
-    //esto es para la parte donde pones las filas a ver
-    const length = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-length');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-length');
-
-        if (layoutRowElement && buttonDatatableElement) {
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          length.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
-    });
-
-    length.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
-
-    //esto es para el input del buscador
-    const search = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-search');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-search');
-
-        if (layoutRowElement && buttonDatatableElement) {
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          search.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
-    });
-
-    search.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+  exportTableToExcel(): void {
+    const tableElement = document.getElementById('playersDataTable');
+    if (tableElement) {
+      const ws: XLSX.WorkSheet = XLSX.utils.table_to_sheet(tableElement);
+      const wb: XLSX.WorkBook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Jugadores');
+      XLSX.writeFile(wb, `jugadores_equipo_${this.teamId}.xlsx`, { bookType: 'xlsx' });
+    }
   }
 
-  // Método para confirmar la eliminación del equipo
-  confirmarEliminarJugador(playerId: number, name: string, surname: string, index: number): void {
+  nextPage(): void {
+    if (this.page < this.totalPages) {
+      this.page++;
+      this.actualizarPaginacion();
+    }
+  }
+
+  prevPage(): void {
+    if (this.page > 1) {
+      this.page--;
+      this.actualizarPaginacion();
+    }
+  }
+
+  onPageSizeChange(): void {
+    this.pageSize = Number(this.pageSize);
+    this.page = 1;
+    this.actualizarPaginacion();
+  }
+
+  get paginationInfo(): string {
+    if (this.totalRecords === 0) return '';
+    const start = (this.page - 1) * this.pageSize + 1;
+    const end = Math.min(this.page * this.pageSize, this.totalRecords);
+    return `Mostrando ${start}–${end} de ${this.totalRecords}`;
+  }
+
+  trackByPlayer(_index: number, player: any): number {
+    return player?.playerId ?? _index;
+  }
+
+  // Método para confirmar la eliminación del jugador
+  confirmarEliminarJugador(playerId: number, name: string, surname: string): void {
     const confirmacion = confirm('¿Estás seguro de que deseas eliminar el jugador ' + name + ' ' + surname + ` con ID ${playerId}? Si está en Sin equipo, se eliminará completamente...`);
     if (confirmacion) {
-      // Llama al método para eliminar el equipo
-      this.eliminarJugador(playerId, index);
+      this.eliminarJugador(playerId);
     }
   }
 
-  // Método para eliminar el equipo
-  eliminarJugador(playerId: number, index: number): void {
-    // Lógica para eliminar el equipo llamando al servicio correspondiente
+  // Método para eliminar el jugador
+  eliminarJugador(playerId: number): void {
     this.playerservice.deletePlayer(playerId, this.teamId, this.temporadaStoredValue, 1).subscribe(
-      (response) => {
-        // Manejar la respuesta según tus necesidades
-        //console.log('Jugador eliminado con éxito:', response);
-        this.players.splice(index, 1);
+      () => {
+        const index = this.players.findIndex(p => p.playerId === playerId);
+        if (index !== -1) this.players.splice(index, 1);
+        this.actualizarPaginacion();
+        this.cdr.detectChanges();
       },
       (error) => {
         console.error('Error al eliminar el jugador:', error);
@@ -386,8 +561,10 @@ export class PlayerComponent implements OnInit {
   abrirModalCrearJugador(): void {
     this.inicializePlayer();
 
-    //reiniciar la img
     this.showPreview = false;
+    this.selectedFile = null;
+    this.imagePreviewUrl = null;
+    this.formModalActiveTab = 'personal';
     this.showModal = true;
 
     setTimeout(() => {
@@ -398,25 +575,47 @@ export class PlayerComponent implements OnInit {
   // Método para cerrar el modal de creación de equipo
   cerrarModal(): void {
     this.showModal = false;
-    // Limpiar los datos del nuevo equipo al cerrar el modal si es necesario
+    this.selectedFile = null;
+    this.showPreview = false;
+    this.imagePreviewUrl = null;
     this.inicializePlayer();
-    //ir a https://play.google.com/store/apps/details?id=com.futbol.sphairatech&pcampaignid=web_share
   }
 
-  // Método para crear un nuevo equipo
+  // Método para crear o actualizar jugador; si es creación y hay foto seleccionada, se sube tras guardar
   crearJugador(): void {
     if (this.player.telefonoMadre != null || this.player.telefonoPadre != null) {
-      let id = this.player.playerId;
-      // Llamada al servicio para crear el jugador
-      this.playerservice.createUpdatePlayer(this.teamId.toString(), this.player,).subscribe(
+      const id = this.player.playerId;
+      const fileToUpload = this.selectedFile;
+      this.playerservice.createUpdatePlayer(this.teamId.toString(), this.player).subscribe(
         (response) => {
-          if (id === 0) this.players.push(response.data);
-          this.cerrarModal();
-          this.showAlertAndroid = true;
+          if (id === 0) {
+            this.players.push(response.data);
+            const newPlayerId = response.data.playerId;
+            if (fileToUpload) {
+              this.trainingService.createUpdateImgPlayer(newPlayerId.toString(), fileToUpload).subscribe(
+                (imgResponse) => {
+                  const idx = this.players.findIndex(p => p.playerId === newPlayerId);
+                  if (idx !== -1) this.players[idx].picturePlayer = imgResponse.data;
+                  this.cerrarModal();
+                  this.showAlertAndroid = true;
+                },
+                (err) => {
+                  console.error('Error al subir la imagen del jugador', err);
+                  this.cerrarModal();
+                  this.showAlertAndroid = true;
+                }
+              );
+            } else {
+              this.cerrarModal();
+              this.showAlertAndroid = true;
+            }
+          } else {
+            this.cerrarModal();
+            this.showAlertAndroid = true;
+          }
         },
         (error) => {
           console.error('Error al crear el jugador:', error);
-          // Puedes manejar el error según tus necesidades
         }
       );
     } else {
@@ -588,7 +787,8 @@ export class PlayerComponent implements OnInit {
     this.promedioTiro();
     this.promedioPortero();
     this.showPreview = false;
-    this.showModal = true; // Suponiendo que tienes una variable que controla la visibilidad del modal de edición
+    this.formModalActiveTab = 'personal';
+    this.showModal = true;
 
     setTimeout(() => {
       this.enfocarPrimerCampo();
@@ -629,14 +829,59 @@ export class PlayerComponent implements OnInit {
     this.tarjetasAmarillas = 0;
     this.tarjetasRojas = 0;
     this.numTitulares = 0;
+    this.pagosCuotasData = null;
+    this.pagosCuotasError = false;
     this.getInfoAsistencia(player.playerId);
     this.getDatosPlayer(player.playerId);
-    this.selectedPlayer = player; // Almacena el jugador seleccionado en una propiedad del componente
+    this.selectedPlayer = player;
     this.edadSeleccionada = this.fechaEnEspañol(this.selectedPlayer.fechaDeNacimiento) + ' (' + this.calcularEdad(player.fechaDeNacimiento) + ')';
     this.mostrarEdad = true;
+    this.infoModalActiveTab = 'personal';
+  }
 
-    // Aquí llamamos a la función para cargar el gráfico de radar
-    this.cargarGraficoRadar();
+  setInfoModalTab(tab: string): void {
+    this.infoModalActiveTab = tab;
+    if (tab === 'financiera') {
+      this.loadPagosCuotasIfNeeded();
+    }
+  }
+
+  setFormModalTab(tab: 'personal' | 'deportiva'): void {
+    this.formModalActiveTab = tab;
+  }
+
+  loadPagosCuotasIfNeeded(): void {
+    if (this.pagosCuotasLoading || this.pagosCuotasData !== null) { return; }
+    const playerId = this.selectedPlayer?.playerId;
+    if (!playerId || !this.teamId) { return; }
+    this.pagosCuotasLoading = true;
+    this.pagosCuotasError = false;
+    this.playerService.getPagocuotasPlayer(this.teamId, playerId).subscribe({
+      next: (res) => {
+        this.pagosCuotasData = res?.data ?? null;
+        this.pagosCuotasLoading = false;
+      },
+      error: () => {
+        this.pagosCuotasError = true;
+        this.pagosCuotasLoading = false;
+      }
+    });
+  }
+
+  formatearPlazo(plazo: string): string {
+    if (!plazo) return '—';
+    const d = new Date(plazo);
+    if (isNaN(d.getTime())) return plazo;
+    return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+
+  get progresoFinancieroPorcentaje(): number {
+    const d = this.pagosCuotasData;
+    if (!d) return 0;
+    const pagado = parseFloat(d.totalPagado || '0') || 0;
+    const pendiente = parseFloat(d.pendiente || '0') || 0;
+    const total = pagado + pendiente;
+    return total > 0 ? Math.round((pagado / total) * 100) : 0;
   }
 
   // Método para cargar el gráfico de radar con los datos del jugador
@@ -675,33 +920,50 @@ export class PlayerComponent implements OnInit {
       data: {
         labels: labels,
         datasets: [{
-          label: 'Atributos del Jugador',
+          label: '',
           data: data,
-          backgroundColor: 'rgba(0, 252, 0, 0.36)',
-          borderColor: 'rgb(0, 54, 0)',
-          borderWidth: 1
+          backgroundColor: 'rgba(49, 178, 112, 0.25)',
+          borderColor: 'rgb(0, 80, 40)',
+          borderWidth: 2,
+          pointBackgroundColor: 'rgb(0, 80, 40)',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1,
+          pointRadius: 3
         }]
       },
       options: {
         responsive: true,
+        maintainAspectRatio: true,
+        layout: {
+          padding: { top: 4, right: 4, bottom: 4, left: 4 }
+        },
         plugins: {
-          title: {
-            display: true,
-            text: 'Gráfica del jugador'
-          }
+          title: { display: false },
+          legend: { display: false }
         },
         scales: {
           r: {
+            min: 0,
+            max: 100,
             angleLines: {
-              display: true
+              display: true,
+              color: 'rgba(0, 44, 64, 0.15)',
+              lineWidth: 1
+            },
+            grid: {
+              color: 'rgba(0, 44, 64, 0.12)'
             },
             pointLabels: {
-              font: {
-                size: 14
-              }
+              font: { size: 12 },
+              color: 'rgba(0, 44, 64, 0.9)',
+              backdropColor: 'transparent'
             },
-            min: 0, // Establece el valor mínimo del eje radial
-            max: 100 // Establece el valor máximo del eje radial
+            ticks: {
+              display: true,
+              stepSize: 25,
+              font: { size: 10 },
+              color: 'rgba(0, 44, 64, 0.5)'
+            }
           }
         }
       }
@@ -1347,6 +1609,7 @@ export class PlayerComponent implements OnInit {
           this.numTitulares = response.data.numTitulares;
         }
         this.mostrarModalInfoJugador = true; // Activa el indicador para mostrar el modal
+        setTimeout(() => this.cargarGraficoRadar(), 80); // Gráfica en el hero; dibujar cuando el modal ya está visible
       },
       (error) => {
         console.error('Error en la solicitud:', error);

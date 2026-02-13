@@ -1,48 +1,68 @@
-<div class="submenu">
-    <div class="row">
-        <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
-                <i class="bi bi-arrow-left-square-fill"></i>
-                <span class="d-none d-md-inline">Volver</span>
-            </a>
-        </div>
-    </div>
+<div class="back-container">
+  <button type="button" class="btn-back-clean" (click)="irAPantalla(1)">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
 </div>
 
-<div class="container" style="margin-top: 5em;">
-    <div class="row">
-        <div class="col-12 col-md-3 mt-3">
-            <div id="club" class="card selection-card" (click)="irAPantalla(2)">
-                <img src="/assets/iconos/tactica.svg" class="card-img-top mx-auto d-block p-3" alt="Club Icon">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Dibujar tareas</h5>
-                </div>
-            </div>
+<div class="tareas-page">
+  <header class="tareas-header">
+    <h1 class="tareas-title">{{ 'TAREAS.TITLE' | translate }}</h1>
+    <p class="tareas-subtitle">{{ 'TAREAS.SUBTITLE' | translate }}</p>
+  </header>
+
+  <div class="tareas-grid">
+    <div class="fifa-card" (click)="openModalTactica()">
+      <div class="fifa-card-inner">
+        <div class="fifa-card-icon-wrap">
+          <img src="/assets/iconos/tactica.svg" alt="" class="fifa-card-icon" />
         </div>
-        <div class="col-12 col-md-3 mt-3">
-            <div id="coach" class="card selection-card" (click)="irAPantalla(2)">
-                <img src="/assets/iconos/historial-de-pedidos.svg" class="card-img-top mx-auto d-block p-3" alt="Coach Icon">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Historial usadas</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-3 mt-3">
-            <div id="player" class="card selection-card" (click)="irAPantalla(2)">
-                <img src="/assets/iconos/estrella.svg" class="card-img-top mx-auto d-block p-3"
-                    alt="Player Icon">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Favoritas</h5>
-                </div>
-            </div>
-        </div>
-        <div class="col-12 col-md-3 mt-3">
-            <div id="scouting" class="card selection-card" (click)="irAPantalla(2)">
-                <img src="/assets/iconos/cono-de-trafico.svg" class="card-img-top mx-auto d-block p-3" alt="Scouting Icon">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Mis tareas</h5>
-                </div>
-            </div>
-        </div>
+        <h3 class="fifa-card-title">{{ 'TAREAS.DIBUJAR' | translate }}</h3>
+        <p class="fifa-card-desc">{{ 'TAREAS.DIBUJAR_DESC' | translate }}</p>
+      </div>
     </div>
+    <div class="fifa-card" (click)="irAPantalla(2)">
+      <div class="fifa-card-inner">
+        <div class="fifa-card-icon-wrap">
+          <img src="/assets/iconos/historial-de-pedidos.svg" alt="" class="fifa-card-icon" />
+        </div>
+        <h3 class="fifa-card-title">{{ 'TAREAS.HISTORIAL' | translate }}</h3>
+        <p class="fifa-card-desc">{{ 'TAREAS.HISTORIAL_DESC' | translate }}</p>
+      </div>
+    </div>
+    <div class="fifa-card" (click)="irAPantalla(2)">
+      <div class="fifa-card-inner">
+        <div class="fifa-card-icon-wrap">
+          <img src="/assets/iconos/estrella.svg" alt="" class="fifa-card-icon" />
+        </div>
+        <h3 class="fifa-card-title">{{ 'TAREAS.FAVORITAS' | translate }}</h3>
+        <p class="fifa-card-desc">{{ 'TAREAS.FAVORITAS_DESC' | translate }}</p>
+      </div>
+    </div>
+    <div class="fifa-card" (click)="irAPantalla(2)">
+      <div class="fifa-card-inner">
+        <div class="fifa-card-icon-wrap">
+          <img src="/assets/iconos/cono-de-trafico.svg" alt="" class="fifa-card-icon" />
+        </div>
+        <h3 class="fifa-card-title">{{ 'TAREAS.MIS_TAREAS' | translate }}</h3>
+        <p class="fifa-card-desc">{{ 'TAREAS.MIS_TAREAS_DESC' | translate }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal tablero táctico (iframe) -->
+<div class="modal-tactica-backdrop" *ngIf="showModalTactica" (click)="cerrarModalTactica()"></div>
+<div class="modal-tactica" *ngIf="showModalTactica">
+  <div class="modal-tactica-content" (click)="$event.stopPropagation()">
+    <div class="modal-tactica-header">
+      <h2 class="modal-tactica-title">{{ 'TAREAS.DIBUJAR' | translate }}</h2>
+      <button type="button" class="modal-tactica-close" (click)="cerrarModalTactica()" [attr.aria-label]="'COMMON.CLOSE' | translate">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-tactica-body">
+      <iframe [src]="urlTacticalBoardSafe" class="modal-tactica-iframe" title="Tablero táctico"></iframe>
+    </div>
+  </div>
 </div>

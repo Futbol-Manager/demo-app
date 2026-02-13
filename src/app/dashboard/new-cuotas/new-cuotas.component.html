@@ -189,7 +189,9 @@
                   </td>
 
                   <td class="name-cell">
-                    {{ player.nombre }} {{ player.apellido }}
+                    <button type="button" class="btn-link-name" (click)="abrirModalInfoJugador(player)">
+                      {{ player.nombre }} {{ player.apellido }}
+                    </button>
                   </td>
 
                   <td>{{ player.nameTeam || ('CUOTAS.NO_TEAM' | translate) }}</td>

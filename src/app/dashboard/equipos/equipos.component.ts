@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { TeamNew } from 'src/app/core/services/team/team.model';
-import { TeamService } from 'src/app/core/services/team/team.service';
+import { TeamService, EquiposListCache } from 'src/app/core/services/team/team.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { ClubService } from 'src/app/core/services/club/club.service';
-import { distinctUntilChanged, filter } from 'rxjs/operators';
+import { distinctUntilChanged, filter, take } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Location } from '@angular/common';
 
@@ -237,7 +237,6 @@ export class EquiposComponent implements OnInit {
 
     this.isAndroid = /android/i.test(userAgent);
     this.isiOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window);
-    let datosYaCargados = false; // Bandera para evitar múltiples carga
     if (
       localStorage.getItem('temporada') != null &&
       localStorage.getItem('temporada') != undefined
@@ -248,11 +247,10 @@ export class EquiposComponent implements OnInit {
 
     this.loginService.usuarioActual
       .pipe(
-        filter((user) => !!user), // Solo procede si `user` tiene un valor
-        distinctUntilChanged() // Asegura que el valor de `user` haya cambiado
+        filter((user) => !!user),
+        take(1) // Una sola carga para evitar bloqueos por emisiones repetidas
       )
       .subscribe((user) => {
-        if (datosYaCargados) return; // Evita múltiples ejecuciones si ya cargó
         this.usuarioActual = user;
         this.profileId = this.usuarioActual!.profileType.profileId;
         this.userId = this.usuarioActual!.userId;
@@ -271,15 +269,14 @@ export class EquiposComponent implements OnInit {
         } else if (this.profileId < 2) {
           this.cargarListadoEquiposForClub();
         } else if (this.profileId > 2) {
-          this.datosCargando = false;
           this.teamService
             .getTeamByPlayer(this.userId.toString(), this.temporadaStoredValue)
             .subscribe(
               (response: Response) => {
-                if (response.data !== null) {
-                  this.listHijos = response.data;
+                this.datosCargando = false;
+                if (response?.data != null) {
+                  this.listHijos = Array.isArray(response.data) ? response.data : [];
                   this.datosCargados = true;
-
                   let goToDatos = false;
                   let teamId = 0;
                   for (let a = 0; a < this.listHijos.length; a++) {
@@ -289,23 +286,18 @@ export class EquiposComponent implements OnInit {
                       break;
                     }
                   }
-
                   if (goToDatos) {
                     this.router.navigate(['/dashboard/jugadores', teamId]);
                   }
-                } else {
-                  console.error(
-                    'La respuesta del servicio no tiene la estructura esperada',
-                    response
-                  );
                 }
               },
               (error) => {
                 console.error('Error al cargar el listado de equipos', error);
+                this.datosCargando = false;
+                this.datosCargados = true;
               }
             );
         }
-        datosYaCargados = true; // Actualiza la bandera después de la primera carga
       });
 
     const storedValue = localStorage.getItem('federacionSeleccionada');
@@ -389,52 +381,44 @@ export class EquiposComponent implements OnInit {
       });
   }
 
+  /** Aplica datos desde la caché para mostrar la lista al instante al volver. */
+  private applyEquiposCache(cache: EquiposListCache): void {
+    this.listTeam = Array.isArray(cache.listTeam) ? [...cache.listTeam] : [];
+    this.pictureClub = cache.pictureClub ?? '';
+    this.noPicture = cache.noPicture ?? false;
+    if (cache.clubId != null) this.clubId = cache.clubId;
+    if (cache.numEquipos != null) this.numEquipos = cache.numEquipos;
+    if (cache.datosNoCargados != null) this.datosNoCargados = cache.datosNoCargados;
+    if (cache.clubOk != null) this.clubOk = cache.clubOk;
+  }
+
   checkSuscripcion() {
-    //acceder a un endpoint que revisa la sus, si es null, ver si está dentro de la semana que se creo la cuenta
-    //si ya paso la semana, se revisara luego la fecha de renovacion, si no paso aun, pues no hacer nada, si paso
-    //revisar en stripe el estado, porque si esta bien, hay que actualizar la fecha y si esta mal, actualizar a F el valido y la fecha, si esta mal
-    // avisar por un alert
     this.teamService
       .getEstadoSuscripcion(this.userId, this.profileId)
-      .subscribe(
-        (response: Response) => {
-          this.numEquipos = response.data;
-          if (response.data == 999) {
-            //significa que es un club con plan gratuido
-            //hay que ver si tiene mas de 50 padres que pagan cuota, de ser asi, desbloquear los menus
-            /*this.teamService.getPlayersByTeamByClubVerify(this.userId, this.temporadaStoredValue).subscribe(
-            (resp: Response) => {
-              this.numPadresPagados = response.data;
-              if (resp.data < 49) {
-                //significa que lo puede tener todo
-                this.clubOk = true;
-              } else {
-                //significa que no tiene acceso
-              }
-            },
-            (error) => {
-              console.error('Error al cargar el listado de equipos', error);
-            }
-          );*/
-
-            //significa que lo puede tener todo
+      .subscribe({
+        next: (response: Response) => {
+          this.numEquipos = response?.data ?? 0;
+          if (this.numEquipos === 999) {
             this.clubOk = true;
           }
-
-          if (response.data < 1) {
-            //significa que NO es valido el acceso
+          if (this.numEquipos < 1) {
             this.datosNoCargados = true;
           } else {
-            //significa que está solo, sin club
             this.datosCargados = true;
-            //this.clubOk = true;
           }
           this.datosCargando = false;
+          this.teamService.setEquiposCache(this.userId, this.temporadaStoredValue, this.profileId, {
+            numEquipos: this.numEquipos,
+            datosNoCargados: this.datosNoCargados,
+            clubOk: this.clubOk,
+          });
         },
-        (error) => {
+        error: (error) => {
           console.error('Error al cargar el listado de equipos', error);
-        }
-      );
+          this.datosCargando = false;
+          this.datosCargados = true;
+        },
+      });
   }
 
   // Método para cargar el listado de equipos
@@ -442,31 +426,40 @@ export class EquiposComponent implements OnInit {
     localStorage.setItem('temporada', this.temporada);
     this.temporadaStoredValue = this.temporada;
 
+    const cached = this.teamService.getEquiposCache(this.userId, this.temporadaStoredValue, this.profileId);
+    if (cached && cached.listTeam.length > 0) {
+      this.applyEquiposCache(cached);
+      this.datosCargando = false;
+      this.datosCargados = true;
+    }
+
     this.teamService
       .getTeams(this.userId.toString(), this.temporadaStoredValue)
-      .subscribe(
-        (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
-          if (response && response.data) {
+      .subscribe({
+        next: (response: Response) => {
+          if (response?.data) {
             if (response.data.picture != null) {
               this.pictureClub = response.data.picture;
               this.noPicture = true;
             }
-            // Mapea los datos bajo 'data' a instancias del modelo Team
-            this.listTeam = response.data.teams; //.map((team: TeamConJugadores) => new TeamConJugadores(team));
+            this.listTeam = Array.isArray(response.data.teams) ? response.data.teams : [];
+            this.teamService.setEquiposCache(this.userId, this.temporadaStoredValue, this.profileId, {
+              listTeam: this.listTeam,
+              pictureClub: this.pictureClub,
+              noPicture: this.noPicture,
+            });
           } else {
-            console.error(
-              'La respuesta del servicio no tiene la estructura esperada',
-              response
-            );
+            this.listTeam = [];
           }
           this.checkSuscripcion();
-          //this.datosCargados = true;
         },
-        (error) => {
+        error: (error) => {
           console.error('Error al cargar el listado de equipos', error);
-        }
-      );
+          this.datosCargando = false;
+          this.listTeam = [];
+          this.checkSuscripcion();
+        },
+      });
   }
   goBack(): void {
     this.location.back();
@@ -514,32 +507,42 @@ export class EquiposComponent implements OnInit {
     localStorage.setItem('temporada', this.temporada);
     this.temporadaStoredValue = this.temporada;
 
+    const cached = this.teamService.getEquiposCache(this.userId, this.temporadaStoredValue, this.profileId);
+    if (cached && cached.listTeam.length > 0) {
+      this.applyEquiposCache(cached);
+      this.datosCargando = false;
+      this.datosCargados = true;
+    }
+
     this.teamService
       .getTeamByClub(this.userId.toString(), this.temporadaStoredValue)
-      .subscribe(
-        (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
-          if (response && response.data) {
-            this.clubId = response.data.club.clubId;
-            if (response.data.club.picture != null) {
+      .subscribe({
+        next: (response: Response) => {
+          if (response?.data) {
+            this.clubId = response.data.club?.clubId ?? 0;
+            if (response.data.club?.picture != null) {
               this.pictureClub = response.data.club.picture;
               this.noPicture = true;
             }
-            // Mapea los datos bajo 'data' a instancias del modelo Team
-            this.listTeam = response.data.teams; //.map((team: TeamConJugadores) => new TeamConJugadores(team));
+            this.listTeam = Array.isArray(response.data.teams) ? response.data.teams : [];
+            this.teamService.setEquiposCache(this.userId, this.temporadaStoredValue, this.profileId, {
+              listTeam: this.listTeam,
+              pictureClub: this.pictureClub,
+              noPicture: this.noPicture,
+              clubId: this.clubId,
+            });
           } else {
-            console.error(
-              'La respuesta del servicio no tiene la estructura esperada',
-              response
-            );
+            this.listTeam = [];
           }
           this.checkSuscripcion();
-          //this.datosCargados = true;
         },
-        (error) => {
+        error: (error) => {
           console.error('Error al cargar el listado de equipos', error);
-        }
-      );
+          this.datosCargando = false;
+          this.listTeam = [];
+          this.checkSuscripcion();
+        },
+      });
   }
 
   // Método para cargar el listado de clubes
@@ -641,6 +644,9 @@ export class EquiposComponent implements OnInit {
               teamId: resp.data.teamId,
             };
             this.listTeam.push(newTeam);
+            this.teamService.setEquiposCache(this.userId, this.temporadaStoredValue, this.profileId, {
+              listTeam: this.listTeam,
+            });
 
             // Cerrar el modal después de crear el equipo
             this.cerrarModal();
@@ -678,9 +684,10 @@ export class EquiposComponent implements OnInit {
     this.teamService.deleteLogicTeam(teamId.toString()).subscribe(
       (response) => {
         console.log('Equipo eliminado con éxito:', response);
-        // Cargar nuevamente el listado de equipos después de la eliminación exitosa
         this.listTeam.splice(index, 1);
-        //this.cargarListadoEquipos();
+        this.teamService.setEquiposCache(this.userId, this.temporadaStoredValue, this.profileId, {
+          listTeam: this.listTeam,
+        });
       },
       (error) => {
         console.error('Error al eliminar el equipo:', error);

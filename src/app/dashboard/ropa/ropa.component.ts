@@ -12,8 +12,11 @@ import * as $ from 'jquery';
 import 'datatables.net';
 import { RopaClub, RopaJugador } from 'src/app/core/services/team/club.model';
 import * as XLSX from 'xlsx';
-import { Subject, debounceTime } from 'rxjs';
+import { Subject, debounceTime, combineLatest } from 'rxjs';
+import { filter, take } from 'rxjs/operators';
 import { Location } from '@angular/common';
+import { MatDialog } from '@angular/material/dialog';
+import { PlayerInfoDialogComponent, PlayerInfoDialogData } from '../player-info-dialog/player-info-dialog.component';
 
 @Component({
   selector: 'app-ropa',
@@ -85,6 +88,7 @@ export class RopaComponent implements OnInit {
     private elementRef: ElementRef,
     private http: HttpClient,
     private location: Location,
+    private dialog: MatDialog,
   ) {
     this.abrigoSubject
       .pipe(
@@ -96,16 +100,6 @@ export class RopaComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loginService.usuarioActual.subscribe((user) => {
-      this.usuarioActual = user;
-      this.userId = this.usuarioActual!.userId;
-      // Suscribirse a los cambios en los parámetros de la URL
-      this.route.params.subscribe((params) => {
-        // Obtener el valor de clubId de los parámetros
-        this.clubId = +params['clubId']; // El + convierte el valor a número
-      });
-    });
-
     if (
       localStorage.getItem('temporada') != null &&
       localStorage.getItem('temporada') != undefined
@@ -113,57 +107,92 @@ export class RopaComponent implements OnInit {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
 
-    this.clubService
-      .getRopaClub(this.clubId.toString(), this.temporadaStoredValue)
-      .subscribe(
-        (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
-          if (response.data !== null) {
-            this.ropaClub = response.data;
-            this.ropaClub.clubId = this.clubId;
-            this.ropaClub.temporada = this.temporadaStoredValue;
-            //recuperar las prendas que han de verse y las que no
-            this.ocultarColumnasRopa();
-            this.clubService
-              .getRopaJugadoresByClubForTemp(
-                this.clubId.toString(),
-                this.temporadaStoredValue,
-              )
-              .subscribe(
-                (response: Response) => {
-                  // Verifica que la propiedad 'data' exista en la respuesta
-                  if (response.data !== null) {
-                    this.ropaPlayers = response.data;
-                    setTimeout(() => {
-                      this.inicializarDataTable();
-                      this.datosCargados = true;
-                    }, 1000);
-                  } else {
-                    console.error(
-                      'La respuesta del servicio no tiene la estructura esperada',
-                      response,
-                    );
-                  }
-                },
-                (error) => {
-                  console.error('Error al cargar el listado de equipos', error);
-                },
-              );
-          } else {
-            console.error(
-              'La respuesta del servicio no tiene la estructura esperada',
-              response,
-            );
-          }
-        },
-        (error) => {
-          console.error('Error al cargar el listado de equipos', error);
-        },
-      );
+    combineLatest([
+      this.route.params.pipe(take(1)),
+      this.loginService.usuarioActual.pipe(filter((u) => !!u), take(1)),
+    ]).subscribe(([params, user]) => {
+      this.clubId = +params['clubId'];
+      this.usuarioActual = user;
+      this.userId = this.usuarioActual!.userId;
+
+      const cached = this.clubService.getRopaCache(this.clubId, this.temporadaStoredValue);
+      if (cached?.ropaClub && cached?.ropaPlayers?.length !== undefined) {
+        this.ropaClub = cached.ropaClub;
+        this.ropaClub.clubId = this.clubId;
+        this.ropaClub.temporada = this.temporadaStoredValue;
+        this.ropaPlayers = [...(cached.ropaPlayers || [])];
+        this.prendasOcultar = [0];
+        this.ocultarColumnasRopa();
+        setTimeout(() => {
+          this.inicializarDataTable();
+          this.datosCargados = true;
+        }, 100);
+      }
+
+      this.clubService
+        .getRopaClub(this.clubId.toString(), this.temporadaStoredValue)
+        .subscribe({
+          next: (response: Response) => {
+            if (response.data !== null) {
+              this.ropaClub = response.data;
+              this.ropaClub.clubId = this.clubId;
+              this.ropaClub.temporada = this.temporadaStoredValue;
+              this.prendasOcultar = [0];
+              this.ocultarColumnasRopa();
+              this.clubService
+                .getRopaJugadoresByClubForTemp(
+                  this.clubId.toString(),
+                  this.temporadaStoredValue,
+                )
+                .subscribe({
+                  next: (res: Response) => {
+                    if (res.data !== null) {
+                      this.ropaPlayers = res.data;
+                      this.clubService.setRopaCache(this.clubId, this.temporadaStoredValue, {
+                        ropaClub: this.ropaClub,
+                        ropaPlayers: this.ropaPlayers,
+                      });
+                      setTimeout(() => {
+                        this.inicializarDataTable();
+                        this.datosCargados = true;
+                      }, this.datosCargados ? 0 : 1000);
+                    }
+                  },
+                  error: (err) => {
+                    console.error('Error al cargar el listado de equipos', err);
+                  },
+                });
+            }
+          },
+          error: (error) => {
+            console.error('Error al cargar el listado de equipos', error);
+          },
+        });
+    });
   }
 
   goBack(): void {
     this.location.back();
+  }
+
+  /** Abre el modal de información del jugador (misma lógica que info-jugadores / new-cuotas). */
+  abrirModalInfoJugador(ropa: any): void {
+    const player = ropa?.player;
+    const teamId = ropa?.team?.teamId;
+    if (!player?.playerId || teamId == null) return;
+    const data: PlayerInfoDialogData = {
+      player: { ...player, teamId },
+      teamId,
+      initialTab: 'personal',
+    };
+    this.dialog.open(PlayerInfoDialogComponent, {
+      data,
+      width: '95%',
+      maxWidth: '900px',
+      maxHeight: '90vh',
+      panelClass: 'player-info-dialog-panel',
+      backdropClass: 'player-info-dialog-backdrop',
+    });
   }
 
   ocultarColumnasRopa() {

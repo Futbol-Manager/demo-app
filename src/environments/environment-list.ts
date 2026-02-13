@@ -7,11 +7,11 @@ export const localenvironment = {
   images: `${APIURLPROD2}${ImageEnvironments.PRO}/`,
   stripePublicKey: 'pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU'
   //stripePublicKey: 'pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL'
-  
+
   //para apuntar a la api local y la bbdd de desa
   /*apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
   images: `${APIURLPROD2}${ImageEnvironments.DESA}/`,*/
-  
+
   //para apuntar a la api local y a la bbdd de pro
   /*apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
   images: `${APIURLPROD2}${ImageEnvironments.DESA}/`,*/
@@ -26,7 +26,7 @@ export const prodenvironment = {
   apiUrl: `${APIURLPROD2}${ApiEnvironments.PRO}`,
   images: `${APIURLPROD2}${ImageEnvironments.PRO}/`,
   stripePublicKey: 'pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL'
-  
+
   //para apuntar a la api-desa
   /*apiUrl: `${APIURLPROD2}${ApiEnvironments.DESA}`,
   images: `${APIURLPROD2}${ImageEnvironments.DESA}/`,*/

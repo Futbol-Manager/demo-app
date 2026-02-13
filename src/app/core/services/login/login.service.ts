@@ -19,13 +19,31 @@ import { Response } from 'src/app/core/services/models/response.model';
 })
 export class LoginService {
 
-  private usuarioAutenticado: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
+  private usuarioAutenticado: BehaviorSubject<User | null>;
 
   constructor(
     private http: HttpClient,
     private router: Router,
     //private localStorage: LocalStorage
-  ) { }
+  ) {
+    // Restaurar el usuario desde localStorage al iniciar la app (recarga de página / recompilación)
+    const usuarioGuardado = localStorage.getItem('usuario');
+    const token = localStorage.getItem('token');
+
+    if (usuarioGuardado && token) {
+      try {
+        const user: User = JSON.parse(usuarioGuardado);
+        this.usuarioAutenticado = new BehaviorSubject<User | null>(user);
+      } catch (e) {
+        // Si el JSON está corrupto, limpiar y empezar sin sesión
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('token');
+        this.usuarioAutenticado = new BehaviorSubject<User | null>(null);
+      }
+    } else {
+      this.usuarioAutenticado = new BehaviorSubject<User | null>(null);
+    }
+  }
 
   login(login: LoginModel): Observable<LoginResponse> {
     const url: string = environment.apiUrl + 'auth/login';

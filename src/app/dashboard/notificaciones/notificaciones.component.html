@@ -1,58 +1,48 @@
 <div class="back-container">
-  <button class="btn-back-clean" (click)="goBack()">
+  <button type="button" class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
   </button>
 </div>
-<div class="app-shell">
 
-  <!-- ===== LAYOUT 3 COLUMNAS ===== -->
+<div class="app-shell">
   <div class="gmail-layout" [class.reading]="selectCorreo">
 
-    <!-- ===== SIDEBAR ===== -->
+    <!-- Sidebar -->
     <aside class="sidebar-gmail">
-
-      <!-- BOTÓN REDACTAR -->
-      <button class="compose-gmail" (click)="newCorreo()">
-        <i class="bi bi-pencil"></i>
-        <span class="compose-label">
-          {{ 'NOTIFICATIONS.COMPOSE' | translate }}
-        </span>
+      <button type="button" class="compose-gmail" (click)="newCorreo()">
+        <i class="bi bi-pencil-square"></i>
+        <span class="compose-label">{{ 'NOTIFICATIONS.COMPOSE' | translate }}</span>
       </button>
-
-
-      <!-- NAVEGACIÓN -->
       <nav class="nav-gmail">
-
-        <a class="nav-item active" [class.active]="currentFolder === 'inbox'" (click)="mostrarRecibidos()">
+        <a class="nav-item" [class.active]="currentFolder === 'inbox'" (click)="mostrarRecibidos()">
           <i class="bi bi-inbox"></i>
-          <span class="label">
-            {{ 'NOTIFICATIONS.INBOX' | translate }}
-          </span>
-
-          <!-- CONTADOR -->
-          <span class="badge" *ngIf="receivedCount  > 0">
-            {{ receivedCount }}
-          </span>
+          <span class="label">{{ 'NOTIFICATIONS.INBOX' | translate }}</span>
+          <span class="badge" *ngIf="receivedCount > 0">{{ receivedCount }}</span>
         </a>
-
         <a class="nav-item" [class.active]="currentFolder === 'sent'" (click)="mostrarEnviados()">
           <i class="bi bi-send"></i>
-          <span class="label">
-            {{ 'NOTIFICATIONS.SENT' | translate }}
-          </span>
+          <span class="label">{{ 'NOTIFICATIONS.SENT' | translate }}</span>
         </a>
-
       </nav>
-
     </aside>
 
-
-    <!-- ===== LISTA DE CORREOS ===== -->
+    <!-- Lista -->
     <section class="mail-list">
-      <!-- 🔥 SKELETON -->
-      <ng-container *ngIf="loadingCorreos; else correoList">
+      <!-- Barra búsqueda y acciones -->
+      <div class="mail-list-toolbar">
+        <div class="search-wrap">
+          <i class="bi bi-search"></i>
+          <input type="text" class="search-input" [placeholder]="'NOTIFICATIONS.SEARCH_PLACEHOLDER' | translate"
+            [(ngModel)]="searchQuery" />
+        </div>
+        <button type="button" class="btn-mark-all" *ngIf="hasUnreadInInbox" (click)="markAllAsRead()">
+          <i class="bi bi-check-all"></i>
+          <span>{{ 'NOTIFICATIONS.MARK_ALL_READ' | translate }}</span>
+        </button>
+      </div>
 
+      <ng-container *ngIf="loadingCorreos; else correoList">
         <div class="mail-skeleton" *ngFor="let sk of [1,2,3,4,5,6,7,8]">
           <div class="sk-left">
             <div class="sk-line sk-from"></div>
@@ -62,65 +52,64 @@
         </div>
       </ng-container>
 
-      <!-- ===== LISTA REAL ===== -->
       <ng-template #correoList>
-
-        <!-- FILTROS -->
         <div class="filters" *ngIf="currentFolder === 'inbox'">
-          <button class="filter-btn" [class.active]="currentFilter === 'all'" (click)="mostrarTodos()">
+          <button type="button" class="filter-btn" [class.active]="currentFilter === 'all'" (click)="mostrarTodos()">
             {{ 'NOTIFICATIONS.ALL' | translate }}
           </button>
-
-          <button class="filter-btn" [class.active]="currentFilter === 'read'" (click)="mostrarLeidos()">
+          <button type="button" class="filter-btn" [class.active]="currentFilter === 'read'" (click)="mostrarLeidos()">
             {{ 'NOTIFICATIONS.READ' | translate }}
           </button>
-
-          <button class="filter-btn" [class.active]="currentFilter === 'unread'" (click)="mostrarNoLeidos()">
+          <button type="button" class="filter-btn" [class.active]="currentFilter === 'unread'" (click)="mostrarNoLeidos()">
             {{ 'NOTIFICATIONS.UNREAD' | translate }}
           </button>
         </div>
 
-        <div class="mail-item" *ngFor="let correo of correos; let i = index" [class.unread]="!correo.leido && showBtn"
-          [class.sent]="!showBtn" [class.active]="correo === correoSelected" (click)="openCorreo(correo, i)">
+        <!-- Empty states -->
+        <div class="empty-state" *ngIf="correosFiltered.length === 0 && currentFolder === 'inbox' && !searchQuery.trim()">
+          <i class="bi bi-inbox empty-icon"></i>
+          <p class="empty-title">{{ 'NOTIFICATIONS.EMPTY_INBOX' | translate }}</p>
+        </div>
+        <div class="empty-state" *ngIf="correosFiltered.length === 0 && currentFolder === 'sent' && !searchQuery.trim()">
+          <i class="bi bi-send empty-icon"></i>
+          <p class="empty-title">{{ 'NOTIFICATIONS.EMPTY_SENT' | translate }}</p>
+        </div>
+        <div class="empty-state" *ngIf="correosFiltered.length === 0 && searchQuery.trim()">
+          <i class="bi bi-search empty-icon"></i>
+          <p class="empty-title">{{ 'NOTIFICATIONS.EMPTY_SEARCH' | translate }}</p>
+        </div>
 
-
-          <!-- IZQUIERDA -->
+        <div class="mail-item" *ngFor="let correo of correosFiltered; let i = index"
+          [class.unread]="currentFolder === 'inbox' && correo.leido === 0"
+          [class.sent]="currentFolder === 'sent'"
+          [class.active]="isActiveCorreo(correo)"
+          (click)="openCorreo(correo)">
           <div class="mail-main">
             <span class="from">
-              <span class="unread-dot" *ngIf="showBtn && correo.leido === 0"></span>
-              {{ showBtn ? correo.remitente : correo.destinatario }}
+              <span class="unread-dot" *ngIf="currentFolder === 'inbox' && correo.leido === 0"></span>
+              {{ currentFolder === 'inbox' ? correo.remitente : correo.destinatario }}
             </span>
-
             <span class="subject">
               {{ correo.asunto }}
-              <span class="preview">
-                – {{ 'NOTIFICATIONS.OPEN_MESSAGE' | translate }}
-              </span>
+              <span class="preview"> – {{ 'NOTIFICATIONS.OPEN_MESSAGE' | translate }}</span>
             </span>
           </div>
-
-          <!-- DERECHA -->
           <div class="mail-actions">
-            <span class="date">
-              {{ correo.fechaCreate }}
-            </span>
-
-            <button class="delete-btn" (click)="deleteCorreo(correo, i); $event.stopPropagation()"
-              title="{{ 'NOTIFICATIONS.DELETE' | translate }}">
+            <span class="date">{{ formatDate(correo.fechaCreate) }}</span>
+            <button type="button" class="action-btn" *ngIf="currentFolder === 'inbox' && correo.leido === 0"
+              (click)="markAsRead(correo, $event)" [title]="'NOTIFICATIONS.MARK_READ' | translate">
+              <i class="bi bi-envelope-open"></i>
+            </button>
+            <button type="button" class="action-btn delete-btn" (click)="openDeleteConfirm(correo, i, $event)"
+              [title]="'NOTIFICATIONS.DELETE' | translate">
               <i class="bi bi-trash"></i>
             </button>
           </div>
-
         </div>
-
-
       </ng-template>
-
     </section>
 
-    <!-- ===== PANEL DE LECTURA ===== -->
-
-    <!-- SKELETON (MIENTRAS CARGA) -->
+    <!-- Panel lectura -->
     <section class="mail-reader" *ngIf="loadingCorreos">
       <div class="reader-placeholder">
         <div class="sk-line sk-title"></div>
@@ -130,116 +119,99 @@
       </div>
     </section>
 
-    <!-- LECTURA REAL -->
     <section class="mail-reader" *ngIf="!loadingCorreos && selectCorreo">
-      <!-- 🔙 VOLVER SOLO EN MOBILE -->
-      <button class="btn-back-clean mobile-back" (click)="cerrarLectura()">
+      <button type="button" class="btn-back-clean mobile-back" (click)="cerrarLectura()">
         <i class="bi bi-arrow-left"></i>
         <span>{{ 'NOTIFICATIONS.MESSAGES' | translate }}</span>
       </button>
-
-      <h1 class="reader-subject">
-        {{ correoSelected.asunto }}
-      </h1>
-
-      <div class="reader-meta">
-        <strong>{{ correoSelected.remitente }}</strong>
+      <div class="reader-header-pro">
+        <h1 class="reader-subject">{{ correoSelected.asunto }}</h1>
+        <div class="reader-meta">
+          <strong>{{ currentFolder === 'inbox' ? correoSelected.remitente : correoSelected.destinatario }}</strong>
+        </div>
+        <div class="reader-meta">
+          {{ 'NOTIFICATIONS.SENT_AT' | translate }} {{ correoSelected.fechaCreate }}
+        </div>
       </div>
-      <div class="reader-meta">
-        {{ 'NOTIFICATIONS.SENT_AT' | translate }}
-        {{ correoSelected.fechaCreate }}
-      </div>
-      <hr>
-
       <div class="reader-body" [innerHTML]="correoSelected.body"></div>
     </section>
 
-    <!-- EMPTY STATE (CARGADO PERO SIN SELECCIÓN) -->
     <section class="mail-reader" *ngIf="!loadingCorreos && !selectCorreo">
       <div class="empty-reader">
-        {{ 'NOTIFICATIONS.SELECT_MESSAGE' | translate }}
+        <i class="bi bi-envelope-open-heart empty-reader-icon"></i>
+        <p>{{ 'NOTIFICATIONS.SELECT_MESSAGE' | translate }}</p>
       </div>
     </section>
   </div>
 
-  <!-- ================= MODAL NUEVO CORREO ================= -->
-  <div *ngIf="showModalNew" class="custom-modal-backdrop" >
+  <!-- Toast envío correcto -->
+  <div class="toast-send-success" *ngIf="sendSuccess">
+    <i class="bi bi-check-circle-fill"></i>
+    <span>{{ 'NOTIFICATIONS.SEND_SUCCESS' | translate }}</span>
+  </div>
 
+  <!-- Modal nuevo correo -->
+  <div *ngIf="showModalNew" class="custom-modal-backdrop">
     <div class="modal fade show d-block" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered modal-xl compose-modal">
         <div class="modal-content mail-compose-modal">
-
-          <!-- HEADER -->
-          <div class="modal-header">
+          <div class="modal-header modal-header-pro">
             <h5 class="modal-title">
               <i class="bi bi-envelope-paper me-2"></i>
               {{ 'NOTIFICATIONS.COMPOSE' | translate }}
             </h5>
-            <button type="button" class="btn-close" (click)="cerrarModalNew()"></button>
+            <button type="button" class="btn-close btn-close-white" (click)="cerrarModalNew()"></button>
           </div>
-
-          <!-- BODY -->
           <div class="modal-body">
-
-            <!-- DESTINATARIOS -->
             <div class="mb-3">
-              <label class="form-label">
-                {{ 'NOTIFICATIONS.TO' | translate }}
-              </label>
-
-              <select [(ngModel)]="correoNew.destinatarios" class="form-control" id="destinatarios">
-
-                <option *ngIf="usuarioActual!.profileType.profileId == 1" value="0">
-                  Para todo el club
+              <label class="form-label">{{ 'NOTIFICATIONS.TO' | translate }}</label>
+              <select [(ngModel)]="correoNew.destinatarios" class="form-control form-select-pro" id="destinatarios">
+                <option *ngIf="usuarioActual?.profileType?.profileId == 1" value="0">
+                  {{ 'NOTIFICATIONS.TO_CLUB' | translate }}
                 </option>
-
-                <option *ngIf="usuarioActual!.profileType.profileId == 1" value="1">
-                  Para todos los entrenadores
+                <option *ngIf="usuarioActual?.profileType?.profileId == 1" value="1">
+                  {{ 'NOTIFICATIONS.TO_ALL_COACHES' | translate }}
                 </option>
-
                 <option *ngFor="let team of listTeamsForCombo" [value]="team.value">
-                  Para el equipo {{ team.name }}
+                  {{ 'NOTIFICATIONS.TO_TEAM' | translate:{ name: team.name } }}
                 </option>
-
               </select>
             </div>
-
-            <!-- ASUNTO -->
             <div class="mb-3">
-              <label class="form-label">
-                {{ 'NOTIFICATIONS.SUBJECT' | translate }}
-              </label>
-              <input type="text" [(ngModel)]="correoNew.asunto" class="form-control" placeholder="Escribe el asunto">
+              <label class="form-label">{{ 'NOTIFICATIONS.SUBJECT' | translate }}</label>
+              <input type="text" [(ngModel)]="correoNew.asunto" class="form-control form-select-pro" placeholder="{{ 'NOTIFICATIONS.SUBJECT' | translate }}">
             </div>
-
-            <!-- MENSAJE -->
             <div class="mb-3">
-              <label class="form-label">
-                {{ 'NOTIFICATIONS.MESSAGE' | translate }}
-              </label>
-
-              <!-- Summernote -->
-              <div id="summernoteNew" class="compose-editor">
-              </div>
+              <label class="form-label">{{ 'NOTIFICATIONS.MESSAGE' | translate }}</label>
+              <div id="summernoteNew" class="compose-editor"></div>
             </div>
-
           </div>
-
-          <!-- FOOTER -->
-          <div class="modal-footer">
-
-            <button class="btn btn-secondary" (click)="cerrarModalNew()">
+          <div class="modal-footer modal-footer-pro">
+            <button type="button" class="btn btn-cancel-pro" (click)="cerrarModalNew()">
               {{ 'NOTIFICATIONS.CANCEL' | translate }}
             </button>
-
-            <button class="btn btn-success" (click)="guardarCorreo()" [disabled]="!correoNew.asunto">
-              <i class="bi bi-send me-1"></i>
-              {{ 'NOTIFICATIONS.SEND' | translate }}
+            <button type="button" class="btn btn-send-pro" (click)="guardarCorreo()" [disabled]="!correoNew.asunto || isSending">
+              <i class="bi bi-send me-1" *ngIf="!isSending"></i>
+              <span *ngIf="isSending">{{ 'TITLES.LOAD' | translate }}</span>
+              <span *ngIf="!isSending">{{ 'NOTIFICATIONS.SEND' | translate }}</span>
             </button>
-
           </div>
-
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Modal confirmar eliminar -->
+  <div class="modal-backdrop-pro" *ngIf="showDeleteConfirm" (click)="cancelDelete()"></div>
+  <div class="modal-confirm-pro" *ngIf="showDeleteConfirm" (click)="cancelDelete()">
+    <div class="modal-confirm-content" (click)="$event.stopPropagation()">
+      <div class="modal-confirm-icon"><i class="bi bi-trash"></i></div>
+      <h3 class="modal-confirm-title">{{ 'NOTIFICATIONS.DELETE_CONFIRM_TITLE' | translate }}</h3>
+      <p class="modal-confirm-message">{{ 'NOTIFICATIONS.DELETE_CONFIRM_MESSAGE' | translate }}</p>
+      <div class="modal-confirm-actions">
+        <button type="button" class="btn-cancel-pro" (click)="cancelDelete()">{{ 'NOTIFICATIONS.CANCEL' | translate }}</button>
+        <button type="button" class="btn-delete-pro" (click)="confirmDelete()">{{ 'NOTIFICATIONS.DELETE' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>

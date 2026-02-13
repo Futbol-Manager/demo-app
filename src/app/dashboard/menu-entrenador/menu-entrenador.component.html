@@ -8,11 +8,11 @@
 </div>
 <div class="container dashboard-container">
   <div class="row g-3">
-    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(2)">
-      <div class="dashboard-card bg-training">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(5)">
+      <div class="dashboard-card bg-calendar">
         <div class="card-overlay">
-          <i class="bi bi-clipboard-check card-action-icon"></i>
-          <h5>{{ 'DASHBOARD_COACH.TRAINING' | translate }}</h5>
+          <i class="bi bi-calendar-event card-action-icon"></i>
+          <h5>{{ 'DASHBOARD_COACH.CALENDAR' | translate }}</h5>
         </div>
       </div>
     </div>
@@ -26,23 +26,24 @@
       </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(4)">
-      <div class="dashboard-card bg-match">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(7)">
+      <div class="dashboard-card bg-players">
         <div class="card-overlay">
-          <i class="bi bi-dribbble card-action-icon"></i>
-          <h5>{{ 'DASHBOARD_COACH.MATCH' | translate }}</h5>
+          <i class="bi bi-people card-action-icon"></i>
+          <h5>{{ 'DASHBOARD_COACH.PLAYERS' | translate }}</h5>
         </div>
       </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(5)">
-      <div class="dashboard-card bg-calendar">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(8)">
+      <div class="dashboard-card bg-team-info">
         <div class="card-overlay">
-          <i class="bi bi-calendar-event card-action-icon"></i>
-          <h5>{{ 'DASHBOARD_COACH.CALENDAR' | translate }}</h5>
+          <i class="bi bi-info-circle card-action-icon"></i>
+          <h5>{{ 'DASHBOARD_COACH.TEAM_INFO' | translate }}</h5>
         </div>
       </div>
     </div>
+
   </div>
 
   <!-- ROW 2 -->
@@ -65,14 +66,15 @@
       </div>
     </div>
 
-    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(7)">
-      <div class="dashboard-card bg-players">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(13)">
+      <div class="dashboard-card bg-ranking">
         <div class="card-overlay">
-          <i class="bi bi-people card-action-icon"></i>
-          <h5>{{ 'DASHBOARD_COACH.PLAYERS' | translate }}</h5>
+          <i class="bi bi-trophy card-action-icon"></i>
+          <h5>{{ 'DASHBOARD_COACH.RANKINGS' | translate }}</h5>
         </div>
       </div>
     </div>
+
     <!-- NOTIFICACIONES -->
     <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(9)">
       <div class="dashboard-card bg-notifications">
@@ -95,22 +97,8 @@
         </div>
       </div>
 
-      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(13)">
-        <div class="dashboard-card bg-ranking">
-          <div class="card-overlay">
-            <i class="bi bi-trophy card-action-icon"></i>
-            <h5>{{ 'DASHBOARD_COACH.RANKINGS' | translate }}</h5>
-          </div>
-        </div>
-      </div>
-      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(8)">
-        <div class="dashboard-card bg-team-info">
-          <div class="card-overlay">
-            <i class="bi bi-info-circle card-action-icon"></i>
-            <h5>{{ 'DASHBOARD_COACH.TEAM_INFO' | translate }}</h5>
-          </div>
-        </div>
-      </div>
+
+
     </div>
   </div>
 </div>

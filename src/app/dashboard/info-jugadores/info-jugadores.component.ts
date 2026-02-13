@@ -2,6 +2,7 @@ import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, OnDestroy } fr
 import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
+import { PlayerInfoDialogComponent, PlayerInfoDialogData } from '../player-info-dialog/player-info-dialog.component';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { HttpClient } from '@angular/common/http';
@@ -100,7 +101,8 @@ export class InfoJugadoresComponent implements OnInit {
     private playerService: PlayerService,
     private location: Location,
     private teamService: TeamService,
-    private loginService: LoginService) { }
+    private loginService: LoginService,
+    private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -130,6 +132,21 @@ export class InfoJugadoresComponent implements OnInit {
         this.router.navigate(['/dashboard/cuadro-de-mandos', this.clubId]);
         break;
     }
+  }
+
+  /** Abre el modal de ver información del jugador en esta misma página (sin navegar) */
+  abrirModalInfoJugador(player: any): void {
+    const teamId = player.teamId ?? (this.teamSelected >= 0 && this.teams[this.teamSelected] ? this.teams[this.teamSelected].teamId : null);
+    if (teamId == null) return;
+    const data: PlayerInfoDialogData = { player, teamId, initialTab: 'personal' };
+    this.dialog.open(PlayerInfoDialogComponent, {
+      data,
+      width: '95%',
+      maxWidth: '900px',
+      maxHeight: '90vh',
+      panelClass: 'player-info-dialog-panel',
+      backdropClass: 'player-info-dialog-backdrop',
+    });
   }
 
   cargarListadoJugadores(): void {

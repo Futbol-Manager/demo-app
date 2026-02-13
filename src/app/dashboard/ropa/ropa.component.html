@@ -68,11 +68,11 @@
     <table id="dataTable" class="modern-table">
       <thead class="table-custom">
         <tr>
-          <th>{{ 'CLOTHES.TABLE.ID' | translate }}</th>
-          <th class="columna-nombre">{{ 'CLOTHES.TABLE.NAME' | translate }}</th>
-          <th>{{ 'CLOTHES.TABLE.TEAM' | translate }}</th>
-          <th>{{ 'CLOTHES.TABLE.SHIRT_NAME' | translate }}</th>
-          <th>{{ 'CLOTHES.TABLE.NUMBER' | translate }}</th>
+          <th class="col-id">{{ 'CLOTHES.TABLE.ID' | translate }}</th>
+          <th class="sticky-col col-nombre">{{ 'CLOTHES.TABLE.NAME' | translate }}</th>
+          <th class="col-team">{{ 'CLOTHES.TABLE.TEAM' | translate }}</th>
+          <th class="col-shirt">{{ 'CLOTHES.TABLE.SHIRT_NAME' | translate }}</th>
+          <th class="col-num">{{ 'CLOTHES.TABLE.NUMBER' | translate }}</th>
 
           <th>{{ 'CLOTHES.TABLE.MATCH_SHIRT' | translate }}</th>
           <th>{{ 'CLOTHES.TABLE.MATCH_PANTS' | translate }}</th>
@@ -103,7 +103,7 @@
 
       <tbody>
         <tr *ngFor="let ropa of ropaPlayers; let i = index">
-          <td>{{ ropa.player.playerId }}</td>
+          <td class="col-id">{{ ropa.player.playerId }}</td>
           <!-- <td *ngIf="ropa.player.picturePlayer">
                                     <div class="container">
                                         <img src="https://appsphairatech.com/images/user/{{ ropa.player.picturePlayer }}"
@@ -115,14 +115,18 @@
                                         <span class="bi bi-person" style="font-size: 3rem;"></span>
                                     </div>
                                 </td> -->
-          <td class="fila-completa">{{ ropa.player.nombre }} {{ ropa.player.apellido }}</td>
-          <td>{{ ropa.team.category }} {{ ropa.team.name }} {{ ropa.team.levelLeague }}</td>
-          <td>
+          <td class="col-nombre sticky-col">
+            <button type="button" class="btn-link-name" (click)="abrirModalInfoJugador(ropa)">
+              {{ ropa.player.nombre }} {{ ropa.player.apellido }}
+            </button>
+          </td>
+          <td class="col-team">{{ ropa.team.category }} {{ ropa.team.name }} {{ ropa.team.levelLeague }}</td>
+          <td class="col-shirt">
             <div class="d-flex align-items-center">
               <input type="text" class="form-control" [(ngModel)]="ropa.nick" (ngModelChange)="onAbrigoChange(ropa)">
             </div>
           </td>
-          <td>
+          <td class="col-num">
             <div class="d-flex align-items-center">
               <input type="number" class="form-control" [(ngModel)]="ropa.numero"
                 (ngModelChange)="onAbrigoChange(ropa)">

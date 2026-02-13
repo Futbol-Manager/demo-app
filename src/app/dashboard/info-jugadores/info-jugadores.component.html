@@ -92,9 +92,11 @@
             </div>
           </td>
 
-          <!-- NOMBRE -->
+          <!-- NOMBRE (clickeable: abre modal de información) -->
           <td class="fw-semibold">
-            {{ player.nombre }} {{ player.apellido }}
+            <button type="button" class="btn-link-name" (click)="abrirModalInfoJugador(player)">
+              {{ player.nombre }} {{ player.apellido }}
+            </button>
           </td>
 
           <!-- EQUIPO -->

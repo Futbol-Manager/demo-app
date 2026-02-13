@@ -51,6 +51,8 @@ export class TeamNew {
   temporada: string;
   dateCreate: string;
   dateUpdate: string;
+  /** URL del logo del equipo (opcional, si el backend lo devuelve/almacena) */
+  logoUrl?: string;
 
   constructor() {
     this.teamId = 0; // O el valor por defecto que desees para teamId

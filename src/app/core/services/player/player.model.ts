@@ -329,6 +329,31 @@ export class NotificatePlayerUI {
   }
 }
 
+/** Movimiento de pago/cuota (obligatorio o no) */
+export interface PagocuotasMovimiento {
+  nombre: string;
+  importe: string;
+  plazo: string;
+  pagado: string;
+  fechaPago: string;
+}
+
+/** Respuesta de getpagocuotasplayer */
+export interface PagocuotasPlayerResponse {
+  obligatorios: PagocuotasMovimiento[];
+  noObligatorios: PagocuotasMovimiento[];
+  totalPagado: string;
+  pendiente: string;
+  contacto?: string;
+  bizum?: string;
+  banco?: string;
+  asunto?: string;
+  stripeId?: string;
+  nameClub?: string;
+  clubId?: number;
+  terminos?: string;
+}
+
 export class ScoutingPlayer {
   scoutingPlayerId: number;
   playerId: number;

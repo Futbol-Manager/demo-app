@@ -23,11 +23,68 @@ import {
   Patrocinador,
 } from '../models/club.model';
 
+/** Caché del listado de ropa (club + jugadores) para no recargar al volver a la vista */
+export interface RopaListCache {
+  ropaClub: any;
+  ropaPlayers: any[];
+}
+
+/** Caché del listado de new-cuotas (jugadores con pagos) para no recargar al volver */
+export interface NewCuotasListCache {
+  listaPlayers: any[];
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class ClubService {
+  private ropaCache: Map<string, RopaListCache> = new Map();
+  private newCuotasCache: Map<string, NewCuotasListCache> = new Map();
+
   constructor(private http: HttpClient) {}
+
+  private ropaCacheKey(clubId: number, temporada: string): string {
+    return `ropa-${clubId}-${temporada}`;
+  }
+  private newCuotasCacheKey(clubId: number, temporada: string): string {
+    return `newcuotas-${clubId}-${temporada}`;
+  }
+
+  getRopaCache(clubId: number, temporada: string): RopaListCache | null {
+    return this.ropaCache.get(this.ropaCacheKey(clubId, temporada)) ?? null;
+  }
+  setRopaCache(clubId: number, temporada: string, data: Partial<RopaListCache>): void {
+    const key = this.ropaCacheKey(clubId, temporada);
+    const existing = this.ropaCache.get(key) ?? { ropaClub: null, ropaPlayers: [] };
+    this.ropaCache.set(key, { ...existing, ...data });
+  }
+  clearRopaCache(clubId?: number, temporada?: string): void {
+    if (clubId == null && temporada == null) {
+      this.ropaCache.clear();
+      return;
+    }
+    if (clubId != null && temporada != null) {
+      this.ropaCache.delete(this.ropaCacheKey(clubId, temporada));
+    }
+  }
+
+  getNewCuotasCache(clubId: number, temporada: string): NewCuotasListCache | null {
+    return this.newCuotasCache.get(this.newCuotasCacheKey(clubId, temporada)) ?? null;
+  }
+  setNewCuotasCache(clubId: number, temporada: string, data: Partial<NewCuotasListCache>): void {
+    const key = this.newCuotasCacheKey(clubId, temporada);
+    const existing = this.newCuotasCache.get(key) ?? { listaPlayers: [] };
+    this.newCuotasCache.set(key, { ...existing, ...data });
+  }
+  clearNewCuotasCache(clubId?: number, temporada?: string): void {
+    if (clubId == null && temporada == null) {
+      this.newCuotasCache.clear();
+      return;
+    }
+    if (clubId != null && temporada != null) {
+      this.newCuotasCache.delete(this.newCuotasCacheKey(clubId, temporada));
+    }
+  }
 
   filterClub(filter: string) {
     const url: string = environment.apiUrl + 'user/filterClub';
