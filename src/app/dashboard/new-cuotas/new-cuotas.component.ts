@@ -9,8 +9,9 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { PlayerInfoDialogComponent, PlayerInfoDialogData } from '../player-info-dialog/player-info-dialog.component';
-import { combineLatest } from 'rxjs';
+import { combineLatest, forkJoin } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-new-cuotas',
@@ -19,7 +20,7 @@ import { filter, take } from 'rxjs/operators';
 })
 export class NewCuotasComponent implements OnInit {
   datosCargados = true;
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
   clubId = 0;
   showModalBanco = false;
   bancoClubData: any = {};
@@ -104,6 +105,15 @@ export class NewCuotasComponent implements OnInit {
 
   soloLectura = false;
 
+  // ── Filtro por pago individual ──
+  listaPagosClub: any[] = [];                 // Todos los pagos creados por el club
+  pagosSeleccionados: number[] = [];          // IDs de pagos seleccionados (pagoClubId)
+  vistaFiltroPago = false;                    // true = vista filtrada por pagos; false = vista general
+  isLoadingDetalle = false;                   // Loading del desglose
+  playerDetailCache: Map<number, any[]> = new Map(); // Cache: playerId -> array de cuotas asignadas
+  listaPlayersFiltradosPorPago: any[] = [];   // Jugadores recalculados según pagos seleccionados
+  showPagoFilterDropdown = false;             // Mostrar/ocultar el dropdown de filtro
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -138,6 +148,7 @@ export class NewCuotasComponent implements OnInit {
       }
 
       this.loadTabla();
+      this.loadPagosClub();
     });
   }
 
@@ -157,12 +168,209 @@ export class NewCuotasComponent implements OnInit {
           });
           this.enrichPlayersWithTeamId();
           this.isLoading = false;
+
+          // Si hay filtro de pagos activo, recalcular
+          if (this.vistaFiltroPago && this.pagosSeleccionados.length > 0) {
+            this.aplicarFiltroPagos();
+          }
         },
         error: (error) => {
           console.error('Error al cargar el listado de equipos', error);
           this.isLoading = false;
         },
       });
+  }
+
+  /** Carga la lista de todos los pagos creados por el club (para el filtro de chips) */
+  loadPagosClub() {
+    this.clubService
+      .getListPagosClub(this.clubId, this.temporadaStoredValue)
+      .subscribe({
+        next: (response: Response) => {
+          if (response.data) {
+            this.listaPagosClub = response.data;
+          }
+        },
+        error: (err) => {
+          console.error('Error al cargar los pagos del club', err);
+        },
+      });
+  }
+
+  /** Toggle de selección de un pago en el filtro */
+  togglePagoFilter(pagoClubId: number): void {
+    const idx = this.pagosSeleccionados.indexOf(pagoClubId);
+    if (idx >= 0) {
+      this.pagosSeleccionados.splice(idx, 1);
+    } else {
+      this.pagosSeleccionados.push(pagoClubId);
+    }
+
+    if (this.pagosSeleccionados.length === 0) {
+      this.quitarFiltroPagos();
+    } else {
+      this.aplicarFiltroPagos();
+    }
+  }
+
+  /** Quita todos los filtros de pagos y vuelve a la vista general */
+  quitarFiltroPagos(): void {
+    this.pagosSeleccionados = [];
+    this.vistaFiltroPago = false;
+    this.listaPlayersFiltradosPorPago = [];
+    this.filtrarJugadores(); // re-aplica el filtro de texto si hay
+  }
+
+  /** Selecciona todos los pagos */
+  seleccionarTodosPagos(): void {
+    if (this.pagosSeleccionados.length === this.listaPagosClub.length) {
+      this.quitarFiltroPagos();
+    } else {
+      this.pagosSeleccionados = this.listaPagosClub.map((p: any) => p.pagoClubId);
+      this.aplicarFiltroPagos();
+    }
+  }
+
+  /** Aplica el filtro por pagos seleccionados: carga el desglose de cada jugador */
+  aplicarFiltroPagos(): void {
+    this.vistaFiltroPago = true;
+    this.isLoadingDetalle = true;
+
+    // Obtener la lista de jugadores base (aplica filtro de texto también)
+    const jugadoresBase = this.filtro
+      ? this.listaPlayers.filter(
+          (p: any) =>
+            `${p.nombre || ''} ${p.apellido || ''}`.toLowerCase().includes(this.filtro.toLowerCase()) ||
+            (p.nameTeam && p.nameTeam.toLowerCase().includes(this.filtro.toLowerCase()))
+        )
+      : [...this.listaPlayers];
+
+    // Para cada jugador, obtener sus cuotas asignadas (usar caché si existe)
+    const observables: { [key: number]: any } = {};
+    const uncachedPlayers: any[] = [];
+
+    jugadoresBase.forEach((player: any) => {
+      if (this.playerDetailCache.has(player.playerId)) {
+        // Ya está en caché
+      } else {
+        uncachedPlayers.push(player);
+        observables[player.playerId] = this.clubService.getPlayerPaymentDetail(
+          this.clubId,
+          this.temporadaStoredValue,
+          player.playerId
+        );
+      }
+    });
+
+    if (Object.keys(observables).length === 0) {
+      // Todo en caché, recalcular directamente
+      this.recalcularVistaPagos(jugadoresBase);
+      this.isLoadingDetalle = false;
+      return;
+    }
+
+    // Cargar los detalles faltantes en batch
+    forkJoin(observables).subscribe({
+      next: (results: any) => {
+        for (const playerIdStr of Object.keys(results)) {
+          const playerId = +playerIdStr;
+          this.playerDetailCache.set(playerId, results[playerIdStr]);
+        }
+        this.recalcularVistaPagos(jugadoresBase);
+        this.isLoadingDetalle = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar desglose de pagos', err);
+        this.isLoadingDetalle = false;
+        this.toastr.error('Error al cargar el desglose de pagos.');
+      },
+    });
+  }
+
+  /** Recalcula la lista filtrada según los pagos seleccionados */
+  private recalcularVistaPagos(jugadoresBase: any[]): void {
+    this.listaPlayersFiltradosPorPago = jugadoresBase
+      .map((player: any) => {
+        const cuotasDelJugador: any[] = this.playerDetailCache.get(player.playerId) || [];
+
+        // Filtrar solo las cuotas que coinciden con los pagos seleccionados
+        const cuotasFiltradas = cuotasDelJugador.filter((c: any) =>
+          this.pagosSeleccionados.includes(c.pagoClubId)
+        );
+
+        if (cuotasFiltradas.length === 0) return null; // Este jugador no tiene estos pagos
+
+        // Recalcular totales basados en las cuotas filtradas
+        const totalAPagar = cuotasFiltradas.reduce((sum: number, c: any) => sum + (parseFloat(c.importe) || 0), 0);
+
+        // Para saber cuánto ha pagado de estos pagos concretos, usamos los datos del historial
+        // si están disponibles. Si no, usamos la proporción del total.
+        // Como el API no devuelve pagado por cuota individual, estimamos con la proporción
+        // o mostramos el importe de la cuota como "a pagar"
+        const totalPagadoGeneral = parseFloat(player.totalPagado) || 0;
+        const totalGeneralAPagar = parseFloat(player.totalAPagar) || 0;
+        const proporcion = totalGeneralAPagar > 0 ? totalPagadoGeneral / totalGeneralAPagar : 0;
+        const totalPagadoEstimado = Math.round(totalAPagar * proporcion * 100) / 100;
+        const restante = Math.round((totalAPagar - totalPagadoEstimado) * 100) / 100;
+
+        return {
+          ...player,
+          totalAPagarFiltrado: totalAPagar.toFixed(2),
+          totalPagadoFiltrado: totalPagadoEstimado.toFixed(2),
+          restanteFiltrado: Math.max(0, restante).toFixed(2),
+          cuotasFiltradas,
+          estadoFiltrado: restante <= 0 ? 1 : 0,
+          pagadasFiltrado: `${cuotasFiltradas.filter((c: any) => {
+            const imp = parseFloat(c.importe) || 0;
+            const pagEst = imp * proporcion;
+            return pagEst >= imp;
+          }).length}/${cuotasFiltradas.length}`,
+        };
+      })
+      .filter((p: any) => p !== null);
+
+    this.paginaActual = 1;
+  }
+
+  /** Obtiene el nombre de un pago por su ID */
+  getPagoName(pagoClubId: number): string {
+    const pago = this.listaPagosClub.find((p: any) => p.pagoClubId === pagoClubId);
+    return pago ? pago.titulo : '';
+  }
+
+  /** Nombres de los pagos seleccionados para mostrar en el resumen */
+  get pagosSeleccionadosNombres(): string[] {
+    return this.pagosSeleccionados.map((id) => this.getPagoName(id)).filter((n) => n);
+  }
+
+  /** Suma total de los importes de los pagos seleccionados */
+  get sumaPagosSeleccionados(): number {
+    return this.listaPagosClub
+      .filter((p: any) => this.pagosSeleccionados.includes(p.pagoClubId))
+      .reduce((sum: number, p: any) => sum + (parseFloat(p.importe) || 0), 0);
+  }
+
+  /** Players paginados en vista filtrada */
+  get playersPaginadosFiltrados() {
+    const inicio = (this.paginaActual - 1) * this.itemsPorPagina;
+    const fin = inicio + this.itemsPorPagina;
+    return this.listaPlayersFiltradosPorPago.slice(
+      inicio,
+      fin > this.listaPlayersFiltradosPorPago.length
+        ? this.listaPlayersFiltradosPorPago.length
+        : fin
+    );
+  }
+
+  get totalPaginasFiltrado(): number {
+    return Math.ceil(this.listaPlayersFiltradosPorPago.length / this.itemsPorPagina);
+  }
+
+  calcularProgresoFiltrado(player: any): number {
+    const total = parseFloat(player.totalAPagarFiltrado) || 0;
+    if (total === 0) return 0;
+    const pagado = parseFloat(player.totalPagadoFiltrado) || 0;
+    return Math.min((pagado / total) * 100, 100);
   }
 
   /** Asegura que cada jugador tenga teamId (para navegar a Ver información). Si la API de pagos no lo devuelve, se obtiene del listado por club. */

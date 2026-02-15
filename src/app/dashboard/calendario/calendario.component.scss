@@ -3693,3 +3693,828 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
     min-height: 70px;
   }
 }
+
+/* =====================================================
+   DARK MODE OVERRIDES – CALENDARIO
+   =====================================================
+   One `:host-context(body.dark)` block that overrides
+   every light-only colour in this component.
+===================================================== */
+:host-context(body.dark) {
+
+  /* ---- CARD genérica ---- */
+  .card {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    box-shadow: 0 0 35px 0px rgba(0, 0, 0, 0.25);
+  }
+
+  /* ---- ACCORDION ---- */
+  .accordion-body {
+    background-color: var(--bg-surface);
+  }
+
+  /* ---- SELECTION CARD ---- */
+  .selection-card {
+    border-color: var(--border-strong);
+    background-color: var(--bg-card);
+  }
+
+  .selected {
+    border-color: var(--color-primary) !important;
+  }
+
+  /* ---- BTN BACK ---- */
+  .btn-back-clean {
+    color: var(--text-primary);
+    background-color: rgba(var(--color-primary-rgb), 0.08);
+  }
+
+  .btn-back-clean:hover {
+    background-color: rgba(var(--color-navy-rgb), 0.12);
+  }
+
+  /* ---- CALENDAR HEADER ---- */
+  .calendar-header {
+    background: var(--bg-card);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  }
+
+  .team-name {
+    color: var(--text-primary);
+  }
+
+  /* ---- VIEW SWITCHER ---- */
+  .view-btn {
+    border-color: var(--border-color);
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+  }
+
+  .view-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+  }
+
+  .view-btn.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+  }
+
+  /* ---- MONTH TITLE ---- */
+  .month-title {
+    color: var(--text-secondary);
+  }
+
+  /* ---- YEAR VIEW ---- */
+  .calendar-view-year {
+    background: var(--bg-card);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  }
+
+  .year-month-card {
+    color: var(--text-primary);
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+  }
+
+  .year-month-card:hover {
+    background: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+    box-shadow: 0 8px 20px rgba(var(--color-primary-rgb), 0.3);
+  }
+
+  /* ---- WEEK VIEW ---- */
+  .calendar-view-week {
+    background: var(--bg-card);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  }
+
+  .week-day-header {
+    color: var(--text-secondary);
+  }
+
+  /* ---- TABLE HEADER (DÍAS) ---- */
+  .calendar-saas th {
+    color: var(--text-primary);
+  }
+
+  .calendar-saas thead tr,
+  .calendar-saas thead th {
+    background: var(--color-navy);
+    color: #fff;
+  }
+
+  .calendar-saas thead th:last-child {
+    color: #ff6b6b;
+  }
+
+  /* ---- CALENDAR CELL ---- */
+  .calendar-cell {
+    background: var(--bg-card);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  }
+
+  .calendar-cell:hover {
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  }
+
+  .calendar-cell.empty {
+    background: transparent;
+  }
+
+  .day-number {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  .calendar-cell.today {
+    border-color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb), 0.12);
+  }
+
+  .calendar-cell.today .day-number {
+    background: var(--color-primary);
+    color: #fff;
+  }
+
+  /* ---- MODAL SAAS ---- */
+  .modal-content {
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+
+  /* ---- LEFT FOOTER ---- */
+  .left-footer {
+    border-top-color: var(--border-color);
+  }
+
+  /* ---- SECTION TITLE ---- */
+  .section-title {
+    color: var(--text-secondary);
+  }
+
+  /* ---- LIST ITEM ---- */
+  .list-item-act {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .list-item-act:hover {
+    background: var(--bg-hover);
+    border-color: var(--color-primary);
+  }
+
+  .list-item-act.active {
+    background: rgba(var(--color-primary-rgb), 0.12);
+    border-color: var(--color-primary);
+  }
+
+  /* ---- NEW ACTIVITY MENU ---- */
+  .new-activity-menu {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+  }
+
+  .new-activity-menu button {
+    color: var(--text-primary);
+  }
+
+  .new-activity-menu button:hover {
+    background: var(--bg-hover);
+  }
+
+  /* ---- ACTIVITY BADGES ---- */
+  .activity.training {
+    background: rgba(0, 44, 64, 0.2);
+    color: var(--text-primary);
+    border-left-color: var(--color-primary);
+  }
+
+  /* ---- SAAS LABEL ---- */
+  .saas-label {
+    color: var(--text-primary);
+  }
+
+  .saas-label-muted {
+    color: var(--text-muted);
+  }
+
+  .saas-label i {
+    color: var(--color-primary);
+  }
+
+  .saas-label.readonly {
+    color: var(--text-muted);
+  }
+
+  /* ---- SAAS INPUT ---- */
+  .saas-input {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+  }
+
+  .saas-input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .saas-input:hover {
+    border-color: var(--border-strong);
+  }
+
+  .saas-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18);
+    background: var(--bg-input);
+  }
+
+  .saas-input[readonly] {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+  }
+
+  .saas-input:disabled {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+    color: var(--text-muted);
+  }
+
+  /* ---- FORM SECTION ---- */
+  .form-section {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+  }
+
+  /* ---- BTN CUSTOM ---- */
+  .btn-custom {
+    background: var(--color-primary);
+  }
+
+  /* ---- MODAL RIGHT ---- */
+  .modal-right h5 {
+    color: var(--text-primary);
+  }
+
+  /* ---- DIVIDER ---- */
+  .divider {
+    background: var(--border-strong);
+  }
+
+  /* ---- TIME ---- */
+  .time-separator {
+    color: var(--text-secondary);
+  }
+
+  /* ---- EMPTY STATE ---- */
+  .empty-icon {
+    color: var(--text-muted);
+  }
+
+  .empty-title {
+    color: var(--text-primary);
+  }
+
+  .empty-text {
+    color: var(--text-secondary);
+  }
+
+  /* ---- FORM HEADER ---- */
+  .form-header p {
+    color: var(--text-secondary);
+  }
+
+  /* ---- FORM CARD ---- */
+  .form-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  .form-card-header h6 {
+    color: var(--text-primary);
+  }
+
+  .form-card-header span {
+    color: var(--text-muted);
+  }
+
+  /* ---- BTN PRIMARY PRO ---- */
+  .btn-primary-pro {
+    background: var(--color-primary);
+  }
+
+  .btn-primary-pro:hover {
+    box-shadow: 0 10px 25px rgba(var(--color-primary-rgb), 0.45);
+  }
+
+  /* ---- STICKY ACTIONS ---- */
+  .sticky-actions {
+    border-top-color: var(--border-color);
+  }
+
+  /* ---- TABS HEADER ---- */
+  .tabs-header .nav-tabs {
+    border-bottom-color: var(--border-color);
+  }
+
+  .tabs-switch-label {
+    color: var(--text-secondary);
+  }
+
+  .nav-tabs .nav-link {
+    background-color: var(--color-navy);
+    color: #fff;
+  }
+
+  .nav-tabs .nav-link.active {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+
+  .tab-pane {
+    border-color: var(--border-color);
+    background: var(--bg-card);
+  }
+
+  /* ---- CUSTOM SELECT ---- */
+  .custom-select {
+    background-color: var(--bg-input);
+    border-color: var(--border-input);
+    color: var(--text-primary);
+  }
+
+  .custom-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
+  }
+
+  /* ---- FORM CHECK LABEL ---- */
+  .form-check-label {
+    color: var(--text-primary);
+  }
+
+  /* ---- SAAS ACTION BAR ---- */
+  .saas-action-bar {
+    border-bottom-color: var(--border-color);
+  }
+
+  /* ---- SAAS BTN ---- */
+  .saas-btn {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  }
+
+  .saas-btn:hover {
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .saas-btn-primary {
+    background: var(--color-navy);
+  }
+
+  .saas-btn-outline {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  .saas-btn-outline:hover {
+    background: var(--color-beige);
+    color: var(--color-navy);
+  }
+
+  /* ---- SAAS TASK BTN ---- */
+  .saas-task-btn-outline {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--color-primary);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .saas-task-btn-outline:hover {
+    background: var(--color-beige);
+    color: var(--color-navy);
+  }
+
+  .saas-task-btn-outline.danger {
+    border-color: var(--color-navy);
+  }
+
+  .saas-task-btn-outline.danger:hover {
+    background: var(--color-navy);
+    color: #fff;
+  }
+
+  /* ---- SETTINGS ---- */
+  .settings-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+  }
+
+  .settings-title {
+    color: var(--text-primary);
+  }
+
+  .settings-description {
+    color: var(--text-secondary);
+  }
+
+  .section-divider {
+    border-top-color: var(--border-color);
+  }
+
+  /* ---- TASK CARD ---- */
+  .task-card {
+    background: var(--bg-card);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .task-card:hover {
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.2);
+  }
+
+  .task-image img {
+    background: var(--bg-surface);
+  }
+
+  .task-id {
+    color: var(--text-muted);
+  }
+
+  .tag {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  .tag-primary {
+    background: rgba(var(--color-primary-rgb), 0.15);
+    color: var(--color-primary);
+  }
+
+  .task-title {
+    color: var(--text-primary);
+  }
+
+  .task-description {
+    color: var(--text-secondary);
+  }
+
+  .icon-btn {
+    background: var(--bg-surface);
+  }
+
+  .icon-btn i {
+    color: var(--text-primary);
+  }
+
+  .icon-btn:hover {
+    background: var(--bg-hover);
+  }
+
+  /* ---- LOCATION ---- */
+  .location-action {
+    background: var(--color-navy);
+  }
+
+  .danger-action-btn {
+    background: var(--bg-card);
+    border-color: #fca5a5;
+  }
+
+  .danger-action-btn:hover {
+    background: rgba(239, 68, 68, 0.12);
+  }
+
+  /* ---- SAAS MODAL ---- */
+  .saas-modal {
+    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-card) 100%);
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.06),
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 50px 120px -20px rgba(0, 0, 0, 0.4);
+  }
+
+  .saas-modal-header {
+    background: var(--bg-card);
+    border-bottom-color: var(--border-color);
+  }
+
+  .saas-title {
+    color: var(--text-primary);
+  }
+
+  .saas-close {
+    color: var(--text-primary);
+  }
+
+  .saas-modal-footer {
+    background: var(--bg-card);
+    border-top-color: var(--border-color);
+  }
+
+  /* ---- CARD SECTION ---- */
+  .card-section {
+    background: var(--bg-card);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  .convocatoria-card {
+    background: var(--bg-card);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  }
+
+  .convocatoria-card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  }
+
+  .convocatoria-card-title {
+    color: var(--text-secondary);
+    border-bottom-color: var(--border-color);
+  }
+
+  .convocatoria-section-title {
+    color: var(--text-primary);
+  }
+
+  .convocatoria-formacion-select {
+    border-color: var(--border-color);
+    background: var(--bg-input);
+    color: var(--text-primary);
+  }
+
+  .convocatoria-formacion-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
+  }
+
+  /* ---- DROP ZONES ---- */
+  .list-item {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  /* ---- PLAYER CARD ---- */
+  .player-card {
+    background: var(--bg-card);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  }
+
+  .player-chip-name {
+    color: var(--text-primary);
+  }
+
+  /* ---- CONVOCATORIA FOOTER ---- */
+  .convocatoria-footer {
+    background: linear-gradient(180deg, var(--bg-surface) 0%, var(--bg-card) 100%);
+    border-top-color: var(--border-color);
+  }
+
+  .convocatoria-btn-reset {
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+  }
+
+  .convocatoria-btn-reset:hover {
+    background: var(--bg-hover);
+  }
+
+  /* ---- CONVOCATORIA LISTA MODAL ---- */
+  .convocatoria-lista-content {
+    background: var(--bg-card);
+  }
+
+  .convocatoria-lista-switch-text {
+    color: var(--text-primary);
+  }
+
+  .convocatoria-lista-label {
+    color: var(--text-secondary);
+  }
+
+  .convocatoria-lista-textarea {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  .convocatoria-lista-textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.15);
+  }
+
+  .convocatoria-lista-players {
+    background: var(--bg-surface);
+  }
+
+  .convocatoria-lista-player-item {
+    color: var(--text-primary);
+    border-bottom-color: var(--border-color);
+  }
+
+  .convocatoria-lista-player-item:not(.empty):hover {
+    background: var(--bg-hover);
+  }
+
+  .convocatoria-lista-player-item.empty {
+    color: var(--text-muted);
+  }
+
+  /* ---- PARTIDO HORARIOS ---- */
+  .partido-horarios-block {
+    background: linear-gradient(145deg, var(--bg-surface) 0%, var(--bg-card) 100%);
+    border-color: var(--border-color);
+  }
+
+  .partido-horarios-label-main {
+    color: var(--text-secondary);
+  }
+
+  .partido-horarios-label-sub {
+    color: var(--text-muted);
+  }
+
+  .partido-horarios-time {
+    background: var(--bg-input);
+    border-color: var(--border-color);
+  }
+
+  .partido-horarios-time:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.12);
+  }
+
+  .partido-horarios-select {
+    color: var(--text-primary);
+  }
+
+  .partido-horarios-sep {
+    color: var(--text-muted);
+  }
+
+  /* ---- MODAL ASISTENCIA ---- */
+  .modal-asistencia-content {
+    background: var(--bg-card);
+  }
+
+  .modal-asistencia-body {
+    color: var(--text-primary);
+  }
+
+  .modal-asistencia-intro {
+    color: var(--text-secondary);
+  }
+
+  .modal-asistencia-row {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+  }
+
+  .modal-asistencia-row:hover {
+    border-color: var(--border-strong);
+  }
+
+  .modal-asistencia-name {
+    color: var(--text-primary);
+  }
+
+  .modal-asistencia-switch-label {
+    color: var(--text-secondary);
+  }
+
+  .modal-asistencia-select {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  .modal-asistencia-textarea {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  .modal-asistencia-textarea::placeholder {
+    color: var(--text-muted);
+  }
+
+  .modal-asistencia-footer {
+    border-top-color: var(--border-color);
+    background: var(--bg-surface);
+  }
+
+  /* ---- PP SIMPLE FORM ---- */
+  .pp-simple-form__label {
+    color: var(--text-primary);
+  }
+
+  .pp-simple-form__input {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+  }
+
+  .pp-simple-form__input::placeholder {
+    color: var(--text-muted);
+  }
+
+  .pp-simple-form__input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18);
+  }
+
+  .pp-simple-form__select {
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+  }
+
+  .pp-simple-form__select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18);
+  }
+
+  .pp-simple-form__textarea {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+  }
+
+  .pp-simple-form__textarea::placeholder {
+    color: var(--text-muted);
+  }
+
+  .pp-simple-form__textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18);
+  }
+
+  .pp-simple-form__actions {
+    border-top-color: var(--border-color);
+  }
+
+  /* ---- PP AVANZADO ---- */
+  .pp-avanzado-form__label {
+    color: var(--text-primary);
+  }
+
+  .pp-avanzado-form__input {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+  }
+
+  .pp-avanzado-form__input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18);
+  }
+
+  .pp-avanzado-form__textarea {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+  }
+
+  .pp-avanzado-form__textarea:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18);
+  }
+
+  .pp-avanzado-card {
+    border-color: var(--border-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .pp-avanzado-card__title {
+    color: var(--text-primary);
+  }
+
+  .pp-avanzado-card__add-row {
+    border-top-color: var(--border-color);
+  }
+
+  .pp-avanzado-accordion .accordion-body {
+    background: var(--bg-surface);
+  }
+
+  .pp-avanzado-accordion .accordion-button:not(.collapsed) {
+    background-color: rgba(var(--color-primary-rgb), 0.12);
+    color: var(--text-primary);
+  }
+
+  .pp-avanzado-hr {
+    border-color: var(--border-color);
+  }
+
+  /* ---- RESPONSIVE MOBILE FIX ---- */
+  .calendar-cell.empty {
+    background: var(--bg-surface);
+  }
+}

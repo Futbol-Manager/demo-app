@@ -9,6 +9,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-grafica-cuotas',
@@ -26,7 +27,7 @@ export class GraficaCuotasComponent implements OnInit {
   data: any[] = [];
   datosCargados = false;
   loading = true;
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
 
   constructor(
     private loginService: LoginService,

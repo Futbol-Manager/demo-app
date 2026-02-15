@@ -506,3 +506,182 @@
   min-width: 50px;
   text-align: center;
 }
+
+/* ============================================================
+   DESKTOP / MOBILE VIEW TOGGLES
+   ============================================================ */
+.desktop-view {
+  display: block;
+}
+.mobile-view {
+  display: none;
+}
+
+@media (max-width: 991px) {
+  .desktop-view {
+    display: none !important;
+  }
+  .mobile-view {
+    display: block;
+  }
+}
+
+/* ============================================================
+   MOBILE CARD STYLES
+   ============================================================ */
+.mobile-view {
+  padding: 0 8px;
+}
+
+.mobile-skeleton {
+  .skeleton-card {
+    height: 120px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 37%, #e5e7eb 63%);
+    background-size: 400% 100%;
+    animation: shimmer 1.4s ease infinite;
+  }
+}
+
+.player-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.card-header-ropa {
+  background: linear-gradient(135deg, #002c40, #00466a);
+  color: #fff;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+
+  .player-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .player-team {
+    font-size: 0.8rem;
+    opacity: 0.8;
+  }
+
+  .badge-status {
+    margin-left: auto;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    &.status-ok {
+      background: rgba(49, 178, 112, 0.25);
+      color: #d4edda;
+    }
+    &.status-pending {
+      background: rgba(255, 193, 7, 0.3);
+      color: #fff3cd;
+    }
+  }
+}
+
+.card-shirt-info {
+  display: flex;
+  gap: 12px;
+  padding: 12px 16px 8px;
+
+  .shirt-field {
+    flex: 1;
+    label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      color: #6c757d;
+      margin-bottom: 2px;
+      display: block;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    input {
+      width: 100%;
+      padding: 4px 8px;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+  }
+}
+
+.card-clothing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 8px 16px 16px;
+}
+
+.clothing-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 8px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  gap: 6px;
+
+  .clothing-label {
+    font-size: 0.72rem;
+    color: #333;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .clothing-controls {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+
+    select {
+      width: 60px;
+      padding: 2px 4px;
+      font-size: 0.75rem;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+    }
+  }
+}
+
+.btn-toggle-sm {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+
+  &.delivered {
+    background: #d4edda;
+  }
+  &.not-delivered {
+    background: #f8d7da;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-clothing-grid {
+    grid-template-columns: 1fr;
+  }
+}

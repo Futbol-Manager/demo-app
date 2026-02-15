@@ -1,0 +1,127 @@
+<!-- Botón atrás -->
+<div class="back-container">
+  <button type="button" class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<div class="favoritas-page">
+
+  <!-- HEADER -->
+  <header class="page-header">
+    <h1 class="page-title">
+      <i class="bi bi-star-fill star-icon"></i>
+      {{ 'TAREAS_FAV.TITLE' | translate }}
+    </h1>
+    <p class="page-subtitle">{{ 'TAREAS_FAV.SUBTITLE' | translate }}</p>
+  </header>
+
+  <!-- LISTA VACÍA -->
+  <div class="empty-state" *ngIf="favoritas.length === 0">
+    <i class="bi bi-star empty-icon"></i>
+    <p>{{ 'TAREAS_FAV.EMPTY' | translate }}</p>
+  </div>
+
+  <!-- GRID DE TARJETAS -->
+  <div class="task-grid" *ngIf="favoritas.length > 0">
+    <div
+      class="task-card"
+      *ngFor="let tarea of favoritas"
+      [class.active]="selectedTask?.localId === tarea.localId"
+      (click)="openDetail(tarea)">
+
+      <div class="task-image">
+        <img [src]="getImage(tarea)" alt="">
+      </div>
+
+      <div class="task-body">
+        <div class="task-body-top">
+          <span class="origin-badge" [ngClass]="tarea.origin">
+            {{ 'TAREAS_FAV.ORIGIN_' + tarea.origin.toUpperCase() | translate }}
+          </span>
+          <button
+            class="btn-unfav"
+            (click)="removeFavorite(tarea); $event.stopPropagation()"
+            [attr.aria-label]="'TAREAS_FAV.REMOVE' | translate">
+            <i class="bi bi-star-fill"></i>
+          </button>
+        </div>
+        <h4 class="task-title">{{ tarea.slogans || ('TAREAS_FAV.NO_TITLE' | translate) }}</h4>
+        <div class="task-tags" *ngIf="tarea.estrategia || tarea.intencion">
+          <span class="badge badge-secondary" *ngIf="tarea.estrategia">{{ tarea.estrategia }}</span>
+          <span class="badge badge-primary" *ngIf="tarea.intencion">{{ tarea.intencion }}</span>
+        </div>
+        <p class="task-desc">{{ tarea.description | slice:0:80 }}{{ tarea.description.length > 80 ? '...' : '' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL DETALLE -->
+  <div class="detail-backdrop" *ngIf="selectedTask" (click)="closeDetail()"></div>
+  <div class="detail-panel" *ngIf="selectedTask">
+    <div class="detail-panel-inner" (click)="$event.stopPropagation()">
+      <div class="detail-header">
+        <h2>{{ selectedTask.slogans || ('TAREAS_FAV.NO_TITLE' | translate) }}</h2>
+        <button class="detail-close" (click)="closeDetail()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="detail-body">
+        <img class="detail-img" [src]="getImage(selectedTask)" alt="">
+
+        <div class="detail-section" *ngIf="selectedTask.estrategia || selectedTask.intencion">
+          <div class="task-tags">
+            <span class="badge badge-secondary" *ngIf="selectedTask.estrategia">{{ selectedTask.estrategia }}</span>
+            <span class="badge badge-primary" *ngIf="selectedTask.intencion">{{ selectedTask.intencion }}</span>
+          </div>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedTask.description">
+          <label>{{ 'TAREAS_FAV.DESCRIPTION' | translate }}</label>
+          <p>{{ selectedTask.description }}</p>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedTask.rules">
+          <label>{{ 'TAREAS_FAV.RULES' | translate }}</label>
+          <p>{{ selectedTask.rules }}</p>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedTask.variants">
+          <label>{{ 'TAREAS_FAV.VARIANTS' | translate }}</label>
+          <p>{{ selectedTask.variants }}</p>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-section" *ngIf="selectedTask.worktime">
+            <label>{{ 'TAREAS_FAV.WORKTIME' | translate }}</label>
+            <p>{{ selectedTask.worktime }}</p>
+          </div>
+          <div class="detail-section" *ngIf="selectedTask.space">
+            <label>{{ 'TAREAS_FAV.SPACE' | translate }}</label>
+            <p>{{ selectedTask.space }}</p>
+          </div>
+          <div class="detail-section" *ngIf="selectedTask.material">
+            <label>{{ 'TAREAS_FAV.MATERIAL' | translate }}</label>
+            <p>{{ selectedTask.material }}</p>
+          </div>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedTask.video">
+          <label>{{ 'TAREAS_FAV.VIDEO' | translate }}</label>
+          <a [href]="selectedTask.video" target="_blank" class="video-link">
+            <i class="bi bi-play-circle"></i> {{ selectedTask.video }}
+          </a>
+        </div>
+      </div>
+
+      <div class="detail-footer">
+        <button class="btn btn-outline-danger btn-sm" (click)="removeFavorite(selectedTask)">
+          <i class="bi bi-star"></i> {{ 'TAREAS_FAV.REMOVE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

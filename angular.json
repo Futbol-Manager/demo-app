@@ -50,6 +50,9 @@
               "node_modules/bootstrap-select/dist/js/bootstrap-select.min.js",
               "node_modules/summernote/dist/summernote-bs5.min.js",
               "node_modules/chart.js/dist/chart.js"
+            ],
+            "allowedCommonJsDependencies": [
+              "konva"
             ]
           },
           "configurations": {
@@ -87,6 +90,9 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "proxyConfig": "proxy.conf.json"
+          },
           "configurations": {
             "production": {
               "browserTarget": "rep-espi:build:production"

@@ -6,7 +6,9 @@
 </div>
 <!-- ================= CONTENIDO ================= -->
 <div class="container">
-  <app-logo-spinner *ngIf="datosCargando"></app-logo-spinner>
+  <div *ngIf="datosCargando" class="card-skeleton">
+    <div class="skeleton-card" *ngFor="let i of [].constructor(6)"></div>
+  </div>
   <div *ngIf="profileId === 1 || profileId === 2" class="row g-4 mb-4 sphaira-action-cards">
 
     <!-- SUBIR JUGADORES EXCEL -->
@@ -63,10 +65,7 @@
 
       <select class="form-control season-select mx-auto" [(ngModel)]="temporada"
         (change)="profileId === 1 ? cargarListadoEquiposForClub() : cargarListadoEquipos()">
-        <option value="2022">{{ 'SELECTS.2022' | translate }}</option>
-        <option value="2023">{{ 'SELECTS.2023' | translate }}</option>
-        <option value="2024">{{ 'SELECTS.2024' | translate }}</option>
-        <option value="2025">{{ 'SELECTS.2025' | translate }}</option>
+        <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
       </select>
     </div>
 
@@ -142,7 +141,7 @@
             <h5 class="modal-title">
               {{ 'NAV.CREATETEAM' | translate }}
             </h5>
-            <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+            <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModal()"></button>
           </div>
 
           <!-- BODY -->
@@ -321,7 +320,7 @@
         <h5 class="modal-title">
           {{ 'PHRASES.INICIO6' | translate }}
         </h5>
-        <button type="button" class="btn-close" (click)="cerrarModalSubirJugadoresGesDesk()"></button>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalSubirJugadoresGesDesk()"></button>
       </div>
 
       <!-- BODY -->

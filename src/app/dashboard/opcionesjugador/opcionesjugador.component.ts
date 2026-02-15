@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { User } from 'src/app/core/models/users/user.model';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -13,7 +14,8 @@ import { Location } from '@angular/common';
   templateUrl: './opcionesjugador.component.html',
   styleUrls: ['./opcionesjugador.component.scss']
 })
-export class OpcionesjugadorComponent implements OnInit {
+export class OpcionesjugadorComponent implements OnInit, OnDestroy {
+  private subs: Subscription[] = [];
 
   teamId = 0;
   playerId = 0;
@@ -34,20 +36,27 @@ export class OpcionesjugadorComponent implements OnInit {
 
   ngOnInit(): void {
     // Suscríbete al observable del servicio para obtener el usuario actual
-    this.loginService.usuarioActual.subscribe(user => {
-      this.usuarioActual = user;
-      this.userId = user?.userId;
-      this.playerIdUserActual = user?.playerId;
-      // Suscribirse a los cambios en los parámetros de la URL
-      this.route.params.subscribe(params => {
-        // Obtener el valor de teamId de los parámetros
-        this.teamId = +params['teamId'];  // El + convierte el valor a número
-        this.playerId = +params['playerId'];  // El + convierte el valor a número
-        //console.log('teamId:', this.teamId);
-      });
+    this.subs.push(
+      this.loginService.usuarioActual.subscribe(user => {
+        this.usuarioActual = user;
+        this.userId = user?.userId;
+        this.playerIdUserActual = user?.playerId;
+      })
+    );
 
-      this.obtenerSuscripcionActual();
-    });
+    // Parámetros de la URL (separado para evitar anidación)
+    this.subs.push(
+      this.route.params.subscribe(params => {
+        this.teamId = +params['teamId'];
+        this.playerId = +params['playerId'];
+      })
+    );
+
+    this.obtenerSuscripcionActual();
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach(s => s.unsubscribe());
   }
 
   // Método para redirigir a la pantalla de jugadores con el teamId

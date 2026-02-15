@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 
@@ -14,18 +13,12 @@ export class TareasComponent implements OnInit {
   usuarioActual!: User | null;
   userId: any = 0;
   teamId = 0;
-  showModalTactica = false;
-  readonly urlTacticalBoard = 'https://tacticalboard.sphairatech.com/';
-  readonly urlTacticalBoardSafe: SafeResourceUrl;
 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private loginService: LoginService,
-    private sanitizer: DomSanitizer
-  ) {
-    this.urlTacticalBoardSafe = this.sanitizer.bypassSecurityTrustResourceUrl(this.urlTacticalBoard);
-  }
+    private loginService: LoginService
+  ) {}
 
   ngOnInit(): void {
     // Suscríbete al observable del servicio para obtener el usuario actual
@@ -42,19 +35,24 @@ export class TareasComponent implements OnInit {
   }
 
   irAPantalla(id: number): void {
-    if (id === 1) {
-      this.router.navigate(['/dashboard/menu-entrenador', this.teamId, 0]);
-    } else if (id === 2) {
-      window.open(this.urlTacticalBoard, '_blank');
+    switch (id) {
+      case 1:
+        this.router.navigate(['/dashboard/menu-entrenador', this.teamId, 0]);
+        break;
+      case 2: // Historial usadas
+        this.router.navigate(['/dashboard/tareas-historial', this.teamId]);
+        break;
+      case 3: // Favoritas
+        this.router.navigate(['/dashboard/tareas-favoritas', this.teamId]);
+        break;
+      case 4: // Mis Tareas
+        this.router.navigate(['/dashboard/tareas-mis', this.teamId]);
+        break;
     }
   }
 
-  openModalTactica(): void {
-    this.showModalTactica = true;
-  }
-
-  cerrarModalTactica(): void {
-    this.showModalTactica = false;
+  openTacticalBoard(): void {
+    this.router.navigate(['/dashboard/tactical-board', this.teamId]);
   }
 
 }

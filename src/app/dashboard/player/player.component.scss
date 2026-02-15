@@ -484,6 +484,33 @@
   letter-spacing: -0.02em;
 }
 
+/* ─── Injury Alert Badge (Phase 2) ─── */
+.injury-alert-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 0.6rem;
+  vertical-align: middle;
+  margin-left: 0.25rem;
+  box-shadow: 0 0 0 2px #fff, 0 2px 6px rgba(0, 0, 0, 0.15);
+  animation: injuryPulse 2.5s ease-in-out infinite;
+}
+
+.injury-alert-badge-sm {
+  width: 17px;
+  height: 17px;
+  font-size: 0.55rem;
+}
+
+@keyframes injuryPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+
 .player-subtitle {
   margin-bottom: 0.65rem;
   color: #64748b;
@@ -1636,5 +1663,444 @@ input#file-upload-button:hover {
 
   .player-main-head {
     align-items: center;
+  }
+}
+
+/* ===== DARK MODE ===== */
+:host-context(body.dark) {
+  /* Override local CSS variables */
+  --sphaira-green: #3fc982;
+  --sphaira-night: #e2e8f0;
+  --sphaira-ivory: var(--bg-surface);
+  --sphaira-beige: #d4a853;
+
+  /* Back button */
+  .btn-back {
+    color: var(--text-secondary);
+    &:hover {
+      color: var(--color-primary);
+    }
+  }
+
+  /* Page header */
+  .players-page-header {
+    color: var(--text-primary);
+  }
+
+  /* Tabs */
+  .players-tabs .nav-link {
+    color: var(--text-secondary);
+    &:hover {
+      color: var(--text-primary);
+      background: var(--bg-hover);
+    }
+    &.active {
+      color: #fff;
+      background: var(--color-primary);
+    }
+  }
+
+  /* FIFA player cards */
+  .fifa-player-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    box-shadow: var(--shadow-sm);
+    &:hover {
+      box-shadow: var(--shadow-md);
+    }
+  }
+
+  .fifa-pro-card__accent {
+    background: linear-gradient(135deg, var(--color-primary), #2aa463);
+  }
+
+  .player-avatar-wrapper {
+    border-color: var(--border-color);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .player-avatar-placeholder {
+    color: var(--text-muted);
+    background: var(--bg-surface);
+  }
+
+  .player-badges-row .badge {
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+  }
+
+  .player-rating-circle {
+    .rating-inner {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+  }
+
+  .fifa-player-title {
+    color: var(--text-primary);
+  }
+
+  .player-subtitle {
+    color: var(--text-secondary);
+  }
+
+  .player-mini-stats {
+    border-color: var(--border-color);
+    background: var(--bg-surface);
+  }
+
+  .player-mini-stat {
+    color: var(--text-secondary);
+    .stat-value { color: var(--text-primary); }
+  }
+
+  /* Top actions */
+  .btn-crear-jugador {
+    background: var(--color-primary);
+    color: #fff;
+    &:hover {
+      background: #2aa463;
+    }
+  }
+
+  /* Players table */
+  .players-table-scroll {
+    background: var(--bg-card);
+  }
+
+  .players-table-fifa {
+    thead th {
+      background: linear-gradient(180deg, #0a2a3c 0%, #071e2b 100%);
+      color: #fff;
+    }
+    tbody {
+      tr {
+        background: var(--bg-card);
+        &:hover { background: var(--bg-hover); }
+      }
+      td {
+        color: var(--text-primary);
+        border-color: var(--border-color);
+      }
+    }
+  }
+
+  /* Pagination */
+  .pagination-content {
+    background: var(--bg-card);
+  }
+
+  .pagination-info {
+    color: var(--text-secondary);
+  }
+
+  .pagination-select {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+  }
+
+  .pagination-page-btn {
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    &:hover, &.active {
+      background: var(--color-primary);
+      color: #fff;
+    }
+  }
+
+  /* Title negro */
+  .title-negro {
+    color: var(--text-primary);
+  }
+
+  /* Modal overlay */
+  .modal-overlay-fifa {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  /* Modal FIFA PRO */
+  .modal-fifa-pro .modal-content-fifa {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+  }
+
+  .modal-header-fifa {
+    background: linear-gradient(135deg, #0a2a3c, #071e2b);
+  }
+
+  .modal-body-fifa {
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+
+  .modal-section-title {
+    color: var(--text-primary);
+  }
+
+  .modal-footer-fifa {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+  }
+
+  /* Player info modal */
+  .player-info-hero {
+    border-color: var(--border-color);
+  }
+
+  .player-info-avatar-wrap {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(145deg, var(--bg-surface), var(--bg-card));
+  }
+
+  .player-info-name {
+    color: var(--text-primary);
+  }
+
+  .player-info-meta {
+    color: var(--text-secondary);
+  }
+
+  .player-info-opinion {
+    color: var(--text-secondary);
+    background: var(--bg-surface);
+  }
+
+  /* Deportiva section */
+  .deportiva-avatar-wrap {
+    border-color: var(--border-color);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(145deg, var(--bg-surface), var(--bg-card));
+  }
+
+  .deportiva-avatar-placeholder {
+    color: var(--text-muted);
+    background: linear-gradient(145deg, var(--bg-surface), var(--bg-card));
+  }
+
+  .info-block-label {
+    color: var(--text-primary);
+  }
+
+  /* Player info tabs */
+  .player-info-tabs {
+    border-color: var(--border-color);
+    .nav-link {
+      color: #fff;
+      background: #0a2a3c;
+      &:hover { background: #0d3347; }
+      &.active {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+      }
+    }
+  }
+
+  /* Form modal tabs */
+  .form-modal-tabs {
+    border-color: var(--border-color);
+    .nav-link {
+      color: #fff;
+      background: #0a2a3c;
+      &:hover { background: #0d3347; }
+      &.active {
+        background: var(--color-primary);
+        border-color: var(--color-primary);
+      }
+    }
+  }
+
+  .form-modal-section-heading {
+    color: var(--text-primary);
+    border-color: rgba(63, 201, 130, 0.35);
+  }
+
+  .form-modal-label {
+    color: var(--text-secondary);
+  }
+
+  .form-modal-input {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+    &:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(63, 201, 130, 0.2);
+    }
+  }
+
+  .form-modal-tutor-section,
+  .form-modal-bank-section {
+    border-color: var(--border-color);
+  }
+
+  /* Read-only fields */
+  .info-readonly-field {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+    .label { color: var(--text-secondary); }
+    .value { color: var(--text-primary); }
+  }
+
+  .modal-section-heading {
+    color: var(--text-primary);
+    border-color: rgba(63, 201, 130, 0.3);
+  }
+
+  /* Stat cards */
+  .stat-card-pro {
+    background: var(--bg-card);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15), 0 0 0 1px var(--border-color);
+    &:hover {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(63, 201, 130, 0.3);
+    }
+  }
+
+  .stat-card-label {
+    color: var(--text-secondary);
+  }
+
+  .stat-card-value {
+    color: var(--text-primary);
+  }
+
+  /* Financiera section */
+  .financiera-progreso-card {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+  }
+
+  .financiera-progreso-title {
+    color: var(--text-primary);
+  }
+
+  .financiera-progreso-bar-wrap {
+    background: var(--bg-hover);
+  }
+
+  .financiera-progreso-stats {
+    color: var(--text-secondary);
+  }
+
+  .financiera-seccion-count {
+    color: var(--text-secondary);
+  }
+
+  .financiera-movimiento {
+    background: var(--bg-card);
+    border-color: rgba(251, 146, 60, 0.3);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+    &.pagado { border-color: rgba(63, 201, 130, 0.4); }
+  }
+
+  .financiera-movimiento-nombre {
+    color: var(--text-primary);
+  }
+
+  .financiera-movimiento-meta {
+    color: var(--text-secondary);
+  }
+
+  .financiera-movimiento-importe {
+    color: var(--text-primary);
+  }
+
+  .financiera-contacto-card {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+  }
+
+  .financiera-contacto-title {
+    color: var(--text-primary);
+  }
+
+  .financiera-contacto-item {
+    border-color: var(--border-color);
+  }
+
+  .financiera-contacto-value {
+    color: var(--text-primary);
+  }
+
+  /* Table FIFA PRO (inside modals) */
+  .table-wrap-fifa {
+    border-color: var(--border-color);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .table-fifa-pro {
+    background: var(--bg-card);
+    thead th {
+      background: linear-gradient(180deg, #0a2a3c 0%, #071e2b 100%);
+    }
+    tbody td {
+      color: var(--text-primary);
+      border-color: var(--border-color);
+    }
+    tbody tr:hover {
+      background: var(--bg-hover);
+    }
+  }
+
+  /* Modal Asistencia */
+  .modal-asistencia-content .modal-body-fifa {
+    background: var(--bg-card);
+  }
+
+  .badge-asistencia-ok {
+    background: rgba(63, 201, 130, 0.2);
+    color: #4ade80;
+  }
+
+  .badge-asistencia-no {
+    background: rgba(239, 68, 68, 0.2);
+    color: #f87171;
+  }
+
+  /* FIFA buttons */
+  .btn-fifa-primary {
+    background: var(--color-primary);
+    &:hover { background: #2aa463; }
+  }
+
+  .btn-fifa-secondary {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+    &:hover {
+      background: var(--bg-hover);
+    }
+  }
+
+  .btn-fifa-outline {
+    border-color: var(--border-color);
+    color: var(--text-primary);
+    &:hover {
+      background: var(--bg-hover);
+    }
+  }
+
+  .btn-fifa-danger {
+    &:hover {
+      background: #dc2626;
+    }
+  }
+
+  /* Upload zone */
+  .upload-zone-fifa {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+    &:hover {
+      border-color: var(--color-primary);
+    }
+  }
+
+  /* Responsive modal dark fix */
+  @media (max-width: 768px) {
+    .modal-content {
+      background: var(--bg-card);
+    }
   }
 }

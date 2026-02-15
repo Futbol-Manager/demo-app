@@ -12,7 +12,7 @@
   </header>
 
   <div class="tareas-grid">
-    <div class="fifa-card" (click)="openModalTactica()">
+    <div class="fifa-card" (click)="openTacticalBoard()">
       <div class="fifa-card-inner">
         <div class="fifa-card-icon-wrap">
           <img src="/assets/iconos/tactica.svg" alt="" class="fifa-card-icon" />
@@ -30,7 +30,7 @@
         <p class="fifa-card-desc">{{ 'TAREAS.HISTORIAL_DESC' | translate }}</p>
       </div>
     </div>
-    <div class="fifa-card" (click)="irAPantalla(2)">
+    <div class="fifa-card" (click)="irAPantalla(3)">
       <div class="fifa-card-inner">
         <div class="fifa-card-icon-wrap">
           <img src="/assets/iconos/estrella.svg" alt="" class="fifa-card-icon" />
@@ -39,7 +39,7 @@
         <p class="fifa-card-desc">{{ 'TAREAS.FAVORITAS_DESC' | translate }}</p>
       </div>
     </div>
-    <div class="fifa-card" (click)="irAPantalla(2)">
+    <div class="fifa-card" (click)="irAPantalla(4)">
       <div class="fifa-card-inner">
         <div class="fifa-card-icon-wrap">
           <img src="/assets/iconos/cono-de-trafico.svg" alt="" class="fifa-card-icon" />
@@ -51,18 +51,4 @@
   </div>
 </div>
 
-<!-- Modal tablero táctico (iframe) -->
-<div class="modal-tactica-backdrop" *ngIf="showModalTactica" (click)="cerrarModalTactica()"></div>
-<div class="modal-tactica" *ngIf="showModalTactica">
-  <div class="modal-tactica-content" (click)="$event.stopPropagation()">
-    <div class="modal-tactica-header">
-      <h2 class="modal-tactica-title">{{ 'TAREAS.DIBUJAR' | translate }}</h2>
-      <button type="button" class="modal-tactica-close" (click)="cerrarModalTactica()" [attr.aria-label]="'COMMON.CLOSE' | translate">
-        <i class="bi bi-x-lg"></i>
-      </button>
-    </div>
-    <div class="modal-tactica-body">
-      <iframe [src]="urlTacticalBoardSafe" class="modal-tactica-iframe" title="Tablero táctico"></iframe>
-    </div>
-  </div>
-</div>
+

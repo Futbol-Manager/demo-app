@@ -77,9 +77,32 @@
   margin-bottom: 1.5rem;
 }
 .option-card.disabled {
-  opacity: 0.45;
+  opacity: 0.6;
   cursor: not-allowed;
-  pointer-events: none; // 🚫 bloquea el click
+  pointer-events: none;
+  position: relative;
+}
+
+.badge-coming-soon {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.6rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #ffffff;
+}
+
+.option-card-injuries {
+  border-color: #1f8f8a;
+  i { color: #1f8f8a; }
+  &:hover {
+    border-color: #31b270;
+    box-shadow: 0 8px 18px rgba(31, 143, 138, 0.15);
+  }
 }
 
 /* =========================
@@ -592,4 +615,82 @@
     font-weight: 700;
   }
   
+}
+
+/* ===== DARK MODE ===== */
+:host-context(body.dark) {
+  .cuadro-dashboard {
+    background: var(--bg-main);
+  }
+
+  .btn-back-clean {
+    color: var(--text-secondary);
+    background-color: rgba(15, 163, 232, 0.12);
+    &:hover { background-color: var(--bg-hover); }
+  }
+
+  .section-title { color: var(--text-primary); }
+
+  .option-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    &:hover { box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2); }
+  }
+
+  .info-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+  }
+
+  /* Skeleton */
+  .skeleton-line, .skeleton-badge, .skeleton-hour {
+    background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-hover) 37%, var(--bg-surface) 63%);
+    background-size: 400% 100%;
+  }
+
+  .skeleton-card { border-color: var(--border-color); }
+
+  /* Match cards */
+  .match-card.victoria { border-color: rgba(63, 201, 130, 0.4); }
+  .match-card.empate { border-color: rgba(255, 193, 7, 0.4); }
+  .match-card.derrota { border-color: rgba(220, 53, 69, 0.4); }
+
+  .badge.victoria { background: rgba(30, 126, 52, 0.15); color: #4ade80; }
+  .badge.empate { background: rgba(211, 158, 0, 0.15); color: #fbbf24; }
+  .badge.derrota { background: rgba(200, 35, 51, 0.15); color: #f87171; }
+
+  .status { color: var(--text-muted); }
+
+  .score {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  .team-role { color: var(--text-muted); }
+  .match-date { color: var(--text-muted); }
+
+  /* Calendar */
+  .hour { color: var(--text-muted); }
+  .calendar-body { border-color: var(--border-color); }
+  .calendar-event {
+    background: rgba(63, 201, 130, 0.12);
+    small { color: var(--text-secondary); }
+  }
+
+  /* Next matches skeleton */
+  .match-skeleton {
+    background: var(--bg-surface);
+  }
+  .skeleton-circle, .skeleton-vs {
+    background: linear-gradient(90deg, var(--bg-hover) 25%, var(--bg-surface) 37%, var(--bg-hover) 63%);
+    background-size: 400% 100%;
+  }
+
+  /* Date badge */
+  .date-badge {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    .day { color: var(--text-primary); }
+    .date { color: var(--text-secondary); }
+  }
 }

@@ -10,6 +10,7 @@ import 'datatables.net';
 import { Chart, registerables } from 'chart.js/auto';
 import { HttpClient } from '@angular/common/http';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -44,7 +45,7 @@ export class TrainerComponent implements OnInit {
   players: any[] = [];
   imgPlayer: string = '';
   selectedFile!: File;
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
 
   constructor(private playerservice: PlayerService,
     private router: Router,

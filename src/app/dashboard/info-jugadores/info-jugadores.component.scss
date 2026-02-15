@@ -638,3 +638,140 @@
 .btn-warning-custom:hover {
   background: #e6d2a8;
 }
+
+/* ===== DARK MODE ===== */
+:host-context(body.dark) {
+  .btn-back-clean {
+    color: var(--text-secondary);
+    background-color: rgba(15, 163, 232, 0.12);
+    &:hover { background-color: var(--bg-hover); }
+  }
+
+  .table-title {
+    color: var(--text-primary);
+  }
+
+  .filter-label {
+    color: var(--text-secondary);
+  }
+
+  .search-input i {
+    color: var(--text-secondary);
+  }
+
+  /* Skeleton */
+  .skeleton {
+    background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-hover) 37%, var(--bg-surface) 63%);
+    background-size: 400% 100%;
+  }
+
+  /* Table */
+  .modern-table thead th {
+    background-color: #0a2a3c;
+    color: #f4f4f4;
+  }
+
+  .modern-table tbody tr {
+    background: var(--bg-card);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    &:hover {
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  .modern-table tbody td {
+    color: var(--text-primary);
+    &:not(:last-child)::after {
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  /* Sticky columns dark bg */
+  .modern-table thead th:nth-child(1),
+  .modern-table thead th:nth-child(2) {
+    background: #0a2a3c;
+  }
+
+  .modern-table tbody td:nth-child(1),
+  .modern-table tbody td:nth-child(2) {
+    background: var(--bg-card);
+  }
+
+  .btn-link-name {
+    color: #38bdf8;
+    &:hover { color: var(--color-primary); }
+  }
+
+  .image-wrapper {
+    background: var(--bg-surface);
+    i { color: var(--text-muted); }
+  }
+
+  .btn-icon {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+
+  .btn-icon.primary,
+  .btn-icon.info,
+  .btn-primary-custom,
+  .btn-info-custom,
+  .btn-warning-custom {
+    background: #0a2a3c;
+    color: #fff;
+  }
+
+  .btn-success-custom {
+    background: var(--color-primary);
+  }
+
+  /* Column separators */
+  .modern-table tbody td.col-father::before,
+  .modern-table thead th.col-father::before,
+  .modern-table tbody td.col-mother::before,
+  .modern-table thead th.col-mother::before {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Modal */
+  .modal-backdrop-custom {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .modal-base {
+    background: var(--bg-card);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-base__header {
+    background: #0a2a3c;
+  }
+
+  .modal-base__body {
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+
+  .modal-base__footer {
+    border-color: var(--border-color);
+    background: var(--bg-surface);
+  }
+
+  .modal-section__title {
+    color: var(--text-primary);
+  }
+
+  .modal-card {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+  }
+
+  .modal-label {
+    color: var(--text-secondary);
+  }
+
+  .modal-preview {
+    background: var(--bg-hover);
+  }
+}

@@ -70,8 +70,201 @@
     </div>
   </div>
 
-  <!-- Tabla -->
-  <div class="row mb-3">
+  <!-- ═══════════════ FILTRO POR PAGOS INDIVIDUALES ═══════════════ -->
+  <div class="row mb-3" *ngIf="listaPagosClub.length > 0">
+    <div class="col-12">
+      <div class="pago-filter-section">
+
+        <!-- CABECERA del filtro -->
+        <div class="pago-filter-header">
+          <button class="pago-filter-toggle" (click)="showPagoFilterDropdown = !showPagoFilterDropdown">
+            <i class="bi bi-funnel me-2"></i>
+            {{ 'CUOTAS.PAGO_FILTER.TOGGLE' | translate }}
+            <span class="pago-filter-count" *ngIf="pagosSeleccionados.length > 0">
+              {{ pagosSeleccionados.length }}
+            </span>
+            <i class="bi ms-auto" [ngClass]="showPagoFilterDropdown ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+          </button>
+
+          <!-- Botón limpiar filtros -->
+          <button class="btn btn-sm btn-outline-secondary pago-filter-clear"
+                  *ngIf="pagosSeleccionados.length > 0"
+                  (click)="quitarFiltroPagos()">
+            <i class="bi bi-x-circle me-1"></i> {{ 'CUOTAS.PAGO_FILTER.CLEAR' | translate }}
+          </button>
+        </div>
+
+        <!-- PANEL de chips -->
+        <div class="pago-filter-chips" *ngIf="showPagoFilterDropdown">
+
+          <!-- Seleccionar todos -->
+          <button class="pago-chip"
+                  [class.pago-chip-active]="pagosSeleccionados.length === listaPagosClub.length"
+                  (click)="seleccionarTodosPagos()">
+            <i class="bi bi-check-all me-1"></i> {{ 'CUOTAS.PAGO_FILTER.ALL' | translate }}
+          </button>
+
+          <!-- Un chip por cada pago -->
+          <button *ngFor="let pago of listaPagosClub"
+                  class="pago-chip"
+                  [class.pago-chip-active]="pagosSeleccionados.includes(pago.pagoClubId)"
+                  (click)="togglePagoFilter(pago.pagoClubId)">
+            <i class="bi" [ngClass]="pagosSeleccionados.includes(pago.pagoClubId) ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+            {{ pago.titulo }}
+            <span class="pago-chip-amount">{{ pago.importe }} €</span>
+          </button>
+        </div>
+
+        <!-- RESUMEN de selección -->
+        <div class="pago-filter-summary" *ngIf="pagosSeleccionados.length > 0">
+          <div class="pago-summary-pills">
+            <span *ngFor="let name of pagosSeleccionadosNombres" class="pago-summary-pill">
+              {{ name }}
+              <button class="pago-pill-remove" (click)="togglePagoFilter(listaPagosClub[pagosSeleccionadosNombres.indexOf(name)]?.pagoClubId || 0)">
+                <i class="bi bi-x"></i>
+              </button>
+            </span>
+          </div>
+          <div class="pago-summary-total">
+            <i class="bi bi-calculator me-1"></i>
+            {{ 'CUOTAS.PAGO_FILTER.SUMMARY_TOTAL' | translate }} <strong>{{ sumaPagosSeleccionados.toFixed(2) }} €</strong>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- INDICADOR DE CARGA DEL DESGLOSE -->
+  <div class="row mb-3" *ngIf="isLoadingDetalle">
+    <div class="col-12 text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">{{ 'CUOTAS.PAGO_FILTER.LOADING_SR' | translate }}</span>
+      </div>
+      <p class="mt-2 text-muted">{{ 'CUOTAS.PAGO_FILTER.LOADING' | translate }}</p>
+    </div>
+  </div>
+
+  <!-- ═══════════════ TABLA FILTRADA POR PAGOS ═══════════════ -->
+  <div class="row mb-3" *ngIf="vistaFiltroPago && !isLoadingDetalle">
+    <div class="col-12">
+      <div class="table-wrapper">
+        <div class="table-scroll">
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th class="col-name">{{ 'CUOTAS.TABLE.NAME' | translate }}</th>
+                <th>{{ 'CUOTAS.TABLE.TEAM' | translate }}</th>
+                <th>{{ 'CUOTAS.TABLE.STATUS' | translate }}</th>
+                <th>{{ 'CUOTAS.TABLE.TOTAL' | translate }}</th>
+                <th>{{ 'CUOTAS.TABLE.PAID' | translate }}</th>
+                <th>{{ 'CUOTAS.TABLE.REMAINING' | translate }}</th>
+                <th>{{ 'CUOTAS.TABLE.PAYMENTS' | translate }}</th>
+                <th>{{ 'CUOTAS.TABLE.ACTIONS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- SIN RESULTADOS -->
+              <tr *ngIf="listaPlayersFiltradosPorPago.length === 0">
+                <td colspan="9" class="text-center text-muted py-4">
+                  <i class="bi bi-info-circle me-2"></i>
+                  {{ 'CUOTAS.PAGO_FILTER.NO_RESULTS' | translate }}
+                </td>
+              </tr>
+
+              <tr *ngFor="let player of playersPaginadosFiltrados; trackBy: trackByPlayerId">
+                <!-- AVATAR -->
+                <td class="avatar-cell">
+                  <img *ngIf="player.picturePlayer"
+                       [src]="'https://appsphairatech.com/images/user/' + player.picturePlayer">
+                  <i *ngIf="!player.picturePlayer" class="bi bi-person-circle"></i>
+                </td>
+
+                <!-- NOMBRE -->
+                <td class="name-cell">
+                  <button type="button" class="btn-link-name" (click)="abrirModalInfoJugador(player)">
+                    {{ player.nombre }} {{ player.apellido }}
+                  </button>
+                </td>
+
+                <!-- EQUIPO -->
+                <td>{{ player.nameTeam || ('CUOTAS.NO_TEAM' | translate) }}</td>
+
+                <!-- ESTADO -->
+                <td class="status-cell">
+                  <span class="status-badge" [ngClass]="player.estadoFiltrado > 0 ? 'status-success' : 'status-error'">
+                    <i class="bi" [ngClass]="player.estadoFiltrado > 0 ? 'bi-check-lg' : 'bi-x-lg'"></i>
+                  </span>
+                </td>
+
+                <!-- TOTAL A PAGAR -->
+                <td>{{ player.totalAPagarFiltrado }}</td>
+
+                <!-- PAGADO -->
+                <td>{{ player.totalPagadoFiltrado }}</td>
+
+                <!-- RESTANTE -->
+                <td>{{ player.restanteFiltrado }}</td>
+
+                <!-- PAGOS / PROGRESO -->
+                <td class="progress-cell">
+                  <button type="button" class="progress-button" (click)="openModalCuotasAsignadas(player)">
+                    <span class="progress-text">{{ player.pagadasFiltrado }}</span>
+                    <div class="progress">
+                      <div class="progress-bar" [style.width.%]="calcularProgresoFiltrado(player)"></div>
+                    </div>
+                  </button>
+                </td>
+
+                <!-- ACCIONES -->
+                <td>
+                  <div class="actions-group">
+                    <button class="btn-icon edit" [title]="'CUOTAS.ACTIONS.EDIT' | translate"
+                            (click)="openModalEditar(player)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+                    <button class="btn-icon pay" [title]="'CUOTAS.ACTIONS.PAY' | translate"
+                            (click)="openModalPago(player)">
+                      <i class="bi bi-wallet2"></i>
+                    </button>
+                    <button class="btn-icon history" [title]="'CUOTAS.ACTIONS.HISTORY' | translate"
+                            (click)="openModalVerPagosPlayer(player)">
+                      <i class="bi bi-clock-history"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PAGINACIÓN FILTRADA -->
+      <div class="pagination-wrapper" *ngIf="listaPlayersFiltradosPorPago.length > 0">
+        <div class="pagination-content">
+          <div class="pagination-info">
+            {{ 'CUOTAS.PAGINATION.SHOWING' | translate }}
+            {{ (paginaActual - 1) * itemsPorPagina + 1 }}–{{ paginaActual * itemsPorPagina > listaPlayersFiltradosPorPago.length ? listaPlayersFiltradosPorPago.length : paginaActual * itemsPorPagina }}
+            {{ 'CUOTAS.PAGINATION.OF' | translate }}
+            {{ listaPlayersFiltradosPorPago.length }}
+          </div>
+          <div class="pagination-controls">
+            <button class="page-btn" [disabled]="paginaActual === 1" (click)="paginaAnterior()">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <span class="page-indicator">{{ paginaActual }} / {{ totalPaginasFiltrado }}</span>
+            <button class="page-btn" [disabled]="paginaActual === totalPaginasFiltrado" (click)="paginaSiguiente()">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla GENERAL (solo visible cuando NO hay filtro por pagos) -->
+  <div class="row mb-3" *ngIf="!vistaFiltroPago">
     <div class="col-12">
       <div class="table-wrapper">
         <div class="table-scroll" [class.no-scroll]="isLoading">
@@ -259,7 +452,7 @@
 </div>
 
 <!-- PAGINACIÓN (FUERA de la tabla) -->
-<div class="pagination-wrapper" *ngIf="!isLoading">
+<div class="pagination-wrapper" *ngIf="!isLoading && !vistaFiltroPago">
 
   <div class="pagination-content">
 
@@ -311,7 +504,7 @@
           <i class="bi bi-bank2 me-2"></i>
           {{ 'CUOTAS.BANK_INFO.TITLE' | translate }}
         </h5>
-        <button class="btn-close" (click)="cerrarModalBancoClub()"></button>
+        <button class="btn-close" aria-label="Cerrar" (click)="cerrarModalBancoClub()"></button>
       </div>
 
       <div class="modal-body modern-body">
@@ -379,7 +572,7 @@
           <i class="bi bi-wallet2 me-2"></i>
           {{ 'CUOTAS.PAYMENTS_MODAL.TITLE' | translate }}
         </h5>
-        <button class="btn-close" (click)="cerrarModalCuotas()"></button>
+        <button class="btn-close" aria-label="Cerrar" (click)="cerrarModalCuotas()"></button>
       </div>
 
       <div class="modal-body modern-body">
@@ -454,7 +647,7 @@
         <h5 class="modal-title">
           {{ cuotaSeleccionada ? 'Editar cuota' : 'Nueva cuota' }}
         </h5>
-        <button class="btn-close" (click)="cerrarModalCuota()"></button>
+        <button class="btn-close" aria-label="Cerrar" (click)="cerrarModalCuota()"></button>
       </div>
 
       <div class="modal-body modern-body">
@@ -668,7 +861,7 @@
           <i class="bi bi-credit-card-2-front-fill me-2"></i>
           Agregar pago del jugador
         </h5>
-        <button type="button" class="btn-close" (click)="cerrarModalAddPago()"></button>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalAddPago()"></button>
       </div>
 
       <!-- BODY -->
@@ -764,7 +957,7 @@
           <i class="bi bi-clock-history me-2"></i>
           Historial de Pagos
         </h5>
-        <button type="button" class="btn-close" (click)="cerrarModalHistorialPagos()"></button>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalHistorialPagos()"></button>
       </div>
 
       <!-- BODY -->
@@ -853,7 +1046,7 @@
           <i class="bi bi-exclamation-triangle me-2"></i>
           Confirmar devolución
         </h5>
-        <button class="btn-close" (click)="cancelarDevolucion()"></button>
+        <button class="btn-close" aria-label="Cerrar" (click)="cancelarDevolucion()"></button>
       </div>
 
       <div class="modal-body modern-body">
@@ -899,7 +1092,7 @@
           <i class="bi bi-wallet2 me-2"></i>
           {{ 'CUOTAS.CUOTAS_ASSIGNED.TITLE' | translate }}
         </h5>
-        <button type="button" class="btn-close" (click)="cerrarModalCuotasAsignadas()"></button>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalCuotasAsignadas()"></button>
       </div>
 
       <!-- BODY -->
@@ -979,7 +1172,7 @@
           <i class="bi bi-wallet2 me-2"></i>
           Pagos del jugador
         </h5>
-        <button type="button" class="btn-close" (click)="cerrarModalCuotasJugador()"></button>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalCuotasJugador()"></button>
       </div>
 
       <!-- BODY -->
@@ -1087,7 +1280,7 @@
           <i class="bi bi-pencil-square me-2"></i>
           Editar cuota del jugador
         </h5>
-        <button type="button" class="btn-close" (click)="cerrarModalEditarCuotaPlayer()"></button>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalEditarCuotaPlayer()"></button>
       </div>
 
       <!-- BODY -->
@@ -1160,7 +1353,7 @@
           <i class="bi bi-credit-card me-2"></i>
           Configurar Stripe
         </h5>
-        <button type="button" class="btn-close" (click)="cerrarModalStripe()"></button>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalStripe()"></button>
       </div>
 
       <!-- BODY -->

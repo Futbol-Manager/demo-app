@@ -27,7 +27,7 @@
   <div class="custom-dropdown" *ngIf="showDropdown">
     <div class="dropdown-header">
       <span>{{ 'CLOTHES.TITLE' | translate }}</span>
-      <button class="btn-close" (click)="closeDropdown()"></button>
+      <button class="btn-close" aria-label="Cerrar" (click)="closeDropdown()"></button>
     </div>
 
     <div class="dropdown-body">
@@ -53,6 +53,9 @@
 </div>
 
 </div>
+
+<!-- ========== DESKTOP VIEW (hidden on mobile) ========== -->
+<div class="desktop-view">
 
 <!-- SKELETON -->
 <div *ngIf="!datosCargados" class="table-skeleton">
@@ -140,10 +143,10 @@
               </select>
               <div class="d-flex">
                 <button *ngIf="ropa.camisetaJuegoOk === 0" class="btn btn-danger me-1"
-                  (click)="togglePrendaOk(ropa, 2)">
+                  (click)="togglePrendaOk(ropa, 2)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.camisetaJuegoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 2)">
+                <button *ngIf="ropa.camisetaJuegoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 2)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -158,10 +161,10 @@
               </select>
               <div class="d-flex">
                 <button *ngIf="ropa.pantalonJuegoOk === 0" class="btn btn-danger me-1"
-                  (click)="togglePrendaOk(ropa, 3)">
+                  (click)="togglePrendaOk(ropa, 3)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.pantalonJuegoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 3)">
+                <button *ngIf="ropa.pantalonJuegoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 3)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -174,10 +177,10 @@
                 <option *ngFor="let size of abrigoSizesMedias" [value]="size">{{ size }}</option>
               </select>
               <div class="d-flex">
-                <button *ngIf="ropa.mediasOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 11)">
+                <button *ngIf="ropa.mediasOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 11)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.mediasOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 11)">
+                <button *ngIf="ropa.mediasOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 11)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -191,11 +194,11 @@
               </select>
               <div class="d-flex">
                 <button *ngIf="ropa.camisetaJuegoDosOk === 0" class="btn btn-danger me-1"
-                  (click)="togglePrendaOk(ropa, 14)">
+                  (click)="togglePrendaOk(ropa, 14)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
                 <button *ngIf="ropa.camisetaJuegoDosOk === 1" class="btn btn-success"
-                  (click)="togglePrendaOk(ropa, 14)">
+                  (click)="togglePrendaOk(ropa, 14)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -209,11 +212,11 @@
               </select>
               <div class="d-flex">
                 <button *ngIf="ropa.pantalonJuegoDosOk === 0" class="btn btn-danger me-1"
-                  (click)="togglePrendaOk(ropa, 15)">
+                  (click)="togglePrendaOk(ropa, 15)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
                 <button *ngIf="ropa.pantalonJuegoDosOk === 1" class="btn btn-success"
-                  (click)="togglePrendaOk(ropa, 15)">
+                  (click)="togglePrendaOk(ropa, 15)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -226,10 +229,10 @@
                 <option *ngFor="let size of abrigoSizesMedias" [value]="size">{{ size }}</option>
               </select>
               <div class="d-flex">
-                <button *ngIf="ropa.mediasDosOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 16)">
+                <button *ngIf="ropa.mediasDosOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 16)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.mediasDosOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 16)">
+                <button *ngIf="ropa.mediasDosOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 16)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -243,10 +246,10 @@
               </select>
               <div class="d-flex">
                 <button *ngIf="ropa.camisetaEntrenoOk === 0" class="btn btn-danger me-1"
-                  (click)="togglePrendaOk(ropa, 4)">
+                  (click)="togglePrendaOk(ropa, 4)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.camisetaEntrenoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 4)">
+                <button *ngIf="ropa.camisetaEntrenoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 4)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -260,10 +263,10 @@
               </select>
               <div class="d-flex">
                 <button *ngIf="ropa.pantalonEntrenoOk === 0" class="btn btn-danger me-1"
-                  (click)="togglePrendaOk(ropa, 5)">
+                  (click)="togglePrendaOk(ropa, 5)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.pantalonEntrenoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 5)">
+                <button *ngIf="ropa.pantalonEntrenoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 5)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -276,10 +279,10 @@
                 <option *ngFor="let size of abrigoSizesMedias" [value]="size">{{ size }}</option>
               </select>
               <div class="d-flex">
-                <button *ngIf="ropa.mediasTresOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 17)">
+                <button *ngIf="ropa.mediasTresOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 17)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.mediasTresOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 17)">
+                <button *ngIf="ropa.mediasTresOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 17)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -293,10 +296,10 @@
               </select>
               <div class="d-flex">
                 <button *ngIf="ropa.sudaderaEntrenoOk === 0" class="btn btn-danger me-1"
-                  (click)="togglePrendaOk(ropa, 6)">
+                  (click)="togglePrendaOk(ropa, 6)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.sudaderaEntrenoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 6)">
+                <button *ngIf="ropa.sudaderaEntrenoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 6)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -310,10 +313,10 @@
               </select>
               <div class="d-flex">
                 <button *ngIf="ropa.chaquetaChandalOk === 0" class="btn btn-danger me-1"
-                  (click)="togglePrendaOk(ropa, 7)">
+                  (click)="togglePrendaOk(ropa, 7)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.chaquetaChandalOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 7)">
+                <button *ngIf="ropa.chaquetaChandalOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 7)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -327,10 +330,10 @@
               </select>
               <div class="d-flex">
                 <button *ngIf="ropa.pantalonChandalOk === 0" class="btn btn-danger me-1"
-                  (click)="togglePrendaOk(ropa, 8)">
+                  (click)="togglePrendaOk(ropa, 8)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.pantalonChandalOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 8)">
+                <button *ngIf="ropa.pantalonChandalOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 8)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -343,10 +346,10 @@
                 <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
               </select>
               <div class="d-flex">
-                <button *ngIf="ropa.poloPaseoOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 9)">
+                <button *ngIf="ropa.poloPaseoOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 9)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.poloPaseoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 9)">
+                <button *ngIf="ropa.poloPaseoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 9)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -360,10 +363,10 @@
               </select>
               <div class="d-flex">
                 <button *ngIf="ropa.pantalonPaseoOk === 0" class="btn btn-danger me-1"
-                  (click)="togglePrendaOk(ropa, 10)">
+                  (click)="togglePrendaOk(ropa, 10)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.pantalonPaseoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 10)">
+                <button *ngIf="ropa.pantalonPaseoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 10)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -376,10 +379,10 @@
                 <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
               </select>
               <div class="d-flex">
-                <button *ngIf="ropa.abrigoOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 1)">
+                <button *ngIf="ropa.abrigoOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 1)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.abrigoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 1)">
+                <button *ngIf="ropa.abrigoOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 1)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -392,10 +395,10 @@
                 <option *ngFor="let size of abrigoSizes" [value]="size">{{ size }}</option>
               </select>
               <div class="d-flex">
-                <button *ngIf="ropa.chubasqueroOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 12)">
+                <button *ngIf="ropa.chubasqueroOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 12)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.chubasqueroOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 12)">
+                <button *ngIf="ropa.chubasqueroOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 12)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -404,10 +407,10 @@
           <td>
             <div class="d-flex align-items-center" style="width: 100%;">
               <div class="d-flex">
-                <button *ngIf="ropa.mochilaOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 13)">
+                <button *ngIf="ropa.mochilaOk === 0" class="btn btn-danger me-1" (click)="togglePrendaOk(ropa, 13)" aria-label="Marcar como entregado">
                   <i class="bi bi-dash-circle"></i>
                 </button>
-                <button *ngIf="ropa.mochilaOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 13)">
+                <button *ngIf="ropa.mochilaOk === 1" class="btn btn-success" (click)="togglePrendaOk(ropa, 13)" aria-label="Marcar como no entregado">
                   <i class="bi bi-check2-circle"></i>
                 </button>
               </div>
@@ -434,19 +437,76 @@
       </select>
 
       <div class="pagination-controls">
-        <button class="page-btn prev">
+        <button class="page-btn prev" aria-label="Página anterior">
           <i class="bi bi-chevron-left"></i>
         </button>
 
         <span class="page-indicator"></span>
 
-        <button class="page-btn next">
+        <button class="page-btn next" aria-label="Página siguiente">
           <i class="bi bi-chevron-right"></i>
         </button>
       </div>
     </div>
   </div>
 
+</div>
+
+</div><!-- /desktop-view -->
+
+<!-- ========== MOBILE CARD VIEW (shown on mobile only) ========== -->
+<div class="mobile-view" *ngIf="datosCargados">
+  <div class="mobile-skeleton" *ngIf="!datosCargados">
+    <div class="skeleton-card" *ngFor="let s of [1,2,3,4]"></div>
+  </div>
+
+  <div class="player-card" *ngFor="let ropa of ropaPlayers; let i = index">
+    <!-- Card Header -->
+    <div class="card-header-ropa">
+      <div class="player-name" (click)="abrirModalInfoJugador(ropa)">
+        {{ ropa.player.nombre }} {{ ropa.player.apellido }}
+      </div>
+      <div class="player-team">{{ ropa.team.category }} {{ ropa.team.name }} {{ ropa.team.levelLeague }}</div>
+      <span class="badge-status" [ngClass]="ropa.estado === 'OK' ? 'status-ok' : 'status-pending'">
+        {{ ropa.estado === 'OK' ? '✅ OK' : '⏳' }}
+      </span>
+    </div>
+
+    <!-- Shirt Info -->
+    <div class="card-shirt-info">
+      <div class="shirt-field">
+        <label>{{ 'CLOTHES.TABLE.SHIRT_NAME' | translate }}</label>
+        <input type="text" class="form-control form-control-sm" [(ngModel)]="ropa.nick"
+          (ngModelChange)="onAbrigoChange(ropa)">
+      </div>
+      <div class="shirt-field">
+        <label>{{ 'CLOTHES.TABLE.NUMBER' | translate }}</label>
+        <input type="number" class="form-control form-control-sm" [(ngModel)]="ropa.numero"
+          (ngModelChange)="onAbrigoChange(ropa)">
+      </div>
+    </div>
+
+    <!-- Clothing Grid -->
+    <div class="card-clothing-grid">
+      <ng-container *ngFor="let item of clothingItemsMobile">
+        <div class="clothing-item" *ngIf="ropaClub[item.clubProp] === 0">
+          <span class="clothing-label">{{ item.label | translate }}</span>
+          <div class="clothing-controls">
+            <select *ngIf="item.sizeKey" class="form-select form-select-sm"
+              [(ngModel)]="ropa[item.sizeKey]"
+              (change)="updateRopaJugador(ropa)">
+              <option *ngFor="let t of (item.sizes === 'abrigoSizesMedias' ? abrigoSizesMedias : abrigoSizes)" [value]="t">{{ t || '-' }}</option>
+            </select>
+            <button class="btn-toggle-sm"
+              [ngClass]="ropa[item.okKey] === 1 ? 'delivered' : 'not-delivered'"
+              (click)="togglePrendaOk(ropa, item.toggleKey)">
+              {{ ropa[item.okKey] === 1 ? '✅' : '❌' }}
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
 </div>
 
 

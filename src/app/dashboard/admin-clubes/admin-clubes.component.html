@@ -1,12 +1,8 @@
-<div class="submenu">
-    <div class="row">
-        <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
-                <i class="bi bi-arrow-left-square-fill"></i>
-                <span class="d-none d-md-inline">Volver</span>
-            </a>
-        </div>
-    </div>
+<div class="back-container">
+  <div class="btn-back-clean" href="javascript:void(0)" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </div>
 </div>
 
 <div class="container mt-4">
@@ -102,7 +98,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="button" class="btn-close" (click)="cerrarModalDetalleSuscripcion()"></button>
+                <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalDetalleSuscripcion()"></button>
             </div>
 
             <!-- Body -->
@@ -302,7 +298,7 @@
                 <h5 class="modal-title mb-0">
                     <i class="bi bi-pencil-square me-2"></i>{{ editTitle }}
                 </h5>
-                <button type="button" class="btn-close" (click)="closeEditModal()"></button>
+                <button type="button" class="btn-close" aria-label="Cerrar" (click)="closeEditModal()"></button>
             </div>
 
             <div class="modal-body">

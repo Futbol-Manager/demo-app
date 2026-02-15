@@ -1,12 +1,8 @@
-<div class="submenu">
-    <div class="row">
-        <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
-                <i class="bi bi-arrow-left-square-fill"></i>
-                <span class="d-none d-md-inline">Volver</span>
-            </a>
-        </div>
-    </div>
+<div class="back-container">
+  <div class="btn-back-clean" href="javascript:void(0)" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </div>
 </div>
 
 <app-publicidad></app-publicidad>
@@ -135,10 +131,7 @@
 
                         <select class="form-control season-select mx-auto" [(ngModel)]="temporada"
                             (change)="cargarListadoEquipos()">
-                            <option value="2022">2022/2023</option>
-                            <option value="2023">2023/2024</option>
-                            <option value="2024">2024/2025</option>
-                            <option value="2025">2025/2026</option>
+                            <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
                         </select>
                     </div>
                 </div>
@@ -222,10 +215,7 @@
 
                     <select class="form-select season-select text-center" [(ngModel)]="temporada"
                         (change)="cargarJugadores()">
-                        <option value="2022">2022/2023</option>
-                        <option value="2023">2023/2024</option>
-                        <option value="2024">2024/2025</option>
-                        <option value="2025">2025/2026</option>
+                        <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
                     </select>
 
                 </div>

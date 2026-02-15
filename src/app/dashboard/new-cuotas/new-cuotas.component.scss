@@ -1215,3 +1215,614 @@ th:hover i {
     font-size: 0.85rem;
   }
 }
+
+
+/* ===================================================================
+   FILTRO POR PAGOS — sección de chips, resumen y tabla filtrada
+   =================================================================== */
+
+/* SECCIÓN PRINCIPAL */
+.pago-filter-section {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+
+/* HEADER */
+.pago-filter-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.pago-filter-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 10px;
+  background: #002c40;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+}
+.pago-filter-toggle:hover {
+  background: #003d5b;
+  transform: translateY(-1px);
+}
+.pago-filter-toggle:active {
+  transform: scale(0.97);
+}
+
+.pago-filter-count {
+  font-size: 0.82rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.pago-filter-clear {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border: 1.5px solid #dc3545;
+  border-radius: 8px;
+  background: transparent;
+  color: #dc3545;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.pago-filter-clear:hover {
+  background: #dc3545;
+  color: #fff;
+}
+
+/* CHIPS CONTAINER */
+.pago-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+/* CHIP INDIVIDUAL */
+.pago-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1.5px solid #dee2e6;
+  border-radius: 20px;
+  background: #f8f9fa;
+  color: #495057;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.pago-chip:hover {
+  border-color: #0fa3e8;
+  background: #e7f5fd;
+}
+.pago-chip-active {
+  border-color: #0fa3e8;
+  background: #0fa3e8;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(15, 163, 232, 0.3);
+}
+.pago-chip-active:hover {
+  background: #0d8ecb;
+  border-color: #0d8ecb;
+}
+
+.pago-chip-check {
+  font-size: 0.75rem;
+}
+
+.pago-chip-amount {
+  font-size: 0.72rem;
+  opacity: 0.8;
+  font-weight: 400;
+}
+.pago-chip-active .pago-chip-amount {
+  opacity: 0.9;
+}
+
+/* CHIP "TODOS" */
+.pago-chip-todos {
+  border-style: dashed;
+  border-color: #adb5bd;
+  background: transparent;
+  font-style: italic;
+}
+.pago-chip-todos:hover {
+  border-color: #002c40;
+  background: rgba(0, 44, 64, 0.06);
+}
+.pago-chip-todos.active {
+  border-style: solid;
+  border-color: #002c40;
+  background: #002c40;
+  color: #fff;
+  font-style: normal;
+}
+
+/* RESUMEN SELECCIONADOS */
+.pago-filter-summary {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e8f5e9 100%);
+  border-radius: 10px;
+  border-left: 4px solid #0fa3e8;
+}
+
+.pago-summary-label {
+  font-size: 0.78rem;
+  color: #6c757d;
+  font-weight: 500;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.pago-summary-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.pago-summary-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 14px;
+  font-size: 0.78rem;
+  color: #002c40;
+  font-weight: 500;
+}
+
+.pago-pill-remove {
+  background: none;
+  border: none;
+  color: #adb5bd;
+  cursor: pointer;
+  font-size: 0.7rem;
+  padding: 0;
+  margin-left: 2px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.pago-pill-remove:hover {
+  color: #dc3545;
+}
+
+.pago-summary-total {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #002c40;
+}
+.pago-summary-total span {
+  color: #0fa3e8;
+}
+
+/* LOADING DETALLE */
+.loading-detalle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px;
+  color: #6c757d;
+  font-size: 0.88rem;
+}
+.loading-detalle .spinner-border {
+  width: 1.2rem;
+  height: 1.2rem;
+  border-width: 2px;
+}
+
+/* HEADER TABLA FILTRADA */
+.filtered-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding: 0 4px;
+}
+.filtered-table-header h6 {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #002c40;
+  margin: 0;
+}
+.filtered-table-header h6 i {
+  color: #0fa3e8;
+}
+.filtered-table-count {
+  font-size: 0.8rem;
+  color: #6c757d;
+  background: #f1f3f5;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .pago-filter-section {
+    padding: 14px 12px;
+  }
+  .pago-filter-header {
+    gap: 8px;
+  }
+  .pago-filter-toggle {
+    font-size: 0.8rem;
+    padding: 7px 12px;
+  }
+  .pago-filter-clear {
+    margin-left: 0;
+    margin-top: 4px;
+  }
+  .pago-chip {
+    font-size: 0.78rem;
+    padding: 6px 10px;
+  }
+  .pago-filter-summary {
+    padding: 10px 12px;
+  }
+  .filtered-table-header {
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 450px) {
+  .pago-filter-chips {
+    gap: 6px;
+  }
+  .pago-chip {
+    font-size: 0.74rem;
+    padding: 5px 8px;
+    border-radius: 16px;
+  }
+  .pago-chip-amount {
+    display: none;
+  }
+}
+
+/* =====================================================
+   DARK MODE OVERRIDES – NEW CUOTAS
+===================================================== */
+:host-context(body.dark) {
+
+  /* ---- BTN BACK ---- */
+  .btn-back-clean {
+    color: var(--text-primary);
+    background-color: rgba(var(--color-primary-rgb), 0.08);
+  }
+
+  .btn-back-clean:hover {
+    background-color: rgba(var(--color-navy-rgb), 0.12);
+  }
+
+  /* ---- ACTION BTN ---- */
+  .action-btn {
+    color: var(--text-primary);
+  }
+
+  .action-btn:hover {
+    background-color: rgba(var(--color-primary-rgb), 0.06);
+  }
+
+  /* ---- SKELETON ---- */
+  .sk {
+    background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-hover) 37%, var(--bg-surface) 63%);
+    background-size: 400% 100%;
+  }
+
+  /* ---- FILTERS ---- */
+  .modern-filters {
+    background: var(--bg-card);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  }
+
+  .filter-search i {
+    color: var(--text-muted);
+  }
+
+  /* ---- TABLE ---- */
+  .modern-table thead th {
+    background-color: var(--color-navy);
+    color: #fff;
+  }
+
+  .modern-table tbody tr {
+    background: var(--bg-card);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+  }
+
+  .modern-table tbody td::after {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  /* ---- PAGINATION ---- */
+  .pagination-content {
+    background: var(--bg-card);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .pagination-info {
+    color: var(--text-secondary);
+  }
+
+  .pagination-select {
+    border-color: var(--border-input);
+    background: var(--bg-input);
+    color: var(--text-primary);
+  }
+
+  .page-btn {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  .page-indicator {
+    color: var(--text-primary);
+  }
+
+  /* ---- AVATAR FALLBACK ---- */
+  .avatar-cell i {
+    color: var(--text-muted);
+    background: var(--bg-surface);
+  }
+
+  /* ---- BTN ICON ---- */
+  .btn-icon {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  .btn-icon.edit {
+    background: rgba(var(--color-primary-rgb), 0.12);
+    color: var(--color-primary);
+  }
+
+  .btn-icon.pay {
+    background: rgba(239, 220, 182, 0.15);
+    color: var(--color-beige);
+  }
+
+  .btn-icon.history {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  /* ---- MODAL ---- */
+  .modal-body-light {
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+
+  /* ---- TEAM DROPDOWN ---- */
+  .team-dropdown {
+    border-color: var(--border-color);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3);
+    background: var(--bg-card);
+  }
+
+  .team-dropdown .form-check:hover {
+    background: var(--bg-hover);
+  }
+
+  .team-dropdown .form-check-label {
+    color: var(--text-primary);
+  }
+
+  .team-dropdown .select-all {
+    background: var(--bg-surface);
+  }
+
+  .team-option:hover {
+    background: var(--bg-hover);
+  }
+
+  /* ---- SUBSCRIPTION BOX ---- */
+  .subscription-box {
+    border-color: var(--border-color);
+    background: var(--bg-surface);
+  }
+
+  /* ---- CUOTA CARD ---- */
+  .cuota-card {
+    background: var(--bg-card);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  }
+
+  .cuota-grid label {
+    color: var(--text-muted);
+  }
+
+  .cuota-description {
+    color: var(--text-secondary);
+  }
+
+  .cuota-mandatory .label {
+    color: var(--text-muted);
+  }
+
+  /* ---- MODERN LABEL / INPUT ---- */
+  .modern-label {
+    color: var(--text-primary);
+  }
+
+  .modern-input {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+  }
+
+  .modern-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.15rem rgba(var(--color-primary-rgb), 0.25);
+  }
+
+  /* ---- PAYMENT ROW ---- */
+  .payment-row {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+  }
+
+  .payment-title {
+    color: var(--text-primary);
+  }
+
+  .meta-label {
+    color: var(--text-muted);
+  }
+
+  .meta-value {
+    color: var(--text-primary);
+  }
+
+  .payment-desc {
+    color: var(--text-secondary);
+  }
+
+  /* ---- STRIPE INFO ---- */
+  .stripe-info-box {
+    background: var(--bg-surface);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .stripe-info-title {
+    color: var(--text-primary);
+  }
+
+  /* ---- HISTORY CARD ---- */
+  .history-card {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .history-header h6 {
+    color: var(--text-primary);
+  }
+
+  .history-grid .label {
+    color: var(--text-muted);
+  }
+
+  .history-comment {
+    color: var(--text-primary);
+  }
+
+  .history-comment .label {
+    color: var(--text-muted);
+  }
+
+  /* ---- BTN SECONDARY ---- */
+  .btn-secondary {
+    color: var(--text-primary);
+    border-color: var(--border-strong);
+  }
+
+  .btn-success {
+    color: #fff;
+  }
+
+  /* ---- PROGRESS ---- */
+  .progress {
+    background-color: var(--bg-surface);
+  }
+
+  .progress-button:hover {
+    background-color: rgba(var(--color-primary-rgb), 0.08);
+  }
+
+  /* ---- PAGO FILTER SECTION ---- */
+  .pago-filter-section {
+    background: var(--bg-card);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+
+  .pago-filter-count {
+    color: var(--text-muted);
+  }
+
+  .pago-chip {
+    border-color: var(--border-color);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+  }
+
+  .pago-chip:hover {
+    border-color: #0fa3e8;
+    background: rgba(15, 163, 232, 0.12);
+  }
+
+  .pago-chip-todos {
+    border-color: var(--border-strong);
+    background: transparent;
+  }
+
+  .pago-chip-todos:hover {
+    border-color: var(--text-primary);
+    background: rgba(var(--color-navy-rgb), 0.08);
+  }
+
+  .pago-filter-summary {
+    background: linear-gradient(135deg, rgba(var(--color-primary-rgb), 0.08) 0%, rgba(var(--color-primary-rgb), 0.04) 100%);
+    border-left-color: #0fa3e8;
+  }
+
+  .pago-summary-label {
+    color: var(--text-muted);
+  }
+
+  .pago-summary-pill {
+    background: var(--bg-card);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .pago-summary-total {
+    color: var(--text-primary);
+  }
+
+  .loading-detalle {
+    color: var(--text-muted);
+  }
+
+  .filtered-table-header h6 {
+    color: var(--text-primary);
+  }
+
+  .filtered-table-count {
+    color: var(--text-secondary);
+    background: var(--bg-surface);
+  }
+
+  /* ---- TEAM BADGE ---- */
+  .team-badge-pill {
+    background: rgba(var(--color-primary-rgb), 0.12);
+    color: var(--text-primary);
+  }
+}

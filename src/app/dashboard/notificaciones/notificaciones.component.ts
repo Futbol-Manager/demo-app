@@ -8,6 +8,7 @@ import { CorreoEnviado } from 'src/app/core/services/models/club.model';
 import { Response } from 'src/app/core/services/models/response.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Location } from '@angular/common';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 declare var $: any; // Declaración para usar jQuery
 
 @Component({
@@ -62,7 +63,7 @@ export class NotificacionesComponent implements OnInit {
   deleteIndex = -1;
   deleteOption = 0; // 0 = enviado, 1 = recibido
   sendSuccess = false;
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
 
   constructor(
     private loginService: LoginService,

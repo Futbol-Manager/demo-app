@@ -1,0 +1,149 @@
+<!-- ═══════════════════════════════════════════════
+     BOTÓN VOLVER
+═══════════════════════════════════════════════ -->
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     CONTENEDOR PRINCIPAL DEL CHAT CON SIDEBAR
+═══════════════════════════════════════════════ -->
+<div class="chat-container" [class.sidebar-open]="showHistory">
+
+  <!-- SIDEBAR LATERAL DE HISTORIAL -->
+  <aside class="history-sidebar" *ngIf="showHistory">
+    <div class="sidebar-header">
+      <h6><i class="bi bi-clock-history me-2"></i>{{ 'AI_ASSISTANT.HISTORY_TITLE' | translate }}</h6>
+      <button class="btn-new-chat" (click)="startNewConversation()" title="Nueva conversación">
+        <i class="bi bi-plus-lg"></i>
+      </button>
+    </div>
+    <div class="sidebar-content">
+      <div class="history-list" *ngIf="conversations.length > 0">
+        <div class="history-item" 
+             *ngFor="let conv of conversations" 
+             (click)="loadConversation(conv)"
+             [class.active]="currentConversationId === conv.id">
+          <div class="history-item-info">
+            <span class="history-item-title">{{ conv.title }}</span>
+            <span class="history-item-meta">{{ formatDate(conv.date) }}</span>
+          </div>
+          <button class="btn-delete-conv" (click)="deleteConversation($event, conv.id)" title="Eliminar">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+      <div class="history-empty" *ngIf="conversations.length === 0">
+        <i class="bi bi-chat-square-text"></i>
+        <p>{{ 'AI_ASSISTANT.NO_HISTORY' | translate }}</p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ÁREA PRINCIPAL DEL CHAT -->
+  <div class="chat-page">
+
+    <!-- BOTÓN TOGGLE SIDEBAR -->
+    <button class="sidebar-toggle-btn" (click)="toggleHistory()" [title]="showHistory ? 'Ocultar historial' : 'Mostrar historial'">
+      <i class="bi" [class.bi-chevron-left]="showHistory" [class.bi-chevron-right]="!showHistory"></i>
+    </button>
+
+    <!-- CABECERA -->
+    <div class="chat-header">
+      <div class="chat-header-icon">
+        <i class="bi bi-robot"></i>
+      </div>
+      <div class="chat-header-info">
+        <h5>{{ 'AI_ASSISTANT.TITLE' | translate }}</h5>
+        <span class="chat-header-status">
+          <span class="status-dot"></span>
+          {{ 'AI_ASSISTANT.ONLINE' | translate }}
+        </span>
+      </div>
+      <div class="chat-header-actions">
+        <button class="header-action-btn" (click)="startNewConversation()" title="Nueva conversación">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+      </div>
+    </div>
+
+  <!-- CUERPO DEL CHAT (MENSAJES) -->
+  <div class="chat-body" #chatBody>
+
+    <div *ngFor="let msg of messages; trackBy: trackByMsgId"
+         class="chat-message"
+         [class.message-user]="msg.role === 'user'"
+         [class.message-assistant]="msg.role === 'assistant'">
+
+      <!-- AVATAR -->
+      <div class="message-avatar" *ngIf="msg.role === 'assistant'">
+        <i class="bi bi-robot"></i>
+      </div>
+
+      <!-- BURBUJA -->
+      <div class="message-bubble" *ngIf="!msg.isTyping">
+        <div class="message-text" [innerHTML]="msg.text | nl2br"></div>
+        <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
+      </div>
+
+      <!-- INDICADOR "ESCRIBIENDO..." -->
+      <div class="message-bubble typing-bubble" *ngIf="msg.isTyping">
+        <div class="typing-indicator">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+
+      <!-- AVATAR USUARIO -->
+      <div class="message-avatar user-avatar" *ngIf="msg.role === 'user'">
+        <i class="bi bi-person-fill"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUGERENCIAS -->
+  <div class="chat-suggestions" *ngIf="showSuggestions">
+    <p class="suggestions-label">
+      <i class="bi bi-lightbulb me-1"></i>
+      {{ 'AI_ASSISTANT.SUGGESTIONS_LABEL' | translate }}
+    </p>
+    <div class="suggestions-grid">
+      <button *ngFor="let chip of suggestions"
+              class="suggestion-chip"
+              (click)="sendSuggestion(chip)">
+        <i class="bi {{ chip.icon }}"></i>
+        <span>{{ chip.text }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- BARRA DE ENTRADA -->
+  <div class="chat-input-bar">
+    <div class="chat-input-wrapper">
+      <textarea
+        #inputField
+        class="chat-input"
+        [(ngModel)]="userInput"
+        (keydown)="onKeyDown($event)"
+        [placeholder]="'AI_ASSISTANT.INPUT_PLACEHOLDER' | translate"
+        rows="1"
+        [disabled]="isResponding"
+      ></textarea>
+      <button
+        class="chat-send-btn"
+        [class.send-active]="userInput.trim().length > 0"
+        [disabled]="!userInput.trim() || isResponding"
+        (click)="sendMessage()">
+        <i class="bi bi-send-fill"></i>
+      </button>
+    </div>
+    <span class="chat-disclaimer">
+      {{ 'AI_ASSISTANT.DISCLAIMER' | translate }}
+    </span>
+  </div>
+
+</div>

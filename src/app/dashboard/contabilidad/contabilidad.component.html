@@ -1,133 +1,193 @@
-<div>
-    <div class="submenu">
-        <div class="row" *ngIf="this.usuarioActual!.profileType.profileId === 1">
-            <div class="col text-center">
-                <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
-                    <i class="bi bi-house"></i>
-                    <span class="d-none d-md-inline">Inicio</span>
-                </a>
-            </div>
-            <div class="col text-center">
-                <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(2)">
-                    <i class="bi bi-people-fill"></i>
-                    <span class="d-none d-md-inline">Abonados</span>
-                </a>
-            </div>
-            <div class="col text-center">
-                <a class="no-underline" href="javascript:void(0);" (click)="openModalStripe()">
-                    <i class="bi bi-stripe"></i>
-                    <span class="d-none d-md-inline">Stripe</span>
-                </a>
-            </div>
-            <div class="col text-center">
-                <a class="no-underline" href="javascript:void(0);" (click)="abrirModal()">
-                    <i class="bi bi-gear"></i>
-                    <span class="d-none d-md-inline">Ajustes</span>
-                </a>
-            </div>
+<!-- Tab Navigation -->
+<div class="nav-tabs-container" *ngIf="this.usuarioActual!.profileType.profileId === 1">
+    <div class="nav-tabs-bar">
+        <button class="nav-tab active" (click)="irAPantalla(1)">
+            <i class="bi bi-house"></i><span>{{ 'ACCOUNTING.TAB_HOME' | translate }}</span>
+        </button>
+        <button class="nav-tab" (click)="irAPantalla(2)">
+            <i class="bi bi-people-fill"></i><span>{{ 'ACCOUNTING.TAB_SUBSCRIBERS' | translate }}</span>
+        </button>
+        <button class="nav-tab" (click)="openModalStripe()">
+            <i class="bi bi-stripe"></i><span>{{ 'ACCOUNTING.TAB_STRIPE' | translate }}</span>
+        </button>
+        <button class="nav-tab" (click)="abrirModal()">
+            <i class="bi bi-gear"></i><span>{{ 'ACCOUNTING.TAB_SETTINGS' | translate }}</span>
+        </button>
+    </div>
+</div>
+
+<!-- Skeleton Loading -->
+<div *ngIf="!datosCargados" class="container mt-3">
+    <div class="skeleton-table">
+        <div class="skeleton-row" *ngFor="let r of [1,2,3,4,5,6,7,8]">
+            <div class="skeleton-cell" *ngFor="let c of [1,2,3,4,5,6,7,8]"></div>
         </div>
     </div>
 </div>
+
 <div *ngIf="datosCargados">
 
     <div class="container mt-3">
         <!-- Contenido para el dataTable -->
         <div class="row" *ngIf="recalcular">
             <div class="col">
-                <label for="cuotaClub" class="form-label">Es necesario recalcular los totales, vuelve a entrar para
-                    verlos.</label>
+                <label for="cuotaClub" class="form-label">{{ 'ACCOUNTING.RECALCULATE_MSG' | translate }}</label>
             </div>
         </div>
         <div class="row" *ngIf="!recalcular">
             <div class="col-3">
-                <label for="cuotaClub" class="form-label" *ngIf="!hayRopa">Total de la Cuota</label>
-                <label for="cuotaClub" class="form-label" *ngIf="hayRopa">Total de la Cuota + Ropa</label>
+                <label for="cuotaClub" class="form-label" *ngIf="!hayRopa">{{ 'ACCOUNTING.TOTAL_FEE' | translate }}</label>
+                <label for="cuotaClub" class="form-label" *ngIf="hayRopa">{{ 'ACCOUNTING.TOTAL_FEE_CLOTHING' | translate }}</label>
                 <input type="text" class="form-control" id="cuotaClub" name="cuotaClub" [(ngModel)]="totales.cuotaClub"
                     disabled>
             </div>
             <div class="col-3" *ngIf="hayRopa">
-                <label for="cuotaRopa" class="form-label">Total de la ropa</label>
+                <label for="cuotaRopa" class="form-label">{{ 'ACCOUNTING.TOTAL_CLOTHING' | translate }}</label>
                 <input type="text" class="form-control" id="cuotaRopa" name="cuotaRopa" [(ngModel)]="totales.cuotaRopa"
                     disabled>
             </div>
             <div class="col-3">
-                <label for="pagado" class="form-label">Total pagado de todos los jugadores</label>
+                <label for="pagado" class="form-label">{{ 'ACCOUNTING.TOTAL_PAID_ALL' | translate }}</label>
                 <input type="text" class="form-control" id="pagado" name="pagado" [(ngModel)]="totales.pagado" disabled>
             </div>
             <div class="col-3">
-                <label for="restante" class="form-label">Restante y pendiente por pagar</label>
+                <label for="restante" class="form-label">{{ 'ACCOUNTING.REMAINING_PENDING' | translate }}</label>
                 <input type="text" class="form-control" id="restante" name="restante" [(ngModel)]="totales.restante"
                     disabled>
             </div>
         </div>
         <div style="margin-top: 2em;">
-            <h2>Tabla Cuota Jugadores</h2>
+            <h2>{{ 'ACCOUNTING.TABLE_TITLE' | translate }}</h2>
             <!-- Botón para exportar a Excel-->
-            <button class="btn btn-success" style="margin-bottom: 2em;" (click)="exportTableToExcel()">
-                <i class="bi bi-file-earmark-spreadsheet-fill"></i> Descargar Excel
+            <button class="btn btn-success" style="margin-bottom: 1em;" (click)="exportTableToExcel()">
+                <i class="bi bi-file-earmark-spreadsheet-fill"></i> {{ 'ACCOUNTING.DOWNLOAD_EXCEL' | translate }}
             </button>
-            <div class="row justify-content-between div-headdatatable">
-                <div class="col-md-auto mr-auto" id="dt-length">
-                    <!-- Contenido para el dt-length -->
+
+            <!-- Table Controls: Search + Page Size -->
+            <div class="table-controls">
+                <div class="table-controls-left">
+                    <label for="pageSize">{{ 'COMMON.SHOW' | translate }}</label>
+                    <select id="pageSize" class="form-select form-select-sm" [(ngModel)]="pageSize"
+                        (change)="currentPage = 1" style="width: auto; display: inline-block;">
+                        <option *ngFor="let opt of pageSizeOptions" [ngValue]="opt">{{ opt }}</option>
+                    </select>
+                    <span>{{ 'COMMON.RECORDS' | translate }}</span>
                 </div>
-                <div class="col-md-auto ml-auto" id="dt-search">
+                <div class="table-controls-right">
+                    <label for="searchInput">{{ 'COMMON.SEARCH' | translate }}:</label>
+                    <input id="searchInput" type="text" class="form-control form-control-sm"
+                        [(ngModel)]="searchTerm" (input)="applyFilter()" [attr.placeholder]="'COMMON.SEARCH_PLACEHOLDER' | translate"
+                        style="width: 250px; display: inline-block;">
                 </div>
             </div>
+
+            <!-- Info text -->
+            <div class="table-info">
+                {{ 'COMMON.SHOWING' | translate }} {{ filteredList.length === 0 ? 0 : ((currentPage - 1) * pageSize) + 1 }}
+                {{ 'COMMON.TO' | translate }} {{ currentPage * pageSize > filteredList.length ? filteredList.length : currentPage * pageSize }}
+                {{ 'COMMON.OF' | translate }} {{ filteredList.length }} {{ 'COMMON.RECORDS' | translate }}
+                <span *ngIf="searchTerm">({{ 'COMMON.FILTERED_OF' | translate }} {{ listHCP.length }} {{ 'COMMON.TOTAL_RECORDS' | translate }})</span>
+            </div>
+
             <div style="overflow-x: auto;">
-                <table id="dataTable" class="table table-bordered table-striped text-center">
+                <table class="table table-bordered table-striped text-center">
                     <thead class="table-custom">
                         <tr>
-                            <th>ID</th>
-                            <th>IMAGEN</th>
-                            <th>NOMBRE</th>
-                            <th>APELLIDOS</th>
-                            <th>EQUIPO</th>
-                            <th>ESTADO_PAGO</th>
-                            <th>CUOTA_+_ROPA</th>
-                            <th>CUOTA_ROPA</th>
-                            <th>PAGADO</th>
-                            <th>RESTANTE</th>
-                            <th>VERIFICADO</th>
-                            <th>ACCIONES</th>
+                            <th class="sortable" (click)="sortBy('nombre')">
+                                {{ 'ACCOUNTING.TABLE.NAME' | translate }}
+                                <span class="sort-icon">
+                                    <span [class.active]="sortColumn === 'nombre' && sortDirection === 'asc'">&#9650;</span>
+                                    <span [class.active]="sortColumn === 'nombre' && sortDirection === 'desc'">&#9660;</span>
+                                </span>
+                            </th>
+                            <th>{{ 'ACCOUNTING.TABLE.IMAGE' | translate }}</th>
+                            <th class="sortable" (click)="sortBy('apellido')">
+                                {{ 'ACCOUNTING.TABLE.SURNAMES' | translate }}
+                                <span class="sort-icon">
+                                    <span [class.active]="sortColumn === 'apellido' && sortDirection === 'asc'">&#9650;</span>
+                                    <span [class.active]="sortColumn === 'apellido' && sortDirection === 'desc'">&#9660;</span>
+                                </span>
+                            </th>
+                            <th class="sortable" (click)="sortBy('teamName')">
+                                {{ 'ACCOUNTING.TABLE.TEAM' | translate }}
+                                <span class="sort-icon">
+                                    <span [class.active]="sortColumn === 'teamName' && sortDirection === 'asc'">&#9650;</span>
+                                    <span [class.active]="sortColumn === 'teamName' && sortDirection === 'desc'">&#9660;</span>
+                                </span>
+                            </th>
+                            <th class="sortable" (click)="sortBy('estado')">
+                                {{ 'ACCOUNTING.TABLE.PAYMENT_STATUS' | translate }}
+                                <span class="sort-icon">
+                                    <span [class.active]="sortColumn === 'estado' && sortDirection === 'asc'">&#9650;</span>
+                                    <span [class.active]="sortColumn === 'estado' && sortDirection === 'desc'">&#9660;</span>
+                                </span>
+                            </th>
+                            <th class="sortable" (click)="sortBy('cuotaClub')">
+                                {{ 'ACCOUNTING.TABLE.FEE_CLOTHING' | translate }}
+                                <span class="sort-icon">
+                                    <span [class.active]="sortColumn === 'cuotaClub' && sortDirection === 'asc'">&#9650;</span>
+                                    <span [class.active]="sortColumn === 'cuotaClub' && sortDirection === 'desc'">&#9660;</span>
+                                </span>
+                            </th>
+                            <th class="sortable" (click)="sortBy('cuotaRopa')">
+                                {{ 'ACCOUNTING.TABLE.CLOTHING_FEE' | translate }}
+                                <span class="sort-icon">
+                                    <span [class.active]="sortColumn === 'cuotaRopa' && sortDirection === 'asc'">&#9650;</span>
+                                    <span [class.active]="sortColumn === 'cuotaRopa' && sortDirection === 'desc'">&#9660;</span>
+                                </span>
+                            </th>
+                            <th class="sortable" (click)="sortBy('pagado')">
+                                {{ 'ACCOUNTING.TABLE.PAID' | translate }}
+                                <span class="sort-icon">
+                                    <span [class.active]="sortColumn === 'pagado' && sortDirection === 'asc'">&#9650;</span>
+                                    <span [class.active]="sortColumn === 'pagado' && sortDirection === 'desc'">&#9660;</span>
+                                </span>
+                            </th>
+                            <th class="sortable" (click)="sortBy('restante')">
+                                {{ 'ACCOUNTING.TABLE.REMAINING' | translate }}
+                                <span class="sort-icon">
+                                    <span [class.active]="sortColumn === 'restante' && sortDirection === 'asc'">&#9650;</span>
+                                    <span [class.active]="sortColumn === 'restante' && sortDirection === 'desc'">&#9660;</span>
+                                </span>
+                            </th>
+                            <th>{{ 'ACCOUNTING.TABLE.VERIFIED' | translate }}</th>
+                            <th>{{ 'ACCOUNTING.TABLE.ACTIONS' | translate }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let player of listHCP; let i = index">
-                            <td>{{ player.playerId }}</td>
-                            <td *ngIf="player.picturePlayer">
-                                <div class="container">
+                        <tr *ngFor="let player of paginatedList; let i = index">
+                            <td>{{ player.nombre }}</td>
+                            <td>
+                                <div *ngIf="player.picturePlayer">
                                     <img src="https://appsphairatech.com/images/user/{{ player.picturePlayer }}"
                                         alt="user-player" width="50" height="50" class="rounded-circle me-2">
                                 </div>
-                            </td>
-                            <td *ngIf="!player.picturePlayer">
-                                <div class="container">
+                                <div *ngIf="!player.picturePlayer">
                                     <span class="bi bi-person" style="font-size: 3rem;"></span>
                                 </div>
                             </td>
-                            <td>{{ player.nombre }}</td>
                             <td>{{ player.apellido }}</td>
                             <td>{{ player.teamName }}</td>
                             <td>
-                                <ng-container *ngIf="player.estado === 0">
-                                    <i class="bi bi-x-circle text-danger" title="Ningún pago"></i>
-                                </ng-container>
-                                <ng-container *ngIf="player.estado === 1">
-                                    <i class="bi bi-exclamation-triangle text-warning" title="Con retraso"></i>
-                                </ng-container>
-                                <ng-container *ngIf="player.estado === 2">
-                                    <i class="bi bi-check-circle text-success" title="Al corriente"></i>
-                                </ng-container>
-                                <ng-container *ngIf="player.estado === 3">
-                                    <i class="bi bi-check-circle text-success" title="Completado"></i>
-                                </ng-container>
+                                <span *ngIf="player.estado === 0" class="badge bg-danger" [attr.title]="'ACCOUNTING.STATUS.NO_PAYMENT' | translate">
+                                    <i class="bi bi-x-circle"></i> {{ 'ACCOUNTING.STATUS.NO_PAYMENT' | translate }}
+                                </span>
+                                <span *ngIf="player.estado === 1" class="badge bg-warning text-dark" [attr.title]="'ACCOUNTING.STATUS.LATE' | translate">
+                                    <i class="bi bi-exclamation-triangle"></i> {{ 'ACCOUNTING.STATUS.LATE' | translate }}
+                                </span>
+                                <span *ngIf="player.estado === 2" class="badge bg-success" [attr.title]="'ACCOUNTING.STATUS.UP_TO_DATE' | translate">
+                                    <i class="bi bi-check-circle"></i> {{ 'ACCOUNTING.STATUS.UP_TO_DATE' | translate }}
+                                </span>
+                                <span *ngIf="player.estado === 3" class="badge bg-success" [attr.title]="'ACCOUNTING.STATUS.COMPLETED' | translate">
+                                    <i class="bi bi-check-circle"></i> {{ 'ACCOUNTING.STATUS.COMPLETED' | translate }}
+                                </span>
                             </td>
                             <td>{{ player.cuotaClub }}</td>
                             <td>{{ player.cuotaRopa }}</td>
                             <td>{{ player.pagado }}</td>
                             <td>{{ player.restante }}</td>
                             <td>
-                                <ng-container>
+                                <ng-container *ngIf="player.verify !== 1">
                                     <i class="bi bi-x-circle text-danger" style="cursor: pointer;"
                                         (click)="invitarJugador(player)"></i>
                                     <i class="bi bi-envelope text-danger ms-2" style="cursor: pointer;"
@@ -139,18 +199,38 @@
                             </td>
                             <td>
                                 <i class="bi bi-pencil" style="cursor: pointer;" (click)="openModalEditar(player, i)"
-                                    title="Editar cuota del jugador"></i>
+                                    [attr.title]="'ACCOUNTING.TOOLTIP_EDIT_FEE' | translate"></i>
                                 <i class="bi bi-wallet2 ms-2" style="cursor: pointer;"
-                                    (click)="openModalPago(player, i)" title="Introducir un pago"></i>
+                                    (click)="openModalPago(player, i)" [attr.title]="'ACCOUNTING.TOOLTIP_ADD_PAYMENT' | translate"></i>
                                 <i class="bi bi-clock-history ms-2" style="cursor: pointer;"
-                                    (click)="openModalVerPagosPlayer(player, i)" title="Ver histoial de pagos"></i>
+                                    (click)="openModalVerPagosPlayer(player, i)" [attr.title]="'ACCOUNTING.TOOLTIP_VIEW_HISTORY' | translate"></i>
+                            </td>
+                        </tr>
+                        <tr *ngIf="paginatedList.length === 0">
+                            <td colspan="11">
+                                <app-empty-state variant="compact" icon="bi-cash-stack"
+                                  [title]="'EMPTY_STATES.NO_RESULTS' | translate"
+                                  [message]="'EMPTY_STATES.ACCOUNTING.MESSAGE' | translate">
+                                </app-empty-state>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
-        </div>
-        <div id="button_datatable">
+
+            <!-- Pagination -->
+            <div class="pagination-container" *ngIf="totalPages > 1">
+                <button class="page-btn" (click)="goToPage(1)" [disabled]="currentPage === 1"
+                    [attr.title]="'ACCOUNTING.PAGINATION.FIRST_PAGE' | translate">&laquo;</button>
+                <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
+                    [attr.title]="'ACCOUNTING.PAGINATION.PREVIOUS' | translate">&lsaquo;</button>
+                <button *ngFor="let p of pages" class="page-btn" [class.active]="p === currentPage"
+                    (click)="goToPage(p)">{{ p }}</button>
+                <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
+                    [attr.title]="'ACCOUNTING.PAGINATION.NEXT' | translate">&rsaquo;</button>
+                <button class="page-btn" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages"
+                    [attr.title]="'ACCOUNTING.PAGINATION.LAST_PAGE' | translate">&raquo;</button>
+            </div>
         </div>
     </div>
 </div>
@@ -160,14 +240,14 @@
     <table id="tablaExcel" class="table table-bordered table-striped text-center" #table1>
         <thead class="table-custom">
             <tr>
-                <th>NOMBRE</th>
-                <th>APELLIDOS</th>
-                <th>EQUIPO</th>
-                <th>ESTADO_PAGO</th>
-                <th>CUOTA_+_ROPA</th>
-                <th>CUOTA_ROPA</th>
-                <th>PAGADO</th>
-                <th>RESTANTE</th>
+                <th>{{ 'ACCOUNTING.EXCEL.NAME' | translate }}</th>
+                <th>{{ 'ACCOUNTING.EXCEL.SURNAMES' | translate }}</th>
+                <th>{{ 'ACCOUNTING.EXCEL.TEAM' | translate }}</th>
+                <th>{{ 'ACCOUNTING.EXCEL.PAYMENT_STATUS' | translate }}</th>
+                <th>{{ 'ACCOUNTING.EXCEL.FEE_CLOTHING' | translate }}</th>
+                <th>{{ 'ACCOUNTING.EXCEL.CLOTHING_FEE' | translate }}</th>
+                <th>{{ 'ACCOUNTING.EXCEL.PAID' | translate }}</th>
+                <th>{{ 'ACCOUNTING.EXCEL.REMAINING' | translate }}</th>
             </tr>
         </thead>
         <tbody>
@@ -177,16 +257,16 @@
                 <td>{{ player.teamName }}</td>
                 <td>
                     <ng-container *ngIf="player.estado === 0">
-                        Ningún pago
+                        {{ 'ACCOUNTING.EXCEL.STATUS_NONE' | translate }}
                     </ng-container>
                     <ng-container *ngIf="player.estado === 1">
-                        Con retraso
+                        {{ 'ACCOUNTING.EXCEL.STATUS_LATE' | translate }}
                     </ng-container>
                     <ng-container *ngIf="player.estado === 2">
-                        Al corriente
+                        {{ 'ACCOUNTING.EXCEL.STATUS_DONE' | translate }}
                     </ng-container>
                     <ng-container *ngIf="player.estado === 3">
-                        Completado
+                        {{ 'ACCOUNTING.EXCEL.STATUS_COMPLETED' | translate }}
                     </ng-container>
                 </td>
                 <td>{{ player.cuotaClub }}</td>
@@ -203,30 +283,23 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="standard-modalLabel">Cuota del club</h5>
+                <h5 class="modal-title" id="standard-modalLabel">{{ 'ACCOUNTING.SETTINGS.TITLE' | translate }}</h5>
                 <!-- Botón de cerrar con un icono -->
                 <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
             </div>
             <div class="modal-body">
                 <form (ngSubmit)="createUpdateSettings()">
                     <div class="mb-3">
-                        <label for="temporada" class="form-label">Temporada:</label>
+                        <label for="temporada" class="form-label">{{ 'ACCOUNTING.SETTINGS.SEASON' | translate }}:</label>
                         <select class="form-control" id="temporada" name="temporada" [(ngModel)]="infoClub.temporada"
                             (change)="abrirModal()">
-                            <option value="2022">2022/2023</option>
-                            <option value="2023">2023/2024</option>
-                            <option value="2024">2024/2025</option>
-                            <option value="2025">2025/2026</option>
+                            <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
                         </select>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <p style="color: red;">¡Importante! Este cambio afectará a los jugadores de un equipo, de
-                                una
-                                categoria o a todos, selecciona la opción deseada.</p>
-                            <p style="color: red;">Si un equipo no dispone de jugadores, no se aplicará la cuota, es
-                                necesario mínimo
-                                un jugador.</p>
+                            <p style="color: red;">{{ 'ACCOUNTING.SETTINGS.IMPORTANT_WARNING' | translate }}</p>
+                            <p style="color: red;">{{ 'ACCOUNTING.SETTINGS.NO_PLAYERS_WARNING' | translate }}</p>
                         </div>
                     </div>
                     <div class="row mb-3">
@@ -238,20 +311,20 @@
                             </div>
                         </div>
                         <div class="col-md-9" *ngIf="selectedComboTitle == 0">
-                            <label for="teamSelected" class="form-label">Selecciona un equipo</label>
+                            <label for="teamSelected" class="form-label">{{ 'ACCOUNTING.SETTINGS.SELECT_TEAM' | translate }}</label>
                             <select class="form-control me-2" id="teamSelected" name="teamSelected"
                                 [(ngModel)]="teamSelected" (change)="loadCuotaClub()">
-                                <option value="0">Todos los equipos</option>
+                                <option value="0">{{ 'ACCOUNTING.SETTINGS.ALL_TEAMS' | translate }}</option>
                                 <option *ngFor="let team of listTeamsForCombo" [value]="team.value">{{ team.name }}
                                 </option>
                             </select>
                         </div>
                         <div class="col-md-9" *ngIf="selectedComboTitle == 1">
-                            <label for="categorySelected" class="form-label">Selecciona la categoria</label>
+                            <label for="categorySelected" class="form-label">{{ 'ACCOUNTING.SETTINGS.SELECT_CATEGORY' | translate }}</label>
                             <select class="form-control" id="categorySelected" name="categorySelected"
                                 [(ngModel)]="categorySelected">
                                 <!-- Opciones ajustadas según tus necesidades -->
-                                <option value="0">Todas las categorias</option>
+                                <option value="0">{{ 'ACCOUNTING.SETTINGS.ALL_CATEGORIES' | translate }}</option>
                                 <option value="15">Senior</option>
                                 <option value="16">Juvenil</option>
                                 <option value="17">Juvenil/Cadete Femenina</option>
@@ -269,38 +342,38 @@
                     </div>
                     <hr>
                     <div class="mb-3">
-                        <label for="bizum" class="form-label">Bizum:</label>
+                        <label for="bizum" class="form-label">{{ 'ACCOUNTING.SETTINGS.BIZUM' | translate }}:</label>
                         <input type="text" class="form-control" id="bizum" name="bizum" [(ngModel)]="infoClub.bizum">
                     </div>
                     <div class="mb-3">
-                        <label for="banco" class="form-label">Número de Cuenta del Banco:</label>
+                        <label for="banco" class="form-label">{{ 'ACCOUNTING.SETTINGS.BANK_ACCOUNT' | translate }}:</label>
                         <input type="text" class="form-control" id="banco" name="banco" [(ngModel)]="infoClub.banco">
                     </div>
                     <div class="mb-3">
-                        <label for="asunto" class="form-label">Explicación para el asunto:</label>
+                        <label for="asunto" class="form-label">{{ 'ACCOUNTING.SETTINGS.SUBJECT' | translate }}:</label>
                         <textarea class="form-control" id="asunto" rows="5" name="asunto"
-                            placeholder="Ejemplo: Al realizar la transferencia o Bizum, ponga nombre + DNI + Equipo (Alevin B)"
+                            [attr.placeholder]="'ACCOUNTING.SETTINGS.SUBJECT_PLACEHOLDER' | translate"
                             [(ngModel)]="infoClub.asunto"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="totalCuota" class="form-label">Precio de la cuota del club:</label>
+                        <label for="totalCuota" class="form-label">{{ 'ACCOUNTING.SETTINGS.TOTAL_FEE' | translate }}:</label>
                         <input type="text" class="form-control" id="totalCuota" name="totalCuota"
                             [(ngModel)]="clubCuotas.totalCuota" disabled>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="cuotaRopa" class="form-label">Precio de la cuota de la ropa:</label>
+                            <label for="cuotaRopa" class="form-label">{{ 'ACCOUNTING.SETTINGS.CLOTHING_AMOUNT' | translate }}:</label>
                             <input type="number" class="form-control" id="cuotaRopa" name="cuotaRopa"
                                 [(ngModel)]="clubCuotas.cuotaRopa">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaRopaDate" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaRopaDate" class="form-label">{{ 'ACCOUNTING.SETTINGS.CLOTHING_DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaRopaDate" name="cuotaRopaDate"
                                 [(ngModel)]="clubCuotas.cuotaRopaDate">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="numCuotas" class="form-label">Selecciona el número total de pagos o cuotas:</label>
+                        <label for="numCuotas" class="form-label">{{ 'ACCOUNTING.SETTINGS.NUM_INSTALLMENTS' | translate }}:</label>
                         <select class="form-control" id="numCuotas" name="numCuotas" [(ngModel)]="clubCuotas.numCuotas">
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -318,31 +391,28 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <h2>Repartición de las cuotas</h2>
+                            <h2>{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_DISTRIBUTION' | translate }}</h2>
                         </div>
                         <div class="col-md-12">
-                            <p>Segun el número de cuotas o pagos que se haya seleccionado, se debe ir rellenando
-                                cantidad y fecha de
-                                pago en cada una de las cuotas.
-                            </p>
-                            <p style="color: red;">(Solo se permiten números enteros, sin "comas" ni "puntos")</p>
+                            <p>{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_DISTRIBUTION_DESC' | translate }}</p>
+                            <p style="color: red;">{{ 'ACCOUNTING.SETTINGS.INTEGER_NOTICE' | translate }}</p>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="cuotaUno" class="form-label">Cuota 1:</label>
+                            <label for="cuotaUno" class="form-label">{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_1' | translate }}:</label>
                             <input type="number" class="form-control" id="cuotaUno" name="cuotaUno"
                                 [(ngModel)]="clubCuotas.cuotaUno" (input)="validateNumber($event, 1)">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaUnoDate" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaUnoDate" class="form-label">{{ 'ACCOUNTING.SETTINGS.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaUnoDate" name="cuotaUnoDate"
                                 [(ngModel)]="clubCuotas.cuotaUnoDate">
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-12">
-                            <label for="cuotaUnoAlias" class="form-label">Alias o nombre para la Cuota 1:</label>
+                            <label for="cuotaUnoAlias" class="form-label">{{ 'ACCOUNTING.SETTINGS.ALIAS_1' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaUnoAlias" name="cuotaUnoAlias"
                                 [(ngModel)]="clubCuotas.cuotaUnoAlias">
                         </div>
@@ -351,19 +421,19 @@
 
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 1">
                         <div class="col-md-6">
-                            <label for="cuotaDos" class="form-label">Cuota 2:</label>
+                            <label for="cuotaDos" class="form-label">{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_2' | translate }}:</label>
                             <input type="number" class="form-control" id="cuotaDos" name="cuotaDos"
                                 [(ngModel)]="clubCuotas.cuotaDos" (input)="validateNumber($event, 2)">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaDosDate" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaDosDate" class="form-label">{{ 'ACCOUNTING.SETTINGS.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaDosDate" name="cuotaDosDate"
                                 [(ngModel)]="clubCuotas.cuotaDosDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 1">
                         <div class="col-md-12">
-                            <label for="cuotaDosAlias" class="form-label">Alias o nombre para la Cuota 2:</label>
+                            <label for="cuotaDosAlias" class="form-label">{{ 'ACCOUNTING.SETTINGS.ALIAS_2' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaDosAlias" name="cuotaDosAlias"
                                 [(ngModel)]="clubCuotas.cuotaDosAlias">
                         </div>
@@ -372,19 +442,19 @@
 
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 2">
                         <div class="col-md-6">
-                            <label for="cuotaTres" class="form-label">Cuota 3:</label>
+                            <label for="cuotaTres" class="form-label">{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_3' | translate }}:</label>
                             <input type="number" class="form-control" id="cuotaTres" name="cuotaTres"
                                 [(ngModel)]="clubCuotas.cuotaTres" (input)="validateNumber($event, 3)">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaTresDate" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaTresDate" class="form-label">{{ 'ACCOUNTING.SETTINGS.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaTresDate" name="cuotaTresDate"
                                 [(ngModel)]="clubCuotas.cuotaTresDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 2">
                         <div class="col-md-12">
-                            <label for="cuotaTresAlias" class="form-label">Alias o nombre para la Cuota 3:</label>
+                            <label for="cuotaTresAlias" class="form-label">{{ 'ACCOUNTING.SETTINGS.ALIAS_3' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaTresAlias" name="cuotaTresAlias"
                                 [(ngModel)]="clubCuotas.cuotaTresAlias">
                         </div>
@@ -393,19 +463,19 @@
 
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 3">
                         <div class="col-md-6">
-                            <label for="cuotaCuatro" class="form-label">Cuota 4:</label>
+                            <label for="cuotaCuatro" class="form-label">{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_4' | translate }}:</label>
                             <input type="number" class="form-control" id="cuotaCuatro" name="cuotaCuatro"
                                 [(ngModel)]="clubCuotas.cuotaCuatro" (input)="validateNumber($event, 4)">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaCuatroDate" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaCuatroDate" class="form-label">{{ 'ACCOUNTING.SETTINGS.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaCuatroDate" name="cuotaCuatroDate"
                                 [(ngModel)]="clubCuotas.cuotaCuatroDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 3">
                         <div class="col-md-12">
-                            <label for="cuotaCuatroAlias" class="form-label">Alias o nombre para la Cuota 4:</label>
+                            <label for="cuotaCuatroAlias" class="form-label">{{ 'ACCOUNTING.SETTINGS.ALIAS_4' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaCuatroAlias" name="cuotaCuatroAlias"
                                 [(ngModel)]="clubCuotas.cuotaCuatroAlias">
                         </div>
@@ -414,19 +484,19 @@
 
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 4">
                         <div class="col-md-6">
-                            <label for="cuotaCinco" class="form-label">Cuota 5:</label>
+                            <label for="cuotaCinco" class="form-label">{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_5' | translate }}:</label>
                             <input type="number" class="form-control" id="cuotaCinco" name="cuotaCinco"
                                 [(ngModel)]="clubCuotas.cuotaCinco" (input)="validateNumber($event, 5)">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaCincoDate" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaCincoDate" class="form-label">{{ 'ACCOUNTING.SETTINGS.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaCincoDate" name="cuotaCincoDate"
                                 [(ngModel)]="clubCuotas.cuotaCincoDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 4">
                         <div class="col-md-12">
-                            <label for="cuotaCincoAlias" class="form-label">Alias o nombre para la Cuota 5:</label>
+                            <label for="cuotaCincoAlias" class="form-label">{{ 'ACCOUNTING.SETTINGS.ALIAS_5' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaCincoAlias" name="cuotaCincoAlias"
                                 [(ngModel)]="clubCuotas.cuotaCincoAlias">
                         </div>
@@ -435,19 +505,19 @@
 
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 5">
                         <div class="col-md-6">
-                            <label for="cuotaSeis" class="form-label">Cuota 6:</label>
+                            <label for="cuotaSeis" class="form-label">{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_6' | translate }}:</label>
                             <input type="number" class="form-control" id="cuotaSeis" name="cuotaSeis"
                                 [(ngModel)]="clubCuotas.cuotaSeis" (input)="validateNumber($event, 6)">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaSeisDate" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaSeisDate" class="form-label">{{ 'ACCOUNTING.SETTINGS.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaSeisDate" name="cuotaSeisDate"
                                 [(ngModel)]="clubCuotas.cuotaSeisDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 5">
                         <div class="col-md-12">
-                            <label for="cuotaSeisAlias" class="form-label">Alias o nombre para la Cuota 6:</label>
+                            <label for="cuotaSeisAlias" class="form-label">{{ 'ACCOUNTING.SETTINGS.ALIAS_6' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaSeisAlias" name="cuotaSeisAlias"
                                 [(ngModel)]="clubCuotas.cuotaSeisAlias">
                         </div>
@@ -456,19 +526,19 @@
 
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 6">
                         <div class="col-md-6">
-                            <label for="cuotaSiete" class="form-label">Cuota 7:</label>
+                            <label for="cuotaSiete" class="form-label">{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_7' | translate }}:</label>
                             <input type="number" class="form-control" id="cuotaSiete" name="cuotaSiete"
                                 [(ngModel)]="clubCuotas.cuotaSiete" (input)="validateNumber($event, 7)">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaSieteDate" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaSieteDate" class="form-label">{{ 'ACCOUNTING.SETTINGS.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaSieteDate" name="cuotaSieteDate"
                                 [(ngModel)]="clubCuotas.cuotaSieteDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 6">
                         <div class="col-md-12">
-                            <label for="cuotaSieteAlias" class="form-label">Alias o nombre para la Cuota 7:</label>
+                            <label for="cuotaSieteAlias" class="form-label">{{ 'ACCOUNTING.SETTINGS.ALIAS_7' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaSieteAlias" name="cuotaSieteAlias"
                                 [(ngModel)]="clubCuotas.cuotaSieteAlias">
                         </div>
@@ -477,19 +547,19 @@
 
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 7">
                         <div class="col-md-6">
-                            <label for="cuotaOcho" class="form-label">Cuota 8:</label>
+                            <label for="cuotaOcho" class="form-label">{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_8' | translate }}:</label>
                             <input type="number" class="form-control" id="cuotaOcho" name="cuotaOcho"
                                 [(ngModel)]="clubCuotas.cuotaOcho" (input)="validateNumber($event, 8)">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaOchoDate" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaOchoDate" class="form-label">{{ 'ACCOUNTING.SETTINGS.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaOchoDate" name="cuotaOchoDate"
                                 [(ngModel)]="clubCuotas.cuotaOchoDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 7">
                         <div class="col-md-12">
-                            <label for="cuotaOchoAlias" class="form-label">Alias o nombre para la Cuota 8:</label>
+                            <label for="cuotaOchoAlias" class="form-label">{{ 'ACCOUNTING.SETTINGS.ALIAS_8' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaOchoAlias" name="cuotaOchoAlias"
                                 [(ngModel)]="clubCuotas.cuotaOchoAlias">
                         </div>
@@ -498,19 +568,19 @@
 
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 8">
                         <div class="col-md-6">
-                            <label for="cuotaNueve" class="form-label">Cuota 9:</label>
+                            <label for="cuotaNueve" class="form-label">{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_9' | translate }}:</label>
                             <input type="number" class="form-control" id="cuotaNueve" name="cuotaNueve"
                                 [(ngModel)]="clubCuotas.cuotaNueve" (input)="validateNumber($event, 9)">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaNueveDate" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaNueveDate" class="form-label">{{ 'ACCOUNTING.SETTINGS.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaNueveDate" name="cuotaNueveDate"
                                 [(ngModel)]="clubCuotas.cuotaNueveDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 8">
                         <div class="col-md-12">
-                            <label for="cuotaNueveAlias" class="form-label">Alias o nombre para la Cuota 9:</label>
+                            <label for="cuotaNueveAlias" class="form-label">{{ 'ACCOUNTING.SETTINGS.ALIAS_9' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaNueveAlias" name="cuotaNueveAlias"
                                 [(ngModel)]="clubCuotas.cuotaNueveAlias">
                         </div>
@@ -519,19 +589,19 @@
 
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 9">
                         <div class="col-md-6">
-                            <label for="cuotaDiez" class="form-label">Cuota 10:</label>
+                            <label for="cuotaDiez" class="form-label">{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_10' | translate }}:</label>
                             <input type="number" class="form-control" id="cuotaDiez" name="cuotaDiez"
                                 [(ngModel)]="clubCuotas.cuotaDiez" (input)="validateNumber($event, 10)">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaDiezDate" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaDiezDate" class="form-label">{{ 'ACCOUNTING.SETTINGS.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaDiezDate" name="cuotaDiezDate"
                                 [(ngModel)]="clubCuotas.cuotaDiezDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 9">
                         <div class="col-md-12">
-                            <label for="cuotaDiezAlias" class="form-label">Alias o nombre para la Cuota 10:</label>
+                            <label for="cuotaDiezAlias" class="form-label">{{ 'ACCOUNTING.SETTINGS.ALIAS_10' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaDiezAlias" name="cuotaDiezAlias"
                                 [(ngModel)]="clubCuotas.cuotaDiezAlias">
                         </div>
@@ -540,19 +610,19 @@
 
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 10">
                         <div class="col-md-6">
-                            <label for="cuotaOnce" class="form-label">Cuota 11:</label>
+                            <label for="cuotaOnce" class="form-label">{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_11' | translate }}:</label>
                             <input type="number" class="form-control" id="cuotaOnce" name="cuotaOnce"
                                 [(ngModel)]="clubCuotas.cuotaOnce" (input)="validateNumber($event, 11)">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaOnceDate" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaOnceDate" class="form-label">{{ 'ACCOUNTING.SETTINGS.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaOnceDate" name="cuotaOnceDate"
                                 [(ngModel)]="clubCuotas.cuotaOnceDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 10">
                         <div class="col-md-12">
-                            <label for="cuotaOnceAlias" class="form-label">Alias o nombre para la Cuota 11:</label>
+                            <label for="cuotaOnceAlias" class="form-label">{{ 'ACCOUNTING.SETTINGS.ALIAS_11' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaOnceAlias" name="cuotaOnceAlias"
                                 [(ngModel)]="clubCuotas.cuotaOnceAlias">
                         </div>
@@ -561,19 +631,19 @@
 
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 11">
                         <div class="col-md-6">
-                            <label for="cuotaDoce" class="form-label">Cuota 12:</label>
+                            <label for="cuotaDoce" class="form-label">{{ 'ACCOUNTING.SETTINGS.INSTALLMENT_12' | translate }}:</label>
                             <input type="number" class="form-control" id="cuotaDoce" name="cuotaDoce"
                                 [(ngModel)]="clubCuotas.cuotaDoce" (input)="validateNumber($event, 12)">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaDoceDate" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaDoceDate" class="form-label">{{ 'ACCOUNTING.SETTINGS.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaDoceDate" name="cuotaDoceDate"
                                 [(ngModel)]="clubCuotas.cuotaDoceDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="clubCuotas.numCuotas > 11">
                         <div class="col-md-12">
-                            <label for="cuotaDoceAlias" class="form-label">Alias o nombre para la Cuota 12:</label>
+                            <label for="cuotaDoceAlias" class="form-label">{{ 'ACCOUNTING.SETTINGS.ALIAS_12' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaDoceAlias" name="cuotaDoceAlias"
                                 [(ngModel)]="clubCuotas.cuotaDoceAlias">
                         </div>
@@ -583,11 +653,11 @@
                     <div class="modal-footer">
                         <!-- Botón para guardar el nuevo equipo -->
                         <button type="submit" class="btn btn-success float-end"
-                        [disabled]="botonDeshabilitado">Guardar</button>
+                        [disabled]="botonDeshabilitado">{{ 'COMMON.SAVE' | translate }}</button>
                     </div>
                     <div class="mb-3 d-flex">
                         <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
-                            Guardado correctamente
+                            {{ 'ACCOUNTING.SETTINGS.SAVED_OK' | translate }}
                         </div>
                     </div>
                 </form>
@@ -601,7 +671,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Invitar a {{ nombreJugador }}</h5>
+                <h5 class="modal-title">{{ 'ACCOUNTING.INVITE.TITLE' | translate }} {{ nombreJugador }}</h5>
                 <!-- Botón de cerrar con un icono -->
                 <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalInvitar()"></button>
             </div>
@@ -610,16 +680,15 @@
                       introduce su correo
                       electrónico de a quíen vas a invitar. Por favor verifica que la cuenta de
                       correo sea correcta.</p>-->
-                <p>Introduce el correo electrónico del jugador que quieres invitar. Por favor verifica
-                    que la cuenta de correo sea correcta.</p>
+                <p>{{ 'ACCOUNTING.INVITE.HELP_TEXT' | translate }}</p>
                 <form [formGroup]="userForm" class="form-login" #thisForm="ngForm" (ngSubmit)="enviarMailJugador()">
                     <div class="mb-3" style="text-align: center;">
                         <div class="mb-3">
-                            <label for="mail" class="form-label">Correo electrónico</label>
+                            <label for="mail" class="form-label">{{ 'ACCOUNTING.INVITE.EMAIL_LABEL' | translate }}</label>
                             <input type="email" class="form-control input-login" id="mail" formControlName="mail">
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-success float-end">Invitar</button>
+                            <button type="submit" class="btn btn-success float-end">{{ 'ACCOUNTING.INVITE.SEND' | translate }}</button>
                         </div>
                     </div>
                 </form>
@@ -633,31 +702,31 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="standard-modalLabel">Cuota del jugador</h5>
+                <h5 class="modal-title" id="standard-modalLabel">{{ 'ACCOUNTING.PLAYER_FEE.TITLE' | translate }}</h5>
                 <!-- Botón de cerrar con un icono -->
                 <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalJugador()"></button>
             </div>
             <div class="modal-body">
                 <form (ngSubmit)="createUpdateCuotaJugador()">
                     <div class="mb-3">
-                        <label for="totalCuota2" class="form-label">Precio de la cuota del club:</label>
+                        <label for="totalCuota2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.TOTAL_FEE' | translate }}:</label>
                         <input type="text" class="form-control" id="totalCuota2" name="totalCuota2"
                             [(ngModel)]="playerCuotas.totalCuota" disabled>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="cuotaRopa2" class="form-label">Precio de la cuota de la ropa:</label>
+                            <label for="cuotaRopa2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.CLOTHING_AMOUNT' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaRopa2" name="cuotaRopa2"
                                 [(ngModel)]="playerCuotas.cuotaRopa">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaRopaDate2" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaRopaDate2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.CLOTHING_DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaRopaDate2" name="cuotaRopaDate2"
                                 [(ngModel)]="playerCuotas.cuotaRopaDate">
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="numCuotas2" class="form-label">Selecciona el número total de pagos o cuotas:</label>
+                        <label for="numCuotas2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.NUM_INSTALLMENTS' | translate }}:</label>
                         <select class="form-control" id="numCuotas2" name="numCuotas2"
                             [(ngModel)]="playerCuotas.numCuotas">
                             <option value="1">1</option>
@@ -675,162 +744,160 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <h2>Repartición de las cuotas</h2>
-                        <p>Segun el número total de pagos o cuotas que se haya seleccionado, ir rellenando cantidad y
-                            fecha de pago.
-                        </p>
+                        <h2>{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_DISTRIBUTION' | translate }}</h2>
+                        <p>{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_DISTRIBUTION_DESC' | translate }}</p>
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6">
-                            <label for="cuotaUno2" class="form-label">Cuota 1:</label>
+                            <label for="cuotaUno2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_1' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaUno2" name="cuotaUno2"
                                 [(ngModel)]="playerCuotas.cuotaUno">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaUnoDate2" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaUnoDate2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaUnoDate2" name="cuotaUnoDate2"
                                 [(ngModel)]="playerCuotas.cuotaUnoDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 1">
                         <div class="col-md-6">
-                            <label for="cuotaDos2" class="form-label">Cuota 2:</label>
+                            <label for="cuotaDos2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_2' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaDos2" name="cuotaDos2"
                                 [(ngModel)]="playerCuotas.cuotaDos">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaDosDate2" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaDosDate2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaDosDate2" name="cuotaDosDate2"
                                 [(ngModel)]="playerCuotas.cuotaDosDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 2">
                         <div class="col-md-6">
-                            <label for="cuotaTres2" class="form-label">Cuota 3:</label>
+                            <label for="cuotaTres2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_3' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaTres2" name="cuotaTres2"
                                 [(ngModel)]="playerCuotas.cuotaTres">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaTresDate2" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaTresDate2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaTresDate2" name="cuotaTresDate2"
                                 [(ngModel)]="playerCuotas.cuotaTresDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 3">
                         <div class="col-md-6">
-                            <label for="cuotaCuatro2" class="form-label">Cuota 4:</label>
+                            <label for="cuotaCuatro2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_4' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaCuatro2" name="cuotaCuatro2"
                                 [(ngModel)]="playerCuotas.cuotaCuatro">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaCuatroDate2" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaCuatroDate2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaCuatroDate2" name="cuotaCuatroDate2"
                                 [(ngModel)]="playerCuotas.cuotaCuatroDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 4">
                         <div class="col-md-6">
-                            <label for="cuotaCinco2" class="form-label">Cuota 5:</label>
+                            <label for="cuotaCinco2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_5' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaCinco2" name="cuotaCinco2"
                                 [(ngModel)]="playerCuotas.cuotaCinco">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaCincoDate2" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaCincoDate2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaCincoDate2" name="cuotaCincoDate2"
                                 [(ngModel)]="playerCuotas.cuotaCincoDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 5">
                         <div class="col-md-6">
-                            <label for="cuotaSeis2" class="form-label">Cuota 6:</label>
+                            <label for="cuotaSeis2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_6' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaSeis2" name="cuotaSeis2"
                                 [(ngModel)]="playerCuotas.cuotaSeis">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaSeisDate2" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaSeisDate2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaSeisDate2" name="cuotaSeisDate2"
                                 [(ngModel)]="playerCuotas.cuotaSeisDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 6">
                         <div class="col-md-6">
-                            <label for="cuotaSiete2" class="form-label">Cuota 7:</label>
+                            <label for="cuotaSiete2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_7' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaSiete2" name="cuotaSiete2"
                                 [(ngModel)]="playerCuotas.cuotaSiete">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaSieteDate2" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaSieteDate2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaSieteDate2" name="cuotaSieteDate2"
                                 [(ngModel)]="playerCuotas.cuotaSieteDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 7">
                         <div class="col-md-6">
-                            <label for="cuotaOcho2" class="form-label">Cuota 8:</label>
+                            <label for="cuotaOcho2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_8' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaOcho2" name="cuotaOcho2"
                                 [(ngModel)]="playerCuotas.cuotaOcho">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaOchoDate2" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaOchoDate2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaOchoDate2" name="cuotaOchoDate2"
                                 [(ngModel)]="playerCuotas.cuotaOchoDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 8">
                         <div class="col-md-6">
-                            <label for="cuotaNueve2" class="form-label">Cuota 9:</label>
+                            <label for="cuotaNueve2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_9' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaNueve2" name="cuotaNueve2"
                                 [(ngModel)]="playerCuotas.cuotaNueve">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaNueveDate2" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaNueveDate2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaNueveDate2" name="cuotaNueveDate2"
                                 [(ngModel)]="playerCuotas.cuotaNueveDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 9">
                         <div class="col-md-6">
-                            <label for="cuotaDiez2" class="form-label">Cuota 10:</label>
+                            <label for="cuotaDiez2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_10' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaDiez2" name="cuotaDiez2"
                                 [(ngModel)]="playerCuotas.cuotaDiez">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaDiezDate2" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaDiezDate2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaDiezDate2" name="cuotaDiezDate2"
                                 [(ngModel)]="playerCuotas.cuotaDiezDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 10">
                         <div class="col-md-6">
-                            <label for="cuotaOnce2" class="form-label">Cuota 11:</label>
+                            <label for="cuotaOnce2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_11' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaOnce2" name="cuotaOnce2"
                                 [(ngModel)]="playerCuotas.cuotaOnce">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaOnceDate2" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaOnceDate2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaOnceDate2" name="cuotaOnceDate2"
                                 [(ngModel)]="playerCuotas.cuotaOnceDate">
                         </div>
                     </div>
                     <div class="row mb-3" *ngIf="playerCuotas.numCuotas > 11">
                         <div class="col-md-6">
-                            <label for="cuotaDoce2" class="form-label">Cuota 12:</label>
+                            <label for="cuotaDoce2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.INSTALLMENT_12' | translate }}:</label>
                             <input type="text" class="form-control" id="cuotaDoce2" name="cuotaDoce2"
                                 [(ngModel)]="playerCuotas.cuotaDoce">
                         </div>
                         <div class="col-md-6">
-                            <label for="cuotaDoceDate2" class="form-label">Fecha de pago:</label>
+                            <label for="cuotaDoceDate2" class="form-label">{{ 'ACCOUNTING.PLAYER_FEE.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="cuotaDoceDate2" name="cuotaDoceDate2"
                                 [(ngModel)]="playerCuotas.cuotaDoceDate">
                         </div>
                     </div>
                     <div class="modal-footer">
                         <!-- Botón para guardar el nuevo equipo -->
-                        <button type="submit" class="btn btn-success float-end">Guardar</button>
+                        <button type="submit" class="btn btn-success float-end">{{ 'COMMON.SAVE' | translate }}</button>
                     </div>
                     <div class="mb-3 d-flex">
                         <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
-                            Guardado correctamente
+                            {{ 'ACCOUNTING.PLAYER_FEE.SAVED_OK' | translate }}
                         </div>
                     </div>
                 </form>
@@ -844,66 +911,62 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="standard-modalLabel">Agregar pago del jugador</h5>
+                <h5 class="modal-title" id="standard-modalLabel">{{ 'ACCOUNTING.PAYMENT.TITLE' | translate }}</h5>
                 <!-- Botón de cerrar con un icono -->
                 <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalAgregarPago()"></button>
             </div>
             <div class="modal-body">
-                <p>Vas a agregar un pago al jugador <b>{{ textoInfoTitlePagoPlayer }}</b></p>
+                <p>{{ 'ACCOUNTING.PAYMENT.INFO' | translate }} <b>{{ textoInfoTitlePagoPlayer }}</b></p>
                 <form (ngSubmit)="createUpdateHistoryCuotaJugador()">
                     <div class="row mb-3">
                         <div class="col">
-                            <p style="color: red;">(En la cantidad, solo se permiten números enteros, sin "comas" ni
-                                "puntos")</p>
+                            <p style="color: red;">{{ 'ACCOUNTING.PAYMENT.INTEGER_NOTICE' | translate }}</p>
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label for="cantidad" class="form-label">Cantidad:</label>
+                            <label for="cantidad" class="form-label">{{ 'ACCOUNTING.PAYMENT.AMOUNT' | translate }}:</label>
                             <input type="number" class="form-control" id="cantidad" name="cantidad"
                                 [(ngModel)]="agregarPagoPlayer.cantidad" (input)="validateNumber($event, 20)">
                         </div>
                         <div class="col-6">
-                            <label for="fecha" class="form-label">Fecha:</label>
+                            <label for="fecha" class="form-label">{{ 'ACCOUNTING.PAYMENT.DATE' | translate }}:</label>
                             <input type="date" class="form-control" id="fecha" name="fecha"
                                 [(ngModel)]="agregarPagoPlayer.fecha">
                         </div>
                     </div>
                     <div class="row mb-3">
                         <div class="col-6">
-                            <label for="metodo" class="form-label">Método de pago:</label>
+                            <label for="metodo" class="form-label">{{ 'ACCOUNTING.PAYMENT.METHOD' | translate }}:</label>
                             <select class="form-control" id="metodo" name="metodo"
                                 [(ngModel)]="agregarPagoPlayer.metodo">
-                                <option value="Tarjeta">Tarjeta</option>
-                                <option value="Efectivo">Efectivo</option>
-                                <option value="Transferencia">Transferencia</option>
-                                <option value="Bizum">Bizum</option>
-                                <option value="Otro">Otro</option>
+                                <option value="Tarjeta">{{ 'ACCOUNTING.PAYMENT.METHODS.CARD' | translate }}</option>
+                                <option value="Efectivo">{{ 'ACCOUNTING.PAYMENT.METHODS.CASH' | translate }}</option>
+                                <option value="Transferencia">{{ 'ACCOUNTING.PAYMENT.METHODS.TRANSFER' | translate }}</option>
+                                <option value="Bizum">{{ 'ACCOUNTING.PAYMENT.METHODS.BIZUM' | translate }}</option>
+                                <option value="Otro">{{ 'ACCOUNTING.PAYMENT.METHODS.OTHER' | translate }}</option>
                             </select>
                         </div>
                         <div class="col-6">
-                            <label for="temporada" class="form-label">Temporada:</label>
+                            <label for="temporada" class="form-label">{{ 'ACCOUNTING.PAYMENT.SEASON' | translate }}:</label>
                             <select class="form-control" id="temporada" name="temporada"
                                 [(ngModel)]="agregarPagoPlayer.temporada">
-                                <option value="2022">2022/2023</option>
-                                <option value="2023">2023/2024</option>
-                                <option value="2024">2024/2025</option>
-                                <option value="2025">2025/2026</option>
+                                <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
                             </select>
                         </div>
                         <div class="col-12">
-                            <label for="comentario" class="form-label">comentario:</label>
+                            <label for="comentario" class="form-label">{{ 'ACCOUNTING.PAYMENT.COMMENT' | translate }}:</label>
                             <textarea class="form-control" id="comentario" name="comentario"
                                 [(ngModel)]="agregarPagoPlayer.comentario" rows="5"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <!-- Botón para guardar el nuevo equipo -->
-                        <button *ngIf="btnPagar" type="submit" class="btn btn-success float-end">Guardar</button>
+                        <button *ngIf="btnPagar" type="submit" class="btn btn-success float-end">{{ 'COMMON.SAVE' | translate }}</button>
                     </div>
                     <div class="mb-3 d-flex">
                         <div *ngIf="showAlert" class="col-6 alert alert-success mt-3" role="alert">
-                            Guardado correctamente
+                            {{ 'ACCOUNTING.PAYMENT.SAVED_OK' | translate }}
                         </div>
                     </div>
                 </form>
@@ -918,82 +981,54 @@
         <div class="modal-content">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">Configurar Stripe</h5>
+                    <h5 class="modal-title" id="stripeModalLabel">{{ 'ACCOUNTING.STRIPE.TITLE' | translate }}</h5>
                     <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalStripe()"></button>
                 </div>
                 <div class="modal-body">
                     <div class="mb-3 text-center" *ngIf="infoClub.urlStripe != null">
-                        <button (click)="goStripeURL()" class="btn btn-primary">Acceder a Stripe</button>
+                        <button (click)="goStripeURL()" class="btn btn-primary">{{ 'ACCOUNTING.STRIPE.ACCESS' | translate }}</button>
                     </div>
                     <form (ngSubmit)="onSubmit()" #stripeForm="ngForm" *ngIf="infoClub.urlStripe === null">
                         <div class="mb-3" style="height: 20em; overflow-y: scroll; padding: 1em;">
-                            <p><strong>¿Qué es Stripe?</strong></p>
-                            <p>Stripe es una plataforma de pagos en línea que permite a empresas y organizaciones
-                                recibir pagos de
-                                manera segura y eficiente. Con Stripe, puedes gestionar todas tus transacciones de forma
-                                sencilla,
-                                asegurando que los pagos se procesen rápidamente y con total seguridad. Además, Stripe
-                                ofrece
-                                herramientas
-                                para automatizar y simplificar la contabilidad y la gestión financiera de tu club. Para
-                                facilitar esta
-                                gestión, la hemos integrado directamente en SphairaTech.</p>
+                            <p><strong>{{ 'ACCOUNTING.STRIPE.DESC_WHAT_TITLE' | translate }}</strong></p>
+                            <p>{{ 'ACCOUNTING.STRIPE.DESC_WHAT_TEXT' | translate }}</p>
 
-                            <p><strong>¿Cómo puedo activar Stripe en Sphaira para automatizar el pago de las cuotas de
-                                    los padres y no
-                                    tener que preocuparme?</strong></p>
+                            <p><strong>{{ 'ACCOUNTING.STRIPE.DESC_HOW_TITLE' | translate }}</strong></p>
 
-                            <p><strong>1. Registro en Stripe:</strong></p>
-                            <p>Primero, date de alta en Stripe usando el botón proporcionado.</p>
+                            <p><strong>{{ 'ACCOUNTING.STRIPE.DESC_STEP1_TITLE' | translate }}</strong></p>
+                            <p>{{ 'ACCOUNTING.STRIPE.DESC_STEP1_TEXT' | translate }}</p>
 
-                            <p><strong>2. Introduce las cuotas:</strong></p>
-                            <p>Introduce la cantidad que los padres deberán pagar para inscribir a sus hijos en tu club,
-                                pudiendo
-                                dividirlo en hasta 12 cuotas. Puedes incluir el coste de la ropa en estas cuotas o
-                                establecer una cuota
-                                separada para la ropa.</p>
+                            <p><strong>{{ 'ACCOUNTING.STRIPE.DESC_STEP2_TITLE' | translate }}</strong></p>
+                            <p>{{ 'ACCOUNTING.STRIPE.DESC_STEP2_TEXT' | translate }}</p>
 
-                            <p><strong>3. Recibir Pagos:</strong></p>
-                            <p>Los padres podrán acceder a través de una invitación del entrenador o del club. Una vez
-                                registrados,
-                                podrán realizar los pagos para cubrir las cuotas anuales o la cuota de la ropa en las
-                                fechas fijadas por
-                                el club. Recibirás estos pagos automáticamente en tu cuenta de Stripe.</p>
+                            <p><strong>{{ 'ACCOUNTING.STRIPE.DESC_STEP3_TITLE' | translate }}</strong></p>
+                            <p>{{ 'ACCOUNTING.STRIPE.DESC_STEP3_TEXT' | translate }}</p>
 
-                            <p><strong>4. Actualización Automática:</strong></p>
-                            <p>La tabla de pagos se actualizará automáticamente. Solo tendrás que revisarla, sin
-                                necesidad de hacer
-                                cambios manuales.</p>
+                            <p><strong>{{ 'ACCOUNTING.STRIPE.DESC_STEP4_TITLE' | translate }}</strong></p>
+                            <p>{{ 'ACCOUNTING.STRIPE.DESC_STEP4_TEXT' | translate }}</p>
 
-                            <p><strong>5. Comisión:</strong></p>
-                            <p>Hay una comisión del 1,8% en cada pago. Aun así, recibirás el importe total que
-                                establezcas como cuota,
-                                ya que la comisión no se te repercutirá.</p>
+                            <p><strong>{{ 'ACCOUNTING.STRIPE.DESC_STEP5_TITLE' | translate }}</strong></p>
+                            <p>{{ 'ACCOUNTING.STRIPE.DESC_STEP5_TEXT' | translate }}</p>
 
-                            <p><strong>6. Importancia del Registro:</strong></p>
-                            <p>Si decides no darte de alta en Stripe, no podrás recibir pagos por parte de los padres a
-                                través de
-                                Sphaira y tendrás que llevar un registro manual.</p>
+                            <p><strong>{{ 'ACCOUNTING.STRIPE.DESC_STEP6_TITLE' | translate }}</strong></p>
+                            <p>{{ 'ACCOUNTING.STRIPE.DESC_STEP6_TEXT' | translate }}</p>
                         </div>
                         <div class="mb-3 d-flex align-items-center" style="margin-top: 2em;">
                             <input type="checkbox" id="stripeAgreement" name="stripeAgreement" [(ngModel)]="aceptStripe"
                                 class="me-2">
-                            <label for="stripeAgreement" class="mb-0">He leído y estoy de acuerdo con el funcionamiento
-                                de Stripe a
-                                través de SphairaTech.</label>
+                            <label for="stripeAgreement" class="mb-0">{{ 'ACCOUNTING.STRIPE.AGREEMENT' | translate }}</label>
                         </div>
                         <div class="mb-3 d-flex">
                             <div class="col-12">
-                                <label for="email" class="form-label">Correo Electrónico</label>
+                                <label for="email" class="form-label">{{ 'ACCOUNTING.STRIPE.EMAIL_LABEL' | translate }}</label>
                                 <input type="email" class="form-control" id="email" name="email"
-                                    placeholder="tuemail@mail.com" [(ngModel)]="email" required>
+                                    [attr.placeholder]="'ACCOUNTING.STRIPE.EMAIL_PLACEHOLDER' | translate" [(ngModel)]="email" required>
                             </div>
                         </div>
                         <div class="mb-3 d-flex" *ngIf="aceptStripe">
                             <div class="col-12">
                                 <button style="
-                  width: -webkit-fill-available;" type=" submit" class="btn btn-primary">Crear Cuenta en
-                                    Stripe</button>
+                  width: -webkit-fill-available;" type=" submit" class="btn btn-primary">{{ 'ACCOUNTING.STRIPE.CREATE_ACCOUNT' | translate }}</button>
                             </div>
                         </div>
                     </form>
@@ -1009,7 +1044,7 @@
         <div class="modal-content">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="stripeModalLabel">Historial de pagos de los jugadores</h5>
+                    <h5 class="modal-title" id="stripeModalLabel">{{ 'ACCOUNTING.HISTORY.TITLE' | translate }}</h5>
                     <button type="button" class="btn-close" aria-label="Close"
                         (click)="cerrarModalVerPagosPlayer()"></button>
                 </div>
@@ -1018,11 +1053,11 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Cantidad</th>
-                                    <th>Fecha</th>
-                                    <th>Método</th>
-                                    <th>Comentario</th>
-                                    <th>Devolver</th>
+                                    <th>{{ 'ACCOUNTING.HISTORY.AMOUNT' | translate }}</th>
+                                    <th>{{ 'ACCOUNTING.HISTORY.DATE' | translate }}</th>
+                                    <th>{{ 'ACCOUNTING.HISTORY.METHOD' | translate }}</th>
+                                    <th>{{ 'ACCOUNTING.HISTORY.COMMENT' | translate }}</th>
+                                    <th>{{ 'ACCOUNTING.HISTORY.REFUND' | translate }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1045,7 +1080,7 @@
                     <div class="modal-footer">
                         <!-- Botón para guardar el nuevo equipo -->
                         <button type="submit" class="btn btn-success float-end"
-                            (click)="cerrarModalVerPagosPlayer()">Cerrar</button>
+                            (click)="cerrarModalVerPagosPlayer()">{{ 'COMMON.CLOSE' | translate }}</button>
                     </div>
                 </div>
             </div>

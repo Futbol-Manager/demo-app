@@ -9,6 +9,9 @@
 /* Archivo - Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap');
 
+/* ——— Design tokens (light / dark) ——— */
+@import './themes.scss';
+
 html,
 body {
   height: 100%;
@@ -18,52 +21,9 @@ body {
 
 body {
   margin: 0;
-}
-
-// Estilos para tema claro
-.theme-header {
-  background-color: #31b270;
-  color: #333; // Color de texto habitual para el tema claro
-}
-
-// Estilos para tema oscuro
-.dark-theme-header {
-  background-color: #333;
-  color: #fff; // Color de texto habitual para el tema oscuro
-}
-
-// Estilos para tema claro
-.theme-body {
-  background-color: #fafbfe;
-  color: #333; // Color de texto habitual para el tema claro
-  height: -webkit-fill-available;
-}
-
-// Estilos para tema oscuro
-.dark-theme-body {
-  background-color: #3a444e;
-  color: #2e1f1f; // Color de texto habitual para el tema oscuro
-  height: -webkit-fill-available;
-}
-
-/* Estilos adicionales para el menú desplegable en modo oscuro */
-.dark-theme-header .dropdown-menu {
-  background-color: #333 !important;
-  color: #fff; // Color de texto en el menú desplegable en modo oscuro
-}
-
-.dark-theme-header .dropdown-item {
-  color: #fff !important;
-}
-
-/* Estilos adicionales para el menú desplegable en modo claro */
-.light-theme-header .dropdown-menu {
-  background-color: #ffffff !important;
-  color: #000; // Color de texto en el menú desplegable en modo claro
-}
-
-.light-theme-header .dropdown-item {
-  color: #000 !important;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .mat-snack-bar-container {
@@ -146,7 +106,7 @@ body {
 .modal-header {
   padding-bottom: 5px;
   padding-top: 5px;
-  color: #565656;
+  color: var(--text-secondary);
 }
 
 /* Estilos personalizados para el botón de cierre */
@@ -162,13 +122,13 @@ body {
 }
 
 .btn-custom {
-  background-color: #22bf63;
-  color: white;
+  background-color: var(--color-accent);
+  color: var(--text-on-primary);
 }
 
 .btn-success {
-  background-color: #22bf63 !important;
-  color: white;
+  background-color: var(--color-accent) !important;
+  color: var(--text-on-primary);
 }
 
 .btn-entrena {
@@ -177,8 +137,8 @@ body {
 }
 
 .btn-partido {
-  background-color: #22bf63;
-  color: white;
+  background-color: var(--color-accent);
+  color: var(--text-on-primary);
 }
 
 .btn-custom-grey {
@@ -197,12 +157,12 @@ body {
 }
 
 .nav-tabs .nav-link.active {
-  background-color: #3a444e;
+  background-color: var(--tab-active-bg);
   color: white;
 }
 
 .nav-tabs .nav-link {
-  background-color: #818181;
+  background-color: var(--tab-inactive-bg);
   color: white;
 }
 
@@ -213,8 +173,8 @@ body {
   font-size: 0.875rem;
   line-height: 1.5;
   color: #fff;
-  background-color: #3a444e;
-  border-color: #2a3036;
+  background-color: var(--dt-btn-bg);
+  border-color: var(--dt-btn-border);
   border-radius: 0.25rem;
   cursor: pointer;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -222,14 +182,14 @@ body {
 
 .dt-paging-button:hover {
   color: #fff;
-  background-color: #2f373f;
-  border-color: #2d343b;
+  background-color: var(--bg-hover);
+  border-color: var(--border-strong);
 }
 
 .dt-paging-button:disabled {
-  color: #6c757d;
-  background-color: #fff;
-  border-color: #dee2e6;
+  color: var(--text-muted);
+  background-color: var(--bg-card);
+  border-color: var(--border-color);
 }
 
 /* Estilos para el botón de página activa */
@@ -252,11 +212,13 @@ body {
 
 .dt-input {
   border-radius: 4px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-sm);
   font-family: sans-serif;
   font-size: 14px;
   padding: 8px 12px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-input);
+  background-color: var(--bg-input);
+  color: var(--text-primary);
 }
 
 .div-headdatatable {
@@ -264,7 +226,7 @@ body {
 }
 
 .table-custom {
-  background-color: #22bf63 !important;
+  background-color: var(--color-accent) !important;
 }
 
 .p {
@@ -285,7 +247,7 @@ body {
 .submenu {
   text-align: -webkit-center;
   padding-block: inherit;
-  background-color: #002c40;
+  background-color: var(--submenu-bg);
 }
 
 .submenu .row {
@@ -331,7 +293,7 @@ body {
   width: 100%;
   height: 2px;
   /* Grosor del subrayado */
-  background-color: #22BF63;
+  background-color: var(--color-accent);
   /* Color del subrayado */
   bottom: -2px;
   /* Posición del subrayado */
@@ -364,41 +326,34 @@ body {
 
 /* Estilo por defecto para los inputs */
 .custom-input {
-  border: 2px solid #22bf63;
-  /* Color verde para los bordes */
+  border: 2px solid var(--color-accent);
   border-radius: 4px;
-  /* Bordes redondeados */
   padding: 8px;
-  /* Relleno interno */
   transition: border-color 0.3s;
-  /* Transición suave para el cambio de borde */
+  background-color: var(--bg-input);
+  color: var(--text-primary);
 }
 
-/* Estilo para los inputs cuando están en foco */
 .custom-input:focus {
-  border-color: #145724;
-  /* Verde oscuro cuando está enfocado */
+  border-color: var(--color-primary-hover);
   outline: none;
-  /* Elimina el borde de enfoque predeterminado */
-  box-shadow: 0 0 5px rgba(30, 126, 52, 0.5);
-  /* Sombra para un efecto visual */
+  box-shadow: 0 0 5px rgba(var(--color-primary-rgb), 0.4);
 }
 
 /* Estilo para el switch */
 .form-check-input:checked {
-  background-color: #22bf63;
-  /* Cambia el color de fondo cuando está marcado */
-  border-color: #22bf63;
-  /* Cambia el color del borde cuando está marcado */
+  background-color: var(--color-accent);
+  border-color: var(--color-accent);
 }
 
 .form-check-input:checked:focus {
-  box-shadow: 0 0 5px rgba(30, 126, 52, 0.5);
-  /* Sombra para un efecto visual cuando está enfocado y marcado */
+  box-shadow: 0 0 5px rgba(var(--color-primary-rgb), 0.4);
 }
 
 .modal-content {
-  border-color: black;
+  border-color: var(--border-strong);
+  background-color: var(--modal-bg);
+  color: var(--text-primary);
 }
 
 .badge-primary {
@@ -412,10 +367,8 @@ body {
 }
 
 .spinnerLoad {
-  border: 16px solid #f3f3f3;
-  /* Light grey */
-  border-top: 16px solid #3498db;
-  /* Blue */
+  border: 16px solid var(--bg-surface);
+  border-top: 16px solid var(--color-primary);
   border-radius: 50%;
   width: 120px;
   height: 120px;
@@ -447,7 +400,7 @@ body {
 .modal-backdrop-custom {
   position: fixed;
   inset: 0;
-  background: rgba(10, 25, 35, 0.65);
+  background: var(--overlay-bg);
   backdrop-filter: blur(2px);
   z-index: 1040;
 }
@@ -463,17 +416,17 @@ body {
 .modern-modal {
   border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--shadow-lg);
   border: none;
-  background: #ffffff;
+  background: var(--modal-bg);
 }
 
 /* =====================================================
    HEADER
 ===================================================== */
 .modern-modal-header {
-  background: #002c40;
-  color: #ffffff;
+  background: var(--modal-header-bg);
+  color: var(--text-on-navy);
   padding: 1.25rem 1.5rem;
   border-bottom: none;
   display: flex;
@@ -504,7 +457,7 @@ body {
   padding: 1.5rem;
   max-height: 75vh;
   overflow-y: auto;
-  background: #f8fafc;
+  background: var(--modal-body-bg);
 }
 
 /* =====================================================
@@ -517,7 +470,7 @@ body {
 .section-title {
   font-weight: 700;
   margin-bottom: 0.25rem;
-  color: #0f172a;
+  color: var(--text-primary);
 }
 
 .section-help {
@@ -530,10 +483,10 @@ body {
    TARJETAS DNI
 ===================================================== */
 .dni-card {
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 14px;
   padding: 1rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   height: 100%;
 }
 
@@ -544,7 +497,7 @@ body {
   font-weight: 700;
   text-transform: uppercase;
   margin-bottom: 0.5rem;
-  color: #64748b;
+  color: var(--text-secondary);
 }
 
 /* PREVIEW */
@@ -552,7 +505,7 @@ body {
   width: 100%;
   height: 160px;
   border-radius: 10px;
-  background: #f1f5f9;
+  background: var(--bg-surface);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -570,10 +523,10 @@ body {
    DOCUMENTOS
 ===================================================== */
 .doc-card {
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 14px;
   padding: 1rem 1.25rem;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -582,7 +535,7 @@ body {
 }
 
 .doc-card:hover {
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
   transform: translateY(-2px);
 }
 
@@ -600,7 +553,7 @@ body {
 
 .doc-desc {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--text-secondary);
   margin: 0;
 }
 
@@ -620,8 +573,8 @@ body {
   font-size: 1.1rem;
   cursor: pointer;
   transition: background 0.15s ease, transform 0.1s ease;
-  background: #e5e7eb;
-  color: #374151;
+  background: var(--bg-surface);
+  color: var(--text-primary);
 }
 
 .btn-icon:hover {
@@ -673,4 +626,157 @@ body {
 .snackbar-success .mat-simple-snackbar-action,
 .snackbar-error .mat-simple-snackbar-action {
   color: #e5e7eb !important;
+}
+
+/* =====================================================
+   DARK MODE – BOOTSTRAP & GLOBAL OVERRIDES
+   =====================================================
+   Ensures Bootstrap components respect the dark palette.
+===================================================== */
+body.dark {
+
+  /* ---- CARD ---- */
+  .card {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary) !important;
+    border-color: var(--border-color);
+  }
+
+  /* ---- TABLES ---- */
+  .table {
+    --bs-table-bg: var(--bg-card);
+    --bs-table-color: var(--text-primary);
+    --bs-table-border-color: var(--border-color);
+    --bs-table-striped-bg: var(--bg-surface);
+    --bs-table-hover-bg: var(--bg-hover);
+  }
+
+  /* ---- FORM CONTROLS ---- */
+  .form-control,
+  .form-select {
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+  }
+
+  .form-control:focus,
+  .form-select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--color-primary-rgb), 0.25);
+  }
+
+  .form-control::placeholder {
+    color: var(--text-muted);
+  }
+
+  /* ---- LABELS ---- */
+  .form-label,
+  label {
+    color: var(--text-primary);
+  }
+
+  /* ---- BADGES ---- */
+  .badge {
+    border-color: var(--border-color);
+  }
+
+  /* ---- DROPDOWN ---- */
+  .dropdown-menu {
+    background-color: var(--submenu-bg);
+    border-color: var(--border-color);
+  }
+
+  .dropdown-item {
+    color: var(--submenu-text);
+  }
+
+  .dropdown-item:hover,
+  .dropdown-item:focus {
+    background-color: var(--bg-hover);
+  }
+
+  /* ---- MODAL ---- */
+  .modal-content {
+    background-color: var(--modal-bg);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  .modal-header {
+    border-bottom-color: var(--border-color);
+  }
+
+  .modal-footer {
+    border-top-color: var(--border-color);
+  }
+
+  /* ---- ALERT ---- */
+  .alert {
+    border-color: var(--border-color);
+  }
+
+  /* ---- LIST GROUP ---- */
+  .list-group-item {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  /* ---- NAV / TABS ---- */
+  .nav-link {
+    color: var(--text-secondary);
+  }
+
+  .nav-link:hover {
+    color: var(--text-primary);
+  }
+
+  /* ---- TEXT UTILITIES ---- */
+  .text-muted {
+    color: var(--text-muted) !important;
+  }
+
+  .text-dark {
+    color: var(--text-primary) !important;
+  }
+
+  /* ---- BORDERS ---- */
+  .border,
+  .border-bottom,
+  .border-top {
+    border-color: var(--border-color) !important;
+  }
+
+  /* ---- BACKGROUND UTILITIES ---- */
+  .bg-white {
+    background-color: var(--bg-card) !important;
+  }
+
+  .bg-light {
+    background-color: var(--bg-surface) !important;
+  }
+
+  /* ---- CLOSE BUTTON ---- */
+  .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+  }
+
+  /* ---- SCROLLBAR ---- */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--border-strong);
+  }
 }

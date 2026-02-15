@@ -66,18 +66,27 @@
         </div>
 
         <!-- Empty states -->
-        <div class="empty-state" *ngIf="correosFiltered.length === 0 && currentFolder === 'inbox' && !searchQuery.trim()">
-          <i class="bi bi-inbox empty-icon"></i>
-          <p class="empty-title">{{ 'NOTIFICATIONS.EMPTY_INBOX' | translate }}</p>
-        </div>
-        <div class="empty-state" *ngIf="correosFiltered.length === 0 && currentFolder === 'sent' && !searchQuery.trim()">
-          <i class="bi bi-send empty-icon"></i>
-          <p class="empty-title">{{ 'NOTIFICATIONS.EMPTY_SENT' | translate }}</p>
-        </div>
-        <div class="empty-state" *ngIf="correosFiltered.length === 0 && searchQuery.trim()">
-          <i class="bi bi-search empty-icon"></i>
-          <p class="empty-title">{{ 'NOTIFICATIONS.EMPTY_SEARCH' | translate }}</p>
-        </div>
+        <app-empty-state *ngIf="correosFiltered.length === 0 && currentFolder === 'inbox' && !searchQuery.trim()"
+          icon="bi-inbox"
+          [title]="'NOTIFICATIONS.EMPTY_INBOX' | translate"
+          [message]="'NOTIFICATIONS.EMPTY_INBOX_MSG' | translate"
+          [ctaText]="'NOTIFICATIONS.COMPOSE' | translate"
+          ctaIcon="bi-pencil-square"
+          (ctaClick)="newCorreo()">
+        </app-empty-state>
+        <app-empty-state *ngIf="correosFiltered.length === 0 && currentFolder === 'sent' && !searchQuery.trim()"
+          icon="bi-send"
+          [title]="'NOTIFICATIONS.EMPTY_SENT' | translate"
+          [message]="'NOTIFICATIONS.EMPTY_SENT_MSG' | translate"
+          [ctaText]="'NOTIFICATIONS.COMPOSE' | translate"
+          ctaIcon="bi-pencil-square"
+          (ctaClick)="newCorreo()">
+        </app-empty-state>
+        <app-empty-state *ngIf="correosFiltered.length === 0 && searchQuery.trim()"
+          icon="bi-search"
+          [title]="'NOTIFICATIONS.EMPTY_SEARCH' | translate"
+          [message]="'NOTIFICATIONS.EMPTY_SEARCH_MSG' | translate">
+        </app-empty-state>
 
         <div class="mail-item" *ngFor="let correo of correosFiltered; let i = index"
           [class.unread]="currentFolder === 'inbox' && correo.leido === 0"
@@ -160,7 +169,7 @@
               <i class="bi bi-envelope-paper me-2"></i>
               {{ 'NOTIFICATIONS.COMPOSE' | translate }}
             </h5>
-            <button type="button" class="btn-close btn-close-white" (click)="cerrarModalNew()"></button>
+            <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModalNew()"></button>
           </div>
           <div class="modal-body">
             <div class="mb-3">

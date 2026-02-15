@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { User } from 'src/app/core/models/users/user.model';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -20,7 +21,8 @@ declare var bootstrap: any;
   templateUrl: './publicidad.component.html',
   styleUrls: ['./publicidad.component.scss']
 })
-export class PublicidadComponent implements OnInit {
+export class PublicidadComponent implements OnInit, OnDestroy {
+  private userSub?: Subscription;
 
   listPatrocinadores: any[] = [];
   patrocinadorUpdate: Patrocinador = new Patrocinador({});
@@ -35,7 +37,7 @@ export class PublicidadComponent implements OnInit {
     private clubService: ClubService) { }
 
   ngOnInit(): void {
-    this.loginService.usuarioActual.subscribe(user => {
+    this.userSub = this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
       this.userId = user?.userId;
       this.profileId = this.usuarioActual!.profileType.profileId;
@@ -65,6 +67,10 @@ export class PublicidadComponent implements OnInit {
         );
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.userSub?.unsubscribe();
   }
 
   mostrarId(patrocinador: any): void {

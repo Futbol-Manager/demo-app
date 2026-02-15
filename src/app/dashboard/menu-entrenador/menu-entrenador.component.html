@@ -97,7 +97,41 @@
         </div>
       </div>
 
+      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(14)">
+        <div class="dashboard-card bg-injuries">
+          <div class="card-overlay">
+            <i class="bi bi-heart-pulse card-action-icon"></i>
+            <h5>{{ 'DASHBOARD_COACH.INJURIES' | translate }}</h5>
+          </div>
+        </div>
+      </div>
 
+      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(15)">
+        <div class="dashboard-card bg-ai-assistant">
+          <div class="card-overlay">
+            <i class="bi bi-robot card-action-icon"></i>
+            <h5>{{ 'DASHBOARD_COACH.AI_ASSISTANT' | translate }}</h5>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(17)">
+        <div class="dashboard-card bg-debrief">
+          <div class="card-overlay">
+            <i class="bi bi-clipboard-pulse card-action-icon"></i>
+            <h5>{{ 'DASHBOARD_COACH.DEBRIEF' | translate }}</h5>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(16)">
+        <div class="dashboard-card bg-coach-profile">
+          <div class="card-overlay">
+            <i class="bi bi-person-badge card-action-icon"></i>
+            <h5>{{ 'DASHBOARD_COACH.COACH_PROFILE' | translate }}</h5>
+          </div>
+        </div>
+      </div>
 
     </div>
   </div>
@@ -110,6 +144,14 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Detalles del Entrenamiento</h5>
+          <!-- Generar sesión PDF — visible cuando hay tareas -->
+          <app-session-pdf
+            *ngIf="entrenamientoCreado && trainingSession.tasks && trainingSession.tasks.length > 0"
+            [training]="trainingSession"
+            [daySession]="daySession"
+            [teamName]="''"
+            class="ms-auto me-2">
+          </app-session-pdf>
           <!-- Botón de cerrar con un icono -->
           <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalEntrenamiento()"></button>
         </div>
@@ -288,7 +330,7 @@
             </div>
 
             <div class="row text-center align-items-center mt-3">
-              <div class="col-12 col-md-6 mt-3 text-start">
+              <div class="col-12 col-md-4 mt-3 text-start">
                 <button *ngIf="this.usuarioActual!.profileType.profileId === 2" type="button"
                   class="form-control btn btn-custom mt-3" [disabled]="showAddTaskForm"
                   (click)="toggleAddTaskForm()">Agregar
@@ -303,6 +345,7 @@
                   Nube de Tareas</button>
               </div>
             </div>
+
             <!-- Botón para agregar tarea -->
             <!-- Modal para abrir listado de tareas de la tienda-->
             <app-shop [trainingId]="trainingId" (tareaDescargada)="tareaDescargada($event)" *ngIf="viewShop">

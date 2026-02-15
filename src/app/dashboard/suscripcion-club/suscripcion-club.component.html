@@ -1,0 +1,180 @@
+<!-- Back button -->
+<div class="action-bar">
+  <button class="btn-back-clean" (click)="goBack()" [attr.aria-label]="'COMMON.BACK' | translate">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<!-- Skeleton -->
+<div class="skeleton-wrapper" *ngIf="loading">
+  <div class="skeleton-card" *ngFor="let i of [1,2,3]">
+    <div class="skeleton-line skeleton-icon"></div>
+    <div class="skeleton-line skeleton-title"></div>
+    <div class="skeleton-line skeleton-text"></div>
+    <div class="skeleton-line skeleton-text short"></div>
+    <div class="skeleton-line skeleton-btn"></div>
+  </div>
+</div>
+
+<!-- ═══════════ ACTIVE SUBSCRIPTION VIEW ═══════════ -->
+<div class="subscription-active" *ngIf="!loading && subscription">
+  <div class="sub-header-card">
+    <div class="sub-header-info">
+      <div class="sub-plan-icon" [ngClass]="getPlanColorClass(subscription.planType)">
+        <i class="bi" [ngClass]="getPlanIcon(subscription.planType)"></i>
+      </div>
+      <div class="sub-details">
+        <h2>{{ 'CLUB_PLANS.PLAN_' + (subscription.planType === 'familia' ? 'FAMILIA' : subscription.planType === 'club' ? 'CLUB' : 'FREE') + '.NAME' | translate }}</h2>
+        <span class="status-badge" [ngClass]="getStatusBadgeClass(subscription.status)">
+          {{ 'CLUB_PLANS.STATUS.' + (subscription.status | uppercase) | translate }}
+        </span>
+      </div>
+    </div>
+
+    <div class="sub-meta">
+      <div class="meta-item" *ngIf="subscription.startDate">
+        <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.START_DATE' | translate }}</span>
+        <span class="meta-value">{{ subscription.startDate }}</span>
+      </div>
+      <div class="meta-item" *ngIf="subscription.renewDate">
+        <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.RENEW_DATE' | translate }}</span>
+        <span class="meta-value">{{ subscription.renewDate }}</span>
+      </div>
+      <div class="meta-item" *ngIf="subscription.period">
+        <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.PERIOD' | translate }}</span>
+        <span class="meta-value">{{ 'CLUB_PLANS.PERIOD.' + (subscription.period | uppercase) | translate }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Plan Familia specific: Parent registration URL -->
+  <div class="sub-section" *ngIf="subscription.planType === 'familia'">
+    <h3>{{ 'CLUB_PLANS.ACTIVE_VIEW.REGISTRATION_URL' | translate }}</h3>
+    <p class="section-desc">{{ 'CLUB_PLANS.ACTIVE_VIEW.REGISTRATION_URL_DESC' | translate }}</p>
+    <div class="url-copy-box">
+      <input type="text" [value]="getParentRegistrationUrl()" readonly class="form-control">
+      <button class="btn btn-copy" (click)="copyRegistrationUrl()" [attr.aria-label]="'CLUB_PLANS.ACTIVE_VIEW.COPY_URL' | translate">
+        <i class="bi" [ngClass]="urlCopied ? 'bi-check-lg' : 'bi-clipboard'"></i>
+        {{ (urlCopied ? 'CLUB_PLANS.ACTIVE_VIEW.COPIED' : 'CLUB_PLANS.ACTIVE_VIEW.COPY_URL') | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Plan Club specific: Player count -->
+  <div class="sub-section" *ngIf="subscription.planType === 'club'">
+    <h3>{{ 'CLUB_PLANS.ACTIVE_VIEW.PLAN_DETAILS' | translate }}</h3>
+    <div class="sub-meta">
+      <div class="meta-item">
+        <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.PLAYER_COUNT' | translate }}</span>
+        <span class="meta-value">{{ subscription.playerCount || 0 }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.TOTAL_AMOUNT' | translate }}</span>
+        <span class="meta-value">{{ subscription.totalAmount || 0 | number:'1.2-2' }}€</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Plan Gratuito specific: Stripe Connect status -->
+  <div class="sub-section" *ngIf="subscription.planType === 'gratuito'">
+    <h3>{{ 'CLUB_PLANS.ACTIVE_VIEW.STRIPE_CONNECT' | translate }}</h3>
+    <div class="connect-status">
+      <i class="bi" [ngClass]="subscription.stripeConnectStatus === 'active' ? 'bi-check-circle-fill text-success' : 'bi-exclamation-circle-fill text-warning'"></i>
+      <span>{{ 'CLUB_PLANS.ACTIVE_VIEW.CONNECT_STATUS_' + (subscription.stripeConnectStatus || 'not_started' | uppercase) | translate }}</span>
+    </div>
+    <div class="meta-item" *ngIf="subscription.clubCommissionPercent !== undefined">
+      <span class="meta-label">{{ 'CLUB_PLANS.ACTIVE_VIEW.CLUB_COMMISSION' | translate }}</span>
+      <span class="meta-value">{{ subscription.clubCommissionPercent }}%</span>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="sub-actions">
+    <button class="btn btn-outline-primary" (click)="changePlan()">
+      <i class="bi bi-arrow-repeat"></i>
+      {{ 'CLUB_PLANS.ACTIVE_VIEW.CHANGE_PLAN' | translate }}
+    </button>
+    <button class="btn btn-outline-danger" (click)="confirmCancel()" *ngIf="subscription.status === 'active'">
+      <i class="bi bi-x-circle"></i>
+      {{ 'CLUB_PLANS.ACTIVE_VIEW.CANCEL' | translate }}
+    </button>
+  </div>
+
+  <!-- Cancel confirmation modal -->
+  <div class="modal-overlay" *ngIf="showCancelConfirm" (click)="dismissCancel()">
+    <div class="modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-card-header danger">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <h3>{{ 'CLUB_PLANS.CANCEL_MODAL.TITLE' | translate }}</h3>
+      </div>
+      <div class="modal-card-body">
+        <p>{{ 'CLUB_PLANS.CANCEL_MODAL.MESSAGE' | translate }}</p>
+      </div>
+      <div class="modal-card-footer">
+        <button class="btn btn-secondary" (click)="dismissCancel()">{{ 'COMMON.CANCEL' | translate }}</button>
+        <button class="btn btn-danger" (click)="cancelSubscription()">{{ 'CLUB_PLANS.CANCEL_MODAL.CONFIRM' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ PLAN SELECTION ═══════════ -->
+<div class="plan-selection" *ngIf="!loading && !subscription">
+  <div class="plans-header">
+    <h1>{{ 'CLUB_PLANS.SELECTION.TITLE' | translate }}</h1>
+    <p>{{ 'CLUB_PLANS.SELECTION.SUBTITLE' | translate }}</p>
+  </div>
+
+  <div class="plans-grid">
+    <div class="plan-card" *ngFor="let plan of plans"
+         [ngClass]="[getPlanColorClass(plan.id), plan.recommended ? 'recommended' : '']">
+      
+      <!-- Recommended badge -->
+      <div class="recommended-badge" *ngIf="plan.recommended">
+        <i class="bi bi-star-fill"></i>
+        {{ 'CLUB_PLANS.SELECTION.RECOMMENDED' | translate }}
+      </div>
+
+      <!-- Plan icon -->
+      <div class="plan-icon-circle">
+        <i class="bi" [ngClass]="getPlanIcon(plan.id)"></i>
+      </div>
+
+      <!-- Plan name -->
+      <h2 class="plan-name">{{ plan.nameKey | translate }}</h2>
+      <p class="plan-description">{{ plan.descriptionKey | translate }}</p>
+
+      <!-- Pricing -->
+      <div class="plan-pricing">
+        <ng-container *ngIf="plan.id === 'familia'">
+          <div class="price-main">2,99€<span class="price-period">/{{ 'CLUB_PLANS.PRICING.MONTH' | translate }}</span></div>
+          <div class="price-alt">{{ 'CLUB_PLANS.PRICING.OR' | translate }} 29,99€/{{ 'CLUB_PLANS.PRICING.YEAR' | translate }}</div>
+          <div class="price-note">{{ 'CLUB_PLANS.PLAN_FAMILIA.PRICE_NOTE' | translate }}</div>
+        </ng-container>
+        <ng-container *ngIf="plan.id === 'club'">
+          <div class="price-main">5€<span class="price-period">/{{ 'CLUB_PLANS.PRICING.PLAYER_YEAR' | translate }}</span></div>
+          <div class="price-note">{{ 'CLUB_PLANS.PLAN_CLUB.PRICE_NOTE' | translate }}</div>
+        </ng-container>
+        <ng-container *ngIf="plan.id === 'gratuito'">
+          <div class="price-main free-price">{{ 'CLUB_PLANS.PRICING.FREE' | translate }}</div>
+          <div class="price-note">{{ 'CLUB_PLANS.PLAN_FREE.PRICE_NOTE' | translate }}</div>
+        </ng-container>
+      </div>
+
+      <!-- Features -->
+      <ul class="plan-features">
+        <li *ngFor="let feature of plan.features" [ngClass]="{'disabled': !feature.included}">
+          <i class="bi" [ngClass]="feature.included ? 'bi-check-circle-fill' : 'bi-x-circle'"></i>
+          {{ feature.key | translate }}
+        </li>
+      </ul>
+
+      <!-- CTA -->
+      <button class="btn plan-cta" [ngClass]="getPlanColorClass(plan.id)" (click)="selectPlan(plan.id)">
+        {{ 'CLUB_PLANS.SELECTION.CHOOSE' | translate }}
+        <i class="bi bi-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</div>

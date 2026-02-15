@@ -4,9 +4,6 @@ import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import { HttpClient } from '@angular/common/http';
-import * as $ from 'jquery';
-import 'datatables.net';
 import { CuotasClub, HistorialPagosPlayer, HistoryCuotasClub } from 'src/app/core/services/models/club.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RegisterService } from 'src/app/core/services/register/register.service';
@@ -14,6 +11,8 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { ClubCuotas, HostoryPagosPlayer, PlayerCuotas, TotalesCuotas } from 'src/app/core/services/team/club.model';
 import * as XLSX from "xlsx";
+import { TranslateService } from '@ngx-translate/core';
+import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-contabilidad',
@@ -81,7 +80,8 @@ export class ContabilidadComponent implements OnInit {
   hayRopa = false;
   recalcular = false;
 
-  temporadaStoredValue = '2025';
+  seasons = getSeasons();
+  temporadaStoredValue = getCurrentSeasonString();
   botonDeshabilitado: boolean = false;
   numCuotas = 0;
   totalCuota = '';
@@ -89,17 +89,29 @@ export class ContabilidadComponent implements OnInit {
   cuotaRopaDate = '';
   btnPagar = true;
 
+  // Search & filter
+  searchTerm = '';
+  filteredList: any[] = [];
+
+  // Sorting
+  sortColumn = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+
+  // Pagination
+  currentPage = 1;
+  pageSize = 50;
+  pageSizeOptions = [25, 50, 100, 200];
+
   constructor(
     private loginService: LoginService,
     private router: Router,
     private route: ActivatedRoute,
     private teamService: TeamService,
     private clubService: ClubService,
-    private elementRef: ElementRef,
-    private http: HttpClient,
     private registerService: RegisterService,
     private snackBar: MatSnackBar,
-    private fb: FormBuilder) { }
+    private fb: FormBuilder,
+    private translate: TranslateService) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -126,13 +138,8 @@ export class ContabilidadComponent implements OnInit {
           this.listHCP = response.data.list;
           this.totales = response.data.totales;
           if (this.totales.cuotaRopa != '0€') this.hayRopa = true;
-          /*this.players = response.data.players !== null ? response.data.players : [];
-          this.cuota = response.data.cuotas !== null ? response.data.cuotas : new CuotasClub({});
-          this.isFraccionado = this.cuota.fraccionado === 1 ? true : false;*/
-          setTimeout(() => {
-            this.inicializarDataTable();
-            this.datosCargados = true;
-          }, 1000);
+          this.filteredList = [...this.listHCP];
+          this.datosCargados = true;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -157,98 +164,66 @@ export class ContabilidadComponent implements OnInit {
     );
   }
 
-  // Método para inicializar el DataTable
-  inicializarDataTable(): void {
-    // Destruir el DataTable si ya existe
-    const $dataTable = $('#dataTable');
-    if ($dataTable.hasClass('dataTable')) {
-      $dataTable.DataTable().destroy();
+  // Angular table: filter, sort, pagination
+  applyFilter(): void {
+    const term = this.searchTerm.toLowerCase().trim();
+    if (!term) {
+      this.filteredList = [...this.listHCP];
+    } else {
+      this.filteredList = this.listHCP.filter(p =>
+        (p.nombre?.toLowerCase().includes(term)) ||
+        (p.apellido?.toLowerCase().includes(term)) ||
+        (p.teamName?.toLowerCase().includes(term))
+      );
     }
-
-    this.http.get('assets/dataTable/Spanish.json').subscribe((translation) => {
-      $(document).ready(function () {
-        $('#dataTable').DataTable({
-          paging: true,
-          pageLength: 100,
-          searching: true,
-          ordering: true,
-          order: [[0, 'desc']],
-          columnDefs: [
-            {
-              targets: [0],
-              visible: false
-            }
-          ],
-          language: translation
-        });
-      });
-    });
-
-    this.moverElementosDataTable('dataTable');
+    this.sortData();
+    this.currentPage = 1;
   }
 
+  sortBy(column: string): void {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+    this.sortData();
+  }
 
-  moverElementosDataTable(name: string) {
-    // **Move buttons outside the table after initialization**
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElements = this.elementRef.nativeElement.querySelectorAll('.dt-layout-row:not(.dt-layout-table)');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#button_datatable');
-
-        if (layoutRowElements.length >= 2 && buttonDatatableElement) {
-          const layoutRowElement = layoutRowElements[1]; // Obtener el segundo elemento
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          observer.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
+  private sortData(): void {
+    if (!this.sortColumn) return;
+    this.filteredList.sort((a, b) => {
+      let valA = a[this.sortColumn];
+      let valB = b[this.sortColumn];
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
+      return 0;
     });
+  }
 
-    observer.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+  get paginatedList(): any[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredList.slice(start, start + this.pageSize);
+  }
 
-    //esto es para agregar una clase
-    const textcenter = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const dataTableElement = document.querySelector('#' + name);
+  get totalPages(): number {
+    return Math.ceil(this.filteredList.length / this.pageSize);
+  }
 
-        if (dataTableElement) {
-          dataTableElement.classList.add('text-center');
-          textcenter.disconnect(); // Detiene la observación después de encontrar el elemento
-        }
-      });
-    });
+  get pages(): number[] {
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const pages: number[] = [];
+    const start = Math.max(1, current - 2);
+    const end = Math.min(total, current + 2);
+    for (let i = start; i <= end; i++) pages.push(i);
+    return pages;
+  }
 
-    textcenter.observe(document.body, { childList: true, subtree: true });
-
-
-    //esto es para la parte donde pones las filas a ver
-    const length = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-length');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-length');
-
-        if (layoutRowElement && buttonDatatableElement) {
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          length.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
-    });
-
-    length.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
-
-    //esto es para el input del buscador
-    const search = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-search');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-search');
-
-        if (layoutRowElement && buttonDatatableElement) {
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          search.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
-    });
-
-    search.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) this.currentPage = page;
   }
 
   irAPantalla(id: number): void {
@@ -311,7 +286,7 @@ export class ContabilidadComponent implements OnInit {
   createUpdateSettings() {
     let option = this.selectedComboTitle;
     let value = option === 0 ? this.teamSelected : this.categorySelected;
-    alert('Esta operación puede tardar unos minutos, por favor, espera a que se cierre solo.');
+    alert(this.translate.instant('ACCOUNTING.ALERTS.OPERATION_WAIT'));
     this.botonDeshabilitado = true;
     //esto actualiza la info del club, el IBAN, etc
     this.teamService.createUpdateCuotaClub(this.infoClub, option, value).subscribe(
@@ -333,7 +308,7 @@ export class ContabilidadComponent implements OnInit {
                 // Verifica que la propiedad 'data' exista en la respuesta
                 if (response.data !== null) {
                   this.updateCuotaClub(response.data.list);
-                  alert('Guardado correctamente');
+                  alert(this.translate.instant('ACCOUNTING.ALERTS.SAVED_OK'));
                   this.botonDeshabilitado = false;
                   //this.guardar();
                 } else {
@@ -367,6 +342,7 @@ export class ContabilidadComponent implements OnInit {
         this.listHCP[index].restante = responsePlayer.restante;
       }
     });
+    this.applyFilter();
   }
 
   selecFraccionado() {
@@ -424,7 +400,7 @@ export class ContabilidadComponent implements OnInit {
           snackBarConfig.duration = 5000;
           snackBarConfig.horizontalPosition = 'center';
           snackBarConfig.verticalPosition = 'bottom';
-          this.snackBar.open('Invitación enviada correctamente.', 'Cerrar', snackBarConfig);
+          this.snackBar.open(this.translate.instant('ACCOUNTING.ALERTS.INVITE_SENT'), this.translate.instant('COMMON.CLOSE'), snackBarConfig);
         }
       )
     }
@@ -532,7 +508,7 @@ export class ContabilidadComponent implements OnInit {
 
   createUpdateHistoryCuotaJugador() {
     if (this.agregarPagoPlayer.cantidad == null || this.agregarPagoPlayer.fecha == null) {
-      alert('Es necesario tener puesto la cantidad y la fecha.');
+      alert(this.translate.instant('ACCOUNTING.ALERTS.AMOUNT_DATE_REQUIRED'));
     } else {
       this.btnPagar = false;
       this.clubService.updatehistorypagosplayer(this.agregarPagoPlayer).subscribe(
@@ -543,7 +519,7 @@ export class ContabilidadComponent implements OnInit {
             this.listHCP[this.indexPlayerSelected].pagado = (Number(this.listHCP[this.indexPlayerSelected].pagado) + Number(this.agregarPagoPlayer.cantidad));
             this.listHCP[this.indexPlayerSelected].restante = (Number(this.listHCP[this.indexPlayerSelected].cuotaClub) - Number(this.listHCP[this.indexPlayerSelected].pagado));
             //this.agregarPagoPlayer = new HostoryPagosPlayer({});
-            alert('Guardado correctamente');
+            alert(this.translate.instant('ACCOUNTING.ALERTS.SAVED_OK'));
             this.btnPagar = true;
             this.recalcular = true;
             this.cerrarModalAgregarPago();
@@ -724,7 +700,7 @@ export class ContabilidadComponent implements OnInit {
 
   confirmReturnPay(pago: any) {
     console.log(pago);
-    const confirmacion = confirm('Se creará un registro para restar esta cantidad con la fecha de hoy. ¿Estás seguro?');
+    const confirmacion = confirm(this.translate.instant('ACCOUNTING.ALERTS.CONFIRM_REFUND'));
 
     if (confirmacion) {
       this.returnPay(pago);

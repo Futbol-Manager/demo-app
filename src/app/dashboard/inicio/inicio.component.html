@@ -92,6 +92,17 @@
           </div>
         </div>
 
+        <!-- ASISTENTE DE IA -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(11)" class="dashboard-card ai-assistant-card">
+            <div class="ai-gradient-bg"></div>
+            <div class="overlay">
+              <i class="bi bi-robot"></i>
+              <span>{{ 'NAV.AI_ASSISTANT' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </main>
@@ -132,10 +143,7 @@
 
             <select class="form-control season-select mx-auto" [(ngModel)]="temporada"
               (change)="cargarListadoEquipos()">
-              <option value="2022">2022/2023</option>
-              <option value="2023">2023/2024</option>
-              <option value="2024">2024/2025</option>
-              <option value="2025">2025/2026</option>
+              <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
             </select>
           </div>
         </div>
@@ -217,10 +225,7 @@
           </label>
 
           <select class="form-select season-select text-center" [(ngModel)]="temporada" (change)="cargarJugadores()">
-            <option value="2022">2022/2023</option>
-            <option value="2023">2023/2024</option>
-            <option value="2024">2024/2025</option>
-            <option value="2025">2025/2026</option>
+            <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
           </select>
 
         </div>
@@ -308,10 +313,11 @@
       </div>
 
       <!-- VACÍO -->
-      <div *ngIf="listHijos.length === 0" class="empty-state">
-        <i class="bi bi-emoji-frown"></i>
-        <p>{{ 'PHRASES.INICIO1' | translate }}</p>
-      </div>
+      <app-empty-state *ngIf="listHijos.length === 0"
+        icon="bi-person-plus"
+        [title]="'EMPTY_STATES.PARENT_HOME.TITLE' | translate"
+        [message]="'PHRASES.INICIO1' | translate">
+      </app-empty-state>
 
     </div>
   </main>

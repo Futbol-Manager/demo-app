@@ -1,5 +1,3 @@
-<app-logo-spinner *ngIf="loading"></app-logo-spinner>
-
 <div class="back-container">
   <button class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
@@ -96,7 +94,7 @@
         <span class="modal-subtitle">{{ equipoSeleccionado }}</span>
       </div>
 
-      <button class="btn-close-modal" (click)="cerrarModal()">✕</button>
+      <button class="btn-close-modal" aria-label="Cerrar" (click)="cerrarModal()">✕</button>
     </div>
 
     <!-- FILTRO -->

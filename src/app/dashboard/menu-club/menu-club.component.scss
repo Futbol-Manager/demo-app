@@ -13,11 +13,11 @@
   align-items: center;
   gap: 0.4rem;
 
-  background-color: rgba(15, 163, 232, 0.08);
+  background-color: rgba(var(--color-primary-rgb), 0.08);
   border: none;
   border-radius: 8px;
 
-  color: #002c40;
+  color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 500;
 
@@ -32,7 +32,7 @@
 
 /* HOVER */
 .btn-back-clean:hover {
-  background-color: rgba(0, 44, 64, 0.08);
+  background-color: rgba(var(--color-primary-rgb), 0.15);
   transform: translateX(-2px);
 }
 

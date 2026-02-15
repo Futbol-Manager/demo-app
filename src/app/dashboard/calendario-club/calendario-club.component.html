@@ -1,0 +1,240 @@
+<!-- ═══════════════════════════════════════════════
+     BOTÓN VOLVER
+═══════════════════════════════════════════════ -->
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<div class="container-fluid calendario-club-page">
+
+  <!-- ═══════════════════════════════════════════════
+       CABECERA
+  ═══════════════════════════════════════════════ -->
+  <div class="page-header">
+    <h4>
+      <i class="bi bi-calendar3 me-2"></i>
+      {{ 'CALENDAR_CLUB.TITLE' | translate }}
+    </h4>
+    <p class="page-subtitle">{{ 'CALENDAR_CLUB.SUBTITLE' | translate }}</p>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       FILTRO DE EQUIPOS — CHIPS
+  ═══════════════════════════════════════════════ -->
+  <div class="team-filter-section">
+    <div class="team-filter-header">
+      <span class="team-filter-label">
+        <i class="bi bi-funnel me-1"></i>
+        {{ 'CALENDAR_CLUB.FILTER.TITLE' | translate }}
+      </span>
+      <button class="team-select-all" (click)="selectAllTeams()">
+        <i class="bi" [ngClass]="teamsVisibles.size === teams.length ? 'bi-eye-slash' : 'bi-eye'"></i>
+        {{ teamsVisibles.size === teams.length
+            ? ('CALENDAR_CLUB.FILTER.HIDE_ALL' | translate)
+            : ('CALENDAR_CLUB.FILTER.SHOW_ALL' | translate) }}
+      </button>
+    </div>
+
+    <div class="team-chips">
+      <button *ngFor="let team of teams; trackBy: trackByTeamId"
+              class="team-chip"
+              [class.team-chip-active]="isTeamVisible(team.teamId)"
+              [style.--team-color]="team.color"
+              (click)="toggleTeam(team.teamId)">
+        <span class="team-dot" [style.backgroundColor]="team.color"></span>
+        {{ team.name }}
+        <i class="bi" [ngClass]="isTeamVisible(team.teamId) ? 'bi-eye-fill' : 'bi-eye-slash'"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       LOADING
+  ═══════════════════════════════════════════════ -->
+  <div class="calendar-skeleton" *ngIf="isLoading">
+    <div class="skeleton-header"></div>
+    <div class="skeleton-week-row">
+      <div class="skeleton-day-header" *ngFor="let d of [].constructor(7)"></div>
+    </div>
+    <div class="skeleton-week-row" *ngFor="let w of [].constructor(5)">
+      <div class="skeleton-day-cell" *ngFor="let d of [].constructor(7)"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       ERROR
+  ═══════════════════════════════════════════════ -->
+  <div class="error-state" *ngIf="errorMsg && !isLoading">
+    <i class="bi bi-exclamation-triangle me-2"></i>
+    {{ errorMsg }}
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       CALENDARIO MENSUAL
+  ═══════════════════════════════════════════════ -->
+  <div class="calendar-container" *ngIf="!isLoading && !errorMsg">
+
+    <!-- NAVEGACIÓN MES -->
+    <div class="month-nav">
+      <button class="month-btn" (click)="prevMonth()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <div class="month-title">
+        <span class="month-name">{{ monthNames[currentMonth] }}</span>
+        <span class="month-year">{{ currentYear }}</span>
+      </div>
+
+      <button class="month-btn" (click)="nextMonth()">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+
+      <button class="btn-today" (click)="goToToday()">
+        {{ 'CALENDAR_CLUB.TODAY' | translate }}
+      </button>
+    </div>
+
+    <!-- GRID DEL CALENDARIO -->
+    <div class="calendar-grid">
+
+      <!-- CABECERA DÍAS -->
+      <div class="calendar-weekdays">
+        <div class="weekday" *ngFor="let d of weekDays">{{ d }}</div>
+      </div>
+
+      <!-- SEMANAS -->
+      <div class="calendar-weeks">
+        <div class="calendar-week" *ngFor="let week of calendarGrid; trackBy: trackByDate">
+          <div *ngFor="let day of week"
+               class="calendar-cell"
+               [class.other-month]="!day.isCurrentMonth"
+               [class.today]="day.isToday"
+               [class.has-events]="getVisibleDots(day).length > 0"
+               (click)="openDayPanel(day)">
+
+            <span class="day-number">{{ day.dayNumber }}</span>
+
+            <!-- PUNTOS DE COLORES -->
+            <div class="event-dots">
+              <span *ngFor="let evt of getDotsToShow(day)"
+                    class="dot"
+                    [style.backgroundColor]="evt.teamColor"
+                    [class.dot-match]="evt.type === 'match'"
+                    [title]="evt.teamName + (evt.type === 'match' ? ' ⚽' : ' 🏋️')">
+              </span>
+              <span *ngIf="getExtraCount(day) > 0" class="dot-extra">
+                +{{ getExtraCount(day) }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEYENDA -->
+    <div class="calendar-legend">
+      <div class="legend-item">
+        <span class="legend-dot legend-dot-training"></span>
+        <span>{{ 'CALENDAR_CLUB.LEGEND.TRAINING' | translate }}</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-dot legend-dot-match"></span>
+        <span>{{ 'CALENDAR_CLUB.LEGEND.MATCH' | translate }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       PANEL LATERAL — DETALLE DEL DÍA
+  ═══════════════════════════════════════════════ -->
+  <div class="day-panel-overlay" *ngIf="showDayPanel" (click)="closeDayPanel()"></div>
+
+  <div class="day-panel" [class.day-panel-open]="showDayPanel">
+    <div class="day-panel-header" *ngIf="selectedDay">
+      <div>
+        <h5>
+          <i class="bi bi-calendar-event me-2"></i>
+          {{ formatDateDisplay(selectedDay.date) }}
+        </h5>
+        <small class="day-panel-count">
+          {{ selectedDay.events.length }}
+          {{ (selectedDay.events.length === 1 ? 'CALENDAR_CLUB.PANEL.EVENT' : 'CALENDAR_CLUB.PANEL.EVENTS') | translate }}
+        </small>
+      </div>
+      <button class="day-panel-close" (click)="closeDayPanel()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="day-panel-body" *ngIf="selectedDay">
+
+      <!-- SIN EVENTOS -->
+      <div class="day-panel-empty" *ngIf="selectedDay.events.length === 0">
+        <i class="bi bi-calendar-x"></i>
+        <p>{{ 'CALENDAR_CLUB.PANEL.EMPTY' | translate }}</p>
+      </div>
+
+      <!-- EVENTOS AGRUPADOS POR EQUIPO -->
+      <div *ngFor="let group of groupByTeam(selectedDay.events)" class="team-group">
+
+        <!-- CABECERA DEL EQUIPO -->
+        <div class="team-group-header">
+          <span class="team-group-dot" [style.backgroundColor]="group.team.color"></span>
+          <span class="team-group-name">{{ group.team.name }}</span>
+          <button class="team-group-link" (click)="navigateToTeamCalendar(group.team.teamId)"
+                  [title]="'CALENDAR_CLUB.PANEL.GO_TO_CALENDAR' | translate">
+            <i class="bi bi-box-arrow-up-right"></i>
+          </button>
+        </div>
+
+        <!-- ENTRENAMIENTOS -->
+        <div *ngFor="let t of group.trainings" class="event-card event-training"
+             (click)="navigateToEventDetail(t)" style="cursor:pointer">
+          <div class="event-icon">
+            <i class="bi bi-clipboard-check"></i>
+          </div>
+          <div class="event-info">
+            <span class="event-type">{{ 'CALENDAR_CLUB.PANEL.TRAINING' | translate }}</span>
+            <span class="event-detail" *ngIf="t.time">
+              <i class="bi bi-geo-alt me-1"></i>{{ t.time }}
+            </span>
+          </div>
+          <button class="event-action"
+                  [title]="'CALENDAR_CLUB.PANEL.VIEW_DETAIL' | translate">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+
+        <!-- PARTIDOS -->
+        <div *ngFor="let m of group.matches" class="event-card event-match"
+             (click)="navigateToEventDetail(m)" style="cursor:pointer">
+          <div class="event-icon">
+            <i class="bi bi-trophy"></i>
+          </div>
+          <div class="event-info">
+            <span class="event-type">
+              {{ 'CALENDAR_CLUB.PANEL.MATCH' | translate }}
+              <span class="match-terreno" *ngIf="m.terreno">
+                ({{ m.terreno }})
+              </span>
+            </span>
+            <span class="event-rival" *ngIf="m.rivalName">
+              vs {{ m.rivalName }}
+            </span>
+            <span class="event-detail" *ngIf="m.time">
+              <i class="bi bi-clock me-1"></i>{{ m.time }}
+            </span>
+          </div>
+          <button class="event-action"
+                  [title]="'CALENDAR_CLUB.PANEL.VIEW_DETAIL' | translate">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

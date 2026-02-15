@@ -9,6 +9,7 @@ import { TrainingService } from 'src/app/core/services/training/training.service
 import { Response } from 'src/app/core/services/models/response.model';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { User } from 'src/app/core/models/users/user.model';
+import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-inicio-federacion',
@@ -23,8 +24,9 @@ export class InicioFederacionComponent implements OnInit {
   usuarioActual!: User | null;
   userIdClub = 0;
   userId = 0;
-  temporadaStoredValue = '2025';
-  temporada = '2025';
+  seasons = getSeasons();
+  temporadaStoredValue = getCurrentSeasonString();
+  temporada = getCurrentSeasonString();
   busqueda: string = '';          // texto del input de búsqueda
   mailAdd = '';
   loading = true;

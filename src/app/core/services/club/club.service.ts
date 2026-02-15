@@ -5,7 +5,8 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { forkJoin, Observable, of, throwError } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
 import {
@@ -497,6 +498,24 @@ export class ClubService {
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
       return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+    }
+  }
+
+  getListEntrenadoresByClubForTemp(
+    clubId: number,
+    temporada: string
+  ): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      });
+      const url: string =
+        environment.apiUrl +
+        `club/getlisttraineroftheclubfortemp/${clubId}/${temporada}`;
+      return this.http.get<Response>(url, { headers });
+    } else {
+      return new Observable();
     }
   }
 
@@ -1502,6 +1521,46 @@ export class ClubService {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
       return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
+  }
+
+  /**
+   * Obtiene el desglose de pagos individuales para cada jugador.
+   * Combina getListPlayersPagosClub + getListPagosClubForPlayer por cada jugador.
+   * Devuelve un array de jugadores, cada uno con un campo extra `detallePagos[]`.
+   */
+  getPlayersWithPaymentDetails(
+    clubId: number,
+    temporada: string
+  ): Observable<any[]> {
+    const token: string | null = localStorage.getItem('token');
+    if (!token) return of([]);
+
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+
+    // 1. Obtener todos los jugadores con su resumen
+    return this.getListPlayersPagosClub(clubId, temporada).pipe(
+      map((res: Response) => {
+        if (!res?.data) return [];
+        // Deduplicar por playerId
+        return Array.from(
+          new Map(res.data.map((p: any) => [p.playerId, p])).values()
+        ) as any[];
+      })
+    );
+  }
+
+  /**
+   * Obtiene el desglose de cuotas asignadas a un jugador concreto.
+   * Wrapper tipado de getListPagosClubForPlayer.
+   */
+  getPlayerPaymentDetail(
+    clubId: number,
+    temporada: string,
+    playerId: number
+  ): Observable<any[]> {
+    return this.getListPagosClubForPlayer(clubId, temporada, playerId).pipe(
+      map((res: Response) => (res?.data ?? []) as any[])
+    );
   }
 
   updateInfoPagosPlayer(

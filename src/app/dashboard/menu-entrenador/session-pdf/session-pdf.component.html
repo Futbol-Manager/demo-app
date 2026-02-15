@@ -1,0 +1,112 @@
+<!-- ═══════════ GENERATE BUTTON ═══════════ -->
+<button class="btn-generate-session" (click)="generatePdf()" [disabled]="isGenerating || !training?.tasks?.length">
+  <i class="bi" [ngClass]="isGenerating ? 'bi-hourglass-split spin' : 'bi-file-earmark-pdf'"></i>
+  <span>{{ isGenerating ? ('SESSION_PDF.GENERATING' | translate) : ('SESSION_PDF.GENERATE' | translate) }}</span>
+</button>
+
+<!-- ═══════════ PDF TEMPLATE (visible during generation) ═══════════ -->
+<div class="pdf-backdrop" *ngIf="showPdfTemplate">
+  <div id="session-pdf-content" class="session-pdf">
+
+    <!-- ── PAGE HEADER ── -->
+    <div class="pdf-header">
+      <div class="pdf-header-left">
+        <div class="pdf-logo">
+          <img src="assets/images/logo.png" alt="Logo"
+               onerror="this.style.display='none'">
+        </div>
+        <div class="pdf-header-info">
+          <h1 class="pdf-title">{{ 'SESSION_PDF.TITLE' | translate }}</h1>
+          <p class="pdf-date" *ngIf="daySession">
+            {{ formatDate(daySession) }}
+          </p>
+          <p class="pdf-team" *ngIf="teamName">
+            {{ teamName }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SESSION INFO ── -->
+    <div class="pdf-session-info" *ngIf="training?.objectiveSession || training?.warmUp">
+      <div class="info-block" *ngIf="training.objectiveSession">
+        <div class="info-label">{{ 'SESSION_PDF.OBJECTIVE' | translate }}</div>
+        <div class="info-value">{{ training.objectiveSession }}</div>
+      </div>
+      <div class="info-block" *ngIf="training.warmUp">
+        <div class="info-label">{{ 'SESSION_PDF.WARMUP' | translate }}</div>
+        <div class="info-value">{{ training.warmUp }}</div>
+      </div>
+    </div>
+
+    <!-- ── TASK CARDS (2×2 grid = 4 tasks per page) ── -->
+    <div class="pdf-tasks-grid">
+      <div class="pdf-task-card" *ngFor="let task of training?.tasks; let i = index">
+
+        <!-- Task number badge -->
+        <div class="task-number-badge">{{ i + 1 }}</div>
+
+        <!-- Task image — LEFT side -->
+        <div class="task-image-container">
+          <img [src]="taskImages[i]" alt="Tarea {{ i+1 }}"
+               onerror="this.style.display='none'"
+               class="task-image">
+          <div class="yt-badge" *ngIf="!task.imagenBoard && hasVideo(task)">
+            Video
+          </div>
+        </div>
+
+        <!-- Task content — RIGHT side -->
+        <div class="task-content">
+          <!-- Task title -->
+          <div class="task-header">
+            <h3 class="task-title">{{ task.slogans || ('SESSION_PDF.TASK' | translate) + ' ' + (i+1) }}</h3>
+            <div class="task-tags">
+              <span class="tag strategy" *ngIf="task.estrategia && task.estrategia !== '-'">{{ task.estrategia }}</span>
+              <span class="tag intention" *ngIf="task.intencion && task.intencion !== '-'">{{ task.intencion }}</span>
+            </div>
+          </div>
+
+          <!-- Task metadata row -->
+          <div class="task-meta-row">
+            <div class="meta-item" *ngIf="task.worktime">
+              <span>⏱ {{ task.worktime }}</span>
+            </div>
+            <div class="meta-item" *ngIf="task.space">
+              <span>📐 {{ task.space }}</span>
+            </div>
+            <div class="meta-item" *ngIf="task.material">
+              <span>🔶 {{ task.material }}</span>
+            </div>
+          </div>
+
+          <!-- Task description -->
+          <div class="task-body">
+            <div class="task-field" *ngIf="task.description">
+              <span class="field-label">{{ 'SESSION_PDF.DESCRIPTION' | translate }}:</span>
+              <span class="field-value">{{ task.description }}</span>
+            </div>
+            <div class="task-field" *ngIf="task.rules">
+              <span class="field-label">{{ 'SESSION_PDF.RULES' | translate }}:</span>
+              <span class="field-value">{{ task.rules }}</span>
+            </div>
+            <div class="task-field" *ngIf="task.variants">
+              <span class="field-label">{{ 'SESSION_PDF.VARIANTS' | translate }}:</span>
+              <span class="field-value">{{ task.variants }}</span>
+            </div>
+          </div>
+
+          <!-- Video link -->
+          <div class="task-video-link" *ngIf="hasVideo(task)">
+            <span>🎬 {{ task.video }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── FOOTER ── -->
+    <div class="pdf-footer">
+      <span>Sphaira Coach · {{ formatDate(daySession) }}</span>
+    </div>
+  </div>
+</div>

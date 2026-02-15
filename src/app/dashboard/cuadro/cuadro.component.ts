@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 /* =========================
    MODELOS
@@ -48,7 +49,7 @@ export class CuadroComponent implements OnInit {
   loadingDashboard = true;
 
   clubId = 0;
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
 
   horas: string[] = [];
 
@@ -394,6 +395,27 @@ export class CuadroComponent implements OnInit {
       case 9:
         this.router.navigate([
           '/dashboard/cuadro-de-mandos/estadisticas-jugadores-club',
+          this.clubId,
+        ]);
+        break;
+
+      case 10:
+        this.router.navigate([
+          '/dashboard/cuadro-de-mandos/calendario-club',
+          this.clubId,
+        ]);
+        break;
+
+      case 11:
+        this.router.navigate([
+          '/dashboard/cuadro-de-mandos/lesiones-club',
+          this.clubId,
+        ]);
+        break;
+
+      case 12:
+        this.router.navigate([
+          '/dashboard/cuadro-de-mandos/info-entrenadores',
           this.clubId,
         ]);
         break;

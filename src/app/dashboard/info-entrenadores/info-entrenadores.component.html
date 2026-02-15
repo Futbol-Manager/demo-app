@@ -1,0 +1,452 @@
+<!-- ================= HEADER ================= -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <h2 class="table-title">
+    {{ 'TRAINERS.TITLE' | translate }}
+  </h2>
+</div>
+
+<div class="container">
+  <!-- BARRA DE CONTROLES -->
+  <div class="table-toolbar justify-content-center">
+    <!-- BUSCADOR -->
+    <div class="filter-group search-group">
+      <label for="trainerSearch" class="filter-label">
+        {{ 'TRAINERS.SEARCH_LABEL' | translate }}
+      </label>
+      <div class="search-input">
+        <i class="bi bi-search"></i>
+        <input id="trainerSearch" type="text" class="form-control" [(ngModel)]="trainerSearch" (input)="applyFilter()"
+          [placeholder]="'TRAINERS.SEARCH_PLACEHOLDER' | translate" />
+      </div>
+    </div>
+
+    <!-- SELECT EQUIPO -->
+    <div class="filter-group">
+      <label for="teamSelected" class="filter-label">
+        {{ 'TRAINERS.TEAM_LABEL' | translate }}
+      </label>
+      <select id="teamSelected" class="form-select" [(ngModel)]="teamSelected" (change)="loadTrainersOfTeam()">
+        <option value="-1">
+          {{ 'TRAINERS.ALL_TEAMS' | translate }}
+        </option>
+        <option *ngFor="let team of teams; let i = index" [value]="i">
+          {{ team.nameTeam }}
+        </option>
+      </select>
+    </div>
+
+    <!-- DESCARGAR EXCEL -->
+    <div class="filter-group">
+      <label class="filter-label invisible-label">Excel</label>
+      <button class="btn btn-excel" (click)="exportTableToExcel()">
+        <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+        {{ 'COMMON.EXPORT_EXCEL' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= TABLA ================= -->
+  <div class="table-wrapper">
+    <table id="dataTableEntrenadores" class="modern-table">
+      <thead>
+        <tr>
+          <th class="sticky-col sticky-img">{{ 'TRAINERS.TABLE.IMAGE' | translate }}</th>
+          <th class="sticky-col sticky-name">{{ 'TRAINERS.TABLE.NAME' | translate }}</th>
+          <th>{{ 'TRAINERS.TABLE.TEAM' | translate }}</th>
+          <th>{{ 'TRAINERS.TABLE.BIRTHDATE' | translate }}</th>
+          <th>{{ 'TRAINERS.TABLE.PHONE' | translate }}</th>
+          <th>{{ 'TRAINERS.TABLE.DNI' | translate }}</th>
+          <th>{{ 'TRAINERS.TABLE.DNI_IMG' | translate }}</th>
+          <th>{{ 'TRAINERS.TABLE.DOC' | translate }}</th>
+          <th>{{ 'TRAINERS.TABLE.HISTORY' | translate }}</th>
+        </tr>
+      </thead>
+
+      <!-- SKELETON -->
+      <tbody *ngIf="loading">
+        <tr *ngFor="let _ of [].constructor(5)">
+          <td *ngFor="let __ of [].constructor(9)">
+            <div class="skeleton skeleton-cell"></div>
+          </td>
+        </tr>
+      </tbody>
+
+      <!-- DATOS -->
+      <tbody *ngIf="!loading && datosCargados">
+        <tr *ngFor="let trainer of filteredTrainers; let i = index">
+          <!-- IMAGEN -->
+          <td class="image-cell">
+            <div class="image-wrapper">
+              <img *ngIf="trainer.picturePlayer" [src]="imageBaseUrlUser + trainer.picturePlayer" alt="trainer" />
+              <i *ngIf="!trainer.picturePlayer" class="bi bi-person"></i>
+            </div>
+          </td>
+
+          <!-- NOMBRE -->
+          <td class="fw-semibold">
+            <button type="button" class="btn-link-name" (click)="abrirModalInfo(trainer)">
+              {{ trainer.nombre }} {{ trainer.apellido }}
+            </button>
+          </td>
+
+          <!-- EQUIPO(S) -->
+          <td>
+            <div class="team-cell">
+              <span *ngIf="trainer.teams && trainer.teams.length > 1">
+                <span *ngFor="let t of trainer.teams; let last = last">
+                  {{ t }}<span *ngIf="!last">, </span>
+                </span>
+              </span>
+              <span *ngIf="!trainer.teams || trainer.teams.length <= 1">
+                {{ trainer.nameTeam }}
+              </span>
+            </div>
+          </td>
+
+          <!-- FECHA NAC -->
+          <td>{{ formatFechaEspana(trainer.fechaDeNacimiento) }}</td>
+
+          <!-- TELÉFONO -->
+          <td>{{ trainer.telefono }}</td>
+
+          <!-- DNI -->
+          <td>{{ trainer.dni }}</td>
+
+          <!-- DNI IMG -->
+          <td>
+            <button class="btn btn-sm btn-icon" [ngClass]="{
+              'btn-success-custom': trainer.imgDniUno && trainer.imgDniDos,
+              'btn-primary-custom': !trainer.imgDniUno || !trainer.imgDniDos
+            }" (click)="abrirModalDni(trainer, i)" title="{{ 'TRAINERS.BUTTONS.ID' | translate }}">
+              <i class="bi bi-person-vcard"></i>
+            </button>
+          </td>
+
+          <!-- DOCUMENTO -->
+          <td>
+            <button class="btn btn-primary btn-sm btn-icon btn-primary-custom" (click)="abrirModalDoc(trainer, i)"
+              title="{{ 'TRAINERS.BUTTONS.UPLOAD_DOC' | translate }}">
+              <i class="bi bi-cloud-upload"></i>
+            </button>
+          </td>
+
+          <!-- HISTORIAL DEPORTIVO -->
+          <td>
+            <button class="btn btn-sm btn-icon btn-history" (click)="abrirModalHistorial(trainer)"
+              title="{{ 'TRAINERS.BUTTONS.HISTORY' | translate }}">
+              <i class="bi bi-trophy"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SIN RESULTADOS -->
+  <div *ngIf="!loading && datosCargados && filteredTrainers.length === 0" class="no-results">
+    <i class="bi bi-person-raised-hand"></i>
+    <p>{{ 'TRAINERS.NO_RESULTS' | translate }}</p>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: INFORMACIÓN DEL ENTRENADOR                            -->
+<!-- ============================================================ -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalInfo" (click)="cerrarModalInfo()"></div>
+<div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalInfo}"
+  [style.display]="mostrarModalInfo ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content modern-modal">
+      <div class="modal-header modern-modal-header">
+        <div>
+          <h5 class="modal-title">
+            {{ 'TRAINERS.INFO_MODAL.TITLE' | translate }}
+          </h5>
+          <small class="modal-subtitle">
+            {{ selectedTrainer?.nombre }} {{ selectedTrainer?.apellido }}
+          </small>
+        </div>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalInfo()"></button>
+      </div>
+      <div class="modal-body modern-modal-body">
+        <div class="trainer-info-card">
+          <div class="trainer-info-header">
+            <div class="trainer-avatar">
+              <img *ngIf="selectedTrainer?.picturePlayer"
+                [src]="imageBaseUrlUser + selectedTrainer.picturePlayer" alt="trainer" />
+              <i *ngIf="!selectedTrainer?.picturePlayer" class="bi bi-person"></i>
+            </div>
+            <div class="trainer-info-data">
+              <h4>{{ selectedTrainer?.nombre }} {{ selectedTrainer?.apellido }}</h4>
+              <span class="badge badge-team" *ngFor="let t of selectedTrainer?.teams">
+                {{ t }}
+              </span>
+            </div>
+          </div>
+          <div class="row g-3 mt-3">
+            <div class="col-md-6">
+              <div class="info-field">
+                <label>{{ 'TRAINERS.TABLE.BIRTHDATE' | translate }}</label>
+                <span>{{ formatFechaEspana(selectedTrainer?.fechaDeNacimiento) }}</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-field">
+                <label>{{ 'TRAINERS.TABLE.PHONE' | translate }}</label>
+                <span>{{ selectedTrainer?.telefono || '—' }}</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-field">
+                <label>{{ 'TRAINERS.TABLE.DNI' | translate }}</label>
+                <span>{{ selectedTrainer?.dni || '—' }}</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-field">
+                <label>{{ 'TRAINERS.INFO_MODAL.EMAIL' | translate }}</label>
+                <span>{{ selectedTrainer?.email || '—' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: DNI DEL ENTRENADOR                                    -->
+<!-- ============================================================ -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDni" (click)="cerrarModalDni()"></div>
+<div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalDni}"
+  [style.display]="mostrarModalDni ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content modern-modal">
+      <div class="modal-header modern-modal-header">
+        <div>
+          <h5 class="modal-title">{{ 'TRAINERS.DNI_MODAL.TITLE' | translate }}</h5>
+          <small class="modal-subtitle">{{ 'TRAINERS.DNI_MODAL.SUBTITLE' | translate }}</small>
+        </div>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalDni()"></button>
+      </div>
+      <div class="modal-body modern-modal-body">
+        <section class="dni-section">
+          <p class="section-help">{{ 'TRAINERS.DNI_MODAL.HELP' | translate }}</p>
+          <div class="row g-4">
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">{{ 'TRAINERS.DNI_MODAL.FRONT' | translate }}</span>
+                <div class="dni-preview" *ngIf="selectedTrainer?.imgDniUno || dniCara1">
+                  <img [src]="dniCara1 ? dniCara1 : imageBaseUrlPlayerDni + selectedTrainer?.imgDniUno">
+                </div>
+                <input type="file" class="form-control" (change)="onFileChangeDni($event, 'cara1')" accept="image/*">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="dni-card">
+                <span class="dni-label">{{ 'TRAINERS.DNI_MODAL.BACK' | translate }}</span>
+                <div class="dni-preview" *ngIf="selectedTrainer?.imgDniDos || dniCara2">
+                  <img [src]="dniCara2 ? dniCara2 : imageBaseUrlPlayerDni + selectedTrainer?.imgDniDos">
+                </div>
+                <input type="file" class="form-control" (change)="onFileChangeDni($event, 'cara2')" accept="image/*">
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: DOCUMENTOS DEL ENTRENADOR                             -->
+<!-- ============================================================ -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDoc" (click)="cerrarModalDoc()"></div>
+<div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalDoc}"
+  [style.display]="mostrarModalDoc ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content modern-modal">
+      <div class="modal-header modern-modal-header">
+        <div>
+          <h5 class="modal-title">{{ 'TRAINERS.DOC_MODAL.TITLE' | translate }}</h5>
+          <small class="modal-subtitle">{{ 'TRAINERS.DOC_MODAL.SUBTITLE' | translate }}</small>
+        </div>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalDoc()"></button>
+      </div>
+      <div class="modal-body modern-modal-body">
+        <div class="row g-3">
+          <div *ngFor="let doc of listaDocumentos" class="col-12">
+            <div class="doc-card">
+              <div class="doc-info">
+                <h6 class="doc-title">{{ doc.nombre }}</h6>
+                <p class="doc-desc" *ngIf="doc.requiere < 2">{{ doc.descripcion }}</p>
+              </div>
+              <div class="doc-actions">
+                <button *ngIf="doc.requiere === 0 || doc.fileClub" class="btn-icon"
+                  [ngClass]="{ 'success': doc.descargado === 1, 'secondary': doc.descargado === 0 }"
+                  (click)="descargar(doc)" title="{{ 'TRAINERS.DOC_MODAL.DOWNLOAD' | translate }}">
+                  <i class="bi bi-arrow-down-circle"></i>
+                </button>
+                <button *ngIf="doc.requiere === 1" class="btn-icon"
+                  [ngClass]="{ 'success': doc.subido === 1, 'secondary': doc.subido === 0 }" (click)="subir(doc)"
+                  title="{{ 'TRAINERS.DOC_MODAL.UPLOAD' | translate }}">
+                  <i class="bi bi-arrow-up-circle"></i>
+                </button>
+                <button *ngIf="doc.requiere === 1 && doc.subido === 1" class="btn-icon info"
+                  (click)="verDocSubido(doc)" title="{{ 'TRAINERS.DOC_MODAL.VIEW' | translate }}">
+                  <i class="bi bi-eye"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Subir documento -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDocUpload" (click)="cerrarModalDocUpload()"></div>
+<div class="modal fade" tabindex="-1" [ngClass]="{ 'show': mostrarModalDocUpload }"
+  [style.display]="mostrarModalDocUpload ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content modal-base">
+      <div class="modal-base__header">
+        <h5 class="modal-title">{{ 'TRAINERS.DOC_MODAL.UPLOAD_TITLE' | translate }}</h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalDocUpload()"></button>
+      </div>
+      <div class="modal-base__body">
+        <p class="mb-3">{{ 'TRAINERS.DOC_MODAL.UPLOAD_DESC' | translate }}</p>
+        <div class="modal-card">
+          <label class="modal-label">{{ 'TRAINERS.DOC_MODAL.FILE_LABEL' | translate }}</label>
+          <input type="file" class="form-control" (change)="onFileSelected($event)"
+            accept=".pdf,.doc,.docx,.jpg,.png,.jpeg" />
+        </div>
+      </div>
+      <div class="modal-base__footer">
+        <button class="btn btn-secondary" (click)="cerrarModalDocUpload()">{{ 'COMMON.CANCEL' | translate }}</button>
+        <button class="btn btn-primary" (click)="subirDocumento()">{{ 'COMMON.UPLOAD' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Ver documento subido -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDocView" (click)="cerrarModalDocView()"></div>
+<div class="modal fade" tabindex="-1" [ngClass]="{ 'show': mostrarModalDocView }"
+  [style.display]="mostrarModalDocView ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content modal-base">
+      <div class="modal-base__header">
+        <h5 class="modal-title">{{ 'MODAL_VIEW_DOC.TITLE' | translate }}</h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalDocView()"></button>
+      </div>
+      <div class="modal-base__body text-center">
+        <ng-container *ngIf="docTemp?.subido === 1 && docTemp?.filePadre">
+          <ng-container *ngIf="esImagen(docTemp.filePadre); else fileLinkDoc">
+            <p class="mb-2">{{ 'MODAL_VIEW_DOC.ALREADY_UPLOADED' | translate }}</p>
+            <img [src]="'https://appsphairatech.com/images/docs-padres/' + docTemp.filePadre"
+              class="img-fluid rounded shadow-sm" style="max-height: 350px; object-fit: contain;" />
+          </ng-container>
+          <ng-template #fileLinkDoc>
+            <p class="mb-2">{{ 'MODAL_VIEW_DOC.FILE_NAME' | translate }}: {{ docTemp.filePadre }}</p>
+            <a class="btn btn-primary" target="_blank" rel="noopener"
+              [href]="'https://appsphairatech.com/images/docs-padres/' + docTemp.filePadre">
+              {{ 'MODAL_VIEW_DOC.OPEN_FILE' | translate }}
+              <i class="bi bi-box-arrow-up-right ms-1"></i>
+            </a>
+          </ng-template>
+        </ng-container>
+      </div>
+      <div class="modal-base__footer">
+        <button class="btn btn-secondary" (click)="cerrarModalDocView()">{{ 'COMMON.CLOSE' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: HISTORIAL DEPORTIVO DEL ENTRENADOR                    -->
+<!-- ============================================================ -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalHistorial" (click)="cerrarModalHistorial()"></div>
+<div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalHistorial}"
+  [style.display]="mostrarModalHistorial ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content modern-modal">
+      <div class="modal-header modern-modal-header">
+        <div>
+          <h5 class="modal-title">{{ 'TRAINERS.HISTORY_MODAL.TITLE' | translate }}</h5>
+          <small class="modal-subtitle">
+            {{ selectedTrainer?.nombre }} {{ selectedTrainer?.apellido }}
+          </small>
+        </div>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalHistorial()"></button>
+      </div>
+      <div class="modal-body modern-modal-body">
+
+        <!-- Skeleton -->
+        <div *ngIf="loadingHistorial" class="history-skeleton">
+          <div *ngFor="let _ of [].constructor(3)" class="skeleton-row">
+            <div class="skeleton skeleton-cell" *ngFor="let __ of [].constructor(9)"></div>
+          </div>
+        </div>
+
+        <!-- Tabla historial -->
+        <div *ngIf="!loadingHistorial" class="table-wrapper-history">
+          <table class="modern-table history-table">
+            <thead>
+              <tr>
+                <th>{{ 'TRAINERS.HISTORY_MODAL.SEASON' | translate }}</th>
+                <th>{{ 'TRAINERS.HISTORY_MODAL.BADGE' | translate }}</th>
+                <th>{{ 'TRAINERS.HISTORY_MODAL.CLUB' | translate }}</th>
+                <th>{{ 'TRAINERS.HISTORY_MODAL.CATEGORY' | translate }}</th>
+                <th>{{ 'TRAINERS.HISTORY_MODAL.LEVEL' | translate }}</th>
+                <th>{{ 'TRAINERS.HISTORY_MODAL.POSITION' | translate }}</th>
+                <th>{{ 'TRAINERS.HISTORY_MODAL.WINS' | translate }}</th>
+                <th>{{ 'TRAINERS.HISTORY_MODAL.DRAWS' | translate }}</th>
+                <th>{{ 'TRAINERS.HISTORY_MODAL.LOSSES' | translate }}</th>
+                <th>{{ 'TRAINERS.HISTORY_MODAL.GOALS_FOR' | translate }}</th>
+                <th>{{ 'TRAINERS.HISTORY_MODAL.GOALS_AGAINST' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let h of historialDeportivo">
+                <td class="fw-semibold">{{ h.temporada }}</td>
+                <td class="image-cell-sm">
+                  <div class="badge-wrapper">
+                    <img *ngIf="h.escudo" [src]="h.escudo" alt="escudo" />
+                    <i *ngIf="!h.escudo" class="bi bi-shield"></i>
+                  </div>
+                </td>
+                <td>{{ h.club }}</td>
+                <td>{{ h.categoria }}</td>
+                <td>{{ h.nivelEquipo }}</td>
+                <td>
+                  <span class="position-badge">{{ h.posicionTabla }}º</span>
+                </td>
+                <td class="stat-win">{{ h.victorias }}</td>
+                <td class="stat-draw">{{ h.empates }}</td>
+                <td class="stat-loss">{{ h.derrotas }}</td>
+                <td>{{ h.golesAFavor }}</td>
+                <td>{{ h.golesEnContra }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div *ngIf="!loadingHistorial && historialDeportivo.length === 0" class="no-results-sm">
+          <i class="bi bi-trophy"></i>
+          <p>{{ 'TRAINERS.HISTORY_MODAL.NO_DATA' | translate }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

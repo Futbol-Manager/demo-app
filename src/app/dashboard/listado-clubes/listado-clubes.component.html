@@ -1,16 +1,14 @@
-<div class="submenu">
-    <div class="row">
-        <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
-                <i class="bi bi-arrow-left-square-fill"></i>
-                <span class="d-none d-md-inline">Volver</span>
-            </a>
-        </div>
-    </div>
+<div class="back-container">
+  <div class="btn-back-clean" href="javascript:void(0)" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </div>
 </div>
-<div *ngIf="isLoading" class="d-flex align-items-center justify-content-center p-3">
-    <div class="spinner-border text-primary me-2" role="status" aria-hidden="true"></div>
-    <strong>Cargando listado, puede tardar unos segundos, espere...</strong>
+<div *ngIf="isLoading" class="table-skeleton">
+    <div class="skeleton-header"></div>
+    <div class="skeleton-row" *ngFor="let i of [].constructor(6)">
+        <div class="skeleton-cell" *ngFor="let j of [].constructor(7)"></div>
+    </div>
 </div>
 <div *ngIf="!isLoading">
     <div class="container mt-3">
@@ -77,7 +75,7 @@
                 <h5 class="modal-title">
                     <i class="bi bi-people-fill me-2"></i> Número de equipos del club
                 </h5>
-                <button style="background-color: white;" type="button" class="btn-close"
+                <button style="background-color: white;" type="button" class="btn-close" aria-label="Cerrar"
                     (click)="cerrarModalVerEquipos()"></button>
             </div>
             <div class="modal-body bg-light">

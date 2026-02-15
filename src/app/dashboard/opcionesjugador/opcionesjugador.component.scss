@@ -1,3 +1,26 @@
+/* ===== BOTÓN VOLVER ===== */
+.back-container { padding: 0; }
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 16px;
+  margin-left: 24px;
+  background: transparent;
+  border: none;
+  background-color: rgba(15, 163, 232, 0.08);
+  color: #002c40;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+.btn-back-clean i { font-size: 1.1rem; }
+.btn-back-clean:hover { background-color: rgba(0, 44, 64, 0.08); transform: translateX(-2px); }
+.btn-back-clean:active { transform: translateX(0); }
+
 .card {
     position: relative;
     display: flex;

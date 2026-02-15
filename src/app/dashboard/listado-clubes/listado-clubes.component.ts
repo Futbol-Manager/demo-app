@@ -4,6 +4,7 @@ import { Location } from '@angular/common';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { User } from 'src/app/core/models/users/user.model';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-listado-clubes',
@@ -22,7 +23,7 @@ export class ListadoClubesComponent implements OnInit {
   usuarioActual!: User | null;
   userIdClub = 0;
   userId = 0;
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
   equiposClubSelected = 0;
   suscripcionSelected = 0;
   equiposDelClub = 0;

@@ -14,9 +14,12 @@ import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { RegisterService } from 'src/app/core/services/register/register.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { TeamService } from 'src/app/core/services/team/team.service';
+import { ThemeService } from 'src/app/core/services/theme/theme.service';
 import { environment } from 'src/environments/environment';
 import { Dropdown } from 'bootstrap';
 import { TranslateService } from '@ngx-translate/core';
+import { Response } from 'src/app/core/services/models/response.model';
 
 @Component({
   selector: 'app-header',
@@ -25,6 +28,7 @@ import { TranslateService } from '@ngx-translate/core';
 })
 export class HeaderComponent implements OnInit {
   isDarkMode: boolean = false;
+  coachBelongsToClub = false;
   usuarioActual!: User | null;
   userForm: FormGroup = this.formBuilder.group({
     pictureUser: [''],
@@ -67,12 +71,18 @@ export class HeaderComponent implements OnInit {
     private renderer: Renderer2,
     private elementRef: ElementRef,
     private trainingService: TrainingService,
-    private translate: TranslateService
+    private teamService: TeamService,
+    private translate: TranslateService,
+    public themeService: ThemeService
   ) {
     const lang = localStorage.getItem('lang');
     if (lang) {
       this.selectedLang = lang;
     }
+    // Sync isDarkMode with ThemeService
+    this.themeService.mode$.subscribe(mode => {
+      this.isDarkMode = mode === 'dark';
+    });
   }
 
   ngOnInit(): void {
@@ -85,6 +95,28 @@ export class HeaderComponent implements OnInit {
       this.imgUser = user !== null ? user.pictureUser : '';
       this.mobile = user !== null ? user.mobile : '';
       this.updateForm(); // Actualiza el formulario cuando cambia el usuario actual
+
+      // Si es Coach (profileId === 2), comprobamos si pertenece a un club
+      if (this.profileId === 2 && this.userId > 0) {
+        this.checkCoachBelongsToClub();
+      }
+    });
+  }
+
+  /**
+   * Comprueba si el entrenador pertenece a un club.
+   * Si el servicio devuelve un clubId > 0, el coach pertenece a un club
+   * y NO debe ver la suscripción del coach.
+   */
+  private checkCoachBelongsToClub(): void {
+    this.teamService.getTeamByClub(this.userId.toString(), '2025').subscribe({
+      next: (response: Response) => {
+        const clubId = response.data?.club?.clubId ?? 0;
+        this.coachBelongsToClub = clubId > 0;
+      },
+      error: () => {
+        this.coachBelongsToClub = false;
+      }
     });
   }
 
@@ -94,87 +126,10 @@ export class HeaderComponent implements OnInit {
       .forEach((el) => Dropdown.getOrCreateInstance(el as HTMLElement));
   }
 
-  //metodo para el modo oscuro y claro
-  toggleDarkMode(): void {
-    this.isDarkMode = !this.isDarkMode;
-
-    //cambiamos primero todo el header
-    const themeClass2 = '.theme-header';
-    const header = document.getElementsByTagName('body')[0];
-    const themeElement2 = header.querySelector(themeClass2);
-    if (themeElement2) {
-      this.renderer.setStyle(
-        themeElement2,
-        'color',
-        this.isDarkMode ? 'white' : 'black'
-      );
-      this.renderer.setStyle(
-        themeElement2,
-        'background-color',
-        this.isDarkMode ? '#3a444e' : 'white'
-      );
-    }
-
-    const submenu = document.getElementById('submenu');
-    if (submenu) {
-      if (this.isDarkMode) {
-        submenu.style.backgroundColor = '#3a444e';
-      } else {
-        submenu.style.backgroundColor = 'white';
-      }
-    }
-
-    const span = document.getElementById('span');
-    const span2 = document.getElementById('span2');
-    const span3 = document.getElementById('span3');
-    if (span && span2 && span3) {
-      if (this.isDarkMode) {
-        span.style.color = 'white';
-        span2.style.color = 'white';
-        span3.style.color = 'white';
-      } else {
-        span.style.color = 'black';
-        span2.style.color = 'black';
-        span3.style.color = 'black';
-      }
-    }
-    //cambiamos todo el body
-    //cambiamos los card
-    const cardElements = document.querySelectorAll('.card');
-    cardElements.forEach((card) => {
-      this.renderer.setStyle(
-        card,
-        'color',
-        this.isDarkMode ? 'white' : 'black'
-      );
-      this.renderer.setStyle(
-        card,
-        'background-color',
-        this.isDarkMode ? '#3a444e' : 'white'
-      );
-    });
-    //cambiamos el calendario
-    const calendar = document.getElementById('tableCalendar');
-    if (calendar) {
-      if (this.isDarkMode) {
-        calendar.style.backgroundColor = '#3a444e';
-      } else {
-        calendar.style.backgroundColor = 'white';
-      }
-    }
-
-    const numDia = document.querySelectorAll('.numero-dia');
-    numDia.forEach((dia) => {
-      this.renderer.setStyle(dia, 'color', this.isDarkMode ? 'white' : 'black');
-    });
-
-    if (this.isDarkMode) {
-      document.body.style.backgroundColor = '#343a40';
-      document.body.style.color = 'white';
-    } else {
-      document.body.style.backgroundColor = '#fafbfe';
-      document.body.style.color = 'black';
-    }
+  /** Select theme mode (dark is currently disabled) */
+  selectTheme(mode: 'light' | 'dark'): void {
+    if (mode === 'dark') return; // Dark mode disabled for now
+    this.themeService.setMode(mode);
   }
 
   goInicio() {
@@ -347,5 +302,10 @@ export class HeaderComponent implements OnInit {
   goSuscripcion() {
     this.showModal = false;
     this.router.navigate(['/dashboard/suscripcion', this.userId]);
+  }
+
+  goSuscripcionClub() {
+    this.showModal = false;
+    this.router.navigate(['/dashboard/suscripcion-club']);
   }
 }

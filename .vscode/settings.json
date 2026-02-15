@@ -1,5 +1,7 @@
 {
     "cSpell.words": [
         "CALENDARIO"
-    ]
+    ],
+    "chat.tools.terminal.autoReplyToPrompts": true,
+    "chat.tools.terminal.ignoreDefaultAutoApproveRules": true
 }

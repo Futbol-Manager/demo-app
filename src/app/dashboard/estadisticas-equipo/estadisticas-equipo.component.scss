@@ -375,3 +375,69 @@
     max-width: 95%;
   }
 }
+
+/* ===== DARK MODE ===== */
+:host-context(body.dark) {
+  --sphaira-green: #3fc982;
+  --sphaira-night: var(--text-primary);
+  --sphaira-card-bg: var(--bg-card);
+  --sphaira-border: var(--border-color);
+  --sphaira-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  --sphaira-shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.3);
+
+  .btn-back-clean {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    &:hover { background: var(--bg-hover); }
+  }
+
+  .form-select-pro {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+    &:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(63, 201, 130, 0.2);
+    }
+  }
+
+  .toggle-btn {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+    &:hover { background: var(--bg-hover); }
+    &.active {
+      background: linear-gradient(180deg, rgba(63, 201, 130, 0.2), rgba(63, 201, 130, 0.08));
+      border-color: var(--color-primary);
+    }
+  }
+
+  .card-pro-header {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 100%);
+  }
+
+  .table-pro thead {
+    background: #0a2a3c;
+  }
+
+  .table-pro tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .table-pro tbody tr:hover {
+    background: rgba(63, 201, 130, 0.08);
+  }
+
+  #button_datatable {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .modal-pro .modal-content-pro {
+    background: var(--bg-card);
+  }
+
+  .modal-pro .modal-header-pro {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, transparent 100%);
+    color: var(--text-primary);
+  }
+}

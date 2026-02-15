@@ -1,20 +1,16 @@
-<div class="submenu">
-    <div class="row">
-        <div class="col text-center">
-            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(1)">
-                <i class="bi bi-clipboard2-data"></i>
-                <span class="d-none d-md-inline">Cuadro Mando Deportivo</span>
-            </a>
-        </div>
-    </div>
+<div class="back-container">
+  <div class="btn-back-clean" href="javascript:void(0)" (click)="irAPantalla(1)">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </div>
 </div>
 
 <div class="container">    
     <div class="row mt-3 text-center">
         <h2>Entrenamientos creados por equipos</h2>
     </div>
-    <div *ngIf="loading" class="spinner-container mt-3">
-        <div class="spinnerLoad"></div>
+    <div *ngIf="loading" class="card-skeleton mt-3">
+        <div class="skeleton-card" *ngFor="let i of [].constructor(6)"></div>
     </div>
     <div class="row mt-3" id="segundo">
         <div class="scroll: auto">

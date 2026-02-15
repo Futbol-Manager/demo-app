@@ -1,1 +1,131 @@
+/* =====================================================
+   SPHAIRA  –  DESIGN TOKENS  (light / dark)
+   =====================================================
+   ThemeService toggles  body.dark  ➜  all variables swap.
+   Usage:  color: var(--text-primary);
+===================================================== */
+
+/* ——— LIGHT (default) ——— */
+:root {
+  /* Backgrounds */
+  --bg-main:          #fafbfe;
+  --bg-card:          #ffffff;
+  --bg-surface:       #f1f5f9;
+  --bg-hover:         #f8fafc;
+  --bg-input:         #ffffff;
+
+  /* Brand */
+  --color-primary:    #31b270;
+  --color-primary-rgb: 49, 178, 112;
+  --color-primary-hover: #28a060;
+  --color-accent:     #22bf63;
+  --color-accent-hover: #1daa57;
+  --color-navy:       #002c40;
+  --color-navy-rgb:   0, 44, 64;
+  --color-beige:      #efdcb6;
+
+  /* Text */
+  --text-primary:     #1e293b;
+  --text-secondary:   #64748b;
+  --text-muted:       #94a3b8;
+  --text-on-primary:  #ffffff;
+  --text-on-navy:     #ffffff;
+
+  /* Borders */
+  --border-color:     #e2e8f0;
+  --border-strong:    #cbd5e1;
+  --border-input:     #d1d5db;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.08);
+  --shadow-lg:  0 10px 30px rgba(0,0,0,0.12);
+
+  /* Header gradient */
+  --header-gradient: linear-gradient(135deg, #31b270 0%, #1f8f8a 45%, #002c40 100%);
+
+  /* Submenu / nav bar */
+  --submenu-bg:       #002c40;
+  --submenu-text:     #ffffff;
+
+  /* Modals */
+  --modal-bg:         #ffffff;
+  --modal-header-bg:  #002c40;
+  --modal-body-bg:    #f8fafc;
+
+  /* DataTable / tabs */
+  --tab-active-bg:    #3a444e;
+  --tab-inactive-bg:  #818181;
+  --dt-btn-bg:        #3a444e;
+  --dt-btn-border:    #2a3036;
+
+  /* Misc */
+  --badge-success:    #22c55e;
+  --badge-danger:     #dc2626;
+  --badge-warning:    #f59e0b;
+  --badge-info:       #0ea5e9;
+  --scrollbar-thumb:  #c1c9d2;
+  --scrollbar-track:  transparent;
+  --overlay-bg:       rgba(10, 25, 35, 0.65);
+}
+
+/* ——— DARK ——— */
+body.dark {
+  /* Backgrounds */
+  --bg-main:          #0f1923;
+  --bg-card:          #162230;
+  --bg-surface:       #1c2d3f;
+  --bg-hover:         #1a2e42;
+  --bg-input:         #1c2d3f;
+
+  /* Brand */
+  --color-primary:    #3fc982;
+  --color-primary-rgb: 63, 201, 130;
+  --color-primary-hover: #34b574;
+  --color-accent:     #3fc982;
+  --color-accent-hover: #34b574;
+  --color-navy:       #e2e8f0;
+  --color-navy-rgb:   226, 232, 240;
+  --color-beige:      #d4a853;
+
+  /* Text */
+  --text-primary:     #e2e8f0;
+  --text-secondary:   #94a3b8;
+  --text-muted:       #64748b;
+  --text-on-primary:  #0f1923;
+  --text-on-navy:     #0f1923;
+
+  /* Borders */
+  --border-color:     #2a3f55;
+  --border-strong:    #3a5068;
+  --border-input:     #2a3f55;
+
+  /* Shadows */
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.30);
+  --shadow-md:  0 4px 12px rgba(0,0,0,0.35);
+  --shadow-lg:  0 10px 30px rgba(0,0,0,0.45);
+
+  /* Header gradient */
+  --header-gradient: linear-gradient(135deg, #1a5c3f 0%, #133e3a 45%, #0a1a25 100%);
+
+  /* Submenu */
+  --submenu-bg:       #0a1a25;
+  --submenu-text:     #e2e8f0;
+
+  /* Modals */
+  --modal-bg:         #162230;
+  --modal-header-bg:  #0a1a25;
+  --modal-body-bg:    #1c2d3f;
+
+  /* DataTable / tabs */
+  --tab-active-bg:    #1c2d3f;
+  --tab-inactive-bg:  #2a3f55;
+  --dt-btn-bg:        #1c2d3f;
+  --dt-btn-border:    #2a3f55;
+
+  /* Misc */
+  --scrollbar-thumb:  #2a3f55;
+  --scrollbar-track:  #0f1923;
+  --overlay-bg:       rgba(5, 12, 18, 0.75);
+}
 

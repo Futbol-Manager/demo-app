@@ -142,7 +142,7 @@
   <div class="modal-content-pro" (click)="$event.stopPropagation()">
     <div class="modal-header-pro">
       <h5 class="modal-title">{{ 'INFO_EQUIPO.INVITAR_MODAL_TITLE' | translate }}</h5>
-      <button type="button" class="btn-close btn-close-white" (click)="cerrarModal()"></button>
+      <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModal()"></button>
     </div>
     <div class="modal-body">
       <p class="modal-p">{{ 'INFO_EQUIPO.INVITAR_MODAL_P' | translate }}</p>
@@ -165,7 +165,7 @@
   <div class="modal-content-pro modal-horario" (click)="$event.stopPropagation()">
     <div class="modal-header-pro">
       <h5 class="modal-title">{{ 'INFO_EQUIPO.HORARIO_MODAL_TITLE' | translate }}</h5>
-      <button type="button" class="btn-close btn-close-white" (click)="cerrarModalHorario()"></button>
+      <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModalHorario()"></button>
     </div>
     <div class="modal-body">
       <p class="modal-p">{{ 'INFO_EQUIPO.HORARIO_MODAL_P' | translate }}</p>

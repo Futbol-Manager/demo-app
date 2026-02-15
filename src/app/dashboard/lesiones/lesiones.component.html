@@ -1,0 +1,814 @@
+<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
+<!-- ║  SPHAIRA – Módulo de Lesiones                                   ║ -->
+<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
+
+<!-- ─── STANDALONE HEADER (only when NOT embedded) ──── -->
+<ng-container *ngIf="!embedded">
+  <div class="lesiones-standalone-header">
+    <div class="lesiones-header-content">
+      <div class="lesiones-header-left">
+        <h2 class="lesiones-page-title"><i class="bi bi-heart-pulse me-2"></i>Gestión de Lesiones</h2>
+        <p class="lesiones-page-subtitle" *ngIf="playerName">{{ playerName }}</p>
+      </div>
+      <div class="lesiones-header-right">
+        <!-- Export / Print / Notifications buttons -->
+        <div class="header-action-btns">
+          <button class="btn-header-action" title="Exportar informe" (click)="exportInjuryReport()">
+            <i class="bi bi-download"></i>
+          </button>
+          <button class="btn-header-action" title="Imprimir informe" (click)="printInjuryReport()">
+            <i class="bi bi-printer"></i>
+          </button>
+          <button class="btn-header-action" title="Configurar notificaciones" (click)="toggleNotifySettings()" *ngIf="!readOnly">
+            <i class="bi bi-bell"></i>
+            <span class="notify-indicator" *ngIf="notificationConfig.autoNotify"></span>
+          </button>
+        </div>
+        <!-- Base / Pro Toggle -->
+        <div class="mode-toggle-wrap">
+          <span class="mode-label" [class.active]="!isPro">Base</span>
+          <label class="mode-toggle">
+            <input type="checkbox" [checked]="isPro" (change)="toggleMode()">
+            <span class="mode-slider"></span>
+          </label>
+          <span class="mode-label" [class.active]="isPro">
+            <i class="bi bi-stars me-1"></i>Pro
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- ─── EMBEDDED HEADER (compact for tab view) ──── -->
+<ng-container *ngIf="embedded">
+  <div class="lesiones-embedded-header">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <h3 class="lesiones-section-title mb-0"><i class="bi bi-heart-pulse me-2"></i>Historial de lesiones</h3>
+      <div class="d-flex align-items-center gap-2 flex-wrap">
+        <div class="header-action-btns header-action-btns-sm">
+          <button class="btn-header-action btn-header-action-sm" title="Exportar" (click)="exportInjuryReport()">
+            <i class="bi bi-download"></i>
+          </button>
+          <button class="btn-header-action btn-header-action-sm" title="Imprimir" (click)="printInjuryReport()">
+            <i class="bi bi-printer"></i>
+          </button>
+          <button class="btn-header-action btn-header-action-sm" title="Notificaciones" (click)="toggleNotifySettings()" *ngIf="!readOnly">
+            <i class="bi bi-bell"></i>
+            <span class="notify-indicator" *ngIf="notificationConfig.autoNotify"></span>
+          </button>
+        </div>
+        <div class="mode-toggle-wrap mode-toggle-sm">
+          <span class="mode-label" [class.active]="!isPro">Base</span>
+          <label class="mode-toggle">
+            <input type="checkbox" [checked]="isPro" (change)="toggleMode()">
+            <span class="mode-slider"></span>
+          </label>
+          <span class="mode-label" [class.active]="isPro"><i class="bi bi-stars me-1"></i>Pro</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- ═══════ VIEW SWITCHER TABS ═══════ -->
+<div class="lesiones-view-tabs">
+  <button class="view-tab" [class.active]="activeView === 'bodymap'" (click)="switchView('bodymap')">
+    <i class="bi bi-person-standing me-1"></i>Mapa Corporal
+  </button>
+  <button class="view-tab" [class.active]="activeView === 'timeline'" (click)="switchView('timeline')">
+    <i class="bi bi-clock-history me-1"></i>Línea Temporal
+  </button>
+  <button class="view-tab" [class.active]="activeView === 'stats'" (click)="switchView('stats')" *ngIf="isPro">
+    <i class="bi bi-bar-chart-line me-1"></i>Estadísticas
+  </button>
+</div>
+
+
+<!-- ═══════ STATS CARDS ═══════ -->
+<div class="lesiones-stats-row">
+  <div class="lesion-stat-card stat-total">
+    <i class="bi bi-clipboard2-pulse"></i>
+    <div class="stat-info">
+      <span class="stat-number">{{ totalInjuries }}</span>
+      <span class="stat-label">Total</span>
+    </div>
+  </div>
+  <div class="lesion-stat-card stat-active">
+    <i class="bi bi-exclamation-circle-fill"></i>
+    <div class="stat-info">
+      <span class="stat-number">{{ activeInjuries }}</span>
+      <span class="stat-label">Activas</span>
+    </div>
+  </div>
+  <div class="lesion-stat-card stat-recovering">
+    <i class="bi bi-arrow-repeat"></i>
+    <div class="stat-info">
+      <span class="stat-number">{{ recoveringInjuries }}</span>
+      <span class="stat-label">Recuperación</span>
+    </div>
+  </div>
+  <div class="lesion-stat-card stat-closed">
+    <i class="bi bi-check-circle-fill"></i>
+    <div class="stat-info">
+      <span class="stat-number">{{ closedInjuries }}</span>
+      <span class="stat-label">Cerradas</span>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════ VIEW: BODY MAP (default) ═══════ -->
+<div class="lesiones-main-layout" *ngIf="activeView === 'bodymap'">
+
+  <!-- ─── LEFT: SVG BODY MAP ──── -->
+  <div class="bodymap-container" [class.bodymap-embedded]="embedded">
+    <div class="bodymap-view-toggle">
+      <button class="btn-view" [class.active]="bodyView === 'front'" (click)="bodyView = 'front'">
+        <i class="bi bi-person-standing me-1"></i>Frontal
+      </button>
+      <button class="btn-view" [class.active]="bodyView === 'back'" (click)="bodyView = 'back'">
+        <i class="bi bi-person me-1"></i>Posterior
+      </button>
+    </div>
+
+    <div class="bodymap-svg-wrap">
+      <svg viewBox="85 0 130 305" class="bodymap-svg" xmlns="http://www.w3.org/2000/svg">
+        <!-- Body outline -->
+        <path [attr.d]="bodyView === 'front' ? getBodyOutlineFront() : getBodyOutlineBack()"
+              fill="#e8f0f6" stroke="#b0c4d4" stroke-width="1" />
+
+        <!-- Clickable zones -->
+        <ng-container *ngFor="let zone of getZonesForView(bodyView)">
+          <path [attr.d]="zone.svgPath"
+                class="bodymap-zone"
+                [class.zone-hovered]="hoveredZone?.id === zone.id"
+                [class.zone-selected]="selectedZone?.id === zone.id"
+                [ngClass]="getZoneSeverityClass(zone.id)"
+                (mouseenter)="hoverZone(zone)"
+                (mouseleave)="hoverZone(null)"
+                (click)="selectZone(zone)" />
+        </ng-container>
+
+        <!-- Injury indicators (dots) -->
+        <ng-container *ngFor="let zone of getZonesForView(bodyView)">
+          <ng-container *ngIf="hasInjuryInZone(zone.id)">
+            <circle [attr.cx]="zone.cx" [attr.cy]="zone.cy" r="4"
+                    class="injury-dot" [ngClass]="getZoneSeverityClass(zone.id)" />
+            <text *ngIf="getZoneInjuryCount(zone.id) > 1"
+                  [attr.x]="zone.cx" [attr.y]="zone.cy + 1.5"
+                  class="injury-count-text">{{ getZoneInjuryCount(zone.id) }}</text>
+          </ng-container>
+        </ng-container>
+      </svg>
+
+      <!-- Tooltip -->
+      <div class="bodymap-tooltip" *ngIf="hoveredZone">
+        <strong>{{ getZoneLabel(hoveredZone) }}</strong>
+        <span *ngIf="hasInjuryInZone(hoveredZone.id)" class="tooltip-injury-badge">
+          {{ getZoneInjuryCount(hoveredZone.id) }} lesión{{ getZoneInjuryCount(hoveredZone.id) > 1 ? 'es' : '' }}
+        </span>
+        <span *ngIf="!readOnly && !hasInjuryInZone(hoveredZone.id)" class="tooltip-hint">
+          Click para registrar lesión
+        </span>
+      </div>
+    </div>
+
+    <!-- Zone legend -->
+    <div class="bodymap-legend">
+      <span class="legend-item"><span class="legend-dot dot-leve"></span>Leve</span>
+      <span class="legend-item"><span class="legend-dot dot-moderada"></span>Moderada</span>
+      <span class="legend-item"><span class="legend-dot dot-grave"></span>Grave</span>
+      <span class="legend-item"><span class="legend-dot dot-none"></span>Sin lesión</span>
+    </div>
+  </div>
+
+  <!-- ─── RIGHT: PANEL (Form / Detail / RTP / List) ──── -->
+  <div class="lesiones-panel">
+
+    <!-- ════ NEW / EDIT FORM ════ -->
+    <div class="lesiones-form-card" *ngIf="showForm">
+      <div class="form-card-header">
+        <h4><i class="bi bi-pencil-square me-2"></i>{{ editingInjury ? 'Editar Lesión' : 'Registrar Nueva Lesión' }}</h4>
+        <button class="btn-close-panel" aria-label="Cerrar" (click)="cancelForm()"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="form-card-body">
+        <div class="row g-3">
+          <!-- Zona -->
+          <div class="col-12">
+            <label class="form-label">Zona corporal</label>
+            <select class="form-select form-select-sphaira" [(ngModel)]="formData.zone" (change)="onZoneSelected($event)">
+              <option value="">-- Selecciona zona --</option>
+              <optgroup label="Vista Frontal">
+                <option *ngFor="let z of getZonesForView('front')" [value]="z.id">{{ getZoneLabel(z) }}</option>
+              </optgroup>
+              <optgroup label="Vista Posterior">
+                <option *ngFor="let z of getZonesForView('back')" [value]="z.id">{{ getZoneLabel(z) }}</option>
+              </optgroup>
+            </select>
+          </div>
+          <!-- Tipo -->
+          <div class="col-md-6">
+            <label class="form-label">Tipo de lesión</label>
+            <select class="form-select form-select-sphaira" [(ngModel)]="formData.type">
+              <option value="">-- Tipo --</option>
+              <option *ngFor="let t of injuryTypes" [value]="t">{{ t }}</option>
+            </select>
+          </div>
+          <!-- Gravedad -->
+          <div class="col-md-6">
+            <label class="form-label">Gravedad</label>
+            <select class="form-select form-select-sphaira" [(ngModel)]="formData.severity">
+              <option *ngFor="let s of severities" [value]="s">{{ s | titlecase }}</option>
+            </select>
+          </div>
+          <!-- Fecha lesión -->
+          <div class="col-md-6">
+            <label class="form-label">Fecha de la lesión</label>
+            <input type="date" class="form-control form-control-sphaira" [(ngModel)]="formData.dateInjury">
+          </div>
+          <!-- Fecha retorno estimada -->
+          <div class="col-md-6">
+            <label class="form-label">Retorno estimado</label>
+            <input type="date" class="form-control form-control-sphaira" [(ngModel)]="formData.dateReturn">
+          </div>
+          <!-- Mecanismo -->
+          <div class="col-12">
+            <label class="form-label">Mecanismo de lesión</label>
+            <input type="text" class="form-control form-control-sphaira" [(ngModel)]="formData.mechanism" placeholder="Ej: Sprint, entrada, giro brusco...">
+          </div>
+          <!-- Descripción -->
+          <div class="col-12">
+            <label class="form-label">Descripción</label>
+            <textarea class="form-control form-control-sphaira" rows="3" [(ngModel)]="formData.description" placeholder="Descripción detallada de la lesión..."></textarea>
+          </div>
+          <!-- Tratamiento -->
+          <div class="col-12">
+            <label class="form-label">Tratamiento</label>
+            <textarea class="form-control form-control-sphaira" rows="2" [(ngModel)]="formData.treatment" placeholder="Tratamiento indicado..."></textarea>
+          </div>
+          <!-- Notas (solo Pro) -->
+          <div class="col-12" *ngIf="isPro">
+            <label class="form-label">Notas médicas <span class="badge-pro-field">PRO</span></label>
+            <textarea class="form-control form-control-sphaira" rows="2" [(ngModel)]="formData.notes" placeholder="Notas adicionales..."></textarea>
+          </div>
+          <!-- Estado -->
+          <div class="col-md-6">
+            <label class="form-label">Estado</label>
+            <select class="form-select form-select-sphaira" [(ngModel)]="formData.status">
+              <option value="activa">Activa</option>
+              <option value="recuperacion">En recuperación</option>
+              <option value="cerrada">Cerrada</option>
+            </select>
+          </div>
+          <!-- RTP Phase (solo Pro) -->
+          <div class="col-md-6" *ngIf="isPro">
+            <label class="form-label">Fase RTP <span class="badge-pro-field">PRO</span></label>
+            <select class="form-select form-select-sphaira" [(ngModel)]="formData.rtpPhase">
+              <option *ngFor="let p of rtpPhases" [ngValue]="p.phase">{{ p.phase }}. {{ p.label }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-actions mt-3">
+          <button class="btn btn-outline-secondary" (click)="cancelForm()">Cancelar</button>
+          <button class="btn btn-sphaira-primary" (click)="saveInjury()" [disabled]="!formData.zone || !formData.type || !formData.dateInjury">
+            <i class="bi bi-check-lg me-1"></i>{{ editingInjury ? 'Guardar cambios' : 'Registrar lesión' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ DETAIL VIEW ════ -->
+    <div class="lesiones-detail-card" *ngIf="showDetail && detailInjury">
+      <div class="detail-card-header">
+        <h4><i class="bi bi-info-circle me-2"></i>Detalle de Lesión</h4>
+        <button class="btn-close-panel" aria-label="Cerrar" (click)="closeDetail()"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="detail-card-body">
+        <!-- Severity badge -->
+        <div class="detail-severity-bar" [style.background]="getSeverityColor(detailInjury.severity)">
+          <span class="text-white fw-bold text-uppercase">{{ detailInjury.severity }}</span>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail-field">
+            <span class="detail-label">Zona</span>
+            <span class="detail-value">{{ detailInjury.zoneLabel }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Tipo</span>
+            <span class="detail-value">{{ detailInjury.type }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Fecha lesión</span>
+            <span class="detail-value">{{ detailInjury.dateInjury }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Retorno estimado</span>
+            <span class="detail-value">{{ detailInjury.dateReturn || '—' }}</span>
+          </div>
+          <div class="detail-field" *ngIf="detailInjury.dateActualReturn">
+            <span class="detail-label">Retorno real</span>
+            <span class="detail-value">{{ detailInjury.dateActualReturn }}</span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Estado</span>
+            <span class="detail-value">
+              <i class="bi me-1" [ngClass]="getStatusIcon(detailInjury.status)" [style.color]="getStatusColor(detailInjury.status)"></i>
+              {{ getStatusLabel(detailInjury.status) }}
+            </span>
+          </div>
+          <div class="detail-field">
+            <span class="detail-label">Días desde lesión</span>
+            <span class="detail-value">{{ getDaysSinceInjury(detailInjury.dateInjury) }} días</span>
+          </div>
+          <div class="detail-field detail-full" *ngIf="detailInjury.mechanism">
+            <span class="detail-label">Mecanismo</span>
+            <span class="detail-value">{{ detailInjury.mechanism }}</span>
+          </div>
+          <div class="detail-field detail-full">
+            <span class="detail-label">Descripción</span>
+            <span class="detail-value">{{ detailInjury.description }}</span>
+          </div>
+          <div class="detail-field detail-full" *ngIf="detailInjury.treatment">
+            <span class="detail-label">Tratamiento</span>
+            <span class="detail-value">{{ detailInjury.treatment }}</span>
+          </div>
+          <div class="detail-field detail-full" *ngIf="detailInjury.notes && isPro">
+            <span class="detail-label">Notas médicas</span>
+            <span class="detail-value">{{ detailInjury.notes }}</span>
+          </div>
+        </div>
+
+        <!-- RTP Progress (Pro) -->
+        <div class="detail-rtp-section" *ngIf="isPro && detailInjury.status !== 'cerrada'">
+          <h5 class="rtp-section-title"><i class="bi bi-graph-up-arrow me-1"></i>Return to Play</h5>
+          <div class="rtp-progress-bar-wrap">
+            <div class="rtp-progress-bar" [style.width.%]="getRtpProgress(detailInjury)"></div>
+          </div>
+          <div class="rtp-phases-mini">
+            <span *ngFor="let p of rtpPhases" class="rtp-phase-dot"
+                  [class.completed]="(detailInjury.rtpPhase || 0) >= p.phase"
+                  [style.borderColor]="p.color"
+                  [style.background]="(detailInjury.rtpPhase || 0) >= p.phase ? p.color : 'transparent'"
+                  [title]="p.label">
+              {{ p.phase }}
+            </span>
+          </div>
+        </div>
+
+        <!-- ════ PHASE 3: MEDICAL DOCUMENTS ════ -->
+        <div class="detail-documents-section">
+          <div class="documents-header">
+            <h5 class="documents-title"><i class="bi bi-folder2-open me-2"></i>Documentos médicos</h5>
+            <button class="btn btn-sphaira-primary btn-sm" *ngIf="!readOnly" (click)="toggleUploadForm()">
+              <i class="bi" [ngClass]="showUploadForm ? 'bi-x-lg' : 'bi-plus-lg'"></i>
+              <span class="ms-1">{{ showUploadForm ? 'Cancelar' : 'Adjuntar' }}</span>
+            </button>
+          </div>
+
+          <!-- Upload form -->
+          <div class="documents-upload-form" *ngIf="showUploadForm">
+            <div class="upload-drop-area" (click)="fileInput.click()">
+              <i class="bi bi-cloud-arrow-up display-6 opacity-50"></i>
+              <p class="mb-1">Haz clic para seleccionar archivo</p>
+              <small class="text-muted">PDF, JPG, PNG (máx. 10 MB)</small>
+              <input #fileInput type="file" accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp" hidden (change)="onFileSelected($event)">
+            </div>
+            <div class="upload-file-info" *ngIf="selectedFile">
+              <i class="bi bi-file-earmark-check me-2 text-success"></i>
+              <span>{{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})</span>
+            </div>
+            <div class="mt-2">
+              <input type="text" class="form-control form-control-sphaira form-control-sm" [(ngModel)]="uploadDescription" placeholder="Descripción del documento (opcional)">
+            </div>
+            <button class="btn btn-sphaira-primary btn-sm mt-2" [disabled]="!selectedFile || uploadingDocument" (click)="uploadDocument()">
+              <i class="bi bi-upload me-1"></i>{{ uploadingDocument ? 'Subiendo...' : 'Subir documento' }}
+            </button>
+          </div>
+
+          <!-- Documents list -->
+          <div class="documents-list" *ngIf="!loadingDocuments">
+            <div *ngIf="detailDocuments.length === 0 && !showUploadForm" class="documents-empty">
+              <i class="bi bi-file-earmark-medical opacity-50"></i>
+              <span>Sin documentos adjuntos</span>
+            </div>
+            <div *ngFor="let doc of detailDocuments" class="document-item">
+              <div class="document-item-icon">
+                <i class="bi" [ngClass]="getDocumentIcon(doc.fileType)" [style.color]="getDocumentIconColor(doc.fileType)"></i>
+              </div>
+              <div class="document-item-info">
+                <span class="document-name">{{ doc.fileName }}</span>
+                <span class="document-meta">
+                  {{ formatFileSize(doc.fileSize) }}
+                  <span *ngIf="doc.uploadedBy"> · {{ doc.uploadedBy }}</span>
+                  <span *ngIf="doc.uploadedAt"> · {{ doc.uploadedAt | date:'dd/MM/yy' }}</span>
+                </span>
+                <span class="document-desc" *ngIf="doc.description">{{ doc.description }}</span>
+              </div>
+              <div class="document-item-actions">
+                <a class="btn-icon-sm" [href]="doc.fileUrl" target="_blank" title="Abrir">
+                  <i class="bi bi-box-arrow-up-right"></i>
+                </a>
+                <button class="btn-icon-sm btn-icon-danger" *ngIf="!readOnly" title="Eliminar" (click)="deleteDocument(doc)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="loadingDocuments" class="documents-loading">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+            <span class="ms-2">Cargando documentos...</span>
+          </div>
+        </div>
+
+        <div class="detail-actions" *ngIf="!readOnly">
+          <button class="btn btn-outline-primary btn-sm" (click)="openEditInjuryForm(detailInjury)">
+            <i class="bi bi-pencil me-1"></i>Editar
+          </button>
+          <button class="btn btn-outline-info btn-sm" *ngIf="isPro && detailInjury.status !== 'cerrada'" (click)="openRtp(detailInjury)">
+            <i class="bi bi-graph-up-arrow me-1"></i>Gestionar RTP
+          </button>
+          <button class="btn btn-outline-danger btn-sm" (click)="deleteInjury(detailInjury)">
+            <i class="bi bi-trash me-1"></i>Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ RTP PANEL (Pro only) ════ -->
+    <div class="lesiones-rtp-card" *ngIf="showRtpPanel && rtpInjury && isPro">
+      <div class="rtp-card-header">
+        <h4><i class="bi bi-graph-up-arrow me-2"></i>Return to Play – Progreso</h4>
+        <button class="btn-close-panel" aria-label="Cerrar" (click)="closeRtp()"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="rtp-card-body">
+        <p class="rtp-injury-ref">
+          <i class="bi bi-heart-pulse me-1"></i>
+          <strong>{{ rtpInjury.zoneLabel }}</strong> – {{ rtpInjury.type }} ({{ rtpInjury.severity }})
+        </p>
+
+        <div class="rtp-progress-bar-wrap rtp-progress-lg">
+          <div class="rtp-progress-bar" [style.width.%]="getRtpProgress(rtpInjury)"></div>
+          <span class="rtp-progress-label">{{ getRtpProgress(rtpInjury) | number:'1.0-0' }}%</span>
+        </div>
+
+        <div class="rtp-phases-list">
+          <div *ngFor="let p of rtpPhases" class="rtp-phase-item"
+               [class.rtp-phase-current]="rtpInjury.rtpPhase === p.phase"
+               [class.rtp-phase-completed]="(rtpInjury.rtpPhase || 0) > p.phase"
+               [class.rtp-phase-pending]="(rtpInjury.rtpPhase || 0) < p.phase"
+               (click)="!readOnly && setRtpPhase(p.phase)">
+            <div class="rtp-phase-icon" [style.borderColor]="p.color"
+                 [style.background]="(rtpInjury.rtpPhase || 0) >= p.phase ? p.color : 'transparent'">
+              <i class="bi" [ngClass]="(rtpInjury.rtpPhase || 0) > p.phase ? 'bi-check-lg' : p.icon"
+                 [style.color]="(rtpInjury.rtpPhase || 0) >= p.phase ? '#fff' : p.color"></i>
+            </div>
+            <div class="rtp-phase-info">
+              <span class="rtp-phase-number">Fase {{ p.phase }}</span>
+              <span class="rtp-phase-label">{{ p.label }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rtp-actions" *ngIf="!readOnly">
+          <button class="btn btn-sphaira-primary btn-sm" (click)="closeRtp()">
+            <i class="bi bi-check-lg me-1"></i>Guardar progreso
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ INJURY LIST / HISTORY ════ -->
+    <div class="lesiones-list-card" *ngIf="!showForm && !showDetail && !showRtpPanel">
+      <div class="list-card-header">
+        <h4><i class="bi bi-list-ul me-2"></i>Historial</h4>
+        <button class="btn btn-sphaira-primary btn-sm" *ngIf="!readOnly" (click)="openNewInjuryForm()">
+          <i class="bi bi-plus-lg me-1"></i>Nueva
+        </button>
+      </div>
+
+      <!-- Filters -->
+      <div class="list-filters">
+        <button class="filter-chip" [class.active]="filterStatus === 'all'" (click)="setFilter('all')">Todas</button>
+        <button class="filter-chip chip-active" [class.active]="filterStatus === 'activa'" (click)="setFilter('activa')">Activas</button>
+        <button class="filter-chip chip-recovering" [class.active]="filterStatus === 'recuperacion'" (click)="setFilter('recuperacion')">Recuperación</button>
+        <button class="filter-chip chip-closed" [class.active]="filterStatus === 'cerrada'" (click)="setFilter('cerrada')">Cerradas</button>
+      </div>
+
+      <!-- Injury cards -->
+      <div class="injury-list-items">
+        <div *ngIf="filteredInjuries.length === 0" class="injury-empty-state">
+          <i class="bi bi-shield-check display-5 opacity-50"></i>
+          <p>No hay lesiones registradas{{ filterStatus !== 'all' ? ' con este filtro' : '' }}.</p>
+        </div>
+
+        <div *ngFor="let injury of filteredInjuries" class="injury-list-item" (click)="viewDetail(injury)">
+          <div class="injury-item-status-bar" [style.background]="getStatusColor(injury.status)"></div>
+          <div class="injury-item-body">
+            <div class="injury-item-header">
+              <span class="injury-item-zone">{{ injury.zoneLabel }}</span>
+              <span class="injury-item-severity" [style.background]="getSeverityColor(injury.severity) + '22'" [style.color]="getSeverityColor(injury.severity)">
+                {{ injury.severity | titlecase }}
+              </span>
+            </div>
+            <div class="injury-item-type">{{ injury.type }}</div>
+            <div class="injury-item-meta">
+              <span><i class="bi bi-calendar3 me-1"></i>{{ injury.dateInjury }}</span>
+              <span><i class="bi bi-clock me-1"></i>{{ getDaysSinceInjury(injury.dateInjury) }}d</span>
+              <span>
+                <i class="bi me-1" [ngClass]="getStatusIcon(injury.status)" [style.color]="getStatusColor(injury.status)"></i>
+                {{ getStatusLabel(injury.status) }}
+              </span>
+            </div>
+            <!-- RTP mini bar (Pro) -->
+            <div class="injury-item-rtp" *ngIf="isPro && injury.status !== 'cerrada'">
+              <div class="rtp-mini-bar">
+                <div class="rtp-mini-fill" [style.width.%]="getRtpProgress(injury)"></div>
+              </div>
+              <span class="rtp-mini-label">RTP {{ getRtpProgress(injury) | number:'1.0-0' }}%</span>
+            </div>
+          </div>
+          <div class="injury-item-actions" *ngIf="!readOnly" (click)="$event.stopPropagation()">
+            <button class="btn-icon-sm" title="Editar" (click)="openEditInjuryForm(injury)"><i class="bi bi-pencil"></i></button>
+            <button class="btn-icon-sm" title="RTP" *ngIf="isPro && injury.status !== 'cerrada'" (click)="openRtp(injury)"><i class="bi bi-graph-up-arrow"></i></button>
+            <button class="btn-icon-sm btn-icon-danger" title="Eliminar" (click)="deleteInjury(injury)"><i class="bi bi-trash"></i></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════ VIEW: TIMELINE ═══════ -->
+<div class="lesiones-timeline-view" *ngIf="activeView === 'timeline'">
+  <div class="timeline-container">
+    <div *ngIf="timelineEntries.length === 0" class="timeline-empty">
+      <i class="bi bi-clock-history display-5 opacity-50"></i>
+      <p>No hay lesiones registradas para mostrar en la línea temporal.</p>
+    </div>
+
+    <div class="timeline-track" *ngIf="timelineEntries.length > 0">
+      <ng-container *ngFor="let entry of timelineEntries; let idx = index">
+        <!-- Month separator -->
+        <div class="timeline-month-label" *ngIf="entry.isFirst">
+          <span class="month-badge">{{ entry.monthLabel }}</span>
+        </div>
+
+        <!-- Timeline item -->
+        <div class="timeline-item" [class.timeline-item-right]="idx % 2 !== 0"
+             [class.timeline-active]="entry.injury.status === 'activa'"
+             [class.timeline-recovering]="entry.injury.status === 'recuperacion'"
+             [class.timeline-closed]="entry.injury.status === 'cerrada'">
+          <div class="timeline-dot" [style.background]="getSeverityColor(entry.injury.severity)"></div>
+          <div class="timeline-card" (click)="viewDetail(entry.injury); switchView('bodymap')">
+            <div class="timeline-card-header">
+              <span class="timeline-day">{{ entry.dayLabel }}</span>
+              <span class="timeline-zone">{{ entry.injury.zoneLabel }}</span>
+              <span class="timeline-severity-badge"
+                    [style.background]="getSeverityColor(entry.injury.severity) + '22'"
+                    [style.color]="getSeverityColor(entry.injury.severity)">
+                {{ entry.injury.severity | titlecase }}
+              </span>
+            </div>
+            <div class="timeline-card-type">{{ entry.injury.type }}</div>
+            <div class="timeline-card-desc" *ngIf="entry.injury.description">
+              {{ entry.injury.description.length > 100 ? entry.injury.description.slice(0, 100) + '...' : entry.injury.description }}
+            </div>
+            <div class="timeline-card-footer">
+              <span class="timeline-status"
+                    [style.color]="getStatusColor(entry.injury.status)">
+                <i class="bi me-1" [ngClass]="getStatusIcon(entry.injury.status)"></i>
+                {{ getStatusLabel(entry.injury.status) }}
+              </span>
+              <span class="timeline-days">{{ getDaysSinceInjury(entry.injury.dateInjury) }}d</span>
+              <!-- RTP mini (Pro) -->
+              <span class="timeline-rtp" *ngIf="isPro && entry.injury.rtpPhase">
+                RTP {{ getRtpProgress(entry.injury) | number:'1.0-0' }}%
+              </span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ VIEW: STATISTICS (Pro only) ═══════ -->
+<div class="lesiones-stats-view" *ngIf="activeView === 'stats' && isPro">
+
+  <!-- KPI Cards Row -->
+  <div class="stats-kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-total"><i class="bi bi-clipboard2-pulse"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-number">{{ totalInjuries }}</span>
+        <span class="kpi-label">Total lesiones</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-recovery"><i class="bi bi-calendar2-check"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-number">{{ avgRecoveryDays }}<small>d</small></span>
+        <span class="kpi-label">Recuperación media</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-zone"><i class="bi bi-geo-alt"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-number kpi-text">{{ mostAffectedZone }}</span>
+        <span class="kpi-label">Zona más afectada</span>
+      </div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon kpi-recurrence"><i class="bi bi-arrow-repeat"></i></div>
+      <div class="kpi-info">
+        <span class="kpi-number">{{ recurrenceRate }}<small>%</small></span>
+        <span class="kpi-label">Tasa recurrencia</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Grid -->
+  <div class="stats-charts-grid">
+
+    <!-- Monthly Trend Bar Chart -->
+    <div class="chart-card chart-card-wide">
+      <h5 class="chart-title"><i class="bi bi-graph-up me-2"></i>Tendencia mensual (12 meses)</h5>
+      <div class="trend-chart">
+        <div class="trend-bars">
+          <div *ngFor="let m of monthTrend" class="trend-bar-col">
+            <div class="trend-bar-track">
+              <div class="trend-bar-fill"
+                   [style.height.%]="m.maxCount > 0 ? (m.count / m.maxCount) * 100 : 0"
+                   [style.background]="m.count > 0 ? '#1f8f8a' : '#e0e0e0'">
+              </div>
+            </div>
+            <span class="trend-bar-value" *ngIf="m.count > 0">{{ m.count }}</span>
+            <span class="trend-bar-label">{{ m.label }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Severity Donut (CSS-only) -->
+    <div class="chart-card">
+      <h5 class="chart-title"><i class="bi bi-pie-chart me-2"></i>Gravedad</h5>
+      <div class="donut-chart-wrap">
+        <div class="donut-chart"
+             [style.background]="'conic-gradient(' +
+               severityStats[0].color + ' 0% ' + severityStats[0].pct + '%, ' +
+               severityStats[1].color + ' ' + severityStats[0].pct + '% ' + (severityStats[0].pct + severityStats[1].pct) + '%, ' +
+               severityStats[2].color + ' ' + (severityStats[0].pct + severityStats[1].pct) + '% 100%)'"
+             *ngIf="severityStats.length === 3">
+          <div class="donut-hole">
+            <span class="donut-total">{{ totalInjuries }}</span>
+            <span class="donut-total-label">Total</span>
+          </div>
+        </div>
+        <div class="donut-legend">
+          <div *ngFor="let s of severityStats" class="legend-row">
+            <span class="legend-color" [style.background]="s.color"></span>
+            <span class="legend-text">{{ s.severity }}</span>
+            <span class="legend-value">{{ s.count }} ({{ s.pct }}%)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zone Distribution -->
+    <div class="chart-card">
+      <h5 class="chart-title"><i class="bi bi-body-text me-2"></i>Zonas afectadas</h5>
+      <div class="horizontal-bars">
+        <div *ngFor="let z of zoneStats" class="hbar-row">
+          <span class="hbar-label">{{ z.label }}</span>
+          <div class="hbar-track">
+            <div class="hbar-fill" [style.width.%]="z.pct" [style.background]="'#1f8f8a'"></div>
+          </div>
+          <span class="hbar-value">{{ z.count }}</span>
+        </div>
+        <div *ngIf="zoneStats.length === 0" class="chart-empty">Sin datos</div>
+      </div>
+    </div>
+
+    <!-- Type Distribution -->
+    <div class="chart-card">
+      <h5 class="chart-title"><i class="bi bi-tags me-2"></i>Tipos de lesión</h5>
+      <div class="horizontal-bars">
+        <div *ngFor="let t of typeStats" class="hbar-row">
+          <span class="hbar-label">{{ t.type }}</span>
+          <div class="hbar-track">
+            <div class="hbar-fill" [style.width.%]="t.pct" [style.background]="'#31b270'"></div>
+          </div>
+          <span class="hbar-value">{{ t.count }}</span>
+        </div>
+        <div *ngIf="typeStats.length === 0" class="chart-empty">Sin datos</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     PHASE 3: NOTIFICATION DIALOG (overlay)
+     ═══════════════════════════════════════════════════════════════════ -->
+<div class="notify-overlay" *ngIf="showNotifyDialog" (click)="cancelNotification()">
+  <div class="notify-dialog" (click)="$event.stopPropagation()">
+    <div class="notify-dialog-icon">
+      <i class="bi bi-bell-fill"></i>
+    </div>
+    <h4 class="notify-dialog-title">¿Enviar notificación?</h4>
+    <p class="notify-dialog-text" *ngIf="pendingNotificationType === 'created'">
+      Se ha registrado una nueva lesión para <strong>{{ pendingNotifyInjury?.playerName }}</strong>.
+      ¿Deseas notificar al jugador y al club?
+    </p>
+    <p class="notify-dialog-text" *ngIf="pendingNotificationType === 'updated'">
+      Se ha actualizado la lesión de <strong>{{ pendingNotifyInjury?.playerName }}</strong>.
+      ¿Deseas enviar una notificación?
+    </p>
+    <p class="notify-dialog-text" *ngIf="pendingNotificationType === 'rtp_change'">
+      Avance de RTP: <strong>{{ pendingNotifyInjury?.playerName }}</strong> → Fase {{ pendingNotifyInjury?.rtpPhase }}/6.
+      ¿Notificar?
+    </p>
+    <p class="notify-dialog-text" *ngIf="pendingNotificationType === 'status_change'">
+      El estado de la lesión de <strong>{{ pendingNotifyInjury?.playerName }}</strong> ha cambiado.
+      ¿Enviar notificación?
+    </p>
+    <div class="notify-dialog-actions">
+      <button class="btn btn-outline-secondary" (click)="cancelNotification()">
+        <i class="bi bi-x-lg me-1"></i>No enviar
+      </button>
+      <button class="btn btn-sphaira-primary" (click)="confirmSendNotification()">
+        <i class="bi bi-send me-1"></i>Enviar
+      </button>
+    </div>
+    <label class="notify-auto-hint">
+      <input type="checkbox" [(ngModel)]="notificationConfig.autoNotify" (change)="saveNotifySettings()">
+      <span>Enviar automáticamente sin preguntar en el futuro</span>
+    </label>
+  </div>
+</div>
+
+<!-- ═══════ NOTIFICATION SETTINGS PANEL ═══════ -->
+<div class="notify-settings-overlay" *ngIf="showNotifySettings" (click)="showNotifySettings = false">
+  <div class="notify-settings-panel" (click)="$event.stopPropagation()">
+    <div class="notify-settings-header">
+      <h4><i class="bi bi-bell-fill me-2"></i>Notificaciones de lesiones</h4>
+      <button class="btn-close-panel" aria-label="Cerrar" (click)="showNotifySettings = false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="notify-settings-body">
+      <div class="notify-setting-row">
+        <div class="notify-setting-info">
+          <span class="notify-setting-label">Envío automático</span>
+          <span class="notify-setting-desc">Enviar notificaciones sin pedir confirmación</span>
+        </div>
+        <label class="mode-toggle">
+          <input type="checkbox" [(ngModel)]="notificationConfig.autoNotify">
+          <span class="mode-slider"></span>
+        </label>
+      </div>
+      <div class="notify-setting-row">
+        <div class="notify-setting-info">
+          <span class="notify-setting-label">Al crear lesión</span>
+          <span class="notify-setting-desc">Notificar cuando se registra una nueva lesión</span>
+        </div>
+        <label class="mode-toggle">
+          <input type="checkbox" [(ngModel)]="notificationConfig.notifyOnCreate">
+          <span class="mode-slider"></span>
+        </label>
+      </div>
+      <div class="notify-setting-row">
+        <div class="notify-setting-info">
+          <span class="notify-setting-label">Al cambiar estado</span>
+          <span class="notify-setting-desc">Notificar cuando cambia el estado de una lesión</span>
+        </div>
+        <label class="mode-toggle">
+          <input type="checkbox" [(ngModel)]="notificationConfig.notifyOnStatusChange">
+          <span class="mode-slider"></span>
+        </label>
+      </div>
+      <div class="notify-setting-row">
+        <div class="notify-setting-info">
+          <span class="notify-setting-label">Al avanzar RTP</span>
+          <span class="notify-setting-desc">Notificar al cambiar la fase de Return to Play</span>
+        </div>
+        <label class="mode-toggle">
+          <input type="checkbox" [(ngModel)]="notificationConfig.notifyOnRtpChange">
+          <span class="mode-slider"></span>
+        </label>
+      </div>
+    </div>
+    <div class="notify-settings-footer">
+      <button class="btn btn-sphaira-primary" (click)="saveNotifySettings()">
+        <i class="bi bi-check-lg me-1"></i>Guardar configuración
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ NOTIFICATION TOAST ═══════ -->
+<div class="notify-toast" [class.notify-toast-visible]="notificationSent">
+  <i class="bi bi-check-circle-fill me-2"></i>Notificación enviada correctamente
+</div>

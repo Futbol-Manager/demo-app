@@ -1,0 +1,267 @@
+<!-- Botón atrás -->
+<div class="back-container">
+  <button type="button" class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<div class="mis-tareas-page">
+
+  <!-- HEADER -->
+  <header class="page-header">
+    <h1 class="page-title">
+      <i class="bi bi-cone-striped header-icon"></i>
+      {{ 'TAREAS_MIS.TITLE' | translate }}
+    </h1>
+    <p class="page-subtitle">{{ 'TAREAS_MIS.SUBTITLE' | translate }}</p>
+  </header>
+
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <button class="btn-create" (click)="openCreate()">
+      <i class="bi bi-plus-lg"></i>
+      {{ 'TAREAS_MIS.CREATE' | translate }}
+    </button>
+  </div>
+
+  <!-- LISTA VACÍA -->
+  <app-empty-state *ngIf="misTareas.length === 0 && !showForm"
+    icon="bi-journal-plus"
+    [title]="'EMPTY_STATES.MY_TASKS.TITLE' | translate"
+    [message]="'EMPTY_STATES.MY_TASKS.MESSAGE' | translate"
+    [ctaText]="'TAREAS_MIS.CREATE' | translate"
+    ctaIcon="bi-plus-lg"
+    (ctaClick)="openCreate()">
+  </app-empty-state>
+
+  <!-- ════════════════════════════════════════════
+       FORMULARIO CREAR / EDITAR
+  ════════════════════════════════════════════ -->
+  <div class="form-panel" *ngIf="showForm">
+    <div class="form-panel-header">
+      <h3>{{ editingId ? ('TAREAS_MIS.EDIT_TITLE' | translate) : ('TAREAS_MIS.CREATE_TITLE' | translate) }}</h3>
+      <button class="form-close" (click)="cancelForm()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="form-body">
+      <!-- Título -->
+      <div class="form-group">
+        <label>{{ 'TAREAS_MIS.FIELD_TITLE' | translate }} *</label>
+        <input type="text" class="form-control saas-input" [(ngModel)]="form.slogans"
+          [placeholder]="'TAREAS_MIS.FIELD_TITLE_PH' | translate">
+      </div>
+
+      <!-- Estrategia + Intención -->
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>{{ 'TAREAS_MIS.FIELD_STRATEGY' | translate }}</label>
+          <select class="form-control saas-input" [(ngModel)]="form.estrategia">
+            <option value="">{{ 'TASKS.SELECT_STRATEGY' | translate }}</option>
+            <option *ngFor="let e of estrategias" [value]="e">{{ e }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>{{ 'TAREAS_MIS.FIELD_INTENTION' | translate }}</label>
+          <select class="form-control saas-input" [(ngModel)]="form.intencion">
+            <option value="">{{ 'TASKS.SELECT_INTENTION' | translate }}</option>
+            <option *ngFor="let i of intenciones" [value]="i">{{ i }}</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label>{{ 'TAREAS_FAV.DESCRIPTION' | translate }}</label>
+        <textarea class="form-control saas-input" rows="3" [(ngModel)]="form.description"
+          [placeholder]="'TAREAS_MIS.FIELD_DESC_PH' | translate"></textarea>
+      </div>
+
+      <!-- Reglas -->
+      <div class="form-group">
+        <label>{{ 'TAREAS_FAV.RULES' | translate }}</label>
+        <textarea class="form-control saas-input" rows="2" [(ngModel)]="form.rules"></textarea>
+      </div>
+
+      <!-- Variantes -->
+      <div class="form-group">
+        <label>{{ 'TAREAS_FAV.VARIANTS' | translate }}</label>
+        <textarea class="form-control saas-input" rows="2" [(ngModel)]="form.variants"></textarea>
+      </div>
+
+      <!-- Tiempo, Espacio, Material -->
+      <div class="form-row-3">
+        <div class="form-group">
+          <label>{{ 'TAREAS_FAV.WORKTIME' | translate }}</label>
+          <input type="text" class="form-control saas-input" [(ngModel)]="form.worktime"
+            [placeholder]="'TAREAS_MIS.FIELD_WORKTIME_PH' | translate">
+        </div>
+        <div class="form-group">
+          <label>{{ 'TAREAS_FAV.SPACE' | translate }}</label>
+          <input type="text" class="form-control saas-input" [(ngModel)]="form.space"
+            [placeholder]="'TAREAS_MIS.FIELD_SPACE_PH' | translate">
+        </div>
+        <div class="form-group">
+          <label>{{ 'TAREAS_FAV.MATERIAL' | translate }}</label>
+          <input type="text" class="form-control saas-input" [(ngModel)]="form.material"
+            [placeholder]="'TAREAS_MIS.FIELD_MATERIAL_PH' | translate">
+        </div>
+      </div>
+
+      <!-- Video -->
+      <div class="form-group">
+        <label>{{ 'TAREAS_FAV.VIDEO' | translate }}</label>
+        <input type="url" class="form-control saas-input" [(ngModel)]="form.video"
+          placeholder="https://...">
+      </div>
+    </div>
+
+    <div class="form-footer">
+      <button class="btn btn-outline-secondary btn-sm" (click)="cancelForm()">
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+      <button class="btn btn-success btn-sm" (click)="saveForm()" [disabled]="!form.slogans?.trim()">
+        <i class="bi bi-check-lg"></i>
+        {{ editingId ? ('COMMON.SAVE' | translate) : ('TAREAS_MIS.CREATE' | translate) }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       GRID DE TARJETAS
+  ════════════════════════════════════════════ -->
+  <div class="task-grid" *ngIf="misTareas.length > 0 && !showForm">
+    <div
+      class="task-card"
+      *ngFor="let tarea of misTareas"
+      [class.active]="selectedTask?.localId === tarea.localId"
+      (click)="openDetail(tarea)">
+
+      <div class="task-body">
+        <div class="task-body-top">
+          <span class="origin-badge own">{{ 'TAREAS_FAV.ORIGIN_OWN' | translate }}</span>
+          <div class="task-body-actions">
+            <button
+              class="btn-fav-sm"
+              [class.is-fav]="isFav(tarea)"
+              (click)="toggleFav($event, tarea)"
+              [attr.aria-label]="'TASKS.TOGGLE_FAV' | translate">
+              <i class="bi" [ngClass]="isFav(tarea) ? 'bi-star-fill' : 'bi-star'"></i>
+            </button>
+            <button class="btn-action-sm" (click)="openEdit(tarea); $event.stopPropagation()">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn-action-sm btn-del" (click)="confirmDelete(tarea); $event.stopPropagation()">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+        <h4 class="task-title">{{ tarea.slogans || ('TAREAS_FAV.NO_TITLE' | translate) }}</h4>
+        <div class="task-tags" *ngIf="tarea.estrategia || tarea.intencion">
+          <span class="badge badge-secondary" *ngIf="tarea.estrategia">{{ tarea.estrategia }}</span>
+          <span class="badge badge-primary" *ngIf="tarea.intencion">{{ tarea.intencion }}</span>
+        </div>
+        <p class="task-desc">{{ tarea.description | slice:0:100 }}{{ tarea.description.length > 100 ? '...' : '' }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       PANEL DETALLE
+  ════════════════════════════════════════════ -->
+  <div class="detail-backdrop" *ngIf="selectedTask" (click)="closeDetail()"></div>
+  <div class="detail-panel" *ngIf="selectedTask">
+    <div class="detail-panel-inner" (click)="$event.stopPropagation()">
+      <div class="detail-header">
+        <h2>{{ selectedTask.slogans || ('TAREAS_FAV.NO_TITLE' | translate) }}</h2>
+        <button class="detail-close" (click)="closeDetail()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="detail-body">
+        <div class="detail-section" *ngIf="selectedTask.estrategia || selectedTask.intencion">
+          <div class="task-tags">
+            <span class="badge badge-secondary" *ngIf="selectedTask.estrategia">{{ selectedTask.estrategia }}</span>
+            <span class="badge badge-primary" *ngIf="selectedTask.intencion">{{ selectedTask.intencion }}</span>
+          </div>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedTask.description">
+          <label>{{ 'TAREAS_FAV.DESCRIPTION' | translate }}</label>
+          <p>{{ selectedTask.description }}</p>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedTask.rules">
+          <label>{{ 'TAREAS_FAV.RULES' | translate }}</label>
+          <p>{{ selectedTask.rules }}</p>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedTask.variants">
+          <label>{{ 'TAREAS_FAV.VARIANTS' | translate }}</label>
+          <p>{{ selectedTask.variants }}</p>
+        </div>
+
+        <div class="detail-row">
+          <div class="detail-section" *ngIf="selectedTask.worktime">
+            <label>{{ 'TAREAS_FAV.WORKTIME' | translate }}</label>
+            <p>{{ selectedTask.worktime }}</p>
+          </div>
+          <div class="detail-section" *ngIf="selectedTask.space">
+            <label>{{ 'TAREAS_FAV.SPACE' | translate }}</label>
+            <p>{{ selectedTask.space }}</p>
+          </div>
+          <div class="detail-section" *ngIf="selectedTask.material">
+            <label>{{ 'TAREAS_FAV.MATERIAL' | translate }}</label>
+            <p>{{ selectedTask.material }}</p>
+          </div>
+        </div>
+
+        <div class="detail-section" *ngIf="selectedTask.video">
+          <label>{{ 'TAREAS_FAV.VIDEO' | translate }}</label>
+          <a [href]="selectedTask.video" target="_blank" class="video-link">
+            <i class="bi bi-play-circle"></i> {{ selectedTask.video }}
+          </a>
+        </div>
+      </div>
+
+      <div class="detail-footer">
+        <button
+          class="btn btn-sm"
+          [class.btn-outline-warning]="!isFav(selectedTask)"
+          [class.btn-warning]="isFav(selectedTask)"
+          (click)="toggleFav($event, selectedTask)">
+          <i class="bi" [ngClass]="isFav(selectedTask) ? 'bi-star-fill' : 'bi-star'"></i>
+        </button>
+        <button class="btn btn-outline-primary btn-sm" (click)="openEdit(selectedTask)">
+          <i class="bi bi-pencil"></i> {{ 'TAREAS_MIS.EDIT' | translate }}
+        </button>
+        <button class="btn btn-outline-danger btn-sm" (click)="confirmDelete(selectedTask)">
+          <i class="bi bi-trash"></i> {{ 'TAREAS_MIS.DELETE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       DIÁLOGO CONFIRMAR ELIMINACIÓN
+  ════════════════════════════════════════════ -->
+  <div class="detail-backdrop" *ngIf="showDeleteConfirm" (click)="cancelDelete()"></div>
+  <div class="confirm-dialog" *ngIf="showDeleteConfirm">
+    <div class="confirm-inner">
+      <i class="bi bi-exclamation-triangle-fill confirm-icon"></i>
+      <p>{{ 'TAREAS_MIS.DELETE_CONFIRM' | translate }}</p>
+      <div class="confirm-actions">
+        <button class="btn btn-outline-secondary btn-sm" (click)="cancelDelete()">
+          {{ 'COMMON.CANCEL' | translate }}
+        </button>
+        <button class="btn btn-danger btn-sm" (click)="doDelete()">
+          <i class="bi bi-trash"></i> {{ 'TAREAS_MIS.DELETE' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

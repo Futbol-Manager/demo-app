@@ -1,3 +1,4 @@
+// Legacy SCSS vars (keep for gradients etc.)
 $green: #31b270;
 $blue: #002c40;
 $white-soft: #f4f4f4;
@@ -106,9 +107,9 @@ app-root {
   border-radius: 16px;
   background: linear-gradient(
       90deg,
-      #e0e0e0 25%,
-      #f5f5f5 37%,
-      #e0e0e0 63%
+      var(--bg-surface) 25%,
+      var(--bg-hover) 37%,
+      var(--bg-surface) 63%
   );
   background-size: 400% 100%;
   animation: shimmer 1.4s ease infinite;
@@ -133,8 +134,8 @@ app-root {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f8f9fa;
-  color: #007bff;
+  background-color: var(--bg-main);
+  color: var(--color-primary);
 }
 
 .spinner-border {
@@ -148,7 +149,7 @@ app-root {
   align-items: center;
   font-size: 1.2rem;
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .mdi-loading {
@@ -167,7 +168,7 @@ app-root {
 ============================ */
 
 .players-dashboard {
-  background: #f4f4f4; // Blanco roto
+  background: var(--bg-main);
   min-height: 100vh;
   padding-bottom: 3rem;
 }
@@ -176,7 +177,7 @@ app-root {
 .players-title {
   font-size: 1.7rem;
   letter-spacing: 0.6px;
-  color: #002c40; // Azul noche
+  color: var(--text-primary);
 }
 
 
@@ -184,19 +185,19 @@ app-root {
   border-radius: 14px;
   padding: 0.65rem 1rem;
   font-weight: 500;
-  background: #ffffff;
-  border: 1px solid #efdcb6; // Beige
-  color: #002c40;
+  background: var(--bg-input);
+  border: 1px solid var(--color-beige);
+  color: var(--text-primary);
 
   &:focus {
-    border-color: #31b270;
-    box-shadow: 0 0 0 0.2rem rgba(49, 178, 112, 0.25);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--color-primary-rgb), 0.25);
   }
 }
 
 /* ---------- CARD JUGADOR ---------- */
 .player-card {
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 20px;
   padding: 2rem 1.6rem;
   height: 100%;
@@ -232,7 +233,7 @@ app-root {
   border-radius: 50%;
   margin-bottom: 0.4rem;
   overflow: hidden;
-  border: 3px solid #2fa36b;
+  border: 3px solid var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -266,14 +267,14 @@ app-root {
 /* NOMBRE */
 .player-name {
   font-weight: 600;
-  color: #002c40;
+  color: var(--text-primary);
   margin: 0;
 }
 
 /* EQUIPO */
 .player-team {
   font-size: 0.85rem;
-  color: #002c40;
+  color: var(--text-secondary);
   margin: 0;
   font-weight: 500;
 }
@@ -287,8 +288,8 @@ app-root {
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 600;
-  background-color: #e6f4ea;
-  color: #2fa36b;
+  background-color: rgba(var(--color-primary-rgb), 0.15);
+  color: var(--color-primary);
 }
 .league-badge.no-team {
   display: inline-block;
@@ -296,8 +297,8 @@ app-root {
   border-radius: 999px;
   font-size: 0.85rem;
   font-weight: 600;
-  background-color: #f1cbcbed;
-  color: #002c40;
+  background-color: rgba(220, 38, 38, 0.15);
+  color: var(--text-primary);
 }
 @media (max-width: 576px) {
   .player-header {
@@ -374,13 +375,13 @@ app-root {
 .page-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #002c40; // Azul noche
+  color: var(--text-primary);
   margin-bottom: 0.3rem;
 }
 
 .page-subtitle {
   font-size: 1rem;
-  color: #6c757d;
+  color: var(--text-secondary);
   margin-bottom: 0;
 }
 
@@ -396,7 +397,7 @@ app-root {
 
 .season-label {
   font-weight: 600;
-  color: #002c40;
+  color: var(--text-primary);
   margin-bottom: 0.4rem;
   display: flex;
   align-items: center;
@@ -408,11 +409,13 @@ app-root {
   border-radius: 14px;
   padding: 0.55rem 0.8rem;
   text-align: center;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-input);
+  background-color: var(--bg-input);
+  color: var(--text-primary);
 
   &:focus {
-    border-color: #31b270; // Verde Sphaira
-    box-shadow: 0 0 0 2px rgba(49, 178, 112, 0.2);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
   }
 }
 
@@ -432,12 +435,12 @@ app-root {
 
 
 .coach-dashboard {
-  background: $white-soft;
+  background: var(--bg-main);
   min-height: 100vh;
   padding-bottom: 4rem;
 }
 .coach-view {
-  background: $white-soft;
+  background: var(--bg-main);
   min-height: 100vh;
 }
 
@@ -449,10 +452,10 @@ app-root {
 
 .team-card {
   position: relative;
-  background: white;
+  background: var(--bg-card);
   border-radius: 20px;
   padding: 1.5rem;
-  box-shadow: 0 12px 30px rgba(0,0,0,.08);
+  box-shadow: var(--shadow-md);
   transition: transform .3s ease, box-shadow .3s ease;
   cursor: pointer;
   display: flex;
@@ -510,7 +513,7 @@ app-root {
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: #efdcb685;
+  background: rgba(var(--color-primary-rgb), 0.12);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -558,7 +561,7 @@ app-root {
 
   p {
     margin: .2rem 0 0;
-    color: #555;
+    color: var(--text-secondary);
     font-size: .9rem;
   }
 }
@@ -568,7 +571,7 @@ app-root {
   align-items: flex-start;
   gap: 0.75rem;
   padding: 0.6rem 0;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--border-color);
 }
 
 /* Iconos */
@@ -598,7 +601,7 @@ app-root {
 .info-title {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #002057;
+  color: var(--text-primary);
 }
 .training-grid {
   display: grid;
@@ -609,14 +612,14 @@ app-root {
 /* Texto principal */
 .info-text {
   font-size: 0.8rem;
-  color: #002057;
+  color: var(--text-primary);
   line-height: 1.15;
   font-weight: 100;
 }
 
 /* Texto secundario */
 .info-text.muted {
-  color: #adb5bd;
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -627,4 +630,40 @@ app-root {
 
 .training {
   margin-top: 0.25rem;
+}
+
+/* ===============================
+   Card Asistente de IA
+================================ */
+.ai-assistant-card {
+  position: relative;
+
+  .ai-gradient-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, #31b270 0%, #1f8f8a 40%, #002c40 100%);
+    z-index: 0;
+  }
+
+  &::after {
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.35),
+        rgba(0, 0, 0, 0.05)
+    ) !important;
+  }
+
+  .overlay i {
+    font-size: 1.8rem;
+    animation: float-icon 3s ease-in-out infinite;
+  }
+}
+
+@keyframes float-icon {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
 }

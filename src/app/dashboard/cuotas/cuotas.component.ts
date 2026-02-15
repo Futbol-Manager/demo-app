@@ -16,6 +16,7 @@ import { environment } from 'src/environments/environment';
 import { firstValueFrom } from 'rxjs';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-cuotas',
@@ -69,7 +70,7 @@ export class CuotasComponent implements OnInit {
   restante: number = 0;
   restanteCero: boolean = false;
   cuotas: any[] = [];
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
 
   listAllCuotas: Array<{ pagoClubId: number; titulo: string }> = [];
 

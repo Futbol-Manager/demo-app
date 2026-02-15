@@ -1,0 +1,371 @@
+<!-- Back button -->
+<div class="action-bar">
+  <button class="btn-back-clean" (click)="goBack()" [attr.aria-label]="'COMMON.BACK' | translate">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<!-- Title -->
+<div class="wizard-header">
+  <div class="wizard-icon plan-club">
+    <i class="bi bi-building"></i>
+  </div>
+  <h1>{{ 'CLUB_PLANS.PLAN_CLUB.NAME' | translate }}</h1>
+  <p>{{ 'CLUB_PLANS.WIZARD_CLUB.SUBTITLE' | translate }}</p>
+</div>
+
+<!-- ═══════════ Stepper ═══════════ -->
+<div class="stepper">
+  <div class="stepper-track">
+    <div class="stepper-item" *ngFor="let step of steps; let i = index"
+         [ngClass]="{'active': currentStep === step, 'completed': isStepCompleted(step)}"
+         (click)="goToStep(step)">
+      <div class="step-circle">
+        <span *ngIf="!isStepCompleted(step)">{{ i + 1 }}</span>
+        <i *ngIf="isStepCompleted(step)" class="bi bi-check-lg"></i>
+      </div>
+      <span class="step-label">{{ 'CLUB_PLANS.WIZARD_CLUB.STEP_' + (i + 1) | translate }}</span>
+    </div>
+    <div class="stepper-line" [style.width.%]="(getStepIndex() / (steps.length - 1)) * 100"></div>
+  </div>
+</div>
+
+<!-- ═══════════ STEP 1: Entity Registration ═══════════ -->
+<div class="wizard-step" *ngIf="currentStep === 'entity'">
+  <div class="step-card">
+    <div class="step-card-header">
+      <i class="bi bi-building"></i>
+      <h2>{{ 'CLUB_PLANS.WIZARD_CLUB.ENTITY_TITLE' | translate }}</h2>
+    </div>
+    <p class="step-description">{{ 'CLUB_PLANS.WIZARD_CLUB.ENTITY_DESC' | translate }}</p>
+
+    <form [formGroup]="entityForm">
+      <!-- Club info section -->
+      <div class="form-section">
+        <h3><i class="bi bi-shield-fill"></i> {{ 'CLUB_PLANS.WIZARD_CLUB.CLUB_INFO' | translate }}</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>{{ 'CLUB_PLANS.WIZARD_CLUB.CLUB_NAME' | translate }} *</label>
+            <input type="text" formControlName="clubName" class="form-control"
+                   [placeholder]="'CLUB_PLANS.WIZARD_CLUB.CLUB_NAME_PH' | translate">
+          </div>
+          <div class="form-group">
+            <label>{{ 'CLUB_PLANS.WIZARD_CLUB.TAX_ID' | translate }} *</label>
+            <input type="text" formControlName="taxId" class="form-control"
+                   [placeholder]="'CLUB_PLANS.WIZARD_CLUB.TAX_ID_PH' | translate">
+            <span class="form-hint" *ngIf="entityForm.get('taxId')?.touched && entityForm.get('taxId')?.invalid">
+              {{ 'CLUB_PLANS.WIZARD_CLUB.TAX_ID_INVALID' | translate }}
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label>{{ 'CLUB_PLANS.WIZARD_CLUB.ADDRESS' | translate }} *</label>
+          <input type="text" formControlName="address" class="form-control"
+                 [placeholder]="'CLUB_PLANS.WIZARD_CLUB.ADDRESS_PH' | translate">
+        </div>
+
+        <div class="form-row triple">
+          <div class="form-group">
+            <label>{{ 'CLUB_PLANS.WIZARD_CLUB.CITY' | translate }} *</label>
+            <input type="text" formControlName="city" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>{{ 'CLUB_PLANS.WIZARD_CLUB.POSTAL_CODE' | translate }} *</label>
+            <input type="text" formControlName="postalCode" class="form-control"
+                   [placeholder]="'CLUB_PLANS.WIZARD_CLUB.POSTAL_CODE_PH' | translate">
+          </div>
+          <div class="form-group">
+            <label>{{ 'CLUB_PLANS.WIZARD_CLUB.COUNTRY' | translate }} *</label>
+            <input type="text" formControlName="country" class="form-control"
+                   [placeholder]="'CLUB_PLANS.WIZARD_CLUB.COUNTRY_PH' | translate">
+          </div>
+        </div>
+      </div>
+
+      <!-- Responsible person section -->
+      <div class="form-section">
+        <h3><i class="bi bi-person-badge-fill"></i> {{ 'CLUB_PLANS.WIZARD_CLUB.RESPONSIBLE_INFO' | translate }}</h3>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>{{ 'CLUB_PLANS.WIZARD_CLUB.RESPONSIBLE_NAME' | translate }} *</label>
+            <input type="text" formControlName="responsibleName" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>{{ 'CLUB_PLANS.WIZARD_CLUB.RESPONSIBLE_ID' | translate }} *</label>
+            <input type="text" formControlName="responsibleId" class="form-control"
+                   [placeholder]="'CLUB_PLANS.WIZARD_CLUB.RESPONSIBLE_ID_PH' | translate">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>{{ 'CLUB_PLANS.WIZARD_CLUB.RESPONSIBLE_EMAIL' | translate }} *</label>
+            <input type="email" formControlName="responsibleEmail" class="form-control">
+          </div>
+          <div class="form-group">
+            <label>{{ 'CLUB_PLANS.WIZARD_CLUB.RESPONSIBLE_PHONE' | translate }} *</label>
+            <input type="tel" formControlName="responsiblePhone" class="form-control"
+                   [placeholder]="'CLUB_PLANS.WIZARD_CLUB.RESPONSIBLE_PHONE_PH' | translate">
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="step-footer">
+    <button class="btn btn-primary btn-next" [disabled]="!isEntityFormValid()" (click)="nextStep()">
+      {{ 'CLUB_PLANS.WIZARD.NEXT' | translate }}
+      <i class="bi bi-arrow-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════ STEP 2: Player Count & Calculation ═══════════ -->
+<div class="wizard-step" *ngIf="currentStep === 'players'">
+  <div class="step-card">
+    <div class="step-card-header">
+      <i class="bi bi-people-fill"></i>
+      <h2>{{ 'CLUB_PLANS.WIZARD_CLUB.PLAYERS_TITLE' | translate }}</h2>
+    </div>
+    <p class="step-description">{{ 'CLUB_PLANS.WIZARD_CLUB.PLAYERS_DESC' | translate }}</p>
+
+    <!-- Currency selector -->
+    <div class="currency-selector">
+      <label>{{ 'CLUB_PLANS.WIZARD_CLUB.CURRENCY' | translate }}</label>
+      <div class="currency-dropdown-wrapper">
+        <button class="currency-btn" (click)="toggleCurrencyDropdown()">
+          <span class="currency-symbol">{{ selectedCurrency.symbol }}</span>
+          <span class="currency-code">{{ selectedCurrency.code }}</span>
+          <span class="currency-name">– {{ selectedCurrency.name }}</span>
+          <i class="bi bi-chevron-down" [ngClass]="{'rotated': showCurrencyDropdown}"></i>
+        </button>
+        <div class="currency-dropdown" *ngIf="showCurrencyDropdown">
+          <button class="currency-option" *ngFor="let c of currencies"
+                  [ngClass]="{'selected': c.code === selectedCurrency.code}"
+                  (click)="selectCurrency(c)">
+            <span class="currency-symbol">{{ c.symbol }}</span>
+            <span class="currency-code">{{ c.code }}</span>
+            <span class="currency-name">{{ c.name }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Player count input -->
+    <div class="player-counter">
+      <label>{{ 'CLUB_PLANS.WIZARD_CLUB.PLAYER_COUNT' | translate }}</label>
+      <div class="counter-controls">
+        <button class="btn-counter" (click)="decrementPlayers()" [disabled]="playerCount <= 0">
+          <i class="bi bi-dash-lg"></i>
+        </button>
+        <input type="number" [value]="playerCount" (input)="onPlayerCountInput($event)"
+               min="0" class="counter-input">
+        <button class="btn-counter" (click)="incrementPlayers()">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Price calculation -->
+    <div class="price-calculation" *ngIf="calculation && !calculatingPrice">
+      <div class="calc-row">
+        <span>{{ playerCount }} {{ 'CLUB_PLANS.WIZARD_CLUB.PLAYERS' | translate }} × {{ BASE_PRICE_EUR | number:'1.2-2' }}€</span>
+        <span>{{ calculation.subtotal | number:'1.2-2' }}€</span>
+      </div>
+      <!-- Local equivalent if not EUR -->
+      <div class="calc-row local-equiv" *ngIf="!isEuro">
+        <span>{{ 'CLUB_PLANS.WIZARD_CLUB.LOCAL_EQUIVALENT' | translate }}</span>
+        <span>≈ {{ calculation.subtotalLocal | number:'1.2-2' }} {{ selectedCurrency.symbol }}</span>
+      </div>
+      <div class="calc-row total">
+        <span>{{ 'CLUB_PLANS.WIZARD_CLUB.TOTAL' | translate }}</span>
+        <span>{{ calculation.total | number:'1.2-2' }}€</span>
+      </div>
+      <div class="calc-row local-total" *ngIf="!isEuro">
+        <span></span>
+        <span class="local-amount">≈ {{ calculation.totalLocal | number:'1.2-2' }} {{ selectedCurrency.symbol }}</span>
+      </div>
+      <div class="calc-note">
+        <i class="bi bi-info-circle"></i>
+        {{ 'CLUB_PLANS.WIZARD_CLUB.ANNUAL_PAYMENT' | translate }}
+      </div>
+      <div class="calc-note" *ngIf="!isEuro">
+        <i class="bi bi-currency-exchange"></i>
+        {{ 'CLUB_PLANS.WIZARD_CLUB.CURRENCY_NOTE' | translate }}
+      </div>
+    </div>
+
+    <!-- Calculating skeleton -->
+    <div class="calc-skeleton" *ngIf="calculatingPrice">
+      <div class="skeleton-line skeleton-calc-row"></div>
+      <div class="skeleton-line skeleton-calc-row"></div>
+      <div class="skeleton-line skeleton-calc-total"></div>
+    </div>
+
+    <!-- No players selected -->
+    <div class="no-players-hint" *ngIf="playerCount === 0">
+      <i class="bi bi-arrow-up-circle"></i>
+      <p>{{ 'CLUB_PLANS.WIZARD_CLUB.SELECT_PLAYERS_HINT' | translate }}</p>
+    </div>
+  </div>
+
+  <div class="step-footer">
+    <button class="btn btn-secondary btn-prev" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      {{ 'CLUB_PLANS.WIZARD.PREVIOUS' | translate }}
+    </button>
+    <button class="btn btn-primary btn-next" [disabled]="playerCount <= 0" (click)="nextStep()">
+      {{ 'CLUB_PLANS.WIZARD.NEXT' | translate }}
+      <i class="bi bi-arrow-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════ STEP 3: Digital Contract ═══════════ -->
+<div class="wizard-step" *ngIf="currentStep === 'contract'">
+  <div class="step-card">
+    <div class="step-card-header">
+      <i class="bi bi-file-earmark-text-fill"></i>
+      <h2>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_TITLE' | translate }}</h2>
+    </div>
+    <p class="step-description">{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_DESC' | translate }}</p>
+
+    <!-- Contract viewer -->
+    <div class="contract-viewer" (scroll)="onContractScroll($event)">
+      <div class="contract-content">
+        <h3>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_HEADER' | translate }}</h3>
+
+        <p><strong>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_PARTIES' | translate }}</strong></p>
+
+        <p>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_PARTY1' | translate }}<br>
+        <strong>Sphaira Tech S.L.</strong>, {{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_SPHAIRA_INFO' | translate }}</p>
+
+        <p>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_PARTY2' | translate }}<br>
+        <strong>{{ contractData?.clubName }}</strong>, {{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_WITH_TAX_ID' | translate }} {{ contractData?.taxId }},
+        {{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_COUNTRY' | translate }} {{ contractData?.country }},
+        {{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_REPRESENTED_BY' | translate }} {{ contractData?.responsibleName }}
+        {{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_WITH_ID' | translate }} {{ contractData?.responsibleId }}.</p>
+
+        <p><strong>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_OBJECT' | translate }}</strong></p>
+        <p>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_OBJECT_TEXT' | translate }}</p>
+
+        <p><strong>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_CONDITIONS' | translate }}</strong></p>
+        <ul>
+          <li>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_COND_1' | translate:{ count: contractData?.playerCount } }}</li>
+          <li>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_COND_2' | translate:{ price: (BASE_PRICE_EUR | number:'1.2-2') + '€' } }}</li>
+          <li>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_COND_3' | translate:{ subtotal: (contractData?.totalBase | number:'1.2-2'), total: (contractData?.totalWithTax | number:'1.2-2') } }}</li>
+          <li>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_COND_4' | translate }}</li>
+          <li>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_COND_5' | translate }}</li>
+        </ul>
+
+        <p><strong>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_PRIVACY' | translate }}</strong></p>
+        <p>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_PRIVACY_TEXT' | translate }}</p>
+
+        <p><strong>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_DURATION' | translate }}</strong></p>
+        <p>{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_DURATION_TEXT' | translate }}</p>
+
+        <p class="contract-date">{{ 'CLUB_PLANS.WIZARD_CLUB.CONTRACT_DATE' | translate }}: {{ contractData?.date }}</p>
+      </div>
+    </div>
+
+    <!-- Scroll hint -->
+    <div class="scroll-hint" *ngIf="!contractScrolledToEnd">
+      <i class="bi bi-arrow-down-circle"></i>
+      {{ 'CLUB_PLANS.WIZARD_CLUB.SCROLL_TO_READ' | translate }}
+    </div>
+
+    <!-- Contract acceptance -->
+    <div class="contract-acceptance" [ngClass]="{'enabled': contractScrolledToEnd}">
+      <div class="acceptance-checkbox" (click)="contractScrolledToEnd && toggleContractAccepted()">
+        <div class="checkbox-box" [ngClass]="{'checked': contractAccepted}">
+          <i class="bi bi-check-lg" *ngIf="contractAccepted"></i>
+        </div>
+        <span>{{ 'CLUB_PLANS.WIZARD_CLUB.ACCEPT_CONTRACT' | translate }}</span>
+      </div>
+
+      <div class="signature-section" *ngIf="contractAccepted">
+        <label>{{ 'CLUB_PLANS.WIZARD_CLUB.SIGNATURE_NAME' | translate }} *</label>
+        <input type="text" [(ngModel)]="signatureName" class="form-control"
+               [placeholder]="'CLUB_PLANS.WIZARD_CLUB.SIGNATURE_PH' | translate">
+        <span class="form-hint">{{ 'CLUB_PLANS.WIZARD_CLUB.SIGNATURE_HINT' | translate }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-footer">
+    <button class="btn btn-secondary btn-prev" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      {{ 'CLUB_PLANS.WIZARD.PREVIOUS' | translate }}
+    </button>
+    <button class="btn btn-primary btn-next" [disabled]="!isContractStepValid()" (click)="submitContract()">
+      {{ 'CLUB_PLANS.WIZARD.NEXT' | translate }}
+      <i class="bi bi-arrow-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════ STEP 4: Payment ═══════════ -->
+<div class="wizard-step" *ngIf="currentStep === 'payment'">
+  <div class="step-card">
+    <div class="step-card-header">
+      <i class="bi bi-credit-card-fill"></i>
+      <h2>{{ 'CLUB_PLANS.WIZARD_CLUB.PAYMENT_TITLE' | translate }}</h2>
+    </div>
+    <p class="step-description">{{ 'CLUB_PLANS.WIZARD_CLUB.PAYMENT_DESC' | translate }}</p>
+
+    <!-- Order summary -->
+    <div class="order-summary">
+      <h4>{{ 'CLUB_PLANS.WIZARD_CLUB.ORDER_SUMMARY' | translate }}</h4>
+      <div class="summary-row">
+        <span>{{ 'CLUB_PLANS.PLAN_CLUB.NAME' | translate }}</span>
+        <span>{{ 'CLUB_PLANS.PRICING.ANNUAL' | translate }}</span>
+      </div>
+      <div class="summary-row">
+        <span>{{ playerCount }} {{ 'CLUB_PLANS.WIZARD_CLUB.PLAYERS' | translate }} × {{ BASE_PRICE_EUR | number:'1.2-2' }}€</span>
+        <span>{{ calculation?.subtotal | number:'1.2-2' }}€</span>
+      </div>
+      <div class="summary-row total">
+        <span>{{ 'CLUB_PLANS.WIZARD_CLUB.TOTAL' | translate }}</span>
+        <span>{{ calculation?.total | number:'1.2-2' }}€</span>
+      </div>
+      <div class="summary-row local-total" *ngIf="!isEuro">
+        <span>{{ 'CLUB_PLANS.WIZARD_CLUB.LOCAL_EQUIVALENT' | translate }}</span>
+        <span>≈ {{ calculation?.totalLocal | number:'1.2-2' }} {{ selectedCurrency.symbol }}</span>
+      </div>
+      <div class="summary-entity">
+        <i class="bi bi-building"></i>
+        <div>
+          <span class="entity-name">{{ entityForm.get('clubName')?.value }}</span>
+          <span class="entity-cif">{{ entityForm.get('taxId')?.value }} · {{ entityForm.get('country')?.value }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stripe info -->
+    <div class="step-info-box">
+      <i class="bi bi-shield-lock-fill"></i>
+      <p>{{ 'CLUB_PLANS.WIZARD_CLUB.SECURE_PAYMENT' | translate }}</p>
+    </div>
+  </div>
+
+  <div class="step-footer">
+    <button class="btn btn-secondary btn-prev" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      {{ 'CLUB_PLANS.WIZARD.PREVIOUS' | translate }}
+    </button>
+    <button class="btn btn-club btn-pay" (click)="processPayment()" [disabled]="processingPayment">
+      <span *ngIf="!processingPayment">
+        <i class="bi bi-lock-fill"></i>
+        {{ 'CLUB_PLANS.WIZARD.PAY_NOW' | translate }} {{ calculation?.total | number:'1.2-2' }}€
+      </span>
+      <span *ngIf="processingPayment">
+        <div class="spinner-border spinner-border-sm" role="status"></div>
+        {{ 'CLUB_PLANS.WIZARD.PROCESSING' | translate }}
+      </span>
+    </button>
+  </div>
+</div>

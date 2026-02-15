@@ -450,3 +450,98 @@
   .form-group.half { flex: 1 1 100%; }
   .logo-upload-wrap { flex-direction: column; align-items: flex-start; }
 }
+
+/* ===== DARK MODE ===== */
+:host-context(body.dark) {
+  --fifa-green: #3fc982;
+  --fifa-night: var(--text-primary);
+  --fifa-border: var(--border-color);
+  --fifa-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+
+  .btn-back-clean {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+    &:hover { background: var(--bg-hover); }
+  }
+
+  .card-pro {
+    background: var(--bg-card);
+  }
+
+  .fifa-header {
+    background: linear-gradient(135deg, #0a2a3c 0%, #071e2b 100%);
+  }
+
+  .card-pro-body { color: var(--text-primary); }
+
+  .logo-preview-wrap {
+    background: var(--bg-surface);
+  }
+
+  .logo-loading {
+    background: rgba(0, 0, 0, 0.7);
+    color: var(--text-primary);
+  }
+
+  .form-input-pro {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+    &:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(63, 201, 130, 0.2);
+    }
+  }
+
+  .dropdown-list {
+    background: var(--bg-card);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  .dropdown-item:hover { background: rgba(63, 201, 130, 0.1); }
+
+  .btn-horario {
+    background: var(--bg-card);
+    &:hover { background: rgba(63, 201, 130, 0.08); }
+  }
+
+  .btn-cancel-pro {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    &:hover { background: var(--bg-hover); }
+  }
+
+  .coach-card-inner {
+    background: var(--bg-surface);
+  }
+
+  .coach-avatar {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+  }
+
+  .modal-backdrop { background: rgba(0, 0, 0, 0.6); }
+
+  .modal-content-pro {
+    background: var(--bg-card);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-header-pro {
+    background: linear-gradient(135deg, #0a2a3c, #071e2b);
+  }
+
+  .modal-body { color: var(--text-primary); }
+  .modal-p { color: var(--text-secondary); }
+
+  .modal-footer-pro {
+    border-color: var(--border-color);
+    background: var(--bg-surface);
+  }
+
+  .modal-confirm-content {
+    color: var(--text-primary);
+  }
+
+  .modal-confirm-message { color: var(--text-secondary); }
+}

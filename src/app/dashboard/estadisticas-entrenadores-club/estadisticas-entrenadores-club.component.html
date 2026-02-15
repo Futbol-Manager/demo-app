@@ -1,11 +1,35 @@
-<div class="submenu">
-    <div class="row">
-        <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="irAPantalla(0)">
-                <i class="bi bi-calendar"></i>
-                <span class="d-none d-md-inline">Cuadro de mandos</span>
-            </a>
-        </div>
-    </div>
+<div class="back-container">
+  <div class="btn-back-clean" href="javascript:void(0)" (click)="irAPantalla(0)">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </div>
 </div>
-<p>estadisticas-entrenadores-club works!</p>
+
+<!-- ===== COMING SOON ===== -->
+<div class="coming-soon-container">
+  <div class="coming-soon-card">
+    <div class="coming-soon-icon">
+      <i class="bi bi-person-raised-hand"></i>
+    </div>
+    <h2 class="coming-soon-title">{{ 'COACH_STATS.TITLE' | translate }}</h2>
+    <div class="coming-soon-badge">
+      <i class="bi bi-clock"></i>
+      <span>{{ 'COMMON.COMING_SOON' | translate }}</span>
+    </div>
+    <p class="coming-soon-desc">{{ 'COMMON.COMING_SOON_DESC' | translate }}</p>
+    <div class="coming-soon-features">
+      <div class="feature-item">
+        <i class="bi bi-graph-up-arrow"></i>
+        <span>{{ 'COACH_STATS.FEATURE_1' | translate }}</span>
+      </div>
+      <div class="feature-item">
+        <i class="bi bi-trophy"></i>
+        <span>{{ 'COACH_STATS.FEATURE_2' | translate }}</span>
+      </div>
+      <div class="feature-item">
+        <i class="bi bi-bar-chart-line"></i>
+        <span>{{ 'COACH_STATS.FEATURE_3' | translate }}</span>
+      </div>
+    </div>
+  </div>
+</div>

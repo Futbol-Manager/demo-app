@@ -29,6 +29,10 @@ import { PatrocinadoresComponent } from './patrocinadores/patrocinadores.compone
 import { PublicidadComponent } from './publicidad/publicidad.component';
 import { NotificacionesComponent } from './notificaciones/notificaciones.component';
 import { TareasComponent } from './tareas/tareas.component';
+import { FavoritasComponent } from './tareas/favoritas/favoritas.component';
+import { HistorialComponent } from './tareas/historial/historial.component';
+import { MisTareasComponent } from './tareas/mis-tareas/mis-tareas.component';
+import { TacticalBoardComponent } from './tareas/tactical-board/tactical-board.component';
 import { OpcionesjugadorComponent } from './opcionesjugador/opcionesjugador.component';
 import { HorariosequiposComponent } from './horariosequipos/horariosequipos.component';
 import { EntrenamientosCreadosComponent } from './entrenamientos-creados/entrenamientos-creados.component';
@@ -59,7 +63,27 @@ import { InfoEquipoComponent } from './info-equipo/info-equipo.component';
 import { AdminClubesComponent } from './admin-clubes/admin-clubes.component';
 import { AdminInicioComponent } from './admin-inicio/admin-inicio.component';
 import { PlayerInfoDialogComponent } from './player-info-dialog/player-info-dialog.component';
+import { CalendarioClubComponent } from './calendario-club/calendario-club.component';
+import { AsistenteIaComponent, Nl2brPipe } from './asistente-ia/asistente-ia.component';
+import { AsistenteIaCoachComponent } from './asistente-ia-coach/asistente-ia-coach.component';
+import { AiFabComponent } from './ai-fab/ai-fab.component';
+import { LesionesComponent } from './lesiones/lesiones.component';
+import { LesionesEquipoComponent } from './lesiones/lesiones-equipo.component';
+import { LesionesClubComponent } from './lesiones-club/lesiones-club.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { InfoEntrenadoresComponent } from './info-entrenadores/info-entrenadores.component';
+import { PerfilEntrenadorComponent } from './perfil-entrenador/perfil-entrenador.component';
+import { SessionPdfComponent } from './menu-entrenador/session-pdf/session-pdf.component';
+import { EmptyStateComponent } from '../shared/empty-state/empty-state.component';
+import { SuscripcionClubComponent } from './suscripcion-club/suscripcion-club.component';
+import { WizardFamiliaComponent } from './suscripcion-club/wizard-familia/wizard-familia.component';
+import { WizardClubComponent } from './suscripcion-club/wizard-club/wizard-club.component';
+import { WizardGratuitoComponent } from './suscripcion-club/wizard-gratuito/wizard-gratuito.component';
+import { FeatureLockModalComponent } from './suscripcion-club/feature-lock-modal/feature-lock-modal.component';
+import { DebriefTrainingComponent } from './debrief/debrief-training/debrief-training.component';
+import { DebriefMatchComponent } from './debrief/debrief-match/debrief-match.component';
+import { DebriefReportComponent } from './debrief/debrief-report/debrief-report.component';
+import { DebriefHistoryComponent } from './debrief/debrief-history/debrief-history.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -94,6 +118,10 @@ export function HttpLoaderFactory(http: HttpClient) {
     PublicidadComponent,
     NotificacionesComponent,
     TareasComponent,
+    FavoritasComponent,
+    HistorialComponent,
+    MisTareasComponent,
+    TacticalBoardComponent,
     OpcionesjugadorComponent,
     HorariosequiposComponent,
     EntrenamientosCreadosComponent,
@@ -120,6 +148,27 @@ export function HttpLoaderFactory(http: HttpClient) {
     AdminClubesComponent,
     AdminInicioComponent,
     PlayerInfoDialogComponent,
+    CalendarioClubComponent,
+    AsistenteIaComponent,
+    AsistenteIaCoachComponent,
+    AiFabComponent,
+    Nl2brPipe,
+    LesionesComponent,
+    LesionesEquipoComponent,
+    LesionesClubComponent,
+    InfoEntrenadoresComponent,
+    PerfilEntrenadorComponent,
+    SessionPdfComponent,
+    EmptyStateComponent,
+    SuscripcionClubComponent,
+    WizardFamiliaComponent,
+    WizardClubComponent,
+    WizardGratuitoComponent,
+    FeatureLockModalComponent,
+    DebriefTrainingComponent,
+    DebriefMatchComponent,
+    DebriefReportComponent,
+    DebriefHistoryComponent,
   ],
   imports: [
     CommonModule,

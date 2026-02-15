@@ -3,10 +3,17 @@ import { APIURLPROD, APIURLLOCAL, ApiEnvironments, APIURLPROD2, ImageEnvironment
 export const localenvironment = {
   production: false,
   //pasa apuntar al api que apunta a PRO
-  apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
+  apiUrl: `${APIURLPROD2}${ApiEnvironments.LOCAL}`,
   images: `${APIURLPROD2}${ImageEnvironments.PRO}/`,
-  stripePublicKey: 'pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU'
+  stripePublicKey: 'pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU',
   //stripePublicKey: 'pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL'
+  stripePrices: {
+    clubMonthly: 'price_1QC6W3HzMBDrutQnKitrxLpV',
+    clubAnnual: 'price_1QC6VpHzMBDrutQnbCKNmItj',
+    clubFree: 'price_1QkkOTHzMBDrutQnAQ8zchAz',
+    scoutingMonthly: 'price_1QCzwDHzMBDrutQnzNPTj1G9',
+    scoutingAnnual: 'price_1QCzw9HzMBDrutQnYz3ctq3A'
+  }
 
   //para apuntar a la api local y la bbdd de desa
   /*apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
@@ -25,7 +32,14 @@ export const prodenvironment = {
   production: true,
   apiUrl: `${APIURLPROD2}${ApiEnvironments.PRO}`,
   images: `${APIURLPROD2}${ImageEnvironments.PRO}/`,
-  stripePublicKey: 'pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL'
+  stripePublicKey: 'pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL',
+  stripePrices: {
+    clubMonthly: 'price_1QC6W3HzMBDrutQnKitrxLpV',
+    clubAnnual: 'price_1QC6VpHzMBDrutQnbCKNmItj',
+    clubFree: 'price_1QkkOTHzMBDrutQnAQ8zchAz',
+    scoutingMonthly: 'price_1QCzwDHzMBDrutQnzNPTj1G9',
+    scoutingAnnual: 'price_1QCzw9HzMBDrutQnYz3ctq3A'
+  }
 
   //para apuntar a la api-desa
   /*apiUrl: `${APIURLPROD2}${ApiEnvironments.DESA}`,

@@ -35,7 +35,11 @@
             <div class="tab-pane fade show active" id="card-content" role="tabpanel" aria-labelledby="card-tab">
                 <!-- Contenido para la pestaña de tarjetas -->
                 <div class="row cards-pane-wrapper">
-                    <p *ngIf="players.length === 0" class="text-muted text-center py-5 mb-0">No hay jugadores en este equipo.</p>
+                    <app-empty-state *ngIf="players.length === 0"
+                      icon="bi-people"
+                      [title]="'EMPTY_STATES.PLAYERS.TITLE' | translate"
+                      [message]="'EMPTY_STATES.PLAYERS.MESSAGE' | translate">
+                    </app-empty-state>
                     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-3" *ngIf="players.length > 0">
                         <!-- Utilizamos ngFor para iterar sobre los jugadores -->
                         <div class="col mb-3" *ngFor="let player of players; let a = index">
@@ -74,7 +78,14 @@
                                         </div>
                                     </div>
 
-                                    <h5 class="card-title fifa-player-title">{{ player.nombre }} {{ player.apellido }}</h5>
+                                    <h5 class="card-title fifa-player-title">
+                                      {{ player.nombre }} {{ player.apellido }}
+                                      <span class="injury-alert-badge" *ngIf="getPlayerInjuryAlert(player.playerId) as alert"
+                                            [style.background]="getInjurySeverityColor(alert.severity)"
+                                            title="Lesión activa">
+                                        <i class="bi bi-heart-pulse-fill"></i>
+                                      </span>
+                                    </h5>
                                     <p class="player-subtitle">Nacimiento: {{ player.fechaDeNacimiento | date }}</p>
 
                                     <div class="player-mini-stats">
@@ -170,7 +181,12 @@
                             </thead>
                             <tbody>
                                 <tr *ngIf="filteredPlayers.length === 0">
-                                    <td [attr.colspan]="13" class="text-muted text-center py-4">No hay jugadores en este equipo.</td>
+                                    <td colspan="100%">
+                                        <app-empty-state variant="compact" icon="bi-people"
+                                          [title]="'EMPTY_STATES.PLAYERS.TITLE' | translate"
+                                          [message]="'EMPTY_STATES.PLAYERS.MESSAGE' | translate">
+                                        </app-empty-state>
+                                    </td>
                                 </tr>
                                 <tr *ngFor="let player of playersPaged; trackBy: trackByPlayer">
                                     <td class="player-table-img-cell">
@@ -180,7 +196,14 @@
                                             <i *ngIf="!player.picturePlayer" class="bi bi-person player-table-no-img"></i>
                                         </div>
                                     </td>
-                                    <td class="fw-semibold col-name">{{ player.nombre }} {{ player.apellido }}</td>
+                                    <td class="fw-semibold col-name">
+                                      {{ player.nombre }} {{ player.apellido }}
+                                      <span class="injury-alert-badge injury-alert-badge-sm" *ngIf="getPlayerInjuryAlert(player.playerId) as alert"
+                                            [style.background]="getInjurySeverityColor(alert.severity)"
+                                            title="Lesión activa">
+                                        <i class="bi bi-heart-pulse-fill"></i>
+                                      </span>
+                                    </td>
                                     <td>{{ player.fechaDeNacimiento | date }}</td>
                                     <td>{{ player.piernaNatural }}</td>
                                     <td>{{ getPositionShort(player.posicion) }}</td>
@@ -1351,10 +1374,13 @@
 
                     <!-- Pestaña: Lesiones -->
                     <div class="tab-pane" [class.active]="infoModalActiveTab === 'lesiones'" role="tabpanel">
-                        <div class="text-center py-5 text-muted">
-                            <i class="bi bi-heart-pulse display-4 opacity-50 d-block mb-3"></i>
-                            <p class="mb-0">No hay registros de lesiones para este jugador.</p>
-                        </div>
+                        <app-lesiones
+                          [playerId]="selectedPlayer?.playerId ?? 0"
+                          [playerName]="(selectedPlayer?.nombre || '') + ' ' + (selectedPlayer?.apellido || '')"
+                          [teamId]="teamId"
+                          [embedded]="true"
+                          [readOnly]="(usuarioActual?.profileType?.profileId ?? 0) >= 3">
+                        </app-lesiones>
                     </div>
                 </div>
             </div>

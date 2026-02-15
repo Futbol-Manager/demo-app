@@ -1,12 +1,8 @@
-<div class="subMenu">
-    <div class="row">
-        <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="navegarACalendario()">Calendario <i class="bi bi-calendar"></i></a>
-        </div>
-        <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="abrirModalCrearJugdor()">Invitar Entrenador <i class="bi bi-envelope"></i></a>
-        </div>
-    </div>
+<div class="back-container">
+  <div class="btn-back-clean" href="javascript:void(0)" (click)="navegarACalendario()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </div>
 </div>
 <div *ngIf="datosCargados" class="container">
     <div>

@@ -9,6 +9,7 @@ import { CancelSubscriptionRequest, SubscriptionRequest, Suscripcion, Suscripcio
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { environment } from 'src/environments/environment';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-suscripcion',
@@ -36,15 +37,14 @@ export class SuscripcionComponent implements OnInit {
   susCripcion: Suscripcion = new Suscripcion({});
   susTipo: SuscripcionTipo = new SuscripcionTipo({});
   usuarioActual!: User | null;
-  precioId = 'price_1QC6W3HzMBDrutQnKitrxLpV';
+  precioId = environment.stripePrices.clubMonthly;
   tiempo = 'M';
   susInfo: any;
   yesSus = false;
   noSus = false;
   cancelSus: CancelSubscriptionRequest = new CancelSubscriptionRequest({});
   cambiarSus: SubscriptionRequest = new SubscriptionRequest({});
-  stripeKey = 'pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL';
-  //stripeKey = 'pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU';
+  stripeKey = environment.stripePublicKey;
   datosCargadosScouting = false;
   datosCargadosPlayer = false;
   datosCargadosClub = false;
@@ -69,8 +69,8 @@ export class SuscripcionComponent implements OnInit {
   imageBaseUrlUser: string = environment.images + 'user/';
   openModalFree = false;
   isReadonly: boolean = false; // Propiedad para controlar readonly
-  temporadaStoredValue = '2025';
-  temporada = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
+  temporada = getCurrentSeasonString();
 
   constructor(
     private route: ActivatedRoute,
@@ -433,13 +433,13 @@ export class SuscripcionComponent implements OnInit {
   calculateTotal() {
     if (this.subscriptionType === 'monthly') {
       this.totalPriceClub = this.monthlyPriceClub * this.numTeams;
-      this.precioId = 'price_1QC6W3HzMBDrutQnKitrxLpV';
+      this.precioId = environment.stripePrices.clubMonthly;
       this.selected = 7;
       this.tiempo = 'M';
       this.isReadonly = false; // Alterna entre true y false
     } else if (this.subscriptionType === 'annual') {
       this.totalPriceClub = this.annualPricePerMonthClub * this.numTeams * 12; // Precio anual por 12 meses
-      this.precioId = 'price_1QC6VpHzMBDrutQnbCKNmItj';
+      this.precioId = environment.stripePrices.clubAnnual;
       this.selected = 8;
       this.tiempo = 'A';
       this.isReadonly = false; // Alterna entre true y false
@@ -450,7 +450,7 @@ export class SuscripcionComponent implements OnInit {
       this.numTeams = 999;
       this.selected = 11;
       this.tiempo = 'A';
-      this.precioId = 'price_1QkkOTHzMBDrutQnAQ8zchAz';
+      this.precioId = environment.stripePrices.clubFree;
     }
   }
 
@@ -458,7 +458,7 @@ export class SuscripcionComponent implements OnInit {
   calculateTotal2() {
     if (this.subscriptionType === 'monthly') {
       this.totalPrice = this.monthlyPrice * this.numTeams;
-      this.precioId = 'price_1QCzwDHzMBDrutQnzNPTj1G9';
+      this.precioId = environment.stripePrices.scoutingMonthly;
       this.selected = 9;
       this.tiempo = 'M';
     } else if (this.subscriptionType === 'annual') {
@@ -466,7 +466,7 @@ export class SuscripcionComponent implements OnInit {
       if (this.cuponIsValid) {
         this.totalPrice = this.totalPrice - (this.totalPrice * 0.34);
       }
-      this.precioId = 'price_1QCzw9HzMBDrutQnYz3ctq3A';
+      this.precioId = environment.stripePrices.scoutingAnnual;
       this.selected = 10;
       this.tiempo = 'A';
     }

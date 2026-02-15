@@ -10,6 +10,7 @@ import { ClubService } from 'src/app/core/services/club/club.service';
 import { distinctUntilChanged, filter, take } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Location } from '@angular/common';
+import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-inicio',
@@ -42,7 +43,8 @@ export class EquiposComponent implements OnInit {
   numEquipos = 0;
   numPadresPagados = 0;
   clubOk = false;
-  temporada = '2025';
+  seasons = getSeasons();
+  temporada = getCurrentSeasonString();
   federacion: number | null = null;
   showAlertAndroid = true;
 
@@ -180,7 +182,7 @@ export class EquiposComponent implements OnInit {
   categoriasVisibles = [...this.categoriasDefault];
   nivelesVisibles = [...this.nivelesDefault];
 
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
   isAndroid: boolean = false;
   isiOS: boolean = false;
 

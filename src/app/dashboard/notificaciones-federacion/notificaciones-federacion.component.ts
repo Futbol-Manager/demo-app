@@ -9,6 +9,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Location } from '@angular/common';
 import { PlayerService } from 'src/app/core/services/player/player.service';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 declare var $: any; // Declaración para usar jQuery
 
 @Component({
@@ -66,7 +67,7 @@ export class NotificacionesFederacionComponent implements OnInit {
   };*/
   isSending: boolean = false;
 
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
   opciones = 0;
 
   listClubsForCombo = [

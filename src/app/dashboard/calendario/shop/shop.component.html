@@ -66,9 +66,19 @@
       </div>
 
       <div class="task-content">
-        <span class="task-id">
-          {{ 'TASKS.ID' | translate }} {{ tarea.tasksShopId }}
-        </span>
+        <div class="task-content-header">
+          <span class="task-id">
+            {{ 'TASKS.ID' | translate }} {{ tarea.tasksShopId }}
+          </span>
+          <button
+            type="button"
+            class="btn-fav"
+            [class.is-fav]="isFav(tarea)"
+            (click)="toggleFav($event, tarea)"
+            [attr.aria-label]="'TASKS.TOGGLE_FAV' | translate">
+            <i class="bi" [ngClass]="isFav(tarea) ? 'bi-star-fill' : 'bi-star'"></i>
+          </button>
+        </div>
 
         <h5 class="task-title">{{ tarea.slogans }}</h5>
 

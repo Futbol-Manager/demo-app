@@ -8,6 +8,7 @@ import { ClubService } from 'src/app/core/services/club/club.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { CuotasClub } from 'src/app/core/services/models/club.model';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-historial-pagos-club',
@@ -17,7 +18,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 export class HistorialPagosClubComponent implements OnInit {
 
   datosCargados = false;
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
   clubId = 0;
   showModalBanco = false;
   listaPagos: any[] = [];

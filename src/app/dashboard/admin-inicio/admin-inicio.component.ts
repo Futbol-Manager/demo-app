@@ -9,6 +9,7 @@ import { User } from 'src/app/core/models/users/user.model';
 import { Response } from 'src/app/core/services/models/response.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Location } from '@angular/common';
+import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-admin-inicio',
@@ -48,8 +49,9 @@ export class AdminInicioComponent implements OnInit {
   listTeam: any[] = [];
   clubList: any[] = [];
 
-  temporada = '2025';
-  temporadaStoredValue = '2025';
+  seasons = getSeasons();
+  temporada = getCurrentSeasonString();
+  temporadaStoredValue = getCurrentSeasonString();
   federacion: number | null = null;
   // =========================
   // Cache keys

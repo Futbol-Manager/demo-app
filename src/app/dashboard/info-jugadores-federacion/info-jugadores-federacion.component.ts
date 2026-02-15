@@ -10,6 +10,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { Location } from '@angular/common';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-info-jugadores-federacion',
@@ -58,7 +59,7 @@ export class InfoJugadoresFederacionComponent implements OnInit {
   imageBaseUrlUser: string = environment.images + 'user/';
   imageBaseUrlPlayerDni: string = environment.images + 'playerDni/';
 
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
   temporada: string = '';
 
   mostrarModalDocJugador = false;

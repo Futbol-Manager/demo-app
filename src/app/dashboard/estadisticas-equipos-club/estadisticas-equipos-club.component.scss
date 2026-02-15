@@ -351,3 +351,71 @@
   color: #0d6efd;
   font-weight: 500;
 }
+
+/* ===== DARK MODE ===== */
+:host-context(body.dark) {
+  .btn-back-clean {
+    color: var(--text-secondary);
+    background-color: rgba(15, 163, 232, 0.12);
+    &:hover { background-color: var(--bg-hover); }
+  }
+
+  .section-title { color: var(--text-primary); }
+  .h2 { color: var(--text-primary); }
+
+  .skeleton-row {
+    background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-hover) 37%, var(--bg-surface) 63%);
+    background-size: 400% 100%;
+  }
+
+  .modern-table thead th {
+    background-color: #0a2a3c;
+  }
+
+  .modern-table tbody tr {
+    background: var(--bg-card);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+    &:hover {
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  .modern-table tbody td {
+    color: var(--text-primary);
+  }
+
+  .team-cell a {
+    color: var(--color-primary);
+  }
+
+  .modal-backdrop-custom {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .modal-card {
+    background: var(--bg-card);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-header {
+    border-color: var(--border-color);
+    h5 { color: var(--text-primary); }
+  }
+
+  .modal-subtitle { color: var(--text-secondary); }
+  .modal-filter { border-color: var(--border-color); }
+
+  .modal-table thead {
+    background: #0a2a3c;
+  }
+
+  .modal-table tbody tr:hover {
+    background: var(--bg-hover);
+  }
+
+  .modal-table td {
+    color: var(--text-primary);
+  }
+
+  .link { color: #60a5fa; }
+}

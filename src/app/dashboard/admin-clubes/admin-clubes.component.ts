@@ -7,6 +7,7 @@ import { User } from 'src/app/core/models/users/user.model';
 import { Response } from 'src/app/core/services/models/response.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Location } from '@angular/common';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-admin-clubes',
@@ -23,7 +24,7 @@ export class AdminClubesComponent implements OnInit {
   // Variables de búsqueda y datos
   clubList: any[] = [];
   searchTerm: string = '';
-  temporada = '2025';
+  temporada = getCurrentSeasonString();
 
   clubDetalleSus: any = null;          // club seleccionado (para mostrar nombre/id)
   susDetalleClub: any = null;          // detalle suscripción

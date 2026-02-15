@@ -1,0 +1,256 @@
+<!-- PERFIL ENTRENADOR -->
+<div class="perfil-entrenador-page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <button class="btn-back" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <h1>{{ 'COACH_PROFILE.TITLE' | translate }}</h1>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs-bar">
+    <button class="tab-btn" [class.active]="activeTab === 'personal'" (click)="setTab('personal')">
+      <i class="bi bi-person-fill"></i> {{ 'COACH_PROFILE.TAB_PERSONAL' | translate }}
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'deportivo'" (click)="setTab('deportivo')">
+      <i class="bi bi-trophy-fill"></i> {{ 'COACH_PROFILE.TAB_SPORT' | translate }}
+    </button>
+  </div>
+
+  <!-- ========== TAB: DATOS PERSONALES ========== -->
+  <div class="tab-content" *ngIf="activeTab === 'personal'">
+
+    <!-- Loading -->
+    <div *ngIf="loading" class="skeleton-card">
+      <div class="skeleton-circle"></div>
+      <div class="skeleton-lines">
+        <div class="skeleton-line w75"></div>
+        <div class="skeleton-line w50"></div>
+        <div class="skeleton-line w90"></div>
+        <div class="skeleton-line w60"></div>
+      </div>
+    </div>
+
+    <!-- Perfil cargado -->
+    <div *ngIf="!loading" class="profile-card">
+
+      <!-- Foto -->
+      <div class="profile-avatar">
+        <img *ngIf="profile.picturePlayer" [src]="imageBaseUrlUser + profile.picturePlayer" alt="Coach" />
+        <div *ngIf="!profile.picturePlayer" class="avatar-placeholder">
+          <i class="bi bi-person-fill"></i>
+        </div>
+      </div>
+
+      <!-- Info (modo lectura) -->
+      <div class="profile-info" *ngIf="!editMode">
+        <h2>{{ profile.nombre }} {{ profile.apellido }}</h2>
+
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-envelope"></i> {{ 'COACH_PROFILE.EMAIL' | translate }}</span>
+            <span class="info-value">{{ profile.email || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-phone"></i> {{ 'COACH_PROFILE.PHONE' | translate }}</span>
+            <span class="info-value">{{ profile.telefono || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-calendar-event"></i> {{ 'COACH_PROFILE.BIRTHDATE' | translate }}</span>
+            <span class="info-value">{{ formatFecha(profile.fechaDeNacimiento) }} <small *ngIf="profile.fechaDeNacimiento">({{ calcularEdad(profile.fechaDeNacimiento) }} {{ 'COACH_PROFILE.YEARS' | translate }})</small></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-card-heading"></i> {{ 'COACH_PROFILE.DNI' | translate }}</span>
+            <span class="info-value">{{ profile.dni || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-geo-alt"></i> {{ 'COACH_PROFILE.ADDRESS' | translate }}</span>
+            <span class="info-value">{{ profile.direccion || '—' }}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label"><i class="bi bi-flag"></i> {{ 'COACH_PROFILE.NATIONALITY' | translate }}</span>
+            <span class="info-value">{{ profile.nacionalidad || '—' }}</span>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <button class="btn-edit" (click)="enableEdit()">
+            <i class="bi bi-pencil-fill"></i> {{ 'COACH_PROFILE.EDIT' | translate }}
+          </button>
+          <button class="btn-dni" (click)="abrirModalDni()">
+            <i class="bi bi-card-image"></i> {{ 'COACH_PROFILE.UPLOAD_DNI' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Info (modo edición) -->
+      <div class="profile-info edit-form" *ngIf="editMode">
+        <h2>{{ 'COACH_PROFILE.EDITING' | translate }}</h2>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.NAME' | translate }}</label>
+            <input type="text" [(ngModel)]="editProfile.nombre" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.SURNAME' | translate }}</label>
+            <input type="text" [(ngModel)]="editProfile.apellido" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.EMAIL' | translate }}</label>
+            <input type="email" [(ngModel)]="editProfile.email" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.PHONE' | translate }}</label>
+            <input type="tel" [(ngModel)]="editProfile.telefono" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.BIRTHDATE' | translate }}</label>
+            <input type="date" [(ngModel)]="editProfile.fechaDeNacimiento" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.DNI' | translate }}</label>
+            <input type="text" [(ngModel)]="editProfile.dni" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.ADDRESS' | translate }}</label>
+            <input type="text" [(ngModel)]="editProfile.direccion" />
+          </div>
+          <div class="form-group">
+            <label>{{ 'COACH_PROFILE.NATIONALITY' | translate }}</label>
+            <input type="text" [(ngModel)]="editProfile.nacionalidad" />
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <button class="btn-save" (click)="saveProfile()">
+            <i class="bi bi-check-lg"></i> {{ 'COACH_PROFILE.SAVE' | translate }}
+          </button>
+          <button class="btn-cancel" (click)="cancelEdit()">
+            <i class="bi bi-x-lg"></i> {{ 'COACH_PROFILE.CANCEL' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DNI Preview -->
+    <div *ngIf="!loading && (profile.imgDniUno || profile.imgDniDos)" class="dni-preview-section">
+      <h3><i class="bi bi-card-image"></i> {{ 'COACH_PROFILE.DNI_IMAGES' | translate }}</h3>
+      <div class="dni-images">
+        <div class="dni-img" *ngIf="profile.imgDniUno">
+          <span>{{ 'COACH_PROFILE.DNI_FRONT' | translate }}</span>
+          <img [src]="imageBaseUrlPlayerDni + profile.imgDniUno" alt="DNI Anverso" />
+        </div>
+        <div class="dni-img" *ngIf="profile.imgDniDos">
+          <span>{{ 'COACH_PROFILE.DNI_BACK' | translate }}</span>
+          <img [src]="imageBaseUrlPlayerDni + profile.imgDniDos" alt="DNI Reverso" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== TAB: HISTORIAL DEPORTIVO ========== -->
+  <div class="tab-content" *ngIf="activeTab === 'deportivo'">
+
+    <div *ngIf="loadingHistorial" class="skeleton-card">
+      <div class="skeleton-lines">
+        <div class="skeleton-line w90"></div>
+        <div class="skeleton-line w75"></div>
+        <div class="skeleton-line w60"></div>
+      </div>
+    </div>
+
+    <div *ngIf="!loadingHistorial" class="history-section">
+      <h3><i class="bi bi-clock-history"></i> {{ 'COACH_PROFILE.SPORT_HISTORY' | translate }}</h3>
+
+      <div *ngIf="historial.length === 0" class="empty-state">
+        <i class="bi bi-inbox"></i>
+        <p>{{ 'COACH_PROFILE.NO_HISTORY' | translate }}</p>
+      </div>
+
+      <div class="history-table-wrapper" *ngIf="historial.length > 0">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>{{ 'COACH_PROFILE.HISTORY.SEASON' | translate }}</th>
+              <th>{{ 'COACH_PROFILE.HISTORY.BADGE' | translate }}</th>
+              <th>{{ 'COACH_PROFILE.HISTORY.CLUB' | translate }}</th>
+              <th>{{ 'COACH_PROFILE.HISTORY.CATEGORY' | translate }}</th>
+              <th>{{ 'COACH_PROFILE.HISTORY.LEVEL' | translate }}</th>
+              <th>{{ 'COACH_PROFILE.HISTORY.POSITION' | translate }}</th>
+              <th class="col-w">{{ 'COACH_PROFILE.HISTORY.WINS' | translate }}</th>
+              <th class="col-d">{{ 'COACH_PROFILE.HISTORY.DRAWS' | translate }}</th>
+              <th class="col-l">{{ 'COACH_PROFILE.HISTORY.LOSSES' | translate }}</th>
+              <th class="col-gf">{{ 'COACH_PROFILE.HISTORY.GF' | translate }}</th>
+              <th class="col-ga">{{ 'COACH_PROFILE.HISTORY.GA' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of historial">
+              <td><strong>{{ h.temporada }}</strong></td>
+              <td>
+                <img *ngIf="h.escudo" [src]="h.escudo" class="badge-img" alt="" />
+                <i *ngIf="!h.escudo" class="bi bi-shield-fill badge-placeholder"></i>
+              </td>
+              <td>{{ h.club }}</td>
+              <td>{{ h.categoria }}</td>
+              <td>{{ h.nivelEquipo }}</td>
+              <td><span class="position-badge">{{ h.posicionTabla }}º</span></td>
+              <td class="stat-win">{{ h.victorias }}</td>
+              <td class="stat-draw">{{ h.empates }}</td>
+              <td class="stat-loss">{{ h.derrotas }}</td>
+              <td class="stat-gf">{{ h.golesAFavor }}</td>
+              <td class="stat-ga">{{ h.golesEnContra }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL DNI ========== -->
+<div class="modal-overlay" *ngIf="mostrarModalDni" (click)="cerrarModalDni()">
+  <div class="modern-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header-modern">
+      <h3><i class="bi bi-card-image"></i> {{ 'COACH_PROFILE.DNI_MODAL_TITLE' | translate }}</h3>
+      <button class="btn-close-modal" aria-label="Cerrar" (click)="cerrarModalDni()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body-modern">
+      <div class="dni-upload-row">
+        <div class="dni-upload-col">
+          <label>{{ 'COACH_PROFILE.DNI_FRONT' | translate }}</label>
+          <div class="upload-zone" (click)="inputDni1.click()">
+            <img *ngIf="dniCara1" [src]="dniCara1" />
+            <div *ngIf="!dniCara1" class="upload-placeholder">
+              <i class="bi bi-cloud-arrow-up"></i>
+              <span>{{ 'COACH_PROFILE.UPLOAD_CLICK' | translate }}</span>
+            </div>
+            <input #inputDni1 type="file" accept="image/png,image/jpeg" hidden (change)="onFileChangeDni($event, 'cara1')" />
+          </div>
+        </div>
+        <div class="dni-upload-col">
+          <label>{{ 'COACH_PROFILE.DNI_BACK' | translate }}</label>
+          <div class="upload-zone" (click)="inputDni2.click()">
+            <img *ngIf="dniCara2" [src]="dniCara2" />
+            <div *ngIf="!dniCara2" class="upload-placeholder">
+              <i class="bi bi-cloud-arrow-up"></i>
+              <span>{{ 'COACH_PROFILE.UPLOAD_CLICK' | translate }}</span>
+            </div>
+            <input #inputDni2 type="file" accept="image/png,image/jpeg" hidden (change)="onFileChangeDni($event, 'cara2')" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer-modern">
+      <button class="btn-cancel" (click)="cerrarModalDni()">{{ 'COACH_PROFILE.CANCEL' | translate }}</button>
+      <button class="btn-save" [disabled]="!dniCara1 && !dniCara2">
+        <i class="bi bi-check-lg"></i> {{ 'COACH_PROFILE.SAVE' | translate }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -17,6 +17,7 @@ import { filter, take } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { PlayerInfoDialogComponent, PlayerInfoDialogData } from '../player-info-dialog/player-info-dialog.component';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-ropa',
@@ -75,10 +76,31 @@ export class RopaComponent implements OnInit {
     { label: 'Mochila', property: 'mochila', index: 21 },
   ];
 
+  /** Mapping used by mobile card view to iterate clothing items dynamically. */
+  clothingItemsMobile = [
+    { label: 'CLOTHES.TABLE.MATCH_SHIRT',       sizeKey: 'camisetaJuego',     okKey: 'camisetaJuegoOk',     toggleKey: 2,  sizes: 'abrigoSizes',       clubProp: 'camisetaJuego' },
+    { label: 'CLOTHES.TABLE.MATCH_PANTS',       sizeKey: 'pantalonJuego',     okKey: 'pantalonJuegoOk',     toggleKey: 3,  sizes: 'abrigoSizes',       clubProp: 'pantalonJuego' },
+    { label: 'CLOTHES.TABLE.MATCH_SOCKS',       sizeKey: 'medias',            okKey: 'mediasOk',            toggleKey: 11, sizes: 'abrigoSizesMedias', clubProp: 'medias' },
+    { label: 'CLOTHES.TABLE.MATCH_SHIRT_2',     sizeKey: 'camisetaJuegoDos',  okKey: 'camisetaJuegoDosOk',  toggleKey: 14, sizes: 'abrigoSizes',       clubProp: 'camisetaJuegoDos' },
+    { label: 'CLOTHES.TABLE.MATCH_PANTS_2',     sizeKey: 'pantalonJuegoDos',  okKey: 'pantalonJuegoDosOk',  toggleKey: 15, sizes: 'abrigoSizes',       clubProp: 'pantalonJuegoDos' },
+    { label: 'CLOTHES.TABLE.MATCH_SOCKS_2',     sizeKey: 'mediasDos',         okKey: 'mediasDosOk',         toggleKey: 16, sizes: 'abrigoSizesMedias', clubProp: 'mediasDos' },
+    { label: 'CLOTHES.TABLE.TRAINING_SHIRT',    sizeKey: 'camisetaEntreno',   okKey: 'camisetaEntrenoOk',   toggleKey: 4,  sizes: 'abrigoSizes',       clubProp: 'camisetaEntreno' },
+    { label: 'CLOTHES.TABLE.TRAINING_PANTS',    sizeKey: 'pantalonEntreno',   okKey: 'pantalonEntrenoOk',   toggleKey: 5,  sizes: 'abrigoSizes',       clubProp: 'pantalonEntreno' },
+    { label: 'CLOTHES.TABLE.TRAINING_SOCKS',    sizeKey: 'mediasTres',        okKey: 'mediasTresOk',        toggleKey: 17, sizes: 'abrigoSizesMedias', clubProp: 'mediasTres' },
+    { label: 'CLOTHES.TABLE.TRAINING_SWEATSHIRT', sizeKey: 'sudaderaEntreno', okKey: 'sudaderaEntrenoOk',   toggleKey: 6,  sizes: 'abrigoSizes',       clubProp: 'sudaderaEntreno' },
+    { label: 'CLOTHES.TABLE.TRACKSUIT_JACKET',  sizeKey: 'chaquetaChandal',   okKey: 'chaquetaChandalOk',   toggleKey: 7,  sizes: 'abrigoSizes',       clubProp: 'chaquetaChandal' },
+    { label: 'CLOTHES.TABLE.TRACKSUIT_PANTS',   sizeKey: 'pantalonChandal',   okKey: 'pantalonChandalOk',   toggleKey: 8,  sizes: 'abrigoSizes',       clubProp: 'pantalonChandal' },
+    { label: 'CLOTHES.TABLE.POLO',              sizeKey: 'poloPaseo',         okKey: 'poloPaseoOk',         toggleKey: 9,  sizes: 'abrigoSizes',       clubProp: 'poloPaseo' },
+    { label: 'CLOTHES.TABLE.CASUAL_PANTS',      sizeKey: 'pantalonPaseo',     okKey: 'pantalonPaseoOk',     toggleKey: 10, sizes: 'abrigoSizes',       clubProp: 'pantalonPaseo' },
+    { label: 'CLOTHES.TABLE.COAT',              sizeKey: 'abrigo',            okKey: 'abrigoOk',            toggleKey: 1,  sizes: 'abrigoSizes',       clubProp: 'abrigo' },
+    { label: 'CLOTHES.TABLE.RAINCOAT',          sizeKey: 'chubasquero',       okKey: 'chubasqueroOk',       toggleKey: 12, sizes: 'abrigoSizes',       clubProp: 'chubasquero' },
+    { label: 'CLOTHES.TABLE.BACKPACK',          sizeKey: '',                  okKey: 'mochilaOk',           toggleKey: 13, sizes: '',                  clubProp: 'mochila' },
+  ];
+
   prendasOcultar: number[] = [0];
 
   ropaPrendas: RopaClub = new RopaClub({});
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
 
   constructor(
     private loginService: LoginService,

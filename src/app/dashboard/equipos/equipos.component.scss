@@ -579,3 +579,183 @@
   padding: 0.8rem;
   border-radius: 10px;
 }
+
+/* =====================================================
+   DARK MODE OVERRIDES – EQUIPOS
+===================================================== */
+:host-context(body.dark) {
+
+  /* ---- BTN BACK ---- */
+  .btn-back-clean {
+    color: var(--text-primary);
+    background-color: rgba(var(--color-primary-rgb), 0.08);
+  }
+
+  .btn-back-clean:hover {
+    background-color: rgba(var(--color-navy-rgb), 0.12);
+  }
+
+  /* ---- SEASON ---- */
+  .season-label {
+    color: var(--text-primary);
+  }
+
+  .season-select {
+    border-color: var(--border-input);
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+
+    &:focus {
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 2px rgba(var(--color-primary-rgb), 0.2);
+    }
+  }
+
+  /* ---- TEAM CARD ---- */
+  .team-card {
+    background: var(--bg-card);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .team-card:hover {
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  .team-card strong {
+    color: var(--text-primary);
+  }
+
+  .team-card:hover strong {
+    color: var(--text-primary);
+  }
+
+  .team-name {
+    color: var(--text-primary);
+  }
+
+  .team-id {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-secondary);
+  }
+
+  .team-card:hover .team-id {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-primary);
+  }
+
+  .team-info {
+    color: var(--text-secondary);
+  }
+
+  .team-card:hover .team-info {
+    color: var(--text-primary);
+  }
+
+  /* ---- CARD GENÉRICA ---- */
+  .card,
+  .card:hover {
+    background-color: var(--bg-card) !important;
+    color: var(--text-primary);
+  }
+
+  /* ---- SPHAIRA ACTION CARD ---- */
+  .sphaira-action-card {
+    background: var(--bg-card);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  .sphaira-action-card:hover {
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.3);
+  }
+
+  /* ---- TEAM INFO BLOCK ---- */
+  .team-info-label {
+    color: var(--text-primary);
+  }
+
+  .team-info-muted {
+    color: var(--text-muted);
+  }
+
+  .team-schedule-day {
+    color: var(--text-primary);
+  }
+
+  .team-schedule-hours {
+    color: var(--text-secondary);
+  }
+
+  /* ---- MODAL ---- */
+  .modern-modal {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  }
+
+  .modern-body {
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+
+  .modern-footer {
+    background: var(--bg-surface);
+    border-top-color: var(--border-color);
+  }
+
+  .modern-input {
+    background-color: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+  }
+
+  /* ---- UPLOAD ZONE ---- */
+  .upload-zone {
+    border-color: var(--border-color);
+    background-color: var(--bg-surface);
+  }
+
+  .upload-zone:hover {
+    border-color: var(--color-primary);
+    background-color: rgba(var(--color-primary-rgb), 0.06);
+  }
+
+  .upload-zone small {
+    color: var(--text-muted);
+  }
+
+  /* ---- DROPDOWN ---- */
+  .dropdown-modern {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    background: var(--bg-card);
+  }
+
+  .dropdown-modern .list-group-item {
+    background-color: var(--bg-card);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  /* ---- BTN SECONDARY ---- */
+  .btn-secondary {
+    color: var(--text-primary);
+  }
+}
+
+/* ===== CARD SKELETON ===== */
+.card-skeleton {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.skeleton-card {
+  height: 120px;
+  border-radius: 14px;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 37%, #e5e7eb 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: -100% 0; }
+}

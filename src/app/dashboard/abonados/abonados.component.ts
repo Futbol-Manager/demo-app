@@ -2,15 +2,13 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
-import * as $ from 'jquery';
-import 'datatables.net';
-import { HttpClient } from '@angular/common/http';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Abonado, AbonadoPagoHistorico, AbonadoTemporada } from 'src/app/core/services/models/club.model';
 import * as XLSX from "xlsx";
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-abonados',
@@ -54,14 +52,26 @@ export class AbonadosComponent implements OnInit {
   }
 ];*/ //lista historial cuotas de los jugadores
 
+  // Search & filter
+  searchTerm = '';
+  filteredList: any[] = [];
+
+  // Sorting
+  sortColumn = '';
+  sortDirection: 'asc' | 'desc' = 'asc';
+
+  // Pagination
+  currentPage = 1;
+  pageSize = 50;
+  pageSizeOptions = [25, 50, 100, 200];
+
   constructor(
     private loginService: LoginService,
     private router: Router,
     private route: ActivatedRoute,
-    private elementRef: ElementRef,
-    private http: HttpClient,
     private clubService: ClubService,
-    private location: Location) { }
+    private location: Location,
+    private translate: TranslateService) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -80,10 +90,8 @@ export class AbonadosComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.listAT = response.data;
-          setTimeout(() => {
-            this.inicializarDataTable();
-            this.datosCargados = true;
-          }, 1000);
+          this.filteredList = [...this.listAT];
+          this.datosCargados = true;
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -109,98 +117,64 @@ export class AbonadosComponent implements OnInit {
     }
   }
 
-  // Método para inicializar el DataTable
-  inicializarDataTable(): void {
-    // Destruir el DataTable si ya existe
-    const $dataTable = $('#dataTable');
-    if ($dataTable.hasClass('dataTable')) {
-      $dataTable.DataTable().destroy();
-    }
-
-    this.http.get('assets/dataTable/Spanish.json').subscribe((translation) => {
-      $(document).ready(function () {
-        $('#dataTable').DataTable({
-          paging: true,
-          pageLength: 100,
-          searching: true,
-          ordering: true,
-          order: [[0, 'desc']],
-          columnDefs: [
-            {
-              targets: [0],
-              visible: false
-            }
-          ],
-          language: translation
-        });
-      });
-    });
-
-    //this.moverElementosDataTable('dataTable');
+  // Search & filter methods
+  applyFilter(): void {
+    const term = this.searchTerm.toLowerCase().trim();
+    this.filteredList = this.listAT.filter(at =>
+      (at.abonado?.nombre?.toLowerCase().includes(term)) ||
+      (at.abonado?.apellidos?.toLowerCase().includes(term)) ||
+      (at.abonado?.mail?.toLowerCase().includes(term)) ||
+      (at.abonado?.telefono?.includes(term))
+    );
+    this.sortData();
+    this.currentPage = 1;
   }
 
+  sortBy(column: string): void {
+    if (this.sortColumn === column) {
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+    this.sortData();
+  }
 
-  moverElementosDataTable(name: string) {
-    // **Move buttons outside the table after initialization**
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElements = this.elementRef.nativeElement.querySelectorAll('.dt-layout-row:not(.dt-layout-table)');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#button_datatable');
-
-        if (layoutRowElements.length >= 2 && buttonDatatableElement) {
-          const layoutRowElement = layoutRowElements[1]; // Obtener el segundo elemento
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          observer.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
+  private sortData(): void {
+    if (!this.sortColumn) return;
+    const col = this.sortColumn;
+    this.filteredList.sort((a, b) => {
+      let valA = col.startsWith('abonado.') ? a.abonado?.[col.split('.')[1]] : a[col];
+      let valB = col.startsWith('abonado.') ? b.abonado?.[col.split('.')[1]] : b[col];
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+      if (valA < valB) return this.sortDirection === 'asc' ? -1 : 1;
+      if (valA > valB) return this.sortDirection === 'asc' ? 1 : -1;
+      return 0;
     });
+  }
 
-    observer.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+  get paginatedList(): any[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredList.slice(start, start + this.pageSize);
+  }
 
-    //esto es para agregar una clase
-    const textcenter = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const dataTableElement = document.querySelector('#' + name);
+  get totalPages(): number {
+    return Math.ceil(this.filteredList.length / this.pageSize);
+  }
 
-        if (dataTableElement) {
-          dataTableElement.classList.add('text-center');
-          textcenter.disconnect(); // Detiene la observación después de encontrar el elemento
-        }
-      });
-    });
+  get pages(): number[] {
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const p: number[] = [];
+    const start = Math.max(1, current - 2);
+    const end = Math.min(total, current + 2);
+    for (let i = start; i <= end; i++) p.push(i);
+    return p;
+  }
 
-    textcenter.observe(document.body, { childList: true, subtree: true });
-
-
-    //esto es para la parte donde pones las filas a ver
-    const length = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-length');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-length');
-
-        if (layoutRowElement && buttonDatatableElement) {
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          length.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
-    });
-
-    length.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
-
-    //esto es para el input del buscador
-    const search = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const layoutRowElement = this.elementRef.nativeElement.querySelector('.dt-search');
-        const buttonDatatableElement = this.elementRef.nativeElement.querySelector('#dt-search');
-
-        if (layoutRowElement && buttonDatatableElement) {
-          $(layoutRowElement).appendTo(buttonDatatableElement);
-          search.disconnect(); // Detiene la observación después de encontrar los elementos
-        }
-      });
-    });
-
-    search.observe(this.elementRef.nativeElement, { childList: true, subtree: true });
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) this.currentPage = page;
   }
 
   openModalCreateUpdateAbonado() {
@@ -221,9 +195,7 @@ export class AbonadosComponent implements OnInit {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.listAT.push(response.data);
-          setTimeout(() => {
-            this.inicializarDataTable();
-          }, 1000);
+          this.filteredList = [...this.listAT];
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -320,7 +292,7 @@ export class AbonadosComponent implements OnInit {
 
   confirmReturnPay(pago: any) {
     //console.log(pago);
-    const confirmacion = confirm('Se creará un registro para restar esta cantidad con la fecha de hoy. ¿Estás seguro?');
+    const confirmacion = confirm(this.translate.instant('SUBS.ALERTS.CONFIRM_REFUND'));
 
     if (confirmacion) {
       this.returnPay(pago);

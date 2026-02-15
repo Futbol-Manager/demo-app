@@ -38,7 +38,7 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  color: #64748b;
+  color: var(--text-secondary);
   font-size: 1rem;
   display: flex;
   align-items: center;
@@ -46,7 +46,7 @@
   z-index: 2;
 
   &:hover {
-    color: #31b270;
+    color: var(--color-primary);
   }
 
   &:focus {
@@ -61,8 +61,8 @@
 }
 
 .btn-custom {
-  background: #31b270;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--text-on-primary);
   border: none;
   border-radius: 10px;
   height: 40px;
@@ -70,15 +70,15 @@
   transition: all 0.3s ease;
 
   &:hover {
-    background: linear-gradient(135deg, #31b270, #efdcb6);
-    color: #0f172a; // mejor contraste en hover
-    box-shadow: 0 12px 25px rgba(49, 178, 112, 0.45);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-beige));
+    color: #0f172a;
+    box-shadow: 0 12px 25px rgba(var(--color-primary-rgb), 0.45);
     transform: translateY(-1px);
   }
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.35);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.35);
   }
 }
 /* ===============================

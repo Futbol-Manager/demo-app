@@ -179,10 +179,13 @@
       </div>
 
       <div class="tab-pane" [class.active]="infoModalActiveTab === 'lesiones'" role="tabpanel">
-        <div class="text-center py-5 text-muted">
-          <i class="bi bi-heart-pulse display-4 opacity-50 d-block mb-3"></i>
-          <p class="mb-0">No hay registros de lesiones para este jugador.</p>
-        </div>
+        <app-lesiones
+          [playerId]="selectedPlayer?.playerId ?? 0"
+          [playerName]="(selectedPlayer?.nombre || '') + ' ' + (selectedPlayer?.apellido || '')"
+          [teamId]="teamId"
+          [embedded]="true"
+          [readOnly]="(usuarioActual?.profileType?.profileId ?? 0) >= 3">
+        </app-lesiones>
       </div>
     </div>
   </div>

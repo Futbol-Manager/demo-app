@@ -15,6 +15,7 @@ import { environment } from 'src/environments/environment';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-info-jugadores',
@@ -63,7 +64,7 @@ export class InfoJugadoresComponent implements OnInit {
   imageBaseUrlUser: string = environment.images + 'user/';
   imageBaseUrlPlayerDni: string = environment.images + 'playerDni/';
 
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
   temporada: string = '';
 
   mostrarModalDocJugador = false;

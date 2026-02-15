@@ -1,5 +1,6 @@
-import { Component, ElementRef, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { User } from 'src/app/core/models/users/user.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
@@ -17,6 +18,7 @@ import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import * as XLSX from 'xlsx';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 // Registra los complementos necesarios
 Chart.register(...registerables);
 
@@ -36,7 +38,8 @@ export interface Player1 {
   templateUrl: './player.component.html',
   styleUrls: ['./player.component.scss']
 })
-export class PlayerComponent implements OnInit {
+export class PlayerComponent implements OnInit, OnDestroy {
+  private subs: Subscription[] = [];
 
   @ViewChild('primerCampo', { static: false }) primerCampo!: ElementRef;
 
@@ -86,6 +89,10 @@ export class PlayerComponent implements OnInit {
 
   showModalMover = false;
   playerIdSelected = 0;
+
+  // ─── Injury alerts (hardcoded Phase 2) ───────────────────────
+  /** Hardcoded map: playerId → { count, maxSeverity } for demo */
+  playerInjuryAlerts: Record<number, { count: number; severity: 'leve' | 'moderada' | 'grave' }> = {};
 
   teamSelected: number = 0;
   listTeamsForCombo: any[] = [];
@@ -172,7 +179,7 @@ export class PlayerComponent implements OnInit {
     'D': '🔴'
   };
 
-  temporada: string = '2025';
+  temporada: string = getCurrentSeasonString();
   userId: number = 0;
   isAndroid: boolean = false;
   isiOS: boolean = false;
@@ -181,7 +188,7 @@ export class PlayerComponent implements OnInit {
   showModalPlayerInfo = false;
   playerInfo: any = [];
   teamIdPlayerSelected = 0;
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
 
   addPlayerMoved: boolean = false;
 
@@ -361,23 +368,34 @@ export class PlayerComponent implements OnInit {
 
     this.isAndroid = /android/i.test(userAgent);
     this.isiOS = /iPad|iPhone|iPod/.test(userAgent) && !('MSStream' in window);
-    this.route.params.subscribe(params => {
-      this.teamId = +params['teamId'];
-      this.cargarListadoJugadores();
-    });
+    this.subs.push(
+      this.route.params.subscribe(params => {
+        this.teamId = +params['teamId'];
+        this.cargarListadoJugadores();
+      })
+    );
 
     if (localStorage.getItem('temporada') != null && localStorage.getItem('temporada') != undefined) {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
 
-    this.loginService.usuarioActual.subscribe(user => {
-      this.usuarioActual = user;
-      this.userId = this.usuarioActual!.userId;
-      this.profileId = this.usuarioActual!.profileType.profileId;
-      //this.playerIdsList = this.usuarioActual!.playerIds;
-    });
+    this.subs.push(
+      this.loginService.usuarioActual.subscribe(user => {
+        this.usuarioActual = user;
+        this.userId = this.usuarioActual!.userId;
+        this.profileId = this.usuarioActual!.profileType.profileId;
+      })
+    );
     this.getListaPostpartidos();
     this.getListaProximosPartidos();
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach(s => s.unsubscribe());
+    if (this.radarChart) {
+      this.radarChart.destroy();
+      this.radarChart = null;
+    }
   }
 
   goBack(): void {
@@ -415,6 +433,8 @@ export class PlayerComponent implements OnInit {
             );
             this.applyFilter();
           }
+          // ── Hardcoded injury alerts (Phase 2 demo) ──
+          this.seedInjuryAlerts();
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
           this.players = [];
@@ -1652,6 +1672,34 @@ export class PlayerComponent implements OnInit {
         console.error('Error en la solicitud:', error);
       }
     );
+  }
+
+  // ─── Injury alerts (Phase 2 – hardcoded demo) ──────────────────
+  /**
+   * Seeds hardcoded injury alert data for the first couple of players.
+   * In the future this will come from an API call.
+   */
+  private seedInjuryAlerts(): void {
+    this.playerInjuryAlerts = {};
+    if (this.players.length > 0) {
+      this.playerInjuryAlerts[this.players[0].playerId] = { count: 1, severity: 'moderada' };
+    }
+    if (this.players.length > 2) {
+      this.playerInjuryAlerts[this.players[2].playerId] = { count: 1, severity: 'grave' };
+    }
+  }
+
+  getPlayerInjuryAlert(playerId: number): { count: number; severity: 'leve' | 'moderada' | 'grave' } | null {
+    return this.playerInjuryAlerts[playerId] || null;
+  }
+
+  getInjurySeverityColor(severity: string): string {
+    switch (severity) {
+      case 'leve': return '#20c997';
+      case 'moderada': return '#ffc107';
+      case 'grave': return '#dc3545';
+      default: return '#6c757d';
+    }
   }
 
 }

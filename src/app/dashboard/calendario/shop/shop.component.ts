@@ -1,5 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { TaskStorageService } from 'src/app/core/services/training/task-storage.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -37,6 +38,7 @@ export class ShopComponent implements OnInit {
 
   constructor(
     private trainingService: TrainingService,
+    public taskStorage: TaskStorageService,
   ) { }
 
   ngOnInit(): void {
@@ -52,6 +54,8 @@ export class ShopComponent implements OnInit {
     this.trainingService.downloadTaskShop(this.trainingId.toString(), tarea).subscribe(
       (response) => {
         if (response) {
+          // Registrar en historial de tareas usadas
+          this.taskStorage.registerUsage(tarea, 'cloud');
           this.tareaDescargada.emit(true);
         }
       },
@@ -98,6 +102,17 @@ export class ShopComponent implements OnInit {
     this.estrategia = '-';
     this.intencion = '-';
     this.textSearch = '';
+  }
+
+  /** Comprueba si una tarea de la nube es favorita */
+  isFav(tarea: any): boolean {
+    return this.taskStorage.isFavorite({ tasksShopId: tarea.tasksShopId });
+  }
+
+  /** Marca/desmarca favorita y registra uso en historial */
+  toggleFav(event: Event, tarea: any): void {
+    event.stopPropagation();
+    this.taskStorage.toggleFavorite(tarea, 'cloud');
   }
 
 }

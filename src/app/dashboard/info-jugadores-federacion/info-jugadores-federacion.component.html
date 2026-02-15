@@ -1,17 +1,15 @@
-<div class="submenu">
-    <div class="row">
-        <div class="col">
-            <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
-                <i class="bi bi-arrow-left-square-fill"></i>
-                <span class="d-none d-md-inline">Volver</span>
-            </a>
-        </div>
-    </div>
+<div class="back-container">
+  <div class="btn-back-clean" href="javascript:void(0)" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </div>
 </div>
 
-<div *ngIf="loading" class="d-flex align-items-center justify-content-center p-3">
-    <div class="spinner-border text-primary me-2" role="status" aria-hidden="true"></div>
-    <strong>Cargando listado...</strong>
+<div *ngIf="loading" class="table-skeleton">
+    <div class="skeleton-header"></div>
+    <div class="skeleton-row" *ngFor="let i of [].constructor(8)">
+        <div class="skeleton-cell" *ngFor="let j of [].constructor(8)"></div>
+    </div>
 </div>
 
 <div *ngIf="datosCargados" style="margin: 5%;">
@@ -327,7 +325,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Subir Documento (PDF, Word o imagen)</h5>
-                <button type="button" class="btn-close" (click)="cerrarModalDocumento()"></button>
+                <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalDocumento()"></button>
             </div>
             <div class="modal-body">
                 <ng-template #subirNuevoArchivo>
@@ -355,7 +353,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Requerimiento Personalizado</h5>
-                <button type="button" class="btn-close" (click)="cerrarModalEditarPersonalizado()"></button>
+                <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalEditarPersonalizado()"></button>
             </div>
             <div class="modal-body">
                 <div *ngIf="showDate">
@@ -388,7 +386,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Subir Documento (PDF, Word o imagen)</h5>
-                <button type="button" class="btn-close" (click)="cerrarModalDocumentoOjo()"></button>
+                <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalDocumentoOjo()"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3 text-center"

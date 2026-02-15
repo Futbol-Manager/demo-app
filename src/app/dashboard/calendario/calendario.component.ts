@@ -1327,12 +1327,68 @@ export class CalendarioComponent implements OnInit {
             );
           }
           this.datosCargados = true;
+
+          // Auto-abrir evento si venimos del calendario del club con queryParams
+          this.autoOpenFromQueryParams();
         },
         (error) => {
           console.error('Error al cargar el listado de equipos', error);
         },
       );
   }
+
+  /**
+   * Lee queryParams (eventType, eventId, eventDate) para abrir automáticamente
+   * el detalle de un entrenamiento o partido al llegar desde el calendario del club.
+   */
+  private autoOpenFromQueryParams(): void {
+    this.route.queryParams.subscribe((qp) => {
+      const eventType = qp['eventType'];   // 'entrenamiento' | 'partido'
+      const eventId = +qp['eventId'];
+      const eventDate = qp['eventDate'];   // 'YYYY-MM-DD'
+
+      if (!eventType || !eventId || !eventDate) return;
+
+      // Navegar al mes correcto si es diferente al actual
+      const eventDateObj = new Date(eventDate + 'T12:00:00');
+      if (
+        eventDateObj.getMonth() !== this.mesActual.getMonth() ||
+        eventDateObj.getFullYear() !== this.mesActual.getFullYear()
+      ) {
+        this.mesActual = new Date(eventDateObj.getFullYear(), eventDateObj.getMonth(), 1);
+        this.generarCalendarioV2(this.mesActual);
+      }
+
+      // Abrir el modal del día y luego seleccionar el evento específico
+      this.abrirModal(eventDate);
+
+      setTimeout(() => {
+        if (eventType === 'entrenamiento') {
+          const training = this.listTraining.find(
+            (t) => t.trainingSessionId === eventId
+          );
+          if (training) {
+            this.selectActivity('entrenamiento', eventId, training);
+          }
+        } else if (eventType === 'partido') {
+          const match = this.listMatchPreparation.find(
+            (m) => m.matchPreparationId === eventId
+          );
+          if (match) {
+            this.selectActivity('partido', eventId, match);
+          }
+        }
+
+        // Limpiar queryParams para evitar re-apertura si se navega dentro del calendario
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: {},
+          replaceUrl: true,
+        });
+      }, 100);
+    });
+  }
+
   puedeVerPartido(dia: any): boolean {
     const perfil = this.usuarioActual?.profileType?.profileId;
 

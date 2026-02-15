@@ -299,3 +299,79 @@
     font-size: 0.8rem;
   }
 }
+
+/* =====================================================
+   DARK MODE OVERRIDES – ESTADISTICAS JUGADORES
+===================================================== */
+:host-context(body.dark) {
+  --sphaira-green: #3fc982;
+  --sphaira-night: var(--text-primary);
+  --sphaira-ivory: var(--bg-surface);
+  --sphaira-card-bg: var(--bg-card);
+  --sphaira-border: var(--border-color);
+  --sphaira-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  --sphaira-shadow-hover: 0 8px 28px rgba(0, 0, 0, 0.28);
+
+  .btn-back-clean {
+    color: var(--text-primary);
+    background: rgba(var(--color-primary-rgb), 0.08);
+  }
+
+  .btn-back-clean:hover {
+    background: rgba(var(--color-primary-rgb), 0.14);
+  }
+
+  .form-select-pro {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+  }
+
+  .form-select-pro:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
+  }
+
+  .toggle-btn {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  .toggle-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--border-strong);
+  }
+
+  .toggle-btn.active {
+    background: rgba(var(--color-primary-rgb), 0.15);
+    border-color: var(--color-primary);
+  }
+
+  .card-pro-header {
+    background: linear-gradient(180deg, rgba(var(--color-primary-rgb), 0.06) 0%, transparent 100%);
+    border-bottom-color: var(--border-color);
+  }
+
+  .table-pro thead {
+    background: var(--color-navy);
+  }
+
+  .table-pro tbody tr:nth-child(even) {
+    background: rgba(var(--color-primary-rgb), 0.04);
+  }
+
+  .table-pro tbody tr:hover {
+    background: rgba(var(--color-primary-rgb), 0.08);
+  }
+
+  .table-pro td {
+    border-bottom-color: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  #button_datatable {
+    border-top-color: var(--border-color);
+    background: rgba(var(--color-primary-rgb), 0.03);
+  }
+}

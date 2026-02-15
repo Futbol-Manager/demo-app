@@ -26,9 +26,8 @@
     </div>
 </div>
 
-<div *ngIf="loading" class="d-flex align-items-center justify-content-center p-3">
-    <div class="spinner-border text-primary me-2" role="status" aria-hidden="true"></div>
-    <strong>Cargando listado...</strong>
+<div *ngIf="loading" class="card-skeleton">
+    <div class="skeleton-card" *ngFor="let i of [].constructor(6)"></div>
 </div>
 
 <div class="container" *ngIf="!loading">
@@ -68,10 +67,7 @@
             <label for="temporada" class="form-label">Temporada:</label>
             <select class="form-control" id="temporada" name="temporada" [(ngModel)]="temporada"
                 (change)="cargarListadoEquiposForClub()">
-                <option value="2022">2022/2023</option>
-                <option value="2023">2023/2024</option>
-                <option value="2024">2024/2025</option>
-                <option value="2025">2025/2026</option>
+                <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
             </select>
         </div>
     </div>

@@ -1,12 +1,15 @@
-<div>
-    <div class="submenu">
-        <div class="row">
-            <div class="col">
-                <a class="no-underline" href="javascript:void(0);" (click)="goBack()">
-                    <i class="bi bi-arrow-left-square-fill"></i>
-                    <span class="d-none d-md-inline">{{ 'NAV.BACK' | translate }}</span>
-                </a>
-            </div>
+<div class="back-container">
+  <div class="btn-back-clean" href="javascript:void(0)" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </div>
+</div>
+
+<!-- Skeleton Loading -->
+<div *ngIf="!datosCargados" class="container mt-3">
+    <div class="skeleton-table">
+        <div class="skeleton-row" *ngFor="let r of [1,2,3,4,5,6,7,8]">
+            <div class="skeleton-cell" *ngFor="let c of [1,2,3,4,5,6,7,8]"></div>
         </div>
     </div>
 </div>
@@ -25,32 +28,93 @@
             {{ 'SUBS.DOWNLOAD_EXCEL' | translate }}
         </button>
 
-        <div class="row justify-content-between div-headdatatable">
-            <div class="col-md-auto mr-auto" id="dt-length"></div>
-            <div class="col-md-auto ml-auto" id="dt-search"></div>
+        <!-- Table Controls: Search + Page Size -->
+        <div class="table-controls">
+            <div class="table-controls-left">
+                <label for="pageSize">{{ 'COMMON.SHOW' | translate }}</label>
+                <select id="pageSize" class="form-select form-select-sm" [(ngModel)]="pageSize"
+                    (change)="currentPage = 1" style="width: auto; display: inline-block;">
+                    <option *ngFor="let opt of pageSizeOptions" [ngValue]="opt">{{ opt }}</option>
+                </select>
+                <span>{{ 'COMMON.RECORDS' | translate }}</span>
+            </div>
+            <div class="table-controls-right">
+                <label for="searchInput">{{ 'COMMON.SEARCH' | translate }}:</label>
+                <input id="searchInput" type="text" class="form-control form-control-sm"
+                    [(ngModel)]="searchTerm" (input)="applyFilter()"
+                    [attr.placeholder]="'COMMON.SEARCH_PLACEHOLDER' | translate"
+                    style="width: 250px; display: inline-block;">
+            </div>
+        </div>
+
+        <!-- Info text -->
+        <div class="table-info">
+            {{ 'COMMON.SHOWING' | translate }} {{ filteredList.length === 0 ? 0 : ((currentPage - 1) * pageSize) + 1 }}
+            {{ 'COMMON.TO' | translate }} {{ currentPage * pageSize > filteredList.length ? filteredList.length : currentPage * pageSize }}
+            {{ 'COMMON.OF' | translate }} {{ filteredList.length }} {{ 'COMMON.RECORDS' | translate }}
+            <span *ngIf="searchTerm">({{ 'COMMON.FILTERED_OF' | translate }} {{ listAT.length }} {{ 'COMMON.TOTAL_RECORDS' | translate }})</span>
         </div>
 
         <div style="overflow-x: auto;">
-            <table id="dataTable" class="table table-bordered table-striped text-center">
+            <table class="table table-bordered table-striped text-center">
                 <thead class="table-custom">
                     <tr>
-                        <th>{{ 'SUBS.TABLE.ID' | translate }}</th>
                         <th>{{ 'SUBS.TABLE.IMAGE' | translate }}</th>
-                        <th>{{ 'SUBS.TABLE.NAME' | translate }}</th>
-                        <th>{{ 'SUBS.TABLE.SURNAMES' | translate }}</th>
-                        <th>{{ 'SUBS.TABLE.EMAIL' | translate }}</th>
+                        <th class="sortable" (click)="sortBy('abonado.nombre')">
+                            {{ 'SUBS.TABLE.NAME' | translate }}
+                            <span class="sort-icon">
+                                <span [class.active]="sortColumn === 'abonado.nombre' && sortDirection === 'asc'">&#9650;</span>
+                                <span [class.active]="sortColumn === 'abonado.nombre' && sortDirection === 'desc'">&#9660;</span>
+                            </span>
+                        </th>
+                        <th class="sortable" (click)="sortBy('abonado.apellidos')">
+                            {{ 'SUBS.TABLE.SURNAMES' | translate }}
+                            <span class="sort-icon">
+                                <span [class.active]="sortColumn === 'abonado.apellidos' && sortDirection === 'asc'">&#9650;</span>
+                                <span [class.active]="sortColumn === 'abonado.apellidos' && sortDirection === 'desc'">&#9660;</span>
+                            </span>
+                        </th>
+                        <th class="sortable" (click)="sortBy('abonado.mail')">
+                            {{ 'SUBS.TABLE.EMAIL' | translate }}
+                            <span class="sort-icon">
+                                <span [class.active]="sortColumn === 'abonado.mail' && sortDirection === 'asc'">&#9650;</span>
+                                <span [class.active]="sortColumn === 'abonado.mail' && sortDirection === 'desc'">&#9660;</span>
+                            </span>
+                        </th>
                         <th>{{ 'SUBS.TABLE.PHONE' | translate }}</th>
-                        <th>{{ 'SUBS.TABLE.STATUS' | translate }}</th>
-                        <th>{{ 'SUBS.TABLE.FEE' | translate }}</th>
-                        <th>{{ 'SUBS.TABLE.PAID' | translate }}</th>
-                        <th>{{ 'SUBS.TABLE.REMAINING' | translate }}</th>
+                        <th class="sortable" (click)="sortBy('estado')">
+                            {{ 'SUBS.TABLE.STATUS' | translate }}
+                            <span class="sort-icon">
+                                <span [class.active]="sortColumn === 'estado' && sortDirection === 'asc'">&#9650;</span>
+                                <span [class.active]="sortColumn === 'estado' && sortDirection === 'desc'">&#9660;</span>
+                            </span>
+                        </th>
+                        <th class="sortable" (click)="sortBy('cuota')">
+                            {{ 'SUBS.TABLE.FEE' | translate }}
+                            <span class="sort-icon">
+                                <span [class.active]="sortColumn === 'cuota' && sortDirection === 'asc'">&#9650;</span>
+                                <span [class.active]="sortColumn === 'cuota' && sortDirection === 'desc'">&#9660;</span>
+                            </span>
+                        </th>
+                        <th class="sortable" (click)="sortBy('pagado')">
+                            {{ 'SUBS.TABLE.PAID' | translate }}
+                            <span class="sort-icon">
+                                <span [class.active]="sortColumn === 'pagado' && sortDirection === 'asc'">&#9650;</span>
+                                <span [class.active]="sortColumn === 'pagado' && sortDirection === 'desc'">&#9660;</span>
+                            </span>
+                        </th>
+                        <th class="sortable" (click)="sortBy('restante')">
+                            {{ 'SUBS.TABLE.REMAINING' | translate }}
+                            <span class="sort-icon">
+                                <span [class.active]="sortColumn === 'restante' && sortDirection === 'asc'">&#9650;</span>
+                                <span [class.active]="sortColumn === 'restante' && sortDirection === 'desc'">&#9660;</span>
+                            </span>
+                        </th>
                         <th>{{ 'SUBS.TABLE.ACTIONS' | translate }}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let abonadoTemp of listAT; let i = index">
-                        <td>{{ abonadoTemp.abonadosTemporadaId }}</td>
-
+                    <tr *ngFor="let abonadoTemp of paginatedList; let i = index">
                         <td *ngIf="abonadoTemp.abonado.imgPerfil">
                             <div class="container">
                                 <img [src]="imageBaseUrl + abonadoTemp.abonado.imgPerfil" alt="user-player" width="50"
@@ -69,18 +133,18 @@
                         <td>{{ abonadoTemp.abonado.telefono }}</td>
 
                         <td>
-                            <ng-container *ngIf="abonadoTemp.estado === 0">
-                                <i class="bi bi-x-circle text-danger"
-                                    [attr.title]="'SUBS.STATUS.NONE' | translate"></i>
-                            </ng-container>
-                            <ng-container *ngIf="abonadoTemp.estado === 1">
-                                <i class="bi bi-exclamation-triangle text-warning"
-                                    [attr.title]="'SUBS.STATUS.PENDING' | translate"></i>
-                            </ng-container>
-                            <ng-container *ngIf="abonadoTemp.estado === 2">
-                                <i class="bi bi-check-circle text-success"
-                                    [attr.title]="'SUBS.STATUS.DONE' | translate"></i>
-                            </ng-container>
+                            <span *ngIf="abonadoTemp.estado === 0" class="badge bg-danger"
+                                [attr.title]="'SUBS.STATUS.NONE' | translate">
+                                <i class="bi bi-x-circle"></i> {{ 'SUBS.STATUS.NONE' | translate }}
+                            </span>
+                            <span *ngIf="abonadoTemp.estado === 1" class="badge bg-warning text-dark"
+                                [attr.title]="'SUBS.STATUS.PENDING' | translate">
+                                <i class="bi bi-exclamation-triangle"></i> {{ 'SUBS.STATUS.PENDING' | translate }}
+                            </span>
+                            <span *ngIf="abonadoTemp.estado === 2" class="badge bg-success"
+                                [attr.title]="'SUBS.STATUS.DONE' | translate">
+                                <i class="bi bi-check-circle"></i> {{ 'SUBS.STATUS.DONE' | translate }}
+                            </span>
                         </td>
 
                         <td>{{ abonadoTemp.cuota }}</td>
@@ -90,22 +154,46 @@
                         <td>
                             <i class="bi bi-pencil" style="cursor: pointer;"
                                 [attr.title]="'SUBS.ACTIONS.EDIT' | translate"
+                                role="button" tabindex="0" [attr.aria-label]="'SUBS.ACTIONS.EDIT' | translate"
                                 (click)="openModalUpdateAbonado(i)"></i>
 
                             <i class="bi bi-wallet2 ms-2" style="cursor: pointer;"
                                 [attr.title]="'SUBS.ACTIONS.INSERT_PAY' | translate"
+                                role="button" tabindex="0" [attr.aria-label]="'SUBS.ACTIONS.INSERT_PAY' | translate"
                                 (click)="openModalPagoAbonado(i)"></i>
 
                             <i class="bi bi-clock-history ms-2" style="cursor: pointer;"
                                 [attr.title]="'SUBS.ACTIONS.VIEW_HISTORY' | translate"
+                                role="button" tabindex="0" [attr.aria-label]="'SUBS.ACTIONS.VIEW_HISTORY' | translate"
                                 (click)="openModalHistorialPagos(i)"></i>
+                        </td>
+                    </tr>
+                    <tr *ngIf="paginatedList.length === 0">
+                        <td colspan="10">
+                            <app-empty-state variant="compact" icon="bi-people-fill"
+                              [title]="'EMPTY_STATES.NO_RESULTS' | translate"
+                              [message]="'EMPTY_STATES.SUBSCRIBERS.MESSAGE' | translate">
+                            </app-empty-state>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </div>
+
+        <!-- Pagination -->
+        <div class="pagination-container" *ngIf="totalPages > 1">
+            <button class="page-btn" (click)="goToPage(1)" [disabled]="currentPage === 1"
+                title="Primera página">&laquo;</button>
+            <button class="page-btn" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1"
+                title="Anterior">&lsaquo;</button>
+            <button *ngFor="let p of pages" class="page-btn" [class.active]="p === currentPage"
+                (click)="goToPage(p)">{{ p }}</button>
+            <button class="page-btn" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages"
+                title="Siguiente">&rsaquo;</button>
+            <button class="page-btn" (click)="goToPage(totalPages)" [disabled]="currentPage === totalPages"
+                title="Última página">&raquo;</button>
+        </div>
     </div>
-    <div id="button_datatable"></div>
 </div>
 
 <!-- tabla para imprimir en excel -->

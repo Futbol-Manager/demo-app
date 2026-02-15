@@ -224,3 +224,69 @@
   min-width: 50px;
   text-align: center;
 }
+
+/* ===== DARK MODE ===== */
+:host-context(body.dark) {
+  .btn-back-clean {
+    color: var(--text-secondary);
+    background-color: rgba(15, 163, 232, 0.12);
+    &:hover { background-color: var(--bg-hover); }
+  }
+
+  .section-title { color: var(--text-primary); }
+
+  .skeleton-header { background: var(--bg-surface); }
+  .skeleton-cell {
+    background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-hover) 37%, var(--bg-surface) 63%);
+    background-size: 400% 100%;
+  }
+
+  .modern-table-wrapper {
+    background: var(--bg-card);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .modern-table thead th {
+    background: #0a2a3c;
+  }
+
+  .modern-table tbody tr {
+    background: var(--bg-card);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    &:hover {
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  .modern-table tbody td {
+    color: var(--text-primary);
+  }
+
+  .badge-team { background: rgba(3, 105, 161, 0.15); color: #38bdf8; }
+  .badge-yellow { background: rgba(146, 64, 14, 0.15); color: #fbbf24; }
+  .badge-red { background: rgba(153, 27, 27, 0.15); color: #f87171; }
+
+  .pagination-content {
+    background: var(--bg-card);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
+
+  .pagination-info { color: var(--text-secondary); }
+
+  .pagination-select {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-input);
+  }
+
+  .page-btn {
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    &:hover:not(:disabled) {
+      background: var(--color-primary);
+      color: #fff;
+    }
+  }
+
+  .page-indicator { color: var(--text-primary); }
+}

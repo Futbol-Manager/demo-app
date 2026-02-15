@@ -8,6 +8,7 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { Response } from 'src/app/core/services/models/response.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
+import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-inicio',
@@ -46,8 +47,9 @@ export class InicioComponent implements OnInit {
   listTeam: any[] = [];
   clubList: any[] = [];
 
-  temporada = '2025';
-  temporadaStoredValue = '2025';
+  seasons = getSeasons();
+  temporada = getCurrentSeasonString();
+  temporadaStoredValue = getCurrentSeasonString();
   federacion: number | null = null;
   // =========================
   // Cache keys
@@ -66,14 +68,15 @@ export class InicioComponent implements OnInit {
   // Ciclo de vida
   // =========================
   ngOnInit(): void {
+    this.yaRedirigido = false;               // reset del flag al re-entrar
     this.cargarUsuario();
     this.detectarPlataforma();
     this.inicializarDesdeCache();
     this.cargarTemporadaDesdeStorage();
     this.inicializarUsuario();
-    this.cargarListadoEquipos();
-    this.cargarJugadores();
-
+    // cargarListadoEquipos y cargarJugadores ya se invocan dentro de
+    // cargarUsuario / inicializarUsuario según el perfil → evitamos llamadas
+    // duplicadas que provocaban race-conditions para profileId >= 3.
   }
   private cargarTemporadaDesdeStorage(): void {
     const temporada = localStorage.getItem('temporada');
@@ -109,7 +112,8 @@ export class InicioComponent implements OnInit {
         break;
 
       case this.profileId > 2:
-        this.cargarHijos();
+        // Una sola llamada que carga los hijos y comprueba datos incompletos
+        this.cargarJugadores();
         break;
 
       default:
@@ -117,30 +121,18 @@ export class InicioComponent implements OnInit {
         break;
     }
   }
-  private cargarHijos(): void {
-    this.datosCargando = true;
+  /** Flag para evitar redirect loops cuando el jugador vuelve a inicio con datos incompletos */
+  private yaRedirigido = false;
 
-    this.teamService
-      .getTeamByPlayer(this.userId.toString(), this.temporadaStoredValue)
-      .pipe(take(1))
-      .subscribe({
-        next: (response: Response) => {
-          this.listHijos = response?.data ?? [];
-          this.datosCargando = false;
-
-          this.redirigirSiDatosIncompletos();
-        },
-        error: (error) => {
-          console.error('Error al cargar hijos', error);
-          this.listHijos = [];
-          this.datosCargando = false;
-        },
-      });
-  }
   private redirigirSiDatosIncompletos(): void {
+    if (this.yaRedirigido) return;           // evita loop infinito de redirect
     const hijoIncompleto = this.listHijos.find((h) => !h.apellido);
     if (hijoIncompleto) {
-      this.router.navigate(['/dashboard/jugadores', hijoIncompleto.teamId]);
+      this.yaRedirigido = true;
+      this.router.navigate(
+        ['/dashboard/jugadores', hijoIncompleto.teamId],
+        { replaceUrl: true }                 // reemplaza en el historial, no apila
+      );
     }
   }
 
@@ -182,6 +174,9 @@ export class InicioComponent implements OnInit {
         break;
       case 10:
         this.router.navigate(['/dashboard/admin-clubes']);
+        break;
+      case 11:
+        this.router.navigate(['/dashboard/asistente-ia']);
         break;
     }
   }
@@ -237,15 +232,20 @@ export class InicioComponent implements OnInit {
         this.profileId = user!.profileType.profileId;
         this.userId = user!.userId;
 
-        // Si ya tenemos clubId desde cache, no repetir llamadas
-        if (this.clubId > 0) {
-          this.verificarSuscripcion();
-        } else {
-          this.cargarClubId();
+        // Solo club/entrenador necesitan clubId y suscripción
+        if (this.profileId <= 2) {
+          if (this.clubId > 0) {
+            this.verificarSuscripcion();
+          } else {
+            this.cargarClubId();
+          }
+          // Cargar equipos solo para club/entrenador (ya se llama también en resolverCargaInicialPorPerfil para coach)
+          if (this.profileId === 1) {
+            this.cargarListadoEquipos();
+          }
         }
-        if (this.profileId === 3) {
-          this.cargarJugadores();
-        }
+        // Para jugador (profileId >= 3) ya se dispara cargarHijos() + cargarJugadores()
+        // desde inicializarUsuario → resolverCargaInicialPorPerfil, no duplicamos aquí.
       });
   }
 
@@ -328,18 +328,15 @@ export class InicioComponent implements OnInit {
             teamLevelLeague: null,
           }));
 
+          // Comprobar datos incompletos ANTES de hacer más peticiones
+          this.redirigirSiDatosIncompletos();
+          if (this.yaRedirigido) return;     // se está redirigiendo, no seguir
+
           if (!hijos.length) {
             this.listHijos = [];
             this.datosCargando = false;
             return;
           }
-
-          // Inicializamos estructura
-          this.listHijos = hijos.map((hijo: any) => ({
-            ...hijo,
-            nextMatch: null,
-            trainingDays: null,
-          }));
 
           // 🔹 Observables por jugador
           const requests = this.listHijos.map((hijo: any) =>
@@ -540,6 +537,7 @@ export class InicioComponent implements OnInit {
         (error) => {
           console.error('Error al cargar el listado de equipos', error);
           this.listTeam = [];
+          this.datosCargando = false;
         }
       );
   }
@@ -588,6 +586,7 @@ export class InicioComponent implements OnInit {
         },
         (error) => {
           console.error('Error al cargar el listado de equipos', error);
+          this.datosCargando = false;
         }
       );
   }

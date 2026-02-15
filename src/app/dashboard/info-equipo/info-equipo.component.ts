@@ -4,6 +4,7 @@ import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { HorarioTeam, TeamNew } from 'src/app/core/services/team/team.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-info-equipo',
@@ -38,7 +39,7 @@ export class InfoEquipoComponent implements OnInit {
   };
 
   diasTeam: any;
-  temporadaStoredValue = '2025';
+  temporadaStoredValue = getCurrentSeasonString();
 
   constructor(
     private teamService: TeamService,

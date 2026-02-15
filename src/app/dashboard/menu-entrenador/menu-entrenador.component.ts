@@ -140,6 +140,14 @@ export class MenuEntrenadorComponent implements OnInit {
       this.router.navigate(['/dashboard/partidos-entrevistas', this.teamId, 0]);
     } else if (id === 13) {
       this.router.navigate(['/dashboard/clasificacion-resultados', this.teamId]);
+    } else if (id === 14) {
+      this.router.navigate(['/dashboard/lesiones', this.teamId]);
+    } else if (id === 15) {
+      this.router.navigate(['/dashboard/asistente-ia-coach']);
+    } else if (id === 16) {
+      this.router.navigate(['/dashboard/perfil-entrenador', this.teamId, this.playerId]);
+    } else if (id === 17) {
+      this.router.navigate(['/dashboard/debrief/history', this.teamId]);
     }
   }
 

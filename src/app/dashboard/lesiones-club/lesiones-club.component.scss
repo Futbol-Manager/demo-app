@@ -1,0 +1,388 @@
+/* ═══════════════════════════════════════════════════════════════════
+   SPHAIRA – Club Dashboard: Lesiones
+   ═══════════════════════════════════════════════════════════════════ */
+
+$sphaira-green: #31b270;
+$sphaira-night: #002c40;
+$sphaira-teal: #1f8f8a;
+$sphaira-accent: #22bf63;
+$sphaira-bg: #f4f7fa;
+
+:host {
+  display: block;
+  font-family: 'Archivo', sans-serif;
+}
+
+/* ═══════ BACK BUTTON ═══════ */
+.back-container {
+  padding: 0.75rem 0;
+}
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  color: $sphaira-night;
+  font-weight: 600;
+  font-size: 0.9rem;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  &:hover { opacity: 1; }
+  i { font-size: 1.1rem; }
+}
+
+/* ═══════ HEADER ═══════ */
+.lesiones-club-header {
+  background: linear-gradient(135deg, $sphaira-night 0%, $sphaira-teal 100%);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.25rem;
+  color: #fff;
+}
+.page-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0;
+}
+.page-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.85;
+  margin: 0.25rem 0 0;
+}
+
+/* ═══════ KPI CARDS ═══════ */
+.kpi-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.kpi-card {
+  flex: 1;
+  min-width: 140px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #fff;
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e9ecef;
+}
+.kpi-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+.kpi-total .kpi-icon { background: rgba(31, 143, 138, 0.12); color: $sphaira-teal; }
+.kpi-active .kpi-icon { background: rgba(220, 53, 69, 0.12); color: #dc3545; }
+.kpi-recovering .kpi-icon { background: rgba(255, 193, 7, 0.12); color: #e0a800; }
+.kpi-closed .kpi-icon { background: rgba(49, 178, 112, 0.12); color: $sphaira-green; }
+.kpi-players .kpi-icon { background: rgba(13, 110, 253, 0.12); color: #0d6efd; }
+
+.kpi-number {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: $sphaira-night;
+  line-height: 1;
+}
+.kpi-label {
+  font-size: 0.75rem;
+  color: #8a9bab;
+  font-weight: 500;
+}
+.kpi-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ═══════ MAIN LAYOUT ═══════ */
+.club-injuries-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1.25rem;
+  min-height: 400px;
+}
+
+/* ═══════ SIDEBAR ═══════ */
+.sidebar-panel {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e9ecef;
+  max-height: 600px;
+  overflow-y: auto;
+}
+.panel-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: $sphaira-night;
+  margin-bottom: 1rem;
+  i { color: $sphaira-teal; }
+}
+.team-stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.team-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.75rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+  &:hover {
+    background: #f4f7fa;
+    border-color: #e0e5ea;
+  }
+  &.active {
+    background: rgba(31, 143, 138, 0.08);
+    border-color: $sphaira-teal;
+  }
+}
+.team-stat-name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: $sphaira-night;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+.team-stat-badges {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+}
+.badge-active {
+  background: rgba(220, 53, 69, 0.12);
+  color: #dc3545;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+.badge-total {
+  background: #f0f2f5;
+  color: #5a6a7a;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+.empty-sidebar {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: #8a9bab;
+  i { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
+  span { font-size: 0.82rem; }
+}
+
+/* ═══════ MAIN PANEL ═══════ */
+.main-panel {
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e9ecef;
+}
+
+/* ═══════ FILTERS BAR ═══════ */
+.filters-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.filter-chips {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.filter-chip {
+  border: 1px solid #e0e5ea;
+  background: #fff;
+  color: #5a6a7a;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  &:hover { background: #f4f7fa; }
+  &.active {
+    background: $sphaira-night;
+    color: #fff;
+    border-color: $sphaira-night;
+  }
+  &.chip-active.active { background: #dc3545; border-color: #dc3545; }
+  &.chip-recovering.active { background: #e0a800; border-color: #e0a800; }
+  &.chip-closed.active { background: $sphaira-green; border-color: $sphaira-green; }
+}
+
+.filter-controls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.filter-select {
+  border-radius: 10px;
+  font-size: 0.8rem;
+  max-width: 180px;
+  border-color: #e0e5ea;
+}
+.search-input-wrap {
+  position: relative;
+  i {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8a9bab;
+    font-size: 0.85rem;
+  }
+  input {
+    padding-left: 2rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    border-color: #e0e5ea;
+    min-width: 180px;
+    &:focus {
+      border-color: $sphaira-teal;
+      box-shadow: 0 0 0 3px rgba(31, 143, 138, 0.1);
+    }
+  }
+}
+.results-count {
+  font-size: 0.78rem;
+  color: #8a9bab;
+  margin-bottom: 0.5rem;
+}
+
+/* ═══════ TABLE ═══════ */
+.injuries-table-wrap {
+  overflow-x: auto;
+}
+.injuries-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+  th, td {
+    padding: 0.65rem 0.75rem;
+    text-align: left;
+    white-space: nowrap;
+  }
+  thead th {
+    background: #f8fafb;
+    font-weight: 700;
+    color: $sphaira-night;
+    border-bottom: 2px solid #e9ecef;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  tbody tr {
+    border-bottom: 1px solid #f0f2f5;
+    transition: background 0.15s;
+    &:hover { background: #fafbfc; }
+  }
+}
+.td-player {
+  font-weight: 600;
+  color: $sphaira-night;
+  i { color: $sphaira-teal; }
+}
+.td-days {
+  font-weight: 700;
+  color: $sphaira-night;
+}
+.severity-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+.status-badge {
+  font-weight: 600;
+  font-size: 0.82rem;
+}
+
+/* ═══════ EMPTY STATE ═══════ */
+.empty-table {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #8a9bab;
+  p { margin: 1rem 0; font-size: 0.9rem; }
+}
+
+/* ═══════ LOADING SKELETON ═══════ */
+.loading-skeleton {
+  padding: 1rem 0;
+}
+.skeleton-bar {
+  height: 40px;
+  background: linear-gradient(90deg, #f0f2f5 25%, #e8eaed 50%, #f0f2f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+.skeleton-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.skeleton-row {
+  display: flex;
+  gap: 0.75rem;
+}
+.skeleton-cell {
+  height: 20px;
+  background: linear-gradient(90deg, #f0f2f5 25%, #e8eaed 50%, #f0f2f5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+  &.w-10 { width: 10%; }
+  &.w-15 { width: 15%; }
+  &.w-20 { width: 20%; }
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ═══════ RESPONSIVE ═══════ */
+@media (max-width: 991px) {
+  .club-injuries-layout {
+    grid-template-columns: 1fr;
+  }
+  .kpi-card { min-width: 120px; }
+}
+
+@media (max-width: 576px) {
+  .kpi-row {
+    gap: 0.5rem;
+  }
+  .kpi-card {
+    min-width: 100px;
+    padding: 0.75rem;
+  }
+  .kpi-number { font-size: 1.2rem; }
+  .filters-bar {
+    flex-direction: column;
+  }
+}
