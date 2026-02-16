@@ -179,15 +179,15 @@
           <table class="table align-middle mb-0">
             <thead>
               <tr>
-                <th>Equipo</th>
                 <th class="text-center">Categoria</th>
+                <th class="text-center">Nivel</th>
                 <th class="text-center">Jugadores</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let team of group.equipos">
-                <td class="fw-semibold">{{ team.nombre }}</td>
                 <td class="text-center"><span class="badge bg-light text-dark border">{{ team.categoria || '-' }}</span></td>
+                <td class="text-center">{{ team.nivel || '-' }}</td>
                 <td class="text-center"><span class="badge rounded-pill bg-primary">{{ team.jugadores }}</span></td>
               </tr>
             </tbody>
@@ -204,40 +204,49 @@
       No hay entrenadores registrados
     </div>
     <div *ngIf="club.entrenadores && club.entrenadores.length > 0">
-      <div class="row g-3">
-        <div class="col-md-6" *ngFor="let coach of club.entrenadores">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-body">
-              <div class="d-flex align-items-start gap-3">
-                <div class="flex-shrink-0">
-                  <img *ngIf="coach.picture" [src]="imageBaseUrl + coach.picture"
-                    alt="" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
-                  <div *ngIf="!coach.picture" class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center"
-                    style="width: 48px; height: 48px;">
-                    <i class="bi bi-person-fill text-primary" style="font-size: 1.4rem;"></i>
-                  </div>
-                </div>
-                <div class="flex-grow-1">
-                  <div class="fw-bold">{{ coach.nombre }} {{ coach.apellido }}</div>
-                  <div *ngIf="coach.email" class="text-muted small">
-                    <i class="bi bi-envelope me-1"></i>{{ coach.email }}
-                  </div>
-                  <div *ngIf="coach.telefono" class="text-muted small">
-                    <i class="bi bi-telephone me-1"></i>{{ coach.telefono }}
-                  </div>
-                  <div *ngIf="coach.titulacion" class="small mt-1">
-                    <span class="badge bg-info bg-opacity-10 text-info border">
-                      <i class="bi bi-award me-1"></i>{{ coach.titulacion }}
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead>
+                <tr>
+                  <th style="padding-left: 1rem;">Entrenador</th>
+                  <th>Email</th>
+                  <th>Telefono</th>
+                  <th>Titulacion</th>
+                  <th>Equipos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let coach of club.entrenadores">
+                  <td style="padding-left: 1rem;">
+                    <div class="d-flex align-items-center gap-2">
+                      <img *ngIf="coach.picture" [src]="imageBaseUrl + coach.picture"
+                        alt="" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
+                      <div *ngIf="!coach.picture" class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center"
+                        style="width: 32px; height: 32px;">
+                        <i class="bi bi-person-fill text-primary" style="font-size: 0.9rem;"></i>
+                      </div>
+                      <span class="fw-semibold">{{ coach.nombre }} {{ coach.apellido }}</span>
+                    </div>
+                  </td>
+                  <td class="small">{{ coach.email || '-' }}</td>
+                  <td class="small">{{ coach.telefono || '-' }}</td>
+                  <td>
+                    <span *ngIf="coach.titulacion" class="badge bg-info bg-opacity-10 text-info border" style="font-size: 0.75rem;">
+                      {{ coach.titulacion }}
                     </span>
-                  </div>
-                  <div *ngIf="coach.equipos && coach.equipos.length > 0" class="mt-1">
+                    <span *ngIf="!coach.titulacion" class="text-muted small">-</span>
+                  </td>
+                  <td>
                     <span *ngFor="let eq of coach.equipos" class="badge bg-primary bg-opacity-10 text-primary me-1" style="font-size: 0.7rem;">
-                      <i class="bi bi-people-fill me-1"></i>{{ eq }}
+                      {{ eq }}
                     </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+                    <span *ngIf="!coach.equipos || coach.equipos.length === 0" class="text-muted small">-</span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
