@@ -5,11 +5,19 @@
   </button>
 </div>
 <!-- ================= CONTENIDO ================= -->
-<div class="container">
-  <div *ngIf="datosCargando" class="card-skeleton">
-    <div class="skeleton-card" *ngFor="let i of [].constructor(6)"></div>
-  </div>
-  <div *ngIf="profileId === 1 || profileId === 2" class="row g-4 mb-4 sphaira-action-cards">
+<div class="container equipos-container">
+  <div class="row g-4 mb-4 sphaira-action-cards" *ngIf="profileId === 1 || profileId === 2 || datosCargando">
+    <!-- Skeleton: misma zona que las cards de equipos -->
+    <ng-container *ngIf="datosCargando">
+      <div class="col-12 equipos-skeleton-wrap">
+        <div class="card-skeleton">
+          <div class="skeleton-card" *ngFor="let i of [].constructor(6)"></div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Contenido real cuando ya cargó -->
+    <ng-container *ngIf="!datosCargando">
 
     <!-- SUBIR JUGADORES EXCEL -->
     <div *ngIf="profileId === 1" class="col-12 col-md-4">
@@ -132,6 +140,7 @@
         </div>
       </div>
     </div>
+    </ng-container>
     <div class="modal d-block" *ngIf="showModal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
         <div class="modal-content modern-modal">

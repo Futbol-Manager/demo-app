@@ -178,7 +178,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       }
     });
 
-    const storedClubId = localStorage.getItem('clubId');
+    const storedClubId = sessionStorage.getItem('clubId');
     if (storedClubId) this.clubId = parseInt(storedClubId, 10);
 
     this.loadConversationsList();

@@ -1466,8 +1466,17 @@
     "DELETE_NO_ALLOWED": "Cette équipe ne peut pas être supprimée (équipe par défaut pour les nouveaux joueurs)."
   },
   "CLOTHES": {
-    "TITLE": "Vêtements du club",
-    "DESCRIPTION": "Activez ou désactivez les vêtements disponibles pour le club.",
+    "TITLE": "Personnaliser les v\u00eatements",
+    "DESCRIPTION": "Activez ou d\u00e9sactivez les colonnes et renommez les articles en cliquant sur l'ic\u00f4ne crayon. Les modifications sont enregistr\u00e9es par utilisateur.",
+    "RESET_DEFAULTS": "R\u00e9initialiser tout par d\u00e9faut",
+    "GROUPS": {
+      "MATCH_1": "1er \u00c9quipement",
+      "MATCH_2": "2e \u00c9quipement",
+      "TRAINING": "Entra\u00eenement",
+      "TRACKSUIT": "Surv\u00eatement",
+      "CASUAL": "D\u00e9contract\u00e9",
+      "ACCESSORIES": "Accessoires"
+    },
     "TABLE": {
       "ID": "ID",
       "NAME": "Nom",

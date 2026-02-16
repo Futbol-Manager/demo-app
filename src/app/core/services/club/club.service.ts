@@ -235,6 +235,21 @@ export class ClubService {
     }
   }
 
+  getUserRopaPrefs(userId: number, clubId: number, temporada: string): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + `club/getuserropaprefs/${userId}/${clubId}/${temporada}`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  saveUserRopaPrefs(dto: { userId: number; clubId: number; temporada: string; columnPrefs: string; labelPrefs: string }): Observable<Response> {
+    return this.http.post<Response>(
+      environment.apiUrl + 'club/saveuserropaprefs',
+      dto,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
   getClubCuota(clubId: string, temp: string): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');

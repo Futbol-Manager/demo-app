@@ -72,7 +72,8 @@ export class CuotasComponent implements OnInit {
   cuotas: any[] = [];
   temporadaStoredValue = getCurrentSeasonString();
 
-  listAllCuotas: Array<{ pagoClubId: number; titulo: string }> = [];
+  listAllCuotas: any[] = [];
+  listCuotasLoading = false;
 
   stripeFeePct = 0.018;
   stripeFeeFix = 0.25;
@@ -185,6 +186,9 @@ export class CuotasComponent implements OnInit {
   }
 
   openModalStripe(): void {
+    this.selectedCuota = null;
+    this.pagarOk = false;
+    this.infoRecurrente = '';
     this.getCuotas();
   }
 
@@ -192,7 +196,9 @@ export class CuotasComponent implements OnInit {
     this.showModalStripe = false;
     this.cantidadAPagar = 0;
     this.amount = 0;
-    this.acceptedTerms = false; // resetea
+    this.acceptedTerms = false;
+    this.selectedCuota = null;
+    this.listCuotasLoading = false;
   }
 
   // Helper opcional
@@ -632,22 +638,38 @@ export class CuotasComponent implements OnInit {
       }
     }*/
 
-    this.clubService.getListPagosClubForStripe(this.clubId, this.temporadaStoredValue
-      , this.teamId, this.playerId
-    ).subscribe(
-      (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
-        if (response.data !== null) {
-          this.listAllCuotas = response.data;
+    this.listCuotasLoading = true;
+    this.listAllCuotas = [];
+
+    this.clubService.getListPagosClubForStripe(
+      this.clubId,
+      this.temporadaStoredValue,
+      this.teamId,
+      this.playerId
+    ).subscribe({
+      next: (response: Response) => {
+        const raw = response?.data;
+        if (Array.isArray(raw)) {
+          this.listAllCuotas = raw;
+        } else if (raw && typeof raw === 'object' && Array.isArray((raw as any).list)) {
+          this.listAllCuotas = (raw as any).list;
+        } else if (raw && typeof raw === 'object' && Array.isArray((raw as any).pagos)) {
+          this.listAllCuotas = (raw as any).pagos;
+        } else if (raw && typeof raw === 'object' && Array.isArray((raw as any).content)) {
+          this.listAllCuotas = (raw as any).content;
+        } else {
+          this.listAllCuotas = [];
         }
+        this.listCuotasLoading = false;
         this.showModalStripe = true;
       },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
+      error: (err) => {
+        console.error('Error al cargar opciones de pago', err);
+        this.listAllCuotas = [];
+        this.listCuotasLoading = false;
+        this.showModalStripe = true;
       }
-    );
-
-    return this.listAllCuotas;
+    });
   }
 
   // Función para convertir número a texto (1 -> 'Uno', 2 -> 'Dos', etc.)

@@ -739,12 +739,17 @@
   }
 }
 
-/* ===== CARD SKELETON ===== */
+/* ===== CARD SKELETON (misma zona que las cards de equipos) ===== */
+.equipos-skeleton-wrap {
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
 .card-skeleton {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1rem;
-  padding: 1rem;
+  padding: 1rem 0;
 }
 
 .skeleton-card {

@@ -75,13 +75,13 @@ export class OpcionesjugadorComponent implements OnInit, OnDestroy {
         this.router.navigate(['/dashboard/calendario', this.teamId, this.playerId]);
         break;
       case 5:
-        this.router.navigate(['/dashboard/patrocinadores', 0]);
+        this.router.navigate(['/dashboard/patrocinadores-usuario', this.userId]);
         break;
       case 6:
-        this.router.navigate(['/dashboard/notificaciones', this.clubId]);
+        this.router.navigate(['/dashboard/notificaciones-usuario', this.userId]);
         break;
       case 7:
-        this.router.navigate(['/dashboard/scouting-player', this.playerId]);
+        this.router.navigate(['/dashboard/scouting-player', this.playerId], { queryParams: { teamId: this.teamId } });
         break;
       case 8:
         this.router.navigate(['/dashboard/partidos-entrevistas', this.teamId, this.playerId]);
@@ -91,6 +91,9 @@ export class OpcionesjugadorComponent implements OnInit, OnDestroy {
         break;
       case 10:
         this.router.navigate(['/dashboard/documentos-jugador', this.teamId, this.playerId]);
+        break;
+      case 11:
+        this.router.navigate(['/dashboard/lesiones', this.teamId], { queryParams: { playerId: this.playerId } });
         break;
     }
   }

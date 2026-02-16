@@ -3,6 +3,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { TrackingService } from '../core/services/tracking/tracking.service';
+import { SidebarService } from '../core/services/sidebar/sidebar.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,7 +16,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     private router: Router,
-    private trackingService: TrackingService
+    private trackingService: TrackingService,
+    public sidebarService: SidebarService
   ) {}
 
   ngOnInit(): void {

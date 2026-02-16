@@ -1462,8 +1462,17 @@
     "DELETE_NO_ALLOWED": "Esta equipa não pode ser eliminada (equipa padrão de novos jogadores)."
   },
   "CLOTHES": {
-    "TITLE": "Vestuário do clube",
-    "DESCRIPTION": "Ative ou desative o vestuário disponível para o clube.",
+    "TITLE": "Personalizar vestu\u00e1rio",
+    "DESCRIPTION": "Ative ou desative colunas e renomeie itens clicando no \u00edcone de l\u00e1pis. As altera\u00e7\u00f5es s\u00e3o guardadas por utilizador.",
+    "RESET_DEFAULTS": "Repor tudo por predefini\u00e7\u00e3o",
+    "GROUPS": {
+      "MATCH_1": "1\u00ba Equipamento",
+      "MATCH_2": "2\u00ba Equipamento",
+      "TRAINING": "Treino",
+      "TRACKSUIT": "Fato de treino",
+      "CASUAL": "Passeio",
+      "ACCESSORIES": "Acess\u00f3rios"
+    },
     "TABLE": {
       "ID": "ID",
       "NAME": "Nome",

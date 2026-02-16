@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, OnDestroy, ViewChild, AfterViewChecked } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -12,7 +12,7 @@ import * as $ from 'jquery';
 import 'datatables.net';
 import { RopaClub, RopaJugador } from 'src/app/core/services/team/club.model';
 import * as XLSX from 'xlsx';
-import { Subject, debounceTime, combineLatest } from 'rxjs';
+import { Subject, Subscription, debounceTime, combineLatest } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { Location } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
@@ -24,7 +24,10 @@ import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
   templateUrl: './ropa.component.html',
   styleUrls: ['./ropa.component.scss'],
 })
-export class RopaComponent implements OnInit {
+export class RopaComponent implements OnInit, AfterViewChecked, OnDestroy {
+  private needsFocusLabel = false;
+  private savePrefs$ = new Subject<void>();
+  private prefsSub!: Subscription;
   usuarioActual!: User | null;
   clubId!: number; // Ajusta el valor según el clubId del equipo actual
   userId!: number;
@@ -57,23 +60,32 @@ export class RopaComponent implements OnInit {
   reloadPage = false;
 
   prendas = [
-    { label: 'Camiseta de Juego', property: 'camisetaJuego', index: 5 },
-    { label: 'Pantalón de Juego', property: 'pantalonJuego', index: 6 },
-    { label: 'Medias', property: 'medias', index: 7 },
-    { label: 'Camiseta de Juego 2º', property: 'camisetaJuegoDos', index: 8 },
-    { label: 'Pantalón de Juego 2º', property: 'pantalonJuegoDos', index: 9 },
-    { label: 'Medias 2º', property: 'mediasDos', index: 10 },
-    { label: 'Camiseta de Entreno', property: 'camisetaEntreno', index: 11 },
-    { label: 'Pantalón de Entreno', property: 'pantalonEntreno', index: 12 },
-    { label: 'Medias Entreno', property: 'mediasTres', index: 13 },
-    { label: 'Sudadera de Entreno', property: 'sudaderaEntreno', index: 14 },
-    { label: 'Chaqueta de Chándal', property: 'chaquetaChandal', index: 15 },
-    { label: 'Pantalón de Chándal', property: 'pantalonChandal', index: 16 },
-    { label: 'Polo de Paseo', property: 'poloPaseo', index: 17 },
-    { label: 'Pantalón de Paseo', property: 'pantalonPaseo', index: 18 },
-    { label: 'Abrigo', property: 'abrigo', index: 19 },
-    { label: 'Chubasquero', property: 'chubasquero', index: 20 },
-    { label: 'Mochila', property: 'mochila', index: 21 },
+    { label: 'Camiseta de Juego', property: 'camisetaJuego', index: 5, group: 'match1' },
+    { label: 'Pantalón de Juego', property: 'pantalonJuego', index: 6, group: 'match1' },
+    { label: 'Medias', property: 'medias', index: 7, group: 'match1' },
+    { label: 'Camiseta de Juego 2º', property: 'camisetaJuegoDos', index: 8, group: 'match2' },
+    { label: 'Pantalón de Juego 2º', property: 'pantalonJuegoDos', index: 9, group: 'match2' },
+    { label: 'Medias 2º', property: 'mediasDos', index: 10, group: 'match2' },
+    { label: 'Camiseta de Entreno', property: 'camisetaEntreno', index: 11, group: 'training' },
+    { label: 'Pantalón de Entreno', property: 'pantalonEntreno', index: 12, group: 'training' },
+    { label: 'Medias Entreno', property: 'mediasTres', index: 13, group: 'training' },
+    { label: 'Sudadera de Entreno', property: 'sudaderaEntreno', index: 14, group: 'training' },
+    { label: 'Chaqueta de Chándal', property: 'chaquetaChandal', index: 15, group: 'tracksuit' },
+    { label: 'Pantalón de Chándal', property: 'pantalonChandal', index: 16, group: 'tracksuit' },
+    { label: 'Polo de Paseo', property: 'poloPaseo', index: 17, group: 'casual' },
+    { label: 'Pantalón de Paseo', property: 'pantalonPaseo', index: 18, group: 'casual' },
+    { label: 'Abrigo', property: 'abrigo', index: 19, group: 'accessories' },
+    { label: 'Chubasquero', property: 'chubasquero', index: 20, group: 'accessories' },
+    { label: 'Mochila', property: 'mochila', index: 21, group: 'accessories' },
+  ];
+
+  prendasGroups = [
+    { key: 'match1', label: 'CLOTHES.GROUPS.MATCH_1', icon: 'bi-trophy' },
+    { key: 'match2', label: 'CLOTHES.GROUPS.MATCH_2', icon: 'bi-trophy-fill' },
+    { key: 'training', label: 'CLOTHES.GROUPS.TRAINING', icon: 'bi-lightning' },
+    { key: 'tracksuit', label: 'CLOTHES.GROUPS.TRACKSUIT', icon: 'bi-wind' },
+    { key: 'casual', label: 'CLOTHES.GROUPS.CASUAL', icon: 'bi-person-walking' },
+    { key: 'accessories', label: 'CLOTHES.GROUPS.ACCESSORIES', icon: 'bi-bag' },
   ];
 
   /** Mapping used by mobile card view to iterate clothing items dynamically. */
@@ -102,6 +114,178 @@ export class RopaComponent implements OnInit {
   ropaPrendas: RopaClub = new RopaClub({});
   temporadaStoredValue = getCurrentSeasonString();
 
+  /** Preferencias de visibilidad de columnas por usuario (localStorage). */
+  userColumnPrefs: { [key: string]: number } = {};
+  /** Nombres personalizados de prendas por usuario (localStorage). */
+  userLabelPrefs: { [key: string]: string } = {};
+  /** Propiedad en edición inline (null = ninguna). */
+  editingLabelProperty: string | null = null;
+  editingLabelValue = '';
+
+  private get userPrefsKey(): string {
+    return `ropa_col_prefs_${this.userId}_${this.clubId}_${this.temporadaStoredValue}`;
+  }
+
+  private get userLabelsKey(): string {
+    return `ropa_label_prefs_${this.userId}_${this.clubId}_${this.temporadaStoredValue}`;
+  }
+
+  loadUserColumnPrefs(): void {
+    const saved = localStorage.getItem(this.userPrefsKey);
+    if (saved) {
+      try { this.userColumnPrefs = JSON.parse(saved); } catch { this.userColumnPrefs = {}; }
+    }
+    const savedLabels = localStorage.getItem(this.userLabelsKey);
+    if (savedLabels) {
+      try { this.userLabelPrefs = JSON.parse(savedLabels); } catch { this.userLabelPrefs = {}; }
+    }
+
+    this.clubService.getUserRopaPrefs(this.userId, this.clubId, this.temporadaStoredValue).subscribe(
+      (resp: Response) => {
+        if (resp?.data) {
+          const data = resp.data as any;
+          if (data.columnPrefs) {
+            try { this.userColumnPrefs = JSON.parse(data.columnPrefs); } catch { /* keep local */ }
+          }
+          if (data.labelPrefs) {
+            try { this.userLabelPrefs = JSON.parse(data.labelPrefs); } catch { /* keep local */ }
+          }
+          localStorage.setItem(this.userPrefsKey, JSON.stringify(this.userColumnPrefs));
+          localStorage.setItem(this.userLabelsKey, JSON.stringify(this.userLabelPrefs));
+          this.applyColumnVisibility();
+        }
+      },
+      (err) => console.error('Error cargando prefs de ropa desde API:', err)
+    );
+  }
+
+  saveUserColumnPrefs(): void {
+    localStorage.setItem(this.userPrefsKey, JSON.stringify(this.userColumnPrefs));
+    this.savePrefs$.next();
+  }
+
+  saveUserLabelPrefs(): void {
+    localStorage.setItem(this.userLabelsKey, JSON.stringify(this.userLabelPrefs));
+    this.savePrefs$.next();
+  }
+
+  private persistPrefsToApi(): void {
+    const dto = {
+      userId: this.userId,
+      clubId: this.clubId,
+      temporada: this.temporadaStoredValue,
+      columnPrefs: JSON.stringify(this.userColumnPrefs),
+      labelPrefs: JSON.stringify(this.userLabelPrefs)
+    };
+    this.clubService.saveUserRopaPrefs(dto).subscribe(
+      () => console.log('Preferencias de ropa guardadas en BD'),
+      (err: any) => console.error('Error guardando prefs de ropa en BD:', err)
+    );
+  }
+
+  private applyColumnVisibility(): void {
+    this.prendasOcultar = [0];
+    this.ocultarColumnasRopa();
+    if (this.dataTable) {
+      for (const prenda of this.prendas) {
+        const visible = this.isColumnVisible(prenda.property);
+        this.dataTable.column(prenda.index).visible(visible);
+      }
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.prefsSub) {
+      this.prefsSub.unsubscribe();
+    }
+    this.savePrefs$.complete();
+  }
+
+  /** Devuelve el nombre personalizado o el label por defecto de la prenda. */
+  getPrendaLabel(property: string): string {
+    if (this.userLabelPrefs[property]) {
+      return this.userLabelPrefs[property];
+    }
+    const prenda = this.prendas.find(p => p.property === property);
+    return prenda?.label || property;
+  }
+
+  /** Devuelve las prendas filtradas por grupo. */
+  getPrendasByGroup(groupKey: string): any[] {
+    return this.prendas.filter(p => p.group === groupKey);
+  }
+
+  ngAfterViewChecked(): void {
+    if (this.needsFocusLabel) {
+      const input = this.elementRef.nativeElement.querySelector('.inline-label-input');
+      if (input) {
+        input.focus();
+        input.select();
+        this.needsFocusLabel = false;
+      }
+    }
+  }
+
+  startEditLabel(property: string, event?: Event): void {
+    if (event) event.stopPropagation();
+    this.editingLabelProperty = property;
+    this.editingLabelValue = this.getPrendaLabel(property);
+    this.needsFocusLabel = true;
+  }
+
+  saveEditLabel(): void {
+    if (this.editingLabelProperty) {
+      const trimmed = this.editingLabelValue.trim();
+      const prenda = this.prendas.find(p => p.property === this.editingLabelProperty);
+      if (trimmed && prenda && trimmed !== prenda.label) {
+        this.userLabelPrefs[this.editingLabelProperty] = trimmed;
+      } else {
+        delete this.userLabelPrefs[this.editingLabelProperty!];
+      }
+      this.saveUserLabelPrefs();
+    }
+    this.editingLabelProperty = null;
+    this.editingLabelValue = '';
+  }
+
+  cancelEditLabel(): void {
+    this.editingLabelProperty = null;
+    this.editingLabelValue = '';
+  }
+
+  onLabelKeydown(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.saveEditLabel();
+    } else if (event.key === 'Escape') {
+      this.cancelEditLabel();
+    }
+  }
+
+  /** Devuelve true si la columna debe ser visible para el usuario actual. */
+  isColumnVisible(property: string): boolean {
+    if (this.userColumnPrefs.hasOwnProperty(property)) {
+      return this.userColumnPrefs[property] === 0;
+    }
+    return this.ropaClub?.[property] === 0;
+  }
+
+  resetColumnPrefs(): void {
+    this.userColumnPrefs = {};
+    this.userLabelPrefs = {};
+    localStorage.removeItem(this.userPrefsKey);
+    localStorage.removeItem(this.userLabelsKey);
+    this.editingLabelProperty = null;
+    this.prendasOcultar = [0];
+    this.ocultarColumnasRopa();
+    if (this.dataTable) {
+      for (const prenda of this.prendas) {
+        const visible = this.isColumnVisible(prenda.property);
+        this.dataTable.column(prenda.index).visible(visible);
+      }
+    }
+    this.persistPrefsToApi();
+  }
+
   constructor(
     private loginService: LoginService,
     private router: Router,
@@ -114,11 +298,15 @@ export class RopaComponent implements OnInit {
   ) {
     this.abrigoSubject
       .pipe(
-        debounceTime(500), // Tiempo de espera en milisegundos
+        debounceTime(500),
       )
       .subscribe((value) => {
         this.updateRopaJugador(value);
       });
+
+    this.prefsSub = this.savePrefs$.pipe(debounceTime(800)).subscribe(() => {
+      this.persistPrefsToApi();
+    });
   }
 
   ngOnInit(): void {
@@ -136,6 +324,7 @@ export class RopaComponent implements OnInit {
       this.clubId = +params['clubId'];
       this.usuarioActual = user;
       this.userId = this.usuarioActual!.userId;
+      this.loadUserColumnPrefs();
 
       const cached = this.clubService.getRopaCache(this.clubId, this.temporadaStoredValue);
       if (cached?.ropaClub && cached?.ropaPlayers?.length !== undefined) {
@@ -218,23 +407,11 @@ export class RopaComponent implements OnInit {
   }
 
   ocultarColumnasRopa() {
-    if (this.ropaClub.camisetaJuego === 1) this.prendasOcultar.push(5);
-    if (this.ropaClub.pantalonJuego === 1) this.prendasOcultar.push(6);
-    if (this.ropaClub.medias === 1) this.prendasOcultar.push(7);
-    if (this.ropaClub.camisetaJuegoDos === 1) this.prendasOcultar.push(8);
-    if (this.ropaClub.pantalonJuegoDos === 1) this.prendasOcultar.push(9);
-    if (this.ropaClub.mediasDos === 1) this.prendasOcultar.push(10);
-    if (this.ropaClub.camisetaEntreno === 1) this.prendasOcultar.push(11);
-    if (this.ropaClub.pantalonEntreno === 1) this.prendasOcultar.push(12);
-    if (this.ropaClub.mediasTres === 1) this.prendasOcultar.push(13);
-    if (this.ropaClub.sudaderaEntreno === 1) this.prendasOcultar.push(14);
-    if (this.ropaClub.chaquetaChandal === 1) this.prendasOcultar.push(15);
-    if (this.ropaClub.pantalonChandal === 1) this.prendasOcultar.push(16);
-    if (this.ropaClub.poloPaseo === 1) this.prendasOcultar.push(17);
-    if (this.ropaClub.pantalonPaseo === 1) this.prendasOcultar.push(18);
-    if (this.ropaClub.abrigo === 1) this.prendasOcultar.push(19);
-    if (this.ropaClub.chubasquero === 1) this.prendasOcultar.push(20);
-    if (this.ropaClub.mochila === 1) this.prendasOcultar.push(21);
+    for (const prenda of this.prendas) {
+      if (!this.isColumnVisible(prenda.property)) {
+        this.prendasOcultar.push(prenda.index);
+      }
+    }
   }
 
   onAbrigoChange(value: RopaJugador) {
@@ -587,25 +764,15 @@ export class RopaComponent implements OnInit {
     if (this.reloadPage) this.router.navigate(['/dashboard/inicio']);
   }
 
-  togglePrendaOkDesactivar(property: string, value: number) {
-    // 1️⃣ Actualizar estado local
-    const newValue = value === 0 ? 1 : 0;
+  togglePrendaOkDesactivar(property: string) {
+    const currentVisible = this.isColumnVisible(property);
+    this.userColumnPrefs[property] = currentVisible ? 1 : 0;
+    this.saveUserColumnPrefs();
 
-    this.ropaClub = {
-      ...this.ropaClub,
-      [property]: newValue,
-    };
-
-    // 2️⃣ Buscar la prenda para saber qué columna es
     const prenda = this.prendas.find((p) => p.property === property);
-
     if (prenda && this.dataTable) {
-      const visible = newValue === 0; // 0 = visible, 1 = oculto
-      this.dataTable.column(prenda.index).visible(visible);
+      this.dataTable.column(prenda.index).visible(!currentVisible);
     }
-
-    // 3️⃣ Persistir en backend
-    this.updateRopaClub(this.ropaClub);
   }
 
   updateRopaClub(ropa: RopaClub) {

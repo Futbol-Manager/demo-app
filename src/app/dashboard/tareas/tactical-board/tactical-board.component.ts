@@ -591,7 +591,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
 
   clearDrawings(): void {
     const children = this.drawLayer.getChildren().slice();
-    children.forEach(child => {
+    children.forEach((child: Konva.Node) => {
       if (!(child instanceof Konva.Transformer)) child.destroy();
     });
     this.selectedNode = null;
@@ -631,7 +631,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
 
   private restoreDrawLayerFromJSON(json: string): void {
     try {
-      this.drawLayer.getChildren().slice().forEach(child => {
+      this.drawLayer.getChildren().slice().forEach((child: Konva.Node) => {
         if (!(child instanceof Konva.Transformer)) child.destroy();
       });
       this.transformer.nodes([]);
@@ -898,7 +898,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
 
   private restoreDrawLayer(json: string): void {
     try {
-      this.drawLayer.getChildren().slice().forEach(child => {
+      this.drawLayer.getChildren().slice().forEach((child: Konva.Node) => {
         if (!(child instanceof Konva.Transformer)) child.destroy();
       });
       this.transformer.nodes([]);

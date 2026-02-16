@@ -52,111 +52,59 @@ export class PatrocinadoresComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Suscribirse a los cambios en los parámetros de la URL
-    this.route.params.subscribe((params) => {
-      // Obtener el valor de teamId de los parámetros
-      this.clubId = +params['clubId']; // El + convierte el valor a número
-      console.log('clubId:', this.clubId);
-    });
-
     this.loginService.usuarioActual.subscribe((user) => {
       this.usuarioActual = user;
-      this.userId = user?.userId;
-      this.profileId = this.usuarioActual!.profileType.profileId;
+      this.userId = user?.userId ?? 0;
+      this.profileId = this.usuarioActual?.profileType?.profileId ?? 0;
 
-      //llamar a endpoint que de userId y profileId
-      if (this.profileId == 0) {
-        this.clubService
-          .getListPatrocinadoresByUser(this.userId, this.profileId)
-          .subscribe(
-            (response: Response) => {
-              if (response.data !== null) {
-                this.listPatrocinadores = response.data;
-                console.log(this.listPatrocinadores);
-                const carouselElement = document.getElementById(
-                  'carouselPatrocinadores',
-                );
-                if (carouselElement) {
-                  let num = this.listPatrocinadores.length * 1000;
-                  const carousel = new bootstrap.Carousel(carouselElement, {
-                    interval: num, // Cambia el tiempo de transición (ms)
-                    wrap: true,
-                  });
-                }
-                this.datosCargados = true;
-              } else {
-                console.error(
-                  'La respuesta del servicio no tiene la estructura esperada',
-                  response,
-                );
-              }
-            },
-            (error) => {
-              console.error('Error al cargar el listado de equipos', error);
-            },
-          );
-      } else if (this.profileId == 2 || this.profileId == 3) {
-        this.clubService
-          .getListPatrocinadoresByUser(this.userId, this.profileId)
-          .subscribe(
-            (response: Response) => {
-              if (response.data !== null) {
-                this.listPatrocinadores = response.data;
-
-                const carouselElement = document.getElementById(
-                  'carouselPatrocinadores',
-                );
-                if (carouselElement) {
-                  let num = this.listPatrocinadores.length * 1000;
-                  const carousel = new bootstrap.Carousel(carouselElement, {
-                    interval: num, // Cambia el tiempo de transición (ms)
-                    wrap: true,
-                  });
-                }
-                this.datosCargados = true;
-              } else {
-                console.error(
-                  'La respuesta del servicio no tiene la estructura esperada',
-                  response,
-                );
-              }
-            },
-            (error) => {
-              console.error('Error al cargar el listado de equipos', error);
-            },
-          );
-      } else {
-        this.clubService.getListPatrocinadoresByClub(this.clubId).subscribe(
-          (response: Response) => {
-            if (response.data !== null) {
-              this.listPatrocinadores = response.data;
-
-              const carouselElement = document.getElementById(
-                'carouselPatrocinadores',
-              );
-              if (carouselElement) {
-                let num = this.listPatrocinadores.length * 1000;
-                const carousel = new bootstrap.Carousel(carouselElement, {
-                  interval: num, // Cambia el tiempo de transición (ms)
-                  wrap: true,
-                });
-              }
-              this.datosCargados = true;
-            } else {
-              console.error(
-                'La respuesta del servicio no tiene la estructura esperada',
-                response,
-              );
-            }
-            this.datosCargando = false;
-          },
-          (error) => {
-            console.error('Error al cargar el listado de equipos', error);
-          },
-        );
-      }
+      this.route.params.subscribe((params) => {
+        const paramUserId = params['userId'];
+        const paramClubId = params['clubId'];
+        const urlUserId = paramUserId != null && paramUserId !== '' ? +paramUserId : null;
+        if (urlUserId != null) {
+          this.userId = urlUserId;
+          this.clubId = 0;
+        } else {
+          this.clubId = paramClubId != null && paramClubId !== '' ? +paramClubId : 0;
+        }
+        this.loadPatrocinadores();
+      });
     });
-    console.log(this.listPatrocinadores);
+  }
+
+  private loadPatrocinadores(): void {
+    const handleResponse = (response: Response) => {
+      if (response.data !== null) {
+        this.listPatrocinadores = response.data;
+        const carouselElement = document.getElementById('carouselPatrocinadores');
+        if (carouselElement) {
+          const num = this.listPatrocinadores.length * 1000;
+          new bootstrap.Carousel(carouselElement, { interval: num, wrap: true });
+        }
+        this.datosCargados = true;
+      } else {
+        console.error('La respuesta del servicio no tiene la estructura esperada', response);
+      }
+      this.datosCargando = false;
+    };
+
+    if (this.profileId === 0 || this.profileId === 2 || this.profileId === 3) {
+      this.clubService.getListPatrocinadoresByUser(this.userId, this.profileId).subscribe({
+        next: handleResponse,
+        error: (err) => {
+          console.error('Error al cargar el listado de equipos', err);
+          this.datosCargando = false;
+        },
+      });
+    } else {
+      this.clubService.getListPatrocinadoresByClub(this.clubId).subscribe({
+        next: handleResponse,
+        error: (err) => {
+          console.error('Error al cargar el listado de equipos', err);
+          this.datosCargando = false;
+        },
+      });
+    }
   }
 
   irAPantalla(id: number): void {

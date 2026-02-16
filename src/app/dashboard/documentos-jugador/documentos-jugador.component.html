@@ -1,136 +1,151 @@
+<app-publicidad></app-publicidad>
+
+<!-- BOTÓN VOLVER -->
 <div class="back-container">
-  <div class="btn-back-clean" href="javascript:void(0)" (click)="goBack()">
+  <button class="btn-back-clean" type="button" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<main class="docs-page">
+  <div class="docs-container">
+
+    <!-- HEADER -->
+    <header class="docs-header">
+      <h1 class="docs-title">
+        <i class="bi bi-file-earmark-pdf"></i>
+        Documentación
+      </h1>
+      <p class="docs-subtitle">Documentos solicitados por tu club. Descarga, sube o completa según indique cada uno.</p>
+    </header>
+
+    <!-- LISTA DE DOCUMENTOS -->
+    <section class="docs-list">
+      <div *ngFor="let doc of listaDocumentos" class="doc-card">
+        <div class="doc-card-icon" [ngClass]="{
+          'doc-card-icon--download': doc.requiere === 0 || doc.fileClub,
+          'doc-card-icon--upload': doc.requiere === 1,
+          'doc-card-icon--form': doc.requiere === 2
+        }">
+          <i class="bi" [ngClass]="{
+            'bi-download': doc.requiere === 0 || doc.fileClub,
+            'bi-upload': doc.requiere === 1,
+            'bi-card-text': doc.requiere === 2
+          }"></i>
+        </div>
+        <div class="doc-card-body">
+          <h3 class="doc-card-title">{{ doc.nombre }}</h3>
+          <p class="doc-card-desc" *ngIf="doc.requiere < 2 && doc.descripcion">{{ doc.descripcion }}</p>
+          <div class="doc-card-status">
+            <span class="status-badge" [ngClass]="{
+              'status-badge--done': (doc.requiere === 0 || doc.fileClub) && doc.descargado === 1 || doc.requiere === 1 && doc.subido === 1 || doc.requiere === 2 && doc.subido === 1,
+              'status-badge--pending': !((doc.requiere === 0 || doc.fileClub) && doc.descargado === 1 || doc.requiere === 1 && doc.subido === 1 || doc.requiere === 2 && doc.subido === 1)
+            }">
+              <i class="bi" [ngClass]="{
+                'bi-check-circle': (doc.requiere === 0 || doc.fileClub) && doc.descargado === 1 || doc.requiere === 1 && doc.subido === 1 || doc.requiere === 2 && doc.subido === 1,
+                'bi-exclamation-circle': !((doc.requiere === 0 || doc.fileClub) && doc.descargado === 1 || doc.requiere === 1 && doc.subido === 1 || doc.requiere === 2 && doc.subido === 1)
+              }"></i>
+              <ng-container *ngIf="(doc.requiere === 0 || doc.fileClub) && doc.descargado === 0">Pendiente descargar</ng-container>
+              <ng-container *ngIf="(doc.requiere === 0 || doc.fileClub) && doc.descargado === 1">Descargado</ng-container>
+              <ng-container *ngIf="doc.requiere === 1 && doc.subido === 0">Pendiente subir</ng-container>
+              <ng-container *ngIf="doc.requiere === 1 && doc.subido === 1">Subido</ng-container>
+              <ng-container *ngIf="doc.requiere === 2 && doc.subido === 0">Pendiente rellenar</ng-container>
+              <ng-container *ngIf="doc.requiere === 2 && doc.subido === 1">Completado</ng-container>
+            </span>
+          </div>
+          <div class="doc-card-actions">
+            <button *ngIf="doc.requiere === 0 || doc.fileClub" type="button" class="btn-doc-action"
+              [class.btn-doc-action--done]="doc.descargado === 1"
+              (click)="descargar(doc)" [title]="doc.descargado === 1 ? 'Ver / Descargar' : 'Descargar documento'">
+              <i class="bi bi-download"></i>
+              {{ doc.descargado === 1 ? 'Ver documento' : 'Descargar' }}
+            </button>
+            <button *ngIf="doc.requiere === 1" type="button" class="btn-doc-action"
+              [class.btn-doc-action--done]="doc.subido === 1"
+              (click)="subir(doc)" title="Subir documento">
+              <i class="bi bi-upload"></i>
+              {{ doc.subido === 1 ? 'Cambiar archivo' : 'Subir documento' }}
+            </button>
+            <button *ngIf="doc.requiere === 2" type="button" class="btn-doc-action"
+              [class.btn-doc-action--done]="doc.subido === 1"
+              (click)="rellenarPersonalizado(doc)" title="Rellenar información">
+              <i class="bi bi-pencil-square"></i>
+              {{ doc.subido === 1 ? 'Ver / Editar' : 'Rellenar' }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div class="docs-empty" *ngIf="listaDocumentos.length === 0">
+        <div class="docs-empty-icon">
+          <i class="bi bi-folder2-open"></i>
+        </div>
+        <h3>No hay documentos</h3>
+        <p>Tu club aún no ha solicitado ningún documento. Cuando lo haga, aparecerán aquí.</p>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- MODAL SUBIR DOCUMENTO -->
+<div class="modal-overlay" [class.modal-overlay--open]="mostrarModalDocumento" (click)="mostrarModalDocumento && cerrarModalDocumento()">
+  <div class="modal-box" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="modal-upload-title">
+    <div class="modal-box-header">
+      <h2 id="modal-upload-title" class="modal-box-title">
+        <i class="bi bi-cloud-upload"></i>
+        Subir documento
+      </h2>
+      <button type="button" class="modal-box-close" aria-label="Cerrar" (click)="cerrarModalDocumento()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-box-body">
+      <p class="modal-box-desc" *ngIf="docPadreTemp?.subido === 1 && docPadreTemp?.filePadre">
+        Por política de privacidad no mostramos el documento subido. Si has subido uno incorrecto, selecciona el archivo correcto y vuelve a subir.
+      </p>
+      <p class="modal-box-desc" *ngIf="!docPadreTemp?.filePadre || docPadreTemp?.subido === 0">
+        Selecciona el archivo que te solicita el club. Formatos: PDF, Word o imagen.
+      </p>
+      <div class="form-group">
+        <label class="file-label">
+          <span class="file-label-text">
+            <i class="bi bi-file-earmark-arrow-up"></i>
+            Elegir archivo (.pdf, .doc, .docx, .jpg, .png)
+          </span>
+          <input type="file" class="file-input" (change)="onFileSelected($event)"
+            accept=".pdf,.doc,.docx,.jpg,.png,.jpeg" />
+        </label>
+        <span class="file-name" *ngIf="archivoSeleccionado">{{ archivoSeleccionado.name }}</span>
+      </div>
+    </div>
+    <div class="modal-box-footer">
+      <button type="button" class="btn-modal-cancel" (click)="cerrarModalDocumento()">Cancelar</button>
+      <button type="button" class="btn-modal-submit" (click)="subirDocumento()">Subir</button>
+    </div>
   </div>
 </div>
 
-<div class="container mt-4">
-    <div class="row">
-        <div *ngFor="let doc of listaDocumentos" class="col-12 mb-3 p-3 rounded"
-            style="background-color: #212529; border: 1px solid black; color: white;">
-
-            <h5 class="fw-bold">{{ doc.nombre }}</h5>
-            <p *ngIf="doc.requiere < 2">{{ doc.descripcion }}</p>
-
-            <!-- Estado -->
-            <ul class="mb-2 ps-0" style="list-style: none;">
-                <li *ngIf="(doc.requiere === 0 || doc.fileClub) && doc.descargado === 0">⚠️ Tienes pendiente descargarlo</li>
-                <li *ngIf="(doc.requiere === 0 || doc.fileClub) && doc.descargado === 1">✅ Ya lo has descargado</li>
-                <li *ngIf="doc.requiere === 1 && doc.subido === 0">⚠️ Tienes pendiente subirlo</li>
-                <li *ngIf="doc.requiere === 1 && doc.subido === 1">✅ Ya lo has subido</li>
-                <li *ngIf="doc.requiere === 2 && doc.subido === 0">⚠️ Tienes pendiente rellenarlo</li>
-                <li *ngIf="doc.requiere === 2 && doc.subido === 1">✅ Ya lo has rellenado</li>
-            </ul>
-
-            <!-- Botones -->
-            <div class="d-flex gap-2">
-                <!-- Descargar -->
-                <button *ngIf="doc.requiere === 0 || doc.fileClub" class="btn btn-light" (click)="descargar(doc)"
-                    title="Descargar documento" [ngClass]="{
-                    'bg-secondary text-white': doc.descargado === 0,
-                    'bg-success text-white': doc.descargado === 1
-                }">
-                    <i class="bi bi-arrow-down-circle"></i>
-                </button>
-
-                <!-- Subir documento -->
-                <button *ngIf="doc.requiere === 1" class="btn btn-light" (click)="subir(doc)" title="Subir documento"
-                    [ngClass]="{
-                    'bg-secondary text-white': doc.subido === 0,
-                    'bg-success text-white': doc.subido === 1
-                }">
-                    <i class="bi bi-arrow-up-circle"></i>
-                </button>
-
-                <!-- Rellenar personalizado -->
-                <button *ngIf="doc.requiere === 2" class="btn btn-light" (click)="rellenarPersonalizado(doc)"
-                    title="Rellenar información" [ngClass]="{
-                    'bg-secondary text-white': doc.subido === 0,
-                    'bg-success text-white': doc.subido === 1
-                }">
-                    <i class="bi bi-card-text"></i>
-                </button>
-            </div>
-        </div>
-
-
+<!-- MODAL FORMULARIO PERSONALIZADO -->
+<div class="modal-overlay" [class.modal-overlay--open]="mostrarModalEditarPersonalizado" (click)="mostrarModalEditarPersonalizado && cerrarModalEditarPersonalizado()">
+  <div class="modal-box modal-box--lg" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="modal-form-title">
+    <div class="modal-box-header">
+      <h2 id="modal-form-title" class="modal-box-title">{{ docEditando?.nombre }}</h2>
+      <button type="button" class="modal-box-close" aria-label="Cerrar" (click)="cerrarModalEditarPersonalizado()">
+        <i class="bi bi-x-lg"></i>
+      </button>
     </div>
-</div>
-
-<!-- Modal para subir documento del club -->
-<div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{ 'show': mostrarModalDocumento }"
-    [style.display]="mostrarModalDocumento ? 'block' : 'none'">
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Subir Documento (PDF, Word o imagen)</h5>
-                <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalDocumento()"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3 text-center"
-                    *ngIf="docPadreTemp?.subido === 1 && docPadreTemp?.filePadre; else subirNuevoArchivo">
-                    <!-- 
-                    <ng-container *ngIf="esImagen(docPadreTemp.filePadre); else mostrarBotonDocumento">
-                        <p class="mb-2">Documento ya subido:</p>
-                        <img [src]="'https://appsphairatech.com/images/docs-padres/' + docPadreTemp.filePadre"
-                            alt="Documento subido" class="img-fluid rounded shadow-sm"
-                            style="max-width: 100%; max-height: 350px; object-fit: contain;" />
-                    </ng-container>
-
-                    <ng-template #mostrarBotonDocumento>
-                        <p class="mb-2">Documento ya subido: {{ docPadreTemp.filePadre }}</p>
-                        <a class="btn btn-primary"
-                            [href]="'https://appsphairatech.com/images/docs-padres/' + docPadreTemp.filePadre"
-                            target="_blank" rel="noopener">
-                            Ver / Descargar documento <i class="bi bi-box-arrow-up-right ms-1"></i>
-                        </a>
-                    </ng-template>
-                    -->
-
-                    <p>Por política de privacidad de datos, no se
-                        puede mostrar el documento que ha sido subido. Por lo tanto, si crees que has cometido un error
-                        y has subido un documento incorrecto súbelo de nuevo</p>
-                </div>
-
-                <ng-template #subirNuevoArchivo>
-                    <p>Aquí puedes subir el archivo que se está solicitando.</p>
-                </ng-template>
-
-                <div class="mb-3">
-                    <label>Seleccionar archivo (.png, .jpg, .pdf o .doc/.docx):</label>
-                    <input type="file" class="form-control" (change)="onFileSelected($event)"
-                        accept=".pdf,.doc,.docx,.jpg,.png,.jpeg" />
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" (click)="cerrarModalDocumento()">Cancelar</button>
-                <button class="btn btn-primary" (click)="subirDocumento()">Subir</button>
-            </div>
-        </div>
+    <div class="modal-box-body" *ngIf="docEditando">
+      <app-form-renderer
+        [docClubesId]="docEditando.docClubesId"
+        [contexto]="'DOCUMENTO'"
+        [userId]="userId"
+        [playerId]="docEditando.playerId || 0"
+        (onSave)="onFormRendererSaved()"
+        (onClose)="onFormRendererClosed()">
+      </app-form-renderer>
     </div>
-</div>
-
-<!-- Modal formulario personalizado -->
-<div class="modal fade" tabindex="-1" [ngClass]="{ 'show': mostrarModalEditarPersonalizado }"
-    [style.display]="mostrarModalEditarPersonalizado ? 'block' : 'none'">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">{{ docEditando?.nombre }}</h5>
-                <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalEditarPersonalizado()"></button>
-            </div>
-
-            <div class="modal-body" *ngIf="docEditando">
-                <app-form-renderer
-                    [docClubesId]="docEditando.docClubesId"
-                    [contexto]="'DOCUMENTO'"
-                    [userId]="userId"
-                    [playerId]="docEditando.playerId || 0"
-                    (onSave)="onFormRendererSaved()"
-                    (onClose)="onFormRendererClosed()">
-                </app-form-renderer>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>

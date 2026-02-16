@@ -1,129 +1,413 @@
-<div class="back-container">
-  <div class="btn-back-clean" href="javascript:void(0)" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
+<app-publicidad></app-publicidad>
+
+<div class="btn-back-clean"  (click)="goBack()">
+  <i class="bi bi-arrow-left"></i>
+  <span>{{ 'COMMON.BACK' | translate }}</span>
+</div>
+
+<div class="gallery-page">
+  <!-- ════════ PAGE HEADER ════════ -->
+  <header class="page-header">
+    <div class="page-header-content">
+      <div class="page-header-icon">
+        <i class="bi bi-collection-play"></i>
+      </div>
+      <div>
+        <h1 class="page-title">Galería de Partidos</h1>
+        <p class="page-subtitle">Revive los mejores momentos de cada encuentro</p>
+      </div>
+    </div>
+    <div class="page-header-stats">
+      <div class="stat-pill">
+        <i class="bi bi-image"></i> {{ totalFotosGlobal }} fotos
+      </div>
+      <div class="stat-pill">
+        <i class="bi bi-play-circle"></i> {{ totalVideosGlobal }} vídeos
+      </div>
+      <div class="stat-pill">
+        <i class="bi bi-calendar-event"></i> {{ partidos.length }} partidos
+      </div>
+    </div>
+  </header>
+
+  <!-- ════════ MATCH SELECTOR ════════ -->
+  <section class="match-selector">
+    <div class="section-label">
+      <i class="bi bi-calendar-event"></i>
+      <span>Selecciona un partido</span>
+    </div>
+    <div class="match-carousel">
+      <button class="carousel-arrow" (click)="prev()" [disabled]="currentIndex === 0">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+
+      <div class="carousel-track">
+        <div *ngFor="let item of getVisibleItems()" class="match-card"
+             [class.match-card--active]="postpartidoSelected === item.id"
+             (click)="seleccionarPartido(item)">
+          <div class="match-card-accent"></div>
+          <div class="match-card-body">
+            <div class="match-letter" [ngClass]="{
+              'match-letter--win': item.letra === 'V',
+              'match-letter--draw': item.letra === 'E',
+              'match-letter--loss': item.letra === 'D'
+            }">{{ item.letra }}</div>
+            <h4 class="match-name">{{ item.name }}</h4>
+            <div class="match-score-row">
+              <span class="match-score">{{ item.resultado }}</span>
+            </div>
+            <div class="match-media-counts">
+              <span class="media-count" *ngIf="item.totalFotos > 0">
+                <i class="bi bi-image"></i> {{ item.totalFotos }}
+              </span>
+              <span class="media-count" *ngIf="item.totalVideos > 0">
+                <i class="bi bi-play-circle"></i> {{ item.totalVideos }}
+              </span>
+              <span class="media-count media-count--empty" *ngIf="!item.totalFotos && !item.totalVideos">
+                <i class="bi bi-camera"></i> 0
+              </span>
+            </div>
+          </div>
+          <div class="match-card-check" *ngIf="postpartidoSelected === item.id">
+            <i class="bi bi-check-lg"></i>
+          </div>
+        </div>
+      </div>
+
+      <button class="carousel-arrow" (click)="next()"
+              [disabled]="currentIndex + 4 >= partidos.length">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </section>
+
+  <!-- ════════ GALLERY CONTENT ════════ -->
+  <section class="gallery-content" *ngIf="showGalery">
+
+    <!-- Premium Tabs -->
+    <div class="gallery-tabs-wrapper">
+      <div class="gallery-tabs">
+        <button class="gallery-tab" [class.gallery-tab--active]="activeTab === 'fotos'" (click)="setTab('fotos')">
+          <div class="tab-icon-wrap"><i class="bi bi-image-fill"></i></div>
+          <div class="tab-text">
+            <span class="tab-label">Fotos</span>
+            <span class="tab-sublabel" *ngIf="fotos.length">{{ fotos.length }} elementos</span>
+            <span class="tab-sublabel" *ngIf="!fotos.length">Sin fotos aún</span>
+          </div>
+        </button>
+        <button class="gallery-tab" [class.gallery-tab--active]="activeTab === 'videos'" (click)="setTab('videos')">
+          <div class="tab-icon-wrap"><i class="bi bi-play-btn-fill"></i></div>
+          <div class="tab-text">
+            <span class="tab-label">Vídeos</span>
+            <span class="tab-sublabel" *ngIf="videos.length">{{ videos.length }} elementos</span>
+            <span class="tab-sublabel" *ngIf="!videos.length">Sin vídeos aún</span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- ──── TAB: FOTOS ──── -->
+    <div class="tab-panel" *ngIf="activeTab === 'fotos'">
+
+      <!-- Action bar con botón para nueva imagen -->
+      <div class="content-action-bar">
+        <button class="btn-new-content" (click)="showUploadPanel = !showUploadPanel">
+          <i class="bi" [ngClass]="showUploadPanel ? 'bi-x-lg' : 'bi-plus-lg'"></i>
+          {{ showUploadPanel ? 'Cerrar' : 'Nueva imagen' }}
+        </button>
+      </div>
+
+      <!-- Upload panel (colapsable) -->
+      <div class="upload-card" *ngIf="showUploadPanel"
+           [class.upload-card--dragging]="isDragging"
+           (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+        <div class="upload-card-glow"></div>
+
+        <div *ngIf="!showPreview" class="upload-inner">
+          <div class="upload-icon-ring">
+            <i class="bi bi-cloud-arrow-up-fill"></i>
+          </div>
+          <h3 class="upload-title">Sube tus fotos</h3>
+          <p class="upload-desc">Arrastra y suelta o elige un método</p>
+          <div class="upload-formats">
+            <span class="format-tag">JPG</span>
+            <span class="format-tag">PNG</span>
+            <span class="format-divider">•</span>
+            <span class="format-limit">máx. 10MB</span>
+          </div>
+          <div class="upload-buttons">
+            <label class="btn-upload-primary">
+              <i class="bi bi-folder2-open"></i>
+              <span>Seleccionar archivo</span>
+              <input type="file" accept="image/png,image/jpeg" (change)="onFileSelected($event)" hidden>
+            </label>
+            <button class="btn-upload-secondary" (click)="openUrlModal('image')">
+              <i class="bi bi-link-45deg"></i>
+              <span>Añadir por URL</span>
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="showPreview" class="upload-preview">
+          <div class="preview-frame">
+            <img [src]="imagePreviewUrl" alt="Vista previa" class="preview-img">
+          </div>
+          <div class="preview-controls">
+            <button class="ctrl-btn" (click)="rotateImage()">
+              <i class="bi bi-arrow-clockwise"></i> Rotar
+            </button>
+            <button class="ctrl-btn ctrl-btn--upload" *ngIf="showbtnupimg" (click)="onSubmit()">
+              <i class="bi bi-cloud-upload-fill"></i> Subir foto
+            </button>
+            <button class="ctrl-btn ctrl-btn--cancel" (click)="resetUpload()">
+              <i class="bi bi-x-lg"></i> Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Photo Grid -->
+      <div class="photo-grid" *ngIf="fotos.length > 0">
+        <div *ngFor="let foto of fotos; let i = index" class="photo-card"
+             (click)="abrirModal(getImageUrl(foto))">
+          <img [src]="getImageUrl(foto)" alt="Foto galería" class="photo-card-img" loading="lazy">
+          <div class="photo-card-hover">
+            <div class="hover-icon"><i class="bi bi-fullscreen"></i></div>
+          </div>
+          <button *ngIf="foto.playerId === playerId" class="photo-delete"
+                  (click)="$event.stopPropagation(); eliminarImagen(foto.galeriaPartidoId, i, 0)">
+            <i class="bi bi-trash3-fill"></i>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="fotos.length === 0 && !showUploadPanel" class="empty-state">
+        <div class="empty-illustration">
+          <i class="bi bi-camera"></i>
+        </div>
+        <h3>Aún no hay fotos</h3>
+        <p>Pulsa "Nueva imagen" para subir la primera foto de este partido</p>
+      </div>
+    </div>
+
+    <!-- ──── TAB: VIDEOS ──── -->
+    <div class="tab-panel" *ngIf="activeTab === 'videos'">
+
+      <!-- Action bar con opciones de vídeo -->
+      <div class="content-action-bar">
+        <button class="btn-new-content btn-new-content--video" (click)="openUrlModal('video')">
+          <i class="bi bi-link-45deg"></i> Añadir por URL
+        </button>
+        <button class="btn-new-content btn-new-content--pro"
+                (click)="hasVideoSubscription ? triggerVideoFileUpload() : openProModal()">
+          <i class="bi bi-upload"></i> Subir desde dispositivo
+          <span class="btn-pro-tag" *ngIf="!hasVideoSubscription">
+            <i class="bi bi-lock-fill"></i> PRO
+          </span>
+        </button>
+      </div>
+
+      <!-- Video file upload panel (solo PRO, colapsable) -->
+      <div class="upload-card upload-card--video" *ngIf="showVideoUploadPanel && hasVideoSubscription">
+        <div class="upload-card-glow"></div>
+        <div class="upload-inner">
+          <div class="upload-icon-ring upload-icon-ring--video">
+            <i class="bi bi-camera-video-fill"></i>
+          </div>
+          <h3 class="upload-title">Sube tu vídeo</h3>
+          <p class="upload-desc">Formatos soportados: MP4, MOV, WebM</p>
+          <div class="upload-formats">
+            <span class="format-tag">MP4</span>
+            <span class="format-tag">MOV</span>
+            <span class="format-tag">WebM</span>
+            <span class="format-divider">•</span>
+            <span class="format-limit">máx. 100MB</span>
+          </div>
+          <div class="upload-buttons">
+            <label class="btn-upload-primary btn-upload-primary--video">
+              <i class="bi bi-camera-video"></i>
+              <span>Seleccionar vídeo</span>
+              <input #videoFileInput type="file" accept="video/mp4,video/quicktime,video/webm" (change)="onVideoFileSelected($event)" hidden>
+            </label>
+            <button class="btn-upload-secondary" (click)="showVideoUploadPanel = false">
+              <i class="bi bi-x-lg"></i>
+              <span>Cancelar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Video preview -->
+        <div *ngIf="videoPreviewUrl" class="upload-preview">
+          <div class="preview-frame preview-frame--video">
+            <video [src]="videoPreviewUrl" class="preview-video" controls></video>
+          </div>
+          <div class="preview-controls">
+            <button class="ctrl-btn ctrl-btn--upload" (click)="onSubmitVideo()">
+              <i class="bi bi-cloud-upload-fill"></i> Subir vídeo
+            </button>
+            <button class="ctrl-btn ctrl-btn--cancel" (click)="resetVideoUpload()">
+              <i class="bi bi-x-lg"></i> Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Video Grid -->
+      <div class="video-grid" *ngIf="videos.length > 0">
+        <div *ngFor="let video of videos; let a = index" class="video-card">
+          <div class="video-card-frame">
+            <iframe *ngIf="video.link" [src]="getEmbedUrl(video)" frameborder="0" allowfullscreen
+                    class="video-iframe"></iframe>
+            <video *ngIf="!video.link && video.urlImg" [src]="getVideoFileUrl(video)"
+                   class="video-iframe" controls></video>
+          </div>
+          <div class="video-card-footer">
+            <div class="video-badge" *ngIf="video.link">
+              <i class="bi bi-youtube"></i> YouTube
+            </div>
+            <div class="video-badge video-badge--file" *ngIf="!video.link">
+              <i class="bi bi-camera-video"></i> Archivo
+            </div>
+            <button *ngIf="video.playerId === playerId" class="video-delete"
+                    (click)="eliminarImagen(video.galeriaPartidoId, a, 1)">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="videos.length === 0 && !showVideoUploadPanel" class="empty-state">
+        <div class="empty-illustration">
+          <i class="bi bi-film"></i>
+        </div>
+        <h3>Sin vídeos aún</h3>
+        <p>Añade un vídeo por URL o sube uno desde tu dispositivo</p>
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<!-- ════════ LIGHTBOX ════════ -->
+<div *ngIf="imagenSeleccionada" class="lightbox" (click)="cerrarModal()">
+  <div class="lightbox-backdrop"></div>
+  <button class="lightbox-close" (click)="cerrarModal()"><i class="bi bi-x-lg"></i></button>
+  <img [src]="imagenSeleccionada" class="lightbox-img" (click)="$event.stopPropagation()">
+</div>
+
+<!-- ════════ URL MODAL ════════ -->
+<div *ngIf="showUrlModal" class="modal-overlay" (click)="closeUrlModal()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+    <div class="modal-header-bar">
+      <div class="modal-header-icon">
+        <i class="bi" [ngClass]="urlModalType === 'video' ? 'bi-play-circle-fill' : 'bi-image-fill'"></i>
+      </div>
+      <div>
+        <h3 class="modal-title">{{ urlModalType === 'video' ? 'Añadir vídeo' : 'Añadir imagen' }}</h3>
+        <p class="modal-subtitle">Pega la URL del recurso</p>
+      </div>
+      <button class="modal-close" (click)="closeUrlModal()"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="modal-info" *ngIf="urlModalType === 'video'">
+        <i class="bi bi-youtube" style="color: #dc2626"></i>
+        Pega un enlace de <strong>YouTube</strong> en cualquier formato (watch, shorts, embed, live...)
+      </div>
+      <div class="modal-info" *ngIf="urlModalType === 'image'">
+        <i class="bi bi-lightbulb"></i>
+        Pega la URL directa de una imagen <strong>JPG, PNG o WebP</strong>
+      </div>
+
+      <label class="input-label">URL del recurso</label>
+      <div class="input-group-pro">
+        <div class="input-prefix"><i class="bi bi-link-45deg"></i></div>
+        <input type="url" [(ngModel)]="urlInput" placeholder="https://www.youtube.com/watch?v=..."
+               class="input-field" (keydown.enter)="submitUrl()">
+      </div>
+      <div *ngIf="urlError" class="input-error">
+        <i class="bi bi-exclamation-circle"></i> {{ urlError }}
+      </div>
+    </div>
+
+    <div class="modal-footer-bar">
+      <button class="btn-modal-cancel" (click)="closeUrlModal()">Cancelar</button>
+      <button class="btn-modal-confirm" (click)="submitUrl()">
+        <i class="bi bi-plus-lg"></i> Añadir
+      </button>
+    </div>
   </div>
 </div>
 
-<app-publicidad></app-publicidad>
+<!-- ════════ MODAL PRO (Vídeos desde dispositivo) ════════ -->
+<div *ngIf="showProModal" class="modal-overlay modal-overlay--pro" (click)="closeProModal()">
+  <div class="modal-pro" (click)="$event.stopPropagation()">
+    <button class="modal-pro-close" (click)="closeProModal()">
+      <i class="bi bi-x-lg"></i>
+    </button>
 
+    <div class="modal-pro-header">
+      <div class="modal-pro-badge">
+        <i class="bi bi-stars"></i>
+        PRO
+      </div>
+      <h2 class="modal-pro-title">Sube vídeos desde tu dispositivo</h2>
+      <p class="modal-pro-subtitle">Accede a funciones premium para compartir tus mejores momentos</p>
+    </div>
 
-<div class="container">
-    <!-- Banner de partidos -->
-    <div class="d-flex justify-content-between align-items-center">
-        <button (click)="prev()" class="btn btn-primary" [disabled]="currentIndex === 0">‹</button>
-
-        <div class="d-flex flex-wrap justify-content-center">
-            <div *ngFor="let item of getVisibleItems()" class="card m-2 partido-card"
-                [ngClass]="{'seleccionado': postpartidoSelected === item.id}" (click)="seleccionarPartido(item)">
-
-                <div class="card-body text-center">
-                    <h5 class="card-title">{{ item.name }}</h5>
-                    <p class="card-text">Resultado: {{ item.resultado }}</p>
-                    <span class="badge fs-5">
-                        {{ iconos[item.letra] }}
-                    </span>
-                </div>
-            </div>
+    <div class="modal-pro-body">
+      <div class="modal-pro-feature">
+        <div class="feature-icon feature-icon--purple">
+          <i class="bi bi-camera-video-fill"></i>
         </div>
-
-        <button (click)="next()" class="btn btn-primary" [disabled]="currentIndex + 4 >= partidos.length">›</button>
-    </div>
-
-    <!-- Galería -->
-    <!-- Contenedor de pestañas -->
-    <div class="mt-3" *ngIf="showGalery">
-        <ul class="nav nav-tabs" id="galeriaTabs">
-            <li class="nav-item">
-                <a class="nav-link active" id="fotos-tab" data-bs-toggle="tab" href="#fotos">Fotos</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="videos-tab" data-bs-toggle="tab" href="#videos">Videos</a>
-            </li>
-        </ul>
-
-        <div class="tab-content mt-3">
-            <!-- Pestaña de Fotos -->
-            <div class="tab-pane fade show active" id="fotos">
-                <div class="text-center mb-3">
-                    <form (submit)="onSubmit()" enctype="multipart/form-data">
-                        <div class="form-group">
-                            <p>Seleccionar imagen en formato JPG o PNG:</p>
-                            <input type="file" id="image" (change)="onFileSelected($event)">
-                            <div *ngIf="showPreview" style="margin-top: 2em;">
-                                <img [src]="imagePreviewUrl" alt="Image Preview" width="150" height="150"
-                                    class="rounded-circle me-2">
-
-                                <!-- Botones alineados verticalmente -->
-                                <div class="d-grid gap-2 mt-3">
-                                    <button (click)="rotateImage()" type="button" class="btn btn-primary btn-lg">
-                                        Rotar Imagen
-                                    </button>
-                                    <button *ngIf="showbtnupimg" type="submit" class="btn btn-success btn-lg">
-                                        Subir foto
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="row">
-                    <div *ngFor="let foto of fotos; let i = index" class="col-lg-4 col-md-6 col-12 mb-3">
-                        <div class="gallery-item position-relative">
-                            <img [src]="imageBaseUrlGaleria + foto.urlImg" class="img-fluid rounded shadow-sm"
-                                (click)="abrirModal(imageBaseUrlGaleria + foto.urlImg)">
-
-                            <button *ngIf="foto.playerId === playerId" type="button"
-                                class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
-                                (click)="eliminarImagen(foto.galeriaPartidoId, i, 0)">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pestaña de Videos -->
-            <div class="tab-pane fade" id="videos">
-                <div class="text-center mb-3">
-                    <button class="btn btn-primary" (click)="abrirModalYoutube()">Subir Video YouTube</button>
-                </div>
-
-                <div class="row">
-                    <div *ngFor="let video of videos; let a = index" class="col-lg-4 col-md-6 col-12 mb-3">
-                        <div class="gallery-item position-relative">
-                            <iframe [src]="getYouTubeEmbedUrl(video.link)" frameborder="0" allowfullscreen
-                                class="w-100 rounded shadow-sm" style="height: 200px;"></iframe>
-
-                            <button *ngIf="video.playerId === playerId" type="button"
-                                class="btn btn-danger btn-sm position-absolute top-0 end-0 m-1"
-                                (click)="eliminarImagen(video.galeriaPartidoId, a, 1)">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="feature-content">
+          <h4>Sube vídeos desde tu dispositivo</h4>
+          <p>Comparte grabaciones directamente desde tu móvil o ordenador sin depender de YouTube</p>
         </div>
+      </div>
+
+      <div class="modal-pro-feature">
+        <div class="feature-icon feature-icon--blue">
+          <i class="bi bi-file-earmark-play"></i>
+        </div>
+        <div class="feature-content">
+          <h4>Múltiples formatos soportados</h4>
+          <p>MP4, MOV, WebM — hasta 100MB por vídeo con reproducción integrada</p>
+        </div>
+      </div>
+
+      <div class="modal-pro-feature">
+        <div class="feature-icon feature-icon--green">
+          <i class="bi bi-shield-check"></i>
+        </div>
+        <div class="feature-content">
+          <h4>Contenido privado y seguro</h4>
+          <p>Tus vídeos se almacenan de forma privada, solo accesible para tu equipo</p>
+        </div>
+      </div>
+
+      <div class="modal-pro-feature">
+        <div class="feature-icon feature-icon--orange">
+          <i class="bi bi-infinity"></i>
+        </div>
+        <div class="feature-content">
+          <h4>Vídeos ilimitados</h4>
+          <p>Sin límite en el número de vídeos que puedes subir a tu galería</p>
+        </div>
+      </div>
     </div>
 
-</div>
-
-<!-- Modal para ver la imagen en grande -->
-<div *ngIf="imagenSeleccionada" class="modal-overlay" (click)="cerrarModal()">
-    <div class="modal-content">
-        <span class="close-btn" (click)="cerrarModal()">&times;</span>
-        <img [src]="imagenSeleccionada" class="modal-img">
+    <div class="modal-pro-footer">
+      <div class="modal-pro-price">
+        <span class="price-label">Desde</span>
+        <span class="price-amount">9.99€</span>
+        <span class="price-period">/mes</span>
+      </div>
+      <button class="btn-pro-subscribe" (click)="goToSubscription()">
+        <i class="bi bi-lightning-charge-fill"></i>
+        Activar PRO ahora
+      </button>
+      <p class="modal-pro-note">Cancela cuando quieras • Sin permanencia</p>
     </div>
-</div>
-
-<!-- Modal para agregar video de YouTube -->
-<div *ngIf="mostrarModalYoutube" class="modal-overlay">
-    <div class="modal-content">
-        <h4>Agregar Vídeo de YouTube</h4>
-        <input type="text" [(ngModel)]="youtubeUrl" placeholder="Pega el enlace de YouTube" class="form-control">
-        <button class="btn btn-success mt-2" (click)="agregarVideoYoutube()">Agregar</button>
-        <button class="btn btn-secondary mt-2" (click)="cerrarModalYoutube()">Cancelar</button>
-    </div>
+  </div>
 </div>

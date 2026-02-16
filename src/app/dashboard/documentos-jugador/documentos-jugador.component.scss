@@ -1,22 +1,491 @@
-/* ===== BOTÓN VOLVER ===== */
-.back-container { padding: 0; }
+// ═══════════════════════════════════════════════════════════════
+// DOCUMENTOS JUGADOR — Premium UI (Sphaira Tech)
+// ═══════════════════════════════════════════════════════════════
+$primary: #0fa3e8;
+$primary-dark: #002c40;
+$accent: #22bf63;
+$success: #22bf63;
+$warning: #f59e0b;
+$bg-page: #f4f7fa;
+$card-bg: #ffffff;
+$text-primary: #1a2332;
+$text-muted: #6b7a8d;
+$border: #e2e8f0;
+$radius: 14px;
+$radius-sm: 10px;
+$shadow: 0 4px 20px rgba(0, 44, 64, 0.08);
+$shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
+
+// ─── Back ───────────────────────────────────────────────────
+.back-container {
+  padding: 0.75rem 1.25rem;
+}
+
 .btn-back-clean {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  margin-top: 16px;
-  margin-left: 24px;
-  background: transparent;
+  margin: 0;
+  padding: 0.4rem 0.75rem;
+  background: rgba($primary-dark, 0.06);
   border: none;
-  background-color: rgba(15, 163, 232, 0.08);
-  color: #002c40;
+  border-radius: $radius-sm;
+  color: $primary-dark;
   font-size: 0.9rem;
   font-weight: 500;
-  padding: 0.35rem 0.6rem;
-  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.15s ease;
+  transition: background 0.2s, transform 0.15s;
+
+  i { font-size: 1.1rem; }
+  &:hover {
+    background: rgba($primary-dark, 0.12);
+    transform: translateX(-2px);
+  }
+  &:active { transform: translateX(0); }
 }
-.btn-back-clean i { font-size: 1.1rem; }
-.btn-back-clean:hover { background-color: rgba(0, 44, 64, 0.08); transform: translateX(-2px); }
-.btn-back-clean:active { transform: translateX(0); }
+
+// ─── Page ───────────────────────────────────────────────────
+.docs-page {
+  min-height: 50vh;
+  padding-bottom: 2rem;
+}
+
+.docs-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+// ─── Header ──────────────────────────────────────────────────
+.docs-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid $border;
+}
+
+.docs-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.35rem 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: $text-primary;
+
+  i {
+    color: $primary;
+    font-size: 1.5rem;
+  }
+}
+
+.docs-subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: $text-muted;
+  line-height: 1.45;
+}
+
+// ─── Document list ───────────────────────────────────────────
+.docs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.doc-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.25rem;
+  background: $card-bg;
+  border-radius: $radius;
+  padding: 1.25rem 1.5rem;
+  box-shadow: $shadow;
+  border: 1px solid $border;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover {
+    box-shadow: $shadow-lg;
+    transform: translateY(-1px);
+  }
+}
+
+.doc-card-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.doc-card-icon--download {
+  background: rgba($primary, 0.12);
+  color: $primary;
+}
+
+.doc-card-icon--upload {
+  background: rgba($accent, 0.12);
+  color: $accent;
+}
+
+.doc-card-icon--form {
+  background: rgba($primary-dark, 0.08);
+  color: $primary-dark;
+}
+
+.doc-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.doc-card-title {
+  margin: 0 0 0.35rem 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.doc-card-desc {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: $text-muted;
+  line-height: 1.4;
+}
+
+.doc-card-status {
+  margin-bottom: 0.75rem;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  i { font-size: 0.95rem; }
+}
+
+.status-badge--pending {
+  background: rgba($warning, 0.12);
+  color: darken($warning, 12%);
+}
+
+.status-badge--done {
+  background: rgba($success, 0.12);
+  color: darken($success, 8%);
+}
+
+.doc-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.btn-doc-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  background: $card-bg;
+  color: $text-primary;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  i { font-size: 1rem; }
+
+  &:hover {
+    border-color: $primary;
+    background: rgba($primary, 0.06);
+    color: $primary;
+  }
+
+  &--done {
+    border-color: rgba($success, 0.4);
+    background: rgba($success, 0.08);
+    color: darken($success, 6%);
+
+    &:hover {
+      border-color: $success;
+      background: rgba($success, 0.14);
+      color: darken($success, 10%);
+    }
+  }
+}
+
+// ─── Empty state ─────────────────────────────────────────────
+.docs-empty {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: $card-bg;
+  border-radius: $radius;
+  border: 1px dashed $border;
+}
+
+.docs-empty-icon {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: rgba($primary, 0.08);
+  color: $primary;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+.docs-empty h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.docs-empty p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: $text-muted;
+}
+
+// ─── Modal overlay ────────────────────────────────────────────
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 44, 64, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s, visibility 0.25s;
+
+  &.modal-overlay--open {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.modal-box {
+  width: 100%;
+  max-width: 480px;
+  max-height: 90vh;
+  background: $card-bg;
+  border-radius: $radius;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: docsModalIn 0.3s ease;
+
+  &--lg {
+    max-width: 720px;
+  }
+}
+
+@keyframes docsModalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modal-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, $primary-dark 0%, lighten($primary-dark, 10%) 100%);
+  color: #fff;
+}
+
+.modal-box-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+
+  i { font-size: 1.2rem; }
+}
+
+.modal-box-close {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: $radius-sm;
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+
+  &:hover { background: rgba(255, 255, 255, 0.25); }
+}
+
+.modal-box-body {
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.modal-box-desc {
+  margin: 0 0 1.25rem 0;
+  font-size: 0.9rem;
+  color: $text-muted;
+  line-height: 1.5;
+}
+
+.form-group {
+  margin-bottom: 0;
+}
+
+.file-label {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.file-label-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.25rem;
+  background: $bg-page;
+  border: 2px dashed $border;
+  border-radius: $radius-sm;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: $text-primary;
+  transition: border-color 0.2s, background 0.2s;
+
+  i { color: $primary; font-size: 1.2rem; }
+
+  &:hover {
+    border-color: $primary;
+    background: rgba($primary, 0.04);
+  }
+}
+
+.file-input {
+  position: absolute;
+  width: 0.1px;
+  height: 0.1px;
+  opacity: 0;
+  overflow: hidden;
+  z-index: -1;
+}
+
+.file-name {
+  display: block;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: $accent;
+  font-weight: 500;
+}
+
+.modal-box-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid $border;
+  background: rgba($primary-dark, 0.02);
+}
+
+.btn-modal-cancel {
+  padding: 0.6rem 1.25rem;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  background: $card-bg;
+  color: $text-primary;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: $text-muted;
+    background: $bg-page;
+  }
+}
+
+.btn-modal-submit {
+  padding: 0.6rem 1.25rem;
+  border: none;
+  border-radius: $radius-sm;
+  background: linear-gradient(135deg, $accent 0%, darken($accent, 6%) 100%);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(34, 191, 99, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(34, 191, 99, 0.35);
+  }
+}
+
+// ─── Responsive ──────────────────────────────────────────────
+@media (max-width: 768px) {
+  .docs-container {
+    padding: 0 1rem;
+  }
+
+  .docs-title {
+    font-size: 1.4rem;
+  }
+
+  .doc-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1rem;
+    padding: 1.25rem;
+  }
+
+  .doc-card-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.25rem;
+  }
+
+  .btn-doc-action {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .modal-box--lg {
+    max-width: 100%;
+    max-height: 95vh;
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-box-footer {
+    flex-direction: column;
+
+    button {
+      width: 100%;
+    }
+  }
+}

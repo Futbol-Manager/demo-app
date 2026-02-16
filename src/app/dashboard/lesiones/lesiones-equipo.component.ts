@@ -26,14 +26,14 @@ import { User } from 'src/app/core/models/users/user.model';
         <div class="lesiones-equipo-header">
           <div class="lesiones-equipo-header-content">
             <div>
-              <h2 class="lesiones-equipo-title"><i class="bi bi-heart-pulse me-2"></i>Lesiones del Equipo</h2>
-              <p class="lesiones-equipo-subtitle">Gestiona las lesiones de todos los jugadores</p>
+              <h2 class="lesiones-equipo-title"><i class="bi bi-heart-pulse me-2"></i>{{ soloJugador ? 'Mis lesiones' : 'Lesiones del Equipo' }}</h2>
+              <p class="lesiones-equipo-subtitle">{{ soloJugador ? 'Historial de tus lesiones' : 'Gestiona las lesiones de todos los jugadores' }}</p>
             </div>
           </div>
         </div>
 
-        <!-- Player selector -->
-        <div class="player-selector-card">
+        <!-- Player selector: solo visible cuando no es vista "solo jugador" -->
+        <div class="player-selector-card" *ngIf="!soloJugador">
           <label class="selector-label">Selecciona un jugador:</label>
           <div class="player-chips">
             <button *ngFor="let p of players" class="player-chip"
@@ -55,13 +55,17 @@ import { User } from 'src/app/core/models/users/user.model';
             [playerName]="selectedPlayerName"
             [teamId]="teamId"
             [embedded]="false"
-            [readOnly]="false">
+            [readOnly]="soloJugador">
           </app-lesiones>
         </div>
 
-        <div *ngIf="selectedPlayerId === 0" class="empty-state-select">
+        <div *ngIf="selectedPlayerId === 0 && !soloJugador" class="empty-state-select">
           <i class="bi bi-person-check display-4 opacity-50"></i>
           <p>Selecciona un jugador para gestionar sus lesiones</p>
+        </div>
+        <div *ngIf="selectedPlayerId === 0 && soloJugador" class="empty-state-select">
+          <i class="bi bi-heart-pulse display-4 opacity-50"></i>
+          <p>Cargando tus lesiones...</p>
         </div>
       </div>
     </div>
@@ -196,6 +200,8 @@ export class LesionesEquipoComponent implements OnInit {
   selectedPlayerId: number = 0;
   selectedPlayerName: string = '';
   usuarioActual: User | null = null;
+  /** true cuando se entra con ?playerId= (vista solo lesiones del jugador): oculta selector y pasa readOnly a app-lesiones */
+  soloJugador: boolean = false;
 
   // Hardcoded injury counts per player (mock)
   private playerInjuryCounts: Record<number, number> = {};
@@ -209,6 +215,9 @@ export class LesionesEquipoComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    const queryPlayerId = this.route.snapshot.queryParamMap.get('playerId');
+    this.soloJugador = !!(queryPlayerId && queryPlayerId !== '');
+
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
     });
@@ -240,6 +249,15 @@ export class LesionesEquipoComponent implements OnInit {
             else if (idx === 1) this.playerInjuryCounts[p.playerId] = 1;
             else this.playerInjuryCounts[p.playerId] = 0;
           });
+
+          const queryPlayerId = this.route.snapshot.queryParamMap.get('playerId');
+          if (queryPlayerId) {
+            const pid = +queryPlayerId;
+            const player = this.players.find((p: any) => p.playerId === pid);
+            if (player) {
+              this.selectPlayer(player);
+            }
+          }
         }
       },
       () => {

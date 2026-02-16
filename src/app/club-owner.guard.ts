@@ -52,15 +52,26 @@ export class ClubOwnerGuard implements CanActivate {
         return this.clubService.getClubByUserId(userId).pipe(
           map((res: Response) => {
             if (res?.data) {
-              // res.data puede ser un objeto club o un array de clubs
-              const clubs = Array.isArray(res.data) ? res.data : [res.data];
-              const belongs = clubs.some((c: any) =>
-                (c.clubId || c.club?.clubId || c.id) === urlClubId
-              );
+              // res.data puede ser un número (clubId directo) o un objeto/array de clubs
+              const data = res.data;
 
-              if (belongs) {
+              // Caso 1: El backend devuelve directamente el clubId como número
+              if (typeof data === 'number' && data === urlClubId) {
                 sessionStorage.setItem('clubId', String(urlClubId));
                 return true;
+              }
+
+              // Caso 2: El backend devuelve un objeto o array de clubs
+              if (typeof data === 'object') {
+                const clubs = Array.isArray(data) ? data : [data];
+                const belongs = clubs.some((c: any) =>
+                  (c.clubId || c.club?.clubId || c.id) === urlClubId
+                );
+
+                if (belongs) {
+                  sessionStorage.setItem('clubId', String(urlClubId));
+                  return true;
+                }
               }
             }
 

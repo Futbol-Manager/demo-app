@@ -870,8 +870,17 @@
     "TYPE": "Type"
   },
   "CLOTHES": {
-    "TITLE": "Club apparel",
-    "DESCRIPTION": "Enable or disable the apparel available for the club.",
+    "TITLE": "Customize apparel",
+    "DESCRIPTION": "Toggle columns on/off and rename items by clicking the pencil icon. Changes are saved per user.",
+    "RESET_DEFAULTS": "Reset all to defaults",
+    "GROUPS": {
+      "MATCH_1": "1st Kit",
+      "MATCH_2": "2nd Kit",
+      "TRAINING": "Training",
+      "TRACKSUIT": "Tracksuit",
+      "CASUAL": "Casual",
+      "ACCESSORIES": "Accessories"
+    },
     "TABLE": {
       "ID": "ID",
       "NAME": "Name",

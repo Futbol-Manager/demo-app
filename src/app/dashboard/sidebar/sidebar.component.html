@@ -1,0 +1,35 @@
+<aside class="sidebar" [class.sidebar--collapsed]="collapsed">
+
+  <!-- Toggle button -->
+  <button class="sidebar-toggle" (click)="toggle()">
+    <i class="bi" [ngClass]="collapsed ? 'bi-list' : 'bi-x-lg'"></i>
+  </button>
+
+  <!-- Nav content -->
+  <nav class="sidebar-nav">
+    <div *ngFor="let section of sections" class="sidebar-section" [class.d-none]="!section.visible">
+
+      <span class="sidebar-section-title" *ngIf="!collapsed">{{ section.title }}</span>
+      <div class="sidebar-section-divider" *ngIf="collapsed"></div>
+
+      <a *ngFor="let item of section.items"
+         class="sidebar-item"
+         [class.sidebar-item--active]="isActive(item)"
+         (click)="navigate(item)"
+         [title]="collapsed ? item.label : ''">
+        <i class="bi {{ item.icon }} sidebar-item-icon"></i>
+        <span class="sidebar-item-label" *ngIf="!collapsed">{{ item.label }}</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Footer -->
+  <div class="sidebar-footer">
+    <div class="sidebar-brand" *ngIf="!collapsed">
+      <span class="brand-text">Sphaiara<strong>Tech</strong></span>
+    </div>
+    <div class="sidebar-brand-icon" *ngIf="collapsed">
+      <span>S</span>
+    </div>
+  </div>
+</aside>

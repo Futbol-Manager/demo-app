@@ -76,17 +76,6 @@ export class NotificacionesComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.loginService.usuarioActual.subscribe((user) => {
-      this.usuarioActual = user;
-      this.userId = this.usuarioActual!.userId;
-      // Suscribirse a los cambios en los parámetros de la URL
-      this.route.params.subscribe((params) => {
-        // Obtener el valor de clubId de los parámetros
-        this.clubId = +params['clubId']; // El + convierte el valor a número
-        console.log('clubId:', this.clubId);
-      });
-    });
-
     if (
       localStorage.getItem('temporada') != null &&
       localStorage.getItem('temporada') != undefined
@@ -94,33 +83,41 @@ export class NotificacionesComponent implements OnInit {
       this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
     }
 
-    if (this.userId == 9) {
-      this.userId = Number(localStorage.getItem('userId'));
-    }
-    this.clubService.getListCorreos(this.userId).subscribe(
+    this.loginService.usuarioActual.subscribe((user) => {
+      this.usuarioActual = user;
+      this.userId = this.usuarioActual?.userId ?? 0;
+      if (this.userId === 9) {
+        this.userId = Number(localStorage.getItem('userId')) || this.userId;
+      }
+      this.route.params.subscribe((params) => {
+        const paramUserId = params['userId'];
+        const paramClubId = params['clubId'];
+        if (paramUserId != null && paramUserId !== '') {
+          this.userId = +paramUserId;
+          this.clubId = 0;
+          this.loadCorreosByUser(this.userId);
+        } else {
+          this.clubId = paramClubId != null && paramClubId !== '' ? +paramClubId : 0;
+          this.loadCorreosByUser(this.userId);
+        }
+      });
+    });
+  }
+
+  private loadCorreosByUser(userId: number): void {
+    this.clubService.getListCorreos(userId).subscribe(
       (response: Response) => {
         this.loadingCorreos = true;
         this.selectCorreo = false;
-        // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.correosEnviadosSinFiltro = response.data.enviados ?? [];
-          /*if (this.correosEnviadosSinFiltro != null) {
-            for (let index = 0; index < this.correosEnviadosSinFiltro.length; index++) {
-              this.correosEnviadosSinFiltro[index].destinatarios = this.destinatariosString(this.correosEnviadosSinFiltro[index].destinatarios);
-            }
-          }*/
-
           this.correosRecibidosSinFiltro = response.data.recibidos ?? [];
           this.correos = response.data.recibidos ?? [];
           this.receivedCount = this.correosRecibidosSinFiltro.filter((c: any) => c.leido === 0).length;
           this.loadingCorreos = false;
         } else {
-          console.error(
-            'La respuesta del servicio no tiene la estructura esperada',
-            response,
-          );
+          console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
-
         this.initSummernote();
       },
       (error) => {

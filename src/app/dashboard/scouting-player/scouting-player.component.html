@@ -1,459 +1,166 @@
-<div class="back-container">
-  <div class="btn-back-clean" href="javascript:void(0)" (click)="irAPantalla(0)">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
+<app-publicidad></app-publicidad>
+<div class="mis-estadisticas-page">
+  <!-- Botón volver -->
+  <div class="back-container">
+    <button type="button" class="btn-back-premium" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
   </div>
-</div>
 
-<!-- calendario.component.html -->
-<div class="container mt-3" *ngIf="datosCargados">
-    <h2 class="text-center">Datos para el Scouting</h2>
-    <div class="container">
-        <!-- Información personal -->
-        <div class="row">
-            <div class="col-12 col-md-6">
-                <label><strong>Información Personal:</strong></label>
+  <div class="mis-estadisticas-wrap" *ngIf="datosCargados">
+    <!-- Hero: foto + nombre + radar (compacto, una sola fila) -->
+    <section class="premium-hero premium-hero-compact">
+      <div class="premium-hero-inner">
+        <div class="premium-profile">
+          <ng-container *ngIf="profileImageUrl && !profileImageError">
+            <div class="premium-avatar-wrap">
+              <img [src]="profileImageUrl" alt="" class="premium-avatar" (error)="profileImageError = true">
             </div>
-            <div class="col-12 col-md-6">
-                <!-- Sección del día con el interruptor -->
-                <div class="d-flex align-items-center mb-3">
-                    <span><strong>Privado / Publico&nbsp;&nbsp;</strong></span>
-                    <div class="form-check form-switch">
-                        <input class="form-check-input custom-input" type="checkbox" id="publico" name="publico"
-                            [checked]="scoutingPlayer.esPublico === 1"
-                            (change)="togglePrivadoPublico(scoutingPlayer.esPublico)">
-                    </div>
-                </div>
+          </ng-container>
+          <ng-container *ngIf="!profileImageUrl || profileImageError">
+            <div class="premium-avatar-placeholder">
+              <i class="bi bi-person"></i>
             </div>
+          </ng-container>
+          <h1 class="premium-name">{{ displayName }}</h1>
+          <p class="premium-meta">
+            {{ (playerFromTeam?.posicion || scoutingPlayer?.posicionPrincipal) || '—' }}
+            <span class="premium-meta-sep">·</span>
+            {{ (playerFromTeam?.piernaNatural || scoutingPlayer?.piernaNatural) || '—' }}
+            <span class="premium-meta-sep" *ngIf="(playerFromTeam?.altura || scoutingPlayer?.altura)">·</span>
+            <span *ngIf="(playerFromTeam?.altura || scoutingPlayer?.altura)">{{ playerFromTeam?.altura || scoutingPlayer?.altura }} cm</span>
+          </p>
         </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="col" *ngIf="scoutingPlayer.imagenPerfil">
-                    <img src="https://appsphairatech.com/images/imgScoutingPlayer/{{ scoutingPlayer.imagenPerfil }}"
-                        alt="user-image" width="150" height="150" style="max-width: 100%;" class="rounded-circle me-2">
-                </div>
-                <div class="col" *ngIf="!scoutingPlayer.imagenPerfil">
-                    <ng-container>
-                        <span class="bi bi-person" style="font-size: 4rem;"></span>
-                    </ng-container>
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="mb-3" style="text-align: center;">
-                    <ng-container>
-                      <div class="container">
-                        <h4>Sube tu foto de perfil</h4>
-                        <form (submit)="onSubmit()" enctype="multipart/form-data">
-                          <div class="form-group">
-                            <label for="image">Seleccionar imagen en formato JPG o PNG:</label>
-                            <input type="file" id="image" (change)="onFileSelected($event)">
-                            <!-- Vista previa de la imagen seleccionada, solo visible si showPreview es true -->
-                            <img *ngIf="showPreview" [src]="imagePreviewUrl" alt="Image Preview" width="150" height="150"
-                              class="rounded-circle me-2">
-                          </div>
-                          <button *ngIf="showbtnupimg" style="margin-top: 1em;" type="submit" class="btn btn-custom">Subir
-                            imagen</button>
-                        </form>
-                      </div>
-                    </ng-container>
-                  </div>
-            </div>
+        <div class="premium-radar-wrap" *ngIf="playerFromTeam && (playerFromTeam.habilidadConBalon || playerFromTeam.pase)">
+          <canvas #radarCanvas></canvas>
         </div>
+      </div>
+    </section>
 
-
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="nombre" name="nombre"
-                        [(ngModel)]="scoutingPlayer.nombre" placeholder="Nombre completo">
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="fechaDeNacimiento"
-                        name="fechaDeNacimiento" [(ngModel)]="scoutingPlayer.fechaDeNacimiento"
-                        placeholder="Fecha de Nacimiento" placeholder="Fecha de nacimiento" onfocus="(this.type='date')"
-                        onblur="(this.type='text')">
-                </div>
-            </div>
+    <!-- Fila 1: Datos deportivos | Estadísticas de partidos -->
+    <div class="premium-row">
+      <section class="premium-section premium-col">
+        <h2 class="premium-section-title">
+          <i class="bi bi-graph-up-arrow me-2"></i>Datos deportivos
+        </h2>
+        <div class="premium-data-grid">
+          <div class="premium-data-item">
+            <span class="premium-data-label">Posición</span>
+            <span class="premium-data-value">{{ (playerFromTeam?.posicion || scoutingPlayer?.posicionPrincipal) || '—' }}</span>
+          </div>
+          <div class="premium-data-item">
+            <span class="premium-data-label">Posición 2</span>
+            <span class="premium-data-value">{{ (playerFromTeam?.posicionDos || scoutingPlayer?.posicionesSecundarias) || '—' }}</span>
+          </div>
+          <div class="premium-data-item">
+            <span class="premium-data-label">Pierna natural</span>
+            <span class="premium-data-value">{{ (playerFromTeam?.piernaNatural || scoutingPlayer?.piernaNatural) || '—' }}</span>
+          </div>
+          <div class="premium-data-item">
+            <span class="premium-data-label">Altura (cm)</span>
+            <span class="premium-data-value">{{ (playerFromTeam?.altura || scoutingPlayer?.altura) || '—' }}</span>
+          </div>
+          <div class="premium-data-item">
+            <span class="premium-data-label">Peso (kg)</span>
+            <span class="premium-data-value">{{ (playerFromTeam?.peso || scoutingPlayer?.peso) || '—' }}</span>
+          </div>
         </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="paisResidencia" name="paisResidencia"
-                        [(ngModel)]="scoutingPlayer.paisResidencia" placeholder="País de Residencia">
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="provinciaResidencia"
-                        name="provinciaResidencia" [(ngModel)]="scoutingPlayer.provinciaResidencia"
-                        placeholder="Provincia de Residencia">
-                </div>
-            </div>
+      </section>
+      <section class="premium-section premium-col">
+        <h2 class="premium-section-title">
+          <i class="bi bi-trophy me-2"></i>Estadísticas de partidos
+        </h2>
+        <div class="premium-stats-grid">
+          <div class="premium-stat-card">
+            <span class="premium-stat-value">{{ partidosJugados }}</span>
+            <span class="premium-stat-label">Partidos jugados</span>
+          </div>
+          <div class="premium-stat-card">
+            <span class="premium-stat-value">{{ numTitulares }}</span>
+            <span class="premium-stat-label">Titularidades</span>
+          </div>
+          <div class="premium-stat-card">
+            <span class="premium-stat-value">{{ minutosJugados }}</span>
+            <span class="premium-stat-label">Minutos jugados</span>
+          </div>
+          <div class="premium-stat-card">
+            <span class="premium-stat-value">{{ goles }}</span>
+            <span class="premium-stat-label">Goles</span>
+          </div>
+          <div class="premium-stat-card">
+            <span class="premium-stat-value">{{ tarjetasAmarillas }}</span>
+            <span class="premium-stat-label">Tarjetas amarillas</span>
+          </div>
+          <div class="premium-stat-card">
+            <span class="premium-stat-value">{{ tarjetasRojas }}</span>
+            <span class="premium-stat-label">Tarjetas rojas</span>
+          </div>
         </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="nacionalidad" name="nacionalidad"
-                        [(ngModel)]="scoutingPlayer.nacionalidad" placeholder="Nacionalidad">
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="altura" name="altura"
-                        [(ngModel)]="scoutingPlayer.altura" placeholder="Altura (cm)">
-                </div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="peso" name="peso"
-                        [(ngModel)]="scoutingPlayer.peso" placeholder="Peso (kg)">
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <select class="form-control custom-input mt-3" id="piernaNatural" name="piernaNatural"
-                        [(ngModel)]="scoutingPlayer.piernaNatural">
-                        <option value="Pie">Pie natural</option>
-                        <option value="Derecha">Derecha</option>
-                        <option value="Izquierda">Izquierda</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="email" class="form-control custom-input mt-3" id="mailContacto" name="mailContacto"
-                        [(ngModel)]="scoutingPlayer.mailContacto" placeholder="Correo Electrónico">
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="tel" class="form-control custom-input mt-3" id="telefonoContacto"
-                        name="telefonoContacto" [(ngModel)]="scoutingPlayer.telefonoContacto"
-                        placeholder="Teléfono de Contacto">
-                </div>
-            </div>
-        </div>
-
-        <!-- Posición en el campo -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <label><strong>Posición en el Campo:</strong></label>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <select class="form-control custom-input mt-3" id="posicionPrincipal" name="posicionPrincipal"
-                        [(ngModel)]="scoutingPlayer.posicionPrincipal">
-                        <option value="Sin definir">Posición principal</option>
-                        <option value="Portero">Portero</option>
-                        <option value="Defensa Central">Defensa Central</option>
-                        <option value="Defensa Lateral">Defensa Lateral</option>
-                        <option value="Carrilero">Carrilero</option>
-                        <option value="Centrocampista">Centrocampista</option>
-                        <option value="Centrocampista Defensivo">Centrocampista Defensivo</option>
-                        <option value="Centrocampista Ofensivo">Centrocampista Ofensivo</option>
-                        <option value="Mediapunta">Mediapunta</option>
-                        <option value="Extremo">Extremo</option>
-                        <option value="Delantero Centro">Delantero Centro</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <select class="form-control custom-input mt-3" id="posicionesSecundarias"
-                        name="posicionesSecundarias" [(ngModel)]="scoutingPlayer.posicionesSecundarias">
-                        <option value="Posicion Secundaria">Posición secundaría</option>
-                        <option value="Portero">Portero</option>
-                        <option value="Defensa Central">Defensa Central</option>
-                        <option value="Defensa Lateral">Defensa Lateral</option>
-                        <option value="Carrilero">Carrilero</option>
-                        <option value="Centrocampista">Centrocampista</option>
-                        <option value="Centrocampista Defensivo">Centrocampista Defensivo</option>
-                        <option value="Centrocampista Ofensivo">Centrocampista Ofensivo</option>
-                        <option value="Mediapunta">Mediapunta</option>
-                        <option value="Extremo">Extremo</option>
-                        <option value="Delantero Centro">Delantero Centro</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <!-- CV futbolístico -->
-        <div class="row mt-4">
-            <div class="col-12 col-md-12">
-                <label><strong>CV Futbolístico:</strong></label>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-12">
-                <div class="form-group">
-                    <textarea class="form-control custom-input mt-3" id="clubesAnteriores" name="clubesAnteriores"
-                        rows="8" [(ngModel)]="scoutingPlayer.clubesAnteriores"
-                        placeholder="Clubes Anteriores"></textarea>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <select class="form-control custom-input mt-3" id="ultimosPartidos" name="ultimosPartidos"
-                        [(ngModel)]="scoutingPlayer.ultimosPartidos">
-                        <option value="0">Partidos jugados en la última temporada</option>
-                        <option *ngFor="let numero of numeros" [value]="numero">{{ numero }}</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <select class="form-control custom-input mt-3" id="goles" name="goles"
-                        [(ngModel)]="scoutingPlayer.goles">
-                        <option value="0">Goles en la última temporada</option>
-                        <option *ngFor="let numero of numeros" [value]="numero">{{ numero }}</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <select class="form-control custom-input mt-3" id="asistencias" name="asistencias"
-                        [(ngModel)]="scoutingPlayer.asistencias">
-                        <option value="0">Asistencias en la última temporada</option>
-                        <option *ngFor="let numero of numeros" [value]="numero">{{ numero }}</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-12">
-                <div class="form-group">
-                    <textarea class="form-control custom-input mt-3" id="torneosImportantes" name="torneosImportantes"
-                        rows="8" [(ngModel)]="scoutingPlayer.torneosImportantes"
-                        placeholder="Torneos Importantes en los que ha Participado"></textarea>
-                </div>
-            </div>
-        </div>
-
-        <!-- Premios individuales y convocatorias -->
-        <div class="row mt-4">
-            <div class="col-12 col-md-6">
-                <label><strong>Premios y Convocatorias:</strong></label>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="premiosIndividuales"
-                        name="premiosIndividuales" [(ngModel)]="scoutingPlayer.premiosIndividuales"
-                        placeholder="Premios Individuales">
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="convocatoriasSelecciones"
-                        name="convocatoriasSelecciones" [(ngModel)]="scoutingPlayer.convocatoriasSelecciones"
-                        placeholder="Convocatorias a Selecciones">
-                </div>
-            </div>
-        </div>
-
-        <!-- Salud y estado físico -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <label><strong>Salud y Estado Físico:</strong></label>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-12">
-                <div class="form-group">
-                    <textarea class="form-control custom-input mt-3" id="lesionesRecientes" name="lesionesRecientes"
-                        [(ngModel)]="scoutingPlayer.lesionesRecientes"
-                        placeholder="Lesiones Recientes (en los últimos 12 meses)"></textarea>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-12">
-                <div class="form-group">
-                    <textarea class="form-control custom-input mt-3" id="historialMedico" name="historialMedico"
-                        [(ngModel)]="scoutingPlayer.historialMedico"
-                        placeholder="Historial Médico (información sobre lesiones graves o cirugías)"></textarea>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <textarea class="form-control custom-input mt-3" id="estadoActual" name="estadoActual"
-                        [(ngModel)]="scoutingPlayer.estadoActual"
-                        placeholder="Estado Actual (si está al 100%, en recuperación, etc.)">
-                    </textarea>
-                </div>
-            </div>
-        </div>
-
-        <!-- Video de Highlights -->
-        <div class="row mt-4">
-            <div class="col-12 col-md-12">
-                <label><strong>Video de Highlights:</strong></label>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-12">
-                <!-- <div class="form-group">
-                    <input type="url" class="form-control custom-input mt-3" id="videoHighlights" name="videoHighlights"
-                        [(ngModel)]="scoutingPlayer.videoHighlights" placeholder="URL del Video de Highlights">
-                </div>-->
-            </div>
-            <div class="col-12 col-md-12">
-                <div class="form-group">
-                    <textarea class="form-control custom-input mt-3" id="descripcionVideo" name="descripcionVideo"
-                        [(ngModel)]="scoutingPlayer.descripcionVideo" placeholder="Descripción del Video"></textarea>
-                </div>
-            </div>
-        </div>
-
-        <!-- Disponibilidad y expectativas -->
-        <div class="row mt-4">
-            <div class="col-12 col-md-12">
-                <label><strong>Disponibilidad y Expectativas:</strong></label>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="disponibilidadPruebas"
-                        name="disponibilidadPruebas" [(ngModel)]="scoutingPlayer.disponibilidadPruebas"
-                        placeholder="Disponibilidad para Pruebas (fechas y localización preferida)">
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="disponibilidadMudarse"
-                        name="disponibilidadMudarse" [(ngModel)]="scoutingPlayer.disponibilidadMudarse"
-                        placeholder="Disponibilidad para Mudarse (sí/no, o localidades preferidas)">
-                </div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12">
-                <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="expectativasContractuales"
-                        name="expectativasContractuales" [(ngModel)]="scoutingPlayer.expectativasContractuales"
-                        placeholder="Expectativas Contractuales (si está buscando contrato profesional o semi-profesional)">
-                </div>
-            </div>
-        </div>
-
-        <!-- Referencias -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <label><strong>Referencias:</strong></label>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12">
-                <div class="form-group">
-                    <textarea class="form-control custom-input mt-3" id="entrenadoresAnteriores"
-                        name="entrenadoresAnteriores" [(ngModel)]="scoutingPlayer.entrenadoresAnteriores"
-                        placeholder="Entrenadores anteriores (nombre y contacto)"></textarea>
-                </div>
-            </div>
-        </div>
-
-        <!-- Opinión sobre sí mismo -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <label><strong>Opinión sobre Sí Mismo:</strong></label>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <textarea class="form-control custom-input mt-3" id="fortalezas" name="fortalezas"
-                        [(ngModel)]="scoutingPlayer.fortalezas"
-                        placeholder="Fortalezas ¿En qué crees que destacas?"></textarea>
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <textarea class="form-control custom-input mt-3" id="areasMejora" name="areasMejora"
-                        [(ngModel)]="scoutingPlayer.areasMejora"
-                        placeholder="Áreas de Mejora ¿En qué aspectos sientes que puedes mejorar?"></textarea>
-                </div>
-            </div>
-        </div>
-
-        <!-- Ocupación -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <label><strong>Ocupación:</strong></label>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <select class="form-control custom-input mt-3" id="estudiaTrabaja" name="estudiaTrabaja"
-                        [(ngModel)]="scoutingPlayer.estudiaTrabaja">
-                        <option value="Estoy_estudiando">Estoy estudiando</option>
-                        <option value="Estoy_trabajando">Estoy trabajando</option>
-                        <option value="Ambos">Ambos</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-12 col-md-6">
-                <div class="form-group">
-                    <input type="text" class="form-control custom-input mt-3" id="estadoEstudios" name="estadoEstudios"
-                        [(ngModel)]="scoutingPlayer.estadoEstudios"
-                        placeholder="En el caso de estudiar, describir cómo va en los estudios">
-                </div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12">
-                <div class="form-group">
-                    <textarea class="form-control custom-input mt-3" id="descripcion" name="descripcion"
-                        [(ngModel)]="scoutingPlayer.descripcion"
-                        placeholder="Descripción (describe el trabajo o el curso en el que se encuentra ahora mismo)"></textarea>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-3">
-            <div class="col-12">
-                <div class="form-group">
-                    <button type="button" class="btn btn-custom btn-block textoCentrado float-end"
-                        (click)="guardarForm()">Guardar</button>
-                </div>
-            </div>
-        </div>
-        <div class="row mt-3">
-        </div>
+      </section>
     </div>
-</div>
 
-<!-- Modal para ver los detalles de la tarea -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalSus}">
-    <div class="modal-dialog modal-lg" role="document">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-          <div class="modal-header">
-                <h5 class="modal-title">Información de Suscripción</h5>
-                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSus()"></button>
-            </div>
-            <div class="modal-body">
-                <p>Necesitas tener una suscripción activa. Ve al perfil y en la opción Suscripción o pulsa en acceder para acceder a la pantalla 
-                    y elegir una para usar las funciones de Scouting.
-                </p>
-                <button type="button" class="btn btn-custom btn-block textoCentrado float-end"
-                    (click)="irAPantalla(1)">Acceder</button>
-            </div>
+    <!-- Fila 2: Gráficas | Asistencia a entrenamientos -->
+    <div class="premium-row">
+      <section class="premium-section premium-section-graficas premium-col">
+        <h2 class="premium-section-title">
+          <i class="bi bi-bar-chart-line me-2"></i>Gráficas
+        </h2>
+        <div class="premium-graficas-tabs">
+          <button type="button" class="premium-graficas-tab" [class.active]="activeTabGraficas === 'estadisticas'" (click)="setTabGraficas('estadisticas')">
+            <i class="bi bi-trophy me-1"></i> Partidos
+          </button>
+          <button type="button" class="premium-graficas-tab" [class.active]="activeTabGraficas === 'asistencia'" (click)="setTabGraficas('asistencia')" [disabled]="!tieneDatosAsistenciaParaGrafica">
+            <i class="bi bi-calendar-check me-1"></i> Asistencia
+          </button>
         </div>
+        <div class="premium-grafica-container" *ngIf="activeTabGraficas === 'estadisticas'">
+          <canvas #barEstadisticasCanvas></canvas>
+        </div>
+        <div class="premium-grafica-container" *ngIf="activeTabGraficas === 'asistencia'">
+          <canvas #barAsistenciaCanvas *ngIf="tieneDatosAsistenciaParaGrafica"></canvas>
+          <p class="premium-grafica-empty" *ngIf="!tieneDatosAsistenciaParaGrafica">
+            <i class="bi bi-calendar-x"></i> No hay datos de asistencia para mostrar por mes.
+          </p>
+        </div>
+      </section>
+      <section class="premium-section premium-section-last premium-col">
+        <h2 class="premium-section-title">
+          <i class="bi bi-calendar-check me-2"></i>Asistencia a entrenamientos
+        </h2>
+        <div class="premium-table-wrap">
+          <table class="premium-table">
+            <thead>
+              <tr>
+                <th>Fecha</th>
+                <th>Asistencia</th>
+                <th>Retraso</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="!listAsistencia?.length">
+                <td colspan="3" class="premium-table-empty">No hay registros</td>
+              </tr>
+              <tr *ngFor="let p of listAsistencia">
+                <td>{{ p.fecha }}</td>
+                <td>
+                  <span *ngIf="p.asistencia === 1" class="premium-badge ok"><i class="bi bi-check-circle-fill"></i></span>
+                  <span *ngIf="p.asistencia === 0" class="premium-badge no"><i class="bi bi-x-circle-fill"></i></span>
+                </td>
+                <td>
+                  <span *ngIf="p.retraso === 1" class="premium-badge ok"><i class="bi bi-check-circle-fill"></i></span>
+                  <span *ngIf="p.retraso === 0" class="premium-badge no"><i class="bi bi-x-circle-fill"></i></span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
+  </div>
+
+  <div *ngIf="!datosCargados" class="premium-loading">
+    <div class="premium-loading-spinner"></div>
+    <p>Cargando información deportiva…</p>
+  </div>
 </div>

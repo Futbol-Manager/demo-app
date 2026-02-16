@@ -1,247 +1,267 @@
+<app-publicidad></app-publicidad>
+
+<!-- BOTÓN VOLVER -->
 <div class="back-container">
-  <div class="btn-back-clean" href="javascript:void(0)" (click)="goBack()">
+  <button class="btn-back-clean" type="button" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<!-- LOADING -->
+<div class="cuotas-page" *ngIf="!datosCargados">
+  <div class="cuotas-loading">
+    <div class="cuotas-spinner"></div>
+    <p>Cargando cuotas...</p>
   </div>
 </div>
 
-<div class="container" *ngIf="datosCargados">
-    <!-- Contenido para el dataTable -->
-    <div class="row mt-3">
-        <div class="col-12 col-md-12 text-center">
-            <h2><u>Información</u></h2>
+<main class="cuotas-page cuotas-page--loaded" *ngIf="datosCargados">
+  <div class="cuotas-container">
+
+    <!-- HEADER -->
+    <header class="cuotas-header">
+      <h1 class="cuotas-title">
+        <i class="bi bi-credit-card-2-front"></i>
+        Pagar cuotas
+      </h1>
+      <p class="cuotas-subtitle">{{ nameClub }}</p>
+      <div class="cuotas-header-actions" *ngIf="stripeBtoShow">
+        <button type="button" class="btn-pagar-stripe" (click)="openModalStripe()">
+          <i class="bi bi-credit-card"></i>
+          Pagar con tarjeta
+        </button>
+      </div>
+    </header>
+
+    <!-- ESTADO FINANCIERO -->
+    <section class="cuotas-section cuotas-estado">
+      <h2 class="section-title">Estado financiero</h2>
+      <div class="estado-grid">
+        <div class="estado-card estado-card--pagado">
+          <div class="estado-card-icon">
+            <i class="bi bi-check-circle-fill"></i>
+          </div>
+          <span class="estado-card-label">Pagado</span>
+          <span class="estado-card-value">{{ pagado }} €</span>
         </div>
+        <div class="estado-card estado-card--pendiente">
+          <div class="estado-card-icon">
+            <i class="bi bi-clock-history"></i>
+          </div>
+          <span class="estado-card-label">Pendiente</span>
+          <span class="estado-card-value">{{ pdte }} €</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- TABLAS DE CUOTAS -->
+    <section class="cuotas-section">
+      <div class="cuotas-tables-row">
+        <div class="cuotas-table-wrap">
+          <h3 class="table-caption">
+            <i class="bi bi-list-check"></i>
+            Cuotas obligatorias
+          </h3>
+          <div class="table-scroll">
+            <table class="cuotas-table">
+              <thead>
+                <tr>
+                  <th>Concepto</th>
+                  <th>Importe</th>
+                  <th>Plazo</th>
+                  <th>Pagado</th>
+                  <th>Fecha pago</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let cuota of cuotasObligatorias; let i = index">
+                  <td>{{ cuota.nombre }}</td>
+                  <td>{{ cuota.importe }} €</td>
+                  <td>{{ cuota.plazo }}</td>
+                  <td>{{ cuota.pagado }}</td>
+                  <td>{{ cuota.fechaPago }}</td>
+                </tr>
+                <tr *ngIf="!cuotasObligatorias?.length">
+                  <td colspan="5" class="empty-row">Sin cuotas obligatorias</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="cuotas-table-wrap">
+          <h3 class="table-caption">
+            <i class="bi bi-list-ul"></i>
+            Cuotas no obligatorias
+          </h3>
+          <div class="table-scroll">
+            <table class="cuotas-table">
+              <thead>
+                <tr>
+                  <th>Concepto</th>
+                  <th>Importe</th>
+                  <th>Plazo</th>
+                  <th>Pagado</th>
+                  <th>Fecha pago</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let cuota of cuotasNoObligatorias; let i = index">
+                  <td>{{ cuota.nombre }}</td>
+                  <td>{{ cuota.importe }} €</td>
+                  <td>{{ cuota.plazo }}</td>
+                  <td>{{ cuota.pagado }}</td>
+                  <td>{{ cuota.fechaPago }}</td>
+                </tr>
+                <tr *ngIf="!cuotasNoObligatorias?.length">
+                  <td colspan="5" class="empty-row">Sin cuotas opcionales</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- INFORMACIÓN DE PAGO POR TRANSFERENCIA -->
+    <section class="cuotas-section cuotas-transfer">
+      <h2 class="section-title">
+        <i class="bi bi-bank2"></i>
+        Pago por transferencia
+      </h2>
+      <p class="transfer-disclaimer">Solo si tu club lo permite. Indica el concepto y notifica al club una vez realizado.</p>
+      <div class="transfer-card">
+        <div class="transfer-row">
+          <span class="transfer-label">IBAN / Cuenta</span>
+          <span class="transfer-value">{{ banco }}</span>
+        </div>
+        <div class="transfer-row">
+          <span class="transfer-label">Concepto / Asunto</span>
+          <span class="transfer-value">{{ asunto }}</span>
+        </div>
+        <div class="transfer-row">
+          <span class="transfer-label">Contacto</span>
+          <span class="transfer-value">{{ contacto }}</span>
+        </div>
+        <div class="transfer-row" *ngIf="bizum">
+          <span class="transfer-label">Bizum</span>
+          <span class="transfer-value">{{ bizum }}</span>
+        </div>
+      </div>
+      <div class="transfer-tip">
+        <i class="bi bi-info-circle"></i>
+        Notifica al club cuando hayas realizado la transferencia para que registre el pago.
+      </div>
+      <div class="cuotas-header-actions" *ngIf="stripeBtoShow">
+        <button type="button" class="btn-pagar-stripe btn-pagar-stripe--secondary" (click)="openModalStripe()">
+          <i class="bi bi-credit-card"></i>
+          Pagar con tarjeta (Stripe)
+        </button>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- MODAL PAGO STRIPE -->
+<div class="modal-overlay" [class.modal-overlay--open]="showModalStripe" (click)="showModalStripe && closeModal()">
+  <div class="modal-pago" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="modal-pago-title">
+    <div class="modal-pago-header">
+      <h2 id="modal-pago-title" class="modal-pago-title">
+        <i class="bi bi-credit-card-2-back"></i>
+        Realizar pago
+      </h2>
+      <button type="button" class="modal-pago-close" aria-label="Cerrar" (click)="closeModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
     </div>
-    <div class="row">
-        <div class="col-12 col-md-12" *ngIf="stripeBtoShow">
-            <button class="btn btn-custom btn-sm" (click)="openModalStripe()">Pagar con Stripe
-                <i class="bi bi-stripe"></i>
-            </button>
+
+    <div class="modal-pago-body">
+      <!-- Términos -->
+      <div class="modal-block">
+        <h3 class="modal-block-title">Términos y condiciones (Sphaira Tech)</h3>
+        <div class="terms-box terms-box--scroll" [innerHTML]="terminosHtmlSafe"></div>
+      </div>
+      <div class="modal-block">
+        <h3 class="modal-block-title">Autorización</h3>
+        <div class="terms-box terms-box--authorize">
+          <p>Autorizo a <strong>{{ nameClub }}</strong> a cobrar en mi tarjeta los importes indicados. He leído y acepto los Términos; en suscripciones, los cobros serán automáticos. Sphaira facilita la plataforma; Stripe procesa el pago. Soy mayor de edad o tutor legal y acepto la política de privacidad de Sphaira y Stripe.</p>
         </div>
-        <div class="col-12 col-md-6">
-            <h2>Cuotas Obligatorias</h2>
-            <div style="overflow-x: auto;">
-                <table id="dataTable" class="table table-bordered table-striped text-center">
-                    <thead class="table-custom">
-                        <tr>
-                            <th>NOMBRE</th>
-                            <th>IMPORTE</th>
-                            <th>PLAZO_PAGO</th>
-                            <th>CANTIDAD PAGADA</th>
-                            <th>FECHA_DE_PAGO</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let cuota of cuotasObligatorias; let i = index">
-                            <td>{{ cuota.nombre }}</td>
-                            <td>{{ cuota.importe }}</td>
-                            <td>{{ cuota.plazo }}</td>
-                            <td>{{ cuota.pagado }}</td>
-                            <td>{{ cuota.fechaPago }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+      </div>
+
+      <!-- Checkbox siempre visible y clickeable (sin overlay encima) -->
+      <div class="terms-accept-block">
+        <label class="terms-accept-label" for="chkAcepto">
+          <input type="checkbox" class="terms-accept-input" id="chkAcepto" [(ngModel)]="acceptedTerms" [ngModelOptions]="{standalone: true}">
+          <span class="terms-accept-box">
+            <i class="bi bi-check-lg terms-accept-icon"></i>
+          </span>
+          <span class="terms-accept-text">Acepto los Términos y Condiciones y autorizo los cargos según lo descrito.</span>
+        </label>
+        <p class="terms-accept-hint" *ngIf="!acceptedTerms">Marca la casilla para poder continuar con el pago.</p>
+      </div>
+
+      <form class="modal-form" (ngSubmit)="makePayment()">
+        <div class="form-group">
+          <label for="selectedCuota">Cuota a pagar</label>
+          <div class="cuota-select-wrap" *ngIf="!listCuotasLoading && listAllCuotas.length > 0">
+            <select id="selectedCuota" name="selectedCuota" class="form-control premium-select"
+              [(ngModel)]="selectedCuota" [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="onCuotaChange($event)">
+              <option [ngValue]="null" disabled>Selecciona un pago</option>
+              <option *ngFor="let c of listAllCuotas" [ngValue]="c">
+                {{ c.titulo || c.nombre || c.title || 'Pago' }}{{ isRecurrente(c) }}
+              </option>
+            </select>
+          </div>
+          <div class="cuota-loading" *ngIf="listCuotasLoading">
+            <span class="cuota-loading-spinner"></span>
+            <span>Cargando opciones de pago...</span>
+          </div>
+          <div class="cuota-empty" *ngIf="!listCuotasLoading && listAllCuotas.length === 0">
+            <i class="bi bi-inbox"></i>
+            <p>No hay opciones de pago disponibles.</p>
+            <p class="cuota-empty-hint">Tu club debe asignarte las cuotas para poder pagar desde aquí. Contacta con el club si crees que es un error.</p>
+          </div>
         </div>
-        <div class="col-12 col-md-6">
-            <h2>Cuotas No obligatorias</h2>
-            <div style="overflow-x: auto;">
-                <table id="dataTable2" class="table table-bordered table-striped text-center">
-                    <thead class="table-custom">
-                        <tr>
-                            <th>NOMBRE</th>
-                            <th>IMPORTE</th>
-                            <th>PLAZO_PAGO</th>
-                            <th>CANTIDAD PAGADA</th>
-                            <th>FECHA_DE_PAGO</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let cuota of cuotasNoObligatorias; let i = index">
-                            <td>{{ cuota.nombre }}</td>
-                            <td>{{ cuota.importe }}</td>
-                            <td>{{ cuota.plazo }}</td>
-                            <td>{{ cuota.pagado }}</td>
-                            <td>{{ cuota.fechaPago }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+
+        <div class="form-group" *ngIf="pagarOk">
+          <label>Importe a pagar</label>
+          <div class="amount-display">
+            <span class="amount-value">{{ amount | number:'1.2-2' }}</span>
+            <span class="amount-currency">€</span>
+          </div>
         </div>
+
+        <div class="form-group alert-recurrente" *ngIf="infoRecurrente">
+          <i class="bi bi-arrow-repeat"></i>
+          <p>{{ infoRecurrente }}</p>
+        </div>
+
+        <div class="form-group">
+          <label>Datos de la tarjeta</label>
+          <div id="card-element" class="stripe-card-wrap"></div>
+        </div>
+
+        <p class="modal-fee-note">
+          <i class="bi bi-info-circle"></i>
+          Se aplica un pequeño coste de gestión al pagar con tarjeta.
+        </p>
+
+        <div class="modal-form-actions" *ngIf="pagarOk">
+          <p class="terms-required-msg" *ngIf="!acceptedTerms">
+            <i class="bi bi-info-circle"></i> Debes aceptar los Términos y Condiciones para poder pagar.
+          </p>
+          <button type="submit" class="btn-submit-pago"
+            [disabled]="!acceptedTerms || loading">
+            <span *ngIf="!loading">Pagar {{ amount | number:'1.2-2' }} €</span>
+            <span *ngIf="loading" class="btn-loading">
+              <span class="btn-spinner"></span>
+              Procesando...
+            </span>
+          </button>
+        </div>
+      </form>
     </div>
-</div>
-
-<div class="container py-4" *ngIf="datosCargados">
-    <!-- Estado financiero -->
-    <!-- Estado financiero -->
-    <div class="card-financiero mb-4 shadow">
-        <h5 class="mb-4">Estado Financiero</h5>
-        <div class="row text-center">
-            <div class="col-6">
-                <div class="box-pagado">
-                    <i class="bi bi-check-circle-fill text-success"></i>
-                    <h6 class="fw-bold">Pagado</h6>
-                    <h4 class="mt-2">{{ pagado }}</h4>
-                </div>
-            </div>
-            <div class="col-6">
-                <div class="box-pagado">
-                    <i class="bi bi-clock-fill text-warning"></i>
-                    <h6 class="fw-bold">Pendiente</h6>
-                    <h4 class="mt-2">{{ pdte }}</h4>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Información de pago -->
-    <div class="card shadow-sm border-0 mb-4">
-        <div class="card-body">
-            <h5 class="card-title mb-3">
-                <i class="bi bi-bank2 me-2 text-primary"></i> Pago por transferencia (solo si tu club lo permite)
-            </h5>
-
-            <div class="mb-3">
-                <i class="bi bi-123 me-2 text-secondary"></i>
-                <strong>Número de cuenta del banco del Club</strong><br />
-                {{ banco }}
-            </div>
-
-            <div class="mb-3">
-                <i class="bi bi-pencil me-2 text-secondary"></i>
-                <strong>Asunto o concepto pago de la cuota</strong><br />
-                {{ asunto }}
-            </div>
-
-            <div class="mb-3">
-                <i class="bi bi-person me-2 text-secondary"></i>
-                <strong>Contacto</strong><br />
-                {{ contacto }}
-            </div>
-
-            <div class="mb-3">
-                <i class="bi bi-phone me-2 text-secondary"></i>
-                <strong>BIZUM</strong><br />
-                {{ bizum }}
-            </div>
-
-            <div class="alert alert-success mt-3" role="alert">
-                <i class="bi bi-info-circle me-1"></i>
-                Puedes pagar por transferencia a la cuenta indicada poniendo el asunto o concepto. Una vez realizado el
-                pago, no
-                olvides notificarlo al club para que lo registre.
-            </div>
-            <div class="mb-3" *ngIf="stripeBtoShow">
-                <button class="btn btn-custom btn-sm" (click)="openModalStripe()">Pagar con Stripe
-                    <i class="bi bi-stripe"></i>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Modal para editar stripe -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalStripe}">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Realizar Pago</h5>
-                    <button type="button" class="btn-close" aria-label="Close" (click)="closeModal()"></button>
-                </div>
-
-                <div class="modal-body">
-                    <!-- ===================== BLOQUE 1: Términos y condiciones ===================== -->
-                    <h6 class="mb-2">TÉRMINOS Y CONDICIONES DE PAGO DE CUOTAS Y SERVICIOS (SPHAIRA TECH)</h6>
-                    <div class="terms-box mb-3 p-3 border rounded" [innerHTML]="terminosHtmlSafe"></div>
-
-                    <!-- ===================== BLOQUE 2: Texto de aceptación ===================== -->
-                    <h6 class="mb-2">TEXTO DE ACEPTACIÓN / AUTORIZACIÓN</h6>
-                    <div class="terms-box mb-3 p-3 border rounded" style="white-space: pre-wrap;">
-                        <p>
-                            Autorizo a <b>{{nameClub}}</b> a cobrar en mi tarjeta o método de pago proporcionado los
-                            importes
-                            indicados en pantalla. Entiendo que:
-                        </p>
-                        <ul>
-                            <li>He leído y acepto los <b>Términos y Condiciones</b> de pago.</li>
-                            <li>En caso de ser una suscripción, la primera autorización se realiza ahora y las
-                                siguientes se cargarán automáticamente según el calendario indicado.</li>
-                            <li><b>Sphaira</b> facilita la plataforma; <b>Stripe</b> procesará el pago y transferirá los
-                                fondos al Club.</li>
-                            <li>Soy mayor de edad o tutor legal del menor y consiento el tratamiento de datos necesario.
-                            </li>
-                            <li>Acepto la política de privacidad de <b>Sphaira</b> y de <b>Stripe</b>.</li>
-                        </ul>
-                    </div>
-
-                    <!-- ===================== Checkbox de aceptación ===================== -->
-                    <div class="form-check mb-4">
-                        <input class="form-check-input" type="checkbox" id="chkAcepto" [(ngModel)]="acceptedTerms"
-                            [ngModelOptions]="{standalone: true}">
-                        <label class="form-check-label" for="chkAcepto">
-                            He leído y acepto los Términos y Condiciones y autorizo los cargos automáticos,
-                            siempre y cuando aplique, según lo descrito.
-                        </label>
-                    </div>
-
-                    <!-- ===================== FORMULARIO DE PAGO (solo si aceptan) ===================== -->
-                    <form (ngSubmit)="makePayment()">
-                        <div class="row mb-3">
-                            <label for="cantidadAPagar" class="form-label">Selecciona la cuota a pagar:</label>
-                            <select [(ngModel)]="selectedCuota" [ngModelOptions]="{ standalone: true }"
-                                id="selectedCuota" name="selectedCuota" class="form-control"
-                                (ngModelChange)="onCuotaChange($event)">
-                                <option [ngValue]="null" disabled selected>Selecciona el pago</option>
-                                <option *ngFor="let c of listAllCuotas" [ngValue]="c">
-                                    {{ c.titulo }} {{ isRecurrente(c)}}
-                                </option>
-                            </select>
-                        </div>
-
-                        <div class="row mb-3">
-                            <label for="amount" class="form-label">La cantidad final a pagar será de:</label>
-                            <input type="number" class="form-control" id="amount" [(ngModel)]="amount" name="amount"
-                                disabled>
-                        </div>
-
-                        <div class="row mb-3" *ngIf="infoRecurrente != ''">
-                            <h3>&#9888;&#65039; Atención</h3>
-                            <p style="color: red">{{ infoRecurrente }}</p>
-                        </div>
-
-                        <div class="row mt-3">
-                            <h2>Datos de la tarjeta</h2>
-                        </div>
-                        <div class="row mt-3 mb-3">
-                            <div id="card-element"></div>
-                        </div>
-
-                        <div class="row mb-3" *ngIf="pagarOk">
-                            <button type="submit" class="btn btn-custom"
-                                [disabled]="!acceptedTerms || loading || !pagarOk">
-                                <span *ngIf="!loading">Pagar {{ amount | number:'1.2-2' }} €</span>
-                                <span *ngIf="loading">Procesando...</span>
-                            </button>
-                        </div>
-
-                        <div class="row mb-3">
-                            <p style="color: rgb(172, 172, 172);">
-                                Cuando realices el pago de las cuotas del club o de la ropa mediante tarjeta de débito o
-                                crédito, se aplicará un pequeño coste adicional por "gastos de gestión".
-                            </p>
-                        </div>
-                    </form>
-
-                    <!-- Overlay para indicar que falta aceptar términos (opcional, si prefieres mostrar el form deshabilitado) -->
-                    <div class="terms-overlay d-flex align-items-center justify-content-center" *ngIf="!acceptedTerms">
-                        <small class="text-muted text-center px-3">
-                            Debes aceptar los Términos y Condiciones para continuar con el pago.
-                        </small>
-                    </div>
-
-                </div>
-            </div>
-        </div>
-    </div>
+  </div>
 </div>
