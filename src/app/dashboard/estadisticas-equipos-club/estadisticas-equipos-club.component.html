@@ -18,8 +18,10 @@
 
   <!-- TABLA REAL -->
   <ng-container *ngIf="!loading">
-    <div style="margin-top: 3em; overflow-x: auto;">
+    <div style="margin-top: 3em;">
       <h2 class="mb-3"> {{ 'ESTADIS_EQUIPO.TITLE' | translate }}</h2>
+
+    <div style="overflow-x: auto;">
 
       <table class="table modern-table">
         <thead>
@@ -77,6 +79,7 @@
         </tbody>
       </table>
 
+    </div>
     </div>
   </ng-container>
 </div>

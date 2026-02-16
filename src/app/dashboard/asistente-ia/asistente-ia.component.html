@@ -64,6 +64,9 @@
         </span>
       </div>
       <div class="chat-header-actions">
+        <span class="credits-badge credits-clickable" (click)="openCreditsModal()">
+          <i class="bi bi-coin"></i> {{ creditsAvailable }} créditos
+        </span>
         <button class="header-action-btn" (click)="startNewConversation()" title="Nueva conversación">
           <i class="bi bi-plus-lg"></i>
         </button>
@@ -133,10 +136,16 @@
         rows="1"
         [disabled]="isResponding"
       ></textarea>
-      <button
+      <button *ngIf="isResponding"
+        class="chat-cancel-btn"
+        (click)="cancelPendingRequest()"
+        title="Cancelar peticion">
+        <i class="bi bi-x-circle-fill"></i>
+      </button>
+      <button *ngIf="!isResponding"
         class="chat-send-btn"
         [class.send-active]="userInput.trim().length > 0"
-        [disabled]="!userInput.trim() || isResponding"
+        [disabled]="!userInput.trim()"
         (click)="sendMessage()">
         <i class="bi bi-send-fill"></i>
       </button>
@@ -147,3 +156,12 @@
   </div>
 
 </div>
+
+<!-- MODAL DE CRÉDITOS -->
+<app-credits-modal
+  *ngIf="showCreditsModal"
+  [userId]="userId"
+  [creditsAvailable]="creditsAvailable"
+  (closed)="closeCreditsModal()"
+  (creditsPurchased)="creditsAvailable = $event">
+</app-credits-modal>

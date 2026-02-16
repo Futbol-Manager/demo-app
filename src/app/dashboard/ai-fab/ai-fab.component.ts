@@ -1,14 +1,11 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked, HostListener } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { filter, finalize } from 'rxjs/operators';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LoginService } from 'src/app/core/services/login/login.service';
+import { AiChatService, AiCreditsInfo } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { User } from 'src/app/core/models/users/user.model';
-
-/* ═══════════════════════════════════════
-   INTERFACES
-═══════════════════════════════════════ */
 
 interface ChatMessage {
   id: number;
@@ -24,38 +21,6 @@ interface SuggestionChip {
   query: string;
 }
 
-/* ═══════════════════════════════════════
-   RESPUESTAS RÁPIDAS PARA EL FAB
-═══════════════════════════════════════ */
-
-const FAB_RESPONSES_CLUB: { pattern: RegExp; response: string }[] = [
-  { pattern: /cu[áa]ntos jugadores/i, response: 'El club tiene **127 jugadores** activos repartidos en 8 equipos.' },
-  { pattern: /cuotas|pagar|pendientes/i, response: 'Hay **23 jugadores** con cuotas pendientes (4.560 € total).' },
-  { pattern: /pr[óo]ximo.*(partido|partidos)/i, response: '⚽ Próximo: **Sábado 21 feb** — Cadete A vs CD Aluche (10:00h, Local)' },
-  { pattern: /estad[íi]sticas/i, response: '📊 87 partidos jugados — 48% victorias — 198 goles a favor.' },
-  { pattern: /lesion|lesionados/i, response: '🏥 Hay **5 jugadores lesionados** actualmente en el club.' },
-  { pattern: /entrenamiento/i, response: '📋 **14 entrenamientos** programados esta semana.' },
-  { pattern: /(hola|hey|buenas)/i, response: '¡Hola! 👋 Soy el asistente rápido. ¿En qué puedo ayudarte?' },
-  { pattern: /(ayuda|qu[ée] puedes)/i, response: 'Pregúntame sobre jugadores, cuotas, partidos, estadísticas o lesiones. Para más detalle, ve al Asistente de IA completo.' },
-];
-
-const FAB_RESPONSES_COACH: { pattern: RegExp; response: string }[] = [
-  { pattern: /entrenamiento/i, response: '📋 Tienes **3 entrenamientos** esta semana (Lun, Mié, Vie).' },
-  { pattern: /pr[óo]ximo.*(partido|partidos)/i, response: '⚽ Próximo: **Sábado 21 feb** vs CD Aluche (10:00h, Local)' },
-  { pattern: /estad[íi]sticas/i, response: '📊 18 partidos — 67% victorias — 2º clasificado.' },
-  { pattern: /lesion|lesionados|plantilla/i, response: '🏥 **2 lesionados**: David López (fibrilar) y Andrés Ruiz (tendinitis). 18 disponibles.' },
-  { pattern: /t[áa]ctica|formaci[óo]n/i, response: '📐 Tu 4-3-3 tiene 71% de victorias. El 4-2-3-1 como alternativa tiene 50%.' },
-  { pattern: /ejercicio|sesi[óo]n/i, response: '💡 Sugerencia: Rondo 4v2 + Posesión 5v5 + Partido reducido 7v7.' },
-  { pattern: /(hola|hey|buenas)/i, response: '¡Hola, míster! ⚽ ¿En qué puedo ayudarte?' },
-  { pattern: /(ayuda|qu[ée] puedes)/i, response: 'Pregúntame sobre entrenamientos, partidos, estadísticas o plantilla. Para más detalle, ve al Asistente de IA.' },
-];
-
-const FAB_DEFAULT = 'Puedo ayudarte rápidamente con consultas básicas. Para respuestas más completas, ve al **Asistente de IA** desde el menú.';
-
-/* ═══════════════════════════════════════
-   COMPONENTE
-═══════════════════════════════════════ */
-
 @Component({
   selector: 'app-ai-fab',
   templateUrl: './ai-fab.component.html',
@@ -65,35 +30,88 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('fabChatBody') fabChatBody!: ElementRef<HTMLDivElement>;
 
   isOpen = false;
+  isExpanded = false;
   isVisible = true;
   messages: ChatMessage[] = [];
   userInput = '';
   isResponding = false;
+  creditsAvailable = 50;
+  showCreditsModal = false;
   private msgIdCounter = 0;
   private shouldScroll = false;
   private subs: Subscription[] = [];
+  private chatSub: Subscription | null = null;
   private profileId = 0;
+  userId = 0;
+  private clubId: number | null = null;
+  private currentScreenContext = 'dashboard';
+
+  // Drag state
+  isDragging = false;
+  private dragStartX = 0;
+  private dragStartY = 0;
+  popupX = 0;
+  popupY = 0;
+  private positionInitialized = false;
+
+  // Resize state
+  isResizing = false;
+  private resizeDir = '';
+  private resizeStartX = 0;
+  private resizeStartY = 0;
+  popupW = 390;
+  popupH = 520;
+  private readonly minW = 320;
+  private readonly minH = 380;
+  private readonly maxW = 700;
+  private readonly maxH = 800;
+
+  // Sizes for expand/contract
+  private normalW = 390;
+  private normalH = 520;
+  private expandedW = 600;
+  private expandedH = 700;
 
   quickSuggestions: SuggestionChip[] = [];
 
-  private clubSuggestions: SuggestionChip[] = [
-    { icon: 'bi-people-fill', text: 'Jugadores', query: '¿Cuántos jugadores hay?' },
-    { icon: 'bi-cash-coin', text: 'Cuotas', query: 'Cuotas pendientes' },
-    { icon: 'bi-trophy', text: 'Partidos', query: 'Próximo partido' },
-    { icon: 'bi-bandaid', text: 'Lesiones', query: 'Jugadores lesionados' },
-  ];
-
-  private coachSuggestions: SuggestionChip[] = [
-    { icon: 'bi-clipboard-check', text: 'Entrenamientos', query: 'Entrenamientos esta semana' },
-    { icon: 'bi-trophy', text: 'Partido', query: 'Próximo partido' },
-    { icon: 'bi-graph-up', text: 'Estadísticas', query: 'Estadísticas del equipo' },
-    { icon: 'bi-heart-pulse', text: 'Plantilla', query: 'Estado de la plantilla' },
-  ];
+  private screenSuggestions: { [key: string]: SuggestionChip[] } = {
+    'dashboard': [
+      { icon: 'bi-bar-chart-line', text: 'Resumen del club', query: 'Resume el estado del club' },
+      { icon: 'bi-trophy', text: 'Mejor equipo', query: '¿Que equipo va mejor?' },
+      { icon: 'bi-calendar-event', text: 'Proximos partidos', query: 'Proximos partidos importantes' },
+      { icon: 'bi-lightbulb', text: 'Recomendaciones', query: 'Dame recomendaciones para mejorar la gestion del club' },
+    ],
+    'estadisticas-equipos': [
+      { icon: 'bi-shield-check', text: 'Mejor defensa', query: '¿Que equipo tiene mejor defensa?' },
+      { icon: 'bi-graph-up', text: 'Comparar resultados', query: 'Compara los resultados de liga' },
+      { icon: 'bi-bar-chart', text: 'Goles por equipo', query: 'Genera un analisis de goles por equipo' },
+      { icon: 'bi-trophy', text: 'Ranking equipos', query: '¿Como va la clasificacion de los equipos?' },
+    ],
+    'estadisticas-jugadores': [
+      { icon: 'bi-star-fill', text: 'Jugador mas completo', query: '¿Quien es el jugador mas completo?' },
+      { icon: 'bi-trophy', text: 'Top goleadores', query: 'Top goleadores por equipo' },
+      { icon: 'bi-clock-history', text: 'Mas minutos', query: 'Jugadores con mas minutos' },
+      { icon: 'bi-graph-up-arrow', text: 'Rendimiento', query: 'Analiza el rendimiento individual de los jugadores' },
+    ],
+    'jugadores': [
+      { icon: 'bi-people-fill', text: 'Analizar plantilla', query: 'Analiza la plantilla' },
+      { icon: 'bi-grid-3x3', text: 'Por posicion', query: 'Jugadores por posicion' },
+      { icon: 'bi-calendar3', text: 'Media de edad', query: 'Media de edad del club' },
+      { icon: 'bi-person-badge', text: 'Estado jugadores', query: '¿Cual es el estado de los jugadores?' },
+    ],
+    'calendario': [
+      { icon: 'bi-calendar-week', text: 'Resumen semana', query: 'Resumen de la semana' },
+      { icon: 'bi-clock', text: 'Entrenamientos hoy', query: 'Entrenamientos de hoy' },
+      { icon: 'bi-trophy', text: 'Proximos partidos', query: 'Proximos partidos' },
+      { icon: 'bi-list-check', text: 'Actividades pendientes', query: '¿Que actividades tenemos pendientes?' },
+    ],
+  };
 
   constructor(
     private loginService: LoginService,
     private router: Router,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private aiChatService: AiChatService
   ) {}
 
   ngOnInit(): void {
@@ -101,14 +119,14 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.loginService.usuarioActual.subscribe((user) => {
         if (user) {
           this.profileId = user.profileType?.profileId || 0;
-          this.quickSuggestions = this.profileId === 2 ? this.coachSuggestions : this.clubSuggestions;
-          // Ocultar para perfiles que no son club(1) ni entrenador(2)
+          this.userId = user.userId;
           this.isVisible = this.profileId === 1 || this.profileId === 2;
+          this.updateSuggestions();
+          this.loadCredits();
         }
       })
     );
 
-    // Ocultar el FAB cuando estamos en la pantalla del asistente de IA
     this.subs.push(
       this.router.events.pipe(
         filter(e => e instanceof NavigationEnd)
@@ -117,12 +135,18 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
         if (url.includes('asistente-ia')) {
           this.isOpen = false;
         }
+        this.detectScreenContext(url);
+        this.updateSuggestions();
       })
     );
+
+    this.detectScreenContext(this.router.url);
+    this.updateSuggestions();
   }
 
   ngOnDestroy(): void {
     this.subs.forEach(s => s.unsubscribe());
+    this.chatSub?.unsubscribe();
   }
 
   ngAfterViewChecked(): void {
@@ -132,18 +156,145 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
-  /* ═══════════════════════════════════════
-     TOGGLE
-  ═══════════════════════════════════════ */
+  // ─── POSITION ─────────────────────────────
+  private initPosition(): void {
+    if (this.positionInitialized) return;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    this.popupX = vw - this.popupW - 24;
+    this.popupY = vh - this.popupH - 90;
+    this.positionInitialized = true;
+  }
+
+  // ─── DRAG ─────────────────────────────────
+  startDrag(event: MouseEvent): void {
+    if ((event.target as HTMLElement).closest('.fab-resize-handle')) return;
+    if ((event.target as HTMLElement).closest('button')) return;
+    this.isDragging = true;
+    this.dragStartX = event.clientX - this.popupX;
+    this.dragStartY = event.clientY - this.popupY;
+    event.preventDefault();
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onMouseMove(event: MouseEvent): void {
+    if (this.isDragging) {
+      this.popupX = Math.max(0, Math.min(window.innerWidth - this.popupW, event.clientX - this.dragStartX));
+      this.popupY = Math.max(0, Math.min(window.innerHeight - this.popupH, event.clientY - this.dragStartY));
+    }
+    if (this.isResizing) {
+      this.handleResize(event);
+    }
+  }
+
+  @HostListener('document:mouseup')
+  onMouseUp(): void {
+    this.isDragging = false;
+    this.isResizing = false;
+    this.resizeDir = '';
+  }
+
+  // ─── RESIZE ───────────────────────────────
+  startResize(event: MouseEvent, direction: string): void {
+    this.isResizing = true;
+    this.resizeDir = direction;
+    this.resizeStartX = event.clientX;
+    this.resizeStartY = event.clientY;
+    event.preventDefault();
+    event.stopPropagation();
+  }
+
+  private handleResize(event: MouseEvent): void {
+    const dx = event.clientX - this.resizeStartX;
+    const dy = event.clientY - this.resizeStartY;
+    this.resizeStartX = event.clientX;
+    this.resizeStartY = event.clientY;
+
+    if (this.resizeDir.includes('e')) {
+      this.popupW = Math.max(this.minW, Math.min(this.maxW, this.popupW + dx));
+    }
+    if (this.resizeDir.includes('w')) {
+      const newW = Math.max(this.minW, Math.min(this.maxW, this.popupW - dx));
+      if (newW !== this.popupW) {
+        this.popupX += this.popupW - newW;
+        this.popupW = newW;
+      }
+    }
+    if (this.resizeDir.includes('s')) {
+      this.popupH = Math.max(this.minH, Math.min(this.maxH, this.popupH + dy));
+    }
+    if (this.resizeDir.includes('n')) {
+      const newH = Math.max(this.minH, Math.min(this.maxH, this.popupH - dy));
+      if (newH !== this.popupH) {
+        this.popupY += this.popupH - newH;
+        this.popupH = newH;
+      }
+    }
+  }
+
+  // ─── EXPAND / CONTRACT ────────────────────
+  toggleExpand(): void {
+    if (this.isExpanded) {
+      this.popupW = this.normalW;
+      this.popupH = this.normalH;
+    } else {
+      this.normalW = this.popupW;
+      this.normalH = this.popupH;
+      this.popupW = Math.min(this.expandedW, window.innerWidth - 32);
+      this.popupH = Math.min(this.expandedH, window.innerHeight - 32);
+    }
+    this.clampPosition();
+    this.isExpanded = !this.isExpanded;
+  }
+
+  private clampPosition(): void {
+    this.popupX = Math.max(0, Math.min(window.innerWidth - this.popupW, this.popupX));
+    this.popupY = Math.max(0, Math.min(window.innerHeight - this.popupH, this.popupY));
+  }
+
+  // ─── CHAT LOGIC ───────────────────────────
+  private detectScreenContext(url: string): void {
+    const clubMatch = url.match(/cuadro\/(\d+)/);
+    if (clubMatch) {
+      this.clubId = parseInt(clubMatch[1], 10);
+    } else {
+      const storedClubId = localStorage.getItem('clubId');
+      if (storedClubId) this.clubId = parseInt(storedClubId, 10);
+    }
+
+    if (url.includes('estadisticas-equipos')) {
+      this.currentScreenContext = 'estadisticas-equipos';
+    } else if (url.includes('estadisticas-jugadores')) {
+      this.currentScreenContext = 'estadisticas-jugadores';
+    } else if (url.includes('info-jugadores') || url.includes('jugadores')) {
+      this.currentScreenContext = 'jugadores';
+    } else if (url.includes('calendario')) {
+      this.currentScreenContext = 'calendario';
+    } else {
+      this.currentScreenContext = 'dashboard';
+    }
+  }
+
+  private updateSuggestions(): void {
+    this.quickSuggestions = this.screenSuggestions[this.currentScreenContext] || this.screenSuggestions['dashboard'];
+  }
+
+  private loadCredits(): void {
+    if (this.userId) {
+      this.aiChatService.getCredits(this.userId).subscribe(info => {
+        this.creditsAvailable = info.creditsAvailable;
+      });
+    }
+  }
 
   toggleChat(): void {
     this.isOpen = !this.isOpen;
-    if (this.isOpen && this.messages.length === 0) {
-      this.addAssistantMessage(
-        this.profileId === 2
-          ? '¡Hola, míster! ⚽ Pregúntame lo que necesites.'
-          : '¡Hola! 👋 Soy tu asistente rápido. ¿En qué te ayudo?'
-      );
+    if (this.isOpen) {
+      this.initPosition();
+      if (this.messages.length === 0) {
+        this.addAssistantMessage('¡Hola! 👋 Soy tu asistente IA de Sphaira. ¿En que puedo ayudarte?');
+        this.loadCredits();
+      }
     }
   }
 
@@ -156,13 +307,14 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     }
   }
 
-  /* ═══════════════════════════════════════
-     ENVIAR MENSAJE
-  ═══════════════════════════════════════ */
-
   sendMessage(): void {
     const text = this.userInput.trim();
     if (!text || this.isResponding) return;
+
+    if (this.creditsAvailable <= 0) {
+      this.addAssistantMessage('No tienes creditos disponibles. Pulsa en "creditos" para comprar mas.');
+      return;
+    }
 
     this.messages.push({
       id: ++this.msgIdCounter,
@@ -183,15 +335,54 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     };
     this.messages.push(typingMsg);
 
-    const delay = 600 + Math.random() * 800;
-    setTimeout(() => {
-      const idx = this.messages.indexOf(typingMsg);
-      if (idx > -1) this.messages.splice(idx, 1);
+    const apiKeyType = this.profileId === 99 ? 'admin' : 'users';
 
-      const response = this.getResponse(text);
-      this.addAssistantMessage(response);
-      this.isResponding = false;
-    }, delay);
+    this.chatSub?.unsubscribe();
+    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, this.currentScreenContext, text, apiKeyType)
+      .pipe(
+        finalize(() => {
+          this.isResponding = false;
+        })
+      )
+      .subscribe({
+        next: (resp) => {
+          const idx = this.messages.indexOf(typingMsg);
+          if (idx > -1) this.messages.splice(idx, 1);
+
+          if (resp.success && resp.response) {
+            this.addAssistantMessage(resp.response);
+            if (resp.creditsRemaining !== undefined) {
+              this.creditsAvailable = resp.creditsRemaining;
+            }
+          } else {
+            this.addAssistantMessage(resp.message || 'Ha ocurrido un error. Intentalo de nuevo.');
+          }
+        },
+        error: () => {
+          const idx = this.messages.indexOf(typingMsg);
+          if (idx > -1) this.messages.splice(idx, 1);
+          this.addAssistantMessage('Error de conexion. Intentalo de nuevo.');
+        }
+      });
+  }
+
+  cancelPendingRequest(): void {
+    if (this.chatSub) {
+      this.chatSub.unsubscribe();
+      this.chatSub = null;
+    }
+    this.isResponding = false;
+    const typingIdx = this.messages.findIndex(m => m.isTyping);
+    if (typingIdx > -1) this.messages.splice(typingIdx, 1);
+    this.addAssistantMessage('Peticion cancelada.');
+  }
+
+  openCreditsModal(): void {
+    this.showCreditsModal = true;
+  }
+
+  closeCreditsModal(): void {
+    this.showCreditsModal = false;
   }
 
   sendQuick(chip: SuggestionChip): void {
@@ -205,24 +396,6 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.sendMessage();
     }
   }
-
-  /* ═══════════════════════════════════════
-     RESPUESTAS
-  ═══════════════════════════════════════ */
-
-  private getResponse(text: string): string {
-    const responses = this.profileId === 2 ? FAB_RESPONSES_COACH : FAB_RESPONSES_CLUB;
-    for (const entry of responses) {
-      if (entry.pattern.test(text)) {
-        return entry.response;
-      }
-    }
-    return FAB_DEFAULT;
-  }
-
-  /* ═══════════════════════════════════════
-     HELPERS
-  ═══════════════════════════════════════ */
 
   private addAssistantMessage(text: string): void {
     this.messages.push({

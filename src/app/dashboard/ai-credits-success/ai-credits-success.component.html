@@ -1,0 +1,37 @@
+<div class="credits-success-container">
+  <div class="credits-success-card">
+
+    <!-- LOADING -->
+    <div *ngIf="status === 'loading'" class="status-section">
+      <div class="spinner-lg"></div>
+      <h4>Verificando pago...</h4>
+      <p>Estamos confirmando tu compra de creditos</p>
+    </div>
+
+    <!-- SUCCESS -->
+    <div *ngIf="status === 'success'" class="status-section success">
+      <div class="success-icon">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <h4>Compra realizada con exito</h4>
+      <p class="credits-added">+{{ creditsAdded }} creditos</p>
+      <p class="credits-total">Ahora tienes <strong>{{ creditsAvailable }}</strong> creditos disponibles</p>
+      <button class="btn-back" (click)="goBack()">
+        <i class="bi bi-arrow-left me-2"></i>Volver al dashboard
+      </button>
+    </div>
+
+    <!-- ERROR -->
+    <div *ngIf="status === 'error'" class="status-section error">
+      <div class="error-icon">
+        <i class="bi bi-exclamation-circle-fill"></i>
+      </div>
+      <h4>Error en el pago</h4>
+      <p>{{ errorMessage }}</p>
+      <button class="btn-back" (click)="goBack()">
+        <i class="bi bi-arrow-left me-2"></i>Volver al dashboard
+      </button>
+    </div>
+
+  </div>
+</div>

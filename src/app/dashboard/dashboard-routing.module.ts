@@ -75,6 +75,8 @@ import { DebriefHistoryComponent } from './debrief/debrief-history/debrief-histo
 import { ClubOwnerGuard } from '../club-owner.guard';
 import { AdminRegistrosComponent } from './admin-registros/admin-registros.component';
 import { AdminActivityComponent } from './admin-activity/admin-activity.component';
+import { AdminAiUsageComponent } from './admin-ai-usage/admin-ai-usage.component';
+import { AiCreditsSuccessComponent } from './ai-credits-success/ai-credits-success.component';
 
 const routes: Routes = [
   {
@@ -145,6 +147,8 @@ const routes: Routes = [
       { path: 'admin-ai-insights', component: AdminAiInsightsComponent },
       { path: 'admin-registros', component: AdminRegistrosComponent },
       { path: 'admin-activity', component: AdminActivityComponent },
+      { path: 'admin-ai-usage', component: AdminAiUsageComponent },
+      { path: 'ai-credits-success', component: AiCreditsSuccessComponent },
       { path: 'suscripcion-club', component: SuscripcionClubComponent },
       { path: 'suscripcion-club/wizard/familia', component: WizardFamiliaComponent },
       { path: 'suscripcion-club/wizard/club', component: WizardClubComponent },

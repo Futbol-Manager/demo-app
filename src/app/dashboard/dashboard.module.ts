@@ -94,6 +94,9 @@ import { FormBuilderComponent } from './shared/form-builder/form-builder.compone
 import { FormRendererComponent } from './shared/form-renderer/form-renderer.component';
 import { AdminRegistrosComponent } from './admin-registros/admin-registros.component';
 import { AdminActivityComponent } from './admin-activity/admin-activity.component';
+import { AdminAiUsageComponent } from './admin-ai-usage/admin-ai-usage.component';
+import { CreditsModalComponent } from './credits-modal/credits-modal.component';
+import { AiCreditsSuccessComponent } from './ai-credits-success/ai-credits-success.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -188,6 +191,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     FormRendererComponent,
     AdminRegistrosComponent,
     AdminActivityComponent,
+    AdminAiUsageComponent,
+    CreditsModalComponent,
+    AiCreditsSuccessComponent,
   ],
   imports: [
     CommonModule,

@@ -160,6 +160,59 @@
   justify-content: center;
   gap: 6px;
 }
+
+/* =========================
+   GRAFICAS
+========================= */
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.chart-card {
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.chart-title {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #002c40;
+  border-bottom: 1px solid #e9ecef;
+  display: flex;
+  align-items: center;
+
+  i { color: #31b270; }
+}
+
+.chart-body {
+  padding: 1rem;
+  height: 280px;
+  position: relative;
+}
+
+.chart-body-ranking {
+  height: auto;
+  min-height: 200px;
+  max-height: 380px;
+}
+
+@media (max-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+  .chart-body {
+    height: 240px;
+  }
+}
+
 .pagination-wrapper {
   display: flex;
   justify-content: center;
@@ -289,4 +342,15 @@
   }
 
   .page-indicator { color: var(--text-primary); }
+
+  .chart-card {
+    background: var(--bg-card);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+  }
+
+  .chart-title {
+    color: var(--text-primary);
+    border-color: var(--border-color);
+    i { color: var(--color-primary); }
+  }
 }

@@ -725,6 +725,52 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
   &:disabled { cursor: not-allowed; }
 }
 
+.chat-cancel-btn {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  border: none;
+  border-radius: 12px;
+  background: #dc3545;
+  color: #fff;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #c82333;
+    transform: scale(1.05);
+  }
+}
+
+.credits-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  backdrop-filter: blur(4px);
+
+  i { font-size: 0.9rem; }
+
+  &.credits-clickable {
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.05);
+    }
+  }
+}
+
 .chat-disclaimer {
   display: block;
   text-align: center;

@@ -1,8 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { TranslateService } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs/operators';
 import { LoginService } from 'src/app/core/services/login/login.service';
+import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { User } from 'src/app/core/models/users/user.model';
 
 /* ═══════════════════════════════════════
@@ -125,7 +128,7 @@ const COACH_DEFAULT_RESPONSE =
   templateUrl: './asistente-ia-coach.component.html',
   styleUrls: ['./asistente-ia-coach.component.scss'],
 })
-export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked {
+export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDestroy {
   @ViewChild('chatBody') chatBody!: ElementRef<HTMLDivElement>;
   @ViewChild('inputField') inputField!: ElementRef<HTMLTextAreaElement>;
 
@@ -133,8 +136,13 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked {
   messages: ChatMessage[] = [];
   userInput = '';
   isResponding = false;
+  creditsAvailable = 50;
+  showCreditsModal = false;
   private msgIdCounter = 0;
   private shouldScroll = false;
+  userId = 0;
+  private clubId: number | null = null;
+  private chatSub: Subscription | null = null;
 
   /* ── Historial ── */
   showHistory = true;
@@ -157,16 +165,32 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked {
     private loginService: LoginService,
     private router: Router,
     private location: Location,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private aiChatService: AiChatService
   ) {}
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe((user) => {
       this.usuarioActual = user;
+      if (user) {
+        this.userId = user.userId;
+        this.loadCredits();
+      }
     });
+
+    const storedClubId = localStorage.getItem('clubId');
+    if (storedClubId) this.clubId = parseInt(storedClubId, 10);
 
     this.loadConversationsList();
     this.startNewConversation();
+  }
+
+  private loadCredits(): void {
+    if (this.userId) {
+      this.aiChatService.getCredits(this.userId).subscribe(info => {
+        this.creditsAvailable = info.creditsAvailable;
+      });
+    }
   }
 
   ngAfterViewChecked(): void {
@@ -296,6 +320,11 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked {
     const text = this.userInput.trim();
     if (!text || this.isResponding) return;
 
+    if (this.creditsAvailable <= 0) {
+      this.addAssistantMessage('No tienes creditos disponibles. Compra mas creditos para seguir usando el asistente IA.');
+      return;
+    }
+
     this.messages.push({
       id: ++this.msgIdCounter,
       role: 'user',
@@ -316,18 +345,58 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked {
     this.messages.push(typingMsg);
     this.shouldScroll = true;
 
-    const delay = 800 + Math.random() * 1200;
-    setTimeout(() => {
-      const idx = this.messages.indexOf(typingMsg);
-      if (idx > -1) this.messages.splice(idx, 1);
+    this.chatSub?.unsubscribe();
+    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, 'dashboard', text, 'users')
+      .pipe(
+        finalize(() => {
+          this.isResponding = false;
+        })
+      )
+      .subscribe({
+        next: (resp) => {
+          const idx = this.messages.indexOf(typingMsg);
+          if (idx > -1) this.messages.splice(idx, 1);
 
-      const response = this.getResponse(text);
-      this.addAssistantMessage(response);
-      this.updateSuggestionsContext(text);
-      this.isResponding = false;
+          if (resp.success && resp.response) {
+            this.addAssistantMessage(resp.response);
+            if (resp.creditsRemaining !== undefined) {
+              this.creditsAvailable = resp.creditsRemaining;
+            }
+          } else {
+            this.addAssistantMessage(resp.message || 'Ha ocurrido un error. Intentalo de nuevo.');
+          }
+          this.updateSuggestionsContext(text);
+          this.saveConversation();
+        },
+        error: () => {
+          const idx = this.messages.indexOf(typingMsg);
+          if (idx > -1) this.messages.splice(idx, 1);
+          this.addAssistantMessage('Error de conexion. Intentalo de nuevo.');
+        }
+      });
+  }
 
-      this.saveConversation();
-    }, delay);
+  cancelPendingRequest(): void {
+    if (this.chatSub) {
+      this.chatSub.unsubscribe();
+      this.chatSub = null;
+    }
+    this.isResponding = false;
+    const typingIdx = this.messages.findIndex(m => m.isTyping);
+    if (typingIdx > -1) this.messages.splice(typingIdx, 1);
+    this.addAssistantMessage('Peticion cancelada.');
+  }
+
+  openCreditsModal(): void {
+    this.showCreditsModal = true;
+  }
+
+  closeCreditsModal(): void {
+    this.showCreditsModal = false;
+  }
+
+  ngOnDestroy(): void {
+    this.chatSub?.unsubscribe();
   }
 
   sendSuggestion(chip: SuggestionChip): void {
