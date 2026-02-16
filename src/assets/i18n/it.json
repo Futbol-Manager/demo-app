@@ -1,4 +1,4 @@
-﻿{
+{
   "COMMON": {
     "BACK": "Indietro",
     "COMING_SOON": "Prossimamente",
@@ -24,6 +24,12 @@
     "WELCOME": "Benvenuto!",
     "PROFILE": "Profilo",
     "CHANGE_LANG": "Lingua",
+    "CHANGE_PASSWORD": "Cambiare la password",
+    "CURRENT_PASSWORD": "Password attuale",
+    "NEW_PASSWORD": "Nuova password",
+    "CONFIRM_PASSWORD": "Conferma password",
+    "CANCEL": "Annulla",
+    "SAVE": "Salva",
     "SUBSCRIPTION": "Abbonamento",
     "CLUB_SUBSCRIPTION": "Abbonamento del Club",
     "LOGOUT": "Esci",
@@ -82,7 +88,7 @@
       "BIRTHDATE": "Data di nascita",
       "PHONE": "Telefono",
       "DNI": "N. documento",
-      "DNI_IMG": "Img. doc.",
+      "DNI_IMG": "Doc. Identità (Img.)",
       "DOCUMENTS": "Documenti",
       "HISTORY": "Storico"
     },
@@ -108,13 +114,20 @@
       "CLOSE": "Chiudi"
     },
     "DNI_MODAL": {
-      "TITLE": "Immagine del documento",
+      "TITLE": "Documento d'identità",
+      "SUBTITLE": "",
+      "HELP": "",
       "FRONT": "Fronte",
       "BACK": "Retro",
       "NO_IMAGE": "Nessuna immagine caricata",
       "UPLOAD_FRONT": "Carica fronte",
       "UPLOAD_BACK": "Carica retro",
       "CLOSE": "Chiudi"
+    },
+    "CERTS_MODAL": {
+      "TITLE": "Certificati dell'allenatore",
+      "DOWNLOAD": "Scarica",
+      "NOT_PROVIDED": "Questo documento non è stato ancora fornito dall'allenatore"
     },
     "DOC_MODAL": {
       "TITLE": "Documenti dell'allenatore",
@@ -854,7 +867,8 @@
       "EMPTY_DESC": "Completa il tuo primo debrief dopo un allenamento o una partita per vederlo qui",
       "TRAINING_SESSION": "Sessione di allenamento",
       "STATUS_COMPLETED": "Completato",
-      "STATUS_DRAFT": "Bozza"
+      "STATUS_DRAFT": "Bozza",
+      "STATUS_REPORT-GENERATED": "Rapporto generato"
     }
   }
 }

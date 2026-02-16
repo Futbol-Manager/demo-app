@@ -1,0 +1,132 @@
+<div class="form-renderer">
+  <div class="renderer-header">
+    <h4><i class="bi bi-ui-checks-grid"></i> Formulario personalizado</h4>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center p-4">
+    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+    <span class="ms-2">Cargando formulario...</span>
+  </div>
+
+  <!-- No fields - hide silently in profile context -->
+  <div *ngIf="!loading && fields.length === 0 && contexto === 'DOCUMENTO'" class="no-fields">
+    <p>No hay campos definidos para este formulario.</p>
+  </div>
+
+  <!-- Fields -->
+  <div *ngIf="!loading && fields.length > 0" class="renderer-fields">
+    <div *ngFor="let field of fields" class="render-field">
+      <label class="render-label">
+        {{ field.etiqueta }}
+        <span *ngIf="field.obligatorio === 1" class="required">*</span>
+      </label>
+
+      <!-- TEXT_SHORT -->
+      <input *ngIf="field.tipoCampo === 'TEXT_SHORT'" type="text"
+        [(ngModel)]="responses[field.formularioCampoId].valor"
+        placeholder="Escribe aquí..." />
+
+      <!-- TEXT_LONG -->
+      <textarea *ngIf="field.tipoCampo === 'TEXT_LONG'" rows="3"
+        [(ngModel)]="responses[field.formularioCampoId].valor"
+        placeholder="Escribe aquí..."></textarea>
+
+      <!-- NUMBER -->
+      <input *ngIf="field.tipoCampo === 'NUMBER'" type="number"
+        [(ngModel)]="responses[field.formularioCampoId].valor"
+        placeholder="0" />
+
+      <!-- DATE -->
+      <input *ngIf="field.tipoCampo === 'DATE'" type="date"
+        [(ngModel)]="responses[field.formularioCampoId].valor" />
+
+      <!-- CHECKBOX (Sí/No) -->
+      <div *ngIf="field.tipoCampo === 'CHECKBOX'" class="checkbox-field">
+        <label class="checkbox-label">
+          <input type="checkbox"
+            [checked]="responses[field.formularioCampoId].valor === 'true'"
+            (change)="responses[field.formularioCampoId].valor = responses[field.formularioCampoId].valor === 'true' ? 'false' : 'true'" />
+          <span>{{ responses[field.formularioCampoId].valor === 'true' ? 'Sí' : 'No' }}</span>
+        </label>
+      </div>
+
+      <!-- SELECT -->
+      <select *ngIf="field.tipoCampo === 'SELECT'"
+        [(ngModel)]="responses[field.formularioCampoId].valor">
+        <option value="" disabled>Selecciona una opción</option>
+        <option *ngFor="let opt of getOpciones(field)" [value]="opt">{{ opt }}</option>
+      </select>
+
+      <!-- FILE -->
+      <div *ngIf="field.tipoCampo === 'FILE'" class="file-field">
+        <div *ngIf="responses[field.formularioCampoId]?.file" class="file-existing">
+          <i class="bi bi-file-earmark-check"></i>
+          <span>Archivo subido: {{ responses[field.formularioCampoId].file }}</span>
+        </div>
+        <div class="file-upload-row">
+          <input type="file" (change)="onFileChange($event, field)" />
+          <span *ngIf="uploadingField === field.formularioCampoId" class="uploading">
+            <div class="spinner-border spinner-border-sm" role="status"></div> Subiendo...
+          </span>
+        </div>
+      </div>
+
+      <!-- SIGNATURE -->
+      <div *ngIf="field.tipoCampo === 'SIGNATURE'" class="signature-field">
+
+        <!-- Locked signature: show image + lock icon -->
+        <ng-container *ngIf="responses[field.formularioCampoId]?.bloqueado === 1">
+          <div class="file-existing signature-locked">
+            <i class="bi bi-lock-fill text-warning"></i>
+            <span>Firma enviada (no modificable)</span>
+          </div>
+          <img *ngIf="responses[field.formularioCampoId]?.file"
+            [src]="getFileUrl(responses[field.formularioCampoId].file)"
+            alt="Firma" class="signature-preview" />
+        </ng-container>
+
+        <!-- Editable signature -->
+        <ng-container *ngIf="responses[field.formularioCampoId]?.bloqueado !== 1">
+          <div *ngIf="responses[field.formularioCampoId]?.file" class="file-existing">
+            <i class="bi bi-pen"></i>
+            <span>Firma guardada: {{ responses[field.formularioCampoId].file }}</span>
+          </div>
+          <button *ngIf="signaturePadField?.formularioCampoId !== field.formularioCampoId"
+            class="btn-open-signature" (click)="openSignaturePad(field)">
+            <i class="bi bi-pen"></i> {{ responses[field.formularioCampoId]?.file ? 'Cambiar firma' : 'Firmar' }}
+          </button>
+
+          <!-- Signature pad -->
+          <div *ngIf="signaturePadField?.formularioCampoId === field.formularioCampoId" class="signature-pad-wrapper">
+            <canvas [id]="'signatureCanvas-' + field.formularioCampoId"
+              class="signature-canvas"
+              (mousedown)="startDraw($event)"
+              (mousemove)="draw($event)"
+              (mouseup)="endDraw()"
+              (mouseleave)="endDraw()"
+              (touchstart)="startDraw($event)"
+              (touchmove)="draw($event)"
+              (touchend)="endDraw()">
+            </canvas>
+            <div class="signature-actions">
+              <button class="btn-sm-clear" (click)="clearSignature()">Limpiar</button>
+              <button class="btn-sm-save" (click)="saveSignature(field)"
+                [disabled]="uploadingField === field.formularioCampoId">
+                {{ uploadingField === field.formularioCampoId ? 'Guardando...' : 'Guardar firma' }}
+              </button>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div *ngIf="!loading && fields.length > 0" class="renderer-footer">
+    <button class="btn btn-secondary" (click)="close()">Cancelar</button>
+    <button class="btn btn-primary" (click)="saveResponses()" [disabled]="saving">
+      <i class="bi bi-check-lg"></i> {{ saving ? 'Guardando...' : 'Enviar respuestas' }}
+    </button>
+  </div>
+</div>

@@ -243,7 +243,7 @@ export class DebriefService {
     const ratingAnswer = debrief.answers.find(a => a.questionId === (type === 'training' ? 'TQ1' : 'MQ1'));
     if (ratingAnswer) {
       sections.push({
-        titleKey: 'DEBRIEF.REPORT.GENERAL_RATING',
+        titleKey: 'DEBRIEF.REPORT.SECTION_RATING',
         icon: 'bi-star-fill',
         content: `Valoración general: ${ratingAnswer.quickValue}/5`,
         rating: ratingAnswer.quickValue as number
@@ -254,7 +254,7 @@ export class DebriefService {
     const objectiveAnswer = debrief.answers.find(a => a.questionId === (type === 'training' ? 'TQ2' : 'MQ2'));
     if (objectiveAnswer) {
       sections.push({
-        titleKey: 'DEBRIEF.REPORT.OBJECTIVES',
+        titleKey: 'DEBRIEF.REPORT.SECTION_OBJECTIVES',
         icon: 'bi-bullseye',
         content: `Cumplimiento de objetivos: ${objectiveAnswer.quickValue}`,
       });
@@ -263,7 +263,7 @@ export class DebriefService {
     // Sección de asistencia
     if (debrief.attendanceContext && !debrief.attendanceContext.noRecordsAvailable) {
       sections.push({
-        titleKey: 'DEBRIEF.REPORT.ATTENDANCE',
+        titleKey: 'DEBRIEF.REPORT.SECTION_ATTENDANCE',
         icon: 'bi-people-fill',
         content: `Asistencia: ${debrief.attendanceContext.present}/${debrief.attendanceContext.totalPlayers} ` +
           `(${debrief.attendanceContext.attendanceRate}%). ` +
@@ -278,7 +278,7 @@ export class DebriefService {
       .filter(a => a.textValue || a.audioTranscript)
       .forEach(a => {
         sections.push({
-          titleKey: 'DEBRIEF.REPORT.COACH_NOTES',
+          titleKey: 'DEBRIEF.REPORT.SECTION_NOTES',
           icon: 'bi-chat-text-fill',
           content: a.textValue || a.audioTranscript || '',
         });
@@ -288,7 +288,7 @@ export class DebriefService {
     const playerAnswers = debrief.answers.filter(a => a.selectedPlayers && a.selectedPlayers.length > 0);
     if (playerAnswers.length > 0) {
       sections.push({
-        titleKey: 'DEBRIEF.REPORT.HIGHLIGHTED_PLAYERS',
+        titleKey: 'DEBRIEF.REPORT.SECTION_HIGHLIGHTS',
         icon: 'bi-person-check-fill',
         content: `Jugadores mencionados en ${playerAnswers.length} categoría(s).`,
       });

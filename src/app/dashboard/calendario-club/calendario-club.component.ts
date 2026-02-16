@@ -3,10 +3,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, of, Subscription } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { ClubService } from 'src/app/core/services/club/club.service';
+import { LoginService } from 'src/app/core/services/login/login.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { User } from 'src/app/core/models/users/user.model';
 
 /* ═══════════════════════════════════════
    PALETA DE 30 COLORES PARA EQUIPOS
@@ -100,11 +104,15 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
     'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ];
 
+  userId = 0;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private teamService: TeamService,
     private trainingService: TrainingService,
+    private clubService: ClubService,
+    private loginService: LoginService,
     private translate: TranslateService,
   ) {}
 
@@ -113,6 +121,10 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
   ═══════════════════════════════════════ */
 
   ngOnInit(): void {
+    this.loginService.usuarioActual.subscribe((user: User | null) => {
+      if (user) this.userId = user.userId;
+    });
+
     this.route.params.subscribe((params) => {
       this.clubId = +params['clubId'];
     });
@@ -167,6 +179,7 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
               visible: true,
             }));
             this.teamsVisibles = new Set(this.teams.map((t) => t.teamId));
+            this.loadSavedTeamOrder();
             console.log('[CalendarioClub] Equipos cargados:', this.teams.length, this.teams);
             this.loadAllEvents();
           } else {
@@ -504,6 +517,57 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
         eventDate: event.date,
       },
     });
+  }
+
+  /* ═══════════════════════════════════════
+     DRAG & DROP — REORDENAR EQUIPOS
+  ═══════════════════════════════════════ */
+
+  private justDragged = false;
+
+  dropTeam(event: CdkDragDrop<TeamInfo[]>): void {
+    if (event.previousIndex !== event.currentIndex) {
+      moveItemInArray(this.teams, event.previousIndex, event.currentIndex);
+      this.saveTeamOrder();
+      this.buildCalendarGrid();
+    }
+    this.justDragged = true;
+    setTimeout(() => this.justDragged = false, 200);
+  }
+
+  onChipClick(teamId: number): void {
+    if (this.justDragged) return;
+    this.toggleTeam(teamId);
+  }
+
+  private loadSavedTeamOrder(): void {
+    if (!this.userId || !this.clubId) return;
+    this.clubService.getCalendarioTeamOrder(this.userId, this.clubId).subscribe(
+      (res: Response) => {
+        if (res?.data && typeof res.data === 'string' && res.data.length > 0) {
+          const savedIds = res.data.split(',').map((id: string) => parseInt(id, 10));
+          const reordered: TeamInfo[] = [];
+          for (const id of savedIds) {
+            const team = this.teams.find((t) => t.teamId === id);
+            if (team) reordered.push(team);
+          }
+          // Add any teams not in saved order (new teams)
+          for (const team of this.teams) {
+            if (!reordered.find((t) => t.teamId === team.teamId)) {
+              reordered.push(team);
+            }
+          }
+          this.teams = reordered;
+          this.buildCalendarGrid();
+        }
+      }
+    );
+  }
+
+  private saveTeamOrder(): void {
+    if (!this.userId || !this.clubId) return;
+    const order = this.teams.map((t) => t.teamId).join(',');
+    this.clubService.saveCalendarioTeamOrder(this.userId, this.clubId, order).subscribe();
   }
 
   /* ═══════════════════════════════════════

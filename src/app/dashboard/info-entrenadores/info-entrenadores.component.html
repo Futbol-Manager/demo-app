@@ -15,6 +15,16 @@
 <div class="container">
   <!-- BARRA DE CONTROLES -->
   <div class="table-toolbar justify-content-center">
+    <!-- TEMPORADA -->
+    <div class="filter-group">
+      <label for="temporadaSelect" class="filter-label">
+        {{ 'TITLES.SEASON' | translate }}
+      </label>
+      <select id="temporadaSelect" class="form-select" [(ngModel)]="temporadaStoredValue" (change)="onTemporadaChange()">
+        <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
+      </select>
+    </div>
+
     <!-- BUSCADOR -->
     <div class="filter-group search-group">
       <label for="trainerSearch" class="filter-label">
@@ -50,6 +60,15 @@
         {{ 'COMMON.EXPORT_EXCEL' | translate }}
       </button>
     </div>
+
+    <!-- PERSONALIZAR CAMPOS -->
+    <div class="filter-group">
+      <label class="filter-label invisible-label">Campos</label>
+      <button class="btn btn-custom-fields" (click)="abrirModalCustomFields()">
+        <i class="bi bi-sliders"></i>
+        {{ 'TRAINERS.CUSTOM_FIELDS_BTN' | translate }}
+      </button>
+    </div>
   </div>
 
   <!-- ================= TABLA ================= -->
@@ -58,21 +77,57 @@
       <thead>
         <tr>
           <th class="sticky-col sticky-img">{{ 'TRAINERS.TABLE.IMAGE' | translate }}</th>
-          <th class="sticky-col sticky-name">{{ 'TRAINERS.TABLE.NAME' | translate }}</th>
-          <th>{{ 'TRAINERS.TABLE.TEAM' | translate }}</th>
-          <th>{{ 'TRAINERS.TABLE.BIRTHDATE' | translate }}</th>
-          <th>{{ 'TRAINERS.TABLE.PHONE' | translate }}</th>
-          <th>{{ 'TRAINERS.TABLE.DNI' | translate }}</th>
+          <th class="sticky-col sticky-name sortable-th" (click)="sortBy('nombre')">
+            {{ 'TRAINERS.TABLE.NAME' | translate }}
+            <i class="bi sort-icon" [ngClass]="getSortIcon('nombre')"></i>
+          </th>
+          <th class="sortable-th" (click)="sortBy('nameTeam')">
+            {{ 'TRAINERS.TABLE.TEAM' | translate }}
+            <i class="bi sort-icon" [ngClass]="getSortIcon('nameTeam')"></i>
+          </th>
+          <th class="sortable-th" (click)="sortBy('email')">
+            {{ 'TRAINERS.TABLE.EMAIL' | translate }}
+            <i class="bi sort-icon" [ngClass]="getSortIcon('email')"></i>
+          </th>
+          <th class="sortable-th" (click)="sortBy('telefono')">
+            {{ 'TRAINERS.TABLE.PHONE' | translate }}
+            <i class="bi sort-icon" [ngClass]="getSortIcon('telefono')"></i>
+          </th>
+          <th class="sortable-th" (click)="sortBy('fechaDeNacimiento')">
+            {{ 'TRAINERS.TABLE.BIRTHDATE' | translate }}
+            <i class="bi sort-icon" [ngClass]="getSortIcon('fechaDeNacimiento')"></i>
+          </th>
+          <th class="sortable-th" (click)="sortBy('documentoIdentidad')">
+            {{ 'TRAINERS.TABLE.DNI' | translate }}
+            <i class="bi sort-icon" [ngClass]="getSortIcon('documentoIdentidad')"></i>
+          </th>
+          <th class="sortable-th" (click)="sortBy('nacionalidad')">
+            {{ 'TRAINERS.TABLE.NATIONALITY' | translate }}
+            <i class="bi sort-icon" [ngClass]="getSortIcon('nacionalidad')"></i>
+          </th>
+          <th class="sortable-th" (click)="sortBy('licenciaFederativa')">
+            {{ 'TRAINERS.TABLE.FED_LICENSE' | translate }}
+            <i class="bi sort-icon" [ngClass]="getSortIcon('licenciaFederativa')"></i>
+          </th>
+          <th class="sortable-th" (click)="sortBy('titulacionDeportiva')">
+            {{ 'TRAINERS.TABLE.SPORTS_QUAL' | translate }}
+            <i class="bi sort-icon" [ngClass]="getSortIcon('titulacionDeportiva')"></i>
+          </th>
+          <th>{{ 'TRAINERS.TABLE.CERTIFICATES' | translate }}</th>
+          <th>{{ 'TRAINERS.TABLE.EMERGENCY' | translate }}</th>
+          <!-- CAMPOS PERSONALIZADOS DINÁMICOS -->
+          <th *ngFor="let campo of customFields" class="custom-field-th">
+            {{ campo.etiqueta }}
+          </th>
           <th>{{ 'TRAINERS.TABLE.DNI_IMG' | translate }}</th>
           <th>{{ 'TRAINERS.TABLE.DOC' | translate }}</th>
-          <th>{{ 'TRAINERS.TABLE.HISTORY' | translate }}</th>
         </tr>
       </thead>
 
       <!-- SKELETON -->
       <tbody *ngIf="loading">
         <tr *ngFor="let _ of [].constructor(5)">
-          <td *ngFor="let __ of [].constructor(9)">
+          <td *ngFor="let __ of [].constructor(14 + customFields.length)">
             <div class="skeleton skeleton-cell"></div>
           </td>
         </tr>
@@ -110,20 +165,64 @@
             </div>
           </td>
 
-          <!-- FECHA NAC -->
-          <td>{{ formatFechaEspana(trainer.fechaDeNacimiento) }}</td>
+          <!-- EMAIL -->
+          <td>{{ trainer.email }}</td>
 
           <!-- TELÉFONO -->
           <td>{{ trainer.telefono }}</td>
 
-          <!-- DNI -->
-          <td>{{ trainer.dni }}</td>
+          <!-- FECHA NAC -->
+          <td>{{ formatFechaEspana(trainer.fechaDeNacimiento) }}</td>
 
-          <!-- DNI IMG -->
+          <!-- DOC. IDENTIDAD -->
+          <td>{{ trainer.documentoIdentidad || trainer.dni || '—' }}
+            <small *ngIf="trainer.tipoDocumento" class="text-muted d-block">{{ trainer.tipoDocumento }}</small>
+          </td>
+
+          <!-- NACIONALIDAD -->
+          <td>{{ trainer.nacionalidad || '—' }}</td>
+
+          <!-- LICENCIA FEDERATIVA -->
+          <td>{{ trainer.licenciaFederativa || '—' }}</td>
+
+          <!-- TITULACIÓN DEPORTIVA -->
+          <td>{{ trainer.titulacionDeportiva || '—' }}</td>
+
+          <!-- CERTIFICADOS -->
+          <td>
+            <button class="btn btn-sm btn-icon btn-cert-status" (click)="abrirModalCerts(trainer)"
+              title="{{ 'TRAINERS.TABLE.CERTIFICATES' | translate }}">
+              <i class="bi bi-file-earmark-check"></i>
+            </button>
+          </td>
+
+          <!-- CONTACTO EMERGENCIA -->
+          <td>
+            <span *ngIf="trainer.contactoEmergenciaNombre">{{ trainer.contactoEmergenciaNombre }}</span>
+            <small *ngIf="trainer.contactoEmergenciaTelefono" class="text-muted d-block">{{ trainer.contactoEmergenciaTelefono }}</small>
+            <span *ngIf="!trainer.contactoEmergenciaNombre">—</span>
+          </td>
+
+          <!-- CAMPOS PERSONALIZADOS DINÁMICOS -->
+          <td *ngFor="let campo of customFields" class="custom-field-cell">
+            <ng-container *ngIf="!isSignatureOrFile(campo)">
+              {{ getCustomFieldValue(trainer, campo.formularioCampoId) }}
+            </ng-container>
+            <ng-container *ngIf="isSignatureOrFile(campo)">
+              <button *ngIf="hasSignatureOrFile(trainer, campo.formularioCampoId, campo.tipoCampo)"
+                class="btn btn-sm btn-icon btn-view-sig" (click)="abrirModalFirma(trainer, campo.formularioCampoId)"
+                [title]="campo.tipoCampo === 'SIGNATURE' ? 'Ver firma' : 'Ver archivo'">
+                <i class="bi" [ngClass]="campo.tipoCampo === 'SIGNATURE' ? 'bi-pen' : 'bi-file-earmark'"></i>
+              </button>
+              <span *ngIf="!hasSignatureOrFile(trainer, campo.formularioCampoId, campo.tipoCampo)" class="text-muted">—</span>
+            </ng-container>
+          </td>
+
+          <!-- DOC. IDENTIDAD IMG -->
           <td>
             <button class="btn btn-sm btn-icon" [ngClass]="{
-              'btn-success-custom': trainer.imgDniUno && trainer.imgDniDos,
-              'btn-primary-custom': !trainer.imgDniUno || !trainer.imgDniDos
+              'btn-success-custom': trainer.imgDniUno || trainer.imgDniDos,
+              'btn-primary-custom': !trainer.imgDniUno && !trainer.imgDniDos
             }" (click)="abrirModalDni(trainer, i)" title="{{ 'TRAINERS.BUTTONS.ID' | translate }}">
               <i class="bi bi-person-vcard"></i>
             </button>
@@ -134,14 +233,6 @@
             <button class="btn btn-primary btn-sm btn-icon btn-primary-custom" (click)="abrirModalDoc(trainer, i)"
               title="{{ 'TRAINERS.BUTTONS.UPLOAD_DOC' | translate }}">
               <i class="bi bi-cloud-upload"></i>
-            </button>
-          </td>
-
-          <!-- HISTORIAL DEPORTIVO -->
-          <td>
-            <button class="btn btn-sm btn-icon btn-history" (click)="abrirModalHistorial(trainer)"
-              title="{{ 'TRAINERS.BUTTONS.HISTORY' | translate }}">
-              <i class="bi bi-trophy"></i>
             </button>
           </td>
         </tr>
@@ -205,14 +296,71 @@
             </div>
             <div class="col-md-6">
               <div class="info-field">
-                <label>{{ 'TRAINERS.TABLE.DNI' | translate }}</label>
-                <span>{{ selectedTrainer?.dni || '—' }}</span>
+                <label>{{ 'TRAINERS.INFO_MODAL.ID_DOCUMENT' | translate }}</label>
+                <span>{{ selectedTrainer?.documentoIdentidad || selectedTrainer?.dni || '—' }}
+                  <small *ngIf="selectedTrainer?.tipoDocumento">({{ selectedTrainer.tipoDocumento }})</small>
+                </span>
               </div>
             </div>
             <div class="col-md-6">
               <div class="info-field">
                 <label>{{ 'TRAINERS.INFO_MODAL.EMAIL' | translate }}</label>
                 <span>{{ selectedTrainer?.email || '—' }}</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-field">
+                <label>{{ 'TRAINERS.INFO_MODAL.NATIONALITY' | translate }}</label>
+                <span>{{ selectedTrainer?.nacionalidad || '—' }}</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-field">
+                <label>{{ 'TRAINERS.INFO_MODAL.ADDRESS' | translate }}</label>
+                <span>{{ selectedTrainer?.direccion || '—' }}</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-field">
+                <label>{{ 'TRAINERS.INFO_MODAL.FED_LICENSE' | translate }}</label>
+                <span>{{ selectedTrainer?.licenciaFederativa || '—' }}</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-field">
+                <label>{{ 'TRAINERS.INFO_MODAL.SPORTS_QUAL' | translate }}</label>
+                <span>{{ selectedTrainer?.titulacionDeportiva || '—' }}</span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-field">
+                <label>{{ 'TRAINERS.INFO_MODAL.EMERGENCY' | translate }}</label>
+                <span>{{ selectedTrainer?.contactoEmergenciaNombre || '—' }}
+                  <small *ngIf="selectedTrainer?.contactoEmergenciaTelefono">· {{ selectedTrainer.contactoEmergenciaTelefono }}</small>
+                </span>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="info-field">
+                <label>{{ 'TRAINERS.INFO_MODAL.CERTIFICATES' | translate }}</label>
+                <div class="cert-status-list">
+                  <span [class.uploaded]="selectedTrainer?.certDelitosSexuales">
+                    <i class="bi" [ngClass]="selectedTrainer?.certDelitosSexuales ? 'bi-check-circle-fill' : 'bi-x-circle'"></i>
+                    {{ 'TRAINERS.INFO_MODAL.CERT_SEX' | translate }}
+                  </span>
+                  <span [class.uploaded]="selectedTrainer?.certAntecedentesPenales">
+                    <i class="bi" [ngClass]="selectedTrainer?.certAntecedentesPenales ? 'bi-check-circle-fill' : 'bi-x-circle'"></i>
+                    {{ 'TRAINERS.INFO_MODAL.CERT_CRIMINAL' | translate }}
+                  </span>
+                  <span [class.uploaded]="selectedTrainer?.seguroResponsabilidad">
+                    <i class="bi" [ngClass]="selectedTrainer?.seguroResponsabilidad ? 'bi-check-circle-fill' : 'bi-x-circle'"></i>
+                    {{ 'TRAINERS.INFO_MODAL.INSURANCE' | translate }}
+                  </span>
+                  <span [class.uploaded]="selectedTrainer?.formacionPrimerosAuxilios">
+                    <i class="bi" [ngClass]="selectedTrainer?.formacionPrimerosAuxilios ? 'bi-check-circle-fill' : 'bi-x-circle'"></i>
+                    {{ 'TRAINERS.INFO_MODAL.FIRST_AID' | translate }}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
@@ -223,7 +371,7 @@
 </div>
 
 <!-- ============================================================ -->
-<!-- MODAL: DNI DEL ENTRENADOR                                    -->
+<!-- MODAL: DOC. IDENTIDAD DEL ENTRENADOR                         -->
 <!-- ============================================================ -->
 <div class="modal-backdrop-custom" *ngIf="mostrarModalDni" (click)="cerrarModalDni()"></div>
 <div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalDni}"
@@ -233,30 +381,47 @@
       <div class="modal-header modern-modal-header">
         <div>
           <h5 class="modal-title">{{ 'TRAINERS.DNI_MODAL.TITLE' | translate }}</h5>
-          <small class="modal-subtitle">{{ 'TRAINERS.DNI_MODAL.SUBTITLE' | translate }}</small>
+          <small class="modal-subtitle">{{ selectedTrainer?.nombre }} {{ selectedTrainer?.apellido }}
+            <span *ngIf="selectedTrainer?.tipoDocumento"> — {{ selectedTrainer.tipoDocumento }}</span>
+          </small>
         </div>
         <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalDni()"></button>
       </div>
       <div class="modal-body modern-modal-body">
         <section class="dni-section">
-          <p class="section-help">{{ 'TRAINERS.DNI_MODAL.HELP' | translate }}</p>
           <div class="row g-4">
             <div class="col-md-6">
               <div class="dni-card">
                 <span class="dni-label">{{ 'TRAINERS.DNI_MODAL.FRONT' | translate }}</span>
                 <div class="dni-preview" *ngIf="selectedTrainer?.imgDniUno || dniCara1">
-                  <img [src]="dniCara1 ? dniCara1 : imageBaseUrlPlayerDni + selectedTrainer?.imgDniUno">
+                  <img [src]="dniCara1 ? dniCara1 : imageBaseUrlEntrenadorDocs + selectedTrainer?.imgDniUno">
                 </div>
-                <input type="file" class="form-control" (change)="onFileChangeDni($event, 'cara1')" accept="image/*">
+                <div *ngIf="!selectedTrainer?.imgDniUno && !dniCara1" class="dni-no-image">
+                  <i class="bi bi-card-image"></i>
+                  <span>{{ 'TRAINERS.DNI_MODAL.NO_IMAGE' | translate }}</span>
+                </div>
+                <div class="dni-card-actions" *ngIf="selectedTrainer?.imgDniUno">
+                  <a class="btn btn-sm btn-outline-primary" [href]="imageBaseUrlEntrenadorDocs + selectedTrainer?.imgDniUno" target="_blank">
+                    <i class="bi bi-download"></i> Descargar
+                  </a>
+                </div>
               </div>
             </div>
             <div class="col-md-6">
               <div class="dni-card">
                 <span class="dni-label">{{ 'TRAINERS.DNI_MODAL.BACK' | translate }}</span>
                 <div class="dni-preview" *ngIf="selectedTrainer?.imgDniDos || dniCara2">
-                  <img [src]="dniCara2 ? dniCara2 : imageBaseUrlPlayerDni + selectedTrainer?.imgDniDos">
+                  <img [src]="dniCara2 ? dniCara2 : imageBaseUrlEntrenadorDocs + selectedTrainer?.imgDniDos">
                 </div>
-                <input type="file" class="form-control" (change)="onFileChangeDni($event, 'cara2')" accept="image/*">
+                <div *ngIf="!selectedTrainer?.imgDniDos && !dniCara2" class="dni-no-image">
+                  <i class="bi bi-card-image"></i>
+                  <span>{{ 'TRAINERS.DNI_MODAL.NO_IMAGE' | translate }}</span>
+                </div>
+                <div class="dni-card-actions" *ngIf="selectedTrainer?.imgDniDos">
+                  <a class="btn btn-sm btn-outline-primary" [href]="imageBaseUrlEntrenadorDocs + selectedTrainer?.imgDniDos" target="_blank">
+                    <i class="bi bi-download"></i> Descargar
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -374,6 +539,90 @@
 </div>
 
 <!-- ============================================================ -->
+<!-- MODAL: CERTIFICADOS DEL ENTRENADOR                           -->
+<!-- ============================================================ -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalCerts" (click)="cerrarModalCerts()"></div>
+<div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalCerts}"
+  [style.display]="mostrarModalCerts ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-md">
+    <div class="modal-content modern-modal">
+      <div class="modal-header modern-modal-header">
+        <div>
+          <h5 class="modal-title">{{ 'TRAINERS.CERTS_MODAL.TITLE' | translate }}</h5>
+          <small class="modal-subtitle">{{ selectedTrainer?.nombre }} {{ selectedTrainer?.apellido }}</small>
+        </div>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalCerts()"></button>
+      </div>
+      <div class="modal-body modern-modal-body">
+        <div class="cert-status-list-modal">
+
+          <!-- Cert Delitos Sexuales -->
+          <div class="cert-row" [class.cert-uploaded]="selectedTrainer?.certDelitosSexuales" [class.cert-missing]="!selectedTrainer?.certDelitosSexuales">
+            <div class="cert-row-icon">
+              <i class="bi" [ngClass]="selectedTrainer?.certDelitosSexuales ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+            </div>
+            <div class="cert-row-info">
+              <span class="cert-row-name">{{ 'TRAINERS.INFO_MODAL.CERT_SEX' | translate }}</span>
+              <span *ngIf="!selectedTrainer?.certDelitosSexuales" class="cert-row-hint">{{ 'TRAINERS.CERTS_MODAL.NOT_PROVIDED' | translate }}</span>
+            </div>
+            <a *ngIf="selectedTrainer?.certDelitosSexuales" class="btn btn-sm btn-outline-primary"
+              [href]="imageBaseUrlEntrenadorDocs + selectedTrainer.certDelitosSexuales" target="_blank">
+              <i class="bi bi-download"></i> {{ 'TRAINERS.CERTS_MODAL.DOWNLOAD' | translate }}
+            </a>
+          </div>
+
+          <!-- Cert Antecedentes Penales -->
+          <div class="cert-row" [class.cert-uploaded]="selectedTrainer?.certAntecedentesPenales" [class.cert-missing]="!selectedTrainer?.certAntecedentesPenales">
+            <div class="cert-row-icon">
+              <i class="bi" [ngClass]="selectedTrainer?.certAntecedentesPenales ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+            </div>
+            <div class="cert-row-info">
+              <span class="cert-row-name">{{ 'TRAINERS.INFO_MODAL.CERT_CRIMINAL' | translate }}</span>
+              <span *ngIf="!selectedTrainer?.certAntecedentesPenales" class="cert-row-hint">{{ 'TRAINERS.CERTS_MODAL.NOT_PROVIDED' | translate }}</span>
+            </div>
+            <a *ngIf="selectedTrainer?.certAntecedentesPenales" class="btn btn-sm btn-outline-primary"
+              [href]="imageBaseUrlEntrenadorDocs + selectedTrainer.certAntecedentesPenales" target="_blank">
+              <i class="bi bi-download"></i> {{ 'TRAINERS.CERTS_MODAL.DOWNLOAD' | translate }}
+            </a>
+          </div>
+
+          <!-- Seguro -->
+          <div class="cert-row" [class.cert-uploaded]="selectedTrainer?.seguroResponsabilidad" [class.cert-missing]="!selectedTrainer?.seguroResponsabilidad">
+            <div class="cert-row-icon">
+              <i class="bi" [ngClass]="selectedTrainer?.seguroResponsabilidad ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+            </div>
+            <div class="cert-row-info">
+              <span class="cert-row-name">{{ 'TRAINERS.INFO_MODAL.INSURANCE' | translate }}</span>
+              <span *ngIf="!selectedTrainer?.seguroResponsabilidad" class="cert-row-hint">{{ 'TRAINERS.CERTS_MODAL.NOT_PROVIDED' | translate }}</span>
+            </div>
+            <a *ngIf="selectedTrainer?.seguroResponsabilidad" class="btn btn-sm btn-outline-primary"
+              [href]="imageBaseUrlEntrenadorDocs + selectedTrainer.seguroResponsabilidad" target="_blank">
+              <i class="bi bi-download"></i> {{ 'TRAINERS.CERTS_MODAL.DOWNLOAD' | translate }}
+            </a>
+          </div>
+
+          <!-- Primeros Auxilios -->
+          <div class="cert-row" [class.cert-uploaded]="selectedTrainer?.formacionPrimerosAuxilios" [class.cert-missing]="!selectedTrainer?.formacionPrimerosAuxilios">
+            <div class="cert-row-icon">
+              <i class="bi" [ngClass]="selectedTrainer?.formacionPrimerosAuxilios ? 'bi-check-circle-fill' : 'bi-x-circle-fill'"></i>
+            </div>
+            <div class="cert-row-info">
+              <span class="cert-row-name">{{ 'TRAINERS.INFO_MODAL.FIRST_AID' | translate }}</span>
+              <span *ngIf="!selectedTrainer?.formacionPrimerosAuxilios" class="cert-row-hint">{{ 'TRAINERS.CERTS_MODAL.NOT_PROVIDED' | translate }}</span>
+            </div>
+            <a *ngIf="selectedTrainer?.formacionPrimerosAuxilios" class="btn btn-sm btn-outline-primary"
+              [href]="imageBaseUrlEntrenadorDocs + selectedTrainer.formacionPrimerosAuxilios" target="_blank">
+              <i class="bi bi-download"></i> {{ 'TRAINERS.CERTS_MODAL.DOWNLOAD' | translate }}
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
 <!-- MODAL: HISTORIAL DEPORTIVO DEL ENTRENADOR                    -->
 <!-- ============================================================ -->
 <div class="modal-backdrop-custom" *ngIf="mostrarModalHistorial" (click)="cerrarModalHistorial()"></div>
@@ -446,6 +695,56 @@
           <i class="bi bi-trophy"></i>
           <p>{{ 'TRAINERS.HISTORY_MODAL.NO_DATA' | translate }}</p>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: VER FIRMA / ARCHIVO                                   -->
+<!-- ============================================================ -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalFirma" (click)="cerrarModalFirma()"></div>
+<div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalFirma}"
+  [style.display]="mostrarModalFirma ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content modern-modal">
+      <div class="modal-header modern-modal-header">
+        <div>
+          <h5 class="modal-title">Firma / Archivo</h5>
+        </div>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalFirma()"></button>
+      </div>
+      <div class="modal-body modern-modal-body text-center p-4">
+        <img *ngIf="firmaUrl" [src]="firmaUrl" class="img-fluid rounded shadow-sm" style="max-height: 550px; object-fit: contain; background: #fff; padding: 16px;" />
+        <div *ngIf="firmaUrl" class="mt-3">
+          <a [href]="firmaUrl" target="_blank" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-download me-1"></i> Descargar
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL CAMPOS PERSONALIZADOS ================= -->
+<div class="modal fade" [ngClass]="{ 'show': mostrarModalCustomFields }"
+  [style.display]="mostrarModalCustomFields ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-sliders me-2"></i>{{ 'TRAINERS.CUSTOM_FIELDS_TITLE' | translate }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalCustomFields()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted mb-3">{{ 'TRAINERS.CUSTOM_FIELDS_DESC' | translate }}</p>
+        <app-form-builder
+          [clubId]="clubId"
+          [contexto]="'PERFIL_ENTRENADOR'"
+          (onSave)="onCustomFieldsSaved($event)"
+          (onClose)="cerrarModalCustomFields()">
+        </app-form-builder>
       </div>
     </div>
   </div>

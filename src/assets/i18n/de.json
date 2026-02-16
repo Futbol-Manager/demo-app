@@ -24,6 +24,12 @@
     "WELCOME": "Willkommen!",
     "PROFILE": "Profil",
     "CHANGE_LANG": "Sprache",
+    "CHANGE_PASSWORD": "Passwort ändern",
+    "CURRENT_PASSWORD": "Aktuelles Passwort",
+    "NEW_PASSWORD": "Neues Passwort",
+    "CONFIRM_PASSWORD": "Passwort bestätigen",
+    "CANCEL": "Abbrechen",
+    "SAVE": "Speichern",
     "SUBSCRIPTION": "Abonnement",
     "CLUB_SUBSCRIPTION": "Vereinsabonnement",
     "LOGOUT": "Abmelden",
@@ -82,7 +88,7 @@
       "BIRTHDATE": "Geburtsdatum",
       "PHONE": "Telefon",
       "DNI": "Ausweisnummer",
-      "DNI_IMG": "Ausweisbild",
+      "DNI_IMG": "Ausweis (Bild)",
       "DOCUMENTS": "Dokumente",
       "HISTORY": "Historie"
     },
@@ -108,13 +114,20 @@
       "CLOSE": "Schließen"
     },
     "DNI_MODAL": {
-      "TITLE": "Ausweisbild",
+      "TITLE": "Ausweisdokument",
+      "SUBTITLE": "",
+      "HELP": "",
       "FRONT": "Vorderseite",
       "BACK": "Rückseite",
       "NO_IMAGE": "Kein Bild hochgeladen",
       "UPLOAD_FRONT": "Vorderseite hochladen",
       "UPLOAD_BACK": "Rückseite hochladen",
       "CLOSE": "Schließen"
+    },
+    "CERTS_MODAL": {
+      "TITLE": "Zertifikate des Trainers",
+      "DOWNLOAD": "Herunterladen",
+      "NOT_PROVIDED": "Dieses Dokument wurde vom Trainer noch nicht eingereicht"
     },
     "DOC_MODAL": {
       "TITLE": "Trainerdokumente",
@@ -854,7 +867,8 @@
       "EMPTY_DESC": "Schließen Sie Ihr erstes Debrief nach einem Training oder Spiel ab, um es hier zu sehen",
       "TRAINING_SESSION": "Trainingseinheit",
       "STATUS_COMPLETED": "Abgeschlossen",
-      "STATUS_DRAFT": "Entwurf"
+      "STATUS_DRAFT": "Entwurf",
+      "STATUS_REPORT-GENERATED": "Bericht erstellt"
     }
   }
 }

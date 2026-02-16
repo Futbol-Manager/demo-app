@@ -271,6 +271,13 @@
                 [teamName]="''">
               </app-session-pdf>
 
+              <!-- Análisis Rápido -->
+              <button *ngIf="profileId !== 3" class="saas-btn saas-btn-warning"
+                (click)="navigateToDebrief('training', trainingSession.trainingSessionId)">
+                <i class="bi bi-clipboard-pulse"></i>
+                <span>{{ 'DASHBOARD_COACH.DEBRIEF' | translate }}</span>
+              </button>
+
             </div>
 
           </ng-container>
@@ -657,6 +664,16 @@
                   class="saas-btn saas-btn-outline" (click)="abrirModalPDF()">
                   <i class="bi bi-file-earmark-pdf"></i>
                   {{ 'CAL.TEXT_101' | translate }}
+                </button>
+              </div>
+
+              <!-- ================= ANÁLISIS RÁPIDO ================= -->
+              <div class="action-group"
+                   *ngIf="usuarioActual!.profileType.profileId === 2 && match.matchPreparationId !== 0">
+                <button type="button" class="saas-btn saas-btn-warning"
+                  (click)="navigateToDebrief('match', match.matchPreparationId)">
+                  <i class="bi bi-clipboard-pulse"></i>
+                  {{ 'DASHBOARD_COACH.DEBRIEF' | translate }}
                 </button>
               </div>
             </div>

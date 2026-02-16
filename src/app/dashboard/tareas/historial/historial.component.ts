@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TaskStorageService, StoredTask } from 'src/app/core/services/training/task-storage.service';
+import { LoginService } from 'src/app/core/services/login/login.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -21,11 +22,17 @@ export class HistorialComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    public taskStorage: TaskStorageService
+    public taskStorage: TaskStorageService,
+    private loginService: LoginService
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(p => this.teamId = +p['teamId']);
+    this.loginService.usuarioActual.subscribe(user => {
+      if (user?.userId) {
+        this.taskStorage.loadFromBackend(user.userId);
+      }
+    });
     this.sub = this.taskStorage.history$.subscribe(list => {
       this.historial = list;
       if (this.selectedTask && !list.find(t => t.localId === this.selectedTask!.localId)) {

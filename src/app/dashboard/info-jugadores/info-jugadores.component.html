@@ -50,6 +50,15 @@
         {{ 'COMMON.EXPORT_EXCEL' | translate }}
       </button>
     </div>
+
+    <!-- PERSONALIZAR CAMPOS -->
+    <div class="filter-group">
+      <label class="filter-label invisible-label">Campos</label>
+      <button class="btn btn-custom-fields" (click)="abrirModalCustomFields()">
+        <i class="bi bi-sliders"></i>
+        {{ 'PLAYERS.CUSTOM_FIELDS_BTN' | translate }}
+      </button>
+    </div>
   </div>
   <div class="table-wrapper">
     <table id="dataTable" class="modern-table">
@@ -72,11 +81,15 @@
           <th>{{ 'PLAYERS.TABLE.PHONE' | translate }}</th>
           <th>{{ 'PLAYERS.TABLE.EMAIL' | translate }}</th>
           <th>{{ 'PLAYERS.TABLE.IBAN' | translate }}</th>
+          <!-- CAMPOS PERSONALIZADOS DINÁMICOS -->
+          <th *ngFor="let campo of customFields" class="custom-field-th">
+            {{ campo.etiqueta }}
+          </th>
         </tr>
       </thead>
       <tbody *ngIf="loading">
         <tr *ngFor="let _ of [].constructor(7)">
-          <td *ngFor="let __ of [].constructor(17)">
+          <td *ngFor="let __ of [].constructor(17 + customFields.length)">
             <div class="skeleton skeleton-cell"></div>
           </td>
         </tr>
@@ -159,6 +172,21 @@
 
           <!-- IBAN -->
           <td class="fw-semibold">{{ player.iban }}</td>
+
+          <!-- CAMPOS PERSONALIZADOS DINÁMICOS -->
+          <td *ngFor="let campo of customFields" class="custom-field-cell">
+            <ng-container *ngIf="!isSignatureOrFile(campo)">
+              {{ getCustomFieldValue(player, campo.formularioCampoId) }}
+            </ng-container>
+            <ng-container *ngIf="isSignatureOrFile(campo)">
+              <button *ngIf="hasSignatureOrFile(player, campo.formularioCampoId, campo.tipoCampo)"
+                class="btn btn-sm btn-icon btn-view-sig" (click)="abrirModalFirma(player, campo.formularioCampoId)"
+                [title]="campo.tipoCampo === 'SIGNATURE' ? 'Ver firma' : 'Ver archivo'">
+                <i class="bi" [ngClass]="campo.tipoCampo === 'SIGNATURE' ? 'bi-pen' : 'bi-file-earmark'"></i>
+              </button>
+              <span *ngIf="!hasSignatureOrFile(player, campo.formularioCampoId, campo.tipoCampo)" class="text-muted">—</span>
+            </ng-container>
+          </td>
         </tr>
       </tbody>
     </table>
@@ -661,6 +689,57 @@
         </button>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL CAMPOS PERSONALIZADOS ================= -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalCustomFields" (click)="cerrarModalCustomFields()"></div>
+<div class="modal fade" [ngClass]="{ 'show': mostrarModalCustomFields }"
+  [style.display]="mostrarModalCustomFields ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-sliders me-2"></i>{{ 'PLAYERS.CUSTOM_FIELDS_TITLE' | translate }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalCustomFields()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted mb-3">{{ 'PLAYERS.CUSTOM_FIELDS_DESC' | translate }}</p>
+        <app-form-builder
+          [clubId]="clubId"
+          [contexto]="'PERFIL_JUGADOR'"
+          (onSave)="onCustomFieldsSaved($event)"
+          (onClose)="cerrarModalCustomFields()">
+        </app-form-builder>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- MODAL: VER FIRMA / ARCHIVO                                   -->
+<!-- ============================================================ -->
+<div class="modal-backdrop-custom" *ngIf="mostrarModalFirma" (click)="cerrarModalFirma()"></div>
+<div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalFirma}"
+  [style.display]="mostrarModalFirma ? 'block' : 'none'">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content modern-modal">
+      <div class="modal-header modern-modal-header">
+        <div>
+          <h5 class="modal-title">Firma / Archivo</h5>
+        </div>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalFirma()"></button>
+      </div>
+      <div class="modal-body modern-modal-body text-center p-4">
+        <img *ngIf="firmaUrl" [src]="firmaUrl" class="img-fluid rounded shadow-sm" style="max-height: 550px; object-fit: contain; background: #fff; padding: 16px;" />
+        <div *ngIf="firmaUrl" class="mt-3">
+          <a [href]="firmaUrl" target="_blank" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-download me-1"></i> Descargar
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </div>

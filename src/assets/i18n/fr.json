@@ -139,6 +139,12 @@
     "WELCOME": "Bienvenue !",
     "PROFILE": "Profil",
     "CHANGE_LANG": "Langue",
+    "CHANGE_PASSWORD": "Changer le mot de passe",
+    "CURRENT_PASSWORD": "Mot de passe actuel",
+    "NEW_PASSWORD": "Nouveau mot de passe",
+    "CONFIRM_PASSWORD": "Confirmer le mot de passe",
+    "CANCEL": "Annuler",
+    "SAVE": "Enregistrer",
     "SUBSCRIPTION": "Abonnement",
     "CLUB_SUBSCRIPTION": "Abonnement du club",
     "LOGOUT": "Déconnexion",
@@ -823,7 +829,8 @@
     "INJURIES": "Blessures",
     "AI_ASSISTANT": "Assistant IA",
     "COACH_PROFILE": "Mon profil",
-    "DEBRIEF": "Quick Debrief"
+    "DEBRIEF": "Analyse Rapide",
+    "DEBRIEF_HISTORY": "Historique des Analyses"
   },
   "CUADROMANDO": {
     "SUBMENU": {
@@ -841,7 +848,7 @@
       "TEAMS": "Équipes",
       "TEAMS_DESC": "Statistiques",
       "PLAYER": "Joueur",
-      "PLAYER_DESC": "Métriques",
+      "PLAYER_DESC": "Statistiques",
       "COACH": "Entraîneurs",
       "COACH_DESC": "Informations",
       "CALENDAR": "Calendrier",
@@ -882,8 +889,10 @@
       "HIDE_ALL": "Tout masquer"
     },
     "LEGEND": {
-      "TRAINING": "Entraînement (●)",
-      "MATCH": "Match (■)"
+      "TRAINING": "Entraînement",
+      "MATCH": "Match",
+      "DUMBBELL": "haltère",
+      "BALL": "ballon"
     },
     "PANEL": {
       "EVENT": "activité",
@@ -927,7 +936,7 @@
       "BIRTHDATE": "Date de naissance",
       "PHONE": "Téléphone",
       "DNI": "Nº d'identification",
-      "DNI_IMG": "Image pièce d'id.",
+      "DNI_IMG": "Doc. Identité (Img.)",
       "DOCUMENTS": "Documents",
       "HISTORY": "Historique"
     },
@@ -953,13 +962,20 @@
       "CLOSE": "Fermer"
     },
     "DNI_MODAL": {
-      "TITLE": "Image de la pièce d'identité",
+      "TITLE": "Document d'identité",
+      "SUBTITLE": "",
+      "HELP": "",
       "FRONT": "Recto",
       "BACK": "Verso",
       "NO_IMAGE": "Aucune image chargée",
       "UPLOAD_FRONT": "Télécharger recto",
       "UPLOAD_BACK": "Télécharger verso",
       "CLOSE": "Fermer"
+    },
+    "CERTS_MODAL": {
+      "TITLE": "Certificats de l'entraîneur",
+      "DOWNLOAD": "Télécharger",
+      "NOT_PROVIDED": "Ce document n'a pas encore été fourni par l'entraîneur"
     },
     "DOC_MODAL": {
       "TITLE": "Documents de l'entraîneur",
@@ -1166,7 +1182,7 @@
       "CUSTOM_CONTENT": "Contenu du message",
       "CUSTOM_HELP": "Vous pouvez écrire ce que vous voulez ici, y compris copier-coller du texte depuis Word.",
       "CUSTOM_CHECK": "Ceci sera visible par le joueur/parent pour accepter ce que vous écrirez ci-dessous.",
-      "CUSTOM_TITLE_LABEL": "Texte d'autorisation",
+      "CUSTOM_TITLE_LABEL": "Titre",
       "CUSTOM_TITLE_PLACEHOLDER": "Ex. J'autorise le club à...",
       "UPLOADING": "Téléchargement du document...",
       "UPLOAD_PROGRESS": "Progression du téléchargement",
@@ -1586,7 +1602,10 @@
       "DESCRIPTION": "Choisissez l'équipe dans laquelle vous souhaitez déplacer le joueur.",
       "SELECT_TEAM": "Sélectionner l'équipe",
       "KEEP_BOTH": "Si vous cochez la case, le joueur sera ajouté à l'équipe sélectionnée tout en restant dans l'équipe actuelle."
-    }
+    },
+    "CUSTOM_FIELDS_BTN": "Personnaliser champs",
+    "CUSTOM_FIELDS_TITLE": "Champs personnalisés du joueur",
+    "CUSTOM_FIELDS_DESC": "Définissez les champs supplémentaires que les joueurs ou parents/tuteurs de votre club devront compléter dans leur profil."
   },
   "SPONSOR": {
     "TITLE": "Sponsor",
@@ -2089,32 +2108,42 @@
   },
   "DEBRIEF": {
     "BACK": "Retour",
-    "TRAINING_TITLE": "Debrief d'Entraînement",
-    "MATCH_TITLE": "Debrief de Match",
+    "TRAINING_TITLE": "Analyse de l'Entraînement",
+    "MATCH_TITLE": "Analyse du Match",
     "STEP": "Question",
     "OF": "de",
     "DICTATE": "Dicter",
-    "LISTENING": "Écoute en cours...",
+    "LISTENING": "Écoute en cours... (appuyez pour arrêter)",
+    "STOP_LISTENING": "Arrêter la dictée",
     "STOP": "Arrêter",
     "NEXT": "Suivant",
     "PREVIOUS": "Précédent",
     "SKIP": "Passer",
     "COMPLETE": "Générer le Rapport IA",
     "COMPLETING": "Génération...",
+    "GENERATE_REPORT": "Générer le Rapport IA",
     "SAVE_DRAFT": "Enregistrer le brouillon",
     "SETTINGS": "Paramètres des questions",
+    "CUSTOMIZE_QUESTIONS": "Personnaliser les questions",
     "ADD_CUSTOM_QUESTION": "Ajouter une question personnalisée",
     "REMOVE_QUESTION": "Supprimer la question",
     "SELECT_PLAYERS": "Sélectionner des joueurs",
     "RATE_1_TO_5": "Notez de 1 à 5",
+    "TEXT_PLACEHOLDER": "Tapez votre réponse ici...",
+    "PLAYERS_HINT": "Appuyez sur les joueurs pour les sélectionner",
+    "ATTENDANCE_CONTEXT": "Présence de l'équipe",
     "ATTENDANCE_WEEK": "Présence de la semaine",
     "ATTENDANCE_MATCH_WEEK": "Présence semaine du match",
     "ATTENDANCE_TOTAL": "Total",
     "ATTENDANCE_PRESENT": "Présents",
+    "PRESENT": "Présents",
     "ATTENDANCE_ABSENT": "Absents",
+    "ABSENT": "Absents",
     "ATTENDANCE_LATE": "En retard",
+    "LATE": "En retard",
     "ATTENDANCE_RATE": "Taux",
     "ATTENDANCE_NO_RECORDS": "Aucun registre de présence disponible pour cette semaine",
+    "NO_ATTENDANCE_RECORDS": "Aucun registre de présence disponible pour cette semaine",
     "MATCH_RESULT": "Résultat du Match",
     "RIVAL_NAME": "Nom de l'adversaire",
     "SCORE_LOCAL": "Domicile",
@@ -2180,7 +2209,7 @@
       "TRAINING_TITLE": "Rapport d'Entraînement",
       "MATCH_TITLE": "Rapport de Match",
       "GENERATING": "Génération du rapport IA...",
-      "GENERATING_DESC": "Analyse des réponses du debrief pour créer un rapport personnalisé",
+      "GENERATING_DESC": "Analyse des réponses pour créer un rapport personnalisé",
       "ERROR": "Erreur lors de la génération du rapport",
       "RETRY": "Réessayer",
       "REGENERATE": "Régénérer le rapport",
@@ -2188,7 +2217,7 @@
       "SUMMARY": "Résumé exécutif",
       "ATTENDANCE_SUMMARY": "Résumé de présence",
       "RECOMMENDATIONS": "Recommandations",
-      "VIEW_HISTORY": "Voir l'historique des debriefs",
+      "VIEW_HISTORY": "Voir l'historique des analyses",
       "SECTION_RATING": "Évaluation Générale",
       "SECTION_OBJECTIVES": "Réalisation des Objectifs",
       "SECTION_ATTENDANCE": "Contexte de Présence",
@@ -2196,16 +2225,17 @@
       "SECTION_HIGHLIGHTS": "Joueurs Remarquables"
     },
     "HISTORY": {
-      "TITLE": "Historique des Debriefs",
-      "DEBRIEFS": "debriefs",
+      "TITLE": "Historique des Analyses",
+      "DEBRIEFS": "analyses",
       "ALL": "Tous",
       "TRAININGS": "Entraînements",
       "MATCHES": "Matchs",
-      "EMPTY": "Aucun debrief",
-      "EMPTY_DESC": "Complétez votre premier debrief après un entraînement ou un match pour le voir ici",
+      "EMPTY": "Aucune analyse",
+      "EMPTY_DESC": "Complétez votre première analyse après un entraînement ou un match pour la voir ici",
       "TRAINING_SESSION": "Séance d'entraînement",
       "STATUS_COMPLETED": "Terminé",
-      "STATUS_DRAFT": "Brouillon"
+      "STATUS_DRAFT": "Brouillon",
+      "STATUS_REPORT-GENERATED": "Rapport généré"
     }
   }
 }

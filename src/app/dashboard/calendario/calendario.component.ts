@@ -1007,9 +1007,11 @@ export class CalendarioComponent implements OnInit {
     }
   }
 
-  // Método para redirigir a la pantalla de jugadores con el teamId
+  navigateToDebrief(type: 'training' | 'match', entityId: number): void {
+    this.router.navigate(['/dashboard/debrief', type, this.teamId, entityId]);
+  }
+
   navegarAInicio(): void {
-    // Ajusta la ruta según la configuración de tus rutas en el enrutador
     this.router.navigate(['/dashboard/inicio']);
   }
 

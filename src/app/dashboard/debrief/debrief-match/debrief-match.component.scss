@@ -228,7 +228,20 @@ $debrief-gradient: linear-gradient(135deg, $verde 0%, $azul 100%);
   &.selected { border-color: $azul; background: rgba($azul, 0.1); color: $azul; i { color: $azul; } }
   &:hover:not(.selected) { border-color: $azul; }
 }
+.recording-pulse {
+  animation: pulse-icon 1s ease-in-out infinite;
+}
+
+@keyframes pulse-icon {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
 .players-hint { text-align: center; font-size: 0.78rem; color: $text-light; margin-top: 10px; }
+.no-players-msg {
+  text-align: center; font-size: 0.88rem; color: $text-light; padding: 16px;
+  i { margin-right: 6px; }
+}
 .loading-players { display: flex; justify-content: center; padding: 20px; }
 
 /* ═══ NAVIGATION ═══ */

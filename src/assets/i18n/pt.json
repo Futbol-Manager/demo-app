@@ -154,6 +154,12 @@
     "WELCOME": "Bem-vindo!",
     "PROFILE": "Perfil",
     "CHANGE_LANG": "Idioma",
+    "CHANGE_PASSWORD": "Alterar palavra-passe",
+    "CURRENT_PASSWORD": "Palavra-passe atual",
+    "NEW_PASSWORD": "Nova palavra-passe",
+    "CONFIRM_PASSWORD": "Confirmar palavra-passe",
+    "CANCEL": "Cancelar",
+    "SAVE": "Guardar",
     "SUBSCRIPTION": "Subscrição",
     "CLUB_SUBSCRIPTION": "Subscrição do Clube",
     "LOGOUT": "Sair",
@@ -342,7 +348,8 @@
     "INJURIES": "Lesões",
     "AI_ASSISTANT": "Assistente IA",
     "COACH_PROFILE": "O meu perfil",
-    "DEBRIEF": "Quick Debrief"
+    "DEBRIEF": "Análise Rápida",
+    "DEBRIEF_HISTORY": "Histórico de Análises"
   },
   "AI_COACH": {
     "TITLE": "Assistente Desportivo IA",
@@ -367,7 +374,7 @@
       "BIRTHDATE": "Data de nasc.",
       "PHONE": "Telefone",
       "DNI": "Nº identificação",
-      "DNI_IMG": "Img. ID",
+      "DNI_IMG": "Doc. Identidade (Img.)",
       "DOCUMENTS": "Documentos",
       "HISTORY": "Histórico"
     },
@@ -393,13 +400,20 @@
       "CLOSE": "Fechar"
     },
     "DNI_MODAL": {
-      "TITLE": "Imagem da identificação",
+      "TITLE": "Documento de identidade",
+      "SUBTITLE": "",
+      "HELP": "",
       "FRONT": "Frente",
       "BACK": "Verso",
       "NO_IMAGE": "Não há imagem carregada",
       "UPLOAD_FRONT": "Carregar frente",
       "UPLOAD_BACK": "Carregar verso",
       "CLOSE": "Fechar"
+    },
+    "CERTS_MODAL": {
+      "TITLE": "Certificados do treinador",
+      "DOWNLOAD": "Baixar",
+      "NOT_PROVIDED": "Este documento ainda não foi fornecido pelo treinador"
     },
     "DOC_MODAL": {
       "TITLE": "Documentos do treinador",
@@ -961,7 +975,7 @@
       "TEAMS": "Equipas",
       "TEAMS_DESC": "Estatísticas",
       "PLAYER": "Jogador",
-      "PLAYER_DESC": "Métricas",
+      "PLAYER_DESC": "Estatísticas",
       "COACH": "Treinadores",
       "COACH_DESC": "Informação",
       "CALENDAR": "Calendário",
@@ -1002,8 +1016,10 @@
       "HIDE_ALL": "Ocultar todos"
     },
     "LEGEND": {
-      "TRAINING": "Treino (●)",
-      "MATCH": "Jogo (■)"
+      "TRAINING": "Treino",
+      "MATCH": "Jogo",
+      "DUMBBELL": "haltere",
+      "BALL": "bola"
     },
     "PANEL": {
       "EVENT": "atividade",
@@ -1162,7 +1178,7 @@
       "CUSTOM_CONTENT": "Conteúdo da mensagem",
       "CUSTOM_HELP": "Aqui pode colocar o que quiser, incluindo copiar e colar texto do Word.",
       "CUSTOM_CHECK": "Isto será visto pelo jogador/pai para aceitar o que colocar abaixo.",
-      "CUSTOM_TITLE_LABEL": "Texto de autorização",
+      "CUSTOM_TITLE_LABEL": "Título",
       "CUSTOM_TITLE_PLACEHOLDER": "Ex. Autorizo o clube a...",
       "UPLOADING": "A carregar documento...",
       "UPLOAD_PROGRESS": "Progresso do carregamento",
@@ -1582,7 +1598,10 @@
       "DESCRIPTION": "Escolha a equipa para onde quer mover o jogador.",
       "SELECT_TEAM": "Selecione a equipa",
       "KEEP_BOTH": "Se ativar a caixa de seleção, o jogador será adicionado à equipa selecionada, além de permanecer na que já está."
-    }
+    },
+    "CUSTOM_FIELDS_BTN": "Personalizar campos",
+    "CUSTOM_FIELDS_TITLE": "Campos personalizados do jogador",
+    "CUSTOM_FIELDS_DESC": "Defina os campos adicionais que os jogadores ou pais/tutores do seu clube deverão preencher no seu perfil."
   },
   "SPONSOR": {
     "TITLE": "Patrocinador",
@@ -2091,32 +2110,42 @@
   },
   "DEBRIEF": {
     "BACK": "Voltar",
-    "TRAINING_TITLE": "Debrief de Treino",
-    "MATCH_TITLE": "Debrief de Jogo",
+    "TRAINING_TITLE": "Análise do Treino",
+    "MATCH_TITLE": "Análise do Jogo",
     "STEP": "Pergunta",
     "OF": "de",
     "DICTATE": "Ditar",
-    "LISTENING": "A ouvir...",
+    "LISTENING": "A ouvir... (toque para parar)",
+    "STOP_LISTENING": "Parar ditado",
     "STOP": "Parar",
     "NEXT": "Seguinte",
     "PREVIOUS": "Anterior",
     "SKIP": "Saltar",
     "COMPLETE": "Gerar Relatório IA",
     "COMPLETING": "A gerar...",
+    "GENERATE_REPORT": "Gerar Relatório IA",
     "SAVE_DRAFT": "Guardar rascunho",
     "SETTINGS": "Configurações de perguntas",
+    "CUSTOMIZE_QUESTIONS": "Personalizar perguntas",
     "ADD_CUSTOM_QUESTION": "Adicionar pergunta personalizada",
     "REMOVE_QUESTION": "Remover pergunta",
     "SELECT_PLAYERS": "Selecionar jogadores",
     "RATE_1_TO_5": "Avalie de 1 a 5",
+    "TEXT_PLACEHOLDER": "Escreva a sua resposta aqui...",
+    "PLAYERS_HINT": "Toque nos jogadores para os selecionar",
+    "ATTENDANCE_CONTEXT": "Presença da equipa",
     "ATTENDANCE_WEEK": "Presença da semana",
     "ATTENDANCE_MATCH_WEEK": "Presença semana do jogo",
     "ATTENDANCE_TOTAL": "Total",
     "ATTENDANCE_PRESENT": "Presentes",
+    "PRESENT": "Presentes",
     "ATTENDANCE_ABSENT": "Ausentes",
+    "ABSENT": "Ausentes",
     "ATTENDANCE_LATE": "Atrasados",
+    "LATE": "Atrasados",
     "ATTENDANCE_RATE": "Taxa",
     "ATTENDANCE_NO_RECORDS": "Sem registos de presença disponíveis para esta semana",
+    "NO_ATTENDANCE_RECORDS": "Sem registos de presença disponíveis para esta semana",
     "MATCH_RESULT": "Resultado do Jogo",
     "RIVAL_NAME": "Nome do adversário",
     "SCORE_LOCAL": "Casa",
@@ -2182,7 +2211,7 @@
       "TRAINING_TITLE": "Relatório de Treino",
       "MATCH_TITLE": "Relatório de Jogo",
       "GENERATING": "A gerar relatório IA...",
-      "GENERATING_DESC": "A analisar as respostas do debrief para criar um relatório personalizado",
+      "GENERATING_DESC": "A analisar as respostas para criar um relatório personalizado",
       "ERROR": "Erro ao gerar o relatório",
       "RETRY": "Tentar novamente",
       "REGENERATE": "Regenerar relatório",
@@ -2190,7 +2219,7 @@
       "SUMMARY": "Resumo executivo",
       "ATTENDANCE_SUMMARY": "Resumo de presença",
       "RECOMMENDATIONS": "Recomendações",
-      "VIEW_HISTORY": "Ver histórico de debriefs",
+      "VIEW_HISTORY": "Ver histórico de análises",
       "SECTION_RATING": "Avaliação Geral",
       "SECTION_OBJECTIVES": "Cumprimento de Objetivos",
       "SECTION_ATTENDANCE": "Contexto de Presença",
@@ -2198,16 +2227,17 @@
       "SECTION_HIGHLIGHTS": "Jogadores em Destaque"
     },
     "HISTORY": {
-      "TITLE": "Histórico de Debriefs",
-      "DEBRIEFS": "debriefs",
+      "TITLE": "Histórico de Análises",
+      "DEBRIEFS": "análises",
       "ALL": "Todos",
       "TRAININGS": "Treinos",
       "MATCHES": "Jogos",
-      "EMPTY": "Sem debriefs",
-      "EMPTY_DESC": "Complete o seu primeiro debrief após um treino ou jogo para o ver aqui",
+      "EMPTY": "Sem análises",
+      "EMPTY_DESC": "Complete a sua primeira análise após um treino ou jogo para a ver aqui",
       "TRAINING_SESSION": "Sessão de treino",
       "STATUS_COMPLETED": "Concluído",
-      "STATUS_DRAFT": "Rascunho"
+      "STATUS_DRAFT": "Rascunho",
+      "STATUS_REPORT-GENERATED": "Relatório gerado"
     }
   }
 }

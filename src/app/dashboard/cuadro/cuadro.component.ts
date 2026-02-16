@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
@@ -42,7 +42,7 @@ interface ResultadoUI {
   templateUrl: './cuadro.component.html',
   styleUrls: ['./cuadro.component.scss'],
 })
-export class CuadroComponent implements OnInit {
+export class CuadroComponent implements OnInit, OnDestroy {
   /* =========================
      VARIABLES GENERALES
   ========================= */
@@ -52,6 +52,15 @@ export class CuadroComponent implements OnInit {
   temporadaStoredValue = getCurrentSeasonString();
 
   horas: string[] = [];
+
+  /* Línea de hora actual */
+  currentTimeTop = -1;
+  currentTimeLabel = '';
+  private timeInterval: any = null;
+
+  private readonly HORA_INICIO = 8;
+  private readonly HORA_FIN = 23;
+  private readonly PX_POR_HORA = 32;
 
   listTeams: string[] = [];
   listUltimos: string[] = [];
@@ -103,6 +112,14 @@ export class CuadroComponent implements OnInit {
     }
 
     this.cargarDatosDashboard();
+    this.updateCurrentTimeLine();
+    this.timeInterval = setInterval(() => this.updateCurrentTimeLine(), 60000);
+  }
+
+  ngOnDestroy(): void {
+    if (this.timeInterval) {
+      clearInterval(this.timeInterval);
+    }
   }
 
   /* =========================
@@ -221,8 +238,9 @@ export class CuadroComponent implements OnInit {
   ========================= */
 
   generarCalendarioEntrenos(): void {
-    const pxPorHora = 32;
-    const pxPorMinuto = pxPorHora / 60;
+    const pxPorMinuto = this.PX_POR_HORA / 60;
+    const inicioDia = this.HORA_INICIO * 60;
+    const finDia = this.HORA_FIN * 60;
 
     const eventos: CalendarEvent[] = this.listTeams
       .map((t) => {
@@ -245,23 +263,10 @@ export class CuadroComponent implements OnInit {
       })
       .filter(Boolean) as CalendarEvent[];
 
-    if (!eventos.length) {
-      this.entrenamientosCalendar = [];
-      this.horas = [];
-      return;
-    }
-
-    const minStart = Math.min(...eventos.map((e) => e.start));
-    const maxEnd = Math.max(...eventos.map((e) => e.end));
-
-    const inicioDia = Math.floor(minStart / 60) * 60;
-    const finDia = Math.ceil(maxEnd / 60) * 60;
-
+    // Horas fijas de 08:00 a 23:00
     this.horas = [];
     for (let m = inicioDia; m <= finDia; m += 60) {
-      const h = Math.floor(m / 60)
-        .toString()
-        .padStart(2, '0');
+      const h = Math.floor(m / 60).toString().padStart(2, '0');
       this.horas.push(`${h}:00`);
     }
 
@@ -317,33 +322,28 @@ export class CuadroComponent implements OnInit {
     });
 
     this.entrenamientosCalendar = eventos;
-    this.generarHorasDinamicas(eventos);
+    this.updateCurrentTimeLine();
   }
 
   timeToMinutes(time: string): number {
     const [h, m] = time.split(':').map(Number);
     return h * 60 + m;
   }
-  generarHorasDinamicas(eventos: CalendarEvent[]): void {
-    if (!eventos.length) {
-      this.horas = [];
-      return;
-    }
 
-    const minStart = Math.min(...eventos.map((e) => e.start));
-    const maxEnd = Math.max(...eventos.map((e) => e.end));
+  updateCurrentTimeLine(): void {
+    const now = new Date();
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    const inicioDia = this.HORA_INICIO * 60;
+    const finDia = this.HORA_FIN * 60;
+    const pxPorMinuto = this.PX_POR_HORA / 60;
 
-    const inicio = Math.floor(minStart / 60) * 60;
-    const fin = Math.ceil(maxEnd / 60) * 60;
-
-    this.horas = [];
-
-    for (let m = inicio; m <= fin; m += 60) {
-      const h = Math.floor(m / 60)
-        .toString()
-        .padStart(2, '0');
-
-      this.horas.push(`${h}:00`);
+    if (currentMinutes >= inicioDia && currentMinutes <= finDia) {
+      this.currentTimeTop = (currentMinutes - inicioDia) * pxPorMinuto;
+      const hh = now.getHours().toString().padStart(2, '0');
+      const mm = now.getMinutes().toString().padStart(2, '0');
+      this.currentTimeLabel = `${hh}:${mm}`;
+    } else {
+      this.currentTimeTop = -1;
     }
   }
 

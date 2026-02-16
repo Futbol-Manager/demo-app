@@ -60,7 +60,15 @@ export class HeaderComponent implements OnInit {
   imageBaseUrl: string = environment.images + 'user/';
 
   showModalIdioma = false;
-  selectedLang: string = 'es'; // Idioma actual por defecto
+  selectedLang: string = 'es';
+
+  showPasswordSection = false;
+  currentPassword = '';
+  newPassword = '';
+  confirmPassword = '';
+  passwordError = '';
+  passwordSuccess = '';
+  savingPassword = false;
 
   constructor(
     private router: Router,
@@ -307,5 +315,47 @@ export class HeaderComponent implements OnInit {
   goSuscripcionClub() {
     this.showModal = false;
     this.router.navigate(['/dashboard/suscripcion-club']);
+  }
+
+  cambiarPassword(): void {
+    this.passwordError = '';
+    this.passwordSuccess = '';
+
+    if (!this.currentPassword || !this.newPassword || !this.confirmPassword) {
+      this.passwordError = 'Rellena todos los campos.';
+      return;
+    }
+    if (this.newPassword.length < 6) {
+      this.passwordError = 'La contraseña debe tener al menos 6 caracteres.';
+      return;
+    }
+    if (this.newPassword !== this.confirmPassword) {
+      this.passwordError = 'Las contraseñas no coinciden.';
+      return;
+    }
+
+    this.savingPassword = true;
+    this.registerService.verifyAndChangePassword(this.userId, this.currentPassword, this.newPassword).subscribe({
+      next: (res: any) => {
+        if (res?.data === 'wrong_password') {
+          this.passwordError = 'La contraseña actual no es correcta.';
+          this.savingPassword = false;
+        } else {
+          this.passwordSuccess = 'Contraseña actualizada correctamente.';
+          this.savingPassword = false;
+          this.currentPassword = '';
+          this.newPassword = '';
+          this.confirmPassword = '';
+          setTimeout(() => {
+            this.showPasswordSection = false;
+            this.passwordSuccess = '';
+          }, 2000);
+        }
+      },
+      error: () => {
+        this.passwordError = 'Error al actualizar la contraseña. Inténtalo de nuevo.';
+        this.savingPassword = false;
+      }
+    });
   }
 }

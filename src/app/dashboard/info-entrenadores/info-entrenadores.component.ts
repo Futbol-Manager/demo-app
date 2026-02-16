@@ -8,7 +8,7 @@ import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
-import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { getCurrentSeasonString, getSeasons } from 'src/app/core/utils/season.utils';
 
 /* =========================
    INTERFACES
@@ -17,6 +17,7 @@ import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 export interface Trainer {
   trainerId: number;
   playerId: number;
+  userId?: number;
   nombre: string;
   apellido: string;
   picturePlayer: string;
@@ -29,6 +30,19 @@ export interface Trainer {
   teams?: string[];           // Si entrena varios equipos
   imgDniUno?: string;
   imgDniDos?: string;
+  // Campos del perfil de entrenador
+  documentoIdentidad?: string;
+  tipoDocumento?: string;
+  direccion?: string;
+  nacionalidad?: string;
+  licenciaFederativa?: string;
+  titulacionDeportiva?: string;
+  certDelitosSexuales?: string;
+  certAntecedentesPenales?: string;
+  seguroResponsabilidad?: string;
+  formacionPrimerosAuxilios?: string;
+  contactoEmergenciaNombre?: string;
+  contactoEmergenciaTelefono?: string;
 }
 
 export interface TrainerHistory {
@@ -64,9 +78,11 @@ export class InfoEntrenadoresComponent implements OnInit {
 
   imageBaseUrlUser: string = environment.images + 'user/';
   imageBaseUrlPlayerDni: string = environment.images + 'playerDni/';
+  imageBaseUrlEntrenadorDocs: string = environment.images + 'entrenador-docs/';
+  perfilesEntrenadores: any[] = [];
 
+  seasons = getSeasons();
   temporadaStoredValue = getCurrentSeasonString();
-  temporada: string = '';
 
   usuarioActual!: User | null;
   userId: number = 0;
@@ -91,6 +107,20 @@ export class InfoEntrenadoresComponent implements OnInit {
   listaDocumentos: any[] = [];
   archivoSeleccionado!: File | null;
   docTemp: any;
+
+  /* ---- Modal campos personalizados del perfil ---- */
+  mostrarModalCustomFields = false;
+
+  /* ---- Modal Certificados ---- */
+  mostrarModalCerts = false;
+
+  /* ---- Ordenación de tabla ---- */
+  sortColumn = '';
+  sortDirection: 'asc' | 'desc' | '' = '';
+
+  /* ---- Campos personalizados dinámicos ---- */
+  customFields: any[] = [];
+  customFieldResponses: { [userId: number]: { [campoId: number]: { valor: string; file: string; tipo: string } } } = {};
 
   /* ---- Modal Historial deportivo ---- */
   mostrarModalHistorial = false;
@@ -159,12 +189,20 @@ export class InfoEntrenadoresComponent implements OnInit {
       this.clubId = +params['clubId'];
     });
 
-    this.temporada = new Date().getFullYear().toString();
-
-    if (localStorage.getItem('temporada')) {
-      this.temporadaStoredValue = localStorage.getItem('temporada')!.toString();
+    const temporadaLS = localStorage.getItem('temporada');
+    if (temporadaLS) {
+      this.temporadaStoredValue = temporadaLS;
     }
 
+    this.cargarListadoEntrenadores();
+  }
+
+  /* =========================
+     TEMPORADA
+  ========================= */
+
+  onTemporadaChange(): void {
+    localStorage.setItem('temporada', this.temporadaStoredValue);
     this.cargarListadoEntrenadores();
   }
 
@@ -190,8 +228,9 @@ export class InfoEntrenadoresComponent implements OnInit {
               if (team.trainers && team.trainers.length > 0) {
                 for (const t of team.trainers) {
                   // Check if trainer already exists (may train multiple teams)
+                  // Use userId for deduplication (playerId can be 0 for coaches)
                   const existing = allTrainers.find(
-                    (tr) => tr.playerId === t.playerId
+                    (tr) => tr.userId === t.userId
                   );
                   if (existing) {
                     if (!existing.teams) existing.teams = [existing.nameTeam];
@@ -210,6 +249,11 @@ export class InfoEntrenadoresComponent implements OnInit {
 
             this.trainers = allTrainers;
             this.filteredTrainers = [...allTrainers];
+
+            // Cargar perfiles de entrenadores para enriquecer datos
+            this.cargarPerfilesEntrenadores();
+            // Cargar campos personalizados dinámicos
+            this.cargarCamposPersonalizados();
           }
           this.datosCargados = true;
           this.loading = false;
@@ -220,6 +264,39 @@ export class InfoEntrenadoresComponent implements OnInit {
           this.datosCargados = true;
         }
       );
+  }
+
+  cargarPerfilesEntrenadores(): void {
+    this.clubService.getPerfilesEntrenadoresByClub(this.clubId).subscribe(
+      (response: any) => {
+        if (response?.data) {
+          this.perfilesEntrenadores = response.data;
+          // Enriquecer trainers con datos del perfil
+          for (const trainer of this.trainers) {
+            const perfil = this.perfilesEntrenadores.find(
+              (p: any) => p.userId === trainer.trainerId
+            );
+            if (perfil) {
+              trainer.documentoIdentidad = perfil.documentoIdentidad || trainer.dni;
+              trainer.tipoDocumento = perfil.tipoDocumento;
+              trainer.direccion = perfil.direccion;
+              trainer.nacionalidad = perfil.nacionalidad;
+              trainer.licenciaFederativa = perfil.licenciaFederativa;
+              trainer.titulacionDeportiva = perfil.titulacionDeportiva;
+              trainer.certDelitosSexuales = perfil.certDelitosSexuales;
+              trainer.certAntecedentesPenales = perfil.certAntecedentesPenales;
+              trainer.seguroResponsabilidad = perfil.seguroResponsabilidad;
+              trainer.formacionPrimerosAuxilios = perfil.formacionPrimerosAuxilios;
+              trainer.contactoEmergenciaNombre = perfil.contactoEmergenciaNombre;
+              trainer.contactoEmergenciaTelefono = perfil.contactoEmergenciaTelefono;
+              trainer.imgDniUno = perfil.imgDocFrontal;
+              trainer.imgDniDos = perfil.imgDocTrasera;
+            }
+          }
+          this.filteredTrainers = [...this.trainers];
+        }
+      }
+    );
   }
 
   /* =========================
@@ -254,7 +331,11 @@ export class InfoEntrenadoresComponent implements OnInit {
         (t.nameTeam && this.normalizeText(t.nameTeam).includes(filter)) ||
         (t.telefono && this.normalizeText(t.telefono).includes(filter)) ||
         (t.dni && this.normalizeText(t.dni).includes(filter)) ||
-        (t.email && this.normalizeText(t.email).includes(filter))
+        (t.email && this.normalizeText(t.email).includes(filter)) ||
+        (t.documentoIdentidad && this.normalizeText(t.documentoIdentidad).includes(filter)) ||
+        (t.nacionalidad && this.normalizeText(t.nacionalidad).includes(filter)) ||
+        (t.licenciaFederativa && this.normalizeText(t.licenciaFederativa).includes(filter)) ||
+        (t.titulacionDeportiva && this.normalizeText(t.titulacionDeportiva).includes(filter))
       );
     });
   }
@@ -484,6 +565,166 @@ export class InfoEntrenadoresComponent implements OnInit {
       return `${day}/${month}/${year}`;
     }
     return fecha;
+  }
+
+  /* =========================
+     CAMPOS PERSONALIZADOS PERFIL
+  ========================= */
+
+  abrirModalCustomFields(): void {
+    this.mostrarModalCustomFields = true;
+  }
+
+  cerrarModalCustomFields(): void {
+    this.mostrarModalCustomFields = false;
+  }
+
+  onCustomFieldsSaved(fields: any[]): void {
+    this.snackBar.open('Campos personalizados guardados', 'Cerrar', { duration: 3000 });
+    this.cerrarModalCustomFields();
+    // Recargar campos personalizados para actualizar las columnas dinámicas
+    this.cargarCamposPersonalizados();
+  }
+
+  /* =========================
+     MODAL CERTIFICADOS
+  ========================= */
+
+  abrirModalCerts(trainer: any): void {
+    this.selectedTrainer = trainer;
+    this.mostrarModalCerts = true;
+  }
+
+  cerrarModalCerts(): void {
+    this.mostrarModalCerts = false;
+  }
+
+  /* =========================
+     ORDENACIÓN DE TABLA
+  ========================= */
+
+  sortBy(column: string): void {
+    if (this.sortColumn === column) {
+      // Ciclar: asc -> desc -> sin orden
+      if (this.sortDirection === 'asc') {
+        this.sortDirection = 'desc';
+      } else if (this.sortDirection === 'desc') {
+        this.sortDirection = '';
+        this.sortColumn = '';
+      } else {
+        this.sortDirection = 'asc';
+      }
+    } else {
+      this.sortColumn = column;
+      this.sortDirection = 'asc';
+    }
+
+    if (!this.sortColumn || !this.sortDirection) {
+      this.applyFilter();
+      return;
+    }
+
+    const dir = this.sortDirection === 'asc' ? 1 : -1;
+    this.filteredTrainers.sort((a: any, b: any) => {
+      let valA = a[this.sortColumn] || '';
+      let valB = b[this.sortColumn] || '';
+
+      if (typeof valA === 'string') valA = valA.toLowerCase();
+      if (typeof valB === 'string') valB = valB.toLowerCase();
+
+      if (valA < valB) return -1 * dir;
+      if (valA > valB) return 1 * dir;
+      return 0;
+    });
+  }
+
+  getSortIcon(column: string): string {
+    if (this.sortColumn !== column) return 'bi-chevron-expand';
+    if (this.sortDirection === 'asc') return 'bi-chevron-up';
+    if (this.sortDirection === 'desc') return 'bi-chevron-down';
+    return 'bi-chevron-expand';
+  }
+
+  /* =========================
+     CAMPOS PERSONALIZADOS DINÁMICOS
+  ========================= */
+
+  cargarCamposPersonalizados(): void {
+    this.clubService.getFormCamposByClub(this.clubId, 'PERFIL_ENTRENADOR').subscribe(
+      (res: any) => {
+        this.customFields = (res?.data || []).sort((a: any, b: any) => a.orden - b.orden);
+        // Para cada trainer, cargar sus respuestas
+        if (this.customFields.length > 0) {
+          this.cargarRespuestasCustomFields();
+        }
+      }
+    );
+  }
+
+  cargarRespuestasCustomFields(): void {
+    for (const trainer of this.trainers) {
+      const tUserId = trainer.userId || trainer.trainerId;
+      this.clubService.getFormRespuestasByProfile(this.clubId, tUserId).subscribe(
+        (res: any) => {
+          const items = res?.data || [];
+          const map: { [campoId: number]: { valor: string; file: string; tipo: string } } = {};
+          for (const item of items) {
+            if (item.respuesta && item.campo) {
+              map[item.campo.formularioCampoId] = {
+                valor: item.respuesta.valor || '',
+                file: item.respuesta.file || '',
+                tipo: item.campo.tipoCampo || ''
+              };
+            }
+          }
+          this.customFieldResponses[tUserId] = map;
+        }
+      );
+    }
+  }
+
+  getCustomFieldValue(trainer: any, campoId: number): string {
+    const tUserId = trainer.userId || trainer.trainerId;
+    const map = this.customFieldResponses[tUserId];
+    if (!map || !map[campoId]) return '—';
+    const entry = map[campoId];
+    // Para firmas y archivos, el valor está en file, no en valor
+    if (entry.tipo === 'SIGNATURE' || entry.tipo === 'FILE') {
+      return entry.file ? '✓' : '—';
+    }
+    return entry.valor || '—';
+  }
+
+  isSignatureOrFile(campo: any): boolean {
+    return campo.tipoCampo === 'SIGNATURE' || campo.tipoCampo === 'FILE';
+  }
+
+  hasSignatureOrFile(trainer: any, campoId: number, tipoCampo: string): boolean {
+    const tUserId = trainer.userId || trainer.trainerId;
+    const map = this.customFieldResponses[tUserId];
+    if (!map || !map[campoId]) return false;
+    return !!(map[campoId].file);
+  }
+
+  getSignatureFileUrl(trainer: any, campoId: number): string {
+    const tUserId = trainer.userId || trainer.trainerId;
+    const map = this.customFieldResponses[tUserId];
+    if (!map || !map[campoId]) return '';
+    return environment.images + 'formulario-files/' + map[campoId].file;
+  }
+
+  /* ---- Modal firma/archivo ---- */
+  mostrarModalFirma = false;
+  firmaUrl = '';
+
+  abrirModalFirma(trainer: any, campoId: number): void {
+    this.firmaUrl = this.getSignatureFileUrl(trainer, campoId);
+    this.mostrarModalFirma = true;
+  }
+
+  cerrarModalFirma(): void {
+    this.mostrarModalFirma = false;
+    this.firmaUrl = '';
   }
 
   goBack(): void {

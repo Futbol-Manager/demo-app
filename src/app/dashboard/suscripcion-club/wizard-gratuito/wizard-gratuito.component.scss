@@ -318,7 +318,7 @@ $free-white: #FAFAFA;
   font-weight: 600;
   border: none;
   color: #fff;
-  background: linear-gradient(135deg, #635bff, #7c3aed);
+  background: linear-gradient(135deg, #0fa3e8, #0d8ecb);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -393,7 +393,7 @@ $free-white: #FAFAFA;
   margin-bottom: 24px;
 
   &.sphaira {
-    border-left: 3px solid #635bff;
+    border-left: 3px solid #0fa3e8;
   }
 }
 
@@ -403,7 +403,7 @@ $free-white: #FAFAFA;
   gap: 8px;
   margin-bottom: 8px;
 
-  i { color: #635bff; }
+  i { color: #0fa3e8; }
   span {
     font-size: 0.85rem;
     font-weight: 600;
@@ -415,7 +415,7 @@ $free-white: #FAFAFA;
   .fee-value {
     font-size: 1.2rem;
     font-weight: 700;
-    color: #635bff;
+    color: #0fa3e8;
     display: block;
     margin-bottom: 4px;
   }
@@ -573,7 +573,7 @@ $free-white: #FAFAFA;
   &.fee {
     color: #6b7280;
     i { font-size: 0.75rem; margin-right: 4px; }
-    .bi-star-fill { color: #635bff; }
+    .bi-star-fill { color: #0fa3e8; }
     .bi-building { color: $free-primary; }
   }
 

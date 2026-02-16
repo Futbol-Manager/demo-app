@@ -1006,25 +1006,82 @@ export class TrainingService {
   }
 
   updateMultaStatus(idsPk: number, pagoStatus: number): Observable<Response> {
-    // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
-
-    // Verifica si el token está presente
     if (token) {
-      // Configura las cabeceras con el token para la solicitud HTTP
-      const headers = new HttpHeaders({
-        'Authorization': `Bearer ${token}`
-      });
-
-      // Construye la URL para la solicitud
+      const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
       const url: string = environment.apiUrl + `training/updatepagomultaasistenciabypk/${idsPk}/${pagoStatus}`;
-
-      // Realiza la solicitud HTTP con las cabeceras configuradas
       return this.http.get<Response>(url, { headers });
     } else {
-      // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return new Observable();
     }
+  }
+
+  // ═══════════════════════════════════════════
+  //   COACH TASKS – History, Favorites, Own
+  // ═══════════════════════════════════════════
+
+  private authHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token') || '';
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+  }
+
+  getCoachTaskHistory(userId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + `training/coach-task-history/${userId}`,
+      { headers: this.authHeaders() }
+    );
+  }
+
+  getCoachTaskFavorites(userId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + `training/coach-task-favorites/${userId}`,
+      { headers: this.authHeaders() }
+    );
+  }
+
+  addFavoriteTask(userId: number, taskId: number): Observable<Response> {
+    return this.http.post<Response>(
+      environment.apiUrl + `training/coach-task-favorite/${userId}/${taskId}`,
+      {},
+      { headers: this.authHeaders() }
+    );
+  }
+
+  removeFavoriteTask(userId: number, taskId: number): Observable<Response> {
+    return this.http.delete<Response>(
+      environment.apiUrl + `training/coach-task-favorite/${userId}/${taskId}`,
+      { headers: this.authHeaders() }
+    );
+  }
+
+  getCoachOwnTasks(userId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + `training/coach-tasks/${userId}`,
+      { headers: this.authHeaders() }
+    );
+  }
+
+  createCoachTask(task: any): Observable<Response> {
+    return this.http.post<Response>(
+      environment.apiUrl + 'training/coach-task',
+      task,
+      { headers: this.authHeaders() }
+    );
+  }
+
+  updateCoachTask(task: any): Observable<Response> {
+    return this.http.put<Response>(
+      environment.apiUrl + 'training/coach-task',
+      task,
+      { headers: this.authHeaders() }
+    );
+  }
+
+  deleteCoachTask(coachTaskId: number, userId: number): Observable<Response> {
+    return this.http.delete<Response>(
+      environment.apiUrl + `training/coach-task/${coachTaskId}/${userId}`,
+      { headers: this.authHeaders() }
+    );
   }
 
 }

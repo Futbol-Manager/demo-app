@@ -111,39 +111,25 @@
     </div>
 </div>
 
-<!-- Modal texto personalizado -->
+<!-- Modal formulario personalizado -->
 <div class="modal fade" tabindex="-1" [ngClass]="{ 'show': mostrarModalEditarPersonalizado }"
     [style.display]="mostrarModalEditarPersonalizado ? 'block' : 'none'">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Requerimiento Personalizado</h5>
+                <h5 class="modal-title">{{ docEditando?.nombre }}</h5>
                 <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalEditarPersonalizado()"></button>
             </div>
 
-            <div class="modal-body">
-                <label class="form-label">Contenido del mensaje:</label>
-                <div class="form-group">
-                    <div class="mb-3" *ngIf="docEditando?.subido === 1">
-                        <p>Por política de privacidad de datos, no se
-                            puede mostrar la información que ha sido subido. Por lo tanto, si crees que has cometido un
-                            error
-                            y has subido un documento incorrecto súbelo de nuevo.</p>
-                    </div>
-                    <div class="form-control" id="editorPersonalizado" contenteditable="true"
-                        [innerHTML]="contenidoEditando">
-                    </div>
-                </div>
-
-                <div class="form-check mb-3 mt-3">
-                    <input type="checkbox" class="form-check-input" id="checkboxReq" [(ngModel)]="requiereRespuesta">
-                    <label for="checkboxReq" class="form-check-label"> {{ tituloEditando }}</label>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-secondary" (click)="cerrarModalEditarPersonalizado()">Cancelar</button>
-                <button class="btn btn-success" (click)="guardarEdicionPersonalizado()">Guardar cambios</button>
+            <div class="modal-body" *ngIf="docEditando">
+                <app-form-renderer
+                    [docClubesId]="docEditando.docClubesId"
+                    [contexto]="'DOCUMENTO'"
+                    [userId]="userId"
+                    [playerId]="docEditando.playerId || 0"
+                    (onSave)="onFormRendererSaved()"
+                    (onClose)="onFormRendererClosed()">
+                </app-form-renderer>
             </div>
         </div>
     </div>

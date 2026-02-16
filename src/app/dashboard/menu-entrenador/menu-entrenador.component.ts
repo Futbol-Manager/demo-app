@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild } from '@an
 import { Router, ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
+import { ClubService } from 'src/app/core/services/club/club.service';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
@@ -83,6 +84,7 @@ export class MenuEntrenadorComponent implements OnInit {
     private trainingService: TrainingService,
     private playerService: PlayerService,
     private teamService: TeamService,
+    private clubService: ClubService,
     private cdr: ChangeDetectorRef,
     private location: Location,
   ) {
@@ -100,9 +102,35 @@ export class MenuEntrenadorComponent implements OnInit {
         // Obtener el valor de teamId de los parámetros
         this.teamId = +params['teamId'];  // El + convierte el valor a número
         this.playerId = +params['playerId'];  // El + convierte el valor a número
-        //console.log('teamId:', this.teamId);
       });
+
+      // Cargar clubId del entrenador desde el equipo actual
+      if (this.teamId) {
+        this.teamService.getTeamById(this.teamId.toString()).subscribe(
+          (response: any) => {
+            const team = response?.data;
+            if (team && team.clubId) {
+              this.clubId = team.clubId;
+            } else if (this.userId) {
+              this.fallbackClubFromEntrenador();
+            }
+          },
+          () => { if (this.userId) this.fallbackClubFromEntrenador(); }
+        );
+      } else if (this.userId) {
+        this.fallbackClubFromEntrenador();
+      }
     });
+  }
+
+  private fallbackClubFromEntrenador(): void {
+    this.clubService.getClubForEntrenador(this.userId).subscribe(
+      (response: any) => {
+        if (response?.data) {
+          this.clubId = response.data;
+        }
+      }
+    );
   }
 
   // Método para redirigir a la pantalla de jugadores con el teamId
@@ -148,6 +176,12 @@ export class MenuEntrenadorComponent implements OnInit {
       this.router.navigate(['/dashboard/perfil-entrenador', this.teamId, this.playerId]);
     } else if (id === 17) {
       this.router.navigate(['/dashboard/debrief/history', this.teamId]);
+    } else if (id === 18) {
+      if (this.clubId) {
+        this.router.navigate(['/dashboard/documentos-entrenador', this.clubId]);
+      } else {
+        alert('No se ha encontrado el club asociado.');
+      }
     }
   }
 

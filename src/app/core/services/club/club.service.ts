@@ -1238,6 +1238,14 @@ export class ClubService {
     return this.http.post<Response>(url, formData, { headers });
   }
 
+  updateTextoAutorizacion(docClubesId: number, textoAutorizacion: string): Observable<Response> {
+    return this.http.post<Response>(
+      environment.apiUrl + 'club/updatetextoautorizacion/' + docClubesId,
+      { textoAutorizacion },
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
   getListDocumentosPlayer(
     teamId: number,
     playerId: number
@@ -2094,5 +2102,256 @@ export class ClubService {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
       return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
+  }
+
+  /**************************PERFIL ENTRENADOR************************** */
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      Authorization: `Bearer ${token}`,
+    });
+  }
+
+  getPerfilEntrenador(userId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'entrenador/perfil/' + userId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getClubForEntrenador(userId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'entrenador/club/' + userId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getAllClubsForEntrenador(userId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'entrenador/clubs/' + userId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getUserByEmail(email: string): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'user/getbyemail/' + email,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  syncEntrenadorClubs(): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'entrenador/sync-clubs',
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  createUpdatePerfilEntrenador(dto: any): Observable<Response> {
+    const formData = new FormData();
+    formData.append(
+      'dto',
+      new Blob([JSON.stringify(dto)], { type: 'application/json' })
+    );
+    return this.http.post<Response>(
+      environment.apiUrl + 'entrenador/perfil',
+      formData,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  uploadDocPerfilEntrenador(file: File, userId: number, tipo: string): Observable<Response> {
+    const formData = new FormData();
+    formData.append('files', file, file.name);
+    return this.http.post<Response>(
+      environment.apiUrl + 'entrenador/perfil/upload-doc/' + userId + '/' + tipo,
+      formData,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  deleteDocPerfilEntrenador(userId: number, tipo: string): Observable<Response> {
+    return this.http.delete<Response>(
+      environment.apiUrl + 'entrenador/perfil/delete-doc/' + userId + '/' + tipo,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getPerfilesEntrenadoresByClub(clubId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'entrenador/perfiles-by-club/' + clubId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  /**************************DOCUMENTOS ENTRENADOR************************** */
+
+  getListDocumentosEntrenador(clubId: number, userId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'entrenador/documentos/' + clubId + '/' + userId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getlistDocumentosEntrenadoresByClub(clubId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'entrenador/documentos-club/' + clubId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getDocCompletionDetail(docClubesId: number, clubId: number, tipo: string): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'club/doc-completion-detail/' + docClubesId + '/' + clubId + '/' + tipo,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  saveDocTeams(docClubesId: number, teamIds: number[]): Observable<Response> {
+    return this.http.post<Response>(
+      environment.apiUrl + 'club/doc-teams/' + docClubesId,
+      teamIds,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  uploadDocEntrenador(file: File, dto: any): Observable<Response> {
+    const formData = new FormData();
+    formData.append('files', file, file.name);
+    formData.append(
+      'dto',
+      new Blob([JSON.stringify(dto)], { type: 'application/json' })
+    );
+    return this.http.post<Response>(
+      environment.apiUrl + 'entrenador/upload-doc-entrenador',
+      formData,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  uploadDocEntrenadorPersonalizado(dto: any): Observable<Response> {
+    const formData = new FormData();
+    formData.append(
+      'dto',
+      new Blob([JSON.stringify(dto)], { type: 'application/json' })
+    );
+    return this.http.post<Response>(
+      environment.apiUrl + 'entrenador/upload-doc-entrenador-personalizado',
+      formData,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  updateDocumentoEntrenadorDescargado(dto: any): Observable<Response> {
+    const formData = new FormData();
+    formData.append(
+      'dto',
+      new Blob([JSON.stringify(dto)], { type: 'application/json' })
+    );
+    return this.http.post<Response>(
+      environment.apiUrl + 'entrenador/update-doc-entrenador-descargado',
+      formData,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  /**************************FORMULARIOS PERSONALIZADOS************************** */
+
+  getFormCamposByDoc(docClubesId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'formulario/campos/documento/' + docClubesId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getFormCamposByClub(clubId: number, contexto: string): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'formulario/campos/club/' + clubId + '/' + contexto,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  saveFormCampos(campos: any[]): Observable<Response> {
+    return this.http.post<Response>(
+      environment.apiUrl + 'formulario/campos',
+      campos,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  deleteFormCampo(formularioCampoId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'formulario/campos/delete/' + formularioCampoId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getFormRespuestasByDoc(docClubesId: number, userId: number, playerId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'formulario/respuestas/documento/' + docClubesId + '/' + userId + '/' + playerId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getFormRespuestasByProfile(clubId: number, userId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'formulario/respuestas/perfil/' + clubId + '/' + userId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getFormRespuestasByPlayerProfile(clubId: number, playerId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'formulario/respuestas/perfil-jugador/' + clubId + '/' + playerId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  saveFormRespuestas(respuestas: any[]): Observable<Response> {
+    return this.http.post<Response>(
+      environment.apiUrl + 'formulario/respuestas',
+      respuestas,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  uploadFormFile(file: File, formularioCampoId: number, userId: number, playerId: number): Observable<Response> {
+    const formData = new FormData();
+    formData.append('files', file, file.name);
+    return this.http.post<Response>(
+      environment.apiUrl + 'formulario/respuestas/upload-file/' + formularioCampoId + '/' + userId + '/' + playerId,
+      formData,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getFormRegistros(clubId: number, docClubesId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'formulario/registro/' + clubId + '/' + docClubesId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getFormRegistroDetalle(registroId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'formulario/registro/detalle/' + registroId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getCalendarioTeamOrder(userId: number, clubId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + 'club/calendario-team-order/' + userId + '/' + clubId,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  saveCalendarioTeamOrder(userId: number, clubId: number, teamIdsOrder: string): Observable<Response> {
+    return this.http.post<Response>(
+      environment.apiUrl + 'club/calendario-team-order/' + userId + '/' + clubId,
+      teamIdsOrder,
+      { headers: this.getAuthHeaders() }
+    );
   }
 }

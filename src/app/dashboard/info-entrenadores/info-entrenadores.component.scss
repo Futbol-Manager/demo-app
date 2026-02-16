@@ -722,6 +722,28 @@
   }
 }
 
+.cert-status-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    color: #ef4444;
+
+    i {
+      font-size: 0.9rem;
+    }
+
+    &.uploaded {
+      color: #22c55e;
+    }
+  }
+}
+
 .no-results-sm {
   display: flex;
   flex-direction: column;
@@ -739,4 +761,228 @@
     font-size: 0.9rem;
     font-weight: 500;
   }
+}
+
+.btn-custom-fields {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0fa3e8, #0d8ecb);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(15, 163, 232, 0.25);
+
+  &:hover {
+    background: linear-gradient(135deg, #0d8ecb, #0a7ab5);
+    box-shadow: 0 4px 12px rgba(15, 163, 232, 0.35);
+  }
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+.cert-icons {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+
+  i {
+    font-size: 1rem;
+  }
+}
+
+.text-success {
+  color: #28a745 !important;
+}
+
+.text-danger {
+  color: #dc3545 !important;
+}
+
+.text-muted {
+  color: #6c757d !important;
+  font-size: 0.78rem;
+}
+
+/* ---- CUSTOM FIELD COLUMNS ---- */
+.custom-field-th {
+  font-size: 0.78rem;
+  white-space: nowrap;
+  background: rgba(106, 120, 209, 0.06);
+}
+
+.custom-field-cell {
+  font-size: 0.82rem;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.btn-view-sig {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #f1f5f9;
+  color: #0fa3e8;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  i {
+    font-size: 0.9rem;
+  }
+
+  &:hover {
+    background: rgba(15, 163, 232, 0.12);
+    border-color: rgba(15, 163, 232, 0.3);
+    color: #0d8ecb;
+  }
+}
+
+/* ---- SORTABLE HEADERS ---- */
+.sortable-th {
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+
+  &:hover {
+    background: rgba(15, 163, 232, 0.06);
+  }
+
+  .sort-icon {
+    font-size: 0.7rem;
+    margin-left: 4px;
+    opacity: 0.4;
+    vertical-align: middle;
+  }
+
+  &:hover .sort-icon {
+    opacity: 0.7;
+  }
+}
+
+/* ---- CERT STATUS BUTTON ---- */
+.btn-cert-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #f1f5f9;
+  color: #002c40;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  i {
+    font-size: 1rem;
+  }
+
+  &:hover {
+    background: rgba(15, 163, 232, 0.1);
+    border-color: rgba(15, 163, 232, 0.3);
+    color: #0fa3e8;
+  }
+}
+
+/* ---- CERT MODAL LIST ---- */
+.cert-status-list-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cert-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  transition: all 0.2s;
+
+  &.cert-uploaded {
+    background: rgba(34, 197, 94, 0.06);
+    border-color: rgba(34, 197, 94, 0.2);
+
+    .cert-row-icon i {
+      color: #22c55e;
+    }
+  }
+
+  &.cert-missing {
+    background: rgba(239, 68, 68, 0.04);
+    border-color: rgba(239, 68, 68, 0.15);
+
+    .cert-row-icon i {
+      color: #ef4444;
+    }
+  }
+}
+
+.cert-row-icon {
+  flex-shrink: 0;
+  i {
+    font-size: 1.3rem;
+  }
+}
+
+.cert-row-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.cert-row-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.cert-row-hint {
+  font-size: 0.75rem;
+  color: #ef4444;
+  font-style: italic;
+}
+
+/* ---- DNI NO IMAGE ---- */
+.dni-no-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f8fafc;
+  border: 2px dashed #e2e8f0;
+  border-radius: 12px;
+  color: #94a3b8;
+
+  i {
+    font-size: 2rem;
+    margin-bottom: 8px;
+  }
+
+  span {
+    font-size: 0.82rem;
+    font-weight: 500;
+  }
+}
+
+.dni-card-actions {
+  margin-top: 8px;
+  display: flex;
+  gap: 8px;
 }

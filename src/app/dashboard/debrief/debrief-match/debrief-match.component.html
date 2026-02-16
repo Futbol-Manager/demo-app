@@ -175,29 +175,36 @@
         *ngIf="speechAvailable"
         [class.recording]="isListening && activeAudioQuestionId === currentQuestion.id"
         (click)="toggleAudio(currentQuestion.id)">
-        <i class="bi" [class.bi-mic-fill]="isListening && activeAudioQuestionId === currentQuestion.id"
-           [class.bi-mic]="!(isListening && activeAudioQuestionId === currentQuestion.id)"></i>
-        <span *ngIf="!(isListening && activeAudioQuestionId === currentQuestion.id)">{{ 'DEBRIEF.DICTATE' | translate }}</span>
-        <span *ngIf="isListening && activeAudioQuestionId === currentQuestion.id">{{ 'DEBRIEF.LISTENING' | translate }}</span>
+        <ng-container *ngIf="!(isListening && activeAudioQuestionId === currentQuestion.id)">
+          <i class="bi bi-mic"></i>
+          <span>{{ 'DEBRIEF.DICTATE' | translate }}</span>
+        </ng-container>
+        <ng-container *ngIf="isListening && activeAudioQuestionId === currentQuestion.id">
+          <i class="bi bi-stop-circle-fill recording-pulse"></i>
+          <span>{{ 'DEBRIEF.STOP_LISTENING' | translate }}</span>
+        </ng-container>
       </button>
     </div>
 
     <!-- PLAYERS -->
     <div class="answer-section" *ngIf="currentQuestion.type === 'players'">
-      <div class="players-grid" *ngIf="!loadingPlayers">
+      <div class="players-grid" *ngIf="!loadingPlayers && players.length > 0">
         <button
           *ngFor="let player of players"
           class="player-chip"
           [class.selected]="isPlayerSelected(currentQuestion.id, player.playerId)"
           (click)="togglePlayer(currentQuestion.id, player.playerId)">
           <i class="bi bi-person-fill"></i>
-          <span>{{ player.name || player.nombre }}</span>
+          <span>{{ player.nombre }} {{ player.apellido }}</span>
         </button>
       </div>
       <div class="loading-players" *ngIf="loadingPlayers">
         <app-logo-spinner></app-logo-spinner>
       </div>
-      <p class="players-hint">{{ 'DEBRIEF.PLAYERS_HINT' | translate }}</p>
+      <p class="no-players-msg" *ngIf="!loadingPlayers && players.length === 0">
+        <i class="bi bi-info-circle"></i> No hay jugadores disponibles para este equipo.
+      </p>
+      <p class="players-hint" *ngIf="players.length > 0">{{ 'DEBRIEF.PLAYERS_HINT' | translate }}</p>
     </div>
 
   </div>

@@ -1,21 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { TrainingService } from './training.service';
 
-/**
- * Interfaz para una tarea almacenada localmente (favorita, historial, propia).
- * Extiende los campos del modelo Task / TaskShop del backend.
- */
 export interface StoredTask {
-  /** ID local (generado). Para tareas propias se usa como PK */
   localId: string;
-  /** taskId del backend (si proviene de un entrenamiento) */
   taskId?: number;
-  /** tasksShopId del backend (si proviene de la nube) */
   tasksShopId?: number;
-  /** Origen: 'cloud' = nube, 'training' = entrenamiento, 'own' = propia */
+  coachTaskId?: number;
   origin: 'cloud' | 'training' | 'own';
-
-  /* ─── Campos de tarea ─── */
   slogans: string;
   description: string;
   rules: string;
@@ -28,13 +20,8 @@ export interface StoredTask {
   estrategia: string;
   intencion: string;
   imagenBoard: string;
-
-  /* ─── Metadatos ─── */
-  /** Fecha en que se marcó como favorita o se añadió al historial */
   addedAt: string;
-  /** Número de veces usada (historial) */
   usageCount?: number;
-  /** Última fecha de uso */
   lastUsedAt?: string;
 }
 
@@ -45,23 +32,99 @@ const MY_TASKS_KEY  = 'sphaira_my_tasks';
 @Injectable({ providedIn: 'root' })
 export class TaskStorageService {
 
-  /* ─── Subjects ─── */
   private _favorites$ = new BehaviorSubject<StoredTask[]>(this.load(FAVORITES_KEY));
   private _history$   = new BehaviorSubject<StoredTask[]>(this.load(HISTORY_KEY));
   private _myTasks$   = new BehaviorSubject<StoredTask[]>(this.load(MY_TASKS_KEY));
 
-  /** Observable de favoritas */
   favorites$: Observable<StoredTask[]> = this._favorites$.asObservable();
-  /** Observable de historial */
   history$: Observable<StoredTask[]> = this._history$.asObservable();
-  /** Observable de mis tareas */
   myTasks$: Observable<StoredTask[]> = this._myTasks$.asObservable();
 
-  /* ═══════════════════════════════════════════
-     FAVORITAS
-  ═══════════════════════════════════════════ */
+  private userId = 0;
 
-  /** ¿Es favorita? (por localId o por tasksShopId) */
+  constructor(private trainingService: TrainingService) {}
+
+  setUserId(userId: number): void {
+    this.userId = userId;
+  }
+
+  // ═══════════════════════════════════════════
+  //   SYNC WITH BACKEND
+  // ═══════════════════════════════════════════
+
+  loadFromBackend(userId: number): void {
+    this.userId = userId;
+
+    this.trainingService.getCoachTaskHistory(userId).subscribe({
+      next: (res: any) => {
+        const tasks: StoredTask[] = (res?.data || []).map((t: any) => this.mapBackendTask(t, 'training'));
+        this._history$.next(tasks);
+        this.save(HISTORY_KEY, tasks);
+      },
+      error: () => {}
+    });
+
+    this.trainingService.getCoachTaskFavorites(userId).subscribe({
+      next: (res: any) => {
+        const tasks: StoredTask[] = (res?.data || []).map((t: any) => this.mapBackendTask(t, 'training'));
+        this._favorites$.next(tasks);
+        this.save(FAVORITES_KEY, tasks);
+      },
+      error: () => {}
+    });
+
+    this.trainingService.getCoachOwnTasks(userId).subscribe({
+      next: (res: any) => {
+        const tasks: StoredTask[] = (res?.data || []).map((t: any) => ({
+          localId: 'ct_' + (t.coachTaskId || this.uid()),
+          coachTaskId: t.coachTaskId,
+          origin: 'own' as const,
+          slogans: t.slogans || '',
+          description: t.description || '',
+          rules: t.rules || '',
+          variants: t.variants || '',
+          worktime: t.worktime || '',
+          space: t.space || '',
+          material: t.material || '',
+          work: t.work || '',
+          video: t.video || '',
+          estrategia: t.estrategia || '',
+          intencion: t.intencion || '',
+          imagenBoard: t.imagenBoard || '',
+          addedAt: t.fecCreate || new Date().toISOString(),
+        }));
+        this._myTasks$.next(tasks);
+        this.save(MY_TASKS_KEY, tasks);
+      },
+      error: () => {}
+    });
+  }
+
+  private mapBackendTask(t: any, origin: 'cloud' | 'training'): StoredTask {
+    return {
+      localId: 'task_' + (t.taskId || this.uid()),
+      taskId: t.taskId,
+      origin,
+      slogans: t.slogans || '',
+      description: t.description || '',
+      rules: t.rules || '',
+      variants: t.variants || '',
+      worktime: t.worktime || '',
+      space: t.space || '',
+      material: t.material || '',
+      work: t.work || '',
+      video: t.video || '',
+      estrategia: t.estrategia || '',
+      intencion: t.intencion || '',
+      imagenBoard: t.imagenBoard || '',
+      addedAt: new Date().toISOString(),
+    };
+  }
+
+  // ═══════════════════════════════════════════
+  //   FAVORITAS
+  // ═══════════════════════════════════════════
+
   isFavorite(task: { localId?: string; tasksShopId?: number; taskId?: number }): boolean {
     const list = this._favorites$.getValue();
     return list.some(f =>
@@ -71,7 +134,6 @@ export class TaskStorageService {
     );
   }
 
-  /** Marcar / desmarcar favorita. Devuelve el nuevo estado. */
   toggleFavorite(task: any, origin: 'cloud' | 'training' | 'own'): boolean {
     const list = this._favorites$.getValue();
     const idx = list.findIndex(f =>
@@ -84,27 +146,36 @@ export class TaskStorageService {
       list.splice(idx, 1);
       this.save(FAVORITES_KEY, list);
       this._favorites$.next([...list]);
-      return false; // ya no es favorita
+      if (task.taskId && this.userId) {
+        this.trainingService.removeFavoriteTask(this.userId, task.taskId).subscribe();
+      }
+      return false;
     }
 
     const stored = this.mapToStored(task, origin);
     list.unshift(stored);
     this.save(FAVORITES_KEY, list);
     this._favorites$.next([...list]);
-    return true; // ahora es favorita
+    if (task.taskId && this.userId) {
+      this.trainingService.addFavoriteTask(this.userId, task.taskId).subscribe();
+    }
+    return true;
   }
 
   removeFavorite(localId: string): void {
+    const fav = this._favorites$.getValue().find(f => f.localId === localId);
     const list = this._favorites$.getValue().filter(f => f.localId !== localId);
     this.save(FAVORITES_KEY, list);
     this._favorites$.next(list);
+    if (fav?.taskId && this.userId) {
+      this.trainingService.removeFavoriteTask(this.userId, fav.taskId).subscribe();
+    }
   }
 
-  /* ═══════════════════════════════════════════
-     HISTORIAL DE USADAS
-  ═══════════════════════════════════════════ */
+  // ═══════════════════════════════════════════
+  //   HISTORIAL DE USADAS
+  // ═══════════════════════════════════════════
 
-  /** Registrar uso de una tarea (se llama al añadir a entrenamiento) */
   registerUsage(task: any, origin: 'cloud' | 'training' | 'own'): void {
     const list = this._history$.getValue();
     const existing = list.find(h =>
@@ -126,12 +197,11 @@ export class TaskStorageService {
     this._history$.next([...list]);
   }
 
-  /* ═══════════════════════════════════════════
-     MIS TAREAS
-  ═══════════════════════════════════════════ */
+  // ═══════════════════════════════════════════
+  //   MIS TAREAS
+  // ═══════════════════════════════════════════
 
   addMyTask(task: Partial<StoredTask>): StoredTask {
-    const list = this._myTasks$.getValue();
     const stored: StoredTask = {
       localId: this.uid(),
       origin: 'own',
@@ -149,6 +219,36 @@ export class TaskStorageService {
       imagenBoard: task.imagenBoard || '',
       addedAt: new Date().toISOString(),
     };
+
+    if (this.userId) {
+      this.trainingService.createCoachTask({
+        userId: this.userId,
+        slogans: stored.slogans,
+        description: stored.description,
+        rules: stored.rules,
+        variants: stored.variants,
+        worktime: stored.worktime,
+        space: stored.space,
+        material: stored.material,
+        work: stored.work,
+        video: stored.video,
+        estrategia: stored.estrategia,
+        intencion: stored.intencion,
+        imagenBoard: stored.imagenBoard,
+      }).subscribe({
+        next: (res: any) => {
+          if (res?.data?.coachTaskId) {
+            stored.coachTaskId = res.data.coachTaskId;
+            stored.localId = 'ct_' + res.data.coachTaskId;
+            const list = this._myTasks$.getValue();
+            this.save(MY_TASKS_KEY, list);
+            this._myTasks$.next([...list]);
+          }
+        }
+      });
+    }
+
+    const list = this._myTasks$.getValue();
     list.unshift(stored);
     this.save(MY_TASKS_KEY, list);
     this._myTasks$.next([...list]);
@@ -162,30 +262,52 @@ export class TaskStorageService {
       Object.assign(task, changes);
       this.save(MY_TASKS_KEY, list);
       this._myTasks$.next([...list]);
+      if (task.coachTaskId && this.userId) {
+        this.trainingService.updateCoachTask({
+          coachTaskId: task.coachTaskId,
+          userId: this.userId,
+          slogans: task.slogans,
+          description: task.description,
+          rules: task.rules,
+          variants: task.variants,
+          worktime: task.worktime,
+          space: task.space,
+          material: task.material,
+          work: task.work,
+          video: task.video,
+          estrategia: task.estrategia,
+          intencion: task.intencion,
+          imagenBoard: task.imagenBoard,
+        }).subscribe();
+      }
     }
   }
 
   deleteMyTask(localId: string): void {
+    const task = this._myTasks$.getValue().find(t => t.localId === localId);
     const list = this._myTasks$.getValue().filter(t => t.localId !== localId);
     this.save(MY_TASKS_KEY, list);
     this._myTasks$.next(list);
-    // También quitar de favoritas si estaba
     this.removeFavorite(localId);
+    if (task?.coachTaskId && this.userId) {
+      this.trainingService.deleteCoachTask(task.coachTaskId, this.userId).subscribe();
+    }
   }
 
   getMyTask(localId: string): StoredTask | undefined {
     return this._myTasks$.getValue().find(t => t.localId === localId);
   }
 
-  /* ═══════════════════════════════════════════
-     UTILIDADES INTERNAS
-  ═══════════════════════════════════════════ */
+  // ═══════════════════════════════════════════
+  //   UTILIDADES INTERNAS
+  // ═══════════════════════════════════════════
 
   private mapToStored(task: any, origin: 'cloud' | 'training' | 'own'): StoredTask {
     return {
       localId: task.localId || this.uid(),
       taskId: task.taskId || undefined,
       tasksShopId: task.tasksShopId || undefined,
+      coachTaskId: task.coachTaskId || undefined,
       origin,
       slogans: task.slogans || '',
       description: task.description || '',

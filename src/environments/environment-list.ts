@@ -2,8 +2,8 @@ import { APIURLPROD, APIURLLOCAL, ApiEnvironments, APIURLPROD2, ImageEnvironment
 
 export const localenvironment = {
   production: false,
-  //pasa apuntar al api que apunta a PRO
-  apiUrl: `${APIURLPROD2}${ApiEnvironments.LOCAL}`,
+  //para apuntar al backend local
+  apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
   images: `${APIURLPROD2}${ImageEnvironments.PRO}/`,
   stripePublicKey: 'pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU',
   //stripePublicKey: 'pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL'

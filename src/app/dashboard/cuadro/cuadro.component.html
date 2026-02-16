@@ -25,11 +25,11 @@
           </div>
         </div>
 
-        <div class="col-6" (click)="irAPantalla(8)">
-          <div class="option-card">
-            <i class="bi bi-diagram-3"></i>
-            <h6>{{ 'CUADROMANDO.OPTIONS.TEAMS' | translate }}</h6>
-            <small>{{ 'CUADROMANDO.OPTIONS.TEAMS_DESC' | translate }}</small>
+        <div class="col-6">
+          <div class="option-card" (click)="irAPantalla(12)">
+            <i class="bi bi-person-raised-hand"></i>
+            <h6>{{ 'CUADROMANDO.OPTIONS.COACH' | translate }}</h6>
+            <small>{{ 'CUADROMANDO.OPTIONS.COACH_DESC' | translate }}</small>
           </div>
         </div>
 
@@ -41,11 +41,11 @@
           </div>
         </div>
 
-        <div class="col-6">
-          <div class="option-card" (click)="irAPantalla(12)">
-            <i class="bi bi-person-raised-hand"></i>
-            <h6>{{ 'CUADROMANDO.OPTIONS.COACH' | translate }}</h6>
-            <small>{{ 'CUADROMANDO.OPTIONS.COACH_DESC' | translate }}</small>
+        <div class="col-6" (click)="irAPantalla(8)">
+          <div class="option-card">
+            <i class="bi bi-diagram-3"></i>
+            <h6>{{ 'CUADROMANDO.OPTIONS.TEAMS' | translate }}</h6>
+            <small>{{ 'CUADROMANDO.OPTIONS.TEAMS_DESC' | translate }}</small>
           </div>
         </div>
 
@@ -171,6 +171,14 @@
                     [style.height.px]="e.height" [style.left.%]="e.left" [style.width.%]="e.width">
                     <strong>{{ e.equipo }}</strong>
                     <small>{{ e.hora }}</small>
+                  </div>
+
+                  <!-- Línea de hora actual (estilo Google Calendar) -->
+                  <div class="current-time-line" *ngIf="currentTimeTop >= 0"
+                       [style.top.px]="currentTimeTop">
+                    <span class="current-time-label">{{ currentTimeLabel }}</span>
+                    <div class="current-time-dot"></div>
+                    <div class="current-time-rule"></div>
                   </div>
                 </div>
               </div>

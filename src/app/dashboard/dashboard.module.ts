@@ -46,6 +46,7 @@ import { MenuClubComponent } from './menu-club/menu-club.component';
 import { ClasificacionResultadosComponent } from './clasificacion-resultados/clasificacion-resultados.component';
 import { DocumentosClubComponent } from './documentos-club/documentos-club.component';
 import { DocumentosJugadorComponent } from './documentos-jugador/documentos-jugador.component';
+import { DocumentosEntrenadorComponent } from './documentos-entrenador/documentos-entrenador.component';
 import { NewCuotasComponent } from './new-cuotas/new-cuotas.component';
 import { HistorialPagosClubComponent } from './historial-pagos-club/historial-pagos-club.component';
 import { InicioFederacionComponent } from './inicio-federacion/inicio-federacion.component';
@@ -84,6 +85,8 @@ import { DebriefTrainingComponent } from './debrief/debrief-training/debrief-tra
 import { DebriefMatchComponent } from './debrief/debrief-match/debrief-match.component';
 import { DebriefReportComponent } from './debrief/debrief-report/debrief-report.component';
 import { DebriefHistoryComponent } from './debrief/debrief-history/debrief-history.component';
+import { FormBuilderComponent } from './shared/form-builder/form-builder.component';
+import { FormRendererComponent } from './shared/form-renderer/form-renderer.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -136,6 +139,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ClasificacionResultadosComponent,
     DocumentosClubComponent,
     DocumentosJugadorComponent,
+    DocumentosEntrenadorComponent,
     NewCuotasComponent,
     HistorialPagosClubComponent,
     InicioFederacionComponent,
@@ -169,6 +173,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     DebriefMatchComponent,
     DebriefReportComponent,
     DebriefHistoryComponent,
+    FormBuilderComponent,
+    FormRendererComponent,
   ],
   imports: [
     CommonModule,

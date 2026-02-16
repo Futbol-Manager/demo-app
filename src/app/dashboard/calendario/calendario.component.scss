@@ -269,6 +269,51 @@
   margin: 0 auto;
 }
 
+@media (min-width: 1600px) {
+  .calendar-inner {
+    max-width: 90vw;
+  }
+  .calendar-page {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  .calendar-cell {
+    height: 120px;
+    max-height: 120px;
+  }
+  .calendar-saas thead th {
+    font-size: 0.75rem;
+    padding: 12px 0;
+  }
+  .calendar-saas {
+    border-spacing: 10px;
+  }
+}
+
+@media (min-width: 2000px) {
+  .calendar-inner {
+    max-width: 92vw;
+  }
+  .calendar-cell {
+    height: 140px;
+    max-height: 140px;
+    padding: 10px;
+  }
+  .calendar-saas thead th {
+    font-size: 0.82rem;
+    padding: 14px 0;
+  }
+  .calendar-saas {
+    border-spacing: 12px;
+  }
+  .calendar-header {
+    padding: 22px 28px 20px;
+  }
+  .team-name {
+    font-size: 1.5rem;
+  }
+}
+
 .calendar-header {
   background: #ffffff;
   border-radius: 16px;

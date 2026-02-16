@@ -48,13 +48,12 @@
   <!-- ÁREA PRINCIPAL DEL CHAT -->
   <div class="chat-page">
 
-    <!-- BOTÓN TOGGLE SIDEBAR -->
-    <button class="sidebar-toggle-btn" (click)="toggleHistory()" [title]="showHistory ? 'Ocultar historial' : 'Mostrar historial'">
-      <i class="bi" [class.bi-chevron-left]="showHistory" [class.bi-chevron-right]="!showHistory"></i>
-    </button>
-
     <!-- CABECERA -->
     <div class="chat-header">
+      <!-- BOTÓN TOGGLE SIDEBAR -->
+      <button class="sidebar-toggle-btn" (click)="toggleHistory()" [title]="showHistory ? 'Ocultar historial' : 'Mostrar historial'">
+        <i class="bi" [class.bi-chevron-left]="showHistory" [class.bi-chevron-right]="!showHistory"></i>
+      </button>
       <div class="chat-header-icon">
         <i class="bi bi-robot"></i>
       </div>

@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
-import { Router, ActivatedRoute } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Location } from '@angular/common';
@@ -18,41 +17,33 @@ export class DocumentosJugadorComponent implements OnInit {
   playerId = 0;
   listaDocumentos: any[] = [];
   usuarioActual!: User | null;
-  clubId!: number;  // Ajusta el valor según el clubId del equipo actual
   userId!: number;
   mostrarModalDocumento = false;
   archivoSeleccionado!: File | null;
   docPadreTemp: any;
 
-  mostrarModalPersonalizado: boolean = false;
-  requiereRespuesta: boolean = false;
-  tituloPersonalizado: string = '';
-
   mostrarModalEditarPersonalizado: boolean = false;
-  contenidoEditando: string = '';
-  tituloEditando: string = '';
   docEditando: any = null;
 
   constructor(
     private location: Location,
     private clubService: ClubService,
-    private router: Router,
     private route: ActivatedRoute,
-    private fb: FormBuilder,
-    private loginService: LoginService,) { }
+    private loginService: LoginService,
+  ) { }
 
   ngOnInit(): void {
-    this.loginService.usuarioActual.subscribe(user => {
-      this.usuarioActual = user;
-      this.userId = this.usuarioActual!.userId;
-    });
     this.route.params.subscribe(params => {
-      // Obtener el valor de clubId de los parámetros
-      this.teamId = +params['teamId'];  // El + convierte el valor a número
-      this.playerId = +params['playerId'];  // El + convierte el valor a número
+      this.teamId = +params['teamId'];
+      this.playerId = +params['playerId'];
     });
 
-    this.loadDocuments();
+    this.loginService.usuarioActual.subscribe(user => {
+      if (!user) return;
+      this.usuarioActual = user;
+      this.userId = user.userId;
+      this.loadDocuments();
+    });
   }
 
   goBack(): void {
@@ -171,8 +162,6 @@ export class DocumentosJugadorComponent implements OnInit {
 
   rellenarPersonalizado(doc: any): void {
     this.docEditando = doc;
-    this.contenidoEditando = doc.descripcion || ''; // ajusta al campo real
-    this.tituloEditando = doc.nombre || ''; // ajusta al campo real
     this.mostrarModalEditarPersonalizado = true;
   }
 
@@ -181,41 +170,38 @@ export class DocumentosJugadorComponent implements OnInit {
     this.mostrarModalEditarPersonalizado = false;
   }
 
-  guardarEdicionPersonalizado(): void {
-    if (!this.requiereRespuesta) {
-       alert('Debes aceptar la autorización o condiciones puestas por el club.');
-       return;
+  onFormRendererSaved(): void {
+    // Mark document as submitted
+    if (this.docEditando) {
+      const dto = {
+        docPadresId: this.docEditando.docPadresId,
+        docClubesId: this.docEditando.docClubesId,
+        nombre: this.docEditando.nombre,
+        clubId: this.docEditando.clubId,
+        fecCreate: null,
+        descargado: this.docEditando.descargado,
+        descripcion: 'Formulario personalizado completado',
+        subido: 1,
+        playerId: this.docEditando.playerId,
+        userId: this.userId,
+        requiere: this.docEditando.requiere,
+      };
+
+      this.clubService.uploadDocPadresPersonalizado(dto).subscribe({
+        next: () => {
+          alert('Formulario enviado correctamente');
+          this.cerrarModalEditarPersonalizado();
+          this.loadDocuments();
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Error al registrar el envío');
+        },
+      });
     }
-
-    const contenidoActualizado = (document.getElementById('editorPersonalizado') as HTMLElement).innerHTML;
-
-    const dto = {
-      docPadresId: this.docEditando.docPadresId,
-      docClubesId: this.docEditando.docClubesId,
-      nombre: this.docEditando.nombre,
-      clubId: this.docEditando.clubId, // asegúrate de tener this.clubId en tu componente
-      fecCreate: null,
-      descargado: this.docEditando.descargado,
-      descripcion: contenidoActualizado,
-      subido: 1,
-      playerId: this.docEditando.playerId,
-      userId: this.userId,
-      requiere: this.docEditando.requiere
-    };
-
-    this.clubService.uploadDocPadresPersonalizado(dto).subscribe({
-      next: (res) => {
-        //this.loadDocuments();
-        alert('Contenido actualizado correctamente');
-        this.cerrarModalEditarPersonalizado();
-        // refrescar lista si hace falta
-      },
-      error: (err) => {
-        console.error(err);
-        alert('Error al subir el documento');
-      }
-    });
   }
 
-
+  onFormRendererClosed(): void {
+    this.cerrarModalEditarPersonalizado();
+  }
 }

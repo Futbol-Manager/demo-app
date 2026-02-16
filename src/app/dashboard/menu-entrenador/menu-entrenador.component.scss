@@ -126,14 +126,37 @@
   background-image: url("/assets/images/notificaciones.jpg");
 }
 .bg-injuries {
-  background: linear-gradient(135deg, #002c40 0%, #dc3545 100%);
+  background-image: url("/assets/images/lesiones.jpg");
 }
 .bg-ai-assistant {
   background: linear-gradient(135deg, #002c40 0%, #2563eb 100%);
+  position: relative;
+  overflow: hidden;
+
+  .card-bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  .card-overlay {
+    position: relative;
+    z-index: 1;
+  }
 }
 .bg-debrief {
-  background: linear-gradient(135deg, #002C3F 0%, #3BB271 100%);
+  background-image: url("/assets/images/analisis.jpg");
 }
 .bg-coach-profile {
-  background: linear-gradient(135deg, #1a1e3e 0%, #6366f1 100%);
+  background-image: url("/assets/images/mi-perfil.jpg");
+}
+.bg-coach-documents {
+  background-image: url("/assets/images/documentacion.jpg");
+}
+
+.menu-bottom-spacer {
+  height: 40px;
 }

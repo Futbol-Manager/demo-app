@@ -94,6 +94,15 @@ export class InfoJugadoresComponent implements OnInit {
   teamId = 0;
   addPlayerMoved: boolean = false;
 
+  /* ---- Campos personalizados dinámicos ---- */
+  mostrarModalCustomFields = false;
+  customFields: any[] = [];
+  customFieldResponses: { [key: number]: { [campoId: number]: { valor: string; file: string; tipo: string } } } = {};
+
+  /* ---- Modal firma/archivo ---- */
+  mostrarModalFirma = false;
+  firmaUrl = '';
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -172,6 +181,7 @@ export class InfoJugadoresComponent implements OnInit {
         }
         this.datosCargados = true;
         this.loading = false;
+        this.cargarCamposPersonalizados();
       },
       (error) => {
         console.error('Error al cargar el listado de jugadores', error);
@@ -681,7 +691,97 @@ export class InfoJugadoresComponent implements OnInit {
       }
     });
   }
-    goBack(): void {
+  /* =========================
+     CAMPOS PERSONALIZADOS
+  ========================= */
+
+  abrirModalCustomFields(): void {
+    this.mostrarModalCustomFields = true;
+  }
+
+  cerrarModalCustomFields(): void {
+    this.mostrarModalCustomFields = false;
+  }
+
+  onCustomFieldsSaved(fields: any[]): void {
+    this.cerrarModalCustomFields();
+    this.cargarCamposPersonalizados();
+  }
+
+  cargarCamposPersonalizados(): void {
+    this.clubService.getFormCamposByClub(this.clubId, 'PERFIL_JUGADOR').subscribe(
+      (res: any) => {
+        this.customFields = (res?.data || []).sort((a: any, b: any) => a.orden - b.orden);
+        if (this.customFields.length > 0) {
+          this.cargarRespuestasCustomFields();
+        }
+      }
+    );
+  }
+
+  cargarRespuestasCustomFields(): void {
+    for (const player of this.players) {
+      const pId = player.playerId || 0;
+      if (!pId) continue;
+      this.clubService.getFormRespuestasByPlayerProfile(this.clubId, pId).subscribe(
+        (res: any) => {
+          const items = res?.data || [];
+          const map: { [campoId: number]: { valor: string; file: string; tipo: string } } = {};
+          for (const item of items) {
+            if (item.respuesta && item.campo) {
+              map[item.campo.formularioCampoId] = {
+                valor: item.respuesta.valor || '',
+                file: item.respuesta.file || '',
+                tipo: item.campo.tipoCampo || ''
+              };
+            }
+          }
+          this.customFieldResponses[pId] = map;
+        }
+      );
+    }
+  }
+
+  getCustomFieldValue(player: any, campoId: number): string {
+    const pId = player.playerId || 0;
+    const map = this.customFieldResponses[pId];
+    if (!map || !map[campoId]) return '—';
+    const entry = map[campoId];
+    if (entry.tipo === 'SIGNATURE' || entry.tipo === 'FILE') {
+      return entry.file ? '✓' : '—';
+    }
+    return entry.valor || '—';
+  }
+
+  isSignatureOrFile(campo: any): boolean {
+    return campo.tipoCampo === 'SIGNATURE' || campo.tipoCampo === 'FILE';
+  }
+
+  hasSignatureOrFile(player: any, campoId: number, tipoCampo: string): boolean {
+    const pId = player.playerId || 0;
+    const map = this.customFieldResponses[pId];
+    if (!map || !map[campoId]) return false;
+    return !!(map[campoId].file);
+  }
+
+  getSignatureFileUrl(player: any, campoId: number): string {
+    const pId = player.playerId || 0;
+    const map = this.customFieldResponses[pId];
+    if (!map || !map[campoId]) return '';
+    return environment.images + 'formulario-files/' + map[campoId].file;
+  }
+
+  abrirModalFirma(player: any, campoId: number): void {
+    this.firmaUrl = this.getSignatureFileUrl(player, campoId);
+    this.mostrarModalFirma = true;
+  }
+
+  cerrarModalFirma(): void {
+    this.mostrarModalFirma = false;
+    this.firmaUrl = '';
+  }
+
+  goBack(): void {
     this.location.back();
   }
 

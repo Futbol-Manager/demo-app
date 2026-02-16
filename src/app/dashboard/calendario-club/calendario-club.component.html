@@ -38,16 +38,21 @@
       </button>
     </div>
 
-    <div class="team-chips">
-      <button *ngFor="let team of teams; trackBy: trackByTeamId"
-              class="team-chip"
-              [class.team-chip-active]="isTeamVisible(team.teamId)"
-              [style.--team-color]="team.color"
-              (click)="toggleTeam(team.teamId)">
-        <span class="team-dot" [style.backgroundColor]="team.color"></span>
-        {{ team.name }}
-        <i class="bi" [ngClass]="isTeamVisible(team.teamId) ? 'bi-eye-fill' : 'bi-eye-slash'"></i>
-      </button>
+    <div class="team-chips" cdkDropList [cdkDropListOrientation]="'horizontal'"
+         (cdkDropListDropped)="dropTeam($event)">
+      <div *ngFor="let team of teams; trackBy: trackByTeamId"
+           cdkDrag class="team-chip-wrapper">
+        <div class="team-chip"
+             [class.team-chip-active]="isTeamVisible(team.teamId)"
+             [style.--team-color]="team.color">
+          <i class="bi bi-grip-vertical drag-handle" cdkDragHandle></i>
+          <span class="team-dot" [style.backgroundColor]="team.color"></span>
+          <span class="team-chip-name" (click)="onChipClick(team.teamId)">{{ team.name }}</span>
+          <i class="bi toggle-eye" (click)="onChipClick(team.teamId)"
+             [ngClass]="isTeamVisible(team.teamId) ? 'bi-eye-fill' : 'bi-eye-slash'"></i>
+        </div>
+        <div *cdkDragPlaceholder class="team-chip-placeholder"></div>
+      </div>
     </div>
   </div>
 
@@ -117,11 +122,12 @@
 
             <span class="day-number">{{ day.dayNumber }}</span>
 
-            <!-- PUNTOS DE COLORES -->
+            <!-- ICONOS DE EVENTOS -->
             <div class="event-dots">
               <span *ngFor="let evt of getDotsToShow(day)"
                     class="dot"
                     [style.backgroundColor]="evt.teamColor"
+                    [class.dot-training]="evt.type === 'training'"
                     [class.dot-match]="evt.type === 'match'"
                     [title]="evt.teamName + (evt.type === 'match' ? ' ⚽' : ' 🏋️')">
               </span>
@@ -139,10 +145,12 @@
       <div class="legend-item">
         <span class="legend-dot legend-dot-training"></span>
         <span>{{ 'CALENDAR_CLUB.LEGEND.TRAINING' | translate }}</span>
+        <small class="legend-shape-hint">({{ 'CALENDAR_CLUB.LEGEND.DUMBBELL' | translate }})</small>
       </div>
       <div class="legend-item">
         <span class="legend-dot legend-dot-match"></span>
         <span>{{ 'CALENDAR_CLUB.LEGEND.MATCH' | translate }}</span>
+        <small class="legend-shape-hint">({{ 'CALENDAR_CLUB.LEGEND.BALL' | translate }})</small>
       </div>
     </div>
   </div>
@@ -194,7 +202,13 @@
         <div *ngFor="let t of group.trainings" class="event-card event-training"
              (click)="navigateToEventDetail(t)" style="cursor:pointer">
           <div class="event-icon">
-            <i class="bi bi-clipboard-check"></i>
+            <svg viewBox="0 0 24 14" fill="currentColor" width="18" height="12">
+              <rect x="0" y="3.5" width="3.5" height="7" rx="1"/>
+              <rect x="20.5" y="3.5" width="3.5" height="7" rx="1"/>
+              <rect x="3.5" y="1" width="3" height="12" rx="1"/>
+              <rect x="17.5" y="1" width="3" height="12" rx="1"/>
+              <rect x="6.5" y="5" width="11" height="4" rx="1"/>
+            </svg>
           </div>
           <div class="event-info">
             <span class="event-type">{{ 'CALENDAR_CLUB.PANEL.TRAINING' | translate }}</span>
@@ -212,7 +226,10 @@
         <div *ngFor="let m of group.matches" class="event-card event-match"
              (click)="navigateToEventDetail(m)" style="cursor:pointer">
           <div class="event-icon">
-            <i class="bi bi-trophy"></i>
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+              <circle cx="12" cy="12" r="11"/>
+              <path d="M12 1.5a10.5 10.5 0 1 0 0 21 10.5 10.5 0 0 0 0-21zm0 1.5a9 9 0 0 1 5.2 1.65L14.5 7.5l-5 0-2.7-2.85A9 9 0 0 1 12 3zm-7.8 5.1L7 7l3 3-1.2 4H4.3a9 9 0 0 1-.1-5.9zm2.1 7.4l1.5-1H11l1.8 3.3A9 9 0 0 1 6.3 15.5zm9.4 2.3L13.5 14l1.2-4 3.8-1.3a9 9 0 0 1-.8 9.1z" fill="rgba(255,255,255,0.3)"/>
+            </svg>
           </div>
           <div class="event-info">
             <span class="event-type">

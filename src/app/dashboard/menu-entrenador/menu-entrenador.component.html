@@ -108,6 +108,7 @@
 
       <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(15)">
         <div class="dashboard-card bg-ai-assistant">
+          <img src="assets/images/asistente-ia.jpg" alt="Asistente de IA" class="card-bg-img">
           <div class="card-overlay">
             <i class="bi bi-robot card-action-icon"></i>
             <h5>{{ 'DASHBOARD_COACH.AI_ASSISTANT' | translate }}</h5>
@@ -119,7 +120,7 @@
         <div class="dashboard-card bg-debrief">
           <div class="card-overlay">
             <i class="bi bi-clipboard-pulse card-action-icon"></i>
-            <h5>{{ 'DASHBOARD_COACH.DEBRIEF' | translate }}</h5>
+            <h5>{{ 'DASHBOARD_COACH.DEBRIEF_HISTORY' | translate }}</h5>
           </div>
         </div>
       </div>
@@ -133,9 +134,21 @@
         </div>
       </div>
 
+      <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(18)">
+        <div class="dashboard-card bg-coach-documents">
+          <div class="card-overlay">
+            <i class="bi bi-folder2-open card-action-icon"></i>
+            <h5>{{ 'DASHBOARD_COACH.COACH_DOCUMENTS' | translate }}</h5>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
+  <div class="menu-bottom-spacer"></div>
 </div>
+
+<app-footer></app-footer>
 
 <!-- Modal para mostrar información del entrenamiento -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalEntrenamiento}">

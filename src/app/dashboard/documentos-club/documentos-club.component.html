@@ -6,15 +6,23 @@
   </button>
 </div>
 
-<!-- ================= ACCIONES PRINCIPALES ================= -->
+<!-- ================= PESTAÑAS ================= -->
 <div class="container mt-4">
+  <div class="doc-tabs-bar">
+    <button class="doc-tab-btn" [class.active]="activeDocTab === 'jugadores'" (click)="setDocTab('jugadores')">
+      <i class="bi bi-people-fill"></i> {{ 'DOCUMENTS_CLUB.TAB_PLAYERS' | translate }}
+    </button>
+    <button class="doc-tab-btn" [class.active]="activeDocTab === 'entrenadores'" (click)="setDocTab('entrenadores')">
+      <i class="bi bi-person-workspace"></i> {{ 'DOCUMENTS_CLUB.TAB_COACHES' | translate }}
+    </button>
+  </div>
 
   <div class="row g-4 mb-4 action-cards">
 
     <div class="col-12 col-md-4" *ngFor="let action of [
     { title: 'UPLOAD_NEW', button: 'UPLOAD_DOC', icon: 'bi-upload', click: 'upload', variant: 'green' },
     { title: 'REQUIRE_DOC_TITLE', button: 'REQUIRE_DOC', icon: 'bi-file-earmark-text', click: 'require', variant: 'blue' },
-    { title: 'CUSTOM_INFO_TITLE', button: 'CUSTOM', icon: 'bi-card-text', click: 'custom', variant: 'beige' }
+    { title: 'CUSTOM_INFO_TITLE', button: 'CREATE_FORM', icon: 'bi-card-text', click: 'custom', variant: 'beige' }
   ]">
 
       <div class="action-card" [ngClass]="'variant-' + action.variant">
@@ -109,15 +117,26 @@
         <tr *ngFor="let doc of listDocuments; let i = index">
           <!-- COMPLETADO -->
           <td class="completed-cell">
-            <span class="fw-bold">{{ doc.totalSubidos }}/{{ doc.totalPadres }}</span>
-            <div class="progress progress-xs">
-              <div class="progress-bar bg-success"
-                [style.width.%]="doc.totalPadres ? (doc.totalSubidos / doc.totalPadres) * 100 : 0">
+            <div class="completion-btn" (click)="openCompletionDetail(doc)"
+                 title="Click para ver detalle">
+              <span class="fw-bold">{{ doc.totalSubidos }}/{{ doc.totalPadres }}</span>
+              <div class="progress progress-xs">
+                <div class="progress-bar bg-success"
+                  [style.width.%]="doc.totalPadres ? (doc.totalSubidos / doc.totalPadres) * 100 : 0">
+                </div>
               </div>
             </div>
           </td>
 
-          <td>{{ doc.nombre }}</td>
+          <td>
+            {{ doc.nombre }}
+            <div *ngIf="doc.teamIds?.length > 0" class="team-badges mt-1">
+              <span class="badge bg-info text-dark me-1" *ngFor="let tid of doc.teamIds">
+                {{ getTeamNames([tid]) }}
+              </span>
+            </div>
+            <span *ngIf="!doc.teamIds || doc.teamIds.length === 0" class="badge bg-secondary mt-1">Todos</span>
+          </td>
 
           <td *ngIf="doc.requiere < 2" class="doc-description">
             {{ doc.descripcion }}
@@ -150,6 +169,11 @@
               <button *ngIf="doc.requiere == 2" class="btn btn-action"
                 title="{{ 'DOCS_EQUIPO.COMMON.EDIT' | translate }}" (click)="editarPersonalizado(doc)">
                 <i class="bi bi-pencil"></i>
+              </button>
+
+              <button *ngIf="doc.requiere == 2" class="btn btn-action"
+                title="Ver registros" (click)="openRegistros(doc)">
+                <i class="bi bi-journal-text"></i>
               </button>
 
               <button *ngIf="doc.file" class="btn btn-action" title="{{ 'DOCS_EQUIPO.DOCS.OPEN' | translate }}"
@@ -262,6 +286,23 @@
             <input type="file" class="form-control" accept=".pdf,.doc,.docx" (change)="onFileSelected($event)">
           </div>
 
+          <!-- Team filter -->
+          <div class="mb-3" *ngIf="equiposClub.length > 0">
+            <label class="form-label">Equipos <span class="text-danger">*</span></label>
+            <div class="team-chips">
+              <span *ngFor="let team of equiposClub"
+                class="badge me-1 mb-1"
+                [class.bg-primary]="isTeamSelected(team.teamId)"
+                [class.bg-light]="!isTeamSelected(team.teamId)"
+                [class.text-dark]="!isTeamSelected(team.teamId)"
+                style="cursor: pointer;"
+                (click)="toggleTeamId(team.teamId)">
+                {{ team.name }}
+              </span>
+            </div>
+            <small *ngIf="selectedTeamIds.length === 0" class="text-danger">Selecciona al menos un equipo</small>
+          </div>
+
         </form>
       </div>
 
@@ -270,7 +311,7 @@
           {{ 'DOCS_EQUIPO.COMMON.CANCEL' | translate }}
         </button>
 
-        <button class="btn btn-success" [disabled]="!formDocumento.valid || loadingUpload" (click)="subirDocumento()">
+        <button class="btn btn-success" [disabled]="!formDocumento.valid || loadingUpload || selectedTeamIds.length === 0" (click)="subirDocumento()">
 
           <ng-container *ngIf="!loadingUpload">
             <i class="bi bi-cloud-arrow-up me-1"></i>
@@ -284,11 +325,6 @@
 
         </button>
 
-
-        <ng-template #uploading>
-          <span class="spinner-border spinner-border-sm me-2"></span>
-          Subiendo…
-        </ng-template>
 
       </div>
 
@@ -333,6 +369,23 @@
             <input type="text" class="form-control" formControlName="tipoSin">
           </div>
 
+          <!-- Team filter -->
+          <div class="mb-3" *ngIf="equiposClub.length > 0">
+            <label class="form-label">Equipos <span class="text-danger">*</span></label>
+            <div class="team-chips">
+              <span *ngFor="let team of equiposClub"
+                class="badge me-1 mb-1"
+                [class.bg-primary]="isTeamSelected(team.teamId)"
+                [class.bg-light]="!isTeamSelected(team.teamId)"
+                [class.text-dark]="!isTeamSelected(team.teamId)"
+                style="cursor: pointer;"
+                (click)="toggleTeamId(team.teamId)">
+                {{ team.name }}
+              </span>
+            </div>
+            <small *ngIf="selectedTeamIds.length === 0" class="text-danger">Selecciona al menos un equipo</small>
+          </div>
+
         </form>
       </div>
 
@@ -341,7 +394,7 @@
           {{ 'DOCS_EQUIPO.COMMON.CANCEL' | translate }}
         </button>
 
-        <button class="btn btn-success" [disabled]="!documentoSinSubir.valid" (click)="subirSinDocumento()">
+        <button class="btn btn-success" [disabled]="!documentoSinSubir.valid || selectedTeamIds.length === 0" (click)="subirSinDocumento()">
           {{ 'DOCS_EQUIPO.COMMON.SAVE' | translate }}
         </button>
       </div>
@@ -349,7 +402,7 @@
     </div>
   </div>
 </div>
-<!-- ================= MODAL PERSONALIZADO ================= -->
+<!-- ================= MODAL PERSONALIZADO (3 pasos) ================= -->
 <div class="modal fade" [ngClass]="{ 'show': mostrarModalPersonalizado }"
   [style.display]="mostrarModalPersonalizado ? 'block' : 'none'">
 
@@ -359,44 +412,112 @@
       <div class="modal-header">
         <h5 class="modal-title">
           {{ 'DOCS_EQUIPO.MODAL.CUSTOM_TITLE' | translate }}
+          <small class="d-block text-muted fw-normal" style="font-size: 0.75rem;">
+            Paso {{ customDocStep }} de 3
+          </small>
         </h5>
         <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalPersonalizado()"></button>
       </div>
 
       <div class="modal-body">
 
-        <label class="form-label">
-          {{ 'DOCS_EQUIPO.MODAL.CUSTOM_CONTENT' | translate }}
-        </label>
+        <!-- PASO 1: Título del documento + equipo -->
+        <div *ngIf="customDocStep === 1">
+          <div class="mb-3">
+            <label class="form-label">
+              {{ 'DOCS_EQUIPO.MODAL.CUSTOM_TITLE_LABEL' | translate }}
+            </label>
+            <input type="text" class="form-control" [(ngModel)]="tituloPersonalizado"
+              [placeholder]="'DOCS_EQUIPO.MODAL.CUSTOM_TITLE_PLACEHOLDER' | translate">
+          </div>
 
-        <div class="form-control mb-3" contenteditable="true" #editor>
+          <!-- Team filter -->
+          <div class="mb-3" *ngIf="equiposClub.length > 0">
+            <label class="form-label">Equipos <span class="text-danger">*</span></label>
+            <div class="team-chips">
+              <span *ngFor="let team of equiposClub"
+                class="badge me-1 mb-1"
+                [class.bg-primary]="isTeamSelected(team.teamId)"
+                [class.bg-light]="!isTeamSelected(team.teamId)"
+                [class.text-dark]="!isTeamSelected(team.teamId)"
+                style="cursor: pointer;"
+                (click)="toggleTeamId(team.teamId)">
+                {{ team.name }}
+              </span>
+            </div>
+            <small *ngIf="selectedTeamIds.length === 0" class="text-danger">Selecciona al menos un equipo</small>
+          </div>
         </div>
 
-        <div class="form-check mb-3">
-          <input type="checkbox" class="form-check-input" id="customCheck" [(ngModel)]="requiereRespuesta">
-          <label class="form-check-label" for="customCheck">
-            {{ 'DOCS_EQUIPO.MODAL.CUSTOM_CHECK' | translate }}
-          </label>
+        <!-- PASO 2: Constructor de formulario -->
+        <div *ngIf="customDocStep === 2 && createdDocClubesId">
+          <app-form-builder
+            [docClubesId]="createdDocClubesId"
+            [contexto]="'DOCUMENTO'"
+            (onSave)="onFormBuilderSaved($event)"
+            (onClose)="onFormBuilderClosed()">
+          </app-form-builder>
         </div>
 
-        <div class="mb-3">
-          <label class="form-label">
-            {{ 'DOCS_EQUIPO.MODAL.CUSTOM_TITLE_LABEL' | translate }}
-          </label>
-          <input type="text" class="form-control" [(ngModel)]="tituloPersonalizado"
-            [placeholder]="'DOCS_EQUIPO.MODAL.CUSTOM_TITLE_PLACEHOLDER' | translate">
+        <!-- PASO 3: Texto de autorización -->
+        <div *ngIf="customDocStep === 3">
+          <div class="mb-3">
+            <label class="form-label fw-semibold">
+              {{ 'DOCS_EQUIPO.MODAL.AUTH_TEXT_LABEL' | translate }}
+            </label>
+            <p class="text-muted" style="font-size: 0.85rem;">
+              {{ 'DOCS_EQUIPO.MODAL.AUTH_TEXT_HINT' | translate }}
+            </p>
+            <textarea class="form-control" rows="4" [(ngModel)]="textoAutorizacion"
+              placeholder="Ej: Autorizo al club a utilizar los datos proporcionados para los fines indicados..."></textarea>
+          </div>
         </div>
 
       </div>
 
-      <div class="modal-footer">
+      <div class="modal-footer" *ngIf="customDocStep === 1">
         <button class="btn btn-secondary" (click)="cerrarModalPersonalizado()">
           {{ 'DOCS_EQUIPO.COMMON.CANCEL' | translate }}
         </button>
-
-        <button class="btn btn-success" (click)="crearPersonalizado(editor.innerHTML)">
-          {{ 'DOCS_EQUIPO.COMMON.SAVE' | translate }}
+        <button class="btn btn-success" [disabled]="!tituloPersonalizado.trim() || selectedTeamIds.length === 0" (click)="crearDocYAbrirBuilder()">
+          Siguiente <i class="bi bi-arrow-right"></i>
         </button>
+      </div>
+
+      <div class="modal-footer" *ngIf="customDocStep === 3">
+        <button class="btn btn-secondary" (click)="customDocStep = 2">
+          <i class="bi bi-arrow-left"></i> Volver al formulario
+        </button>
+        <button class="btn btn-success" (click)="finalizarFormularioPersonalizado()">
+          <i class="bi bi-check-lg"></i> Finalizar
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL EDITAR PERSONALIZADO (form-builder) ================= -->
+<div class="modal fade" [ngClass]="{ 'show': mostrarModalEditarPersonalizado }"
+  [style.display]="mostrarModalEditarPersonalizado ? 'block' : 'none'">
+
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil-square me-2"></i>Editar formulario: {{ docEditando?.nombre }}
+        </h5>
+        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalEditarPersonalizado()"></button>
+      </div>
+
+      <div class="modal-body" *ngIf="docEditando">
+        <app-form-builder
+          [docClubesId]="docEditando.docClubesId"
+          [contexto]="'DOCUMENTO'"
+          (onSave)="onEditFormBuilderSaved($event)"
+          (onClose)="onEditFormBuilderClosed()">
+        </app-form-builder>
       </div>
 
     </div>
@@ -453,6 +574,146 @@
 
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: REGISTROS INMUTABLES ============ -->
+<div class="modal-backdrop" *ngIf="mostrarModalRegistros" (click)="cerrarModalRegistros()">
+  <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-journal-text me-2"></i> Registros de formularios firmados
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrarModalRegistros()"></button>
+      </div>
+
+      <div class="modal-body">
+        <div *ngIf="loadingRegistros" class="text-center p-4">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+
+        <div *ngIf="!loadingRegistros && registros.length === 0" class="text-center text-muted p-4">
+          No hay registros para este documento.
+        </div>
+
+        <table *ngIf="!loadingRegistros && registros.length > 0" class="table table-hover">
+          <thead>
+            <tr>
+              <th>Firmante</th>
+              <th>Fecha</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let reg of registros">
+              <td>{{ reg.nombreFirmante || 'Usuario #' + reg.userId }}</td>
+              <td>{{ reg.fecCreate | date:'dd/MM/yyyy' }}</td>
+              <td>
+                <button class="btn btn-sm btn-outline-primary" (click)="openRegistroDetalle(reg)">
+                  <i class="bi bi-eye"></i> Ver detalle
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: DETALLE REGISTRO ============ -->
+<div class="modal-backdrop" *ngIf="mostrarModalRegistroDetalle" (click)="cerrarModalRegistroDetalle()">
+  <div class="modal-dialog modal-lg modal-dialog-centered" (click)="$event.stopPropagation()">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-file-earmark-lock me-2"></i> Detalle del registro
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrarModalRegistroDetalle()"></button>
+      </div>
+
+      <div class="modal-body">
+        <div *ngIf="!registroDetalle" class="text-center p-4">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+
+        <div *ngIf="registroDetalle">
+          <p><strong>Firmante:</strong> {{ registroDetalle.nombreFirmante || 'Usuario #' + registroDetalle.userId }}</p>
+          <p><strong>Fecha:</strong> {{ registroDetalle.fecCreate | date:'dd/MM/yyyy HH:mm' }}</p>
+
+          <h6 class="mt-3 mb-2">Datos del formulario:</h6>
+          <table class="table table-sm table-bordered" *ngIf="registroDetalle.datosParseados?.length > 0">
+            <thead>
+              <tr>
+                <th>Campo ID</th>
+                <th>Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of registroDetalle.datosParseados">
+                <td>{{ item.campoId }}</td>
+                <td>{{ item.valor }}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div *ngIf="registroDetalle.firmaFile" class="mt-3">
+            <h6>Firma:</h6>
+            <img [src]="getFileUrl(registroDetalle.firmaFile)" alt="Firma" class="img-fluid border rounded"
+              style="max-width: 400px;" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ MODAL: DETALLE COMPLETADOS ============ -->
+<div class="modal fade" [ngClass]="{ 'show': mostrarModalCompletionDetail }"
+  [style.display]="mostrarModalCompletionDetail ? 'block' : 'none'">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-people me-2"></i> Detalle de completados
+        </h5>
+        <button type="button" class="btn-close" (click)="cerrarModalCompletionDetail()"></button>
+      </div>
+
+      <div class="modal-body">
+        <div *ngIf="loadingCompletionDetail" class="text-center p-4">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+
+        <div *ngIf="!loadingCompletionDetail && completionDetailList.length === 0" class="text-center text-muted p-4">
+          No se encontraron usuarios.
+        </div>
+
+        <table *ngIf="!loadingCompletionDetail && completionDetailList.length > 0" class="table table-hover">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Estado</th>
+              <th>Fecha de subida</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of completionDetailList">
+              <td>{{ item.nombre }} {{ item.apellido }}</td>
+              <td>
+                <i *ngIf="item.completado" class="bi bi-check-circle-fill text-success" style="font-size: 1.2em;"></i>
+                <i *ngIf="!item.completado" class="bi bi-x-circle-fill text-danger" style="font-size: 1.2em;"></i>
+              </td>
+              <td>{{ item.completado ? (item.fechaSubida | date:'dd/MM/yyyy') : '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>

@@ -71,6 +71,12 @@ export class RegisterService {
     return this.http.post<any>(url, body);
   }
 
+  verifyAndChangePassword(userId: number, currentPassword: string, newPassword: string) {
+    const body = { userId, currentPassword, newPassword };
+    const url: string = environment.apiUrl + 'user/verifyAndChangePass';
+    return this.http.post<any>(url, body);
+  }
+
   validateUser(userId: number) {
     const url: string = environment.apiUrl + 'user/validateUser';
     return this.http.post<any>(url, userId);

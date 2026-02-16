@@ -7,6 +7,8 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { DebriefService } from 'src/app/core/services/debrief/debrief.service';
 import { SpeechRecognitionService } from 'src/app/core/services/speech/speech-recognition.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { PlayerService } from 'src/app/core/services/player/player.service';
+import { Response } from 'src/app/core/services/models/response.model';
 import {
   DebriefQuestion,
   DebriefAnswer,
@@ -55,6 +57,7 @@ export class DebriefTrainingComponent implements OnInit, OnDestroy {
   isListening = false;
   interimText = '';
   activeAudioQuestionId: string | null = null;
+  private stoppingAudioQuestionId: string | null = null;
 
   // ── Custom Questions modal ──
   showCustomModal = false;
@@ -71,6 +74,7 @@ export class DebriefTrainingComponent implements OnInit, OnDestroy {
     private debriefService: DebriefService,
     private speechService: SpeechRecognitionService,
     private trainingService: TrainingService,
+    private playerService: PlayerService,
     private translate: TranslateService
   ) {}
 
@@ -86,8 +90,10 @@ export class DebriefTrainingComponent implements OnInit, OnDestroy {
     this.speechService.result$
       .pipe(takeUntil(this.destroy$))
       .subscribe(result => {
-        if (this.activeAudioQuestionId) {
-          this.appendAudioTranscript(this.activeAudioQuestionId, result.transcript);
+        const qId = this.activeAudioQuestionId || this.stoppingAudioQuestionId;
+        if (qId) {
+          this.appendAudioTranscript(qId, result.transcript);
+          this.stoppingAudioQuestionId = null;
         }
       });
 
@@ -142,10 +148,15 @@ export class DebriefTrainingComponent implements OnInit, OnDestroy {
 
     // Cargar jugadores del equipo
     this.loadingPlayers = true;
-    this.trainingService.getTrainingSessions(String(this.teamId))
+    this.playerService.getPlayers(String(this.teamId))
       .pipe(takeUntil(this.destroy$))
       .subscribe(
-        () => { this.loadingPlayers = false; },
+        (response: Response) => {
+          if (response && response.data && response.data.players) {
+            this.players = response.data.players;
+          }
+          this.loadingPlayers = false;
+        },
         () => { this.loadingPlayers = false; }
       );
 
@@ -279,11 +290,13 @@ export class DebriefTrainingComponent implements OnInit, OnDestroy {
 
   toggleAudio(questionId: string): void {
     if (this.isListening && this.activeAudioQuestionId === questionId) {
+      this.stoppingAudioQuestionId = questionId;
       this.speechService.stopListening();
       this.activeAudioQuestionId = null;
       this.interimText = '';
     } else {
       this.activeAudioQuestionId = questionId;
+      this.stoppingAudioQuestionId = null;
       const appLang = this.translate.currentLang || 'es';
       const speechLang = this.speechService.mapAppLangToSpeechLang(appLang);
       this.speechService.startListening(speechLang, true);

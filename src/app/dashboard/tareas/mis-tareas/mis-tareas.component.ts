@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { TaskStorageService, StoredTask } from 'src/app/core/services/training/task-storage.service';
+import { LoginService } from 'src/app/core/services/login/login.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -16,12 +17,10 @@ export class MisTareasComponent implements OnInit, OnDestroy {
   teamId = 0;
   imageBaseUrl: string = environment.images + 'task-board/';
 
-  /* ─── Formulario crear / editar ─── */
   showForm = false;
-  editingId: string | null = null; // null = crear, string = editar
+  editingId: string | null = null;
   form: Partial<StoredTask> = this.emptyForm();
 
-  /* ─── Estrategias e intenciones (mismas que Shop) ─── */
   estrategias: string[] = [
     'Acciones a Balón Parado', 'Acciones Combinadas', 'Circuito', 'Conservación',
     'Juego Adaptado al Fútbol', 'Juego de Posición', 'Juego de Posición Específico',
@@ -53,11 +52,17 @@ export class MisTareasComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    public taskStorage: TaskStorageService
+    public taskStorage: TaskStorageService,
+    private loginService: LoginService
   ) {}
 
   ngOnInit(): void {
     this.route.params.subscribe(p => this.teamId = +p['teamId']);
+    this.loginService.usuarioActual.subscribe(user => {
+      if (user?.userId) {
+        this.taskStorage.loadFromBackend(user.userId);
+      }
+    });
     this.sub = this.taskStorage.myTasks$.subscribe(list => {
       this.misTareas = list;
       if (this.selectedTask && !list.find(t => t.localId === this.selectedTask!.localId)) {

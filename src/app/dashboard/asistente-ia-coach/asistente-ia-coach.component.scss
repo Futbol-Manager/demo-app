@@ -234,9 +234,13 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
 
 /* BOTÓN TOGGLE SIDEBAR */
 .sidebar-toggle-btn {
+  position: absolute;
+  top: 50%;
+  left: -18px;
+  transform: translateY(-50%);
   width: 36px;
   height: 36px;
-  border: 2px solid $border-color;
+  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   background: $bg-white;
   color: $text-dark;
@@ -247,14 +251,13 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
   justify-content: center;
   transition: all 0.2s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 12px;
-  flex-shrink: 0;
+  z-index: 2;
 
   &:hover {
     background: $coach-primary;
     border-color: $coach-primary;
     color: #fff;
-    transform: scale(1.05);
+    transform: translateY(-50%) scale(1.05);
   }
 }
 
@@ -262,6 +265,7 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
    CABECERA
 ═══════════════════════════════════════ */
 .chat-header {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 14px;

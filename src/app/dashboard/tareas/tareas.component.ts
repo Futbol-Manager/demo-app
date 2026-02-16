@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { LoginService } from 'src/app/core/services/login/login.service';
+import { TaskStorageService } from 'src/app/core/services/training/task-storage.service';
 
 @Component({
   selector: 'app-tareas',
@@ -17,19 +18,19 @@ export class TareasComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private loginService: LoginService
+    private loginService: LoginService,
+    private taskStorage: TaskStorageService
   ) {}
 
   ngOnInit(): void {
-    // Suscríbete al observable del servicio para obtener el usuario actual
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
       this.userId = user?.userId;
-      // Suscribirse a los cambios en los parámetros de la URL
+      if (this.userId) {
+        this.taskStorage.loadFromBackend(this.userId);
+      }
       this.route.params.subscribe(params => {
-        // Obtener el valor de teamId de los parámetros
-        this.teamId = +params['teamId'];  // El + convierte el valor a número
-        //console.log('teamId:', this.teamId);
+        this.teamId = +params['teamId'];
       });
     });
   }

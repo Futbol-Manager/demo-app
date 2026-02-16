@@ -775,3 +775,61 @@
     background: var(--bg-hover);
   }
 }
+
+/* ═══════════════════════════════════════
+   BOTÓN PERSONALIZAR CAMPOS
+═══════════════════════════════════════ */
+.btn-custom-fields {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.45rem 1rem;
+  background: linear-gradient(135deg, #0fa3e8, #0d8ecb);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(15, 163, 232, 0.25);
+}
+.btn-custom-fields:hover {
+  background: linear-gradient(135deg, #0d8ecb, #0a7ab5);
+  box-shadow: 0 4px 12px rgba(15, 163, 232, 0.35);
+  transform: translateY(-1px);
+}
+
+/* ═══════════════════════════════════════
+   COLUMNAS DINÁMICAS PERSONALIZADAS
+═══════════════════════════════════════ */
+.custom-field-th {
+  font-size: 0.75rem;
+  white-space: nowrap;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.custom-field-cell {
+  font-size: 0.8rem;
+  white-space: nowrap;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-view-sig {
+  background: linear-gradient(135deg, #0fa3e8, #0d8ecb);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.btn-view-sig:hover {
+  background: linear-gradient(135deg, #0d8ecb, #0a7ab5);
+  transform: scale(1.05);
+}
