@@ -39,6 +39,7 @@
 
 .app-shell {
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -48,6 +49,7 @@
   display: grid;
   grid-template-columns: 280px 420px 1fr;
   height: calc(100vh - 56px);
+  height: calc(100dvh - 56px);
   background: var(--bg-app);
   gap: 0;
   overflow: hidden;

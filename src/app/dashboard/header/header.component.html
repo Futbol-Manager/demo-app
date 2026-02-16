@@ -68,6 +68,16 @@
           </div>
         </div>
 
+        <!-- ===== SUGERENCIAS BADGE (solo admin) ===== -->
+        <div *ngIf="userId === 9" class="position-relative" style="cursor: pointer;" (click)="goToSugerencias()">
+          <i class="bi bi-bell fs-5 header-action-icon"></i>
+          <span *ngIf="unreadSugerencias > 0"
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size: 0.65rem;">
+            {{ unreadSugerencias }}
+          </span>
+        </div>
+
         <!-- ===== THEME SELECTOR ===== -->
         <div class="dropdown">
           <button class="btn-theme-toggle" data-bs-toggle="dropdown" aria-expanded="false"
@@ -285,18 +295,33 @@
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label">{{ 'HEADER.CURRENT_PASSWORD' | translate }}</label>
-              <input type="password" class="form-control" [(ngModel)]="currentPassword"
-                placeholder="Contraseña actual">
+              <div class="input-group">
+                <input [type]="showCurrentPassword ? 'text' : 'password'" class="form-control" [(ngModel)]="currentPassword"
+                  placeholder="Contraseña actual">
+                <button class="btn btn-outline-secondary" type="button" (click)="showCurrentPassword = !showCurrentPassword" tabindex="-1">
+                  <i class="bi" [ngClass]="showCurrentPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+              </div>
             </div>
             <div class="col-md-4">
               <label class="form-label">{{ 'HEADER.NEW_PASSWORD' | translate }}</label>
-              <input type="password" class="form-control" [(ngModel)]="newPassword"
-                placeholder="Nueva contraseña">
+              <div class="input-group">
+                <input [type]="showNewPassword ? 'text' : 'password'" class="form-control" [(ngModel)]="newPassword"
+                  placeholder="Nueva contraseña">
+                <button class="btn btn-outline-secondary" type="button" (click)="showNewPassword = !showNewPassword" tabindex="-1">
+                  <i class="bi" [ngClass]="showNewPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+              </div>
             </div>
             <div class="col-md-4">
               <label class="form-label">{{ 'HEADER.CONFIRM_PASSWORD' | translate }}</label>
-              <input type="password" class="form-control" [(ngModel)]="confirmPassword"
-                placeholder="Confirmar">
+              <div class="input-group">
+                <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control" [(ngModel)]="confirmPassword"
+                  placeholder="Confirmar">
+                <button class="btn btn-outline-secondary" type="button" (click)="showConfirmPassword = !showConfirmPassword" tabindex="-1">
+                  <i class="bi" [ngClass]="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -308,7 +333,7 @@
           </div>
 
           <div class="mt-3 d-flex gap-2">
-            <button class="btn btn-primary" [disabled]="savingPassword || !currentPassword || !newPassword || !confirmPassword"
+            <button class="btn btn-sphaira-blue" [disabled]="savingPassword || !currentPassword || !newPassword || !confirmPassword"
               (click)="cambiarPassword()">
               <span *ngIf="savingPassword" class="spinner-border spinner-border-sm me-1"></span>
               {{ 'HEADER.SAVE' | translate }}

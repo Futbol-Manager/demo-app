@@ -111,14 +111,16 @@ body {
 
 /* Estilos personalizados para el botón de cierre */
 .btn-close {
-  font-size: 0.75rem;
-  /* Tamaño de fuente más pequeño */
-  width: 1rem;
-  /* Ancho más pequeño */
-  height: 1rem;
-  /* Altura más pequeña */
-  padding: 0.15rem;
-  /* Padding más pequeño */
+  font-size: 0.85rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0.375rem;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
 }
 
 .btn-custom {

@@ -1,16 +1,8 @@
-/* Suponiendo que este estilo va en styles.css o en el archivo de estilos del componente padre */
-#dashboard {
-    background-image: url('./../../assets/images/fondo3.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    height: 100vh;
+#dashboard1 {
+    min-height: 100vh;
+    min-height: 100dvh;
     background-color: var(--bg-main);
     transition: background-color 0.3s ease;
-  }
-
-  :host-context(body.dark) #dashboard {
-    background-image: none;
-    background-color: var(--bg-main);
+    overflow-x: hidden;
   }
   

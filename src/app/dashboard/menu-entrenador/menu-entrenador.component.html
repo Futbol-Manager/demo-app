@@ -84,10 +84,10 @@
         </div>
       </div>
     </div>
+  </div>
 
-
-    <!-- ROW 3 -->
-    <div class="row g-3 mt-3">
+  <!-- ROW 3 -->
+  <div class="row g-3 mt-3">
       <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(12)">
         <div class="dashboard-card bg-gallery">
           <div class="card-overlay">
@@ -108,7 +108,6 @@
 
       <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(15)">
         <div class="dashboard-card bg-ai-assistant">
-          <img src="assets/images/asistente-ia.jpg" alt="Asistente de IA" class="card-bg-img">
           <div class="card-overlay">
             <i class="bi bi-robot card-action-icon"></i>
             <h5>{{ 'DASHBOARD_COACH.AI_ASSISTANT' | translate }}</h5>
@@ -143,7 +142,6 @@
         </div>
       </div>
 
-    </div>
   </div>
   <div class="menu-bottom-spacer"></div>
 </div>
@@ -152,8 +150,7 @@
 
 <!-- Modal para mostrar información del entrenamiento -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalEntrenamiento}">
-  <div class="modal-dialog modal-xl" role="document">
-    <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Detalles del Entrenamiento</h5>
@@ -369,14 +366,12 @@
           </div>
         </div>
       </div>
-    </div>
   </div>
 </div>
 
 <!-- Modal para ver los detalles de la tarea -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalTask}">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Detalles de la Tarea</h5>
@@ -431,32 +426,28 @@
           <button type="button" class="btn btn-secondary" (click)="closeTaskModal()">Cerrar</button>
         </div>
       </div>
-    </div>
   </div>
 </div>
 
 <!-- Modal para ver la pizarra -->
 <div class="modal modal-large" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalBoard}">
-  <div class="modal-dialog" role="document">
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Detalles del Entrenamiento</h5>
-        <!-- Botón de cerrar con un icono -->
+        <h5 class="modal-title">Pizarra Táctica</h5>
         <button type="button" class="btn-close" aria-label="Close" (click)="cerrarBoardModal()"></button>
       </div>
-      <div class="modal-body">
-        <!-- Contenido del modal (en este caso, el iframe) -->
-        <iframe width="100%" height="100%" id="urlIframe" scrolling="no" frameborder="0"
+      <div class="modal-body" style="min-height: 70vh; padding: 0;">
+        <iframe width="100%" style="height: 70vh; border: none;" id="urlIframe" scrolling="no"
           src="https://tacticalboard.sphairatech.com"></iframe>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Modal para mostrar información del entrenamiento -->
+<!-- Modal para mostrar información del partido -->
 <div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalPartido}">
-  <div class="modal-dialog modal-xl" role="document">
-    <div class="modal-dialog modal-dialog-centered">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Detalles del Partido</h5>
@@ -505,7 +496,7 @@
                 </div>
               </div>
               <div class="row text-center mt-3">
-                <div class="col-12 col-md-1 mt-3">
+                <div class="col-6 col-md-2 mt-3">
                   <label for="hora" class="form-label">Hora de</label>
                   <select class="form-control custom-input" id="hora" name="hora" [(ngModel)]="match.hora"
                     aria-placeholder="08">
@@ -525,7 +516,7 @@
                     <option value="21">21</option>
                   </select>
                 </div>
-                <div class="col-12 col-md-1 mt-3">
+                <div class="col-6 col-md-2 mt-3">
                   <label for="minutos" class="form-label">quedada:</label>
                   <select class="form-control custom-input" id="minutos" name="minutos" [(ngModel)]="match.minutos">
                     <option value="00">00</option>
@@ -541,7 +532,7 @@
                     <option value="Visitante">Visitante</option>
                   </select>
                 </div>
-                <div class="col-12 col-md-1 mt-3">
+                <div class="col-6 col-md-2 mt-3">
                   <label for="horaEmpieza" class="form-label">Hora del</label>
                   <select class="form-control custom-input" id="horaEmpieza" name="horaEmpieza"
                     [(ngModel)]="match.horaEmpieza">
@@ -561,7 +552,7 @@
                     <option value="21">21</option>
                   </select>
                 </div>
-                <div class="col-12 col-md-1 mt-3">
+                <div class="col-6 col-md-2 mt-3">
                   <label for="minutosEmpieza" class="form-label">partido:</label>
                   <select class="form-control custom-input" id="minutosEmpieza" name="minutosEmpieza"
                     [(ngModel)]="match.minutosEmpieza">
@@ -578,7 +569,7 @@
                 </div>
               </div>
               <div class="row text-center mt-3">
-                <div class="col-12 col-md-1 mt-3">
+                <div class="col-12 col-md-6 mt-3">
                   <label for="equipacion" class="form-label">Equipación:</label>
                   <textarea class="form-control custom-input" id="equipacion" rows="2" name="equipacion"
                     [(ngModel)]="match.equipacion"></textarea>
@@ -723,6 +714,5 @@
           </div>
         </div>
       </div>
-    </div>
   </div>
 </div>

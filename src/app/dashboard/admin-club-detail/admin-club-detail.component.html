@@ -1,0 +1,551 @@
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<!-- Loading -->
+<div *ngIf="isLoading" class="text-center py-5">
+  <div class="spinner-border" role="status"></div>
+  <div class="mt-3 text-muted">{{ 'APP.LOADING' | translate }}</div>
+</div>
+
+<div *ngIf="!isLoading && club" class="container mt-3">
+
+  <!-- CLUB HEADER -->
+  <div class="club-header-card mb-4">
+    <div class="d-flex align-items-center gap-3">
+      <div class="club-avatar-lg">
+        <img *ngIf="club.picture" [src]="imageBaseUrl + club.picture" alt="" class="club-img-lg">
+        <i *ngIf="!club.picture" class="bi bi-shield-shaded"></i>
+      </div>
+      <div class="flex-grow-1">
+        <h3 class="mb-1 fw-bold">{{ club.nombre }}</h3>
+        <div class="text-muted small">
+          <span *ngIf="club.identification">ID: {{ club.identification }}</span>
+          <span *ngIf="club.foundationDate" class="ms-3">
+            <i class="bi bi-calendar3 me-1"></i>{{ club.foundationDate }}
+          </span>
+        </div>
+      </div>
+      <div class="d-none d-md-flex align-items-center gap-2">
+        <span class="badge rounded-pill px-3 py-2"
+          [ngClass]="club.suscripcionActiva ? 'bg-success' : 'bg-secondary'">
+          {{ club.suscripcionActiva ? 'Activa' : 'Inactiva' }}
+        </span>
+        <button class="btn btn-outline-primary btn-sm" (click)="goToClubDashboard()">
+          <i class="bi bi-box-arrow-in-right me-1"></i>Entrar como club
+        </button>
+      </div>
+    </div>
+
+    <!-- Mini KPIs -->
+    <div class="row g-2 mt-3">
+      <div class="col-3">
+        <div class="mini-kpi">
+          <div class="mini-kpi-value">{{ club.totalEquipos }}</div>
+          <div class="mini-kpi-label">Equipos</div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="mini-kpi">
+          <div class="mini-kpi-value">{{ club.totalEntrenadores }}</div>
+          <div class="mini-kpi-label">Entrenadores</div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="mini-kpi">
+          <div class="mini-kpi-value">{{ club.totalJugadores }}</div>
+          <div class="mini-kpi-label">Jugadores</div>
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="mini-kpi">
+          <div class="mini-kpi-value">{{ club.totalPadres }}</div>
+          <div class="mini-kpi-label">Padres</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile buttons -->
+    <div class="d-flex d-md-none align-items-center gap-2 mt-3">
+      <span class="badge rounded-pill px-3 py-2"
+        [ngClass]="club.suscripcionActiva ? 'bg-success' : 'bg-secondary'">
+        {{ club.suscripcionActiva ? 'Activa' : 'Inactiva' }}
+      </span>
+      <button class="btn btn-outline-primary btn-sm" (click)="goToClubDashboard()">
+        <i class="bi bi-box-arrow-in-right me-1"></i>Entrar
+      </button>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <ul class="nav nav-tabs nav-tabs-sphaira mb-3">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'info'" (click)="setTab('info')">
+        <i class="bi bi-info-circle me-1"></i>Info
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'equipos'" (click)="setTab('equipos')">
+        <i class="bi bi-people me-1"></i>Equipos
+        <span class="badge ms-1">{{ club.equipos?.length || 0 }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'entrenadores'" (click)="setTab('entrenadores')">
+        <i class="bi bi-clipboard2-check me-1"></i>Entrenadores
+        <span class="badge ms-1">{{ club.totalEntrenadores || 0 }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'crm'" (click)="setTab('crm')">
+        <i class="bi bi-journal-text me-1"></i>CRM
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'sesiones'" (click)="setTab('sesiones')">
+        <i class="bi bi-activity me-1"></i>Sesiones
+      </a>
+    </li>
+  </ul>
+
+  <!-- TAB: Info General -->
+  <div *ngIf="activeTab === 'info'" class="tab-content-section">
+    <div class="card border-0 shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Informacion del Club</h5>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="info-item">
+              <div class="info-label">Nombre</div>
+              <div class="info-value">{{ club.nombre }}</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-item">
+              <div class="info-label">Identificacion</div>
+              <div class="info-value">{{ club.identification || '-' }}</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-item">
+              <div class="info-label">Fecha de fundacion</div>
+              <div class="info-value">{{ club.foundationDate || '-' }}</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-item">
+              <div class="info-label">User ID</div>
+              <div class="info-value">{{ club.userId }}</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-item">
+              <div class="info-label">Club ID</div>
+              <div class="info-value">{{ club.clubId }}</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="info-item">
+              <div class="info-label">Estado Suscripcion</div>
+              <div class="info-value">
+                <span class="badge" [ngClass]="club.suscripcionActiva ? 'bg-success' : 'bg-secondary'">
+                  {{ club.suscripcionActiva ? 'Activa' : 'Inactiva' }}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Equipos -->
+  <div *ngIf="activeTab === 'equipos'" class="tab-content-section">
+    <div *ngIf="!club.equipos || club.equipos.length === 0" class="text-center py-4 text-muted">
+      <i class="bi bi-people fs-1 d-block mb-2"></i>
+      No hay equipos registrados
+    </div>
+    <div *ngIf="club.equipos && club.equipos.length > 0">
+      <div *ngFor="let group of equiposPorTemporada" class="mb-4">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="bi bi-calendar3 text-primary"></i>
+          <h6 class="mb-0 fw-bold">Temporada {{ group.temporada }}</h6>
+          <span class="badge rounded-pill bg-secondary">{{ group.equipos.length }}</span>
+        </div>
+        <div class="table-responsive">
+          <table class="table align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Equipo</th>
+                <th class="text-center">Categoria</th>
+                <th class="text-center">Jugadores</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let team of group.equipos">
+                <td class="fw-semibold">{{ team.nombre }}</td>
+                <td class="text-center"><span class="badge bg-light text-dark border">{{ team.categoria || '-' }}</span></td>
+                <td class="text-center"><span class="badge rounded-pill bg-primary">{{ team.jugadores }}</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: Entrenadores -->
+  <div *ngIf="activeTab === 'entrenadores'" class="tab-content-section">
+    <div *ngIf="!club.entrenadores || club.entrenadores.length === 0" class="text-center py-4 text-muted">
+      <i class="bi bi-clipboard2-check fs-1 d-block mb-2"></i>
+      No hay entrenadores registrados
+    </div>
+    <div *ngIf="club.entrenadores && club.entrenadores.length > 0">
+      <div class="row g-3">
+        <div class="col-md-6" *ngFor="let coach of club.entrenadores">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <div class="d-flex align-items-start gap-3">
+                <div class="flex-shrink-0">
+                  <img *ngIf="coach.picture" [src]="imageBaseUrl + coach.picture"
+                    alt="" class="rounded-circle" style="width: 48px; height: 48px; object-fit: cover;">
+                  <div *ngIf="!coach.picture" class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center"
+                    style="width: 48px; height: 48px;">
+                    <i class="bi bi-person-fill text-primary" style="font-size: 1.4rem;"></i>
+                  </div>
+                </div>
+                <div class="flex-grow-1">
+                  <div class="fw-bold">{{ coach.nombre }} {{ coach.apellido }}</div>
+                  <div *ngIf="coach.email" class="text-muted small">
+                    <i class="bi bi-envelope me-1"></i>{{ coach.email }}
+                  </div>
+                  <div *ngIf="coach.telefono" class="text-muted small">
+                    <i class="bi bi-telephone me-1"></i>{{ coach.telefono }}
+                  </div>
+                  <div *ngIf="coach.titulacion" class="small mt-1">
+                    <span class="badge bg-info bg-opacity-10 text-info border">
+                      <i class="bi bi-award me-1"></i>{{ coach.titulacion }}
+                    </span>
+                  </div>
+                  <div *ngIf="coach.equipos && coach.equipos.length > 0" class="mt-1">
+                    <span *ngFor="let eq of coach.equipos" class="badge bg-primary bg-opacity-10 text-primary me-1" style="font-size: 0.7rem;">
+                      <i class="bi bi-people-fill me-1"></i>{{ eq }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: CRM -->
+  <div *ngIf="activeTab === 'crm'" class="tab-content-section">
+
+    <div *ngIf="isLoadingCrm" class="text-center py-4">
+      <div class="spinner-border spinner-border-sm" role="status"></div>
+      <span class="ms-2 text-muted">Cargando datos CRM...</span>
+    </div>
+
+    <div *ngIf="!isLoadingCrm">
+
+      <!-- Club Status + Reminders Row -->
+      <div class="row g-3 mb-4">
+        <!-- Status Card -->
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-flag me-1"></i>Estado del Club</h6>
+                <button class="btn btn-sm btn-outline-primary" (click)="openStatusModal()">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
+              <div *ngIf="clubStatus">
+                <span class="badge px-3 py-2 fs-6" [ngClass]="getStatusBadge(clubStatus.status)">
+                  {{ getStatusLabel(clubStatus.status) }}
+                </span>
+                <div *ngIf="clubStatus.reason" class="text-muted small mt-2">{{ clubStatus.reason }}</div>
+              </div>
+              <div *ngIf="!clubStatus" class="text-muted small">
+                Sin estado asignado. Haz clic en el lapiz para asignar uno.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reminders Card -->
+        <div class="col-md-6">
+          <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h6 class="mb-0 fw-bold"><i class="bi bi-bell me-1"></i>Recordatorios</h6>
+                <button class="btn btn-sm btn-outline-primary" (click)="toggleReminderForm()">
+                  <i class="bi bi-plus-lg"></i>
+                </button>
+              </div>
+
+              <!-- Reminder form -->
+              <div *ngIf="showReminderForm" class="mb-3 p-2 bg-light rounded">
+                <input type="text" class="form-control form-control-sm mb-2"
+                  [(ngModel)]="newReminderTitle" placeholder="Titulo del recordatorio">
+                <textarea class="form-control form-control-sm mb-2" rows="2"
+                  [(ngModel)]="newReminderDescription" placeholder="Descripcion (opcional)"></textarea>
+                <input type="date" class="form-control form-control-sm mb-2"
+                  [(ngModel)]="newReminderDueDate">
+                <div class="d-flex gap-2">
+                  <button class="btn btn-sm btn-primary" (click)="saveReminder()" [disabled]="isSavingReminder">
+                    <span *ngIf="isSavingReminder" class="spinner-border spinner-border-sm me-1"></span>
+                    {{ isSavingReminder ? 'Guardando...' : 'Guardar' }}
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary" (click)="toggleReminderForm()" [disabled]="isSavingReminder">Cancelar</button>
+                </div>
+              </div>
+
+              <!-- Reminders list -->
+              <div *ngIf="reminders.length === 0 && !showReminderForm" class="text-muted small">
+                No hay recordatorios para este club
+              </div>
+              <div *ngFor="let r of reminders" class="reminder-item d-flex align-items-start gap-2 mb-2">
+                <input type="checkbox" class="form-check-input mt-1"
+                  [checked]="r.completed === 1"
+                  (change)="completeReminder(r)"
+                  [disabled]="r.completed === 1">
+                <div [class.text-decoration-line-through]="r.completed === 1"
+                     [class.text-muted]="r.completed === 1">
+                  <div class="fw-semibold small">{{ r.title }}</div>
+                  <div class="text-muted" style="font-size: 0.75rem;">
+                    <span [class.text-danger]="isOverdue(r.dueDate) && r.completed !== 1"
+                          [class.text-warning]="isToday(r.dueDate) && r.completed !== 1">
+                      {{ r.dueDate }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interactions Timeline -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="mb-0 fw-bold"><i class="bi bi-clock-history me-1"></i>Timeline de Interacciones</h6>
+            <button class="btn btn-sm btn-primary" (click)="toggleInteractionForm()">
+              <i class="bi bi-plus-lg me-1"></i>Nueva
+            </button>
+          </div>
+
+          <!-- Interaction form -->
+          <div *ngIf="showInteractionForm" class="mb-3 p-3 bg-light rounded">
+            <div class="mb-2">
+              <label class="form-label small text-muted">Tipo</label>
+              <div class="d-flex gap-2 flex-wrap">
+                <button *ngFor="let t of interactionTypes"
+                  class="btn btn-sm"
+                  [ngClass]="newInteractionType === t.value ? 'btn-primary' : 'btn-outline-secondary'"
+                  (click)="newInteractionType = t.value">
+                  <i class="bi {{ t.icon }} me-1"></i>{{ t.label }}
+                </button>
+              </div>
+            </div>
+            <textarea class="form-control mb-2" rows="3"
+              [(ngModel)]="newInteractionContent" placeholder="Describe la interaccion..."></textarea>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-primary" (click)="saveInteraction()" [disabled]="isSavingInteraction">
+                <span *ngIf="isSavingInteraction" class="spinner-border spinner-border-sm me-1"></span>
+                {{ isSavingInteraction ? 'Guardando...' : 'Guardar' }}
+              </button>
+              <button class="btn btn-sm btn-outline-secondary" (click)="toggleInteractionForm()" [disabled]="isSavingInteraction">Cancelar</button>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div *ngIf="interactions.length === 0 && !showInteractionForm" class="text-center py-4 text-muted">
+            <i class="bi bi-journal-text fs-1 d-block mb-2"></i>
+            No hay interacciones registradas. Haz clic en "Nueva" para crear la primera.
+          </div>
+
+          <div class="timeline">
+            <div *ngFor="let item of interactions" class="timeline-item">
+              <div class="timeline-marker">
+                <i class="bi {{ getInteractionIcon(item.type) }}"></i>
+              </div>
+              <div class="timeline-content">
+                <div class="d-flex justify-content-between align-items-start">
+                  <span class="badge bg-light text-dark border">{{ getInteractionLabel(item.type) }}</span>
+                  <span class="text-muted" style="font-size: 0.75rem;">{{ item.dateCreated | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <div class="mt-1 small">{{ item.content }}</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- TAB: Sesiones -->
+  <div *ngIf="activeTab === 'sesiones'" class="tab-content-section">
+
+    <div *ngIf="isLoadingSessions" class="text-center py-4">
+      <div class="spinner-border spinner-border-sm" role="status"></div>
+      <span class="ms-2 text-muted">Cargando sesiones...</span>
+    </div>
+
+    <div *ngIf="!isLoadingSessions">
+
+      <!-- Empty state -->
+      <div *ngIf="sessions.length === 0" class="text-center py-4 text-muted">
+        <i class="bi bi-activity fs-1 d-block mb-2"></i>
+        No hay sesiones registradas para este club
+      </div>
+
+      <!-- Sessions list -->
+      <div *ngIf="sessions.length > 0" class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h6 class="mb-3 fw-bold"><i class="bi bi-activity me-1"></i>Sesiones de Usuario ({{ sessions.length }})</h6>
+
+          <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0">
+              <thead>
+                <tr>
+                  <th style="font-size: 0.8rem;">Inicio</th>
+                  <th style="font-size: 0.8rem;">Fin</th>
+                  <th class="text-center" style="font-size: 0.8rem;">Duracion</th>
+                  <th class="text-center" style="font-size: 0.8rem;">Perfil</th>
+                  <th class="text-center" style="font-size: 0.8rem;">Eventos</th>
+                  <th style="font-size: 0.8rem;">Resumen</th>
+                  <th class="text-center" style="font-size: 0.8rem;">Detalle</th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let s of sessions">
+                  <tr>
+                    <td style="font-size: 0.8rem;">{{ s.sessionStart | date:'dd/MM/yy HH:mm' }}</td>
+                    <td style="font-size: 0.8rem;">{{ s.sessionEnd ? (s.sessionEnd | date:'HH:mm') : '-' }}</td>
+                    <td class="text-center" style="font-size: 0.8rem;">
+                      <span class="badge bg-light text-dark border">{{ formatDuration(s.durationSeconds) }}</span>
+                    </td>
+                    <td class="text-center" style="font-size: 0.8rem;">
+                      <span class="badge bg-primary bg-opacity-10 text-primary">{{ getProfileLabel(s.profileType) }}</span>
+                    </td>
+                    <td class="text-center" style="font-size: 0.8rem;">
+                      <span class="badge rounded-pill bg-secondary">{{ s.totalEvents }}</span>
+                    </td>
+                    <td style="font-size: 0.75rem;" class="text-muted">{{ s.summary || '-' }}</td>
+                    <td class="text-center">
+                      <button class="btn btn-sm btn-outline-primary" style="font-size: 0.75rem;"
+                        (click)="toggleSessionDetail(s.sessionId)">
+                        <i class="bi" [ngClass]="expandedSessionId === s.sessionId ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                      </button>
+                    </td>
+                  </tr>
+
+                  <!-- Expanded detail row -->
+                  <tr *ngIf="expandedSessionId === s.sessionId">
+                    <td colspan="7" class="p-0">
+                      <div class="p-3 bg-light">
+                        <div *ngIf="isLoadingSessionDetail" class="text-center py-2">
+                          <div class="spinner-border spinner-border-sm" role="status"></div>
+                          <span class="ms-2 text-muted small">Cargando eventos...</span>
+                        </div>
+                        <div *ngIf="!isLoadingSessionDetail && sessionDetail">
+                          <h6 class="fw-bold small mb-2">
+                            <i class="bi bi-list-ul me-1"></i>Timeline de Eventos
+                            <span class="text-muted fw-normal ms-1">({{ sessionDetail.eventsParsed?.length || 0 }})</span>
+                          </h6>
+                          <div *ngIf="!sessionDetail.eventsParsed || sessionDetail.eventsParsed.length === 0"
+                               class="text-muted small">Sin eventos detallados</div>
+                          <div class="session-events-timeline">
+                            <div *ngFor="let ev of sessionDetail.eventsParsed" class="d-flex align-items-start gap-2 mb-2">
+                              <div class="flex-shrink-0" style="width: 52px;">
+                                <span class="badge bg-dark bg-opacity-75 font-monospace" style="font-size: 0.7rem;">{{ ev.t }}</span>
+                              </div>
+                              <div class="flex-shrink-0">
+                                <i class="bi {{ getEventIcon(ev.a) }} {{ getEventColor(ev.a) }}" style="font-size: 0.9rem;"></i>
+                              </div>
+                              <div class="flex-grow-1">
+                                <span class="badge bg-light text-dark border me-1" style="font-size: 0.65rem;">{{ getEventLabel(ev.a) }}</span>
+                                <span class="small">{{ ev.d }}</span>
+                                <span class="text-muted d-block" style="font-size: 0.65rem;">{{ ev.p }}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- No club found -->
+<div *ngIf="!isLoading && !club" class="text-center py-5">
+  <i class="bi bi-exclamation-triangle fs-1 text-warning d-block mb-2"></i>
+  <p class="text-muted">No se encontro el club solicitado</p>
+  <button class="btn btn-primary" (click)="goBack()">Volver</button>
+</div>
+
+<!-- Status Modal -->
+<div class="modal" tabindex="-1" role="dialog" *ngIf="showStatusModal"
+    style="display:block; background: rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: min(450px, 95vw);">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-flag me-2"></i>Cambiar Estado del Club</h5>
+        <button type="button" class="btn-close" (click)="closeStatusModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label small text-muted">Estado</label>
+          <div class="d-flex gap-2 flex-wrap">
+            <button *ngFor="let s of statusOptions"
+              class="btn btn-sm"
+              [ngClass]="selectedStatus === s.value ? s.color + ' text-white' : 'btn-outline-secondary'"
+              (click)="selectedStatus = s.value">
+              {{ s.label }}
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="form-label small text-muted">Motivo (opcional)</label>
+          <textarea class="form-control" rows="2" [(ngModel)]="statusReason"
+            placeholder="Razon del cambio..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" (click)="closeStatusModal()" [disabled]="isSavingStatus">Cancelar</button>
+        <button class="btn btn-primary" (click)="saveStatus()" [disabled]="isSavingStatus">
+          <span *ngIf="isSavingStatus" class="spinner-border spinner-border-sm me-1"></span>
+          {{ isSavingStatus ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast notification -->
+<div class="toast-container" *ngIf="showToast">
+  <div class="toast-notification" [class.toast-success]="toastType === 'success'" [class.toast-error]="toastType === 'error'">
+    <i class="bi" [ngClass]="toastType === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill'"></i>
+    <span>{{ toastMessage }}</span>
+  </div>
+</div>

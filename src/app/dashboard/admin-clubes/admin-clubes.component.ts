@@ -1,13 +1,11 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { filter, take } from 'rxjs/operators';
-import { LoginService } from 'src/app/core/services/login/login.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
-import { User } from 'src/app/core/models/users/user.model';
+import { CrmService } from 'src/app/core/services/crm/crm.service';
 import { Response } from 'src/app/core/services/models/response.model';
-import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Location } from '@angular/common';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-admin-clubes',
@@ -16,96 +14,196 @@ import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 })
 export class AdminClubesComponent implements OnInit {
 
-  usuarioActual!: User;
-  userId = 0;
-  profileId = 0;
-  clubId = 0;
-
-  // Variables de búsqueda y datos
+  imageBaseUrl: string = environment.images + 'user/';
   clubList: any[] = [];
   searchTerm: string = '';
+  filterSuscripcion: string = 'all';
   temporada = getCurrentSeasonString();
 
-  clubDetalleSus: any = null;          // club seleccionado (para mostrar nombre/id)
-  susDetalleClub: any = null;          // detalle suscripción
+  kpis = {
+    totalClubes: 0,
+    totalEquipos: 0,
+    totalJugadores: 0,
+    totalEntrenadores: 0,
+    totalPadres: 0,
+    suscripcionesActivas: 0
+  };
+
+  isRefreshing = false;
+  lastUpdated: Date | null = null;
+
+  clubDetalleSus: any = null;
+  susDetalleClub: any = null;
   isLoadingDetalleSus = false;
   modalDetalleSuscripcion = false;
 
-  // --- NUEVAS VARS: modal edición ---
+  pendingReminders: any[] = [];
+  recentInteractions: any[] = [];
+  atRiskClubs: any[] = [];
+  isLoadingRisk = false;
+
+  modalDeleteClub = false;
+  clubToDelete: any = null;
+  isDeletingClub = false;
+
+  currentYear = new Date().getFullYear();
+
   modalEditField = false;
   editType: 'teams' | 'players' | 'renew' | null = null;
   editTitle = '';
-
   editNumberValue: number = 0;
-  editDateValue: string = ''; // formato yyyy-MM-dd (input date)
+  editDateValue: string = '';
   option = 0;
 
   constructor(
-    private loginService: LoginService,
     private teamService: TeamService,
+    private crmService: CrmService,
     private router: Router,
     private route: ActivatedRoute,
-    private location: Location,
-    private playerservice: PlayerService
+    private location: Location
   ) { }
 
   ngOnInit(): void {
-    //this.cargarUsuario();
     this.cargarListadoClubes();
+    this.cargarKPIs();
+    this.cargarCrmResumen();
   }
 
   goBack(): void {
     this.location.back();
   }
 
-  // Getter para filtrar la lista basándose en el input de búsqueda
   get filteredClubs() {
-    return this.clubList.filter(club =>
-      club.nombre.toLowerCase().includes(this.searchTerm.toLowerCase())
-    );
-  }
-
-  private cargarUsuario(): void {
-    this.userId = Number(localStorage.getItem('userId'));
+    return this.clubList.filter(club => {
+      const matchName = club.nombre.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const matchSub = this.filterSuscripcion === 'all'
+        || (this.filterSuscripcion === 'active' && club.suscripcionActiva)
+        || (this.filterSuscripcion === 'inactive' && !club.suscripcionActiva);
+      return matchName && matchSub;
+    });
   }
 
   cargarListadoClubes(): void {
     localStorage.setItem('temporada', this.temporada);
-
-    // Hardcoding de 5 clubes para pruebas según tus columnas
-    /*this.clubList = [
-      { id: 210, nombre: 'Real Madrid Cantera', equipos: 12, entrenadores: 24, jugadores: 250, padres: 400, clubId: 60 },
-      { id: 2, nombre: 'FC Barcelona Academy', equipos: 15, entrenadores: 30, jugadores: 310, padres: 500, clubId: 0 },
-      { id: 3, nombre: 'Atlético de Madrid Base', equipos: 10, entrenadores: 18, jugadores: 190, padres: 320, clubId: 0 },
-      { id: 4, nombre: 'Sevilla FC Junior', equipos: 8, entrenadores: 14, jugadores: 150, padres: 210, clubId: 0 },
-      { id: 5, nombre: 'Valencia CF Mestalla', equipos: 9, entrenadores: 16, jugadores: 175, padres: 280, clubId: 0 },
-    ];*/
-
-    // Cuando conectes el servicio, usa esto:
     this.teamService.getClubesAdmin(this.temporada).subscribe(
       (response: Response) => {
         if (response?.data) {
           this.clubList = response.data;
+          this.lastUpdated = new Date();
+          this.enrichRemindersWithClubName();
         }
       }
     );
   }
 
-  // Acciones de la tabla
-  verDetalleClub(clubId: number) {
-    console.log('Navegando al club:', clubId);
-    // this.router.navigate(['/admin/club', clubId]);
+  cargarKPIs(): void {
+    this.teamService.getAdminKPIs().subscribe(
+      (response: Response) => {
+        if (response?.data) {
+          this.kpis = response.data;
+          this.lastUpdated = new Date();
+        }
+      }
+    );
+  }
+
+  refreshData(): void {
+    this.isRefreshing = true;
+    this.teamService.refreshAdminCache().subscribe({
+      next: () => {
+        let done = 0;
+        const checkDone = () => { done++; if (done >= 2) { this.isRefreshing = false; this.lastUpdated = new Date(); } };
+        this.teamService.getClubesAdmin(this.temporada).subscribe({
+          next: (r: Response) => { if (r?.data) this.clubList = r.data; checkDone(); },
+          error: () => checkDone()
+        });
+        this.teamService.getAdminKPIs().subscribe({
+          next: (r: Response) => { if (r?.data) this.kpis = r.data; checkDone(); },
+          error: () => checkDone()
+        });
+        this.cargarCrmResumen();
+      },
+      error: () => {
+        this.isRefreshing = false;
+      }
+    });
   }
 
   goToClub(userId: number, clubId: number): void {
-    console.log('Navegando al club ID:', clubId);
-
     localStorage.setItem('userId', userId.toString());
     localStorage.setItem('clubId', clubId.toString());
-    // Ejemplo de navegación:
     this.router.navigate(['/dashboard/admin-inicio', clubId, userId]);
   }
 
+  goToClubDetail(clubId: number): void {
+    this.router.navigate(['/dashboard/admin-club-detail', clubId]);
+  }
+
+  goToClubCrm(clubId: number): void {
+    this.router.navigate(['/dashboard/admin-club-detail', clubId]);
+  }
+
+  getActivityIcon(type: string): string {
+    switch (type) {
+      case 'LOGIN': return 'bi-box-arrow-in-right';
+      case 'CREATE_TEAM': return 'bi-people-fill';
+      case 'CREATE_PLAYER': return 'bi-person-plus';
+      case 'CREATE_MATCH': return 'bi-trophy';
+      case 'CREATE_TRAINING': return 'bi-clipboard2-check';
+      case 'UPDATE': return 'bi-pencil-square';
+      case 'DELETE': return 'bi-trash';
+      case 'CALL': return 'bi-telephone';
+      case 'EMAIL': return 'bi-envelope';
+      case 'MEETING': return 'bi-camera-video';
+      default: return 'bi-activity';
+    }
+  }
+
+  cargarCrmResumen(): void {
+    const userId = Number(localStorage.getItem('userId')) || 9;
+    this.crmService.getPendingReminders(userId).subscribe({
+      next: (res: any) => {
+        this.pendingReminders = (res?.data || []).filter((r: any) => r.completed !== 1).slice(0, 5);
+        this.enrichRemindersWithClubName();
+      },
+      error: () => {}
+    });
+    this.crmService.getRecentClubActivity().subscribe({
+      next: (res: any) => { this.recentInteractions = (res?.data || []).slice(0, 8); },
+      error: () => {}
+    });
+  }
+
+  enrichRemindersWithClubName(): void {
+    if (!this.pendingReminders.length || !this.clubList.length) return;
+    for (const r of this.pendingReminders) {
+      if (!r.clubName) {
+        const club = this.clubList.find((c: any) => c.clubId === r.clubId);
+        r.clubName = club ? club.nombre : 'Club #' + r.clubId;
+      }
+    }
+  }
+
+  scanRiskClubs(): void {
+    this.isLoadingRisk = true;
+    this.atRiskClubs = [];
+    this.crmService.getAtRiskClubsAI().subscribe({
+      next: (res: any) => { this.atRiskClubs = res?.data || []; this.isLoadingRisk = false; },
+      error: () => { this.isLoadingRisk = false; }
+    });
+  }
+
+  completeReminderFromList(reminder: any, event: Event): void {
+    event.stopPropagation();
+    this.crmService.completeReminder(reminder.id).subscribe({
+      next: () => {
+        this.pendingReminders = this.pendingReminders.filter((r: any) => r.id !== reminder.id);
+      },
+      error: () => {}
+    });
+  }
+
+  // Suscripcion modal
   abrirModalDetalleSuscripcion() {
     this.modalDetalleSuscripcion = true;
   }
@@ -115,9 +213,7 @@ export class AdminClubesComponent implements OnInit {
   }
 
   verDetalleSuscripcion(club: any) {
-    // ✅ guarda el club completo para usarlo en modal (nombre, jugadores, etc)
     this.clubDetalleSus = club;
-
     this.susDetalleClub = null;
     this.isLoadingDetalleSus = true;
 
@@ -135,26 +231,22 @@ export class AdminClubesComponent implements OnInit {
     });
   }
 
-  // ✅ abrir mini modal
+  // Edit modal
   openEditModal(type: 'teams' | 'players' | 'renew', currentValue: any) {
     this.editType = type;
 
     if (type === 'teams') {
-      this.editTitle = 'Editar nº equipos';
+      this.editTitle = 'Editar n\u00ba equipos';
       this.editNumberValue = Number(currentValue ?? 0);
     }
-
     if (type === 'players') {
-      this.editTitle = 'Editar nº jugadores';
+      this.editTitle = 'Editar n\u00ba jugadores';
       this.editNumberValue = Number(currentValue ?? 0);
     }
-
     if (type === 'renew') {
-      this.editTitle = 'Editar próxima renovación';
-      // si viene "2025-07-31" perfecto; si viene otro formato, lo dejas tal cual o conviertes
+      this.editTitle = 'Editar proxima renovacion';
       this.editDateValue = (currentValue ?? '').toString();
     }
-
     this.modalEditField = true;
   }
 
@@ -164,29 +256,21 @@ export class AdminClubesComponent implements OnInit {
     this.editTitle = '';
   }
 
-  // ✅ guardar cambios (de momento local + luego enchufas API)
   saveEditField() {
-    console.log(this.susDetalleClub);
     if (!this.editType) return;
 
-    // 1) Equipos -> vive en susDetalleClub.numeroEquipos
     if (this.editType === 'teams' && this.susDetalleClub) {
       this.susDetalleClub.numeroEquipos = Number(this.editNumberValue ?? 0);
       this.option = 1;
     }
-
-    // 2) Jugadores -> viene del clubDetalleSus (la fila)
     if (this.editType === 'players' && this.clubDetalleSus) {
       this.clubDetalleSus.jugadores = Number(this.editNumberValue ?? 0);
       this.option = 2;
     }
-
-    // 3) Renovación -> susDetalleClub.dateFinal
     if (this.editType === 'renew' && this.susDetalleClub) {
       this.susDetalleClub.dateFinal = this.editDateValue;
       this.option = 3;
     }
-
     this.changeSusClubAdmin();
   }
 
@@ -194,6 +278,7 @@ export class AdminClubesComponent implements OnInit {
     this.option = 5;
     this.changeSusClubAdmin();
   }
+
   confirmCancelarSuscripcion() {
     this.option = 4;
     this.changeSusClubAdmin();
@@ -221,6 +306,32 @@ export class AdminClubesComponent implements OnInit {
     });
   }
 
+  // Delete club
+  confirmarEliminarClub(club: any): void {
+    this.clubToDelete = club;
+    this.modalDeleteClub = true;
+  }
 
+  cancelarEliminarClub(): void {
+    this.modalDeleteClub = false;
+    this.clubToDelete = null;
+  }
 
+  ejecutarEliminarClub(): void {
+    if (!this.clubToDelete) return;
+    this.isDeletingClub = true;
+    this.teamService.softDeleteClub(this.clubToDelete.clubId).subscribe({
+      next: () => {
+        this.clubList = this.clubList.filter(c => c.clubId !== this.clubToDelete.clubId);
+        this.isDeletingClub = false;
+        this.modalDeleteClub = false;
+        this.clubToDelete = null;
+        this.cargarKPIs();
+      },
+      error: (err: any) => {
+        console.error(err);
+        this.isDeletingClub = false;
+      }
+    });
+  }
 }

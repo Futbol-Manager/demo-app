@@ -292,11 +292,12 @@
             <div class="team-chips">
               <span *ngFor="let team of equiposClub"
                 class="badge me-1 mb-1"
-                [class.bg-primary]="isTeamSelected(team.teamId)"
-                [class.bg-light]="!isTeamSelected(team.teamId)"
-                [class.text-dark]="!isTeamSelected(team.teamId)"
+                [class.bg-success]="isTeamSelected(team.value)"
+                [class.text-white]="isTeamSelected(team.value)"
+                [class.bg-light]="!isTeamSelected(team.value)"
+                [class.text-dark]="!isTeamSelected(team.value)"
                 style="cursor: pointer;"
-                (click)="toggleTeamId(team.teamId)">
+                (click)="toggleTeamId(team.value)">
                 {{ team.name }}
               </span>
             </div>
@@ -375,11 +376,12 @@
             <div class="team-chips">
               <span *ngFor="let team of equiposClub"
                 class="badge me-1 mb-1"
-                [class.bg-primary]="isTeamSelected(team.teamId)"
-                [class.bg-light]="!isTeamSelected(team.teamId)"
-                [class.text-dark]="!isTeamSelected(team.teamId)"
+                [class.bg-success]="isTeamSelected(team.value)"
+                [class.text-white]="isTeamSelected(team.value)"
+                [class.bg-light]="!isTeamSelected(team.value)"
+                [class.text-dark]="!isTeamSelected(team.value)"
                 style="cursor: pointer;"
-                (click)="toggleTeamId(team.teamId)">
+                (click)="toggleTeamId(team.value)">
                 {{ team.name }}
               </span>
             </div>
@@ -437,11 +439,12 @@
             <div class="team-chips">
               <span *ngFor="let team of equiposClub"
                 class="badge me-1 mb-1"
-                [class.bg-primary]="isTeamSelected(team.teamId)"
-                [class.bg-light]="!isTeamSelected(team.teamId)"
-                [class.text-dark]="!isTeamSelected(team.teamId)"
+                [class.bg-success]="isTeamSelected(team.value)"
+                [class.text-white]="isTeamSelected(team.value)"
+                [class.bg-light]="!isTeamSelected(team.value)"
+                [class.text-dark]="!isTeamSelected(team.value)"
                 style="cursor: pointer;"
-                (click)="toggleTeamId(team.teamId)">
+                (click)="toggleTeamId(team.value)">
                 {{ team.name }}
               </span>
             </div>
@@ -599,6 +602,7 @@
           No hay registros para este documento.
         </div>
 
+        <div class="table-responsive">
         <table *ngIf="!loadingRegistros && registros.length > 0" class="table table-hover">
           <thead>
             <tr>
@@ -619,6 +623,7 @@
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>
@@ -646,6 +651,7 @@
           <p><strong>Fecha:</strong> {{ registroDetalle.fecCreate | date:'dd/MM/yyyy HH:mm' }}</p>
 
           <h6 class="mt-3 mb-2">Datos del formulario:</h6>
+          <div class="table-responsive">
           <table class="table table-sm table-bordered" *ngIf="registroDetalle.datosParseados?.length > 0">
             <thead>
               <tr>
@@ -660,11 +666,12 @@
               </tr>
             </tbody>
           </table>
+          </div>
 
           <div *ngIf="registroDetalle.firmaFile" class="mt-3">
             <h6>Firma:</h6>
             <img [src]="getFileUrl(registroDetalle.firmaFile)" alt="Firma" class="img-fluid border rounded"
-              style="max-width: 400px;" />
+              style="max-width: 100%;" />
           </div>
         </div>
       </div>
@@ -694,6 +701,7 @@
           No se encontraron usuarios.
         </div>
 
+        <div class="table-responsive">
         <table *ngIf="!loadingCompletionDetail && completionDetailList.length > 0" class="table table-hover">
           <thead>
             <tr>
@@ -713,6 +721,7 @@
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   </div>

@@ -1,0 +1,154 @@
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>Volver</span>
+  </button>
+</div>
+
+<div class="container mt-4">
+
+  <!-- HEADER -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h4 class="page-title mb-0">
+        <i class="bi bi-clock-history me-2"></i>Actividad de Clubes
+      </h4>
+      <div class="text-muted small mt-1">
+        {{ totalItems }} registros en total
+      </div>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <span *ngIf="lastUpdated" class="text-muted small">
+        <i class="bi bi-clock me-1"></i>{{ lastUpdated | date:'HH:mm' }}
+      </span>
+      <button class="btn btn-sm btn-refresh" (click)="refreshData()" [disabled]="isRefreshing">
+        <i class="bi bi-arrow-clockwise me-1" [class.spin-icon]="isRefreshing"></i>
+        {{ isRefreshing ? 'Actualizando...' : 'Actualizar datos' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="card mb-4 shadow-sm filter-card">
+    <div class="card-body">
+      <div class="row align-items-center g-2">
+        <div class="col-md-5">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">
+              <i class="bi bi-search text-muted"></i>
+            </span>
+            <input type="text" class="form-control border-start-0 ps-0" [(ngModel)]="searchTerm"
+              placeholder="Buscar por club o descripcion...">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <select class="form-select" [(ngModel)]="filterType">
+            <option value="all">Todos los tipos</option>
+            <option *ngFor="let t of actionTypes" [value]="t">{{ getActivityLabel(t) }}</option>
+          </select>
+        </div>
+        <div class="col-md-2 text-center">
+          <span class="badge bg-primary p-2">{{ filteredActivities.length }} mostrados</span>
+        </div>
+        <div class="col-md-2 text-end">
+          <span class="text-muted small">Pagina {{ currentPage + 1 }} de {{ totalPages }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <div class="text-muted mt-2">Cargando actividad...</div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="table-responsive" *ngIf="!isLoading">
+    <table class="table align-middle activity-table">
+      <thead>
+        <tr>
+          <th style="width: 180px;">Fecha</th>
+          <th>Club</th>
+          <th style="width: 160px;">Tipo</th>
+          <th>Descripcion</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let a of filteredActivities" class="activity-row">
+          <td>
+            <span class="text-muted small">{{ a.dateCreated | date:'dd/MM/yyyy HH:mm' }}</span>
+          </td>
+          <td>
+            <span class="club-link" (click)="goToClub(a.clubId)">{{ a.clubName }}</span>
+          </td>
+          <td>
+            <span class="badge activity-badge" [ngClass]="getActivityBadgeClass(a.actionType)">
+              <i class="bi {{ getActivityIcon(a.actionType) }} me-1"></i>{{ getActivityLabel(a.actionType) }}
+            </span>
+          </td>
+          <td>
+            <span class="small">{{ a.description || '-' }}</span>
+          </td>
+        </tr>
+        <tr *ngIf="filteredActivities.length === 0">
+          <td colspan="4" class="text-center py-4 text-muted">
+            <i class="bi bi-info-circle me-2"></i>No se encontraron registros de actividad
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAGINACION -->
+  <div *ngIf="!isLoading && totalPages > 1" class="d-flex justify-content-between align-items-center mt-3 mb-4 flex-wrap gap-2">
+    <div class="text-muted small">
+      Mostrando {{ currentPage * pageSize + 1 }} - {{ currentPage * pageSize + activities.length }} de {{ totalItems }}
+    </div>
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item" [class.disabled]="currentPage === 0">
+          <button class="page-link" (click)="goToPage(0)" title="Primera">
+            <i class="bi bi-chevron-double-left"></i>
+          </button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === 0">
+          <button class="page-link" (click)="goToPage(currentPage - 1)">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+        </li>
+        <li *ngFor="let p of pageNumbers" class="page-item" [class.active]="p === currentPage">
+          <button class="page-link" (click)="goToPage(p)">{{ p + 1 }}</button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage >= totalPages - 1">
+          <button class="page-link" (click)="goToPage(currentPage + 1)">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage >= totalPages - 1">
+          <button class="page-link" (click)="goToPage(totalPages - 1)" title="Ultima">
+            <i class="bi bi-chevron-double-right"></i>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="admin-footer">
+  <div class="container">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+      <div class="d-flex align-items-center gap-2">
+        <i class="bi bi-shield-shaded footer-logo"></i>
+        <span class="footer-brand">Sphaira</span>
+        <span class="footer-sep">|</span>
+        <span class="footer-text">Actividad de Clubes</span>
+      </div>
+      <div class="footer-text">
+        &copy; {{ currentYear }} Sphaira Tech. Todos los derechos reservados.
+      </div>
+    </div>
+  </div>
+</footer>

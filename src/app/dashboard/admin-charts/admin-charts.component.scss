@@ -1,0 +1,103 @@
+:host {
+  --sphaira-green: #31b270;
+  --sphaira-night: #002c40;
+  --sphaira-ivory: #f4f4f4;
+  --sphaira-beige: #efdcb6;
+  --sphaira-blue: #002c40;
+}
+
+/* ===== BOTON VOLVER ===== */
+.back-container { padding: 0; }
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 16px;
+  margin-left: 24px;
+  background-color: rgba(15, 163, 232, 0.08);
+  color: var(--sphaira-night);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+.btn-back-clean i { font-size: 1.1rem; }
+.btn-back-clean:hover { background-color: rgba(15, 163, 232, 0.15); transform: translateX(-2px); }
+
+/* ===== LOADING ===== */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+  color: var(--sphaira-green);
+}
+.loading-text {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+/* ===== CHARTS WRAPPER ===== */
+.charts-wrapper {
+  padding: 1.5rem 1.5rem 2rem;
+}
+
+/* ===== CHART CARD ===== */
+.chart-card {
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  .card-body {
+    padding: 1.25rem 1.5rem;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
+    border-color: rgba(49, 178, 112, 0.2);
+  }
+}
+
+.chart-title {
+  font-weight: 650;
+  color: var(--sphaira-night);
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  font-family: 'Archivo', sans-serif;
+
+  i {
+    color: var(--sphaira-green);
+    font-size: 1.1rem;
+  }
+}
+
+/* ===== CANVAS ===== */
+.canvas-wrapper {
+  position: relative;
+  width: 100%;
+}
+.chart-canvas {
+  display: block;
+  max-width: 100%;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .charts-wrapper { padding: 1rem 0.75rem; }
+  .chart-card .card-body { padding: 1rem; }
+  .chart-title { font-size: 0.88rem; }
+}
+
+@media (max-width: 576px) {
+  .charts-wrapper { padding: 0.75rem 0.5rem; }
+}

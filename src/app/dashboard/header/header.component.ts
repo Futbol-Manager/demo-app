@@ -16,6 +16,7 @@ import { RegisterService } from 'src/app/core/services/register/register.service
 import { TrainingService } from 'src/app/core/services/training/training.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { ThemeService } from 'src/app/core/services/theme/theme.service';
+import { SugerenciaService } from 'src/app/core/services/sugerencia/sugerencia.service';
 import { environment } from 'src/environments/environment';
 import { Dropdown } from 'bootstrap';
 import { TranslateService } from '@ngx-translate/core';
@@ -69,6 +70,10 @@ export class HeaderComponent implements OnInit {
   passwordError = '';
   passwordSuccess = '';
   savingPassword = false;
+  showCurrentPassword = false;
+  showNewPassword = false;
+  showConfirmPassword = false;
+  unreadSugerencias = 0;
 
   constructor(
     private router: Router,
@@ -81,7 +86,8 @@ export class HeaderComponent implements OnInit {
     private trainingService: TrainingService,
     private teamService: TeamService,
     private translate: TranslateService,
-    public themeService: ThemeService
+    public themeService: ThemeService,
+    private sugerenciaService: SugerenciaService
   ) {
     const lang = localStorage.getItem('lang');
     if (lang) {
@@ -108,6 +114,11 @@ export class HeaderComponent implements OnInit {
       if (this.profileId === 2 && this.userId > 0) {
         this.checkCoachBelongsToClub();
       }
+
+      // Cargar sugerencias no leidas para el admin
+      if (this.userId === 9) {
+        this.loadUnreadSugerencias();
+      }
     });
   }
 
@@ -126,6 +137,21 @@ export class HeaderComponent implements OnInit {
         this.coachBelongsToClub = false;
       }
     });
+  }
+
+  private loadUnreadSugerencias(): void {
+    this.sugerenciaService.countUnread().subscribe({
+      next: (response: Response) => {
+        this.unreadSugerencias = response?.data ?? 0;
+      },
+      error: () => {
+        this.unreadSugerencias = 0;
+      }
+    });
+  }
+
+  goToSugerencias(): void {
+    this.router.navigate(['/dashboard/admin-sugerencias']);
   }
 
   ngAfterViewInit() {

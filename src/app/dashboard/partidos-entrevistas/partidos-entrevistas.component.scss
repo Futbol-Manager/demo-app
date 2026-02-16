@@ -163,11 +163,83 @@
 
 .partido-card {
     transition: background-color 0.3s ease-in-out;
+    width: 12rem;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 
 .partido-card.seleccionado {
     background-color: #22BF63 !important;
-    /* Verde Bootstrap */
     color: white;
-    /* Para mejor visibilidad */
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .btn-back-clean {
+        margin-left: 12px;
+        margin-top: 10px;
+    }
+
+    .gallery-item {
+        flex: 0 1 calc(50% - 10px);
+        height: 160px;
+    }
+
+    .gallery {
+        max-height: 320px;
+    }
+
+    .delete-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .close-btn {
+        font-size: 28px;
+        top: 8px;
+        right: 12px;
+        padding: 4px 8px;
+    }
+
+    .partido-card {
+        width: 9rem;
+        margin: 0.25rem !important;
+    }
+
+    .partido-card .card-body {
+        padding: 0.5rem;
+    }
+
+    .partido-card .card-title {
+        font-size: 0.85rem;
+    }
+
+    .partido-card .card-text {
+        font-size: 0.75rem;
+    }
+
+    .modal-content {
+        max-width: 95%;
+        max-height: 95%;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gallery-item {
+        flex: 0 1 100%;
+        height: 200px;
+    }
+
+    .partido-card {
+        width: 7.5rem;
+    }
+
+    .partido-card .badge.fs-5 {
+        font-size: 1rem !important;
+    }
 }

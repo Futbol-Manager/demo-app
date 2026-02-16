@@ -1,0 +1,112 @@
+<!-- ================= BOTÓN VOLVER ================= -->
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<div class="container mt-4 mb-5">
+
+  <!-- ================= ENCABEZADO ================= -->
+  <div class="page-header">
+    <div class="header-text">
+      <h2 class="page-title">
+        <i class="bi bi-lightbulb"></i> Sugerencias
+      </h2>
+      <p class="page-subtitle">Envía tus ideas y sugerencias para mejorar la plataforma</p>
+    </div>
+    <button class="btn-nueva-sugerencia" (click)="toggleForm()">
+      <i class="bi" [ngClass]="showForm ? 'bi-x-lg' : 'bi-plus-lg'"></i>
+      {{ showForm ? 'Cancelar' : 'Nueva sugerencia' }}
+    </button>
+  </div>
+
+  <!-- ================= FORMULARIO NUEVA SUGERENCIA ================= -->
+  <div class="form-card" *ngIf="showForm">
+    <h5 class="form-card-title">
+      <i class="bi bi-pencil-square"></i> Nueva sugerencia
+    </h5>
+
+    <div class="mb-3">
+      <label class="form-label">Título</label>
+      <input
+        type="text"
+        class="form-control custom-input"
+        placeholder="Escribe un título descriptivo..."
+        [(ngModel)]="titulo"
+        maxlength="150"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Descripción</label>
+      <textarea
+        class="form-control custom-input"
+        rows="4"
+        placeholder="Describe tu sugerencia en detalle..."
+        [(ngModel)]="descripcion"
+        maxlength="2000"
+      ></textarea>
+    </div>
+
+    <div class="form-actions">
+      <button
+        class="btn-enviar"
+        (click)="submitSugerencia()"
+        [disabled]="submitting || !titulo.trim() || !descripcion.trim()"
+      >
+        <i class="bi bi-send"></i>
+        {{ submitting ? 'Enviando...' : 'Enviar sugerencia' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= LOADING SKELETON ================= -->
+  <div *ngIf="loading" class="skeleton-container">
+    <div class="skeleton-card" *ngFor="let i of [1,2,3]">
+      <div class="skeleton-line skeleton-title"></div>
+      <div class="skeleton-line skeleton-text"></div>
+      <div class="skeleton-line skeleton-text short"></div>
+    </div>
+  </div>
+
+  <!-- ================= ESTADO VACÍO ================= -->
+  <div *ngIf="!loading && sugerencias.length === 0" class="empty-state">
+    <i class="bi bi-lightbulb"></i>
+    <h5>No hay sugerencias todavía</h5>
+    <p>Sé el primero en enviar una sugerencia para mejorar la plataforma.</p>
+  </div>
+
+  <!-- ================= LISTA DE SUGERENCIAS ================= -->
+  <div class="sugerencias-list" *ngIf="!loading && sugerencias.length > 0">
+    <div class="sugerencia-card" *ngFor="let sug of sugerencias">
+      <div class="sugerencia-header">
+        <h5 class="sugerencia-title">{{ sug.title }}</h5>
+        <span class="status-badge" [ngClass]="getStatusClass(sug.status)">
+          <i class="bi" [ngClass]="getStatusIcon(sug.status)"></i>
+          {{ getStatusLabel(sug.status) }}
+        </span>
+      </div>
+
+      <p class="sugerencia-desc">{{ sug.description }}</p>
+
+      <div class="sugerencia-meta">
+        <span class="meta-item">
+          <i class="bi bi-calendar3"></i>
+          {{ sug.createdAt | date:'dd/MM/yyyy HH:mm' }}
+        </span>
+      </div>
+
+      <!-- Respuesta del administrador -->
+      <div class="admin-response" *ngIf="sug.adminResponse">
+        <div class="response-header">
+          <i class="bi bi-reply"></i>
+          <strong>Respuesta del equipo</strong>
+        </div>
+        <p class="response-text">{{ sug.adminResponse }}</p>
+      </div>
+    </div>
+  </div>
+
+</div>

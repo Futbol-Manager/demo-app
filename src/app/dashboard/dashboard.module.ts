@@ -62,7 +62,12 @@ import { LogoSpinnerComponent } from '../shared/logo-spinner/logo-spinner.compon
 import { FooterComponent } from '../shared/footer/footer.component';
 import { InfoEquipoComponent } from './info-equipo/info-equipo.component';
 import { AdminClubesComponent } from './admin-clubes/admin-clubes.component';
+import { AdminClubDetailComponent } from './admin-club-detail/admin-club-detail.component';
 import { AdminInicioComponent } from './admin-inicio/admin-inicio.component';
+import { SugerenciasClubComponent } from './sugerencias-club/sugerencias-club.component';
+import { AdminSugerenciasComponent } from './admin-sugerencias/admin-sugerencias.component';
+import { AdminChartsComponent } from './admin-charts/admin-charts.component';
+import { AdminAiInsightsComponent } from './admin-ai-insights/admin-ai-insights.component';
 import { PlayerInfoDialogComponent } from './player-info-dialog/player-info-dialog.component';
 import { CalendarioClubComponent } from './calendario-club/calendario-club.component';
 import { AsistenteIaComponent, Nl2brPipe } from './asistente-ia/asistente-ia.component';
@@ -87,6 +92,8 @@ import { DebriefReportComponent } from './debrief/debrief-report/debrief-report.
 import { DebriefHistoryComponent } from './debrief/debrief-history/debrief-history.component';
 import { FormBuilderComponent } from './shared/form-builder/form-builder.component';
 import { FormRendererComponent } from './shared/form-renderer/form-renderer.component';
+import { AdminRegistrosComponent } from './admin-registros/admin-registros.component';
+import { AdminActivityComponent } from './admin-activity/admin-activity.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -129,7 +136,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     HorariosequiposComponent,
     EntrenamientosCreadosComponent,
     PuntuacionEquipsComponent,
-    PublicidadComponent,
     GraficaCuotasComponent,
     GoleadoresComponent,
     MenuEntrenadorComponent,
@@ -150,7 +156,12 @@ export function HttpLoaderFactory(http: HttpClient) {
     LogoSpinnerComponent,
     FooterComponent,
     AdminClubesComponent,
+    AdminClubDetailComponent,
     AdminInicioComponent,
+    SugerenciasClubComponent,
+    AdminSugerenciasComponent,
+    AdminChartsComponent,
+    AdminAiInsightsComponent,
     PlayerInfoDialogComponent,
     CalendarioClubComponent,
     AsistenteIaComponent,
@@ -175,6 +186,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     DebriefHistoryComponent,
     FormBuilderComponent,
     FormRendererComponent,
+    AdminRegistrosComponent,
+    AdminActivityComponent,
   ],
   imports: [
     CommonModule,

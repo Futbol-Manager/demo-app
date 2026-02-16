@@ -59,6 +59,7 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
   max-width: 1400px;
   margin: 0 auto;
   height: calc(100vh - 140px);
+  height: calc(100dvh - 140px);
   min-height: 500px;
   gap: 0;
 }
@@ -104,8 +105,8 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
 }
 
 .btn-new-chat {
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   border: none;
   border-radius: 8px;
   background: $coach-primary;
@@ -388,8 +389,8 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
 }
 
 .history-close {
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   border: none;
   border-radius: 6px;
   background: transparent;
@@ -700,9 +701,9 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
 }
 
 .chat-send-btn {
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
   border: none;
   border-radius: 12px;
   background: $border-color;
@@ -742,6 +743,7 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
     top: 0;
     left: 0;
     height: 100vh;
+    height: 100dvh;
     z-index: 1000;
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
   }
@@ -763,6 +765,7 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
 
   .chat-container {
     height: calc(100vh - 120px);
+    height: calc(100dvh - 120px);
   }
 
   .chat-header {

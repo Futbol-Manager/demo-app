@@ -51,7 +51,12 @@ import { NotificacionesFederacionComponent } from './notificaciones-federacion/n
 import { ListadoClubesComponent } from './listado-clubes/listado-clubes.component';
 import { EquiposComponent } from './equipos/equipos.component';
 import { AdminClubesComponent } from './admin-clubes/admin-clubes.component';
+import { AdminClubDetailComponent } from './admin-club-detail/admin-club-detail.component';
 import { AdminInicioComponent } from './admin-inicio/admin-inicio.component';
+import { SugerenciasClubComponent } from './sugerencias-club/sugerencias-club.component';
+import { AdminSugerenciasComponent } from './admin-sugerencias/admin-sugerencias.component';
+import { AdminChartsComponent } from './admin-charts/admin-charts.component';
+import { AdminAiInsightsComponent } from './admin-ai-insights/admin-ai-insights.component';
 import { CalendarioClubComponent } from './calendario-club/calendario-club.component';
 import { AsistenteIaComponent } from './asistente-ia/asistente-ia.component';
 import { AsistenteIaCoachComponent } from './asistente-ia-coach/asistente-ia-coach.component';
@@ -68,6 +73,8 @@ import { DebriefMatchComponent } from './debrief/debrief-match/debrief-match.com
 import { DebriefReportComponent } from './debrief/debrief-report/debrief-report.component';
 import { DebriefHistoryComponent } from './debrief/debrief-history/debrief-history.component';
 import { ClubOwnerGuard } from '../club-owner.guard';
+import { AdminRegistrosComponent } from './admin-registros/admin-registros.component';
+import { AdminActivityComponent } from './admin-activity/admin-activity.component';
 
 const routes: Routes = [
   {
@@ -130,7 +137,14 @@ const routes: Routes = [
       { path: 'notificaciones-federacion', component: NotificacionesFederacionComponent },
       { path: 'listado-clubes', component: ListadoClubesComponent },
       { path: 'admin-clubes', component: AdminClubesComponent },
+      { path: 'admin-club-detail/:clubId', component: AdminClubDetailComponent },
       { path: 'admin-inicio/:clubId/:userId', component: AdminInicioComponent },
+      { path: 'sugerencias-club', component: SugerenciasClubComponent },
+      { path: 'admin-sugerencias', component: AdminSugerenciasComponent },
+      { path: 'admin-charts', component: AdminChartsComponent },
+      { path: 'admin-ai-insights', component: AdminAiInsightsComponent },
+      { path: 'admin-registros', component: AdminRegistrosComponent },
+      { path: 'admin-activity', component: AdminActivityComponent },
       { path: 'suscripcion-club', component: SuscripcionClubComponent },
       { path: 'suscripcion-club/wizard/familia', component: WizardFamiliaComponent },
       { path: 'suscripcion-club/wizard/club', component: WizardClubComponent },

@@ -675,9 +675,9 @@ export class DocumentosClubComponent implements OnInit {
   toggleTeamId(teamId: number): void {
     const idx = this.selectedTeamIds.indexOf(teamId);
     if (idx >= 0) {
-      this.selectedTeamIds.splice(idx, 1);
+      this.selectedTeamIds = this.selectedTeamIds.filter(id => id !== teamId);
     } else {
-      this.selectedTeamIds.push(teamId);
+      this.selectedTeamIds = [...this.selectedTeamIds, teamId];
     }
   }
 
@@ -689,7 +689,7 @@ export class DocumentosClubComponent implements OnInit {
     if (!teamIds || teamIds.length === 0) return 'Todos';
     return teamIds
       .map((id) => {
-        const team = this.equiposClub.find((t: any) => t.teamId === id);
+        const team = this.equiposClub.find((t: any) => t.value === id);
         return team ? team.name : 'Equipo #' + id;
       })
       .join(', ');

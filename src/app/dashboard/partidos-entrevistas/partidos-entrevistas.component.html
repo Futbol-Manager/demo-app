@@ -15,8 +15,7 @@
 
         <div class="d-flex flex-wrap justify-content-center">
             <div *ngFor="let item of getVisibleItems()" class="card m-2 partido-card"
-                [ngClass]="{'seleccionado': postpartidoSelected === item.id}" (click)="seleccionarPartido(item)"
-                style="width: 12rem; cursor: pointer;">
+                [ngClass]="{'seleccionado': postpartidoSelected === item.id}" (click)="seleccionarPartido(item)">
 
                 <div class="card-body text-center">
                     <h5 class="card-title">{{ item.name }}</h5>

@@ -446,7 +446,7 @@ app-root {
 
 .teams-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
   gap: 1.5rem;
 }
 
@@ -665,5 +665,36 @@ app-root {
   }
   50% {
     transform: translateY(-4px);
+  }
+}
+
+/* ===============================
+   Card Administrador
+================================ */
+.admin-card {
+  border: 2px solid rgba(0, 44, 64, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 44, 64, 0.2);
+
+  &::after {
+    background: linear-gradient(
+        to top,
+        rgba(0, 44, 64, 0.75),
+        rgba(0, 44, 64, 0.15)
+    ) !important;
+  }
+
+  &:hover {
+    border-color: rgba(0, 44, 64, 0.5);
+    box-shadow: 0 12px 32px rgba(0, 44, 64, 0.35);
+  }
+
+  .overlay i {
+    font-size: 1.6rem;
+  }
+
+  .overlay span {
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
   }
 }

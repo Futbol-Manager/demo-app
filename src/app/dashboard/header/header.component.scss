@@ -203,16 +203,17 @@
   .theme-header .header-action {
     background: transparent !important;
     box-shadow: none !important;
-    border-radius: 0 !important;
+    border-radius: 50% !important;
 
-    padding: 0.25rem;
+    padding: 0.5rem;
     margin: 0;
+    min-width: 44px;
+    min-height: 44px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    /* 🔥 zona clicable real */
     pointer-events: auto;
     z-index: 2;
   }
@@ -494,8 +495,8 @@ body.modal-open {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: none;
   background: rgba(255, 255, 255, 0.15);
@@ -596,4 +597,20 @@ body.modal-open {
   border-radius: 6px;
   background: linear-gradient(135deg, #0fa3e8, #0d8ecb) !important;
   color: #ffffff !important;
+}
+
+.btn-sphaira-blue {
+  background: #002c40 !important;
+  border-color: #002c40 !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  &:hover:not(:disabled) {
+    background: #004060 !important;
+    box-shadow: 0 3px 10px rgba(0, 44, 64, 0.3);
+  }
+  &:disabled {
+    opacity: 0.6;
+  }
 }

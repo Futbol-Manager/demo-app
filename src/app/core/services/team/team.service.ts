@@ -858,24 +858,75 @@ export class TeamService {
     }
 
     getClubesAdmin(temporada: string): Observable<Response> {
-        // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
-
-        // Verifica si el token está presente
         if (token) {
-            // Configura las cabeceras con el token para la solicitud HTTP
             const headers = new HttpHeaders({
                 'Authorization': `Bearer ${token}`
             });
-
-            // Construye la URL para la solicitud
             const url: string = environment.apiUrl + `team/getclubesadmin/${temporada}`;
-
-            // Realiza la solicitud HTTP con las cabeceras configuradas
             return this.http.get<Response>(url, { headers });
         } else {
-            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return new Observable();
+        }
+    }
+
+    getAdminKPIs(): Observable<Response> {
+        const token: string | null = localStorage.getItem('token');
+        if (token) {
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+            const url: string = environment.apiUrl + `team/getadminkpis`;
+            return this.http.get<Response>(url, { headers });
+        } else {
+            return new Observable();
+        }
+    }
+
+    getAdminAIInsights(): Observable<Response> {
+        const token: string | null = localStorage.getItem('token');
+        if (token) {
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+            const url: string = environment.apiUrl + `team/getadminaiinsights`;
+            return this.http.get<Response>(url, { headers });
+        } else {
+            return new Observable();
+        }
+    }
+
+    refreshAdminCache(): Observable<Response> {
+        const url: string = environment.apiUrl + 'team/refreshadmincache';
+        const token = localStorage.getItem('token');
+        if (!token) return throwError(() => new Error('No auth token'));
+        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+        return this.http.post<Response>(url, {}, { headers });
+    }
+
+    getAdminStats(): Observable<Response> {
+        const token: string | null = localStorage.getItem('token');
+        if (token) {
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+            const url: string = environment.apiUrl + `team/getadminstats`;
+            return this.http.get<Response>(url, { headers });
+        } else {
+            return new Observable();
+        }
+    }
+
+    getClubDetailAdmin(clubId: number): Observable<Response> {
+        const token: string | null = localStorage.getItem('token');
+        if (token) {
+            const headers = new HttpHeaders({
+                'Authorization': `Bearer ${token}`
+            });
+            const url: string = environment.apiUrl + `team/getclubdetailadmin/${clubId}`;
+            return this.http.get<Response>(url, { headers });
+        } else {
+            return new Observable();
         }
     }
 
@@ -884,6 +935,22 @@ export class TeamService {
         if (!headers) return throwError(() => new Error('No auth token'));
         const url = `${this.base}club/changeSuscriptionClubAdmin/${option}`;
         return this.http.post<any>(url, body, { headers });
+    }
+
+    getAdminRegistrations(): Observable<Response> {
+        const url: string = environment.apiUrl + 'team/getadminregistrations';
+        const token = localStorage.getItem('token');
+        if (!token) return throwError(() => new Error('No auth token'));
+        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+        return this.http.get<Response>(url, { headers });
+    }
+
+    softDeleteClub(clubId: number): Observable<Response> {
+        const url: string = environment.apiUrl + 'team/softdeleteclub/' + clubId;
+        const token = localStorage.getItem('token');
+        if (!token) return throwError(() => new Error('No auth token'));
+        const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+        return this.http.delete<Response>(url, { headers });
     }
 
 }

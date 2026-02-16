@@ -1,0 +1,393 @@
+/* =========================================================
+   VARIABLES GLOBALES – SPHAIRATECH
+========================================================= */
+:host {
+  --sphaira-green: #31b270;
+  --sphaira-night: #002c40;
+  --sphaira-blue: #002c40;
+  --sphaira-dark: #1f2933;
+  --sphaira-dark-hover: #111827;
+  --sphaira-danger: #dc3545;
+  --sphaira-bg-soft: #f4f4f4;
+}
+
+/* =========================================================
+   BOTÓN VOLVER
+========================================================= */
+.back-container {
+  padding: 0;
+}
+
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 16px;
+  margin-left: 24px;
+  background: transparent;
+  border: none;
+  background-color: rgba(15, 163, 232, 0.08);
+  color: #002c40;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+
+  i {
+    font-size: 1.1rem;
+  }
+
+  &:hover {
+    background-color: rgba(15, 163, 232, 0.15);
+    transform: translateX(-2px);
+  }
+}
+
+/* =========================================================
+   ENCABEZADO DE PÁGINA
+========================================================= */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--sphaira-night);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  i {
+    color: #f5a623;
+    font-size: 1.4rem;
+  }
+}
+
+.page-subtitle {
+  color: #64748b;
+  font-size: 0.9rem;
+  margin: 0.25rem 0 0;
+}
+
+.btn-nueva-sugerencia {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--sphaira-green), #28a060);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(49, 178, 112, 0.35);
+  }
+}
+
+/* =========================================================
+   FORMULARIO NUEVA SUGERENCIA
+========================================================= */
+.form-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.form-card-title {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--sphaira-night);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  i {
+    color: var(--sphaira-green);
+  }
+}
+
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 0.3rem;
+}
+
+.custom-input {
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  padding: 0.6rem 0.85rem;
+  transition: border-color 0.2s;
+
+  &:focus {
+    border-color: var(--sphaira-green);
+    box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.12);
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-enviar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 1.3rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--sphaira-night);
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+
+  &:hover:not(:disabled) {
+    background: var(--sphaira-dark-hover);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+/* =========================================================
+   SKELETON LOADING
+========================================================= */
+.skeleton-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.skeleton-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.5rem;
+}
+
+.skeleton-line {
+  height: 14px;
+  background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+  margin-bottom: 0.75rem;
+
+  &.skeleton-title {
+    width: 40%;
+    height: 18px;
+  }
+
+  &.skeleton-text {
+    width: 80%;
+  }
+
+  &.short {
+    width: 50%;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* =========================================================
+   ESTADO VACÍO
+========================================================= */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #94a3b8;
+
+  i {
+    font-size: 3rem;
+    color: #cbd5e1;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  h5 {
+    color: #475569;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  p {
+    font-size: 0.9rem;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+}
+
+/* =========================================================
+   LISTA DE SUGERENCIAS
+========================================================= */
+.sugerencias-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.sugerencia-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+
+  &:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.07);
+    border-color: #cbd5e1;
+  }
+}
+
+.sugerencia-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.sugerencia-title {
+  font-size: 1rem;
+  font-weight: 650;
+  color: var(--sphaira-night);
+  margin: 0;
+}
+
+.sugerencia-desc {
+  color: #475569;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  margin: 0 0 0.75rem;
+  white-space: pre-line;
+}
+
+.sugerencia-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  color: #94a3b8;
+
+  i {
+    font-size: 0.85rem;
+  }
+}
+
+/* =========================================================
+   STATUS BADGES
+========================================================= */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-pending {
+  background: rgba(245, 166, 35, 0.12);
+  color: #b8860b;
+}
+
+.badge-progress {
+  background: rgba(59, 130, 246, 0.12);
+  color: #2563eb;
+}
+
+.badge-done {
+  background: rgba(49, 178, 112, 0.12);
+  color: #16a34a;
+}
+
+.badge-rejected {
+  background: rgba(220, 53, 69, 0.12);
+  color: #dc3545;
+}
+
+/* =========================================================
+   RESPUESTA DEL ADMIN
+========================================================= */
+.admin-response {
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: rgba(59, 130, 246, 0.05);
+  border-left: 3px solid #3b82f6;
+  border-radius: 0 10px 10px 0;
+}
+
+.response-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.82rem;
+  color: #2563eb;
+  margin-bottom: 0.4rem;
+}
+
+.response-text {
+  font-size: 0.87rem;
+  color: #334155;
+  margin: 0;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+@media (max-width: 576px) {
+  .page-header {
+    flex-direction: column;
+  }
+
+  .btn-nueva-sugerencia {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .sugerencia-header {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+}
