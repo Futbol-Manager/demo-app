@@ -36,34 +36,41 @@
           <a class="nav-link dropdown-toggle header-action" data-bs-toggle="dropdown" role="button">
             <i class="bi bi-shield-check"></i>
             <span class="d-none d-md-inline">
-              Administrador
+              {{ 'ADMIN_MENU.TITLE' | translate }}
             </span>
           </a>
 
           <div class="dropdown-menu dropdown-menu-end header-dropdown">
+            <a class="dropdown-item" (click)="goToAdminClubes()">
+              <i class="bi bi-speedometer2"></i>
+              {{ 'ADMIN_MENU.GENERAL_PANEL' | translate }}
+            </a>
+
+            <div class="dropdown-divider"></div>
+
             <a class="dropdown-item" (click)="goToAdminSugerencias()">
               <i class="bi bi-chat-left-text"></i>
-              Sugerencias
+              {{ 'ADMIN_MENU.SUGGESTIONS' | translate }}
             </a>
 
             <a class="dropdown-item" (click)="goToAdminCharts()">
               <i class="bi bi-bar-chart-line"></i>
-              Gráficas
+              {{ 'ADMIN_MENU.CHARTS' | translate }}
             </a>
 
             <a class="dropdown-item" (click)="goToAdminAiInsights()">
               <i class="bi bi-lightbulb"></i>
-              AI Insights
+              {{ 'ADMIN_MENU.AI_INSIGHTS' | translate }}
             </a>
 
             <a class="dropdown-item" (click)="goToAdminAiUsage()">
               <i class="bi bi-cpu"></i>
-              Uso de IA
+              {{ 'ADMIN_MENU.AI_USAGE' | translate }}
             </a>
 
             <a class="dropdown-item" (click)="goToAdminRegistros()">
               <i class="bi bi-file-earmark-text"></i>
-              Registros
+              {{ 'ADMIN_MENU.RECORDS' | translate }}
             </a>
           </div>
         </div>
@@ -334,7 +341,7 @@
               <label class="form-label">{{ 'HEADER.CURRENT_PASSWORD' | translate }}</label>
               <div class="input-group">
                 <input [type]="showCurrentPassword ? 'text' : 'password'" class="form-control" [(ngModel)]="currentPassword"
-                  placeholder="Contraseña actual">
+                  [placeholder]="'HEADER.CURRENT_PASSWORD' | translate">
                 <button class="btn btn-outline-secondary" type="button" (click)="showCurrentPassword = !showCurrentPassword" tabindex="-1">
                   <i class="bi" [ngClass]="showCurrentPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
                 </button>
@@ -344,7 +351,7 @@
               <label class="form-label">{{ 'HEADER.NEW_PASSWORD' | translate }}</label>
               <div class="input-group">
                 <input [type]="showNewPassword ? 'text' : 'password'" class="form-control" [(ngModel)]="newPassword"
-                  placeholder="Nueva contraseña">
+                  [placeholder]="'HEADER.NEW_PASSWORD' | translate">
                 <button class="btn btn-outline-secondary" type="button" (click)="showNewPassword = !showNewPassword" tabindex="-1">
                   <i class="bi" [ngClass]="showNewPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
                 </button>
@@ -354,7 +361,7 @@
               <label class="form-label">{{ 'HEADER.CONFIRM_PASSWORD' | translate }}</label>
               <div class="input-group">
                 <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control" [(ngModel)]="confirmPassword"
-                  placeholder="Confirmar">
+                  [placeholder]="'HEADER.CONFIRM_PASSWORD' | translate">
                 <button class="btn btn-outline-secondary" type="button" (click)="showConfirmPassword = !showConfirmPassword" tabindex="-1">
                   <i class="bi" [ngClass]="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
                 </button>

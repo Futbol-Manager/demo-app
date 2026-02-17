@@ -54,7 +54,6 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
     this.route.params.subscribe((params) => {
       // Obtener el valor de teamId de los parámetros
       this.clubId = +params['clubId']; // El + convierte el valor a número
-      console.log('clubId:', this.clubId);
     });
     this.cargarTablaJugadores();
   }
@@ -96,6 +95,8 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
       },
       (error) => {
         console.error('Error al cargar el listado de equipos', error);
+        this.loading = false;
+        this.datosCargados = true;
       }
     );
   }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from "rxjs";
+import { BehaviorSubject, EMPTY, Observable, tap } from "rxjs";
 
 import { LoginModel } from '../../models/users/login.model';
 import { LoginResponse } from '../../models/users/login-response.model';
@@ -118,7 +118,7 @@ export class LoginService {
         return this.http.get<Response>(url, { headers });
     } else {
         // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-        return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+        return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
 }
 

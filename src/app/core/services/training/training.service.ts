@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { EMPTY, Observable, of, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Training, Task, AsistenciaTraining } from '../models/training.models';
@@ -34,7 +34,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
   updateMatchInfoVisibility(matchPreparationId: number, visible: number): Observable<Response> {
@@ -54,7 +54,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -77,7 +77,7 @@ export class TrainingService {
       return this.http.post<Response>(url, training, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
 
   }
@@ -99,7 +99,7 @@ export class TrainingService {
       return this.http.post<Response>(url, training, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
 
   }
@@ -122,7 +122,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -144,7 +144,7 @@ export class TrainingService {
       return this.http.post<Response>(url, task, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -259,7 +259,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -281,7 +281,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -303,7 +303,7 @@ export class TrainingService {
       return this.http.post<Response>(url, match, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -324,7 +324,7 @@ export class TrainingService {
       return this.http.post<Response>(url, match, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -343,10 +343,10 @@ export class TrainingService {
       const url: string = environment.apiUrl + `training/deletetask/${taskId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
-      return this.http.get<Response>(url, { headers });
+      return this.http.delete<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -368,7 +368,7 @@ export class TrainingService {
           return this.http.get<Response>(url, { headers });
       } else {
           // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-          return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+          return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
       }
   }*/
 
@@ -390,7 +390,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -412,7 +412,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -433,7 +433,7 @@ export class TrainingService {
       return this.http.post<Response>(url, filterTaskShop, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -454,7 +454,7 @@ export class TrainingService {
       return this.http.post<Response>(url, taskShop, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -476,7 +476,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -498,7 +498,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -520,7 +520,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -542,7 +542,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -563,7 +563,7 @@ export class TrainingService {
       return this.http.post<Response>(url, postPartido, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -586,7 +586,7 @@ export class TrainingService {
       return this.http.post<Response>(url, respPreEntreno, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -608,7 +608,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -629,7 +629,7 @@ export class TrainingService {
       return this.http.post<Response>(url, respPostEntreno, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -651,7 +651,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -672,7 +672,7 @@ export class TrainingService {
       return this.http.post<Response>(url, respPrePartido, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -694,7 +694,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -715,7 +715,7 @@ export class TrainingService {
       return this.http.post<Response>(url, respPostPartido, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -737,7 +737,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -759,7 +759,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -781,7 +781,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -803,7 +803,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -825,7 +825,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -849,7 +849,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -871,7 +871,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -892,7 +892,7 @@ export class TrainingService {
       return this.http.post<Response>(url, golPostPartido, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -911,10 +911,10 @@ export class TrainingService {
       const url: string = `${environment.apiUrl}match/deletegolpostpartidoavanzado/${golPostPartidoId}/${postPartidoId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
-      return this.http.get<Response>(url, { headers });
+      return this.http.delete<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -936,7 +936,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -957,7 +957,7 @@ export class TrainingService {
       return this.http.post<Response>(url, asis, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -979,7 +979,7 @@ export class TrainingService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1003,7 +1003,7 @@ export class TrainingService {
       const url: string = environment.apiUrl + `training/updatepagomultaasistenciabypk/${idsPk}/${pagoStatus}`;
       return this.http.get<Response>(url, { headers });
     } else {
-      return new Observable();
+      return EMPTY;
     }
   }
 

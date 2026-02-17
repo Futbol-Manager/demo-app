@@ -45,7 +45,6 @@ export class EstadisticasEquiposClubComponent implements OnInit {
     this.route.params.subscribe((params) => {
       // Obtener el valor de teamId de los parámetros
       this.clubId = +params['clubId']; // El + convierte el valor a número
-      console.log('clubId:', this.clubId);
     });
     this.getListaPostpartidos();
   }
@@ -150,7 +149,6 @@ export class EstadisticasEquiposClubComponent implements OnInit {
     //console.log(this.resumenes[index].teamId);
     //console.log(this.resumenes[index].partidos);
     this.partidosTeamSelected = this.resumenes[index].partidos;
-    console.log(this.partidosTeamSelected);
     this.filteredPlayers = this.partidosTeamSelected;
     this.equipoSeleccionado = this.resumenes[index].nameTeam;
     this.mostarTabla = true;

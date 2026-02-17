@@ -264,7 +264,6 @@ export class InicioComponent implements OnInit {
       .subscribe({
         next: (response: Response) => {
           this.clubId = response.data?.club?.clubId ?? 0;
-          console.log("CLUBID", this.clubId)
           if (!this.clubId) {
             console.error('ClubId inválido');
             this.clubLoading = false;
@@ -390,7 +389,6 @@ export class InicioComponent implements OnInit {
         if (response?.data && response.data.length > 0) {
           // Guardamos solo el próximo partido
           hijo.nextMatch = response.data[0];
-          console.log('PROX:', hijo.nextMatch);
         } else {
           hijo.nextMatch = null;
         }

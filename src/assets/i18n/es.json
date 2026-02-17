@@ -2287,5 +2287,41 @@
       "STATUS_DRAFT": "Borrador",
       "STATUS_REPORT-GENERATED": "Informe generado"
     }
+  },
+  "ADMIN_MENU": {
+    "TITLE": "Administrador",
+    "GENERAL_PANEL": "Panel General",
+    "SUGGESTIONS": "Sugerencias",
+    "CHARTS": "Gráficas",
+    "AI_INSIGHTS": "AI Insights",
+    "AI_USAGE": "Uso de IA",
+    "RECORDS": "Registros"
+  },
+  "STATS": {
+    "NO_PLAYER_DATA": "No hay datos de jugadores disponibles",
+    "NO_TEAM_DATA": "No hay datos de equipos disponibles"
+  },
+  "AI_PANEL": {
+    "CONSULT_BUTTON": "Consulta con IA",
+    "PLAYER_DESCRIPTION": "Pídele a la IA que genere gráficas y análisis con los datos de los jugadores",
+    "TEAM_DESCRIPTION": "Pídele a la IA que genere gráficas y análisis con los datos de los equipos",
+    "SIDEBAR_TITLE_PLAYERS": "Asistente IA - Estadísticas de Jugadores",
+    "SIDEBAR_TITLE_TEAMS": "Asistente IA - Estadísticas de Equipos",
+    "HELP_TEXT": "Pregúntame sobre los datos. Puedo ayudarte con:",
+    "SUGGESTION_TOP_SCORER": "Top goleador",
+    "SUGGESTION_ASSISTS": "Gráfica asistencias",
+    "SUGGESTION_PERFORMANCE": "Análisis de rendimiento",
+    "SUGGESTION_CARDS": "Tarjetas",
+    "SUGGESTION_COMPARISON": "Comparativa",
+    "SUGGESTION_AVG_MINUTES": "Minutos promedio",
+    "SUGGESTION_BEST_TEAM": "Mejor equipo",
+    "SUGGESTION_POINTS_CHART": "Gráfica puntos",
+    "SUGGESTION_GOALS_COMPARISON": "Comparativa goles",
+    "SUGGESTION_AVG_WINS": "Promedio victorias",
+    "SUGGESTION_RECENT_STREAKS": "Rachas recientes",
+    "USER_LABEL": "Tú:",
+    "PLACEHOLDER": "Escribe tu consulta aquí...",
+    "SEND": "Enviar",
+    "HINT_CTRL_ENTER": "Presiona Ctrl+Enter para enviar"
   }
 }

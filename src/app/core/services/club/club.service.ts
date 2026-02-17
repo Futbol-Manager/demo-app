@@ -5,7 +5,7 @@ import {
   HttpRequest,
 } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable, of, throwError } from 'rxjs';
+import { EMPTY, forkJoin, Observable, of, throwError } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
@@ -109,7 +109,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -137,7 +137,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -164,7 +164,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -186,7 +186,7 @@ export class ClubService {
       return this.http.post<Response>(url, ropaJugador, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -209,7 +209,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -231,7 +231,7 @@ export class ClubService {
       return this.http.post<Response>(url, ropaClub, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -269,7 +269,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -296,7 +296,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -323,7 +323,7 @@ export class ClubService {
       return this.http.post<Response>(url, clubCuota, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -351,7 +351,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -379,7 +379,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -404,7 +404,7 @@ export class ClubService {
       return this.http.post<Response>(url, playerCuota, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -427,7 +427,7 @@ export class ClubService {
       return this.http.post<Response>(url, historyPagos, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -451,7 +451,7 @@ export class ClubService {
       return this.http.post<Response>(url, historyPagos, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -468,7 +468,7 @@ export class ClubService {
       const url: string = environment.apiUrl + `club/uploadExcel/${clubId}`;
       return this.http.post<Response>(url, formData, { headers });
     } else {
-      return new Observable();
+      return EMPTY;
     }
   }
 
@@ -486,7 +486,7 @@ export class ClubService {
         environment.apiUrl + `club/uploadExcelgesdesk/${clubId}`;
       return this.http.post<Response>(url, formData, { headers });
     } else {
-      return new Observable();
+      return EMPTY;
     }
   }
 
@@ -512,7 +512,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -530,7 +530,7 @@ export class ClubService {
         `club/getlisttraineroftheclubfortemp/${clubId}/${temporada}`;
       return this.http.get<Response>(url, { headers });
     } else {
-      return new Observable();
+      return EMPTY;
     }
   }
 
@@ -552,7 +552,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -574,7 +574,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -598,7 +598,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -623,7 +623,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -652,7 +652,7 @@ export class ClubService {
       return this.http.post<Response>(url, abonado, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -679,7 +679,7 @@ export class ClubService {
       return this.http.post<Response>(url, abonadoPagoHist, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -703,7 +703,7 @@ export class ClubService {
       return this.http.post<Response>(url, abonadoPagoHist, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -794,7 +794,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -816,7 +816,7 @@ export class ClubService {
       return this.http.post<Response>(url, patrocinador, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -835,10 +835,10 @@ export class ClubService {
         environment.apiUrl + `club/deletepatrocinadorbyid/${patrocinadorId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
-      return this.http.get<Response>(url, { headers });
+      return this.http.delete<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -864,7 +864,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -890,7 +890,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -914,7 +914,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -936,7 +936,7 @@ export class ClubService {
       return this.http.post<Response>(url, correoEnviado, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -958,7 +958,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -977,10 +977,10 @@ export class ClubService {
         environment.apiUrl + `club/delete-correo/${id}/${option}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
-      return this.http.get<Response>(url, { headers });
+      return this.http.delete<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1003,7 +1003,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1025,7 +1025,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1046,7 +1046,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1068,7 +1068,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1090,7 +1090,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1114,14 +1114,14 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
   getConteoPadresPorClub(clubId: number): Observable<Response> {
     const token: string | null = localStorage.getItem('token');
 
     if (!token) {
-      return new Observable();
+      return EMPTY;
     }
 
     const headers = new HttpHeaders({
@@ -1148,10 +1148,10 @@ export class ClubService {
         environment.apiUrl + `club/deletedocumentoforclub/${docClubesId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
-      return this.http.get<Response>(url, { headers });
+      return this.http.delete<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1177,7 +1177,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1203,7 +1203,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1237,7 +1237,7 @@ export class ClubService {
 
   uploadSinDocClub(dto: any): Observable<Response> {
     const token = localStorage.getItem('token');
-    if (!token) return new Observable();
+    if (!token) return EMPTY;
 
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
@@ -1283,13 +1283,13 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
   updateDocumentoDescargado(dto: any): Observable<Response> {
     const token = localStorage.getItem('token');
-    if (!token) return new Observable();
+    if (!token) return EMPTY;
 
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
@@ -1302,7 +1302,7 @@ export class ClubService {
 
   uploadDocPadres(file: File, dto: any): Observable<Response> {
     const token = localStorage.getItem('token');
-    if (!token) return new Observable();
+    if (!token) return EMPTY;
 
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
@@ -1321,7 +1321,7 @@ export class ClubService {
 
   uploadDocPadresPersonalizado(dto: any): Observable<Response> {
     const token = localStorage.getItem('token');
-    if (!token) return new Observable();
+    if (!token) return EMPTY;
 
     const headers = new HttpHeaders({
       Authorization: `Bearer ${token}`,
@@ -1355,7 +1355,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1376,20 +1376,23 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
   updateCreateCategoryType(dto: any): Observable<Response> {
     const token = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      });
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    });
-
-    const url = environment.apiUrl + 'club/updatecreatecategorytype';
-    return this.http.post<Response>(url, dto, { headers });
+      const url = environment.apiUrl + 'club/updatecreatecategorytype';
+      return this.http.post<Response>(url, dto, { headers });
+    } else {
+      return EMPTY;
+    }
   }
 
   getBancoClub(clubId: number, temporada: string): Observable<Response> {
@@ -1411,20 +1414,23 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
   updateBancoClub(dto: any): Observable<Response> {
     const token = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      });
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    });
-
-    const url = environment.apiUrl + 'club/update-bancoclub';
-    return this.http.post<Response>(url, dto, { headers });
+      const url = environment.apiUrl + 'club/update-bancoclub';
+      return this.http.post<Response>(url, dto, { headers });
+    } else {
+      return EMPTY;
+    }
   }
 
   getListPagosClub(clubId: number, temporada: string): Observable<Response> {
@@ -1446,7 +1452,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1475,7 +1481,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1503,20 +1509,23 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
   createUpdatePagoClub(dto: any): Observable<Response> {
     const token = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      });
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    });
-
-    const url = environment.apiUrl + 'club/createupdate-pagoclub';
-    return this.http.post<Response>(url, dto, { headers });
+      const url = environment.apiUrl + 'club/createupdate-pagoclub';
+      return this.http.post<Response>(url, dto, { headers });
+    } else {
+      return EMPTY;
+    }
   }
 
   getListPlayersPagosClub(
@@ -1542,7 +1551,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1609,20 +1618,23 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
   createPagoHistoryPlayer(dto: any): Observable<Response> {
     const token = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      });
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    });
-
-    const url = environment.apiUrl + `club/create-pagohistoriplayer`;
-    return this.http.post<Response>(url, dto, { headers });
+      const url = environment.apiUrl + `club/create-pagohistoriplayer`;
+      return this.http.post<Response>(url, dto, { headers });
+    } else {
+      return EMPTY;
+    }
   }
 
   moverPlayerTemporada(
@@ -1649,7 +1661,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1677,20 +1689,23 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
   devolverPagoClubById(dto: any): Observable<Response> {
     const token = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      });
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    });
-
-    const url = environment.apiUrl + `club/devolverpagoclubbyplayer`;
-    return this.http.post<Response>(url, dto, { headers });
+      const url = environment.apiUrl + `club/devolverpagoclubbyplayer`;
+      return this.http.post<Response>(url, dto, { headers });
+    } else {
+      return EMPTY;
+    }
   }
 
   deletePagoClubForPlayer(
@@ -1714,10 +1729,10 @@ export class ClubService {
         `club/delete-pagoclub/${pagoClubId}/${playerId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
-      return this.http.get<Response>(url, { headers });
+      return this.http.delete<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1745,7 +1760,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1754,14 +1769,17 @@ export class ClubService {
     playerId: number
   ): Observable<Response> {
     const token = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      });
 
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    });
-
-    const url = environment.apiUrl + `club/editpagoclubforplayer/${playerId}`;
-    return this.http.post<Response>(url, dto, { headers });
+      const url = environment.apiUrl + `club/editpagoclubforplayer/${playerId}`;
+      return this.http.post<Response>(url, dto, { headers });
+    } else {
+      return EMPTY;
+    }
   }
 
   deletePagoClub(pagoClubId: number): Observable<Response> {
@@ -1780,10 +1798,10 @@ export class ClubService {
         environment.apiUrl + `club/deletepagoclub/${pagoClubId}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
-      return this.http.get<Response>(url, { headers });
+      return this.http.delete<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1806,7 +1824,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1829,7 +1847,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1857,7 +1875,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1883,7 +1901,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1905,7 +1923,7 @@ export class ClubService {
       return this.http.post<Response>(url, correoEnviado, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1931,7 +1949,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1950,10 +1968,10 @@ export class ClubService {
         environment.apiUrl + `club/deleteclubfede/${clubId}/${temporada}`;
 
       // Realiza la solicitud HTTP con las cabeceras configuradas
-      return this.http.get<Response>(url, { headers });
+      return this.http.delete<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -1979,7 +1997,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -2000,7 +2018,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -2022,7 +2040,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -2044,7 +2062,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -2066,7 +2084,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -2093,7 +2111,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -2115,7 +2133,7 @@ export class ClubService {
       return this.http.get<Response>(url, { headers });
     } else {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-      return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+      return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
   }
 
@@ -2296,7 +2314,7 @@ export class ClubService {
   }
 
   deleteFormCampo(formularioCampoId: number): Observable<Response> {
-    return this.http.get<Response>(
+    return this.http.delete<Response>(
       environment.apiUrl + 'formulario/campos/delete/' + formularioCampoId,
       { headers: this.getAuthHeaders() }
     );

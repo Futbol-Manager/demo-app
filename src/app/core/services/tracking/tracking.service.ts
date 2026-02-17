@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, Subscription, interval } from 'rxjs';
+import { EMPTY, Observable, Subscription, interval } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
 
@@ -183,7 +183,7 @@ export class TrackingService implements OnDestroy {
         { headers: this.getAuthHeaders() }
       );
     } else {
-      return new Observable();
+      return EMPTY;
     }
   }
 
@@ -195,7 +195,7 @@ export class TrackingService implements OnDestroy {
         { headers: this.getAuthHeaders() }
       );
     } else {
-      return new Observable();
+      return EMPTY;
     }
   }
 }

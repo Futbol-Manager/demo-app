@@ -154,6 +154,10 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['/dashboard/admin-sugerencias']);
   }
 
+  goToAdminClubes(): void {
+    this.router.navigate(['/dashboard/admin-clubes']);
+  }
+
   goToAdminSugerencias(): void {
     this.router.navigate(['/dashboard/admin-sugerencias']);
   }
@@ -200,7 +204,6 @@ export class HeaderComponent implements OnInit {
   }
 
   saveChanges() {
-    console.log(this.profileId);
     if (this.userForm.valid) {
       const today: Date = new Date(
         Date.UTC(
@@ -349,7 +352,6 @@ export class HeaderComponent implements OnInit {
           }
         );
     } else {
-      console.log('Ninguna imagen seleccionada.');
     }
   }
 

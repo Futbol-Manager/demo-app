@@ -178,7 +178,7 @@ export class RopaComponent implements OnInit, AfterViewChecked, OnDestroy {
       labelPrefs: JSON.stringify(this.userLabelPrefs)
     };
     this.clubService.saveUserRopaPrefs(dto).subscribe(
-      () => console.log('Preferencias de ropa guardadas en BD'),
+      () => {},
       (err: any) => console.error('Error guardando prefs de ropa en BD:', err)
     );
   }

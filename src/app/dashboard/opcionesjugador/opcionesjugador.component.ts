@@ -105,9 +105,7 @@ export class OpcionesjugadorComponent implements OnInit, OnDestroy {
   obtenerSuscripcionActual() {
     this.teamService.getSubscriptionByPlayerId(0, this.userId).subscribe(
       (response: Response) => {
-        console.log(response.data);
         if (response.data.suscripcionId != 0) {
-          console.log(response.data);
           this.showOpcionesOk = true;
         } else {
           //5555

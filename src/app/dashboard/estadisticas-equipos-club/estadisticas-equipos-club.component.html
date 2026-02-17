@@ -24,13 +24,13 @@
         
         <button class="btn-ai-consult" (click)="toggleAiPanel()">
           <i class="bi bi-robot"></i>
-          <span>Consulta con IA</span>
+          <span>{{ 'AI_PANEL.CONSULT_BUTTON' | translate }}</span>
         </button>
       </div>
 
       <div class="ai-info-banner">
         <i class="bi bi-lightbulb-fill"></i>
-        <span>Pídele a la IA que genere gráficas y análisis con los datos de los equipos</span>
+        <span>{{ 'AI_PANEL.TEAM_DESCRIPTION' | translate }}</span>
       </div>
 
     <div style="overflow-x: auto;">
@@ -86,6 +86,18 @@
               </div>
 
 
+            </td>
+          </tr>
+        </tbody>
+
+        <!-- Empty state -->
+        <tbody *ngIf="datosCargados && resumentotales.length === 0">
+          <tr>
+            <td colspan="20" class="text-center py-5">
+              <div class="empty-state">
+                <i class="bi bi-trophy fs-1 text-muted"></i>
+                <p class="mt-2 text-muted">{{ 'STATS.NO_TEAM_DATA' | translate }}</p>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -180,7 +192,7 @@
   <div class="ai-sidebar-header">
     <h3>
       <i class="bi bi-robot"></i>
-      Asistente IA - Estadísticas de Equipos
+      {{ 'AI_PANEL.SIDEBAR_TITLE_TEAMS' | translate }}
     </h3>
     <button class="btn-close-ai" (click)="toggleAiPanel()">
       <i class="bi bi-x-lg"></i>
@@ -189,26 +201,26 @@
 
   <div class="ai-sidebar-body">
     <div class="ai-suggestions-section">
-      <p class="ai-intro">💡 Pregúntame sobre los datos de tus equipos. Puedo ayudarte con:</p>
+      <p class="ai-intro">💡 {{ 'AI_PANEL.HELP_TEXT' | translate }}</p>
       
       <div class="suggestion-chips">
         <button class="suggestion-chip" (click)="useSuggestion('¿Qué equipo tiene más victorias?')">
-          🏆 Mejor equipo
+          🏆 {{ 'AI_PANEL.SUGGESTION_BEST_TEAM' | translate }}
         </button>
         <button class="suggestion-chip" (click)="useSuggestion('Muestra una gráfica de puntos por equipo')">
-          📊 Gráfica puntos
+          📊 {{ 'AI_PANEL.SUGGESTION_POINTS_CHART' | translate }}
         </button>
         <button class="suggestion-chip" (click)="useSuggestion('Analiza el rendimiento de los equipos')">
-          📈 Análisis rendimiento
+          📈 {{ 'AI_PANEL.SUGGESTION_PERFORMANCE_ANALYSIS' | translate }}
         </button>
         <button class="suggestion-chip" (click)="useSuggestion('Compara goles a favor vs en contra')">
-          ⚖️ Comparativa goles
+          ⚖️ {{ 'AI_PANEL.SUGGESTION_GOALS_COMPARISON' | translate }}
         </button>
         <button class="suggestion-chip" (click)="useSuggestion('¿Cuál es el promedio de victorias?')">
-          📊 Promedio victorias
+          📊 {{ 'AI_PANEL.SUGGESTION_AVG_WINS' | translate }}
         </button>
         <button class="suggestion-chip" (click)="useSuggestion('Muestra las últimas 5 rachas')">
-          🎯 Rachas recientes
+          🎯 {{ 'AI_PANEL.SUGGESTION_RECENT_STREAKS' | translate }}
         </button>
       </div>
     </div>
@@ -218,7 +230,7 @@
         <div *ngFor="let message of aiMessages" class="ai-message" [ngClass]="message.role">
           <div class="message-content">
             <strong *ngIf="message.role === 'assistant'">🤖 IA:</strong>
-            <strong *ngIf="message.role === 'user'">Tú:</strong>
+            <strong *ngIf="message.role === 'user'">{{ 'AI_PANEL.USER_LABEL' | translate }}</strong>
             <p [innerHTML]="message.content"></p>
           </div>
         </div>
@@ -236,16 +248,16 @@
       <div class="ai-input-section">
         <textarea 
           [(ngModel)]="aiPrompt" 
-          placeholder="Escribe tu consulta aquí..."
+          [placeholder]="'AI_PANEL.PLACEHOLDER' | translate"
           rows="3"
           (keydown)="onKeyDown($event)"
           [disabled]="aiLoading"
         ></textarea>
         <button class="btn-send-ai" (click)="sendAiMessage()" [disabled]="aiLoading || !aiPrompt.trim()">
           <i class="bi bi-send-fill"></i>
-          Enviar
+          {{ 'AI_PANEL.SEND' | translate }}
         </button>
-        <small class="ai-hint">Presiona Ctrl+Enter para enviar</small>
+        <small class="ai-hint">{{ 'AI_PANEL.HINT_CTRL_ENTER' | translate }}</small>
       </div>
     </div>
   </div>

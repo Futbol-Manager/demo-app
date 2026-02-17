@@ -1,7 +1,7 @@
 // team.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { EMPTY, Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
 import { CancelSubscriptionRequest, HorarioTeam, SubscriptionRequest, Suscripcion, Team, TeamNew } from './team.model';
@@ -91,7 +91,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -113,7 +113,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -135,7 +135,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -157,7 +157,7 @@ export class TeamService {
             return this.http.post<Response>(url, team, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
 
     }
@@ -167,7 +167,7 @@ export class TeamService {
      */
     uploadTeamLogo(teamId: number, file: File): Observable<Response> {
         const token: string | null = localStorage.getItem('token');
-        if (!token) return new Observable();
+        if (!token) return EMPTY;
         const formData = new FormData();
         formData.append('file', file, file.name);
         const headers = new HttpHeaders({
@@ -192,10 +192,10 @@ export class TeamService {
             const url: string = environment.apiUrl + `team/deleteteam/${teamId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
-            return this.http.get<Response>(url, { headers });
+            return this.http.delete<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -214,10 +214,10 @@ export class TeamService {
             const url: string = environment.apiUrl + `team/deleteLogicTeam/${teamId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
-            return this.http.get<Response>(url, { headers });
+            return this.http.delete<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -239,7 +239,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -261,7 +261,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -283,7 +283,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -305,7 +305,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -327,7 +327,7 @@ export class TeamService {
             return this.http.post<Response>(url, cuota, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
 
     }
@@ -350,7 +350,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
 
     }
@@ -373,7 +373,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -395,7 +395,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -417,7 +417,7 @@ export class TeamService {
             return this.http.post<Response>(url, historyCuotasClub, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -439,7 +439,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -461,7 +461,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -483,7 +483,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -505,7 +505,7 @@ export class TeamService {
             return this.http.post<Response>(url, dto, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -527,7 +527,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -549,7 +549,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -573,7 +573,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -594,7 +594,7 @@ export class TeamService {
             return this.http.post<Response>(url, paymentRequest, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -616,7 +616,7 @@ export class TeamService {
             return this.http.post<Response>(url, dto, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -638,7 +638,7 @@ export class TeamService {
             return this.http.post<Response>(url, dto, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -660,7 +660,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -682,7 +682,7 @@ export class TeamService {
             return this.http.post<Response>(url, dto, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -704,7 +704,7 @@ export class TeamService {
             return this.http.post<Response>(url, dto, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -726,7 +726,7 @@ export class TeamService {
             return this.http.post<Response>(url, dto, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -745,10 +745,10 @@ export class TeamService {
             const url: string = environment.apiUrl + `stripe/deletesuscripcionbyid/${suscripcionId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
-            return this.http.get<Response>(url, { headers });
+            return this.http.delete<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -770,7 +770,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -792,7 +792,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -853,7 +853,7 @@ export class TeamService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -866,7 +866,7 @@ export class TeamService {
             const url: string = environment.apiUrl + `team/getclubesadmin/${temporada}`;
             return this.http.get<Response>(url, { headers });
         } else {
-            return new Observable();
+            return EMPTY;
         }
     }
 
@@ -879,7 +879,7 @@ export class TeamService {
             const url: string = environment.apiUrl + `team/getadminkpis`;
             return this.http.get<Response>(url, { headers });
         } else {
-            return new Observable();
+            return EMPTY;
         }
     }
 
@@ -892,7 +892,7 @@ export class TeamService {
             const url: string = environment.apiUrl + `team/getadminaiinsights`;
             return this.http.get<Response>(url, { headers });
         } else {
-            return new Observable();
+            return EMPTY;
         }
     }
 
@@ -913,7 +913,7 @@ export class TeamService {
             const url: string = environment.apiUrl + `team/getadminstats`;
             return this.http.get<Response>(url, { headers });
         } else {
-            return new Observable();
+            return EMPTY;
         }
     }
 
@@ -926,7 +926,7 @@ export class TeamService {
             const url: string = environment.apiUrl + `team/getclubdetailadmin/${clubId}`;
             return this.http.get<Response>(url, { headers });
         } else {
-            return new Observable();
+            return EMPTY;
         }
     }
 

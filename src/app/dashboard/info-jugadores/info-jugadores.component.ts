@@ -16,6 +16,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-info-jugadores',
@@ -112,7 +113,8 @@ export class InfoJugadoresComponent implements OnInit {
     private location: Location,
     private teamService: TeamService,
     private loginService: LoginService,
-    private dialog: MatDialog) { }
+    private dialog: MatDialog,
+    private toastr: ToastrService) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -428,17 +430,17 @@ export class InfoJugadoresComponent implements OnInit {
       this.clubService.uploadDocPadres(file, dto).subscribe({
         next: (res) => {
           this.loadDocuments();
-          alert('Documento subido correctamente');
+          this.toastr.success('Documento subido correctamente');
           this.cerrarModalDocumento();
           // refrescar lista si hace falta
         },
         error: (err) => {
           console.error(err);
-          alert('Error al subir el documento');
+          this.toastr.error('Error al subir el documento');
         }
       });
     } else {
-      alert('Selecciona un archivo para subir.');
+      this.toastr.warning('Selecciona un archivo para subir.');
     }
   }
 
@@ -492,7 +494,7 @@ export class InfoJugadoresComponent implements OnInit {
         }, 1000);
       } else {
         // Muestra un mensaje de error si el archivo no es PNG o JPEG
-        alert('Formato de archivo no válido. Por favor, sube una imagen en formato PNG o JPEG.');
+        this.toastr.warning('Formato de archivo no válido. Por favor, sube una imagen en formato PNG o JPEG.');
       }
     }
   }
@@ -632,7 +634,7 @@ export class InfoJugadoresComponent implements OnInit {
       if (['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'].includes(ext || '')) {
         this.archivoSeleccionado = file;
       } else {
-        alert('Solo se permiten archivos PDF o Word.');
+        this.toastr.warning('Solo se permiten archivos PDF o Word.');
         this.archivoSeleccionado = null;
       }
     }
@@ -663,7 +665,7 @@ export class InfoJugadoresComponent implements OnInit {
 
   guardarEdicionPersonalizado(): void {
     if (!this.requiereRespuesta) {
-      alert('Debes aceptar la autorización o condiciones puestas por el club.');
+      this.toastr.warning('Debes aceptar la autorización o condiciones puestas por el club.');
       return;
     }
 
@@ -686,13 +688,13 @@ export class InfoJugadoresComponent implements OnInit {
     this.clubService.uploadDocPadresPersonalizado(dto).subscribe({
       next: (res) => {
         //this.loadDocuments();
-        alert('Contenido actualizado correctamente');
+        this.toastr.success('Contenido actualizado correctamente');
         this.cerrarModalEditarPersonalizado();
         // refrescar lista si hace falta
       },
       error: (err) => {
         console.error(err);
-        alert('Error al subir el documento');
+        this.toastr.error('Error al subir el documento');
       }
     });
   }
@@ -798,13 +800,13 @@ export class InfoJugadoresComponent implements OnInit {
     }*/
 
     if (this.teamSelected == 0) {
-      alert('Selecciona un equipo del desplegable.');
+      this.toastr.warning('Selecciona un equipo del desplegable.');
     } else {
       this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected, cuotaTbm, this.addPlayerMoved ? 1 : 0).subscribe(
         (response: Response) => {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
-            alert("Movido correctamente, cuando vuelvas a entrar verás los cambios.");
+            this.toastr.success('Movido correctamente, cuando vuelvas a entrar verás los cambios.');
             this.showModalMover = false;
             this.addPlayerMoved = false;
             this.teamSelected = 0;
@@ -873,10 +875,10 @@ export class InfoJugadoresComponent implements OnInit {
         (response: Response) => {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data) {
-            alert('Jugador movido correctamente');
+            this.toastr.success('Jugador movido correctamente');
           } else {
             console.error('La respuesta del servicio no tiene la estructura esperada', response);
-            alert(response.error.msg);
+            this.toastr.error(response.error.msg);
           }
         },
         (error) => {

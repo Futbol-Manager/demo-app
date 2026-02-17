@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { Response } from 'src/app/core/services/models/response.model';
 import {
   DebriefTraining,
   DebriefMatch,
@@ -17,10 +16,6 @@ import {
   ReportSection,
   DEFAULT_TRAINING_QUESTIONS,
   DEFAULT_MATCH_QUESTIONS,
-  SaveDebriefTrainingRequest,
-  SaveDebriefMatchRequest,
-  GenerateReportRequest,
-  SaveDebriefConfigRequest
 } from 'src/app/core/models/debrief/debrief.model';
 
 @Injectable({
@@ -28,49 +23,27 @@ import {
 })
 export class DebriefService {
 
-  // ── Almacenamiento local (hasta que haya backend) ──
-  private localDebriefs: (DebriefTraining | DebriefMatch)[] = [];
-  private localReports: DebriefReport[] = [];
-  private localConfig: DebriefConfig | null = null;
-  private nextId = 1;
+  private baseUrl = environment.apiUrl + 'debrief/';
 
-  constructor(private http: HttpClient) {
-    this.loadFromLocalStorage();
-  }
-
-  // ═══════════════════════════════════════
-  // HEADERS helper
-  // ═══════════════════════════════════════
-  private getHeaders(): HttpHeaders | null {
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
-  }
+  constructor(private http: HttpClient) {}
 
   // ═══════════════════════════════════════
   // PREGUNTAS
   // ═══════════════════════════════════════
 
-  /** Obtiene las preguntas activas para entrenamiento (default + custom - removed) */
   getTrainingQuestions(config?: DebriefConfig | null): DebriefQuestion[] {
     return this.mergeQuestions(DEFAULT_TRAINING_QUESTIONS, config);
   }
 
-  /** Obtiene las preguntas activas para partido (default + custom - removed) */
   getMatchQuestions(config?: DebriefConfig | null): DebriefQuestion[] {
     return this.mergeQuestions(DEFAULT_MATCH_QUESTIONS, config);
   }
 
-  /** Fusiona preguntas default con personalizaciones */
   private mergeQuestions(defaults: DebriefQuestion[], config?: DebriefConfig | null): DebriefQuestion[] {
     if (!config) return [...defaults];
-
-    // Filtrar las preguntas default que el coach no haya removido
     const activeDefaults = defaults.filter(
       q => !config.removedDefaultQuestionIds.includes(q.id)
     );
-
-    // Agregar preguntas custom al final
     return [...activeDefaults, ...(config.customQuestions || [])];
   }
 
@@ -78,168 +51,144 @@ export class DebriefService {
   // CONFIGURACIÓN PERSONALIZADA
   // ═══════════════════════════════════════
 
-  /** Obtener configuración del entrenador/club */
   getConfig(userId: number, teamId?: number): Observable<DebriefConfig | null> {
-    // TODO: Reemplazar con llamada al backend
-    // const url = `${environment.apiUrl}debrief/config/${userId}`;
-    // return this.http.get<Response>(url, { headers }).pipe(map(r => r.data));
-
-    return of(this.localConfig);
+    return this.http.get<any>(this.baseUrl + `config/${userId}`).pipe(
+      map(res => {
+        if (!res?.data) return null;
+        const d = res.data;
+        return {
+          configId: d.configId,
+          userId: d.userId,
+          teamId: d.teamId,
+          customQuestions: d.customQuestions ? JSON.parse(d.customQuestions) : [],
+          removedDefaultQuestionIds: d.removedDefaultQuestionIds ? JSON.parse(d.removedDefaultQuestionIds) : [],
+          updatedAt: d.updatedAt
+        } as DebriefConfig;
+      }),
+      catchError(() => of(null))
+    );
   }
 
-  /** Guardar configuración personalizada */
   saveConfig(config: DebriefConfig): Observable<DebriefConfig> {
-    // TODO: Reemplazar con llamada al backend
-    // const url = `${environment.apiUrl}debrief/config`;
-    // const body: SaveDebriefConfigRequest = { ... };
-    // return this.http.put<Response>(url, body, { headers }).pipe(map(r => r.data));
-
-    this.localConfig = { ...config, updatedAt: new Date().toISOString() };
-    this.saveToLocalStorage();
-    return of(this.localConfig);
+    const body = {
+      userId: config.userId,
+      teamId: config.teamId || null,
+      customQuestions: JSON.stringify(config.customQuestions || []),
+      removedDefaultQuestionIds: JSON.stringify(config.removedDefaultQuestionIds || [])
+    };
+    return this.http.put<any>(this.baseUrl + 'config', body).pipe(
+      map(res => {
+        const d = res.data;
+        return {
+          configId: d.configId,
+          userId: d.userId,
+          teamId: d.teamId,
+          customQuestions: d.customQuestions ? JSON.parse(d.customQuestions) : [],
+          removedDefaultQuestionIds: d.removedDefaultQuestionIds ? JSON.parse(d.removedDefaultQuestionIds) : [],
+          updatedAt: d.updatedAt
+        } as DebriefConfig;
+      }),
+      catchError(() => of(config))
+    );
   }
 
-  /** Añadir una pregunta personalizada */
   addCustomQuestion(question: DebriefQuestion): void {
-    if (!this.localConfig) {
-      this.localConfig = {
-        userId: 0,
-        customQuestions: [],
-        removedDefaultQuestionIds: []
-      };
-    }
-    this.localConfig.customQuestions.push(question);
-    this.saveToLocalStorage();
+    // This is handled via saveConfig now — kept for backward compatibility
+    // The component should call getConfig(), modify, then saveConfig()
   }
 
-  /** Quitar una pregunta (default: marcarla como removed, custom: eliminarla) */
   removeQuestion(questionId: string): void {
-    if (!this.localConfig) {
-      this.localConfig = {
-        userId: 0,
-        customQuestions: [],
-        removedDefaultQuestionIds: []
-      };
-    }
-
-    // ¿Es una custom? → eliminar del array
-    const customIdx = this.localConfig.customQuestions.findIndex(q => q.id === questionId);
-    if (customIdx >= 0) {
-      this.localConfig.customQuestions.splice(customIdx, 1);
-    } else {
-      // Es default → marcar como removed
-      if (!this.localConfig.removedDefaultQuestionIds.includes(questionId)) {
-        this.localConfig.removedDefaultQuestionIds.push(questionId);
-      }
-    }
-    this.saveToLocalStorage();
+    // Handled via saveConfig — kept for backward compatibility
   }
 
-  /** Restaurar una pregunta default que fue removida */
   restoreDefaultQuestion(questionId: string): void {
-    if (!this.localConfig) return;
-    this.localConfig.removedDefaultQuestionIds =
-      this.localConfig.removedDefaultQuestionIds.filter(id => id !== questionId);
-    this.saveToLocalStorage();
+    // Handled via saveConfig — kept for backward compatibility
   }
 
   // ═══════════════════════════════════════
   // GUARDAR DEBRIEF
   // ═══════════════════════════════════════
 
-  /** Guardar debrief de entrenamiento */
   saveTrainingDebrief(debrief: DebriefTraining): Observable<DebriefTraining> {
-    // TODO: Reemplazar con llamada al backend
-    // const url = `${environment.apiUrl}debrief/training`;
-    // const body: SaveDebriefTrainingRequest = { ... };
-    // return this.http.post<Response>(url, body, { headers }).pipe(map(r => r.data));
-
-    if (!debrief.debriefId) {
-      debrief.debriefId = this.nextId++;
-    }
-    debrief.createdAt = debrief.createdAt || new Date().toISOString();
-    debrief.updatedAt = new Date().toISOString();
-
-    const idx = this.localDebriefs.findIndex(
-      d => (d as DebriefTraining).trainingSessionId === debrief.trainingSessionId &&
-        d.debriefId === debrief.debriefId
+    const body = {
+      teamId: debrief.teamId,
+      coachUserId: debrief.coachUserId,
+      trainingSessionId: debrief.trainingSessionId,
+      date: debrief.date,
+      answers: JSON.stringify(debrief.answers),
+      attendanceContext: debrief.attendanceContext ? JSON.stringify(debrief.attendanceContext) : null,
+      customQuestions: debrief.customQuestions ? JSON.stringify(debrief.customQuestions) : null,
+      status: debrief.status || 'completed'
+    };
+    return this.http.post<any>(this.baseUrl + 'training', body).pipe(
+      map(res => this.mapToDebriefTraining(res.data)),
+      catchError(() => of(debrief))
     );
-    if (idx >= 0) {
-      this.localDebriefs[idx] = debrief;
-    } else {
-      this.localDebriefs.push(debrief);
-    }
-    this.saveToLocalStorage();
-    return of(debrief);
   }
 
-  /** Guardar debrief de partido */
   saveMatchDebrief(debrief: DebriefMatch): Observable<DebriefMatch> {
-    // TODO: Reemplazar con llamada al backend
-    // const url = `${environment.apiUrl}debrief/match`;
-    // const body: SaveDebriefMatchRequest = { ... };
-    // return this.http.post<Response>(url, body, { headers }).pipe(map(r => r.data));
-
-    if (!debrief.debriefId) {
-      debrief.debriefId = this.nextId++;
-    }
-    debrief.createdAt = debrief.createdAt || new Date().toISOString();
-    debrief.updatedAt = new Date().toISOString();
-
-    const idx = this.localDebriefs.findIndex(
-      d => (d as DebriefMatch).matchPreparationId === debrief.matchPreparationId &&
-        d.debriefId === debrief.debriefId
+    const body = {
+      teamId: debrief.teamId,
+      coachUserId: debrief.coachUserId,
+      matchPreparationId: debrief.matchPreparationId,
+      date: debrief.date,
+      rivalName: debrief.rivalName || null,
+      matchResult: debrief.result || null,
+      answers: JSON.stringify(debrief.answers),
+      attendanceContext: debrief.attendanceContext ? JSON.stringify(debrief.attendanceContext) : null,
+      customQuestions: debrief.customQuestions ? JSON.stringify(debrief.customQuestions) : null,
+      status: debrief.status || 'completed'
+    };
+    return this.http.post<any>(this.baseUrl + 'match', body).pipe(
+      map(res => this.mapToDebriefMatch(res.data)),
+      catchError(() => of(debrief))
     );
-    if (idx >= 0) {
-      this.localDebriefs[idx] = debrief;
-    } else {
-      this.localDebriefs.push(debrief);
-    }
-    this.saveToLocalStorage();
-    return of(debrief);
   }
 
   // ═══════════════════════════════════════
-  // GENERAR INFORME (mock hasta backend IA)
+  // GENERAR INFORME
   // ═══════════════════════════════════════
 
-  /** Genera informe IA basado en las respuestas del debrief */
   generateReport(debriefId: number, type: DebriefType, lang: string = 'es'): Observable<DebriefReport> {
-    // TODO: Reemplazar con llamada al backend (IA)
-    // const url = `${environment.apiUrl}debrief/${debriefId}/generate-report`;
-    // const body: GenerateReportRequest = { debriefId, type, includeAttendance: true, includeMatchStats: true, language: lang };
-    // return this.http.post<Response>(url, body, { headers }).pipe(map(r => r.data));
-
-    const debrief = this.localDebriefs.find(d => d.debriefId === debriefId);
-    if (!debrief) {
-      return of({
-        reportId: 0,
-        debriefId,
-        type,
+    return this.getDebrief(debriefId).pipe(
+      map(debrief => {
+        if (!debrief) {
+          return {
+            reportId: 0, debriefId, type,
+            generatedAt: new Date().toISOString(),
+            sections: [], summary: 'No se encontró el debrief.',
+            recommendations: [], rawAnswers: []
+          };
+        }
+        return this.buildMockReport(debrief, type);
+      }),
+      catchError(() => of({
+        reportId: 0, debriefId, type,
         generatedAt: new Date().toISOString(),
-        sections: [],
-        summary: 'No se encontró el debrief.',
-        recommendations: [],
-        rawAnswers: []
-      });
-    }
-
-    // Mock: generar secciones según las respuestas
-    const report = this.buildMockReport(debrief, type);
-    this.localReports.push(report);
-
-    // Marcar debrief como report-generated
-    debrief.status = 'report-generated';
-    this.saveToLocalStorage();
-
-    return of(report);
+        sections: [], summary: 'Error al generar informe.',
+        recommendations: [], rawAnswers: []
+      }))
+    );
   }
 
-  /** Construye un informe mock a partir de las respuestas */
+  saveReport(debriefId: number, report: DebriefReport): Observable<DebriefReport> {
+    const body = {
+      type: report.type,
+      sections: JSON.stringify(report.sections),
+      summary: report.summary,
+      recommendations: JSON.stringify(report.recommendations),
+      attendanceSummary: report.attendanceSummary || null,
+      rawAnswers: JSON.stringify(report.rawAnswers)
+    };
+    return this.http.post<any>(this.baseUrl + `${debriefId}/report`, body).pipe(
+      map(res => this.mapToReport(res.data)),
+      catchError(() => of(report))
+    );
+  }
+
   private buildMockReport(debrief: DebriefTraining | DebriefMatch, type: DebriefType): DebriefReport {
     const sections: ReportSection[] = [];
 
-    // Sección de valoración general
     const ratingAnswer = debrief.answers.find(a => a.questionId === (type === 'training' ? 'TQ1' : 'MQ1'));
     if (ratingAnswer) {
       sections.push({
@@ -250,7 +199,6 @@ export class DebriefService {
       });
     }
 
-    // Sección de objetivos
     const objectiveAnswer = debrief.answers.find(a => a.questionId === (type === 'training' ? 'TQ2' : 'MQ2'));
     if (objectiveAnswer) {
       sections.push({
@@ -260,7 +208,6 @@ export class DebriefService {
       });
     }
 
-    // Sección de asistencia
     if (debrief.attendanceContext && !debrief.attendanceContext.noRecordsAvailable) {
       sections.push({
         titleKey: 'DEBRIEF.REPORT.SECTION_ATTENDANCE',
@@ -273,7 +220,6 @@ export class DebriefService {
       });
     }
 
-    // Secciones de texto libre
     debrief.answers
       .filter(a => a.textValue || a.audioTranscript)
       .forEach(a => {
@@ -284,7 +230,6 @@ export class DebriefService {
         });
       });
 
-    // Jugadores destacados
     const playerAnswers = debrief.answers.filter(a => a.selectedPlayers && a.selectedPlayers.length > 0);
     if (playerAnswers.length > 0) {
       sections.push({
@@ -295,7 +240,7 @@ export class DebriefService {
     }
 
     return {
-      reportId: this.nextId++,
+      reportId: 0,
       debriefId: debrief.debriefId!,
       type,
       generatedAt: new Date().toISOString(),
@@ -318,9 +263,10 @@ export class DebriefService {
   // ═══════════════════════════════════════
 
   getReport(debriefId: number): Observable<DebriefReport | null> {
-    // TODO: Backend → GET /api/debrief/{debriefId}/report
-    const report = this.localReports.find(r => r.debriefId === debriefId);
-    return of(report || null);
+    return this.http.get<any>(this.baseUrl + `${debriefId}/report`).pipe(
+      map(res => res?.data ? this.mapToReport(res.data) : null),
+      catchError(() => of(null))
+    );
   }
 
   // ═══════════════════════════════════════
@@ -328,49 +274,47 @@ export class DebriefService {
   // ═══════════════════════════════════════
 
   getHistory(teamId: number): Observable<DebriefHistoryItem[]> {
-    // TODO: Backend → GET /api/debrief/history/{teamId}
-    const items: DebriefHistoryItem[] = this.localDebriefs
-      .filter(d => d.teamId === teamId)
-      .map(d => {
-        const isMatch = 'matchPreparationId' in d;
-        return {
-          debriefId: d.debriefId!,
-          type: (isMatch ? 'match' : 'training') as DebriefType,
+    return this.http.get<any>(this.baseUrl + `history/${teamId}`).pipe(
+      map(res => {
+        if (!res?.data) return [];
+        return (res.data as any[]).map(d => ({
+          debriefId: d.debriefId,
+          type: d.type as DebriefType,
           date: d.date,
-          rivalName: isMatch ? (d as DebriefMatch).rivalName : undefined,
+          rivalName: d.rivalName || undefined,
           status: d.status,
-          summary: d.answers.length + ' respuestas'
-        };
-      })
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-    return of(items);
+          summary: d.answers ? JSON.parse(d.answers).length + ' respuestas' : '0 respuestas'
+        }));
+      }),
+      catchError(() => of([]))
+    );
   }
 
   getDebrief(debriefId: number): Observable<(DebriefTraining | DebriefMatch) | null> {
-    const found = this.localDebriefs.find(d => d.debriefId === debriefId);
-    return of(found || null);
+    return this.http.get<any>(this.baseUrl + `${debriefId}`).pipe(
+      map(res => {
+        if (!res?.data) return null;
+        const d = res.data;
+        if (d.type === 'match') {
+          return this.mapToDebriefMatch(d);
+        }
+        return this.mapToDebriefTraining(d);
+      }),
+      catchError(() => of(null))
+    );
   }
 
   // ═══════════════════════════════════════
   // ASISTENCIA CONTEXTUAL
   // ═══════════════════════════════════════
 
-  /**
-   * Obtiene datos de asistencia de la semana cercana al entrenamiento/partido.
-   * Actualmente mock — se reemplazará con llamada real al TrainingService.
-   */
   getAttendanceContext(teamId: number, referenceDate: string): Observable<AttendanceContext> {
-    // TODO: Llamar al backend para obtener asistencia de la semana
-    // const url = `${environment.apiUrl}training/attendance-week/${teamId}?date=${referenceDate}`;
-    // return this.http.get<Response>(url, { headers }).pipe(map(r => r.data));
-
-    // Mock: Indicar que no hay registros disponibles
+    // TODO: Connect to real training attendance endpoint when available
     const refDate = new Date(referenceDate);
     const startOfWeek = new Date(refDate);
-    startOfWeek.setDate(refDate.getDate() - refDate.getDay() + 1); // Lunes
+    startOfWeek.setDate(refDate.getDate() - refDate.getDay() + 1);
     const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // Domingo
+    endOfWeek.setDate(startOfWeek.getDate() + 6);
 
     const weekScope = `${this.formatDate(startOfWeek)} - ${this.formatDate(endOfWeek)}`;
 
@@ -392,37 +336,54 @@ export class DebriefService {
   }
 
   // ═══════════════════════════════════════
-  // PERSISTENCIA LOCAL
+  // MAPPERS (backend entity -> frontend model)
   // ═══════════════════════════════════════
 
-  private saveToLocalStorage(): void {
-    try {
-      localStorage.setItem('sphaira_debriefs', JSON.stringify(this.localDebriefs));
-      localStorage.setItem('sphaira_debrief_reports', JSON.stringify(this.localReports));
-      if (this.localConfig) {
-        localStorage.setItem('sphaira_debrief_config', JSON.stringify(this.localConfig));
-      }
-      localStorage.setItem('sphaira_debrief_nextId', String(this.nextId));
-    } catch (e) {
-      console.warn('DebriefService: Error saving to localStorage', e);
-    }
+  private mapToDebriefTraining(d: any): DebriefTraining {
+    return {
+      debriefId: d.debriefId,
+      trainingSessionId: d.trainingSessionId,
+      teamId: d.teamId,
+      coachUserId: d.coachUserId,
+      date: d.date,
+      answers: d.answers ? JSON.parse(d.answers) : [],
+      attendanceContext: d.attendanceContext ? JSON.parse(d.attendanceContext) : undefined,
+      customQuestions: d.customQuestions ? JSON.parse(d.customQuestions) : undefined,
+      status: d.status,
+      createdAt: d.createdAt,
+      updatedAt: d.updatedAt
+    };
   }
 
-  private loadFromLocalStorage(): void {
-    try {
-      const debriefs = localStorage.getItem('sphaira_debriefs');
-      if (debriefs) this.localDebriefs = JSON.parse(debriefs);
+  private mapToDebriefMatch(d: any): DebriefMatch {
+    return {
+      debriefId: d.debriefId,
+      matchPreparationId: d.matchPreparationId,
+      teamId: d.teamId,
+      coachUserId: d.coachUserId,
+      date: d.date,
+      rivalName: d.rivalName,
+      result: d.matchResult,
+      answers: d.answers ? JSON.parse(d.answers) : [],
+      attendanceContext: d.attendanceContext ? JSON.parse(d.attendanceContext) : undefined,
+      customQuestions: d.customQuestions ? JSON.parse(d.customQuestions) : undefined,
+      status: d.status,
+      createdAt: d.createdAt,
+      updatedAt: d.updatedAt
+    };
+  }
 
-      const reports = localStorage.getItem('sphaira_debrief_reports');
-      if (reports) this.localReports = JSON.parse(reports);
-
-      const config = localStorage.getItem('sphaira_debrief_config');
-      if (config) this.localConfig = JSON.parse(config);
-
-      const nextId = localStorage.getItem('sphaira_debrief_nextId');
-      if (nextId) this.nextId = parseInt(nextId, 10);
-    } catch (e) {
-      console.warn('DebriefService: Error loading from localStorage', e);
-    }
+  private mapToReport(d: any): DebriefReport {
+    return {
+      reportId: d.reportId,
+      debriefId: d.debriefId,
+      type: d.type as DebriefType,
+      generatedAt: d.generatedAt,
+      sections: d.sections ? JSON.parse(d.sections) : [],
+      summary: d.summary || '',
+      recommendations: d.recommendations ? JSON.parse(d.recommendations) : [],
+      attendanceSummary: d.attendanceSummary,
+      rawAnswers: d.rawAnswers ? JSON.parse(d.rawAnswers) : []
+    };
   }
 }

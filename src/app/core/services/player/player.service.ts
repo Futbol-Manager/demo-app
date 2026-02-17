@@ -1,7 +1,7 @@
 // player.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError, of } from 'rxjs';
+import { Observable, throwError, of, EMPTY } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Response } from 'src/app/core/services/models/response.model';
 import { NotificatePlayerUI, PagocuotasPlayerResponse, Player, ScoutingPlayer } from './player.model';
@@ -56,7 +56,7 @@ export class PlayerService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -103,7 +103,7 @@ export class PlayerService {
             return this.http.post<Response>(url, player, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -122,10 +122,10 @@ export class PlayerService {
             const url: string = environment.apiUrl + `player/deleteplayer/${playerId}/${teamId}/${temporada}/${option}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
-            return this.http.get<Response>(url, { headers });
+            return this.http.delete<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -147,7 +147,7 @@ export class PlayerService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -168,7 +168,7 @@ export class PlayerService {
             return this.http.post<Response>(url, player, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -190,7 +190,7 @@ export class PlayerService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -212,7 +212,7 @@ export class PlayerService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -234,7 +234,7 @@ export class PlayerService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -253,10 +253,10 @@ export class PlayerService {
             const url: string = environment.apiUrl + `match/getdeletegaleriapartidos/${galeriaPartidoId}`;
 
             // Realiza la solicitud HTTP con las cabeceras configuradas
-            return this.http.get<Response>(url, { headers });
+            return this.http.delete<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -278,7 +278,7 @@ export class PlayerService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -331,7 +331,7 @@ export class PlayerService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -358,11 +358,11 @@ export class PlayerService {
                 return this.http.post<Response>(url, formData, { headers });
             } else {
                 // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-                return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+                return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
             }
         } else {
             // Manejo de error si no se proporciona un archivo (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -383,7 +383,7 @@ export class PlayerService {
             return this.http.post<Response>(url, convocatoria, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -404,7 +404,7 @@ export class PlayerService {
             return this.http.post<Response>(url, ui, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -425,7 +425,7 @@ export class PlayerService {
             return this.http.post<Response>(url, dto, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -446,7 +446,7 @@ export class PlayerService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -467,7 +467,7 @@ export class PlayerService {
             return this.http.post<Response>(url, scoutingPlayer, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -488,7 +488,7 @@ export class PlayerService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -525,14 +525,17 @@ export class PlayerService {
 
     updatePlayerInfo(dto: any): Observable<Response> {
         const token = localStorage.getItem('token');
+        if (token) {
+            const headers = new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            });
 
-        const headers = new HttpHeaders({
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
-        });
-
-        const url = environment.apiUrl + 'player/update-playerinfo';
-        return this.http.post<Response>(url, dto, { headers });
+            const url = environment.apiUrl + 'player/update-playerinfo';
+            return this.http.post<Response>(url, dto, { headers });
+        } else {
+            return EMPTY;
+        }
     }
 
     getPlayerInfo(playerId: number): Observable<Response> {
@@ -552,7 +555,7 @@ export class PlayerService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -573,7 +576,7 @@ export class PlayerService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -594,7 +597,7 @@ export class PlayerService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 
@@ -615,7 +618,7 @@ export class PlayerService {
             return this.http.get<Response>(url, { headers });
         } else {
             // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return new Observable(); // Puedes devolver un Observable vacío o manejar el error de otra manera
+            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
         }
     }
 

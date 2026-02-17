@@ -2321,5 +2321,41 @@
       "STATUS_DRAFT": "Draft",
       "STATUS_REPORT-GENERATED": "Report generated"
     }
+  },
+  "ADMIN_MENU": {
+    "TITLE": "Administrator",
+    "GENERAL_PANEL": "General Panel",
+    "SUGGESTIONS": "Suggestions",
+    "CHARTS": "Charts",
+    "AI_INSIGHTS": "AI Insights",
+    "AI_USAGE": "AI Usage",
+    "RECORDS": "Records"
+  },
+  "STATS": {
+    "NO_PLAYER_DATA": "No player data available",
+    "NO_TEAM_DATA": "No team data available"
+  },
+  "AI_PANEL": {
+    "CONSULT_BUTTON": "Ask AI",
+    "PLAYER_DESCRIPTION": "Ask the AI to generate charts and analysis with player data",
+    "TEAM_DESCRIPTION": "Ask the AI to generate charts and analysis with team data",
+    "SIDEBAR_TITLE_PLAYERS": "AI Assistant - Player Statistics",
+    "SIDEBAR_TITLE_TEAMS": "AI Assistant - Team Statistics",
+    "HELP_TEXT": "Ask me about the data. I can help you with:",
+    "SUGGESTION_TOP_SCORER": "Top scorer",
+    "SUGGESTION_ASSISTS": "Assists chart",
+    "SUGGESTION_PERFORMANCE": "Performance analysis",
+    "SUGGESTION_CARDS": "Cards",
+    "SUGGESTION_COMPARISON": "Comparison",
+    "SUGGESTION_AVG_MINUTES": "Average minutes",
+    "SUGGESTION_BEST_TEAM": "Best team",
+    "SUGGESTION_POINTS_CHART": "Points chart",
+    "SUGGESTION_GOALS_COMPARISON": "Goals comparison",
+    "SUGGESTION_AVG_WINS": "Average wins",
+    "SUGGESTION_RECENT_STREAKS": "Recent streaks",
+    "USER_LABEL": "You:",
+    "PLACEHOLDER": "Write your query here...",
+    "SEND": "Send",
+    "HINT_CTRL_ENTER": "Press Ctrl+Enter to send"
   }
 }

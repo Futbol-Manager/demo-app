@@ -40,6 +40,7 @@ import { GolPostPartido } from 'src/app/core/services/team/team.model';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
 
 declare var html2pdf: any;
 
@@ -863,6 +864,7 @@ export class CalendarioComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private loginService: LoginService,
     private location: Location,
+    private toastr: ToastrService,
   ) { }
 
   ngOnInit(): void {
@@ -2479,11 +2481,11 @@ export class CalendarioComponent implements OnInit {
         this.respPostPartido = new RespPostPartido({});
         this.showModalFormPostPartido = false;
         if (!response.data) {
-          alert(
+          this.toastr.warning(
             'No se han enviado las respuestas porque ya se rellenó anteriormente y solo se puede una vez por partido.',
           );
         } else {
-          alert('Respuestas enviadas correctamente.');
+          this.toastr.success('Respuestas enviadas correctamente.');
         }
       },
       (error) => {
@@ -3176,7 +3178,7 @@ export class CalendarioComponent implements OnInit {
     this.playerService
       .updateConvocatoria(this.convocatoriaJSON, this.matchPreparationId)
       .subscribe(() => {
-        alert('Convocatoria guardada');
+        this.toastr.success('Convocatoria guardada');
         this.showNotificar = true;
       });
   }
@@ -3274,7 +3276,7 @@ export class CalendarioComponent implements OnInit {
     this.playerService
       .notificateMatchPlayer(ui, this.teamId)
       .subscribe((response) => {
-        alert('Notificados con éxito.');
+        this.toastr.success('Notificados con éxito.');
       });
   }
 
@@ -3320,8 +3322,8 @@ export class CalendarioComponent implements OnInit {
     this.playerService
       .notificateMatchPlayer(ui, this.teamId)
       .subscribe((response) => {
-        alert(
-          'Pre-aviso enviado a los padres, en No convocados solo veras a los juagdores que han confirmado asistencia.',
+        this.toastr.info(
+          'Pre-aviso enviado a los padres, en No convocados solo veras a los jugadores que han confirmado asistencia.',
         );
       });
   }
@@ -3367,7 +3369,7 @@ export class CalendarioComponent implements OnInit {
       .subscribe(
         (resp) => {
           if (resp.data) {
-            alert('Cambio guardado.');
+            this.toastr.success('Cambio guardado.');
           }
         },
         (error) => {
@@ -3471,7 +3473,7 @@ export class CalendarioComponent implements OnInit {
     };
 
     this.playerService.notificarNoAsistencia(dto).subscribe((response) => {
-      alert('Notificación enviada.');
+      this.toastr.success('Notificación enviada.');
       this.motivoNoAsistencia = '';
     });
   }

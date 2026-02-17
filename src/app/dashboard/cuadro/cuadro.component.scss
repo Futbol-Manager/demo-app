@@ -738,3 +738,77 @@
     .date { color: var(--text-secondary); }
   }
 }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════ */
+@media (max-width: 768px) {
+  .cuadro-dashboard {
+    padding: 0.5rem;
+  }
+
+  .back-container {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .section-title,
+  .info-card h5 {
+    font-size: 1.2rem;
+  }
+
+  .option-card {
+    padding: 0.75rem;
+    font-size: 0.8rem;
+
+    i { font-size: 1.3rem; }
+  }
+
+  .info-card,
+  .next-matches-card {
+    padding: 0.75rem;
+  }
+
+  .match-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+  }
+
+  .match-body {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .team {
+    width: 100%;
+  }
+
+  .next-match {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    text-align: center;
+  }
+
+  .team-side {
+    justify-content: center;
+  }
+
+  .team-side.right {
+    justify-content: center;
+  }
+
+  .calendar {
+    font-size: 0.7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .row.g-3 > .col-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}

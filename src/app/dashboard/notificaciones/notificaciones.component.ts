@@ -381,20 +381,17 @@ export class NotificacionesComponent implements OnInit {
 
   mostrarEnviados() {
     this.showBtn = false;
-    console.log('Mostrando enviados');
     this.currentFolder = 'sent';
     this.correos = this.correosEnviadosSinFiltro;
   }
 
   mostrarRecibidos() {
     this.showBtn = true;
-    console.log('Mostrando recibidos');
     this.currentFolder = 'inbox';
     this.correos = this.correosRecibidosSinFiltro;
   }
 
   filtrarCorreos(tipo: string) {
-    console.log(`Filtrando correos: ${tipo}`);
   }
 
   /**

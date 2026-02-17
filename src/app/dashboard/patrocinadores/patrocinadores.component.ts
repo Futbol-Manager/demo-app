@@ -10,6 +10,7 @@ import { Response } from 'src/app/core/services/models/response.model';
 import { Patrocinador } from 'src/app/core/services/models/club.model';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
 declare var bootstrap: any;
 
 @Component({
@@ -49,6 +50,7 @@ export class PatrocinadoresComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private location: Location,
+    private toastr: ToastrService,
   ) {}
 
   ngOnInit(): void {
@@ -244,7 +246,7 @@ export class PatrocinadoresComponent implements OnInit {
         },
       });
     } else {
-      alert('Por favor, rellena todos los campos.');
+      this.toastr.warning('Por favor, rellena todos los campos.');
     }
   }
 
@@ -289,7 +291,7 @@ export class PatrocinadoresComponent implements OnInit {
       reader.readAsDataURL(file);
     } else {
       this.selectedImageFile = null;
-      alert('Solo JPG o PNG');
+      this.toastr.warning('Solo JPG o PNG');
     }
   }
 
@@ -311,7 +313,6 @@ export class PatrocinadoresComponent implements OnInit {
           },
         );
     } else {
-      console.log('Ninguna imagen seleccionada.');
     }
   }
   fixHttps() {
