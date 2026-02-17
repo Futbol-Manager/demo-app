@@ -61,7 +61,7 @@ export class AiChatService {
   }
 
   /**
-   * Envia un mensaje al asistente IA. Consume 1 credito.
+   * Envía un mensaje al asistente IA. Consume 1 crédito.
    */
   sendMessage(userId: number, clubId: number | null, screenContext: string, message: string, apiKeyType: string = 'users'): Observable<AiChatResponse> {
     const body = { userId, clubId, screenContext, message, apiKeyType };
@@ -74,15 +74,15 @@ export class AiChatService {
           success: false,
           error: isTimeout ? 'TIMEOUT' : 'NETWORK_ERROR',
           message: isTimeout
-            ? 'La respuesta tardo demasiado. Intentalo de nuevo.'
-            : 'Error de conexion. Intentalo de nuevo.'
+            ? 'La respuesta tardó demasiado. Inténtalo de nuevo.'
+            : 'Error de conexión. Inténtalo de nuevo.'
         });
       })
     );
   }
 
   /**
-   * Obtiene los creditos del usuario.
+   * Obtiene los créditos del usuario.
    */
   getCredits(userId: number): Observable<AiCreditsInfo> {
     return this.http.get<AiCreditsInfo>(`${this.baseUrl}/credits/${userId}`, { headers: this.getHeaders() }).pipe(
@@ -116,14 +116,14 @@ export class AiChatService {
   }
 
   /**
-   * Comprar creditos (via Stripe). Agrega directamente sin pago.
+   * Comprar créditos (via Stripe). Agrega directamente sin pago.
    */
   purchaseCredits(userId: number, amount: number): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/credits/purchase`, { userId, amount }, { headers: this.getHeaders() });
   }
 
   /**
-   * Crea una Stripe Checkout Session para comprar creditos.
+   * Crea una Stripe Checkout Session para comprar créditos.
    * Redirige al usuario a la pagina de pago de Stripe.
    */
   createCheckoutSession(userId: number, credits: number, priceEur: number): Observable<{ success: boolean; checkoutUrl?: string; sessionId?: string; error?: string }> {
@@ -140,13 +140,13 @@ export class AiChatService {
       timeout(15000),
       catchError(err => {
         console.error('[AiChatService] Checkout error:', err);
-        return of({ success: false, error: 'Error al crear sesion de pago.' });
+        return of({ success: false, error: 'Error al crear sesión de pago.' });
       })
     );
   }
 
   /**
-   * Verifica el pago de una Checkout Session y acredita los creditos.
+   * Verifica el pago de una Checkout Session y acredita los créditos.
    */
   verifyCheckoutSession(sessionId: string): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/credits/checkout/verify`, { sessionId }, { headers: this.getHeaders() }).pipe(

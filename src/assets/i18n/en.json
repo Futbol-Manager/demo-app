@@ -444,7 +444,7 @@
     "ONLINE": "Online",
     "SUGGESTIONS_LABEL": "Quick suggestions",
     "INPUT_PLACEHOLDER": "Type your question...",
-    "DISCLAIMER": "Responses are indicative. Real club data connection coming soon.",
+    "DISCLAIMER": "Responses are indicative. No personal data is shared with the AI.",
     "HISTORY_TITLE": "Conversation history",
     "NO_HISTORY": "No conversations saved yet"
   },
@@ -913,6 +913,9 @@
       "SUBTITLE": "Manage and access the teams you coach",
       "TRAINING_SCHEDULE": "Training schedule",
       "PLAYERS_COUNT": "Number of players",
+      "NO_TEAMS_FOR_SEASON": "No teams associated with this season",
+      "NO_TEAMS_HINT": "Create your first team and start managing your training sessions, players and matches.",
+      "NO_SCHEDULE": "No schedule assigned",
       "PLAYERS": "players"
     }
   },
@@ -1083,7 +1086,7 @@
     "ONLINE": "Online",
     "SUGGESTIONS_LABEL": "Quick suggestions",
     "INPUT_PLACEHOLDER": "Type your sports question...",
-    "DISCLAIMER": "Responses are indicative. Real team data connection coming soon.",
+    "DISCLAIMER": "Responses are indicative. No personal data is shared with the AI.",
     "HISTORY_TITLE": "Conversation history",
     "NO_HISTORY": "No conversations saved yet"
   },

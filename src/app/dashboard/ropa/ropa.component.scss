@@ -462,7 +462,7 @@
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
-  text-align: left;
+  text-align: center;
   padding: 0.5rem 0.75rem;
 }
 .modern-table td.col-nombre .btn-link-name {
@@ -478,14 +478,14 @@
   border: none;
   padding: 0;
   font: inherit;
-  color: #0fa3e8;
+  color: #002c40;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-align: left;
+  text-align: center;
 }
 .btn-link-name:hover {
-  color: #002c40;
+  color: #001a26;
 }
 
 .modern-table th,

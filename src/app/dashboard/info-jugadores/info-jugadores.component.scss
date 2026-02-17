@@ -275,13 +275,13 @@
   border: none;
   padding: 0;
   font: inherit;
-  color: #0fa3e8;
+  color: #002c40;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 .btn-link-name:hover {
-  color: #002c40;
+  color: #001a26;
 }
 
 .modern-table tbody td:not(:last-child)::after {
@@ -465,13 +465,13 @@
   height: auto;
   min-height: 72px;
   padding: 0.6rem 0.75rem;
-  text-align: left;
+  text-align: center;
 }
 .modern-table tbody td:nth-child(2) .btn-link-name {
   display: inline-block;
   max-width: 100%;
   word-break: break-word;
-  text-align: left;
+  text-align: center;
   line-height: 1.35;
 }
 
@@ -803,7 +803,7 @@
   align-items: center;
   gap: 6px;
   padding: 0.45rem 1rem;
-  background: linear-gradient(135deg, #0fa3e8, #0d8ecb);
+  background: linear-gradient(135deg, #002c40, #003a54);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -811,11 +811,11 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 6px rgba(15, 163, 232, 0.25);
+  box-shadow: 0 2px 6px rgba(0, 44, 64, 0.25);
 }
 .btn-custom-fields:hover {
-  background: linear-gradient(135deg, #0d8ecb, #0a7ab5);
-  box-shadow: 0 4px 12px rgba(15, 163, 232, 0.35);
+  background: linear-gradient(135deg, #003a54, #004d6e);
+  box-shadow: 0 4px 12px rgba(0, 44, 64, 0.35);
   transform: translateY(-1px);
 }
 

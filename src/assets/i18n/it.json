@@ -70,7 +70,7 @@
     "ONLINE": "Online",
     "SUGGESTIONS_LABEL": "Suggerimenti rapidi",
     "INPUT_PLACEHOLDER": "Scrivi la tua domanda sportiva...",
-    "DISCLAIMER": "Le risposte sono indicative. Prossimamente connesso ai dati reali della squadra.",
+    "DISCLAIMER": "Le risposte sono indicative. Nessun dato personale viene condiviso con l'IA.",
     "HISTORY_TITLE": "Storico delle conversazioni",
     "NO_HISTORY": "Nessuna conversazione salvata ancora"
   },
@@ -869,6 +869,18 @@
       "STATUS_COMPLETED": "Completato",
       "STATUS_DRAFT": "Bozza",
       "STATUS_REPORT-GENERATED": "Rapporto generato"
+    }
+  },
+  "COACH": {
+    "MY_TEAMS": {
+      "TITLE": "Le mie squadre",
+      "SUBTITLE": "Gestisci e accedi alle squadre che alleni",
+      "TRAINING_SCHEDULE": "Orari di allenamento",
+      "PLAYERS_COUNT": "Numero di giocatori",
+      "NO_TEAMS_FOR_SEASON": "Nessuna squadra associata a questa stagione",
+      "NO_TEAMS_HINT": "Crea la tua prima squadra e inizia a gestire allenamenti, giocatori e partite.",
+      "NO_SCHEDULE": "Nessun orario assegnato",
+      "PLAYERS": "Giocatori"
     }
   }
 }

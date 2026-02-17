@@ -356,7 +356,7 @@
     "ONLINE": "Online",
     "SUGGESTIONS_LABEL": "Sugestões rápidas",
     "INPUT_PLACEHOLDER": "Escreva a sua pergunta desportiva...",
-    "DISCLAIMER": "As respostas são indicativas. Em breve conectado a dados reais da equipa.",
+    "DISCLAIMER": "As respostas são indicativas. Nenhum dado pessoal é partilhado com a IA.",
     "HISTORY_TITLE": "Histórico de conversas",
     "NO_HISTORY": "Ainda não há conversas guardadas"
   },
@@ -1036,7 +1036,7 @@
     "ONLINE": "Online",
     "SUGGESTIONS_LABEL": "Sugestões rápidas",
     "INPUT_PLACEHOLDER": "Escreva a sua pergunta...",
-    "DISCLAIMER": "As respostas são orientativas. Brevemente ligado a dados reais do clube.",
+    "DISCLAIMER": "As respostas são orientativas. Nenhum dado pessoal é partilhado com a IA.",
     "HISTORY_TITLE": "Histórico de conversas",
     "NO_HISTORY": "Ainda não há conversas guardadas"
   },
@@ -1506,6 +1506,7 @@
       "TRAINING_SCHEDULE": "Horários de treino",
       "PLAYERS_COUNT": "Número de jogadores",
       "NO_TEAMS_FOR_SEASON": "Não há equipas associadas a esta época",
+      "NO_TEAMS_HINT": "Crie a sua primeira equipa e comece a gerir os seus treinos, jogadores e jogos.",
       "NO_SCHEDULE": "Sem horários atribuídos",
       "PLAYERS": "Jogadores"
     }

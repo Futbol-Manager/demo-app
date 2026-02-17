@@ -14,7 +14,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background-color: rgba(15, 163, 232, 0.08);
+  background-color: rgba(0, 44, 64, 0.08);
   border: none;
   border-radius: 8px;
   color: #002c40;
@@ -45,7 +45,7 @@
   font-size: 1.3rem;
 }
 .page-header h4 i {
-  color: #0fa3e8;
+  color: #002c40;
 }
 .page-subtitle {
   color: #6c757d;
@@ -104,6 +104,12 @@
 
 .team-chip-wrapper {
   display: inline-flex;
+  cursor: grab;
+  touch-action: none;
+
+  &:active {
+    cursor: grabbing;
+  }
 }
 
 .team-chip-placeholder {
@@ -112,7 +118,7 @@
   border-radius: 20px;
   min-width: 100px;
   height: 36px;
-  background: rgba(15, 163, 232, 0.08);
+  background: rgba(0, 44, 64, 0.08);
 }
 
 .team-chip {
@@ -131,12 +137,12 @@
   user-select: none;
 }
 .team-chip:hover {
-  border-color: var(--team-color, #0fa3e8);
+  border-color: var(--team-color, #002c40);
   background: #fff;
 }
 
 .team-chip-active {
-  border-color: var(--team-color, #0fa3e8);
+  border-color: var(--team-color, #002c40);
   background: #fff;
   color: #002c40;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
@@ -159,12 +165,7 @@
 .team-chip .drag-handle {
   font-size: 0.75rem;
   opacity: 0.35;
-  cursor: grab;
   margin-right: -2px;
-  touch-action: none;
-}
-.team-chip:active .drag-handle {
-  cursor: grabbing;
 }
 .team-chip .toggle-eye {
   cursor: pointer;
@@ -190,7 +191,7 @@
   font-weight: 500;
   background: #fff;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-  border: 1.5px solid #0fa3e8;
+  border: 1.5px solid #002c40;
 }
 .cdk-drag-preview {
   box-sizing: border-box;
@@ -320,17 +321,17 @@
   position: absolute;
   right: 0;
   padding: 6px 16px;
-  border: 1.5px solid #0fa3e8;
+  border: 1.5px solid #002c40;
   border-radius: 8px;
   background: transparent;
-  color: #0fa3e8;
+  color: #002c40;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
 }
 .btn-today:hover {
-  background: #0fa3e8;
+  background: #002c40;
   color: #fff;
 }
 
@@ -383,7 +384,7 @@
 }
 .calendar-cell:hover {
   background: #e9f5ff;
-  box-shadow: 0 2px 8px rgba(15, 163, 232, 0.12);
+  box-shadow: 0 2px 8px rgba(0, 44, 64, 0.12);
 }
 
 .calendar-cell.other-month {
@@ -394,11 +395,11 @@
 }
 
 .calendar-cell.today {
-  background: #e7f5fd;
-  border: 2px solid #0fa3e8;
+  background: rgba(0, 44, 64, 0.06);
+  border: 2px solid #002c40;
 }
 .calendar-cell.today .day-number {
-  background: #0fa3e8;
+  background: #002c40;
   color: #fff;
   border-radius: 50%;
   width: 26px;
@@ -424,14 +425,14 @@
 .event-dots {
   display: flex;
   flex-wrap: wrap;
-  gap: 3px;
+  gap: 4px;
   margin-top: auto;
   align-items: center;
 }
 
 .dot {
-  width: 14px;
-  height: 10px;
+  width: 18px;
+  height: 13px;
   border-radius: 0;
   flex-shrink: 0;
   transition: transform 0.15s;
@@ -442,8 +443,8 @@
 
 /* Entrenamiento: mancuerna */
 .dot-training {
-  width: 14px;
-  height: 10px;
+  width: 18px;
+  height: 13px;
   border-radius: 0;
   -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 12'%3E%3Crect x='0' y='3' width='3' height='6' rx='1'/%3E%3Crect x='17' y='3' width='3' height='6' rx='1'/%3E%3Crect x='3' y='1' width='3' height='10' rx='1'/%3E%3Crect x='14' y='1' width='3' height='10' rx='1'/%3E%3Crect x='6' y='4' width='8' height='4' rx='1'/%3E%3C/svg%3E");
   mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 12'%3E%3Crect x='0' y='3' width='3' height='6' rx='1'/%3E%3Crect x='17' y='3' width='3' height='6' rx='1'/%3E%3Crect x='3' y='1' width='3' height='10' rx='1'/%3E%3Crect x='14' y='1' width='3' height='10' rx='1'/%3E%3Crect x='6' y='4' width='8' height='4' rx='1'/%3E%3C/svg%3E");
@@ -455,13 +456,13 @@
 
 /* Partido: balón (círculo) */
 .dot-match {
-  width: 10px;
-  height: 10px;
+  width: 13px;
+  height: 13px;
   border-radius: 50%;
 }
 
 .dot-extra {
-  font-size: 0.6rem;
+  font-size: 0.7rem;
   font-weight: 700;
   color: #6c757d;
   line-height: 1;
@@ -486,8 +487,8 @@
   color: #6c757d;
 }
 .legend-dot {
-  width: 14px;
-  height: 10px;
+  width: 18px;
+  height: 13px;
   flex-shrink: 0;
 }
 .legend-dot-training {
@@ -500,8 +501,8 @@
   mask-repeat: no-repeat;
 }
 .legend-dot-match {
-  width: 10px;
-  height: 10px;
+  width: 13px;
+  height: 13px;
   border-radius: 50%;
   background: #e8590c;
 }
@@ -559,7 +560,7 @@
   font-size: 1.05rem;
 }
 .day-panel-header h5 i {
-  color: #0fa3e8;
+  color: #002c40;
 }
 .day-panel-count {
   color: #6c757d;
@@ -632,7 +633,7 @@
 .team-group-link {
   background: none;
   border: none;
-  color: #0fa3e8;
+  color: #002c40;
   cursor: pointer;
   padding: 4px;
   border-radius: 6px;
@@ -640,7 +641,7 @@
   transition: all 0.15s;
 }
 .team-group-link:hover {
-  background: #e7f5fd;
+  background: rgba(0, 44, 64, 0.06);
 }
 
 /* ─── TARJETA DE EVENTO ─── */
@@ -667,14 +668,14 @@
 }
 
 .event-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 0.9rem;
+  font-size: 1.05rem;
 }
 .event-training .event-icon {
   background: #d3f9d8;
@@ -723,7 +724,7 @@
   align-self: center;
 }
 .event-action:hover {
-  color: #0fa3e8;
+  color: #002c40;
 }
 
 /* ═══════════════════════════════════════
@@ -749,16 +750,16 @@
     font-size: 0.75rem;
   }
   .dot {
-    width: 10px;
-    height: 8px;
+    width: 14px;
+    height: 10px;
   }
   .dot-training {
-    width: 10px;
-    height: 8px;
+    width: 14px;
+    height: 10px;
   }
   .dot-match {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
   }
 }
 
@@ -786,15 +787,15 @@
     gap: 2px;
   }
   .dot, .dot-training {
-    width: 8px;
-    height: 6px;
+    width: 12px;
+    height: 8px;
   }
   .dot-match {
-    width: 6px;
-    height: 6px;
+    width: 8px;
+    height: 8px;
   }
   .dot-extra {
-    font-size: 0.5rem;
+    font-size: 0.6rem;
   }
   .team-filter-section {
     padding: 12px 14px;
@@ -823,12 +824,12 @@
     padding: 4px 0;
   }
   .dot, .dot-training {
-    width: 7px;
-    height: 5px;
+    width: 10px;
+    height: 7px;
   }
   .dot-match {
-    width: 5px;
-    height: 5px;
+    width: 7px;
+    height: 7px;
   }
   .page-header h4 {
     font-size: 1.1rem;

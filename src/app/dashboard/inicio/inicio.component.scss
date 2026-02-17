@@ -698,3 +698,55 @@ app-root {
     text-transform: uppercase;
   }
 }
+
+/* ===============================
+   CTA — Sin equipos (Coach)
+================================ */
+.no-teams-cta {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 44, 64, 0.08);
+}
+
+.no-teams-icon {
+  font-size: 3rem;
+  color: #002c40;
+  opacity: 0.6;
+}
+
+.no-teams-title {
+  font-weight: 700;
+  color: #002c40;
+  font-size: 1.15rem;
+}
+
+.no-teams-subtitle {
+  color: #6c757d;
+  font-size: 0.92rem;
+  margin-bottom: 1.5rem;
+}
+
+.btn-create-team {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.65rem 1.8rem;
+  background: linear-gradient(135deg, #002c40, #003a54);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 4px 14px rgba(0, 44, 64, 0.25);
+}
+
+.btn-create-team:hover {
+  background: linear-gradient(135deg, #003a54, #004d6e);
+  box-shadow: 0 6px 20px rgba(0, 44, 64, 0.35);
+  transform: translateY(-2px);
+}

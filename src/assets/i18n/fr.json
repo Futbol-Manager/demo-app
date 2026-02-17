@@ -909,7 +909,7 @@
     "ONLINE": "En ligne",
     "SUGGESTIONS_LABEL": "Suggestions rapides",
     "INPUT_PLACEHOLDER": "Écrivez votre question...",
-    "DISCLAIMER": "Les réponses sont indicatives. Connexion aux données réelles du club à venir.",
+    "DISCLAIMER": "Les réponses sont indicatives. Aucune donnée personnelle n'est partagée avec l'IA.",
     "HISTORY_TITLE": "Historique des conversations",
     "NO_HISTORY": "Aucune conversation enregistrée"
   },
@@ -918,7 +918,7 @@
     "ONLINE": "En ligne",
     "SUGGESTIONS_LABEL": "Suggestions rapides",
     "INPUT_PLACEHOLDER": "Écrivez votre question sportive...",
-    "DISCLAIMER": "Les réponses sont indicatives. Connexion aux données réelles de l'équipe à venir.",
+    "DISCLAIMER": "Les réponses sont indicatives. Aucune donnée personnelle n'est partagée avec l'IA.",
     "HISTORY_TITLE": "Historique des conversations",
     "NO_HISTORY": "Aucune conversation enregistrée"
   },
@@ -1510,6 +1510,7 @@
       "TRAINING_SCHEDULE": "Horaires d'entraînement",
       "PLAYERS_COUNT": "Nombre de joueurs",
       "NO_TEAMS_FOR_SEASON": "Aucune équipe associée à cette saison",
+      "NO_TEAMS_HINT": "Créez votre première équipe et commencez à gérer vos entraînements, joueurs et matchs.",
       "NO_SCHEDULE": "Pas d'horaires assignés",
       "PLAYERS": "Joueurs"
     }

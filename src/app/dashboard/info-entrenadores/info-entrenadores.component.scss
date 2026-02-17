@@ -217,14 +217,14 @@
   border: none;
   padding: 0;
   font: inherit;
-  color: #0fa3e8;
+  color: #002c40;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 .btn-link-name:hover {
-  color: #002c40;
+  color: #001a26;
 }
 
 /* IMAGEN */
@@ -311,6 +311,7 @@
   height: auto;
   min-height: 72px;
   padding: 0.6rem 0.75rem;
+  text-align: center;
 }
 
 .modern-table thead th:nth-child(2)::after,
@@ -767,7 +768,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: linear-gradient(135deg, #0fa3e8, #0d8ecb);
+  background: linear-gradient(135deg, #002c40, #003a54);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -776,11 +777,11 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
-  box-shadow: 0 2px 6px rgba(15, 163, 232, 0.25);
+  box-shadow: 0 2px 6px rgba(0, 44, 64, 0.25);
 
   &:hover {
-    background: linear-gradient(135deg, #0d8ecb, #0a7ab5);
-    box-shadow: 0 4px 12px rgba(15, 163, 232, 0.35);
+    background: linear-gradient(135deg, #003a54, #004d6e);
+    box-shadow: 0 4px 12px rgba(0, 44, 64, 0.35);
   }
 
   i {

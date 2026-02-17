@@ -191,9 +191,14 @@ export class InfoJugadoresComponent implements OnInit {
 
   loadPlayersOfTeam(): void {
     if (this.teamSelected < 0) {
-      this.players = this.teams.flatMap(team => team.players); // Mostrar todos los jugadores
+      // Mostrar todos los jugadores, añadiendo teamId a cada uno
+      this.players = this.teams.flatMap(team =>
+        team.players.map((p: any) => ({ ...p, teamId: team.teamId }))
+      );
     } else {
-      this.players = this.teams[this.teamSelected].players; // Mostrar jugadores del equipo seleccionado
+      // Mostrar jugadores del equipo seleccionado, añadiendo teamId
+      const team = this.teams[this.teamSelected];
+      this.players = team.players.map((p: any) => ({ ...p, teamId: team.teamId }));
     }
 
     this.applyNameFilter();

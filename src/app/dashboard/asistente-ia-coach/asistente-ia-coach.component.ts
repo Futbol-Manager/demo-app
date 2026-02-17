@@ -321,7 +321,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     if (!text || this.isResponding) return;
 
     if (this.creditsAvailable <= 0) {
-      this.addAssistantMessage('No tienes creditos disponibles. Compra mas creditos para seguir usando el asistente IA.');
+      this.addAssistantMessage('No tienes créditos disponibles. Compra más créditos para seguir usando el asistente IA.');
       return;
     }
 

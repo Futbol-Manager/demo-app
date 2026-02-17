@@ -45,7 +45,7 @@
         <div class="team-chip"
              [class.team-chip-active]="isTeamVisible(team.teamId)"
              [style.--team-color]="team.color">
-          <i class="bi bi-grip-vertical drag-handle" cdkDragHandle></i>
+          <i class="bi bi-grip-vertical drag-handle"></i>
           <span class="team-dot" [style.backgroundColor]="team.color"></span>
           <span class="team-chip-name" (click)="onChipClick(team.teamId)">{{ team.name }}</span>
           <i class="bi toggle-eye" (click)="onChipClick(team.teamId)"

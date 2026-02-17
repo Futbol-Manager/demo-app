@@ -21,6 +21,14 @@ interface SuggestionChip {
   query: string;
 }
 
+interface ConversationSummary {
+  id: string;
+  title: string;
+  date: string;
+  messageCount: number;
+  messages: ChatMessage[];
+}
+
 @Component({
   selector: 'app-ai-fab',
   templateUrl: './ai-fab.component.html',
@@ -45,6 +53,12 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   userId = 0;
   private clubId: number | null = null;
   private currentScreenContext = 'dashboard';
+
+  // Conversation history
+  showHistoryPanel = false;
+  conversations: ConversationSummary[] = [];
+  currentConversationId: string | null = null;
+  private readonly STORAGE_KEY = 'sphaira_fab_ai_history';
 
   // Drag state
   isDragging = false;
@@ -73,6 +87,7 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   private expandedH = 700;
 
   quickSuggestions: SuggestionChip[] = [];
+  showSuggestions = true;
 
   private screenSuggestions: { [key: string]: SuggestionChip[] } = {
     'dashboard': [
@@ -104,6 +119,45 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
       { icon: 'bi-clock', text: 'Entrenamientos hoy', query: 'Entrenamientos de hoy' },
       { icon: 'bi-trophy', text: 'Proximos partidos', query: 'Proximos partidos' },
       { icon: 'bi-list-check', text: 'Actividades pendientes', query: '¿Que actividades tenemos pendientes?' },
+    ],
+  };
+
+  private contextualSuggestions: { [key: string]: SuggestionChip[] } = {
+    'jugadores': [
+      { icon: 'bi-person-lines-fill', text: 'Detalles del jugador', query: '¿Puedes darme mas detalles sobre ese jugador?' },
+      { icon: 'bi-graph-up-arrow', text: 'Rendimiento', query: '¿Como ha sido su rendimiento esta temporada?' },
+      { icon: 'bi-trophy', text: 'Goles y asistencias', query: '¿Cuantos goles y asistencias tiene?' },
+      { icon: 'bi-people', text: 'Comparar jugadores', query: 'Compara a los mejores jugadores del equipo' },
+    ],
+    'equipo': [
+      { icon: 'bi-shield-check', text: 'Defensa del equipo', query: '¿Como va la defensa del equipo?' },
+      { icon: 'bi-bar-chart', text: 'Estadisticas', query: 'Dame estadisticas detalladas del equipo' },
+      { icon: 'bi-calendar3', text: 'Proximos partidos', query: '¿Cuales son los proximos partidos?' },
+      { icon: 'bi-arrow-up-circle', text: 'Mejoras', query: '¿Que areas puede mejorar el equipo?' },
+    ],
+    'entrenamiento': [
+      { icon: 'bi-clipboard-check', text: 'Plan semanal', query: '¿Que ejercicios recomiendas para esta semana?' },
+      { icon: 'bi-clock-history', text: 'Asistencia', query: '¿Como va la asistencia a entrenamientos?' },
+      { icon: 'bi-lightning', text: 'Ejercicios especificos', query: 'Sugiere ejercicios para mejorar la tecnica' },
+      { icon: 'bi-calendar-week', text: 'Planificacion', query: '¿Como deberia planificar los entrenamientos?' },
+    ],
+    'partido': [
+      { icon: 'bi-flag', text: 'Analisis del partido', query: '¿Puedes analizar el ultimo partido?' },
+      { icon: 'bi-clipboard-data', text: 'Tactica', query: '¿Que tactica recomiendas para el proximo partido?' },
+      { icon: 'bi-people-fill', text: 'Alineacion', query: '¿Cual seria la mejor alineacion?' },
+      { icon: 'bi-graph-up', text: 'Resultado esperado', query: '¿Que probabilidades tenemos de ganar?' },
+    ],
+    'estadisticas': [
+      { icon: 'bi-bar-chart-line', text: 'Mas datos', query: 'Dame mas datos estadisticos' },
+      { icon: 'bi-trophy', text: 'Ranking', query: '¿Como estamos en el ranking?' },
+      { icon: 'bi-graph-down', text: 'Areas de mejora', query: '¿En que estadisticas estamos peor?' },
+      { icon: 'bi-person-badge', text: 'Mejor jugador', query: '¿Quien es el jugador con mejores estadisticas?' },
+    ],
+    'general': [
+      { icon: 'bi-lightbulb', text: 'Recomendaciones', query: 'Dame recomendaciones para mejorar' },
+      { icon: 'bi-bar-chart-line', text: 'Resumen general', query: 'Hazme un resumen del estado del club' },
+      { icon: 'bi-people-fill', text: 'Plantilla', query: 'Analiza la plantilla' },
+      { icon: 'bi-calendar-event', text: 'Proximos eventos', query: '¿Que eventos tenemos proximos?' },
     ],
   };
 
@@ -277,6 +331,26 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   private updateSuggestions(): void {
     this.quickSuggestions = this.screenSuggestions[this.currentScreenContext] || this.screenSuggestions['dashboard'];
+    this.showSuggestions = true;
+  }
+
+  /** Update suggestions based on the user's last message topic */
+  private updateSuggestionsFromContext(userText: string): void {
+    const text = userText.toLowerCase();
+    if (text.includes('jugador') || text.includes('goleador') || text.includes('rendimiento') || text.includes('ficha')) {
+      this.quickSuggestions = this.contextualSuggestions['jugadores'];
+    } else if (text.includes('equipo') || text.includes('plantilla') || text.includes('club') || text.includes('defensa')) {
+      this.quickSuggestions = this.contextualSuggestions['equipo'];
+    } else if (text.includes('entrenamient') || text.includes('ejercicio') || text.includes('sesion') || text.includes('asistencia')) {
+      this.quickSuggestions = this.contextualSuggestions['entrenamiento'];
+    } else if (text.includes('partido') || text.includes('rival') || text.includes('tactica') || text.includes('alineacion')) {
+      this.quickSuggestions = this.contextualSuggestions['partido'];
+    } else if (text.includes('estadistica') || text.includes('dato') || text.includes('ranking') || text.includes('clasificacion')) {
+      this.quickSuggestions = this.contextualSuggestions['estadisticas'];
+    } else {
+      this.quickSuggestions = this.contextualSuggestions['general'];
+    }
+    this.showSuggestions = true;
   }
 
   private loadCredits(): void {
@@ -291,8 +365,9 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.isOpen = !this.isOpen;
     if (this.isOpen) {
       this.initPosition();
+      this.showHistoryPanel = false;
       if (this.messages.length === 0) {
-        this.addAssistantMessage('¡Hola! 👋 Soy tu asistente IA de Sphaira. ¿En que puedo ayudarte?');
+        this.addWelcomeMessage();
         this.loadCredits();
       }
     }
@@ -312,7 +387,7 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (!text || this.isResponding) return;
 
     if (this.creditsAvailable <= 0) {
-      this.addAssistantMessage('No tienes creditos disponibles. Pulsa en "creditos" para comprar mas.');
+      this.addAssistantMessage('No tienes créditos disponibles. Pulsa en "créditos" para comprar más.');
       return;
     }
 
@@ -325,6 +400,7 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.userInput = '';
     this.shouldScroll = true;
     this.isResponding = true;
+    this.showSuggestions = false;
 
     const typingMsg: ChatMessage = {
       id: ++this.msgIdCounter,
@@ -336,6 +412,7 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.messages.push(typingMsg);
 
     const apiKeyType = this.profileId === 99 ? 'admin' : 'users';
+    const lastUserText = text;
 
     this.chatSub?.unsubscribe();
     this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, this.currentScreenContext, text, apiKeyType)
@@ -357,11 +434,16 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
           } else {
             this.addAssistantMessage(resp.message || 'Ha ocurrido un error. Intentalo de nuevo.');
           }
+          // Show contextual suggestions after each response
+          this.updateSuggestionsFromContext(lastUserText);
+          this.saveConversation();
         },
         error: () => {
           const idx = this.messages.indexOf(typingMsg);
           if (idx > -1) this.messages.splice(idx, 1);
           this.addAssistantMessage('Error de conexion. Intentalo de nuevo.');
+          this.showSuggestions = true;
+          this.saveConversation();
         }
       });
   }
@@ -375,6 +457,7 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     const typingIdx = this.messages.findIndex(m => m.isTyping);
     if (typingIdx > -1) this.messages.splice(typingIdx, 1);
     this.addAssistantMessage('Peticion cancelada.');
+    this.showSuggestions = true;
   }
 
   openCreditsModal(): void {
@@ -395,6 +478,10 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
       event.preventDefault();
       this.sendMessage();
     }
+  }
+
+  private addWelcomeMessage(): void {
+    this.addAssistantMessage('¡Hola! 👋 Soy tu asistente IA de Sphaira. ¿En que puedo ayudarte?');
   }
 
   private addAssistantMessage(text: string): void {
@@ -431,5 +518,107 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   trackByMsgId(index: number, msg: ChatMessage): number {
     return msg.id;
+  }
+
+  // ─── CONVERSATION HISTORY ─────────────────
+  toggleHistoryPanel(): void {
+    this.showHistoryPanel = !this.showHistoryPanel;
+    if (this.showHistoryPanel) {
+      this.loadConversationsList();
+    }
+  }
+
+  startNewConversation(): void {
+    if (this.messages.some(m => m.role === 'user')) {
+      this.saveConversation();
+    }
+    this.messages = [];
+    this.msgIdCounter = 0;
+    this.currentConversationId = null;
+    this.showHistoryPanel = false;
+    this.addWelcomeMessage();
+    this.updateSuggestions();
+  }
+
+  loadConversation(conv: ConversationSummary): void {
+    if (this.messages.some(m => m.role === 'user') && this.currentConversationId !== conv.id) {
+      this.saveConversation();
+    }
+    this.messages = conv.messages.map(m => ({
+      ...m,
+      timestamp: new Date(m.timestamp),
+    }));
+    this.msgIdCounter = this.messages.length;
+    this.currentConversationId = conv.id;
+    this.showHistoryPanel = false;
+    this.showSuggestions = true;
+    this.shouldScroll = true;
+  }
+
+  deleteConversation(event: Event, convId: string): void {
+    event.stopPropagation();
+    try {
+      const raw = localStorage.getItem(this.STORAGE_KEY);
+      let list: ConversationSummary[] = raw ? JSON.parse(raw) : [];
+      list = list.filter(c => c.id !== convId);
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+      this.conversations = list;
+      if (this.currentConversationId === convId) {
+        this.currentConversationId = null;
+      }
+    } catch { /* ignore */ }
+  }
+
+  private loadConversationsList(): void {
+    try {
+      const raw = localStorage.getItem(this.STORAGE_KEY);
+      this.conversations = raw ? JSON.parse(raw) : [];
+    } catch {
+      this.conversations = [];
+    }
+  }
+
+  private saveConversation(): void {
+    const userMsgs = this.messages.filter(m => m.role === 'user');
+    if (userMsgs.length === 0) return;
+
+    const title = userMsgs[0].text.substring(0, 40) + (userMsgs[0].text.length > 40 ? '...' : '');
+    const id = this.currentConversationId || 'fab_conv_' + Date.now();
+
+    const conv: ConversationSummary = {
+      id,
+      title,
+      date: new Date().toISOString(),
+      messageCount: this.messages.filter(m => !m.isTyping).length,
+      messages: this.messages.filter(m => !m.isTyping),
+    };
+
+    try {
+      const raw = localStorage.getItem(this.STORAGE_KEY);
+      let list: ConversationSummary[] = raw ? JSON.parse(raw) : [];
+      const idx = list.findIndex(c => c.id === id);
+      if (idx > -1) {
+        list[idx] = conv;
+      } else {
+        list.unshift(conv);
+      }
+      if (list.length > 30) list = list.slice(0, 30);
+      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
+      this.currentConversationId = id;
+    } catch { /* ignore */ }
+  }
+
+  formatDate(dateStr: string): string {
+    const d = new Date(dateStr);
+    const now = new Date();
+    const diff = now.getTime() - d.getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Ahora';
+    if (mins < 60) return `Hace ${mins} min`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `Hace ${hours}h`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `Hace ${days}d`;
+    return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' });
   }
 }

@@ -16,9 +16,9 @@ $shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
 $shadow-md: 0 4px 20px rgba(0, 0, 0, 0.1);
 $shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
 
-$coach-primary: #2563eb;
-$coach-secondary: #1e40af;
-$coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100%);
+$coach-primary: $green-primary;
+$coach-secondary: $green-accent;
+$coach-gradient: linear-gradient(135deg, $green-primary 0%, $teal 45%, $navy 100%);
 
 /* ═══════════════════════════════════════
    BOTÓN VOLVER
@@ -34,7 +34,7 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background-color: rgba(15, 163, 232, 0.08);
+  background-color: rgba(0, 44, 64, 0.08);
   border: none;
   border-radius: 8px;
   color: $navy;
@@ -420,8 +420,8 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
   border-bottom: 1px solid rgba(0,0,0,0.04);
   transition: background 0.15s;
 
-  &:hover { background: rgba(37, 99, 235, 0.04); }
-  &.active { background: rgba(37, 99, 235, 0.08); border-left: 3px solid $coach-primary; }
+  &:hover { background: rgba(49, 178, 112, 0.04); }
+  &.active { background: rgba(49, 178, 112, 0.08); border-left: 3px solid $coach-primary; }
 }
 
 .history-item-info {
@@ -527,7 +527,7 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
 .message-assistant .message-avatar {
   background: linear-gradient(135deg, $coach-primary, $teal);
   color: #fff;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  box-shadow: 0 2px 8px rgba(49, 178, 112, 0.25);
 }
 
 .user-avatar {
@@ -568,7 +568,7 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
   }
 
   .message-user & {
-    ::ng-deep strong { color: #93c5fd; }
+    ::ng-deep strong { color: #86efac; }
   }
 }
 
@@ -647,9 +647,9 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
 
   &:hover {
     border-color: $coach-primary;
-    background: rgba(37, 99, 235, 0.06);
+    background: rgba(49, 178, 112, 0.06);
     transform: translateY(-1px);
-    box-shadow: 0 3px 10px rgba(37, 99, 235, 0.12);
+    box-shadow: 0 3px 10px rgba(49, 178, 112, 0.12);
   }
 
   &:active { transform: translateY(0); }
@@ -678,7 +678,7 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
 
   &:focus-within {
     border-color: $coach-primary;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.1);
   }
 }
 
@@ -718,7 +718,7 @@ $coach-gradient: linear-gradient(135deg, $coach-primary 0%, $teal 45%, $navy 100
   &.send-active {
     background: linear-gradient(135deg, $coach-primary, $teal);
     color: #fff;
-    box-shadow: 0 3px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 3px 12px rgba(49, 178, 112, 0.3);
   }
 
   &.send-active:hover { transform: scale(1.05); }

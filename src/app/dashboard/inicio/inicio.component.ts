@@ -185,6 +185,10 @@ export class InicioComponent implements OnInit {
     this.router.navigate(['/dashboard/menu-entrenador', team.teamId, 0]);
   }
 
+  irACrearEquipo(): void {
+    this.router.navigate(['/dashboard/equipos']);
+  }
+
   // =========================
   // Cache inicial (evita skeleton innecesario)
 

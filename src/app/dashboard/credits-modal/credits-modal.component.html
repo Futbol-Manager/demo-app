@@ -26,8 +26,8 @@
         <i class="bi bi-coin"></i>
       </div>
       <div>
-        <span class="credits-header-title">Creditos de IA</span>
-        <span class="credits-header-sub">Gestiona tus creditos</span>
+        <span class="credits-header-title">Créditos de IA</span>
+        <span class="credits-header-sub">Gestiona tus créditos</span>
       </div>
     </div>
     <button class="credits-close-btn" (click)="close()" (mousedown)="$event.stopPropagation()">
@@ -40,7 +40,7 @@
     <!-- LOADING -->
     <div *ngIf="loading" class="credits-loading">
       <div class="spinner"></div>
-      <span>Cargando creditos...</span>
+      <span>Cargando créditos...</span>
     </div>
 
     <ng-container *ngIf="!loading">
@@ -48,7 +48,7 @@
       <div class="credits-summary">
         <div class="credits-big-number">
           <span class="big-num">{{ creditsInfo.creditsAvailable }}</span>
-          <span class="big-label">creditos disponibles</span>
+          <span class="big-label">créditos disponibles</span>
         </div>
         <div class="credits-detail-grid">
           <div class="credit-detail">
@@ -71,13 +71,13 @@
 
       <!-- SEPARADOR -->
       <div class="credits-divider">
-        <span>Comprar creditos</span>
+        <span>Comprar créditos</span>
       </div>
 
       <!-- SUCCESS MESSAGE -->
       <div *ngIf="purchaseSuccess" class="purchase-success">
         <i class="bi bi-check-circle-fill"></i>
-        Creditos anadidos correctamente
+        Créditos añadidos correctamente
       </div>
 
       <!-- ERROR MESSAGE -->
@@ -100,14 +100,14 @@
             <span>{{ pack.credits }}</span>
           </div>
           <div class="pack-price">{{ pack.price }} &euro;</div>
-          <div class="pack-per-credit">{{ getPerCreditPrice(pack) }} &euro;/credito</div>
+          <div class="pack-per-credit">{{ getPerCreditPrice(pack) }} &euro;/crédito</div>
         </div>
       </div>
 
       <!-- INFO -->
       <div class="credits-info">
         <i class="bi bi-info-circle"></i>
-        <span>Cada mensaje al asistente IA consume 1 credito. Los creditos no caducan.</span>
+        <span>Cada mensaje al asistente IA consume 1 crédito. Los créditos no caducan.</span>
       </div>
     </ng-container>
   </div>

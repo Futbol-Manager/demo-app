@@ -16,7 +16,7 @@ import { User } from 'src/app/core/models/users/user.model';
    PALETA DE 30 COLORES PARA EQUIPOS
 ═══════════════════════════════════════ */
 const TEAM_COLORS: string[] = [
-  '#0fa3e8', '#e8590c', '#7950f2', '#2f9e44', '#f08c00',
+  '#002c40', '#e8590c', '#7950f2', '#2f9e44', '#f08c00',
   '#c2255c', '#1098ad', '#6741d9', '#e03131', '#099268',
   '#5c7cfa', '#f76707', '#ae3ec9', '#20c997', '#fd7e14',
   '#3b5bdb', '#d6336c', '#0ca678', '#f03e3e', '#1c7ed6',

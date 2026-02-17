@@ -45,6 +45,12 @@
       </div>
     </div>
     <div class="fab-header-right" (mousedown)="$event.stopPropagation()">
+      <button class="fab-header-btn" (click)="startNewConversation()" title="Nueva conversación">
+        <i class="bi bi-plus-circle"></i>
+      </button>
+      <button class="fab-header-btn" (click)="toggleHistoryPanel()" title="Historial">
+        <i class="bi bi-clock-history"></i>
+      </button>
       <button class="fab-header-btn" (click)="toggleExpand()" [title]="isExpanded ? 'Contraer' : 'Expandir'">
         <i class="bi" [ngClass]="isExpanded ? 'bi-arrows-angle-contract' : 'bi-arrows-angle-expand'"></i>
       </button>
@@ -57,8 +63,39 @@
     </div>
   </div>
 
+  <!-- HISTORY PANEL (overlay) -->
+  <div class="fab-history-panel" *ngIf="showHistoryPanel">
+    <div class="fab-history-header">
+      <span class="fab-history-title"><i class="bi bi-clock-history"></i> Historial</span>
+      <button class="fab-history-close" (click)="toggleHistoryPanel()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="fab-history-list" *ngIf="conversations.length > 0">
+      <div class="fab-history-item" *ngFor="let conv of conversations" (click)="loadConversation(conv)">
+        <div class="fab-history-item-info">
+          <span class="fab-history-item-title">{{ conv.title }}</span>
+          <span class="fab-history-item-meta">{{ formatDate(conv.date) }} · {{ conv.messageCount }} msgs</span>
+        </div>
+        <button class="fab-history-item-delete" (click)="deleteConversation($event, conv.id)" title="Eliminar">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+    </div>
+    <div class="fab-history-empty" *ngIf="conversations.length === 0">
+      <i class="bi bi-chat-dots"></i>
+      <span>No hay conversaciones anteriores</span>
+    </div>
+  </div>
+
   <!-- BODY -->
   <div class="fab-body" #fabChatBody>
+    <!-- Privacy disclaimer -->
+    <div class="fab-privacy-notice" *ngIf="messages.length <= 2">
+      <i class="bi bi-shield-lock"></i>
+      <span>Tus datos personales no se comparten con la IA. Las respuestas son orientativas.</span>
+    </div>
+
     <div *ngFor="let msg of messages; trackBy: trackByMsgId"
          class="fab-message"
          [class.msg-user]="msg.role === 'user'"
@@ -76,8 +113,8 @@
       </div>
     </div>
 
-    <!-- QUICK SUGGESTIONS -->
-    <div class="fab-quick-suggestions" *ngIf="messages.length <= 2">
+    <!-- QUICK SUGGESTIONS (always visible when not responding) -->
+    <div class="fab-quick-suggestions" *ngIf="showSuggestions && !isResponding">
       <button *ngFor="let chip of quickSuggestions"
               class="fab-quick-chip"
               (click)="sendQuick(chip)">

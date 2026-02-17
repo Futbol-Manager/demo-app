@@ -5,7 +5,7 @@
     <div *ngIf="status === 'loading'" class="status-section">
       <div class="spinner-lg"></div>
       <h4>Verificando pago...</h4>
-      <p>Estamos confirmando tu compra de creditos</p>
+      <p>Estamos confirmando tu compra de créditos</p>
     </div>
 
     <!-- SUCCESS -->
@@ -13,9 +13,9 @@
       <div class="success-icon">
         <i class="bi bi-check-circle-fill"></i>
       </div>
-      <h4>Compra realizada con exito</h4>
-      <p class="credits-added">+{{ creditsAdded }} creditos</p>
-      <p class="credits-total">Ahora tienes <strong>{{ creditsAvailable }}</strong> creditos disponibles</p>
+      <h4>Compra realizada con éxito</h4>
+      <p class="credits-added">+{{ creditsAdded }} créditos</p>
+      <p class="credits-total">Ahora tienes <strong>{{ creditsAvailable }}</strong> créditos disponibles</p>
       <button class="btn-back" (click)="goBack()">
         <i class="bi bi-arrow-left me-2"></i>Volver al dashboard
       </button>
