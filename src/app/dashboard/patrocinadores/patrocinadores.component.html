@@ -353,85 +353,70 @@
 
 
 
-<!-- Overlay -->
-<div class="modal-backdrop-custom" *ngIf="showModalVerPatrocinador"></div>
+<!-- Overlay VER patrocinador (premium) -->
+<div class="view-sponsor-overlay" *ngIf="showModalVerPatrocinador" (click)="cerrarVerPatrocinador()">
+  <div class="view-sponsor-panel" (click)="$event.stopPropagation()">
 
-<!-- Modal ver patrocinador -->
-<div class="modal d-block" tabindex="-1" role="dialog" *ngIf="showModalVerPatrocinador">
-  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-    <div class="modal-content sponsor-modal">
+    <!-- CLOSE -->
+    <button class="view-sponsor-close" (click)="cerrarVerPatrocinador()">
+      <i class="bi bi-x-lg"></i>
+    </button>
 
-      <!-- HEADER -->
-      <div class="modal-header sponsor-header">
-        <h5 class="modal-title">
-          {{ 'SPONSOR.TITLE_VIEW' | translate }}
-        </h5>
-        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarVerPatrocinador()">
-        </button>
-      </div>
-
-      <!-- BODY -->
-      <div class="modal-body">
-        <form>
-
-          <!-- Imagen -->
-          <ng-container *ngIf="patrocinadorUpdate.patrocinadorId !== 0 && patrocinadorUpdate.imagen">
-            <div class="text-center mb-4">
-              <img [src]="imageBaseUrl + patrocinadorUpdate.imagen" alt="sponsor-image" class="sponsor-image">
-            </div>
-          </ng-container>
-
-          <div class="mb-4">
-            <h6 class="section-title">
-              {{ 'SPONSOR.DATA_TITLE' | translate }}
-            </h6>
-          </div>
-
-          <div class="row g-3">
-            <div class="col-md-6">
-              <input type="text" class="form-control sponsor-input readonly" [(ngModel)]="patrocinadorUpdate.nombre"
-                name="nombre" placeholder="{{ 'SPONSOR.NAME' | translate }}" readonly>
-            </div>
-
-            <div class="col-md-6">
-              <input type="text" class="form-control sponsor-input readonly" [(ngModel)]="patrocinadorUpdate.web"
-                name="web" placeholder="{{ 'SPONSOR.WEB' | translate }}" readonly>
-            </div>
-
-            <div class="col-md-6">
-              <textarea class="form-control sponsor-input readonly" rows="5"
-                [(ngModel)]="patrocinadorUpdate.descripcion" name="descripcion"
-                placeholder="{{ 'SPONSOR.DESCRIPTION' | translate }}" readonly>
-              </textarea>
-            </div>
-
-            <div class="col-md-6">
-              <textarea class="form-control sponsor-input readonly" rows="5" [(ngModel)]="patrocinadorUpdate.beneficios"
-                name="beneficios" placeholder="{{ 'SPONSOR.BENEFITS' | translate }}" readonly>
-              </textarea>
-            </div>
-
-            <div class="col-md-6">
-              <input type="text" class="form-control sponsor-input readonly" [(ngModel)]="patrocinadorUpdate.telefono"
-                name="telefono" placeholder="{{ 'SPONSOR.PHONE' | translate }}" readonly>
-            </div>
-
-            <div class="col-md-6">
-              <input type="email" class="form-control sponsor-input readonly" [(ngModel)]="patrocinadorUpdate.mail"
-                name="email" placeholder="{{ 'SPONSOR.EMAIL' | translate }}" readonly>
-            </div>
-          </div>
-
-        </form>
-      </div>
-
-      <!-- FOOTER -->
-      <div class="modal-footer sponsor-footer">
-        <button type="button" class="btn btn-secondary px-4" (click)="cerrarVerPatrocinador()">
-          {{ 'COMMON.CLOSE' | translate }}
-        </button>
-      </div>
-
+    <!-- HERO -->
+    <div class="view-sponsor-hero">
+      <ng-container *ngIf="patrocinadorUpdate.imagen; else noSponsorImg">
+        <img [src]="imageBaseUrl + patrocinadorUpdate.imagen"
+          alt="Logo de {{ patrocinadorUpdate.nombre }}" class="view-sponsor-logo" />
+      </ng-container>
+      <ng-template #noSponsorImg>
+        <div class="view-sponsor-logo-placeholder">
+          <i class="bi bi-building"></i>
+        </div>
+      </ng-template>
     </div>
+
+    <!-- NAME -->
+    <h2 class="view-sponsor-name">{{ patrocinadorUpdate.nombre }}</h2>
+
+    <!-- CONTACT PILLS -->
+    <div class="view-sponsor-contacts">
+      <a *ngIf="patrocinadorUpdate.web" [href]="patrocinadorUpdate.web" target="_blank" class="vs-contact-pill vs-contact-pill--web">
+        <i class="bi bi-globe2"></i>
+        <span>Sitio web</span>
+      </a>
+      <a *ngIf="patrocinadorUpdate.telefono" href="tel:{{ patrocinadorUpdate.telefono }}" class="vs-contact-pill vs-contact-pill--phone">
+        <i class="bi bi-telephone-fill"></i>
+        <span>{{ patrocinadorUpdate.telefono }}</span>
+      </a>
+      <a *ngIf="patrocinadorUpdate.mail" href="mailto:{{ patrocinadorUpdate.mail }}" class="vs-contact-pill vs-contact-pill--mail">
+        <i class="bi bi-envelope-fill"></i>
+        <span>{{ patrocinadorUpdate.mail }}</span>
+      </a>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="view-sponsor-section" *ngIf="patrocinadorUpdate.descripcion">
+      <div class="vs-section-header">
+        <i class="bi bi-info-circle"></i>
+        <h4>Sobre el patrocinador</h4>
+      </div>
+      <p class="vs-section-text">{{ patrocinadorUpdate.descripcion }}</p>
+    </div>
+
+    <!-- BENEFITS -->
+    <div class="view-sponsor-section view-sponsor-section--benefits" *ngIf="patrocinadorUpdate.beneficios">
+      <div class="vs-section-header">
+        <i class="bi bi-gift"></i>
+        <h4>Beneficios exclusivos</h4>
+      </div>
+      <p class="vs-section-text">{{ patrocinadorUpdate.beneficios }}</p>
+    </div>
+
+    <!-- WEB CTA -->
+    <a *ngIf="patrocinadorUpdate.web" [href]="patrocinadorUpdate.web" target="_blank" class="view-sponsor-cta">
+      <i class="bi bi-box-arrow-up-right"></i>
+      Visitar {{ patrocinadorUpdate.nombre }}
+    </a>
+
   </div>
 </div>

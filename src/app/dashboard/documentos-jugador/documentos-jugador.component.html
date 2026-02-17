@@ -11,18 +11,28 @@
 <main class="docs-page">
   <div class="docs-container">
 
-    <!-- HEADER -->
-    <header class="docs-header">
-      <h1 class="docs-title">
-        <i class="bi bi-file-earmark-pdf"></i>
-        Documentación
-      </h1>
-      <p class="docs-subtitle">Documentos solicitados por tu club. Descarga, sube o completa según indique cada uno.</p>
+    <!-- BANNER (estilo Lesiones / Galería) -->
+    <header class="docs-page-banner">
+      <div class="docs-banner-content">
+        <div class="docs-banner-left">
+          <h1 class="docs-page-title">
+            <i class="bi bi-file-earmark-pdf me-2"></i>
+            Documentación
+          </h1>
+          <p class="docs-page-subtitle">Documentos solicitados por tu club. Descarga, sube o completa según indique cada uno.</p>
+        </div>
+        <div class="docs-banner-right">
+          <div class="docs-search-box">
+            <i class="bi bi-search"></i>
+            <input type="text" placeholder="Buscar documento..." [(ngModel)]="searchDoc" />
+          </div>
+        </div>
+      </div>
     </header>
 
-    <!-- LISTA DE DOCUMENTOS -->
+    <!-- LISTA DE DOCUMENTOS (grid para ocupar más espacio) -->
     <section class="docs-list">
-      <div *ngFor="let doc of listaDocumentos" class="doc-card">
+      <div *ngFor="let doc of documentosFiltrados" class="doc-card">
         <div class="doc-card-icon" [ngClass]="{
           'doc-card-icon--download': doc.requiere === 0 || doc.fileClub,
           'doc-card-icon--upload': doc.requiere === 1,

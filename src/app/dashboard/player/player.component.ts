@@ -572,7 +572,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
       },
       (error) => {
         console.error('Error al eliminar el jugador:', error);
-        // Puedes manejar el error según tus necesidades
       }
     );
   }

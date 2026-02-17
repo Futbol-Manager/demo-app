@@ -76,37 +76,68 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
 }
 
 .cuotas-container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 0 1.25rem;
 }
 
-// ─── Header ──────────────────────────────────────────────────
-.cuotas-header {
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid $border;
+// ─── Banner (estilo Lesiones / Galería) ───────────────────────
+.cuotas-page-banner {
+  background: linear-gradient(135deg, $primary-dark 0%, #1f8f8a 100%);
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 1.5rem;
+  color: #fff;
 }
 
-.cuotas-title {
+.cuotas-banner-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.cuotas-banner-left {
+  flex: 1;
+  min-width: 0;
+}
+
+.cuotas-page-title {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin: 0 0 0.25rem 0;
-  font-size: 1.75rem;
+  margin: 0;
+  font-size: 1.4rem;
   font-weight: 700;
-  color: $text-primary;
+  color: #fff;
 
   i {
-    color: $primary;
+    color: #fff;
     font-size: 1.5rem;
+    opacity: 0.95;
   }
 }
 
-.cuotas-subtitle {
-  margin: 0 0 1rem 0;
+.cuotas-page-subtitle {
+  margin: 0.25rem 0 0 0;
   font-size: 0.95rem;
-  color: $text-muted;
+  opacity: 0.85;
+}
+
+.cuotas-banner-actions {
+  flex-shrink: 0;
+}
+
+.btn-pagar-stripe--banner {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  border: 1.5px solid rgba(255, 255, 255, 0.5);
+  &:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  }
 }
 
 .cuotas-header-actions {
@@ -305,16 +336,20 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
   box-shadow: $shadow;
   padding: 1.25rem;
   margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem 2rem;
 }
 
 .transfer-row {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  padding: 0.75rem 0;
+  padding: 0.5rem 0;
   border-bottom: 1px solid $border;
 
-  &:last-child { border-bottom: none; }
+  &:nth-child(2n) { padding-left: 1rem; border-left: 1px solid $border; }
+  &:nth-last-child(-n+2) { border-bottom: none; }
 }
 
 .transfer-label {
@@ -776,8 +811,32 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
     padding: 0 1rem;
   }
 
-  .cuotas-title {
-    font-size: 1.4rem;
+  .cuotas-page-banner {
+    padding: 1.25rem 1.5rem;
+  }
+
+  .cuotas-banner-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .cuotas-page-title {
+    font-size: 1.25rem;
+  }
+
+  .cuotas-banner-actions .btn-pagar-stripe {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .transfer-card {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .transfer-row {
+    padding-left: 0 !important;
+    border-left: none !important;
   }
 
   .estado-grid {

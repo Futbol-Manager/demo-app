@@ -54,7 +54,6 @@ export class MenuClubComponent implements OnInit {
       this.route.params.subscribe((params) => {
         // Obtener el valor de teamId de los parámetros
         this.teamId = +params['teamId']; // El + convierte el valor a número
-        //console.log('teamId:', this.teamId);
       });
     });
   }

@@ -32,94 +32,70 @@
   </div>
 </div>
 
-<!-- Modal para ver el patrocinador -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalVerPatrocinador}">
-  <div class="modal-dialog modal-xl" role="document">
-    <div class="modal-content">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="stripeModalLabel">Patrocinador</h5>
-          <button type="button" class="btn-close" aria-label="Close" (click)="cerrarVerPatrocinador()"></button>
+<!-- Modal premium para ver el patrocinador -->
+<div class="vs-overlay" *ngIf="showModalVerPatrocinador" (click)="cerrarVerPatrocinador()">
+  <div class="vs-panel" (click)="$event.stopPropagation()">
+
+    <!-- CLOSE -->
+    <button class="vs-close" (click)="cerrarVerPatrocinador()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <!-- HERO -->
+    <div class="vs-hero">
+      <ng-container *ngIf="patrocinadorUpdate.imagen; else noImg">
+        <img [src]="imageBaseUrlPatro + patrocinadorUpdate.imagen"
+          alt="Logo de {{ patrocinadorUpdate.nombre }}" class="vs-logo" />
+      </ng-container>
+      <ng-template #noImg>
+        <div class="vs-logo-placeholder">
+          <i class="bi bi-building"></i>
         </div>
-        <div class="modal-body">
-          <div class="row text-center">
-            <!-- Primera columna principal -->
-            <div class="col-12 col-md-12">
-              <div class="row text-center align-items-center">
-                <div class="col-12 col-md-12">
-                  <!-- Contenido de la subcolumna -->
-                  <ng-container *ngIf="patrocinadorUpdate.patrocinadorId !== 0">
-                    <div class="form-group">
-                      <ng-container *ngIf="patrocinadorUpdate.imagen">
-                        <div class="container">
-                          <img [src]="imageBaseUrlPatro + patrocinadorUpdate.imagen" alt="user-player"
-                            style="width: -webkit-fill-available;">
-                        </div>
-                      </ng-container>
-                    </div>
-                  </ng-container>
-                </div>
-              </div>
-              <div class="row mt-3">
-                <div class="col-12 col-md-12">
-                  <!-- Contenido de la subcolumna -->
-                  <label><strong>Datos del Patrocinador:</strong></label>
-                </div>
-              </div>
-              <div class="row mt-3">
-                <div class="col-12 col-md-6">
-                  <!-- Contenido de la subcolumna -->
-                  <div class="form-group">
-                    <input type="text" class="form-control custom-input" id="nombre" name="nombre"
-                      [(ngModel)]="patrocinadorUpdate.nombre" placeholder="Nombre" #primerCampo readonly="true">
-                  </div>
-                </div>
-                <div class="col-12 col-md-6">
-                  <!-- Contenido de la subcolumna -->
-                  <div class="form-group">
-                    <input type="text" class="form-control custom-input" id="web" name="web"
-                      [(ngModel)]="patrocinadorUpdate.web" placeholder="Web" readonly="true">
-                  </div>
-                </div>
-              </div>
-              <div class="row mt-3">
-                <div class="col-12 col-md-6">
-                  <!-- Contenido de la subcolumna -->
-                  <div class="form-group">
-                    <textarea class="form-control custom-input" id="descripcion" name="descripcion"
-                      [(ngModel)]="patrocinadorUpdate.descripcion" rows="5" placeholder="Descripción"
-                      readonly="true"></textarea>
-                  </div>
-                </div>
-                <div class="col-12 col-md-6">
-                  <!-- Contenido de la subcolumna -->
-                  <div class="form-group">
-                    <textarea class="form-control custom-input" id="beneficios" name="beneficios"
-                      [(ngModel)]="patrocinadorUpdate.beneficios" rows="5" placeholder="Beneficios"
-                      readonly="true"></textarea>
-                  </div>
-                </div>
-              </div>
-              <div class="row mt-3">
-                <div class="col-12 col-md-6">
-                  <!-- Contenido de la subcolumna -->
-                  <div class="form-group">
-                    <input type="text" class="form-control custom-input" id="telefono" name="telefono"
-                      [(ngModel)]="patrocinadorUpdate.telefono" placeholder="Teléfono" maxlength="9" readonly="true">
-                  </div>
-                </div>
-                <div class="col-12 col-md-6">
-                  <!-- Contenido de la subcolumna -->
-                  <div class="form-group">
-                    <input type="mail" class="form-control custom-input" id="email" name="email"
-                      [(ngModel)]="patrocinadorUpdate.mail" placeholder="Email" readonly="true">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      </ng-template>
     </div>
+
+    <!-- NAME -->
+    <h2 class="vs-name">{{ patrocinadorUpdate.nombre }}</h2>
+
+    <!-- CONTACT PILLS -->
+    <div class="vs-contacts">
+      <a *ngIf="patrocinadorUpdate.web" [href]="patrocinadorUpdate.web" target="_blank" class="vs-pill vs-pill--web">
+        <i class="bi bi-globe2"></i>
+        <span>Sitio web</span>
+      </a>
+      <a *ngIf="patrocinadorUpdate.telefono" href="tel:{{ patrocinadorUpdate.telefono }}" class="vs-pill vs-pill--phone">
+        <i class="bi bi-telephone-fill"></i>
+        <span>{{ patrocinadorUpdate.telefono }}</span>
+      </a>
+      <a *ngIf="patrocinadorUpdate.mail" href="mailto:{{ patrocinadorUpdate.mail }}" class="vs-pill vs-pill--mail">
+        <i class="bi bi-envelope-fill"></i>
+        <span>{{ patrocinadorUpdate.mail }}</span>
+      </a>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="vs-section" *ngIf="patrocinadorUpdate.descripcion">
+      <div class="vs-section-header">
+        <i class="bi bi-info-circle"></i>
+        <h4>Sobre el patrocinador</h4>
+      </div>
+      <p class="vs-section-text">{{ patrocinadorUpdate.descripcion }}</p>
+    </div>
+
+    <!-- BENEFITS -->
+    <div class="vs-section vs-section--benefits" *ngIf="patrocinadorUpdate.beneficios">
+      <div class="vs-section-header">
+        <i class="bi bi-gift"></i>
+        <h4>Beneficios exclusivos</h4>
+      </div>
+      <p class="vs-section-text">{{ patrocinadorUpdate.beneficios }}</p>
+    </div>
+
+    <!-- WEB CTA -->
+    <a *ngIf="patrocinadorUpdate.web" [href]="patrocinadorUpdate.web" target="_blank" class="vs-cta">
+      <i class="bi bi-box-arrow-up-right"></i>
+      Visitar {{ patrocinadorUpdate.nombre }}
+    </a>
+
   </div>
 </div>

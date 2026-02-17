@@ -484,6 +484,7 @@ export class MenuEntrenadorComponent implements OnInit {
   cerrarModalPartido() {
     this.showModalPartido = false;
   }
+
   goBack(): void {
     this.location.back();
   }

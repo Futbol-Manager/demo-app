@@ -203,21 +203,6 @@ $sidebar-transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
    ═══════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
   .sidebar {
-    width: $sidebar-width-collapsed;
-
-    .sidebar-item-label { display: none; }
-    .sidebar-item { justify-content: center; padding: 10px 0; }
-    .sidebar-item-icon { margin: 0; font-size: 1.2rem; }
-    .sidebar-section-title { display: none; }
-    .sidebar-nav { padding: 0 6px; }
-
-    &:not(.sidebar--collapsed) {
-      width: $sidebar-width-expanded;
-      .sidebar-item-label { display: inline; }
-      .sidebar-item { justify-content: flex-start; padding: 9px 12px; }
-      .sidebar-item-icon { font-size: 1.05rem; }
-      .sidebar-section-title { display: block; }
-      .sidebar-nav { padding: 8px 10px; }
-    }
+    display: none !important;
   }
 }

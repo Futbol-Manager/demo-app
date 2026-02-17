@@ -19,18 +19,22 @@
 <main class="cuotas-page cuotas-page--loaded" *ngIf="datosCargados">
   <div class="cuotas-container">
 
-    <!-- HEADER -->
-    <header class="cuotas-header">
-      <h1 class="cuotas-title">
-        <i class="bi bi-credit-card-2-front"></i>
-        Pagar cuotas
-      </h1>
-      <p class="cuotas-subtitle">{{ nameClub }}</p>
-      <div class="cuotas-header-actions" *ngIf="stripeBtoShow">
-        <button type="button" class="btn-pagar-stripe" (click)="openModalStripe()">
-          <i class="bi bi-credit-card"></i>
-          Pagar con tarjeta
-        </button>
+    <!-- BANNER (estilo Lesiones / Galería) -->
+    <header class="cuotas-page-banner">
+      <div class="cuotas-banner-content">
+        <div class="cuotas-banner-left">
+          <h1 class="cuotas-page-title">
+            <i class="bi bi-credit-card-2-front me-2"></i>
+            Pagar cuotas
+          </h1>
+          <p class="cuotas-page-subtitle">{{ nameClub }}</p>
+        </div>
+        <div class="cuotas-banner-actions" *ngIf="stripeBtoShow">
+          <button type="button" class="btn-pagar-stripe btn-pagar-stripe--banner" (click)="openModalStripe()">
+            <i class="bi bi-credit-card"></i>
+            Pagar con tarjeta
+          </button>
+        </div>
       </div>
     </header>
 

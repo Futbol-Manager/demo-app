@@ -75,6 +75,18 @@ export class HeaderComponent implements OnInit {
   showConfirmPassword = false;
   unreadSugerencias = 0;
 
+  // Detección de dispositivo y modal de descarga
+  isAndroid = false;
+  isiOS = false;
+  isDesktop = true;
+  showDownloadModal = false;
+  downloadModalPlatform: 'android' | 'ios' = 'android';
+
+  linkCopied = false;
+
+  readonly playStoreUrl = 'https://play.google.com/store/apps/details?id=com.futbol.sphairatech&pcampaignid=web_share';
+  readonly appStoreUrl = 'https://apps.apple.com/es/app/sphaira-tech/id6745791142';
+
   constructor(
     private router: Router,
     private loginService: LoginService,
@@ -100,6 +112,7 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.detectDevice();
     this.loginService.usuarioActual.subscribe((user: User | null) => {
       this.usuarioActual = user;
       this.profileId = this.usuarioActual!.profileType.profileId;
@@ -176,6 +189,36 @@ export class HeaderComponent implements OnInit {
 
   goToAdminRegistros(): void {
     this.router.navigate(['/dashboard/admin-registros']);
+  }
+
+  private detectDevice(): void {
+    const ua = navigator.userAgent || navigator.vendor || '';
+    this.isAndroid = /android/i.test(ua);
+    this.isiOS = /iPad|iPhone|iPod/.test(ua) && !('MSStream' in window);
+    this.isDesktop = !this.isAndroid && !this.isiOS;
+  }
+
+  getQrUrl(platform: 'android' | 'ios'): string {
+    const url = platform === 'android' ? this.playStoreUrl : this.appStoreUrl;
+    return `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(url)}`;
+  }
+
+  openDownloadModal(platform: 'android' | 'ios'): void {
+    this.downloadModalPlatform = platform;
+    this.showDownloadModal = true;
+  }
+
+  closeDownloadModal(): void {
+    this.showDownloadModal = false;
+    this.linkCopied = false;
+  }
+
+  copyDownloadLink(): void {
+    const url = this.downloadModalPlatform === 'android' ? this.playStoreUrl : this.appStoreUrl;
+    navigator.clipboard.writeText(url).then(() => {
+      this.linkCopied = true;
+      setTimeout(() => this.linkCopied = false, 2000);
+    });
   }
 
   ngAfterViewInit() {

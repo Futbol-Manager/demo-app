@@ -98,24 +98,37 @@
         </div>
 
         <!-- ===== DESCARGAR APP ===== -->
-        <div class="dropdown">
+        <!-- Móvil Android: enlace directo a Play Store -->
+        <a *ngIf="isAndroid" class="header-action" [href]="playStoreUrl" target="_blank" role="button">
+          <i class="bi bi-google-play"></i>
+          <span class="d-none d-md-inline">
+            {{ 'HEADER.DOWNLOAD.PLAYSTORE' | translate }}
+          </span>
+        </a>
+
+        <!-- Móvil iOS: enlace directo a App Store -->
+        <a *ngIf="isiOS" class="header-action" [href]="appStoreUrl" target="_blank" role="button">
+          <i class="bi bi-apple"></i>
+          <span class="d-none d-md-inline">
+            {{ 'HEADER.DOWNLOAD.APPSTORE' | translate }}
+          </span>
+        </a>
+
+        <!-- Desktop: dropdown con ambas opciones → abre modal QR -->
+        <div *ngIf="isDesktop" class="dropdown">
           <a class="nav-link dropdown-toggle header-action" data-bs-toggle="dropdown" role="button">
             <i class="bi bi-download"></i>
             <span class="d-none d-md-inline">
               {{ 'HEADER.DOWNLOAD.TITLE' | translate }}
             </span>
-
           </a>
 
           <div class="dropdown-menu dropdown-menu-end header-dropdown">
-            <a class="dropdown-item"
-              href="https://play.google.com/store/apps/details?id=com.futbol.sphairatech&pcampaignid=web_share"
-              target="_blank">
+            <a class="dropdown-item" (click)="openDownloadModal('android')">
               <i class="bi bi-google-play"></i>
               {{ 'HEADER.DOWNLOAD.PLAYSTORE' | translate }}
             </a>
-
-            <a class="dropdown-item" href="https://apps.apple.com/es/app/sphaira-tech/id6745791142" target="_blank">
+            <a class="dropdown-item" (click)="openDownloadModal('ios')">
               <i class="bi bi-apple"></i>
               {{ 'HEADER.DOWNLOAD.APPSTORE' | translate }}
             </a>
@@ -215,192 +228,261 @@
   </div>
 </header>
 
-<!-- MODAL EDITAR PERFIL -->
-<div class="modal profile-modal" tabindex="-1" role="dialog" *ngIf="showModal">
-  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-    <div class="modal-content profile-modal-content">
+<!-- MODAL EDITAR PERFIL — PREMIUM -->
+<div class="pm-overlay" *ngIf="showModal" (click)="cerrarModal()">
+  <div class="pm-panel" (click)="$event.stopPropagation()">
 
-      <!-- HEADER -->
-      <div class="modal-header profile-modal-header">
-        <div>
-          <h5 class="modal-title">
-            {{ 'PROFILE.EDIT_TITLE' | translate }}
-          </h5>
-          <small class="text-muted">
-            {{ 'PROFILE.INSTRUCTIONS_TITLE' | translate }}
-          </small>
-        </div>
-        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModal()"></button>
+    <!-- HERO BANNER + AVATAR -->
+    <div class="pm-hero">
+      <button class="pm-close" (click)="cerrarModal()"><i class="bi bi-x-lg"></i></button>
+      <div class="pm-hero-bg"></div>
+      <div class="pm-avatar-wrap">
+        <img [src]="showPreview ? imagePreviewUrl : imgUser ? imageBaseUrl + imgUser : './../../../assets/images/no-image.png'"
+          class="pm-avatar" />
+        <label class="pm-avatar-edit" title="Cambiar foto">
+          <i class="bi bi-camera-fill"></i>
+          <input type="file" hidden (change)="onFileSelected($event)" />
+        </label>
       </div>
+      <h2 class="pm-hero-name">{{ nameUser }}</h2>
+      <span class="pm-hero-role" *ngIf="usuarioActual?.mail">{{ usuarioActual?.mail }}</span>
 
-      <!-- BODY -->
-      <div class="modal-body profile-modal-body">
+      <button *ngIf="showbtnupimg" type="button" class="pm-upload-btn" (click)="onSubmit()">
+        <i class="bi bi-upload me-1"></i> {{ 'PROFILE.UPLOAD_PHOTO' | translate }}
+      </button>
+    </div>
 
-        <!-- AVATAR -->
-        <div class="profile-avatar-section">
-          <div class="avatar-wrapper">
-            <img [src]="
-                showPreview
-                  ? imagePreviewUrl
-                  : imgUser
-                  ? imageBaseUrl + imgUser
-                  : './../../../assets/images/no-image.png'
-              " class="profile-avatar" />
-          </div>
+    <!-- BODY -->
+    <div class="pm-body">
 
-          <h6 class="mt-3">
-            {{ 'PROFILE.UPLOAD_TITLE' | translate }}
-          </h6>
-
-          <!-- ⚠️ NO form anidado -->
-          <label class="upload-label">
-            {{ 'PROFILE.SELECT_IMAGE_TEXT' | translate }}
-            <input type="file" hidden (change)="onFileSelected($event)" />
-          </label>
-
-          <button *ngIf="showbtnupimg" type="button" class="btn btn-success px-4" (click)="onSubmit()">
-            <i class="bi bi-upload"></i> {{ 'PROFILE.UPLOAD_PHOTO' | translate }}
-          </button>
+      <!-- SECCIÓN: Datos personales -->
+      <div class="pm-section">
+        <div class="pm-section-header">
+          <i class="bi bi-person-circle"></i>
+          <h3>{{ 'PROFILE.EDIT_TITLE' | translate }}</h3>
         </div>
 
-        <hr />
-
-        <!-- FORM -->
-        <form [formGroup]="userForm" #thisForm="ngForm" (ngSubmit)="saveChanges()" class="profile-form">
-          <div class="row g-3">
-
-            <div class="col-md-6">
-              <label class="form-label">
-                {{ 'PROFILE.FIELDS.NAME' | translate }}
-              </label>
-              <input type="text" class="form-control" formControlName="firstName" />
+        <form [formGroup]="userForm" #thisForm="ngForm" (ngSubmit)="saveChanges()" class="pm-form">
+          <div class="pm-form-grid">
+            <div class="pm-field">
+              <label>{{ 'PROFILE.FIELDS.NAME' | translate }}</label>
+              <div class="pm-input-wrap">
+                <i class="bi bi-person"></i>
+                <input type="text" formControlName="firstName" />
+              </div>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label">
-                {{ 'PROFILE.FIELDS.SURNAMES' | translate }}
-              </label>
-              <input type="text" class="form-control" formControlName="secondName" />
+            <div class="pm-field">
+              <label>{{ 'PROFILE.FIELDS.SURNAMES' | translate }}</label>
+              <div class="pm-input-wrap">
+                <i class="bi bi-person-badge"></i>
+                <input type="text" formControlName="secondName" />
+              </div>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label">
-                {{ 'PROFILE.FIELDS.EMAIL' | translate }}
-              </label>
-              <input type="email" class="form-control" formControlName="mail" readonly />
+            <div class="pm-field">
+              <label>{{ 'PROFILE.FIELDS.EMAIL' | translate }}</label>
+              <div class="pm-input-wrap pm-input-wrap--readonly">
+                <i class="bi bi-envelope"></i>
+                <input type="email" formControlName="mail" readonly />
+              </div>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label">
-                {{ 'PROFILE.FIELDS.PHONE' | translate }}
-              </label>
-              <input type="text" class="form-control" formControlName="mobile" readonly />
+            <div class="pm-field">
+              <label>{{ 'PROFILE.FIELDS.PHONE' | translate }}</label>
+              <div class="pm-input-wrap pm-input-wrap--readonly">
+                <i class="bi bi-telephone"></i>
+                <input type="text" formControlName="mobile" readonly />
+              </div>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label">
-                {{ 'PROFILE.FIELDS.BIRTHDATE' | translate }}
-              </label>
-              <input type="date" class="form-control" formControlName="birthdate" />
+            <div class="pm-field">
+              <label>{{ 'PROFILE.FIELDS.BIRTHDATE' | translate }}</label>
+              <div class="pm-input-wrap">
+                <i class="bi bi-calendar3"></i>
+                <input type="date" formControlName="birthdate" />
+              </div>
             </div>
 
-            <div class="col-md-6">
-              <label class="form-label">
-                {{ 'PROFILE.FIELDS.GENDER' | translate }}
-              </label>
-              <select class="form-control" formControlName="genreType">
-                <option value="1">
-                  {{ 'PROFILE.GENDER_M' | translate }}
-                </option>
-                <option value="2">
-                  {{ 'PROFILE.GENDER_F' | translate }}
-                </option>
-                <option value="3">
-                  {{ 'PROFILE.GENDER_O' | translate }}
-                </option>
-              </select>
+            <div class="pm-field">
+              <label>{{ 'PROFILE.FIELDS.GENDER' | translate }}</label>
+              <div class="pm-input-wrap">
+                <i class="bi bi-gender-ambiguous"></i>
+                <select formControlName="genreType">
+                  <option value="1">{{ 'PROFILE.GENDER_M' | translate }}</option>
+                  <option value="2">{{ 'PROFILE.GENDER_F' | translate }}</option>
+                  <option value="3">{{ 'PROFILE.GENDER_O' | translate }}</option>
+                </select>
+              </div>
             </div>
-
           </div>
         </form>
+      </div>
 
-        <hr />
-
-        <!-- CAMBIAR CONTRASEÑA -->
-        <div *ngIf="!showPasswordSection" class="text-center">
-          <button class="btn btn-outline-secondary" (click)="showPasswordSection = true">
-            <i class="bi bi-key me-2"></i>{{ 'HEADER.CHANGE_PASSWORD' | translate }}
-          </button>
+      <!-- SECCIÓN: Seguridad -->
+      <div class="pm-section pm-section--security">
+        <div class="pm-section-header" (click)="showPasswordSection = !showPasswordSection" style="cursor:pointer">
+          <i class="bi bi-shield-lock"></i>
+          <h3>{{ 'HEADER.CHANGE_PASSWORD' | translate }}</h3>
+          <i class="bi pm-section-chevron" [ngClass]="showPasswordSection ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
         </div>
 
-        <div *ngIf="showPasswordSection" class="password-change-section">
-          <h6 class="mb-3"><i class="bi bi-key me-2"></i>{{ 'HEADER.CHANGE_PASSWORD' | translate }}</h6>
-
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label">{{ 'HEADER.CURRENT_PASSWORD' | translate }}</label>
-              <div class="input-group">
-                <input [type]="showCurrentPassword ? 'text' : 'password'" class="form-control" [(ngModel)]="currentPassword"
-                  [placeholder]="'HEADER.CURRENT_PASSWORD' | translate">
-                <button class="btn btn-outline-secondary" type="button" (click)="showCurrentPassword = !showCurrentPassword" tabindex="-1">
+        <div *ngIf="showPasswordSection" class="pm-password-body">
+          <div class="pm-form-grid pm-form-grid--3">
+            <div class="pm-field">
+              <label>{{ 'HEADER.CURRENT_PASSWORD' | translate }}</label>
+              <div class="pm-input-wrap">
+                <i class="bi bi-lock"></i>
+                <input [type]="showCurrentPassword ? 'text' : 'password'" [(ngModel)]="currentPassword"
+                  [placeholder]="'HEADER.CURRENT_PASSWORD' | translate" />
+                <button class="pm-eye-btn" type="button" (click)="showCurrentPassword = !showCurrentPassword" tabindex="-1">
                   <i class="bi" [ngClass]="showCurrentPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
                 </button>
               </div>
             </div>
-            <div class="col-md-4">
-              <label class="form-label">{{ 'HEADER.NEW_PASSWORD' | translate }}</label>
-              <div class="input-group">
-                <input [type]="showNewPassword ? 'text' : 'password'" class="form-control" [(ngModel)]="newPassword"
-                  [placeholder]="'HEADER.NEW_PASSWORD' | translate">
-                <button class="btn btn-outline-secondary" type="button" (click)="showNewPassword = !showNewPassword" tabindex="-1">
+
+            <div class="pm-field">
+              <label>{{ 'HEADER.NEW_PASSWORD' | translate }}</label>
+              <div class="pm-input-wrap">
+                <i class="bi bi-key"></i>
+                <input [type]="showNewPassword ? 'text' : 'password'" [(ngModel)]="newPassword"
+                  [placeholder]="'HEADER.NEW_PASSWORD' | translate" />
+                <button class="pm-eye-btn" type="button" (click)="showNewPassword = !showNewPassword" tabindex="-1">
                   <i class="bi" [ngClass]="showNewPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
                 </button>
               </div>
             </div>
-            <div class="col-md-4">
-              <label class="form-label">{{ 'HEADER.CONFIRM_PASSWORD' | translate }}</label>
-              <div class="input-group">
-                <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control" [(ngModel)]="confirmPassword"
-                  [placeholder]="'HEADER.CONFIRM_PASSWORD' | translate">
-                <button class="btn btn-outline-secondary" type="button" (click)="showConfirmPassword = !showConfirmPassword" tabindex="-1">
+
+            <div class="pm-field">
+              <label>{{ 'HEADER.CONFIRM_PASSWORD' | translate }}</label>
+              <div class="pm-input-wrap">
+                <i class="bi bi-key-fill"></i>
+                <input [type]="showConfirmPassword ? 'text' : 'password'" [(ngModel)]="confirmPassword"
+                  [placeholder]="'HEADER.CONFIRM_PASSWORD' | translate" />
+                <button class="pm-eye-btn" type="button" (click)="showConfirmPassword = !showConfirmPassword" tabindex="-1">
                   <i class="bi" [ngClass]="showConfirmPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
                 </button>
               </div>
             </div>
           </div>
 
-          <div *ngIf="passwordError" class="alert alert-danger py-2 mt-2 mb-0">
-            <i class="bi bi-exclamation-triangle me-1"></i> {{ passwordError }}
+          <div *ngIf="passwordError" class="pm-alert pm-alert--error">
+            <i class="bi bi-exclamation-triangle"></i> {{ passwordError }}
           </div>
-          <div *ngIf="passwordSuccess" class="alert alert-success py-2 mt-2 mb-0">
-            <i class="bi bi-check-circle me-1"></i> {{ passwordSuccess }}
+          <div *ngIf="passwordSuccess" class="pm-alert pm-alert--success">
+            <i class="bi bi-check-circle"></i> {{ passwordSuccess }}
           </div>
 
-          <div class="mt-3 d-flex gap-2">
-            <button class="btn btn-sphaira-blue" [disabled]="savingPassword || !currentPassword || !newPassword || !confirmPassword"
+          <div class="pm-password-actions">
+            <button class="pm-btn pm-btn--primary" [disabled]="savingPassword || !currentPassword || !newPassword || !confirmPassword"
               (click)="cambiarPassword()">
               <span *ngIf="savingPassword" class="spinner-border spinner-border-sm me-1"></span>
               {{ 'HEADER.SAVE' | translate }}
             </button>
-            <button class="btn btn-outline-secondary" (click)="showPasswordSection = false; passwordError = ''; passwordSuccess = ''">
+            <button class="pm-btn pm-btn--ghost" (click)="showPasswordSection = false; passwordError = ''; passwordSuccess = ''">
               {{ 'HEADER.CANCEL' | translate }}
             </button>
           </div>
         </div>
       </div>
 
-      <!-- FOOTER -->
-      <div class="modal-footer profile-modal-footer">
-        <button class="btn btn-success px-4" (click)="saveChanges()">
-          {{ 'APP.BUTTONS.SAVE' | translate }}
+    </div>
+
+    <!-- FOOTER -->
+    <div class="pm-footer">
+      <button class="pm-btn pm-btn--save" (click)="saveChanges()">
+        <i class="bi bi-check-lg me-1"></i>
+        {{ 'APP.BUTTONS.SAVE' | translate }}
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+
+<!-- MODAL DESCARGAR APP (QR + Info) -->
+<div class="modal download-modal" tabindex="-1" role="dialog" *ngIf="showDownloadModal">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content download-modal-content">
+
+      <!-- HEADER -->
+      <div class="download-modal-header">
+        <div class="download-modal-header-left">
+          <div class="download-modal-icon-wrap">
+            <i class="bi" [ngClass]="downloadModalPlatform === 'android' ? 'bi-google-play' : 'bi-apple'"></i>
+          </div>
+          <div>
+            <h5 class="download-modal-title">
+              {{ downloadModalPlatform === 'android' ? 'Descargar en Google Play' : 'Descargar en App Store' }}
+            </h5>
+            <span class="download-modal-badge">Sphaira Tech</span>
+          </div>
+        </div>
+        <button type="button" class="download-modal-close" aria-label="Cerrar" (click)="closeDownloadModal()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <!-- BODY -->
+      <div class="download-modal-body">
+
+        <!-- QR -->
+        <div class="download-qr-section">
+          <p class="download-qr-hint">Escanea el código QR con tu teléfono para descargar la app</p>
+          <div class="download-qr-frame">
+            <img [src]="getQrUrl(downloadModalPlatform)" alt="Código QR para descargar la app" width="200" height="200" />
+          </div>
+        </div>
+
+        <!-- DIVIDER -->
+        <div class="download-divider">
+          <span>o copia el enlace</span>
+        </div>
+
+        <!-- LINK -->
+        <div class="download-link-section">
+          <div class="download-link-box">
+            <i class="bi bi-link-45deg"></i>
+            <span class="download-link-text">{{ downloadModalPlatform === 'android' ? playStoreUrl : appStoreUrl }}</span>
+            <button class="download-link-copy" title="Copiar enlace"
+              (click)="$event.stopPropagation(); copyDownloadLink()">
+              <i class="bi bi-clipboard"></i>
+            </button>
+          </div>
+          <span class="download-link-copied" *ngIf="linkCopied">Enlace copiado</span>
+        </div>
+
+        <!-- INFO -->
+        <div class="download-info-section">
+          <div class="download-info-card">
+            <i class="bi bi-phone"></i>
+            <div>
+              <strong>Disponible para {{ downloadModalPlatform === 'android' ? 'Android 8.0+' : 'iOS 15.0+' }}</strong>
+              <span>Gratis &middot; Gestión deportiva profesional</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTÓN DIRECTO -->
+        <a class="download-direct-btn"
+          [href]="downloadModalPlatform === 'android' ? playStoreUrl : appStoreUrl"
+          target="_blank">
+          <i class="bi" [ngClass]="downloadModalPlatform === 'android' ? 'bi-google-play' : 'bi-apple'"></i>
+          {{ downloadModalPlatform === 'android' ? 'Abrir en Google Play' : 'Abrir en App Store' }}
+          <i class="bi bi-box-arrow-up-right ms-auto"></i>
+        </a>
+
+        <!-- SWITCH -->
+        <button class="download-switch-btn" (click)="downloadModalPlatform = downloadModalPlatform === 'android' ? 'ios' : 'android'">
+          <i class="bi" [ngClass]="downloadModalPlatform === 'android' ? 'bi-apple' : 'bi-google-play'"></i>
+          {{ downloadModalPlatform === 'android' ? 'Ver versión para iOS' : 'Ver versión para Android' }}
         </button>
       </div>
 
     </div>
   </div>
 </div>
-
-
 
 <!-- MODAL IDIOMA -->
 <div class="modal lang-modal" tabindex="-1" role="dialog" *ngIf="showModalIdioma">
