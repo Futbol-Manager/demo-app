@@ -1060,14 +1060,18 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.65rem;
+  font-size: 0.8rem;
   font-weight: 600;
-  padding: 3px 5px;
+  padding: 4px 6px;
   border-radius: 6px;
   pointer-events: none;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.activity i {
+  font-size: 0.85rem;
 }
 
 
@@ -1085,10 +1089,17 @@
   border-left: 3px solid #31b270;
 }
 
-/* Iconos Local / Visitante */
+/* Iconos Local / Visitante (original pequeño) */
 .match-icon {
   width: 12px;
   height: 12px;
+  flex-shrink: 0;
+}
+
+/* Iconos Local / Visitante (tamaño grande para celdas) */
+.match-icon-lg {
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
 }
 
@@ -1096,6 +1107,17 @@
 .match-name {
   overflow: hidden;
   text-overflow: ellipsis;
+  min-width: 0;
+}
+
+/* Hora inline en entrenamiento del calendario */
+.training-time-inline {
+  margin-left: 2px;
+  opacity: 0.75;
+  font-weight: 500;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .saas-label {
@@ -3709,7 +3731,8 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
     min-width: 0;
   }
   .activities .activity i,
-  .activities .activity .match-icon {
+  .activities .activity .match-icon,
+  .activities .activity .match-icon-lg {
     flex-shrink: 0;
     margin-right: 3px;
   }
@@ -3727,6 +3750,14 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
     height: 12px;
     margin-right: 2px;
     vertical-align: -2px;
+  }
+  .match-icon-lg {
+    width: 16px;
+    height: 16px;
+    margin-right: 2px;
+  }
+  .training-time-inline {
+    font-size: 0.65rem;
   }
   .year-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -4562,4 +4593,146 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   .calendar-cell.empty {
     background: var(--bg-surface);
   }
+}
+
+/* ============================= */
+/* TRAINING TIME BADGES          */
+/* ============================= */
+
+.training-time-badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  background: rgba(0, 44, 64, 0.08);
+  color: #002c40;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.training-time-header {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #6b7280;
+  margin-top: 4px;
+}
+
+input[type="time"].saas-input {
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #1f2937;
+  background: #f9fafb;
+  transition: border-color 0.2s;
+  width: 100%;
+  height: 44px;
+
+  &:focus {
+    border-color: #002c40;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 44, 64, 0.1);
+  }
+
+  &:read-only {
+    background: #f3f4f6;
+    cursor: not-allowed;
+  }
+}
+
+/* ═══ Modales de confirmación de eliminación ═══ */
+.confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.15s ease;
+}
+
+.confirm-dialog {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px 28px 24px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  animation: scaleIn 0.2s ease;
+
+  .confirm-icon {
+    font-size: 2.5rem;
+    color: #e53935;
+    margin-bottom: 12px;
+  }
+
+  h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0 0 8px;
+  }
+
+  p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0 0 24px;
+    line-height: 1.5;
+  }
+
+  .confirm-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .btn-confirm-cancel {
+    padding: 10px 24px;
+    border-radius: 10px;
+    border: 1px solid #d1d5db;
+    background: #fff;
+    color: #374151;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover {
+      background: #f3f4f6;
+      border-color: #9ca3af;
+    }
+  }
+
+  .btn-confirm-delete {
+    padding: 10px 24px;
+    border-radius: 10px;
+    border: none;
+    background: #e53935;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover {
+      background: #c62828;
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }

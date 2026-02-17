@@ -87,7 +87,22 @@
       </div>
 
       <!-- BURBUJA -->
-      <div class="message-bubble" *ngIf="!msg.isTyping">
+      <div class="message-bubble" *ngIf="!msg.isTyping && !msg.isActionPreview">
+        <div class="message-text" [innerHTML]="msg.text | nl2br"></div>
+        <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
+      </div>
+
+      <!-- Action preview (confirm/cancel) -->
+      <div class="message-bubble action-bubble" *ngIf="msg.isActionPreview && !msg.actionExecuted">
+        <app-ai-action-preview
+          [actions]="msg.pendingActions || []"
+          [isExecuting]="!!msg.isExecutingAction"
+          (confirmed)="confirmActions(msg)"
+          (cancelled)="cancelActions(msg)">
+        </app-ai-action-preview>
+        <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
+      </div>
+      <div class="message-bubble" *ngIf="msg.isActionPreview && msg.actionExecuted">
         <div class="message-text" [innerHTML]="msg.text | nl2br"></div>
         <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
       </div>
@@ -129,9 +144,10 @@
     <div class="chat-input-wrapper">
       <textarea
         #inputField
-        class="chat-input"
+        class="chat-input chat-input-auto"
         [(ngModel)]="userInput"
         (keydown)="onKeyDown($event)"
+        (input)="autoResizeInput($event)"
         [placeholder]="'AI_ASSISTANT.INPUT_PLACEHOLDER' | translate"
         rows="1"
         [disabled]="isResponding"

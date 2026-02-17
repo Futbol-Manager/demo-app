@@ -99,6 +99,7 @@ import { AdminAiUsageComponent } from './admin-ai-usage/admin-ai-usage.component
 import { CreditsModalComponent } from './credits-modal/credits-modal.component';
 import { AiCreditsSuccessComponent } from './ai-credits-success/ai-credits-success.component';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
+import { AiActionPreviewComponent } from './shared/ai-action-preview/ai-action-preview.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -198,6 +199,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     CreditsModalComponent,
     AiCreditsSuccessComponent,
     ConfirmDialogComponent,
+    AiActionPreviewComponent,
   ],
   imports: [
     CommonModule,

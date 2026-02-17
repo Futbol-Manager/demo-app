@@ -687,6 +687,7 @@ $coach-gradient: linear-gradient(135deg, $green-primary 0%, $teal 45%, $navy 100
   color: $text-dark;
   resize: none;
   outline: none;
+  overflow: hidden;
   min-height: 24px;
   max-height: 120px;
   padding: 6px 0;

@@ -5,7 +5,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { LoginService } from 'src/app/core/services/login/login.service';
-import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { AiChatService, AiPendingAction } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
 
@@ -19,6 +19,11 @@ interface ChatMessage {
   text: string;
   timestamp: Date;
   isTyping?: boolean;
+  isActionPreview?: boolean;
+  pendingActions?: AiPendingAction[];
+  actionToken?: string;
+  actionExecuted?: boolean;
+  isExecutingAction?: boolean;
 }
 
 interface SuggestionChip {
@@ -143,6 +148,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   private shouldScroll = false;
   userId = 0;
   private clubId: number | null = null;
+  private teamId: number | null = null;
   private chatSub: Subscription | null = null;
 
   // Voice recognition
@@ -195,6 +201,26 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     const storedClubId = sessionStorage.getItem('clubId');
     if (storedClubId) this.clubId = parseInt(storedClubId, 10);
 
+    // Try to extract teamId from the current URL or sessionStorage
+    const urlParts = this.router.url.split('/');
+    const teamRoutes = ['calendario', 'jugadores', 'menu-entrenador', 'menu-club', 'tareas',
+      'estadisticas_equipo', 'estadisticas_jugadores', 'informacion_equipo',
+      'entrenadores', 'tactical-board', 'lesiones', 'debrief'];
+    for (const route of teamRoutes) {
+      const idx = urlParts.indexOf(route);
+      if (idx >= 0 && idx + 1 < urlParts.length) {
+        const tid = parseInt(urlParts[idx + 1], 10);
+        if (!isNaN(tid) && tid > 0) {
+          this.teamId = tid;
+          break;
+        }
+      }
+    }
+    if (!this.teamId) {
+      const storedTeamId = sessionStorage.getItem('teamId');
+      if (storedTeamId) this.teamId = parseInt(storedTeamId, 10);
+    }
+
     this.loadConversationsList();
 
     this.addAssistantMessage(
@@ -211,8 +237,8 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     this.voiceTranscriptSub = this.voiceRecognition.transcript$.subscribe(result => {
       if (result.isFinal) {
         // Final transcript: commit to input
-        this.voiceTranscriptBase = this.userInput.trim()
-          ? this.userInput + ' ' + result.transcript 
+        this.voiceTranscriptBase = this.voiceTranscriptBase.trim()
+          ? this.voiceTranscriptBase + ' ' + result.transcript 
           : result.transcript;
         this.userInput = this.voiceTranscriptBase;
       } else {
@@ -423,8 +449,14 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     this.messages.push(typingMsg);
     this.shouldScroll = true;
 
+    // Build conversation history (last 10 messages)
+    const history = this.messages
+      .filter(m => !m.isTyping && m.text && m.text.trim().length > 0)
+      .slice(-10)
+      .map(m => ({ role: m.role, text: m.isActionPreview ? '[Acción propuesta: ' + m.text + ']' : m.text }));
+
     this.chatSub?.unsubscribe();
-    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, 'dashboard', text, 'users')
+    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, 'dashboard', text, 'users', this.teamId, history)
       .pipe(
         finalize(() => {
           this.isResponding = false;
@@ -435,7 +467,20 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
           const idx = this.messages.indexOf(typingMsg);
           if (idx > -1) this.messages.splice(idx, 1);
 
-          if (resp.success && resp.response) {
+          if (resp.success && resp.hasActions && resp.pendingActions && resp.pendingActions.length > 0) {
+            this.messages.push({
+              id: ++this.msgIdCounter,
+              role: 'assistant',
+              text: resp.response || '',
+              timestamp: new Date(),
+              isActionPreview: true,
+              pendingActions: resp.pendingActions,
+              actionToken: resp.actionToken,
+            });
+            if (resp.creditsRemaining !== undefined) {
+              this.creditsAvailable = resp.creditsRemaining;
+            }
+          } else if (resp.success && resp.response) {
             this.addAssistantMessage(resp.response);
             if (resp.creditsRemaining !== undefined) {
               this.creditsAvailable = resp.creditsRemaining;
@@ -444,14 +489,75 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
             this.addAssistantMessage(resp.message || 'Ha ocurrido un error. Intentalo de nuevo.');
           }
           this.updateSuggestionsContext(text);
+          this.shouldScroll = true;
           this.saveConversation();
+          this.focusChatInput();
         },
         error: () => {
           const idx = this.messages.indexOf(typingMsg);
           if (idx > -1) this.messages.splice(idx, 1);
           this.addAssistantMessage('Error de conexion. Intentalo de nuevo.');
+          this.focusChatInput();
         }
       });
+  }
+
+  confirmActions(msg: ChatMessage): void {
+    if (!msg.actionToken || msg.actionExecuted) return;
+    msg.isExecutingAction = true;
+    this.aiChatService.executeActions(msg.actionToken).subscribe({
+      next: (result) => {
+        msg.actionExecuted = true;
+        msg.isExecutingAction = false;
+        if (result.success) {
+          const parts: string[] = [];
+          if ((result.created ?? 0) > 0) parts.push(result.created + ' creado(s)');
+          if ((result.edited ?? 0) > 0) parts.push(result.edited + ' editado(s)');
+          if ((result.deleted ?? 0) > 0) parts.push(result.deleted + ' eliminado(s)');
+          let summaryMsg = '✅ ' + (parts.length > 0 ? parts.join(', ') : 'Acciones ejecutadas correctamente.') + ' Recargando datos...';
+          if (result.errors && result.errors.length > 0) {
+            summaryMsg += '\n⚠️ Advertencias: ' + result.errors.join(', ');
+          }
+          if (result.details && result.details.length > 0) {
+            summaryMsg += '\n📋 ' + result.details.join(', ');
+          }
+          this.addAssistantMessage(summaryMsg);
+          setTimeout(() => window.dispatchEvent(new CustomEvent('ai-data-changed')), 500);
+          setTimeout(() => window.dispatchEvent(new CustomEvent('ai-data-changed')), 1500);
+        } else {
+          let errMsg = '❌ ' + (result.message || 'Error al ejecutar las acciones.');
+          if (result.errors && result.errors.length > 0) {
+            errMsg += '\n' + result.errors.join(', ');
+          }
+          this.addAssistantMessage(errMsg);
+        }
+        this.shouldScroll = true;
+        this.saveConversation();
+        this.focusChatInput();
+      },
+      error: () => {
+        msg.isExecutingAction = false;
+        this.addAssistantMessage('❌ Error de conexión al ejecutar las acciones.');
+        this.saveConversation();
+        this.focusChatInput();
+      }
+    });
+  }
+
+  cancelActions(msg: ChatMessage): void {
+    msg.actionExecuted = true;
+    this.addAssistantMessage('Acción cancelada.');
+    this.shouldScroll = true;
+    this.saveConversation();
+    this.focusChatInput();
+  }
+
+  private focusChatInput(): void {
+    setTimeout(() => {
+      if (this.inputField?.nativeElement) {
+        this.inputField.nativeElement.focus();
+      }
+    }, 100);
   }
 
   cancelPendingRequest(): void {
@@ -489,6 +595,29 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.sendMessage();
+      this.resetInputSize();
+    }
+  }
+
+  autoResizeInput(event?: Event): void {
+    const el = event ? event.target as HTMLTextAreaElement : this.inputField?.nativeElement;
+    if (!el) return;
+    el.style.height = 'auto';
+    const scrollH = el.scrollHeight;
+    if (scrollH > 120) {
+      el.style.height = '120px';
+      el.style.overflowY = 'auto';
+    } else {
+      el.style.height = scrollH + 'px';
+      el.style.overflowY = 'hidden';
+    }
+  }
+
+  private resetInputSize(): void {
+    const el = this.inputField?.nativeElement;
+    if (el) {
+      el.style.height = 'auto';
+      el.style.overflowY = 'hidden';
     }
   }
 

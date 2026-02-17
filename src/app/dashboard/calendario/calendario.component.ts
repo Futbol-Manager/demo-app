@@ -2,7 +2,9 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  NgZone,
   OnInit,
+  OnDestroy,
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -68,8 +70,9 @@ interface Category {
   templateUrl: './calendario.component.html',
   styleUrls: ['./calendario.component.scss'],
 })
-export class CalendarioComponent implements OnInit {
+export class CalendarioComponent implements OnInit, OnDestroy {
   @ViewChild('endOfModal', { static: false }) endOfModal!: ElementRef;
+  private aiDataChangedHandler = () => this.reloadDataFromAi();
 
   datosCargados: boolean = false;
   teamId!: number; // Ajusta el valor según el teamId del equipo actual
@@ -865,9 +868,11 @@ export class CalendarioComponent implements OnInit {
     private loginService: LoginService,
     private location: Location,
     private toastr: ToastrService,
+    private ngZone: NgZone,
   ) { }
 
   ngOnInit(): void {
+    window.addEventListener('ai-data-changed', this.aiDataChangedHandler);
     // Suscríbete al observable del servicio para obtener el usuario actual
     console.log(this.today);
     this.loginService.usuarioActual.subscribe((user) => {
@@ -909,6 +914,20 @@ export class CalendarioComponent implements OnInit {
       );
     });
     this.horas = this.generarHoras(8, 21);
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('ai-data-changed', this.aiDataChangedHandler);
+  }
+
+  private reloadDataFromAi(): void {
+    if (this.teamId) {
+      console.log('[Calendario] reloadDataFromAi triggered for teamId=' + this.teamId);
+      this.ngZone.run(() => {
+        this.getListaEntrenamientos();
+        this.cdr.detectChanges();
+      });
+    }
   }
 
   goBack(): void {
@@ -965,15 +984,13 @@ export class CalendarioComponent implements OnInit {
 
           trainingId: training?.trainingSessionId ?? null,
           trainingVisible: training?.visible ?? 0,
+          startTime: training?.startTime ?? null,
+          endTime: training?.endTime ?? null,
 
           matchPreparationId: match?.matchPreparationId ?? null,
           matchVisible: match?.visible ?? 0,
 
-          rivalName: match
-            ? match.rivalName.length > 16
-              ? match.rivalName.substring(0, 16) + '...'
-              : match.rivalName
-            : null,
+          rivalName: match?.rivalName ?? null,
 
           terreno: match?.terreno ?? null
         };
@@ -1093,13 +1110,11 @@ export class CalendarioComponent implements OnInit {
         daysession,
         trainingId: training?.trainingSessionId ?? null,
         trainingVisible: training?.visible ?? 0,
+        startTime: training?.startTime ?? null,
+        endTime: training?.endTime ?? null,
         matchPreparationId: match?.matchPreparationId ?? null,
         matchVisible: match?.visible ?? 0,
-        rivalName: match
-          ? match.rivalName?.length > 20
-            ? match.rivalName.substring(0, 20) + '...'
-            : match.rivalName
-          : null,
+        rivalName: match?.rivalName ?? null,
         terreno: match?.terreno ?? null
       });
     }
@@ -1263,24 +1278,32 @@ export class CalendarioComponent implements OnInit {
       );
   }
 
+  showDeleteTrainingConfirm = false;
+
   eliminarEntrenamiento() {
+    this.showDeleteTrainingConfirm = true;
+  }
+
+  confirmDeleteTraining() {
+    this.showDeleteTrainingConfirm = false;
     this.trainingSession.daySession = this.daySession;
     this.trainingService
       .deleteTrainingSession(this.teamId.toString(), this.trainingSession)
       .subscribe(
         (response) => {
           console.log('Sesión de entrenamiento eliminada con éxito:', response);
-          // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
           this.getListaEntrenamientos();
-          // Cerrar el modal después de crear el equipo
           if (this.trainingSession.trainingSessionId === 0) this.cerrarModal();
           else this.cerrarModalEntrenamiento();
         },
         (error) => {
           console.error('Error al eliminar la sesión de entrenamiento:', error);
-          // Aquí puedes manejar el error, si es necesario
         },
       );
+  }
+
+  cancelDeleteTraining() {
+    this.showDeleteTrainingConfirm = false;
   }
 
   getListaEntrenamientos() {
@@ -1787,16 +1810,20 @@ export class CalendarioComponent implements OnInit {
   }
 
 
+  showDeleteMatchConfirm = false;
+
   eliminarPartido(): void {
+    this.showDeleteMatchConfirm = true;
+  }
+
+  confirmDeleteMatch(): void {
+    this.showDeleteMatchConfirm = false;
     this.match.matchDate = this.daySession;
-    // Lógica para crear el partido usando this.partido y enviarlo al servicio
     this.trainingService
       .deletePartido(this.teamId.toString(), this.match)
       .subscribe(
         (response) => {
-          // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
           if (response.data) {
-            // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
             this.getListaPrePartido();
             if (this.match.matchPreparationId === 0) this.cerrarModal();
             else this.cerrarModalPartido();
@@ -1808,6 +1835,10 @@ export class CalendarioComponent implements OnInit {
           console.error('Error en la solicitud:', error);
         },
       );
+  }
+
+  cancelDeleteMatch(): void {
+    this.showDeleteMatchConfirm = false;
   }
 
   verTienda() {

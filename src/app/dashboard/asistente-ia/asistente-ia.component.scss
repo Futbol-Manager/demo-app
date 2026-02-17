@@ -657,6 +657,7 @@ $shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
   color: $text-dark;
   resize: none;
   outline: none;
+  overflow: hidden;
   min-height: 24px;
   max-height: 120px;
   padding: 6px 0;

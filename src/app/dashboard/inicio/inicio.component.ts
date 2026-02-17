@@ -93,7 +93,13 @@ export class InicioComponent implements OnInit {
         this.profileId = user!.profileType.profileId;
         this.userId = this.obtenerUserIdPorPerfil(user!);
 
-        //controlamos que sea espinosa el admin
+        // Override admin: si el profileId real no es club ni coach,
+        // forzar como coach para que vea el dashboard correctamente
+        if (user!.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
+          this.profileId = 2;
+          this.userId = 9;
+        }
+
         localStorage.setItem('userId', this.userId == 9 ? this.userId.toString() : '0');
 
         this.resolverCargaInicialPorPerfil();
@@ -236,17 +242,24 @@ export class InicioComponent implements OnInit {
         this.profileId = user!.profileType.profileId;
         this.userId = user!.userId;
 
-        // Solo club/entrenador necesitan clubId y suscripción
-        if (this.profileId <= 2) {
+        // Override admin: si el profileId real no es club ni coach,
+        // forzar como coach para que vea el dashboard correctamente
+        if (this.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
+          this.profileId = 2;
+        }
+
+        // Club (profileId=1): necesita clubId y suscripción
+        if (this.profileId === 1) {
           if (this.clubId > 0) {
             this.verificarSuscripcion();
           } else {
             this.cargarClubId();
           }
-          // Cargar equipos solo para club/entrenador (ya se llama también en resolverCargaInicialPorPerfil para coach)
-          if (this.profileId === 1) {
-            this.cargarListadoEquipos();
-          }
+          this.cargarListadoEquipos();
+        }
+        // Coach (profileId=2): solo necesita cargar equipos directamente
+        if (this.profileId === 2) {
+          this.cargarListadoEquipos();
         }
         // Para jugador (profileId >= 3) ya se dispara cargarHijos() + cargarJugadores()
         // desde inicializarUsuario → resolverCargaInicialPorPerfil, no duplicamos aquí.
@@ -259,7 +272,7 @@ export class InicioComponent implements OnInit {
   // =========================
   private cargarClubId(): void {
     this.teamService
-      .getTeamByClub(this.userId.toString(), '2025')
+      .getTeamByClub(this.userId.toString(), this.temporada)
       .pipe(take(1))
       .subscribe({
         next: (response: Response) => {

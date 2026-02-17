@@ -16,6 +16,8 @@ export class VoiceRecognitionService {
   private transcriptSubject = new Subject<SpeechRecognitionResult>();
   private isListeningSubject = new BehaviorSubject<boolean>(false);
   private errorSubject = new Subject<string>();
+  private silenceTimer: any = null;
+  private readonly SILENCE_TIMEOUT_MS = 5000;
 
   transcript$ = this.transcriptSubject.asObservable();
   isListening$ = this.isListeningSubject.asObservable();
@@ -26,7 +28,6 @@ export class VoiceRecognitionService {
   }
 
   private initializeRecognition(): void {
-    // Check for browser support
     const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     
     if (!SpeechRecognition) {
@@ -37,15 +38,14 @@ export class VoiceRecognitionService {
     this.isRecognitionSupported = true;
     this.recognition = new SpeechRecognition();
     
-    // Configuration
-    this.recognition.continuous = false;  // Stop after user finishes speaking
-    this.recognition.interimResults = true;  // Show partial results while speaking
-    this.recognition.lang = 'es-ES';  // Spanish by default
+    this.recognition.continuous = true;
+    this.recognition.interimResults = true;
+    this.recognition.lang = 'es-ES';
     this.recognition.maxAlternatives = 1;
 
-    // Event handlers
     this.recognition.onstart = () => {
       this.isListeningSubject.next(true);
+      this.resetSilenceTimer();
     };
 
     this.recognition.onresult = (event: any) => {
@@ -72,17 +72,17 @@ export class VoiceRecognitionService {
           });
         }
       }
+
+      this.resetSilenceTimer();
     };
 
     this.recognition.onerror = (event: any) => {
-      this.isListeningSubject.next(false);
-      
       let errorMessage = 'Error en el reconocimiento de voz';
       
       switch (event.error) {
         case 'no-speech':
-          errorMessage = 'No se detectó voz. Intenta de nuevo.';
-          break;
+          this.stopDueToSilence();
+          return;
         case 'audio-capture':
           errorMessage = 'No se pudo acceder al micrófono.';
           break;
@@ -93,16 +93,41 @@ export class VoiceRecognitionService {
           errorMessage = 'Error de conexión.';
           break;
         case 'aborted':
-          // User stopped recording, this is normal
           return;
       }
       
+      this.clearSilenceTimer();
+      this.isListeningSubject.next(false);
       this.errorSubject.next(errorMessage);
     };
 
     this.recognition.onend = () => {
+      this.clearSilenceTimer();
       this.isListeningSubject.next(false);
     };
+  }
+
+  private resetSilenceTimer(): void {
+    this.clearSilenceTimer();
+    this.silenceTimer = setTimeout(() => {
+      this.stopDueToSilence();
+    }, this.SILENCE_TIMEOUT_MS);
+  }
+
+  private clearSilenceTimer(): void {
+    if (this.silenceTimer) {
+      clearTimeout(this.silenceTimer);
+      this.silenceTimer = null;
+    }
+  }
+
+  private stopDueToSilence(): void {
+    this.clearSilenceTimer();
+    if (this.isListeningSubject.value) {
+      try {
+        this.recognition.stop();
+      } catch (e) {}
+    }
   }
 
   isSupported(): boolean {
@@ -116,7 +141,6 @@ export class VoiceRecognitionService {
     }
 
     if (this.isListeningSubject.value) {
-      // Already listening
       return;
     }
 
@@ -133,11 +157,10 @@ export class VoiceRecognitionService {
       return;
     }
 
+    this.clearSilenceTimer();
     try {
       this.recognition.stop();
-    } catch (error) {
-      // Ignore errors when stopping
-    }
+    } catch (error) {}
   }
 
   abort(): void {
@@ -145,11 +168,10 @@ export class VoiceRecognitionService {
       return;
     }
 
+    this.clearSilenceTimer();
     try {
       this.recognition.abort();
       this.isListeningSubject.next(false);
-    } catch (error) {
-      // Ignore errors when aborting
-    }
+    } catch (error) {}
   }
 }

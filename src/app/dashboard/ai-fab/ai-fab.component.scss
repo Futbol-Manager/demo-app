@@ -488,7 +488,7 @@ $border-color: #e2e8f0;
 ═══════════════════════════════════════ */
 .fab-input-bar {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   gap: 8px;
   padding: 10px 12px;
   border-top: 1px solid $border-color;
@@ -513,6 +513,14 @@ $border-color: #e2e8f0;
     border-color: $green-primary;
     box-shadow: 0 0 0 2px rgba(49, 178, 112, 0.1);
   }
+}
+
+.fab-input-auto {
+  resize: none;
+  overflow: hidden;
+  min-height: 36px;
+  max-height: 120px;
+  line-height: 1.4;
   &:disabled { opacity: 0.5; }
 }
 

@@ -6,7 +6,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { LoginService } from 'src/app/core/services/login/login.service';
-import { AiChatService, AiCreditsInfo } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { AiChatService, AiCreditsInfo, AiPendingAction } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
 
@@ -32,6 +32,11 @@ interface ChatMessage {
   text: string;
   timestamp: Date;
   isTyping?: boolean;
+  isActionPreview?: boolean;
+  pendingActions?: AiPendingAction[];
+  actionToken?: string;
+  actionExecuted?: boolean;
+  isExecutingAction?: boolean;
 }
 
 interface SuggestionChip {
@@ -134,8 +139,8 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
     this.voiceTranscriptSub = this.voiceRecognition.transcript$.subscribe(result => {
       if (result.isFinal) {
         // Final transcript: commit to input
-        this.voiceTranscriptBase = this.userInput.trim()
-          ? this.userInput + ' ' + result.transcript 
+        this.voiceTranscriptBase = this.voiceTranscriptBase.trim()
+          ? this.voiceTranscriptBase + ' ' + result.transcript 
           : result.transcript;
         this.userInput = this.voiceTranscriptBase;
       } else {
@@ -214,8 +219,14 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
     this.messages.push(typingMsg);
     this.shouldScroll = true;
 
+    // Build conversation history (last 10 messages)
+    const history = this.messages
+      .filter(m => !m.isTyping && m.text && m.text.trim().length > 0)
+      .slice(-10)
+      .map(m => ({ role: m.role, text: m.isActionPreview ? '[Acción propuesta: ' + m.text + ']' : m.text }));
+
     this.chatSub?.unsubscribe();
-    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, 'dashboard', text, 'users')
+    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, 'dashboard', text, 'users', null, history)
       .pipe(
         finalize(() => {
           this.isResponding = false;
@@ -226,7 +237,20 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
           const idx = this.messages.indexOf(typingMsg);
           if (idx > -1) this.messages.splice(idx, 1);
 
-          if (resp.success && resp.response) {
+          if (resp.success && resp.hasActions && resp.pendingActions && resp.pendingActions.length > 0) {
+            this.messages.push({
+              id: ++this.msgIdCounter,
+              role: 'assistant',
+              text: resp.response || '',
+              timestamp: new Date(),
+              isActionPreview: true,
+              pendingActions: resp.pendingActions,
+              actionToken: resp.actionToken,
+            });
+            if (resp.creditsRemaining !== undefined) {
+              this.creditsAvailable = resp.creditsRemaining;
+            }
+          } else if (resp.success && resp.response) {
             this.addAssistantMessage(resp.response);
             if (resp.creditsRemaining !== undefined) {
               this.creditsAvailable = resp.creditsRemaining;
@@ -234,14 +258,75 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
           } else {
             this.addAssistantMessage(resp.message || 'Ha ocurrido un error. Intentalo de nuevo.');
           }
+          this.shouldScroll = true;
           this.saveConversation();
+          this.focusChatInput();
         },
         error: () => {
           const idx = this.messages.indexOf(typingMsg);
           if (idx > -1) this.messages.splice(idx, 1);
           this.addAssistantMessage('Error de conexion. Intentalo de nuevo.');
+          this.focusChatInput();
         }
       });
+  }
+
+  confirmActions(msg: ChatMessage): void {
+    if (!msg.actionToken || msg.actionExecuted) return;
+    msg.isExecutingAction = true;
+    this.aiChatService.executeActions(msg.actionToken).subscribe({
+      next: (result) => {
+        msg.actionExecuted = true;
+        msg.isExecutingAction = false;
+        if (result.success) {
+          const parts: string[] = [];
+          if ((result.created ?? 0) > 0) parts.push(result.created + ' creado(s)');
+          if ((result.edited ?? 0) > 0) parts.push(result.edited + ' editado(s)');
+          if ((result.deleted ?? 0) > 0) parts.push(result.deleted + ' eliminado(s)');
+          let summaryMsg = '✅ ' + (parts.length > 0 ? parts.join(', ') : 'Acciones ejecutadas correctamente.') + ' Recargando datos...';
+          if (result.errors && result.errors.length > 0) {
+            summaryMsg += '\n⚠️ Advertencias: ' + result.errors.join(', ');
+          }
+          if (result.details && result.details.length > 0) {
+            summaryMsg += '\n📋 ' + result.details.join(', ');
+          }
+          this.addAssistantMessage(summaryMsg);
+          setTimeout(() => window.dispatchEvent(new CustomEvent('ai-data-changed')), 500);
+          setTimeout(() => window.dispatchEvent(new CustomEvent('ai-data-changed')), 1500);
+        } else {
+          let errMsg = '❌ ' + (result.message || 'Error al ejecutar las acciones.');
+          if (result.errors && result.errors.length > 0) {
+            errMsg += '\n' + result.errors.join(', ');
+          }
+          this.addAssistantMessage(errMsg);
+        }
+        this.shouldScroll = true;
+        this.saveConversation();
+        this.focusChatInput();
+      },
+      error: () => {
+        msg.isExecutingAction = false;
+        this.addAssistantMessage('❌ Error de conexión al ejecutar las acciones.');
+        this.saveConversation();
+        this.focusChatInput();
+      }
+    });
+  }
+
+  cancelActions(msg: ChatMessage): void {
+    msg.actionExecuted = true;
+    this.addAssistantMessage('Acción cancelada.');
+    this.shouldScroll = true;
+    this.saveConversation();
+    this.focusChatInput();
+  }
+
+  private focusChatInput(): void {
+    setTimeout(() => {
+      if (this.inputField?.nativeElement) {
+        this.inputField.nativeElement.focus();
+      }
+    }, 100);
   }
 
   cancelPendingRequest(): void {
@@ -279,6 +364,29 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.sendMessage();
+      this.resetInputSize();
+    }
+  }
+
+  autoResizeInput(event?: Event): void {
+    const el = event ? event.target as HTMLTextAreaElement : this.inputField?.nativeElement;
+    if (!el) return;
+    el.style.height = 'auto';
+    const scrollH = el.scrollHeight;
+    if (scrollH > 120) {
+      el.style.height = '120px';
+      el.style.overflowY = 'auto';
+    } else {
+      el.style.height = scrollH + 'px';
+      el.style.overflowY = 'hidden';
+    }
+  }
+
+  private resetInputSize(): void {
+    const el = this.inputField?.nativeElement;
+    if (el) {
+      el.style.height = 'auto';
+      el.style.overflowY = 'hidden';
     }
   }
 

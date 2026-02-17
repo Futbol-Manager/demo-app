@@ -21,6 +21,7 @@ import { environment } from 'src/environments/environment';
 import { Dropdown } from 'bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { Response } from 'src/app/core/services/models/response.model';
+import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-header',
@@ -128,7 +129,7 @@ export class HeaderComponent implements OnInit {
    * y NO debe ver la suscripción del coach.
    */
   private checkCoachBelongsToClub(): void {
-    this.teamService.getTeamByClub(this.userId.toString(), '2025').subscribe({
+    this.teamService.getTeamByClub(this.userId.toString(), getCurrentSeasonString()).subscribe({
       next: (response: Response) => {
         const clubId = response.data?.club?.clubId ?? 0;
         this.coachBelongsToClub = clubId > 0;

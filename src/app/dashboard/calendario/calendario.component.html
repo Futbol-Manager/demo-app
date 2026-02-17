@@ -87,11 +87,13 @@
               <span class="day-number">{{ dia.numero }}</span>
               <div class="activities">
                 <div *ngIf="puedeVerEntrenamiento(dia)" class="activity training">
-                  <i class="fa-solid fa-dumbbell"></i> {{ 'CAL.TEXT_062' | translate }}
+                  <i class="fa-solid fa-dumbbell"></i>
+                  <span class="activity-text">{{ 'CAL.TEXT_062' | translate }}</span>
+                  <span *ngIf="dia.startTime" class="training-time-inline">{{ dia.startTime }}<span *ngIf="dia.endTime"> - {{ dia.endTime }}</span></span>
                 </div>
                 <div *ngIf="puedeVerPartido(dia)" class="activity match">
-                  <img *ngIf="dia.terreno === 'Local'" src="assets/iconos/home.svg" class="match-icon">
-                  <img *ngIf="dia.terreno === 'Visitante'" src="assets/iconos/travel.svg" class="match-icon">
+                  <img *ngIf="dia.terreno === 'Local'" src="assets/iconos/home.svg" class="match-icon-lg">
+                  <img *ngIf="dia.terreno === 'Visitante'" src="assets/iconos/travel.svg" class="match-icon-lg">
                   <span class="match-name">{{ dia.rivalName }}</span>
                 </div>
               </div>
@@ -132,11 +134,12 @@
                           <div *ngIf="puedeVerEntrenamiento(dia)" class="activity training">
                             <i class="fa-solid fa-dumbbell"></i>
                             <span class="activity-text">{{ 'CAL.TEXT_062' | translate }}</span>
+                            <span *ngIf="dia.startTime" class="training-time-inline">{{ dia.startTime }}<span *ngIf="dia.endTime"> - {{ dia.endTime }}</span></span>
                           </div>
 
                           <div *ngIf="puedeVerPartido(dia)" class="activity match">
-                            <img *ngIf="dia.terreno === 'Local'" src="assets/iconos/home.svg" class="match-icon">
-                            <img *ngIf="dia.terreno === 'Visitante'" src="assets/iconos/travel.svg" class="match-icon">
+                            <img *ngIf="dia.terreno === 'Local'" src="assets/iconos/home.svg" class="match-icon-lg">
+                            <img *ngIf="dia.terreno === 'Visitante'" src="assets/iconos/travel.svg" class="match-icon-lg">
                             <span class="activity-text match-name">{{ dia.rivalName }}</span>
                           </div>
 
@@ -188,6 +191,7 @@
               [class.active]="selectedItem?.type === 'entrenamiento' && selectedItem?.id === t.trainingSessionId"
               (click)="selectActivity('entrenamiento', t.trainingSessionId, t)">
               <i class="fa-solid fa-dumbbell"></i> {{ 'CAL.TEXT_062' | translate }}
+              <span *ngIf="t.startTime" class="training-time-badge">{{ t.startTime }}<span *ngIf="t.endTime"> - {{ t.endTime }}</span></span>
             </div>
           </ng-container>
 
@@ -233,6 +237,9 @@
               {{ mode === 'create-entrenamiento'
               ? ('CAL.TEXT_067' | translate)
               : ('Entrenamiento ' + daySession) }}
+              <span *ngIf="mode === 'view-entrenamiento' && trainingSession?.startTime" class="training-time-header">
+                {{ trainingSession.startTime }}<span *ngIf="trainingSession.endTime"> - {{ trainingSession.endTime }}</span>
+              </span>
             </h4>
 
             <p *ngIf="mode === 'create-entrenamiento'">
@@ -318,6 +325,27 @@
                 </div>
               </div>
             </section>
+
+            <!-- HORARIO (MISMA FILA) -->
+            <div class="form-row-2col">
+              <!-- HORA INICIO -->
+              <div class="form-card compact">
+                <h6>Hora de inicio</h6>
+                <input type="time" class="form-control saas-input"
+                  [(ngModel)]="trainingSession.startTime" name="startTime"
+                  [readonly]="profileId === 3"
+                  placeholder="Ej: 19:00" />
+              </div>
+
+              <!-- HORA FIN -->
+              <div class="form-card compact">
+                <h6>Hora de fin</h6>
+                <input type="time" class="form-control saas-input"
+                  [(ngModel)]="trainingSession.endTime" name="endTime"
+                  [readonly]="profileId === 3"
+                  placeholder="Ej: 20:00" />
+              </div>
+            </div>
 
             <!-- OBJETIVO + CALENTAMIENTO (MISMA FILA) -->
             <div class="form-row-2col">
@@ -2995,6 +3023,32 @@
 
         <button (click)="generatePDF()">{{ 'CAL.TEXT_329' | translate }}</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación para eliminar entrenamiento -->
+<div class="confirm-overlay" *ngIf="showDeleteTrainingConfirm" (click)="cancelDeleteTraining()">
+  <div class="confirm-dialog" (click)="$event.stopPropagation()">
+    <div class="confirm-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+    <h3>¿Eliminar entrenamiento?</h3>
+    <p>¿Estás seguro de que quieres eliminar este entrenamiento? Esta acción no se puede deshacer.</p>
+    <div class="confirm-actions">
+      <button class="btn-confirm-cancel" (click)="cancelDeleteTraining()">Cancelar</button>
+      <button class="btn-confirm-delete" (click)="confirmDeleteTraining()">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación para eliminar partido -->
+<div class="confirm-overlay" *ngIf="showDeleteMatchConfirm" (click)="cancelDeleteMatch()">
+  <div class="confirm-dialog" (click)="$event.stopPropagation()">
+    <div class="confirm-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
+    <h3>¿Eliminar partido?</h3>
+    <p>¿Estás seguro de que quieres eliminar este partido? Esta acción no se puede deshacer.</p>
+    <div class="confirm-actions">
+      <button class="btn-confirm-cancel" (click)="cancelDeleteMatch()">Cancelar</button>
+      <button class="btn-confirm-delete" (click)="confirmDeleteMatch()">Eliminar</button>
     </div>
   </div>
 </div>
