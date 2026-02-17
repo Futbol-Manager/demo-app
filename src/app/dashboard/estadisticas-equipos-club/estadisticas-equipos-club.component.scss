@@ -759,8 +759,45 @@
     }
   }
 
+  .ai-input-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .ai-mic {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    border: none;
+    border-radius: 8px;
+    background: #e9ecef;
+    color: #495057;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #dee2e6;
+      transform: scale(1.05);
+    }
+
+    &.recording {
+      background: #dc3545;
+      color: #fff;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+
+    &.recording:hover {
+      background: #c82333;
+    }
+  }
+
   .btn-send-ai {
-    width: 100%;
+    flex: 1;
     padding: 0.75rem;
     background: #31b270;
     color: white;
@@ -792,6 +829,11 @@
     font-size: 0.75rem;
     margin-top: 0.5rem;
   }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 @keyframes fadeIn {

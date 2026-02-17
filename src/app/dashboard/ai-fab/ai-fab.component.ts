@@ -6,6 +6,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { AiChatService, AiCreditsInfo } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { User } from 'src/app/core/models/users/user.model';
+import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
 
 interface ChatMessage {
   id: number;
@@ -89,6 +90,11 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   quickSuggestions: SuggestionChip[] = [];
   showSuggestions = true;
 
+  // Voice recognition
+  isRecording = false;
+  isVoiceSupported = false;
+  private voiceTranscriptBase = '';  // Text before voice started
+
   private screenSuggestions: { [key: string]: SuggestionChip[] } = {
     'dashboard': [
       { icon: 'bi-bar-chart-line', text: 'Resumen del club', query: 'Resume el estado del club' },
@@ -165,7 +171,8 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     private loginService: LoginService,
     private router: Router,
     private sanitizer: DomSanitizer,
-    private aiChatService: AiChatService
+    private aiChatService: AiChatService,
+    private voiceRecognition: VoiceRecognitionService
   ) {}
 
   ngOnInit(): void {
@@ -196,6 +203,55 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
 
     this.detectScreenContext(this.router.url);
     this.updateSuggestions();
+    this.initVoiceRecognition();
+  }
+
+  private initVoiceRecognition(): void {
+    this.isVoiceSupported = this.voiceRecognition.isSupported();
+
+    this.subs.push(
+      this.voiceRecognition.transcript$.subscribe(result => {
+        if (result.isFinal) {
+          // Final transcript: commit to input
+          this.voiceTranscriptBase = this.userInput.trim() 
+            ? this.userInput + ' ' + result.transcript 
+            : result.transcript;
+          this.userInput = this.voiceTranscriptBase;
+        } else {
+          // Interim transcript: show in real-time but don't commit yet
+          const interim = result.transcript;
+          this.userInput = this.voiceTranscriptBase 
+            ? this.voiceTranscriptBase + ' ' + interim 
+            : interim;
+        }
+      })
+    );
+
+    this.subs.push(
+      this.voiceRecognition.isListening$.subscribe(isListening => {
+        this.isRecording = isListening;
+        if (!isListening) {
+          // When recording stops, commit whatever we have
+          this.voiceTranscriptBase = this.userInput;
+        }
+      })
+    );
+
+    this.subs.push(
+      this.voiceRecognition.error$.subscribe(error => {
+        console.warn('Voice recognition error:', error);
+      })
+    );
+  }
+
+  toggleVoiceRecognition(): void {
+    if (this.isRecording) {
+      this.voiceRecognition.stop();
+    } else {
+      // Save current text as base
+      this.voiceTranscriptBase = this.userInput.trim();
+      this.voiceRecognition.start('es-ES');
+    }
   }
 
   ngOnDestroy(): void {

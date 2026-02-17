@@ -136,6 +136,14 @@
         rows="1"
         [disabled]="isResponding"
       ></textarea>
+      <button *ngIf="isVoiceSupported && !isResponding"
+        class="ai-mic"
+        [class.recording]="isRecording"
+        (click)="toggleVoiceRecognition()"
+        aria-label="Reconocimiento de voz"
+        [title]="isRecording ? 'Detener grabación' : 'Usar micrófono'">
+        <i class="bi" [ngClass]="isRecording ? 'bi-mic-fill' : 'bi-mic'"></i>
+      </button>
       <button *ngIf="isResponding"
         class="chat-cancel-btn"
         (click)="cancelPendingRequest()"

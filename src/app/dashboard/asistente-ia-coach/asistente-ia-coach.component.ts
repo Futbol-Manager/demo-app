@@ -7,6 +7,7 @@ import { finalize } from 'rxjs/operators';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { User } from 'src/app/core/models/users/user.model';
+import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
 
 /* ═══════════════════════════════════════
    INTERFACES
@@ -144,6 +145,14 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   private clubId: number | null = null;
   private chatSub: Subscription | null = null;
 
+  // Voice recognition
+  isRecording = false;
+  isVoiceSupported = false;
+  private voiceTranscriptSub: Subscription | null = null;
+  private voiceListeningSub: Subscription | null = null;
+  private voiceErrorSub: Subscription | null = null;
+  private voiceTranscriptBase = '';
+
   /* ── Historial ── */
   showHistory = true;
   conversations: ConversationSummary[] = [];
@@ -166,7 +175,8 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     private router: Router,
     private location: Location,
     private translate: TranslateService,
-    private aiChatService: AiChatService
+    private aiChatService: AiChatService,
+    private voiceRecognition: VoiceRecognitionService
   ) {}
 
   ngOnInit(): void {
@@ -183,6 +193,50 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
 
     this.loadConversationsList();
     this.startNewConversation();
+    this.initVoiceRecognition();
+  }
+
+  private initVoiceRecognition(): void {
+    this.isVoiceSupported = this.voiceRecognition.isSupported();
+
+    // Subscribe to transcript
+    this.voiceTranscriptSub = this.voiceRecognition.transcript$.subscribe(result => {
+      if (result.isFinal) {
+        // Final transcript: commit to input
+        this.voiceTranscriptBase = this.userInput.trim()
+          ? this.userInput + ' ' + result.transcript 
+          : result.transcript;
+        this.userInput = this.voiceTranscriptBase;
+      } else {
+        // Interim transcript: show in real-time but don't commit yet
+        const interim = result.transcript;
+        this.userInput = this.voiceTranscriptBase
+          ? this.voiceTranscriptBase + ' ' + interim 
+          : interim;
+      }
+    });
+
+    this.voiceListeningSub = this.voiceRecognition.isListening$.subscribe(isListening => {
+      this.isRecording = isListening;
+      if (!isListening) {
+        // When recording stops, commit whatever we have
+        this.voiceTranscriptBase = this.userInput;
+      }
+    });
+
+    this.voiceErrorSub = this.voiceRecognition.error$.subscribe(error => {
+      console.warn('Voice recognition error:', error);
+    });
+  }
+
+  toggleVoiceRecognition(): void {
+    if (this.isRecording) {
+      this.voiceRecognition.stop();
+    } else {
+      // Save current text as base
+      this.voiceTranscriptBase = this.userInput.trim();
+      this.voiceRecognition.start('es-ES');
+    }
   }
 
   private loadCredits(): void {
@@ -397,6 +451,9 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
 
   ngOnDestroy(): void {
     this.chatSub?.unsubscribe();
+    this.voiceTranscriptSub?.unsubscribe();
+    this.voiceListeningSub?.unsubscribe();
+    this.voiceErrorSub?.unsubscribe();
   }
 
   sendSuggestion(chip: SuggestionChip): void {

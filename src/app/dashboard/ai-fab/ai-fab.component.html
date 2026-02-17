@@ -133,6 +133,14 @@
       placeholder="Escribe tu pregunta..."
       [disabled]="isResponding"
     />
+    <button *ngIf="isVoiceSupported && !isResponding"
+            class="fab-mic"
+            [class.recording]="isRecording"
+            (click)="toggleVoiceRecognition()"
+            aria-label="Reconocimiento de voz"
+            [title]="isRecording ? 'Detener grabación' : 'Usar micrófono'">
+      <i class="bi" [ngClass]="isRecording ? 'bi-mic-fill' : 'bi-mic'"></i>
+    </button>
     <button *ngIf="isResponding"
             class="fab-cancel"
             (click)="cancelPendingRequest()"
