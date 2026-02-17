@@ -159,6 +159,10 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   currentConversationId: string | null = null;
   private readonly STORAGE_KEY = 'sphaira_coach_ai_history';
 
+  /* ── Delete confirmation ── */
+  showDeleteConfirm = false;
+  conversationToDelete: ConversationSummary | null = null;
+
   suggestions: SuggestionChip[] = [
     { icon: 'bi-clipboard-check', text: 'Entrenamientos esta semana', query: '¿Qué entrenamientos tengo esta semana?' },
     { icon: 'bi-lightbulb', text: 'Sugerir ejercicios', query: 'Sugiere ejercicios para la sesión de hoy' },
@@ -192,7 +196,11 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     if (storedClubId) this.clubId = parseInt(storedClubId, 10);
 
     this.loadConversationsList();
-    this.startNewConversation();
+
+    this.addAssistantMessage(
+      '¡Hola, míster! 👋⚽ Soy tu asistente deportivo de IA. Puedo ayudarte con entrenamientos, partidos, estadísticas, táctica y todo lo relacionado con tu equipo.\n\nEscríbeme o elige una sugerencia. ¡Vamos!'
+    );
+
     this.initVoiceRecognition();
   }
 
@@ -307,7 +315,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
             timestamp: new Date(m.timestamp),
           }));
           this.msgIdCounter = Math.max(...this.messages.map(m => m.id), 0);
-          this.showHistory = false;
+          // Keep history panel open so user can switch between conversations
           this.showSuggestions = false;
           this.shouldScroll = true;
         }
@@ -319,17 +327,33 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
 
   deleteConversation(conv: ConversationSummary, event: Event): void {
     event.stopPropagation();
+    this.conversationToDelete = conv;
+    this.showDeleteConfirm = true;
+  }
+
+  confirmDeleteConversation(): void {
+    if (!this.conversationToDelete) return;
     try {
       const raw = localStorage.getItem(this.STORAGE_KEY);
       if (raw) {
         let all = JSON.parse(raw) as any[];
-        all = all.filter(c => c.id !== conv.id);
+        all = all.filter(c => c.id !== this.conversationToDelete!.id);
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(all));
         this.loadConversationsList();
+        if (this.currentConversationId === this.conversationToDelete!.id) {
+          this.currentConversationId = null;
+        }
       }
     } catch {
       // ignore
     }
+    this.showDeleteConfirm = false;
+    this.conversationToDelete = null;
+  }
+
+  cancelDeleteConversation(): void {
+    this.showDeleteConfirm = false;
+    this.conversationToDelete = null;
   }
 
   private saveConversation(): void {

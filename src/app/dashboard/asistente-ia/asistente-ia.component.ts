@@ -82,6 +82,10 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
   currentConversationId: string | null = null;
   private readonly STORAGE_KEY = 'sphaira_club_ai_history';
 
+  /* Delete confirmation */
+  showDeleteConfirm = false;
+  conversationIdToDelete: string | null = null;
+
   suggestions: SuggestionChip[] = [
     { icon: 'bi-bar-chart-line', text: 'Resume el estado del club', query: 'Resume el estado del club' },
     { icon: 'bi-trophy', text: '¿Que equipo va mejor?', query: '¿Que equipo va mejor?' },
@@ -113,6 +117,8 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
 
     const storedClubId = localStorage.getItem('clubId');
     if (storedClubId) this.clubId = parseInt(storedClubId, 10);
+
+    this.loadConversationsList();
 
     this.addAssistantMessage(
       '¡Hola! 👋 Soy el asistente de IA de tu club. Puedo ayudarte a consultar informacion sobre jugadores, equipos, estadisticas y mucho mas.\n\nPuedes escribirme o elegir una de las sugerencias de abajo. ¡Preguntame lo que necesites!'
@@ -355,23 +361,35 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
     }));
     this.msgIdCounter = this.messages.length;
     this.currentConversationId = conv.id;
-    this.showHistory = false;
-    this.showSuggestions = true;
+    this.showSuggestions = false;
     this.shouldScroll = true;
   }
 
   deleteConversation(event: Event, convId: string): void {
     event.stopPropagation();
+    this.conversationIdToDelete = convId;
+    this.showDeleteConfirm = true;
+  }
+
+  confirmDeleteConversation(): void {
+    if (!this.conversationIdToDelete) return;
     try {
       const raw = localStorage.getItem(this.STORAGE_KEY);
       let list: ConversationSummary[] = raw ? JSON.parse(raw) : [];
-      list = list.filter(c => c.id !== convId);
+      list = list.filter(c => c.id !== this.conversationIdToDelete);
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
       this.conversations = list;
-      if (this.currentConversationId === convId) {
+      if (this.currentConversationId === this.conversationIdToDelete) {
         this.currentConversationId = null;
       }
     } catch { /* ignore */ }
+    this.showDeleteConfirm = false;
+    this.conversationIdToDelete = null;
+  }
+
+  cancelDeleteConversation(): void {
+    this.showDeleteConfirm = false;
+    this.conversationIdToDelete = null;
   }
 
   private saveConversation(): void {

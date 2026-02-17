@@ -198,6 +198,13 @@
     </div>
 
     <div class="timeline-export">
+      <button class="export-btn save-btn" 
+              (click)="saveBoard()"
+              [class.saved]="!hasUnsavedChanges"
+              title="Guardar dibujo para retomarlo más tarde">
+        <i class="bi" [ngClass]="hasUnsavedChanges ? 'bi-floppy' : 'bi-check-circle-fill'"></i>
+        <span>{{ hasUnsavedChanges ? 'Guardar' : 'Guardado' }}</span>
+      </button>
       <button class="export-btn img" (click)="exportImage()"
               [title]="'TBOARD.EXPORT_IMG' | translate" [disabled]="isExporting">
         <i class="bi bi-image"></i>
@@ -221,6 +228,47 @@
         <div class="export-progress-fill" [style.width.%]="exportProgress"></div>
       </div>
       <span class="export-pct">{{ exportProgress }}%</span>
+    </div>
+  </div>
+
+  <!-- Save success toast -->
+  <div class="save-toast" *ngIf="showSaveSuccess">
+    <i class="bi bi-check-circle-fill"></i>
+    <div class="save-toast-content">
+      <strong>Dibujo guardado</strong>
+      <span>Podrás recuperarlo cuando vuelvas</span>
+    </div>
+  </div>
+
+  <!-- Exit confirmation modal -->
+  <div class="modal-backdrop-board" *ngIf="showExitConfirm" (click)="onExitCancelled()">
+    <div class="modal-dialog-board" (click)="$event.stopPropagation()">
+      <div class="modal-header-board">
+        <h5 class="modal-title-board">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          Cambios sin guardar
+        </h5>
+        <button type="button" class="btn-close-board" (click)="onExitCancelled()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="modal-body-board">
+        <p>Tienes cambios sin guardar en la pizarra táctica.</p>
+        <p>¿Qué deseas hacer?</p>
+      </div>
+      <div class="modal-footer-board">
+        <button type="button" class="btn-board btn-cancel-board" (click)="onExitCancelled()">
+          Cancelar
+        </button>
+        <button type="button" class="btn-board btn-discard-board" (click)="onExitConfirmed()">
+          <i class="bi bi-trash3"></i>
+          Descartar cambios
+        </button>
+        <button type="button" class="btn-board btn-save-board" (click)="onSaveAndExit()">
+          <i class="bi bi-floppy"></i>
+          Guardar y salir
+        </button>
+      </div>
     </div>
   </div>
 </div>

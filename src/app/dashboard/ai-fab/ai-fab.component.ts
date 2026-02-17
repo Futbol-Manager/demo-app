@@ -61,6 +61,10 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   currentConversationId: string | null = null;
   private readonly STORAGE_KEY = 'sphaira_fab_ai_history';
 
+  // Delete confirmation
+  showDeleteConfirm = false;
+  conversationIdToDelete: string | null = null;
+
   // Drag state
   isDragging = false;
   private dragStartX = 0;
@@ -606,23 +610,36 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     }));
     this.msgIdCounter = this.messages.length;
     this.currentConversationId = conv.id;
-    this.showHistoryPanel = false;
+    // Keep history panel open so user can switch between conversations
     this.showSuggestions = true;
     this.shouldScroll = true;
   }
 
   deleteConversation(event: Event, convId: string): void {
     event.stopPropagation();
+    this.conversationIdToDelete = convId;
+    this.showDeleteConfirm = true;
+  }
+
+  confirmDeleteConversation(): void {
+    if (!this.conversationIdToDelete) return;
     try {
       const raw = localStorage.getItem(this.STORAGE_KEY);
       let list: ConversationSummary[] = raw ? JSON.parse(raw) : [];
-      list = list.filter(c => c.id !== convId);
+      list = list.filter(c => c.id !== this.conversationIdToDelete);
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
       this.conversations = list;
-      if (this.currentConversationId === convId) {
+      if (this.currentConversationId === this.conversationIdToDelete) {
         this.currentConversationId = null;
       }
     } catch { /* ignore */ }
+    this.showDeleteConfirm = false;
+    this.conversationIdToDelete = null;
+  }
+
+  cancelDeleteConversation(): void {
+    this.showDeleteConfirm = false;
+    this.conversationIdToDelete = null;
   }
 
   private loadConversationsList(): void {

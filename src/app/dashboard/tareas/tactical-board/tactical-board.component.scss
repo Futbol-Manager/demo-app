@@ -449,6 +449,87 @@
 .export-btn.gif { border-color: rgba(255, 145, 0, 0.3); }
 .export-btn.gif:hover { border-color: #ff9100; background: rgba(255, 145, 0, 0.12); }
 
+.export-btn.save-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+  color: #fff;
+}
+.export-btn.save-btn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+  transform: translateY(-1px);
+}
+.export-btn.save-btn.saved {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #10b981;
+  box-shadow: none;
+}
+.export-btn.save-btn.saved:hover {
+  background: rgba(16, 185, 129, 0.2);
+  transform: none;
+}
+
+/* ═══════════ SAVE SUCCESS TOAST ═══════════ */
+.save-toast {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10001;
+  animation: toastSlideIn 0.3s ease, toastFadeOut 0.3s ease 2.7s;
+  min-width: 280px;
+
+  i {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  .save-toast-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    span {
+      font-size: 0.8rem;
+      opacity: 0.9;
+    }
+  }
+}
+
+@keyframes toastSlideIn {
+  from {
+    transform: translateX(400px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes toastFadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 /* ═══════════ EXPORT OVERLAY ═══════════ */
 .export-overlay {
   position: absolute;
@@ -510,8 +591,14 @@
   .tool-separator { margin: 0 0.2rem; height: 24px; }
   .stroke-slider { width: 40px; }
   .speed-slider { width: 36px; }
-  .timeline-bar { gap: 0.4rem; padding: 0.4rem 0.5rem; padding-right: 80px; }
+  .timeline-bar { gap: 0.4rem; padding: 0.4rem 0.5rem; padding-right: 140px; }
   .export-btn span { display: none; }
+  .save-toast {
+    right: 16px;
+    bottom: 16px;
+    min-width: 240px;
+    padding: 12px 16px;
+  }
 }
 
 @media (max-width: 480px) {
@@ -531,5 +618,210 @@
 
   .board-title {
     color: var(--text-primary);
+  }
+}
+
+/* ═══════════ EXIT CONFIRMATION MODAL ═══════════ */
+.modal-backdrop-board {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-dialog-board {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+  max-width: 520px;
+  width: 90%;
+  overflow: hidden;
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header-board {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffffff 100%);
+
+  .modal-title-board {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #1a2332;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    i {
+      font-size: 1.3rem;
+      color: #ef4444;
+    }
+  }
+
+  .btn-close-board {
+    background: transparent;
+    border: none;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: #6b7a8d;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: #1a2332;
+    }
+
+    i {
+      font-size: 1rem;
+    }
+  }
+}
+
+.modal-body-board {
+  padding: 24px;
+
+  p {
+    margin: 0 0 12px 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #4a5568;
+
+    &:last-child {
+      margin-bottom: 0;
+      font-weight: 600;
+      color: #1a2332;
+    }
+  }
+}
+
+.modal-footer-board {
+  display: flex;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8f9fa;
+  justify-content: flex-end;
+
+  .btn-board {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    i {
+      font-size: 1rem;
+    }
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  .btn-cancel-board {
+    background: #e2e8f0;
+    color: #4a5568;
+
+    &:hover {
+      background: #cbd5e1;
+    }
+  }
+
+  .btn-discard-board {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.3);
+
+    &:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+    }
+  }
+
+  .btn-save-board {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.3);
+
+    &:hover {
+      background: linear-gradient(135deg, #059669 0%, #047857 100%);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .modal-dialog-board {
+    max-width: 95%;
+  }
+
+  .modal-header-board {
+    padding: 16px 20px;
+
+    .modal-title-board {
+      font-size: 1rem;
+    }
+  }
+
+  .modal-body-board {
+    padding: 20px;
+
+    p {
+      font-size: 0.9rem;
+    }
+  }
+
+  .modal-footer-board {
+    padding: 12px 20px;
+    gap: 8px;
+    flex-direction: column;
+
+    .btn-board {
+      padding: 10px 16px;
+      font-size: 0.85rem;
+      width: 100%;
+      justify-content: center;
+    }
   }
 }

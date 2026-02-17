@@ -167,3 +167,15 @@
   (closed)="closeCreditsModal()"
   (creditsPurchased)="creditsAvailable = $event">
 </app-credits-modal>
+
+<!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+<app-confirm-dialog
+  [show]="showDeleteConfirm"
+  [title]="'¿Eliminar conversación?'"
+  [message]="'Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar esta conversación?'"
+  [confirmText]="'Eliminar'"
+  [cancelText]="'Cancelar'"
+  [danger]="true"
+  (confirmed)="confirmDeleteConversation()"
+  (cancelled)="cancelDeleteConversation()">
+</app-confirm-dialog>

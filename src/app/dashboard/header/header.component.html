@@ -33,7 +33,7 @@
 
         <!-- ===== ADMINISTRADOR (solo admin) ===== -->
         <div *ngIf="userId === 9" class="dropdown">
-          <a class="nav-link dropdown-toggle header-action" data-bs-toggle="dropdown" role="button">
+          <a class="nav-link dropdown-toggle header-action" data-bs-toggle="dropdown" role="button" style="cursor: pointer;">
             <i class="bi bi-shield-check"></i>
             <span class="d-none d-md-inline">
               {{ 'ADMIN_MENU.TITLE' | translate }}
@@ -41,34 +41,34 @@
           </a>
 
           <div class="dropdown-menu dropdown-menu-end header-dropdown">
-            <a class="dropdown-item" (click)="goToAdminClubes()">
+            <a class="dropdown-item" (click)="goToAdminClubes()" style="cursor: pointer;">
               <i class="bi bi-speedometer2"></i>
               {{ 'ADMIN_MENU.GENERAL_PANEL' | translate }}
             </a>
 
             <div class="dropdown-divider"></div>
 
-            <a class="dropdown-item" (click)="goToAdminSugerencias()">
+            <a class="dropdown-item" (click)="goToAdminSugerencias()" style="cursor: pointer;">
               <i class="bi bi-chat-left-text"></i>
               {{ 'ADMIN_MENU.SUGGESTIONS' | translate }}
             </a>
 
-            <a class="dropdown-item" (click)="goToAdminCharts()">
+            <a class="dropdown-item" (click)="goToAdminCharts()" style="cursor: pointer;">
               <i class="bi bi-bar-chart-line"></i>
               {{ 'ADMIN_MENU.CHARTS' | translate }}
             </a>
 
-            <a class="dropdown-item" (click)="goToAdminAiInsights()">
+            <a class="dropdown-item" (click)="goToAdminAiInsights()" style="cursor: pointer;">
               <i class="bi bi-lightbulb"></i>
               {{ 'ADMIN_MENU.AI_INSIGHTS' | translate }}
             </a>
 
-            <a class="dropdown-item" (click)="goToAdminAiUsage()">
+            <a class="dropdown-item" (click)="goToAdminAiUsage()" style="cursor: pointer;">
               <i class="bi bi-cpu"></i>
               {{ 'ADMIN_MENU.AI_USAGE' | translate }}
             </a>
 
-            <a class="dropdown-item" (click)="goToAdminRegistros()">
+            <a class="dropdown-item" (click)="goToAdminRegistros()" style="cursor: pointer;">
               <i class="bi bi-file-earmark-text"></i>
               {{ 'ADMIN_MENU.RECORDS' | translate }}
             </a>

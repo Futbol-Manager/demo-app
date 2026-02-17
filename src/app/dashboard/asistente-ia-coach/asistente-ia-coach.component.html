@@ -48,12 +48,13 @@
   <!-- ÁREA PRINCIPAL DEL CHAT -->
   <div class="chat-page">
 
+    <!-- BOTÓN TOGGLE SIDEBAR -->
+    <button class="sidebar-toggle-btn" (click)="toggleHistory()" [title]="showHistory ? 'Ocultar historial' : 'Mostrar historial'">
+      <i class="bi" [class.bi-chevron-left]="showHistory" [class.bi-chevron-right]="!showHistory"></i>
+    </button>
+
     <!-- CABECERA -->
     <div class="chat-header">
-      <!-- BOTÓN TOGGLE SIDEBAR -->
-      <button class="sidebar-toggle-btn" (click)="toggleHistory()" [title]="showHistory ? 'Ocultar historial' : 'Mostrar historial'">
-        <i class="bi" [class.bi-chevron-left]="showHistory" [class.bi-chevron-right]="!showHistory"></i>
-      </button>
       <div class="chat-header-icon">
         <i class="bi bi-robot"></i>
       </div>
@@ -175,3 +176,15 @@
   (closed)="closeCreditsModal()"
   (creditsPurchased)="creditsAvailable = $event">
 </app-credits-modal>
+
+<!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+<app-confirm-dialog
+  [show]="showDeleteConfirm"
+  [title]="'¿Eliminar conversación?'"
+  [message]="'Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar esta conversación?'"
+  [confirmText]="'Eliminar'"
+  [cancelText]="'Cancelar'"
+  [danger]="true"
+  (confirmed)="confirmDeleteConversation()"
+  (cancelled)="cancelDeleteConversation()">
+</app-confirm-dialog>
