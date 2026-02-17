@@ -30,6 +30,17 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
 
   playersPaged: any[] = [];
 
+  // ORDENAMIENTO
+  sortColumn: string = 'goles';
+  sortDirection: 'asc' | 'desc' = 'desc';
+
+  // AI Panel
+  aiPanelOpen = false;
+  aiPrompt = '';
+  aiMessages: { role: 'user' | 'assistant'; content: string }[] = [];
+  aiLoading = false;
+  @ViewChild('aiMessagesContainer') aiMessagesContainer!: ElementRef;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -89,7 +100,10 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
     );
   }
   private actualizarPaginacion(): void {
-    this.totalRecords = this.players.length;
+    // Aplicar ordenamiento antes de paginar
+    const sortedPlayers = this.sortPlayers([...this.players]);
+    
+    this.totalRecords = sortedPlayers.length;
 
     this.totalPages = Math.max(1, Math.ceil(this.totalRecords / this.pageSize));
 
@@ -100,7 +114,49 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
     const start = (this.page - 1) * this.pageSize;
     const end = start + this.pageSize;
 
-    this.playersPaged = [...this.players.slice(start, end)];
+    this.playersPaged = sortedPlayers.slice(start, end);
+  }
+
+  sortBy(column: string): void {
+    if (this.sortColumn === column) {
+      // Si es la misma columna, invertir dirección
+      this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+    } else {
+      // Nueva columna, ordenar descendente por defecto (excepto nombre)
+      this.sortColumn = column;
+      this.sortDirection = column === 'nombre' || column === 'nameTeam' || column === 'posicion' ? 'asc' : 'desc';
+    }
+    this.page = 1; // Resetear a primera página al ordenar
+    this.actualizarPaginacion();
+  }
+
+  private sortPlayers(players: any[]): any[] {
+    return players.sort((a, b) => {
+      let aValue = a[this.sortColumn];
+      let bValue = b[this.sortColumn];
+
+      // Manejar valores nulos o undefined
+      if (aValue === null || aValue === undefined) aValue = '';
+      if (bValue === null || bValue === undefined) bValue = '';
+
+      // Convertir a números si es necesario
+      const aNum = Number(aValue);
+      const bNum = Number(bValue);
+      const isNumeric = !isNaN(aNum) && !isNaN(bNum) && typeof aValue !== 'string';
+
+      let comparison = 0;
+      
+      if (isNumeric) {
+        comparison = aNum - bNum;
+      } else {
+        // Comparación de strings (case insensitive)
+        const aStr = String(aValue).toLowerCase();
+        const bStr = String(bValue).toLowerCase();
+        comparison = aStr.localeCompare(bStr);
+      }
+
+      return this.sortDirection === 'asc' ? comparison : -comparison;
+    });
   }
 
   nextPage(): void {
@@ -242,6 +298,98 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
       childList: true,
       subtree: true,
     });
+  }
+
+  // ===== AI PANEL METHODS =====
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && event.ctrlKey) {
+      event.preventDefault();
+      this.sendAiMessage();
+    }
+  }
+
+  toggleAiPanel(): void {
+    this.aiPanelOpen = !this.aiPanelOpen;
+    if (this.aiPanelOpen && this.aiMessages.length === 0) {
+      // Mensaje de bienvenida
+      this.aiMessages.push({
+        role: 'assistant',
+        content: '¡Hola! 👋 Soy tu asistente de análisis de estadísticas. Puedo ayudarte a visualizar y analizar los datos de tus jugadores. ¿En qué te puedo ayudar?'
+      });
+    }
+  }
+
+  useSuggestion(suggestion: string): void {
+    this.aiPrompt = suggestion;
+    this.sendAiMessage();
+  }
+
+  async sendAiMessage(): Promise<void> {
+    if (!this.aiPrompt.trim() || this.aiLoading) return;
+
+    const userMessage = this.aiPrompt.trim();
+    this.aiMessages.push({
+      role: 'user',
+      content: userMessage
+    });
+
+    this.aiPrompt = '';
+    this.aiLoading = true;
+
+    // Scroll to bottom
+    setTimeout(() => this.scrollAiToBottom(), 100);
+
+    try {
+      // Aquí se integrará con el servicio real de IA
+      // Por ahora, una respuesta simulada
+      await this.simulateAiResponse(userMessage);
+    } catch (error) {
+      this.aiMessages.push({
+        role: 'assistant',
+        content: '❌ Lo siento, ha ocurrido un error al procesar tu consulta. Por favor, intenta de nuevo.'
+      });
+    } finally {
+      this.aiLoading = false;
+      setTimeout(() => this.scrollAiToBottom(), 100);
+    }
+  }
+
+  private async simulateAiResponse(userMessage: string): Promise<void> {
+    // Simulación temporal hasta integrar el servicio real
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    let response = '';
+    
+    if (userMessage.toLowerCase().includes('goleador') || userMessage.toLowerCase().includes('goles')) {
+      const topScorer = this.players.reduce((max, p) => p.goles > max.goles ? p : max, this.players[0]);
+      response = `⚽ **Top Goleador**<br><br>El jugador con más goles es <strong>${topScorer?.nombre}</strong> con <strong>${topScorer?.goles} goles</strong> en ${topScorer?.partidosJugados} partidos.`;
+    } else if (userMessage.toLowerCase().includes('asistencia')) {
+      const topAssister = this.players.reduce((max, p) => p.asistencias > max.asistencias ? p : max, this.players[0]);
+      response = `🎯 **Top Asistente**<br><br>El jugador con más asistencias es <strong>${topAssister?.nombre}</strong> con <strong>${topAssister?.asistencias} asistencias</strong>.`;
+    } else if (userMessage.toLowerCase().includes('tarjeta')) {
+      response = `🟨 **Análisis de Tarjetas**<br><br>Estoy preparando un análisis detallado de las tarjetas del equipo. Esta funcionalidad estará disponible próximamente con gráficas interactivas.`;
+    } else if (userMessage.toLowerCase().includes('gráfica') || userMessage.toLowerCase().includes('grafica')) {
+      response = `📊 **Generación de Gráficas**<br><br>¡Excelente idea! Puedo generar gráficas de:<br>• Goles por jugador<br>• Asistencias<br>• Minutos jugados<br>• Comparativas de rendimiento<br><br>Próximamente podrás ver estas gráficas directamente aquí.`;
+    } else {
+      response = `Entiendo tu consulta sobre "${userMessage}". Actualmente puedo ayudarte con:<br><br>
+        📊 Análisis de goles y asistencias<br>
+        ⏱️ Estadísticas de minutos jugados<br>
+        🟨 Información sobre tarjetas<br>
+        📈 Comparativas entre jugadores<br><br>
+        ¿Qué te gustaría saber específicamente?`;
+    }
+
+    this.aiMessages.push({
+      role: 'assistant',
+      content: response
+    });
+  }
+
+  private scrollAiToBottom(): void {
+    if (this.aiMessagesContainer) {
+      const element = this.aiMessagesContainer.nativeElement;
+      element.scrollTop = element.scrollHeight;
+    }
   }
 
 }

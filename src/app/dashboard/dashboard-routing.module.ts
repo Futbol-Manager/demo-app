@@ -73,6 +73,7 @@ import { DebriefMatchComponent } from './debrief/debrief-match/debrief-match.com
 import { DebriefReportComponent } from './debrief/debrief-report/debrief-report.component';
 import { DebriefHistoryComponent } from './debrief/debrief-history/debrief-history.component';
 import { ClubOwnerGuard } from '../club-owner.guard';
+import { AdminGuard } from '../admin.guard';
 import { AdminRegistrosComponent } from './admin-registros/admin-registros.component';
 import { AdminActivityComponent } from './admin-activity/admin-activity.component';
 import { AdminAiUsageComponent } from './admin-ai-usage/admin-ai-usage.component';
@@ -140,16 +141,16 @@ const routes: Routes = [
       { path: 'notificaciones-usuario/:userId', component: NotificacionesComponent },
       { path: 'notificaciones-federacion', component: NotificacionesFederacionComponent },
       { path: 'listado-clubes', component: ListadoClubesComponent },
-      { path: 'admin-clubes', component: AdminClubesComponent },
-      { path: 'admin-club-detail/:clubId', component: AdminClubDetailComponent },
-      { path: 'admin-inicio/:clubId/:userId', component: AdminInicioComponent },
+      { path: 'admin-clubes', component: AdminClubesComponent, canActivate: [AdminGuard] },
+      { path: 'admin-club-detail/:clubId', component: AdminClubDetailComponent, canActivate: [AdminGuard] },
+      { path: 'admin-inicio/:clubId/:userId', component: AdminInicioComponent, canActivate: [AdminGuard] },
       { path: 'sugerencias-club', component: SugerenciasClubComponent },
-      { path: 'admin-sugerencias', component: AdminSugerenciasComponent },
-      { path: 'admin-charts', component: AdminChartsComponent },
-      { path: 'admin-ai-insights', component: AdminAiInsightsComponent },
-      { path: 'admin-registros', component: AdminRegistrosComponent },
-      { path: 'admin-activity', component: AdminActivityComponent },
-      { path: 'admin-ai-usage', component: AdminAiUsageComponent },
+      { path: 'admin-sugerencias', component: AdminSugerenciasComponent, canActivate: [AdminGuard] },
+      { path: 'admin-charts', component: AdminChartsComponent, canActivate: [AdminGuard] },
+      { path: 'admin-ai-insights', component: AdminAiInsightsComponent, canActivate: [AdminGuard] },
+      { path: 'admin-registros', component: AdminRegistrosComponent, canActivate: [AdminGuard] },
+      { path: 'admin-activity', component: AdminActivityComponent, canActivate: [AdminGuard] },
+      { path: 'admin-ai-usage', component: AdminAiUsageComponent, canActivate: [AdminGuard] },
       { path: 'ai-credits-success', component: AiCreditsSuccessComponent },
       { path: 'suscripcion-club', component: SuscripcionClubComponent },
       { path: 'suscripcion-club/wizard/familia', component: WizardFamiliaComponent },

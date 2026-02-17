@@ -24,6 +24,13 @@ export class EstadisticasEquiposClubComponent implements OnInit {
   equipoSeleccionado = '';
   loading = true;
 
+  // AI Panel
+  aiPanelOpen = false;
+  aiPrompt = '';
+  aiMessages: { role: 'user' | 'assistant'; content: string }[] = [];
+  aiLoading = false;
+  @ViewChild('aiMessagesContainer') aiMessagesContainer!: ElementRef;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -184,6 +191,101 @@ export class EstadisticasEquiposClubComponent implements OnInit {
       D: '🔴',
     };
     return iconos[resultado] || '❓';
+  }
+
+  // ===== AI PANEL METHODS =====
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && event.ctrlKey) {
+      event.preventDefault();
+      this.sendAiMessage();
+    }
+  }
+
+  toggleAiPanel(): void {
+    this.aiPanelOpen = !this.aiPanelOpen;
+    if (this.aiPanelOpen && this.aiMessages.length === 0) {
+      // Mensaje de bienvenida
+      this.aiMessages.push({
+        role: 'assistant',
+        content: '¡Hola! 👋 Soy tu asistente de análisis de estadísticas. Puedo ayudarte a visualizar y analizar los datos de tus equipos. ¿En qué te puedo ayudar?'
+      });
+    }
+  }
+
+  useSuggestion(suggestion: string): void {
+    this.aiPrompt = suggestion;
+    this.sendAiMessage();
+  }
+
+  async sendAiMessage(): Promise<void> {
+    if (!this.aiPrompt.trim() || this.aiLoading) return;
+
+    const userMessage = this.aiPrompt.trim();
+    this.aiMessages.push({
+      role: 'user',
+      content: userMessage
+    });
+
+    this.aiPrompt = '';
+    this.aiLoading = true;
+
+    // Scroll to bottom
+    setTimeout(() => this.scrollAiToBottom(), 100);
+
+    try {
+      // Aquí se integrará con el servicio real de IA
+      // Por ahora, una respuesta simulada
+      await this.simulateAiResponse(userMessage);
+    } catch (error) {
+      this.aiMessages.push({
+        role: 'assistant',
+        content: '❌ Lo siento, ha ocurrido un error al procesar tu consulta. Por favor, intenta de nuevo.'
+      });
+    } finally {
+      this.aiLoading = false;
+      setTimeout(() => this.scrollAiToBottom(), 100);
+    }
+  }
+
+  private async simulateAiResponse(userMessage: string): Promise<void> {
+    // Simulación temporal hasta integrar el servicio real
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    let response = '';
+    
+    if (userMessage.toLowerCase().includes('victoria') || userMessage.toLowerCase().includes('mejor')) {
+      const topTeam = this.resumentotales.reduce((max, t) => t.victorias > max.victorias ? t : max, this.resumentotales[0]);
+      response = `🏆 **Mejor Equipo por Victorias**<br><br>El equipo con más victorias es <strong>${topTeam?.equipo}</strong> con <strong>${topTeam?.victorias} victorias</strong> de ${topTeam?.partidos} partidos jugados (${((topTeam?.victorias / topTeam?.partidos) * 100).toFixed(1)}% efectividad).`;
+    } else if (userMessage.toLowerCase().includes('punto') || userMessage.toLowerCase().includes('puntos')) {
+      const topPoints = this.resumentotales.reduce((max, t) => t.puntos > max.puntos ? t : max, this.resumentotales[0]);
+      response = `📊 **Líder en Puntos**<br><br>El equipo con más puntos es <strong>${topPoints?.equipo}</strong> con <strong>${topPoints?.puntos} puntos</strong>.`;
+    } else if (userMessage.toLowerCase().includes('goles')) {
+      const topScorer = this.resumentotales.reduce((max, t) => t.gf > max.gf ? t : max, this.resumentotales[0]);
+      response = `⚽ **Equipo Más Goleador**<br><br>El equipo con más goles a favor es <strong>${topScorer?.equipo}</strong> con <strong>${topScorer?.gf} goles</strong> (promedio de ${(topScorer?.gf / topScorer?.partidos).toFixed(1)} goles por partido).`;
+    } else if (userMessage.toLowerCase().includes('racha')) {
+      response = `🎯 **Análisis de Rachas**<br><br>Estoy analizando las últimas 5 rachas de resultados de cada equipo. Esta información te ayuda a ver la tendencia actual. Las rachas se muestran en la tabla principal con las últimas 5 resultados.`;
+    } else if (userMessage.toLowerCase().includes('gráfica') || userMessage.toLowerCase().includes('grafica')) {
+      response = `📊 **Generación de Gráficas**<br><br>¡Excelente idea! Puedo generar gráficas de:<br>• Puntos por equipo<br>• Victorias/Empates/Derrotas<br>• Goles a favor vs en contra<br>• Diferencia de goles<br>• Comparativas de rendimiento<br><br>Próximamente podrás ver estas gráficas directamente aquí.`;
+    } else {
+      response = `Entiendo tu consulta sobre "${userMessage}". Actualmente puedo ayudarte con:<br><br>
+        🏆 Análisis de victorias y rendimiento<br>
+        📊 Estadísticas de puntos<br>
+        ⚽ Información sobre goles<br>
+        📈 Comparativas entre equipos<br><br>
+        ¿Qué te gustaría saber específicamente?`;
+    }
+
+    this.aiMessages.push({
+      role: 'assistant',
+      content: response
+    });
+  }
+
+  private scrollAiToBottom(): void {
+    if (this.aiMessagesContainer) {
+      const element = this.aiMessagesContainer.nativeElement;
+      element.scrollTop = element.scrollHeight;
+    }
   }
 
 }

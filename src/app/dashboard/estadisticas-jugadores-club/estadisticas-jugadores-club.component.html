@@ -16,9 +16,21 @@
 </div>
 <div class="modern-table-wrapper" *ngIf="datosCargados">
 
-  <h2 class="datatable-title">
-    {{ 'PLAYERS.TITLE' | translate }}
-  </h2>
+  <div class="header-with-ai">
+    <h2 class="datatable-title">
+      {{ 'PLAYERS.TITLE' | translate }}
+    </h2>
+    
+    <button class="btn-ai-consult" (click)="toggleAiPanel()">
+      <i class="bi bi-robot"></i>
+      <span>Consulta con IA</span>
+    </button>
+  </div>
+
+  <div class="ai-info-banner">
+    <i class="bi bi-lightbulb-fill"></i>
+    <span>Pídele a la IA que genere gráficas y análisis con los datos de los jugadores</span>
+  </div>
 
   <div class="table-scroll">
     <table class="modern-table">
@@ -26,25 +38,130 @@
 
       <thead>
         <tr>
-          <th class="columna-nombre">{{ 'PLAYERS.TABLE.NAME' | translate }}</th>
-          <th>{{ 'PLAYERS.TABLE.TEAM' | translate }}</th>
-          <th>{{ 'PLAYERS.TABLE.POSITION' | translate }}</th>
-          <th>{{ 'PLAYERS.TABLE.MATCHES' | translate }}</th>
-          <th>{{ 'PLAYERS.TABLE.MINUTES' | translate }}</th>
+          <th class="columna-nombre sortable" (click)="sortBy('nombre')">
+            {{ 'PLAYERS.TABLE.NAME' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'nombre' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'nombre' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'nombre'
+            }"></i>
+          </th>
+          <th class="sortable" (click)="sortBy('nameTeam')">
+            {{ 'PLAYERS.TABLE.TEAM' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'nameTeam' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'nameTeam' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'nameTeam'
+            }"></i>
+          </th>
+          <th class="sortable" (click)="sortBy('posicion')">
+            {{ 'PLAYERS.TABLE.POSITION' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'posicion' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'posicion' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'posicion'
+            }"></i>
+          </th>
+          <th class="sortable" (click)="sortBy('partidosJugados')">
+            {{ 'PLAYERS.TABLE.MATCHES' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'partidosJugados' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'partidosJugados' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'partidosJugados'
+            }"></i>
+          </th>
+          <th class="sortable" (click)="sortBy('minTotales')">
+            {{ 'PLAYERS.TABLE.MINUTES' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'minTotales' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'minTotales' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'minTotales'
+            }"></i>
+          </th>
 
-          <th>{{ 'PLAYERS.TABLE.MEDIA_MINUTES_MATCH' | translate }}</th>
+          <th class="sortable" (click)="sortBy('mediaMinPorPartido')">
+            {{ 'PLAYERS.TABLE.MEDIA_MINUTES_MATCH' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'mediaMinPorPartido' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'mediaMinPorPartido' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'mediaMinPorPartido'
+            }"></i>
+          </th>
 
-          <th>{{ 'PLAYERS.TABLE.GOALS' | translate }}</th>
-          <th>{{ 'PLAYERS.TABLE.MEDIA_GOALS_MATCH' | translate }}</th>
+          <th class="sortable" (click)="sortBy('goles')">
+            {{ 'PLAYERS.TABLE.GOALS' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'goles' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'goles' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'goles'
+            }"></i>
+          </th>
+          <th class="sortable" (click)="sortBy('mediaGolesPorPartido')">
+            {{ 'PLAYERS.TABLE.MEDIA_GOALS_MATCH' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'mediaGolesPorPartido' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'mediaGolesPorPartido' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'mediaGolesPorPartido'
+            }"></i>
+          </th>
 
-          <th>{{ 'PLAYERS.TABLE.ASSISTS' | translate }}</th>
-          <th>{{ 'PLAYERS.TABLE.GOALS_ASSISTS' | translate }}</th>
-          <th>{{ 'PLAYERS.TABLE.MEDIA_ASSISTS_MATCH' | translate }}</th>
-          <th>{{ 'PLAYERS.TABLE.MEDIA_GOALS_ASSISTS_MATCH' | translate }}</th>
+          <th class="sortable" (click)="sortBy('asistencias')">
+            {{ 'PLAYERS.TABLE.ASSISTS' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'asistencias' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'asistencias' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'asistencias'
+            }"></i>
+          </th>
+          <th class="sortable" (click)="sortBy('golesAsistencias')">
+            {{ 'PLAYERS.TABLE.GOALS_ASSISTS' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'golesAsistencias' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'golesAsistencias' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'golesAsistencias'
+            }"></i>
+          </th>
+          <th class="sortable" (click)="sortBy('mediaAsistenciasPorPartido')">
+            {{ 'PLAYERS.TABLE.MEDIA_ASSISTS_MATCH' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'mediaAsistenciasPorPartido' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'mediaAsistenciasPorPartido' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'mediaAsistenciasPorPartido'
+            }"></i>
+          </th>
+          <th class="sortable" (click)="sortBy('mediaGolesAsistenciasPorPartido')">
+            {{ 'PLAYERS.TABLE.MEDIA_GOALS_ASSISTS_MATCH' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'mediaGolesAsistenciasPorPartido' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'mediaGolesAsistenciasPorPartido' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'mediaGolesAsistenciasPorPartido'
+            }"></i>
+          </th>
 
-          <th>{{ 'PLAYERS.TABLE.GOALS_PENALTY' | translate }}</th>
-          <th>{{ 'PLAYERS.TABLE.GOALS_FREE_KICK' | translate }}</th>
-          <th>{{ 'PLAYERS.TABLE.PENALTIES_MISSED' | translate }}</th>
+          <th class="sortable" (click)="sortBy('penaltisConvertidos')">
+            {{ 'PLAYERS.TABLE.GOALS_PENALTY' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'penaltisConvertidos' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'penaltisConvertidos' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'penaltisConvertidos'
+            }"></i>
+          </th>
+          <th class="sortable" (click)="sortBy('tiroLibre')">
+            {{ 'PLAYERS.TABLE.GOALS_FREE_KICK' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'tiroLibre' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'tiroLibre' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'tiroLibre'
+            }"></i>
+          </th>
+          <th class="sortable" (click)="sortBy('penaltisFallados')">
+            {{ 'PLAYERS.TABLE.PENALTIES_MISSED' | translate }}
+            <i class="bi" [ngClass]="{
+              'bi-chevron-up': sortColumn === 'penaltisFallados' && sortDirection === 'asc',
+              'bi-chevron-down': sortColumn === 'penaltisFallados' && sortDirection === 'desc',
+              'bi-chevron-expand': sortColumn !== 'penaltisFallados'
+            }"></i>
+          </th>
 
           <th>{{ 'PLAYERS.TABLE.CARDS' | translate }}</th>
         </tr>
@@ -131,6 +248,83 @@
         </button>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- PANEL LATERAL DE IA -->
+<div class="ai-sidebar-overlay" [class.active]="aiPanelOpen" (click)="toggleAiPanel()"></div>
+<div class="ai-sidebar" [class.active]="aiPanelOpen">
+  <div class="ai-sidebar-header">
+    <h3>
+      <i class="bi bi-robot"></i>
+      Asistente IA - Estadísticas de Jugadores
+    </h3>
+    <button class="btn-close-ai" (click)="toggleAiPanel()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="ai-sidebar-body">
+    <div class="ai-suggestions-section">
+      <p class="ai-intro">💡 Pregúntame sobre los datos de tus jugadores. Puedo ayudarte con:</p>
+      
+      <div class="suggestion-chips">
+        <button class="suggestion-chip" (click)="useSuggestion('¿Quién es el goleador del equipo?')">
+          ⚽ Top goleador
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('Muestra una gráfica de asistencias por jugador')">
+          📊 Gráfica asistencias
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('Analiza el rendimiento de los jugadores')">
+          📈 Análisis de rendimiento
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('¿Qué jugadores tienen más tarjetas?')">
+          🟨 Tarjetas
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('Compara goles vs asistencias')">
+          ⚖️ Comparativa
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('¿Cuál es la media de minutos jugados?')">
+          ⏱️ Minutos promedio
+        </button>
+      </div>
+    </div>
+
+    <div class="ai-chat-section">
+      <div class="ai-messages" #aiMessagesContainer>
+        <div *ngFor="let message of aiMessages" class="ai-message" [ngClass]="message.role">
+          <div class="message-content">
+            <strong *ngIf="message.role === 'assistant'">🤖 IA:</strong>
+            <strong *ngIf="message.role === 'user'">Tú:</strong>
+            <p [innerHTML]="message.content"></p>
+          </div>
+        </div>
+        
+        <div *ngIf="aiLoading" class="ai-message assistant">
+          <div class="message-content">
+            <strong>🤖 IA:</strong>
+            <p class="typing-indicator">
+              <span></span><span></span><span></span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-input-section">
+        <textarea 
+          [(ngModel)]="aiPrompt" 
+          placeholder="Escribe tu consulta aquí..."
+          rows="3"
+          (keydown)="onKeyDown($event)"
+          [disabled]="aiLoading"
+        ></textarea>
+        <button class="btn-send-ai" (click)="sendAiMessage()" [disabled]="aiLoading || !aiPrompt.trim()">
+          <i class="bi bi-send-fill"></i>
+          Enviar
+        </button>
+        <small class="ai-hint">Presiona Ctrl+Enter para enviar</small>
+      </div>
     </div>
   </div>
 </div>

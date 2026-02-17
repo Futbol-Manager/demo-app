@@ -21,6 +21,53 @@
       <!-- ================= BLOQUE DERECHO ================= -->
       <div class="col-auto d-flex align-items-center gap-2">
 
+        <!-- ===== SUGERENCIAS BADGE (solo admin) ===== -->
+        <div *ngIf="userId === 9" class="position-relative header-action-icon-container" style="cursor: pointer;" (click)="goToSugerencias()">
+          <i class="bi bi-bell fs-5 header-action-icon"></i>
+          <span *ngIf="unreadSugerencias > 0"
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            style="font-size: 0.65rem;">
+            {{ unreadSugerencias }}
+          </span>
+        </div>
+
+        <!-- ===== ADMINISTRADOR (solo admin) ===== -->
+        <div *ngIf="userId === 9" class="dropdown">
+          <a class="nav-link dropdown-toggle header-action" data-bs-toggle="dropdown" role="button">
+            <i class="bi bi-shield-check"></i>
+            <span class="d-none d-md-inline">
+              Administrador
+            </span>
+          </a>
+
+          <div class="dropdown-menu dropdown-menu-end header-dropdown">
+            <a class="dropdown-item" (click)="goToAdminSugerencias()">
+              <i class="bi bi-chat-left-text"></i>
+              Sugerencias
+            </a>
+
+            <a class="dropdown-item" (click)="goToAdminCharts()">
+              <i class="bi bi-bar-chart-line"></i>
+              Gráficas
+            </a>
+
+            <a class="dropdown-item" (click)="goToAdminAiInsights()">
+              <i class="bi bi-lightbulb"></i>
+              AI Insights
+            </a>
+
+            <a class="dropdown-item" (click)="goToAdminAiUsage()">
+              <i class="bi bi-cpu"></i>
+              Uso de IA
+            </a>
+
+            <a class="dropdown-item" (click)="goToAdminRegistros()">
+              <i class="bi bi-file-earmark-text"></i>
+              Registros
+            </a>
+          </div>
+        </div>
+
         <!-- ===== AYUDA ===== -->
         <div class="dropdown">
           <a class="nav-link dropdown-toggle header-action" data-bs-toggle="dropdown" role="button">
@@ -66,16 +113,6 @@
               {{ 'HEADER.DOWNLOAD.APPSTORE' | translate }}
             </a>
           </div>
-        </div>
-
-        <!-- ===== SUGERENCIAS BADGE (solo admin) ===== -->
-        <div *ngIf="userId === 9" class="position-relative" style="cursor: pointer;" (click)="goToSugerencias()">
-          <i class="bi bi-bell fs-5 header-action-icon"></i>
-          <span *ngIf="unreadSugerencias > 0"
-            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-            style="font-size: 0.65rem;">
-            {{ unreadSugerencias }}
-          </span>
         </div>
 
         <!-- ===== THEME SELECTOR ===== -->

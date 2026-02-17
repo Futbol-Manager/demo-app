@@ -154,6 +154,26 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(['/dashboard/admin-sugerencias']);
   }
 
+  goToAdminSugerencias(): void {
+    this.router.navigate(['/dashboard/admin-sugerencias']);
+  }
+
+  goToAdminCharts(): void {
+    this.router.navigate(['/dashboard/admin-charts']);
+  }
+
+  goToAdminAiInsights(): void {
+    this.router.navigate(['/dashboard/admin-ai-insights']);
+  }
+
+  goToAdminAiUsage(): void {
+    this.router.navigate(['/dashboard/admin-ai-usage']);
+  }
+
+  goToAdminRegistros(): void {
+    this.router.navigate(['/dashboard/admin-registros']);
+  }
+
   ngAfterViewInit() {
     document
       .querySelectorAll('[data-bs-toggle="dropdown"]')

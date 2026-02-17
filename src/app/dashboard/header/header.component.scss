@@ -48,7 +48,7 @@
 }
 
 /* ========================= */
-/* BOTONES AYUDA / DESCARGA  */
+/* BOTONES AYUDA / DESCARGA / ADMIN */
 /* ========================= */
 .header-action {
   display: flex;
@@ -69,6 +69,36 @@
 
 .header-action i {
   font-size: 1.1rem;
+}
+
+/* ========================= */
+/* CAMPANA DE NOTIFICACIONES */
+/* ========================= */
+.header-action-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+  position: relative;
+}
+
+.header-action-icon-container:hover {
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.header-action-icon {
+  color: #ffffff;
+  transition: transform 0.2s ease;
+}
+
+.header-action-icon-container:hover .header-action-icon {
+  transform: scale(1.1);
 }
 
 /* ========================= */

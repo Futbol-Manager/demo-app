@@ -379,6 +379,7 @@
   pointer-events: none;
   display: flex;
   align-items: center;
+  transition: top 0.5s ease-in-out;
 }
 
 .current-time-label {
@@ -387,7 +388,7 @@
   top: -14px;
   font-size: 0.58rem;
   font-weight: 700;
-  color: #e53935;
+  color: #002c40;
   background: rgba(255, 255, 255, 0.85);
   padding: 1px 4px;
   border-radius: 3px;
@@ -398,15 +399,17 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #e53935;
+  background: #002c40;
   flex-shrink: 0;
   margin-left: -5px;
+  box-shadow: 0 0 4px rgba(0, 44, 64, 0.4);
 }
 
 .current-time-rule {
   flex: 1;
   height: 2px;
-  background: #e53935;
+  background: #002c40;
+  box-shadow: 0 1px 2px rgba(0, 44, 64, 0.2);
 }
 
 /* =========================

@@ -19,7 +19,19 @@
   <!-- TABLA REAL -->
   <ng-container *ngIf="!loading">
     <div style="margin-top: 3em;">
-      <h2 class="mb-3"> {{ 'ESTADIS_EQUIPO.TITLE' | translate }}</h2>
+      <div class="header-with-ai">
+        <h2 class="mb-3"> {{ 'ESTADIS_EQUIPO.TITLE' | translate }}</h2>
+        
+        <button class="btn-ai-consult" (click)="toggleAiPanel()">
+          <i class="bi bi-robot"></i>
+          <span>Consulta con IA</span>
+        </button>
+      </div>
+
+      <div class="ai-info-banner">
+        <i class="bi bi-lightbulb-fill"></i>
+        <span>Pídele a la IA que genere gráficas y análisis con los datos de los equipos</span>
+      </div>
 
     <div style="overflow-x: auto;">
 
@@ -159,5 +171,82 @@
       </table>
     </div>
 
+  </div>
+</div>
+
+<!-- PANEL LATERAL DE IA -->
+<div class="ai-sidebar-overlay" [class.active]="aiPanelOpen" (click)="toggleAiPanel()"></div>
+<div class="ai-sidebar" [class.active]="aiPanelOpen">
+  <div class="ai-sidebar-header">
+    <h3>
+      <i class="bi bi-robot"></i>
+      Asistente IA - Estadísticas de Equipos
+    </h3>
+    <button class="btn-close-ai" (click)="toggleAiPanel()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="ai-sidebar-body">
+    <div class="ai-suggestions-section">
+      <p class="ai-intro">💡 Pregúntame sobre los datos de tus equipos. Puedo ayudarte con:</p>
+      
+      <div class="suggestion-chips">
+        <button class="suggestion-chip" (click)="useSuggestion('¿Qué equipo tiene más victorias?')">
+          🏆 Mejor equipo
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('Muestra una gráfica de puntos por equipo')">
+          📊 Gráfica puntos
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('Analiza el rendimiento de los equipos')">
+          📈 Análisis rendimiento
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('Compara goles a favor vs en contra')">
+          ⚖️ Comparativa goles
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('¿Cuál es el promedio de victorias?')">
+          📊 Promedio victorias
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('Muestra las últimas 5 rachas')">
+          🎯 Rachas recientes
+        </button>
+      </div>
+    </div>
+
+    <div class="ai-chat-section">
+      <div class="ai-messages" #aiMessagesContainer>
+        <div *ngFor="let message of aiMessages" class="ai-message" [ngClass]="message.role">
+          <div class="message-content">
+            <strong *ngIf="message.role === 'assistant'">🤖 IA:</strong>
+            <strong *ngIf="message.role === 'user'">Tú:</strong>
+            <p [innerHTML]="message.content"></p>
+          </div>
+        </div>
+        
+        <div *ngIf="aiLoading" class="ai-message assistant">
+          <div class="message-content">
+            <strong>🤖 IA:</strong>
+            <p class="typing-indicator">
+              <span></span><span></span><span></span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-input-section">
+        <textarea 
+          [(ngModel)]="aiPrompt" 
+          placeholder="Escribe tu consulta aquí..."
+          rows="3"
+          (keydown)="onKeyDown($event)"
+          [disabled]="aiLoading"
+        ></textarea>
+        <button class="btn-send-ai" (click)="sendAiMessage()" [disabled]="aiLoading || !aiPrompt.trim()">
+          <i class="bi bi-send-fill"></i>
+          Enviar
+        </button>
+        <small class="ai-hint">Presiona Ctrl+Enter para enviar</small>
+      </div>
+    </div>
   </div>
 </div>
