@@ -2,7 +2,9 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  NgZone,
   OnInit,
+  OnDestroy,
   ViewChild,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -69,8 +71,9 @@ interface Category {
   templateUrl: './calendario.component.html',
   styleUrls: ['./calendario.component.scss'],
 })
-export class CalendarioComponent implements OnInit {
+export class CalendarioComponent implements OnInit, OnDestroy {
   @ViewChild('endOfModal', { static: false }) endOfModal!: ElementRef;
+  private aiDataChangedHandler = () => this.reloadDataFromAi();
 
   datosCargados: boolean = false;
   teamId!: number; // Ajusta el valor según el teamId del equipo actual
@@ -806,8 +809,11 @@ export class CalendarioComponent implements OnInit {
 
   userId: any = 0;
 
-  showModalTask: boolean = false; // Controla la visibilidad del modal
-  tareaSeleccionada: any; // Almacena la tarea seleccionada
+  showModalTask: boolean = false;
+  tareaSeleccionada: any;
+
+  showEditTaskModal: boolean = false;
+  tareaEditando: Task | null = null;
 
   // Genera un array con los números del 0 al 1000
   numeros: number[] = [0, ...Array.from({ length: 1000 }, (_, i) => i + 1)];
@@ -857,7 +863,7 @@ export class CalendarioComponent implements OnInit {
   motivoNoAsistencia = '';
 
   constructor(
-    private router: Router,
+    public router: Router,
     private route: ActivatedRoute,
     private trainingService: TrainingService,
     private playerService: PlayerService,
@@ -866,10 +872,11 @@ export class CalendarioComponent implements OnInit {
     private loginService: LoginService,
     private location: Location,
     private toastr: ToastrService,
-    private translate: TranslateService,
+    private ngZone: NgZone,
   ) { }
 
   ngOnInit(): void {
+    window.addEventListener('ai-data-changed', this.aiDataChangedHandler);
     // Suscríbete al observable del servicio para obtener el usuario actual
     console.log(this.today);
     this.loginService.usuarioActual.subscribe((user) => {
@@ -877,6 +884,13 @@ export class CalendarioComponent implements OnInit {
       this.userId = user?.userId;
       this.profileId =
         user?.profileType.profileId != null ? user?.profileType.profileId : 0;
+
+      // Override admin: si el userId es 9 (admin que también actúa como coach),
+      // forzar profileId = 2 para que el calendario funcione correctamente
+      if (user?.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
+        this.profileId = 2;
+      }
+
       // Suscribirse a los cambios en los parámetros de la URL
       this.route.params.subscribe((params) => {
         // Obtener el valor de teamId de los parámetros
@@ -889,9 +903,9 @@ export class CalendarioComponent implements OnInit {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
             this.nombreEquipo =
-              response.data.categoryType.categoryName +
+              (response.data.categoryType?.categoryName || '') +
               ' ' +
-              response.data.levelLeague;
+              (response.data.levelLeague || '');
             this.categoryTeam = response.data.categoryTypeId;
             this.imgClub = response.data.imgClub;
             this.match2.imgClub =
@@ -903,14 +917,31 @@ export class CalendarioComponent implements OnInit {
               'La respuesta del servicio no tiene la estructura esperada',
               response,
             );
+            // Intentar cargar entrenamientos aunque el equipo no tenga datos completos
+            this.getListaEntrenamientos();
           }
         },
         (error) => {
-          console.error('Error al cargar el listado de equipos', error);
+          console.error('Error al cargar datos del equipo, intentando cargar entrenamientos igualmente', error);
+          this.getListaEntrenamientos();
         },
       );
     });
     this.horas = this.generarHoras(8, 21);
+  }
+
+  ngOnDestroy(): void {
+    window.removeEventListener('ai-data-changed', this.aiDataChangedHandler);
+  }
+
+  private reloadDataFromAi(): void {
+    if (this.teamId) {
+      console.log('[Calendario] reloadDataFromAi triggered for teamId=' + this.teamId);
+      this.ngZone.run(() => {
+        this.getListaEntrenamientos();
+        this.cdr.detectChanges();
+      });
+    }
   }
 
   goBack(): void {
@@ -967,15 +998,13 @@ export class CalendarioComponent implements OnInit {
 
           trainingId: training?.trainingSessionId ?? null,
           trainingVisible: training?.visible ?? 0,
+          startTime: training?.startTime ?? null,
+          endTime: training?.endTime ?? null,
 
           matchPreparationId: match?.matchPreparationId ?? null,
           matchVisible: match?.visible ?? 0,
 
-          rivalName: match
-            ? match.rivalName.length > 16
-              ? match.rivalName.substring(0, 16) + '...'
-              : match.rivalName
-            : null,
+          rivalName: match?.rivalName ?? null,
 
           terreno: match?.terreno ?? null
         };
@@ -1095,13 +1124,11 @@ export class CalendarioComponent implements OnInit {
         daysession,
         trainingId: training?.trainingSessionId ?? null,
         trainingVisible: training?.visible ?? 0,
+        startTime: training?.startTime ?? null,
+        endTime: training?.endTime ?? null,
         matchPreparationId: match?.matchPreparationId ?? null,
         matchVisible: match?.visible ?? 0,
-        rivalName: match
-          ? match.rivalName?.length > 20
-            ? match.rivalName.substring(0, 20) + '...'
-            : match.rivalName
-          : null,
+        rivalName: match?.rivalName ?? null,
         terreno: match?.terreno ?? null
       });
     }
@@ -1265,24 +1292,32 @@ export class CalendarioComponent implements OnInit {
       );
   }
 
+  showDeleteTrainingConfirm = false;
+
   eliminarEntrenamiento() {
+    this.showDeleteTrainingConfirm = true;
+  }
+
+  confirmDeleteTraining() {
+    this.showDeleteTrainingConfirm = false;
     this.trainingSession.daySession = this.daySession;
     this.trainingService
       .deleteTrainingSession(this.teamId.toString(), this.trainingSession)
       .subscribe(
         (response) => {
           console.log('Sesión de entrenamiento eliminada con éxito:', response);
-          // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
           this.getListaEntrenamientos();
-          // Cerrar el modal después de crear el equipo
           if (this.trainingSession.trainingSessionId === 0) this.cerrarModal();
           else this.cerrarModalEntrenamiento();
         },
         (error) => {
           console.error('Error al eliminar la sesión de entrenamiento:', error);
-          // Aquí puedes manejar el error, si es necesario
         },
       );
+  }
+
+  cancelDeleteTraining() {
+    this.showDeleteTrainingConfirm = false;
   }
 
   getListaEntrenamientos() {
@@ -1295,18 +1330,22 @@ export class CalendarioComponent implements OnInit {
           this.listTraining = response.data.map(
             (team: Training) => new Training(team),
           );
-          // Lógica para obtener o generar la información del calendario
-          this.getListaPrePartido();
-          //this.generarCalendarioV2(new Date());
         } else {
-          console.error(
-            'La respuesta del servicio no tiene la estructura esperada',
-            response,
-          );
+          this.listTraining = [];
+          if (response?.data !== null && response?.data !== undefined) {
+            console.error(
+              'La respuesta del servicio no tiene la estructura esperada',
+              response,
+            );
+          }
         }
+        // Siempre continuar para generar el calendario (aunque no haya datos de entrenamientos)
+        this.getListaPrePartido();
       },
       (error) => {
-        console.error('Error al cargar el listado de equipos', error);
+        console.error('Error al cargar entrenamientos:', error);
+        this.listTraining = [];
+        this.getListaPrePartido();
       },
     );
   }
@@ -1323,22 +1362,29 @@ export class CalendarioComponent implements OnInit {
             this.listMatchPreparation = response.data.map(
               (match: MatchPreparation) => new MatchPreparation(match),
             );
-            // Lógica para obtener o generar la información del calendario
-            this.generarCalendarioV2(this.mesActual);
-            if (this.vistaCalendario === 'week') this.generarVistaSemana();
           } else {
-            console.error(
-              'La respuesta del servicio no tiene la estructura esperada',
-              response,
-            );
+            this.listMatchPreparation = [];
+            if (response?.data !== null && response?.data !== undefined) {
+              console.error(
+                'La respuesta del servicio no tiene la estructura esperada',
+                response,
+              );
+            }
           }
+          // Siempre generar el calendario, aunque no haya pre-partidos
+          this.generarCalendarioV2(this.mesActual);
+          if (this.vistaCalendario === 'week') this.generarVistaSemana();
           this.datosCargados = true;
 
           // Auto-abrir evento si venimos del calendario del club con queryParams
           this.autoOpenFromQueryParams();
         },
         (error) => {
-          console.error('Error al cargar el listado de equipos', error);
+          console.error('Error al cargar pre-partidos, generando calendario sin ellos', error);
+          this.listMatchPreparation = [];
+          this.generarCalendarioV2(this.mesActual);
+          if (this.vistaCalendario === 'week') this.generarVistaSemana();
+          this.datosCargados = true;
         },
       );
   }
@@ -1396,11 +1442,12 @@ export class CalendarioComponent implements OnInit {
   }
 
   puedeVerPartido(dia: any): boolean {
-    const perfil = this.usuarioActual?.profileType?.profileId;
+    const perfil = this.profileId ?? this.usuarioActual?.profileType?.profileId;
 
     if (!dia.matchPreparationId) return false;
 
-    if (perfil === 1 || perfil === 2) return true;
+    // Club (0, 1) + Coach (2) + Staff (6, 7) → siempre pueden ver
+    if (perfil === 0 || perfil === 1 || perfil === 2 || perfil === 6 || perfil === 7) return true;
 
     if (perfil === 3) {
       return dia.matchVisible === 1;
@@ -1411,15 +1458,15 @@ export class CalendarioComponent implements OnInit {
 
 
   puedeVerPartidoEnLista(m: any): boolean {
-    const perfil = this.usuarioActual?.profileType?.profileId;
+    const perfil = this.profileId ?? this.usuarioActual?.profileType?.profileId;
 
     const esVisible =
       m.visible === 1 ||
       m.visible === '1' ||
       m.visible === true;
 
-    // Club y Coach → siempre
-    if (perfil === 1 || perfil === 2) {
+    // Club (0, 1) + Coach (2) + Staff (6, 7) → siempre
+    if (perfil === 0 || perfil === 1 || perfil === 2 || perfil === 6 || perfil === 7) {
       return true;
     }
 
@@ -1431,15 +1478,15 @@ export class CalendarioComponent implements OnInit {
     return false;
   }
   puedeVerEntrenamientoEnLista(t: any): boolean {
-    const perfil = this.usuarioActual?.profileType?.profileId;
+    const perfil = this.profileId ?? this.usuarioActual?.profileType?.profileId;
 
     const esVisible =
       t.visible === 1 ||
       t.visible === '1' ||
       t.visible === true;
 
-    // Club y Coach → siempre
-    if (perfil === 1 || perfil === 2) {
+    // Club (0, 1) + Coach (2) + Staff (6, 7) → siempre
+    if (perfil === 0 || perfil === 1 || perfil === 2 || perfil === 6 || perfil === 7) {
       return true;
     }
 
@@ -1452,12 +1499,14 @@ export class CalendarioComponent implements OnInit {
   }
 
   puedeVerEntrenamiento(dia: any): boolean {
-    const perfil = this.usuarioActual?.profileType?.profileId;
+    const perfil = this.profileId ?? this.usuarioActual?.profileType?.profileId;
 
     if (!dia.trainingId) return false;
 
-    if (perfil === 1 || perfil === 2) return true;
+    // Club (0, 1) + Coach (2) + Staff de tipo coach (6, 7) → siempre pueden ver
+    if (perfil === 0 || perfil === 1 || perfil === 2 || perfil === 6 || perfil === 7) return true;
 
+    // Jugador → solo si el entrenamiento está marcado como visible
     if (perfil === 3) {
       return dia.trainingVisible === 1;
     }
@@ -1789,16 +1838,20 @@ export class CalendarioComponent implements OnInit {
   }
 
 
+  showDeleteMatchConfirm = false;
+
   eliminarPartido(): void {
+    this.showDeleteMatchConfirm = true;
+  }
+
+  confirmDeleteMatch(): void {
+    this.showDeleteMatchConfirm = false;
     this.match.matchDate = this.daySession;
-    // Lógica para crear el partido usando this.partido y enviarlo al servicio
     this.trainingService
       .deletePartido(this.teamId.toString(), this.match)
       .subscribe(
         (response) => {
-          // Manejar la respuesta del servidor, por ejemplo, cerrar el modal si se ha creado correctamente
           if (response.data) {
-            // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
             this.getListaPrePartido();
             if (this.match.matchPreparationId === 0) this.cerrarModal();
             else this.cerrarModalPartido();
@@ -1810,6 +1863,10 @@ export class CalendarioComponent implements OnInit {
           console.error('Error en la solicitud:', error);
         },
       );
+  }
+
+  cancelDeleteMatch(): void {
+    this.showDeleteMatchConfirm = false;
   }
 
   verTienda() {
@@ -2208,12 +2265,45 @@ export class CalendarioComponent implements OnInit {
   }
 
   openTaskModal(tarea: any): void {
-    this.tareaSeleccionada = tarea; // Almacena la tarea seleccionada
-    this.showModalTask = true; // Muestra el modal
+    this.tareaSeleccionada = tarea;
+    this.parsedExtraFields = this.parseExtraFields(tarea?.extraFields);
+    this.showModalTask = true;
   }
 
   closeTaskModal(): void {
-    this.showModalTask = false; // Oculta el modal
+    this.showModalTask = false;
+    this.parsedExtraFields = [];
+  }
+
+  parsedExtraFields: { name: string; value: string }[] = [];
+
+  private parseExtraFields(raw: string | undefined): { name: string; value: string }[] {
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.filter((f: any) => f.name?.trim()) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  editTarea(tarea: Task): void {
+    this.tareaEditando = tarea;
+    this.showEditTaskModal = true;
+  }
+
+  onTaskSaved(updated: Task): void {
+    const idx = this.trainingSession.tasks.findIndex((t: Task) => t.taskId === updated.taskId);
+    if (idx !== -1) {
+      this.trainingSession.tasks[idx] = { ...this.trainingSession.tasks[idx], ...updated };
+    }
+    this.showEditTaskModal = false;
+    this.tareaEditando = null;
+  }
+
+  onEditModalClosed(): void {
+    this.showEditTaskModal = false;
+    this.tareaEditando = null;
   }
 
   printDivPostPartido(divId: string): void {

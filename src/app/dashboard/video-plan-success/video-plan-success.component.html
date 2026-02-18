@@ -1,0 +1,51 @@
+<div class="success-page">
+  <!-- Loading -->
+  <div *ngIf="status === 'loading'" class="state-card">
+    <div class="spinner"></div>
+    <p>Activando tu plan de vídeo…</p>
+  </div>
+
+  <!-- Success -->
+  <div *ngIf="status === 'success'" class="state-card success">
+    <div class="icon-wrap success-icon">
+      <i class="bi bi-camera-video-fill"></i>
+    </div>
+    <h2>¡Plan activado!</h2>
+    <p class="subtitle">
+      Tu plan <strong>Sphaira Vídeo {{ planLabel() }}</strong> está activo.
+      Dispones de <strong>{{ storageLimitHuman }}</strong> de almacenamiento para vídeos de scouting.
+    </p>
+    <div class="features-list">
+      <div><i class="bi bi-check-circle-fill"></i> Sube vídeos desde tu dispositivo</div>
+      <div><i class="bi bi-check-circle-fill"></i> Vincula vídeos a jugadores de tu watchlist</div>
+      <div><i class="bi bi-check-circle-fill"></i> Reproducción segura con URLs temporales</div>
+      <div><i class="bi bi-check-circle-fill"></i> Sin límite de visualizaciones</div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary" (click)="goToLibrary()">
+        <i class="bi bi-collection-play"></i> Ir a mi biblioteca de vídeos
+      </button>
+      <button class="btn-outline" (click)="goBack()">Volver al inicio</button>
+    </div>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="status === 'error'" class="state-card error">
+    <div class="icon-wrap error-icon">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+    </div>
+    <h2>Error al activar el plan</h2>
+    <p>{{ errorMessage }}</p>
+    <p class="help-note">
+      Si completaste el pago en Stripe, el plan puede estar activo.<br>
+      Comprueba tu biblioteca de vídeos. Si el error persiste, contacta con
+      <a href="mailto:soporte@sphairatech.com">soporte@sphairatech.com</a>
+    </p>
+    <div class="btn-row">
+      <button class="btn-primary" (click)="goToLibrary()">
+        <i class="bi bi-collection-play"></i> Ir a mi biblioteca de vídeos
+      </button>
+      <button class="btn-outline" (click)="goBack()">Volver al inicio</button>
+    </div>
+  </div>
+</div>

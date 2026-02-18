@@ -5,6 +5,7 @@ import { filter, take } from 'rxjs/operators';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { SidebarService } from 'src/app/core/services/sidebar/sidebar.service';
 import { ClubService } from 'src/app/core/services/club/club.service';
+import { TrackingService } from 'src/app/core/services/tracking/tracking.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { Response } from 'src/app/core/services/models/response.model';
 
@@ -42,11 +43,39 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   private subs: Subscription[] = [];
 
+  private readonly MODULE_LABELS: Record<string, string> = {
+    'inicio':                    'Inicio / Dashboard',
+    'asistente-ia':              'Asistente IA',
+    'asistente-ia-coach':        'Asistente IA (entrenador)',
+    'scouting-club':             'Scouting',
+    'club-videos':               'Vídeos Scouting',
+    'equipos':                   'Equipos',
+    'cuadro-de-mandos':          'Cuadro de mandos',
+    'documentos-club':           'Documentos',
+    'new-cuotas':                'Cuotas',
+    'ropa':                      'Ropa / Equipación',
+    'patrocinadores':            'Patrocinadores',
+    'notificaciones':            'Notificaciones',
+    'calendario':                'Calendario',
+    'tareas':                    'Tareas',
+    'jugadores':                 'Jugadores',
+    'informacion_equipo':        'Información del equipo',
+    'estadisticas_equipo':       'Estadísticas del equipo',
+    'estadisticas_jugadores':    'Estadísticas de jugadores',
+    'clasificacion-resultados':  'Clasificación y resultados',
+    'partidos-entrevistas':      'Galería / Partidos',
+    'lesiones':                  'Lesiones',
+    'debrief':                   'Debrief',
+    'perfil-entrenador':         'Perfil entrenador',
+    'tactical-board':            'Pizarra táctica',
+  };
+
   constructor(
     private loginService: LoginService,
     private router: Router,
     public sidebarService: SidebarService,
-    private clubService: ClubService
+    private clubService: ClubService,
+    private trackingService: TrackingService
   ) {}
 
   get isCollapsed(): boolean {
@@ -65,6 +94,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
           this.profileId = user.profileType?.profileId ?? 0;
           this.userId = user.userId ?? 0;
           this.playerId = user.playerId ?? 0;
+          // Override admin: userId=9 siempre se comporta como Coach (profileId 2)
+          if (this.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
+            this.profileId = 2;
+          }
           this.loadClubId();
           this.buildSections();
         }
@@ -96,8 +129,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
     if (item.action) {
       item.action();
     } else if (item.route) {
+      this.trackModuleNavigation(item.route, item.label);
       this.router.navigateByUrl(item.route);
     }
+  }
+
+  private trackModuleNavigation(route: string, label: string): void {
+    const segment = route.split('/').find(s => s && !s.match(/^\d+$/) && s !== 'dashboard');
+    const moduleName = (segment && this.MODULE_LABELS[segment]) ? this.MODULE_LABELS[segment] : label;
+    this.trackingService.trackActivity('MODULE', 'Módulo visitado: ' + moduleName);
   }
 
   isActive(item: SidebarItem): boolean {
@@ -129,7 +169,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private extractRouteParams(): void {
     const url = this.currentUrl;
 
-    const teamMatch = url.match(/\/(menu-entrenador|menu-club|calendario|jugadores|estadisticas_equipo|estadisticas_jugadores|informacion_equipo|tareas|partidos-entrevistas|clasificacion-resultados|lesiones|tactical-board|debrief)\/(\d+)/);
+    const teamMatch = url.match(/\/(menu-entrenador|menu-fisio|menu-club|calendario|jugadores|estadisticas_equipo|estadisticas_jugadores|informacion_equipo|tareas|partidos-entrevistas|clasificacion-resultados|lesiones|tactical-board|debrief)\/(\d+)/);
     if (teamMatch) {
       this.teamId = +teamMatch[2];
     }
@@ -156,6 +196,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     ];
     if (this.profileId === 2) {
       generalItems.push({ id: 'ai', label: 'SIDEBAR.AI_ASSISTANT', icon: 'bi-robot', route: '/dashboard/asistente-ia-coach' });
+
+    if (this.profileId === 2 || this.profileId === 6 || this.profileId === 7) {
+      generalItems.push({ id: 'ai', label: 'Asistente IA', icon: 'bi-robot', route: '/dashboard/asistente-ia-coach' });
     } else if (this.profileId === 1) {
       generalItems.push({ id: 'ai', label: 'SIDEBAR.AI_ASSISTANT', icon: 'bi-robot', route: '/dashboard/asistente-ia' });
     }
@@ -171,6 +214,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'ropa', label: 'SIDEBAR.CLOTHING', icon: 'bi-backpack3', route: `/dashboard/ropa/${this.clubId}` },
         { id: 'patrocinadores', label: 'SIDEBAR.SPONSORS', icon: 'bi-collection', route: `/dashboard/patrocinadores/${this.clubId}` },
         { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
+        { id: 'dashboard', label: 'Cuadro de mandos', icon: 'bi-clipboard2-data', route: `/dashboard/cuadro-de-mandos/${this.clubId}` },
+        { id: 'equipos', label: 'Equipos', icon: 'bi-people', route: '/dashboard/equipos' },
+        { id: 'docs', label: 'Documentos', icon: 'bi-file-earmark-pdf', route: `/dashboard/documentos-club/${this.clubId}` },
+        { id: 'cuotas', label: 'Cuotas', icon: 'bi-bank2', route: `/dashboard/new-cuotas/${this.clubId}` },
+        { id: 'ropa', label: 'Ropa', icon: 'bi-backpack3', route: `/dashboard/ropa/${this.clubId}` },
+        { id: 'patrocinadores', label: 'Patrocinadores', icon: 'bi-collection', route: `/dashboard/patrocinadores/${this.clubId}` },
+        { id: 'scouting', label: 'Scouting', icon: 'bi-binoculars', route: `/dashboard/scouting-club/${this.clubId}` },
+        { id: 'videos', label: 'Vídeos Scouting', icon: 'bi-collection-play', route: `/dashboard/club-videos/${this.clubId}` },
+        { id: 'notificaciones', label: 'Notificaciones', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
       ];
       this.sections.push({ id: 'club', title: 'SIDEBAR.SECTION_CLUB', items: clubItems, visible: true });
     }
@@ -219,6 +271,36 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'clasificacion', label: 'SIDEBAR.STANDINGS', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
         { id: 'patrocinadores', label: 'SIDEBAR.SPONSORS', icon: 'bi-collection', route: '/dashboard/patrocinadores/0' },
         { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
+    // ─── Fisioterapeuta / Nutricionista (profileId 6 o 7) ───
+    const isOnFisioMenu = this.currentUrl.includes('/menu-fisio/');
+    if ((this.profileId === 6 || this.profileId === 7) && hasTeam && !isOnFisioMenu && !isOnInicio) {
+      const sectionTitle = this.profileId === 6 ? 'Fisioterapeuta' : 'Nutricionista';
+      const fisioItems: SidebarItem[] = [
+        { id: 'lesiones', label: 'Lesiones', icon: 'bi-heart-pulse', route: `/dashboard/lesiones/${this.teamId}` },
+        { id: 'jugadores', label: 'Jugadores', icon: 'bi-people', route: `/dashboard/jugadores/${this.teamId}` },
+        { id: 'calendario', label: 'Calendario', icon: 'bi-calendar-event', route: `/dashboard/calendario/${this.teamId}/0` },
+        { id: 'stats-jugadores', label: 'Estadísticas jugadores', icon: 'bi-graph-up', route: `/dashboard/estadisticas_jugadores/${this.teamId}` },
+        { id: 'stats-equipo', label: 'Estadísticas equipo', icon: 'bi-bar-chart-line', route: `/dashboard/estadisticas_equipo/${this.teamId}` },
+        { id: 'clasificacion', label: 'Clasificación', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
+        { id: 'documentos', label: 'Documentos', icon: 'bi-file-earmark-pdf', route: `/dashboard/documentos-entrenador/${this.clubId}` },
+        { id: 'notificaciones', label: 'Notificaciones', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
+        { id: 'perfil', label: 'Mi perfil', icon: 'bi-person-badge', route: `/dashboard/perfil-entrenador/${this.teamId}/${this.playerId}` },
+      ];
+      this.sections.push({ id: 'fisio', title: sectionTitle, items: fisioItems, visible: true });
+    }
+
+    // ─── Jugador (profileId 3, 4, 5 - visible cuando tiene jugador Y NO está en menú jugador) ───
+    if (this.profileId >= 3 && this.profileId <= 5 && hasPlayer && !isOnPlayerMenu && !isOnInicio) {
+      const playerItems: SidebarItem[] = [
+        { id: 'datos', label: 'Datos personales', icon: 'bi-person', route: `/dashboard/jugadores/${this.teamId}` },
+        { id: 'calendario', label: 'Calendario', icon: 'bi-calendar-event', route: `/dashboard/calendario/${this.teamId}/${this.playerId}` },
+        { id: 'cuotas', label: 'Pagar cuotas', icon: 'bi-credit-card', route: `/dashboard/cuotas/${this.teamId}/${this.playerId}` },
+        { id: 'documentos', label: 'Documentación', icon: 'bi-file-earmark-pdf', route: `/dashboard/documentos-jugador/${this.teamId}/${this.playerId}` },
+        { id: 'galeria', label: 'Galería', icon: 'bi-images', route: `/dashboard/partidos-entrevistas/${this.teamId}/${this.playerId}` },
+        { id: 'clasificacion', label: 'Clasificación', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
+        { id: 'patrocinadores', label: 'Patrocinadores', icon: 'bi-collection', route: '/dashboard/patrocinadores/0' },
+        { id: 'notificaciones', label: 'Notificaciones', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
+        { id: 'scouting-profile', label: 'Perfil Scouting', icon: 'bi-binoculars', route: `/dashboard/scouting-player-profile/${this.playerId}` },
       ];
       this.sections.push({ id: 'player', title: 'SIDEBAR.SECTION_PLAYER', items: playerItems, visible: true });
     }

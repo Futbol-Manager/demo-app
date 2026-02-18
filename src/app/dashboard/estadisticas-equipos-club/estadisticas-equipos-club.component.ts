@@ -1,17 +1,19 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { TranslateService } from '@ngx-translate/core';
 import { Location } from '@angular/common';
+import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-estadisticas-equipos-club',
   templateUrl: './estadisticas-equipos-club.component.html',
   styleUrls: ['./estadisticas-equipos-club.component.scss'],
 })
-export class EstadisticasEquiposClubComponent implements OnInit {
+export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
   clubId = 0;
   resumenes: any[] = [];
   resumentotales: any[] = [];
@@ -32,6 +34,14 @@ export class EstadisticasEquiposClubComponent implements OnInit {
   aiLoading = false;
   @ViewChild('aiMessagesContainer') aiMessagesContainer!: ElementRef;
 
+  // Voice recognition
+  isRecording = false;
+  isVoiceSupported = false;
+  private voiceTranscriptSub: Subscription | null = null;
+  private voiceListeningSub: Subscription | null = null;
+  private voiceErrorSub: Subscription | null = null;
+  private voiceTranscriptBase = '';
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -39,7 +49,7 @@ export class EstadisticasEquiposClubComponent implements OnInit {
     private http: HttpClient,
     private elementRef: ElementRef,
     private location: Location,
-    private translate: TranslateService
+    private voiceRecognition: VoiceRecognitionService
   ) {}
 
   ngOnInit(): void {
@@ -49,6 +59,56 @@ export class EstadisticasEquiposClubComponent implements OnInit {
       this.clubId = +params['clubId']; // El + convierte el valor a número
     });
     this.getListaPostpartidos();
+    this.initVoiceRecognition();
+  }
+
+  private initVoiceRecognition(): void {
+    this.isVoiceSupported = this.voiceRecognition.isSupported();
+
+    // Subscribe to transcript
+    this.voiceTranscriptSub = this.voiceRecognition.transcript$.subscribe(result => {
+      if (result.isFinal) {
+        // Final transcript: commit to input
+        this.voiceTranscriptBase = this.aiPrompt.trim()
+          ? this.aiPrompt + ' ' + result.transcript 
+          : result.transcript;
+        this.aiPrompt = this.voiceTranscriptBase;
+      } else {
+        // Interim transcript: show in real-time but don't commit yet
+        const interim = result.transcript;
+        this.aiPrompt = this.voiceTranscriptBase
+          ? this.voiceTranscriptBase + ' ' + interim 
+          : interim;
+      }
+    });
+
+    this.voiceListeningSub = this.voiceRecognition.isListening$.subscribe(isListening => {
+      this.isRecording = isListening;
+      if (!isListening) {
+        // When recording stops, commit whatever we have
+        this.voiceTranscriptBase = this.aiPrompt;
+      }
+    });
+
+    this.voiceErrorSub = this.voiceRecognition.error$.subscribe(error => {
+      console.warn('Voice recognition error:', error);
+    });
+  }
+
+  toggleVoiceRecognition(): void {
+    if (this.isRecording) {
+      this.voiceRecognition.stop();
+    } else {
+      // Save current text as base
+      this.voiceTranscriptBase = this.aiPrompt.trim();
+      this.voiceRecognition.start('es-ES');
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.voiceTranscriptSub?.unsubscribe();
+    this.voiceListeningSub?.unsubscribe();
+    this.voiceErrorSub?.unsubscribe();
   }
 
   // Método para redirigir a la pantalla de jugadores con el teamId

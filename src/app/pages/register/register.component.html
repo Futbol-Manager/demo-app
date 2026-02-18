@@ -183,6 +183,14 @@
               <div *ngIf="selectedOption == 2 || selectedOption == 5">
                 <form [formGroup]="registerFormEntrenador" (ngSubmit)="submitEntrenador()" class="form-register">
 
+                  <!-- Selector de rol (Entrenador / Fisioterapeuta / Nutricionista) -->
+                  <div class="mb-3">
+                    <label class="form-label fw-bold">¿Cuál es tu rol?</label>
+                    <select class="form-control input-register" [(ngModel)]="selectedStaffRole" [ngModelOptions]="{standalone: true}">
+                      <option *ngFor="let role of staffRoleOptions" [ngValue]="role.value">{{ role.label }}</option>
+                    </select>
+                  </div>
+
                   <!-- Nombre / Apellido -->
                   <div class="mb-3 d-flex">
                     <div class="col-6 input-wrapper">

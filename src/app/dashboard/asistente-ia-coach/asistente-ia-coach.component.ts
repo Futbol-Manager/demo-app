@@ -5,8 +5,11 @@ import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { LoginService } from 'src/app/core/services/login/login.service';
-import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { AiChatService, AiPendingAction } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { InjuryService } from 'src/app/core/services/injury/injury.service';
+import { Injury } from 'src/app/core/services/injury/injury.model';
 import { User } from 'src/app/core/models/users/user.model';
+import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
 
 /* ═══════════════════════════════════════
    INTERFACES
@@ -18,6 +21,11 @@ interface ChatMessage {
   text: string;
   timestamp: Date;
   isTyping?: boolean;
+  isActionPreview?: boolean;
+  pendingActions?: AiPendingAction[];
+  actionToken?: string;
+  actionExecuted?: boolean;
+  isExecutingAction?: boolean;
 }
 
 interface SuggestionChip {
@@ -142,13 +150,26 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   private shouldScroll = false;
   userId = 0;
   private clubId: number | null = null;
+  private teamId: number | null = null;
   private chatSub: Subscription | null = null;
+
+  // Voice recognition
+  isRecording = false;
+  isVoiceSupported = false;
+  private voiceTranscriptSub: Subscription | null = null;
+  private voiceListeningSub: Subscription | null = null;
+  private voiceErrorSub: Subscription | null = null;
+  private voiceTranscriptBase = '';
 
   /* ── Historial ── */
   showHistory = true;
   conversations: ConversationSummary[] = [];
   currentConversationId: string | null = null;
   private readonly STORAGE_KEY = 'sphaira_coach_ai_history';
+
+  /* ── Delete confirmation ── */
+  showDeleteConfirm = false;
+  conversationToDelete: ConversationSummary | null = null;
 
   suggestions: SuggestionChip[] = [
     { icon: 'bi-clipboard-check', text: 'Entrenamientos esta semana', query: '¿Qué entrenamientos tengo esta semana?' },
@@ -160,13 +181,16 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   ];
 
   showSuggestions = true;
+  profileId = 0;
 
   constructor(
     private loginService: LoginService,
     private router: Router,
     private location: Location,
     private translate: TranslateService,
-    private aiChatService: AiChatService
+    private aiChatService: AiChatService,
+    private voiceRecognition: VoiceRecognitionService,
+    private injuryService: InjuryService
   ) {}
 
   ngOnInit(): void {
@@ -174,6 +198,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       this.usuarioActual = user;
       if (user) {
         this.userId = user.userId;
+        this.profileId = user.profileType?.profileId ?? 0;
         this.loadCredits();
       }
     });
@@ -181,8 +206,107 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     const storedClubId = sessionStorage.getItem('clubId');
     if (storedClubId) this.clubId = parseInt(storedClubId, 10);
 
+    // Try to extract teamId from the current URL or sessionStorage
+    const urlParts = this.router.url.split('/');
+    const teamRoutes = ['calendario', 'jugadores', 'menu-entrenador', 'menu-club', 'tareas',
+      'estadisticas_equipo', 'estadisticas_jugadores', 'informacion_equipo',
+      'entrenadores', 'tactical-board', 'lesiones', 'debrief', 'menu-fisio'];
+    for (const route of teamRoutes) {
+      const idx = urlParts.indexOf(route);
+      if (idx >= 0 && idx + 1 < urlParts.length) {
+        const tid = parseInt(urlParts[idx + 1], 10);
+        if (!isNaN(tid) && tid > 0) {
+          this.teamId = tid;
+          break;
+        }
+      }
+    }
+    if (!this.teamId) {
+      const storedTeamId = sessionStorage.getItem('teamId');
+      if (storedTeamId) this.teamId = parseInt(storedTeamId, 10);
+    }
+
+    // Check if arriving from lesiones screen (set by FAB or direct nav)
+    const sourceContext = sessionStorage.getItem('ai_source_context');
+    const sourceTeamId = sessionStorage.getItem('ai_source_teamId');
+    const fromLesiones = sourceContext === 'lesiones';
+    if (fromLesiones && sourceTeamId && !this.teamId) {
+      this.teamId = parseInt(sourceTeamId, 10);
+    }
+    sessionStorage.removeItem('ai_source_context');
+    sessionStorage.removeItem('ai_source_teamId');
+
     this.loadConversationsList();
-    this.startNewConversation();
+
+    const isFisio = this.profileId === 6;
+    const isFromLesiones = fromLesiones && (this.profileId === 1 || this.profileId === 2);
+
+    const welcomeMsg = isFisio
+      ? '¡Hola! 👋🩺 Soy tu asistente clínico de IA. Estoy especializado en fisioterapia deportiva y tengo acceso al historial de lesiones de tu equipo.\n\nPuedo ayudarte con protocolos de rehabilitación, tiempos de recuperación, criterios RTP y prevención de lesiones.\n\nEscríbeme o elige una sugerencia.'
+      : '¡Hola, míster! 👋⚽ Soy tu asistente deportivo de IA. Puedo ayudarte con entrenamientos, partidos, estadísticas, táctica y todo lo relacionado con tu equipo.\n\nEscríbeme o elige una sugerencia. ¡Vamos!';
+
+    this.addAssistantMessage(welcomeMsg);
+
+    if (isFisio) {
+      this.setSuggestionsForFisio([]);
+      if (this.teamId) {
+        this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
+          next: (injuries) => this.setSuggestionsForFisio(injuries),
+          error: () => this.setSuggestionsForFisio([])
+        });
+      }
+    } else if (isFromLesiones && this.teamId) {
+      // Club/Coach arriving from lesiones section — show injury-relevant suggestions
+      this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
+        next: (injuries) => this.setSuggestionsForLesiones(injuries),
+        error: () => {} // Fall back to default suggestions already set
+      });
+    }
+
+    this.initVoiceRecognition();
+  }
+
+  private initVoiceRecognition(): void {
+    this.isVoiceSupported = this.voiceRecognition.isSupported();
+
+    // Subscribe to transcript
+    this.voiceTranscriptSub = this.voiceRecognition.transcript$.subscribe(result => {
+      if (result.isFinal) {
+        // Final transcript: commit to input
+        this.voiceTranscriptBase = this.voiceTranscriptBase.trim()
+          ? this.voiceTranscriptBase + ' ' + result.transcript 
+          : result.transcript;
+        this.userInput = this.voiceTranscriptBase;
+      } else {
+        // Interim transcript: show in real-time but don't commit yet
+        const interim = result.transcript;
+        this.userInput = this.voiceTranscriptBase
+          ? this.voiceTranscriptBase + ' ' + interim 
+          : interim;
+      }
+    });
+
+    this.voiceListeningSub = this.voiceRecognition.isListening$.subscribe(isListening => {
+      this.isRecording = isListening;
+      if (!isListening) {
+        // When recording stops, commit whatever we have
+        this.voiceTranscriptBase = this.userInput;
+      }
+    });
+
+    this.voiceErrorSub = this.voiceRecognition.error$.subscribe(error => {
+      console.warn('Voice recognition error:', error);
+    });
+  }
+
+  toggleVoiceRecognition(): void {
+    if (this.isRecording) {
+      this.voiceRecognition.stop();
+    } else {
+      // Save current text as base
+      this.voiceTranscriptBase = this.userInput.trim();
+      this.voiceRecognition.start('es-ES');
+    }
   }
 
   private loadCredits(): void {
@@ -235,9 +359,30 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     this.showHistory = false;
     this.showSuggestions = true;
 
-    this.addAssistantMessage(
-      '¡Hola, míster! 👋⚽ Soy tu asistente deportivo de IA. Puedo ayudarte con entrenamientos, partidos, estadísticas, táctica y todo lo relacionado con tu equipo.\n\nEscríbeme o elige una sugerencia. ¡Vamos!'
-    );
+    const isFisio = this.profileId === 6;
+    const welcomeMsg = isFisio
+      ? '¡Hola! 👋🩺 Soy tu asistente clínico de IA. Estoy especializado en fisioterapia deportiva y tengo acceso al historial de lesiones de tu equipo.\n\nPuedo ayudarte con protocolos de rehabilitación, tiempos de recuperación, criterios RTP y prevención de lesiones.\n\nEscríbeme o elige una sugerencia.'
+      : '¡Hola, míster! 👋⚽ Soy tu asistente deportivo de IA. Puedo ayudarte con entrenamientos, partidos, estadísticas, táctica y todo lo relacionado con tu equipo.\n\nEscríbeme o elige una sugerencia. ¡Vamos!';
+
+    this.addAssistantMessage(welcomeMsg);
+
+    if (this.teamId) {
+      if (isFisio) {
+        this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
+          next: (injuries) => this.setSuggestionsForFisio(injuries),
+          error: () => this.setSuggestionsForFisio([])
+        });
+      } else if (this.profileId === 1 || this.profileId === 2) {
+        this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
+          next: (injuries) => {
+            if (injuries.filter(i => i.status === 'activa' || i.status === 'recuperacion').length > 0) {
+              this.setSuggestionsForLesiones(injuries);
+            }
+          },
+          error: () => {}
+        });
+      }
+    }
   }
 
   loadConversation(conv: ConversationSummary): void {
@@ -253,7 +398,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
             timestamp: new Date(m.timestamp),
           }));
           this.msgIdCounter = Math.max(...this.messages.map(m => m.id), 0);
-          this.showHistory = false;
+          // Keep history panel open so user can switch between conversations
           this.showSuggestions = false;
           this.shouldScroll = true;
         }
@@ -265,17 +410,33 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
 
   deleteConversation(conv: ConversationSummary, event: Event): void {
     event.stopPropagation();
+    this.conversationToDelete = conv;
+    this.showDeleteConfirm = true;
+  }
+
+  confirmDeleteConversation(): void {
+    if (!this.conversationToDelete) return;
     try {
       const raw = localStorage.getItem(this.STORAGE_KEY);
       if (raw) {
         let all = JSON.parse(raw) as any[];
-        all = all.filter(c => c.id !== conv.id);
+        all = all.filter(c => c.id !== this.conversationToDelete!.id);
         localStorage.setItem(this.STORAGE_KEY, JSON.stringify(all));
         this.loadConversationsList();
+        if (this.currentConversationId === this.conversationToDelete!.id) {
+          this.currentConversationId = null;
+        }
       }
     } catch {
       // ignore
     }
+    this.showDeleteConfirm = false;
+    this.conversationToDelete = null;
+  }
+
+  cancelDeleteConversation(): void {
+    this.showDeleteConfirm = false;
+    this.conversationToDelete = null;
   }
 
   private saveConversation(): void {
@@ -345,8 +506,14 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     this.messages.push(typingMsg);
     this.shouldScroll = true;
 
+    // Build conversation history (last 10 messages)
+    const history = this.messages
+      .filter(m => !m.isTyping && m.text && m.text.trim().length > 0)
+      .slice(-10)
+      .map(m => ({ role: m.role, text: m.isActionPreview ? '[Acción propuesta: ' + m.text + ']' : m.text }));
+
     this.chatSub?.unsubscribe();
-    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, 'dashboard', text, 'users')
+    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, 'dashboard', text, 'users', this.teamId, history)
       .pipe(
         finalize(() => {
           this.isResponding = false;
@@ -357,7 +524,20 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
           const idx = this.messages.indexOf(typingMsg);
           if (idx > -1) this.messages.splice(idx, 1);
 
-          if (resp.success && resp.response) {
+          if (resp.success && resp.hasActions && resp.pendingActions && resp.pendingActions.length > 0) {
+            this.messages.push({
+              id: ++this.msgIdCounter,
+              role: 'assistant',
+              text: resp.response || '',
+              timestamp: new Date(),
+              isActionPreview: true,
+              pendingActions: resp.pendingActions,
+              actionToken: resp.actionToken,
+            });
+            if (resp.creditsRemaining !== undefined) {
+              this.creditsAvailable = resp.creditsRemaining;
+            }
+          } else if (resp.success && resp.response) {
             this.addAssistantMessage(resp.response);
             if (resp.creditsRemaining !== undefined) {
               this.creditsAvailable = resp.creditsRemaining;
@@ -366,14 +546,75 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
             this.addAssistantMessage(resp.message || 'Ha ocurrido un error. Intentalo de nuevo.');
           }
           this.updateSuggestionsContext(text);
+          this.shouldScroll = true;
           this.saveConversation();
+          this.focusChatInput();
         },
         error: () => {
           const idx = this.messages.indexOf(typingMsg);
           if (idx > -1) this.messages.splice(idx, 1);
           this.addAssistantMessage('Error de conexion. Intentalo de nuevo.');
+          this.focusChatInput();
         }
       });
+  }
+
+  confirmActions(msg: ChatMessage): void {
+    if (!msg.actionToken || msg.actionExecuted) return;
+    msg.isExecutingAction = true;
+    this.aiChatService.executeActions(msg.actionToken).subscribe({
+      next: (result) => {
+        msg.actionExecuted = true;
+        msg.isExecutingAction = false;
+        if (result.success) {
+          const parts: string[] = [];
+          if ((result.created ?? 0) > 0) parts.push(result.created + ' creado(s)');
+          if ((result.edited ?? 0) > 0) parts.push(result.edited + ' editado(s)');
+          if ((result.deleted ?? 0) > 0) parts.push(result.deleted + ' eliminado(s)');
+          let summaryMsg = '✅ ' + (parts.length > 0 ? parts.join(', ') : 'Acciones ejecutadas correctamente.') + ' Recargando datos...';
+          if (result.errors && result.errors.length > 0) {
+            summaryMsg += '\n⚠️ Advertencias: ' + result.errors.join(', ');
+          }
+          if (result.details && result.details.length > 0) {
+            summaryMsg += '\n📋 ' + result.details.join(', ');
+          }
+          this.addAssistantMessage(summaryMsg);
+          setTimeout(() => window.dispatchEvent(new CustomEvent('ai-data-changed')), 500);
+          setTimeout(() => window.dispatchEvent(new CustomEvent('ai-data-changed')), 1500);
+        } else {
+          let errMsg = '❌ ' + (result.message || 'Error al ejecutar las acciones.');
+          if (result.errors && result.errors.length > 0) {
+            errMsg += '\n' + result.errors.join(', ');
+          }
+          this.addAssistantMessage(errMsg);
+        }
+        this.shouldScroll = true;
+        this.saveConversation();
+        this.focusChatInput();
+      },
+      error: () => {
+        msg.isExecutingAction = false;
+        this.addAssistantMessage('❌ Error de conexión al ejecutar las acciones.');
+        this.saveConversation();
+        this.focusChatInput();
+      }
+    });
+  }
+
+  cancelActions(msg: ChatMessage): void {
+    msg.actionExecuted = true;
+    this.addAssistantMessage('Acción cancelada.');
+    this.shouldScroll = true;
+    this.saveConversation();
+    this.focusChatInput();
+  }
+
+  private focusChatInput(): void {
+    setTimeout(() => {
+      if (this.inputField?.nativeElement) {
+        this.inputField.nativeElement.focus();
+      }
+    }, 100);
   }
 
   cancelPendingRequest(): void {
@@ -397,6 +638,9 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
 
   ngOnDestroy(): void {
     this.chatSub?.unsubscribe();
+    this.voiceTranscriptSub?.unsubscribe();
+    this.voiceListeningSub?.unsubscribe();
+    this.voiceErrorSub?.unsubscribe();
   }
 
   sendSuggestion(chip: SuggestionChip): void {
@@ -408,6 +652,29 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.sendMessage();
+      this.resetInputSize();
+    }
+  }
+
+  autoResizeInput(event?: Event): void {
+    const el = event ? event.target as HTMLTextAreaElement : this.inputField?.nativeElement;
+    if (!el) return;
+    el.style.height = 'auto';
+    const scrollH = el.scrollHeight;
+    if (scrollH > 120) {
+      el.style.height = '120px';
+      el.style.overflowY = 'auto';
+    } else {
+      el.style.height = scrollH + 'px';
+      el.style.overflowY = 'hidden';
+    }
+  }
+
+  private resetInputSize(): void {
+    const el = this.inputField?.nativeElement;
+    if (el) {
+      el.style.height = 'auto';
+      el.style.overflowY = 'hidden';
     }
   }
 
@@ -425,10 +692,128 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   }
 
   /* ═══════════════════════════════════════
+     SUGERENCIAS LESIONES — CLUB / COACH
+  ═══════════════════════════════════════ */
+
+  private setSuggestionsForLesiones(injuries: Injury[]): void {
+    const active = injuries.filter(i => i.status === 'activa');
+    const recovery = injuries.filter(i => i.status === 'recuperacion');
+    const chips: SuggestionChip[] = [];
+
+    // Bajas activas que afectan disponibilidad (máx. 2)
+    for (const inj of active.slice(0, 2)) {
+      const name = inj.playerName || 'el jugador';
+      const zone = inj.zoneLabel || inj.zone || 'lesión';
+      chips.push({
+        icon: 'bi-person-x',
+        text: `Baja: ${name}`,
+        query: `${name} está lesionado con ${zone}. ¿Cuándo puede estar disponible? Alta prevista: ${inj.dateReturn || 'sin determinar'}.`
+      });
+    }
+
+    // Jugadores en recuperación próximos a volver (máx. 2)
+    for (const inj of recovery.slice(0, 2)) {
+      const name = inj.playerName || 'el jugador';
+      chips.push({
+        icon: 'bi-person-check',
+        text: `Vuelta: ${name}`,
+        query: `¿${name} puede llegar al próximo partido? Está en fase RTP ${inj.rtpPhase}, alta prevista ${inj.dateReturn || 'sin fecha'}.`
+      });
+    }
+
+    // Resumen de disponibilidad
+    if (injuries.length > 0) {
+      chips.push({
+        icon: 'bi-heart-pulse',
+        text: 'Disponibilidad del equipo',
+        query: `¿Cuántos jugadores tengo disponibles? Hay ${active.length} lesiones activas y ${recovery.length} en recuperación.`
+      });
+    }
+
+    // Sugerencias de gestión de alineación con bajas
+    chips.push({
+      icon: 'bi-people',
+      text: 'Alineación sin lesionados',
+      query: active.length > 0
+        ? `Sugiere una alineación para el próximo partido teniendo en cuenta que ${active.map(i => i.playerName).filter(Boolean).join(', ')} están lesionados.`
+        : '¿Cuál sería la mejor alineación para el próximo partido?'
+    });
+
+    this.suggestions = chips.slice(0, 6);
+  }
+
+  /* ═══════════════════════════════════════
+     SUGERENCIAS FISIOTERAPEUTA (DINÁMICAS)
+  ═══════════════════════════════════════ */
+
+  private setSuggestionsForFisio(injuries: Injury[]): void {
+    const active = injuries.filter(i => i.status === 'activa');
+    const recovery = injuries.filter(i => i.status === 'recuperacion');
+    const chips: SuggestionChip[] = [];
+
+    // 1. Sugerencias basadas en lesiones activas (máx. 2)
+    for (const inj of active.slice(0, 2)) {
+      const name = inj.playerName || 'el jugador';
+      const zone = inj.zoneLabel || inj.zone || 'lesión';
+      chips.push({
+        icon: 'bi-bandaid',
+        text: `${name} — ${zone}`,
+        query: `¿Cuál es el protocolo de tratamiento para ${name} con ${zone}? Estado actual: ${inj.status}, fase RTP: ${inj.rtpPhase}.`
+      });
+    }
+
+    // 2. Sugerencias de jugadores en recuperación/RTP (máx. 2)
+    for (const inj of recovery.slice(0, 2)) {
+      const name = inj.playerName || 'el jugador';
+      const zone = inj.zoneLabel || inj.zone || 'lesión';
+      chips.push({
+        icon: 'bi-arrow-up-circle',
+        text: `Alta prevista: ${name}`,
+        query: `¿Cuándo puede volver a entrenar ${name}? Tiene una ${zone} en fase RTP ${inj.rtpPhase}. Alta prevista: ${inj.dateReturn || 'sin fecha'}.`
+      });
+    }
+
+    // 3. Resumen general siempre disponible
+    if (injuries.length > 0) {
+      chips.push({
+        icon: 'bi-heart-pulse',
+        text: 'Resumen de lesiones',
+        query: `Dame un resumen del estado actual de lesiones del equipo. Hay ${active.length} lesiones activas y ${recovery.length} jugadores en recuperación.`
+      });
+    }
+
+    // 4. Completar con sugerencias genéricas hasta 6
+    const generic: SuggestionChip[] = [
+      { icon: 'bi-shield-check', text: 'Prevención de lesiones', query: '¿Qué ejercicios de prevención recomiendas para reducir el riesgo de lesiones musculares?' },
+      { icon: 'bi-calendar-check', text: 'Carga de entrenamiento', query: '¿Cómo debería gestionar la carga de entrenamiento para los jugadores en recuperación?' },
+      { icon: 'bi-clipboard2-pulse', text: 'Protocolo RTP', query: 'Explícame las fases del protocolo Return to Play (RTP) para una lesión muscular' },
+      { icon: 'bi-people', text: 'Estado de la plantilla', query: '¿Cuántos jugadores están disponibles y cuántos tienen restricciones médicas?' },
+    ];
+
+    for (const g of generic) {
+      if (chips.length >= 6) break;
+      chips.push(g);
+    }
+
+    this.suggestions = chips.slice(0, 6);
+  }
+
+  /* ═══════════════════════════════════════
      SUGERENCIAS CONTEXTUALES
   ═══════════════════════════════════════ */
 
   private updateSuggestionsContext(userText: string): void {
+    // Para el fisio, recargar sugerencias clínicas dinámicas
+    if (this.profileId === 6) {
+      if (this.teamId) {
+        this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
+          next: (injuries) => this.setSuggestionsForFisio(injuries),
+          error: () => this.setSuggestionsForFisio([])
+        });
+      }
+      return;
+    }
+
     if (/entrenamiento|ejercicio|sesi[óo]n/i.test(userText)) {
       this.suggestions = [
         { icon: 'bi-lightbulb', text: 'Sugerir ejercicios', query: 'Sugiere ejercicios para la sesión de hoy' },

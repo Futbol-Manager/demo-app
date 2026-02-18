@@ -631,12 +631,39 @@
   display: flex;
   align-items: center;
   justify-content: center;
+.upload-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-top: 0.6rem;
+  padding: 0.35rem 0.9rem;
   font-size: 0.85rem;
   cursor: pointer;
   border: 3px solid #fff;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
   transition: transform 0.2s;
   &:hover { transform: scale(1.1); }
+  transition: background 0.2s, opacity 0.2s;
+
+  &:hover:not(.uploading-label) {
+    background: rgba(var(--color-primary-rgb), 0.25);
+  }
+
+  &.uploading-label {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+}
+
+.spin-icon {
+  display: inline-block;
+  animation: spin-anim 0.75s linear infinite;
+}
+
+@keyframes spin-anim {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
 
 .pm-hero-name {
@@ -1175,6 +1202,46 @@
   color: #fff !important;
 }
 
+/* ========================= */
+/* CREDITS INDICATOR         */
+/* ========================= */
+.credits-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background 0.2s, transform 0.15s;
+  white-space: nowrap;
+
+  i { font-size: 13px; color: #ffd34e; }
+
+  .credits-value {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+
+  .credits-label {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.85;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateY(-1px);
+  }
+}
+
 .btn-sphaira-blue {
   background: #002c40 !important;
   border-color: #002c40 !important;
@@ -1531,5 +1598,115 @@
   .download-qr-frame img {
     width: 170px;
     height: 170px;
+.suggestion-item {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-help-alert {
+  position: absolute;
+  top: -5px;
+  right: -6px;
+  background: #e53e3e;
+  color: #fff;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  pointer-events: none;
+  box-shadow: 0 0 0 2px #fff;
+  animation: pulse-badge 1.5s ease infinite;
+}
+
+@keyframes pulse-badge {
+  0%, 100% { box-shadow: 0 0 0 2px #fff, 0 0 0 0 rgba(229, 62, 62, 0.5); }
+  50% { box-shadow: 0 0 0 2px #fff, 0 0 0 5px rgba(229, 62, 62, 0); }
+}
+
+.btn-sphaira-blue-outline {
+  background: transparent !important;
+  border-color: #002c40 !important;
+  color: #002c40 !important;
+  border-radius: 0 8px 8px 0;
+  transition: all 0.2s ease;
+  &:hover {
+    background: #002c40 !important;
+    color: #fff !important;
+  }
+}
+
+.btn-sphaira-green {
+  background: #31b270 !important;
+  border-color: #31b270 !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  &:hover:not(:disabled) {
+    background: #289960 !important;
+    box-shadow: 0 3px 10px rgba(49, 178, 112, 0.35);
+  }
+  &:disabled {
+    opacity: 0.6;
+  }
+}
+
+.btn-sphaira-red {
+  background: #e53e3e !important;
+  border-color: #e53e3e !important;
+  color: #fff !important;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  &:hover {
+    background: #c53030 !important;
+    box-shadow: 0 3px 10px rgba(229, 62, 62, 0.3);
+  }
+}
+
+/* ──────────────────────────────────────────
+   COACH TRIAL BANNER
+────────────────────────────────────────── */
+.coach-trial-banner {
+  background: linear-gradient(90deg, #002c40, #004c6d);
+  color: #fff;
+  padding: 8px 16px;
+  font-size: 0.83rem;
+  font-weight: 500;
+}
+
+.trial-banner-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  span {
+    flex: 1;
+  }
+}
+
+.btn-trial-subscribe {
+  background: #31b270;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 5px 14px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+
+  &:hover {
+    background: #278960;
   }
 }

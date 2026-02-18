@@ -831,6 +831,17 @@ export class TrainingService {
 
   // AQUI TERMINAN LOS FORMULARIOS
 
+  saveTaskToLibrary(taskId: number, userId: number): Observable<Response> {
+    const token = localStorage.getItem('token');
+    if (!token) return EMPTY;
+    const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+    return this.http.post<Response>(
+      environment.apiUrl + `training/task/${taskId}/to-library/${userId}`,
+      {},
+      { headers }
+    );
+  }
+
   getListGolesAvanzado(postPartidoId: number): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');

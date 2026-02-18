@@ -36,8 +36,8 @@ export class LesionesComponent implements OnInit, OnChanges, OnDestroy {
   profileId: number = 0;
   private subs: Subscription[] = [];
 
-  // Base / Pro toggle
-  isPro: boolean = false;
+  // Base / Pro toggle — persisted in localStorage
+  isPro: boolean = localStorage.getItem('lesiones_isPro') === 'true';
 
   // Body map
   bodyView: 'front' | 'back' = 'front';
@@ -54,7 +54,7 @@ export class LesionesComponent implements OnInit, OnChanges, OnDestroy {
   showForm: boolean = false;
   editingInjury: Injury | null = null;
   formData: Partial<Injury> = {};
-  injuryTypes: string[] = INJURY_TYPES_BASE;
+  injuryTypes: string[] = localStorage.getItem('lesiones_isPro') === 'true' ? INJURY_TYPES_PRO : INJURY_TYPES_BASE;
   severities = ['leve', 'moderada', 'grave'];
 
   // RTP
@@ -136,6 +136,7 @@ export class LesionesComponent implements OnInit, OnChanges, OnDestroy {
   // ─── Base / Pro Toggle ──────────────────────────────────────────
   toggleMode(): void {
     this.isPro = !this.isPro;
+    localStorage.setItem('lesiones_isPro', String(this.isPro));
     this.updateZones();
     this.injuryTypes = this.isPro ? INJURY_TYPES_PRO : INJURY_TYPES_BASE;
   }

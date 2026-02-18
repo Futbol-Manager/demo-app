@@ -126,16 +126,14 @@ export class WizardGratuitoComponent implements OnInit {
 
   initiateStripeConnect(): void {
     this.connectLoading = true;
-    this.subscriptionService.initiateStripeConnect(this.clubId).subscribe(res => {
+    const email = this.registerForm.get('contactEmail')?.value || '';
+    this.subscriptionService.initiateStripeConnect(this.clubId, email).subscribe(res => {
       if (res.onboardingUrl) {
-        // In production, redirect to Stripe Connect onboarding
-        // For mock, simulate success
         window.open(res.onboardingUrl, '_blank');
-        // After redirect back, status would be checked
         setTimeout(() => {
-          this.connectStatus = 'active';
+          this.checkConnectStatus();
           this.connectLoading = false;
-        }, 2000);
+        }, 3000);
       } else {
         this.connectLoading = false;
       }
@@ -201,15 +199,14 @@ export class WizardGratuitoComponent implements OnInit {
   confirmSetup(): void {
     this.submitting = true;
 
-    // Create the subscription with free plan
-    this.subscriptionService.createCheckoutSession(
-      this.clubId,
-      'gratuito',
-      'annual'
-    ).subscribe(res => {
-      // Free plan - no payment needed, just activate
-      this.submitting = false;
-      this.router.navigate(['/dashboard/suscripcion-club']);
+    this.subscriptionService.activateGratuitoPlan(this.clubId).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.router.navigate(['/dashboard/suscripcion-club']);
+      },
+      error: () => {
+        this.submitting = false;
+      }
     });
   }
 }

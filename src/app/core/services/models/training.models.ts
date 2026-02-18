@@ -7,9 +7,11 @@ export class Training {
     objectiveSession: string;
     warmUp: string;
     addressSession: string;
+    startTime: string;
+    endTime: string;
     visible: number;
     infoVisible: number;
-    tasks: Task[] = []; // Agrega la propiedad tareas de tipo array de Tarea
+    tasks: Task[] = [];
 
     constructor(object: any) {
         this.trainingSessionId = object.trainingSessionId || 0;
@@ -19,6 +21,8 @@ export class Training {
         this.infoVisible = object.infoVisible || 0;
         this.warmUp = object.warmUp || '';
         this.addressSession = object.addressSession || '';
+        this.startTime = object.startTime || '';
+        this.endTime = object.endTime || '';
     }
 
 }
@@ -38,6 +42,8 @@ export class Task {
     imagenBoard: string;
     estrategia: string;
     intencion: string;
+    extraFields?: string;
+    tasksShopId?: number;
 
     constructor() {
       this.taskId = 0;
@@ -51,9 +57,10 @@ export class Task {
       this.work = '';
       this.video = '';
       this.imagenBoard = '';
-      this.collapsed = false; // Inicialmente, la tarea está contraída
+      this.collapsed = false;
       this.estrategia = '';
       this.intencion = '';
+      this.extraFields = '';
     }
   }
 

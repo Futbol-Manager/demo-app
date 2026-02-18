@@ -77,6 +77,13 @@ export class RegisterComponent implements OnInit {
   mensajePassword: string = '';
   passwordValida: boolean | null = null;
 
+  staffRoleOptions = [
+    { value: 2, label: 'Entrenador' },
+    { value: 6, label: 'Fisioterapeuta' },
+    { value: 7, label: 'Nutricionista' },
+  ];
+  selectedStaffRole: number = 2;
+
   inputPassword: string = '';
   readonly realPassword = 'RegistroClubesST2025'; // la contraseña que quieras validar
   readonly realPasswordFede = 'LFP2000'; // la contraseña que quieras validar
@@ -459,7 +466,9 @@ export class RegisterComponent implements OnInit {
     }
 
     /* ===== MODELOS ===== */
-    const profileType = new ProfileTypeModel(this.selectedOption, 'Entrenador');
+    const profileNames: Record<number, string> = { 2: 'Entrenador', 6: 'Fisioterapeuta', 7: 'Nutricionista' };
+    const finalProfileId = this.selectedStaffRole || 2;
+    const profileType = new ProfileTypeModel(finalProfileId, profileNames[finalProfileId] || 'Entrenador');
 
     const validationUser = new ValidationUserModel(1, 'Pdte de validar mail');
 

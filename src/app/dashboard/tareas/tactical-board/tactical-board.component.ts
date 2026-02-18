@@ -25,6 +25,13 @@ interface Keyframe {
   drawings: string;
 }
 
+interface UndoState {
+  drawJSON: string;
+  markers: Array<{ id: string; team: 'ball' | 'color'; color: string; number: string; x: number; y: number }>;
+  ballPlaced: boolean;
+  nextPlayerNumber: number;
+}
+
 type ToolType = 'select' | 'pencil' | 'line' | 'arrow' | 'rect' | 'ellipse' | 'text' | 'eraser';
 
 @Component({
@@ -68,10 +75,29 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   exportProgress = 0;
 
   /* undo/redo */
-  private undoStack: string[] = [];
-  private redoStack: string[] = [];
+  private undoStack: UndoState[] = [];
+  private redoStack: UndoState[] = [];
   canUndo = false;
   canRedo = false;
+
+  /* save/load state */
+  hasUnsavedChanges = false;
+  private initialStateHash = '';
+  showExitConfirm = false;
+  private readonly STORAGE_KEY_BOARD = 'tactical_board_autosave';
+  private readonly STORAGE_KEY_META = 'tactical_board_metadata';
+  showSaveSuccess = false;
+  lastSavedTime: string | null = null;
+  private isLoadingState = false;
+
+  /* eraser drag */
+  private eraserActive = false;
+
+  /* rubber-band multi-select */
+  private isSelecting = false;
+  private selectionStartPos = { x: 0, y: 0 };
+  private selectionRect: Konva.Rect | null = null;
+  private selectedMarkers: PlayerMarker[] = [];
 
   /* ── Konva objects ── */
   private stage!: Konva.Stage;
@@ -114,7 +140,10 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   ngAfterViewInit(): void {
-    setTimeout(() => this.initStage(), 0);
+    setTimeout(() => {
+      this.initStage();
+      this.loadAutosave();
+    }, 0);
   }
 
   ngOnDestroy(): void {
@@ -155,6 +184,8 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
 
   /* ────────────────── INIT ────────────────── */
   private initStage(): void {
+    this.isLoadingState = true;
+
     const container = this.boardContainer.nativeElement;
     const w = container.clientWidth || 900;
     const h = container.clientHeight || 580;
@@ -194,6 +225,9 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     this.bindDrawEvents();
     this.captureKeyframe(true);
     this.saveUndoState();
+    this.initialStateHash = this.getCurrentStateHash();
+
+    this.isLoadingState = false;
   }
 
   private fitStage(): void {
@@ -281,8 +315,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     this.showPlayerColorPicker = false;
     if (tool !== 'select') { this.deselectAll(); }
     this.stage.container().style.cursor =
-      tool === 'select' ? 'default' :
-      tool === 'eraser' ? 'not-allowed' : 'crosshair';
+      tool === 'select' ? 'default' : 'crosshair';
   }
 
   setColor(c: string): void {
@@ -319,20 +352,31 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     this.showPlayerColorPicker = false;
 
     if (this.activeTool === 'select') {
-      if (e.target === this.stage || e.target.getLayer() === this.pitchLayer) {
+      const clickedEmpty = e.target === this.stage ||
+        (e.target.getLayer && e.target.getLayer() === this.pitchLayer);
+      if (clickedEmpty) {
         this.deselectAll();
+        /* start rubber-band selection */
+        this.isSelecting = true;
+        this.selectionStartPos = { x: pos.x, y: pos.y };
+        this.selectionRect = new Konva.Rect({
+          x: pos.x, y: pos.y, width: 0, height: 0,
+          stroke: '#00c853', strokeWidth: 1.5 / this.scaleRatio,
+          dash: [6, 3], fill: 'rgba(0, 200, 83, 0.08)', listening: false
+        });
+        this.previewLayer.add(this.selectionRect);
       }
       return;
     }
 
     if (this.activeTool === 'eraser') {
+      this.eraserActive = true;
       const target = e.target;
-      if (target && target.getLayer() === this.drawLayer &&
-          target !== this.drawLayer && !(target instanceof Konva.Transformer)) {
+      if (target && target.getLayer && target.getLayer() === this.drawLayer &&
+          !(target instanceof Konva.Transformer)) {
         target.destroy();
         this.transformer.nodes([]);
         this.drawLayer.batchDraw();
-        this.saveUndoState();
       }
       return;
     }
@@ -386,9 +430,33 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   private onPointerMove(_e: any): void {
-    if (!this.isDrawing) return;
     const pos = this.getPointerPos();
     if (!pos) return;
+
+    /* rubber-band selection drag */
+    if (this.isSelecting && this.selectionRect) {
+      const x = Math.min(this.selectionStartPos.x, pos.x);
+      const y = Math.min(this.selectionStartPos.y, pos.y);
+      const w = Math.abs(pos.x - this.selectionStartPos.x);
+      const h = Math.abs(pos.y - this.selectionStartPos.y);
+      this.selectionRect.setAttrs({ x, y, width: w, height: h });
+      this.previewLayer.batchDraw();
+      return;
+    }
+
+    /* eraser drag-to-erase */
+    if (this.eraserActive) {
+      const stagePos = this.stage.getPointerPosition();
+      if (!stagePos) return;
+      const hit = this.drawLayer.getIntersection(stagePos);
+      if (hit && !(hit instanceof Konva.Transformer)) {
+        hit.destroy();
+        this.drawLayer.batchDraw();
+      }
+      return;
+    }
+
+    if (!this.isDrawing) return;
 
     if (this.activeTool === 'pencil' && this.currentLine) {
       const pts = this.currentLine.points();
@@ -418,6 +486,55 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   private onPointerUp(): void {
+    /* finalize rubber-band selection */
+    if (this.isSelecting) {
+      this.isSelecting = false;
+      if (this.selectionRect) {
+        const selBox = this.selectionRect.getClientRect();
+        this.selectionRect.destroy();
+        this.selectionRect = null;
+        this.previewLayer.batchDraw();
+
+        if (selBox.width > 4 || selBox.height > 4) {
+          const selectedShapes: Konva.Node[] = [];
+          this.drawLayer.getChildren().forEach((child: Konva.Node) => {
+            if (child instanceof Konva.Transformer) return;
+            const box = child.getClientRect();
+            if (this.rectsIntersect(selBox, box)) {
+              selectedShapes.push(child);
+            }
+          });
+
+          this.selectedMarkers = [];
+          this.markers.forEach(m => {
+            const mBox = m.group.getClientRect();
+            if (this.rectsIntersect(selBox, mBox)) {
+              this.selectedMarkers.push(m);
+              if (m.circle) {
+                m.circle.stroke('#00c853');
+                m.circle.strokeWidth(3.5);
+              }
+            }
+          });
+
+          if (selectedShapes.length > 0) {
+            this.transformer.nodes(selectedShapes);
+            this.selectedNode = selectedShapes[0];
+            this.drawLayer.batchDraw();
+          }
+          this.markerLayer.batchDraw();
+        }
+      }
+      return;
+    }
+
+    /* finalize eraser */
+    if (this.eraserActive) {
+      this.eraserActive = false;
+      this.saveUndoState();
+      return;
+    }
+
     if (!this.isDrawing) return;
     this.isDrawing = false;
 
@@ -557,6 +674,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   deselectAll(): void {
     this.selectedNode = null;
     this.selectedMarker = null;
+    this.selectedMarkers = [];
     if (this.transformer) {
       this.transformer.nodes([]);
       this.drawLayer?.batchDraw();
@@ -572,20 +690,40 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   deleteSelected(): void {
-    /* delete selected drawn shape */
-    if (this.selectedNode) {
-      this.selectedNode.destroy();
-      this.selectedNode = null;
+    let changed = false;
+
+    /* delete all shapes in transformer (multi-select or single) */
+    const nodes = this.transformer.nodes();
+    if (nodes.length > 0) {
+      nodes.forEach((n: Konva.Node) => n.destroy());
       this.transformer.nodes([]);
+      this.selectedNode = null;
       this.drawLayer.batchDraw();
-      this.saveUndoState();
-      return;
+      changed = true;
     }
-    /* delete selected marker */
+
+    /* delete multi-selected markers */
+    if (this.selectedMarkers.length > 0) {
+      this.selectedMarkers.forEach(m => {
+        if (m.team === 'ball') this.ballPlaced = false;
+        m.group.destroy();
+        this.markers = this.markers.filter(mk => mk.id !== m.id);
+      });
+      this.selectedMarkers = [];
+      this.markerLayer.batchDraw();
+      changed = true;
+    }
+
+    /* delete single selected marker (click) */
     if (this.selectedMarker) {
       this.removeMarker(this.selectedMarker);
       this.selectedMarker = null;
-      return;
+      changed = true;
+    }
+
+    if (changed) {
+      this.saveUndoState();
+      this.onMarkerChanged();
     }
   }
 
@@ -598,16 +736,30 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     this.transformer.nodes([]);
     this.drawLayer.batchDraw();
     this.saveUndoState();
+    // saveUndoState already calls checkForChanges and autosave
   }
 
   /* ────────────────── UNDO / REDO ────────────────── */
+  private captureFullState(): UndoState {
+    return {
+      drawJSON: this.getDrawLayerJSON(),
+      markers: this.markers.map(m => ({
+        id: m.id, team: m.team, color: m.color,
+        number: m.number, x: m.group.x(), y: m.group.y()
+      })),
+      ballPlaced: this.ballPlaced,
+      nextPlayerNumber: this.nextPlayerNumber
+    };
+  }
+
   private saveUndoState(): void {
-    const state = this.getDrawLayerJSON();
-    this.undoStack.push(state);
+    this.undoStack.push(this.captureFullState());
     this.redoStack = [];
     if (this.undoStack.length > 50) this.undoStack.shift();
     this.canUndo = this.undoStack.length > 1;
     this.canRedo = false;
+    this.checkForChanges();
+    this.autosave();
   }
 
   undo(): void {
@@ -615,18 +767,27 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     const current = this.undoStack.pop()!;
     this.redoStack.push(current);
     const prev = this.undoStack[this.undoStack.length - 1];
-    this.restoreDrawLayerFromJSON(prev);
+    this.restoreFullState(prev);
     this.canUndo = this.undoStack.length > 1;
     this.canRedo = true;
+    this.checkForChanges();
+    this.autosave();
   }
 
   redo(): void {
     if (this.redoStack.length === 0) return;
     const state = this.redoStack.pop()!;
     this.undoStack.push(state);
-    this.restoreDrawLayerFromJSON(state);
+    this.restoreFullState(state);
     this.canUndo = this.undoStack.length > 1;
     this.canRedo = this.redoStack.length > 0;
+    this.checkForChanges();
+    this.autosave();
+  }
+
+  private restoreFullState(state: UndoState): void {
+    this.restoreDrawLayerFromJSON(state.drawJSON);
+    this.restoreMarkersFromState(state);
   }
 
   private restoreDrawLayerFromJSON(json: string): void {
@@ -651,6 +812,48 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
       }
       this.drawLayer.batchDraw();
     } catch { /* silently ignore */ }
+  }
+
+  private restoreMarkersFromState(state: UndoState): void {
+    const prevLoading = this.isLoadingState;
+    this.isLoadingState = true;
+
+    /* remove all current markers */
+    this.markers.forEach(m => m.group.destroy());
+    this.markers = [];
+    this.selectedMarker = null;
+    this.selectedMarkers = [];
+    this.ballPlaced = false;
+
+    /* recreate markers from state */
+    state.markers.forEach(m => {
+      if (m.team === 'ball') {
+        this.addPlayer('ball');
+        const marker = this.markers.find(mk => mk.team === 'ball');
+        if (marker) {
+          marker.id = m.id;
+          marker.group.name(m.id);
+          marker.group.position({ x: m.x, y: m.y });
+        }
+      } else {
+        this.playerColor = m.color;
+        this.addPlayer('color');
+        const marker = this.markers[this.markers.length - 1];
+        if (marker) {
+          marker.id = m.id;
+          marker.group.name(m.id);
+          marker.group.position({ x: m.x, y: m.y });
+          marker.number = m.number;
+          marker.label.text(m.number);
+          marker.label.offsetX(m.number.length > 1 ? 7.5 : 4);
+        }
+      }
+    });
+    this.ballPlaced = state.ballPlaced;
+    this.nextPlayerNumber = state.nextPlayerNumber;
+    this.markerLayer.batchDraw();
+
+    this.isLoadingState = prevLoading;
   }
 
   /* ────────────────── PLAYER MARKERS ────────────────── */
@@ -702,6 +905,7 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
         e.evt.preventDefault();
         this.removeMarker(marker);
       });
+      group.on('dragend', () => this.onMarkerChanged());
     } else {
       const radius = 18;
       const fill = this.playerColor;
@@ -744,7 +948,11 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
         e.evt.preventDefault();
         this.removeMarker(marker);
       });
+      group.on('dragend', () => this.onMarkerChanged());
     }
+    
+    // Register the change after adding the marker
+    this.onMarkerChanged();
   }
 
   private selectMarker(m: PlayerMarker): void {
@@ -792,12 +1000,16 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
       if (finished) return;
       finished = true;
       const val = input.value.trim() || m.number;
+      const changed = val !== m.number;
       m.number = val;
       m.label.text(val);
       m.label.offsetX(val.length > 1 ? 7.5 : 4);
       m.group.visible(true);
       input.remove();
       this.markerLayer.batchDraw();
+      if (changed) {
+        this.onMarkerChanged();
+      }
     };
 
     input.addEventListener('blur', finish);
@@ -814,6 +1026,19 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
     if (m.team === 'ball') this.ballPlaced = false;
     if (this.selectedMarker?.id === m.id) this.selectedMarker = null;
     this.markerLayer.batchDraw();
+    this.onMarkerChanged();
+  }
+
+  private rectsIntersect(r1: { x: number; y: number; width: number; height: number },
+                         r2: { x: number; y: number; width: number; height: number }): boolean {
+    return !(r2.x > r1.x + r1.width || r2.x + r2.width < r1.x ||
+             r2.y > r1.y + r1.height || r2.y + r2.height < r1.y);
+  }
+
+  private onMarkerChanged(): void {
+    if (this.isLoadingState) return;
+    this.checkForChanges();
+    this.autosave();
   }
 
   private getContrastColor(hex: string): string {
@@ -851,6 +1076,8 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
       });
       this.activeKeyframe = this.keyframes.length - 1;
     }
+    this.checkForChanges();
+    this.autosave();
   }
 
   goToKeyframe(index: number): void {
@@ -868,6 +1095,8 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
       this.activeKeyframe = this.keyframes.length - 1;
     }
     this.restoreKeyframe(this.activeKeyframe);
+    this.checkForChanges();
+    this.autosave();
   }
 
   private saveCurrentKeyframeState(): void {
@@ -1066,10 +1295,201 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   setPitchStyle(style: 'full' | 'half' | 'blank'): void {
     this.pitchStyle = style;
     this.drawPitch();
+    this.checkForChanges();
+    this.autosave();
+  }
+
+  /* ────────────────── SAVE/LOAD STATE ────────────────── */
+  private getCurrentStateHash(): string {
+    try {
+      const state = {
+        draw: this.getDrawLayerJSON(),
+        markers: this.markers.map(m => ({
+          id: m.id,
+          team: m.team,
+          color: m.color,
+          number: m.number,
+          x: m.group.x(),
+          y: m.group.y()
+        })),
+        keyframes: this.keyframes
+      };
+      return JSON.stringify(state);
+    } catch {
+      return '';
+    }
+  }
+
+  private checkForChanges(): void {
+    if (this.isLoadingState) return;
+    const currentHash = this.getCurrentStateHash();
+    this.hasUnsavedChanges = currentHash !== this.initialStateHash;
+  }
+
+  private autosave(): void {
+    if (this.isLoadingState || !this.hasUnsavedChanges) return;
+    this.writeToStorage();
+  }
+
+  private writeToStorage(): void {
+    try {
+      const state = {
+        draw: this.getDrawLayerJSON(),
+        markers: this.markers.map(m => ({
+          id: m.id,
+          team: m.team,
+          color: m.color,
+          number: m.number,
+          x: m.group.x(),
+          y: m.group.y()
+        })),
+        keyframes: this.keyframes,
+        pitchStyle: this.pitchStyle,
+        ballPlaced: this.ballPlaced,
+        nextPlayerNumber: this.nextPlayerNumber
+      };
+      localStorage.setItem(this.STORAGE_KEY_BOARD, JSON.stringify(state));
+      localStorage.setItem(this.STORAGE_KEY_META, JSON.stringify({
+        teamId: this.teamId,
+        savedAt: new Date().toISOString()
+      }));
+    } catch (e) {
+      console.warn('Failed to save to localStorage:', e);
+    }
+  }
+
+  private loadAutosave(): void {
+    try {
+      const raw = localStorage.getItem(this.STORAGE_KEY_BOARD);
+      const meta = localStorage.getItem(this.STORAGE_KEY_META);
+      if (!raw || !meta) return;
+
+      const metaData = JSON.parse(meta);
+      if (metaData.teamId !== this.teamId) return;
+
+      const savedDate = new Date(metaData.savedAt);
+      const hoursSince = (Date.now() - savedDate.getTime()) / (1000 * 60 * 60);
+      if (hoursSince > 48) {
+        this.clearAutosave();
+        return;
+      }
+
+      const state = JSON.parse(raw);
+
+      // Set loading flag to prevent triggering change detection
+      this.isLoadingState = true;
+
+      // Restore pitch style
+      if (state.pitchStyle) {
+        this.pitchStyle = state.pitchStyle;
+        this.drawPitch();
+      }
+
+      // Restore markers (preserve original IDs for keyframe compatibility)
+      if (state.markers && Array.isArray(state.markers)) {
+        state.markers.forEach((m: any) => {
+          if (m.team === 'ball') {
+            this.addPlayer('ball');
+            const marker = this.markers.find(mk => mk.team === 'ball');
+            if (marker) {
+              marker.id = m.id;
+              marker.group.name(m.id);
+              marker.group.position({ x: m.x, y: m.y });
+            }
+          } else {
+            this.playerColor = m.color;
+            this.addPlayer('color');
+            const marker = this.markers[this.markers.length - 1];
+            if (marker) {
+              marker.id = m.id;
+              marker.group.name(m.id);
+              marker.group.position({ x: m.x, y: m.y });
+              marker.number = m.number;
+              marker.label.text(m.number);
+              marker.label.offsetX(m.number.length > 1 ? 7.5 : 4);
+            }
+          }
+        });
+        this.ballPlaced = state.ballPlaced || false;
+        this.nextPlayerNumber = state.nextPlayerNumber || 1;
+      }
+
+      // Restore drawings
+      if (state.draw) {
+        this.restoreDrawLayer(state.draw);
+      }
+
+      // Restore keyframes
+      if (state.keyframes && Array.isArray(state.keyframes)) {
+        this.keyframes = state.keyframes;
+        this.activeKeyframe = Math.min(this.activeKeyframe, this.keyframes.length - 1);
+      }
+
+      // Force redraw all layers to render restored positions
+      this.markerLayer.batchDraw();
+      this.drawLayer.batchDraw();
+      this.stage.batchDraw();
+
+      // Done loading, update initial state and clear flag
+      this.isLoadingState = false;
+      this.initialStateHash = this.getCurrentStateHash();
+      this.hasUnsavedChanges = false;
+    } catch (error) {
+      console.warn('Failed to load autosave:', error);
+      this.isLoadingState = false;
+      this.clearAutosave();
+    }
+  }
+
+  private clearAutosave(): void {
+    localStorage.removeItem(this.STORAGE_KEY_BOARD);
+    localStorage.removeItem(this.STORAGE_KEY_META);
+  }
+
+  saveBoard(): void {
+    this.writeToStorage();
+    this.initialStateHash = this.getCurrentStateHash();
+    this.hasUnsavedChanges = false;
+    
+    // Show success message
+    this.showSaveSuccess = true;
+    this.lastSavedTime = new Date().toLocaleTimeString('es-ES', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+    
+    // Hide message after 3 seconds
+    setTimeout(() => {
+      this.showSaveSuccess = false;
+    }, 3000);
   }
 
   /* ────────────────── NAVIGATION ────────────────── */
   goBack(): void {
+    if (this.hasUnsavedChanges) {
+      this.showExitConfirm = true;
+    } else {
+      this.performExit();
+    }
+  }
+
+  onExitConfirmed(): void {
+    this.showExitConfirm = false;
+    this.clearAutosave();
+    this.performExit();
+  }
+
+  onExitCancelled(): void {
+    this.showExitConfirm = false;
+  }
+
+  onSaveAndExit(): void {
+    this.showExitConfirm = false;
+    this.saveBoard();
+    this.performExit();
+  }
+
+  private performExit(): void {
     this.router.navigate(['/dashboard/tareas', this.teamId]);
   }
 }

@@ -171,17 +171,15 @@ export class ClubSubscriptionService {
 
   // ─── Subscription State ─────────────────────────────────────
   getCurrentSubscription(clubId: number): Observable<ClubSubscription | null> {
-    // TODO: Backend necesita endpoint GET /rest/club/{clubId}/subscription
-    // Por ahora, intentamos obtener el estado desde el endpoint existente de Stripe
-    return this.http.get<any>(`${this.apiUrl}stripe/getestadosuscripcion/${clubId}/1`).pipe(
+    return this.http.get<any>(`${this.apiUrl}club-plan/${clubId}/current`).pipe(
       map(res => {
         if (res?.data) {
           this.currentSubscription$.next(res.data);
           return res.data;
         }
-        return this.currentSubscription$.value;
+        return null;
       }),
-      catchError(() => this.currentSubscription$.asObservable())
+      catchError(() => of(null))
     );
   }
 
@@ -253,29 +251,33 @@ export class ClubSubscriptionService {
     }).pipe(delay(300));
   }
 
-  // TODO: Backend necesita endpoint POST /rest/club/register-entity
-  submitClubRegistration(entity: ClubEntityRegistration): Observable<{ clubId: number }> {
-    return this.http.post<any>(`${this.apiUrl}club/register-entity`, entity).pipe(
-      map(res => res?.data || { clubId: 0 }),
-      catchError(() => of({ clubId: Math.floor(Math.random() * 10000) }))
+  submitClubRegistration(clubId: number, entity: ClubEntityRegistration): Observable<{ clubId: number }> {
+    return this.http.post<any>(`${this.apiUrl}club-plan/club/entity`, { ...entity, clubId }).pipe(
+      map(res => ({ clubId: res?.data?.clubId || clubId })),
+      catchError(() => of({ clubId }))
     );
   }
 
-  // TODO: Backend necesita endpoint POST /rest/club/contract
-  submitContract(contract: ContractData): Observable<{ success: boolean; contractId: string; pdfUrl: string }> {
-    return this.http.post<any>(`${this.apiUrl}club/contract`, contract).pipe(
-      map(res => res?.data || { success: false, contractId: '', pdfUrl: '' }),
-      catchError(() => of({
+  submitContract(clubId: number, contract: ContractData): Observable<{ success: boolean; contractId: string; pdfUrl: string }> {
+    return this.http.post<any>(`${this.apiUrl}club-plan/club/contract`, {
+      clubId,
+      signatureName: contract.signatureUrl || contract.responsibleName,
+      playerCount: contract.playerCount,
+      totalAmountCents: Math.round((contract.totalWithTax || contract.totalBase || 0) * 100),
+      contractType: 'plan_club',
+    }).pipe(
+      map(res => ({
         success: true,
-        contractId: 'CTR-' + Date.now(),
-        pdfUrl: '/assets/contract-preview.pdf'
-      }))
+        contractId: res?.data?.id ? String(res.data.id) : 'CTR-' + Date.now(),
+        pdfUrl: ''
+      })),
+      catchError(() => of({ success: true, contractId: 'CTR-' + Date.now(), pdfUrl: '' }))
     );
   }
 
   // ─── Plan 3: Gratuito ──────────────────────────────────────
   getDefaultCommissionConfig(): Observable<CommissionConfig> {
-    const config: CommissionConfig = {
+    const fallback: CommissionConfig = {
       sphairaCutPercent: 3,
       sphairaCutFixed: 0.25,
       sphairaPercent: 3,
@@ -285,7 +287,7 @@ export class ClubSubscriptionService {
       totalParentPercent: 5,
       totalParentFixed: 0.25,
     };
-    return of(config).pipe(delay(300));
+    return of(fallback).pipe(delay(100));
   }
 
   recalculateCommission(exampleAmount: number, clubPercent: number): Observable<CommissionConfig> {
@@ -300,30 +302,40 @@ export class ClubSubscriptionService {
     );
   }
 
-  // TODO: Backend necesita endpoint POST /rest/stripe/connect/onboard/{clubId}
-  initiateStripeConnect(clubId: number): Observable<StripeConnectOnboarding> {
-    return this.http.get<any>(`${this.apiUrl}stripe/create-account/club/${clubId}`).pipe(
-      map(res => res?.data || { clubId, stripeAccountId: '', chargesEnabled: false, detailsSubmitted: false }),
-      catchError(() => of({
+  initiateStripeConnect(clubId: number, email?: string): Observable<StripeConnectOnboarding> {
+    return this.http.post<any>(`${this.apiUrl}club-plan/gratuito/connect/onboard/${clubId}`, { email }).pipe(
+      map(res => ({
         clubId,
-        stripeAccountId: 'acct_mock_' + clubId,
+        stripeAccountId: res?.data?.accountId || '',
         chargesEnabled: false,
         detailsSubmitted: false,
-        onboardingUrl: 'https://connect.stripe.com/setup/s/mock-onboarding',
+        onboardingUrl: res?.data?.onboardingUrl || '',
+      })),
+      catchError(() => of({
+        clubId,
+        stripeAccountId: '',
+        chargesEnabled: false,
+        detailsSubmitted: false,
+        onboardingUrl: '',
       }))
     );
   }
 
-  // TODO: Backend necesita endpoint GET /rest/stripe/connect/status/{clubId}
   getStripeConnectStatus(clubId: number): Observable<StripeConnectOnboarding> {
-    return this.http.get<any>(`${this.apiUrl}stripe/connect/status/${clubId}`).pipe(
-      map(res => res?.data || { clubId, chargesEnabled: false, detailsSubmitted: false }),
+    return this.http.get<any>(`${this.apiUrl}club-plan/gratuito/connect-status/${clubId}`).pipe(
+      map(res => ({
+        clubId,
+        stripeAccountId: res?.data?.accountId || '',
+        chargesEnabled: res?.data?.chargesEnabled || false,
+        detailsSubmitted: res?.data?.detailsSubmitted || false,
+        status: res?.data?.connected ? 'active' as const : 'not_started' as const,
+      })),
       catchError(() => of({
         clubId,
-        stripeAccountId: 'acct_mock_' + clubId,
+        stripeAccountId: '',
         status: 'not_started' as const,
-        chargesEnabled: true,
-        detailsSubmitted: true,
+        chargesEnabled: false,
+        detailsSubmitted: false,
       }))
     );
   }
@@ -360,16 +372,44 @@ export class ClubSubscriptionService {
     return !match.requiredPlans.includes(currentPlan);
   }
 
-  // ─── Stripe Checkout (for Plan 1 & Plan 2) ────────────────
+  // ─── Activate Plans ────────────────────────────────────────
+  activateFamiliaPlan(clubId: number, period: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}club-plan/familia/activate`, { clubId, period }).pipe(
+      map(res => res?.data),
+      catchError(err => of(null))
+    );
+  }
+
+  activateGratuitoPlan(clubId: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}club-plan/gratuito/activate`, { clubId }).pipe(
+      map(res => res?.data),
+      catchError(err => of(null))
+    );
+  }
+
+  // ─── Stripe Checkout (for Plan Club) ────────────────
   createCheckoutSession(
     clubId: number,
     planType?: ClubPlanType,
     period?: string,
     playerCount?: number,
   ): Observable<{ url: string; checkoutUrl: string; sessionId: string }> {
-    return this.http.post<any>(`${this.apiUrl}stripe/subscriptions/create-plan`, {
-      clubId, planType, period, playerCount
-    }).pipe(
+    const endpoint = planType === 'club'
+      ? `${this.apiUrl}club-plan/club/checkout`
+      : `${this.apiUrl}club-plan/familia/subscribe`;
+
+    const body: any = {
+      clubId,
+      playerCount: playerCount || 0,
+      successUrl: window.location.origin + '/dashboard/suscripcion-club',
+      cancelUrl: window.location.origin + '/dashboard/suscripcion-club',
+    };
+
+    if (planType === 'familia') {
+      body.parentEmail = '';
+    }
+
+    return this.http.post<any>(endpoint, body).pipe(
       map(res => {
         const data = res?.data;
         return {
@@ -378,10 +418,21 @@ export class ClubSubscriptionService {
           sessionId: data?.sessionId || '',
         };
       }),
-      catchError(() => {
-        const checkoutUrl = 'https://checkout.stripe.com/pay/mock-session';
-        return of({ url: checkoutUrl, checkoutUrl, sessionId: 'cs_mock_' + Date.now() });
-      })
+      catchError(() => of({ url: '', checkoutUrl: '', sessionId: '' }))
+    );
+  }
+
+  verifyClubCheckout(sessionId: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}club-plan/club/verify-checkout`, { sessionId }).pipe(
+      map(res => res?.data),
+      catchError(() => of(null))
+    );
+  }
+
+  getFeatures(clubId: number): Observable<{ planType: string; features: string[]; blockedRoutes: string[] }> {
+    return this.http.get<any>(`${this.apiUrl}club-plan/${clubId}/features`).pipe(
+      map(res => res?.data || { planType: 'none', features: [], blockedRoutes: [] }),
+      catchError(() => of({ planType: 'none', features: [], blockedRoutes: [] }))
     );
   }
 

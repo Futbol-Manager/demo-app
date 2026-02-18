@@ -36,6 +36,7 @@ import { PuntuacionEquipsComponent } from './puntuacion-equips/puntuacion-equips
 import { GraficaCuotasComponent } from './grafica-cuotas/grafica-cuotas.component';
 import { GoleadoresComponent } from './goleadores/goleadores.component';
 import { MenuEntrenadorComponent } from './menu-entrenador/menu-entrenador.component';
+import { MenuFisioComponent } from './menu-fisio/menu-fisio.component';
 import { InicioDeportesComponent } from './inicio-deportes/inicio-deportes.component';
 import { PartidosEntrevistasComponent } from './partidos-entrevistas/partidos-entrevistas.component';
 import { MenuClubComponent } from './menu-club/menu-club.component';
@@ -74,15 +75,25 @@ import { DebriefReportComponent } from './debrief/debrief-report/debrief-report.
 import { DebriefHistoryComponent } from './debrief/debrief-history/debrief-history.component';
 import { ClubOwnerGuard } from '../club-owner.guard';
 import { AdminGuard } from '../admin.guard';
+import { CoachSubscriptionGuard } from '../coach-subscription.guard';
+import { ClubPlanGuard } from '../guards/club-plan.guard';
+import { SuscripcionCoachComponent } from './suscripcion-coach/suscripcion-coach.component';
+import { CoachSuscripcionSuccessComponent } from './coach-suscripcion-success/coach-suscripcion-success.component';
+import { AdminCoachesComponent } from './admin-coaches/admin-coaches.component';
 import { AdminRegistrosComponent } from './admin-registros/admin-registros.component';
 import { AdminActivityComponent } from './admin-activity/admin-activity.component';
 import { AdminAiUsageComponent } from './admin-ai-usage/admin-ai-usage.component';
 import { AiCreditsSuccessComponent } from './ai-credits-success/ai-credits-success.component';
+import { ScoutingClubComponent } from './scouting-club/scouting-club.component';
+import { ScoutingPlayerProfileComponent } from './scouting-player-profile/scouting-player-profile.component';
+import { ClubVideoLibraryComponent } from './club-video-library/club-video-library.component';
+import { VideoPlanSuccessComponent } from './video-plan-success/video-plan-success.component';
 
 const routes: Routes = [
   {
     path: '',
     component: DashboardComponent,
+    canActivateChild: [CoachSubscriptionGuard],
     children: [
       { path: 'inicio-deportes', component: InicioDeportesComponent },
       { path: 'inicio', component: InicioComponent },
@@ -90,7 +101,8 @@ const routes: Routes = [
       { path: 'inicio-federacion', component: InicioFederacionComponent },
       { path: 'info-jugadores-federacion', component: InfoJugadoresFederacionComponent },
       { path: 'calendario/:teamId/:playerId', component: CalendarioComponent },
-      { path: 'menu-entrenador/:teamId/:playerId', component: MenuEntrenadorComponent },
+      { path: 'menu-entrenador/:teamId/:playerId', component: MenuEntrenadorComponent, canActivate: [ClubPlanGuard] },
+      { path: 'menu-fisio/:teamId/:playerId', component: MenuFisioComponent },
       { path: 'menu-club/:teamId', component: MenuClubComponent },
       { path: 'opcionesjugador/:teamId/:playerId', component: OpcionesjugadorComponent },
       { path: 'partidos-entrevistas/:teamId/:playerId', component: PartidosEntrevistasComponent },
@@ -99,9 +111,9 @@ const routes: Routes = [
       { path: 'clasificacion-resultados/:teamId', component: ClasificacionResultadosComponent },
       { path: 'jugadores/:teamId', component: PlayerComponent },
       { path: 'documentos-club/:clubId', component: DocumentosClubComponent, canActivate: [ClubOwnerGuard] },
-      { path: 'estadisticas_equipo/:teamId', component: EstadisticasEquipoComponent },
+      { path: 'estadisticas_equipo/:teamId', component: EstadisticasEquipoComponent, canActivate: [ClubPlanGuard] },
       { path: 'informacion_equipo/:teamId', component: InformacionEquipoComponent },
-      { path: 'estadisticas_jugadores/:teamId', component: EstadisticasJugadoresComponent },
+      { path: 'estadisticas_jugadores/:teamId', component: EstadisticasJugadoresComponent, canActivate: [ClubPlanGuard] },
       { path: 'entrenadores/:teamId', component: TrainerComponent },
       { path: 'contabilidad/:clubId', component: ContabilidadComponent, canActivate: [ClubOwnerGuard] },
       { path: 'historial-pagos-club/:clubId', component: HistorialPagosClubComponent, canActivate: [ClubOwnerGuard] },
@@ -112,7 +124,7 @@ const routes: Routes = [
       { path: 'cuadro-de-mandos/:clubId', component: CuadroComponent, canActivate: [ClubOwnerGuard] },
       { path: 'patrocinadores/:clubId', component: PatrocinadoresComponent },
       { path: 'patrocinadores-usuario/:userId', component: PatrocinadoresComponent },
-      { path: 'tareas/:teamId', component: TareasComponent },
+      { path: 'tareas/:teamId', component: TareasComponent, canActivate: [ClubPlanGuard] },
       { path: 'tareas-favoritas/:teamId', component: FavoritasComponent },
       { path: 'tareas-historial/:teamId', component: HistorialComponent },
       { path: 'tareas-mis/:teamId', component: MisTareasComponent },
@@ -132,7 +144,7 @@ const routes: Routes = [
       { path: 'perfil-entrenador/:teamId/:playerId', component: PerfilEntrenadorComponent },
       { path: 'asistente-ia', component: AsistenteIaComponent },
       { path: 'asistente-ia-coach', component: AsistenteIaCoachComponent },
-      { path: 'lesiones/:teamId', component: LesionesEquipoComponent },
+      { path: 'lesiones/:teamId', component: LesionesEquipoComponent, canActivate: [ClubPlanGuard] },
       { path: 'informacion_equipo/asistencia/:teamId', component: AsistenciaComponent },
       { path: 'suscripcion/:userId', component: SuscripcionComponent },
       { path: 'scouting-player/:playerId', component: ScoutingPlayerComponent },
@@ -151,7 +163,12 @@ const routes: Routes = [
       { path: 'admin-registros', component: AdminRegistrosComponent, canActivate: [AdminGuard] },
       { path: 'admin-activity', component: AdminActivityComponent, canActivate: [AdminGuard] },
       { path: 'admin-ai-usage', component: AdminAiUsageComponent, canActivate: [AdminGuard] },
+      { path: 'admin-coaches', component: AdminCoachesComponent, canActivate: [AdminGuard] },
       { path: 'ai-credits-success', component: AiCreditsSuccessComponent },
+      { path: 'video-plan-success', component: VideoPlanSuccessComponent },
+      { path: 'club-videos/:clubId', component: ClubVideoLibraryComponent, canActivate: [ClubOwnerGuard, ClubPlanGuard] },
+      { path: 'scouting-club/:clubId', component: ScoutingClubComponent, canActivate: [ClubOwnerGuard, ClubPlanGuard] },
+      { path: 'scouting-player-profile/:playerId', component: ScoutingPlayerProfileComponent },
       { path: 'suscripcion-club', component: SuscripcionClubComponent },
       { path: 'suscripcion-club/wizard/familia', component: WizardFamiliaComponent },
       { path: 'suscripcion-club/wizard/club', component: WizardClubComponent },
@@ -160,6 +177,8 @@ const routes: Routes = [
       { path: 'debrief/match/:teamId/:matchId', component: DebriefMatchComponent },
       { path: 'debrief/report/:debriefId/:type', component: DebriefReportComponent },
       { path: 'debrief/history/:teamId', component: DebriefHistoryComponent },
+      { path: 'suscripcion-coach', component: SuscripcionCoachComponent },
+      { path: 'coach-suscripcion-success', component: CoachSuscripcionSuccessComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
   }

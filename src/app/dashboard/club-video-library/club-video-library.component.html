@@ -1,0 +1,137 @@
+<div class="library-page">
+
+  <!-- HEADER -->
+  <div class="library-header">
+    <div class="header-left">
+      <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
+      <div>
+        <h2><i class="bi bi-collection-play-fill"></i> Biblioteca de Vídeos</h2>
+        <p class="header-sub">Gestiona los vídeos de scouting de tu club</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-manage-plan" (click)="showPlansModal = true">
+        <i class="bi bi-hdd-network"></i>
+        {{ hasPlan ? 'Gestionar plan' : 'Contratar almacenamiento' }}
+      </button>
+      <button class="btn-upload" *ngIf="hasPlan" (click)="showUploadModal = true">
+        <i class="bi bi-cloud-upload"></i> Subir vídeo
+      </button>
+    </div>
+  </div>
+
+  <!-- PLAN BAR -->
+  <div class="plan-bar" *ngIf="!planLoading && hasPlan && plan">
+    <div class="plan-bar-info">
+      <span class="plan-badge">{{ planLabel() }}</span>
+      <span class="storage-text">
+        {{ plan.storageUsedHuman }} / {{ plan.storageLimitHuman }}
+      </span>
+    </div>
+    <div class="plan-bar-track">
+      <div class="plan-bar-fill"
+        [style.width.%]="usedPercent()"
+        [style.background]="barColor()"></div>
+    </div>
+    <span class="plan-pct">{{ usedPercent() | number:'1.0-1' }}%</span>
+    <span class="total-videos">{{ videos.length }} vídeos</span>
+  </div>
+
+  <!-- Sin plan -->
+  <div *ngIf="!planLoading && !hasPlan" class="no-plan-banner">
+    <i class="bi bi-camera-video-off"></i>
+    <div>
+      <strong>Sin almacenamiento de vídeo</strong>
+      <p>Contrata un plan para subir y gestionar vídeos de tus jugadores.</p>
+    </div>
+    <button class="btn-cta" (click)="showPlansModal = true">Ver planes desde €24,99/mes</button>
+  </div>
+
+  <!-- BUSCADOR -->
+  <div class="search-bar" *ngIf="hasPlan">
+    <i class="bi bi-search"></i>
+    <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="applyFilter()"
+      placeholder="Buscar por título, jugador o etiqueta…" class="search-input">
+  </div>
+
+  <!-- LOADING -->
+  <div *ngIf="loading" class="loading-state"><div class="spinner"></div></div>
+
+  <!-- EMPTY -->
+  <div *ngIf="!loading && hasPlan && filteredVideos.length === 0" class="empty-state">
+    <i class="bi bi-film"></i>
+    <p>{{ searchQuery ? 'No se encontraron vídeos para esa búsqueda.' : 'Aún no has subido ningún vídeo. ¡Empieza subiendo el primero!' }}</p>
+    <button class="btn-upload-lg" *ngIf="!searchQuery" (click)="showUploadModal = true">
+      <i class="bi bi-cloud-upload"></i> Subir primer vídeo
+    </button>
+  </div>
+
+  <!-- GRID DE VÍDEOS -->
+  <div class="video-grid" *ngIf="!loading && filteredVideos.length > 0">
+    <div class="video-card" *ngFor="let video of filteredVideos">
+      <div class="video-thumb" (click)="playVideo(video)">
+        <i class="bi bi-play-circle-fill play-icon"></i>
+        <div class="video-overlay">
+          <span class="video-size">{{ video.fileSizeHuman }}</span>
+        </div>
+      </div>
+      <div class="video-info">
+        <p class="video-title">{{ video.title }}</p>
+        <p class="video-player" *ngIf="video.playerName">
+          <i class="bi bi-person"></i> {{ video.playerName }}
+        </p>
+        <p class="video-tags" *ngIf="video.tags">
+          <i class="bi bi-tags"></i>
+          <span *ngFor="let tag of video.tags.split(',')">{{ tag.trim() }}</span>
+        </p>
+        <p class="video-date"><i class="bi bi-calendar3"></i> {{ video.uploadedAt | date:'dd/MM/yyyy' }}</p>
+      </div>
+      <div class="video-actions">
+        <button class="btn-play" (click)="playVideo(video)" [disabled]="videoUrlLoading">
+          <i class="bi bi-play-fill"></i> Ver
+        </button>
+        <button class="btn-del" (click)="confirmDelete(video.id)">
+          <i class="bi bi-trash3"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPRODUCTOR MODAL -->
+  <div class="player-backdrop" *ngIf="activeVideo" (click)="closePlayer()">
+    <div class="player-modal" (click)="$event.stopPropagation()">
+      <div class="player-header">
+        <span>{{ activeVideo.title }}</span>
+        <button class="btn-close-player" (click)="closePlayer()"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <video *ngIf="activeVideoUrl" class="video-player" controls autoplay>
+        <source [src]="activeVideoUrl" [type]="activeVideo.contentType || 'video/mp4'">
+        Tu navegador no soporta vídeo HTML5.
+      </video>
+    </div>
+  </div>
+
+  <!-- CONFIRM DELETE MODAL -->
+  <div class="modal-backdrop" *ngIf="deleteConfirmId" (click)="deleteConfirmId = null">
+    <div class="confirm-modal" (click)="$event.stopPropagation()">
+      <i class="bi bi-exclamation-triangle-fill warn-icon"></i>
+      <h4>¿Eliminar este vídeo?</h4>
+      <p>Esta acción no se puede deshacer. El espacio se liberará en tu plan.</p>
+      <div class="confirm-btns">
+        <button class="btn-outline" (click)="deleteConfirmId = null">Cancelar</button>
+        <button class="btn-danger" (click)="deleteVideo()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODALES -->
+  <app-video-plans-modal *ngIf="showPlansModal" [clubId]="clubId"
+    (closed)="showPlansModal = false; loadPlan()">
+  </app-video-plans-modal>
+
+  <app-video-upload-modal *ngIf="showUploadModal" [clubId]="clubId"
+    (closed)="showUploadModal = false"
+    (uploaded)="onUploadSuccess($event)">
+  </app-video-upload-modal>
+
+</div>

@@ -1,0 +1,110 @@
+<app-publicidad></app-publicidad>
+<!-- BOTÓN VOLVER -->
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>Volver</span>
+  </button>
+</div>
+<div class="container dashboard-container">
+  <!-- ROW 1 -->
+  <div class="row g-3">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(1)">
+      <div class="dashboard-card bg-injuries">
+        <div class="card-overlay">
+          <i class="bi bi-heart-pulse card-action-icon"></i>
+          <h5>Lesiones</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(2)">
+      <div class="dashboard-card bg-players">
+        <div class="card-overlay">
+          <i class="bi bi-people card-action-icon"></i>
+          <h5>Jugadores</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(3)">
+      <div class="dashboard-card bg-calendar">
+        <div class="card-overlay">
+          <i class="bi bi-calendar-event card-action-icon"></i>
+          <h5>Calendario</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(4)">
+      <div class="dashboard-card bg-player-stats">
+        <div class="card-overlay">
+          <i class="bi bi-graph-up card-action-icon"></i>
+          <h5>Estadísticas jugadores</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2 -->
+  <div class="row g-3 mt-3">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(5)">
+      <div class="dashboard-card bg-team-stats">
+        <div class="card-overlay">
+          <i class="bi bi-bar-chart-line card-action-icon"></i>
+          <h5>Estadísticas equipo</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(6)">
+      <div class="dashboard-card bg-ranking">
+        <div class="card-overlay">
+          <i class="bi bi-trophy card-action-icon"></i>
+          <h5>Clasificación y resultado</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(7)">
+      <div class="dashboard-card bg-coach-documents">
+        <div class="card-overlay">
+          <i class="bi bi-file-earmark-pdf card-action-icon"></i>
+          <h5>Documentos</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(8)">
+      <div class="dashboard-card bg-notifications">
+        <div class="card-overlay">
+          <i class="bi bi-bell card-action-icon"></i>
+          <h5>Notificaciones</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3 -->
+  <div class="row g-3 mt-3">
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(9)">
+      <div class="dashboard-card bg-coach-profile">
+        <div class="card-overlay">
+          <i class="bi bi-person-badge card-action-icon"></i>
+          <h5>Mi perfil</h5>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(10)">
+      <div class="dashboard-card bg-ai-assistant">
+        <div class="card-overlay">
+          <i class="bi bi-robot card-action-icon"></i>
+          <h5>Asistente de IA</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="menu-bottom-spacer"></div>
+</div>

@@ -34,6 +34,7 @@ export class ShopComponent implements OnInit {
   estrategia = "-";
   intencion = '-';
   textSearch = '';
+  loadingTasks = false;
   imageBaseUrlTask: string = environment.images + 'task-board/';
 
   constructor(
@@ -43,6 +44,7 @@ export class ShopComponent implements OnInit {
 
   ngOnInit(): void {
     this.downloadTask = false;
+    this.filterSearch();
   }
 
   seleccionarTarea(tarea: any) {
@@ -78,11 +80,8 @@ export class ShopComponent implements OnInit {
   }
 
   filterSearch() {
-    /*console.log('estrategia: ' + this.estrategia)
-    console.log('intencion: ' + this.intencion)
-    console.log('textSearch: ' + this.textSearch)*/
-
-    let body = {
+    this.loadingTasks = true;
+    const body = {
       title: this.textSearch,
       estrategia: this.estrategia,
       intencion: this.intencion
@@ -90,10 +89,12 @@ export class ShopComponent implements OnInit {
 
     this.trainingService.filterTaskShopByOptions(body).subscribe(
       (response: any) => {
-        this.taskList = response.data;
+        this.taskList = response.data || [];
+        this.loadingTasks = false;
       },
       (error) => {
         console.error('Error al cargar el listado de tareas', error);
+        this.loadingTasks = false;
       }
     );
   }

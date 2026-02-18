@@ -93,7 +93,13 @@ export class InicioComponent implements OnInit {
         this.profileId = user!.profileType.profileId;
         this.userId = this.obtenerUserIdPorPerfil(user!);
 
-        //controlamos que sea espinosa el admin
+        // Override admin: si el profileId real no es club ni coach,
+        // forzar como coach para que vea el dashboard correctamente
+        if (user!.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
+          this.profileId = 2;
+          this.userId = 9;
+        }
+
         localStorage.setItem('userId', this.userId == 9 ? this.userId.toString() : '0');
 
         this.resolverCargaInicialPorPerfil();
@@ -108,10 +114,12 @@ export class InicioComponent implements OnInit {
   private resolverCargaInicialPorPerfil(): void {
     switch (true) {
       case this.profileId === 2:
+      case this.profileId === 6:
+      case this.profileId === 7:
         this.cargarListadoEquipos();
         break;
 
-      case this.profileId > 2:
+      case this.profileId > 2 && this.profileId < 6:
         // Una sola llamada que carga los hijos y comprueba datos incompletos
         this.cargarJugadores();
         break;
@@ -178,11 +186,18 @@ export class InicioComponent implements OnInit {
       case 11:
         this.router.navigate(['/dashboard/asistente-ia']);
         break;
+      case 12:
+        this.router.navigate(['/dashboard/scouting-club', this.clubId]);
+        break;
     }
   }
 
   navegarEquipoEntrenador(team: any): void {
-    this.router.navigate(['/dashboard/menu-entrenador', team.teamId, 0]);
+    if (this.profileId === 6 || this.profileId === 7) {
+      this.router.navigate(['/dashboard/menu-fisio', team.teamId, 0]);
+    } else {
+      this.router.navigate(['/dashboard/menu-entrenador', team.teamId, 0]);
+    }
   }
 
   irACrearEquipo(): void {
@@ -236,19 +251,26 @@ export class InicioComponent implements OnInit {
         this.profileId = user!.profileType.profileId;
         this.userId = user!.userId;
 
-        // Solo club/entrenador necesitan clubId y suscripción
-        if (this.profileId <= 2) {
+        // Override admin: si el profileId real no es club ni coach,
+        // forzar como coach para que vea el dashboard correctamente
+        if (this.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
+          this.profileId = 2;
+        }
+
+        // Club (profileId=1): necesita clubId y suscripción
+        if (this.profileId === 1) {
           if (this.clubId > 0) {
             this.verificarSuscripcion();
           } else {
             this.cargarClubId();
           }
-          // Cargar equipos solo para club/entrenador (ya se llama también en resolverCargaInicialPorPerfil para coach)
-          if (this.profileId === 1) {
-            this.cargarListadoEquipos();
-          }
+          this.cargarListadoEquipos();
         }
-        // Para jugador (profileId >= 3) ya se dispara cargarHijos() + cargarJugadores()
+        // Coach, Fisioterapeuta, Nutricionista: cargar equipos directamente
+        if (this.profileId === 2 || this.profileId === 6 || this.profileId === 7) {
+          this.cargarListadoEquipos();
+        }
+        // Para jugador (profileId 3-5) ya se dispara cargarHijos() + cargarJugadores()
         // desde inicializarUsuario → resolverCargaInicialPorPerfil, no duplicamos aquí.
       });
   }
@@ -259,7 +281,7 @@ export class InicioComponent implements OnInit {
   // =========================
   private cargarClubId(): void {
     this.teamService
-      .getTeamByClub(this.userId.toString(), '2025')
+      .getTeamByClub(this.userId.toString(), this.temporada)
       .pipe(take(1))
       .subscribe({
         next: (response: Response) => {

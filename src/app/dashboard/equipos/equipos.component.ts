@@ -264,12 +264,17 @@ export class EquiposComponent implements OnInit {
         this.userId = this.usuarioActual!.userId;
 
         if (this.profileId === 0) {
-          this.userId = Number(localStorage.getItem('userIdClub'));
+          const storedClubUserId = Number(localStorage.getItem('userIdClub'));
+          if (storedClubUserId > 0) {
+            this.userId = storedClubUserId;
+          }
         }
 
-        if (this.userId == 9) {
-          this.userId = Number(localStorage.getItem('userId'));
-          this.profileId = 1;
+        // Override admin: si el profileId real no es club ni coach,
+        // forzar como coach para que funcione correctamente
+        if (this.usuarioActual!.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
+          this.userId = 9;
+          this.profileId = 2;
         }
 
         if (this.profileId === 2) {

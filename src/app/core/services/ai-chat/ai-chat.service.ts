@@ -4,11 +4,32 @@ import { Observable, of } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
+export interface AiPendingAction {
+  function: string;
+  arguments: string;
+  preview: string;
+}
+
 export interface AiChatResponse {
   success: boolean;
   response?: string;
   creditsRemaining?: number;
   tokensUsed?: number;
+  error?: string;
+  message?: string;
+  hasActions?: boolean;
+  pendingActions?: AiPendingAction[];
+  actionToken?: string;
+}
+
+export interface AiActionResult {
+  success: boolean;
+  created?: number;
+  edited?: number;
+  deleted?: number;
+  details?: string[];
+  summary?: string;
+  errors?: string[];
   error?: string;
   message?: string;
 }
@@ -62,9 +83,12 @@ export class AiChatService {
 
   /**
    * Envía un mensaje al asistente IA. Consume 1 crédito.
+   * history: array opcional de {role, text} con los últimos mensajes de la conversación.
    */
-  sendMessage(userId: number, clubId: number | null, screenContext: string, message: string, apiKeyType: string = 'users'): Observable<AiChatResponse> {
-    const body = { userId, clubId, screenContext, message, apiKeyType };
+  sendMessage(userId: number, clubId: number | null, screenContext: string, message: string, apiKeyType: string = 'users', teamId?: number | null, history?: {role: string, text: string}[]): Observable<AiChatResponse> {
+    const body: any = { userId, clubId, screenContext, message, apiKeyType };
+    if (teamId) body.teamId = teamId;
+    if (history && history.length > 0) body.history = history;
     return this.http.post<AiChatResponse>(`${this.baseUrl}/chat`, body, { headers: this.getHeaders() }).pipe(
       timeout(45000),
       catchError(err => {
@@ -76,6 +100,23 @@ export class AiChatService {
           message: isTimeout
             ? 'La respuesta tardó demasiado. Inténtalo de nuevo.'
             : 'Error de conexión. Inténtalo de nuevo.'
+        });
+      })
+    );
+  }
+
+  /**
+   * Ejecuta acciones confirmadas por el usuario. NO consume crédito.
+   */
+  executeActions(actionToken: string): Observable<AiActionResult> {
+    return this.http.post<AiActionResult>(`${this.baseUrl}/actions/execute`, { actionToken }, { headers: this.getHeaders() }).pipe(
+      timeout(30000),
+      catchError(err => {
+        console.error('[AiChatService] Execute actions error:', err);
+        return of({
+          success: false,
+          error: 'EXECUTION_ERROR',
+          message: 'Error al ejecutar las acciones. Inténtalo de nuevo.'
         });
       })
     );

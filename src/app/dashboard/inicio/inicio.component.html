@@ -92,6 +92,17 @@
           </div>
         </div>
 
+        <!-- SCOUTING -->
+        <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(12)" class="dashboard-card" role="button" tabindex="0">
+            <img src="assets/images/scouting.jpg" alt="Scouting">
+            <div class="overlay">
+              <i class="bi bi-binoculars"></i>
+              <span>{{ 'NAV.SCOUTING' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
         <!-- ASISTENTE DE IA -->
         <div class="col-6 col-md-4">
           <div (click)="irAPantallaClub(11)" class="dashboard-card ai-assistant-card" role="button" tabindex="0">
@@ -106,7 +117,7 @@
       </div>
     </div>
   </main>
-  <main *ngIf="profileId === 2" class="dashboard-main coach-view">
+  <main *ngIf="profileId === 2 || profileId === 6 || profileId === 7" class="dashboard-main coach-view">
     <div class="container dashboard-mobile">
 
       <!-- HEADER CENTRADO -->

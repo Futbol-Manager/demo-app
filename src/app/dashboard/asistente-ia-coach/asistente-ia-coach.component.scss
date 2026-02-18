@@ -235,13 +235,9 @@ $coach-gradient: linear-gradient(135deg, $green-primary 0%, $teal 45%, $navy 100
 
 /* BOTÓN TOGGLE SIDEBAR */
 .sidebar-toggle-btn {
-  position: absolute;
-  top: 50%;
-  left: -18px;
-  transform: translateY(-50%);
   width: 36px;
   height: 36px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  border: 2px solid $border-color;
   border-radius: 8px;
   background: $bg-white;
   color: $text-dark;
@@ -252,13 +248,14 @@ $coach-gradient: linear-gradient(135deg, $green-primary 0%, $teal 45%, $navy 100
   justify-content: center;
   transition: all 0.2s ease;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  z-index: 2;
+  margin-bottom: 12px;
+  flex-shrink: 0;
 
   &:hover {
     background: $coach-primary;
     border-color: $coach-primary;
     color: #fff;
-    transform: translateY(-50%) scale(1.05);
+    transform: scale(1.05);
   }
 }
 
@@ -266,7 +263,6 @@ $coach-gradient: linear-gradient(135deg, $green-primary 0%, $teal 45%, $navy 100
    CABECERA
 ═══════════════════════════════════════ */
 .chat-header {
-  position: relative;
   display: flex;
   align-items: center;
   gap: 14px;
@@ -691,6 +687,7 @@ $coach-gradient: linear-gradient(135deg, $green-primary 0%, $teal 45%, $navy 100
   color: $text-dark;
   resize: none;
   outline: none;
+  overflow: hidden;
   min-height: 24px;
   max-height: 120px;
   padding: 6px 0;
@@ -723,6 +720,43 @@ $coach-gradient: linear-gradient(135deg, $green-primary 0%, $teal 45%, $navy 100
 
   &.send-active:hover { transform: scale(1.05); }
   &:disabled { cursor: not-allowed; }
+}
+
+.ai-mic {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  border: none;
+  border-radius: 10px;
+  background: #e9ecef;
+  color: #495057;
+  font-size: 0.95rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-right: 4px;
+
+  &:hover {
+    background: #dee2e6;
+    transform: scale(1.05);
+  }
+
+  &.recording {
+    background: #dc3545;
+    color: #fff;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  &.recording:hover {
+    background: #c82333;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 .chat-cancel-btn {

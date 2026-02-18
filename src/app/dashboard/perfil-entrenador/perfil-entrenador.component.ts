@@ -4,6 +4,7 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { CoachSubscriptionService } from 'src/app/core/services/stripe/coach-subscription.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
@@ -59,7 +60,24 @@ export class PerfilEntrenadorComponent implements OnInit {
   imageBaseUrlEntrenadorDocs: string = environment.images + 'entrenador-docs/';
 
   tiposDocumento = ['Identificación Nacional', 'Carnet de conducir', 'Pasaporte', 'Otro'];
-  tiposTitulacion = ['Monitor', 'UEFA C', 'UEFA B', 'UEFA A', 'UEFA Pro', 'Otro'];
+  tiposTitulacionEntrenador = ['Monitor', 'UEFA C', 'UEFA B', 'UEFA A', 'UEFA Pro', 'Otro'];
+  tiposTitulacionStaff = ['Fisioterapeuta', 'Osteópata', 'Nutricionista', 'Dietista', 'Naturópata', 'Preparador físico', 'Readaptador deportivo', 'Podólogo deportivo', 'Quiropráctico', 'Psicólogo deportivo', 'Médico deportivo', 'Otro'];
+
+  get profileId(): number {
+    return this.usuarioActual?.profileType?.profileId ?? 2;
+  }
+
+  get tiposTitulacion(): string[] {
+    return (this.profileId === 6 || this.profileId === 7) ? this.tiposTitulacionStaff : this.tiposTitulacionEntrenador;
+  }
+
+  get profileTitle(): string {
+    switch (this.profileId) {
+      case 6: return 'Mi perfil de Fisioterapeuta';
+      case 7: return 'Mi perfil de Nutricionista';
+      default: return '';
+    }
+  }
 
   profile: CoachProfile = this.emptyProfile();
 
@@ -100,6 +118,14 @@ export class PerfilEntrenadorComponent implements OnInit {
   /* Documentos del club (para el entrenador) */
   clubDocuments: { clubId: number; clubName: string; docs: any[] }[] = [];
 
+  /* Suscripción (solo coaches independientes) */
+  subscriptionStatus: 'ACTIVE' | 'EXPIRED' | 'NONE' | 'TRIAL' | null = null;
+  subscriptionPlan = '';
+  subscriptionDateFinal = '';
+  subscriptionMonths = 0;
+  coachBelongsToClub = false;
+  loadingSubscription = false;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -107,6 +133,7 @@ export class PerfilEntrenadorComponent implements OnInit {
     private clubService: ClubService,
     private teamService: TeamService,
     private trainingService: TrainingService,
+    private coachSubscriptionService: CoachSubscriptionService,
     private snackBar: MatSnackBar,
     private location: Location,
     private sanitizer: DomSanitizer,
@@ -128,7 +155,50 @@ export class PerfilEntrenadorComponent implements OnInit {
 
       this.cargarPerfil();
       this.loadAllClubs();
+      if (this.profileId === 2) {
+        this.loadSubscriptionStatus();
+      }
     });
+  }
+
+  loadSubscriptionStatus(): void {
+    this.loadingSubscription = true;
+    this.teamService.getEstadoSuscripcion(this.userId, 2).subscribe({
+      next: (res: any) => {
+        const status = res?.data ?? 0;
+        // 0 = none, 1 = trial, 2 = active, 3 = expired
+        if (status === 1) {
+          this.subscriptionStatus = 'TRIAL';
+        } else if (status === 2) {
+          this.subscriptionStatus = 'ACTIVE';
+        } else if (status === 3) {
+          this.subscriptionStatus = 'EXPIRED';
+        } else {
+          this.subscriptionStatus = 'NONE';
+        }
+
+        // Load detail from admin endpoint
+        this.coachSubscriptionService.getAdminCoaches().subscribe({
+          next: (r: any) => {
+            const mine = (r?.data ?? []).find((c: any) => c.userId === this.userId);
+            if (mine) {
+              this.coachBelongsToClub     = mine.belongsToClub;
+              this.subscriptionPlan       = mine.subscriptionPlan || '';
+              this.subscriptionDateFinal  = mine.dateFinal || '';
+              this.subscriptionMonths     = mine.monthsSubscribed ?? 0;
+              if (mine.belongsToClub) this.subscriptionStatus = null;
+            }
+            this.loadingSubscription = false;
+          },
+          error: () => { this.loadingSubscription = false; }
+        });
+      },
+      error: () => { this.loadingSubscription = false; }
+    });
+  }
+
+  goToSubscriptionPage(): void {
+    this.router.navigate(['/dashboard/suscripcion-coach']);
   }
 
   /**
@@ -198,8 +268,9 @@ export class PerfilEntrenadorComponent implements OnInit {
           this.profile.apellido = this.usuarioActual?.secondName || '';
           this.profile.email = this.usuarioActual?.mail || '';
           this.profile.telefono = this.usuarioActual?.mobile || '';
-          this.profile.picture = this.usuarioActual?.pictureUser || '';
         }
+        // La foto siempre se toma del perfil de usuario (pictureUser), no del perfil de entrenador
+        this.profile.picture = this.usuarioActual?.pictureUser || this.profile.picture || '';
         this.loading = false;
       },
       () => {
@@ -394,18 +465,32 @@ export class PerfilEntrenadorComponent implements OnInit {
     this.trainingService.createUpdateImgUser(this.userId.toString(), file).subscribe(
       (response: any) => {
         this.uploadingPhoto = false;
-        this.cargarPerfil();
-        // Actualizar la foto en localStorage para que se refleje en el header
-        const storedUser = localStorage.getItem('usuario');
-        if (storedUser) {
+
+        // response.data puede ser el nombre del archivo o un objeto con pictureUser
+        const newPicture: string = response?.data?.pictureUser || response?.data || '';
+
+        if (newPicture) {
+          // Sincronizar en el objeto en memoria
+          if (this.usuarioActual) {
+            this.usuarioActual.pictureUser = newPicture;
+          }
+          // Sincronizar en localStorage para que el header también lo refleje
           try {
-            const userData = JSON.parse(storedUser);
-            if (response?.data?.pictureUser) {
-              userData.pictureUser = response.data.pictureUser;
+            const storedUser = localStorage.getItem('usuario');
+            if (storedUser) {
+              const userData = JSON.parse(storedUser);
+              userData.pictureUser = newPicture;
+              localStorage.setItem('usuario', JSON.stringify(userData));
             }
-            localStorage.setItem('usuario', JSON.stringify(userData));
           } catch (e) {}
+
+          // Actualizar la foto en el perfil mostrado directamente (sin recargar la API)
+          this.profile.picture = newPicture;
+        } else {
+          // Si no obtenemos la URL nueva, recargamos el perfil completo
+          this.cargarPerfil();
         }
+
         this.snackBar.open('Foto de perfil actualizada', 'Cerrar', { duration: 3000 });
       },
       () => {

@@ -28,6 +28,8 @@ export interface Trainer {
   teamId: number;
   nameTeam: string;
   teams?: string[];           // Si entrena varios equipos
+  profileId?: number;
+  profileName?: string;
   imgDniUno?: string;
   imgDniDos?: string;
   // Campos del perfil de entrenador

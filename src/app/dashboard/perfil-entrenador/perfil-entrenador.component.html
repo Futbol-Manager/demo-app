@@ -6,7 +6,48 @@
     <button class="btn-back" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
     </button>
-    <h1>{{ 'COACH_PROFILE.TITLE' | translate }}</h1>
+    <h1>{{ profileTitle || ('COACH_PROFILE.TITLE' | translate) }}</h1>
+  </div>
+
+  <!-- ========== TARJETA DE SUSCRIPCIÓN (solo coach independiente) ========== -->
+  <div class="subscription-card" *ngIf="profileId === 2 && !coachBelongsToClub && subscriptionStatus !== null">
+    <div class="sub-left">
+      <i class="bi bi-credit-card-2-front sub-icon"></i>
+      <div class="sub-info">
+        <span class="sub-title">Mi suscripción</span>
+        <span class="sub-plan">{{ subscriptionPlan || 'Sin plan activo' }}</span>
+      </div>
+    </div>
+    <div class="sub-right">
+      <span class="sub-badge"
+        [class.sub-active]="subscriptionStatus === 'ACTIVE'"
+        [class.sub-trial]="subscriptionStatus === 'TRIAL'"
+        [class.sub-expired]="subscriptionStatus === 'EXPIRED'"
+        [class.sub-none]="subscriptionStatus === 'NONE'">
+        <ng-container [ngSwitch]="subscriptionStatus">
+          <span *ngSwitchCase="'ACTIVE'"><i class="bi bi-check-circle me-1"></i>Activa</span>
+          <span *ngSwitchCase="'TRIAL'"><i class="bi bi-clock me-1"></i>Período de prueba</span>
+          <span *ngSwitchCase="'EXPIRED'"><i class="bi bi-x-circle me-1"></i>Vencida</span>
+          <span *ngSwitchDefault><i class="bi bi-dash-circle me-1"></i>Sin suscripción</span>
+        </ng-container>
+      </span>
+      <span class="sub-expiry" *ngIf="subscriptionDateFinal">
+        Vence: {{ subscriptionDateFinal }}
+      </span>
+      <span class="sub-months" *ngIf="subscriptionMonths > 0">
+        {{ subscriptionMonths }} mes<span *ngIf="subscriptionMonths > 1">es</span> activo
+      </span>
+      <button class="btn-manage-sub"
+        *ngIf="subscriptionStatus === 'NONE' || subscriptionStatus === 'TRIAL' || subscriptionStatus === 'EXPIRED'"
+        (click)="goToSubscriptionPage()">
+        Ver planes <i class="bi bi-arrow-right ms-1"></i>
+      </button>
+      <button class="btn-manage-sub"
+        *ngIf="subscriptionStatus === 'ACTIVE'"
+        (click)="goToSubscriptionPage()">
+        Gestionar <i class="bi bi-arrow-right ms-1"></i>
+      </button>
+    </div>
   </div>
 
   <!-- ========== CONTENIDO PRINCIPAL ========== -->
@@ -27,7 +68,7 @@
     <div *ngIf="!loading && !editMode" class="section-card">
       <div class="section-header green">
         <i class="bi bi-person-circle"></i>
-        <span>{{ 'COACH_PROFILE.TITLE' | translate }}</span>
+        <span>{{ profileTitle || ('COACH_PROFILE.TITLE' | translate) }}</span>
       </div>
 
       <div class="section-body">

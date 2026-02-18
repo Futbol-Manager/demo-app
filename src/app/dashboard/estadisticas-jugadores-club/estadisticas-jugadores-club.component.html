@@ -331,10 +331,20 @@
           (keydown)="onKeyDown($event)"
           [disabled]="aiLoading"
         ></textarea>
-        <button class="btn-send-ai" (click)="sendAiMessage()" [disabled]="aiLoading || !aiPrompt.trim()">
-          <i class="bi bi-send-fill"></i>
-          {{ 'AI_PANEL.SEND' | translate }}
-        </button>
+        <div class="ai-input-buttons">
+          <button *ngIf="isVoiceSupported && !aiLoading"
+            class="ai-mic"
+            [class.recording]="isRecording"
+            (click)="toggleVoiceRecognition()"
+            aria-label="Reconocimiento de voz"
+            [title]="isRecording ? 'Detener grabación' : 'Usar micrófono'">
+            <i class="bi" [ngClass]="isRecording ? 'bi-mic-fill' : 'bi-mic'"></i>
+          </button>
+          <button class="btn-send-ai" (click)="sendAiMessage()" [disabled]="aiLoading || !aiPrompt.trim()">
+            <i class="bi bi-send-fill"></i>
+            {{ 'AI_PANEL.SEND' | translate }}
+          </button>
+        </div>
         <small class="ai-hint">{{ 'AI_PANEL.HINT_CTRL_ENTER' | translate }}</small>
       </div>
     </div>

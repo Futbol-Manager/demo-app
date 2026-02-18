@@ -92,11 +92,12 @@ export class AdminActivityComponent implements OnInit {
 
   get filteredActivities(): any[] {
     return this.activities.filter(a => {
+      const isClub = a.clubId > 0;
       const matchSearch = !this.searchTerm ||
         (a.clubName || '').toLowerCase().includes(this.searchTerm.toLowerCase()) ||
         (a.description || '').toLowerCase().includes(this.searchTerm.toLowerCase());
       const matchType = this.filterType === 'all' || a.actionType === this.filterType;
-      return matchSearch && matchType;
+      return isClub && matchSearch && matchType;
     });
   }
 
@@ -112,55 +113,84 @@ export class AdminActivityComponent implements OnInit {
 
   getActivityIcon(type: string): string {
     switch (type) {
-      case 'LOGIN': return 'bi-box-arrow-in-right';
-      case 'CREATE_TEAM': return 'bi-people-fill';
-      case 'CREATE_PLAYER': return 'bi-person-plus';
-      case 'CREATE_MATCH': return 'bi-trophy';
-      case 'CREATE_TRAINING': return 'bi-clipboard2-check';
-      case 'UPDATE': return 'bi-pencil-square';
-      case 'DELETE': return 'bi-trash';
-      case 'CALL': return 'bi-telephone';
-      case 'EMAIL': return 'bi-envelope';
-      case 'MEETING': return 'bi-camera-video';
-      case 'VIEW': return 'bi-eye';
-      case 'EXPORT': return 'bi-download';
-      default: return 'bi-activity';
+      case 'LOGIN':            return 'bi-box-arrow-in-right';
+      case 'MODULE':           return 'bi-grid-3x3-gap';
+      case 'AI_CREDIT':        return 'bi-robot';
+      case 'CREATE_TEAM':      return 'bi-people-fill';
+      case 'CREATE_PLAYER':    return 'bi-person-plus';
+      case 'CREATE_MATCH':     return 'bi-trophy';
+      case 'CREATE_TRAINING':  return 'bi-clipboard2-check';
+      case 'TEAM':             return 'bi-people';
+      case 'PLAYER':           return 'bi-person';
+      case 'UPDATE':           return 'bi-pencil-square';
+      case 'DELETE':           return 'bi-trash';
+      case 'CALL':             return 'bi-telephone';
+      case 'EMAIL':            return 'bi-envelope';
+      case 'MEETING':          return 'bi-camera-video';
+      case 'VIEW':             return 'bi-eye';
+      case 'EXPORT':           return 'bi-download';
+      case 'SCOUTING':         return 'bi-binoculars';
+      case 'VIDEO':            return 'bi-play-circle';
+      case 'PAYMENT':          return 'bi-credit-card';
+      default:                 return 'bi-activity';
     }
   }
 
   getActivityLabel(type: string): string {
     switch (type) {
-      case 'LOGIN': return 'Inicio de sesion';
-      case 'CREATE_TEAM': return 'Crear equipo';
-      case 'CREATE_PLAYER': return 'Crear jugador';
-      case 'CREATE_MATCH': return 'Crear partido';
-      case 'CREATE_TRAINING': return 'Crear entrenamiento';
-      case 'UPDATE': return 'Actualizar';
-      case 'DELETE': return 'Eliminar';
-      case 'CALL': return 'Llamada';
-      case 'EMAIL': return 'Email';
-      case 'MEETING': return 'Reunion';
-      case 'VIEW': return 'Visualizar';
-      case 'EXPORT': return 'Exportar';
-      default: return type || 'Otro';
+      case 'LOGIN':            return 'Inicio de sesión';
+      case 'MODULE':           return 'Módulo visitado';
+      case 'AI_CREDIT':        return 'Crédito IA usado';
+      case 'CREATE_TEAM':      return 'Crear equipo';
+      case 'CREATE_PLAYER':    return 'Crear jugador';
+      case 'CREATE_MATCH':     return 'Crear partido';
+      case 'CREATE_TRAINING':  return 'Crear entrenamiento';
+      case 'TEAM':             return 'Acción en equipo';
+      case 'PLAYER':           return 'Acción en jugador';
+      case 'UPDATE':           return 'Actualizar';
+      case 'DELETE':           return 'Eliminar';
+      case 'CALL':             return 'Llamada';
+      case 'EMAIL':            return 'Email';
+      case 'MEETING':          return 'Reunión';
+      case 'VIEW':             return 'Visualizar';
+      case 'EXPORT':           return 'Exportar';
+      case 'SCOUTING':         return 'Scouting';
+      case 'VIDEO':            return 'Vídeo';
+      case 'PAYMENT':          return 'Pago';
+      default:                 return type || 'Otro';
     }
   }
 
   getActivityBadgeClass(type: string): string {
     switch (type) {
-      case 'LOGIN': return 'badge-login';
+      case 'LOGIN':    return 'badge-login';
+      case 'MODULE':   return 'badge-module';
+      case 'AI_CREDIT': return 'badge-ai';
       case 'CREATE_TEAM':
       case 'CREATE_PLAYER':
       case 'CREATE_MATCH':
       case 'CREATE_TRAINING': return 'badge-create';
-      case 'UPDATE': return 'badge-update';
-      case 'DELETE': return 'badge-delete';
-      default: return 'badge-other';
+      case 'UPDATE':   return 'badge-update';
+      case 'DELETE':   return 'badge-delete';
+      case 'SCOUTING': return 'badge-scouting';
+      case 'VIDEO':    return 'badge-video';
+      default:         return 'badge-other';
     }
   }
 
   goToClub(clubId: number): void {
-    this.router.navigate(['/dashboard/admin-club-detail', clubId]);
+    if (clubId > 0) this.router.navigate(['/dashboard/admin-club-detail', clubId]);
+  }
+
+  getDisplayClubName(a: any): string {
+    if (a.clubName && !a.clubName.startsWith('Club #') && !a.clubName.startsWith('Usuario #')) {
+      return a.clubName;
+    }
+    // Fallback legible cuando no hay club asociado
+    if (a.userId === 9) return 'Sphaira Admin';
+    if (a.userId === 241) return 'Sphaira Club (prueba)';
+    if (a.userId > 0) return 'Usuario #' + a.userId;
+    return 'Sin club';
   }
 
   private extractActionTypes(): void {

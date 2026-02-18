@@ -48,12 +48,13 @@
   <!-- ÁREA PRINCIPAL DEL CHAT -->
   <div class="chat-page">
 
+    <!-- BOTÓN TOGGLE SIDEBAR -->
+    <button class="sidebar-toggle-btn" (click)="toggleHistory()" [title]="showHistory ? 'Ocultar historial' : 'Mostrar historial'">
+      <i class="bi" [class.bi-chevron-left]="showHistory" [class.bi-chevron-right]="!showHistory"></i>
+    </button>
+
     <!-- CABECERA -->
     <div class="chat-header">
-      <!-- BOTÓN TOGGLE SIDEBAR -->
-      <button class="sidebar-toggle-btn" (click)="toggleHistory()" [title]="showHistory ? 'Ocultar historial' : 'Mostrar historial'">
-        <i class="bi" [class.bi-chevron-left]="showHistory" [class.bi-chevron-right]="!showHistory"></i>
-      </button>
       <div class="chat-header-icon">
         <i class="bi bi-robot"></i>
       </div>
@@ -88,7 +89,22 @@
       </div>
 
       <!-- BURBUJA -->
-      <div class="message-bubble" *ngIf="!msg.isTyping">
+      <div class="message-bubble" *ngIf="!msg.isTyping && !msg.isActionPreview">
+        <div class="message-text" [innerHTML]="msg.text | nl2br"></div>
+        <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
+      </div>
+
+      <!-- Action preview (confirm/cancel) -->
+      <div class="message-bubble action-bubble" *ngIf="msg.isActionPreview && !msg.actionExecuted">
+        <app-ai-action-preview
+          [actions]="msg.pendingActions || []"
+          [isExecuting]="!!msg.isExecutingAction"
+          (confirmed)="confirmActions(msg)"
+          (cancelled)="cancelActions(msg)">
+        </app-ai-action-preview>
+        <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
+      </div>
+      <div class="message-bubble" *ngIf="msg.isActionPreview && msg.actionExecuted">
         <div class="message-text" [innerHTML]="msg.text | nl2br"></div>
         <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
       </div>
@@ -130,13 +146,22 @@
     <div class="chat-input-wrapper">
       <textarea
         #inputField
-        class="chat-input"
+        class="chat-input chat-input-auto"
         [(ngModel)]="userInput"
         (keydown)="onKeyDown($event)"
+        (input)="autoResizeInput($event)"
         [placeholder]="'AI_COACH.INPUT_PLACEHOLDER' | translate"
         rows="1"
         [disabled]="isResponding"
       ></textarea>
+      <button *ngIf="isVoiceSupported && !isResponding"
+        class="ai-mic"
+        [class.recording]="isRecording"
+        (click)="toggleVoiceRecognition()"
+        aria-label="Reconocimiento de voz"
+        [title]="isRecording ? 'Detener grabación' : 'Usar micrófono'">
+        <i class="bi" [ngClass]="isRecording ? 'bi-mic-fill' : 'bi-mic'"></i>
+      </button>
       <button *ngIf="isResponding"
         class="chat-cancel-btn"
         (click)="cancelPendingRequest()"
@@ -167,3 +192,15 @@
   (closed)="closeCreditsModal()"
   (creditsPurchased)="creditsAvailable = $event">
 </app-credits-modal>
+
+<!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+<app-confirm-dialog
+  [show]="showDeleteConfirm"
+  [title]="'¿Eliminar conversación?'"
+  [message]="'Esta acción no se puede deshacer. ¿Estás seguro de que quieres eliminar esta conversación?'"
+  [confirmText]="'Eliminar'"
+  [cancelText]="'Cancelar'"
+  [danger]="true"
+  (confirmed)="confirmDeleteConversation()"
+  (cancelled)="cancelDeleteConversation()">
+</app-confirm-dialog>

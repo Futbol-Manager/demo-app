@@ -426,8 +426,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
           this.applyFilter();
           this.cdr.detectChanges();
 
-          // Si el perfil es > 2, filtra los jugadores según los playerIds del usuario actual
-          if (this.profileId > 2 && this.usuarioActual?.playerIds && this.players.length > 0) {
+          // Si el perfil es jugador/padre/tutor (3-5), filtra los jugadores según los playerIds del usuario actual
+          if (this.profileId >= 3 && this.profileId <= 5 && this.usuarioActual?.playerIds && this.players.length > 0) {
             this.players = this.players.filter(player =>
               this.usuarioActual!.playerIds!.includes(player.playerId)
             );
@@ -855,7 +855,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.selectedPlayer = player;
     this.edadSeleccionada = this.fechaEnEspañol(this.selectedPlayer.fechaDeNacimiento) + ' (' + this.calcularEdad(player.fechaDeNacimiento) + ')';
     this.mostrarEdad = true;
-    this.infoModalActiveTab = 'personal';
+    const pid = this.profileId ?? this.usuarioActual?.profileType?.profileId ?? 0;
+    this.infoModalActiveTab = pid === 6 ? 'lesiones' : (pid === 7 ? 'deportiva' : 'personal');
   }
 
   setInfoModalTab(tab: string): void {
@@ -1627,11 +1628,17 @@ export class PlayerComponent implements OnInit, OnDestroy {
           this.tarjetasRojas = response.data.tarRojas;
           this.numTitulares = response.data.numTitulares;
         }
-        this.mostrarModalInfoJugador = true; // Activa el indicador para mostrar el modal
-        setTimeout(() => this.cargarGraficoRadar(), 80); // Gráfica en el hero; dibujar cuando el modal ya está visible
+        // Fijar pestaña inicial según perfil justo antes de abrir el modal
+        const pid = this.profileId ?? this.usuarioActual?.profileType?.profileId ?? 0;
+        this.infoModalActiveTab = pid === 6 ? 'lesiones' : (pid === 7 ? 'deportiva' : 'personal');
+        this.mostrarModalInfoJugador = true;
+        setTimeout(() => this.cargarGraficoRadar(), 80);
       },
       (error) => {
         console.error('Error en la solicitud:', error);
+        const pid = this.profileId ?? this.usuarioActual?.profileType?.profileId ?? 0;
+        this.infoModalActiveTab = pid === 6 ? 'lesiones' : (pid === 7 ? 'deportiva' : 'personal');
+        this.mostrarModalInfoJugador = true;
       }
     );
 

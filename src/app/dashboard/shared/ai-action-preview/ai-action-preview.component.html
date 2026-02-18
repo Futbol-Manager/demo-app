@@ -1,0 +1,25 @@
+<div class="action-preview-container">
+  <div class="action-preview-header">
+    <i class="fas fa-robot"></i>
+    <span>El asistente quiere realizar las siguientes acciones:</span>
+  </div>
+
+  <div class="action-list">
+    <div *ngFor="let action of actions" class="action-item" [ngClass]="getActionType(action)">
+      <div class="action-icon">
+        <i [class]="getActionIcon(action)"></i>
+      </div>
+      <div class="action-text">{{ action.preview }}</div>
+    </div>
+  </div>
+
+  <div class="action-buttons">
+    <button class="btn-confirm-action" (click)="onConfirm()" [disabled]="isExecuting">
+      <i class="fas" [ngClass]="isExecuting ? 'fa-spinner fa-spin' : 'fa-check'"></i>
+      {{ isExecuting ? 'Ejecutando...' : 'Confirmar' }}
+    </button>
+    <button class="btn-cancel-action" (click)="onCancel()" [disabled]="isExecuting">
+      <i class="fas fa-times"></i> Cancelar
+    </button>
+  </div>
+</div>

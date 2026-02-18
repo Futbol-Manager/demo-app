@@ -111,7 +111,9 @@ export class LoginComponent implements OnInit {
         next: (res) => {
           if (res?.data?.ok === true && res.data.userDTO?.idValidation > 1) {
             // ✅ Login correcto
-            if (res.data.userDTO.profileType.profileId === 0) {
+            const profileId = res.data.userDTO.profileType.profileId;
+            const userId    = res.data.userDTO.userId;
+            if (profileId === 0 && userId !== 9) {
               this.router.navigate(['/dashboard/inicio-federacion']);
             } else {
               this.router.navigate(['/dashboard/inicio']);

@@ -174,6 +174,27 @@ export class TrackingService implements OnDestroy {
     );
   }
 
+  /**
+   * Registra una actividad puntual en club_activity (visible en admin).
+   * No requiere sesión activa.
+   */
+  trackActivity(type: string, description: string): void {
+    const usuario = localStorage.getItem('usuario');
+    const token   = localStorage.getItem('token');
+    if (!usuario || !token) return;
+
+    const user    = JSON.parse(usuario);
+    const userId  = user.userId ?? 0;
+    const clubId  = parseInt(sessionStorage.getItem('clubId') || '0', 10);
+    if (clubId <= 0) return; // solo rastrear clubes reales
+
+    this.http.post(
+      environment.apiUrl + 'tracking/activity',
+      { clubId, userId, type, description },
+      { headers: this.getAuthHeaders() }
+    ).subscribe({ error: () => {} });
+  }
+
   // Metodos para el admin
   getSessionsByClub(clubId: number): Observable<Response> {
     const token = localStorage.getItem('token');

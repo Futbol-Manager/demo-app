@@ -298,6 +298,33 @@ export class TaskStorageService {
     return this._myTasks$.getValue().find(t => t.localId === localId);
   }
 
+  addMyTaskFromBackend(coachTaskData: any): void {
+    const already = this._myTasks$.getValue().some(t => t.coachTaskId === coachTaskData.coachTaskId);
+    if (already) return;
+    const task: StoredTask = {
+      localId: 'ct_' + coachTaskData.coachTaskId,
+      coachTaskId: coachTaskData.coachTaskId,
+      origin: 'own',
+      slogans: coachTaskData.slogans || '',
+      description: coachTaskData.description || '',
+      rules: coachTaskData.rules || '',
+      variants: coachTaskData.variants || '',
+      worktime: coachTaskData.worktime || '',
+      space: coachTaskData.space || '',
+      material: coachTaskData.material || '',
+      work: coachTaskData.work || '',
+      video: coachTaskData.video || '',
+      estrategia: coachTaskData.estrategia || '',
+      intencion: coachTaskData.intencion || '',
+      imagenBoard: coachTaskData.imagenBoard || '',
+      addedAt: coachTaskData.fecCreate || new Date().toISOString(),
+    };
+    const list = this._myTasks$.getValue();
+    list.unshift(task);
+    this.save(MY_TASKS_KEY, list);
+    this._myTasks$.next([...list]);
+  }
+
   // ═══════════════════════════════════════════
   //   UTILIDADES INTERNAS
   // ═══════════════════════════════════════════

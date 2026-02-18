@@ -233,10 +233,26 @@ export class WizardClubComponent implements OnInit {
     if (!this.contractData || !this.isContractStepValid()) return;
 
     this.contractData.signatureUrl = this.signatureName;
-    this.subscriptionService.submitContract(this.contractData).subscribe(res => {
-      if (res.success) {
-        this.nextStep();
-      }
+    (this.contractData as any).clubId = this.clubId;
+
+    const entityVal = this.entityForm.value;
+    this.subscriptionService.submitClubRegistration(this.clubId, {
+      clubName: entityVal.clubName,
+      taxId: entityVal.taxId,
+      address: entityVal.address,
+      city: entityVal.city,
+      postalCode: entityVal.postalCode,
+      country: entityVal.country,
+      responsibleName: entityVal.responsibleName,
+      responsibleId: entityVal.responsibleId,
+      email: entityVal.responsibleEmail,
+      phone: entityVal.responsiblePhone,
+    }).subscribe(() => {
+      this.subscriptionService.submitContract(this.clubId, this.contractData!).subscribe(res => {
+        if (res.success) {
+          this.nextStep();
+        }
+      });
     });
   }
 
@@ -247,7 +263,8 @@ export class WizardClubComponent implements OnInit {
     this.subscriptionService.createCheckoutSession(
       this.clubId,
       'club',
-      'annual'
+      'annual',
+      this.playerCount
     ).subscribe(res => {
       if (res.url) {
         window.location.href = res.url;
