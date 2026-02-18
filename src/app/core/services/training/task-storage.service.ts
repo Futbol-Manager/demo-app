@@ -20,6 +20,7 @@ export interface StoredTask {
   estrategia: string;
   intencion: string;
   imagenBoard: string;
+  extraFields?: string;
   addedAt: string;
   usageCount?: number;
   lastUsedAt?: string;
@@ -91,6 +92,7 @@ export class TaskStorageService {
           estrategia: t.estrategia || '',
           intencion: t.intencion || '',
           imagenBoard: t.imagenBoard || '',
+          extraFields: t.extraFields || '',
           addedAt: t.fecCreate || new Date().toISOString(),
         }));
         this._myTasks$.next(tasks);
@@ -217,6 +219,7 @@ export class TaskStorageService {
       estrategia: task.estrategia || '',
       intencion: task.intencion || '',
       imagenBoard: task.imagenBoard || '',
+      extraFields: task.extraFields || '',
       addedAt: new Date().toISOString(),
     };
 
@@ -235,6 +238,7 @@ export class TaskStorageService {
         estrategia: stored.estrategia,
         intencion: stored.intencion,
         imagenBoard: stored.imagenBoard,
+        extraFields: stored.extraFields || '',
       }).subscribe({
         next: (res: any) => {
           if (res?.data?.coachTaskId) {
@@ -317,6 +321,7 @@ export class TaskStorageService {
       estrategia: coachTaskData.estrategia || '',
       intencion: coachTaskData.intencion || '',
       imagenBoard: coachTaskData.imagenBoard || '',
+      extraFields: coachTaskData.extraFields || '',
       addedAt: coachTaskData.fecCreate || new Date().toISOString(),
     };
     const list = this._myTasks$.getValue();

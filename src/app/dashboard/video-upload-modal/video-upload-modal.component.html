@@ -49,9 +49,21 @@
           <p>{{ progress | number:'1.0-0' }}% — Subiendo…</p>
         </div>
 
-        <!-- Error -->
-        <div *ngIf="error" class="alert-error">
+        <!-- Error genérico -->
+        <div *ngIf="error && !noPlanError" class="alert-error">
           <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+        </div>
+
+        <!-- Error: sin plan de vídeo -->
+        <div *ngIf="noPlanError" class="alert-no-plan">
+          <div class="no-plan-icon"><i class="bi bi-lock-fill"></i></div>
+          <div class="no-plan-content">
+            <strong>Sin plan de almacenamiento de vídeo</strong>
+            <p>Tu club no tiene un plan de vídeo activo. Contrata un plan para poder subir vídeos directamente desde tu dispositivo.</p>
+            <button class="btn-go-plans" (click)="closed.emit(); viewPlans.emit()">
+              <i class="bi bi-stars"></i> Ver planes de vídeo
+            </button>
+          </div>
         </div>
 
         <!-- Formulario -->

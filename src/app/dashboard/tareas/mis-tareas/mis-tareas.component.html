@@ -139,6 +139,11 @@
       [class.active]="selectedTask?.localId === tarea.localId"
       (click)="openDetail(tarea)">
 
+      <!-- Imagen de la tarea -->
+      <div class="task-thumb">
+        <img [src]="getImage(tarea)" [alt]="tarea.slogans" class="task-img" />
+      </div>
+
       <div class="task-body">
         <div class="task-body-top">
           <span class="origin-badge own">{{ 'TAREAS_FAV.ORIGIN_OWN' | translate }}</span>
@@ -179,6 +184,11 @@
         <button class="detail-close" (click)="closeDetail()">
           <i class="bi bi-x-lg"></i>
         </button>
+      </div>
+
+      <!-- Imagen en detalle -->
+      <div class="detail-image-wrap" *ngIf="selectedTask.imagenBoard">
+        <img [src]="getImage(selectedTask)" [alt]="selectedTask.slogans" class="detail-image" />
       </div>
 
       <div class="detail-body">
@@ -225,6 +235,16 @@
             <i class="bi bi-play-circle"></i> {{ selectedTask.video }}
           </a>
         </div>
+
+        <!-- Campos extra del entrenador -->
+        <ng-container *ngIf="selectedTask.extraFields && selectedTask.extraFields !== '[]' && selectedTask.extraFields !== ''">
+          <ng-container *ngFor="let field of parseExtraFields(selectedTask.extraFields)">
+            <div class="detail-section" *ngIf="field.name && field.value">
+              <label><i class="bi bi-tag me-1"></i>{{ field.name }}</label>
+              <p>{{ field.value }}</p>
+            </div>
+          </ng-container>
+        </ng-container>
       </div>
 
       <div class="detail-footer">

@@ -19,6 +19,13 @@ export class VideoStorageService {
     return this.http.get<any>(`${this.baseUrl}/${clubId}/plan`, { headers: this.getHeaders() });
   }
 
+  requestPlan(clubId: number, requesterName: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/${clubId}/request-plan`,
+      { requesterName },
+      { headers: this.getHeaders() }
+    );
+  }
+
   createCheckoutSession(clubId: number, planKey: string): Observable<any> {
     // clubId en la URL para recuperarlo tras la redirección de Stripe
     const successUrl = `${window.location.origin}/dashboard/video-plan-success?clubId=${clubId}`;
@@ -48,6 +55,27 @@ export class VideoStorageService {
 
   deleteVideo(clubId: number, videoId: number): Observable<any> {
     return this.http.delete<any>(`${this.baseUrl}/${clubId}/video/${videoId}`, { headers: this.getHeaders() });
+  }
+
+  // ── Carpetas ──────────────────────────────────────────────
+  getFolders(clubId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/${clubId}/folders`, { headers: this.getHeaders() });
+  }
+
+  createFolder(clubId: number, name: string, color: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/${clubId}/folder`, { name, color }, { headers: this.getHeaders() });
+  }
+
+  updateFolder(clubId: number, folderId: number, changes: { name?: string; color?: string }): Observable<any> {
+    return this.http.patch<any>(`${this.baseUrl}/${clubId}/folder/${folderId}`, changes, { headers: this.getHeaders() });
+  }
+
+  deleteFolder(clubId: number, folderId: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/${clubId}/folder/${folderId}`, { headers: this.getHeaders() });
+  }
+
+  assignVideoFolder(clubId: number, videoId: number, folderId: number | null): Observable<any> {
+    return this.http.patch<any>(`${this.baseUrl}/${clubId}/video/${videoId}/folder`, { folderId }, { headers: this.getHeaders() });
   }
 
   uploadVideo(clubId: number, uploadedBy: number, file: File, meta: {

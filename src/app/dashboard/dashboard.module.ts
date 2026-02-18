@@ -111,6 +111,8 @@ import { SuscripcionCoachComponent } from './suscripcion-coach/suscripcion-coach
 import { CoachSuscripcionSuccessComponent } from './coach-suscripcion-success/coach-suscripcion-success.component';
 import { AdminCoachesComponent } from './admin-coaches/admin-coaches.component';
 import { TaskEditModalComponent } from './task-edit-modal/task-edit-modal.component';
+import { FormTemplateSelectorComponent } from './shared/form-template-selector/form-template-selector.component';
+import { FormTemplatesComponent } from './debrief/form-templates/form-templates.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -222,6 +224,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     CoachSuscripcionSuccessComponent,
     AdminCoachesComponent,
     TaskEditModalComponent,
+    FormTemplateSelectorComponent,
+    FormTemplatesComponent,
   ],
   imports: [
     CommonModule,

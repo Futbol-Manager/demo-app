@@ -524,6 +524,17 @@
   background: rgba(0, 0, 0, 0.3);
   z-index: 1040;
   animation: fadeIn 0.2s ease;
+  pointer-events: none;
+}
+
+.day-panel-overlay-click {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 400px;
+  bottom: 0;
+  z-index: 1045;
+  cursor: pointer;
 }
 
 .day-panel {
@@ -654,6 +665,12 @@
   margin-bottom: 6px;
   transition: all 0.15s;
 }
+.event-card-btn {
+  width: 100%;
+  text-align: left;
+  border: none;
+  cursor: pointer;
+}
 .event-card:hover {
   transform: translateX(3px);
 }
@@ -725,6 +742,104 @@
 }
 .event-action:hover {
   color: #002c40;
+}
+
+/* ═══════════════════════════════════════
+   DETALLE DE EVENTO EN PANEL
+═══════════════════════════════════════ */
+.event-detail-view {
+  animation: fadeIn 0.2s ease;
+}
+
+.event-detail-back {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: #6c757d;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-bottom: 14px;
+  transition: color 0.15s;
+
+  &:hover {
+    color: #002c40;
+  }
+}
+
+.event-detail-header {
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+
+  &.event-detail-training {
+    background: #f0faf4;
+    border-left: 4px solid #2f9e44;
+  }
+
+  &.event-detail-match {
+    background: #fff5f0;
+    border-left: 4px solid #e8590c;
+  }
+}
+
+.event-detail-team {
+  display: block;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #002c40;
+}
+
+.event-detail-type {
+  display: block;
+  font-size: 0.78rem;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+.event-detail-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.event-detail-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #495057;
+
+  i {
+    color: #6c757d;
+    font-size: 0.9rem;
+    width: 16px;
+    text-align: center;
+  }
+}
+
+.event-detail-goto {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  background: #002c40;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #004a6e;
+  }
 }
 
 /* ═══════════════════════════════════════

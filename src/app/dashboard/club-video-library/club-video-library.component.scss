@@ -221,3 +221,148 @@ $accent: #00b4d8;
 }
 
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── LAYOUT CON CARPETAS ───────────────────────────────────────── */
+.library-body {
+  display: flex; gap: 20px; align-items: flex-start;
+}
+
+/* ── SIDEBAR CARPETAS ──────────────────────────────────────────── */
+.folders-sidebar {
+  width: 220px; flex-shrink: 0;
+  background: #fff; border-radius: 14px; border: 1px solid #e8edf1;
+  padding: 16px 0; box-shadow: 0 2px 10px rgba(0,44,64,0.05);
+}
+
+.folders-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 14px 10px; border-bottom: 1px solid #f0f4f7;
+  margin-bottom: 8px;
+}
+.folders-title {
+  font-size: 12px; font-weight: 700; text-transform: uppercase;
+  color: #8a9baa; letter-spacing: 0.06em;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-new-folder {
+  background: transparent; border: none; cursor: pointer;
+  color: $blue; font-size: 16px; padding: 2px 4px; border-radius: 6px;
+  &:hover { background: #f0f7fb; }
+}
+
+/* Formulario nueva carpeta */
+.new-folder-form {
+  padding: 10px 12px; border-bottom: 1px solid #f0f4f7; margin-bottom: 8px;
+}
+.folder-name-input {
+  width: 100%; border: 1px solid #d8e3ea; border-radius: 6px;
+  padding: 6px 10px; font-size: 13px; color: #002c40; outline: none;
+  &:focus { border-color: $accent; }
+  &.inline-edit { margin-bottom: 6px; }
+}
+.color-picker {
+  display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0;
+}
+.color-dot {
+  width: 18px; height: 18px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: transform 0.1s;
+  &.selected { border-color: #002c40; transform: scale(1.25); }
+  &:hover { transform: scale(1.15); }
+}
+.new-folder-actions {
+  display: flex; gap: 6px; margin-top: 8px;
+}
+.btn-cancel-folder {
+  flex: 1; border: 1px solid #d8e3ea; background: #fff; border-radius: 6px;
+  padding: 5px 0; font-size: 12px; cursor: pointer; color: #667;
+  &:hover { background: #f5f7fa; }
+}
+.btn-save-folder {
+  flex: 1; border: none; background: $blue; color: #fff; border-radius: 6px;
+  padding: 5px 0; font-size: 12px; cursor: pointer; font-weight: 700;
+  &:hover { background: $blue-light; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}
+.folder-error { font-size: 11px; color: #e74c3c; margin: 4px 0 0; }
+
+/* Lista de carpetas */
+.folder-list {
+  list-style: none; padding: 0; margin: 0;
+}
+.folder-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 9px 14px; cursor: pointer; font-size: 13px; color: #4a5568;
+  border-left: 3px solid transparent; transition: background 0.15s;
+  position: relative;
+  &:hover { background: #f5f9fb; }
+  &.active { background: #e8f5fb; border-left-color: $accent; color: $blue; font-weight: 700; }
+  i { font-size: 14px; flex-shrink: 0; }
+}
+.folder-label { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.folder-count {
+  font-size: 10px; background: #e8edf1; border-radius: 10px;
+  padding: 1px 6px; color: #8a9baa; flex-shrink: 0;
+}
+.folder-item-actions {
+  display: none; gap: 2px;
+  .folder-item:hover & { display: flex; }
+}
+.btn-folder-edit, .btn-folder-del {
+  background: transparent; border: none; cursor: pointer;
+  border-radius: 4px; padding: 2px 4px; font-size: 11px;
+}
+.btn-folder-edit { color: #667; &:hover { background: #e8edf1; } }
+.btn-folder-del { color: #e74c3c; &:hover { background: #fef2f2; } }
+
+/* ── CONTENIDO PRINCIPAL ───────────────────────────────────────── */
+.videos-main { flex: 1; min-width: 0; }
+
+/* Breadcrumb de carpeta activa */
+.folder-breadcrumb {
+  display: flex; align-items: center; gap: 6px;
+  background: #e8f5fb; border-radius: 20px;
+  padding: 3px 10px; font-size: 12px; color: $blue; font-weight: 600;
+  margin-left: 8px; white-space: nowrap;
+}
+.btn-clear-folder {
+  background: transparent; border: none; cursor: pointer;
+  color: #8a9baa; font-size: 13px; padding: 0; line-height: 1;
+  &:hover { color: $blue; }
+}
+
+/* Etiqueta de carpeta en tarjeta de vídeo */
+.video-folder-tag {
+  font-size: 11px; color: #667; margin: 2px 0; display: flex; align-items: center; gap: 4px;
+}
+
+/* Botón mover carpeta en tarjeta */
+.btn-move {
+  background: #f0f7fb; border: 1px solid #d8e3ea; border-radius: 6px;
+  padding: 4px 10px; cursor: pointer; font-size: 13px; color: $blue;
+  &:hover { background: #e0f0f8; }
+}
+
+/* ── MODAL MOVER A CARPETA ─────────────────────────────────────── */
+.move-folder-modal {
+  background: #fff; border-radius: 14px; padding: 0; max-width: 360px; width: 100%;
+  overflow: hidden; box-shadow: 0 16px 40px rgba(0,44,64,0.18);
+}
+.move-modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; background: $blue; color: #fff;
+  h4 { margin: 0; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .btn-close-player { color: #fff; }
+}
+.move-modal-sub {
+  padding: 10px 20px 4px; font-size: 13px; color: #667; border-bottom: 1px solid #f0f4f7; margin: 0;
+}
+.move-folder-list {
+  list-style: none; margin: 0; padding: 8px 0; max-height: 300px; overflow-y: auto;
+  li {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 20px; cursor: pointer; font-size: 14px; color: #4a5568;
+    &:hover { background: #f5f9fb; }
+    &.selected { background: #e8f5fb; font-weight: 700; color: $blue; }
+    i { font-size: 16px; }
+  }
+}

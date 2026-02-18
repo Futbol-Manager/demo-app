@@ -13,6 +13,7 @@ export class VideoUploadModalComponent {
   @Input() playerName?: string;
   @Output() closed = new EventEmitter<void>();
   @Output() uploaded = new EventEmitter<any>();
+  @Output() viewPlans = new EventEmitter<void>();
 
   selectedFile: File | null = null;
   title = '';
@@ -23,6 +24,7 @@ export class VideoUploadModalComponent {
   progress = 0;
   error = '';
   success = false;
+  noPlanError = false;
 
   maxFileSizeMb = 500;
 
@@ -69,6 +71,7 @@ export class VideoUploadModalComponent {
   removeFile(): void {
     this.selectedFile = null;
     this.error = '';
+    this.noPlanError = false;
   }
 
   upload(): void {
@@ -96,12 +99,21 @@ export class VideoUploadModalComponent {
         clearInterval(progressInterval);
         this.progress = 100;
         const data = res?.data;
+        const bodyStatus = res?.status ?? res?.error?.code;
         if (data) {
           setTimeout(() => {
             this.uploading = false;
             this.success = true;
             this.uploaded.emit(data);
           }, 400);
+        } else if (bodyStatus === 402) {
+          this.uploading = false;
+          this.noPlanError = true;
+          this.progress = 0;
+        } else if (bodyStatus === 413) {
+          this.uploading = false;
+          this.error = res?.error?.msg || 'No hay suficiente espacio en tu plan.';
+          this.progress = 0;
         } else {
           this.uploading = false;
           this.error = res?.error?.msg || 'Error al subir el vídeo.';
@@ -114,7 +126,8 @@ export class VideoUploadModalComponent {
         this.progress = 0;
         const statusCode = err?.status;
         if (statusCode === 402) {
-          this.error = 'Plan de vídeo no activo. Contrata un plan para subir vídeos.';
+          this.noPlanError = true;
+          this.error = '';
         } else if (statusCode === 413) {
           this.error = err?.error?.error?.msg || 'No hay suficiente espacio en tu plan.';
         } else {

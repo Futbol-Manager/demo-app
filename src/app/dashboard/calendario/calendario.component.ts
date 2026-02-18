@@ -43,6 +43,9 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import { FormTemplateSelectorResult } from 'src/app/dashboard/shared/form-template-selector/form-template-selector.component';
+import { FormTemplate } from 'src/app/core/services/form-template/form-template.model';
+import { FormTemplateService } from 'src/app/core/services/form-template/form-template.service';
 
 declare var html2pdf: any;
 
@@ -76,7 +79,13 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   datosCargados: boolean = false;
   teamId!: number; // Ajusta el valor según el teamId del equipo actual
+  clubId: number = 0;
   calendario: any[][] = [];
+
+  // ── Selector de formularios pre/post para coaches ─────────────────────────
+  showFormTemplateSelector = false;
+  formSelectorTipo: 'pre-match' | 'post-match' | 'pre-training' | 'post-training' = 'post-match';
+  formSelectorEntityId: number = 0;
   mesActual: Date = new Date();
   /** Vista actual: año (grid 12 meses), mes (tabla), semana (7 días) */
   vistaCalendario: 'year' | 'month' | 'week' = 'month';
@@ -872,6 +881,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     private location: Location,
     private toastr: ToastrService,
     private ngZone: NgZone,
+    private formTemplateService: FormTemplateService,
   ) { }
 
   ngOnInit(): void {
@@ -907,6 +917,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
               (response.data.levelLeague || '');
             this.categoryTeam = response.data.categoryTypeId;
             this.imgClub = response.data.imgClub;
+            this.clubId = response.data.clubId || 0;
             this.match2.imgClub =
               this.imageBaseUrl + 'user/' + response.data.imgClub;
             if (this.categoryTeam === 14) this.irAPantalla(2);
@@ -1040,7 +1051,63 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   }
 
   navigateToDebrief(type: 'training' | 'match', entityId: number): void {
-    this.router.navigate(['/dashboard/debrief', type, this.teamId, entityId]);
+    const tipo = type === 'match' ? 'post-match' : 'post-training';
+    this.formSelectorTipo = tipo as any;
+    this.formSelectorEntityId = entityId;
+    this.showFormTemplateSelector = true;
+  }
+
+  openPreForm(type: 'training' | 'match', entityId: number): void {
+    const tipo = type === 'match' ? 'pre-match' : 'pre-training';
+    this.formSelectorTipo = tipo as any;
+    this.formSelectorEntityId = entityId;
+    this.showFormTemplateSelector = true;
+  }
+
+  onFormTemplateSelected(result: FormTemplateSelectorResult): void {
+    this.showFormTemplateSelector = false;
+    const isMatch = this.formSelectorTipo === 'pre-match' || this.formSelectorTipo === 'post-match';
+    const type = isMatch ? 'match' : 'training';
+    if (result.type === 'standard') {
+      if (this.formSelectorTipo === 'post-match' || this.formSelectorTipo === 'post-training') {
+        this.router.navigate(['/dashboard/debrief', type, this.teamId, this.formSelectorEntityId]);
+      } else {
+        this.toastr.info('Formulario estándar de preparación no disponible aún', 'Formulario PRE');
+      }
+    }
+    // Respuesta a template personalizado: se persiste vía servicio
+    if (result.type === 'custom' && result.template) {
+      this.persistFormTemplateResponse(result.template);
+    }
+  }
+
+  private persistFormTemplateResponse(template: FormTemplate): void {
+    const isMatch = this.formSelectorTipo === 'pre-match' || this.formSelectorTipo === 'post-match';
+    const payload: any = {
+      formTemplateId: template.formTemplateId,
+      coachUserId: this.userId,
+      teamId: this.teamId,
+      tipo: this.formSelectorTipo,
+      respuestas: '[]',
+      isStandard: 0,
+    };
+    if (isMatch) {
+      payload.matchPreparationId = this.formSelectorEntityId;
+    } else {
+      payload.trainingSessionId = this.formSelectorEntityId;
+    }
+    this.formTemplateService.saveResponse(payload).subscribe(
+      (res: any) => {
+        this.toastr.success(`Formulario "${template.nombre}" guardado correctamente`, 'Formulario guardado');
+      },
+      () => {
+        this.toastr.error('Error al guardar las respuestas del formulario', 'Error');
+      }
+    );
+  }
+
+  onFormTemplateSelectorClosed(): void {
+    this.showFormTemplateSelector = false;
   }
 
   navegarAInicio(): void {
@@ -2723,6 +2790,10 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   cerrarModalAsistencia() {
     this.showModalAsistencia = false;
+  }
+
+  countAsistencia(value: number): number {
+    return this.listAsistencia.filter((j: any) => j.asistencia === value).length;
   }
 
   toggleAsistencia(index: number, value: number) {

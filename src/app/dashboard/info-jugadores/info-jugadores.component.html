@@ -60,6 +60,29 @@
       </button>
     </div>
   </div>
+  <!-- LEYENDA CONSENTIMIENTO IA -->
+  <div class="ia-legend">
+    <span class="ia-legend__asterisk">*</span>
+    <span class="ia-legend__text">
+      Jugador sin consentimiento de uso de IA firmado por su tutor/a. No es posible generar informes IA para estos jugadores.
+    </span>
+    <button
+      type="button"
+      class="ia-legend__notify-btn"
+      [disabled]="solicitudMasivaLoading || solicitudMasivaEnviada"
+      (click)="solicitarConsentimientoMasivo()">
+      <span *ngIf="!solicitudMasivaLoading && !solicitudMasivaEnviada">
+        <i class="bi bi-bell-fill"></i> Solicitar firma a todos
+      </span>
+      <span *ngIf="solicitudMasivaLoading">
+        <i class="bi bi-hourglass-split"></i> Enviando…
+      </span>
+      <span *ngIf="solicitudMasivaEnviada">
+        <i class="bi bi-check-circle-fill"></i> Notificaciones enviadas
+      </span>
+    </button>
+  </div>
+
   <div class="table-wrapper">
     <table id="dataTable" class="modern-table">
       <thead>
@@ -109,6 +132,7 @@
           <td class="fw-semibold">
             <button type="button" class="btn-link-name" (click)="abrirModalInfoJugador(player)">
               {{ player.nombre }} {{ player.apellido }}
+              <span *ngIf="!player.consentimientoIA" class="ia-no-consent-badge" title="Sin consentimiento IA firmado">*</span>
             </button>
           </td>
 

@@ -272,3 +272,82 @@
     }
   }
 }
+
+// ── Template mode ────────────────────────────────────────────────────────────
+.template-nombre-row {
+  margin-bottom: 16px;
+
+  label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 4px;
+  }
+
+  input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+
+    &:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);
+    }
+  }
+}
+
+// ── CDK Drag & Drop ──────────────────────────────────────────────────────────
+.fields-drop-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: #f9fafb;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 12px;
+  cursor: default;
+
+  &.cdk-drag-preview {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    opacity: 0.95;
+  }
+
+  &.cdk-drag-placeholder {
+    opacity: 0.3;
+  }
+}
+
+.field-drag-handle {
+  flex-shrink: 0;
+  color: #bbb;
+  cursor: grab;
+  padding: 4px 2px;
+  font-size: 18px;
+  line-height: 1;
+
+  &:active { cursor: grabbing; }
+}
+
+.field-row-inner {
+  flex: 1;
+  min-width: 0;
+}
+
+// ── Field preview hints ───────────────────────────────────────────────────────
+.field-preview-hint {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: wrap;
+}

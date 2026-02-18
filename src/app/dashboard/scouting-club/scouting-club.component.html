@@ -411,6 +411,10 @@
           </div>
         </div>
         <div class="player-card-actions">
+          <button class="btn-sm btn-outline-profile" (click)="openPublicProfile(player)">
+            <i class="bi bi-person-lines-fill"></i>
+            Ver perfil
+          </button>
           <button class="btn-sm btn-primary" (click)="addToWatchlist(player)">
             <i class="bi bi-plus-circle"></i>
             {{ 'SCOUTING_CLUB.SEARCH.ADD_WATCHLIST' | translate }}
@@ -467,11 +471,44 @@
                 (click)="$event.stopPropagation(); moveInPipeline(item?.watchlist?.id, pipelineStages[getStageIndex(stage) + 1])">
                 <i class="bi bi-arrow-right"></i>
               </button>
+              <button class="btn-discard" title="Descartar jugador"
+                (click)="$event.stopPropagation(); moveInPipeline(item?.watchlist?.id, 'DISCARDED')">
+                <i class="bi bi-x-circle"></i>
+              </button>
             </div>
           </div>
           <div *ngIf="getPipelineStageItems(stage).length === 0" class="column-empty">
             <i class="bi bi-inbox"></i>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════ SECCIÓN DESCARTADOS ═══════ -->
+    <div class="discarded-section" *ngIf="getDiscardedItems().length > 0">
+      <button class="discarded-toggle" (click)="showDiscarded = !showDiscarded">
+        <i class="bi bi-x-circle-fill"></i>
+        <span>Descartados ({{ getDiscardedItems().length }})</span>
+        <i [class]="'bi ' + (showDiscarded ? 'bi-chevron-up' : 'bi-chevron-down')"></i>
+      </button>
+      <div class="discarded-list" *ngIf="showDiscarded">
+        <div class="discarded-card" *ngFor="let item of getDiscardedItems()"
+          (click)="openDetail(item?.watchlist?.id)">
+          <div class="pipeline-card-photo">
+            <img *ngIf="item?.scoutingProfile?.imagenPerfil || item?.watchlist?.externalPlayerPhoto"
+              [src]="item?.scoutingProfile?.imagenPerfil || item?.watchlist?.externalPlayerPhoto"
+              alt="" class="pipeline-card-img">
+            <i *ngIf="!item?.scoutingProfile?.imagenPerfil && !item?.watchlist?.externalPlayerPhoto"
+              class="bi bi-person-circle pipeline-card-icon"></i>
+          </div>
+          <div class="discarded-card-info">
+            <div class="pipeline-card-name">{{ item?.scoutingProfile?.nombre || item?.watchlist?.externalPlayerName || 'Sin nombre' }}</div>
+            <div class="pipeline-card-position">{{ item?.scoutingProfile?.posicionPrincipal || item?.watchlist?.externalPlayerPosition || '-' }}</div>
+          </div>
+          <button class="btn-restore" title="Volver a pipeline"
+            (click)="$event.stopPropagation(); restoreFromDiscarded(item?.watchlist?.id)">
+            <i class="bi bi-arrow-counterclockwise"></i> Restaurar
+          </button>
         </div>
       </div>
     </div>
@@ -1004,8 +1041,13 @@
   [watchlistId]="detailWatchlistId"
   [playerName]="getPlayerNameForUpload()"
   (uploaded)="onPlayerVideoUploaded($event)"
-  (closed)="showVideoUploadModal = false">
+  (closed)="showVideoUploadModal = false"
+  (viewPlans)="showVideoUploadModal = false; showPlansModal = true">
 </app-video-upload-modal>
+
+<app-video-plans-modal *ngIf="showPlansModal" [clubId]="clubId"
+  (closed)="showPlansModal = false">
+</app-video-plans-modal>
 
 <!-- ═══════ REPRODUCTOR DE VÍDEO B2 ═══════ -->
 <div class="modal-backdrop" *ngIf="playingVideoUrl" (click)="closeVideoPlayer()">

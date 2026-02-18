@@ -4,69 +4,97 @@
     <p class="builder-hint">Añade los campos que necesites. Los usuarios verán este formulario para rellenar.</p>
   </div>
 
+  <!-- Nombre del template (sólo en templateMode) -->
+  <div *ngIf="templateMode" class="template-nombre-row">
+    <label>Nombre del formulario</label>
+    <input type="text" [(ngModel)]="nombreTemplate" placeholder="Ej: Preparación táctica pre-partido" />
+  </div>
+
   <!-- Loading -->
   <div *ngIf="loading" class="text-center p-4">
     <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
     <span class="ms-2">Cargando campos...</span>
   </div>
 
-  <!-- Campos -->
+  <!-- Campos con CDK Drag & Drop -->
   <div *ngIf="!loading" class="builder-fields">
 
-    <div *ngFor="let field of fields; let i = index" class="field-row">
-      <div class="field-row-header">
-        <span class="field-number">{{ i + 1 }}</span>
-        <div class="field-row-actions">
-          <button class="btn-sm-icon" (click)="moveField(i, -1)" [disabled]="i === 0" title="Subir">
-            <i class="bi bi-chevron-up"></i>
-          </button>
-          <button class="btn-sm-icon" (click)="moveField(i, 1)" [disabled]="i === fields.length - 1" title="Bajar">
-            <i class="bi bi-chevron-down"></i>
-          </button>
-          <button class="btn-sm-icon btn-danger-icon" (click)="removeField(i)" title="Eliminar">
-            <i class="bi bi-trash"></i>
-          </button>
-        </div>
-      </div>
+    <div cdkDropList (cdkDropListDropped)="onDrop($event)" class="fields-drop-list">
+      <div *ngFor="let field of fields; let i = index"
+           class="field-row"
+           cdkDrag>
 
-      <div class="field-row-body">
-        <div class="field-group">
-          <label>Etiqueta del campo</label>
-          <input type="text" [(ngModel)]="field.etiqueta" placeholder="Ej: Nombre completo" />
+        <!-- Handle de arrastre -->
+        <div class="field-drag-handle" cdkDragHandle title="Arrastrar para reordenar">
+          <i class="bi bi-grip-vertical"></i>
         </div>
 
-        <div class="field-group">
-          <label>Tipo de campo</label>
-          <select [(ngModel)]="field.tipoCampo">
-            <option *ngFor="let t of fieldTypes" [value]="t.value">{{ t.label }}</option>
-          </select>
-        </div>
-
-        <div class="field-group-inline">
-          <label>
-            <input type="checkbox" [checked]="field.obligatorio === 1"
-              (change)="field.obligatorio = field.obligatorio === 1 ? 0 : 1" />
-            Obligatorio
-          </label>
-        </div>
-
-        <!-- Opciones para SELECT -->
-        <div *ngIf="field.tipoCampo === 'SELECT'" class="field-options">
-          <label>Opciones del desplegable:</label>
-          <div class="option-list">
-            <div *ngFor="let opt of getOpciones(field); let j = index" class="option-item">
-              <span>{{ opt }}</span>
-              <button class="btn-sm-icon btn-danger-icon" (click)="removeOpcion(field, j)">
-                <i class="bi bi-x"></i>
+        <div class="field-row-inner">
+          <div class="field-row-header">
+            <span class="field-number">{{ i + 1 }}</span>
+            <div class="field-row-actions">
+              <button class="btn-sm-icon btn-danger-icon" (click)="removeField(i)" title="Eliminar">
+                <i class="bi bi-trash"></i>
               </button>
             </div>
           </div>
-          <div class="option-add">
-            <input type="text" [(ngModel)]="newOptionText" placeholder="Nueva opción..."
-              (keyup.enter)="addOpcion(field, newOptionText)" />
-            <button class="btn-sm-add" (click)="addOpcion(field, newOptionText)">
-              <i class="bi bi-plus"></i>
-            </button>
+
+          <div class="field-row-body">
+            <div class="field-group">
+              <label>Etiqueta del campo</label>
+              <input type="text" [(ngModel)]="field.etiqueta" placeholder="Ej: Sensaciones previas al partido" />
+            </div>
+
+            <div class="field-group">
+              <label>Tipo de campo</label>
+              <select [(ngModel)]="field.tipoCampo">
+                <option *ngFor="let t of fieldTypes" [value]="t.value">{{ t.label }}</option>
+              </select>
+            </div>
+
+            <div class="field-group-inline">
+              <label>
+                <input type="checkbox" [checked]="field.obligatorio === 1"
+                  (change)="field.obligatorio = field.obligatorio === 1 ? 0 : 1" />
+                Obligatorio
+              </label>
+            </div>
+
+            <!-- Opciones para SELECT -->
+            <div *ngIf="field.tipoCampo === 'SELECT'" class="field-options">
+              <label>Opciones del desplegable:</label>
+              <div class="option-list">
+                <div *ngFor="let opt of getOpciones(field); let j = index" class="option-item">
+                  <span>{{ opt }}</span>
+                  <button class="btn-sm-icon btn-danger-icon" (click)="removeOpcion(field, j)">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="option-add">
+                <input type="text" [(ngModel)]="newOptionText" placeholder="Nueva opción..."
+                  (keyup.enter)="addOpcion(field, newOptionText)" />
+                <button class="btn-sm-add" (click)="addOpcion(field, newOptionText)">
+                  <i class="bi bi-plus"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Preview RATING -->
+            <div *ngIf="field.tipoCampo === 'RATING'" class="field-preview-hint">
+              <i class="bi bi-star-fill text-warning"></i>
+              <i class="bi bi-star-fill text-warning"></i>
+              <i class="bi bi-star-fill text-warning"></i>
+              <i class="bi bi-star text-muted"></i>
+              <i class="bi bi-star text-muted"></i>
+              <span class="ms-2 text-muted small">Valoración 1-5 estrellas</span>
+            </div>
+
+            <!-- Preview SCALE -->
+            <div *ngIf="field.tipoCampo === 'SCALE'" class="field-preview-hint">
+              <span class="badge bg-secondary me-1" *ngFor="let n of [1,2,3,4,5,6,7,8,9,10]">{{ n }}</span>
+              <span class="ms-1 text-muted small">Escala 1-10</span>
+            </div>
           </div>
         </div>
       </div>
@@ -81,8 +109,10 @@
   <!-- Footer -->
   <div class="builder-footer">
     <button class="btn btn-secondary" (click)="close()">Cancelar</button>
-    <button class="btn btn-success" (click)="saveFields()" [disabled]="saving || fields.length === 0">
-      <i class="bi bi-check-lg"></i> {{ saving ? 'Guardando...' : 'Guardar formulario' }}
+    <button class="btn btn-success" (click)="saveFields()"
+      [disabled]="saving || fields.length === 0 || (templateMode && !nombreTemplate.trim())">
+      <i class="bi bi-check-lg"></i>
+      {{ saving ? 'Guardando...' : (templateMode ? 'Guardar plantilla' : 'Guardar formulario') }}
     </button>
   </div>
 </div>

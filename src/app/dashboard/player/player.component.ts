@@ -742,7 +742,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
       parentesco2: 0,
       entidad: '',
       titularBanco: '',
-      iban: ''
+      iban: '',
+      consentimientoIA: 0
     };
   }
 

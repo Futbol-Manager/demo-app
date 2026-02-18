@@ -1,0 +1,222 @@
+.ftm-page {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+.back-container {
+  margin-bottom: 12px;
+}
+
+.btn-back-clean {
+  background: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #555;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 6px 0;
+
+  &:hover { color: #222; }
+}
+
+// ── Header ─────────────────────────────────────────────────────────────────────
+.ftm-header {
+  margin-bottom: 20px;
+
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #222;
+    margin: 0 0 4px;
+
+    i { margin-right: 8px; color: #4CAF50; }
+  }
+
+  p { font-size: 13px; color: #888; margin: 0; }
+}
+
+// ── Tabs ───────────────────────────────────────────────────────────────────────
+.ftm-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.ftm-tab {
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover { background: #eeeeee; color: #333; }
+
+  &--active {
+    background: #4CAF50;
+    border-color: #4CAF50;
+    color: #fff;
+  }
+}
+
+// ── Loading ────────────────────────────────────────────────────────────────────
+.ftm-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #888;
+  padding: 24px 0;
+}
+
+// ── Builder ────────────────────────────────────────────────────────────────────
+.ftm-builder-wrap {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
+}
+
+// ── Empty ──────────────────────────────────────────────────────────────────────
+.ftm-empty {
+  text-align: center;
+  padding: 40px 0 24px;
+  color: #aaa;
+
+  i { font-size: 40px; display: block; margin-bottom: 10px; }
+  p { font-size: 14px; margin: 0; }
+}
+
+// ── Cards ──────────────────────────────────────────────────────────────────────
+.ftm-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.ftm-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  transition: border-color 0.15s;
+
+  &:hover { border-color: #4CAF50; }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  &__name {
+    font-weight: 600;
+    font-size: 15px;
+    color: #222;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__meta {
+    font-size: 12px;
+    color: #aaa;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+}
+
+.ftm-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &--edit {
+    background: #e3f2fd;
+    color: #1565c0;
+    &:hover { background: #bbdefb; }
+  }
+
+  &--delete {
+    background: #fdecea;
+    color: #c62828;
+    &:hover { background: #ffcdd2; }
+  }
+}
+
+// ── Create button ─────────────────────────────────────────────────────────────
+.ftm-create-btn {
+  width: 100%;
+  background: none;
+  border: 2px dashed #4CAF50;
+  color: #4CAF50;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  &:hover { background: #f1f8f1; border-style: solid; }
+}
+
+// ── Confirm delete ─────────────────────────────────────────────────────────────
+.ftm-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.ftm-confirm {
+  background: #fff;
+  border-radius: 14px;
+  padding: 24px 28px;
+  max-width: 360px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+
+  h5 { margin: 0 0 8px; font-size: 17px; font-weight: 700; color: #c62828; }
+  p  { font-size: 14px; color: #555; margin-bottom: 20px; }
+
+  &__actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+}

@@ -278,7 +278,14 @@
                 [teamName]="''">
               </app-session-pdf>
 
-              <!-- Análisis Rápido -->
+              <!-- Formulario PRE-Entrenamiento (coaches) -->
+              <button *ngIf="profileId !== 3" class="saas-btn saas-btn-info"
+                (click)="openPreForm('training', trainingSession.trainingSessionId)">
+                <i class="bi bi-clipboard-plus"></i>
+                <span>PRE-Entrenamiento</span>
+              </button>
+
+              <!-- Análisis Rápido / POST-Entrenamiento -->
               <button *ngIf="profileId !== 3" class="saas-btn saas-btn-warning"
                 (click)="navigateToDebrief('training', trainingSession.trainingSessionId)">
                 <i class="bi bi-clipboard-pulse"></i>
@@ -699,9 +706,16 @@
                 </button>
               </div>
 
-              <!-- ================= ANÁLISIS RÁPIDO ================= -->
+              <!-- ================= FORMULARIOS PRE/POST PARTIDO ================= -->
               <div class="action-group"
                    *ngIf="usuarioActual!.profileType.profileId === 2 && match.matchPreparationId !== 0">
+                <!-- PRE-Partido -->
+                <button type="button" class="saas-btn saas-btn-info"
+                  (click)="openPreForm('match', match.matchPreparationId)">
+                  <i class="bi bi-clipboard-plus"></i>
+                  PRE-Partido
+                </button>
+                <!-- POST-Partido / Análisis Rápido -->
                 <button type="button" class="saas-btn saas-btn-warning"
                   (click)="navigateToDebrief('match', match.matchPreparationId)">
                   <i class="bi bi-clipboard-pulse"></i>
@@ -2492,9 +2506,26 @@
         </button>
       </div>
       <div class="modal-asistencia-body">
+        <!-- Resumen de asistencia -->
+        <div class="modal-asistencia-summary" *ngIf="listAsistencia.length > 0">
+          <div class="asistencia-summary-pill asistencia-pill-ok">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ countAsistencia(1) }} confirman</span>
+          </div>
+          <div class="asistencia-summary-counter">
+            <span class="asistencia-counter-num">{{ countAsistencia(1) }}</span>
+            <span class="asistencia-counter-sep">/</span>
+            <span class="asistencia-counter-total">{{ listAsistencia.length }}</span>
+          </div>
+          <div class="asistencia-summary-pill asistencia-pill-no">
+            <i class="bi bi-x-circle-fill"></i>
+            <span>{{ countAsistencia(0) }} no vienen</span>
+          </div>
+        </div>
         <p class="modal-asistencia-intro">{{ 'CAL.TEXT_298' | translate }}</p>
         <div class="modal-asistencia-list">
-          <div *ngFor="let jugador of listAsistencia; let i = index" class="modal-asistencia-row">
+          <div *ngFor="let jugador of listAsistencia; let i = index" class="modal-asistencia-row"
+               [class.asistencia-row-absent]="jugador.asistencia === 0">
             <div class="modal-asistencia-player">
               <span class="modal-asistencia-name">{{ jugador.player.nombre }} {{ jugador.player.apellido }}</span>
             </div>
@@ -3108,5 +3139,17 @@
   (saved)="onTaskSaved($event)"
   (closed)="onEditModalClosed()">
 </app-task-edit-modal>
+
+<!-- ── Selector de formulario pre/post (coaches) ──────────────────────── -->
+<app-form-template-selector
+  [show]="showFormTemplateSelector"
+  [tipo]="formSelectorTipo"
+  [clubId]="clubId"
+  [teamId]="teamId"
+  [entityId]="formSelectorEntityId"
+  [coachUserId]="userId"
+  (selected)="onFormTemplateSelected($event)"
+  (closed)="onFormTemplateSelectorClosed()">
+</app-form-template-selector>
 
 <app-footer></app-footer>

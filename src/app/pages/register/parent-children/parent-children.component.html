@@ -185,9 +185,7 @@
               </span>
             </label>
 
-
           </div>
-
 
           <button type="submit" class="btn-primary">
             {{
@@ -316,5 +314,102 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- =============================================
+     MODAL — CONSENTIMIENTO USO DE IA
+     ============================================= -->
+<div class="consent-modal-backdrop" *ngIf="showConsentModal" (click)="closeConsentModal()">
+  <div class="consent-modal" (click)="$event.stopPropagation()">
+
+    <!-- CABECERA -->
+    <div class="consent-modal__header">
+      <div class="consent-modal__header-left">
+        <span class="consent-modal__icon">⚖️</span>
+        <div>
+          <h3 class="consent-modal__title">Consentimiento para el Uso de Inteligencia Artificial</h3>
+          <span class="consent-modal__subtitle">Lectura obligatoria antes de completar el registro</span>
+        </div>
+      </div>
+      <button class="consent-modal__close" (click)="closeConsentModal()" type="button">✕</button>
+    </div>
+
+    <!-- CUERPO — TEXTO LEGAL SCROLLABLE -->
+    <div class="consent-modal__body">
+
+      <p><strong>Responsable del Tratamiento:</strong> Sphaira Tech, S.L. (en adelante, "Sphaira Tech"), con domicilio social en España, es la responsable del tratamiento de sus datos personales en el sentido del Reglamento (UE) 2016/679 (RGPD/GDPR).</p>
+
+      <p>Al marcar la casilla inferior, usted, en calidad de padre, madre o tutor legal (en adelante, el "Usuario"), declara haber leído, comprendido y aceptado expresamente las siguientes condiciones relativas al uso de tecnologías de Inteligencia Artificial (IA) en la plataforma Sphaira Tech:</p>
+
+      <p><strong>1. Uso de Servicios de Inteligencia Artificial de Terceros</strong><br>
+      La plataforma Sphaira Tech integra servicios de Inteligencia Artificial proporcionados por terceros proveedores que pueden incluir, entre otros: <strong>OpenAI, LLC</strong> (modelos GPT-4/GPT-4o), con sede en San Francisco, California, EE.UU.; <strong>Google LLC</strong> (modelos Gemini), con sede en Mountain View, California, EE.UU.; y <strong>Anthropic, PBC</strong> (modelos Claude), con sede en San Francisco, California, EE.UU. Dichos servicios se utilizan para ofrecer funcionalidades avanzadas tales como análisis de rendimiento deportivo, generación de informes personalizados, recomendaciones inteligentes y asistencia automatizada.</p>
+
+      <p><strong>2. Datos Tratados y Transferencia Internacional</strong><br>
+      Para el funcionamiento de las funcionalidades de IA, determinados datos —que pueden incluir información de rendimiento deportivo, estadísticas, datos del perfil del usuario y contenidos introducidos en la plataforma— podrán ser procesados a través de las APIs privadas de los proveedores mencionados, cuyos servidores pueden estar ubicados fuera del Espacio Económico Europeo (EEE), incluyendo los Estados Unidos de América. Sphaira Tech garantiza que estas transferencias internacionales se realizan bajo las garantías adecuadas exigidas por el Reglamento (UE) 2016/679 (RGPD/GDPR) y conforme a la Ley Orgánica 3/2018, de 5 de diciembre, de Protección de Datos Personales y Garantía de los Derechos Digitales (LOPDGDD).</p>
+
+      <p><strong>3. Finalidad del Tratamiento</strong><br>
+      Los datos procesados mediante IA se utilizarán exclusivamente para: (a) personalizar la experiencia del usuario dentro de la plataforma; (b) generar análisis, estadísticas e informes deportivos; (c) mejorar y optimizar los servicios ofrecidos por Sphaira Tech; y (d) facilitar la detección y el desarrollo del talento deportivo. Sphaira Tech <strong>no venderá, cederá ni utilizará sus datos para entrenar modelos de IA de terceros</strong> de modo que permita su identificación personal, salvo que medie un consentimiento expreso adicional o exista una obligación legal.</p>
+
+      <p><strong>4. Menores de Edad</strong><br>
+      Al proporcionar datos de menores bajo su tutela, usted declara expresamente ser su padre/madre o tutor legal y tener plena capacidad jurídica para prestar el presente consentimiento en nombre de dichos menores, en conformidad con el artículo 8 del RGPD y el artículo 7 de la LOPDGDD.</p>
+
+      <p><strong>5. Derechos del Usuario</strong><br>
+      En cualquier momento podrá ejercer sus derechos de acceso, rectificación, supresión ("derecho al olvido"), limitación del tratamiento, portabilidad y oposición, así como revocar el presente consentimiento —sin que ello afecte a la licitud del tratamiento previo a dicha revocación— contactando con Sphaira Tech en: <strong>privacy&#64;sphairatech.com</strong>.</p>
+
+      <p><strong>6. Carácter Necesario del Consentimiento</strong><br>
+      La aceptación del presente consentimiento es requisito imprescindible para completar el registro y acceder a las funcionalidades de Inteligencia Artificial de la plataforma. Sin dicha aceptación, no es posible finalizar el proceso de registro.</p>
+
+    </div>
+
+    <!-- CHECKBOX DE FIRMA -->
+    <div class="consent-modal__check-area">
+      <label class="consent-modal__check-label" [class.is-checked]="modalConsentChecked">
+        <input type="checkbox" [(ngModel)]="modalConsentChecked" />
+        <span class="consent-modal__check-box">
+          <svg *ngIf="modalConsentChecked" viewBox="0 0 12 10" fill="none">
+            <path d="M1 5l3.5 3.5L11 1" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        <span class="consent-modal__check-text">
+          He leído íntegramente el texto anterior y presto mi <strong>consentimiento libre, específico, informado e inequívoco</strong> para el tratamiento de mis datos y los de los menores a mi cargo mediante servicios de Inteligencia Artificial (OpenAI, Gemini, Anthropic), conforme al artículo 7 del RGPD.
+        </span>
+      </label>
+      <p class="consent-modal__check-warning" *ngIf="!modalConsentChecked">
+        ⚠ Debe marcar la casilla para poder completar el registro.
+      </p>
+    </div>
+
+    <!-- ACCIONES PRINCIPALES (vista normal) -->
+    <div class="consent-modal__actions" *ngIf="!showConsentWarning">
+      <button type="button" class="consent-modal__btn-decline" (click)="declineConsent()">
+        Prefiero no aceptar
+      </button>
+      <button type="button" class="consent-modal__btn-confirm"
+              [disabled]="!modalConsentChecked"
+              (click)="confirmConsent()">
+        ✔ Acepto y completo el registro
+      </button>
+    </div>
+
+    <!-- AVISO: CONSECUENCIAS DE NO FIRMAR -->
+    <div class="consent-modal__warning-area" *ngIf="showConsentWarning">
+      <div class="consent-modal__warning-box">
+        <span class="consent-modal__warning-icon">⚠️</span>
+        <p class="consent-modal__warning-text">
+          <strong>Atención:</strong> Si no firma este consentimiento, el club <strong>no podrá solicitar informes deportivos ni económicos</strong> (relativos a los pagos al club) sobre su hijo/a a través de la plataforma Sphaira Tech. Esta funcionalidad requiere el uso de Inteligencia Artificial y el tratamiento de los datos autorizados.
+        </p>
+      </div>
+      <p class="consent-modal__warning-question">¿Desea firmar el consentimiento?</p>
+      <div class="consent-modal__warning-actions">
+        <button type="button" class="consent-modal__btn-sign-no" (click)="confirmNoConsent()">
+          NO FIRMAR
+        </button>
+        <button type="button" class="consent-modal__btn-sign-yes" (click)="backToConsent()">
+          FIRMAR
+        </button>
+      </div>
+    </div>
+
   </div>
 </div>

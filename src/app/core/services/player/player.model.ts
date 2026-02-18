@@ -158,6 +158,7 @@ export class Player {
   titularBanco: string;
   iban: string;
   entidad: string;
+  consentimientoIA: number;
 
   constructor(object: any) {
     this.playerId = object.playerId || 0;
@@ -241,6 +242,7 @@ export class Player {
     this.titularBanco = object.titularBanco || '';
     this.entidad = object.entidad || '';
     this.iban = object.iban || '';
+    this.consentimientoIA = object.consentimientoIA ?? 0;
   }
 }
 

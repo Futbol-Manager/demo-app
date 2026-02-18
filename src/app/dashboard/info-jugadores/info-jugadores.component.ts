@@ -1,4 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { forkJoin } from 'rxjs';
 import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -103,6 +104,10 @@ export class InfoJugadoresComponent implements OnInit {
   /* ---- Modal firma/archivo ---- */
   mostrarModalFirma = false;
   firmaUrl = '';
+
+  /* ---- Solicitud masiva de consentimiento IA ---- */
+  solicitudMasivaLoading = false;
+  solicitudMasivaEnviada = false;
 
   constructor(
     private router: Router,
@@ -866,6 +871,28 @@ export class InfoJugadoresComponent implements OnInit {
 
     // Si ya está en formato correcto o no reconocible, devolver tal cual
     return fecha;
+  }
+
+  solicitarConsentimientoMasivo(): void {
+    if (this.solicitudMasivaLoading || this.solicitudMasivaEnviada) return;
+    const sinConsent = this.players.filter(p => !p.consentimientoIA);
+    if (!sinConsent.length) {
+      this.toastr.info('Todos los jugadores ya tienen el consentimiento firmado.');
+      return;
+    }
+    this.solicitudMasivaLoading = true;
+    const peticiones = sinConsent.map(p => this.playerService.solicitarConsentimientoIA(p.playerId));
+    forkJoin(peticiones).subscribe({
+      next: () => {
+        this.solicitudMasivaLoading = false;
+        this.solicitudMasivaEnviada = true;
+        this.toastr.success(`Notificación enviada a los tutores de ${sinConsent.length} jugador(es).`);
+      },
+      error: () => {
+        this.solicitudMasivaLoading = false;
+        this.toastr.error('Error al enviar algunas notificaciones.');
+      }
+    });
   }
 
   updateTemporada(player: any) {
