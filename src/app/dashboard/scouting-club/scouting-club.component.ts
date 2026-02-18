@@ -1064,6 +1064,13 @@ export class ScoutingClubComponent implements OnInit {
           next: (res) => { this.playerVideos = res?.data || []; this.checkVideosLoaded(); },
           error: ()    => { this.checkVideosLoaded(); }
         });
+    } else if (watchlistId) {
+      // Jugador externo: usar endpoint de watchlist
+      this.http.get<any>(`${this.apiBase}/${this.clubId}/watchlist/${watchlistId}/videos`, { headers: this.headers })
+        .subscribe({
+          next: (res) => { this.playerVideos = res?.data || []; this.checkVideosLoaded(); },
+          error: ()    => { this.checkVideosLoaded(); }
+        });
     } else {
       this.checkVideosLoaded();
     }
@@ -1097,20 +1104,26 @@ export class ScoutingClubComponent implements OnInit {
   addSocialLink(): void {
     if (!this.addLinkUrl.trim()) return;
     const playerId = this.detailData?.scoutingProfile?.id || this.detailData?.watchlist?.playerId;
-    if (!playerId) { this.addLinkError = 'Este jugador no tiene perfil de scouting asociado.'; return; }
+    const watchlistId = this.detailData?.watchlist?.id;
+
+    if (!playerId && !watchlistId) { this.addLinkError = 'No se puede identificar al jugador.'; return; }
 
     this.addLinkSaving = true;
     this.addLinkError  = '';
     const plataforma = this.detectPlatform(this.addLinkUrl);
     const body = {
-      playerId,
+      playerId: playerId || 0,
       tipo: 'SOCIAL_LINK',
       plataforma,
       url: this.addLinkUrl.trim(),
       titulo: this.addLinkTitle.trim() || plataforma
     };
 
-    this.http.post<any>(`${this.playerApiBase}/${playerId}/video`, body, { headers: this.headers })
+    const url = playerId
+      ? `${this.playerApiBase}/${playerId}/video`
+      : `${this.apiBase}/${this.clubId}/watchlist/${watchlistId}/video`;
+
+    this.http.post<any>(url, body, { headers: this.headers })
       .subscribe({
         next: () => {
           this.addLinkUrl     = '';
@@ -1129,7 +1142,11 @@ export class ScoutingClubComponent implements OnInit {
   deleteSocialLink(videoId: number): void {
     if (!confirm('¿Eliminar este enlace?')) return;
     const playerId = this.detailData?.scoutingProfile?.id || this.detailData?.watchlist?.playerId;
-    this.http.delete<any>(`${this.playerApiBase}/${playerId}/video/${videoId}`, { headers: this.headers })
+    const watchlistId = this.detailData?.watchlist?.id;
+    const url = playerId
+      ? `${this.playerApiBase}/${playerId}/video/${videoId}`
+      : `${this.apiBase}/${this.clubId}/watchlist/${watchlistId}/video/${videoId}`;
+    this.http.delete<any>(url, { headers: this.headers })
       .subscribe({ next: () => this.loadPlayerVideos(), error: () => {} });
   }
 
