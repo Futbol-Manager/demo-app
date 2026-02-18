@@ -53,6 +53,96 @@
         </div>
     </div>
 
+    <!-- CLUB PLANS SECTION -->
+    <div class="mb-4">
+      <button class="btn btn-sm btn-outline-secondary mb-2" (click)="togglePlansSection()">
+        <i class="bi me-1" [ngClass]="showPlansSection ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+        Planes de Club ({{ planKpis.totalActiveClubs }} activos)
+      </button>
+
+      <div *ngIf="showPlansSection">
+        <!-- Plan KPIs -->
+        <div class="row g-2 mb-3">
+          <div class="col-6 col-md-3">
+            <div class="kpi-card kpi-clubs" style="padding:12px;">
+              <div class="kpi-value" style="font-size:1.3rem">{{ planKpis.familiaCount }}</div>
+              <div class="kpi-label" style="font-size:0.75rem">Plan Familia</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="kpi-card kpi-subs" style="padding:12px;">
+              <div class="kpi-value" style="font-size:1.3rem">{{ planKpis.clubCount }}</div>
+              <div class="kpi-label" style="font-size:0.75rem">Plan Club</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="kpi-card kpi-teams" style="padding:12px;">
+              <div class="kpi-value" style="font-size:1.3rem">{{ planKpis.gratuitoCount }}</div>
+              <div class="kpi-label" style="font-size:0.75rem">Plan Gratuito</div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="kpi-card kpi-coaches" style="padding:12px;">
+              <div class="kpi-value" style="font-size:1.3rem">{{ (planKpis.totalRevenueCents / 100) | number:'1.2-2' }} €</div>
+              <div class="kpi-label" style="font-size:0.75rem">Ingresos Plan Club</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="d-flex gap-2 mb-2">
+          <select class="form-select form-select-sm" style="width:auto" [(ngModel)]="filterPlanType">
+            <option value="all">Todos los planes</option>
+            <option value="familia">Plan Familia</option>
+            <option value="club">Plan Club</option>
+            <option value="gratuito">Plan Gratuito</option>
+          </select>
+        </div>
+
+        <!-- Plans Table -->
+        <div class="table-responsive" *ngIf="filteredPlans.length > 0">
+          <table class="table table-hover table-sm align-middle">
+            <thead>
+              <tr>
+                <th>Club</th>
+                <th>Plan</th>
+                <th>Estado</th>
+                <th>Periodo</th>
+                <th>Jugadores</th>
+                <th>Inicio</th>
+                <th>Renovación</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let plan of filteredPlans">
+                <td>
+                  <strong>{{ plan.clubName || ('Club #' + plan.clubId) }}</strong>
+                  <small class="d-block text-muted">{{ plan.clubEmail }}</small>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="getPlanBadgeClass(plan.planType)">
+                    {{ getPlanLabel(plan.planType) }}
+                  </span>
+                </td>
+                <td>
+                  <span class="badge" [ngClass]="plan.status === 'active' ? 'bg-success' : 'bg-secondary'">
+                    {{ getStatusLabel(plan.status) }}
+                  </span>
+                </td>
+                <td>{{ plan.period === 'monthly' ? 'Mensual' : plan.period === 'annual' ? 'Anual' : '-' }}</td>
+                <td>{{ plan.playerCount || '-' }}</td>
+                <td>{{ plan.startDate | date:'dd/MM/yyyy' }}</td>
+                <td>{{ plan.renewDate ? (plan.renewDate | date:'dd/MM/yyyy') : '-' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p *ngIf="filteredPlans.length === 0" class="text-muted text-center py-3">
+          No hay planes registrados
+        </p>
+      </div>
+    </div>
+
     <!-- ACCESO RAPIDO + ACTUALIZAR -->
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <div class="d-flex gap-2 flex-wrap">

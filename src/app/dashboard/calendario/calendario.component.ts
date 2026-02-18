@@ -862,7 +862,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   motivoNoAsistencia = '';
 
   constructor(
-    private router: Router,
+    public router: Router,
     private route: ActivatedRoute,
     private trainingService: TrainingService,
     private playerService: PlayerService,
@@ -2265,11 +2265,25 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   openTaskModal(tarea: any): void {
     this.tareaSeleccionada = tarea;
+    this.parsedExtraFields = this.parseExtraFields(tarea?.extraFields);
     this.showModalTask = true;
   }
 
   closeTaskModal(): void {
     this.showModalTask = false;
+    this.parsedExtraFields = [];
+  }
+
+  parsedExtraFields: { name: string; value: string }[] = [];
+
+  private parseExtraFields(raw: string | undefined): { name: string; value: string }[] {
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed.filter((f: any) => f.name?.trim()) : [];
+    } catch {
+      return [];
+    }
   }
 
   editTarea(tarea: Task): void {

@@ -53,6 +53,18 @@
   <!-- TASK GRID -->
   <div class="task-grid">
 
+    <!-- Loading spinner -->
+    <div *ngIf="loadingTasks" class="task-loading">
+      <span class="spinner-border spinner-border-sm"></span>
+      <span>Cargando tareas...</span>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!loadingTasks && taskList.length === 0" class="task-empty">
+      <i class="bi bi-cloud-slash"></i>
+      <p>No hay tareas disponibles.<br>Prueba con otros filtros o comparte la primera.</p>
+    </div>
+
     <div
       class="task-card"
       *ngFor="let tarea of taskList"

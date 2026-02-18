@@ -476,3 +476,33 @@
   .kpi-card { padding: 0.6rem 0.4rem; }
   .kpi-value { font-size: 1.1rem; }
 }
+
+/* Club Plan Badges */
+.badge-familia {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.badge-club {
+  background: linear-gradient(135deg, #11998e, #38ef7d);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.badge-gratuito {
+  background: linear-gradient(135deg, #fc5c7d, #6a82fb);
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.badge-none {
+  background: #6c757d;
+  color: #fff;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+}

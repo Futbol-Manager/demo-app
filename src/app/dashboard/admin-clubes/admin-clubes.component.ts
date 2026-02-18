@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { CrmService } from 'src/app/core/services/crm/crm.service';
 import { Response } from 'src/app/core/services/models/response.model';
@@ -48,6 +49,18 @@ export class AdminClubesComponent implements OnInit {
 
   currentYear = new Date().getFullYear();
 
+  // Club Plans
+  clubPlans: any[] = [];
+  planKpis = {
+    totalActiveClubs: 0,
+    familiaCount: 0,
+    clubCount: 0,
+    gratuitoCount: 0,
+    totalRevenueCents: 0,
+  };
+  filterPlanType: string = 'all';
+  showPlansSection = false;
+
   modalEditField = false;
   editType: 'teams' | 'players' | 'renew' | null = null;
   editTitle = '';
@@ -58,6 +71,7 @@ export class AdminClubesComponent implements OnInit {
   constructor(
     private teamService: TeamService,
     private crmService: CrmService,
+    private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
     private location: Location
@@ -67,6 +81,7 @@ export class AdminClubesComponent implements OnInit {
     this.cargarListadoClubes();
     this.cargarKPIs();
     this.cargarCrmResumen();
+    this.cargarClubPlans();
   }
 
   goBack(): void {
@@ -105,6 +120,63 @@ export class AdminClubesComponent implements OnInit {
         }
       }
     );
+  }
+
+  cargarClubPlans(): void {
+    this.http.get<any>(`${environment.apiUrl}club-plan/admin/all`).subscribe({
+      next: (res) => {
+        if (res?.data) {
+          this.planKpis = {
+            totalActiveClubs: res.data.totalActiveClubs || 0,
+            familiaCount: res.data.familiaCount || 0,
+            clubCount: res.data.clubCount || 0,
+            gratuitoCount: res.data.gratuitoCount || 0,
+            totalRevenueCents: res.data.totalRevenueCents || 0,
+          };
+          this.clubPlans = res.data.plans || [];
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  get filteredPlans(): any[] {
+    return this.clubPlans.filter(plan => {
+      if (this.filterPlanType === 'all') return true;
+      return plan.planType === this.filterPlanType;
+    });
+  }
+
+  getPlanLabel(planType: string): string {
+    switch (planType) {
+      case 'familia': return 'Plan Familia';
+      case 'club': return 'Plan Club';
+      case 'gratuito': return 'Plan Gratuito';
+      default: return 'Sin plan';
+    }
+  }
+
+  getPlanBadgeClass(planType: string): string {
+    switch (planType) {
+      case 'familia': return 'badge-familia';
+      case 'club': return 'badge-club';
+      case 'gratuito': return 'badge-gratuito';
+      default: return 'badge-none';
+    }
+  }
+
+  getStatusLabel(status: string): string {
+    switch (status) {
+      case 'active': return 'Activo';
+      case 'cancelled': return 'Cancelado';
+      case 'expired': return 'Expirado';
+      case 'replaced': return 'Reemplazado';
+      default: return status;
+    }
+  }
+
+  togglePlansSection(): void {
+    this.showPlansSection = !this.showPlansSection;
   }
 
   refreshData(): void {

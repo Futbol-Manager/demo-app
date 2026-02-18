@@ -2536,66 +2536,108 @@
 </div>
 
 <!-- Modal para ver los detalles de la tarea -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalTask}">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">{{ 'CAL.TEXT_300' | translate }}</h5>
-          <button type="button" class="btn-close" aria-label="Close" (click)="closeTaskModal()"></button>
-        </div>
-        <div class="modal-body">
-          <h1>Tarea: {{ tareaSeleccionada?.slogans }}</h1>
-          <p>ID: {{ tareaSeleccionada?.taskId }}</p>
-          <p><b>{{ 'CAL.TEXT_301' | translate }}</b> {{ tareaSeleccionada?.estrategia }}</p>
-          <p><b>{{ 'CAL.TEXT_302' | translate }}</b> {{ tareaSeleccionada?.intencion }}</p>
-          <p><b>{{ 'CAL.TEXT_303' | translate }}</b> {{ tareaSeleccionada?.description }}</p>
-          <p><b>{{ 'CAL.TEXT_304' | translate }}</b> {{ tareaSeleccionada?.rules }}</p>
-          <p><b>{{ 'CAL.TEXT_305' | translate }}</b> {{ tareaSeleccionada?.variants }}</p>
-          <p><b>{{ 'CAL.TEXT_306' | translate }}</b> {{ tareaSeleccionada?.worktime }}</p>
-          <p><b>{{ 'CAL.TEXT_307' | translate }}</b> {{ tareaSeleccionada?.space }}</p>
-          <p><b>{{ 'CAL.TEXT_308' | translate }}</b> {{ tareaSeleccionada?.material }}</p>
-          <p><b>{{ 'CAL.TEXT_132' | translate }}</b> {{ tareaSeleccionada?.video }}</p>
-          <br>
-          <!-- <img *ngIf="tareaSeleccionada?.imagenBoard"
-            [src]="'https://appsphairatech.com/images/task-board/' + tareaSeleccionada.imagenBoard"
-            alt="{{ 'CAL.TEXT_037' | translate }}" class="img-fluid">
-           Mostrar la imagen si tarea.imagenBoard tiene un valor -->
-          <div [id]="'div_tarea_' + tareaSeleccionada?.taskId">
-            <img class="imgBoard" *ngIf="tareaSeleccionada?.imagenBoard"
-              [src]="imageBaseUrlTask + tareaSeleccionada?.imagenBoard" alt="{{ 'CAL.TEXT_037' | translate }}"
-              [id]="'imagen_tarea_' + tareaSeleccionada?.taskId"
-              onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'">
-          </div>
-          <hr>
-          <div *ngIf="this.usuarioActual!.profileType.profileId != 3">
-            <h4>{{ 'CAL.TEXT_309' | translate }}</h4>
-            <!-- Botón para abrir el modal -->
-            <button class="btn btn-warning" (click)="openBoardModal()">{{ 'CAL.TEXT_310' | translate }}</button> {{
-            'CAL.TEXT_311' | translate }}
-            <!-- Botón para abrir enlace en una nueva pestaña -->
-            <a href="https://tacticalboard.sphairatech.com/" target="_blank"> {{ 'CAL.TEXT_312' | translate }}</a>
-            <!-- Agregar más campos de tarea según sea necesario -->
-            <div class="container">
-              <h4>{{ 'CAL.TEXT_313' | translate }}</h4>
-              <form (submit)="onSubmit(tareaSeleccionada)" enctype="multipart/form-data">
-                <div class="form-group">
-                  <label for="image">{{ 'CAL.TEXT_314' | translate }}</label>
-                  <input type="file" id="image" (change)="onFileSelected($event)">
-                </div>
-                <button style="margin-top: 1em;" type="submit" class="btn btn-primary">{{ 'CAL.TEXT_315' | translate
-                  }}</button>
-              </form>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" (click)="closeTaskModal()">{{ 'CAL.TEXT_316' | translate
-            }}</button>
-        </div>
+<div class="task-view-overlay" *ngIf="showModalTask" (click)="closeTaskModal()"></div>
+<div class="task-view-modal" *ngIf="showModalTask" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+
+  <!-- Header -->
+  <div class="tvm-header">
+    <div class="tvm-header-left">
+      <div class="tvm-badges" *ngIf="(tareaSeleccionada?.estrategia && tareaSeleccionada?.estrategia !== '-') || (tareaSeleccionada?.intencion && tareaSeleccionada?.intencion !== '-')">
+        <span class="tvm-badge tvm-badge-strategy" *ngIf="tareaSeleccionada?.estrategia && tareaSeleccionada?.estrategia !== '-'">
+          <i class="bi bi-bullseye me-1"></i>{{ tareaSeleccionada?.estrategia }}
+        </span>
+        <span class="tvm-badge tvm-badge-intention" *ngIf="tareaSeleccionada?.intencion && tareaSeleccionada?.intencion !== '-'">
+          <i class="bi bi-lightning-charge me-1"></i>{{ tareaSeleccionada?.intencion }}
+        </span>
+      </div>
+      <h2 class="tvm-title">{{ tareaSeleccionada?.slogans }}</h2>
+    </div>
+    <button class="tvm-close" (click)="closeTaskModal()"><i class="bi bi-x-lg"></i></button>
+  </div>
+
+  <div class="tvm-body">
+
+    <!-- Imagen si existe -->
+    <div class="tvm-image-wrap" *ngIf="tareaSeleccionada?.imagenBoard">
+      <div [id]="'div_tarea_' + tareaSeleccionada?.taskId">
+        <img [src]="imageBaseUrlTask + tareaSeleccionada?.imagenBoard"
+             [id]="'imagen_tarea_' + tareaSeleccionada?.taskId"
+             alt="Imagen de la tarea" class="tvm-image"
+             onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'">
       </div>
     </div>
+
+    <!-- Métricas rápidas -->
+    <div class="tvm-metrics" *ngIf="tareaSeleccionada?.worktime?.trim() || tareaSeleccionada?.space?.trim() || tareaSeleccionada?.material?.trim()">
+      <div class="tvm-metric" *ngIf="tareaSeleccionada?.worktime?.trim()">
+        <i class="bi bi-clock"></i>
+        <span class="tvm-metric-label">{{ 'CAL.TEXT_306' | translate }}</span>
+        <span class="tvm-metric-value">{{ tareaSeleccionada?.worktime }}</span>
+      </div>
+      <div class="tvm-metric" *ngIf="tareaSeleccionada?.space?.trim()">
+        <i class="bi bi-arrows-fullscreen"></i>
+        <span class="tvm-metric-label">{{ 'CAL.TEXT_307' | translate }}</span>
+        <span class="tvm-metric-value">{{ tareaSeleccionada?.space }}</span>
+      </div>
+      <div class="tvm-metric" *ngIf="tareaSeleccionada?.material?.trim()">
+        <i class="bi bi-box-seam"></i>
+        <span class="tvm-metric-label">{{ 'CAL.TEXT_308' | translate }}</span>
+        <span class="tvm-metric-value">{{ tareaSeleccionada?.material }}</span>
+      </div>
+    </div>
+
+    <!-- Secciones de texto -->
+    <div class="tvm-section" *ngIf="tareaSeleccionada?.description?.trim()">
+      <div class="tvm-section-title"><i class="bi bi-text-paragraph me-2"></i>{{ 'CAL.TEXT_303' | translate }}</div>
+      <p class="tvm-section-text">{{ tareaSeleccionada?.description }}</p>
+    </div>
+
+    <div class="tvm-section" *ngIf="tareaSeleccionada?.rules?.trim()">
+      <div class="tvm-section-title"><i class="bi bi-card-checklist me-2"></i>{{ 'CAL.TEXT_304' | translate }}</div>
+      <p class="tvm-section-text">{{ tareaSeleccionada?.rules }}</p>
+    </div>
+
+    <div class="tvm-section" *ngIf="tareaSeleccionada?.variants?.trim()">
+      <div class="tvm-section-title"><i class="bi bi-shuffle me-2"></i>{{ 'CAL.TEXT_305' | translate }}</div>
+      <p class="tvm-section-text">{{ tareaSeleccionada?.variants }}</p>
+    </div>
+
+    <!-- Video -->
+    <div class="tvm-section" *ngIf="tareaSeleccionada?.video?.trim()">
+      <div class="tvm-section-title"><i class="bi bi-play-circle me-2"></i>{{ 'CAL.TEXT_132' | translate }}</div>
+      <a [href]="tareaSeleccionada?.video" target="_blank" class="tvm-video-link">
+        <i class="bi bi-box-arrow-up-right me-1"></i>{{ tareaSeleccionada?.video }}
+      </a>
+    </div>
+
+    <!-- Campos extra del entrenador (sin cabecera) -->
+    <ng-container *ngIf="parsedExtraFields.length > 0">
+      <div class="tvm-section" *ngFor="let field of parsedExtraFields">
+        <div class="tvm-section-title"><i class="bi bi-plus-square me-2"></i>{{ field.name }}</div>
+        <p class="tvm-section-text">{{ field.value }}</p>
+      </div>
+    </ng-container>
+
   </div>
+
+  <!-- Footer -->
+  <div class="tvm-footer" *ngIf="usuarioActual!.profileType.profileId != 3">
+    <button class="tvm-btn tvm-btn-board" (click)="closeTaskModal(); router.navigate(['/dashboard/tactical-board', teamId])">
+      <i class="bi bi-vector-pen me-1"></i> Abrir Pizarra
+    </button>
+    <button class="tvm-btn tvm-btn-print" (click)="printDiv(tareaSeleccionada)">
+      <i class="bi bi-printer me-1"></i> Imprimir
+    </button>
+    <button class="tvm-btn tvm-btn-close" (click)="closeTaskModal()">
+      <i class="bi bi-x me-1"></i> Cerrar
+    </button>
+  </div>
+  <div class="tvm-footer" *ngIf="usuarioActual!.profileType.profileId == 3">
+    <button class="tvm-btn tvm-btn-close" (click)="closeTaskModal()">
+      <i class="bi bi-x me-1"></i> Cerrar
+    </button>
+  </div>
+
 </div>
 
 <!-- Modal para ver la convocatoria -->

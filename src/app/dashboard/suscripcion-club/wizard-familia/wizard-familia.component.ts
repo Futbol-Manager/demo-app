@@ -167,11 +167,14 @@ export class WizardFamiliaComponent implements OnInit {
   // ── Activate Plan ────────────────────────────────────
   activatePlan(): void {
     this.activating = true;
-    // TODO: Replace with real API call to activate the Familia plan
-    // The club doesn't pay — this just registers their choice of plan & period
-    setTimeout(() => {
-      this.activating = false;
-      this.router.navigate(['/dashboard/suscripcion-club']);
-    }, 1000);
+    this.subscriptionService.activateFamiliaPlan(this.clubId, this.selectedPeriod).subscribe({
+      next: () => {
+        this.activating = false;
+        this.router.navigate(['/dashboard/suscripcion-club']);
+      },
+      error: () => {
+        this.activating = false;
+      }
+    });
   }
 }

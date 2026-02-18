@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Task } from 'src/app/core/services/models/training.models';
 import { TrainingService } from 'src/app/core/services/training/training.service';
+import { TaskStorageService } from 'src/app/core/services/training/task-storage.service';
 import { environment } from 'src/environments/environment';
 
 export interface CustomField {
@@ -143,9 +144,14 @@ export class TaskEditModalComponent implements OnChanges {
   private doSaveToLibrary(updated: Task): void {
     this.savingLibrary = true;
     this.trainingService.saveTaskToLibrary(updated.taskId, this.userId).subscribe({
-      next: () => {
+      next: (resp: any) => {
         this.saving = false;
         this.savingLibrary = false;
+        if (resp?.data) {
+          this.taskStorage.addMyTaskFromBackend(resp.data);
+        } else if (this.userId) {
+          this.taskStorage.loadFromBackend(this.userId);
+        }
         this.saved.emit(updated);
       },
       error: () => {
@@ -164,5 +170,8 @@ export class TaskEditModalComponent implements OnChanges {
     return (this.editTask as any).tasksShopId || 0;
   }
 
-  constructor(private trainingService: TrainingService) {}
+  constructor(
+    private trainingService: TrainingService,
+    private taskStorage: TaskStorageService
+  ) {}
 }

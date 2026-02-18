@@ -592,7 +592,7 @@
         <button class="btn-link ms-auto" (click)="copyReport()"><i class="bi bi-clipboard"></i> {{ 'AI_REPORT.COPY' | translate }}</button>
         <button class="btn-link" (click)="aiReport = ''; aiReportError = ''"><i class="bi bi-x"></i></button>
       </div>
-      <pre class="ai-report-body">{{ aiReport }}</pre>
+      <div class="ai-report-body" [innerHTML]="formatAiText(aiReport)"></div>
     </div>
     <div class="modal-body">
       <div *ngIf="detailLoading" class="loading-state"><div class="spinner"></div></div>
@@ -1182,9 +1182,20 @@
               <i class="bi bi-stars"></i>
               <span>Análisis de la IA</span>
             </div>
-            <button class="btn-link ai-compare-close" *ngIf="!aiCompareLoading" (click)="aiCompareResult=''; aiCompareError=''">
-              <i class="bi bi-x-lg"></i>
-            </button>
+            <div class="ai-compare-actions" *ngIf="!aiCompareLoading">
+              <!-- Indicador de guardado -->
+              <span class="ai-compare-saved-badge" *ngIf="aiCompareSaved">
+                <i class="bi bi-check-circle-fill"></i> Guardado
+              </span>
+              <!-- Botón PDF -->
+              <button class="btn-ai-pdf" *ngIf="aiCompareResult" (click)="downloadComparisonPdf()" title="Descargar como PDF">
+                <i class="bi bi-file-earmark-pdf"></i> PDF
+              </button>
+              <!-- Botón cerrar -->
+              <button class="ai-compare-close" (click)="clearSavedCompareReport()" title="Cerrar y eliminar informe guardado">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
           </div>
 
           <div *ngIf="aiCompareLoading" class="ai-compare-loading">
@@ -1198,7 +1209,7 @@
             <i class="bi bi-exclamation-circle"></i> {{ aiCompareError }}
           </div>
 
-          <pre *ngIf="aiCompareResult && !aiCompareLoading" class="ai-compare-text">{{ aiCompareResult }}</pre>
+          <div *ngIf="aiCompareResult && !aiCompareLoading" class="ai-compare-text" [innerHTML]="formatAiText(aiCompareResult)"></div>
         </div>
 
       </div>

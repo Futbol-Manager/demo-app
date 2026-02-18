@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { environment } from 'src/environments/environment';
@@ -137,8 +138,61 @@ export class ScoutingClubComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
-    private videoService: VideoStorageService
+    private videoService: VideoStorageService,
+    private sanitizer: DomSanitizer
   ) {}
+
+  /**
+   * Converts AI-generated text (markdown-like) into styled HTML.
+   * Handles: section headers (emoji + caps), bullet lists, bold (**text**), paragraphs.
+   */
+  formatAiText(text: string): SafeHtml {
+    if (!text) return this.sanitizer.bypassSecurityTrustHtml('');
+
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+
+    for (const rawLine of lines) {
+      // Escape HTML entities to prevent XSS on the raw text content
+      const line = rawLine
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      const trimmed = line.trim();
+
+      // Section header: starts with an emoji or a numbered section like "1. RESUMEN EJECUTIVO"
+      const isHeader =
+        /^[\u{1F300}-\u{1FAFF}✅⚠️📊🏆💡🎯📈🔢🎖️]/u.test(trimmed) ||
+        /^\d+\.\s+[A-ZÁÉÍÓÚÜÑ\s]{4,}$/.test(trimmed);
+
+      // Bullet point: starts with -, •, * or indented versions
+      const isBullet = /^\s*[-•*]\s+/.test(rawLine);
+
+      // Apply bold formatting (**text**)
+      const formatted = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+      if (trimmed === '') {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += '<div class="ai-spacer"></div>';
+      } else if (isHeader) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<div class="ai-section-header">${formatted}</div>`;
+      } else if (isBullet) {
+        if (!inList) { html += '<ul class="ai-list">'; inList = true; }
+        const content = formatted.replace(/^\s*[-•*]\s+/, '');
+        html += `<li>${content}</li>`;
+      } else {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<p class="ai-para">${formatted}</p>`;
+      }
+    }
+
+    if (inList) html += '</ul>';
+
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
 
   private get headers(): HttpHeaders {
     const token = localStorage.getItem('token') || '';
@@ -390,8 +444,10 @@ export class ScoutingClubComponent implements OnInit {
   compareMode = false;
   compareSelected: number[] = [];   // watchlist IDs seleccionados
   showCompareModal = false;
-  comparePlayersData: any[] = [];   // detalle de cada jugador para comparar
+  comparePlayersData: any[] = [];
   compareLoading = false;
+  aiCompareSaved = false;
+  aiCompareSavedAt: string | null = null;
 
   toggleCompareMode(): void {
     this.compareMode = !this.compareMode;
@@ -420,6 +476,9 @@ export class ScoutingClubComponent implements OnInit {
     this.compareLoading = true;
     this.showCompareModal = true;
     this.comparePlayersData = [];
+    this.aiCompareResult = '';
+    this.aiCompareSaved = false;
+    this.aiCompareSavedAt = null;
 
     const requests = this.compareSelected.map(id =>
       this.http.get<any>(`${this.apiBase}/${this.clubId}/watchlist/${id}/detail`,
@@ -429,6 +488,13 @@ export class ScoutingClubComponent implements OnInit {
     try {
       const results = await Promise.all(requests);
       this.comparePlayersData = results.map(r => r?.data).filter(Boolean);
+      // Load auto-saved report if it exists for this pair of players
+      const saved = this.loadSavedCompareReport();
+      if (saved) {
+        this.aiCompareResult = saved.report;
+        this.aiCompareSaved = true;
+        this.aiCompareSavedAt = saved.savedAt;
+      }
     } catch (_) {}
     this.compareLoading = false;
   }
@@ -438,12 +504,47 @@ export class ScoutingClubComponent implements OnInit {
     this.comparePlayersData = [];
     this.aiCompareResult = '';
     this.aiCompareError = '';
+    this.aiCompareSaved = false;
+    this.aiCompareSavedAt = null;
   }
 
   // ═══════ AI COMPARE ═══════
   aiCompareResult = '';
   aiCompareLoading = false;
   aiCompareError = '';
+
+  private compareStorageKey(): string {
+    const ids = [...this.compareSelected].sort().join('_');
+    return `sph_ai_compare_${this.clubId}_${ids}`;
+  }
+
+  private saveCompareReport(report: string): void {
+    const payload = {
+      report,
+      playerNames: this.comparePlayersData.map(p => this.getPlayerName(p)),
+      savedAt: new Date().toISOString()
+    };
+    try {
+      localStorage.setItem(this.compareStorageKey(), JSON.stringify(payload));
+      this.aiCompareSaved = true;
+      this.aiCompareSavedAt = payload.savedAt;
+    } catch (_) {}
+  }
+
+  private loadSavedCompareReport(): { report: string; playerNames: string[]; savedAt: string } | null {
+    try {
+      const raw = localStorage.getItem(this.compareStorageKey());
+      return raw ? JSON.parse(raw) : null;
+    } catch (_) { return null; }
+  }
+
+  clearSavedCompareReport(): void {
+    localStorage.removeItem(this.compareStorageKey());
+    this.aiCompareResult = '';
+    this.aiCompareError = '';
+    this.aiCompareSaved = false;
+    this.aiCompareSavedAt = null;
+  }
 
   generateAiComparison(): void {
     if (this.compareSelected.length < 2) return;
@@ -459,6 +560,7 @@ export class ScoutingClubComponent implements OnInit {
           if (!this.aiCompareResult) {
             this.aiCompareError = 'La IA no pudo generar la comparativa. Inténtalo de nuevo.';
           } else {
+            this.saveCompareReport(this.aiCompareResult);
             setTimeout(() => {
               const el = document.getElementById('ai-compare-result');
               if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -470,6 +572,92 @@ export class ScoutingClubComponent implements OnInit {
           this.aiCompareError = err?.error?.error?.msg || 'Error al generar la comparativa con IA.';
         }
       });
+  }
+
+  downloadComparisonPdf(): void {
+    const playerNames = this.comparePlayersData.map(p => this.getPlayerName(p)).join(' vs ');
+    const savedDate = this.aiCompareSavedAt
+      ? new Date(this.aiCompareSavedAt).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })
+      : new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    // Convert raw text to styled HTML for PDF
+    const bodyHtml = this.buildPdfHtml(this.aiCompareResult);
+
+    const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Comparativa IA — ${playerNames}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; color: #1e293b; padding: 32px 40px; line-height: 1.7; }
+    .pdf-header { border-bottom: 3px solid #002c40; padding-bottom: 16px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .pdf-title { font-size: 20px; font-weight: 800; color: #002c40; }
+    .pdf-subtitle { font-size: 13px; color: #64748b; margin-top: 4px; }
+    .pdf-date { font-size: 11px; color: #94a3b8; text-align: right; }
+    .pdf-badge { display: inline-flex; align-items: center; gap: 6px; background: #002c40; color: #fff; border-radius: 20px; padding: 3px 12px; font-size: 11px; font-weight: 700; margin-bottom: 16px; }
+    .ai-section-header { font-size: 13.5px; font-weight: 800; color: #002c40; margin: 20px 0 8px; padding: 6px 0 6px 10px; border-left: 3px solid #31b270; background: #f0fdf4; border-radius: 0 4px 4px 0; }
+    .ai-para { margin: 0 0 10px; font-size: 13px; color: #1e293b; }
+    .ai-list { margin: 4px 0 12px 20px; padding: 0; }
+    .ai-list li { margin-bottom: 5px; font-size: 13px; color: #1e293b; }
+    strong { font-weight: 700; }
+    .pdf-footer { border-top: 1px solid #e2e8f0; margin-top: 32px; padding-top: 10px; font-size: 10px; color: #94a3b8; text-align: center; }
+    @media print { body { padding: 16px 20px; } @page { margin: 1.5cm; } }
+  </style>
+</head>
+<body>
+  <div class="pdf-header">
+    <div>
+      <div class="pdf-title">Comparativa de Jugadores</div>
+      <div class="pdf-subtitle">${playerNames}</div>
+    </div>
+    <div class="pdf-date">Generado el ${savedDate}</div>
+  </div>
+  <div class="pdf-badge">⚡ Análisis generado por IA · Sphaira Tech</div>
+  ${bodyHtml}
+  <div class="pdf-footer">Sphaira Tech · Informe generado automáticamente por inteligencia artificial · Solo uso interno</div>
+  <script>window.onload = function() { window.print(); window.onafterprint = function() { window.close(); }; }<\/script>
+</body>
+</html>`;
+
+    const printWindow = window.open('', '_blank', 'width=800,height=700');
+    if (!printWindow) {
+      alert('Activa las ventanas emergentes para descargar el PDF.');
+      return;
+    }
+    printWindow.document.write(html);
+    printWindow.document.close();
+  }
+
+  private buildPdfHtml(text: string): string {
+    if (!text) return '';
+    const lines = text.split('\n');
+    let html = '';
+    let inList = false;
+
+    for (const rawLine of lines) {
+      const line = rawLine.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      const trimmed = line.trim();
+      const isHeader = /^[\u{1F300}-\u{1FAFF}✅⚠️📊🏆💡🎯📈🔢🎖️]/u.test(trimmed) || /^\d+\.\s+[A-ZÁÉÍÓÚÜÑ\s]{4,}$/.test(trimmed);
+      const isBullet = /^\s*[-•*]\s+/.test(rawLine);
+      const formatted = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
+      if (trimmed === '') {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += '<div style="height:6px"></div>';
+      } else if (isHeader) {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<div class="ai-section-header">${formatted}</div>`;
+      } else if (isBullet) {
+        if (!inList) { html += '<ul class="ai-list">'; inList = true; }
+        html += `<li>${formatted.replace(/^\s*[-•*]\s+/, '')}</li>`;
+      } else {
+        if (inList) { html += '</ul>'; inList = false; }
+        html += `<p class="ai-para">${formatted}</p>`;
+      }
+    }
+    if (inList) html += '</ul>';
+    return html;
   }
 
   getCompareScore(player: any, field: string): number {
