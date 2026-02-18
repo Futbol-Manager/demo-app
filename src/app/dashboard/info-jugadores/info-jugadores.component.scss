@@ -16,30 +16,23 @@
   gap: 0.4rem;
   margin-top: 16px;
   margin-left: 24px;
-  background: transparent;
-  border: none;
-  background-color: rgba(15, 163, 232, 0.08);
-  color: #002c40;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 500;
-
   padding: 0.35rem 0.6rem;
   border-radius: 8px;
-
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    transform 0.15s ease;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-/* ICONO */
 .btn-back-clean i {
   font-size: 1.1rem;
 }
 
-/* HOVER */
 .btn-back-clean:hover {
-  background-color: rgba(0, 44, 64, 0.08);
+  background-color: var(--bg-hover);
   transform: translateX(-2px);
 }
 
@@ -53,10 +46,9 @@
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
-
   font-size: 1.6rem;
   font-weight: 600;
-  color: #002c40;
+  color: var(--text-primary);
   text-align: center;
 }
 
@@ -91,7 +83,7 @@
 .filter-label {
   font-size: 0.7rem;
   font-weight: 600;
-  color: #002c40;
+  color: var(--text-primary);
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
@@ -106,7 +98,7 @@
   top: 50%;
   left: 10px;
   transform: translateY(-50%);
-  color: #002c40;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
@@ -114,7 +106,6 @@
   padding-left: 32px;
 }
 
-/* BOTÓN EXCEL */
 .btn-excel {
   height: 38px;
   display: flex;
@@ -122,7 +113,9 @@
   gap: 0.4rem;
   font-weight: 600;
   border-radius: 10px;
-  background-color: #31b270;
+  background-color: var(--color-primary);
+  color: var(--text-on-primary);
+  border: none;
 }
 
 /* LABEL FANTASMA PARA ALINEAR */
@@ -163,7 +156,7 @@
   width: 100%;
   height: 14px;
   border-radius: 6px;
-  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 37%, #e5e7eb 63%);
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-hover) 37%, var(--bg-surface) 63%);
   background-size: 400% 100%;
   animation: skeleton-loading 1.4s ease infinite;
 }
@@ -221,11 +214,11 @@
   font-size: 0.9rem;
   position: sticky;
   align-items: center;
-  background-color: #002c40;
+  background-color: var(--color-navy);
   z-index: 1000;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #f4f4f4;
+  color: var(--text-on-navy);
   border: none;
   padding: 0.75rem;
   padding-bottom: 1rem;
@@ -237,21 +230,18 @@
   text-align: center;
 }
 
-/* FILAS */
 .modern-table tbody tr {
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 14px;
   height: 72px;
   max-height: 72px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
-  transition:
-    transform 0.15s ease,
-    box-shadow 0.15s ease;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .modern-table tbody tr:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
 }
 
 /* CELDAS */
@@ -275,13 +265,13 @@
   border: none;
   padding: 0;
   font: inherit;
-  color: #002c40;
+  color: var(--color-primary);
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 .btn-link-name:hover {
-  color: #001a26;
+  color: var(--color-primary-hover);
 }
 
 .modern-table tbody td:not(:last-child)::after {
@@ -324,7 +314,7 @@
   align-items: center;
   justify-content: center;
 
-  background: #f4f4f4;
+  background: var(--bg-surface);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -343,20 +333,21 @@
 /* ICONO CUANDO NO HAY IMAGEN */
 .image-wrapper i {
   font-size: 1.6rem;
-  color: #94a3b8;
+  color: var(--text-muted);
 }
 
 .btn-icon {
   border: none;
-  background: #f4f4f4;
+  background: var(--bg-surface);
   border-radius: 8px;
   padding: 6px 8px;
   cursor: pointer;
+  color: var(--text-primary);
 }
 
 .btn-icon.primary {
-  background: #002c40;
-  color: #f4f4f4;
+  background: var(--color-navy);
+  color: var(--text-on-navy);
 }
 
 .btn-icon.warning {

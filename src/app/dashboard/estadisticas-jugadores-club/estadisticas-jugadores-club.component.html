@@ -239,7 +239,7 @@
         {{ paginationInfo }}
       </span>
 
-      <select class="pagination-select" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+      <select class="pagination-select form-select" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
         <option *ngFor="let size of pageSizes" [value]="size">
           {{ size }}
         </option>

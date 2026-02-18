@@ -9,7 +9,7 @@
   background: transparent;
   border: none;
   background-color: rgba(15, 163, 232, 0.08);
-  color: #002c40;
+  color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 500;
 
@@ -59,9 +59,9 @@
   margin-bottom: 12px;
   background: linear-gradient(
     90deg,
-    #e0e0e0 25%,
-    #f5f5f5 37%,
-    #e0e0e0 63%
+    var(--bg-surface) 25%,
+    var(--bg-hover) 37%,
+    var(--bg-surface) 63%
   );
   background-size: 400% 100%;
   animation: shimmer 1.4s infinite;
@@ -95,10 +95,10 @@
 .modern-table thead th {
   font-size: 0.9rem;
   align-items: center;
-  background-color: #002c40;
+  background-color: var(--submenu-bg);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #ffffff;
+  color: var(--submenu-text);
   border: none;
   padding: 0.75rem;
   padding-bottom: 1rem;
@@ -112,15 +112,15 @@
 
 /* FILAS */
 .modern-table tbody tr {
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 14px;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-sm);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .modern-table tbody tr:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
 }
 
 /* CELDAS */
@@ -145,7 +145,7 @@
 .team-cell a {
   font-weight: 600;
   font-size: 1.2rem;
-  color: #002c40;
+  color: var(--text-primary);
   cursor: pointer;
   text-decoration: none;
   line-height: 1.2;
@@ -154,6 +154,7 @@
 
 .team-cell a:hover {
   text-decoration: underline;
+  color: var(--color-primary);
 }
 
 /* PUNTOS */
@@ -254,7 +255,7 @@
 }
 
 .modal-card {
-  background: #fff;
+  background: var(--bg-card);
   width: 90%;
   max-width: 1200px;
   max-height: 85vh;
@@ -273,7 +274,7 @@
 /* HEADER */
 .modal-header {
   padding: 1.2rem 1.5rem;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -282,11 +283,12 @@
 .modal-header h5 {
   margin: 0;
   font-weight: 700;
+  color: var(--text-primary);
 }
 
 .modal-subtitle {
   font-size: .85rem;
-  color: #6c757d;
+  color: var(--text-secondary);
 }
 
 .btn-close-modal {
@@ -299,7 +301,7 @@
 /* FILTRO */
 .modal-filter {
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--border-color);
 }
 
 /* TABLA */
@@ -318,14 +320,14 @@
 .modal-table thead {
   position: sticky;
   top: 0;
-  background: #002c40;
+  background: var(--color-navy);
   z-index: 1;
   border-radius: 10px;
 }
 
 .modal-table th {
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-on-navy);
   white-space: nowrap;
   justify-content: center;
 }
@@ -343,12 +345,16 @@
 }
 
 .modal-table tbody tr:hover {
-  background: #f1f5f9;
+  background: var(--bg-hover);
   justify-content: center;
 }
 
+.modal-table td {
+  color: var(--text-primary);
+}
+
 .link {
-  color: #0d6efd;
+  color: var(--color-primary);
   font-weight: 500;
 }
 
@@ -426,6 +432,7 @@
 
   .modern-table thead th {
     background-color: #0a2a3c;
+    color: var(--text-on-navy) !important;
   }
 
   .modern-table tbody tr {

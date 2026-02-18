@@ -11,6 +11,8 @@ import { Patrocinador } from 'src/app/core/services/models/club.model';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
+import { NotificationService } from 'src/app/core/services/notification/notification.service';
 declare var bootstrap: any;
 
 @Component({
@@ -51,6 +53,8 @@ export class PatrocinadoresComponent implements OnInit {
     private route: ActivatedRoute,
     private location: Location,
     private toastr: ToastrService,
+    private confirmationService: ConfirmationService,
+    private notification: NotificationService,
   ) {}
 
   ngOnInit(): void {
@@ -138,33 +142,26 @@ export class PatrocinadoresComponent implements OnInit {
   }
 
   confirmDeletePatrocinador(id: number, index: number, nombre: string) {
-    const confirmacion = confirm(
-      'AVISO: Vas a eliminar para siempre este patrocinador de nombre: ' +
-        nombre +
-        '. ¿Estás seguro?',
-    );
-
-    if (confirmacion) {
-      this.deletePatrocinador(id, index);
-    }
+    const message = `AVISO: Vas a eliminar para siempre este patrocinador de nombre: ${nombre}. ¿Estás seguro?`;
+    this.confirmationService.confirmDelete(undefined, message).subscribe((confirmed) => {
+      if (confirmed) {
+        this.deletePatrocinador(id, index);
+      }
+    });
   }
 
   deletePatrocinador(id: number, index: number) {
-    this.clubService.deletePatrocinadorById(id).subscribe(
-      (response: Response) => {
+    this.clubService.deletePatrocinadorById(id).subscribe({
+      next: (response: Response) => {
         if (response.data !== null) {
-          this.listPatrocinadores.splice(index);
+          this.listPatrocinadores.splice(index, 1);
+          this.notification.deleteSuccess();
         } else {
-          console.error(
-            'La respuesta del servicio no tiene la estructura esperada',
-            response,
-          );
+          this.notification.errorGeneric();
         }
       },
-      (error) => {
-        console.error('Error al cargar el listado de equipos', error);
-      },
-    );
+      error: () => this.notification.errorGeneric(),
+    });
   }
 
   toggleChaneOculto(value: number, id: number) {

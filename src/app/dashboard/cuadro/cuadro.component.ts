@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
+import { NotificationService } from 'src/app/core/services/notification/notification.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
@@ -95,6 +96,7 @@ export class CuadroComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private clubService: ClubService,
+    private notification: NotificationService,
   ) {}
 
   /* =========================
@@ -145,9 +147,9 @@ export class CuadroComponent implements OnInit, OnDestroy {
           }
           this.loadingDashboard = false;
         },
-        error: (err) => {
+        error: () => {
           this.loadingDashboard = false;
-          console.error('Error cargando cuadro de mando', err);
+          this.notification.error('CUADROMANDO.LOAD_ERROR');
         },
       });
   }

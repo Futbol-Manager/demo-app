@@ -47,6 +47,29 @@
     "TOTAL_RECORDS": "registros totales",
     "NO_RESULTS": "No se encontraron resultados."
   },
+  "OPCIONES_JUGADOR": {
+    "DATOS_PERSONALES": "Datos personales",
+    "CALENDARIO": "Calendario",
+    "PAGAR_CUOTAS": "Pagar cuotas",
+    "DOCUMENTACION": "Documentación",
+    "CLASIFICACION_RESULTADOS": "Clasificación y resultados",
+    "MIS_ESTADISTICAS": "Mis estadísticas",
+    "GALERIA": "Galería",
+    "NOTIFICACIONES": "Notificaciones",
+    "PATROCINADORES": "Patrocinadores",
+    "LESIONES": "Lesiones"
+  },
+  "ACTIONS": {
+    "CONFIRM_TITLE": "Confirmar",
+    "CONFIRM_DELETE_TITLE": "Confirmar eliminación",
+    "CONFIRM_DELETE_MESSAGE": "¿Estás seguro? Esta acción no se puede deshacer.",
+    "DELETE_SUCCESS": "Eliminado correctamente",
+    "SAVE_SUCCESS": "Guardado correctamente",
+    "ERROR_GENERIC": "Ha ocurrido un error. Inténtalo de nuevo.",
+    "CANCEL": "Cancelar",
+    "DELETE": "Eliminar",
+    "ACCEPT": "Aceptar"
+  },
   "COACH_STATS": {
     "TITLE": "Estadísticas de entrenadores",
     "FEATURE_1": "Rendimiento por temporada y equipo",
@@ -720,7 +743,22 @@
     "TEXT_383": "Sáb",
     "TEXT_384": "Dom",
     "TEXT_385": "Ant.",
-    "TEXT_386": "Sig."
+    "TEXT_386": "Sig.",
+    "TEXT_387": "Otra",
+    "TEXT_388": "Actividades del dia",
+    "TEXT_389": "Nueva actividad",
+    "TEXT_390": "Detalles del entrenamiento",
+    "TEXT_391": "No hay ninguna actividad seleccionada",
+    "TEXT_392": "Selecciona una actividad del listado o crea una nueva desde \"Nueva actividad\".",
+    "TEXT_393": "No se han enviado las respuestas porque ya se relleno anteriormente y solo se puede una vez por partido.",
+    "TEXT_394": "Respuestas enviadas correctamente.",
+    "TEXT_395": "AVISO: Al activar esta opcion, su tarea de entrenamiento sera publica y visible para otros entrenadores. Cualquier dato ingresado sera accesible. No esta permitido publicar informacion, datos o imagenes con derechos de autor sin el permiso del autor. Cualquier contenido que infrinja esta norma sera eliminado. Estas seguro?",
+    "TEXT_396": "Convocatoria guardada",
+    "TEXT_397": "Notificados con exito.",
+    "TEXT_398": "Pre-aviso enviado a los padres, en No convocados solo veras a los jugadores que han confirmado asistencia.",
+    "TEXT_399": "Cambio guardado.",
+    "TEXT_400": "Notificacion enviada.",
+    "TEXT_401": "Detalles del Partido"
   },
   "REGISTER": {
     "TITLE": "Registro de usuario",
@@ -811,6 +849,7 @@
     }
   },
   "CUADROMANDO": {
+    "LOAD_ERROR": "No se ha podido cargar el cuadro de mandos. Inténtalo de nuevo.",
     "SUBMENU": {
       "BACK": "Panel de Control"
     },
@@ -856,11 +895,72 @@
       "VS": "VS"
     }
   },
+  "SIDEBAR": {
+    "SECTION_GENERAL": "General",
+    "SECTION_CLUB": "Club",
+    "SECTION_COACH": "Entrenador",
+    "SECTION_TEAM": "Equipo",
+    "SECTION_PLAYER": "Jugador",
+    "SECTION_ADMIN": "Administración",
+    "HOME": "Inicio",
+    "AI_ASSISTANT": "Asistente IA",
+    "DASHBOARD": "Cuadro de mandos",
+    "TEAMS": "Equipos",
+    "DOCUMENTS": "Documentos",
+    "FEES": "Cuotas",
+    "CLOTHING": "Ropa",
+    "SPONSORS": "Patrocinadores",
+    "NOTIFICATIONS": "Notificaciones",
+    "CALENDAR": "Calendario",
+    "TASKS": "Tareas",
+    "PLAYERS": "Jugadores",
+    "INFO_TEAM": "Info equipo",
+    "STATS_TEAM": "Estadísticas equipo",
+    "STATS_PLAYERS": "Estadísticas jugadores",
+    "STATS_PLAYERS_SHORT": "Estad. jugadores",
+    "STATS_TEAM_SHORT": "Estad. equipo",
+    "STANDINGS": "Clasificación",
+    "GALLERY": "Galería",
+    "INJURIES": "Lesiones",
+    "DEBRIEF": "Debrief",
+    "MY_PROFILE": "Mi perfil",
+    "PERSONAL_DATA": "Datos personales",
+    "PAY_FEES": "Pagar cuotas",
+    "DOCUMENTATION": "Documentación",
+    "ADMIN": "Admin",
+    "REGISTERS": "Registros",
+    "ACTIVITY": "Actividad",
+    "CHARTS": "Gráficos",
+    "SUGGESTIONS": "Sugerencias"
+  },
   "CALENDAR_CLUB": {
     "TITLE": "Calendario del club",
     "SUBTITLE": "Todos los entrenamientos y partidos de todos tus equipos en un solo calendario.",
     "LOADING": "Cargando calendario...",
     "TODAY": "Hoy",
+    "DAYS": {
+      "MON": "LUN",
+      "TUE": "MAR",
+      "WED": "MIÉ",
+      "THU": "JUE",
+      "FRI": "VIE",
+      "SAT": "SÁB",
+      "SUN": "DOM"
+    },
+    "MONTHS": {
+      "JAN": "Enero",
+      "FEB": "Febrero",
+      "MAR": "Marzo",
+      "APR": "Abril",
+      "MAY": "Mayo",
+      "JUN": "Junio",
+      "JUL": "Julio",
+      "AUG": "Agosto",
+      "SEP": "Septiembre",
+      "OCT": "Octubre",
+      "NOV": "Noviembre",
+      "DEC": "Diciembre"
+    },
     "FILTER": {
       "TITLE": "Equipos",
       "SHOW_ALL": "Mostrar todos",
@@ -880,6 +980,56 @@
       "MATCH": "Partido",
       "GO_TO_CALENDAR": "Ir al calendario del equipo",
       "VIEW_DETAIL": "Ver detalle"
+    }
+  },
+  "INJURIES_CLUB": {
+    "TITLE": "Gestión de lesiones",
+    "SUBTITLE": "Control y seguimiento de lesiones del club",
+    "KPI": {
+      "TOTAL": "Total lesiones",
+      "ACTIVE": "Activas",
+      "RECOVERING": "Recuperación",
+      "CLOSED": "Cerradas",
+      "PLAYERS_AFFECTED": "Jugadores afectados"
+    },
+    "SIDEBAR": {
+      "TITLE": "Por jugador",
+      "NO_DATA": "Sin datos",
+      "ACTIVE_PLURAL": "activas",
+      "ACTIVE_SINGULAR": "activa"
+    },
+    "FILTERS": {
+      "STATUS": "Estado",
+      "ALL": "Todas",
+      "ACTIVE": "Activas",
+      "RECOVERING": "Recuperación",
+      "CLOSED": "Cerradas",
+      "SEVERITY": "Gravedad",
+      "SEARCH_PLACEHOLDER": "Buscar jugador, lesión..."
+    },
+    "TABLE": {
+      "PLAYER": "Jugador",
+      "INJURY": "Lesión",
+      "TYPE": "Tipo",
+      "DATE": "Fecha",
+      "DAYS": "Días",
+      "STATUS": "Estado",
+      "SEVERITY": "Gravedad",
+      "ACTIONS": "Acciones"
+    },
+    "STATUS": {
+      "ACTIVE": "Activa",
+      "RECOVERING": "Recuperación",
+      "CLOSED": "Cerrada"
+    },
+    "SEVERITY": {
+      "LEVE": "Leve",
+      "MODERADA": "Moderada",
+      "GRAVE": "Grave"
+    },
+    "EMPTY": {
+      "TITLE": "Sin lesiones",
+      "MESSAGE": "No hay lesiones registradas con los filtros actuales."
     }
   },
   "AI_ASSISTANT": {
@@ -1465,7 +1615,21 @@
     },
     "CUSTOM_FIELDS_BTN": "Personalizar campos",
     "CUSTOM_FIELDS_TITLE": "Campos personalizados del jugador",
-    "CUSTOM_FIELDS_DESC": "Define los campos adicionales que los jugadores o padres/tutores de tu club deberán completar en su perfil."
+    "CUSTOM_FIELDS_DESC": "Define los campos adicionales que los jugadores o padres/tutores de tu club deberán completar en su perfil.",
+    "MESSAGES": {
+      "DOC_UPLOAD_SUCCESS": "Documento subido correctamente",
+      "DOC_UPLOAD_ERROR": "Error al subir el documento",
+      "SELECT_FILE": "Selecciona un archivo para subir.",
+      "INVALID_IMAGE_FORMAT": "Formato de archivo no válido. Sube una imagen en formato PNG o JPEG.",
+      "PDF_WORD_ONLY": "Solo se permiten archivos PDF o Word.",
+      "ACCEPT_AUTHORIZATION": "Debes aceptar la autorización o condiciones puestas por el club.",
+      "CONTENT_UPDATED": "Contenido actualizado correctamente",
+      "SELECT_TEAM_DROPDOWN": "Selecciona un equipo del desplegable.",
+      "MOVED_SUCCESS": "Movido correctamente, cuando vuelvas a entrar verás los cambios.",
+      "MOVE_SEASON_CONFIRM": "Vas a mover este jugador a otra temporada; no desaparecerá de la actual. ¿Continuar?",
+      "PLAYER_MOVED_SUCCESS": "Jugador movido correctamente",
+      "LOAD_ERROR": "Error al cargar el listado."
+    }
   },
   "SPONSOR": {
     "TITLE": "Patrocinador",
@@ -1636,7 +1800,14 @@
     },
     "CUSTOM_FIELDS_BTN": "Personalizar campos",
     "CUSTOM_FIELDS_TITLE": "Campos personalizados del perfil",
-    "CUSTOM_FIELDS_DESC": "Define los campos adicionales que los entrenadores de tu club deberán completar en su perfil."
+    "CUSTOM_FIELDS_DESC": "Define los campos adicionales que los entrenadores de tu club deberán completar en su perfil.",
+    "MESSAGES": {
+      "DOC_UPLOAD_SUCCESS": "Documento subido correctamente",
+      "DOC_UPLOAD_ERROR": "Error al subir el documento",
+      "SELECT_FILE": "Selecciona un archivo para subir.",
+      "CUSTOM_FIELDS_SAVED": "Campos personalizados guardados",
+      "LOAD_ERROR": "Error al cargar el listado."
+    }
   },
   "DOCUMENTS_CLUB": {
     "TAB_PLAYERS": "Jugadores",
@@ -2316,12 +2487,34 @@
     "SUGGESTION_AVG_MINUTES": "Minutos promedio",
     "SUGGESTION_BEST_TEAM": "Mejor equipo",
     "SUGGESTION_POINTS_CHART": "Gráfica puntos",
+    "SUGGESTION_PERFORMANCE_ANALYSIS": "Análisis de rendimiento",
     "SUGGESTION_GOALS_COMPARISON": "Comparativa goles",
     "SUGGESTION_AVG_WINS": "Promedio victorias",
     "SUGGESTION_RECENT_STREAKS": "Rachas recientes",
     "USER_LABEL": "Tú:",
     "PLACEHOLDER": "Escribe tu consulta aquí...",
     "SEND": "Enviar",
-    "HINT_CTRL_ENTER": "Presiona Ctrl+Enter para enviar"
+    "HINT_CTRL_ENTER": "Presiona Ctrl+Enter para enviar",
+    "WELCOME_PLAYERS": "¡Hola! 👋 Soy tu asistente de análisis de estadísticas. Puedo ayudarte a visualizar y analizar los datos de tus jugadores. ¿En qué te puedo ayudar?",
+    "WELCOME_TEAMS": "¡Hola! 👋 Soy tu asistente de análisis de estadísticas. Puedo ayudarte a visualizar y analizar los datos de tus equipos. ¿En qué te puedo ayudar?",
+    "ERROR_MESSAGE": "❌ Lo siento, ha ocurrido un error al procesar tu consulta. Por favor, intenta de nuevo.",
+    "SHOWING": "Mostrando",
+    "OF": "de"
+  },
+  "EQUIPOS": {
+    "LINK_COPIED": "¡Enlace copiado al portapapeles!",
+    "LINK_COPY_ERROR": "No se pudo copiar el enlace. Intenta de nuevo.",
+    "SUBSCRIPTION_REQUIRED_TITLE": "Suscripción requerida",
+    "SUBSCRIPTION_REQUIRED_MESSAGE": "No puedes crear más equipos. Necesitas actualizar tu suscripción. Si tu club pertenece a una federación, contacta con ellos para ampliar el límite.",
+    "GO_TO_SUBSCRIPTION": "Ir a suscripción",
+    "SELECT_CATEGORY_FIRST": "Debes seleccionar o crear la categoría primero. No vale solo con escribirlo.",
+    "DELETE_TEAM_TITLE": "Eliminar equipo",
+    "DELETE_TEAM_MESSAGE": "¿Estás seguro de que deseas eliminar el equipo {{name}}?",
+    "TEAM_DELETED_SUCCESS": "Equipo eliminado correctamente",
+    "TEAM_DELETED_ERROR": "Error al eliminar el equipo",
+    "SELECT_XLSX_FILE": "Por favor selecciona un archivo en formato .xlsx",
+    "PLAYERS_UPLOADED_SUCCESS": "Jugadores insertados en los equipos correctamente",
+    "UPLOAD_ERROR": "Error al subir el archivo",
+    "ACCEPT_BROWSER_MANAGEMENT": "Debes aceptar que la suscripción se gestiona desde el navegador"
   }
 }

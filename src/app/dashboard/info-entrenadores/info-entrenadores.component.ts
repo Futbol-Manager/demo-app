@@ -6,8 +6,8 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import * as XLSX from 'xlsx';
+import { NotificationService } from 'src/app/core/services/notification/notification.service';
 import { getCurrentSeasonString, getSeasons } from 'src/app/core/utils/season.utils';
 
 /* =========================
@@ -175,7 +175,7 @@ export class InfoEntrenadoresComponent implements OnInit {
     private route: ActivatedRoute,
     private clubService: ClubService,
     private loginService: LoginService,
-    private snackBar: MatSnackBar,
+    private notification: NotificationService,
     private location: Location,
   ) {}
 
@@ -508,15 +508,13 @@ export class InfoEntrenadoresComponent implements OnInit {
       this.clubService.uploadDocPadres(file, dto).subscribe({
         next: () => {
           this.loadDocuments();
-          this.snackBar.open('Documento subido correctamente', 'Cerrar', { duration: 3000 });
+          this.notification.success('TRAINERS.MESSAGES.DOC_UPLOAD_SUCCESS');
           this.cerrarModalDocUpload();
         },
-        error: () => {
-          this.snackBar.open('Error al subir el documento', 'Cerrar', { duration: 3000 });
-        },
+        error: () => this.notification.error('TRAINERS.MESSAGES.DOC_UPLOAD_ERROR'),
       });
     } else {
-      alert('Selecciona un archivo para subir.');
+      this.notification.warning('TRAINERS.MESSAGES.SELECT_FILE');
     }
   }
 
@@ -580,9 +578,8 @@ export class InfoEntrenadoresComponent implements OnInit {
   }
 
   onCustomFieldsSaved(fields: any[]): void {
-    this.snackBar.open('Campos personalizados guardados', 'Cerrar', { duration: 3000 });
+    this.notification.success('TRAINERS.MESSAGES.CUSTOM_FIELDS_SAVED');
     this.cerrarModalCustomFields();
-    // Recargar campos personalizados para actualizar las columnas dinámicas
     this.cargarCamposPersonalizados();
   }
 

@@ -9,16 +9,16 @@
   <nav class="sidebar-nav">
     <div *ngFor="let section of sections" class="sidebar-section" [class.d-none]="!section.visible">
 
-      <span class="sidebar-section-title" *ngIf="!collapsed">{{ section.title }}</span>
+      <span class="sidebar-section-title" *ngIf="!collapsed">{{ section.title | translate }}</span>
       <div class="sidebar-section-divider" *ngIf="collapsed"></div>
 
       <a *ngFor="let item of section.items"
          class="sidebar-item"
          [class.sidebar-item--active]="isActive(item)"
          (click)="navigate(item)"
-         [title]="collapsed ? item.label : ''">
+         [title]="collapsed ? (item.label | translate) : ''">
         <i class="bi {{ item.icon }} sidebar-item-icon"></i>
-        <span class="sidebar-item-label" *ngIf="!collapsed">{{ item.label }}</span>
+        <span class="sidebar-item-label" *ngIf="!collapsed">{{ item.label | translate }}</span>
       </a>
     </div>
   </nav>

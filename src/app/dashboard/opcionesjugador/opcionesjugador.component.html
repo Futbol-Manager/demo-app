@@ -12,99 +12,42 @@
   <!-- ROW 1 -->
   <div class="row g-3">
     <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(2)">
-      <div class="dashboard-card bg-personal-data">
-        <div class="card-overlay">
-          <i class="bi bi-person card-action-icon"></i>
-          <h5>Datos personales</h5>
-        </div>
-      </div>
+      <app-dashboard-card icon="bi bi-person" [title]="'OPCIONES_JUGADOR.DATOS_PERSONALES' | translate" bgClass="bg-personal-data"></app-dashboard-card>
     </div>
-
     <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(4)">
-      <div class="dashboard-card bg-calendar">
-        <div class="card-overlay">
-          <i class="bi bi-calendar-event card-action-icon"></i>
-          <h5>Calendario</h5>
-        </div>
-      </div>
+      <app-dashboard-card icon="bi bi-calendar-event" [title]="'OPCIONES_JUGADOR.CALENDARIO' | translate" bgClass="bg-calendar"></app-dashboard-card>
     </div>
-
     <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(9)">
-      <div class="dashboard-card bg-pay-fees">
-        <div class="card-overlay">
-          <i class="bi bi-credit-card card-action-icon"></i>
-          <h5>Pagar cuotas</h5>
-        </div>
-      </div>
+      <app-dashboard-card icon="bi bi-credit-card" [title]="'OPCIONES_JUGADOR.PAGAR_CUOTAS' | translate" bgClass="bg-pay-fees"></app-dashboard-card>
     </div>
-
     <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(10)">
-      <div class="dashboard-card bg-documents">
-        <div class="card-overlay">
-          <i class="bi bi-file-earmark-pdf card-action-icon"></i>
-          <h5>Documentación</h5>
-        </div>
-      </div>
+      <app-dashboard-card icon="bi bi-file-earmark-pdf" [title]="'OPCIONES_JUGADOR.DOCUMENTACION' | translate" bgClass="bg-documents"></app-dashboard-card>
     </div>
   </div>
 
   <!-- ROW 2 -->
   <div class="row g-3 mt-3">
     <div *ngIf="showOpcionesOk" class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(3)">
-      <div class="dashboard-card bg-ranking">
-        <div class="card-overlay">
-          <i class="bi bi-trophy card-action-icon"></i>
-          <h5>Clasificación y resultados</h5>
-        </div>
-      </div>
+      <app-dashboard-card icon="bi bi-trophy" [title]="'OPCIONES_JUGADOR.CLASIFICACION_RESULTADOS' | translate" bgClass="bg-ranking"></app-dashboard-card>
     </div>
-
     <div *ngIf="showOpcionesOk" class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(7)">
-      <div class="dashboard-card bg-my-stats">
-        <div class="card-overlay">
-          <i class="bi bi-graph-up card-action-icon"></i>
-          <h5>Mis estadísticas</h5>
-        </div>
-      </div>
+      <app-dashboard-card icon="bi bi-graph-up" [title]="'OPCIONES_JUGADOR.MIS_ESTADISTICAS' | translate" bgClass="bg-my-stats"></app-dashboard-card>
     </div>
-
     <div *ngIf="showOpcionesOk" class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(8)">
-      <div class="dashboard-card bg-gallery">
-        <div class="card-overlay">
-          <i class="bi bi-images card-action-icon"></i>
-          <h5>Galería</h5>
-        </div>
-      </div>
+      <app-dashboard-card icon="bi bi-images" [title]="'OPCIONES_JUGADOR.GALERIA' | translate" bgClass="bg-gallery"></app-dashboard-card>
     </div>
-
     <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(6)">
-      <div class="dashboard-card bg-notifications">
-        <div class="card-overlay">
-          <i class="bi bi-bell card-action-icon"></i>
-          <h5>Notificaciones</h5>
-        </div>
-      </div>
+      <app-dashboard-card icon="bi bi-bell" [title]="'OPCIONES_JUGADOR.NOTIFICACIONES' | translate" bgClass="bg-notifications"></app-dashboard-card>
     </div>
   </div>
 
   <!-- ROW 3 -->
   <div *ngIf="showOpcionesOk" class="row g-3 mt-3">
     <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(5)">
-      <div class="dashboard-card bg-sponsors">
-        <div class="card-overlay">
-          <i class="bi bi-collection card-action-icon"></i>
-          <h5>Patrocinadores</h5>
-        </div>
-      </div>
+      <app-dashboard-card icon="bi bi-collection" [title]="'OPCIONES_JUGADOR.PATROCINADORES' | translate" bgClass="bg-sponsors"></app-dashboard-card>
     </div>
-
     <div class="col-12 col-sm-6 col-lg-3" (click)="irAPantalla(11)">
-      <div class="dashboard-card bg-injuries">
-        <div class="card-overlay">
-          <i class="bi bi-heart-pulse card-action-icon"></i>
-          <h5>Lesiones</h5>
-        </div>
-      </div>
+      <app-dashboard-card icon="bi bi-heart-pulse" [title]="'OPCIONES_JUGADOR.LESIONES' | translate" bgClass="bg-injuries"></app-dashboard-card>
     </div>
   </div>
 

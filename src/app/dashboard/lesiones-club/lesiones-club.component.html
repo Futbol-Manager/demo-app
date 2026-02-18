@@ -10,8 +10,8 @@
 <div class="lesiones-club-header">
   <div class="header-content">
     <div class="header-left">
-      <h2 class="page-title"><i class="bi bi-heart-pulse me-2"></i>{{ 'CUADROMANDO.OPTIONS.INJURIES' | translate }}</h2>
-      <p class="page-subtitle">{{ 'CUADROMANDO.OPTIONS.INJURIES_DESC' | translate }}</p>
+      <h2 class="page-title"><i class="bi bi-heart-pulse me-2"></i>{{ 'INJURIES_CLUB.TITLE' | translate }}</h2>
+      <p class="page-subtitle">{{ 'INJURIES_CLUB.SUBTITLE' | translate }}</p>
     </div>
   </div>
 </div>
@@ -22,35 +22,35 @@
     <div class="kpi-icon"><i class="bi bi-clipboard2-pulse"></i></div>
     <div class="kpi-info">
       <span class="kpi-number">{{ totalInjuries }}</span>
-      <span class="kpi-label">Total lesiones</span>
+      <span class="kpi-label">{{ 'INJURIES_CLUB.KPI.TOTAL' | translate }}</span>
     </div>
   </div>
   <div class="kpi-card kpi-active">
     <div class="kpi-icon"><i class="bi bi-exclamation-circle-fill"></i></div>
     <div class="kpi-info">
       <span class="kpi-number">{{ activeInjuries }}</span>
-      <span class="kpi-label">Activas</span>
+      <span class="kpi-label">{{ 'INJURIES_CLUB.KPI.ACTIVE' | translate }}</span>
     </div>
   </div>
   <div class="kpi-card kpi-recovering">
     <div class="kpi-icon"><i class="bi bi-arrow-repeat"></i></div>
     <div class="kpi-info">
       <span class="kpi-number">{{ recoveringInjuries }}</span>
-      <span class="kpi-label">Recuperación</span>
+      <span class="kpi-label">{{ 'INJURIES_CLUB.KPI.RECOVERING' | translate }}</span>
     </div>
   </div>
   <div class="kpi-card kpi-closed">
     <div class="kpi-icon"><i class="bi bi-check-circle-fill"></i></div>
     <div class="kpi-info">
       <span class="kpi-number">{{ closedInjuries }}</span>
-      <span class="kpi-label">Cerradas</span>
+      <span class="kpi-label">{{ 'INJURIES_CLUB.KPI.CLOSED' | translate }}</span>
     </div>
   </div>
   <div class="kpi-card kpi-players">
     <div class="kpi-icon"><i class="bi bi-people-fill"></i></div>
     <div class="kpi-info">
       <span class="kpi-number">{{ playersAffected }}</span>
-      <span class="kpi-label">Jugadores afectados</span>
+      <span class="kpi-label">{{ 'INJURIES_CLUB.KPI.PLAYERS_AFFECTED' | translate }}</span>
     </div>
   </div>
 </div>
@@ -60,20 +60,22 @@
 
   <!-- LEFT: By-Player Summary -->
   <div class="sidebar-panel">
-    <h5 class="panel-title"><i class="bi bi-bar-chart-line me-2"></i>Por jugador</h5>
+    <h5 class="panel-title"><i class="bi bi-bar-chart-line me-2"></i>{{ 'INJURIES_CLUB.SIDEBAR.TITLE' | translate }}</h5>
     <div class="team-stats-list">
       <div *ngFor="let ts of teamStats" class="team-stat-row"
            [class.active]="filterTeam === ts.team"
            (click)="filterTeam = filterTeam === ts.team ? '' : ts.team; applyFilters()">
         <span class="team-stat-name">{{ ts.team }}</span>
         <div class="team-stat-badges">
-          <span class="badge-active" *ngIf="ts.active > 0">{{ ts.active }} activa{{ ts.active > 1 ? 's' : '' }}</span>
+          <span class="badge-active" *ngIf="ts.active > 0">
+            {{ ts.active }} {{ ts.active > 1 ? ('INJURIES_CLUB.SIDEBAR.ACTIVE_PLURAL' | translate) : ('INJURIES_CLUB.SIDEBAR.ACTIVE_SINGULAR' | translate) }}
+          </span>
           <span class="badge-total">{{ ts.total }}</span>
         </div>
       </div>
       <div *ngIf="teamStats.length === 0" class="empty-sidebar">
         <i class="bi bi-shield-check opacity-50"></i>
-        <span>Sin datos</span>
+        <span>{{ 'INJURIES_CLUB.SIDEBAR.NO_DATA' | translate }}</span>
       </div>
     </div>
   </div>
@@ -83,31 +85,31 @@
     <!-- Filters bar -->
     <div class="filters-bar">
       <div class="filter-chips">
-        <button class="filter-chip" [class.active]="filterStatus === 'all'" (click)="setFilter('all')">Todas</button>
-        <button class="filter-chip chip-active" [class.active]="filterStatus === 'activa'" (click)="setFilter('activa')">Activas</button>
-        <button class="filter-chip chip-recovering" [class.active]="filterStatus === 'recuperacion'" (click)="setFilter('recuperacion')">Recuperación</button>
-        <button class="filter-chip chip-closed" [class.active]="filterStatus === 'cerrada'" (click)="setFilter('cerrada')">Cerradas</button>
+        <button class="filter-chip" [class.active]="filterStatus === 'all'" (click)="setFilter('all')">{{ 'INJURIES_CLUB.FILTERS.ALL' | translate }}</button>
+        <button class="filter-chip chip-active" [class.active]="filterStatus === 'activa'" (click)="setFilter('activa')">{{ 'INJURIES_CLUB.FILTERS.ACTIVE' | translate }}</button>
+        <button class="filter-chip chip-recovering" [class.active]="filterStatus === 'recuperacion'" (click)="setFilter('recuperacion')">{{ 'INJURIES_CLUB.FILTERS.RECOVERING' | translate }}</button>
+        <button class="filter-chip chip-closed" [class.active]="filterStatus === 'cerrada'" (click)="setFilter('cerrada')">{{ 'INJURIES_CLUB.FILTERS.CLOSED' | translate }}</button>
       </div>
       <div class="filter-controls">
         <select class="form-select form-select-sm filter-select" [(ngModel)]="filterSeverity" (change)="applyFilters()">
-          <option value="">Todas las gravedades</option>
-          <option value="leve">Leve</option>
-          <option value="moderada">Moderada</option>
-          <option value="grave">Grave</option>
+          <option value="">{{ 'INJURIES_CLUB.FILTERS.SEVERITY' | translate }}</option>
+          <option value="leve">{{ 'INJURIES_CLUB.SEVERITY.LEVE' | translate }}</option>
+          <option value="moderada">{{ 'INJURIES_CLUB.SEVERITY.MODERADA' | translate }}</option>
+          <option value="grave">{{ 'INJURIES_CLUB.SEVERITY.GRAVE' | translate }}</option>
         </select>
         <div class="search-input-wrap">
           <i class="bi bi-search"></i>
-          <input type="text" class="form-control form-control-sm" [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="Buscar jugador, zona...">
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="searchTerm" (input)="applyFilters()" [placeholder]="'INJURIES_CLUB.FILTERS.SEARCH_PLACEHOLDER' | translate">
         </div>
         <button class="btn btn-outline-secondary btn-sm" *ngIf="filterTeam || filterSeverity || searchTerm || filterStatus !== 'all'" (click)="clearFilters()">
-          <i class="bi bi-x-circle me-1"></i>Limpiar
+          <i class="bi bi-x-circle me-1"></i>{{ 'COMMON.CLEAR' | translate }}
         </button>
       </div>
     </div>
 
     <!-- Results count -->
     <div class="results-count">
-      <span>{{ filteredInjuries.length }} lesión{{ filteredInjuries.length !== 1 ? 'es' : '' }}</span>
+      <span>{{ filteredInjuries.length }} {{ filteredInjuries.length !== 1 ? ('INJURIES_CLUB.KPI.TOTAL' | translate).toLowerCase() : 'lesión' }}</span>
     </div>
 
     <!-- Injuries table -->
@@ -115,13 +117,13 @@
       <table class="injuries-table" *ngIf="filteredInjuries.length > 0">
         <thead>
           <tr>
-            <th>Jugador</th>
-            <th>Zona</th>
-            <th>Tipo</th>
-            <th>Gravedad</th>
-            <th>Fecha</th>
-            <th>Días</th>
-            <th>Estado</th>
+            <th>{{ 'INJURIES_CLUB.TABLE.PLAYER' | translate }}</th>
+            <th>{{ 'INJURIES_CLUB.TABLE.INJURY' | translate }}</th>
+            <th>{{ 'INJURIES_CLUB.TABLE.TYPE' | translate }}</th>
+            <th>{{ 'INJURIES_CLUB.TABLE.SEVERITY' | translate }}</th>
+            <th>{{ 'INJURIES_CLUB.TABLE.DATE' | translate }}</th>
+            <th>{{ 'INJURIES_CLUB.TABLE.DAYS' | translate }}</th>
+            <th>{{ 'INJURIES_CLUB.TABLE.STATUS' | translate }}</th>
           </tr>
         </thead>
         <tbody>
@@ -134,7 +136,7 @@
             <td>{{ inj.type }}</td>
             <td>
               <span class="severity-badge" [style.background]="getSeverityColor(inj.severity) + '22'" [style.color]="getSeverityColor(inj.severity)">
-                {{ inj.severity | titlecase }}
+                {{ getSeverityTranslation(inj.severity) }}
               </span>
             </td>
             <td>{{ inj.dateInjury }}</td>
@@ -152,8 +154,8 @@
       <!-- Empty state -->
       <div class="empty-table" *ngIf="filteredInjuries.length === 0">
         <i class="bi bi-shield-check display-4 opacity-50"></i>
-        <p>No se encontraron lesiones con los filtros seleccionados</p>
-        <button class="btn btn-outline-primary btn-sm" (click)="clearFilters()">Limpiar filtros</button>
+        <p>{{ 'INJURIES_CLUB.EMPTY.MESSAGE' | translate }}</p>
+        <button class="btn btn-outline-primary btn-sm" (click)="clearFilters()">{{ 'COMMON.CLEAR' | translate }}</button>
       </div>
     </div>
   </div>

@@ -177,7 +177,7 @@
 
       <div class="modal-left">
 
-        <h6 class="section-title">Actividades del día</h6>
+        <h6 class="section-title">{{ 'CAL.TEXT_388' | translate }}</h6>
 
         <!-- LISTA CON SCROLL -->
         <div class="activities-list">
@@ -205,14 +205,14 @@
         <!-- FOOTER FIJO -->
         <div class="left-footer position-relative" *ngIf="this.usuarioActual!.profileType.profileId != 3">
           <button class="btn btn-primary-pro w-100" type="button" (click)="toggleNewActivityMenu($event)">
-            <i class="bi bi-plus-circle"></i> Nueva actividad
+            <i class="bi bi-plus-circle"></i> {{ 'CAL.TEXT_389' | translate }}
           </button>
 
           <div class="new-activity-menu" *ngIf="showNewActivityMenu">
             <button (click)="selectNewActivity('entrenamiento')"><i class="fa-solid fa-dumbbell"></i>
-              Entrenamiento</button>
-            <button (click)="selectNewActivity('partido')"><i class="fa-solid fa-futbol"></i> Partido</button>
-            <button (click)="selectNewActivity('otra')"><i class="fa-regular fa-square-plus"></i> Otra</button>
+              {{ 'CAL.TEXT_062' | translate }}</button>
+            <button (click)="selectNewActivity('partido')"><i class="fa-solid fa-futbol"></i> {{ 'CAL.TEXT_066' | translate }}</button>
+            <button (click)="selectNewActivity('otra')"><i class="fa-regular fa-square-plus"></i> {{ 'CAL.TEXT_387' | translate }}</button>
           </div>
         </div>
 
@@ -232,7 +232,7 @@
             <h4>
               {{ mode === 'create-entrenamiento'
               ? ('CAL.TEXT_067' | translate)
-              : ('Entrenamiento ' + daySession) }}
+              : (('CAL.TEXT_062' | translate) + ' ' + daySession) }}
             </h4>
 
             <p *ngIf="mode === 'create-entrenamiento'">
@@ -290,7 +290,7 @@
             <section class="settings-section">
               <!-- TÍTULO Entrenamiento -->
               <h2 class="section-title">
-                Detalles del entrenamiento
+                {{ 'CAL.TEXT_390' | translate }}
               </h2>
 
               <!-- DIVISOR SUTIL -->
@@ -601,7 +601,7 @@
           <!-- HEADER -->
           <div class="detail-header">
             <h5 class="modal-title">
-              {{ isCreate ? ('CAL.TEXT_070' | translate) : ('Partido ' + daySession) }}
+              {{ isCreate ? ('CAL.TEXT_070' | translate) : (('CAL.TEXT_066' | translate) + ' ' + daySession) }}
             </h5>
           </div>
           <div>
@@ -684,7 +684,7 @@
               <section class="settings-section">
                 <!-- TÍTULO Entrenamiento -->
                 <h2 class="section-title">
-                  Detalles del Patido
+                  {{ 'CAL.TEXT_401' | translate }}
                 </h2>
 
                 <!-- DIVISOR SUTIL -->
@@ -1039,11 +1039,8 @@
             <div class="empty-icon">
               <i class="bi bi-calendar-plus"></i>
             </div>
-            <h5 class="empty-title">No hay ninguna actividad seleccionada</h5>
-            <p class="empty-text">
-              Selecciona una actividad del listado o crea una nueva desde
-              <strong>“Nueva actividad”</strong>.
-            </p>
+            <h5 class="empty-title">{{ 'CAL.TEXT_391' | translate }}</h5>
+            <p class="empty-text">{{ 'CAL.TEXT_392' | translate }}</p>
           </div>
         </div>
       </div>
@@ -1191,14 +1188,14 @@
   </div>
   <div class="modal saas-modal-post-partido d-block" tabindex="-1" role="dialog" style="z-index: 1060;">
     <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content rounded-4 shadow-lg">
-        <div class="modal-header border-0 pb-2 bg-light d-flex align-items-center"
+      <div class="modal-content rounded-4 shadow-lg pp-modal-content">
+        <div class="modal-header border-0 pb-2 pp-modal-header d-flex align-items-center"
           style="border-top-left-radius: 1.2rem; border-top-right-radius: 1.2rem;">
-          <h5 class="modal-title fw-bold" style="font-size: 1.5rem; color: #222;">{{ 'CAL.TEXT_100' | translate }}</h5>
+          <h5 class="modal-title fw-bold pp-modal-title">{{ 'CAL.TEXT_100' | translate }}</h5>
           <button type="button" class="btn-close custom-close-btn" aria-label="Close"
             (click)="cerrarModalPostPartido()"></button>
         </div>
-        <div class="modal-body pt-0 pb-3 px-4" style="background: #F8FAFD;">
+        <div class="modal-body pt-0 pb-3 px-4 pp-modal-body">
           <ul class="nav nav-tabs border-0 saas-nav-tabs" id="myTab" role="tablist" style="margin-bottom: 1.5rem;">
             <li class="nav-item" role="presentation">
               <button class="nav-link saas-nav-link active" id="simple-tab" data-bs-toggle="tab"

@@ -41,6 +41,7 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core';
 
 declare var html2pdf: any;
 
@@ -865,6 +866,7 @@ export class CalendarioComponent implements OnInit {
     private loginService: LoginService,
     private location: Location,
     private toastr: ToastrService,
+    private translate: TranslateService,
   ) { }
 
   ngOnInit(): void {
@@ -2481,11 +2483,9 @@ export class CalendarioComponent implements OnInit {
         this.respPostPartido = new RespPostPartido({});
         this.showModalFormPostPartido = false;
         if (!response.data) {
-          this.toastr.warning(
-            'No se han enviado las respuestas porque ya se rellenó anteriormente y solo se puede una vez por partido.',
-          );
+          this.toastr.warning(this.translate.instant('CAL.TEXT_393'));
         } else {
-          this.toastr.success('Respuestas enviadas correctamente.');
+          this.toastr.success(this.translate.instant('CAL.TEXT_394'));
         }
       },
       (error) => {
@@ -2976,11 +2976,7 @@ export class CalendarioComponent implements OnInit {
 
   toggleChangeSubirTarea(actualValue: number) {
     const nuevoValor = actualValue === 0 ? 1 : 0;
-    const confirmacion = confirm(
-      'AVISO: Al activar esta opción, su tarea de entrenamiento será pública y visible para otros entrenadores. ' +
-      'Cualquier dato ingresado será accesible. No está permitido publicar información, datos o imágenes con derechos de autor sin el permiso del autor. ' +
-      'Cualquier contenido que infrinja esta norma será eliminado. ¿Estás seguro?',
-    );
+    const confirmacion = confirm(this.translate.instant('CAL.TEXT_395'));
 
     if (confirmacion) {
       this.subirTarea = nuevoValor;
@@ -3178,7 +3174,7 @@ export class CalendarioComponent implements OnInit {
     this.playerService
       .updateConvocatoria(this.convocatoriaJSON, this.matchPreparationId)
       .subscribe(() => {
-        this.toastr.success('Convocatoria guardada');
+        this.toastr.success(this.translate.instant('CAL.TEXT_396'));
         this.showNotificar = true;
       });
   }
@@ -3276,7 +3272,7 @@ export class CalendarioComponent implements OnInit {
     this.playerService
       .notificateMatchPlayer(ui, this.teamId)
       .subscribe((response) => {
-        this.toastr.success('Notificados con éxito.');
+        this.toastr.success(this.translate.instant('CAL.TEXT_397'));
       });
   }
 
@@ -3322,9 +3318,7 @@ export class CalendarioComponent implements OnInit {
     this.playerService
       .notificateMatchPlayer(ui, this.teamId)
       .subscribe((response) => {
-        this.toastr.info(
-          'Pre-aviso enviado a los padres, en No convocados solo veras a los jugadores que han confirmado asistencia.',
-        );
+        this.toastr.info(this.translate.instant('CAL.TEXT_398'));
       });
   }
 
@@ -3369,7 +3363,7 @@ export class CalendarioComponent implements OnInit {
       .subscribe(
         (resp) => {
           if (resp.data) {
-            this.toastr.success('Cambio guardado.');
+            this.toastr.success(this.translate.instant('CAL.TEXT_399'));
           }
         },
         (error) => {
@@ -3473,7 +3467,7 @@ export class CalendarioComponent implements OnInit {
     };
 
     this.playerService.notificarNoAsistencia(dto).subscribe((response) => {
-      this.toastr.success('Notificación enviada.');
+      this.toastr.success(this.translate.instant('CAL.TEXT_400'));
       this.motivoNoAsistencia = '';
     });
   }

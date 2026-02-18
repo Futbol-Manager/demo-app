@@ -1450,6 +1450,24 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   min-height: 0;
 }
 
+/* Clases base para el modal post-partido (light mode) */
+.pp-modal-content {
+  background: #ffffff;
+}
+
+.pp-modal-header {
+  background: #f8fafd;
+}
+
+.pp-modal-title {
+  font-size: 1.5rem;
+  color: #222;
+}
+
+.pp-modal-body {
+  background: #f8fafd;
+}
+
 .pp-tab-content {
   padding: 0;
   margin-top: 0;
@@ -3810,7 +3828,8 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   /* ---- MONTH TITLE ---- */
   .month-title {
-    color: var(--text-secondary);
+    color: var(--text-primary);
+    font-weight: 700;
   }
 
   /* ---- YEAR VIEW ---- */
@@ -3849,8 +3868,9 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   .calendar-saas thead tr,
   .calendar-saas thead th {
-    background: var(--color-navy);
-    color: #fff;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--color-primary);
   }
 
   .calendar-saas thead th:last-child {
@@ -3890,6 +3910,32 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   .modal-content {
     background: var(--bg-card);
     color: var(--text-primary);
+  }
+
+  .modal-header {
+    background: var(--bg-card);
+    border-bottom-color: var(--border-color);
+    color: var(--text-primary);
+  }
+
+  .modal-title {
+    color: var(--text-primary);
+  }
+
+  .modal-left {
+    border-right-color: var(--border-color);
+  }
+
+  .form-header h4 {
+    color: var(--text-primary);
+  }
+
+  h2.section-title {
+    color: var(--text-primary);
+  }
+
+  .btn-close {
+    filter: invert(1) grayscale(100%) brightness(2);
   }
 
   /* ---- LEFT FOOTER ---- */
@@ -3936,9 +3982,19 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   /* ---- ACTIVITY BADGES ---- */
   .activity.training {
-    background: rgba(0, 44, 64, 0.2);
-    color: var(--text-primary);
-    border-left-color: var(--color-primary);
+    background: rgba(var(--color-primary-rgb), 0.22);
+    color: #e2f5ec;
+    border-left: 3px solid var(--color-primary);
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+
+  .activity.match {
+    background: rgba(49, 178, 112, 0.35);
+    color: #e2f5ec;
+    border-left: 3px solid #31b270;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
   }
 
   /* ---- SAAS LABEL ---- */
@@ -4074,18 +4130,81 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .nav-tabs .nav-link {
-    background-color: var(--color-navy);
-    color: #fff;
+    background-color: var(--bg-surface);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+  }
+
+  .nav-tabs .nav-link:hover {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+    border-color: var(--border-strong);
   }
 
   .nav-tabs .nav-link.active {
     background-color: var(--color-primary);
     border-color: var(--color-primary);
+    color: #fff;
   }
 
   .tab-pane {
     border-color: var(--border-color);
     background: var(--bg-card);
+  }
+
+  /* ---- POST-PARTIDO MODAL ---- */
+  .pp-modal-content {
+    background: var(--bg-card);
+    color: var(--text-primary);
+  }
+
+  .pp-modal-header {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color) !important;
+  }
+
+  .pp-modal-title {
+    color: var(--text-primary);
+  }
+
+  .pp-modal-body {
+    background: var(--bg-surface);
+  }
+
+  .saas-nav-tabs .saas-nav-link {
+    background-color: var(--bg-surface);
+    color: var(--text-secondary);
+    border-color: var(--border-color);
+  }
+
+  .saas-nav-tabs .saas-nav-link.active {
+    background-color: var(--color-primary);
+    color: #fff;
+    border-color: var(--color-primary);
+  }
+
+  .saas-nav-tabs .saas-nav-link:hover:not(.active) {
+    background-color: var(--bg-hover);
+    color: var(--text-primary);
+  }
+
+  .pp-simple-form__input,
+  .pp-simple-form__select,
+  .pp-simple-form__textarea,
+  .pp-avanzado-form__input,
+  .pp-avanzado-form__select {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border-color);
+  }
+
+  .pp-simple-form__label,
+  .pp-avanzado-form__label {
+    color: var(--text-secondary);
+  }
+
+  .custom-close-btn {
+    filter: invert(1) grayscale(100%) brightness(2);
   }
 
   /* ---- CUSTOM SELECT ---- */
@@ -4122,18 +4241,35 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .saas-btn-primary {
-    background: var(--color-navy);
+    background: var(--color-primary);
+    color: #fff;
+  }
+
+  .saas-btn-primary:hover {
+    background: var(--color-accent-hover, #34b574);
+    color: #fff;
+  }
+
+  .saas-btn-success {
+    background: #31b270;
+    color: #fff;
+  }
+
+  .saas-btn-success:hover {
+    background: #27925c;
+    color: #fff;
   }
 
   .saas-btn-outline {
     background: var(--bg-card);
     color: var(--text-primary);
-    border-color: var(--border-color);
+    border-color: var(--border-strong);
   }
 
   .saas-btn-outline:hover {
-    background: var(--color-beige);
-    color: var(--color-navy);
+    background: rgba(var(--color-primary-rgb), 0.12);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
   }
 
   /* ---- SAAS TASK BTN ---- */
@@ -4145,17 +4281,19 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .saas-task-btn-outline:hover {
-    background: var(--color-beige);
-    color: var(--color-navy);
+    background: rgba(var(--color-primary-rgb), 0.12);
+    color: var(--color-primary);
+    border-color: var(--color-primary);
   }
 
   .saas-task-btn-outline.danger {
-    border-color: var(--color-navy);
+    border-color: #f87171;
+    color: #f87171;
   }
 
   .saas-task-btn-outline.danger:hover {
-    background: var(--color-navy);
-    color: #fff;
+    background: rgba(239, 68, 68, 0.15);
+    color: #f87171;
   }
 
   /* ---- SETTINGS ---- */
@@ -4556,6 +4694,20 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
 
   .pp-avanzado-hr {
     border-color: var(--border-color);
+  }
+
+  /* ---- NAV BUTTONS ---- */
+  .nav-btn {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+  }
+
+  .nav-btn:hover {
+    background: rgba(var(--color-primary-rgb), 0.15);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    transform: translateY(-1px);
   }
 
   /* ---- RESPONSIVE MOBILE FIX ---- */

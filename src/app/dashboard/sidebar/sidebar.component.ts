@@ -150,91 +150,89 @@ export class SidebarComponent implements OnInit, OnDestroy {
     const hasTeam = this.teamId > 0;
     const hasPlayer = this.playerId > 0;
 
-    // ─── General (siempre visible) ───
+    // ─── General (siempre visible) ─── Claves i18n SIDEBAR.*
     const generalItems: SidebarItem[] = [
-      { id: 'home', label: 'Inicio', icon: 'bi-house-door', route: '/dashboard/inicio' },
+      { id: 'home', label: 'SIDEBAR.HOME', icon: 'bi-house-door', route: '/dashboard/inicio' },
     ];
-
     if (this.profileId === 2) {
-      generalItems.push({ id: 'ai', label: 'Asistente IA', icon: 'bi-robot', route: '/dashboard/asistente-ia-coach' });
+      generalItems.push({ id: 'ai', label: 'SIDEBAR.AI_ASSISTANT', icon: 'bi-robot', route: '/dashboard/asistente-ia-coach' });
     } else if (this.profileId === 1) {
-      generalItems.push({ id: 'ai', label: 'Asistente IA', icon: 'bi-robot', route: '/dashboard/asistente-ia' });
+      generalItems.push({ id: 'ai', label: 'SIDEBAR.AI_ASSISTANT', icon: 'bi-robot', route: '/dashboard/asistente-ia' });
     }
-
-    this.sections.push({ id: 'general', title: 'General', items: generalItems, visible: true });
+    this.sections.push({ id: 'general', title: 'SIDEBAR.SECTION_GENERAL', items: generalItems, visible: true });
 
     // ─── Club (profileId 1 - visible cuando NO está en menú club) ───
     if (this.profileId === 1 && !isOnClubMenu && !isOnInicio) {
       const clubItems: SidebarItem[] = [
-        { id: 'dashboard', label: 'Cuadro de mandos', icon: 'bi-clipboard2-data', route: `/dashboard/cuadro-de-mandos/${this.clubId}` },
-        { id: 'equipos', label: 'Equipos', icon: 'bi-people', route: '/dashboard/equipos' },
-        { id: 'docs', label: 'Documentos', icon: 'bi-file-earmark-pdf', route: `/dashboard/documentos-club/${this.clubId}` },
-        { id: 'cuotas', label: 'Cuotas', icon: 'bi-bank2', route: `/dashboard/new-cuotas/${this.clubId}` },
-        { id: 'ropa', label: 'Ropa', icon: 'bi-backpack3', route: `/dashboard/ropa/${this.clubId}` },
-        { id: 'patrocinadores', label: 'Patrocinadores', icon: 'bi-collection', route: `/dashboard/patrocinadores/${this.clubId}` },
-        { id: 'notificaciones', label: 'Notificaciones', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
+        { id: 'dashboard', label: 'SIDEBAR.DASHBOARD', icon: 'bi-clipboard2-data', route: `/dashboard/cuadro-de-mandos/${this.clubId}` },
+        { id: 'equipos', label: 'SIDEBAR.TEAMS', icon: 'bi-people', route: '/dashboard/equipos' },
+        { id: 'docs', label: 'SIDEBAR.DOCUMENTS', icon: 'bi-file-earmark-pdf', route: `/dashboard/documentos-club/${this.clubId}` },
+        { id: 'cuotas', label: 'SIDEBAR.FEES', icon: 'bi-bank2', route: `/dashboard/new-cuotas/${this.clubId}` },
+        { id: 'ropa', label: 'SIDEBAR.CLOTHING', icon: 'bi-backpack3', route: `/dashboard/ropa/${this.clubId}` },
+        { id: 'patrocinadores', label: 'SIDEBAR.SPONSORS', icon: 'bi-collection', route: `/dashboard/patrocinadores/${this.clubId}` },
+        { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
       ];
-      this.sections.push({ id: 'club', title: 'Club', items: clubItems, visible: true });
+      this.sections.push({ id: 'club', title: 'SIDEBAR.SECTION_CLUB', items: clubItems, visible: true });
     }
 
-    // ─── Entrenador (profileId 2 - visible cuando tiene equipo Y NO está en menú entrenador) ───
+    // ─── Entrenador (profileId 2) ───
     if (this.profileId === 2 && hasTeam && !isOnCoachMenu && !isOnInicio) {
       const coachItems: SidebarItem[] = [
-        { id: 'calendario', label: 'Calendario', icon: 'bi-calendar-event', route: `/dashboard/calendario/${this.teamId}/0` },
-        { id: 'tareas', label: 'Tareas', icon: 'bi-list-task', route: `/dashboard/tareas/${this.teamId}` },
-        { id: 'jugadores', label: 'Jugadores', icon: 'bi-people', route: `/dashboard/jugadores/${this.teamId}` },
-        { id: 'info-equipo', label: 'Info equipo', icon: 'bi-info-circle', route: `/dashboard/informacion_equipo/${this.teamId}` },
-        { id: 'stats-equipo', label: 'Estadísticas equipo', icon: 'bi-bar-chart-line', route: `/dashboard/estadisticas_equipo/${this.teamId}` },
-        { id: 'stats-jugadores', label: 'Estadísticas jugadores', icon: 'bi-graph-up', route: `/dashboard/estadisticas_jugadores/${this.teamId}` },
-        { id: 'clasificacion', label: 'Clasificación', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
-        { id: 'galeria', label: 'Galería', icon: 'bi-images', route: `/dashboard/partidos-entrevistas/${this.teamId}/0` },
-        { id: 'lesiones', label: 'Lesiones', icon: 'bi-heart-pulse', route: `/dashboard/lesiones/${this.teamId}` },
-        { id: 'notificaciones', label: 'Notificaciones', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
-        { id: 'debrief', label: 'Debrief', icon: 'bi-clipboard-pulse', route: `/dashboard/debrief/history/${this.teamId}` },
-        { id: 'perfil', label: 'Mi perfil', icon: 'bi-person-badge', route: `/dashboard/perfil-entrenador/${this.teamId}/${this.playerId}` },
+        { id: 'calendario', label: 'SIDEBAR.CALENDAR', icon: 'bi-calendar-event', route: `/dashboard/calendario/${this.teamId}/0` },
+        { id: 'tareas', label: 'SIDEBAR.TASKS', icon: 'bi-list-task', route: `/dashboard/tareas/${this.teamId}` },
+        { id: 'jugadores', label: 'SIDEBAR.PLAYERS', icon: 'bi-people', route: `/dashboard/jugadores/${this.teamId}` },
+        { id: 'info-equipo', label: 'SIDEBAR.INFO_TEAM', icon: 'bi-info-circle', route: `/dashboard/informacion_equipo/${this.teamId}` },
+        { id: 'stats-equipo', label: 'SIDEBAR.STATS_TEAM', icon: 'bi-bar-chart-line', route: `/dashboard/estadisticas_equipo/${this.teamId}` },
+        { id: 'stats-jugadores', label: 'SIDEBAR.STATS_PLAYERS', icon: 'bi-graph-up', route: `/dashboard/estadisticas_jugadores/${this.teamId}` },
+        { id: 'clasificacion', label: 'SIDEBAR.STANDINGS', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
+        { id: 'galeria', label: 'SIDEBAR.GALLERY', icon: 'bi-images', route: `/dashboard/partidos-entrevistas/${this.teamId}/0` },
+        { id: 'lesiones', label: 'SIDEBAR.INJURIES', icon: 'bi-heart-pulse', route: `/dashboard/lesiones/${this.teamId}` },
+        { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
+        { id: 'debrief', label: 'SIDEBAR.DEBRIEF', icon: 'bi-clipboard-pulse', route: `/dashboard/debrief/history/${this.teamId}` },
+        { id: 'perfil', label: 'SIDEBAR.MY_PROFILE', icon: 'bi-person-badge', route: `/dashboard/perfil-entrenador/${this.teamId}/${this.playerId}` },
       ];
-      this.sections.push({ id: 'coach', title: 'Entrenador', items: coachItems, visible: true });
+      this.sections.push({ id: 'coach', title: 'SIDEBAR.SECTION_COACH', items: coachItems, visible: true });
     }
 
     // ─── Equipo Club (profileId 1 cuando está dentro de un equipo) ───
     if (this.profileId === 1 && hasTeam && !isOnClubMenu) {
       const teamItems: SidebarItem[] = [
-        { id: 'calendario', label: 'Calendario', icon: 'bi-calendar4-week', route: `/dashboard/calendario/${this.teamId}/0` },
-        { id: 'jugadores', label: 'Jugadores', icon: 'bi-people-fill', route: `/dashboard/jugadores/${this.teamId}` },
-        { id: 'stats-jugadores', label: 'Estad. jugadores', icon: 'bi-graph-up', route: `/dashboard/estadisticas_jugadores/${this.teamId}` },
-        { id: 'stats-equipo', label: 'Estad. equipo', icon: 'bi-bar-chart', route: `/dashboard/estadisticas_equipo/${this.teamId}` },
-        { id: 'clasificacion', label: 'Clasificación', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
-        { id: 'galeria', label: 'Galería', icon: 'bi-collection-play', route: `/dashboard/partidos-entrevistas/${this.teamId}/0` },
-        { id: 'info', label: 'Info equipo', icon: 'bi-info-circle', route: `/dashboard/informacion_equipo/${this.teamId}` },
+        { id: 'calendario', label: 'SIDEBAR.CALENDAR', icon: 'bi-calendar4-week', route: `/dashboard/calendario/${this.teamId}/0` },
+        { id: 'jugadores', label: 'SIDEBAR.PLAYERS', icon: 'bi-people-fill', route: `/dashboard/jugadores/${this.teamId}` },
+        { id: 'stats-jugadores', label: 'SIDEBAR.STATS_PLAYERS_SHORT', icon: 'bi-graph-up', route: `/dashboard/estadisticas_jugadores/${this.teamId}` },
+        { id: 'stats-equipo', label: 'SIDEBAR.STATS_TEAM_SHORT', icon: 'bi-bar-chart', route: `/dashboard/estadisticas_equipo/${this.teamId}` },
+        { id: 'clasificacion', label: 'SIDEBAR.STANDINGS', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
+        { id: 'galeria', label: 'SIDEBAR.GALLERY', icon: 'bi-collection-play', route: `/dashboard/partidos-entrevistas/${this.teamId}/0` },
+        { id: 'info', label: 'SIDEBAR.INFO_TEAM', icon: 'bi-info-circle', route: `/dashboard/informacion_equipo/${this.teamId}` },
       ];
-      this.sections.push({ id: 'team', title: 'Equipo', items: teamItems, visible: true });
+      this.sections.push({ id: 'team', title: 'SIDEBAR.SECTION_TEAM', items: teamItems, visible: true });
     }
 
-    // ─── Jugador (profileId >= 3 - visible cuando tiene jugador Y NO está en menú jugador) ───
+    // ─── Jugador (profileId >= 3) ───
     if (this.profileId >= 3 && hasPlayer && !isOnPlayerMenu && !isOnInicio) {
       const playerItems: SidebarItem[] = [
-        { id: 'datos', label: 'Datos personales', icon: 'bi-person', route: `/dashboard/jugadores/${this.teamId}` },
-        { id: 'calendario', label: 'Calendario', icon: 'bi-calendar-event', route: `/dashboard/calendario/${this.teamId}/${this.playerId}` },
-        { id: 'cuotas', label: 'Pagar cuotas', icon: 'bi-credit-card', route: `/dashboard/cuotas/${this.teamId}/${this.playerId}` },
-        { id: 'documentos', label: 'Documentación', icon: 'bi-file-earmark-pdf', route: `/dashboard/documentos-jugador/${this.teamId}/${this.playerId}` },
-        { id: 'galeria', label: 'Galería', icon: 'bi-images', route: `/dashboard/partidos-entrevistas/${this.teamId}/${this.playerId}` },
-        { id: 'clasificacion', label: 'Clasificación', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
-        { id: 'patrocinadores', label: 'Patrocinadores', icon: 'bi-collection', route: '/dashboard/patrocinadores/0' },
-        { id: 'notificaciones', label: 'Notificaciones', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
+        { id: 'datos', label: 'SIDEBAR.PERSONAL_DATA', icon: 'bi-person', route: `/dashboard/jugadores/${this.teamId}` },
+        { id: 'calendario', label: 'SIDEBAR.CALENDAR', icon: 'bi-calendar-event', route: `/dashboard/calendario/${this.teamId}/${this.playerId}` },
+        { id: 'cuotas', label: 'SIDEBAR.PAY_FEES', icon: 'bi-credit-card', route: `/dashboard/cuotas/${this.teamId}/${this.playerId}` },
+        { id: 'documentos', label: 'SIDEBAR.DOCUMENTATION', icon: 'bi-file-earmark-pdf', route: `/dashboard/documentos-jugador/${this.teamId}/${this.playerId}` },
+        { id: 'galeria', label: 'SIDEBAR.GALLERY', icon: 'bi-images', route: `/dashboard/partidos-entrevistas/${this.teamId}/${this.playerId}` },
+        { id: 'clasificacion', label: 'SIDEBAR.STANDINGS', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
+        { id: 'patrocinadores', label: 'SIDEBAR.SPONSORS', icon: 'bi-collection', route: '/dashboard/patrocinadores/0' },
+        { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
       ];
-      this.sections.push({ id: 'player', title: 'Jugador', items: playerItems, visible: true });
+      this.sections.push({ id: 'player', title: 'SIDEBAR.SECTION_PLAYER', items: playerItems, visible: true });
     }
 
     // ─── Admin (solo userId 9) ───
     if (this.userId === 9) {
       const adminItems: SidebarItem[] = [
-        { id: 'admin', label: 'Admin', icon: 'bi-shield-lock', route: '/dashboard/admin-clubes' },
-        { id: 'registros', label: 'Registros', icon: 'bi-journal-text', route: '/dashboard/admin-registros' },
-        { id: 'actividad', label: 'Actividad', icon: 'bi-activity', route: '/dashboard/admin-activity' },
-        { id: 'charts', label: 'Gráficos', icon: 'bi-graph-up-arrow', route: '/dashboard/admin-charts' },
-        { id: 'sugerencias', label: 'Sugerencias', icon: 'bi-chat-dots', route: '/dashboard/admin-sugerencias' },
+        { id: 'admin', label: 'SIDEBAR.ADMIN', icon: 'bi-shield-lock', route: '/dashboard/admin-clubes' },
+        { id: 'registros', label: 'SIDEBAR.REGISTERS', icon: 'bi-journal-text', route: '/dashboard/admin-registros' },
+        { id: 'actividad', label: 'SIDEBAR.ACTIVITY', icon: 'bi-activity', route: '/dashboard/admin-activity' },
+        { id: 'charts', label: 'SIDEBAR.CHARTS', icon: 'bi-graph-up-arrow', route: '/dashboard/admin-charts' },
+        { id: 'sugerencias', label: 'SIDEBAR.SUGGESTIONS', icon: 'bi-chat-dots', route: '/dashboard/admin-sugerencias' },
       ];
-      this.sections.push({ id: 'admin', title: 'Administración', items: adminItems, visible: true });
+      this.sections.push({ id: 'admin', title: 'SIDEBAR.SECTION_ADMIN', items: adminItems, visible: true });
     }
   }
 }

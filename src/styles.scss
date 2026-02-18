@@ -50,6 +50,29 @@ body {
   padding: 0 !important;
 }
 
+/* Panel del diálogo de confirmación (theme-aware) */
+.cdk-overlay-pane.confirmation-dialog-panel .mat-mdc-dialog-container,
+.cdk-overlay-pane.confirmation-dialog-panel .mat-dialog-container {
+  background: var(--modal-bg) !important;
+  color: var(--text-primary);
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  padding: 1.25rem !important;
+}
+
+/* Fondos para tarjetas de dashboard (componente app-dashboard-card) */
+.bg-personal-data { background-image: url("/assets/images/jugadores.jpg"); }
+.bg-calendar { background-image: url("/assets/images/calendario.jpg"); }
+.bg-pay-fees { background-image: url("/assets/images/pagarcuota.jpg"); }
+.bg-documents { background-image: url("/assets/images/documentacion.jpg"); }
+.bg-ranking { background-image: url("/assets/images/clasificaciones.jpg"); }
+.bg-my-stats { background-image: url("/assets/images/estadisticasjugadores.jpg"); }
+.bg-gallery { background-image: url("/assets/images/galeria.jpg"); }
+.bg-notifications { background-image: url("/assets/images/notificaciones.jpg"); }
+.bg-sponsors { background-image: url("/assets/images/patrocinadores.jpg"); }
+.bg-injuries { background-image: url("/assets/images/lesiones.jpg"); }
+.bg-my-club { background-image: url("/assets/images/infoequipo.jpg"); }
+
 .btn-container {
   position: relative;
 }
@@ -128,9 +151,120 @@ body {
   color: var(--text-on-primary);
 }
 
-.btn-success {
-  background-color: var(--color-accent) !important;
-  color: var(--text-on-primary);
+/* ===== Botones unificados (success / danger) — mismo formato en toda la app ===== */
+.btn-success,
+.btn.btn-success {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--text-on-primary) !important;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.btn-success:hover,
+.btn.btn-success:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+.btn-danger,
+.btn.btn-danger {
+  background-color: var(--badge-danger) !important;
+  border-color: var(--badge-danger) !important;
+  color: #ffffff !important;
+  border-radius: 10px;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.btn-danger:hover,
+.btn.btn-danger:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+/* ===== Inputs y select unificados (light + dark vía variables) ===== */
+.form-control,
+.form-select {
+  background-color: var(--bg-input);
+  color: var(--text-primary);
+  border: 1px solid var(--border-input);
+  border-radius: 10px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9375rem;
+  min-height: 38px;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem rgba(var(--color-primary-rgb), 0.25);
+  outline: 0;
+}
+.form-control::placeholder {
+  color: var(--text-muted);
+}
+
+/* ===== Tabla unificada .modern-table — mismo formato en toda la app ===== */
+.table-wrapper {
+  max-height: calc(100vh - 320px);
+  overflow-y: auto;
+  overflow-x: auto;
+}
+.modern-table {
+  border-collapse: separate;
+  border-spacing: 0 10px;
+  width: 100%;
+}
+.modern-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+.modern-table thead th {
+  font-size: 0.9rem;
+  position: sticky;
+  background-color: var(--color-navy);
+  z-index: 1000;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-on-navy);
+  border: none;
+  padding: 0.75rem 1rem;
+  text-align: center;
+}
+.modern-table tbody tr {
+  background: var(--bg-card);
+  border-radius: 14px;
+  height: 72px;
+  max-height: 72px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.modern-table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.modern-table tbody td {
+  border: none;
+  padding: 0.85rem;
+  text-align: center;
+  font-size: 0.85rem;
+  position: relative;
+  vertical-align: middle;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--text-primary);
+}
+.modern-table tbody td:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 20%;
+  right: 0;
+  width: 1px;
+  height: 60%;
+  background: var(--border-color);
 }
 
 .btn-entrena {

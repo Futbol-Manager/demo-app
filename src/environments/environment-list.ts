@@ -23,7 +23,7 @@ export const localenvironment = {
   /*apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
   images: `${APIURLPROD2}${ImageEnvironments.DESA}/`,*/
 
-  //para apuntar a la api-desa
+  //para apuntar a la api-desa (requiere CORS actualizado en backend de desarrollo)
   /*apiUrl: `${APIURLPROD2}${ApiEnvironments.DESA}`,
   images: `${APIURLPROD2}${ImageEnvironments.DESA}/`,*/
 }

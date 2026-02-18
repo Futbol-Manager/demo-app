@@ -1,9 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { TranslateService } from '@ngx-translate/core';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { InjuryService } from 'src/app/core/services/injury/injury.service';
 import { Injury } from 'src/app/core/services/injury/injury.model';
+import { NotificationService } from 'src/app/core/services/notification/notification.service';
+import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
 
 @Component({
   selector: 'app-lesiones-club',
@@ -48,7 +51,10 @@ export class LesionesClubComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private loginService: LoginService,
-    private injuryService: InjuryService
+    private injuryService: InjuryService,
+    private translate: TranslateService,
+    private notificationService: NotificationService,
+    private confirmationService: ConfirmationService
   ) {}
 
   ngOnInit(): void {
@@ -159,11 +165,16 @@ export class LesionesClubComponent implements OnInit, OnDestroy {
     }
   }
 
+  getSeverityTranslation(severity: string): string {
+    const severityKey = severity.toUpperCase();
+    return this.translate.instant(`INJURIES_CLUB.SEVERITY.${severityKey}`);
+  }
+
   getStatusLabel(status: string): string {
     switch (status) {
-      case 'activa': return 'Activa';
-      case 'recuperacion': return 'En recuperación';
-      case 'cerrada': return 'Cerrada';
+      case 'activa': return this.translate.instant('INJURIES_CLUB.STATUS.ACTIVE');
+      case 'recuperacion': return this.translate.instant('INJURIES_CLUB.STATUS.RECOVERING');
+      case 'cerrada': return this.translate.instant('INJURIES_CLUB.STATUS.CLOSED');
       default: return status;
     }
   }

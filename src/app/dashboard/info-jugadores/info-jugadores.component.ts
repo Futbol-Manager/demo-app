@@ -10,13 +10,13 @@ import * as XLSX from "xlsx";
 import { Player } from 'src/app/core/services/player/player.model';
 import { Location } from '@angular/common';
 import { PlayerService } from 'src/app/core/services/player/player.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
-import { ToastrService } from 'ngx-toastr';
+import { NotificationService } from 'src/app/core/services/notification/notification.service';
+import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
 
 @Component({
   selector: 'app-info-jugadores',
@@ -107,14 +107,14 @@ export class InfoJugadoresComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar,
     private clubService: ClubService,
     private playerService: PlayerService,
     private location: Location,
     private teamService: TeamService,
     private loginService: LoginService,
     private dialog: MatDialog,
-    private toastr: ToastrService) { }
+    private notification: NotificationService,
+    private confirmation: ConfirmationService) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -430,17 +430,16 @@ export class InfoJugadoresComponent implements OnInit {
       this.clubService.uploadDocPadres(file, dto).subscribe({
         next: (res) => {
           this.loadDocuments();
-          this.toastr.success('Documento subido correctamente');
+          this.notification.success('PLAYERS.MESSAGES.DOC_UPLOAD_SUCCESS');
           this.cerrarModalDocumento();
-          // refrescar lista si hace falta
         },
         error: (err) => {
           console.error(err);
-          this.toastr.error('Error al subir el documento');
+          this.notification.error('PLAYERS.MESSAGES.DOC_UPLOAD_ERROR');
         }
       });
     } else {
-      this.toastr.warning('Selecciona un archivo para subir.');
+      this.notification.warning('PLAYERS.MESSAGES.SELECT_FILE');
     }
   }
 
@@ -493,8 +492,7 @@ export class InfoJugadoresComponent implements OnInit {
           this.subirCaraDni(cara);
         }, 1000);
       } else {
-        // Muestra un mensaje de error si el archivo no es PNG o JPEG
-        this.toastr.warning('Formato de archivo no válido. Por favor, sube una imagen en formato PNG o JPEG.');
+        this.notification.warning('PLAYERS.MESSAGES.INVALID_IMAGE_FORMAT');
       }
     }
   }
@@ -558,9 +556,7 @@ export class InfoJugadoresComponent implements OnInit {
                 break;
             }
 
-            this.snackBar.open('Imagen subida correctamente.', 'Cerrar', {
-              duration: 3000,
-            });
+            this.notification.success('PLAYERS.MESSAGES.DOC_UPLOAD_SUCCESS');
           },
           error => {
             console.error('Error al subir la imagen', error);
@@ -634,7 +630,7 @@ export class InfoJugadoresComponent implements OnInit {
       if (['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'].includes(ext || '')) {
         this.archivoSeleccionado = file;
       } else {
-        this.toastr.warning('Solo se permiten archivos PDF o Word.');
+        this.notification.warning('PLAYERS.MESSAGES.PDF_WORD_ONLY');
         this.archivoSeleccionado = null;
       }
     }
@@ -665,7 +661,7 @@ export class InfoJugadoresComponent implements OnInit {
 
   guardarEdicionPersonalizado(): void {
     if (!this.requiereRespuesta) {
-      this.toastr.warning('Debes aceptar la autorización o condiciones puestas por el club.');
+      this.notification.warning('PLAYERS.MESSAGES.ACCEPT_AUTHORIZATION');
       return;
     }
 
@@ -687,14 +683,12 @@ export class InfoJugadoresComponent implements OnInit {
 
     this.clubService.uploadDocPadresPersonalizado(dto).subscribe({
       next: (res) => {
-        //this.loadDocuments();
-        this.toastr.success('Contenido actualizado correctamente');
+        this.notification.success('PLAYERS.MESSAGES.CONTENT_UPDATED');
         this.cerrarModalEditarPersonalizado();
-        // refrescar lista si hace falta
       },
       error: (err) => {
         console.error(err);
-        this.toastr.error('Error al subir el documento');
+        this.notification.error('PLAYERS.MESSAGES.DOC_UPLOAD_ERROR');
       }
     });
   }
@@ -800,24 +794,21 @@ export class InfoJugadoresComponent implements OnInit {
     }*/
 
     if (this.teamSelected == 0) {
-      this.toastr.warning('Selecciona un equipo del desplegable.');
+      this.notification.warning('PLAYERS.MESSAGES.SELECT_TEAM_DROPDOWN');
     } else {
-      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected, cuotaTbm, this.addPlayerMoved ? 1 : 0).subscribe(
-        (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
+      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected, cuotaTbm, this.addPlayerMoved ? 1 : 0).subscribe({
+        next: (response: Response) => {
           if (response.data !== null) {
-            this.toastr.success('Movido correctamente, cuando vuelvas a entrar verás los cambios.');
+            this.notification.success('PLAYERS.MESSAGES.MOVED_SUCCESS');
             this.showModalMover = false;
             this.addPlayerMoved = false;
             this.teamSelected = 0;
           } else {
-            console.error('La respuesta del servicio no tiene la estructura esperada', response);
+            this.notification.errorGeneric();
           }
         },
-        (error) => {
-          console.error('Error al cargar el listado de equipos', error);
-        }
-      );
+        error: () => this.notification.errorGeneric()
+      });
     }
   }
 
@@ -869,23 +860,30 @@ export class InfoJugadoresComponent implements OnInit {
   }
 
   updateTemporada(player: any) {
-    const confirmacion = confirm('Vas a mover este jugador a otra temporada, esto no significa que desaparezca de la actual, ¿estás seguro?');
-    if (confirmacion) {
-      this.clubService.moverPlayerTemporada(this.clubId, player.playerId, this.temporadaStoredValue).subscribe(
-        (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
-          if (response.data) {
-            this.toastr.success('Jugador movido correctamente');
-          } else {
-            console.error('La respuesta del servicio no tiene la estructura esperada', response);
-            this.toastr.error(response.error.msg);
-          }
-        },
-        (error) => {
-          console.error('Error al cargar el listado de equipos', error);
-        }
-      );
-    }
+    this.confirmation.confirm({
+      titleKey: 'ACTIONS.CONFIRM_TITLE',
+      messageKey: 'PLAYERS.MESSAGES.MOVE_SEASON_CONFIRM',
+      confirmKey: 'COMMON.ACCEPT',
+      cancelKey: 'COMMON.CANCEL'
+    }).subscribe((confirmed) => {
+      if (confirmed) {
+        this.clubService.moverPlayerTemporada(this.clubId, player.playerId, this.temporadaStoredValue).subscribe({
+          next: (response: Response) => {
+            if (response.data) {
+              this.notification.success('PLAYERS.MESSAGES.PLAYER_MOVED_SUCCESS');
+            } else {
+              const msg = response?.error?.msg;
+              if (msg) {
+                this.notification.error(msg, false);
+              } else {
+                this.notification.error('PLAYERS.MESSAGES.LOAD_ERROR');
+              }
+            }
+          },
+          error: () => this.notification.errorGeneric()
+        });
+      }
+    });
   }
 
 }

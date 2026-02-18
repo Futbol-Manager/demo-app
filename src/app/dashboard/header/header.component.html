@@ -150,11 +150,12 @@
               <span>{{ 'HEADER.LIGHT_MODE' | translate }}</span>
               <i class="bi bi-check-lg theme-check" *ngIf="!isDarkMode"></i>
             </button>
-            <!-- Dark mode (disabled) -->
-            <button class="dropdown-item theme-option disabled" disabled>
+            <!-- Dark mode -->
+            <button class="dropdown-item theme-option" [class.active]="isDarkMode"
+              (click)="selectTheme('dark')">
               <i class="bi bi-moon-fill theme-option-icon dark-icon"></i>
               <span>{{ 'HEADER.DARK_MODE' | translate }}</span>
-              <span class="badge-coming-soon">{{ 'HEADER.COMING_SOON' | translate }}</span>
+              <i class="bi bi-check-lg theme-check" *ngIf="isDarkMode"></i>
             </button>
           </div>
         </div>

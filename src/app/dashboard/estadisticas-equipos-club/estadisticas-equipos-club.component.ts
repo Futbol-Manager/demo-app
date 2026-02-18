@@ -3,6 +3,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
+import { TranslateService } from '@ngx-translate/core';
 import { Location } from '@angular/common';
 
 @Component({
@@ -37,7 +38,8 @@ export class EstadisticasEquiposClubComponent implements OnInit {
     private clubService: ClubService,
     private http: HttpClient,
     private elementRef: ElementRef,
-    private location: Location
+    private location: Location,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -205,7 +207,7 @@ export class EstadisticasEquiposClubComponent implements OnInit {
       // Mensaje de bienvenida
       this.aiMessages.push({
         role: 'assistant',
-        content: '¡Hola! 👋 Soy tu asistente de análisis de estadísticas. Puedo ayudarte a visualizar y analizar los datos de tus equipos. ¿En qué te puedo ayudar?'
+        content: this.translate.instant('AI_PANEL.WELCOME_TEAMS')
       });
     }
   }
@@ -237,7 +239,7 @@ export class EstadisticasEquiposClubComponent implements OnInit {
     } catch (error) {
       this.aiMessages.push({
         role: 'assistant',
-        content: '❌ Lo siento, ha ocurrido un error al procesar tu consulta. Por favor, intenta de nuevo.'
+        content: this.translate.instant('AI_PANEL.ERROR_MESSAGE')
       });
     } finally {
       this.aiLoading = false;

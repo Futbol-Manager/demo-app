@@ -82,6 +82,7 @@ import { InfoEntrenadoresComponent } from './info-entrenadores/info-entrenadores
 import { PerfilEntrenadorComponent } from './perfil-entrenador/perfil-entrenador.component';
 import { SessionPdfComponent } from './menu-entrenador/session-pdf/session-pdf.component';
 import { EmptyStateComponent } from '../shared/empty-state/empty-state.component';
+import { DashboardCardComponent } from '../shared/dashboard-card/dashboard-card.component';
 import { SuscripcionClubComponent } from './suscripcion-club/suscripcion-club.component';
 import { WizardFamiliaComponent } from './suscripcion-club/wizard-familia/wizard-familia.component';
 import { WizardClubComponent } from './suscripcion-club/wizard-club/wizard-club.component';
@@ -180,6 +181,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     PerfilEntrenadorComponent,
     SessionPdfComponent,
     EmptyStateComponent,
+    DashboardCardComponent,
     SuscripcionClubComponent,
     WizardFamiliaComponent,
     WizardClubComponent,

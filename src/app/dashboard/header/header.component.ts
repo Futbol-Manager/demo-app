@@ -227,9 +227,8 @@ export class HeaderComponent implements OnInit {
       .forEach((el) => Dropdown.getOrCreateInstance(el as HTMLElement));
   }
 
-  /** Select theme mode (dark is currently disabled) */
+  /** Select theme mode */
   selectTheme(mode: 'light' | 'dark'): void {
-    if (mode === 'dark') return; // Dark mode disabled for now
     this.themeService.setMode(mode);
   }
 

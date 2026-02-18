@@ -4,6 +4,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { PlayerEstadistica } from 'src/app/core/services/player/player.model';
+import { TranslateService } from '@ngx-translate/core';
 import * as $ from 'jquery';
 
 @Component({
@@ -46,7 +47,8 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
     private route: ActivatedRoute,
     private clubService: ClubService,
     private http: HttpClient,
-    private elementRef: ElementRef
+    private elementRef: ElementRef,
+    private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
@@ -185,7 +187,7 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
     const start = (this.page - 1) * this.pageSize + 1;
     const end = Math.min(this.page * this.pageSize, this.totalRecords);
 
-    return `Mostrando ${start}–${end} de ${this.totalRecords}`;
+    return `${this.translate.instant('AI_PANEL.SHOWING')} ${start}–${end} ${this.translate.instant('AI_PANEL.OF')} ${this.totalRecords}`;
   }
 
   trackByPlayer(index: number, player: any): number {
@@ -315,7 +317,7 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
       // Mensaje de bienvenida
       this.aiMessages.push({
         role: 'assistant',
-        content: '¡Hola! 👋 Soy tu asistente de análisis de estadísticas. Puedo ayudarte a visualizar y analizar los datos de tus jugadores. ¿En qué te puedo ayudar?'
+        content: this.translate.instant('AI_PANEL.WELCOME_PLAYERS')
       });
     }
   }
@@ -347,7 +349,7 @@ export class EstadisticasJugadoresClubComponent implements OnInit {
     } catch (error) {
       this.aiMessages.push({
         role: 'assistant',
-        content: '❌ Lo siento, ha ocurrido un error al procesar tu consulta. Por favor, intenta de nuevo.'
+        content: this.translate.instant('AI_PANEL.ERROR_MESSAGE')
       });
     } finally {
       this.aiLoading = false;

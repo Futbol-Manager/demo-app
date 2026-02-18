@@ -26,6 +26,7 @@ import { AsistenciaComponent } from './dashboard/asistencia/asistencia.component
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { ParentChildrenComponent } from './pages/register/parent-children/parent-children.component';
+import { ConfirmationDialogComponent } from './shared/confirmation-dialog/confirmation-dialog.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -43,6 +44,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ClubesListComponent,
     AsistenciaComponent,
     ParentChildrenComponent,
+    ConfirmationDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -84,8 +86,8 @@ export function HttpLoaderFactory(http: HttpClient) {
 
 export class AppModule {
   constructor(private translate: TranslateService) {
-    // Idiomas soportados
-    const supportedLangs = ['es', 'en', 'fr'];
+    // Idiomas soportados: ES, EN, FR, DE, IT, PT
+    const supportedLangs = ['es', 'en', 'fr', 'de', 'it', 'pt'];
 
     // 1. Idioma guardado anteriormente
     const savedLang = localStorage.getItem('lang');

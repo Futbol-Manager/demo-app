@@ -11,6 +11,9 @@ import { distinctUntilChanged, filter, take } from 'rxjs/operators';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { Location } from '@angular/common';
 import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { TranslateService } from '@ngx-translate/core';
+import { NotificationService } from 'src/app/core/services/notification/notification.service';
+import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
 
 @Component({
   selector: 'app-inicio',
@@ -217,7 +220,10 @@ export class EquiposComponent implements OnInit {
     private teamService: TeamService,
     private clubService: ClubService,
     private fb: FormBuilder,
-    private location: Location
+    private location: Location,
+    private translate: TranslateService,
+    private notificationService: NotificationService,
+    private confirmationService: ConfirmationService
   ) {
     this.excelForm = this.fb.group({
       excelFile: [null],
@@ -374,12 +380,11 @@ export class EquiposComponent implements OnInit {
       .writeText(link)
       .then(() => {
         console.log('Enlace copiado al portapapeles:', link);
-        // Opcional: puedes usar un toast o alert para avisar al usuario
-        alert('¡Link copiado!');
+        this.notificationService.success('EQUIPOS.LINK_COPIED');
       })
       .catch((err) => {
         console.error('Error al copiar el enlace:', err);
-        alert('No se pudo copiar el enlace. Intenta de nuevo.');
+        this.notificationService.error('EQUIPOS.LINK_COPY_ERROR');
       });
   }
 
@@ -586,12 +591,17 @@ export class EquiposComponent implements OnInit {
     }
 
     if (!accessSusOk) {
-      const confirmacion = confirm(
-        'No puedes crear más equipos, necesitas actualizar tu suscripción, ¿quieres ir a la página de suscripción?. Si tu club pertenece a una federación, habla con ellos para que te amplien el límite.'
-      );
-      if (confirmacion) {
-        this.router.navigate(['/dashboard/suscripcion', this.userId]);
-      }
+      this.confirmationService.confirm({
+        titleKey: 'EQUIPOS.SUBSCRIPTION_REQUIRED_TITLE',
+        messageKey: 'EQUIPOS.SUBSCRIPTION_REQUIRED_MESSAGE',
+        confirmKey: 'EQUIPOS.GO_TO_SUBSCRIPTION',
+        cancelKey: 'COMMON.CANCEL',
+        confirmStyle: 'warn'
+      }).subscribe(confirmed => {
+        if (confirmed) {
+          this.router.navigate(['/dashboard/suscripcion', this.userId]);
+        }
+      });
     } else {
       this.showModal = true;
     }
@@ -659,9 +669,7 @@ export class EquiposComponent implements OnInit {
           }
         );
       } else {
-        alert(
-          'Debes seleccionar o crear la categoria. No vale solo con escribirlo.'
-        );
+        this.notificationService.warning('EQUIPOS.SELECT_CATEGORY_FIRST');
         return;
       }
     }
@@ -671,13 +679,19 @@ export class EquiposComponent implements OnInit {
   confirmarEliminarEquipo(team: any, index: number): void {
     let name = team.category + ' ' + team.name;
     name = name.trim() + ' ' + team.levelLeague;
-    const confirmacion = confirm(
-      '¿Estás seguro de que deseas eliminar el equipo ' + name
-    );
-    if (confirmacion) {
-      // Llama al método para eliminar el equipo
-      this.eliminarEquipo(team.teamId, index);
-    }
+    
+    this.confirmationService.confirm({
+      titleKey: 'EQUIPOS.DELETE_TEAM_TITLE',
+      message: this.translate.instant('EQUIPOS.DELETE_TEAM_MESSAGE', { name }),
+      confirmKey: 'ACTIONS.DELETE',
+      cancelKey: 'COMMON.CANCEL',
+      confirmStyle: 'warn'
+    }).subscribe(confirmed => {
+      if (confirmed) {
+        // Llama al método para eliminar el equipo
+        this.eliminarEquipo(team.teamId, index);
+      }
+    });
   }
 
   // Método para eliminar el equipo
@@ -690,9 +704,11 @@ export class EquiposComponent implements OnInit {
         this.teamService.setEquiposCache(this.userId, this.temporadaStoredValue, this.profileId, {
           listTeam: this.listTeam,
         });
+        this.notificationService.success('EQUIPOS.TEAM_DELETED_SUCCESS');
       },
       (error) => {
         console.error('Error al eliminar el equipo:', error);
+        this.notificationService.error('EQUIPOS.TEAM_DELETED_ERROR');
       }
     );
   }
@@ -772,7 +788,7 @@ export class EquiposComponent implements OnInit {
         this.fileName = null;
         this.selectedFile = null;
         this.showUploadButton = false;
-        alert('Por favor selecciona un archivo en formato .xlsx');
+        this.notificationService.warning('EQUIPOS.SELECT_XLSX_FILE');
       }
     }
   }
@@ -787,7 +803,7 @@ export class EquiposComponent implements OnInit {
           console.log('Archivo subido con éxito', response);
           // Aquí puedes manejar la respuesta del servidor
           this.showModalSubirJugadores = false;
-          alert('Jugadores insertado en los equipos.');
+          this.notificationService.success('EQUIPOS.PLAYERS_UPLOADED_SUCCESS');
           //this.router.navigate(['/dashboard/inicio']);
         },
         (error) => {
@@ -814,7 +830,7 @@ export class EquiposComponent implements OnInit {
             console.log('Archivo subido con éxito', response);
             // Aquí puedes manejar la respuesta del servidor
             this.showModalSubirJugadores = false;
-            alert('Jugadores insertado en los exipos.');
+            this.notificationService.success('EQUIPOS.PLAYERS_UPLOADED_SUCCESS');
             //this.router.navigate(['/dashboard/inicio']);
           },
           (error) => {
@@ -933,7 +949,7 @@ export class EquiposComponent implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        alert('Error al subir el documento');
+        this.notificationService.error('EQUIPOS.UPLOAD_ERROR');
       },
     });
   }
@@ -981,7 +997,7 @@ export class EquiposComponent implements OnInit {
 
   onAceptarDescarga(): void {
     if (!this.aceptoGestionNavegador) {
-      alert('Debes aceptar que la suscripción se gestiona desde el navegador.');
+      this.notificationService.warning('EQUIPOS.ACCEPT_BROWSER_MANAGEMENT');
       return;
     }
     // Cierra el modal y abre la Store

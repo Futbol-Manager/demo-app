@@ -11,6 +11,8 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { User } from 'src/app/core/models/users/user.model';
+import { NotificationService } from 'src/app/core/services/notification/notification.service';
+import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
 
 /* ═══════════════════════════════════════
    PALETA DE 30 COLORES PARA EQUIPOS
@@ -96,13 +98,10 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
   private subs: Subscription[] = [];
 
   /* ─── Días de la semana (se traducen) ─── */
-  weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+  weekDays: string[] = [];
 
   /* ─── Nombres de meses ─── */
-  monthNames = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-  ];
+  monthNames: string[] = [];
 
   userId = 0;
 
@@ -114,6 +113,8 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
     private clubService: ClubService,
     private loginService: LoginService,
     private translate: TranslateService,
+    private notificationService: NotificationService,
+    private confirmationService: ConfirmationService
   ) {}
 
   /* ═══════════════════════════════════════
@@ -121,6 +122,32 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
   ═══════════════════════════════════════ */
 
   ngOnInit(): void {
+    // Inicializar días y meses traducidos
+    this.weekDays = [
+      this.translate.instant('CALENDAR_CLUB.DAYS.MON'),
+      this.translate.instant('CALENDAR_CLUB.DAYS.TUE'),
+      this.translate.instant('CALENDAR_CLUB.DAYS.WED'),
+      this.translate.instant('CALENDAR_CLUB.DAYS.THU'),
+      this.translate.instant('CALENDAR_CLUB.DAYS.FRI'),
+      this.translate.instant('CALENDAR_CLUB.DAYS.SAT'),
+      this.translate.instant('CALENDAR_CLUB.DAYS.SUN')
+    ];
+
+    this.monthNames = [
+      this.translate.instant('CALENDAR_CLUB.MONTHS.JAN'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.FEB'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.MAR'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.APR'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.MAY'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.JUN'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.JUL'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.AUG'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.SEP'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.OCT'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.NOV'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.DEC')
+    ];
+
     this.loginService.usuarioActual.subscribe((user: User | null) => {
       if (user) this.userId = user.userId;
     });

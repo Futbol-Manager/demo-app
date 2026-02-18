@@ -47,6 +47,23 @@
     "TOTAL_RECORDS": "enregistrements au total",
     "NO_RESULTS": "Aucun résultat trouvé."
   },
+  "OPCIONES_JUGADOR": {
+    "DATOS_PERSONALES": "Données personnelles",
+    "CALENDARIO": "Calendrier",
+    "PAGAR_CUOTAS": "Payer les cotisations",
+    "DOCUMENTACION": "Documentation",
+    "CLASIFICACION_RESULTADOS": "Classement et résultats",
+    "MIS_ESTADISTICAS": "Mes statistiques",
+    "GALERIA": "Galerie",
+    "NOTIFICACIONES": "Notifications",
+    "PATROCINADORES": "Partenaires",
+    "LESIONES": "Blessures"
+  },
+  "ACTIONS": {
+    "EDIT": "Modifier l'abonné",
+    "INSERT_PAY": "Ajouter un paiement",
+    "VIEW_HISTORY": "Voir l'historique des paiements"
+  },
   "COACH_STATS": {
     "TITLE": "Statistiques des entraîneurs",
     "FEATURE_1": "Performance par saison et équipe",
@@ -162,7 +179,8 @@
     "DARK_MODE": "Mode sombre",
     "LIGHT_MODE": "Mode clair",
     "COMING_SOON": "Bientôt"
-  },  "PROFILE": {
+  },
+  "PROFILE": {
     "EDIT_TITLE": "Modifier le profil utilisateur",
     "INSTRUCTIONS_TITLE": "Instructions",
     "INSTRUCTIONS_TEXT": "Saisissez les données que vous souhaitez modifier sans laisser de champs vides.",
@@ -218,11 +236,6 @@
     "NONE": "Aucun paiement",
     "PENDING": "Paiements en attente",
     "DONE": "Terminé"
-  },
-  "ACTIONS": {
-    "EDIT": "Modifier l'abonné",
-    "INSERT_PAY": "Ajouter un paiement",
-    "VIEW_HISTORY": "Voir l'historique des paiements"
   },
   "MODAL": {
     "TITLE": "Abonné",
@@ -704,7 +717,22 @@
     "TEXT_383": "Sam",
     "TEXT_384": "Dim",
     "TEXT_385": "Préc.",
-    "TEXT_386": "Suiv."
+    "TEXT_386": "Suiv.",
+    "TEXT_387": "Autre",
+    "TEXT_388": "Activites du jour",
+    "TEXT_389": "Nouvelle activite",
+    "TEXT_390": "Details de l'entrainement",
+    "TEXT_391": "Aucune activite selectionnee",
+    "TEXT_392": "Selectionnez une activite dans la liste ou creez-en une nouvelle via \"Nouvelle activite\".",
+    "TEXT_393": "Les reponses n'ont pas ete envoyees car elles ont deja ete soumises et ne peuvent etre remplies qu'une seule fois par match.",
+    "TEXT_394": "Reponses envoyees avec succes.",
+    "TEXT_395": "AVERTISSEMENT: En activant cette option, votre tache d'entrainement sera publique et visible par les autres entraineurs. Toutes les donnees saisies seront accessibles. Il n'est pas permis de publier des informations, donnees ou images protegees par des droits d'auteur sans l'autorisation de l'auteur. Tout contenu enfreignant cette regle sera supprime. Etes-vous sur?",
+    "TEXT_396": "Convocation enregistree",
+    "TEXT_397": "Notifications envoyees.",
+    "TEXT_398": "Pre-avis envoye aux parents. Sous Non convoques vous ne verrez que les joueurs qui ont confirme leur presence.",
+    "TEXT_399": "Modification enregistree.",
+    "TEXT_400": "Notification envoyee.",
+    "TEXT_401": "Details du match"
   },
   "REGISTER": {
     "TITLE": "Inscription de l’utilisateur",
@@ -721,7 +749,8 @@
           "WARNING_HIGHLIGHT_2": "PARENT / TUTEUR, CE N’EST PAS VOTRE INSCRIPTION",
           "WARNING_HIGHLIGHT_3": "EXCLUSIVEMENT RÉSERVÉE AUX ENTRAÎNEURS",
           "WARNING_SUFFIX": "Contactez votre club pour recevoir le lien d’inscription"
-        }
+        },
+        "NAME": "Club"
       },
       "COACH": {
         "TITLE": "Entraîneur",
@@ -771,7 +800,7 @@
       "HELP": "Si vous avez besoin d’aide, contactez",
       "WHATSAPP": "ou WhatsApp"
     },
-     "VALIDATION": {
+    "VALIDATION": {
       "PLAYER_VALID": "Joueur validé",
       "PLAYER_EXISTS": "Le joueur existe déjà !"
     },
@@ -830,9 +859,11 @@
     "AI_ASSISTANT": "Assistant IA",
     "COACH_PROFILE": "Mon profil",
     "DEBRIEF": "Analyse Rapide",
-    "DEBRIEF_HISTORY": "Historique des Analyses"
+    "DEBRIEF_HISTORY": "Historique des Analyses",
+    "COACH_DOCUMENTS": "Documents entraîneur"
   },
   "CUADROMANDO": {
+    "LOAD_ERROR": "Impossible de charger le tableau de bord. Veuillez réessayer.",
     "SUBMENU": {
       "BACK": "Tableau de bord"
     },
@@ -878,11 +909,72 @@
       "VS": "VS"
     }
   },
+  "SIDEBAR": {
+    "SECTION_GENERAL": "Général",
+    "SECTION_CLUB": "Club",
+    "SECTION_COACH": "Entraîneur",
+    "SECTION_TEAM": "Équipe",
+    "SECTION_PLAYER": "Joueur",
+    "SECTION_ADMIN": "Administration",
+    "HOME": "Accueil",
+    "AI_ASSISTANT": "Assistant IA",
+    "DASHBOARD": "Tableau de bord",
+    "TEAMS": "Équipes",
+    "DOCUMENTS": "Documents",
+    "FEES": "Cotisations",
+    "CLOTHING": "Vêtements",
+    "SPONSORS": "Partenaires",
+    "NOTIFICATIONS": "Notifications",
+    "CALENDAR": "Calendrier",
+    "TASKS": "Tâches",
+    "PLAYERS": "Joueurs",
+    "INFO_TEAM": "Info équipe",
+    "STATS_TEAM": "Statistiques équipe",
+    "STATS_PLAYERS": "Statistiques joueurs",
+    "STATS_PLAYERS_SHORT": "Stat. joueurs",
+    "STATS_TEAM_SHORT": "Stat. équipe",
+    "STANDINGS": "Classement",
+    "GALLERY": "Galerie",
+    "INJURIES": "Blessures",
+    "DEBRIEF": "Debrief",
+    "MY_PROFILE": "Mon profil",
+    "PERSONAL_DATA": "Données personnelles",
+    "PAY_FEES": "Payer les cotisations",
+    "DOCUMENTATION": "Documentation",
+    "ADMIN": "Admin",
+    "REGISTERS": "Registres",
+    "ACTIVITY": "Activité",
+    "CHARTS": "Graphiques",
+    "SUGGESTIONS": "Suggestions"
+  },
   "CALENDAR_CLUB": {
     "TITLE": "Calendrier du club",
     "SUBTITLE": "Tous les entraînements et matchs de toutes vos équipes dans un seul calendrier.",
     "LOADING": "Chargement du calendrier...",
     "TODAY": "Aujourd'hui",
+    "DAYS": {
+      "MON": "LUN",
+      "TUE": "MAR",
+      "WED": "MER",
+      "THU": "JEU",
+      "FRI": "VEN",
+      "SAT": "SAM",
+      "SUN": "DIM"
+    },
+    "MONTHS": {
+      "JAN": "Janvier",
+      "FEB": "Février",
+      "MAR": "Mars",
+      "APR": "Avril",
+      "MAY": "Mai",
+      "JUN": "Juin",
+      "JUL": "Juillet",
+      "AUG": "Août",
+      "SEP": "Septembre",
+      "OCT": "Octobre",
+      "NOV": "Novembre",
+      "DEC": "Décembre"
+    },
     "FILTER": {
       "TITLE": "Équipes",
       "SHOW_ALL": "Tout afficher",
@@ -902,6 +994,56 @@
       "MATCH": "Match",
       "GO_TO_CALENDAR": "Aller au calendrier de l'équipe",
       "VIEW_DETAIL": "Voir le détail"
+    }
+  },
+  "INJURIES_CLUB": {
+    "TITLE": "Gestion des blessures",
+    "SUBTITLE": "Contrôle et suivi des blessures du club",
+    "KPI": {
+      "TOTAL": "Total blessures",
+      "ACTIVE": "Actives",
+      "RECOVERING": "Récupération",
+      "CLOSED": "Fermées",
+      "PLAYERS_AFFECTED": "Joueurs affectés"
+    },
+    "SIDEBAR": {
+      "TITLE": "Par joueur",
+      "NO_DATA": "Sans données",
+      "ACTIVE_PLURAL": "actives",
+      "ACTIVE_SINGULAR": "active"
+    },
+    "FILTERS": {
+      "STATUS": "Statut",
+      "ALL": "Toutes",
+      "ACTIVE": "Actives",
+      "RECOVERING": "Récupération",
+      "CLOSED": "Fermées",
+      "SEVERITY": "Gravité",
+      "SEARCH_PLACEHOLDER": "Rechercher joueur, blessure..."
+    },
+    "TABLE": {
+      "PLAYER": "Joueur",
+      "INJURY": "Blessure",
+      "TYPE": "Type",
+      "DATE": "Date",
+      "DAYS": "Jours",
+      "STATUS": "Statut",
+      "SEVERITY": "Gravité",
+      "ACTIONS": "Actions"
+    },
+    "STATUS": {
+      "ACTIVE": "Active",
+      "RECOVERING": "Récupération",
+      "CLOSED": "Fermée"
+    },
+    "SEVERITY": {
+      "LEVE": "Légère",
+      "MODERADA": "Modérée",
+      "GRAVE": "Grave"
+    },
+    "EMPTY": {
+      "TITLE": "Sans blessures",
+      "MESSAGE": "Aucune blessure enregistrée avec les filtres actuels."
     }
   },
   "AI_ASSISTANT": {
@@ -938,7 +1080,14 @@
       "DNI": "Nº d'identification",
       "DNI_IMG": "Doc. Identité (Img.)",
       "DOCUMENTS": "Documents",
-      "HISTORY": "Historique"
+      "HISTORY": "Historique",
+      "EMAIL": "Email",
+      "NATIONALITY": "Nationalité",
+      "FED_LICENSE": "Licence fédérale",
+      "SPORTS_QUAL": "Qualification sportive",
+      "CERTIFICATES": "Certificats",
+      "EMERGENCY": "Contact d'urgence",
+      "DOC": "Document"
     },
     "BUTTONS": {
       "BACK": "Retour",
@@ -959,7 +1108,18 @@
       "DNI": "Nº d'identification",
       "TEAM": "Équipe(s)",
       "YEARS": "ans",
-      "CLOSE": "Fermer"
+      "CLOSE": "Fermer",
+      "ID_DOCUMENT": "Pièce d'identité",
+      "NATIONALITY": "Nationalité",
+      "ADDRESS": "Adresse",
+      "FED_LICENSE": "Licence fédérale",
+      "SPORTS_QUAL": "Qualification sportive",
+      "EMERGENCY": "Contact d'urgence",
+      "CERTIFICATES": "Certificats",
+      "CERT_SEX": "Certificat de délits sexuels",
+      "CERT_CRIMINAL": "Casier judiciaire",
+      "INSURANCE": "Assurance",
+      "FIRST_AID": "Premiers secours"
     },
     "DNI_MODAL": {
       "TITLE": "Document d'identité",
@@ -1003,6 +1163,16 @@
       "GA": "BC",
       "NO_HISTORY": "Aucun historique sportif enregistré",
       "CLOSE": "Fermer"
+    },
+    "CUSTOM_FIELDS_BTN": "Personnaliser champs",
+    "CUSTOM_FIELDS_TITLE": "Champs personnalisés du profil",
+    "CUSTOM_FIELDS_DESC": "Définissez les champs supplémentaires que les entraîneurs de votre club devront compléter dans leur profil.",
+    "MESSAGES": {
+      "DOC_UPLOAD_SUCCESS": "Document téléchargé avec succès",
+      "DOC_UPLOAD_ERROR": "Erreur lors du téléchargement du document",
+      "SELECT_FILE": "Sélectionnez un fichier à télécharger.",
+      "CUSTOM_FIELDS_SAVED": "Champs personnalisés enregistrés",
+      "LOAD_ERROR": "Erreur lors du chargement de la liste."
     }
   },
   "COACH_PROFILE": {
@@ -1042,7 +1212,31 @@
       "LOSSES": "D",
       "GF": "BP",
       "GA": "BC"
-    }
+    },
+    "ID_DOCUMENT": "Pièce d'identité",
+    "ID_DOC_TYPE": "Type de document",
+    "UPLOAD_ID_DOC": "Télécharger pièce d'identité",
+    "SAVING": "Enregistrement...",
+    "ID_DOC_IMAGES": "Images du document",
+    "DOC_FRONT": "Recto",
+    "DOC_BACK": "Verso",
+    "ID_DOC_MODAL_TITLE": "Document d'identité",
+    "FEDERATION_LICENSE": "Licence fédérale",
+    "SPORTS_QUALIFICATION": "Qualification sportive",
+    "EMERGENCY_CONTACT": "Contact d'urgence",
+    "EMERGENCY_CONTACT_NAME": "Nom du contact d'urgence",
+    "EMERGENCY_CONTACT_PHONE": "Téléphone du contact d'urgence",
+    "CERTIFICATES_TITLE": "Certificats",
+    "CERT_SEX_OFFENSES": "Certificat de délits sexuels",
+    "CERT_CRIMINAL_RECORD": "Casier judiciaire",
+    "INSURANCE": "Assurance",
+    "FIRST_AID": "Premiers secours",
+    "UPLOADED": "Téléchargé",
+    "PENDING": "En attente",
+    "CUSTOM_FIELDS_TITLE": "Champs personnalisés",
+    "CUSTOM_FIELDS_HINT": "Ajoutez des informations supplémentaires à votre profil.",
+    "CLUB_DOCS_TITLE": "Documents du club",
+    "CHANGE_PHOTO": "Changer la photo"
   },
   "FOOTER": {
     "RIGHTS": "Tous droits réservés."
@@ -1167,7 +1361,8 @@
       "DATE": "Date",
       "VISIBILITY": "Visibilité",
       "REQUIRE_UPLOAD": "Autoriser le téléchargement",
-      "OPEN": "Ouvrir le document"
+      "OPEN": "Ouvrir le document",
+      "CREATE_FORM": "Créer un document"
     },
     "MODAL": {
       "UPLOAD_TITLE": "Télécharger un document (PDF ou Word)",
@@ -1188,7 +1383,9 @@
       "UPLOAD_PROGRESS": "Progression du téléchargement",
       "UPLOAD_SUCCESS": "Document téléchargé avec succès",
       "UPLOAD_ERROR": "Erreur lors du téléchargement du document",
-      "UPLOAD_WAIT": "Veuillez patienter pendant le téléchargement"
+      "UPLOAD_WAIT": "Veuillez patienter pendant le téléchargement",
+      "AUTH_TEXT_LABEL": "Texte d'autorisation",
+      "AUTH_TEXT_HINT": "Ce texte apparaîtra dans le document pour que le tuteur autorise."
     }
   },
   "CUOTAS": {
@@ -1466,15 +1663,15 @@
     "DELETE_NO_ALLOWED": "Cette équipe ne peut pas être supprimée (équipe par défaut pour les nouveaux joueurs)."
   },
   "CLOTHES": {
-    "TITLE": "Personnaliser les v\u00eatements",
-    "DESCRIPTION": "Activez ou d\u00e9sactivez les colonnes et renommez les articles en cliquant sur l'ic\u00f4ne crayon. Les modifications sont enregistr\u00e9es par utilisateur.",
-    "RESET_DEFAULTS": "R\u00e9initialiser tout par d\u00e9faut",
+    "TITLE": "Personnaliser les vêtements",
+    "DESCRIPTION": "Activez ou désactivez les colonnes et renommez les articles en cliquant sur l'icône crayon. Les modifications sont enregistrées par utilisateur.",
+    "RESET_DEFAULTS": "Réinitialiser tout par défaut",
     "GROUPS": {
-      "MATCH_1": "1er \u00c9quipement",
-      "MATCH_2": "2e \u00c9quipement",
-      "TRAINING": "Entra\u00eenement",
-      "TRACKSUIT": "Surv\u00eatement",
-      "CASUAL": "D\u00e9contract\u00e9",
+      "MATCH_1": "1er Équipement",
+      "MATCH_2": "2e Équipement",
+      "TRAINING": "Entraînement",
+      "TRACKSUIT": "Survêtement",
+      "CASUAL": "Décontracté",
       "ACCESSORIES": "Accessoires"
     },
     "TABLE": {
@@ -1615,7 +1812,21 @@
     },
     "CUSTOM_FIELDS_BTN": "Personnaliser champs",
     "CUSTOM_FIELDS_TITLE": "Champs personnalisés du joueur",
-    "CUSTOM_FIELDS_DESC": "Définissez les champs supplémentaires que les joueurs ou parents/tuteurs de votre club devront compléter dans leur profil."
+    "CUSTOM_FIELDS_DESC": "Définissez les champs supplémentaires que les joueurs ou parents/tuteurs de votre club devront compléter dans leur profil.",
+    "MESSAGES": {
+      "DOC_UPLOAD_SUCCESS": "Document téléchargé avec succès",
+      "DOC_UPLOAD_ERROR": "Erreur lors du téléchargement du document",
+      "SELECT_FILE": "Sélectionnez un fichier à télécharger.",
+      "INVALID_IMAGE_FORMAT": "Format invalide. Téléchargez une image PNG ou JPEG.",
+      "PDF_WORD_ONLY": "Seuls les fichiers PDF ou Word sont acceptés.",
+      "ACCEPT_AUTHORIZATION": "Vous devez accepter l'autorisation ou les conditions du club.",
+      "CONTENT_UPDATED": "Contenu mis à jour avec succès",
+      "SELECT_TEAM_DROPDOWN": "Sélectionnez une équipe dans la liste.",
+      "MOVED_SUCCESS": "Déplacé avec succès. Actualisez pour voir les changements.",
+      "MOVE_SEASON_CONFIRM": "Vous allez déplacer ce joueur vers une autre saison ; il restera dans l'actuelle. Continuer ?",
+      "PLAYER_MOVED_SUCCESS": "Joueur déplacé avec succès",
+      "LOAD_ERROR": "Erreur lors du chargement de la liste."
+    }
   },
   "SPONSOR": {
     "TITLE": "Sponsor",
@@ -2020,7 +2231,22 @@
       "PAYMENT_TITLE": "Résumé et paiement",
       "PAYMENT_DESC": "Vérifiez le résumé de votre commande avant de procéder au paiement sécurisé.",
       "ORDER_SUMMARY": "Résumé de la commande",
-      "SECURE_PAYMENT": "Le paiement sera traité de manière sécurisée via Stripe."
+      "SECURE_PAYMENT": "Le paiement sera traité de manière sécurisée via Stripe.",
+      "TAX_ID": "N° fiscal / CIF",
+      "TAX_ID_PH": "Entrez le numéro fiscal",
+      "TAX_ID_INVALID": "Format de numéro fiscal invalide",
+      "POSTAL_CODE_PH": "Code postal",
+      "COUNTRY": "Pays",
+      "COUNTRY_PH": "Sélectionnez le pays",
+      "RESPONSIBLE_ID": "ID du responsable",
+      "RESPONSIBLE_ID_PH": "Entrez l'ID du responsable",
+      "RESPONSIBLE_PHONE_PH": "Téléphone du responsable",
+      "CURRENCY": "Devise",
+      "LOCAL_EQUIVALENT": "Équivalent local",
+      "CURRENCY_NOTE": "La devise affichée dans l'application pour les frais et paiements.",
+      "CONTRACT_WITH_TAX_ID": "Contrat avec numéro fiscal",
+      "CONTRACT_COUNTRY": "Pays du contrat",
+      "CONTRACT_WITH_ID": "Contrat avec ID"
     },
     "WIZARD_FREE": {
       "SUBTITLE": "Configurez le plan Gratuit pour votre club",
@@ -2247,5 +2473,67 @@
       "STATUS_DRAFT": "Brouillon",
       "STATUS_REPORT-GENERATED": "Rapport généré"
     }
+  },
+  "STATS": {
+    "NO_PLAYER_DATA": "Aucune donnée de joueur disponible",
+    "NO_TEAM_DATA": "Aucune donnée d'équipe disponible"
+  },
+  "AI_PANEL": {
+    "CONSULT_BUTTON": "Consulter l'IA",
+    "PLAYER_DESCRIPTION": "Demandez à l'IA de générer des graphiques et analyses avec les données des joueurs",
+    "TEAM_DESCRIPTION": "Demandez à l'IA de générer des graphiques et analyses avec les données des équipes",
+    "SIDEBAR_TITLE_PLAYERS": "Assistant IA - Statistiques des joueurs",
+    "SIDEBAR_TITLE_TEAMS": "Assistant IA - Statistiques des équipes",
+    "HELP_TEXT": "Posez-moi des questions sur les données. Je peux vous aider avec :",
+    "SUGGESTION_TOP_SCORER": "Meilleur buteur",
+    "SUGGESTION_ASSISTS": "Graphique des passes",
+    "SUGGESTION_PERFORMANCE": "Analyse de performance",
+    "SUGGESTION_CARDS": "Cartons",
+    "SUGGESTION_COMPARISON": "Comparaison",
+    "SUGGESTION_AVG_MINUTES": "Minutes moyennes",
+    "SUGGESTION_BEST_TEAM": "Meilleure équipe",
+    "SUGGESTION_POINTS_CHART": "Graphique des points",
+    "SUGGESTION_PERFORMANCE_ANALYSIS": "Analyse de performance",
+    "SUGGESTION_GOALS_COMPARISON": "Comparaison des buts",
+    "SUGGESTION_AVG_WINS": "Victoires moyennes",
+    "SUGGESTION_RECENT_STREAKS": "Séries récentes",
+    "USER_LABEL": "Vous :",
+    "PLACEHOLDER": "Écrivez votre question ici...",
+    "SEND": "Envoyer",
+    "HINT_CTRL_ENTER": "Appuyez sur Ctrl+Entrée pour envoyer",
+    "WELCOME_PLAYERS": "Bonjour ! 👋 Je suis votre assistant d'analyse de statistiques. Je peux vous aider à visualiser et analyser les données de vos joueurs. Comment puis-je vous aider ?",
+    "WELCOME_TEAMS": "Bonjour ! 👋 Je suis votre assistant d'analyse de statistiques. Je peux vous aider à visualiser et analyser les données de vos équipes. Comment puis-je vous aider ?",
+    "ERROR_MESSAGE": "❌ Désolé, une erreur s'est produite lors du traitement de votre requête. Veuillez réessayer.",
+    "SHOWING": "Affichage de",
+    "OF": "sur"
+  },
+  "EQUIPOS": {
+    "LINK_COPIED": "Lien copié dans le presse-papiers !",
+    "LINK_COPY_ERROR": "Impossible de copier le lien. Veuillez réessayer.",
+    "SUBSCRIPTION_REQUIRED_TITLE": "Abonnement requis",
+    "SUBSCRIPTION_REQUIRED_MESSAGE": "Vous ne pouvez pas créer plus d'équipes. Vous devez mettre à jour votre abonnement. Si votre club appartient à une fédération, contactez-les pour augmenter la limite.",
+    "GO_TO_SUBSCRIPTION": "Aller à l'abonnement",
+    "SELECT_CATEGORY_FIRST": "Vous devez d'abord sélectionner ou créer la catégorie. L'écrire ne suffit pas.",
+    "DELETE_TEAM_TITLE": "Supprimer l'équipe",
+    "DELETE_TEAM_MESSAGE": "Êtes-vous sûr de vouloir supprimer l'équipe {{name}} ?",
+    "TEAM_DELETED_SUCCESS": "Équipe supprimée avec succès",
+    "TEAM_DELETED_ERROR": "Erreur lors de la suppression de l'équipe",
+    "SELECT_XLSX_FILE": "Veuillez sélectionner un fichier au format .xlsx",
+    "PLAYERS_UPLOADED_SUCCESS": "Joueurs ajoutés aux équipes avec succès",
+    "UPLOAD_ERROR": "Erreur lors du téléchargement du fichier",
+    "ACCEPT_BROWSER_MANAGEMENT": "Vous devez accepter que l'abonnement soit géré depuis le navigateur"
+  },
+  "DOCUMENTS_CLUB": {
+    "TAB_PLAYERS": "Players",
+    "TAB_COACHES": "Coaches"
+  },
+  "ADMIN_MENU": {
+    "TITLE": "Administrateur",
+    "GENERAL_PANEL": "Panneau Général",
+    "SUGGESTIONS": "Suggestions",
+    "CHARTS": "Graphiques",
+    "AI_INSIGHTS": "Analyses IA",
+    "AI_USAGE": "Utilisation IA",
+    "RECORDS": "Enregistrements"
   }
 }
