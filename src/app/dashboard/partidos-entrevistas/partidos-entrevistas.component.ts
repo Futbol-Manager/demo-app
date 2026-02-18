@@ -10,6 +10,7 @@ import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { environment } from 'src/environments/environment';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { VideoStorageService } from 'src/app/core/services/video-storage/video-storage.service';
 
 @Component({
   selector: 'app-partidos-entrevistas',
@@ -57,7 +58,9 @@ export class PartidosEntrevistasComponent implements OnInit {
   activeTab: 'fotos' | 'videos' = 'fotos';
 
   /** Control de suscripción para vídeos */
-  hasVideoSubscription = true;
+  hasVideoSubscription = false;
+  planLoading = false;
+  teamName = '';
 
   /** Modal para agregar contenido por URL */
   showUrlModal = false;
@@ -65,8 +68,10 @@ export class PartidosEntrevistasComponent implements OnInit {
   urlInput = '';
   urlError = '';
 
-  /** Modal de suscripción PRO para vídeos desde dispositivo */
-  showProModal = false;
+  /** Modal informativo: el club no tiene suscripción de vídeos */
+  showVideoPlansModal = false;
+  requestPlanSent = false;
+  requestPlanLoading = false;
 
   /** Controla si se muestra el panel de subida de fotos */
   showUploadPanel = false;
@@ -96,7 +101,8 @@ export class PartidosEntrevistasComponent implements OnInit {
     private clubService: ClubService,
     private playerService: PlayerService,
     private location: Location,
-    private sanitizer: DomSanitizer) { }
+    private sanitizer: DomSanitizer,
+    private videoService: VideoStorageService) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -106,17 +112,53 @@ export class PartidosEntrevistasComponent implements OnInit {
       this.route.params.subscribe(params => {
         this.teamId = +params['teamId'];
         this.playerId = +params['playerId'];
+        this.resolveClubId();
       });
     });
 
-    this.loadVideoSubscription();
     this.getListaPostpartidos();
   }
 
-  /** Carga estado de suscripción de vídeo (mock - integrar con API real) */
-  loadVideoSubscription(): void {
-    const stored = localStorage.getItem('video_subscription');
-    this.hasVideoSubscription = stored === 'true';
+  private resolveClubId(): void {
+    if (!this.teamId) return;
+    this.teamService.getTeamById(this.teamId.toString()).subscribe({
+      next: (res: any) => {
+        const team = res?.data;
+        if (team?.clubId) {
+          this.clubId = team.clubId;
+          this.teamName = team.name || team.nombreEquipo || '';
+        } else if (this.userId) {
+          this.fallbackClubId();
+        }
+        this.loadPlanStatus();
+      },
+      error: () => {
+        if (this.userId) this.fallbackClubId();
+        this.loadPlanStatus();
+      }
+    });
+  }
+
+  private fallbackClubId(): void {
+    this.clubService.getClubForEntrenador(this.userId).subscribe({
+      next: (res: any) => { if (res?.data) this.clubId = res.data; },
+      error: () => {}
+    });
+  }
+
+  loadPlanStatus(): void {
+    if (!this.clubId) return;
+    this.planLoading = true;
+    this.videoService.getPlan(this.clubId).subscribe({
+      next: (res: any) => {
+        this.hasVideoSubscription = res?.data?.hasPlan === true && res?.data?.status === 'ACTIVE';
+        this.planLoading = false;
+      },
+      error: () => {
+        this.hasVideoSubscription = false;
+        this.planLoading = false;
+      }
+    });
   }
 
   setTab(tab: 'fotos' | 'videos'): void {
@@ -329,19 +371,23 @@ export class PartidosEntrevistasComponent implements OnInit {
     }
   }
 
-  // ─── Upload de vídeo por archivo (PRO) ─────────────────────
+  // ─── Upload de vídeo por archivo (requiere plan del club) ──
 
-  openProModal(): void {
-    this.showProModal = true;
+  openVideoPlansModal(): void {
+    this.requestPlanSent = false;
+    this.showVideoPlansModal = true;
   }
 
-  closeProModal(): void {
-    this.showProModal = false;
-  }
-
-  goToSubscription(): void {
-    this.showProModal = false;
-    this.router.navigate(['/dashboard/suscripcion']);
+  sendPlanRequest(): void {
+    if (this.requestPlanLoading || this.requestPlanSent || !this.clubId) return;
+    this.requestPlanLoading = true;
+    const name = this.usuarioActual?.firstName
+      ? `${this.usuarioActual.firstName}`
+      : 'Un miembro del equipo';
+    this.videoService.requestPlan(this.clubId, name).subscribe({
+      next: () => { this.requestPlanSent = true; this.requestPlanLoading = false; },
+      error: () => { this.requestPlanSent = true; this.requestPlanLoading = false; }
+    });
   }
 
   triggerVideoFileUpload(): void {
@@ -368,18 +414,58 @@ export class PartidosEntrevistasComponent implements OnInit {
   }
 
   onSubmitVideo(): void {
-    if (this.selectedVideoFile) {
-      this.playerService.uploadImgGaleria(this.selectedVideoFile, this.postpartidoSelected, this.teamId, this.playerId).subscribe(
-        (response: Response) => {
-          this.videos.push(response.data);
-          this.resetVideoUpload();
-        },
-        (error) => {
-          console.error('Error al subir vídeo', error);
-          alert('Error al subir el vídeo. Inténtalo de nuevo.');
+    if (!this.selectedVideoFile) return;
+    const fileRef = this.selectedVideoFile;
+
+    this.playerService.uploadImgGaleria(fileRef, this.postpartidoSelected, this.teamId, this.playerId).subscribe(
+      (response: Response) => {
+        this.videos.push(response.data);
+        this.resetVideoUpload();
+        this.uploadVideoToClubLibrary(fileRef);
+      },
+      (error) => {
+        console.error('Error al subir vídeo', error);
+        alert('Error al subir el vídeo. Inténtalo de nuevo.');
+      }
+    );
+  }
+
+  private uploadVideoToClubLibrary(file: File): void {
+    if (!this.clubId) return;
+    const matchLabel = this.selectedPartido
+      ? (this.selectedPartido.fecha ? new Date(this.selectedPartido.fecha).toLocaleDateString('es-ES') : 'Partido')
+      : 'Partido';
+    const folderName = this.teamName || `Equipo ${this.teamId}`;
+    const videoTitle = `${folderName} - ${matchLabel}`;
+
+    this.videoService.getFolders(this.clubId).subscribe({
+      next: (res: any) => {
+        const folders: any[] = res?.data || [];
+        const existing = folders.find((f: any) => f.name === folderName);
+        if (existing) {
+          this.doUploadToLibrary(file, videoTitle, existing.id);
+        } else {
+          this.videoService.createFolder(this.clubId, folderName, '#3b82f6').subscribe({
+            next: (cRes: any) => this.doUploadToLibrary(file, videoTitle, cRes?.data?.id),
+            error: () => this.doUploadToLibrary(file, videoTitle, null)
+          });
         }
-      );
-    }
+      },
+      error: () => this.doUploadToLibrary(file, videoTitle, null)
+    });
+  }
+
+  private doUploadToLibrary(file: File, title: string, folderId: number | null): void {
+    const meta = { title, description: '', tags: '', playerName: '' };
+    this.videoService.uploadVideo(this.clubId, this.userId, file, meta).subscribe({
+      next: (res: any) => {
+        const videoId = res?.data?.id;
+        if (videoId && folderId) {
+          this.videoService.assignVideoFolder(this.clubId, videoId, folderId).subscribe();
+        }
+      },
+      error: () => {}
+    });
   }
 
   resetVideoUpload(): void {
@@ -444,8 +530,14 @@ export class PartidosEntrevistasComponent implements OnInit {
     });
   }
 
-  /** Agrega un vídeo por URL de YouTube */
+  /** Agrega un vídeo por URL de YouTube (requiere plan del club) */
   addVideoByUrl(url: string): void {
+    if (!this.hasVideoSubscription) {
+      this.closeUrlModal();
+      this.showVideoPlansModal = true;
+      return;
+    }
+
     const videoId = this.extractVideoId(url);
     if (!videoId) {
       this.urlError = 'No se pudo procesar la URL. Pega un enlace válido de YouTube (ej: https://www.youtube.com/watch?v=xxxxx)';

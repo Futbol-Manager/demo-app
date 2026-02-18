@@ -429,6 +429,17 @@ export class PlayerService {
         }
     }
 
+    solicitarConsentimientoIA(playerId: number): Observable<Response> {
+        const token: string | null = localStorage.getItem('token');
+        if (token) {
+            const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+            const url: string = environment.apiUrl + `player/solicitarconsentimientoia/${playerId}`;
+            return this.http.post<Response>(url, {}, { headers });
+        } else {
+            return EMPTY;
+        }
+    }
+
     getscoutingplayerbyplayerid(playerId: number, userId: number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');

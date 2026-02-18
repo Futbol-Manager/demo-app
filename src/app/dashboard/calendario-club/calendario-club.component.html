@@ -158,7 +158,10 @@
   <!-- ═══════════════════════════════════════════════
        PANEL LATERAL — DETALLE DEL DÍA
   ═══════════════════════════════════════════════ -->
-  <div class="day-panel-overlay" *ngIf="showDayPanel" (click)="closeDayPanel()"></div>
+  <!-- Fondo visual (sin interceptar clicks) -->
+  <div class="day-panel-overlay" *ngIf="showDayPanel"></div>
+  <!-- Zona clicable para cerrar (solo la parte izquierda, fuera del panel) -->
+  <div class="day-panel-overlay-click" *ngIf="showDayPanel" (click)="closeDayPanel()"></div>
 
   <div class="day-panel" [class.day-panel-open]="showDayPanel">
     <div class="day-panel-header" *ngIf="selectedDay">
@@ -192,15 +195,16 @@
         <div class="team-group-header">
           <span class="team-group-dot" [style.backgroundColor]="group.team.color"></span>
           <span class="team-group-name">{{ group.team.name }}</span>
-          <button class="team-group-link" (click)="navigateToTeamCalendar(group.team.teamId)"
+          <button type="button" class="team-group-link" (click)="navigateToTeamCalendar(group.team.teamId)"
                   [title]="'CALENDAR_CLUB.PANEL.GO_TO_CALENDAR' | translate">
             <i class="bi bi-box-arrow-up-right"></i>
           </button>
         </div>
 
         <!-- ENTRENAMIENTOS -->
-        <div *ngFor="let t of group.trainings" class="event-card event-training"
-             (click)="navigateToEventDetail(t)" style="cursor:pointer">
+        <button type="button" *ngFor="let t of group.trainings"
+                class="event-card event-training event-card-btn"
+                (click)="goToEventInCalendar(t)">
           <div class="event-icon">
             <svg viewBox="0 0 24 14" fill="currentColor" width="18" height="12">
               <rect x="0" y="3.5" width="3.5" height="7" rx="1"/>
@@ -216,15 +220,15 @@
               <i class="bi bi-geo-alt me-1"></i>{{ t.time }}
             </span>
           </div>
-          <button class="event-action"
-                  [title]="'CALENDAR_CLUB.PANEL.VIEW_DETAIL' | translate">
+          <span class="event-action">
             <i class="bi bi-chevron-right"></i>
-          </button>
-        </div>
+          </span>
+        </button>
 
         <!-- PARTIDOS -->
-        <div *ngFor="let m of group.matches" class="event-card event-match"
-             (click)="navigateToEventDetail(m)" style="cursor:pointer">
+        <button type="button" *ngFor="let m of group.matches"
+                class="event-card event-match event-card-btn"
+                (click)="goToEventInCalendar(m)">
           <div class="event-icon">
             <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
               <circle cx="12" cy="12" r="11"/>
@@ -245,11 +249,10 @@
               <i class="bi bi-clock me-1"></i>{{ m.time }}
             </span>
           </div>
-          <button class="event-action"
-                  [title]="'CALENDAR_CLUB.PANEL.VIEW_DETAIL' | translate">
+          <span class="event-action">
             <i class="bi bi-chevron-right"></i>
-          </button>
-        </div>
+          </span>
+        </button>
       </div>
     </div>
   </div>

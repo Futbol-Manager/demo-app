@@ -333,7 +333,8 @@ export class TrainerComponent implements OnInit {
       parentesco2: 0,
       entidad: '',
       titularBanco: '',
-      iban: ''
+      iban: '',
+      consentimientoIA: 0
     };
   }
 

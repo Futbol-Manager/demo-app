@@ -54,11 +54,18 @@ export class ScoutingClubComponent implements OnInit {
   pipelineData: any = null;
   pipelineLoading = false;
   pipelineStages = ['IDENTIFIED', 'OBSERVED', 'EVALUATED', 'SHORTLISTED', 'CONTACTED'];
+  showDiscarded = false;
 
-  // Player detail
+  // Player detail (watchlist)
   showDetailModal = false;
   detailData: any = null;
   detailLoading = false;
+
+  // Public profile (search results)
+  showPublicProfileModal = false;
+  publicProfile: any = null;
+  publicProfileVideos: any[] = [];
+  publicProfileLoading = false;
 
   // Evaluation form
   showEvalForm = false;
@@ -128,6 +135,7 @@ export class ScoutingClubComponent implements OnInit {
   addLinkSaving        = false;
   addLinkError         = '';
   showVideoUploadModal = false;
+  showPlansModal       = false;
   playingVideoUrl      = '';
   playingVideoTitle    = '';
 
@@ -318,6 +326,26 @@ export class ScoutingClubComponent implements OnInit {
     this.searchLeague = '';
     this.searchAvailability = '';
     this.searchOnlyWithVideo = false;
+  }
+
+  // ═══════ PUBLIC PROFILE (desde búsqueda) ═══════
+
+  openPublicProfile(player: any): void {
+    const playerId = player.playerId || player.id;
+    if (!playerId) return;
+    this.publicProfile = null;
+    this.publicProfileVideos = [];
+    this.publicProfileLoading = true;
+    this.showPublicProfileModal = true;
+    this.http.get<any>(`${this.playerApiBase}/${playerId}/profile`, { headers: this.headers })
+      .subscribe({
+        next: res => {
+          this.publicProfile = res?.data?.profile || null;
+          this.publicProfileVideos = res?.data?.videos || [];
+          this.publicProfileLoading = false;
+        },
+        error: () => { this.publicProfileLoading = false; }
+      });
   }
 
   addToWatchlist(player: any): void {
@@ -1038,6 +1066,14 @@ export class ScoutingClubComponent implements OnInit {
 
   getStageIndex(stage: string): number {
     return this.pipelineStages.indexOf(stage);
+  }
+
+  getDiscardedItems(): any[] {
+    return this.pipelineData?.['DISCARDED'] || [];
+  }
+
+  restoreFromDiscarded(watchlistId: number): void {
+    this.moveInPipeline(watchlistId, 'IDENTIFIED');
   }
 
   scoreColor(val: number): string {

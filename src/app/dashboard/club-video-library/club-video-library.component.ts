@@ -28,6 +28,23 @@ export class ClubVideoLibraryComponent implements OnInit {
 
   deleteConfirmId: number | null = null;
 
+  // ── Carpetas ──────────────────────────────────────────────
+  folders: any[] = [];
+  activeFolderId: number | null | 'uncategorized' = null; // null = todas, 'uncategorized' = sin carpeta
+  showCreateFolder = false;
+  newFolderName = '';
+  newFolderColor = '#3b82f6';
+  folderSaving = false;
+  folderError = '';
+
+  editingFolder: any = null;  // carpeta que se está renombrando inline
+  editFolderName = '';
+  editFolderColor = '';
+
+  movingVideo: any = null;  // vídeo al que se le está cambiando la carpeta
+
+  folderColors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#06b6d4','#f97316'];
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -41,6 +58,7 @@ export class ClubVideoLibraryComponent implements OnInit {
       || 0;
     this.loadPlan();
     this.loadVideos();
+    this.loadFolders();
   }
 
   loadPlan(): void {
@@ -71,13 +89,114 @@ export class ClubVideoLibraryComponent implements OnInit {
 
   applyFilter(): void {
     const q = this.searchQuery.toLowerCase();
+    let base = this.videos;
+
+    if (this.activeFolderId === 'uncategorized') {
+      base = base.filter(v => !v.folderId);
+    } else if (this.activeFolderId !== null) {
+      base = base.filter(v => v.folderId === this.activeFolderId);
+    }
+
     this.filteredVideos = q
-      ? this.videos.filter(v =>
+      ? base.filter(v =>
           (v.title || '').toLowerCase().includes(q) ||
           (v.playerName || '').toLowerCase().includes(q) ||
           (v.tags || '').toLowerCase().includes(q)
         )
-      : [...this.videos];
+      : [...base];
+  }
+
+  selectFolder(id: number | null | 'uncategorized'): void {
+    this.activeFolderId = id;
+    this.applyFilter();
+  }
+
+  videoCountInFolder(folderId: number | null | 'uncategorized'): number {
+    if (folderId === 'uncategorized') return this.videos.filter(v => !v.folderId).length;
+    if (folderId === null) return this.videos.length;
+    return this.videos.filter(v => v.folderId === folderId).length;
+  }
+
+  loadFolders(): void {
+    if (!this.clubId) return;
+    this.videoService.getFolders(this.clubId).subscribe({
+      next: (res) => { this.folders = res?.data || []; },
+      error: () => {}
+    });
+  }
+
+  createFolder(): void {
+    if (!this.newFolderName.trim()) return;
+    this.folderSaving = true;
+    this.folderError = '';
+    this.videoService.createFolder(this.clubId, this.newFolderName.trim(), this.newFolderColor).subscribe({
+      next: (res) => {
+        if (res?.data) this.folders.push(res.data);
+        this.folders.sort((a, b) => a.name.localeCompare(b.name));
+        this.newFolderName = '';
+        this.newFolderColor = '#3b82f6';
+        this.showCreateFolder = false;
+        this.folderSaving = false;
+      },
+      error: () => { this.folderSaving = false; this.folderError = 'Error al crear la carpeta.'; }
+    });
+  }
+
+  startEditFolder(folder: any): void {
+    this.editingFolder = folder;
+    this.editFolderName = folder.name;
+    this.editFolderColor = folder.color || '#3b82f6';
+  }
+
+  saveEditFolder(): void {
+    if (!this.editingFolder || !this.editFolderName.trim()) return;
+    this.videoService.updateFolder(this.clubId, this.editingFolder.id, {
+      name: this.editFolderName.trim(), color: this.editFolderColor
+    }).subscribe({
+      next: (res) => {
+        if (res?.data) {
+          const idx = this.folders.findIndex(f => f.id === this.editingFolder.id);
+          if (idx >= 0) this.folders[idx] = res.data;
+          this.folders.sort((a, b) => a.name.localeCompare(b.name));
+        }
+        this.editingFolder = null;
+      },
+      error: () => {}
+    });
+  }
+
+  deleteFolder(folder: any): void {
+    if (!confirm(`¿Eliminar la carpeta "${folder.name}"? Los vídeos quedarán sin carpeta.`)) return;
+    this.videoService.deleteFolder(this.clubId, folder.id).subscribe({
+      next: () => {
+        this.folders = this.folders.filter(f => f.id !== folder.id);
+        this.videos.forEach(v => { if (v.folderId === folder.id) v.folderId = null; });
+        if (this.activeFolderId === folder.id) this.selectFolder(null);
+        this.applyFilter();
+      },
+      error: () => {}
+    });
+  }
+
+  moveVideoToFolder(video: any, folderId: number | null): void {
+    this.videoService.assignVideoFolder(this.clubId, video.id, folderId).subscribe({
+      next: () => {
+        video.folderId = folderId;
+        this.movingVideo = null;
+        this.applyFilter();
+      },
+      error: () => {}
+    });
+  }
+
+  folderName(folderId: number | null): string {
+    if (!folderId) return 'Sin carpeta';
+    return this.folders.find(f => f.id === folderId)?.name || 'Sin carpeta';
+  }
+
+  getFolderProp(folderId: any, prop: string): string {
+    if (!folderId || folderId === 'uncategorized') return '';
+    return this.folders.find(f => f.id === folderId)?.[prop] || '';
   }
 
   playVideo(video: any): void {

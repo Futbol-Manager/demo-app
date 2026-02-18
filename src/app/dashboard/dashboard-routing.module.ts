@@ -73,6 +73,7 @@ import { DebriefTrainingComponent } from './debrief/debrief-training/debrief-tra
 import { DebriefMatchComponent } from './debrief/debrief-match/debrief-match.component';
 import { DebriefReportComponent } from './debrief/debrief-report/debrief-report.component';
 import { DebriefHistoryComponent } from './debrief/debrief-history/debrief-history.component';
+import { FormTemplatesComponent } from './debrief/form-templates/form-templates.component';
 import { ClubOwnerGuard } from '../club-owner.guard';
 import { AdminGuard } from '../admin.guard';
 import { CoachSubscriptionGuard } from '../coach-subscription.guard';
@@ -177,6 +178,7 @@ const routes: Routes = [
       { path: 'debrief/match/:teamId/:matchId', component: DebriefMatchComponent },
       { path: 'debrief/report/:debriefId/:type', component: DebriefReportComponent },
       { path: 'debrief/history/:teamId', component: DebriefHistoryComponent },
+      { path: 'debrief/templates/:clubId', component: FormTemplatesComponent },
       { path: 'suscripcion-coach', component: SuscripcionCoachComponent },
       { path: 'coach-suscripcion-success', component: CoachSuscripcionSuccessComponent },
       { path: '**', redirectTo: 'inicio' },

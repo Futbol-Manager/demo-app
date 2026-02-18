@@ -1,0 +1,93 @@
+<div class="ftm-page">
+
+  <!-- Back -->
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>Volver</span>
+    </button>
+  </div>
+
+  <!-- Page Header -->
+  <div class="ftm-header">
+    <h2><i class="bi bi-journal-text"></i> Gestión de formularios personalizados</h2>
+    <p>Crea y gestiona formularios propios para los análisis pre y post de partidos y entrenamientos.</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="ftm-tabs">
+    <button *ngFor="let tab of tabs"
+      class="ftm-tab"
+      [class.ftm-tab--active]="activeTab === tab"
+      (click)="activeTab = tab">
+      {{ tipoLabels[tab] }}
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="ftm-loading">
+    <div class="spinner-border text-success spinner-border-sm"></div>
+    <span>Cargando...</span>
+  </div>
+
+  <!-- Builder inline -->
+  <div *ngIf="showBuilder" class="ftm-builder-wrap">
+    <app-form-builder
+      [templateMode]="true"
+      [tipoFormulario]="activeTab"
+      [templateNombre]="editingTemplate?.nombre || ''"
+      [initialCampos]="getInitialCampos(editingTemplate)"
+      (templateSaved)="onBuilderSaved($event)"
+      (onClose)="onBuilderClose()">
+    </app-form-builder>
+  </div>
+
+  <!-- Template list -->
+  <ng-container *ngIf="!loading && !showBuilder">
+
+    <!-- Empty state -->
+    <div *ngIf="activeTemplates.length === 0" class="ftm-empty">
+      <i class="bi bi-inbox"></i>
+      <p>Aún no hay formularios para <strong>{{ tipoLabels[activeTab] }}</strong>.</p>
+    </div>
+
+    <!-- Cards -->
+    <div class="ftm-cards">
+      <div *ngFor="let t of activeTemplates" class="ftm-card">
+        <div class="ftm-card__info">
+          <span class="ftm-card__name">{{ t.nombre }}</span>
+          <span class="ftm-card__meta">
+            <i class="bi bi-calendar3"></i> {{ t.createdAt | date:'dd/MM/yyyy' }}
+          </span>
+        </div>
+        <div class="ftm-card__actions">
+          <button class="ftm-btn ftm-btn--edit" (click)="openEdit(t)" title="Editar">
+            <i class="bi bi-pencil"></i> Editar
+          </button>
+          <button class="ftm-btn ftm-btn--delete" (click)="confirmDelete(t)" title="Eliminar">
+            <i class="bi bi-trash"></i> Eliminar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Create button -->
+    <button class="ftm-create-btn" (click)="openCreate()">
+      <i class="bi bi-plus-circle"></i> Nuevo formulario de {{ tipoLabels[activeTab] }}
+    </button>
+
+  </ng-container>
+
+  <!-- Confirm delete dialog -->
+  <div *ngIf="templateToDelete" class="ftm-confirm-backdrop">
+    <div class="ftm-confirm">
+      <h5>¿Eliminar formulario?</h5>
+      <p>Se eliminará <strong>"{{ templateToDelete.nombre }}"</strong> permanentemente.</p>
+      <div class="ftm-confirm__actions">
+        <button class="btn btn-secondary" (click)="cancelDelete()">Cancelar</button>
+        <button class="btn btn-danger" (click)="doDelete()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+
+</div>

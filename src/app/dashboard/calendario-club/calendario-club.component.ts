@@ -526,6 +526,16 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
     this.selectedDay = null;
   }
 
+  goToEventInCalendar(event: CalendarEvent): void {
+    this.router.navigate(['/dashboard/calendario', event.teamId, 0], {
+      queryParams: {
+        eventType: event.type === 'training' ? 'entrenamiento' : 'partido',
+        eventId: event.id,
+        eventDate: event.date,
+      },
+    });
+  }
+
   /* ═══════════════════════════════════════
      NAVEGAR AL CALENDARIO DEL EQUIPO
   ═══════════════════════════════════════ */

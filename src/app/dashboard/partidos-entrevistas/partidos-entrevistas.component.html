@@ -195,14 +195,18 @@
 
       <!-- Action bar con opciones de vídeo -->
       <div class="content-action-bar">
-        <button class="btn-new-content btn-new-content--video" (click)="openUrlModal('video')">
+        <button class="btn-new-content btn-new-content--video"
+                (click)="hasVideoSubscription ? openUrlModal('video') : openVideoPlansModal()">
           <i class="bi bi-link-45deg"></i> Añadir por URL
+          <span class="btn-pro-tag" *ngIf="!hasVideoSubscription && !planLoading">
+            <i class="bi bi-lock-fill"></i>
+          </span>
         </button>
         <button class="btn-new-content btn-new-content--pro"
-                (click)="hasVideoSubscription ? triggerVideoFileUpload() : openProModal()">
+                (click)="hasVideoSubscription ? triggerVideoFileUpload() : openVideoPlansModal()">
           <i class="bi bi-upload"></i> Subir desde dispositivo
-          <span class="btn-pro-tag" *ngIf="!hasVideoSubscription">
-            <i class="bi bi-lock-fill"></i> PRO
+          <span class="btn-pro-tag" *ngIf="!hasVideoSubscription && !planLoading">
+            <i class="bi bi-lock-fill"></i>
           </span>
         </button>
       </div>
@@ -339,75 +343,73 @@
   </div>
 </div>
 
-<!-- ════════ MODAL PRO (Vídeos desde dispositivo) ════════ -->
-<div *ngIf="showProModal" class="modal-overlay modal-overlay--pro" (click)="closeProModal()">
+<!-- ════════ MODAL: CLUB SIN SUSCRIPCIÓN DE VÍDEOS ════════ -->
+<div *ngIf="showVideoPlansModal" class="modal-overlay modal-overlay--pro" (click)="showVideoPlansModal = false">
   <div class="modal-pro" (click)="$event.stopPropagation()">
-    <button class="modal-pro-close" (click)="closeProModal()">
+
+    <button class="modal-pro-close" (click)="showVideoPlansModal = false">
       <i class="bi bi-x-lg"></i>
     </button>
 
-    <div class="modal-pro-header">
-      <div class="modal-pro-badge">
-        <i class="bi bi-stars"></i>
-        PRO
+    <!-- Header azul Sphaira -->
+    <div class="modal-pro-header modal-pro-header--sphaira">
+      <div class="modal-pro-icon-ring">
+        <i class="bi bi-camera-video-fill"></i>
       </div>
-      <h2 class="modal-pro-title">Sube vídeos desde tu dispositivo</h2>
-      <p class="modal-pro-subtitle">Accede a funciones premium para compartir tus mejores momentos</p>
+      <div class="modal-pro-badge modal-pro-badge--locked">
+        <i class="bi bi-lock-fill"></i> Función no disponible
+      </div>
+      <h2 class="modal-pro-title">Vídeos no activados</h2>
+      <p class="modal-pro-subtitle">Tu club aún no tiene activa la suscripción de vídeos. Solo el administrador del club puede activarla.</p>
     </div>
 
+    <div class="modal-pro-divider"></div>
+
+    <!-- Features -->
     <div class="modal-pro-body">
       <div class="modal-pro-feature">
-        <div class="feature-icon feature-icon--purple">
-          <i class="bi bi-camera-video-fill"></i>
+        <div class="feature-icon modal-feature-icon--blue-sphaira">
+          <i class="bi bi-cloud-upload-fill"></i>
         </div>
         <div class="feature-content">
-          <h4>Sube vídeos desde tu dispositivo</h4>
-          <p>Comparte grabaciones directamente desde tu móvil o ordenador sin depender de YouTube</p>
+          <h4>Sube vídeos desde el dispositivo</h4>
+          <p>Con la suscripción activa podrás subir grabaciones de partidos directamente desde tu móvil</p>
         </div>
       </div>
-
       <div class="modal-pro-feature">
-        <div class="feature-icon feature-icon--blue">
-          <i class="bi bi-file-earmark-play"></i>
+        <div class="feature-icon modal-feature-icon--navy">
+          <i class="bi bi-folder2-open"></i>
         </div>
         <div class="feature-content">
-          <h4>Múltiples formatos soportados</h4>
-          <p>MP4, MOV, WebM — hasta 100MB por vídeo con reproducción integrada</p>
-        </div>
-      </div>
-
-      <div class="modal-pro-feature">
-        <div class="feature-icon feature-icon--green">
-          <i class="bi bi-shield-check"></i>
-        </div>
-        <div class="feature-content">
-          <h4>Contenido privado y seguro</h4>
-          <p>Tus vídeos se almacenan de forma privada, solo accesible para tu equipo</p>
-        </div>
-      </div>
-
-      <div class="modal-pro-feature">
-        <div class="feature-icon feature-icon--orange">
-          <i class="bi bi-infinity"></i>
-        </div>
-        <div class="feature-content">
-          <h4>Vídeos ilimitados</h4>
-          <p>Sin límite en el número de vídeos que puedes subir a tu galería</p>
+          <h4>Organizados por equipo y partido</h4>
+          <p>Los vídeos se guardan automáticamente en la biblioteca del club, clasificados por equipo y partido</p>
         </div>
       </div>
     </div>
 
+    <!-- Footer -->
     <div class="modal-pro-footer">
-      <div class="modal-pro-price">
-        <span class="price-label">Desde</span>
-        <span class="price-amount">9.99€</span>
-        <span class="price-period">/mes</span>
-      </div>
-      <button class="btn-pro-subscribe" (click)="goToSubscription()">
-        <i class="bi bi-lightning-charge-fill"></i>
-        Activar PRO ahora
-      </button>
-      <p class="modal-pro-note">Cancela cuando quieras • Sin permanencia</p>
+      <ng-container *ngIf="!requestPlanSent; else planSentTpl">
+        <button class="btn-request-plan" [disabled]="requestPlanLoading" (click)="sendPlanRequest()">
+          <ng-container *ngIf="!requestPlanLoading">
+            <i class="bi bi-send-fill"></i> Pedir al club que lo active
+          </ng-container>
+          <ng-container *ngIf="requestPlanLoading">
+            <i class="bi bi-arrow-repeat spin-icon"></i> Enviando solicitud...
+          </ng-container>
+        </button>
+        <p class="modal-pro-note">Se enviará una notificación push al administrador del club</p>
+      </ng-container>
+      <ng-template #planSentTpl>
+        <div class="request-sent-msg">
+          <i class="bi bi-check-circle-fill"></i>
+          <p>¡Solicitud enviada! El administrador del club recibirá una notificación para activar los vídeos.</p>
+        </div>
+        <button class="btn-upload-secondary" (click)="showVideoPlansModal = false">
+          <i class="bi bi-x-lg"></i> Cerrar
+        </button>
+      </ng-template>
     </div>
+
   </div>
 </div>

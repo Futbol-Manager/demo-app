@@ -142,24 +142,29 @@ export class TaskEditModalComponent implements OnChanges {
   }
 
   private doSaveToLibrary(updated: Task): void {
-    this.savingLibrary = true;
-    this.trainingService.saveTaskToLibrary(updated.taskId, this.userId).subscribe({
-      next: (resp: any) => {
-        this.saving = false;
-        this.savingLibrary = false;
-        if (resp?.data) {
-          this.taskStorage.addMyTaskFromBackend(resp.data);
-        } else if (this.userId) {
-          this.taskStorage.loadFromBackend(this.userId);
-        }
-        this.saved.emit(updated);
-      },
-      error: () => {
-        this.saving = false;
-        this.savingLibrary = false;
-        this.saved.emit(updated);
-      }
+    // Sincronizamos el userId en el servicio por si aún no estaba fijado
+    if (this.userId) {
+      this.taskStorage.setUserId(this.userId);
+    }
+    this.taskStorage.addMyTask({
+      origin: 'own',
+      slogans: updated.slogans || '',
+      description: updated.description || '',
+      rules: updated.rules || '',
+      variants: updated.variants || '',
+      worktime: updated.worktime || '',
+      space: updated.space || '',
+      material: updated.material || '',
+      work: updated.work || '',
+      video: updated.video || '',
+      estrategia: updated.estrategia || '',
+      intencion: updated.intencion || '',
+      imagenBoard: updated.imagenBoard || '',
+      extraFields: updated.extraFields || '',
     });
+    this.saving = false;
+    this.savingLibrary = false;
+    this.saved.emit(updated);
   }
 
   close(): void {
