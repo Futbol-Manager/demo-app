@@ -5,6 +5,8 @@ import { filter, finalize } from 'rxjs/operators';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { AiChatService, AiCreditsInfo, AiPendingAction } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { InjuryService } from 'src/app/core/services/injury/injury.service';
+import { Injury } from 'src/app/core/services/injury/injury.model';
 import { User } from 'src/app/core/models/users/user.model';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
 
@@ -113,6 +115,18 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
       { icon: 'bi-calendar-event', text: 'Proximos partidos', query: 'Proximos partidos importantes' },
       { icon: 'bi-lightbulb', text: 'Recomendaciones', query: 'Dame recomendaciones para mejorar la gestion del club' },
     ],
+    'dashboard_coach': [
+      { icon: 'bi-clipboard2-pulse', text: 'Estado del equipo', query: '¿Cómo está el equipo en este momento? Dame un resumen de los jugadores disponibles y las bajas.' },
+      { icon: 'bi-lightning-charge', text: 'Sesión de hoy', query: 'Sugiereme una sesión de entrenamiento para hoy basándote en el estado del equipo.' },
+      { icon: 'bi-people-fill', text: 'Mejor once', query: '¿Cuál sería el once ideal para el próximo partido con los jugadores disponibles?' },
+      { icon: 'bi-calendar-week', text: 'Planificación semanal', query: 'Ayúdame a planificar los entrenamientos de esta semana teniendo en cuenta los partidos.' },
+    ],
+    'dashboard_fisio': [
+      { icon: 'bi-bandaid-fill', text: 'Resumen de bajas', query: 'Dame un resumen de todos los jugadores lesionados y su estado actual.' },
+      { icon: 'bi-heart-pulse', text: 'Recuperaciones', query: '¿Qué jugadores están en fase de recuperación y cuándo se espera que vuelvan?' },
+      { icon: 'bi-shield-plus', text: 'Prevención', query: 'Recomiéndame ejercicios de prevención para reducir el riesgo de lesiones esta semana.' },
+      { icon: 'bi-clipboard-heart', text: 'Protocolo RTP', query: '¿Cuál es el protocolo de retorno al juego (RTP) recomendado para las lesiones activas del equipo?' },
+    ],
     'estadisticas-equipos': [
       { icon: 'bi-shield-check', text: 'Mejor defensa', query: '¿Que equipo tiene mejor defensa?' },
       { icon: 'bi-graph-up', text: 'Comparar resultados', query: 'Compara los resultados de liga' },
@@ -183,7 +197,8 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     private router: Router,
     private sanitizer: DomSanitizer,
     private aiChatService: AiChatService,
-    private voiceRecognition: VoiceRecognitionService
+    private voiceRecognition: VoiceRecognitionService,
+    private injuryService: InjuryService
   ) {}
 
   ngOnInit(): void {
@@ -192,7 +207,13 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
         if (user) {
           this.profileId = user.profileType?.profileId || 0;
           this.userId = user.userId;
-          this.isVisible = this.profileId === 1 || this.profileId === 2;
+
+          // Override admin: userId=9 actúa también como coach
+          if (user.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
+            this.profileId = 2;
+          }
+
+          this.isVisible = this.profileId === 1 || this.profileId === 2 || this.profileId === 6 || this.profileId === 7;
           this.updateSuggestions();
           this.loadCredits();
         }
@@ -407,19 +428,114 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.currentScreenContext = 'jugadores';
     } else if (url.includes('calendario')) {
       this.currentScreenContext = 'calendario';
+    } else if (url.includes('lesiones')) {
+      this.currentScreenContext = 'lesiones';
     } else {
       this.currentScreenContext = 'dashboard';
     }
   }
 
   private updateSuggestions(): void {
+    // Lesiones: sugerencias dinámicas basadas en lesiones reales del equipo
+    if (this.currentScreenContext === 'lesiones' && (this.profileId === 1 || this.profileId === 2 || this.profileId === 6 || this.profileId === 7)) {
+      const teamId = this.currentTeamId;
+      if (teamId) {
+        this.injuryService.getInjuriesByTeam(teamId).subscribe({
+          next: (injuries) => this.setInjurySuggestions(injuries),
+          error: () => this.setInjurySuggestions([])
+        });
+      } else {
+        this.setInjurySuggestions([]);
+      }
+      return;
+    }
+
+    // Dashboard: sugerencias distintas según perfil
+    if (this.currentScreenContext === 'dashboard') {
+      if (this.profileId === 2) {
+        this.quickSuggestions = this.screenSuggestions['dashboard_coach'];
+      } else if (this.profileId === 6 || this.profileId === 7) {
+        this.quickSuggestions = this.screenSuggestions['dashboard_fisio'];
+      } else {
+        this.quickSuggestions = this.screenSuggestions['dashboard'];
+      }
+      this.showSuggestions = true;
+      return;
+    }
+
     this.quickSuggestions = this.screenSuggestions[this.currentScreenContext] || this.screenSuggestions['dashboard'];
+    this.showSuggestions = true;
+  }
+
+  private setInjurySuggestions(injuries: Injury[]): void {
+    const active = injuries.filter(i => i.status === 'activa');
+    const recovery = injuries.filter(i => i.status === 'recuperacion');
+    const chips: SuggestionChip[] = [];
+
+    // Jugadores con lesiones activas (máx. 2)
+    for (const inj of active.slice(0, 2)) {
+      const name = inj.playerName || 'el jugador';
+      const zone = inj.zoneLabel || inj.zone || 'lesión';
+      chips.push({
+        icon: 'bi-bandaid',
+        text: `${name} — ${zone}`,
+        query: `¿Cómo está evolucionando la lesión de ${name}? Tiene una ${zone} activa (fase RTP: ${inj.rtpPhase}).`
+      });
+    }
+
+    // Jugadores en recuperación (máx. 2)
+    for (const inj of recovery.slice(0, 2)) {
+      const name = inj.playerName || 'el jugador';
+      const zone = inj.zoneLabel || inj.zone || 'lesión';
+      chips.push({
+        icon: 'bi-arrow-up-circle',
+        text: `RTP: ${name}`,
+        query: `¿Cuándo puede volver a jugar ${name}? Tiene una ${zone} en fase RTP ${inj.rtpPhase}. Alta prevista: ${inj.dateReturn || 'sin fecha'}.`
+      });
+    }
+
+    // Resumen general si hay lesiones
+    if (injuries.length > 0) {
+      chips.push({
+        icon: 'bi-heart-pulse',
+        text: 'Resumen de bajas',
+        query: `Dame un resumen del estado de lesiones del equipo: ${active.length} activas, ${recovery.length} en recuperación.`
+      });
+    }
+
+    // Sugerencias genéricas de relleno hasta 4
+    const generic: SuggestionChip[] = [
+      { icon: 'bi-shield-check', text: 'Prevención', query: '¿Qué ejercicios preventivos recomiendas para reducir el riesgo de lesiones?' },
+      { icon: 'bi-calendar-check', text: 'Carga del equipo', query: '¿Cómo afectan las bajas por lesión a la planificación de entrenamientos?' },
+    ];
+    for (const g of generic) {
+      if (chips.length >= 4) break;
+      chips.push(g);
+    }
+
+    this.quickSuggestions = chips.slice(0, 4);
     this.showSuggestions = true;
   }
 
   /** Update suggestions based on the user's last message topic */
   private updateSuggestionsFromContext(userText: string): void {
     const text = userText.toLowerCase();
+
+    // Coach contextual follow-ups
+    if (this.profileId === 2) {
+      if (text.includes('entrenamient') || text.includes('ejercicio') || text.includes('sesion') || text.includes('planif')) {
+        this.quickSuggestions = this.contextualSuggestions['entrenamiento'];
+      } else if (text.includes('partido') || text.includes('rival') || text.includes('tactica') || text.includes('alineacion') || text.includes('once')) {
+        this.quickSuggestions = this.contextualSuggestions['partido'];
+      } else if (text.includes('jugador') || text.includes('rendimiento') || text.includes('ficha') || text.includes('disponible')) {
+        this.quickSuggestions = this.contextualSuggestions['jugadores'];
+      } else {
+        this.quickSuggestions = this.contextualSuggestions['entrenamiento'];
+      }
+      this.showSuggestions = true;
+      return;
+    }
+
     if (text.includes('jugador') || text.includes('goleador') || text.includes('rendimiento') || text.includes('ficha')) {
       this.quickSuggestions = this.contextualSuggestions['jugadores'];
     } else if (text.includes('equipo') || text.includes('plantilla') || text.includes('club') || text.includes('defensa')) {
@@ -458,7 +574,12 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   goToFullAssistant(): void {
     this.isOpen = false;
-    if (this.profileId === 2) {
+    // Preserve current screen context so the full-page chat can show relevant suggestions
+    sessionStorage.setItem('ai_source_context', this.currentScreenContext);
+    if (this.currentTeamId) {
+      sessionStorage.setItem('ai_source_teamId', String(this.currentTeamId));
+    }
+    if (this.profileId === 2 || this.profileId === 6 || this.profileId === 7) {
       this.router.navigate(['/dashboard/asistente-ia-coach']);
     } else {
       this.router.navigate(['/dashboard/asistente-ia']);
@@ -667,7 +788,15 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private addWelcomeMessage(): void {
-    this.addAssistantMessage('¡Hola! 👋 Soy tu asistente IA de Sphaira. ¿En que puedo ayudarte?');
+    let msg = '¡Hola! 👋 Soy tu asistente IA de Sphaira. ¿En qué puedo ayudarte?';
+    if (this.profileId === 2) {
+      msg = '¡Hola, entrenador! 👋 Puedo ayudarte con la planificación de entrenamientos, análisis de jugadores, táctica y mucho más. ¿Por dónde empezamos?';
+    } else if (this.profileId === 6) {
+      msg = '¡Hola! 👋 Soy tu asistente de fisioterapia. Puedo ayudarte con el seguimiento de lesiones, protocolos de recuperación y prevención. ¿En qué te ayudo?';
+    } else if (this.profileId === 7) {
+      msg = '¡Hola! 👋 Soy tu asistente de nutrición deportiva. Puedo ayudarte con planes nutricionales, hidratación y rendimiento. ¿Qué necesitas?';
+    }
+    this.addAssistantMessage(msg);
   }
 
   private addAssistantMessage(text: string): void {

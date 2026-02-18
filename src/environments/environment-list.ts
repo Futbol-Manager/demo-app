@@ -12,7 +12,9 @@ export const localenvironment = {
     clubAnnual: 'price_1QC6VpHzMBDrutQnbCKNmItj',
     clubFree: 'price_1QkkOTHzMBDrutQnAQ8zchAz',
     scoutingMonthly: 'price_1QCzwDHzMBDrutQnzNPTj1G9',
-    scoutingAnnual: 'price_1QCzw9HzMBDrutQnYz3ctq3A'
+    scoutingAnnual: 'price_1QCzw9HzMBDrutQnYz3ctq3A',
+    coachMonthly: 'price_1Q5x7MHzMBDrutQnaF1WOHLm',
+    coachAnnual: 'price_1Q5x7uHzMBDrutQnCnc54UjO'
   }
 
   //para apuntar a la api local y la bbdd de desa
@@ -38,7 +40,9 @@ export const prodenvironment = {
     clubAnnual: 'price_1QC6VpHzMBDrutQnbCKNmItj',
     clubFree: 'price_1QkkOTHzMBDrutQnAQ8zchAz',
     scoutingMonthly: 'price_1QCzwDHzMBDrutQnzNPTj1G9',
-    scoutingAnnual: 'price_1QCzw9HzMBDrutQnYz3ctq3A'
+    scoutingAnnual: 'price_1QCzw9HzMBDrutQnYz3ctq3A',
+    coachMonthly: 'price_1QCzwDHzMBDrutQnzNPTj1G9',
+    coachAnnual: 'price_1QCzw9HzMBDrutQnYz3ctq3A'
   }
 
   //para apuntar a la api-desa

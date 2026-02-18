@@ -282,7 +282,7 @@
     max-height: 120px;
   }
   .calendar-saas thead th {
-    font-size: 0.75rem;
+    font-size: 0.86rem;
     padding: 12px 0;
   }
   .calendar-saas {
@@ -300,7 +300,7 @@
     padding: 10px;
   }
   .calendar-saas thead th {
-    font-size: 0.82rem;
+    font-size: 0.92rem;
     padding: 14px 0;
   }
   .calendar-saas {
@@ -488,11 +488,6 @@
   border-spacing: 8px;
 }
 
-.calendar-saas thead th:last-child {
-  color: #ef4444;
-}
-
-
 .calendar-saas th {
   border: none;
   text-align: center;
@@ -511,9 +506,9 @@
 .calendar-saas thead th {
   background: #002c40;
   color: #ffffff;
-  font-size: 0.65rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   padding: 10px 0;
   border: none;
@@ -530,11 +525,20 @@
   border-bottom-left-radius: 12px;
 }
 
+.calendar-saas thead th:nth-child(6) {
+  background: rgba(0, 44, 64, 0.06);
+}
+
 .calendar-saas thead th:last-child {
   border-top-right-radius: 12px;
   border-bottom-right-radius: 12px;
-  color: #ff6b6b;
-  /* Domingo destacado */
+  background: rgba(0, 44, 64, 0.06);
+}
+
+/* Sombreado suave en celdas de sábado (col 6) y domingo (col 7) */
+.calendar-saas tbody tr td:nth-child(6).calendar-cell,
+.calendar-saas tbody tr td:nth-child(7).calendar-cell {
+  background: rgba(0, 44, 64, 0.04);
 }
 
 /* En móvil: texto breve en botones Mes Anterior/Siguiente */
@@ -2369,6 +2373,10 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   color: #dc2626;
 }
 
+.icon-btn.warning i {
+  color: #d97706;
+}
+
 /* MOBILE FIX */
 @media (max-width: 576px) {
   .task-actions {
@@ -3882,10 +3890,6 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   .calendar-saas thead th {
     background: var(--color-navy);
     color: #fff;
-  }
-
-  .calendar-saas thead th:last-child {
-    color: #ff6b6b;
   }
 
   /* ---- CALENDAR CELL ---- */

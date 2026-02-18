@@ -17,6 +17,7 @@ import { TrainingService } from 'src/app/core/services/training/training.service
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { ThemeService } from 'src/app/core/services/theme/theme.service';
 import { SugerenciaService } from 'src/app/core/services/sugerencia/sugerencia.service';
+import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { environment } from 'src/environments/environment';
 import { Dropdown } from 'bootstrap';
 import { TranslateService } from '@ngx-translate/core';
@@ -56,6 +57,7 @@ export class HeaderComponent implements OnInit {
   showPreview: boolean = false;
 
   showbtnupimg = false;
+  uploadingPhoto = false;
   userId: number = 0;
   profileId = 0;
   idValidation = 1;
@@ -75,6 +77,15 @@ export class HeaderComponent implements OnInit {
   showNewPassword = false;
   showConfirmPassword = false;
   unreadSugerencias = 0;
+  unreadSugerenciasUser = 0;
+
+  // Coach trial banner
+  coachTrialActive = false;
+
+  // AI Credits
+  creditsAvailable = 0;
+  creditsLoaded = false;
+  showCreditsModal = false;
 
   constructor(
     private router: Router,
@@ -88,7 +99,8 @@ export class HeaderComponent implements OnInit {
     private teamService: TeamService,
     private translate: TranslateService,
     public themeService: ThemeService,
-    private sugerenciaService: SugerenciaService
+    private sugerenciaService: SugerenciaService,
+    private aiChatService: AiChatService
   ) {
     const lang = localStorage.getItem('lang');
     if (lang) {
@@ -109,6 +121,12 @@ export class HeaderComponent implements OnInit {
       this.userId = user !== null ? user.userId : 0;
       this.imgUser = user !== null ? user.pictureUser : '';
       this.mobile = user !== null ? user.mobile : '';
+
+      // Override admin: userId=9 siempre se comporta como Coach (profileId 2)
+      if (this.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
+        this.profileId = 2;
+      }
+
       this.updateForm(); // Actualiza el formulario cuando cambia el usuario actual
 
       // Si es Coach (profileId === 2), comprobamos si pertenece a un club
@@ -120,7 +138,34 @@ export class HeaderComponent implements OnInit {
       if (this.userId === 9) {
         this.loadUnreadSugerencias();
       }
+
+      // Cargar respuestas no leídas de sugerencias para el usuario normal
+      if (this.userId > 0 && this.userId !== 9) {
+        this.loadUnreadSugerenciasUser();
+      }
+
+      // Cargar créditos IA
+      if (this.userId > 0 && !this.creditsLoaded) {
+        this.creditsLoaded = true;
+        this.loadAiCredits();
+      }
     });
+  }
+
+  loadAiCredits(): void {
+    this.aiChatService.getCredits(this.userId).subscribe({
+      next: info => { this.creditsAvailable = info.creditsAvailable; },
+      error: () => { this.creditsAvailable = 0; }
+    });
+  }
+
+  openCreditsModal(): void {
+    this.showCreditsModal = true;
+  }
+
+  closeCreditsModal(): void {
+    this.showCreditsModal = false;
+    this.loadAiCredits();
   }
 
   /**
@@ -133,11 +178,32 @@ export class HeaderComponent implements OnInit {
       next: (response: Response) => {
         const clubId = response.data?.club?.clubId ?? 0;
         this.coachBelongsToClub = clubId > 0;
+        if (!this.coachBelongsToClub) {
+          this.checkCoachTrialStatus();
+        }
       },
       error: () => {
         this.coachBelongsToClub = false;
+        this.checkCoachTrialStatus();
       }
     });
+  }
+
+  private checkCoachTrialStatus(): void {
+    this.teamService.getEstadoSuscripcion(this.userId, 2).subscribe({
+      next: (res: any) => {
+        const status = res?.data ?? 0;
+        // status = 1 means trial active (no subscription, within 3 days of registration)
+        // status = 0 means trial expired (guard will redirect)
+        // status > 1 means active subscription
+        this.coachTrialActive = status === 1;
+      },
+      error: () => { this.coachTrialActive = false; }
+    });
+  }
+
+  goToCoachSubscription(): void {
+    this.router.navigate(['/dashboard/suscripcion-coach']);
   }
 
   private loadUnreadSugerencias(): void {
@@ -151,8 +217,23 @@ export class HeaderComponent implements OnInit {
     });
   }
 
+  private loadUnreadSugerenciasUser(): void {
+    this.sugerenciaService.countUnreadResponsesUser(this.userId).subscribe({
+      next: (response: Response) => {
+        this.unreadSugerenciasUser = response?.data ?? 0;
+      },
+      error: () => {
+        this.unreadSugerenciasUser = 0;
+      }
+    });
+  }
+
   goToSugerencias(): void {
     this.router.navigate(['/dashboard/admin-sugerencias']);
+  }
+
+  goToSugerenciasUsuario(): void {
+    this.router.navigate(['/dashboard/sugerencias-club']);
   }
 
   goToAdminClubes(): void {
@@ -177,6 +258,10 @@ export class HeaderComponent implements OnInit {
 
   goToAdminRegistros(): void {
     this.router.navigate(['/dashboard/admin-registros']);
+  }
+
+  goToAdminCoaches(): void {
+    this.router.navigate(['/dashboard/admin-coaches']);
   }
 
   ngAfterViewInit() {
@@ -312,53 +397,74 @@ export class HeaderComponent implements OnInit {
   }
 
   onFileSelected(event: any) {
-    if (
-      event.target.files[0].type === 'image/png' ||
-      event.target.files[0].type === 'image/jpeg'
-    ) {
-      this.selectedFile = event.target.files[0];
-      this.showbtnupimg = true;
-      if (this.selectedFile) {
-        const reader = new FileReader();
-        reader.onload = (e: any) => {
-          this.imagePreviewUrl = e.target.result;
-          this.showPreview = true; // Mostrar vista previa
-        };
-        reader.readAsDataURL(this.selectedFile);
-      }
-    } else {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const validTypes = ['image/png', 'image/jpeg', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
       this.showbtnupimg = false;
+      return;
     }
+
+    this.selectedFile = file;
+
+    // Mostrar preview inmediatamente
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.imagePreviewUrl = e.target.result;
+      this.showPreview = true;
+    };
+    reader.readAsDataURL(file);
+
+    // Subir automáticamente sin necesidad de pulsar "Guardar"
+    this.onSubmit();
   }
 
   onSubmit() {
-    if (this.selectedFile) {
-      //console.log('Imagen seleccionada:', this.selectedFile);
+    if (!this.selectedFile) return;
 
-      // Simulamos el envío de la imagen al servidor
-      const userId = this.usuarioActual?.userId.toString();
-      this.trainingService
-        .createUpdateImgUser(userId!, this.selectedFile)
-        .subscribe(
-          (response) => {
-            this.imgUser = response.data;
-            this.uploadedImageUrl = this.imagePreviewUrl as string; // Actualizar imagen principal
-            this.showPreview = false; // Ocultar vista previa
-            this.cerrarModal();
-          },
-          (error) => {
-            console.error('Error al subir la imagen', error);
-            // Aquí puedes manejar el error si la subida de la imagen falla
-            this.showPreview = true; // Mantener la vista previa si la subida falla
+    const userId = this.usuarioActual?.userId.toString();
+    if (!userId) return;
+
+    this.uploadingPhoto = true;
+    this.showbtnupimg = false;
+
+    this.trainingService
+      .createUpdateImgUser(userId, this.selectedFile)
+      .subscribe(
+        (response) => {
+          this.uploadingPhoto = false;
+          this.imgUser = response.data;
+          this.uploadedImageUrl = this.imagePreviewUrl as string;
+          this.showPreview = false;
+
+          // Actualizar foto en localStorage para reflejarse en toda la app
+          const storedUser = localStorage.getItem('usuario');
+          if (storedUser) {
+            try {
+              const userData = JSON.parse(storedUser);
+              if (response?.data) userData.pictureUser = response.data;
+              localStorage.setItem('usuario', JSON.stringify(userData));
+            } catch (e) {}
           }
-        );
-    } else {
-    }
+
+          this.cerrarModal();
+        },
+        (error) => {
+          this.uploadingPhoto = false;
+          console.error('Error al subir la imagen', error);
+          this.showPreview = true;
+        }
+      );
   }
 
   goSuscripcion() {
     this.showModal = false;
-    this.router.navigate(['/dashboard/suscripcion', this.userId]);
+    if (this.profileId === 2 && !this.coachBelongsToClub) {
+      this.router.navigate(['/dashboard/suscripcion-coach']);
+    } else {
+      this.router.navigate(['/dashboard/suscripcion', this.userId]);
+    }
   }
 
   goSuscripcionClub() {

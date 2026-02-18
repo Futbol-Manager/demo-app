@@ -42,6 +42,8 @@ export class Task {
     imagenBoard: string;
     estrategia: string;
     intencion: string;
+    extraFields?: string;
+    tasksShopId?: number;
 
     constructor() {
       this.taskId = 0;
@@ -55,9 +57,10 @@ export class Task {
       this.work = '';
       this.video = '';
       this.imagenBoard = '';
-      this.collapsed = false; // Inicialmente, la tarea está contraída
+      this.collapsed = false;
       this.estrategia = '';
       this.intencion = '';
+      this.extraFields = '';
     }
   }
 

@@ -55,7 +55,7 @@ import { User } from 'src/app/core/models/users/user.model';
             [playerName]="selectedPlayerName"
             [teamId]="teamId"
             [embedded]="false"
-            [readOnly]="soloJugador">
+            [readOnly]="soloJugador || ((usuarioActual?.profileType?.profileId ?? 0) >= 3 && (usuarioActual?.profileType?.profileId ?? 0) < 6)">
           </app-lesiones>
         </div>
 

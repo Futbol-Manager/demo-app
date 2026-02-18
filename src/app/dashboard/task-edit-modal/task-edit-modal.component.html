@@ -1,0 +1,146 @@
+<div class="task-edit-overlay" (click)="close()"></div>
+
+<div class="task-edit-modal">
+  <div class="modal-header-custom">
+    <h4 class="modal-title-custom">
+      <i class="bi bi-pencil-square me-2"></i> Editar tarea
+    </h4>
+    <button class="btn-close-modal" (click)="close()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="modal-body-custom">
+    <!-- Imagen -->
+    <div class="image-section">
+      <div class="image-preview" *ngIf="currentImageUrl">
+        <img [src]="currentImageUrl" alt="Imagen de la tarea" />
+      </div>
+      <div class="image-placeholder" *ngIf="!currentImageUrl">
+        <i class="bi bi-image"></i>
+        <span>Sin imagen</span>
+      </div>
+      <label class="upload-btn">
+        <i class="bi bi-upload me-1"></i> Cambiar imagen
+        <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+      </label>
+    </div>
+
+    <!-- Campos principales -->
+    <div class="fields-grid">
+      <div class="field-group full">
+        <label>Título (Slogan)</label>
+        <input class="form-control saas-input" [(ngModel)]="editTask.slogans" placeholder="Título de la tarea" />
+      </div>
+
+      <div class="field-group">
+        <label>Tiempo de trabajo</label>
+        <input class="form-control saas-input" [(ngModel)]="editTask.worktime" placeholder="Ej: 15 min" />
+      </div>
+
+      <div class="field-group">
+        <label>Espacio</label>
+        <input class="form-control saas-input" [(ngModel)]="editTask.space" placeholder="Ej: 20x30m" />
+      </div>
+
+      <div class="field-group">
+        <label>Material</label>
+        <input class="form-control saas-input" [(ngModel)]="editTask.material" placeholder="Ej: conos, petos..." />
+      </div>
+
+      <div class="field-group">
+        <label>Estrategia</label>
+        <select class="form-control saas-input" [(ngModel)]="editTask.estrategia">
+          <option *ngFor="let op of estrategiaOptions" [value]="op">{{ op }}</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label>Intención</label>
+        <select class="form-control saas-input" [(ngModel)]="editTask.intencion">
+          <option *ngFor="let op of intencionOptions" [value]="op">{{ op }}</option>
+        </select>
+      </div>
+
+      <div class="field-group full">
+        <label>Descripción</label>
+        <textarea class="form-control saas-input" rows="3" [(ngModel)]="editTask.description" placeholder="Descripción del ejercicio..."></textarea>
+      </div>
+
+      <div class="field-group full">
+        <label>Reglas</label>
+        <textarea class="form-control saas-input" rows="2" [(ngModel)]="editTask.rules" placeholder="Reglas del ejercicio..."></textarea>
+      </div>
+
+      <div class="field-group full">
+        <label>Variantes</label>
+        <textarea class="form-control saas-input" rows="2" [(ngModel)]="editTask.variants" placeholder="Variantes posibles..."></textarea>
+      </div>
+
+      <div class="field-group full">
+        <label>Trabajo</label>
+        <input class="form-control saas-input" [(ngModel)]="editTask.work" placeholder="Tipo de trabajo..." />
+      </div>
+
+      <div class="field-group full">
+        <label>Vídeo</label>
+        <input class="form-control saas-input" [(ngModel)]="editTask.video" placeholder="Enlace de YouTube, Instagram, TikTok..." />
+      </div>
+    </div>
+
+    <!-- Campos personalizados -->
+    <div class="custom-fields-section">
+      <div class="section-header">
+        <h6><i class="bi bi-plus-circle me-1"></i> Campos extra del entrenador</h6>
+        <button class="btn-add-field" type="button" (click)="addCustomField()">
+          <i class="bi bi-plus"></i> Añadir campo
+        </button>
+      </div>
+
+      <div class="custom-field-row" *ngFor="let field of customFields; let i = index">
+        <input
+          class="form-control saas-input field-name"
+          [(ngModel)]="field.name"
+          placeholder="Nombre del campo (ej: Observación)"
+        />
+        <input
+          class="form-control saas-input field-value"
+          [(ngModel)]="field.value"
+          placeholder="Valor (ej: funcionó muy bien)"
+        />
+        <button class="btn-remove-field" type="button" (click)="removeCustomField(i)">
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+
+      <p class="empty-hint" *ngIf="customFields.length === 0">
+        Pulsa "Añadir campo" para agregar notas personales, observaciones, variantes extra...
+      </p>
+    </div>
+
+    <!-- Opción guardar en biblioteca -->
+    <div class="save-options">
+      <label class="save-option-check">
+        <input type="checkbox" [(ngModel)]="saveToLibrary" />
+        <span>Guardar también en <strong>Mis Tareas</strong> (biblioteca personal)</span>
+      </label>
+    </div>
+
+    <!-- Error -->
+    <div class="alert alert-danger py-2" *ngIf="errorMsg">{{ errorMsg }}</div>
+  </div>
+
+  <div class="modal-footer-custom">
+    <button class="btn-cancel" type="button" (click)="close()">Cancelar</button>
+    <button class="btn-save" type="button" (click)="save()" [disabled]="saving">
+      <span *ngIf="!saving && !savingLibrary">
+        <i class="bi bi-check-lg me-1"></i>
+        {{ saveToLibrary ? 'Guardar y añadir a biblioteca' : 'Guardar cambios' }}
+      </span>
+      <span *ngIf="saving || savingLibrary">
+        <span class="spinner-border spinner-border-sm me-1"></span>
+        {{ savingLibrary ? 'Guardando en biblioteca...' : 'Guardando...' }}
+      </span>
+    </button>
+  </div>
+</div>

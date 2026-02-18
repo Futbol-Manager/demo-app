@@ -1,0 +1,53 @@
+<div class="success-page">
+
+  <!-- Verificando -->
+  <div class="state-card" *ngIf="status === 'verifying'">
+    <div class="verify-ring">
+      <i class="bi bi-shield-fill-check"></i>
+    </div>
+    <h2>Verificando tu pago</h2>
+    <p>Estamos confirmando tu suscripción con Stripe. Solo tomará un momento.</p>
+    <div class="verify-dots">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <!-- Éxito -->
+  <div class="state-card" *ngIf="status === 'success'">
+    <div class="success-icon-wrap">
+      <div class="success-ring"><i class="bi bi-check-lg"></i></div>
+    </div>
+    <h2>¡Bienvenido a Sphaira Coach!</h2>
+    <p>Tu suscripción está activa. Ya tienes acceso completo a todas las funcionalidades.</p>
+
+    <div class="plan-chip">
+      <i class="bi bi-star-fill"></i> Plan {{ planType }}
+    </div>
+
+    <div class="perks-list">
+      <div class="perk-row"><i class="bi bi-check-circle-fill"></i> Gestión completa de equipo</div>
+      <div class="perk-row"><i class="bi bi-check-circle-fill"></i> Asistente de IA desbloqueado</div>
+      <div class="perk-row"><i class="bi bi-check-circle-fill"></i> Estadísticas y análisis avanzados</div>
+      <div class="perk-row"><i class="bi bi-check-circle-fill"></i> Informes PDF y debrief</div>
+      <div class="perk-row"><i class="bi bi-check-circle-fill"></i> Control de lesiones del equipo</div>
+    </div>
+
+    <button class="btn-primary" (click)="goToDashboard()">
+      <i class="bi bi-house-fill me-2"></i>Ir al panel principal
+    </button>
+  </div>
+
+  <!-- Error -->
+  <div class="state-card" *ngIf="status === 'error'">
+    <div class="error-ring"><i class="bi bi-x-lg"></i></div>
+    <h2>Algo no fue bien</h2>
+    <p>No pudimos verificar tu pago. Si ya se realizó el cargo, contacta con soporte en <strong>soporte@sphaira.com</strong>.</p>
+    <div class="error-actions">
+      <button class="btn-primary" (click)="retry()">
+        <i class="bi bi-arrow-repeat me-2"></i>Intentar de nuevo
+      </button>
+      <button class="btn-secondary" (click)="goToDashboard()">Ir al panel</button>
+    </div>
+  </div>
+
+</div>

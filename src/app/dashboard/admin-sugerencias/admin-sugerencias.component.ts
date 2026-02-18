@@ -14,7 +14,7 @@ export class AdminSugerenciasComponent implements OnInit {
   filteredSugerencias: any[] = [];
   loading = true;
 
-  activeFilter: 'ALL' | 'PENDING' | 'IN_PROGRESS' | 'DONE' | 'REJECTED' = 'ALL';
+  activeFilter: 'ALL' | 'PENDING' | 'IN_PROGRESS' | 'DONE' | 'REJECTED' | 'ARCHIVED' | 'TRASH' = 'ALL';
 
   // Modal state
   showModal = false;
@@ -22,6 +22,13 @@ export class AdminSugerenciasComponent implements OnInit {
   modalStatus = '';
   modalResponse = '';
   savingModal = false;
+
+  // Quick AI actions
+  loadingAiAction = false;
+  showRejectInput = false;
+  rejectReason = '';
+  aiResultMessage = '';
+  aiActionDone = false;
 
   constructor(
     private location: Location,
@@ -53,14 +60,17 @@ export class AdminSugerenciasComponent implements OnInit {
     });
   }
 
-  setFilter(filter: 'ALL' | 'PENDING' | 'IN_PROGRESS' | 'DONE' | 'REJECTED'): void {
+  setFilter(filter: 'ALL' | 'PENDING' | 'IN_PROGRESS' | 'DONE' | 'REJECTED' | 'ARCHIVED' | 'TRASH'): void {
     this.activeFilter = filter;
     this.applyFilter();
   }
 
   applyFilter(): void {
     if (this.activeFilter === 'ALL') {
-      this.filteredSugerencias = [...this.sugerencias];
+      // Vista principal: excluye archivadas y papelera
+      this.filteredSugerencias = this.sugerencias.filter(
+        s => s.status !== 'ARCHIVED' && s.status !== 'TRASH'
+      );
     } else {
       this.filteredSugerencias = this.sugerencias.filter(s => s.status === this.activeFilter);
     }
@@ -95,6 +105,152 @@ export class AdminSugerenciasComponent implements OnInit {
     this.modalStatus = '';
     this.modalResponse = '';
     this.savingModal = false;
+    this.showRejectInput = false;
+    this.rejectReason = '';
+    this.aiResultMessage = '';
+    this.aiActionDone = false;
+    this.loadingAiAction = false;
+  }
+
+  acceptWithAI(): void {
+    if (!this.selectedSugerencia || this.loadingAiAction) return;
+    this.loadingAiAction = true;
+    this.aiResultMessage = '';
+    this.sugerenciaService.aiRespond(this.selectedSugerencia.id, 'ACCEPT', '').subscribe({
+      next: (res: any) => {
+        this.loadingAiAction = false;
+        this.aiActionDone = true;
+        this.aiResultMessage = res?.data?.adminResponse || 'Aceptada correctamente.';
+        this.toastr.success('Sugerencia aceptada. Mensaje enviado al usuario.');
+        this.loadSugerencias();
+      },
+      error: () => {
+        this.loadingAiAction = false;
+        this.toastr.error('Error al procesar la acción. Inténtalo de nuevo.');
+      }
+    });
+  }
+
+  archiveSugerencia(): void {
+    if (!this.selectedSugerencia || this.savingModal) return;
+    this.savingModal = true;
+    this.sugerenciaService.updateStatus(this.selectedSugerencia.id, 'ARCHIVED').subscribe({
+      next: () => {
+        this.savingModal = false;
+        this.toastr.success('Sugerencia archivada.');
+        this.closeModal();
+        this.loadSugerencias();
+      },
+      error: () => {
+        this.savingModal = false;
+        this.toastr.error('Error al archivar.');
+      }
+    });
+  }
+
+  moveToTrash(): void {
+    if (!this.selectedSugerencia || this.savingModal) return;
+    this.savingModal = true;
+    this.sugerenciaService.updateStatus(this.selectedSugerencia.id, 'TRASH').subscribe({
+      next: () => {
+        this.savingModal = false;
+        this.toastr.success('Sugerencia enviada a la papelera.');
+        this.closeModal();
+        this.loadSugerencias();
+      },
+      error: () => {
+        this.savingModal = false;
+        this.toastr.error('Error al mover a la papelera.');
+      }
+    });
+  }
+
+  restoreSugerencia(): void {
+    if (!this.selectedSugerencia || this.savingModal) return;
+    this.savingModal = true;
+    const restoreStatus = this.selectedSugerencia.status === 'ARCHIVED' ? 'DONE' : 'PENDING';
+    this.sugerenciaService.updateStatus(this.selectedSugerencia.id, restoreStatus).subscribe({
+      next: () => {
+        this.savingModal = false;
+        this.toastr.success('Sugerencia restaurada.');
+        this.closeModal();
+        this.loadSugerencias();
+      },
+      error: () => {
+        this.savingModal = false;
+        this.toastr.error('Error al restaurar.');
+      }
+    });
+  }
+
+  hardDelete(): void {
+    if (!this.selectedSugerencia || this.savingModal) return;
+    if (!confirm('¿Eliminar definitivamente esta sugerencia? Esta acción no se puede deshacer.')) return;
+    this.savingModal = true;
+    this.sugerenciaService.hardDelete(this.selectedSugerencia.id).subscribe({
+      next: () => {
+        this.savingModal = false;
+        this.toastr.success('Sugerencia eliminada definitivamente.');
+        this.closeModal();
+        this.loadSugerencias();
+      },
+      error: () => {
+        this.savingModal = false;
+        this.toastr.error('Error al eliminar.');
+      }
+    });
+  }
+
+  archiveAllDone(): void {
+    if (!confirm('¿Archivar todas las sugerencias con estado "Implementada"?')) return;
+    this.sugerenciaService.archiveAllDone().subscribe({
+      next: (res: any) => {
+        const count = res?.data ?? 0;
+        this.toastr.success(`${count} sugerencia${count !== 1 ? 's' : ''} archivada${count !== 1 ? 's' : ''}.`);
+        this.loadSugerencias();
+      },
+      error: () => this.toastr.error('Error al archivar las sugerencias.')
+    });
+  }
+
+  markAsImplemented(): void {
+    if (!this.selectedSugerencia || this.savingModal) return;
+    this.savingModal = true;
+    this.sugerenciaService.updateStatus(this.selectedSugerencia.id, 'DONE').subscribe({
+      next: () => {
+        this.savingModal = false;
+        this.toastr.success('Sugerencia marcada como Implementada.');
+        this.closeModal();
+        this.loadSugerencias();
+      },
+      error: () => {
+        this.savingModal = false;
+        this.toastr.error('Error al actualizar el estado.');
+      }
+    });
+  }
+
+  rejectWithAI(): void {
+    if (!this.selectedSugerencia || this.loadingAiAction) return;
+    if (!this.rejectReason.trim()) {
+      this.toastr.warning('Por favor, indica el motivo del rechazo.');
+      return;
+    }
+    this.loadingAiAction = true;
+    this.aiResultMessage = '';
+    this.sugerenciaService.aiRespond(this.selectedSugerencia.id, 'REJECT', this.rejectReason.trim()).subscribe({
+      next: (res: any) => {
+        this.loadingAiAction = false;
+        this.aiActionDone = true;
+        this.aiResultMessage = res?.data?.adminResponse || 'Rechazada correctamente.';
+        this.toastr.success('Sugerencia rechazada. Mensaje enviado al usuario.');
+        this.loadSugerencias();
+      },
+      error: () => {
+        this.loadingAiAction = false;
+        this.toastr.error('Error al procesar la acción. Inténtalo de nuevo.');
+      }
+    });
   }
 
   saveChanges(): void {
@@ -162,6 +318,8 @@ export class AdminSugerenciasComponent implements OnInit {
       case 'IN_PROGRESS': return 'En desarrollo';
       case 'DONE': return 'Implementada';
       case 'REJECTED': return 'Rechazada';
+      case 'ARCHIVED': return 'Archivada';
+      case 'TRASH': return 'Papelera';
       default: return status;
     }
   }
@@ -172,6 +330,8 @@ export class AdminSugerenciasComponent implements OnInit {
       case 'IN_PROGRESS': return 'badge-progress';
       case 'DONE': return 'badge-done';
       case 'REJECTED': return 'badge-rejected';
+      case 'ARCHIVED': return 'badge-archived';
+      case 'TRASH': return 'badge-trash';
       default: return '';
     }
   }
@@ -182,6 +342,8 @@ export class AdminSugerenciasComponent implements OnInit {
       case 'IN_PROGRESS': return 'bi-gear';
       case 'DONE': return 'bi-check-circle';
       case 'REJECTED': return 'bi-x-circle';
+      case 'ARCHIVED': return 'bi-archive';
+      case 'TRASH': return 'bi-trash';
       default: return 'bi-question-circle';
     }
   }
@@ -193,6 +355,8 @@ export class AdminSugerenciasComponent implements OnInit {
       case 'IN_PROGRESS': return 'En Desarrollo';
       case 'DONE': return 'Implementadas';
       case 'REJECTED': return 'Rechazadas';
+      case 'ARCHIVED': return 'Archivadas';
+      case 'TRASH': return 'Papelera';
       default: return filter;
     }
   }
@@ -204,6 +368,8 @@ export class AdminSugerenciasComponent implements OnInit {
       case 'IN_PROGRESS': return 'bi-gear';
       case 'DONE': return 'bi-check-circle';
       case 'REJECTED': return 'bi-x-circle';
+      case 'ARCHIVED': return 'bi-archive';
+      case 'TRASH': return 'bi-trash';
       default: return 'bi-circle';
     }
   }

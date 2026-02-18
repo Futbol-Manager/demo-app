@@ -108,7 +108,7 @@
 
     <div class="coaches-section">
       <div class="coaches-header">
-        <h2 class="section-title">{{ 'INFO_EQUIPO.ENTRENADORES' | translate }}</h2>
+        <h2 class="section-title">Staff del equipo</h2>
         <ng-container *ngIf="coaches.length < 4 && (team.userId == usuarioActual?.userId || usuarioActual?.profileType?.profileId == 1)">
           <button type="button" class="btn-invite" (click)="abrirModalInvitarEntenador()">
             <i class="bi bi-person-plus-fill"></i>
@@ -118,12 +118,19 @@
       </div>
       <div class="coaches-grid">
         <div class="coach-card" *ngFor="let coach of coaches">
-          <div class="coach-card-inner" *ngIf="coach.profile == 2">
+          <div class="coach-card-inner" *ngIf="coach.profile == 2 || coach.profile == 6 || coach.profile == 7">
             <div class="coach-avatar">
               <img *ngIf="coach.picture" src="https://appsphairatech.com/images/user/{{ coach.picture }}" alt="" />
               <i *ngIf="!coach.picture" class="bi bi-person"></i>
             </div>
             <h5 class="coach-name">{{ coach.name }} {{ coach.surname }}</h5>
+            <span class="coach-role-badge" [ngClass]="{
+              'badge-coach': coach.profile == 2,
+              'badge-physio': coach.profile == 6,
+              'badge-nutri': coach.profile == 7
+            }">
+              {{ coach.profileName || (coach.profile == 2 ? 'Entrenador' : coach.profile == 6 ? 'Fisioterapeuta' : 'Nutricionista') }}
+            </span>
             <div class="coach-actions" *ngIf="(team.userId == usuarioActual?.userId && team.userId != coach.userId) || usuarioActual?.profileType?.profileId == 1">
               <button type="button" class="btn-coach-delete" title="Eliminar" (click)="deleteCoach(coach.userId)">
                 <i class="bi bi-trash3"></i>

@@ -1,0 +1,88 @@
+<div class="modal-backdrop" (click)="!uploading && closed.emit()">
+  <div class="upload-modal" (click)="$event.stopPropagation()">
+
+    <div class="modal-header">
+      <h3><i class="bi bi-cloud-upload-fill"></i> Subir vídeo</h3>
+      <button class="btn-close-modal" [disabled]="uploading" (click)="closed.emit()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Éxito -->
+      <div *ngIf="success" class="success-state">
+        <div class="success-icon"><i class="bi bi-check-circle-fill"></i></div>
+        <h4>¡Vídeo subido!</h4>
+        <p>Tu vídeo se ha subido correctamente y ya está disponible en la biblioteca.</p>
+        <button class="btn-close-success" (click)="closed.emit()">Cerrar</button>
+      </div>
+
+      <ng-container *ngIf="!success">
+
+        <!-- Drop zone -->
+        <div class="drop-zone" *ngIf="!selectedFile"
+          (click)="fileInput.click()"
+          (dragover)="$event.preventDefault()"
+          (drop)="onDrop($event)">
+          <i class="bi bi-film"></i>
+          <p>Arrastra tu vídeo aquí o <strong>haz clic para seleccionarlo</strong></p>
+          <span class="drop-hint">MP4, MOV, AVI, MKV — máx. {{ maxFileSizeMb }} MB</span>
+          <input #fileInput type="file" accept="video/*" class="d-none" (change)="onFileSelected($event)">
+        </div>
+
+        <!-- Archivo seleccionado -->
+        <div *ngIf="selectedFile && !uploading" class="file-selected">
+          <div class="file-icon"><i class="bi bi-camera-video"></i></div>
+          <div class="file-meta">
+            <p class="file-name">{{ selectedFile.name }}</p>
+            <p class="file-size">{{ formatSize(selectedFile.size) }}</p>
+          </div>
+          <button class="btn-remove-file" (click)="removeFile()"><i class="bi bi-x"></i></button>
+        </div>
+
+        <!-- Progreso -->
+        <div *ngIf="uploading" class="upload-progress">
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" [style.width.%]="progress"></div>
+          </div>
+          <p>{{ progress | number:'1.0-0' }}% — Subiendo…</p>
+        </div>
+
+        <!-- Error -->
+        <div *ngIf="error" class="alert-error">
+          <i class="bi bi-exclamation-triangle-fill"></i> {{ error }}
+        </div>
+
+        <!-- Formulario -->
+        <div class="upload-form" *ngIf="!uploading">
+          <div class="form-group">
+            <label>Título <span class="required">*</span></label>
+            <input type="text" [(ngModel)]="title" placeholder="Ej: Highlights vs. Real Madrid Sub-18" class="form-input">
+          </div>
+          <div class="form-group" *ngIf="!playerName">
+            <label>Jugador</label>
+            <input type="text" [(ngModel)]="description" placeholder="Nombre del jugador o descripción" class="form-input">
+          </div>
+          <div class="form-group" *ngIf="playerName">
+            <label>Jugador</label>
+            <input type="text" [value]="playerName" disabled class="form-input">
+          </div>
+          <div class="form-group">
+            <label>Etiquetas <span class="hint">(separadas por coma)</span></label>
+            <input type="text" [(ngModel)]="tags" placeholder="Ej: delantera, presión, velocidad" class="form-input">
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div class="modal-footer" *ngIf="!uploading">
+          <button class="btn-cancel" (click)="closed.emit()">Cancelar</button>
+          <button class="btn-upload" [disabled]="!selectedFile || !title.trim()" (click)="upload()">
+            <i class="bi bi-cloud-upload"></i> Subir vídeo
+          </button>
+        </div>
+
+      </ng-container>
+    </div>
+  </div>
+</div>

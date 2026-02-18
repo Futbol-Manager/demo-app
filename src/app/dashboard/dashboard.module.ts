@@ -41,6 +41,7 @@ import { PuntuacionEquipsComponent } from './puntuacion-equips/puntuacion-equips
 import { GraficaCuotasComponent } from './grafica-cuotas/grafica-cuotas.component';
 import { GoleadoresComponent } from './goleadores/goleadores.component';
 import { MenuEntrenadorComponent } from './menu-entrenador/menu-entrenador.component';
+import { MenuFisioComponent } from './menu-fisio/menu-fisio.component';
 import { InicioDeportesComponent } from './inicio-deportes/inicio-deportes.component';
 import { PartidosEntrevistasComponent } from './partidos-entrevistas/partidos-entrevistas.component';
 import { MenuClubComponent } from './menu-club/menu-club.component';
@@ -100,6 +101,16 @@ import { CreditsModalComponent } from './credits-modal/credits-modal.component';
 import { AiCreditsSuccessComponent } from './ai-credits-success/ai-credits-success.component';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
 import { AiActionPreviewComponent } from './shared/ai-action-preview/ai-action-preview.component';
+import { ScoutingClubComponent } from './scouting-club/scouting-club.component';
+import { ScoutingPlayerProfileComponent } from './scouting-player-profile/scouting-player-profile.component';
+import { VideoPlansModalComponent } from './video-plans-modal/video-plans-modal.component';
+import { VideoUploadModalComponent } from './video-upload-modal/video-upload-modal.component';
+import { ClubVideoLibraryComponent } from './club-video-library/club-video-library.component';
+import { VideoPlanSuccessComponent } from './video-plan-success/video-plan-success.component';
+import { SuscripcionCoachComponent } from './suscripcion-coach/suscripcion-coach.component';
+import { CoachSuscripcionSuccessComponent } from './coach-suscripcion-success/coach-suscripcion-success.component';
+import { AdminCoachesComponent } from './admin-coaches/admin-coaches.component';
+import { TaskEditModalComponent } from './task-edit-modal/task-edit-modal.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -146,6 +157,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     GraficaCuotasComponent,
     GoleadoresComponent,
     MenuEntrenadorComponent,
+    MenuFisioComponent,
     InicioDeportesComponent,
     PartidosEntrevistasComponent,
     MenuClubComponent,
@@ -200,6 +212,16 @@ export function HttpLoaderFactory(http: HttpClient) {
     AiCreditsSuccessComponent,
     ConfirmDialogComponent,
     AiActionPreviewComponent,
+    ScoutingClubComponent,
+    ScoutingPlayerProfileComponent,
+    VideoPlansModalComponent,
+    VideoUploadModalComponent,
+    ClubVideoLibraryComponent,
+    VideoPlanSuccessComponent,
+    SuscripcionCoachComponent,
+    CoachSuscripcionSuccessComponent,
+    AdminCoachesComponent,
+    TaskEditModalComponent,
   ],
   imports: [
     CommonModule,

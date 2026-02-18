@@ -81,6 +81,10 @@
             {{ 'TRAINERS.TABLE.NAME' | translate }}
             <i class="bi sort-icon" [ngClass]="getSortIcon('nombre')"></i>
           </th>
+          <th class="sortable-th" (click)="sortBy('profileName')">
+            Rol
+            <i class="bi sort-icon" [ngClass]="getSortIcon('profileName')"></i>
+          </th>
           <th class="sortable-th" (click)="sortBy('nameTeam')">
             {{ 'TRAINERS.TABLE.TEAM' | translate }}
             <i class="bi sort-icon" [ngClass]="getSortIcon('nameTeam')"></i>
@@ -127,7 +131,7 @@
       <!-- SKELETON -->
       <tbody *ngIf="loading">
         <tr *ngFor="let _ of [].constructor(5)">
-          <td *ngFor="let __ of [].constructor(14 + customFields.length)">
+          <td *ngFor="let __ of [].constructor(15 + customFields.length)">
             <div class="skeleton skeleton-cell"></div>
           </td>
         </tr>
@@ -149,6 +153,17 @@
             <button type="button" class="btn-link-name" (click)="abrirModalInfo(trainer)">
               {{ trainer.nombre }} {{ trainer.apellido }}
             </button>
+          </td>
+
+          <!-- ROL -->
+          <td>
+            <span class="role-badge" [ngClass]="{
+              'role-coach': !trainer.profileId || trainer.profileId === 2,
+              'role-physio': trainer.profileId === 6,
+              'role-nutri': trainer.profileId === 7
+            }">
+              {{ trainer.profileName || 'Entrenador' }}
+            </span>
           </td>
 
           <!-- EQUIPO(S) -->
@@ -276,6 +291,13 @@
             </div>
             <div class="trainer-info-data">
               <h4>{{ selectedTrainer?.nombre }} {{ selectedTrainer?.apellido }}</h4>
+              <span class="role-badge mb-2" [ngClass]="{
+                'role-coach': !selectedTrainer?.profileId || selectedTrainer?.profileId === 2,
+                'role-physio': selectedTrainer?.profileId === 6,
+                'role-nutri': selectedTrainer?.profileId === 7
+              }">
+                {{ selectedTrainer?.profileName || 'Entrenador' }}
+              </span>
               <span class="badge badge-team" *ngFor="let t of selectedTrainer?.teams">
                 {{ t }}
               </span>

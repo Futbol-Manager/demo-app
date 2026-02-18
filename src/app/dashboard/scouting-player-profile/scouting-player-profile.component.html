@@ -1,0 +1,268 @@
+<app-publicidad></app-publicidad>
+
+<div class="scouting-profile-container">
+
+  <div class="sp-header">
+    <div class="sp-header-left">
+      <i class="bi bi-binoculars-fill"></i>
+      <div>
+        <h2>{{ 'PLAYER_SCOUTING.TITLE' | translate }}</h2>
+        <p>{{ 'PLAYER_SCOUTING.SUBTITLE' | translate }}</p>
+      </div>
+    </div>
+    <div class="sp-header-right">
+      <div class="visibility-toggle" [class.public]="form.get('esPublico')?.value">
+        <span>
+          <i class="bi" [class.bi-eye-fill]="form.get('esPublico')?.value" [class.bi-eye-slash]="!form.get('esPublico')?.value"></i>
+          {{ form.get('esPublico')?.value ? ('PLAYER_SCOUTING.VISIBLE_YES' | translate) : ('PLAYER_SCOUTING.VISIBLE_NO' | translate) }}
+        </span>
+        <label class="switch">
+          <input type="checkbox" [formControl]="$any(form.get('esPublico'))">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="sp-loading">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <div *ngIf="successMsg" class="alert alert-success">{{ successMsg | translate }}</div>
+  <div *ngIf="errorMsg" class="alert alert-danger">{{ errorMsg }}</div>
+
+  <form [formGroup]="form" (ngSubmit)="save()" *ngIf="!loading">
+
+    <!-- PERSONAL DATA -->
+    <div class="sp-section">
+      <div class="sp-section-header" data-bs-toggle="collapse" data-bs-target="#secPersonal">
+        <i class="bi bi-person-fill"></i>
+        <span>{{ 'PLAYER_SCOUTING.SEC_PERSONAL' | translate }}</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </div>
+      <div id="secPersonal" class="collapse show">
+        <div class="sp-section-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.NAME' | translate }}</label>
+              <input type="text" class="form-control" formControlName="nombre">
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.NATIONALITY' | translate }}</label>
+              <input type="text" class="form-control" formControlName="nacionalidad">
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.HEIGHT' | translate }} (cm)</label>
+              <input type="number" class="form-control" formControlName="altura">
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.WEIGHT' | translate }} (kg)</label>
+              <input type="number" class="form-control" formControlName="peso">
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.FOOT' | translate }}</label>
+              <select class="form-select" formControlName="piernaNatural">
+                <option value="">--</option>
+                <option *ngFor="let p of PIES" [value]="p">{{ p }}</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.EMAIL' | translate }}</label>
+              <input type="email" class="form-control" formControlName="mailContacto">
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.PHONE' | translate }}</label>
+              <input type="tel" class="form-control" formControlName="telefonoContacto">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POSITIONS -->
+    <div class="sp-section">
+      <div class="sp-section-header" data-bs-toggle="collapse" data-bs-target="#secPosition">
+        <i class="bi bi-diagram-3-fill"></i>
+        <span>{{ 'PLAYER_SCOUTING.SEC_POSITION' | translate }}</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </div>
+      <div id="secPosition" class="collapse show">
+        <div class="sp-section-body">
+          <p class="text-muted small">{{ 'PLAYER_SCOUTING.POSITIONS_HINT' | translate }}</p>
+          <div class="positions-grid">
+            <span *ngFor="let pos of POSITIONS"
+                  class="position-badge"
+                  [class.selected]="isPositionSelected(pos)"
+                  (click)="togglePosition(pos)">{{ pos }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CURRENT SITUATION -->
+    <div class="sp-section">
+      <div class="sp-section-header" data-bs-toggle="collapse" data-bs-target="#secSituation">
+        <i class="bi bi-arrow-left-right"></i>
+        <span>{{ 'PLAYER_SCOUTING.SEC_SITUATION' | translate }}</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </div>
+      <div id="secSituation" class="collapse">
+        <div class="sp-section-body">
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.LEAGUE' | translate }}</label>
+              <input type="text" class="form-control" formControlName="ligaActual" [placeholder]="'PLAYER_SCOUTING.LEAGUE_HINT' | translate">
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.AVAILABILITY' | translate }}</label>
+              <div class="d-flex gap-2 flex-wrap">
+                <span *ngFor="let d of DISPONIBILIDADES"
+                      class="availability-badge"
+                      [class.selected]="form.get('disponibilidad')?.value === d.value"
+                      (click)="form.get('disponibilidad')?.setValue(d.value)">{{ d.label }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CV -->
+    <div class="sp-section">
+      <div class="sp-section-header" data-bs-toggle="collapse" data-bs-target="#secCV">
+        <i class="bi bi-journal-text"></i>
+        <span>{{ 'PLAYER_SCOUTING.SEC_CV' | translate }}</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </div>
+      <div id="secCV" class="collapse">
+        <div class="sp-section-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.CLUBS' | translate }}</label>
+              <textarea class="form-control" formControlName="clubesAnteriores" rows="3"></textarea>
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.GOALS' | translate }}</label>
+              <input type="number" class="form-control" formControlName="goles">
+            </div>
+            <div class="col-6 col-md-3">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.ASSISTS' | translate }}</label>
+              <input type="number" class="form-control" formControlName="asistencias">
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.TOURNAMENTS' | translate }}</label>
+              <textarea class="form-control" formControlName="torneosImportantes" rows="2"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.AWARDS' | translate }}</label>
+              <textarea class="form-control" formControlName="premiosIndividuales" rows="2"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SELF DESCRIPTION -->
+    <div class="sp-section">
+      <div class="sp-section-header" data-bs-toggle="collapse" data-bs-target="#secSelf">
+        <i class="bi bi-star-fill"></i>
+        <span>{{ 'PLAYER_SCOUTING.SEC_SELF' | translate }}</span>
+        <i class="bi bi-chevron-down ms-auto"></i>
+      </div>
+      <div id="secSelf" class="collapse">
+        <div class="sp-section-body">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.STRENGTHS' | translate }}</label>
+              <textarea class="form-control" formControlName="fortalezas" rows="3"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.IMPROVEMENT' | translate }}</label>
+              <textarea class="form-control" formControlName="areasMejora" rows="3"></textarea>
+            </div>
+            <div class="col-12">
+              <label class="form-label">{{ 'PLAYER_SCOUTING.DESCRIPTION' | translate }}</label>
+              <textarea class="form-control" formControlName="descripcion" rows="4"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIDEOS -->
+    <div class="sp-section">
+      <div class="sp-section-header">
+        <i class="bi bi-play-circle-fill"></i>
+        <span>{{ 'PLAYER_SCOUTING.VIDEOS' | translate }}</span>
+        <button type="button" class="btn btn-sm btn-outline-primary ms-auto" (click)="showAddVideo = !showAddVideo">
+          <i class="bi bi-plus-lg"></i> {{ 'PLAYER_SCOUTING.VIDEO_ADD' | translate }}
+        </button>
+      </div>
+      <div class="sp-section-body">
+
+        <!-- Add video form -->
+        <div *ngIf="showAddVideo" class="add-video-form">
+          <div class="row g-2">
+            <div class="col-12">
+              <div class="d-flex gap-2 flex-wrap">
+                <span *ngFor="let p of PLATFORMS" class="platform-badge"
+                      [class.selected]="newVideoPlataforma === p.value"
+                      (click)="newVideoPlataforma = p.value">
+                  <i class="bi" [ngClass]="p.icon"></i> {{ p.label }}
+                </span>
+              </div>
+            </div>
+            <div class="col-12 col-md-6">
+              <input type="text" class="form-control" [(ngModel)]="newVideoTitulo" [ngModelOptions]="{standalone: true}"
+                     [placeholder]="'PLAYER_SCOUTING.VIDEO_TITLE' | translate">
+            </div>
+            <div class="col-12 col-md-6">
+              <input type="url" class="form-control" [(ngModel)]="newVideoUrl" [ngModelOptions]="{standalone: true}"
+                     placeholder="https://..." [placeholder]="'PLAYER_SCOUTING.VIDEO_URL' | translate">
+            </div>
+            <div class="col-12 d-flex gap-2 justify-content-end">
+              <button type="button" class="btn btn-sm btn-secondary" (click)="showAddVideo = false">{{ 'COMMON.CANCEL' | translate }}</button>
+              <button type="button" class="btn btn-sm btn-primary" (click)="addVideo()">{{ 'COMMON.SAVE' | translate }}</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Video list -->
+        <div *ngIf="videoLoading" class="text-center py-2"><div class="spinner-border spinner-border-sm"></div></div>
+        <p *ngIf="!videoLoading && videos.length === 0" class="text-muted small">{{ 'PLAYER_SCOUTING.VIDEO_EMPTY' | translate }}</p>
+
+        <div *ngFor="let v of videos" class="video-row">
+          <i class="bi platform-icon" [ngClass]="getPlatformIcon(v.plataforma)"></i>
+          <div class="video-info">
+            <span class="video-title">{{ v.titulo || v.url }}</span>
+            <span class="video-platform text-muted">{{ v.plataforma }}</span>
+          </div>
+          <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteVideo(v.videoId)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+
+        <!-- Upload paywall -->
+        <div class="upload-paywall">
+          <i class="bi bi-upload"></i>
+          <div class="paywall-text">
+            <strong>{{ 'PLAYER_SCOUTING.VIDEO_UPLOAD_TITLE' | translate }}</strong>
+            <span class="text-muted">{{ 'PLAYER_SCOUTING.VIDEO_UPLOAD_DESC' | translate }}</span>
+          </div>
+          <button type="button" class="btn btn-warning btn-sm">{{ 'PLAYER_SCOUTING.VIDEO_UPGRADE' | translate }}</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SAVE BUTTON -->
+    <div class="sp-save-row">
+      <button type="submit" class="btn btn-primary btn-save" [disabled]="saving">
+        <span *ngIf="saving" class="spinner-border spinner-border-sm me-2"></span>
+        <i *ngIf="!saving" class="bi bi-save2-fill me-2"></i>
+        {{ 'PLAYER_SCOUTING.SAVE' | translate }}
+      </button>
+    </div>
+
+  </form>
+</div>

@@ -35,6 +35,7 @@
     "LOGOUT": "Abmelden",
     "HELP": {
       "TITLE": "Hilfe",
+      "SUGGESTIONS": "Vorschläge",
       "EMAIL": "E-Mail",
       "WHATSAPP": "WhatsApp",
       "CALL": "Anrufen"
@@ -882,5 +883,97 @@
       "NO_SCHEDULE": "Keine Zeiten zugewiesen",
       "PLAYERS": "Spieler"
     }
-  }
+  },
+  "SCOUTING_CLUB": {
+    "TITLE": "Club-Scouting",
+    "TABS": { "SEARCH": "Spieler suchen", "WATCHLIST": "Meine Liste", "PIPELINE": "Pipeline" },
+    "SEARCH": {
+      "PLACEHOLDER": "Nach Name suchen...",
+      "BTN": "Suchen",
+      "LOADING": "Spieler werden gesucht...",
+      "NO_RESULTS": "Keine Spieler mit diesen Kriterien gefunden",
+      "ADD_WATCHLIST": "Zur Liste hinzufügen",
+      "INITIAL_TITLE": "Finden Sie Spieler für Ihren Verein",
+      "INITIAL_DESC": "Verwenden Sie Filter, um Spieler mit öffentlichen Profilen zu finden"
+    },
+    "FILTER": {
+      "ALL_POSITIONS": "Alle Positionen",
+      "ALL_FEET": "Alle Füße",
+      "AGE_MIN": "Min. Alter",
+      "AGE_MAX": "Max. Alter",
+      "CLEAR": "Filter löschen",
+      "FILTERS": "Filter",
+      "POSITION": "Position",
+      "FOOT": "Bevorzugter Fuß",
+      "AGE": "Alter",
+      "HEIGHT": "Größe",
+      "NATIONALITY": "Nationalität",
+      "NATIONALITY_PLACEHOLDER": "z.B. Spanisch, Deutsch...",
+      "LEAGUE": "Liga / Wettbewerb",
+      "LEAGUE_PLACEHOLDER": "z.B. Bundesliga, LaLiga...",
+      "AVAILABILITY": "Verfügbarkeit",
+      "VIDEO": "Video",
+      "ONLY_WITH_VIDEO": "Nur Spieler mit Video",
+      "MIN": "Min.",
+      "MAX": "Max.",
+      "ANY": "Beliebig",
+      "ACTIVE": "Aktive Filter"
+    },
+    "WATCHLIST": {
+      "SEARCH_PLACEHOLDER": "In meiner Liste suchen...",
+      "ALL": "Alle",
+      "ADD_EXTERNAL": "Externen Spieler hinzufügen",
+      "EMPTY": "Ihre Beobachtungsliste ist leer",
+      "REMOVE": "Von der Liste entfernen",
+      "GO_SEARCH": "Spieler suchen"
+    },
+    "TABLE": { "NAME": "Name", "POSITION": "Position", "STATUS": "Status", "RATING": "Bewertung", "ACTIONS": "Aktionen" },
+    "DETAIL": { "TITLE": "Spielerprofil", "BIO": "Biografie" },
+    "EVAL": {
+      "TITLE": "Bewertungen",
+      "ADD": "Neue Bewertung",
+      "NEW": "Neue Bewertung",
+      "DATE": "Datum",
+      "OVERALL": "Gesamtbewertung",
+      "CONTEXT": "Beobachtungskontext",
+      "CONTEXT_PLACEHOLDER": "Z.B. Ligaspiel Spieltag 5",
+      "EMPTY": "Noch keine Bewertungen"
+    },
+    "SCORES": { "TECHNICAL": "Technik", "TACTICAL": "Taktik", "PHYSICAL": "Physisch", "MENTAL": "Mental", "POTENTIAL": "Potenzial", "ATTITUDE": "Einstellung" },
+    "FORM": { "NAME": "Name", "POSITION": "Position", "AGE": "Alter", "TEAM": "Verein", "NOTES": "Notizen" },
+    "CONFIG": {
+      "TITLE": "Scouting-Einstellungen",
+      "DESC": "Aktivieren oder deaktivieren Sie erweiterte Scouting-Funktionen",
+      "PIPELINE": "Scouting-Pipeline",
+      "PIPELINE_DESC": "Verwalten Sie Spieler in Phasen: Identifiziert, Beobachtet, Bewertet...",
+      "REPORTS": "Berichte",
+      "REPORTS_DESC": "Erstellen Sie PDF-Bewertungsberichte für Spieler",
+      "COMPARE": "Vergleich",
+      "COMPARE_DESC": "Vergleichen Sie Statistiken mehrerer Spieler nebeneinander"
+    },
+    "YEARS": "Jahre",
+    "CANCEL": "Abbrechen",
+    "SAVE": "Speichern"
+  },
+  "PLAYER_SCOUTING": {
+    "TITLE": "Mein Scouting-Profil", "SUBTITLE": "Profil sichtbar für Vereine",
+    "SAVED": "Profil gespeichert", "SAVE": "Profil speichern",
+    "VISIBLE_YES": "Öffentliches Profil", "VISIBLE_NO": "Privates Profil",
+    "SEC_PERSONAL": "Persönliche Daten", "SEC_POSITION": "Positionen",
+    "SEC_SITUATION": "Aktuelle Situation", "SEC_CV": "Fußball-Lebenslauf",
+    "SEC_SELF": "Stärken und Beschreibung", "NAME": "Vollständiger Name",
+    "NATIONALITY": "Nationalität", "HEIGHT": "Größe", "WEIGHT": "Gewicht",
+    "FOOT": "Bevorzugter Fuß", "EMAIL": "Kontakt-E-Mail", "PHONE": "Telefon",
+    "POSITIONS_HINT": "Positionen auswählen", "LEAGUE": "Aktuelle Liga",
+    "LEAGUE_HINT": "Z.B.: Bundesliga", "AVAILABILITY": "Verfügbarkeit",
+    "CLUBS": "Frühere Vereine", "GOALS": "Tore", "ASSISTS": "Vorlagen",
+    "TOURNAMENTS": "Wichtige Turniere", "AWARDS": "Auszeichnungen",
+    "STRENGTHS": "Meine Stärken", "IMPROVEMENT": "Verbesserungsbereiche",
+    "DESCRIPTION": "Freie Beschreibung", "VIDEOS": "Meine Videos",
+    "VIDEO_ADD": "Hinzufügen", "VIDEO_PLATFORM": "Plattform", "VIDEO_TITLE": "Titel",
+    "VIDEO_URL": "Video-URL", "VIDEO_EMPTY": "Noch keine Videos",
+    "VIDEO_UPLOAD_TITLE": "Video hochladen", "VIDEO_UPLOAD_DESC": "Abo €2,99/Monat",
+    "VIDEO_UPGRADE": "Abonnement aktivieren"
+  },
+  "AI_REPORT": { "TITLE": "KI-Bericht", "GENERATING": "Wird generiert...", "GENERATED": "KI-generierter Bericht", "COPY": "Kopieren" }
 }

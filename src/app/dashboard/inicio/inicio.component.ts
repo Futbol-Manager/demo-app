@@ -114,10 +114,12 @@ export class InicioComponent implements OnInit {
   private resolverCargaInicialPorPerfil(): void {
     switch (true) {
       case this.profileId === 2:
+      case this.profileId === 6:
+      case this.profileId === 7:
         this.cargarListadoEquipos();
         break;
 
-      case this.profileId > 2:
+      case this.profileId > 2 && this.profileId < 6:
         // Una sola llamada que carga los hijos y comprueba datos incompletos
         this.cargarJugadores();
         break;
@@ -184,11 +186,18 @@ export class InicioComponent implements OnInit {
       case 11:
         this.router.navigate(['/dashboard/asistente-ia']);
         break;
+      case 12:
+        this.router.navigate(['/dashboard/scouting-club', this.clubId]);
+        break;
     }
   }
 
   navegarEquipoEntrenador(team: any): void {
-    this.router.navigate(['/dashboard/menu-entrenador', team.teamId, 0]);
+    if (this.profileId === 6 || this.profileId === 7) {
+      this.router.navigate(['/dashboard/menu-fisio', team.teamId, 0]);
+    } else {
+      this.router.navigate(['/dashboard/menu-entrenador', team.teamId, 0]);
+    }
   }
 
   irACrearEquipo(): void {
@@ -257,11 +266,11 @@ export class InicioComponent implements OnInit {
           }
           this.cargarListadoEquipos();
         }
-        // Coach (profileId=2): solo necesita cargar equipos directamente
-        if (this.profileId === 2) {
+        // Coach, Fisioterapeuta, Nutricionista: cargar equipos directamente
+        if (this.profileId === 2 || this.profileId === 6 || this.profileId === 7) {
           this.cargarListadoEquipos();
         }
-        // Para jugador (profileId >= 3) ya se dispara cargarHijos() + cargarJugadores()
+        // Para jugador (profileId 3-5) ya se dispara cargarHijos() + cargarJugadores()
         // desde inicializarUsuario → resolverCargaInicialPorPerfil, no duplicamos aquí.
       });
   }

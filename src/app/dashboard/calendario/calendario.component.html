@@ -574,6 +574,10 @@
                       <i class="bi bi-eye"></i>
                     </button>
 
+                    <button class="icon-btn warning" title="Editar tarea" (click)="editTarea(tarea)">
+                      <i class="bi bi-pencil"></i>
+                    </button>
+
                     <button class="icon-btn danger" [title]="'CAL.TEXT_189' | translate" (click)="deleteTask(tarea)">
                       <i class="bi bi-trash"></i>
                     </button>
@@ -3052,3 +3056,15 @@
     </div>
   </div>
 </div>
+
+<!-- Modal edición de tarea -->
+<app-task-edit-modal
+  *ngIf="showEditTaskModal && tareaEditando"
+  [task]="tareaEditando"
+  [trainingId]="trainingSession.trainingSessionId"
+  [userId]="userId"
+  (saved)="onTaskSaved($event)"
+  (closed)="onEditModalClosed()">
+</app-task-edit-modal>
+
+<app-footer></app-footer>

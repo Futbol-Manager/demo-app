@@ -47,7 +47,7 @@
                                 <div class="fifa-pro-card__accent"></div>
                                 <div class="card-body">
                                     <div class="player-top-actions">
-                                        <button class="fifa-pro-btn fifa-pro-btn-invite" title="Invitar"
+                                        <button *ngIf="profileId !== 6 && profileId !== 7" class="fifa-pro-btn fifa-pro-btn-invite" title="Invitar"
                                             (click)="invitarJugador(player.playerId)">
                                             <i class="fa-solid fa-user-plus"></i>
                                         </button>
@@ -120,7 +120,7 @@
                                             (click)="verInfoJugador(player)">
                                             <i class="bi bi-person-fill"></i>
                                         </button>
-                                        <button class="fifa-pro-btn fifa-pro-btn-secondary" title="Editar"
+                                        <button *ngIf="profileId !== 6 && profileId !== 7" class="fifa-pro-btn fifa-pro-btn-secondary" title="Editar"
                                             (click)="editarJugador(player.playerId)">
                                             <i class="bi bi-pencil-fill"></i>
                                         </button>
@@ -220,7 +220,7 @@
                                                 (click)="verInfoJugador(player)">
                                                 <i class="bi bi-person-fill"></i>
                                             </button>
-                                            <button class="fifa-pro-btn fifa-pro-btn-primary" title="Editar"
+                                            <button *ngIf="profileId !== 6 && profileId !== 7" class="fifa-pro-btn fifa-pro-btn-primary" title="Editar"
                                                 (click)="editarJugador(player.playerId)">
                                                 <i class="bi bi-pencil-fill"></i>
                                             </button>
@@ -1112,7 +1112,7 @@
 
                 <!-- Pestañas -->
                 <ul class="nav nav-tabs player-info-tabs" role="tablist">
-                    <li class="nav-item" role="presentation">
+                    <li class="nav-item" role="presentation" *ngIf="(usuarioActual?.profileType?.profileId ?? 0) !== 6 && (usuarioActual?.profileType?.profileId ?? 0) !== 7">
                         <button type="button" class="nav-link" [class.active]="infoModalActiveTab === 'personal'" (click)="setInfoModalTab('personal')">
                             <i class="bi bi-person-vcard me-1"></i> Información personal
                         </button>
@@ -1379,7 +1379,7 @@
                           [playerName]="(selectedPlayer?.nombre || '') + ' ' + (selectedPlayer?.apellido || '')"
                           [teamId]="teamId"
                           [embedded]="true"
-                          [readOnly]="(usuarioActual?.profileType?.profileId ?? 0) >= 3">
+                          [readOnly]="(usuarioActual?.profileType?.profileId ?? 0) >= 3 && (usuarioActual?.profileType?.profileId ?? 0) < 6">
                         </app-lesiones>
                     </div>
                 </div>

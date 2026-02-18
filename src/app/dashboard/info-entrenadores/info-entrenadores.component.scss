@@ -227,6 +227,31 @@
   color: #001a26;
 }
 
+/* ROLE BADGES */
+.role-badge {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+
+  &.role-coach {
+    background: rgba(49, 178, 112, 0.15);
+    color: #1f8f5a;
+  }
+
+  &.role-physio {
+    background: rgba(59, 130, 246, 0.15);
+    color: #2563eb;
+  }
+
+  &.role-nutri {
+    background: rgba(245, 158, 11, 0.15);
+    color: #d97706;
+  }
+}
+
 /* IMAGEN */
 .image-cell {
   padding: 0 !important;

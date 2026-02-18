@@ -80,7 +80,9 @@
             <span class="text-muted small">{{ a.dateCreated | date:'dd/MM/yyyy HH:mm' }}</span>
           </td>
           <td>
-            <span class="club-link" (click)="goToClub(a.clubId)">{{ a.clubName }}</span>
+            <span class="club-link" [class.no-link]="!a.clubId" (click)="goToClub(a.clubId)">
+              {{ getDisplayClubName(a) }}
+            </span>
           </td>
           <td>
             <span class="badge activity-badge" [ngClass]="getActivityBadgeClass(a.actionType)">

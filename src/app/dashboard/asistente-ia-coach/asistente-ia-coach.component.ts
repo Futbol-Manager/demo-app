@@ -6,6 +6,8 @@ import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { AiChatService, AiPendingAction } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { InjuryService } from 'src/app/core/services/injury/injury.service';
+import { Injury } from 'src/app/core/services/injury/injury.model';
 import { User } from 'src/app/core/models/users/user.model';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
 
@@ -179,6 +181,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   ];
 
   showSuggestions = true;
+  profileId = 0;
 
   constructor(
     private loginService: LoginService,
@@ -186,7 +189,8 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     private location: Location,
     private translate: TranslateService,
     private aiChatService: AiChatService,
-    private voiceRecognition: VoiceRecognitionService
+    private voiceRecognition: VoiceRecognitionService,
+    private injuryService: InjuryService
   ) {}
 
   ngOnInit(): void {
@@ -194,6 +198,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       this.usuarioActual = user;
       if (user) {
         this.userId = user.userId;
+        this.profileId = user.profileType?.profileId ?? 0;
         this.loadCredits();
       }
     });
@@ -205,7 +210,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     const urlParts = this.router.url.split('/');
     const teamRoutes = ['calendario', 'jugadores', 'menu-entrenador', 'menu-club', 'tareas',
       'estadisticas_equipo', 'estadisticas_jugadores', 'informacion_equipo',
-      'entrenadores', 'tactical-board', 'lesiones', 'debrief'];
+      'entrenadores', 'tactical-board', 'lesiones', 'debrief', 'menu-fisio'];
     for (const route of teamRoutes) {
       const idx = urlParts.indexOf(route);
       if (idx >= 0 && idx + 1 < urlParts.length) {
@@ -221,11 +226,42 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       if (storedTeamId) this.teamId = parseInt(storedTeamId, 10);
     }
 
+    // Check if arriving from lesiones screen (set by FAB or direct nav)
+    const sourceContext = sessionStorage.getItem('ai_source_context');
+    const sourceTeamId = sessionStorage.getItem('ai_source_teamId');
+    const fromLesiones = sourceContext === 'lesiones';
+    if (fromLesiones && sourceTeamId && !this.teamId) {
+      this.teamId = parseInt(sourceTeamId, 10);
+    }
+    sessionStorage.removeItem('ai_source_context');
+    sessionStorage.removeItem('ai_source_teamId');
+
     this.loadConversationsList();
 
-    this.addAssistantMessage(
-      '¡Hola, míster! 👋⚽ Soy tu asistente deportivo de IA. Puedo ayudarte con entrenamientos, partidos, estadísticas, táctica y todo lo relacionado con tu equipo.\n\nEscríbeme o elige una sugerencia. ¡Vamos!'
-    );
+    const isFisio = this.profileId === 6;
+    const isFromLesiones = fromLesiones && (this.profileId === 1 || this.profileId === 2);
+
+    const welcomeMsg = isFisio
+      ? '¡Hola! 👋🩺 Soy tu asistente clínico de IA. Estoy especializado en fisioterapia deportiva y tengo acceso al historial de lesiones de tu equipo.\n\nPuedo ayudarte con protocolos de rehabilitación, tiempos de recuperación, criterios RTP y prevención de lesiones.\n\nEscríbeme o elige una sugerencia.'
+      : '¡Hola, míster! 👋⚽ Soy tu asistente deportivo de IA. Puedo ayudarte con entrenamientos, partidos, estadísticas, táctica y todo lo relacionado con tu equipo.\n\nEscríbeme o elige una sugerencia. ¡Vamos!';
+
+    this.addAssistantMessage(welcomeMsg);
+
+    if (isFisio) {
+      this.setSuggestionsForFisio([]);
+      if (this.teamId) {
+        this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
+          next: (injuries) => this.setSuggestionsForFisio(injuries),
+          error: () => this.setSuggestionsForFisio([])
+        });
+      }
+    } else if (isFromLesiones && this.teamId) {
+      // Club/Coach arriving from lesiones section — show injury-relevant suggestions
+      this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
+        next: (injuries) => this.setSuggestionsForLesiones(injuries),
+        error: () => {} // Fall back to default suggestions already set
+      });
+    }
 
     this.initVoiceRecognition();
   }
@@ -323,9 +359,30 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     this.showHistory = false;
     this.showSuggestions = true;
 
-    this.addAssistantMessage(
-      '¡Hola, míster! 👋⚽ Soy tu asistente deportivo de IA. Puedo ayudarte con entrenamientos, partidos, estadísticas, táctica y todo lo relacionado con tu equipo.\n\nEscríbeme o elige una sugerencia. ¡Vamos!'
-    );
+    const isFisio = this.profileId === 6;
+    const welcomeMsg = isFisio
+      ? '¡Hola! 👋🩺 Soy tu asistente clínico de IA. Estoy especializado en fisioterapia deportiva y tengo acceso al historial de lesiones de tu equipo.\n\nPuedo ayudarte con protocolos de rehabilitación, tiempos de recuperación, criterios RTP y prevención de lesiones.\n\nEscríbeme o elige una sugerencia.'
+      : '¡Hola, míster! 👋⚽ Soy tu asistente deportivo de IA. Puedo ayudarte con entrenamientos, partidos, estadísticas, táctica y todo lo relacionado con tu equipo.\n\nEscríbeme o elige una sugerencia. ¡Vamos!';
+
+    this.addAssistantMessage(welcomeMsg);
+
+    if (this.teamId) {
+      if (isFisio) {
+        this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
+          next: (injuries) => this.setSuggestionsForFisio(injuries),
+          error: () => this.setSuggestionsForFisio([])
+        });
+      } else if (this.profileId === 1 || this.profileId === 2) {
+        this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
+          next: (injuries) => {
+            if (injuries.filter(i => i.status === 'activa' || i.status === 'recuperacion').length > 0) {
+              this.setSuggestionsForLesiones(injuries);
+            }
+          },
+          error: () => {}
+        });
+      }
+    }
   }
 
   loadConversation(conv: ConversationSummary): void {
@@ -635,10 +692,128 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   }
 
   /* ═══════════════════════════════════════
+     SUGERENCIAS LESIONES — CLUB / COACH
+  ═══════════════════════════════════════ */
+
+  private setSuggestionsForLesiones(injuries: Injury[]): void {
+    const active = injuries.filter(i => i.status === 'activa');
+    const recovery = injuries.filter(i => i.status === 'recuperacion');
+    const chips: SuggestionChip[] = [];
+
+    // Bajas activas que afectan disponibilidad (máx. 2)
+    for (const inj of active.slice(0, 2)) {
+      const name = inj.playerName || 'el jugador';
+      const zone = inj.zoneLabel || inj.zone || 'lesión';
+      chips.push({
+        icon: 'bi-person-x',
+        text: `Baja: ${name}`,
+        query: `${name} está lesionado con ${zone}. ¿Cuándo puede estar disponible? Alta prevista: ${inj.dateReturn || 'sin determinar'}.`
+      });
+    }
+
+    // Jugadores en recuperación próximos a volver (máx. 2)
+    for (const inj of recovery.slice(0, 2)) {
+      const name = inj.playerName || 'el jugador';
+      chips.push({
+        icon: 'bi-person-check',
+        text: `Vuelta: ${name}`,
+        query: `¿${name} puede llegar al próximo partido? Está en fase RTP ${inj.rtpPhase}, alta prevista ${inj.dateReturn || 'sin fecha'}.`
+      });
+    }
+
+    // Resumen de disponibilidad
+    if (injuries.length > 0) {
+      chips.push({
+        icon: 'bi-heart-pulse',
+        text: 'Disponibilidad del equipo',
+        query: `¿Cuántos jugadores tengo disponibles? Hay ${active.length} lesiones activas y ${recovery.length} en recuperación.`
+      });
+    }
+
+    // Sugerencias de gestión de alineación con bajas
+    chips.push({
+      icon: 'bi-people',
+      text: 'Alineación sin lesionados',
+      query: active.length > 0
+        ? `Sugiere una alineación para el próximo partido teniendo en cuenta que ${active.map(i => i.playerName).filter(Boolean).join(', ')} están lesionados.`
+        : '¿Cuál sería la mejor alineación para el próximo partido?'
+    });
+
+    this.suggestions = chips.slice(0, 6);
+  }
+
+  /* ═══════════════════════════════════════
+     SUGERENCIAS FISIOTERAPEUTA (DINÁMICAS)
+  ═══════════════════════════════════════ */
+
+  private setSuggestionsForFisio(injuries: Injury[]): void {
+    const active = injuries.filter(i => i.status === 'activa');
+    const recovery = injuries.filter(i => i.status === 'recuperacion');
+    const chips: SuggestionChip[] = [];
+
+    // 1. Sugerencias basadas en lesiones activas (máx. 2)
+    for (const inj of active.slice(0, 2)) {
+      const name = inj.playerName || 'el jugador';
+      const zone = inj.zoneLabel || inj.zone || 'lesión';
+      chips.push({
+        icon: 'bi-bandaid',
+        text: `${name} — ${zone}`,
+        query: `¿Cuál es el protocolo de tratamiento para ${name} con ${zone}? Estado actual: ${inj.status}, fase RTP: ${inj.rtpPhase}.`
+      });
+    }
+
+    // 2. Sugerencias de jugadores en recuperación/RTP (máx. 2)
+    for (const inj of recovery.slice(0, 2)) {
+      const name = inj.playerName || 'el jugador';
+      const zone = inj.zoneLabel || inj.zone || 'lesión';
+      chips.push({
+        icon: 'bi-arrow-up-circle',
+        text: `Alta prevista: ${name}`,
+        query: `¿Cuándo puede volver a entrenar ${name}? Tiene una ${zone} en fase RTP ${inj.rtpPhase}. Alta prevista: ${inj.dateReturn || 'sin fecha'}.`
+      });
+    }
+
+    // 3. Resumen general siempre disponible
+    if (injuries.length > 0) {
+      chips.push({
+        icon: 'bi-heart-pulse',
+        text: 'Resumen de lesiones',
+        query: `Dame un resumen del estado actual de lesiones del equipo. Hay ${active.length} lesiones activas y ${recovery.length} jugadores en recuperación.`
+      });
+    }
+
+    // 4. Completar con sugerencias genéricas hasta 6
+    const generic: SuggestionChip[] = [
+      { icon: 'bi-shield-check', text: 'Prevención de lesiones', query: '¿Qué ejercicios de prevención recomiendas para reducir el riesgo de lesiones musculares?' },
+      { icon: 'bi-calendar-check', text: 'Carga de entrenamiento', query: '¿Cómo debería gestionar la carga de entrenamiento para los jugadores en recuperación?' },
+      { icon: 'bi-clipboard2-pulse', text: 'Protocolo RTP', query: 'Explícame las fases del protocolo Return to Play (RTP) para una lesión muscular' },
+      { icon: 'bi-people', text: 'Estado de la plantilla', query: '¿Cuántos jugadores están disponibles y cuántos tienen restricciones médicas?' },
+    ];
+
+    for (const g of generic) {
+      if (chips.length >= 6) break;
+      chips.push(g);
+    }
+
+    this.suggestions = chips.slice(0, 6);
+  }
+
+  /* ═══════════════════════════════════════
      SUGERENCIAS CONTEXTUALES
   ═══════════════════════════════════════ */
 
   private updateSuggestionsContext(userText: string): void {
+    // Para el fisio, recargar sugerencias clínicas dinámicas
+    if (this.profileId === 6) {
+      if (this.teamId) {
+        this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
+          next: (injuries) => this.setSuggestionsForFisio(injuries),
+          error: () => this.setSuggestionsForFisio([])
+        });
+      }
+      return;
+    }
+
     if (/entrenamiento|ejercicio|sesi[óo]n/i.test(userText)) {
       this.suggestions = [
         { icon: 'bi-lightbulb', text: 'Sugerir ejercicios', query: 'Sugiere ejercicios para la sesión de hoy' },

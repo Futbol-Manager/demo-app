@@ -39,6 +39,13 @@ export class SugerenciaService {
         return this.http.get<Response>(url, { headers });
     }
 
+    getSugerenciasByUser(userId: number): Observable<Response> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        const url = `${this.base}sugerencias/user/${userId}`;
+        return this.http.get<Response>(url, { headers });
+    }
+
     countUnread(): Observable<Response> {
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));
@@ -65,5 +72,40 @@ export class SugerenciaService {
         if (!headers) return throwError(() => new Error('No auth token'));
         const url = `${this.base}sugerencias/${id}/read`;
         return this.http.put<Response>(url, {}, { headers });
+    }
+
+    aiRespond(id: number, decision: string, reason: string): Observable<Response> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        const url = `${this.base}sugerencias/${id}/ai-respond`;
+        return this.http.post<Response>(url, { decision, reason }, { headers });
+    }
+
+    countUnreadResponsesUser(userId: number): Observable<Response> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        const url = `${this.base}sugerencias/count/unread-user/${userId}`;
+        return this.http.get<Response>(url, { headers });
+    }
+
+    markAllReadByUser(userId: number): Observable<Response> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        const url = `${this.base}sugerencias/mark-read-user/${userId}`;
+        return this.http.put<Response>(url, {}, { headers });
+    }
+
+    archiveAllDone(): Observable<Response> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        const url = `${this.base}sugerencias/archive-all-done`;
+        return this.http.put<Response>(url, {}, { headers });
+    }
+
+    hardDelete(id: number): Observable<Response> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        const url = `${this.base}sugerencias/${id}/hard-delete`;
+        return this.http.delete<Response>(url, { headers });
     }
 }

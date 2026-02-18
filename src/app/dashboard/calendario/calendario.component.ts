@@ -808,8 +808,11 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   userId: any = 0;
 
-  showModalTask: boolean = false; // Controla la visibilidad del modal
-  tareaSeleccionada: any; // Almacena la tarea seleccionada
+  showModalTask: boolean = false;
+  tareaSeleccionada: any;
+
+  showEditTaskModal: boolean = false;
+  tareaEditando: Task | null = null;
 
   // Genera un array con los números del 0 al 1000
   numeros: number[] = [0, ...Array.from({ length: 1000 }, (_, i) => i + 1)];
@@ -880,6 +883,13 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       this.userId = user?.userId;
       this.profileId =
         user?.profileType.profileId != null ? user?.profileType.profileId : 0;
+
+      // Override admin: si el userId es 9 (admin que también actúa como coach),
+      // forzar profileId = 2 para que el calendario funcione correctamente
+      if (user?.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
+        this.profileId = 2;
+      }
+
       // Suscribirse a los cambios en los parámetros de la URL
       this.route.params.subscribe((params) => {
         // Obtener el valor de teamId de los parámetros
@@ -892,9 +902,9 @@ export class CalendarioComponent implements OnInit, OnDestroy {
           // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
             this.nombreEquipo =
-              response.data.categoryType.categoryName +
+              (response.data.categoryType?.categoryName || '') +
               ' ' +
-              response.data.levelLeague;
+              (response.data.levelLeague || '');
             this.categoryTeam = response.data.categoryTypeId;
             this.imgClub = response.data.imgClub;
             this.match2.imgClub =
@@ -906,10 +916,13 @@ export class CalendarioComponent implements OnInit, OnDestroy {
               'La respuesta del servicio no tiene la estructura esperada',
               response,
             );
+            // Intentar cargar entrenamientos aunque el equipo no tenga datos completos
+            this.getListaEntrenamientos();
           }
         },
         (error) => {
-          console.error('Error al cargar el listado de equipos', error);
+          console.error('Error al cargar datos del equipo, intentando cargar entrenamientos igualmente', error);
+          this.getListaEntrenamientos();
         },
       );
     });
@@ -1316,18 +1329,22 @@ export class CalendarioComponent implements OnInit, OnDestroy {
           this.listTraining = response.data.map(
             (team: Training) => new Training(team),
           );
-          // Lógica para obtener o generar la información del calendario
-          this.getListaPrePartido();
-          //this.generarCalendarioV2(new Date());
         } else {
-          console.error(
-            'La respuesta del servicio no tiene la estructura esperada',
-            response,
-          );
+          this.listTraining = [];
+          if (response?.data !== null && response?.data !== undefined) {
+            console.error(
+              'La respuesta del servicio no tiene la estructura esperada',
+              response,
+            );
+          }
         }
+        // Siempre continuar para generar el calendario (aunque no haya datos de entrenamientos)
+        this.getListaPrePartido();
       },
       (error) => {
-        console.error('Error al cargar el listado de equipos', error);
+        console.error('Error al cargar entrenamientos:', error);
+        this.listTraining = [];
+        this.getListaPrePartido();
       },
     );
   }
@@ -1344,22 +1361,29 @@ export class CalendarioComponent implements OnInit, OnDestroy {
             this.listMatchPreparation = response.data.map(
               (match: MatchPreparation) => new MatchPreparation(match),
             );
-            // Lógica para obtener o generar la información del calendario
-            this.generarCalendarioV2(this.mesActual);
-            if (this.vistaCalendario === 'week') this.generarVistaSemana();
           } else {
-            console.error(
-              'La respuesta del servicio no tiene la estructura esperada',
-              response,
-            );
+            this.listMatchPreparation = [];
+            if (response?.data !== null && response?.data !== undefined) {
+              console.error(
+                'La respuesta del servicio no tiene la estructura esperada',
+                response,
+              );
+            }
           }
+          // Siempre generar el calendario, aunque no haya pre-partidos
+          this.generarCalendarioV2(this.mesActual);
+          if (this.vistaCalendario === 'week') this.generarVistaSemana();
           this.datosCargados = true;
 
           // Auto-abrir evento si venimos del calendario del club con queryParams
           this.autoOpenFromQueryParams();
         },
         (error) => {
-          console.error('Error al cargar el listado de equipos', error);
+          console.error('Error al cargar pre-partidos, generando calendario sin ellos', error);
+          this.listMatchPreparation = [];
+          this.generarCalendarioV2(this.mesActual);
+          if (this.vistaCalendario === 'week') this.generarVistaSemana();
+          this.datosCargados = true;
         },
       );
   }
@@ -1417,11 +1441,12 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   }
 
   puedeVerPartido(dia: any): boolean {
-    const perfil = this.usuarioActual?.profileType?.profileId;
+    const perfil = this.profileId ?? this.usuarioActual?.profileType?.profileId;
 
     if (!dia.matchPreparationId) return false;
 
-    if (perfil === 1 || perfil === 2) return true;
+    // Club (0, 1) + Coach (2) + Staff (6, 7) → siempre pueden ver
+    if (perfil === 0 || perfil === 1 || perfil === 2 || perfil === 6 || perfil === 7) return true;
 
     if (perfil === 3) {
       return dia.matchVisible === 1;
@@ -1432,15 +1457,15 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
 
   puedeVerPartidoEnLista(m: any): boolean {
-    const perfil = this.usuarioActual?.profileType?.profileId;
+    const perfil = this.profileId ?? this.usuarioActual?.profileType?.profileId;
 
     const esVisible =
       m.visible === 1 ||
       m.visible === '1' ||
       m.visible === true;
 
-    // Club y Coach → siempre
-    if (perfil === 1 || perfil === 2) {
+    // Club (0, 1) + Coach (2) + Staff (6, 7) → siempre
+    if (perfil === 0 || perfil === 1 || perfil === 2 || perfil === 6 || perfil === 7) {
       return true;
     }
 
@@ -1452,15 +1477,15 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     return false;
   }
   puedeVerEntrenamientoEnLista(t: any): boolean {
-    const perfil = this.usuarioActual?.profileType?.profileId;
+    const perfil = this.profileId ?? this.usuarioActual?.profileType?.profileId;
 
     const esVisible =
       t.visible === 1 ||
       t.visible === '1' ||
       t.visible === true;
 
-    // Club y Coach → siempre
-    if (perfil === 1 || perfil === 2) {
+    // Club (0, 1) + Coach (2) + Staff (6, 7) → siempre
+    if (perfil === 0 || perfil === 1 || perfil === 2 || perfil === 6 || perfil === 7) {
       return true;
     }
 
@@ -1473,12 +1498,14 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   }
 
   puedeVerEntrenamiento(dia: any): boolean {
-    const perfil = this.usuarioActual?.profileType?.profileId;
+    const perfil = this.profileId ?? this.usuarioActual?.profileType?.profileId;
 
     if (!dia.trainingId) return false;
 
-    if (perfil === 1 || perfil === 2) return true;
+    // Club (0, 1) + Coach (2) + Staff de tipo coach (6, 7) → siempre pueden ver
+    if (perfil === 0 || perfil === 1 || perfil === 2 || perfil === 6 || perfil === 7) return true;
 
+    // Jugador → solo si el entrenamiento está marcado como visible
     if (perfil === 3) {
       return dia.trainingVisible === 1;
     }
@@ -2237,12 +2264,31 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   }
 
   openTaskModal(tarea: any): void {
-    this.tareaSeleccionada = tarea; // Almacena la tarea seleccionada
-    this.showModalTask = true; // Muestra el modal
+    this.tareaSeleccionada = tarea;
+    this.showModalTask = true;
   }
 
   closeTaskModal(): void {
-    this.showModalTask = false; // Oculta el modal
+    this.showModalTask = false;
+  }
+
+  editTarea(tarea: Task): void {
+    this.tareaEditando = tarea;
+    this.showEditTaskModal = true;
+  }
+
+  onTaskSaved(updated: Task): void {
+    const idx = this.trainingSession.tasks.findIndex((t: Task) => t.taskId === updated.taskId);
+    if (idx !== -1) {
+      this.trainingSession.tasks[idx] = { ...this.trainingSession.tasks[idx], ...updated };
+    }
+    this.showEditTaskModal = false;
+    this.tareaEditando = null;
+  }
+
+  onEditModalClosed(): void {
+    this.showEditTaskModal = false;
+    this.tareaEditando = null;
   }
 
   printDivPostPartido(divId: string): void {

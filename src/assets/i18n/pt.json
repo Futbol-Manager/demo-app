@@ -148,6 +148,7 @@
     "NOTIFICATIONS": "Notificações",
     "AI_ASSISTANT": "Assistente de IA",
     "CREATETEAM": "Criar uma equipa",
+    "SCOUTING": "Scouting",
     "CREATE": "Criar"
   },
   "HEADER": {
@@ -165,6 +166,7 @@
     "LOGOUT": "Sair",
     "HELP": {
       "TITLE": "Ajuda",
+      "SUGGESTIONS": "Sugestões",
       "EMAIL": "Email",
       "WHATSAPP": "WhatsApp",
       "CALL": "Ligar"
@@ -1448,9 +1450,9 @@
     "GUARDAR": "Guardar",
     "ELIMINAR": "Eliminar equipa",
     "ENTRENADORES": "Treinadores da equipa",
-    "INVITAR": "Convidar treinador",
-    "INVITAR_MODAL_TITLE": "Convidar treinador",
-    "INVITAR_MODAL_P": "Introduza o correio do treinador. Verifique que está correto.",
+    "INVITAR": "Convidar staff",
+    "INVITAR_MODAL_TITLE": "Convidar staff",
+    "INVITAR_MODAL_P": "Introduza o correio do membro do staff. Verifique que está correto.",
     "EMAIL": "Correio eletrónico",
     "HORARIO_MODAL_TITLE": "Horário da equipa",
     "HORARIO_MODAL_P": "Ative os dias de treino e atribua hora de início e fim.",
@@ -2249,5 +2251,97 @@
       "STATUS_DRAFT": "Rascunho",
       "STATUS_REPORT-GENERATED": "Relatório gerado"
     }
-  }
+  },
+  "SCOUTING_CLUB": {
+    "TITLE": "Scouting do Clube",
+    "TABS": { "SEARCH": "Procurar Jogadores", "WATCHLIST": "Minha Lista", "PIPELINE": "Pipeline" },
+    "SEARCH": {
+      "PLACEHOLDER": "Procurar por nome...",
+      "BTN": "Procurar",
+      "LOADING": "Procurando jogadores...",
+      "NO_RESULTS": "Nenhum jogador encontrado com esses critérios",
+      "ADD_WATCHLIST": "Adicionar à lista",
+      "INITIAL_TITLE": "Encontre jogadores para o seu clube",
+      "INITIAL_DESC": "Use os filtros para encontrar jogadores com perfis públicos"
+    },
+    "FILTER": {
+      "ALL_POSITIONS": "Todas as posições",
+      "ALL_FEET": "Todos os pés",
+      "AGE_MIN": "Idade mín.",
+      "AGE_MAX": "Idade máx.",
+      "CLEAR": "Limpar filtros",
+      "FILTERS": "Filtros",
+      "POSITION": "Posição",
+      "FOOT": "Pé dominante",
+      "AGE": "Idade",
+      "HEIGHT": "Altura",
+      "NATIONALITY": "Nacionalidade",
+      "NATIONALITY_PLACEHOLDER": "Ex: Espanhola, Portuguesa...",
+      "LEAGUE": "Liga / Competição",
+      "LEAGUE_PLACEHOLDER": "Ex: Primeira Liga, LaLiga...",
+      "AVAILABILITY": "Disponibilidade",
+      "VIDEO": "Vídeo",
+      "ONLY_WITH_VIDEO": "Apenas jogadores com vídeo",
+      "MIN": "Mín.",
+      "MAX": "Máx.",
+      "ANY": "Qualquer",
+      "ACTIVE": "Filtros ativos"
+    },
+    "WATCHLIST": {
+      "SEARCH_PLACEHOLDER": "Procurar na minha lista...",
+      "ALL": "Todos",
+      "ADD_EXTERNAL": "Adicionar jogador externo",
+      "EMPTY": "A sua lista de observação está vazia",
+      "REMOVE": "Remover da lista",
+      "GO_SEARCH": "Procurar jogadores"
+    },
+    "TABLE": { "NAME": "Nome", "POSITION": "Posição", "STATUS": "Estado", "RATING": "Avaliação", "ACTIONS": "Ações" },
+    "DETAIL": { "TITLE": "Ficha do jogador", "BIO": "Biografia" },
+    "EVAL": {
+      "TITLE": "Avaliações",
+      "ADD": "Nova avaliação",
+      "NEW": "Nova avaliação",
+      "DATE": "Data",
+      "OVERALL": "Avaliação geral",
+      "CONTEXT": "Contexto de observação",
+      "CONTEXT_PLACEHOLDER": "Ex: Jogo do campeonato jornada 5",
+      "EMPTY": "Sem avaliações ainda"
+    },
+    "SCORES": { "TECHNICAL": "Técnica", "TACTICAL": "Tática", "PHYSICAL": "Físico", "MENTAL": "Mental", "POTENTIAL": "Potencial", "ATTITUDE": "Atitude" },
+    "FORM": { "NAME": "Nome", "POSITION": "Posição", "AGE": "Idade", "TEAM": "Equipa", "NOTES": "Notas" },
+    "CONFIG": {
+      "TITLE": "Configurações de Scouting",
+      "DESC": "Ative ou desative funcionalidades avançadas de scouting",
+      "PIPELINE": "Pipeline de Scouting",
+      "PIPELINE_DESC": "Gerir jogadores por fases: Identificado, Observado, Avaliado...",
+      "REPORTS": "Relatórios",
+      "REPORTS_DESC": "Gerar relatórios PDF de avaliação de jogadores",
+      "COMPARE": "Comparação",
+      "COMPARE_DESC": "Comparar estatísticas de vários jogadores lado a lado"
+    },
+    "YEARS": "anos",
+    "CANCEL": "Cancelar",
+    "SAVE": "Guardar"
+  },
+  "PLAYER_SCOUTING": {
+    "TITLE": "Meu perfil de Scouting", "SUBTITLE": "Perfil visível para os clubes",
+    "SAVED": "Perfil guardado", "SAVE": "Guardar perfil",
+    "VISIBLE_YES": "Perfil público", "VISIBLE_NO": "Perfil privado",
+    "SEC_PERSONAL": "Dados pessoais", "SEC_POSITION": "Posições",
+    "SEC_SITUATION": "Situação atual", "SEC_CV": "CV futebolístico",
+    "SEC_SELF": "Pontos fortes e descrição", "NAME": "Nome completo",
+    "NATIONALITY": "Nacionalidade", "HEIGHT": "Altura", "WEIGHT": "Peso",
+    "FOOT": "Pé preferido", "EMAIL": "Email de contacto", "PHONE": "Telefone",
+    "POSITIONS_HINT": "Selecione as suas posições", "LEAGUE": "Liga atual",
+    "LEAGUE_HINT": "Ex: Liga Portugal 2", "AVAILABILITY": "Disponibilidade",
+    "CLUBS": "Clubes anteriores", "GOALS": "Golos", "ASSISTS": "Assistências",
+    "TOURNAMENTS": "Torneios importantes", "AWARDS": "Prémios",
+    "STRENGTHS": "Os meus pontos fortes", "IMPROVEMENT": "Áreas de melhoria",
+    "DESCRIPTION": "Descrição livre", "VIDEOS": "Os meus vídeos",
+    "VIDEO_ADD": "Adicionar", "VIDEO_PLATFORM": "Plataforma", "VIDEO_TITLE": "Título",
+    "VIDEO_URL": "URL do vídeo", "VIDEO_EMPTY": "Nenhum vídeo adicionado",
+    "VIDEO_UPLOAD_TITLE": "Carregar o seu vídeo", "VIDEO_UPLOAD_DESC": "Subscrição €2,99/mês",
+    "VIDEO_UPGRADE": "Ativar subscrição"
+  },
+  "AI_REPORT": { "TITLE": "Relatório IA", "GENERATING": "A gerar...", "GENERATED": "Relatório gerado pela IA", "COPY": "Copiar" }
 }
