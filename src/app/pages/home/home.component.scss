@@ -90,9 +90,9 @@ $border: #f4f4f4;
   transform: scale(1.05);
 }
 
-/* Logo visible en tema dark */
+/* Logo ya se cambia por asset blanco en tema dark */
 body.dark .logo-header {
-  filter: brightness(0) invert(1);
+  filter: none;
 }
 
 @media (max-width: 768px) {

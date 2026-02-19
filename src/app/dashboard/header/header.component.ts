@@ -1,9 +1,11 @@
-import { Component, ElementRef, OnInit, Renderer2 } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarConfig } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subject } from 'rxjs';
+import { interval } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import {
   GenreTypeModel,
   ProfileTypeModel,
@@ -18,18 +20,23 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { ThemeService } from 'src/app/core/services/theme/theme.service';
 import { SugerenciaService } from 'src/app/core/services/sugerencia/sugerencia.service';
 import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { ClubService } from 'src/app/core/services/club/club.service';
 import { environment } from 'src/environments/environment';
 import { Dropdown } from 'bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { Response } from 'src/app/core/services/models/response.model';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
+/** Intervalo en ms para refrescar listado y contador de notificaciones */
+const NOTIFICATIONS_POLL_INTERVAL_MS = 45_000;
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
 })
-export class HeaderComponent implements OnInit {
+export class HeaderComponent implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
   isDarkMode: boolean = false;
   coachBelongsToClub = false;
   usuarioActual!: User | null;
@@ -78,6 +85,17 @@ export class HeaderComponent implements OnInit {
   showConfirmPassword = false;
   unreadSugerencias = 0;
   unreadSugerenciasUser = 0;
+  unreadHeaderNotifications = 0;
+  headerNotifications: Array<{
+    correoRecibidoId: number;
+    asunto: string;
+    remitente: string;
+    fechaCreate: string;
+    leido: number;
+    previewText: string;
+  }> = [];
+  expandedNotificationId: number | null = null;
+  loadingPreviewId: number | null = null;
 
   // Coach trial banner
   coachTrialActive = false;
@@ -112,7 +130,9 @@ export class HeaderComponent implements OnInit {
     private translate: TranslateService,
     public themeService: ThemeService,
     private sugerenciaService: SugerenciaService,
-    private aiChatService: AiChatService
+    private aiChatService: AiChatService,
+    private clubService: ClubService,
+    private cdr: ChangeDetectorRef
   ) {
     const lang = localStorage.getItem('lang');
     if (lang) {
@@ -155,6 +175,7 @@ export class HeaderComponent implements OnInit {
       // Cargar respuestas no leídas de sugerencias para el usuario normal
       if (this.userId > 0 && this.userId !== 9) {
         this.loadUnreadSugerenciasUser();
+        this.loadHeaderNotifications();
       }
 
       // Cargar créditos IA
@@ -163,6 +184,20 @@ export class HeaderComponent implements OnInit {
         this.loadAiCredits();
       }
     });
+
+    // Actualizar listado y contador de notificaciones cada cierto tiempo
+    interval(NOTIFICATIONS_POLL_INTERVAL_MS)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        if (this.userId > 0 && this.userId !== 9 && this.canShowUserNotificationsBell()) {
+          this.loadHeaderNotifications();
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadAiCredits(): void {
@@ -239,6 +274,134 @@ export class HeaderComponent implements OnInit {
         this.unreadSugerenciasUser = 0;
       }
     });
+  }
+
+  private loadHeaderNotifications(): void {
+    if (!this.canShowUserNotificationsBell() || this.userId <= 0) {
+      this.unreadHeaderNotifications = 0;
+      this.headerNotifications = [];
+      return;
+    }
+    this.clubService.getListCorreos(this.userId).subscribe({
+      next: (response: Response) => {
+        const recibidos = response?.data?.recibidos ?? [];
+        const sorted = [...recibidos].sort((a: any, b: any) =>
+          new Date(b.fechaCreate || 0).getTime() - new Date(a.fechaCreate || 0).getTime()
+        );
+        this.unreadHeaderNotifications = sorted.filter((m: any) => m.leido === 0).length;
+        this.headerNotifications = sorted.slice(0, 5).map((m: any) => ({
+          correoRecibidoId: m.correoRecibidoId,
+          asunto: m.asunto || this.translate.instant('HEADER.NOTIFICATIONS.NO_SUBJECT'),
+          remitente: m.remitente || '',
+          fechaCreate: m.fechaCreate || '',
+          leido: m.leido ?? 1,
+          previewText: this.getPreviewFromBody(m.body)
+        }));
+      },
+      error: () => {
+        this.unreadHeaderNotifications = 0;
+        this.headerNotifications = [];
+      }
+    });
+  }
+
+  canShowUserNotificationsBell(): boolean {
+    if (this.userId === 9) return false;
+    return this.profileId === 1 || this.profileId === 2 || this.profileId === 6 || this.profileId === 7 || (this.profileId > 2 && this.profileId < 6);
+  }
+
+  goToNotificationsCenter(): void {
+    this.router.navigate(['/dashboard/notificaciones-usuario', this.userId]);
+  }
+
+  openHeaderNotification(notification: { correoRecibidoId: number; leido: number }): void {
+    if (notification?.correoRecibidoId && notification.leido === 0) {
+      this.clubService.openCorreoRecibido(notification.correoRecibidoId).subscribe({
+        next: () => {
+          const idx = this.headerNotifications.findIndex(n => n.correoRecibidoId === notification.correoRecibidoId);
+          if (idx !== -1) this.headerNotifications[idx].leido = 1;
+          this.unreadHeaderNotifications = Math.max(0, this.unreadHeaderNotifications - 1);
+          this.goToNotificationsCenter();
+        },
+        error: () => this.goToNotificationsCenter()
+      });
+      return;
+    }
+    this.goToNotificationsCenter();
+  }
+
+  formatHeaderNotificationDate(fechaStr: string): string {
+    if (!fechaStr) return '';
+    const d = new Date(fechaStr);
+    if (isNaN(d.getTime())) return '';
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    return `${pad(d.getDate())}/${pad(d.getMonth() + 1)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+
+  formatNotificationCount(count: number): string {
+    if (!count || count <= 0) return '0';
+    return count > 99 ? '99+' : `${count}`;
+  }
+
+  getPreviewFromBody(body: string | undefined): string {
+    if (body == null || typeof body !== 'string') return '';
+    let text = body.trim();
+    if (!text) return '';
+    try {
+      if (/^[A-Za-z0-9+/]+=*$/.test(text.replace(/\s/g, '')) && !text.includes('<')) {
+        try {
+          text = decodeURIComponent(escape(atob(text)));
+        } catch (_) {
+          text = atob(text);
+        }
+      }
+    } catch (_) { /* no base64 */ }
+    if (typeof document !== 'undefined') {
+      const div = document.createElement('div');
+      div.innerHTML = text;
+      text = (div.textContent || div.innerText || '').trim();
+    } else {
+      text = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+    const max = 160;
+    return text.length <= max ? text : text.slice(0, max) + '…';
+  }
+
+  toggleNotificationPreview(id: number): void {
+    const isExpanding = this.expandedNotificationId !== id;
+    this.expandedNotificationId = isExpanding ? id : null;
+    this.loadingPreviewId = null;
+
+    if (isExpanding) {
+      const notification = this.headerNotifications.find(n => n.correoRecibidoId === id);
+      if (notification && !notification.previewText) {
+        this.loadingPreviewId = id;
+        this.cdr.markForCheck();
+        this.clubService.getCorreoRecibido(id).subscribe({
+          next: (response: Response) => {
+            const data = response?.data as { body?: string } | null;
+            const body = data?.body ?? (typeof response?.data === 'string' ? response.data : '');
+            const preview = this.getPreviewFromBody(body);
+            const idx = this.headerNotifications.findIndex(n => n.correoRecibidoId === id);
+            if (idx !== -1) {
+              const list = [...this.headerNotifications];
+              list[idx] = { ...list[idx], previewText: preview };
+              this.headerNotifications = list;
+            }
+            if (this.loadingPreviewId === id) this.loadingPreviewId = null;
+            this.cdr.markForCheck();
+          },
+          error: () => {
+            this.loadingPreviewId = null;
+            this.cdr.markForCheck();
+          }
+        });
+      }
+    }
+  }
+
+  isNotificationExpanded(id: number): boolean {
+    return this.expandedNotificationId === id;
   }
 
   goToSugerencias(): void {

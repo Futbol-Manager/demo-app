@@ -161,6 +161,17 @@
       "LABEL": "Credits",
       "TOOLTIP": "Available AI credits. Click to buy more."
     },
+    "NOTIFICATIONS": {
+      "TITLE": "Notifications",
+      "UNREAD": "unread",
+      "SEE_MORE": "See more",
+      "EMPTY": "No recent messages",
+      "NO_SUBJECT": "No subject",
+      "EXPAND": "Expand",
+      "COLLAPSE": "Collapse",
+      "LOADING": "Loading…",
+      "NO_PREVIEW": "No content to preview"
+    },
     "HELP": {
       "TITLE": "Help",
       "SUGGESTIONS": "Suggestions",
@@ -521,8 +532,25 @@
       "EMPTY": "No activities scheduled for this day.",
       "TRAINING": "Training",
       "MATCH": "Match",
+      "VS": "vs",
       "GO_TO_CALENDAR": "Go to team calendar",
       "VIEW_DETAIL": "View detail"
+    },
+    "MODAL": {
+      "DATE": "Date",
+      "LOCATION": "Location",
+      "RIVAL": "Rival",
+      "VENUE": "Venue",
+      "TIME": "Time",
+      "GO_TO_DETAIL": "View full detail",
+      "SCHEDULE": "Schedule",
+      "OBJECTIVE": "Objective",
+      "WARMUP": "Warm-up",
+      "MATCH_TYPE": "Match type",
+      "STADIUM": "Stadium / Venue",
+      "MEET_TIME": "Arrival time",
+      "TERRAIN_LOCAL": "Home",
+      "TERRAIN_AWAY": "Away"
     }
   },
   "INJURIES_CLUB": {

@@ -962,6 +962,20 @@ export class ClubService {
     }
   }
 
+  /** Obtiene un correo recibido por id (incluye body). No marca como leído. */
+  getCorreoRecibido(correoRecibidoId: number): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      });
+      const url: string =
+        environment.apiUrl + `club/get-correo-recibido/${correoRecibidoId}`;
+      return this.http.get<Response>(url, { headers });
+    }
+    return EMPTY;
+  }
+
   deleteCorreo(id: number, option: number): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');

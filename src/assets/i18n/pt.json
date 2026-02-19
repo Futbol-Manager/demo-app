@@ -181,6 +181,17 @@
     "SUBSCRIPTION": "Subscrição",
     "CLUB_SUBSCRIPTION": "Subscrição do Clube",
     "LOGOUT": "Sair",
+    "NOTIFICATIONS": {
+      "TITLE": "Notificações",
+      "UNREAD": "não lidas",
+      "SEE_MORE": "Ver mais",
+      "EMPTY": "Sem mensagens recentes",
+      "NO_SUBJECT": "Sem assunto",
+      "EXPAND": "Expandir",
+      "COLLAPSE": "Recolher",
+      "LOADING": "A carregar…",
+      "NO_PREVIEW": "Sem conteúdo para pré-visualizar"
+    },
     "HELP": {
       "TITLE": "Ajuda",
       "SUGGESTIONS": "Sugestões",
@@ -1128,8 +1139,25 @@
       "EMPTY": "Não há atividades programadas para este dia.",
       "TRAINING": "Treino",
       "MATCH": "Jogo",
+      "VS": "vs",
       "GO_TO_CALENDAR": "Ir ao calendário da equipa",
       "VIEW_DETAIL": "Ver detalhe"
+    },
+    "MODAL": {
+      "DATE": "Data",
+      "LOCATION": "Local",
+      "RIVAL": "Adversário",
+      "VENUE": "Local do jogo",
+      "TIME": "Hora",
+      "GO_TO_DETAIL": "Ver detalhe completo",
+      "SCHEDULE": "Horário",
+      "OBJECTIVE": "Objetivo",
+      "WARMUP": "Aquecimento",
+      "MATCH_TYPE": "Tipo de jogo",
+      "STADIUM": "Estádio / Local",
+      "MEET_TIME": "Hora de chegada",
+      "TERRAIN_LOCAL": "Casa",
+      "TERRAIN_AWAY": "Fora"
     }
   },
   "INJURIES_CLUB": {

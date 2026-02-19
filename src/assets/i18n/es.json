@@ -191,6 +191,17 @@
       "LABEL": "Créditos",
       "TOOLTIP": "Créditos IA disponibles. Clic para comprar más."
     },
+    "NOTIFICATIONS": {
+      "TITLE": "Notificaciones",
+      "UNREAD": "sin leer",
+      "SEE_MORE": "Ver más",
+      "EMPTY": "No tienes mensajes recientes",
+      "NO_SUBJECT": "Sin asunto",
+      "EXPAND": "Expandir",
+      "COLLAPSE": "Ver menos",
+      "LOADING": "Cargando…",
+      "NO_PREVIEW": "Sin contenido para previsualizar"
+    },
     "HELP": {
       "TITLE": "Ayuda",
       "SUGGESTIONS": "Sugerencias",
@@ -984,8 +995,25 @@
       "EMPTY": "No hay actividades programadas para este día.",
       "TRAINING": "Entrenamiento",
       "MATCH": "Partido",
+      "VS": "vs",
       "GO_TO_CALENDAR": "Ir al calendario del equipo",
       "VIEW_DETAIL": "Ver detalle"
+    },
+    "MODAL": {
+      "DATE": "Fecha",
+      "LOCATION": "Lugar",
+      "RIVAL": "Rival",
+      "VENUE": "Sede",
+      "TIME": "Hora",
+      "GO_TO_DETAIL": "Ver detalle completo",
+      "SCHEDULE": "Horario",
+      "OBJECTIVE": "Objetivo",
+      "WARMUP": "Calentamiento",
+      "MATCH_TYPE": "Tipo de partido",
+      "STADIUM": "Estadio / Lugar",
+      "MEET_TIME": "Hora de llegada",
+      "TERRAIN_LOCAL": "Local",
+      "TERRAIN_AWAY": "Visitante"
     }
   },
   "INJURIES_CLUB": {

@@ -36,9 +36,8 @@
         <div *ngIf="userId === 9" class="position-relative header-action-icon-container" style="cursor: pointer;" (click)="goToSugerencias()">
           <i class="bi bi-bell fs-5 header-action-icon"></i>
           <span *ngIf="unreadSugerencias > 0"
-            class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
-            style="font-size: 0.65rem;">
-            {{ unreadSugerencias }}
+            class="position-absolute top-0 start-100 translate-middle badge rounded-pill header-notification-badge">
+            {{ formatNotificationCount(unreadSugerencias) }}
           </span>
         </div>
 
@@ -171,6 +170,68 @@
             <a class="dropdown-item" (click)="openDownloadModal('ios')">
               <i class="bi bi-apple"></i>
               {{ 'HEADER.DOWNLOAD.APPSTORE' | translate }}
+            </a>
+          </div>
+        </div>
+
+        <!-- ===== NOTIFICACIONES USUARIO (Club / Coach / Player) ===== -->
+        <div class="dropdown" *ngIf="canShowUserNotificationsBell()">
+          <a class="nav-link dropdown-toggle header-action-icon-container position-relative"
+            data-bs-toggle="dropdown" role="button" aria-expanded="false"
+            [attr.aria-label]="'HEADER.NOTIFICATIONS.TITLE' | translate">
+            <i class="bi bi-bell fs-5 header-action-icon"></i>
+            <span *ngIf="unreadHeaderNotifications > 0"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill header-notification-badge">
+              {{ formatNotificationCount(unreadHeaderNotifications) }}
+            </span>
+          </a>
+
+          <div class="dropdown-menu dropdown-menu-end header-dropdown notifications-dropdown">
+            <div class="notifications-header">
+              <span>{{ 'HEADER.NOTIFICATIONS.TITLE' | translate }}</span>
+              <span *ngIf="unreadHeaderNotifications > 0" class="notifications-unread">
+                {{ formatNotificationCount(unreadHeaderNotifications) }} {{ 'HEADER.NOTIFICATIONS.UNREAD' | translate }}
+              </span>
+            </div>
+
+            <a class="dropdown-item notifications-empty" *ngIf="headerNotifications.length === 0">
+              <i class="bi bi-inbox"></i>
+              {{ 'HEADER.NOTIFICATIONS.EMPTY' | translate }}
+            </a>
+
+            <div class="notifications-list">
+              <div class="notification-row" *ngFor="let notification of headerNotifications">
+                <div class="notification-item-clickable" (click)="openHeaderNotification(notification)">
+                  <i class="bi" [ngClass]="notification.leido === 0 ? 'bi-envelope-fill' : 'bi-envelope-open'"></i>
+                  <div class="notification-content">
+                    <span class="notification-subject">{{ notification.asunto }}</span>
+                    <span class="notification-meta">
+                      {{ notification.remitente }} · {{ formatHeaderNotificationDate(notification.fechaCreate) }}
+                    </span>
+                    <button type="button" class="notification-expand-btn"
+                      (click)="toggleNotificationPreview(notification.correoRecibidoId); $event.stopPropagation()"
+                      [attr.aria-expanded]="isNotificationExpanded(notification.correoRecibidoId)">
+                      <i class="bi" [ngClass]="isNotificationExpanded(notification.correoRecibidoId) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+                      {{ (isNotificationExpanded(notification.correoRecibidoId) ? 'HEADER.NOTIFICATIONS.COLLAPSE' : 'HEADER.NOTIFICATIONS.EXPAND') | translate }}
+                    </button>
+                  </div>
+                </div>
+                <div class="notification-preview" *ngIf="isNotificationExpanded(notification.correoRecibidoId)"
+                  (click)="$event.stopPropagation()">
+                  <span *ngIf="loadingPreviewId === notification.correoRecibidoId" class="notification-preview-loading">
+                    <i class="bi bi-arrow-repeat"></i> {{ 'HEADER.NOTIFICATIONS.LOADING' | translate }}
+                  </span>
+                  <span *ngIf="loadingPreviewId !== notification.correoRecibidoId && notification.previewText">{{ notification.previewText }}</span>
+                  <span *ngIf="loadingPreviewId !== notification.correoRecibidoId && !notification.previewText" class="notification-preview-empty">{{ 'HEADER.NOTIFICATIONS.NO_PREVIEW' | translate }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <a class="dropdown-item notifications-see-more" (click)="goToNotificationsCenter()">
+              <i class="bi bi-arrow-right-circle"></i>
+              {{ 'HEADER.NOTIFICATIONS.SEE_MORE' | translate }}
             </a>
           </div>
         </div>

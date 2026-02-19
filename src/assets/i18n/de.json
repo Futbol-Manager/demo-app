@@ -207,6 +207,21 @@
       "PLAYSTORE": "Play Store",
       "APPSTORE": "App Store"
     },
+    "CREDITS": {
+      "LABEL": "Credits",
+      "TOOLTIP": "Verfügbare KI-Credits. Klicken Sie, um mehr zu kaufen."
+    },
+    "NOTIFICATIONS": {
+      "TITLE": "Benachrichtigungen",
+      "UNREAD": "ungelesen",
+      "SEE_MORE": "Mehr anzeigen",
+      "EMPTY": "Keine aktuellen Nachrichten",
+      "NO_SUBJECT": "Ohne Betreff",
+      "EXPAND": "Erweitern",
+      "COLLAPSE": "Einklappen",
+      "LOADING": "Wird geladen…",
+      "NO_PREVIEW": "Kein Inhalt zur Vorschau"
+    },
     "DARK_MODE": "Dunkelmodus",
     "LIGHT_MODE": "Hellmodus",
     "COMING_SOON": "Demnächst"
@@ -1101,8 +1116,25 @@
       "EMPTY": "Keine Aktivitäten für diesen Tag geplant.",
       "TRAINING": "Training",
       "MATCH": "Spiel",
+      "VS": "gegen",
       "GO_TO_CALENDAR": "Zum Teamkalender gehen",
       "VIEW_DETAIL": "Detail ansehen"
+    },
+    "MODAL": {
+      "DATE": "Datum",
+      "LOCATION": "Ort",
+      "RIVAL": "Gegner",
+      "VENUE": "Spielort",
+      "TIME": "Uhrzeit",
+      "GO_TO_DETAIL": "Vollständige Details ansehen",
+      "SCHEDULE": "Zeitplan",
+      "OBJECTIVE": "Ziel",
+      "WARMUP": "Aufwärmen",
+      "MATCH_TYPE": "Spieltyp",
+      "STADIUM": "Stadion / Ort",
+      "MEET_TIME": "Ankunftszeit",
+      "TERRAIN_LOCAL": "Heim",
+      "TERRAIN_AWAY": "Auswärts"
     }
   },
   "INJURIES_CLUB": {
@@ -2468,8 +2500,7 @@
   "DOCUMENTS_CLUB": {
     "TAB_PLAYERS": "Spieler",
     "TAB_COACHES": "Trainer"
-  }
-}
+  },
   "SCOUTING_CLUB": {
     "TITLE": "Club-Scouting",
     "TABS": { "SEARCH": "Spieler suchen", "WATCHLIST": "Meine Liste", "PIPELINE": "Pipeline" },

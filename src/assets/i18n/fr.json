@@ -166,6 +166,17 @@
     "SUBSCRIPTION": "Abonnement",
     "CLUB_SUBSCRIPTION": "Abonnement du club",
     "LOGOUT": "Déconnexion",
+    "NOTIFICATIONS": {
+      "TITLE": "Notifications",
+      "UNREAD": "non lus",
+      "SEE_MORE": "Voir plus",
+      "EMPTY": "Aucun message récent",
+      "NO_SUBJECT": "Sans objet",
+      "EXPAND": "Développer",
+      "COLLAPSE": "Réduire",
+      "LOADING": "Chargement…",
+      "NO_PREVIEW": "Aucun contenu à prévisualiser"
+    },
     "HELP": {
       "TITLE": "Aide",
       "SUGGESTIONS": "Suggestions",
@@ -994,8 +1005,25 @@
       "EMPTY": "Aucune activité prévue pour ce jour.",
       "TRAINING": "Entraînement",
       "MATCH": "Match",
+      "VS": "vs",
       "GO_TO_CALENDAR": "Aller au calendrier de l'équipe",
       "VIEW_DETAIL": "Voir le détail"
+    },
+    "MODAL": {
+      "DATE": "Date",
+      "LOCATION": "Lieu",
+      "RIVAL": "Adversaire",
+      "VENUE": "Lieu de match",
+      "TIME": "Heure",
+      "GO_TO_DETAIL": "Voir le détail complet",
+      "SCHEDULE": "Horaire",
+      "OBJECTIVE": "Objectif",
+      "WARMUP": "Échauffement",
+      "MATCH_TYPE": "Type de match",
+      "STADIUM": "Stade / Lieu",
+      "MEET_TIME": "Heure d'arrivée",
+      "TERRAIN_LOCAL": "Domicile",
+      "TERRAIN_AWAY": "Extérieur"
     }
   },
   "INJURIES_CLUB": {
