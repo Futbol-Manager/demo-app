@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { VideoStorageService } from 'src/app/core/services/video-storage/video-storage.service';
+import { DriveService } from 'src/app/core/services/drive/drive.service';
 
 @Component({
   selector: 'app-club-video-library',
@@ -45,10 +46,17 @@ export class ClubVideoLibraryComponent implements OnInit {
 
   folderColors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#06b6d4','#f97316'];
 
+  // ── Google Drive ──────────────────────────────────────
+  driveImporting = false;
+  driveImportProgress = '';
+  driveExporting = false;
+  driveExportingVideoId: number | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private videoService: VideoStorageService
+    private videoService: VideoStorageService,
+    private driveService: DriveService
   ) {}
 
   ngOnInit(): void {
@@ -267,6 +275,93 @@ export class ClubVideoLibraryComponent implements OnInit {
     if (bytes >= 1e9)  return (bytes / 1e9).toFixed(1) + ' GB';
     if (bytes >= 1e6)  return (bytes / 1e6).toFixed(1) + ' MB';
     return bytes + ' B';
+  }
+
+  // ── Google Drive import ─────────────────────────────────
+  async importFromDrive(): Promise<void> {
+    try {
+      this.driveImportProgress = 'Conectando con Google Drive…';
+      this.driveImporting = true;
+
+      const accessToken = await this.driveService.getImportToken();
+      this.driveImportProgress = 'Selecciona un vídeo…';
+
+      const file = await this.driveService.openFilePicker(accessToken);
+      this.driveImportProgress = `Importando "${file.name}" (${this.formatSize(file.sizeBytes)})…`;
+
+      const userId = Number(localStorage.getItem('userId')) || 0;
+      this.videoService.importFromDrive(this.clubId, file.id, accessToken, {
+        title: file.name,
+        uploadedBy: userId,
+        folderId: typeof this.activeFolderId === 'number' ? this.activeFolderId : undefined
+      }).subscribe({
+        next: (res) => {
+          if (res?.data) {
+            this.videos.unshift(res.data);
+            this.applyFilter();
+            this.loadPlan();
+          }
+          this.driveImporting = false;
+          this.driveImportProgress = '';
+        },
+        error: (err) => {
+          console.error('Error importando desde Drive:', err);
+          this.driveImportProgress = 'Error al importar el vídeo.';
+          setTimeout(() => { this.driveImporting = false; this.driveImportProgress = ''; }, 3000);
+        }
+      });
+    } catch (e) {
+      if (e === 'cancelled') {
+        this.driveImporting = false;
+        this.driveImportProgress = '';
+        return;
+      }
+      console.error('Error en flujo Drive:', e);
+      this.driveImportProgress = 'Error al conectar con Google Drive.';
+      setTimeout(() => { this.driveImporting = false; this.driveImportProgress = ''; }, 3000);
+    }
+  }
+
+  // ── Google Drive export ─────────────────────────────────
+  async exportToDrive(video: any): Promise<void> {
+    try {
+      this.driveExporting = true;
+      this.driveExportingVideoId = video.id;
+
+      let videoUrl = video.videoUrl;
+      if (!videoUrl) {
+        const urlRes: any = await this.videoService.getVideoUrl(this.clubId, video.id).toPromise();
+        videoUrl = urlRes?.data?.url;
+      }
+      if (!videoUrl) {
+        alert('No se pudo obtener la URL del vídeo.');
+        this.driveExporting = false;
+        this.driveExportingVideoId = null;
+        return;
+      }
+
+      const accessToken = await this.driveService.getExportToken();
+
+      const response = await fetch(videoUrl);
+      const blob = await response.blob();
+
+      const filename = (video.title || 'video') + (video.contentType === 'video/mp4' ? '.mp4' : '');
+      await this.driveService.uploadToDrive(accessToken, blob, filename, video.contentType || 'video/mp4');
+
+      alert('Vídeo exportado a Google Drive correctamente.');
+      this.driveExporting = false;
+      this.driveExportingVideoId = null;
+    } catch (e) {
+      if (e === 'cancelled') {
+        this.driveExporting = false;
+        this.driveExportingVideoId = null;
+        return;
+      }
+      console.error('Error exportando a Drive:', e);
+      alert('Error al exportar el vídeo a Google Drive.');
+      this.driveExporting = false;
+      this.driveExportingVideoId = null;
+    }
   }
 
   goBack(): void { this.router.navigate(['/dashboard']); }

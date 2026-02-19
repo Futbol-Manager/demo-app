@@ -309,7 +309,7 @@
           <div class="message-content">
             <strong *ngIf="message.role === 'assistant'">🤖 IA:</strong>
             <strong *ngIf="message.role === 'user'">{{ 'AI_PANEL.USER_LABEL' | translate }}</strong>
-            <p [innerHTML]="message.content"></p>
+            <div [innerHTML]="message.content | markdownAi"></div>
           </div>
         </div>
         
@@ -345,7 +345,7 @@
             {{ 'AI_PANEL.SEND' | translate }}
           </button>
         </div>
-        <small class="ai-hint">{{ 'AI_PANEL.HINT_CTRL_ENTER' | translate }}</small>
+        <small class="ai-hint">Shift+Enter para nueva línea · Enter para enviar</small>
       </div>
     </div>
   </div>

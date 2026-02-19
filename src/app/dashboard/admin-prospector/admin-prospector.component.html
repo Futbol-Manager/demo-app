@@ -1,0 +1,796 @@
+<!-- Back button -->
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i> Volver
+  </button>
+</div>
+
+<div class="container mt-4">
+
+  <!-- ── Header ── -->
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h4 class="fw-bold mb-0"><i class="bi bi-bullseye me-2 text-success"></i>Prospección de Clubes</h4>
+      <div class="text-muted small mt-1" *ngIf="selectedCampaign">
+        Campaña activa: <strong>{{ selectedCampaign.name }}</strong>
+        <button class="btn btn-link btn-sm p-0 ms-2" (click)="selectedCampaign = null; selectTab('campaigns')">cambiar</button>
+      </div>
+    </div>
+    <button class="btn btn-sm btn-refresh" (click)="loadCampaigns(); loadCampaignStats()">
+      <i class="bi bi-arrow-clockwise"></i> Actualizar
+    </button>
+  </div>
+
+  <!-- ── KPI Cards ── -->
+  <div *ngIf="campaignStats && selectedCampaign" class="row g-3 mb-4">
+    <div class="col-6 col-md-3">
+      <div class="kpi-card kpi-clubs">
+        <div class="kpi-icon"><i class="bi bi-building"></i></div>
+        <div class="kpi-value">{{ campaignStats.total || 0 }}</div>
+        <div class="kpi-label">Clubes descubiertos</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="kpi-card kpi-teams">
+        <div class="kpi-icon"><i class="bi bi-envelope-check"></i></div>
+        <div class="kpi-value">{{ campaignStats.with_email || 0 }}</div>
+        <div class="kpi-label">Con email de contacto</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="kpi-card kpi-coaches">
+        <div class="kpi-icon"><i class="bi bi-fire"></i></div>
+        <div class="kpi-value">{{ campaignStats.avg_pain_score || 0 }}</div>
+        <div class="kpi-label">Pain score medio / 10</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <div class="kpi-card kpi-subs">
+        <div class="kpi-icon"><i class="bi bi-send-check"></i></div>
+        <div class="kpi-value">{{ campaignStats.total_emails || 0 }}</div>
+        <div class="kpi-label">Emails generados</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tabs ── -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'campaigns'" (click)="selectTab('campaigns')">
+        <i class="bi bi-collection me-1"></i>Campañas
+      </a>
+    </li>
+    <li class="nav-item" *ngIf="selectedCampaign">
+      <a class="nav-link" [class.active]="activeTab === 'pipeline'" (click)="selectTab('pipeline')">
+        <i class="bi bi-diagram-3 me-1"></i>Pipeline
+        <span *ngIf="isJobRunning" class="ms-1 pulse-dot"></span>
+      </a>
+    </li>
+    <li class="nav-item" *ngIf="selectedCampaign">
+      <a class="nav-link" [class.active]="activeTab === 'prospects'" (click)="selectTab('prospects')">
+        <i class="bi bi-people me-1"></i>Clubes
+        <span *ngIf="campaignStats?.total" class="badge ms-1 bg-light text-dark small">{{ campaignStats.total }}</span>
+      </a>
+    </li>
+    <li class="nav-item" *ngIf="selectedCampaign">
+      <a class="nav-link" [class.active]="activeTab === 'emails'" (click)="selectTab('emails')">
+        <i class="bi bi-envelope me-1"></i>Emails
+        <span *ngIf="campaignStats?.total_emails" class="badge ms-1 bg-light text-dark small">{{ campaignStats.total_emails }}</span>
+      </a>
+    </li>
+  </ul>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB: CAMPAÑAS
+  ═══════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab === 'campaigns'">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold mb-0">Campañas de prospección</h5>
+        <p class="text-muted small mb-0">Cada campaña es un ciclo de descubrimiento → enriquecimiento → análisis → email.</p>
+      </div>
+      <button class="btn btn-sm btn-refresh" (click)="openNewCampaignModal()">
+        <i class="bi bi-plus-lg"></i> Nueva campaña
+      </button>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+    </div>
+
+    <div *ngIf="!isLoading && campaigns.length === 0" class="empty-state">
+      <i class="bi bi-bullseye"></i>
+      <p class="mt-2 fw-semibold">Sin campañas todavía</p>
+      <p class="small text-muted">Crea tu primera campaña y empieza a encontrar clubes potenciales.</p>
+      <button class="btn btn-refresh btn-sm" (click)="openNewCampaignModal()"><i class="bi bi-plus-lg"></i> Crear campaña</button>
+    </div>
+
+    <div class="table-responsive" *ngIf="campaigns.length > 0">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Clubes</th>
+            <th>Emails A/B</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of campaigns" [class.row-selected]="selectedCampaign?.campaign_id === c.campaign_id">
+            <td>
+              <div class="fw-semibold">{{ c.name }}</div>
+              <div class="text-muted small" *ngIf="c.description">{{ c.description }}</div>
+            </td>
+            <td><span class="badge rounded-pill badge-count">{{ c.total_prospects || 0 }}</span></td>
+            <td class="small">
+              <span class="badge bg-primary me-1">A: {{ c.group_a_count || 0 }}</span>
+              <span class="badge bg-info">B: {{ c.group_b_count || 0 }}</span>
+            </td>
+            <td>
+              <span class="badge" [ngClass]="campaignStatusClass(c)">{{ campaignStatusLabel(c) }}</span>
+            </td>
+            <td class="small text-muted">{{ c.date_created | date:'dd/MM/yy' }}</td>
+            <td>
+              <button class="btn btn-sm btn-refresh" (click)="selectCampaign(c)">
+                <i class="bi bi-play-circle"></i> Abrir
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB: PIPELINE
+  ═══════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab === 'pipeline' && selectedCampaign">
+
+    <!-- Job progress bar (when running) -->
+    <div *ngIf="isJobRunning" class="job-progress-banner mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span><i class="bi bi-hourglass-split me-2 spin-icon"></i>
+          <strong>{{ statusLabel(currentJob.step) }} en progreso...</strong>
+        </span>
+        <span class="small">{{ currentJob.processed || 0 }} / {{ currentJob.total_items || '?' }} clubes</span>
+      </div>
+      <div class="progress" style="height:10px; border-radius:8px;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+             [style.width.%]="currentJob.progress || 0">
+        </div>
+      </div>
+      <div class="text-end small mt-1 text-muted">{{ currentJob.progress || 0 }}% completado</div>
+    </div>
+
+    <!-- 4 step cards (always visible) -->
+    <div class="pipeline-grid">
+
+      <!-- ── Step 1: Descubrir ── -->
+      <div class="pipeline-card" [ngClass]="'step-' + pipelineStepStates['discover']">
+        <div class="pipeline-card-header">
+          <div class="step-badge">1</div>
+          <div class="step-info">
+            <div class="step-title"><i class="bi bi-search me-2"></i>Descubrir clubes</div>
+            <div class="step-subtitle">Scrapea federaciones y directorios online</div>
+          </div>
+          <div class="step-state-badge">
+            <span *ngIf="pipelineStepStates['discover'] === 'done'" class="badge badge-done"><i class="bi bi-check2"></i> {{ stepDoneCount('discover') }} clubes</span>
+            <span *ngIf="pipelineStepStates['discover'] === 'running'" class="badge badge-running"><i class="bi bi-hourglass-split"></i> En progreso</span>
+            <span *ngIf="pipelineStepStates['discover'] === 'pending'" class="badge badge-pending">Pendiente</span>
+          </div>
+        </div>
+        <div class="pipeline-card-body">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Provincias a buscar <span class="text-muted fw-normal">(separadas por coma, vacío = todas)</span></label>
+            <input type="text" class="form-control form-control-sm" [(ngModel)]="pipelineProvinces"
+                   placeholder="Ej: Asturias, Madrid, Barcelona">
+          </div>
+          <div class="d-flex gap-2 align-items-center">
+            <button class="btn btn-refresh btn-sm" (click)="runDiscover()" [disabled]="isJobRunning">
+              <i class="bi bi-search"></i>
+              {{ pipelineStepStates['discover'] === 'done' ? 'Redescubrir' : 'Descubrir' }}
+            </button>
+            <span *ngIf="pipelineStepStates['discover'] === 'done'" class="text-muted small">
+              <i class="bi bi-info-circle me-1"></i>Ya tienes {{ stepDoneCount('discover') }} clubes. Puedes redescubrir si quieres más.
+            </span>
+          </div>
+          <div *ngIf="stepResults['discover']?.status === 'FAILED'" class="alert alert-danger mt-2 mb-0 small">
+            <i class="bi bi-exclamation-triangle me-1"></i>{{ stepResults['discover'].error_msg }}
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Step 2: Enriquecer ── -->
+      <div class="pipeline-card" [ngClass]="'step-' + pipelineStepStates['enrich']">
+        <div class="pipeline-card-header">
+          <div class="step-badge">2</div>
+          <div class="step-info">
+            <div class="step-title"><i class="bi bi-database me-2"></i>Enriquecer datos</div>
+            <div class="step-subtitle">Webs, RRSS, emails y nivel de digitalización</div>
+          </div>
+          <div class="step-state-badge">
+            <span *ngIf="pipelineStepStates['enrich'] === 'done'" class="badge badge-done"><i class="bi bi-check2"></i> {{ stepDoneCount('enrich') }} enriquecidos</span>
+            <span *ngIf="pipelineStepStates['enrich'] === 'partial'" class="badge badge-partial"><i class="bi bi-arrow-repeat"></i> {{ stepPendingCount('enrich') }} pendientes</span>
+            <span *ngIf="pipelineStepStates['enrich'] === 'running'" class="badge badge-running"><i class="bi bi-hourglass-split"></i> En progreso</span>
+            <span *ngIf="pipelineStepStates['enrich'] === 'pending'" class="badge badge-pending">Esperando paso 1</span>
+          </div>
+        </div>
+        <div class="pipeline-card-body">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Máx. clubes a enriquecer ahora</label>
+            <input type="number" class="form-control form-control-sm" [(ngModel)]="pipelineMaxEnrich" min="1" max="500"
+                   style="max-width:120px;">
+          </div>
+          <div class="d-flex gap-2 align-items-center flex-wrap">
+            <button class="btn btn-refresh btn-sm" (click)="runEnrich()"
+                    [disabled]="isJobRunning || !canRunStep('enrich')">
+              <i class="bi bi-database"></i> Enriquecer
+            </button>
+            <span *ngIf="stepPendingCount('enrich') > 0" class="text-muted small">
+              {{ stepPendingCount('enrich') }} clubes sin enriquecer en esta campaña
+            </span>
+          </div>
+          <div *ngIf="stepResults['enrich']?.status === 'FAILED'" class="alert alert-danger mt-2 mb-0 small">
+            <i class="bi bi-exclamation-triangle me-1"></i>{{ stepResults['enrich'].error_msg }}
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Step 3: Analizar ── -->
+      <div class="pipeline-card" [ngClass]="'step-' + pipelineStepStates['analyze']">
+        <div class="pipeline-card-header">
+          <div class="step-badge">3</div>
+          <div class="step-info">
+            <div class="step-title"><i class="bi bi-robot me-2"></i>Analizar con IA</div>
+            <div class="step-subtitle">GPT detecta pain points y asigna un score 1–10</div>
+          </div>
+          <div class="step-state-badge">
+            <span *ngIf="pipelineStepStates['analyze'] === 'done'" class="badge badge-done"><i class="bi bi-check2"></i> {{ stepDoneCount('analyze') }} analizados</span>
+            <span *ngIf="pipelineStepStates['analyze'] === 'partial'" class="badge badge-partial"><i class="bi bi-arrow-repeat"></i> {{ stepPendingCount('analyze') }} pendientes</span>
+            <span *ngIf="pipelineStepStates['analyze'] === 'running'" class="badge badge-running"><i class="bi bi-hourglass-split"></i> En progreso</span>
+            <span *ngIf="pipelineStepStates['analyze'] === 'pending'" class="badge badge-pending">Esperando paso 2</span>
+          </div>
+        </div>
+        <div class="pipeline-card-body">
+          <p class="small text-muted mb-3">
+            La IA analiza la web, RRSS y datos del club para detectar qué problemas tiene
+            y cómo Sphaira puede ayudarle. Usa créditos de OpenAI.
+          </p>
+          <div class="d-flex gap-2 align-items-center">
+            <button class="btn btn-refresh btn-sm" (click)="runAnalyze()"
+                    [disabled]="isJobRunning || !canRunStep('analyze')">
+              <i class="bi bi-robot"></i> Analizar con IA
+            </button>
+            <span *ngIf="stepPendingCount('analyze') > 0" class="text-muted small">
+              {{ stepPendingCount('analyze') }} clubes listos para analizar
+            </span>
+          </div>
+          <div *ngIf="stepResults['analyze']?.status === 'FAILED'" class="alert alert-danger mt-2 mb-0 small">
+            <i class="bi bi-exclamation-triangle me-1"></i>{{ stepResults['analyze'].error_msg }}
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Step 4: Generar emails ── -->
+      <div class="pipeline-card" [ngClass]="'step-' + pipelineStepStates['generate']">
+        <div class="pipeline-card-header">
+          <div class="step-badge">4</div>
+          <div class="step-info">
+            <div class="step-title"><i class="bi bi-envelope-paper me-2"></i>Generar emails A/B</div>
+            <div class="step-subtitle">Personalizado (A) vs. orientado a pains (B)</div>
+          </div>
+          <div class="step-state-badge">
+            <span *ngIf="pipelineStepStates['generate'] === 'done'" class="badge badge-done"><i class="bi bi-check2"></i> {{ stepDoneCount('generate') }} emails</span>
+            <span *ngIf="pipelineStepStates['generate'] === 'partial'" class="badge badge-partial"><i class="bi bi-arrow-repeat"></i> {{ stepPendingCount('generate') }} pendientes</span>
+            <span *ngIf="pipelineStepStates['generate'] === 'running'" class="badge badge-running"><i class="bi bi-hourglass-split"></i> En progreso</span>
+            <span *ngIf="pipelineStepStates['generate'] === 'pending'" class="badge badge-pending">Esperando paso 3</span>
+          </div>
+        </div>
+        <div class="pipeline-card-body">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">
+              % grupo A (personalizado)
+              <span class="text-muted fw-normal">— el resto irá al grupo B</span>
+            </label>
+            <div class="d-flex align-items-center gap-2">
+              <input type="range" class="form-range" [(ngModel)]="pipelineAbRatio" min="0" max="1" step="0.1"
+                     style="max-width:140px;">
+              <span class="badge bg-primary">A: {{ (pipelineAbRatio * 100) | number:'1.0-0' }}%</span>
+              <span class="badge bg-info">B: {{ ((1 - pipelineAbRatio) * 100) | number:'1.0-0' }}%</span>
+            </div>
+          </div>
+          <div class="d-flex gap-2 align-items-center flex-wrap">
+            <button class="btn btn-refresh btn-sm" (click)="runGenerate()"
+                    [disabled]="isJobRunning || !canRunStep('generate')">
+              <i class="bi bi-envelope-paper"></i> Generar emails
+            </button>
+            <button *ngIf="pipelineStepStates['generate'] === 'done'" class="btn btn-sm btn-outline-primary"
+                    (click)="selectTab('emails')">
+              <i class="bi bi-eye"></i> Ver emails generados
+            </button>
+          </div>
+          <div *ngIf="stepResults['generate']?.status === 'FAILED'" class="alert alert-danger mt-2 mb-0 small">
+            <i class="bi bi-exclamation-triangle me-1"></i>{{ stepResults['generate'].error_msg }}
+          </div>
+          <div *ngIf="stepResults['generate']?.status === 'COMPLETED'" class="alert alert-success mt-2 mb-0 small">
+            <i class="bi bi-check-circle me-1"></i>{{ stepResults['generate'].processed }} emails generados correctamente.
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /pipeline-grid -->
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB: CLUBES (PROSPECTS)
+  ═══════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab === 'prospects' && selectedCampaign">
+
+    <!-- Filters -->
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body py-2">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-5">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control" placeholder="Buscar por nombre, ciudad o email..."
+                     [(ngModel)]="prospectSearch">
+            </div>
+          </div>
+          <div class="col-md-4">
+            <select class="form-select form-select-sm" [(ngModel)]="prospectFilterStatus" (change)="filterProspects()">
+              <option value="">Todos los estados</option>
+              <option value="NEW">Nuevos (sin enriquecer)</option>
+              <option value="ENRICHED">Enriquecidos</option>
+              <option value="ANALYZED">Analizados</option>
+              <option value="EMAIL_READY">Email listo</option>
+              <option value="EMAIL_SENT">Email enviado</option>
+            </select>
+          </div>
+          <div class="col-md-3 d-flex justify-content-end align-items-center gap-2">
+            <span class="text-muted small">{{ prospectsTotal }} clubes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+    </div>
+
+    <div class="table-responsive" *ngIf="!isLoading">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Club</th>
+            <th>Provincia</th>
+            <th>Email</th>
+            <th>Digitalización</th>
+            <th>Pain</th>
+            <th>Grupo</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of filteredProspects">
+            <td>
+              <div class="club-name" (click)="openProspectDetail(p)">{{ p.name }}</div>
+              <div class="small text-muted">{{ p.city }}</div>
+            </td>
+            <td class="small">{{ p.province }}</td>
+            <td class="small text-truncate" style="max-width:160px;">
+              <a *ngIf="p.email" href="mailto:{{ p.email }}" class="text-muted">{{ p.email }}</a>
+              <span *ngIf="!p.email" class="text-muted">—</span>
+            </td>
+            <td>
+              <span class="badge digit-badge" [ngClass]="digitalizationLevel(p).cssClass">
+                {{ digitalizationLevel(p).label }}
+              </span>
+            </td>
+            <td>
+              <div class="pain-score-bar">
+                <span class="pain-score-num fw-bold" [style.color]="painScoreColor(p.pain_score)">
+                  {{ p.pain_score || 0 }}
+                </span>
+                <div class="pain-bar-track">
+                  <div class="pain-bar-fill" [style.width.%]="(p.pain_score || 0) * 10"
+                       [style.background]="painScoreColor(p.pain_score)"></div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <span *ngIf="p.ab_group" class="badge" [ngClass]="p.ab_group === 'A' ? 'bg-primary' : 'bg-info'">
+                {{ p.ab_group }}
+              </span>
+              <span *ngIf="!p.ab_group" class="text-muted small">—</span>
+            </td>
+            <td><span class="badge" [ngClass]="statusBadgeClass(p.status)">{{ statusLabel(p.status) }}</span></td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary" (click)="openProspectDetail(p)" title="Ver detalle">
+                <i class="bi bi-eye"></i>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredProspects.length === 0">
+            <td colspan="8" class="text-center text-muted py-4">
+              <i class="bi bi-inbox me-2"></i>No hay clubes con ese filtro
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="totalPages > 1">
+      <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="prospectsPage === 0">
+        <i class="bi bi-chevron-left"></i> Anterior
+      </button>
+      <span class="small text-muted">Página {{ prospectsPage + 1 }} de {{ totalPages }}</span>
+      <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="prospectsPage + 1 >= totalPages">
+        Siguiente <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB: EMAILS
+  ═══════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab === 'emails' && selectedCampaign">
+
+    <!-- Stats row -->
+    <div *ngIf="campaignStats" class="email-stats-bar mb-3">
+      <div class="email-stat">
+        <i class="bi bi-envelope text-primary"></i>
+        <strong>{{ campaignStats.total_emails || 0 }}</strong>
+        <span>generados</span>
+      </div>
+      <div class="email-stat-sep">|</div>
+      <div class="email-stat">
+        <i class="bi bi-send-check text-success"></i>
+        <strong>{{ campaignStats.sent || 0 }}</strong>
+        <span>enviados</span>
+      </div>
+      <div class="email-stat-sep">|</div>
+      <div class="email-stat">
+        <i class="bi bi-clock text-warning"></i>
+        <strong>{{ campaignStats.draft || 0 }}</strong>
+        <span>pendientes</span>
+      </div>
+      <div class="email-stat-sep">|</div>
+      <div class="email-stat">
+        <i class="bi bi-people text-primary"></i>
+        <strong>{{ campaignStats.group_a || 0 }}A / {{ campaignStats.group_b || 0 }}B</strong>
+        <span>grupos</span>
+      </div>
+    </div>
+
+    <!-- Filter + send -->
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body py-2">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-4">
+            <select class="form-select form-select-sm" [(ngModel)]="emailFilterVariant" (change)="filterEmails()">
+              <option value="">Todos los grupos</option>
+              <option value="A">Grupo A — personalizado</option>
+              <option value="B">Grupo B — genérico</option>
+            </select>
+          </div>
+          <div class="col-md-8 text-end">
+            <button class="btn btn-sm btn-refresh" (click)="openSendConfirm()" [disabled]="emails.length === 0">
+              <i class="bi bi-send"></i> Enviar emails
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+    </div>
+
+    <div class="table-responsive" *ngIf="!isLoading">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Club</th>
+            <th>Email destino</th>
+            <th>Asunto</th>
+            <th>Grupo</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of emails">
+            <td class="fw-semibold">{{ e.club_name }}</td>
+            <td class="small text-muted">{{ e.club_email || '—' }}</td>
+            <td class="small text-truncate" style="max-width:240px;" [title]="e.subject">{{ e.subject }}</td>
+            <td>
+              <span class="badge" [ngClass]="e.ab_variant === 'A' ? 'bg-primary' : 'bg-info'">
+                {{ e.ab_variant === 'A' ? 'A · Personalizado' : 'B · Genérico' }}
+              </span>
+            </td>
+            <td><span class="badge" [ngClass]="statusBadgeClass(e.status)">{{ statusLabel(e.status) }}</span></td>
+            <td>
+              <div class="d-flex gap-1">
+                <button class="btn btn-xs btn-outline-secondary" (click)="openEmailPreview(e)" title="Vista previa">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-xs btn-outline-primary" (click)="openEditEmail(e)" title="Editar email"
+                        [disabled]="e.status === 'SENT'">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="emails.length === 0">
+            <td colspan="6" class="text-center text-muted py-4">
+              <i class="bi bi-envelope-x me-2"></i>No hay emails generados todavía
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<!-- Footer -->
+<footer class="admin-footer">
+  <div class="container text-center">
+    <div class="footer-logo"><i class="bi bi-bullseye"></i></div>
+    <div class="footer-brand">Sphaira Prospector</div>
+    <div class="footer-text">Pipeline de prospección comercial</div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════
+     MODALS
+═══════════════════════════════════════════════════ -->
+
+<!-- Nueva campaña -->
+<div class="modal" [ngClass]="{'d-block': showNewCampaignModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Nueva campaña</h5>
+        <button type="button" class="btn-close" (click)="showNewCampaignModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Nombre</label>
+          <input type="text" class="form-control" [(ngModel)]="newCampaignName"
+                 placeholder="Ej: Prospección Madrid Q2 2026">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Descripción <span class="text-muted fw-normal">(opcional)</span></label>
+          <textarea class="form-control" [(ngModel)]="newCampaignDesc" rows="2"
+                    placeholder="Ej: Clubes de División de Honor en Madrid y Castilla"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showNewCampaignModal = false">Cancelar</button>
+        <button class="btn btn-refresh" (click)="createCampaign()" [disabled]="!newCampaignName.trim()">
+          <i class="bi bi-check-lg"></i> Crear campaña
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Continuar con siguiente paso -->
+<div class="modal" [ngClass]="{'d-block': showContinueModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header modal-header-success">
+        <h5 class="modal-title"><i class="bi bi-check-circle me-2"></i>Paso completado</h5>
+        <button type="button" class="btn-close" (click)="showContinueModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <p>{{ continueMessage }}</p>
+        <p class="text-muted small mb-0">Puedes continuar ahora o hacerlo más tarde desde el panel del pipeline.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" (click)="showContinueModal = false">Ahora no</button>
+        <button class="btn btn-refresh" (click)="confirmContinue()">
+          <i class="bi bi-play-circle"></i> {{ continueStepLabel }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Detalle de prospect -->
+<div class="modal" [ngClass]="{'d-block': showProspectModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content" *ngIf="selectedProspect">
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title mb-0"><i class="bi bi-building me-2"></i>{{ selectedProspect.name }}</h5>
+          <div class="small opacity-75">{{ selectedProspect.city }}, {{ selectedProspect.province }}</div>
+        </div>
+        <button type="button" class="btn-close" (click)="showProspectModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-4">
+          <!-- Datos -->
+          <div class="col-md-5">
+            <h6 class="fw-bold mb-2">Datos de contacto</h6>
+            <div class="detail-row"><i class="bi bi-envelope"></i><span>{{ selectedProspect.email || '—' }}</span></div>
+            <div class="detail-row"><i class="bi bi-telephone"></i><span>{{ selectedProspect.phone || '—' }}</span></div>
+            <div class="detail-row">
+              <i class="bi bi-globe"></i>
+              <a *ngIf="selectedProspect.website" [href]="selectedProspect.website" target="_blank" class="small text-truncate">{{ selectedProspect.website }}</a>
+              <span *ngIf="!selectedProspect.website" class="text-muted">—</span>
+            </div>
+            <h6 class="fw-bold mt-3 mb-2">Redes sociales</h6>
+            <div class="detail-row">
+              <i class="bi bi-instagram"></i>
+              <span [class.text-muted]="!selectedProspect.instagram">{{ selectedProspect.instagram || 'No encontrado' }}</span>
+            </div>
+            <div class="detail-row">
+              <i class="bi bi-twitter-x"></i>
+              <span [class.text-muted]="!selectedProspect.twitter">{{ selectedProspect.twitter || 'No encontrado' }}</span>
+            </div>
+            <div class="detail-row">
+              <i class="bi bi-facebook"></i>
+              <span [class.text-muted]="!selectedProspect.facebook">{{ selectedProspect.facebook || 'No encontrado' }}</span>
+            </div>
+            <h6 class="fw-bold mt-3 mb-2">Estructura</h6>
+            <div class="detail-row"><i class="bi bi-people"></i><span>~{{ selectedProspect.estimated_teams || '?' }} equipos</span></div>
+            <div class="detail-row">
+              <i class="bi bi-mortarboard"></i>
+              <span>{{ selectedProspect.has_youth_academy ? 'Tiene cantera' : 'Sin cantera detectada' }}</span>
+            </div>
+            <div class="detail-row mt-1">
+              <i class="bi bi-wifi"></i>
+              <span class="badge digit-badge" [ngClass]="digitalizationLevel(selectedProspect).cssClass">
+                Digitalización {{ digitalizationLevel(selectedProspect).label }}
+              </span>
+            </div>
+          </div>
+          <!-- Pain points -->
+          <div class="col-md-7">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h6 class="fw-bold mb-0">Análisis de necesidades</h6>
+              <span class="badge rounded-pill pain-score-badge" [style.background]="painScoreColor(selectedProspect.pain_score)" style="color:#fff;">
+                Pain score: {{ selectedProspect.pain_score || 0 }}/10
+              </span>
+            </div>
+            <div *ngIf="selectedProspect.pain_points?.length">
+              <div *ngFor="let pp of selectedProspect.pain_points" class="pain-item mb-2">
+                <div class="d-flex justify-content-between align-items-start">
+                  <strong class="small">{{ pp.id }}</strong>
+                  <span class="badge rounded-pill ms-2" [style.background]="painScoreColor(pp.severity)" style="color:#fff; font-size:0.7rem;">
+                    {{ pp.severity }}/10
+                  </span>
+                </div>
+                <div class="small text-muted mt-1">{{ pp.evidence }}</div>
+              </div>
+            </div>
+            <div *ngIf="!selectedProspect.pain_points?.length" class="text-muted small fst-italic">
+              <i class="bi bi-info-circle me-1"></i>Este club aún no ha sido analizado. Ejecuta el paso 3 (Analizar con IA) del pipeline.
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span class="badge me-auto" [ngClass]="statusBadgeClass(selectedProspect.status)">{{ statusLabel(selectedProspect.status) }}</span>
+        <button class="btn btn-secondary" (click)="showProspectModal = false">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Preview email -->
+<div class="modal" [ngClass]="{'d-block': showEmailPreviewModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-truncate" style="max-width:85%;"><i class="bi bi-envelope-open me-2"></i>{{ previewEmailSubject }}</h5>
+        <button type="button" class="btn-close" (click)="showEmailPreviewModal = false"></button>
+      </div>
+      <div class="modal-body p-0">
+        <iframe [src]="previewEmailUrl" style="width:100%; height:520px; border:none;"></iframe>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showEmailPreviewModal = false">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Editar email -->
+<div class="modal" [ngClass]="{'d-block': showEditEmailModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Editar email — {{ editingEmail?.club_name }}</h5>
+        <button type="button" class="btn-close" (click)="showEditEmailModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Asunto</label>
+          <input type="text" class="form-control" [(ngModel)]="editEmailSubject">
+        </div>
+        <div class="mb-2">
+          <div class="d-flex justify-content-between align-items-center mb-1">
+            <label class="form-label fw-semibold mb-0">Cuerpo del email (HTML)</label>
+            <button class="btn btn-xs btn-outline-primary" (click)="regenerateEmail()" [disabled]="isRegenerating">
+              <span *ngIf="!isRegenerating"><i class="bi bi-robot"></i> Regenerar con IA</span>
+              <span *ngIf="isRegenerating"><i class="bi bi-hourglass-split spin-icon"></i> Generando...</span>
+            </button>
+          </div>
+          <textarea class="form-control font-monospace small" [(ngModel)]="editEmailBody" rows="12"></textarea>
+        </div>
+        <div class="alert alert-info small mb-0">
+          <i class="bi bi-lightbulb me-1"></i>
+          Puedes editar el HTML directamente, o usar <strong>Regenerar con IA</strong> para que la IA cree una nueva versión basada en los pain points del club.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showEditEmailModal = false">Cancelar</button>
+        <button class="btn btn-refresh" (click)="saveEmail()" [disabled]="isSavingEmail">
+          <i class="bi bi-floppy"></i> {{ isSavingEmail ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Envío de emails -->
+<div class="modal" [ngClass]="{'d-block': showSendConfirmModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header" [ngClass]="sendResult && !sendResult.dry_run ? 'modal-header-success' : 'modal-header-warning'">
+        <h5 class="modal-title">
+          <i class="bi" [ngClass]="sendResult && !sendResult.dry_run ? 'bi-send-check' : 'bi-send'"></i>
+          {{ sendResult && !sendResult.dry_run ? 'Emails enviados' : 'Envío de emails' }}
+        </h5>
+        <button type="button" class="btn-close" (click)="showSendConfirmModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="!sendResult">
+          <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <strong>Acción irreversible.</strong> Una vez enviados, no se puede deshacer.
+          </div>
+          <p class="mb-0">Haz primero un <strong>Dry Run</strong> para previsualizar qué emails se enviarían (sin enviar nada), y cuando estés seguro, confirma el envío real.</p>
+        </div>
+
+        <div *ngIf="sendResult?.dry_run">
+          <div class="alert alert-info">
+            <i class="bi bi-eye me-2"></i>
+            <strong>Dry Run completado.</strong> Se enviarían <strong>{{ sendResult.count }}</strong> emails. Revisa la lista y confirma.
+          </div>
+          <div class="dry-run-list" *ngIf="sendResult.preview?.length">
+            <div *ngFor="let p of sendResult.preview" class="dry-run-item">
+              <span class="badge me-2" [ngClass]="p.variant === 'A' ? 'bg-primary' : 'bg-info'">{{ p.variant }}</span>
+              <span class="fw-semibold me-2">{{ p.email }}</span>
+              <span class="small text-muted text-truncate">{{ p.subject }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="sendResult && !sendResult.dry_run">
+          <div class="alert alert-success">
+            <i class="bi bi-check-circle me-2"></i>
+            <strong>{{ sendResult.sent }}</strong> de <strong>{{ sendResult.total }}</strong> emails enviados correctamente.
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showSendConfirmModal = false">Cerrar</button>
+        <button class="btn btn-outline-info" (click)="dryRun()" *ngIf="!sendResult || sendResult.dry_run">
+          <i class="bi bi-eye"></i> Dry Run
+        </button>
+        <button class="btn btn-danger" (click)="confirmSend()" *ngIf="sendResult?.dry_run">
+          <i class="bi bi-send"></i> Enviar de verdad ({{ sendResult.count }})
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

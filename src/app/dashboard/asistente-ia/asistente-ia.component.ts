@@ -85,19 +85,21 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
   showHistory = true;
   conversations: ConversationSummary[] = [];
   currentConversationId: string | null = null;
-  private readonly STORAGE_KEY = 'sphaira_club_ai_history';
+  private historyLoading = false;
 
   /* Delete confirmation */
   showDeleteConfirm = false;
   conversationIdToDelete: string | null = null;
 
   suggestions: SuggestionChip[] = [
-    { icon: 'bi-bar-chart-line', text: 'Resume el estado del club', query: 'Resume el estado del club' },
-    { icon: 'bi-trophy', text: '¿Que equipo va mejor?', query: '¿Que equipo va mejor?' },
-    { icon: 'bi-calendar-event', text: 'Proximos partidos importantes', query: 'Proximos partidos importantes' },
-    { icon: 'bi-graph-up', text: 'Estadisticas del club', query: 'Dame las estadisticas de rendimiento del club' },
-    { icon: 'bi-people-fill', text: 'Analizar la plantilla', query: 'Analiza la plantilla del club' },
-    { icon: 'bi-lightbulb', text: 'Recomendaciones', query: 'Dame recomendaciones para mejorar la gestion del club' },
+    { icon: 'bi-bar-chart-line', text: 'Resumen del club', query: 'Dame un resumen general del estado del club: equipos, jugadores y actividad reciente.' },
+    { icon: 'bi-trophy', text: 'Mejor equipo', query: '¿Qué equipo va mejor en resultados esta temporada?' },
+    { icon: 'bi-calendar-event', text: 'Próximos partidos', query: '¿Cuáles son los próximos partidos importantes del club?' },
+    { icon: 'bi-people-fill', text: 'Estado de la plantilla', query: '¿Cuántos jugadores hay en el club y cómo está distribuida la plantilla por posición?' },
+    { icon: 'bi-cash-stack', text: 'Pagos pendientes', query: '¿Cómo veo qué jugadores tienen cuotas pendientes de pago en Sphaira?' },
+    { icon: 'bi-graph-up', text: 'Estadísticas', query: '¿Qué estadísticas de rendimiento puedo consultar en Sphaira para el club?' },
+    { icon: 'bi-star-fill', text: 'Scouting', query: '¿Cómo funciona el módulo de scouting en Sphaira? ¿Cómo genero informes con IA?' },
+    { icon: 'bi-lightbulb', text: 'Recomendaciones', query: 'Dame recomendaciones para mejorar la gestión y organización del club.' },
   ];
 
   showSuggestions = true;
@@ -117,13 +119,12 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
       if (user) {
         this.userId = user.userId;
         this.loadCredits();
+        this.loadConversationsList();
       }
     });
 
     const storedClubId = localStorage.getItem('clubId');
     if (storedClubId) this.clubId = parseInt(storedClubId, 10);
-
-    this.loadConversationsList();
 
     this.addAssistantMessage(
       '¡Hola! 👋 Soy el asistente de IA de tu club. Puedo ayudarte a consultar informacion sobre jugadores, equipos, estadisticas y mucho mas.\n\nPuedes escribirme o elegir una de las sugerencias de abajo. ¡Preguntame lo que necesites!'
@@ -429,12 +430,21 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
   }
 
   loadConversationsList(): void {
-    try {
-      const raw = localStorage.getItem(this.STORAGE_KEY);
-      this.conversations = raw ? JSON.parse(raw) : [];
-    } catch {
-      this.conversations = [];
-    }
+    if (!this.userId) return;
+    this.historyLoading = true;
+    this.aiChatService.listHistory(this.userId).subscribe({
+      next: (list) => {
+        this.conversations = (list || []).map((c: any) => ({
+          id: c.id,
+          title: c.title || 'Conversación',
+          date: c.date,
+          messageCount: c.messageCount || 0,
+          messages: [],
+        }));
+        this.historyLoading = false;
+      },
+      error: () => { this.historyLoading = false; }
+    });
   }
 
   startNewConversation(): void {
@@ -463,14 +473,29 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
     if (this.messages.some(m => m.role === 'user') && this.currentConversationId !== conv.id) {
       this.saveConversation();
     }
-    this.messages = conv.messages.map(m => ({
-      ...m,
-      timestamp: new Date(m.timestamp),
-    }));
-    this.msgIdCounter = this.messages.length;
     this.currentConversationId = conv.id;
     this.showSuggestions = false;
-    this.shouldScroll = true;
+
+    if (conv.messages && conv.messages.length > 0) {
+      this.messages = conv.messages.map(m => ({ ...m, timestamp: new Date(m.timestamp) }));
+      this.msgIdCounter = this.messages.length;
+      this.shouldScroll = true;
+    } else {
+      // Load messages from API
+      this.aiChatService.getHistoryMessages(conv.id).subscribe({
+        next: (msgs) => {
+          this.messages = (msgs || []).map((m: any, i: number) => ({
+            id: i + 1,
+            role: m.role as 'user' | 'assistant',
+            text: m.text || '',
+            timestamp: m.timestamp ? new Date(m.timestamp) : new Date(),
+          }));
+          this.msgIdCounter = this.messages.length;
+          this.shouldScroll = true;
+        },
+        error: () => {}
+      });
+    }
   }
 
   deleteConversation(event: Event, convId: string): void {
@@ -480,19 +505,17 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
   }
 
   confirmDeleteConversation(): void {
-    if (!this.conversationIdToDelete) return;
-    try {
-      const raw = localStorage.getItem(this.STORAGE_KEY);
-      let list: ConversationSummary[] = raw ? JSON.parse(raw) : [];
-      list = list.filter(c => c.id !== this.conversationIdToDelete);
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
-      this.conversations = list;
-      if (this.currentConversationId === this.conversationIdToDelete) {
-        this.currentConversationId = null;
-      }
-    } catch { /* ignore */ }
+    const convId = this.conversationIdToDelete;
+    if (!convId) return;
     this.showDeleteConfirm = false;
     this.conversationIdToDelete = null;
+    // Remove from local list immediately for instant UI feedback
+    this.conversations = this.conversations.filter(c => c.id !== convId);
+    if (this.currentConversationId === convId) {
+      this.currentConversationId = null;
+    }
+    // Delete from backend
+    this.aiChatService.deleteHistory(convId).subscribe();
   }
 
   cancelDeleteConversation(): void {
@@ -502,32 +525,21 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
 
   private saveConversation(): void {
     const userMsgs = this.messages.filter(m => m.role === 'user');
-    if (userMsgs.length === 0) return;
+    if (userMsgs.length === 0 || !this.userId) return;
 
     const title = userMsgs[0].text.substring(0, 50) + (userMsgs[0].text.length > 50 ? '...' : '');
-    const id = this.currentConversationId || 'conv_' + Date.now();
+    const convId = this.currentConversationId || 'conv_' + Date.now();
+    this.currentConversationId = convId;
 
-    const conv: ConversationSummary = {
-      id,
-      title,
-      date: new Date().toISOString(),
-      messageCount: this.messages.filter(m => !m.isTyping).length,
-      messages: this.messages.filter(m => !m.isTyping),
-    };
+    const messages = this.messages
+      .filter(m => !m.isTyping && m.text)
+      .map(m => ({ role: m.role, text: m.text }));
 
-    try {
-      const raw = localStorage.getItem(this.STORAGE_KEY);
-      let list: ConversationSummary[] = raw ? JSON.parse(raw) : [];
-      const idx = list.findIndex(c => c.id === id);
-      if (idx > -1) {
-        list[idx] = conv;
-      } else {
-        list.unshift(conv);
-      }
-      if (list.length > 50) list = list.slice(0, 50);
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(list));
-      this.currentConversationId = id;
-    } catch { /* ignore */ }
+    const clubId = this.clubId;
+    this.aiChatService.saveHistory(this.userId, convId, title, clubId, 'dashboard', messages).subscribe({
+      next: () => { this.loadConversationsList(); },
+      error: () => {}
+    });
   }
 
   formatDate(dateStr: string): string {

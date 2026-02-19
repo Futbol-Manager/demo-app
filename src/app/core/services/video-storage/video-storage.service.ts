@@ -78,6 +78,24 @@ export class VideoStorageService {
     return this.http.patch<any>(`${this.baseUrl}/${clubId}/video/${videoId}/folder`, { folderId }, { headers: this.getHeaders() });
   }
 
+  // ── Google Drive ────────────────────────────────────────
+  getDriveFileInfo(clubId: number, driveFileId: string, accessToken: string): Observable<any> {
+    return this.http.get<any>(
+      `${this.baseUrl}/${clubId}/drive/file-info?driveFileId=${encodeURIComponent(driveFileId)}&accessToken=${encodeURIComponent(accessToken)}`,
+      { headers: this.getHeaders() }
+    );
+  }
+
+  importFromDrive(clubId: number, driveFileId: string, accessToken: string, meta: {
+    title?: string; description?: string; tags?: string; folderId?: number; uploadedBy?: number;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/${clubId}/drive/import`,
+      { driveFileId, accessToken, ...meta },
+      { headers: this.getHeaders() }
+    );
+  }
+
+  // ── Upload ─────────────────────────────────────────────
   uploadVideo(clubId: number, uploadedBy: number, file: File, meta: {
     title?: string; description?: string; tags?: string;
     watchlistId?: number; playerName?: string;

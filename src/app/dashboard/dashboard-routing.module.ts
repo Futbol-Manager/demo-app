@@ -81,6 +81,7 @@ import { ClubPlanGuard } from '../guards/club-plan.guard';
 import { SuscripcionCoachComponent } from './suscripcion-coach/suscripcion-coach.component';
 import { CoachSuscripcionSuccessComponent } from './coach-suscripcion-success/coach-suscripcion-success.component';
 import { AdminCoachesComponent } from './admin-coaches/admin-coaches.component';
+import { AdminProspectorComponent } from './admin-prospector/admin-prospector.component';
 import { AdminRegistrosComponent } from './admin-registros/admin-registros.component';
 import { AdminActivityComponent } from './admin-activity/admin-activity.component';
 import { AdminAiUsageComponent } from './admin-ai-usage/admin-ai-usage.component';
@@ -165,6 +166,7 @@ const routes: Routes = [
       { path: 'admin-activity', component: AdminActivityComponent, canActivate: [AdminGuard] },
       { path: 'admin-ai-usage', component: AdminAiUsageComponent, canActivate: [AdminGuard] },
       { path: 'admin-coaches', component: AdminCoachesComponent, canActivate: [AdminGuard] },
+      { path: 'admin-prospector', component: AdminProspectorComponent, canActivate: [AdminGuard] },
       { path: 'ai-credits-success', component: AiCreditsSuccessComponent },
       { path: 'video-plan-success', component: VideoPlanSuccessComponent },
       { path: 'club-videos/:clubId', component: ClubVideoLibraryComponent, canActivate: [ClubOwnerGuard, ClubPlanGuard] },

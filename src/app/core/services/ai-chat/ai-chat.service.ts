@@ -164,6 +164,48 @@ export class AiChatService {
   }
 
   /**
+   * Lista las conversaciones del usuario desde la BD.
+   */
+  listHistory(userId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/history/list/${userId}`, { headers: this.getHeaders() }).pipe(
+      timeout(10000),
+      catchError(() => of([]))
+    );
+  }
+
+  /**
+   * Guarda o actualiza una conversación en la BD.
+   * messages: array de {role, text}
+   */
+  saveHistory(userId: number, convId: string, title: string, clubId: number | null, screenContext: string, messages: {role: string, text: string}[]): Observable<any> {
+    const body = { userId, convId, title, clubId, screenContext, messages };
+    return this.http.post<any>(`${this.baseUrl}/history/save`, body, { headers: this.getHeaders() }).pipe(
+      timeout(15000),
+      catchError(() => of({ success: false }))
+    );
+  }
+
+  /**
+   * Obtiene los mensajes completos de una conversación.
+   */
+  getHistoryMessages(convId: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/history/${convId}/messages`, { headers: this.getHeaders() }).pipe(
+      timeout(10000),
+      catchError(() => of([]))
+    );
+  }
+
+  /**
+   * Elimina una conversación y todos sus mensajes.
+   */
+  deleteHistory(convId: string): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/history/${convId}`, { headers: this.getHeaders() }).pipe(
+      timeout(10000),
+      catchError(() => of({ success: false }))
+    );
+  }
+
+  /**
    * Crea una Stripe Checkout Session para comprar créditos.
    * Redirige al usuario a la pagina de pago de Stripe.
    */

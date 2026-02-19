@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
@@ -9,6 +9,7 @@ import { Location } from '@angular/common';
 import * as XLSX from 'xlsx';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
 import { getCurrentSeasonString, getSeasons } from 'src/app/core/utils/season.utils';
+import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
 
 /* =========================
    INTERFACES
@@ -172,6 +173,14 @@ export class InfoEntrenadoresComponent implements OnInit {
     },
   ];
 
+  /* ---- Panel IA ---- */
+  aiPanelOpen = false;
+  aiPrompt = '';
+  aiMessages: { role: 'user' | 'assistant'; content: string }[] = [];
+  aiLoading = false;
+  @ViewChild('aiMessagesContainerEnt') aiMessagesContainer!: ElementRef;
+  private historyConvId: string | null = null;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -179,6 +188,7 @@ export class InfoEntrenadoresComponent implements OnInit {
     private loginService: LoginService,
     private notification: NotificationService,
     private location: Location,
+    private aiChatService: AiChatService,
   ) {}
 
   ngOnInit(): void {
@@ -728,5 +738,110 @@ export class InfoEntrenadoresComponent implements OnInit {
 
   goBack(): void {
     this.location.back();
+  }
+
+  // ===== AI PANEL =====
+  toggleAiPanel(): void {
+    this.aiPanelOpen = !this.aiPanelOpen;
+    if (this.aiPanelOpen && this.aiMessages.length === 0) {
+      this.aiMessages.push({
+        role: 'assistant',
+        content: 'Hola, soy tu asistente IA para la sección de entrenadores. Tengo acceso a los datos anonimizados del cuerpo técnico. ¿En qué puedo ayudarte?'
+      });
+    }
+  }
+
+  useSuggestion(suggestion: string): void {
+    this.aiPrompt = suggestion;
+    this.sendAiMessage();
+  }
+
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendAiMessage();
+    }
+  }
+
+  sendAiMessage(): void {
+    if (!this.aiPrompt.trim() || this.aiLoading) return;
+
+    const userMessage = this.aiPrompt.trim();
+    this.aiMessages.push({ role: 'user', content: userMessage });
+    this.aiPrompt = '';
+    this.aiLoading = true;
+    setTimeout(() => this.scrollAiToBottom(), 100);
+
+    const { contextText, codeToReal } = this.buildAnonymizedCoachContext();
+
+    let anonymizedMessage = userMessage;
+    codeToReal.forEach((real, code) => {
+      anonymizedMessage = anonymizedMessage.replace(
+        new RegExp(real.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), code
+      );
+    });
+
+    const enrichedMessage = anonymizedMessage
+      + '\n\n[CUERPO TÉCNICO - DATOS ANONIMIZADOS]\n' + contextText;
+
+    const history = this.aiMessages.slice(-6).map(m => ({ role: m.role, text: m.content }));
+
+    this.aiChatService.sendMessage(
+      this.userId, this.clubId, 'info-entrenadores', enrichedMessage, 'users', null, history
+    ).subscribe({
+      next: (resp) => {
+        let response = resp.success
+          ? (resp.response || 'Sin respuesta.')
+          : (resp.message || 'Error al consultar la IA.');
+        // De-anonymize: longest codes first to avoid partial matches
+        Array.from(codeToReal.entries())
+          .sort((a, b) => b[0].length - a[0].length)
+          .forEach(([code, real]) => { response = response.split(code).join(real); });
+        this.aiMessages.push({ role: 'assistant', content: response });
+        this.aiLoading = false;
+        this.saveToHistory();
+        setTimeout(() => this.scrollAiToBottom(), 100);
+      },
+      error: () => {
+        this.aiMessages.push({ role: 'assistant', content: 'Error al conectar con la IA. Inténtalo de nuevo.' });
+        this.aiLoading = false;
+        setTimeout(() => this.scrollAiToBottom(), 100);
+      }
+    });
+  }
+
+  private buildAnonymizedCoachContext(): { contextText: string; codeToReal: Map<string, string> } {
+    const codeToReal = new Map<string, string>();
+    const lines: string[] = ['Código | Perfil | Equipo(s)'];
+    this.filteredTrainers.forEach((t, i) => {
+      const code = `ENTRENADOR_${i + 1}`;
+      const fullName = `${t.nombre || ''} ${t.apellido || ''}`.trim() || `Entrenador ${i + 1}`;
+      codeToReal.set(code, fullName);
+      const teams = Array.isArray(t.teams) && t.teams.length
+        ? t.teams.join(', ')
+        : (t.nameTeam || '-');
+      lines.push(`${code} | ${t.profileName || '-'} | ${teams}`);
+    });
+    return { contextText: lines.join('\n'), codeToReal };
+  }
+
+  private scrollAiToBottom(): void {
+    if (this.aiMessagesContainer) {
+      const element = this.aiMessagesContainer.nativeElement;
+      element.scrollTop = element.scrollHeight;
+    }
+  }
+
+  private saveToHistory(): void {
+    const userMsgs = this.aiMessages.filter(m => m.role === 'user');
+    if (userMsgs.length === 0 || !this.userId) return;
+    const title = '[Entrenadores] ' + userMsgs[0].content.substring(0, 40)
+      + (userMsgs[0].content.length > 40 ? '...' : '');
+    const convId = this.historyConvId || ('conv_entrenadores_' + Date.now());
+    this.historyConvId = convId;
+    const messages = this.aiMessages
+      .filter(m => m.role === 'user' || m.role === 'assistant')
+      .map(m => ({ role: m.role, text: m.content }));
+    this.aiChatService.saveHistory(this.userId, convId, title, this.clubId, 'info-entrenadores', messages).subscribe();
   }
 }

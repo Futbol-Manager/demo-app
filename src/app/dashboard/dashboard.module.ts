@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { MarkdownAiPipe } from './pipes/markdown.pipe';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard.component';
 import { HeaderComponent } from './header/header.component';
@@ -111,6 +112,7 @@ import { VideoPlanSuccessComponent } from './video-plan-success/video-plan-succe
 import { SuscripcionCoachComponent } from './suscripcion-coach/suscripcion-coach.component';
 import { CoachSuscripcionSuccessComponent } from './coach-suscripcion-success/coach-suscripcion-success.component';
 import { AdminCoachesComponent } from './admin-coaches/admin-coaches.component';
+import { AdminProspectorComponent } from './admin-prospector/admin-prospector.component';
 import { TaskEditModalComponent } from './task-edit-modal/task-edit-modal.component';
 import { FormTemplateSelectorComponent } from './shared/form-template-selector/form-template-selector.component';
 import { FormTemplatesComponent } from './debrief/form-templates/form-templates.component';
@@ -190,6 +192,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AsistenteIaCoachComponent,
     AiFabComponent,
     Nl2brPipe,
+    MarkdownAiPipe,
     LesionesComponent,
     LesionesEquipoComponent,
     LesionesClubComponent,
@@ -225,6 +228,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     SuscripcionCoachComponent,
     CoachSuscripcionSuccessComponent,
     AdminCoachesComponent,
+    AdminProspectorComponent,
     TaskEditModalComponent,
     FormTemplateSelectorComponent,
     FormTemplatesComponent,

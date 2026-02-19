@@ -109,15 +109,16 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   private voiceTranscriptBase = '';  // Text before voice started
 
   private screenSuggestions: { [key: string]: SuggestionChip[] } = {
+    // ── Cuadro de mando ──────────────────────────────────────────────────────
     'dashboard': [
-      { icon: 'bi-bar-chart-line', text: 'Resumen del club', query: 'Resume el estado del club' },
-      { icon: 'bi-trophy', text: 'Mejor equipo', query: '¿Que equipo va mejor?' },
-      { icon: 'bi-calendar-event', text: 'Proximos partidos', query: 'Proximos partidos importantes' },
-      { icon: 'bi-lightbulb', text: 'Recomendaciones', query: 'Dame recomendaciones para mejorar la gestion del club' },
+      { icon: 'bi-bar-chart-line', text: 'Resumen del club', query: 'Dame un resumen general del estado del club: equipos, jugadores y actividad reciente.' },
+      { icon: 'bi-trophy', text: 'Mejor equipo', query: '¿Qué equipo va mejor en resultados esta temporada?' },
+      { icon: 'bi-calendar-event', text: 'Próximos partidos', query: '¿Cuáles son los próximos partidos importantes del club?' },
+      { icon: 'bi-lightbulb', text: 'Recomendaciones', query: 'Dame recomendaciones para mejorar la gestión del club.' },
     ],
     'dashboard_coach': [
       { icon: 'bi-clipboard2-pulse', text: 'Estado del equipo', query: '¿Cómo está el equipo en este momento? Dame un resumen de los jugadores disponibles y las bajas.' },
-      { icon: 'bi-lightning-charge', text: 'Sesión de hoy', query: 'Sugiereme una sesión de entrenamiento para hoy basándote en el estado del equipo.' },
+      { icon: 'bi-lightning-charge', text: 'Sesión de hoy', query: 'Sugiéreme una sesión de entrenamiento para hoy basándote en el estado del equipo.' },
       { icon: 'bi-people-fill', text: 'Mejor once', query: '¿Cuál sería el once ideal para el próximo partido con los jugadores disponibles?' },
       { icon: 'bi-calendar-week', text: 'Planificación semanal', query: 'Ayúdame a planificar los entrenamientos de esta semana teniendo en cuenta los partidos.' },
     ],
@@ -127,29 +128,100 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
       { icon: 'bi-shield-plus', text: 'Prevención', query: 'Recomiéndame ejercicios de prevención para reducir el riesgo de lesiones esta semana.' },
       { icon: 'bi-clipboard-heart', text: 'Protocolo RTP', query: '¿Cuál es el protocolo de retorno al juego (RTP) recomendado para las lesiones activas del equipo?' },
     ],
+    // ── Estadísticas ─────────────────────────────────────────────────────────
     'estadisticas-equipos': [
-      { icon: 'bi-shield-check', text: 'Mejor defensa', query: '¿Que equipo tiene mejor defensa?' },
-      { icon: 'bi-graph-up', text: 'Comparar resultados', query: 'Compara los resultados de liga' },
-      { icon: 'bi-bar-chart', text: 'Goles por equipo', query: 'Genera un analisis de goles por equipo' },
-      { icon: 'bi-trophy', text: 'Ranking equipos', query: '¿Como va la clasificacion de los equipos?' },
+      { icon: 'bi-shield-check', text: 'Mejor defensa', query: '¿Qué equipo tiene mejor defensa esta temporada?' },
+      { icon: 'bi-graph-up', text: 'Comparar resultados', query: 'Compara los resultados de los equipos del club esta temporada.' },
+      { icon: 'bi-bar-chart', text: 'Goles por equipo', query: 'Genera un análisis de goles marcados y encajados por equipo.' },
+      { icon: 'bi-trophy', text: 'Ranking equipos', query: '¿Cómo va la clasificación de los equipos del club?' },
     ],
     'estadisticas-jugadores': [
-      { icon: 'bi-star-fill', text: 'Jugador mas completo', query: '¿Quien es el jugador mas completo?' },
-      { icon: 'bi-trophy', text: 'Top goleadores', query: 'Top goleadores por equipo' },
-      { icon: 'bi-clock-history', text: 'Mas minutos', query: 'Jugadores con mas minutos' },
-      { icon: 'bi-graph-up-arrow', text: 'Rendimiento', query: 'Analiza el rendimiento individual de los jugadores' },
+      { icon: 'bi-star-fill', text: 'Jugador más completo', query: '¿Quién es el jugador más completo del equipo según las estadísticas?' },
+      { icon: 'bi-trophy', text: 'Top goleadores', query: '¿Cuáles son los jugadores con más goles?' },
+      { icon: 'bi-clock-history', text: 'Más minutos', query: '¿Qué jugadores han acumulado más minutos esta temporada?' },
+      { icon: 'bi-graph-up-arrow', text: 'Rendimiento individual', query: 'Analiza el rendimiento individual de los jugadores y dime quién destaca.' },
     ],
+    // ── Información de jugadores ──────────────────────────────────────────────
     'jugadores': [
-      { icon: 'bi-people-fill', text: 'Analizar plantilla', query: 'Analiza la plantilla' },
-      { icon: 'bi-grid-3x3', text: 'Por posicion', query: 'Jugadores por posicion' },
-      { icon: 'bi-calendar3', text: 'Media de edad', query: 'Media de edad del club' },
-      { icon: 'bi-person-badge', text: 'Estado jugadores', query: '¿Cual es el estado de los jugadores?' },
+      { icon: 'bi-people-fill', text: 'Analizar plantilla', query: 'Analiza la composición y equilibrio de la plantilla actual.' },
+      { icon: 'bi-grid-3x3', text: 'Por posición', query: '¿Cuántos jugadores hay en cada posición? ¿Hay posiciones con falta de profundidad?' },
+      { icon: 'bi-calendar3', text: 'Media de edad', query: '¿Cuál es la media de edad de la plantilla? ¿Hay equilibrio entre veteranos y jóvenes?' },
+      { icon: 'bi-person-badge', text: 'Estado jugadores', query: '¿Cuántos jugadores están disponibles y cuántos tienen alguna baja o incidencia?' },
     ],
+    // ── Información de entrenadores ───────────────────────────────────────────
+    'info-entrenadores': [
+      { icon: 'bi-people-fill', text: 'Cuerpo técnico', query: '¿Cuántos entrenadores hay en el club y qué equipos llevan asignados?' },
+      { icon: 'bi-calendar-check', text: 'Actividad reciente', query: '¿Cuál ha sido la actividad reciente de los equipos en términos de entrenamientos y partidos?' },
+      { icon: 'bi-trophy', text: 'Resultados equipos', query: '¿Cómo van los resultados de los equipos del club esta temporada?' },
+      { icon: 'bi-bar-chart-line', text: 'Carga de trabajo', query: '¿Qué equipos tienen más carga de entrenamientos y partidos en las próximas semanas?' },
+    ],
+    // ── Calendario ────────────────────────────────────────────────────────────
     'calendario': [
-      { icon: 'bi-calendar-week', text: 'Resumen semana', query: 'Resumen de la semana' },
-      { icon: 'bi-clock', text: 'Entrenamientos hoy', query: 'Entrenamientos de hoy' },
-      { icon: 'bi-trophy', text: 'Proximos partidos', query: 'Proximos partidos' },
-      { icon: 'bi-list-check', text: 'Actividades pendientes', query: '¿Que actividades tenemos pendientes?' },
+      { icon: 'bi-calendar-week', text: 'Resumen semana', query: '¿Qué entrenamientos y partidos tenemos programados esta semana?' },
+      { icon: 'bi-clock', text: 'Entrenamientos hoy', query: '¿Hay entrenamientos programados para hoy?' },
+      { icon: 'bi-trophy', text: 'Próximos partidos', query: '¿Cuáles son los próximos partidos y cuándo son?' },
+      { icon: 'bi-list-check', text: 'Planificación', query: 'Ayúdame a organizar los entrenamientos de la próxima semana.' },
+    ],
+    // ── Lesiones ──────────────────────────────────────────────────────────────
+    'lesiones': [
+      { icon: 'bi-bandaid-fill', text: 'Bajas activas', query: 'Dame un resumen de todas las lesiones activas del equipo.' },
+      { icon: 'bi-arrow-up-circle', text: 'Próximas altas', query: '¿Qué jugadores están próximos a recibir el alta médica?' },
+      { icon: 'bi-shield-check', text: 'Prevención', query: '¿Qué ejercicios preventivos recomiendas para reducir el riesgo de lesiones?' },
+      { icon: 'bi-heart-pulse', text: 'Carga del equipo', query: '¿Cómo afectan las bajas por lesión a la disponibilidad del equipo para los próximos partidos?' },
+    ],
+    // ── Documentos ────────────────────────────────────────────────────────────
+    'documentos': [
+      { icon: 'bi-file-earmark-check', text: 'Cómo gestionar docs', query: '¿Cómo gestiono los documentos de los jugadores en Sphaira? ¿Qué tipos de documentos puedo subir?' },
+      { icon: 'bi-upload', text: 'Subir documento', query: '¿Cómo subo un nuevo documento para un jugador o para el club en Sphaira?' },
+      { icon: 'bi-bell', text: 'Alertas de vencimiento', query: '¿Cómo configuro alertas para que me avise cuando un documento esté próximo a vencer?' },
+      { icon: 'bi-folder2-open', text: 'Organizar documentos', query: '¿Cuál es la mejor forma de organizar los documentos del club en Sphaira?' },
+    ],
+    // ── Pagos ─────────────────────────────────────────────────────────────────
+    'pagos': [
+      { icon: 'bi-cash-stack', text: 'Cuotas pendientes', query: '¿Cuántos jugadores tienen cuotas pendientes de pago? Dame un resumen del estado de pagos.' },
+      { icon: 'bi-receipt', text: 'Cómo registrar pagos', query: '¿Cómo registro el pago de una cuota en Sphaira? ¿Puedo registrar pagos parciales?' },
+      { icon: 'bi-send', text: 'Recordatorio de pago', query: '¿Cómo envío un recordatorio de pago a los jugadores con cuotas pendientes?' },
+      { icon: 'bi-graph-up', text: 'Resumen financiero', query: '¿Cómo veo un resumen del estado financiero de las cuotas del club?' },
+    ],
+    // ── Ropa / Equipación ─────────────────────────────────────────────────────
+    'ropa': [
+      { icon: 'bi-bag-check', text: 'Gestionar pedidos', query: '¿Cómo gestiono los pedidos de equipación para el equipo en Sphaira?' },
+      { icon: 'bi-rulers', text: 'Tallas del equipo', query: '¿Cómo registro y consulto las tallas de los jugadores para la equipación?' },
+      { icon: 'bi-box-seam', text: 'Seguimiento de pedidos', query: '¿Cómo hago seguimiento del estado de un pedido de ropa en Sphaira?' },
+      { icon: 'bi-person-check', text: 'Equipación entregada', query: '¿Cómo registro qué jugadores ya han recogido su equipación?' },
+    ],
+    // ── Patrocinadores ────────────────────────────────────────────────────────
+    'patrocinadores': [
+      { icon: 'bi-building', text: 'Gestionar contratos', query: '¿Cómo gestiono los contratos de patrocinio en Sphaira? ¿Qué información puedo registrar?' },
+      { icon: 'bi-calendar-event', text: 'Contratos próximos', query: '¿Cómo configuro alertas para contratos de patrocinio que vencen pronto?' },
+      { icon: 'bi-bar-chart-line', text: 'Valor de visibilidad', query: '¿Cómo puedo demostrar a mis patrocinadores el valor de su visibilidad en el club?' },
+      { icon: 'bi-handshake', text: 'Añadir patrocinador', query: '¿Cómo añado un nuevo patrocinador y su contrato en Sphaira?' },
+    ],
+    // ── Notificaciones ────────────────────────────────────────────────────────
+    'notificaciones': [
+      { icon: 'bi-bell-fill', text: 'Enviar comunicado', query: '¿Cómo envío un comunicado o notificación a todos los jugadores del equipo desde Sphaira?' },
+      { icon: 'bi-megaphone', text: 'Cambio de horario', query: '¿Cómo comunico un cambio de horario o una cancelación de entrenamiento a todo el equipo?' },
+      { icon: 'bi-gear', text: 'Alertas automáticas', query: '¿Qué notificaciones automáticas puedo configurar en Sphaira? ¿Cómo las activo?' },
+      { icon: 'bi-phone', text: 'App móvil', query: '¿Cómo reciben los jugadores y padres las notificaciones del club? ¿Necesitan descargar la app?' },
+    ],
+    // ── Scouting ──────────────────────────────────────────────────────────────
+    'scouting': [
+      { icon: 'bi-star-fill', text: 'Mejores valorados', query: '¿Cómo puedo ver qué jugadores de mi lista de scouting tienen las mejores valoraciones?' },
+      { icon: 'bi-funnel', text: 'Pipeline de fichajes', query: '¿Cómo gestiono el pipeline de fichajes en Sphaira? ¿Qué fases hay?' },
+      { icon: 'bi-person-plus', text: 'Posiciones a cubrir', query: 'Según la plantilla actual, ¿qué posiciones debería priorizar en el scouting?' },
+      { icon: 'bi-clipboard2-data', text: 'Generar informe', query: '¿Cómo genero un informe de scouting con IA para un jugador de mi lista?' },
+    ],
+    'scouting-mis-scoutings': [
+      { icon: 'bi-list-stars', text: 'Mi lista de observación', query: '¿Cómo organizo y filtro mi lista de jugadores observados en Sphaira?' },
+      { icon: 'bi-star-fill', text: 'Mejor valorado', query: '¿Cómo identifico al jugador mejor valorado en mi lista de scouting?' },
+      { icon: 'bi-clipboard2-data', text: 'Informe IA', query: '¿Cómo genero automáticamente un informe de scouting con IA para un jugador?' },
+      { icon: 'bi-person-plus', text: 'Añadir evaluación', query: '¿Cómo añado una nueva evaluación a un jugador que estoy observando?' },
+    ],
+    'scouting-pipeline': [
+      { icon: 'bi-funnel', text: 'Fases del pipeline', query: '¿Cuáles son las fases del pipeline de fichajes en Sphaira y cómo avanzo un jugador de fase?' },
+      { icon: 'bi-people', text: 'Candidatos activos', query: '¿Cuántos jugadores tengo activamente en el pipeline de fichajes y en qué fases están?' },
+      { icon: 'bi-person-check', text: 'Priorizar candidatos', query: '¿Cómo decido qué candidatos priorizar para el próximo mercado de fichajes?' },
+      { icon: 'bi-bar-chart-line', text: 'Comparar candidatos', query: '¿Cómo comparo dos jugadores candidatos para tomar la mejor decisión de fichaje?' },
     ],
   };
 
@@ -396,9 +468,24 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   // ─── CHAT LOGIC ───────────────────────────
   private detectScreenContext(url: string): void {
-    const clubMatch = url.match(/cuadro\/(\d+)/);
-    if (clubMatch) {
-      this.clubId = parseInt(clubMatch[1], 10);
+    // Extract clubId from all club route patterns
+    const clubPatterns = [
+      /cuadro\/(\d+)/,
+      /cuadro-de-mandos\/[^/]+\/(\d+)/,
+      /historial-pagos-club\/(\d+)/,
+      /patrocinadores(?:-usuario)?\/(\d+)/,
+      /notificaciones(?:-usuario)?\/(\d+)/,
+      /scouting-club\/(\d+)/,
+      /club-videos\/(\d+)/,
+      /(?:ropa|documentos)\/(\d+)/
+    ];
+    let foundClubId: number | null = null;
+    for (const pat of clubPatterns) {
+      const m = url.match(pat);
+      if (m) { foundClubId = parseInt(m[1], 10); break; }
+    }
+    if (foundClubId) {
+      this.clubId = foundClubId;
     } else {
       const storedClubId = localStorage.getItem('clubId');
       if (storedClubId) this.clubId = parseInt(storedClubId, 10);
@@ -424,12 +511,28 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.currentScreenContext = 'estadisticas-equipos';
     } else if (url.includes('estadisticas-jugadores') || url.includes('estadisticas_jugadores')) {
       this.currentScreenContext = 'estadisticas-jugadores';
+    } else if (url.includes('info-entrenadores') || url.includes('entrenadores')) {
+      this.currentScreenContext = 'info-entrenadores';
     } else if (url.includes('info-jugadores') || url.includes('jugadores')) {
       this.currentScreenContext = 'jugadores';
     } else if (url.includes('calendario')) {
       this.currentScreenContext = 'calendario';
     } else if (url.includes('lesiones')) {
       this.currentScreenContext = 'lesiones';
+    } else if (url.includes('documentos')) {
+      this.currentScreenContext = 'documentos';
+    } else if (url.includes('historial-pagos') || url.includes('pagos')) {
+      this.currentScreenContext = 'pagos';
+    } else if (url.includes('ropa')) {
+      this.currentScreenContext = 'ropa';
+    } else if (url.includes('patrocinadores')) {
+      this.currentScreenContext = 'patrocinadores';
+    } else if (url.includes('notificaciones')) {
+      this.currentScreenContext = 'notificaciones';
+    } else if (url.includes('scouting-player') && url.includes('pipeline')) {
+      this.currentScreenContext = 'scouting-pipeline';
+    } else if (url.includes('scouting')) {
+      this.currentScreenContext = 'scouting';
     } else {
       this.currentScreenContext = 'dashboard';
     }
@@ -437,7 +540,8 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   private updateSuggestions(): void {
     // Lesiones: sugerencias dinámicas basadas en lesiones reales del equipo
-    if (this.currentScreenContext === 'lesiones' && (this.profileId === 1 || this.profileId === 2 || this.profileId === 6 || this.profileId === 7)) {
+    if ((this.currentScreenContext === 'lesiones' || this.currentScreenContext === 'lesiones-equipo')
+        && (this.profileId === 1 || this.profileId === 2 || this.profileId === 6 || this.profileId === 7)) {
       const teamId = this.currentTeamId;
       if (teamId) {
         this.injuryService.getInjuriesByTeam(teamId).subscribe({

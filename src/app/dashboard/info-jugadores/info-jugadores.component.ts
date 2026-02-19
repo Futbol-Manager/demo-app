@@ -1,5 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { forkJoin } from 'rxjs';
+import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -110,6 +111,14 @@ export class InfoJugadoresComponent implements OnInit {
   solicitudMasivaLoading = false;
   solicitudMasivaEnviada = false;
 
+  /* ---- Panel IA ---- */
+  aiPanelOpen = false;
+  aiPrompt = '';
+  aiMessages: { role: 'user' | 'assistant'; content: string }[] = [];
+  aiLoading = false;
+  @ViewChild('aiMessagesContainer') aiMessagesContainer!: ElementRef;
+  private historyConvId: string | null = null;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -121,7 +130,8 @@ export class InfoJugadoresComponent implements OnInit {
     private dialog: MatDialog,
     private notification: NotificationService,
     private confirmation: ConfirmationService,
-    private toastr: ToastrService) { }
+    private toastr: ToastrService,
+    private aiChatService: AiChatService) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -886,6 +896,111 @@ export class InfoJugadoresComponent implements OnInit {
         this.toastr.error('Error al enviar algunas notificaciones.');
       }
     });
+  }
+
+  // ===== AI PANEL =====
+  toggleAiPanel(): void {
+    this.aiPanelOpen = !this.aiPanelOpen;
+    if (this.aiPanelOpen && this.aiMessages.length === 0) {
+      this.aiMessages.push({
+        role: 'assistant',
+        content: 'Hola, soy tu asistente IA para la sección de jugadores. Tengo acceso a los datos anonimizados del listado actual. ¿En qué puedo ayudarte?'
+      });
+    }
+  }
+
+  useSuggestion(suggestion: string): void {
+    this.aiPrompt = suggestion;
+    this.sendAiMessage();
+  }
+
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendAiMessage();
+    }
+  }
+
+  sendAiMessage(): void {
+    if (!this.aiPrompt.trim() || this.aiLoading) return;
+
+    const userMessage = this.aiPrompt.trim();
+    this.aiMessages.push({ role: 'user', content: userMessage });
+    this.aiPrompt = '';
+    this.aiLoading = true;
+    setTimeout(() => this.scrollAiToBottom(), 100);
+
+    const { contextText, codeToReal } = this.buildAnonymizedPlayersContext();
+
+    let anonymizedMessage = userMessage;
+    codeToReal.forEach((real, code) => {
+      anonymizedMessage = anonymizedMessage.replace(
+        new RegExp(real.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), code
+      );
+    });
+
+    const enrichedMessage = anonymizedMessage
+      + '\n\n[LISTADO DE JUGADORES - DATOS ANONIMIZADOS]\n' + contextText;
+
+    const history = this.aiMessages.slice(-6).map(m => ({ role: m.role, text: m.content }));
+
+    this.aiChatService.sendMessage(
+      this.userId, this.clubId, 'jugadores', enrichedMessage, 'users', null, history
+    ).subscribe({
+      next: (resp) => {
+        let response = resp.success
+          ? (resp.response || 'Sin respuesta.')
+          : (resp.message || 'Error al consultar la IA.');
+        // De-anonymize: longest codes first to avoid partial matches (JUGADOR_1 inside JUGADOR_10)
+        Array.from(codeToReal.entries())
+          .sort((a, b) => b[0].length - a[0].length)
+          .forEach(([code, real]) => { response = response.split(code).join(real); });
+        this.aiMessages.push({ role: 'assistant', content: response });
+        this.aiLoading = false;
+        this.saveToHistory();
+        setTimeout(() => this.scrollAiToBottom(), 100);
+      },
+      error: () => {
+        this.aiMessages.push({ role: 'assistant', content: 'Error al conectar con la IA. Inténtalo de nuevo.' });
+        this.aiLoading = false;
+        setTimeout(() => this.scrollAiToBottom(), 100);
+      }
+    });
+  }
+
+  private buildAnonymizedPlayersContext(): { contextText: string; codeToReal: Map<string, string> } {
+    const codeToReal = new Map<string, string>();
+    const lines: string[] = ['Código | Posición | Dorsal | Equipo'];
+    const source = this.filteredPlayers.length ? this.filteredPlayers : this.players;
+    source.forEach((p, i) => {
+      const code = `JUGADOR_${i + 1}`;
+      const fullName = `${p.nombre || ''} ${p.apellido || ''}`.trim() || `Jugador ${i + 1}`;
+      codeToReal.set(code, fullName);
+      lines.push(
+        `${code} | ${p.posicion || p.posicionGlobal || '-'} | ${p.dorsal ?? p.numDorsal ?? '-'} | ${p.nameTeam || '-'}`
+      );
+    });
+    return { contextText: lines.join('\n'), codeToReal };
+  }
+
+  private scrollAiToBottom(): void {
+    if (this.aiMessagesContainer) {
+      const element = this.aiMessagesContainer.nativeElement;
+      element.scrollTop = element.scrollHeight;
+    }
+  }
+
+  private saveToHistory(): void {
+    const userMsgs = this.aiMessages.filter(m => m.role === 'user');
+    if (userMsgs.length === 0 || !this.userId) return;
+    const title = '[Jugadores] ' + userMsgs[0].content.substring(0, 40)
+      + (userMsgs[0].content.length > 40 ? '...' : '');
+    const convId = this.historyConvId || ('conv_jugadores_' + Date.now());
+    this.historyConvId = convId;
+    const messages = this.aiMessages
+      .filter(m => m.role === 'user' || m.role === 'assistant')
+      .map(m => ({ role: m.role, text: m.content }));
+    this.aiChatService.saveHistory(this.userId, convId, title, this.clubId, 'info-jugadores', messages).subscribe();
   }
 
   updateTemporada(player: any) {

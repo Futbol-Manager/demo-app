@@ -10,6 +10,11 @@
   <h2 class="table-title">
     {{ 'TRAINERS.TITLE' | translate }}
   </h2>
+
+  <button class="btn-ai-consult" (click)="toggleAiPanel()">
+    <i class="bi bi-robot"></i>
+    <span>{{ 'AI_PANEL.CONSULT_BUTTON' | translate }}</span>
+  </button>
 </div>
 
 <div class="container">
@@ -767,6 +772,75 @@
           (onSave)="onCustomFieldsSaved($event)"
           (onClose)="cerrarModalCustomFields()">
         </app-form-builder>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PANEL LATERAL DE IA -->
+<div class="ai-sidebar-overlay" [class.active]="aiPanelOpen" (click)="toggleAiPanel()"></div>
+<div class="ai-sidebar" [class.active]="aiPanelOpen">
+  <div class="ai-sidebar-header">
+    <h3>
+      <i class="bi bi-robot"></i>
+      Asistente IA — Entrenadores
+    </h3>
+    <button class="btn-close-ai" (click)="toggleAiPanel()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="ai-sidebar-body">
+    <div class="ai-suggestions-section">
+      <p class="ai-intro">💡 Pregúntame sobre el cuerpo técnico (datos anonimizados)</p>
+      <div class="suggestion-chips">
+        <button class="suggestion-chip" (click)="useSuggestion('¿Cuántos entrenadores hay en el club?')">
+          👤 Total de entrenadores
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('¿Qué equipos tienen entrenador asignado?')">
+          🏟️ Equipos con entrenador
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('¿Qué perfiles hay en el cuerpo técnico (entrenador, fisio, etc.)?')">
+          📋 Distribución de perfiles
+        </button>
+        <button class="suggestion-chip" (click)="useSuggestion('¿Hay equipos sin entrenador asignado?')">
+          ⚠️ Equipos sin entrenador
+        </button>
+      </div>
+    </div>
+
+    <div class="ai-chat-section">
+      <div class="ai-messages" #aiMessagesContainerEnt>
+        <div *ngFor="let message of aiMessages" class="ai-message" [ngClass]="message.role">
+          <div class="message-content">
+            <strong *ngIf="message.role === 'assistant'">🤖 IA:</strong>
+            <strong *ngIf="message.role === 'user'">Tú:</strong>
+            <div [innerHTML]="message.content | markdownAi"></div>
+          </div>
+        </div>
+        <div *ngIf="aiLoading" class="ai-message assistant">
+          <div class="message-content">
+            <strong>🤖 IA:</strong>
+            <p class="typing-indicator"><span></span><span></span><span></span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ai-input-section">
+        <textarea
+          [(ngModel)]="aiPrompt"
+          placeholder="Escribe tu consulta..."
+          rows="3"
+          (keydown)="onKeyDown($event)"
+          [disabled]="aiLoading"
+        ></textarea>
+        <div class="ai-input-buttons">
+          <button class="btn-send-ai" (click)="sendAiMessage()" [disabled]="aiLoading || !aiPrompt.trim()">
+            <i class="bi bi-send-fill"></i>
+            Enviar
+          </button>
+        </div>
+        <small class="ai-hint">Shift+Enter para nueva línea · Enter para enviar</small>
       </div>
     </div>
   </div>

@@ -165,7 +165,6 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   showHistory = true;
   conversations: ConversationSummary[] = [];
   currentConversationId: string | null = null;
-  private readonly STORAGE_KEY = 'sphaira_coach_ai_history';
 
   /* ── Delete confirmation ── */
   showDeleteConfirm = false;
@@ -200,6 +199,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
         this.userId = user.userId;
         this.profileId = user.profileType?.profileId ?? 0;
         this.loadCredits();
+        this.loadConversationsList();
       }
     });
 
@@ -336,21 +336,19 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   }
 
   loadConversationsList(): void {
-    try {
-      const raw = localStorage.getItem(this.STORAGE_KEY);
-      if (raw) {
-        const all = JSON.parse(raw) as { id: string; title: string; date: string; messages: ChatMessage[] }[];
-        this.conversations = all.map(c => ({
+    if (!this.userId) return;
+    this.aiChatService.listHistory(this.userId).subscribe({
+      next: (list) => {
+        this.conversations = (list || []).map((c: any) => ({
           id: c.id,
-          title: c.title,
+          title: c.title || 'Conversación',
           date: c.date,
-          messageCount: c.messages.filter((m: ChatMessage) => m.role === 'user').length,
-          preview: c.messages.filter((m: ChatMessage) => m.role === 'user')[0]?.text?.substring(0, 60) || 'Conversación vacía',
-        })).reverse(); // más recientes primero
-      }
-    } catch {
-      this.conversations = [];
-    }
+          messageCount: c.messageCount || 0,
+          preview: c.title || '',
+        }));
+      },
+      error: () => {}
+    });
   }
 
   startNewConversation(): void {
@@ -386,26 +384,24 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   }
 
   loadConversation(conv: ConversationSummary): void {
-    try {
-      const raw = localStorage.getItem(this.STORAGE_KEY);
-      if (raw) {
-        const all = JSON.parse(raw) as { id: string; title: string; date: string; messages: any[] }[];
-        const found = all.find(c => c.id === conv.id);
-        if (found) {
-          this.currentConversationId = found.id;
-          this.messages = found.messages.map((m: any) => ({
-            ...m,
-            timestamp: new Date(m.timestamp),
-          }));
-          this.msgIdCounter = Math.max(...this.messages.map(m => m.id), 0);
-          // Keep history panel open so user can switch between conversations
-          this.showSuggestions = false;
-          this.shouldScroll = true;
-        }
-      }
-    } catch {
-      // ignore
+    if (this.currentConversationId !== conv.id) {
+      this.saveConversation();
     }
+    this.currentConversationId = conv.id;
+    this.showSuggestions = false;
+    this.aiChatService.getHistoryMessages(conv.id).subscribe({
+      next: (msgs) => {
+        this.messages = (msgs || []).map((m: any, i: number) => ({
+          id: i + 1,
+          role: m.role as 'user' | 'assistant',
+          text: m.text || '',
+          timestamp: m.timestamp ? new Date(m.timestamp) : new Date(),
+        }));
+        this.msgIdCounter = this.messages.length;
+        this.shouldScroll = true;
+      },
+      error: () => {}
+    });
   }
 
   deleteConversation(conv: ConversationSummary, event: Event): void {
@@ -415,23 +411,17 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   }
 
   confirmDeleteConversation(): void {
-    if (!this.conversationToDelete) return;
-    try {
-      const raw = localStorage.getItem(this.STORAGE_KEY);
-      if (raw) {
-        let all = JSON.parse(raw) as any[];
-        all = all.filter(c => c.id !== this.conversationToDelete!.id);
-        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(all));
-        this.loadConversationsList();
-        if (this.currentConversationId === this.conversationToDelete!.id) {
-          this.currentConversationId = null;
-        }
-      }
-    } catch {
-      // ignore
-    }
+    const conv = this.conversationToDelete;
+    if (!conv) return;
     this.showDeleteConfirm = false;
     this.conversationToDelete = null;
+    // Remove from local list immediately for instant UI feedback
+    this.conversations = this.conversations.filter(c => c.id !== conv.id);
+    if (this.currentConversationId === conv.id) {
+      this.currentConversationId = null;
+    }
+    // Delete from backend
+    this.aiChatService.deleteHistory(conv.id).subscribe();
   }
 
   cancelDeleteConversation(): void {
@@ -440,37 +430,16 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   }
 
   private saveConversation(): void {
-    if (!this.currentConversationId) return;
-    try {
-      const raw = localStorage.getItem(this.STORAGE_KEY);
-      let all: any[] = raw ? JSON.parse(raw) : [];
-
-      const userMessages = this.messages.filter(m => m.role === 'user');
-      const title = userMessages[0]?.text?.substring(0, 50) || 'Nueva conversación';
-
-      const idx = all.findIndex((c: any) => c.id === this.currentConversationId);
-      const data = {
-        id: this.currentConversationId,
-        title,
-        date: new Date().toISOString(),
-        messages: this.messages.filter(m => !m.isTyping),
-      };
-
-      if (idx > -1) {
-        all[idx] = data;
-      } else {
-        all.push(data);
-      }
-
-      // Máximo 50 conversaciones
-      if (all.length > 50) {
-        all = all.slice(all.length - 50);
-      }
-
-      localStorage.setItem(this.STORAGE_KEY, JSON.stringify(all));
-    } catch {
-      // ignore
-    }
+    if (!this.currentConversationId || !this.userId) return;
+    const userMessages = this.messages.filter(m => m.role === 'user');
+    if (userMessages.length === 0) return;
+    const title = userMessages[0]?.text?.substring(0, 50) || 'Nueva conversación';
+    const messages = this.messages
+      .filter(m => !m.isTyping && m.text)
+      .map(m => ({ role: m.role, text: m.text }));
+    this.aiChatService.saveHistory(
+      this.userId, this.currentConversationId, title, this.clubId ?? null, 'asistente-coach', messages
+    ).subscribe({ next: () => { this.loadConversationsList(); }, error: () => {} });
   }
 
   /* ═══════════════════════════════════════

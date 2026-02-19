@@ -17,6 +17,9 @@
       <button class="btn-upload" *ngIf="hasPlan" (click)="showUploadModal = true">
         <i class="bi bi-cloud-upload"></i> Subir vídeo
       </button>
+      <button class="btn-drive-import" *ngIf="hasPlan" (click)="importFromDrive()" [disabled]="driveImporting">
+        <i class="bi bi-google"></i> Importar desde Drive
+      </button>
     </div>
   </div>
 
@@ -45,6 +48,12 @@
       <p>Contrata un plan para subir y gestionar vídeos de tus jugadores.</p>
     </div>
     <button class="btn-cta" (click)="showPlansModal = true">Ver planes desde €24,99/mes</button>
+  </div>
+
+  <!-- DRIVE IMPORT PROGRESS -->
+  <div class="drive-import-bar" *ngIf="driveImporting">
+    <div class="spinner-sm"></div>
+    <span>{{ driveImportProgress }}</span>
   </div>
 
   <!-- CARPETAS + BUSCADOR -->
@@ -182,6 +191,10 @@
           <div class="video-actions">
             <button class="btn-play" (click)="playVideo(video)" [disabled]="videoUrlLoading">
               <i class="bi bi-play-fill"></i> Ver
+            </button>
+            <button class="btn-drive-export" (click)="exportToDrive(video)"
+              [disabled]="driveExporting" title="Exportar a Google Drive">
+              <i class="bi" [ngClass]="driveExportingVideoId === video.id ? 'bi-hourglass-split' : 'bi-google'"></i>
             </button>
             <button class="btn-move" (click)="movingVideo = video" title="Mover a carpeta">
               <i class="bi bi-folder-symlink"></i>

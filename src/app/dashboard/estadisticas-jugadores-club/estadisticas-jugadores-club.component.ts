@@ -7,6 +7,8 @@ import { PlayerEstadistica } from 'src/app/core/services/player/player.model';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
+import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { LoginService } from 'src/app/core/services/login/login.service';
 import * as $ from 'jquery';
 
 @Component({
@@ -43,6 +45,7 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
   aiMessages: { role: 'user' | 'assistant'; content: string }[] = [];
   aiLoading = false;
   @ViewChild('aiMessagesContainer') aiMessagesContainer!: ElementRef;
+  private historyConvId: string | null = null;
 
   // Voice recognition
   isRecording = false;
@@ -52,6 +55,8 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
   private voiceErrorSub: Subscription | null = null;
   private voiceTranscriptBase = '';
 
+  userId = 0;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -60,13 +65,16 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
     private elementRef: ElementRef,
     private voiceRecognition: VoiceRecognitionService,
     private translate: TranslateService,
+    private aiChatService: AiChatService,
+    private loginService: LoginService,
   ) {}
 
   ngOnInit(): void {
-    // Suscribirse a los cambios en los parámetros de la URL
+    this.loginService.usuarioActual.pipe().subscribe(user => {
+      if (user) this.userId = user.userId;
+    });
     this.route.params.subscribe((params) => {
-      // Obtener el valor de teamId de los parámetros
-      this.clubId = +params['clubId']; // El + convierte el valor a número
+      this.clubId = +params['clubId'];
     });
     this.cargarTablaJugadores();
     this.initVoiceRecognition();
@@ -366,7 +374,7 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
 
   // ===== AI PANEL METHODS =====
   onKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Enter' && event.ctrlKey) {
+    if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.sendAiMessage();
     }
@@ -388,65 +396,71 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
     this.sendAiMessage();
   }
 
-  async sendAiMessage(): Promise<void> {
+  sendAiMessage(): void {
     if (!this.aiPrompt.trim() || this.aiLoading) return;
 
     const userMessage = this.aiPrompt.trim();
-    this.aiMessages.push({
-      role: 'user',
-      content: userMessage
-    });
-
+    this.aiMessages.push({ role: 'user', content: userMessage });
     this.aiPrompt = '';
     this.aiLoading = true;
-
-    // Scroll to bottom
     setTimeout(() => this.scrollAiToBottom(), 100);
 
-    try {
-      // Aquí se integrará con el servicio real de IA
-      // Por ahora, una respuesta simulada
-      await this.simulateAiResponse(userMessage);
-    } catch (error) {
-      this.aiMessages.push({
-        role: 'assistant',
-        content: this.translate.instant('AI_PANEL.ERROR_MESSAGE')
-      });
-    } finally {
-      this.aiLoading = false;
-      setTimeout(() => this.scrollAiToBottom(), 100);
-    }
+    // Build anonymized stats context from loaded data
+    const { contextText, codeToReal } = this.buildAnonymizedStats();
+
+    // Anonymize user message in case they typed a player name
+    let anonymizedMessage = userMessage;
+    codeToReal.forEach((real, code) => {
+      anonymizedMessage = anonymizedMessage.replace(
+        new RegExp(real.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), code
+      );
+    });
+
+    const enrichedMessage = anonymizedMessage
+      + '\n\n[ESTADÍSTICAS DE JUGADORES - DATOS ANONIMIZADOS]\n' + contextText;
+
+    const history = this.aiMessages.slice(-6).map(m => ({ role: m.role, text: m.content }));
+
+    // Call real AI — clubId=null prevents backend from building conflicting context
+    this.aiChatService.sendMessage(
+      this.userId, this.clubId, 'estadisticas-jugadores', enrichedMessage, 'users', null, history
+    ).subscribe({
+      next: (resp) => {
+        let response = resp.success
+          ? (resp.response || 'Sin respuesta.')
+          : (resp.message || this.translate.instant('AI_PANEL.ERROR_MESSAGE'));
+        // De-anonymize: longest codes first to avoid partial matches (JUGADOR_STAT_1 inside JUGADOR_STAT_10)
+        Array.from(codeToReal.entries())
+          .sort((a, b) => b[0].length - a[0].length)
+          .forEach(([code, real]) => { response = response.split(code).join(real); });
+        this.aiMessages.push({ role: 'assistant', content: response });
+        this.aiLoading = false;
+        this.saveToHistory();
+        setTimeout(() => this.scrollAiToBottom(), 100);
+      },
+      error: () => {
+        this.aiMessages.push({ role: 'assistant', content: this.translate.instant('AI_PANEL.ERROR_MESSAGE') });
+        this.aiLoading = false;
+        setTimeout(() => this.scrollAiToBottom(), 100);
+      }
+    });
   }
 
-  private async simulateAiResponse(userMessage: string): Promise<void> {
-    // Simulación temporal hasta integrar el servicio real
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    let response = '';
-    
-    if (userMessage.toLowerCase().includes('goleador') || userMessage.toLowerCase().includes('goles')) {
-      const topScorer = this.players.reduce((max, p) => p.goles > max.goles ? p : max, this.players[0]);
-      response = `⚽ **Top Goleador**<br><br>El jugador con más goles es <strong>${topScorer?.nombre}</strong> con <strong>${topScorer?.goles} goles</strong> en ${topScorer?.partidosJugados} partidos.`;
-    } else if (userMessage.toLowerCase().includes('asistencia')) {
-      const topAssister = this.players.reduce((max, p) => p.asistencias > max.asistencias ? p : max, this.players[0]);
-      response = `🎯 **Top Asistente**<br><br>El jugador con más asistencias es <strong>${topAssister?.nombre}</strong> con <strong>${topAssister?.asistencias} asistencias</strong>.`;
-    } else if (userMessage.toLowerCase().includes('tarjeta')) {
-      response = `🟨 **Análisis de Tarjetas**<br><br>Estoy preparando un análisis detallado de las tarjetas del equipo. Esta funcionalidad estará disponible próximamente con gráficas interactivas.`;
-    } else if (userMessage.toLowerCase().includes('gráfica') || userMessage.toLowerCase().includes('grafica')) {
-      response = `📊 **Generación de Gráficas**<br><br>¡Excelente idea! Puedo generar gráficas de:<br>• Goles por jugador<br>• Asistencias<br>• Minutos jugados<br>• Comparativas de rendimiento<br><br>Próximamente podrás ver estas gráficas directamente aquí.`;
-    } else {
-      response = `Entiendo tu consulta sobre "${userMessage}". Actualmente puedo ayudarte con:<br><br>
-        📊 Análisis de goles y asistencias<br>
-        ⏱️ Estadísticas de minutos jugados<br>
-        🟨 Información sobre tarjetas<br>
-        📈 Comparativas entre jugadores<br><br>
-        ¿Qué te gustaría saber específicamente?`;
-    }
-
-    this.aiMessages.push({
-      role: 'assistant',
-      content: response
+  private buildAnonymizedStats(): { contextText: string; codeToReal: Map<string, string> } {
+    const codeToReal = new Map<string, string>();
+    const lines: string[] = [
+      'Código | Posición | Partidos | Goles | Asistencias | Min.Totales | T.Amarillas | T.Rojas'
+    ];
+    this.players.forEach((p, i) => {
+      const code = `JUGADOR_STAT_${i + 1}`;
+      codeToReal.set(code, p.nombre || `Jugador ${i + 1}`);
+      lines.push(
+        `${code} | ${p.posicion || '-'} | ${p.partidosJugados || '0'} | `
+        + `${p.goles || '0'} | ${p.asistencias || '0'} | ${p.minTotales || '0'} | `
+        + `${p.tarAmarilla || '0'} | ${p.tarRojas || '0'}`
+      );
     });
+    return { contextText: lines.join('\n'), codeToReal };
   }
 
   private scrollAiToBottom(): void {
@@ -454,6 +468,19 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
       const element = this.aiMessagesContainer.nativeElement;
       element.scrollTop = element.scrollHeight;
     }
+  }
+
+  private saveToHistory(): void {
+    const userMsgs = this.aiMessages.filter(m => m.role === 'user');
+    if (userMsgs.length === 0 || !this.userId) return;
+    const title = '[Estadísticas Jugadores] ' + userMsgs[0].content.substring(0, 40)
+      + (userMsgs[0].content.length > 40 ? '...' : '');
+    const convId = this.historyConvId || ('conv_estadjug_' + Date.now());
+    this.historyConvId = convId;
+    const messages = this.aiMessages
+      .filter(m => m.role === 'user' || m.role === 'assistant')
+      .map(m => ({ role: m.role, text: m.content }));
+    this.aiChatService.saveHistory(this.userId, convId, title, this.clubId, 'estadisticas-jugadores', messages).subscribe();
   }
 
 }

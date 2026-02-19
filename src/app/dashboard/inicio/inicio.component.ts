@@ -189,6 +189,9 @@ export class InicioComponent implements OnInit {
       case 12:
         this.router.navigate(['/dashboard/scouting-club', this.clubId]);
         break;
+      case 13:
+        this.router.navigate(['/dashboard/club-videos', this.clubId]);
+        break;
     }
   }
 

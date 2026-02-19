@@ -88,7 +88,7 @@
 
       <!-- BURBUJA -->
       <div class="message-bubble" *ngIf="!msg.isTyping && !msg.isActionPreview">
-        <div class="message-text" [innerHTML]="msg.text | nl2br"></div>
+        <div class="message-text" [innerHTML]="msg.text | markdownAi"></div>
         <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
       </div>
 
@@ -103,7 +103,7 @@
         <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
       </div>
       <div class="message-bubble" *ngIf="msg.isActionPreview && msg.actionExecuted">
-        <div class="message-text" [innerHTML]="msg.text | nl2br"></div>
+        <div class="message-text" [innerHTML]="msg.text | markdownAi"></div>
         <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
       </div>
 
