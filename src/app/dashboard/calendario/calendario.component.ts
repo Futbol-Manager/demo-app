@@ -47,6 +47,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { FormTemplateSelectorResult } from 'src/app/dashboard/shared/form-template-selector/form-template-selector.component';
 import { FormTemplate } from 'src/app/core/services/form-template/form-template.model';
 import { FormTemplateService } from 'src/app/core/services/form-template/form-template.service';
+import { finalize } from 'rxjs/operators';
 
 declare var html2pdf: any;
 
@@ -87,6 +88,15 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   showFormTemplateSelector = false;
   formSelectorTipo: 'pre-match' | 'post-match' | 'pre-training' | 'post-training' = 'post-match';
   formSelectorEntityId: number = 0;
+
+  // ── Modal de formulario del player ─────────────────────────────────────────
+  showPlayerFormModal = false;
+  playerFormTemplate: FormTemplate | null = null;
+  playerFormTipo: 'pre-match' | 'post-match' | 'pre-training' | 'post-training' = 'pre-training';
+  playerFormEntityId: number = 0;
+  playerFormLoading = false;
+  playerFormAnswers: { [campoId: string]: string } = {};
+  playerFormSaving = false;
   mesActual: Date = new Date();
   /** Vista actual: año (grid 12 meses), mes (tabla), semana (7 días) */
   vistaCalendario: 'year' | 'month' | 'week' = 'month';
@@ -1052,64 +1062,117 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
   }
 
-  navigateToDebrief(type: 'training' | 'match', entityId: number): void {
-    const tipo = type === 'match' ? 'post-match' : 'post-training';
-    this.formSelectorTipo = tipo as any;
-    this.formSelectorEntityId = entityId;
-    this.showFormTemplateSelector = true;
-  }
-
-  openPreForm(type: 'training' | 'match', entityId: number): void {
-    const tipo = type === 'match' ? 'pre-match' : 'pre-training';
-    this.formSelectorTipo = tipo as any;
+  /** Abre el selector de formularios para asignarlo a players en un entrenamiento/partido */
+  openFormSelector(tipo: 'pre-match' | 'post-match' | 'pre-training' | 'post-training', entityId: number): void {
+    this.formSelectorTipo = tipo;
     this.formSelectorEntityId = entityId;
     this.showFormTemplateSelector = true;
   }
 
   onFormTemplateSelected(result: FormTemplateSelectorResult): void {
     this.showFormTemplateSelector = false;
-    const isMatch = this.formSelectorTipo === 'pre-match' || this.formSelectorTipo === 'post-match';
-    const type = isMatch ? 'match' : 'training';
-    if (result.type === 'standard') {
-      if (this.formSelectorTipo === 'post-match' || this.formSelectorTipo === 'post-training') {
-        this.router.navigate(['/dashboard/debrief', type, this.teamId, this.formSelectorEntityId]);
-      } else {
-        this.toastr.info('Formulario estándar de preparación no disponible aún', 'Formulario PRE');
-      }
-    }
-    // Respuesta a template personalizado: se persiste vía servicio
     if (result.type === 'custom' && result.template) {
-      this.persistFormTemplateResponse(result.template);
+      this.assignFormToPlayers(result.template);
     }
   }
 
-  private persistFormTemplateResponse(template: FormTemplate): void {
+  /** Asigna el template seleccionado como formulario activo para ese entrenamiento/partido y notifica a los players */
+  private assignFormToPlayers(template: FormTemplate): void {
     const isMatch = this.formSelectorTipo === 'pre-match' || this.formSelectorTipo === 'post-match';
     const payload: any = {
       formTemplateId: template.formTemplateId,
       coachUserId: this.userId,
       teamId: this.teamId,
       tipo: this.formSelectorTipo,
-      respuestas: '[]',
-      isStandard: 0,
     };
     if (isMatch) {
       payload.matchPreparationId = this.formSelectorEntityId;
     } else {
       payload.trainingSessionId = this.formSelectorEntityId;
     }
-    this.formTemplateService.saveResponse(payload).subscribe(
-      (res: any) => {
-        this.toastr.success(`Formulario "${template.nombre}" guardado correctamente`, 'Formulario guardado');
+    this.formTemplateService.assignTemplate(payload).subscribe(
+      () => {
+        this.toastr.success(
+          `Formulario "${template.nombre}" asignado. Los jugadores recibirán una notificación.`,
+          'Formulario asignado'
+        );
       },
       () => {
-        this.toastr.error('Error al guardar las respuestas del formulario', 'Error');
+        this.toastr.error('Error al asignar el formulario', 'Error');
       }
     );
   }
 
   onFormTemplateSelectorClosed(): void {
     this.showFormTemplateSelector = false;
+  }
+
+  /** Player: abre el formulario asignado por el coach para este entrenamiento/partido */
+  openPlayerForm(tipo: 'pre-match' | 'post-match' | 'pre-training' | 'post-training', entityId: number): void {
+    this.playerFormTipo = tipo;
+    this.playerFormEntityId = entityId;
+    this.playerFormTemplate = null;
+    this.playerFormAnswers = {};
+    this.playerFormLoading = true;
+    this.showPlayerFormModal = true;
+
+    this.formTemplateService.getAssignment(tipo, entityId, this.teamId).pipe(
+      finalize(() => { this.playerFormLoading = false; })
+    ).subscribe({
+      next: (res: any) => {
+        this.playerFormTemplate = res?.data || null;
+        if (this.playerFormTemplate?.campos) {
+          try {
+            const campos = typeof this.playerFormTemplate.campos === 'string'
+              ? JSON.parse(this.playerFormTemplate.campos as any)
+              : this.playerFormTemplate.campos;
+            // Guardamos el array parseado para que getPlayerFormCampos() no haga JSON.parse en cada render
+            (this.playerFormTemplate as any).campos = campos;
+            campos.forEach((c: any) => { this.playerFormAnswers[c.id || c.etiqueta] = ''; });
+          } catch (e) {
+            this.playerFormTemplate = null;
+          }
+        }
+      },
+      error: () => { this.playerFormTemplate = null; }
+    });
+  }
+
+  closePlayerFormModal(): void {
+    this.showPlayerFormModal = false;
+    this.playerFormTemplate = null;
+  }
+
+  getPlayerFormCampos(): any[] {
+    if (!this.playerFormTemplate?.campos) return [];
+    const raw = this.playerFormTemplate.campos as any;
+    return typeof raw === 'string' ? JSON.parse(raw) : raw;
+  }
+
+  submitPlayerForm(): void {
+    if (!this.playerFormTemplate) return;
+    this.playerFormSaving = true;
+    const respuestas = Object.entries(this.playerFormAnswers).map(([campoId, valor]) => ({ campoId, valor }));
+    const isMatch = this.playerFormTipo === 'pre-match' || this.playerFormTipo === 'post-match';
+    const payload: any = {
+      formTemplateId: this.playerFormTemplate.formTemplateId,
+      coachUserId: 0,
+      teamId: this.teamId,
+      tipo: this.playerFormTipo,
+      respuestas: JSON.stringify(respuestas),
+      isStandard: 0,
+    };
+    if (isMatch) payload.matchPreparationId = this.playerFormEntityId;
+    else payload.trainingSessionId = this.playerFormEntityId;
+
+    this.formTemplateService.saveResponse(payload).subscribe(
+      () => {
+        this.playerFormSaving = false;
+        this.showPlayerFormModal = false;
+        this.toastr.success('Formulario enviado correctamente', '¡Listo!');
+      },
+      () => { this.playerFormSaving = false; this.toastr.error('Error al enviar el formulario', 'Error'); }
+    );
   }
 
   navegarAInicio(): void {

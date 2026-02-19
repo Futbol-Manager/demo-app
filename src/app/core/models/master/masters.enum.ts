@@ -7,7 +7,7 @@ export const IMAGESASSETS:string = '/assets/images/'
  * Entornos de la api
  */
 export enum ApiEnvironments{
-    LOCAL = '/rest/',
+    LOCAL = '/api/rest/',
     PRO = '/api/rest/',
     DESA = '/api-desa/rest/'
 }

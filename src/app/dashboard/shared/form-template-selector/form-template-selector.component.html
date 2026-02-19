@@ -6,7 +6,7 @@
       <div class="fts-header__left">
         <i class="bi bi-journal-text"></i>
         <div>
-          <h5>Seleccionar formulario</h5>
+          <h5>Seleccionar formulario para jugadores</h5>
           <span class="fts-tipo-badge">{{ tipoLabel }}</span>
         </div>
       </div>
@@ -33,21 +33,15 @@
       <!-- Loading -->
       <div *ngIf="loading" class="fts-loading">
         <div class="spinner-border spinner-border-sm text-primary"></div>
-        <span>Cargando...</span>
+        <span>Cargando formularios...</span>
       </div>
 
       <ng-container *ngIf="!loading">
 
-        <!-- Formulario estándar (siempre primero) -->
-        <div class="fts-item fts-item--standard" (click)="selectStandard()">
-          <div class="fts-item__icon">
-            <i class="bi bi-patch-check-fill"></i>
-          </div>
-          <div class="fts-item__info">
-            <span class="fts-item__name">Formulario estándar</span>
-            <span class="fts-item__desc">Preguntas predefinidas del sistema</span>
-          </div>
-          <i class="bi bi-chevron-right fts-item__arrow"></i>
+        <!-- Aviso de contexto -->
+        <div class="fts-context-hint">
+          <i class="bi bi-info-circle"></i>
+          El formulario seleccionado se enviará a los jugadores del equipo para ese entrenamiento/partido.
         </div>
 
         <!-- Templates personalizados del club -->
@@ -57,10 +51,7 @@
           </div>
           <div class="fts-item__info">
             <span class="fts-item__name">{{ t.nombre }}</span>
-            <span class="fts-item__desc">
-              {{ (t.campos | json)?.length ? '' : '' }}
-              Personalizado
-            </span>
+            <span class="fts-item__desc">Formulario personalizado</span>
           </div>
           <div class="fts-item__actions" (click)="$event.stopPropagation()">
             <button class="fts-btn-icon" title="Editar" (click)="openEdit(t, $event)">
@@ -76,7 +67,8 @@
         <!-- Sin templates personalizados -->
         <div *ngIf="templates.length === 0" class="fts-empty">
           <i class="bi bi-inbox"></i>
-          <p>Aún no hay formularios personalizados.<br>Crea el primero con el botón de abajo.</p>
+          <p>Aún no tienes formularios personalizados para <strong>{{ tipoLabel }}</strong>.<br>
+             Crea el primero con el botón de abajo.</p>
         </div>
 
         <!-- Botón crear nuevo -->

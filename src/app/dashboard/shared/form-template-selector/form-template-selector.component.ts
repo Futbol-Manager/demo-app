@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { FormTemplateService } from 'src/app/core/services/form-template/form-template.service';
 import {
   FormTemplate,
@@ -9,8 +10,8 @@ import {
 import { FormField } from '../form-builder/form-builder.component';
 
 export interface FormTemplateSelectorResult {
-  type: 'standard' | 'custom';
-  template?: FormTemplate;
+  type: 'custom';
+  template: FormTemplate;
 }
 
 @Component({
@@ -44,7 +45,7 @@ export class FormTemplateSelectorComponent implements OnChanges {
     return FORM_TEMPLATE_TIPO_LABELS[this.tipo] || this.tipo;
   }
 
-  constructor(private ftService: FormTemplateService) {}
+  constructor(private ftService: FormTemplateService, private toastr: ToastrService) {}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['show'] && this.show) {
@@ -65,10 +66,6 @@ export class FormTemplateSelectorComponent implements OnChanges {
     );
   }
 
-  selectStandard(): void {
-    this.selected.emit({ type: 'standard' });
-  }
-
   selectTemplate(t: FormTemplate): void {
     this.selected.emit({ type: 'custom', template: t });
   }
@@ -86,25 +83,50 @@ export class FormTemplateSelectorComponent implements OnChanges {
 
   onBuilderSaved(payload: { nombre: string; campos: FormField[] }): void {
     this.savingTemplate = true;
-    const camposJson = JSON.stringify(payload.campos);
+    const camposParaApi: FormTemplateCampo[] = payload.campos.map((f, idx) => ({
+      id: `campo_${idx + 1}`,
+      tipo: f.tipoCampo as any,
+      etiqueta: f.etiqueta,
+      opciones: (() => { try { return JSON.parse(f.opciones || '[]'); } catch { return []; } })(),
+      obligatorio: f.obligatorio === 1,
+      orden: f.orden,
+    }));
+    const camposJson = JSON.stringify(camposParaApi);
 
     if (this.editingTemplate?.formTemplateId) {
       this.ftService.updateTemplate(this.editingTemplate.formTemplateId, {
         nombre: payload.nombre,
         campos: camposJson,
       }).subscribe(
-        (res: any) => { this.savingTemplate = false; this.showBuilder = false; this.loadTemplates(); },
-        () => { this.savingTemplate = false; }
+        () => {
+          this.savingTemplate = false;
+          this.showBuilder = false;
+          this.loadTemplates();
+          this.toastr.success('Plantilla actualizada correctamente', 'Formulario guardado');
+        },
+        () => {
+          this.savingTemplate = false;
+          this.toastr.error('Error al guardar la plantilla. Inténtalo de nuevo.', 'Error');
+        }
       );
     } else {
       this.ftService.createTemplate({
         clubId: this.clubId,
+        coachUserId: this.coachUserId || null,
         nombre: payload.nombre,
         tipo: this.tipo,
         campos: camposJson,
       }).subscribe(
-        (res: any) => { this.savingTemplate = false; this.showBuilder = false; this.loadTemplates(); },
-        () => { this.savingTemplate = false; }
+        () => {
+          this.savingTemplate = false;
+          this.showBuilder = false;
+          this.loadTemplates();
+          this.toastr.success('Plantilla creada correctamente', 'Formulario guardado');
+        },
+        () => {
+          this.savingTemplate = false;
+          this.toastr.error('Error al guardar la plantilla. Inténtalo de nuevo.', 'Error');
+        }
       );
     }
   }

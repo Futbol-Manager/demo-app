@@ -32,6 +32,7 @@ export class FormTemplateService {
 
   createTemplate(payload: {
     clubId: number;
+    coachUserId?: number | null;
     nombre: string;
     tipo: FormTemplateTipo;
     campos: string;
@@ -72,5 +73,24 @@ export class FormTemplateService {
 
   updateResponse(id: number, payload: { respuestas?: string; formTemplateId?: number | null; isStandard?: number }): Observable<any> {
     return this.http.put(`${this.base}response/${id}`, payload, { headers: this.headers() });
+  }
+
+  // ─── ASSIGNMENTS ──────────────────────────────────────────────────────────
+
+  /** Asigna un template como formulario activo para un entrenamiento/partido y notifica a los players */
+  assignTemplate(payload: {
+    formTemplateId: number;
+    coachUserId: number;
+    teamId: number;
+    tipo: string;
+    matchPreparationId?: number | null;
+    trainingSessionId?: number | null;
+  }): Observable<any> {
+    return this.http.post(`${this.base}assign`, payload, { headers: this.headers() });
+  }
+
+  /** Obtiene el template asignado actualmente a un entrenamiento/partido (o null) */
+  getAssignment(tipo: string, entityId: number, teamId: number): Observable<any> {
+    return this.http.get(`${this.base}assign/${tipo}/${entityId}/${teamId}`, { headers: this.headers() });
   }
 }

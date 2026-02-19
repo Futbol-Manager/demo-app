@@ -45,6 +45,7 @@ export class FormBuilderComponent implements OnInit {
   loading = false;
   saving = false;
   nombreTemplate: string = '';
+  nombreError = false;
 
   fieldTypes = [
     { value: 'TEXT_SHORT', label: 'Texto corto' },
@@ -153,6 +154,11 @@ export class FormBuilderComponent implements OnInit {
 
   saveFields(): void {
     if (this.templateMode) {
+      if (!this.nombreTemplate.trim()) {
+        this.nombreError = true;
+        return;
+      }
+      this.nombreError = false;
       this.updateOrders();
       this.templateSaved.emit({ nombre: this.nombreTemplate, campos: this.fields });
       return;
