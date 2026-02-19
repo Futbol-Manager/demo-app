@@ -1,0 +1,82 @@
+.payment-table-container {
+  .status-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+
+    &.status-green {
+      background-color: #28a745;
+    }
+    &.status-orange {
+      background-color: #fd7e14;
+    }
+    &.status-red {
+      background-color: #dc3545;
+    }
+  }
+
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  .badge {
+    font-size: 0.75rem;
+    &.cursor-pointer {
+      cursor: pointer;
+    }
+  }
+
+  .table th {
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  .btn-group-sm .btn {
+    padding: 0.2rem 0.4rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .payment-table-container {
+    .table th,
+    .table td {
+      font-size: 0.78rem;
+      padding: 0.35rem 0.4rem;
+    }
+
+    .table th {
+      white-space: normal;
+    }
+
+    .btn-group-sm .btn {
+      padding: 0.15rem 0.3rem;
+      font-size: 0.72rem;
+    }
+
+    .col-hide-mobile {
+      display: none;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-table-container {
+    .table th,
+    .table td {
+      font-size: 0.72rem;
+      padding: 0.25rem 0.3rem;
+    }
+
+    .btn-group-sm {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .btn {
+        width: 100%;
+        font-size: 0.68rem;
+      }
+    }
+  }
+}

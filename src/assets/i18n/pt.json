@@ -62,7 +62,9 @@
   "ACTIONS": {
     "EDIT": "Editar associado",
     "INSERT_PAY": "Introduzir um pagamento",
-    "VIEW_HISTORY": "Ver histórico de pagamentos"
+    "VIEW_HISTORY": "Ver histórico de pagamentos",
+    "LOADING": "Carregando...",
+    "SAVE": "Salvar"
   },
   "COACH_STATS": {
     "TITLE": "Estatísticas dos treinadores",
@@ -1486,7 +1488,101 @@
     "TITLE_COL": "Título",
     "AMOUNT": "Valor",
     "METHOD": "Método",
-    "TYPE": "Tipo"
+    "TYPE": "Tipo",
+    "PLAYER": "Jogador",
+    "TEAM": "Equipa",
+    "STATUS": "Estado",
+    "ACTIONS": "Ações",
+    "PAID": "Pago",
+    "REMAINING": "Restante",
+    "PROGRESS": "Progresso",
+    "MANDATORY_DEBT": "Dívida obrigatória",
+    "SEARCH_PLAYER": "Procurar jogador...",
+    "ALL_TEAMS": "Todas as equipas",
+    "ALL_STATUS": "Todos os estados",
+    "STATUS_PAID": "Em dia",
+    "STATUS_CURRENT": "Pendente",
+    "STATUS_OVERDUE": "Vencido",
+    "STATUS_NONE": "Sem pagamentos",
+    "IMPUTE": "Imputar pagamento",
+    "HISTORY": "Histórico",
+    "EDIT": "Editar",
+    "CHARGE_CARD": "Cobrar cartão",
+    "NO_PLAYERS": "Nenhum jogador encontrado.",
+    "PLAYERS": "jogadores",
+    "NEW_TITLE": "Criar novo pagamento",
+    "EDIT_TITLE": "Editar pagamento",
+    "FIELD_TITLE": "Título",
+    "FIELD_DESCRIPTION": "Descrição",
+    "FIELD_AMOUNT": "Montante (€)",
+    "FIELD_DEADLINE": "Prazo",
+    "FIELD_MANDATORY": "É obrigatório?",
+    "FIELD_CHARGE_TYPE": "Tipo de cobrança",
+    "CHARGE_MANUAL": "Manual (dinheiro, transferência...)",
+    "CHARGE_STRIPE_ONE_TIME": "Stripe - Pagamento pontual",
+    "CHARGE_STRIPE_SUBSCRIPTION": "Stripe - Subscrição",
+    "CHARGE_SAVED_CARD": "Cobrar cartão guardado",
+    "SUBSCRIPTION_CONFIG": "Configuração da subscrição",
+    "FIELD_INTERVAL": "Intervalo",
+    "FIELD_INTERVAL_COUNT": "A cada quantos períodos",
+    "FIELD_START_DATE": "Data de início",
+    "FIELD_END_DATE": "Data de fim",
+    "FIELD_TEAMS": "Equipas",
+    "SELECT_ALL_TEAMS": "Selecionar todas",
+    "NO_TEAMS_AVAILABLE": "Nenhuma equipa disponível",
+    "TEAMS_SELECTED": "equipas selecionadas",
+    "BTN_CANCEL": "Cancelar",
+    "BTN_UPDATE": "Atualizar pagamento",
+    "BTN_SAVE": "Guardar pagamento",
+    "IMPUTE_MODAL": {
+      "TITLE": "Imputação de pagamento manual",
+      "CUOTA": "Quota",
+      "SELECT_CUOTA": "Selecionar quota",
+      "AMOUNT": "Montante (€)",
+      "METHOD": "Método de pagamento",
+      "SELECT_METHOD": "Selecionar método",
+      "METHOD_OTHER": "Outro método",
+      "METHOD_OTHER_PLACEHOLDER": "Especificar método...",
+      "DATE": "Data do pagamento",
+      "COMMENT": "Comentário",
+      "COMMENT_PLACEHOLDER": "Notas opcionais..."
+    },
+    "CHARGE_MODAL": {
+      "TITLE": "Cobrar cartão guardado",
+      "NO_CARDS": "Este jogador não tem cartões autorizados.",
+      "SELECT_CARD": "Selecionar cartão",
+      "SELECT_CUOTA": "Selecionar quota",
+      "AMOUNT": "Montante a cobrar (€)",
+      "CHARGE": "Cobrar"
+    },
+    "SUBSCRIPTIONS": {
+      "ALL_STATUS": "Todos os estados",
+      "ACTIVE": "Ativo",
+      "PAUSED_LABEL": "Pausado",
+      "CANCELED_LABEL": "Cancelado",
+      "CUOTA": "Quota",
+      "NEXT_CHARGE": "Próxima cobrança",
+      "START_DATE": "Data de início",
+      "END_DATE": "Data de fim",
+      "PAUSE": "Pausar",
+      "RESUME": "Retomar",
+      "CANCEL": "Cancelar",
+      "NO_SUBSCRIPTIONS": "Nenhuma subscrição para os filtros selecionados."
+    },
+    "EXPORT": {
+      "TITLE": "Exportar"
+    },
+    "HISTORY_MODAL": {
+      "TITLE": "Histórico de pagamentos",
+      "REFUND_INFO": "Os reembolsos não podem ser processados através do Sphaira. Contacte o clube diretamente.",
+      "EMPTY": "Nenhum pagamento registado.",
+      "DATE": "Data",
+      "CONCEPT": "Conceito",
+      "AMOUNT": "Montante",
+      "METHOD": "Método",
+      "COMMENT": "Comentário",
+      "VIEW_RECEIPT": "Ver recibo"
+    }
   },
   "NOTIFICATIONS": {
     "TITLE": "Notificação",
@@ -2597,5 +2693,10 @@
     "VIDEO_UPLOAD_TITLE": "Carregar o seu vídeo", "VIDEO_UPLOAD_DESC": "Subscrição €2,99/mês",
     "VIDEO_UPGRADE": "Ativar subscrição"
   },
-  "AI_REPORT": { "TITLE": "Relatório IA", "GENERATING": "A gerar...", "GENERATED": "Relatório gerado pela IA", "COPY": "Copiar" }
+  "AI_REPORT": { "TITLE": "Relatório IA", "GENERATING": "A gerar...", "GENERATED": "Relatório gerado pela IA", "COPY": "Copiar" },
+  "NOTIF_BELL": {
+    "TITLE": "Notificações",
+    "MARK_ALL_READ": "Marcar tudo como lido",
+    "EMPTY": "Não tem notificações"
+  }
 }

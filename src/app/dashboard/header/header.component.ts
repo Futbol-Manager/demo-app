@@ -105,6 +105,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   creditsLoaded = false;
   showCreditsModal = false;
 
+  // Theme animation
+  themeAnimating = false;
+
+  // Notification modal
+  showNotificationModal = false;
+  modalNotification: { correoRecibidoId: number; asunto: string; remitente: string; fechaCreate: string; leido: number; previewText: string } | null = null;
+  loadingModalBody = false;
+  modalBodyText = '';
+
   // Detección de dispositivo y modal de descarga
   isAndroid = false;
   isiOS = false;
@@ -404,6 +413,64 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return this.expandedNotificationId === id;
   }
 
+  openNotificationModal(notification: { correoRecibidoId: number; asunto: string; remitente: string; fechaCreate: string; leido: number; previewText: string }): void {
+    // Close Bootstrap dropdown
+    document.querySelectorAll('[data-bs-toggle="dropdown"]').forEach(el => {
+      const dd = Dropdown.getInstance(el as HTMLElement);
+      if (dd) dd.hide();
+    });
+
+    this.modalNotification = notification;
+    this.showNotificationModal = true;
+    this.loadingModalBody = true;
+    this.modalBodyText = '';
+
+    if (notification.leido === 0) {
+      this.clubService.openCorreoRecibido(notification.correoRecibidoId).subscribe({
+        next: () => {
+          const idx = this.headerNotifications.findIndex(n => n.correoRecibidoId === notification.correoRecibidoId);
+          if (idx !== -1) this.headerNotifications[idx].leido = 1;
+          this.unreadHeaderNotifications = Math.max(0, this.unreadHeaderNotifications - 1);
+        }
+      });
+    }
+
+    this.clubService.getCorreoRecibido(notification.correoRecibidoId).subscribe({
+      next: (response: Response) => {
+        const data = response?.data as { body?: string } | null;
+        const body = data?.body ?? (typeof response?.data === 'string' ? response.data : '');
+        this.modalBodyText = this.getFullBodyText(body);
+        this.loadingModalBody = false;
+      },
+      error: () => { this.loadingModalBody = false; }
+    });
+  }
+
+  closeNotificationModal(): void {
+    this.showNotificationModal = false;
+    this.modalNotification = null;
+    this.modalBodyText = '';
+  }
+
+  getFullBodyText(body: string | undefined): string {
+    if (body == null || typeof body !== 'string') return '';
+    let text = body.trim();
+    if (!text) return '';
+    try {
+      if (/^[A-Za-z0-9+/]+=*$/.test(text.replace(/\s/g, '')) && !text.includes('<')) {
+        try { text = decodeURIComponent(escape(atob(text))); } catch (_) { text = atob(text); }
+      }
+    } catch (_) {}
+    if (typeof document !== 'undefined') {
+      const div = document.createElement('div');
+      div.innerHTML = text;
+      text = (div.textContent || div.innerText || '').trim();
+    } else {
+      text = text.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    }
+    return text;
+  }
+
   goToSugerencias(): void {
     this.router.navigate(['/dashboard/admin-sugerencias']);
   }
@@ -479,6 +546,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   /** Select theme mode */
   selectTheme(mode: 'light' | 'dark'): void {
     this.themeService.setMode(mode);
+  }
+
+  /** Toggle between light and dark with animation */
+  toggleTheme(): void {
+    if (this.themeAnimating) return;
+    this.themeAnimating = true;
+    const newMode = this.isDarkMode ? 'light' : 'dark';
+    this.themeService.setMode(newMode);
+    setTimeout(() => { this.themeAnimating = false; }, 550);
   }
 
   goInicio() {

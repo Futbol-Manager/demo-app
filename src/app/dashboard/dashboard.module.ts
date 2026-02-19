@@ -116,6 +116,14 @@ import { AdminProspectorComponent } from './admin-prospector/admin-prospector.co
 import { TaskEditModalComponent } from './task-edit-modal/task-edit-modal.component';
 import { FormTemplateSelectorComponent } from './shared/form-template-selector/form-template-selector.component';
 import { FormTemplatesComponent } from './debrief/form-templates/form-templates.component';
+import { PaymentTableComponent } from './new-cuotas/components/payment-table/payment-table.component';
+import { PaymentFormModalComponent } from './new-cuotas/components/payment-form-modal/payment-form-modal.component';
+import { ImputePaymentModalComponent } from './new-cuotas/components/impute-payment-modal/impute-payment-modal.component';
+import { PaymentHistoryModalComponent } from './new-cuotas/components/payment-history-modal/payment-history-modal.component';
+import { SubscriptionManagerComponent } from './new-cuotas/components/subscription-manager/subscription-manager.component';
+import { ChargeSavedCardModalComponent } from './new-cuotas/components/charge-saved-card-modal/charge-saved-card-modal.component';
+import { ExportButtonComponent } from './new-cuotas/components/export-button/export-button.component';
+import { NotificationBellComponent } from './shared/notification-bell/notification-bell.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -232,6 +240,14 @@ export function HttpLoaderFactory(http: HttpClient) {
     TaskEditModalComponent,
     FormTemplateSelectorComponent,
     FormTemplatesComponent,
+    PaymentTableComponent,
+    PaymentFormModalComponent,
+    ImputePaymentModalComponent,
+    PaymentHistoryModalComponent,
+    SubscriptionManagerComponent,
+    ChargeSavedCardModalComponent,
+    ExportButtonComponent,
+    NotificationBellComponent,
   ],
   imports: [
     CommonModule,

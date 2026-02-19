@@ -62,7 +62,9 @@
   "ACTIONS": {
     "EDIT": "Modifier l'abonné",
     "INSERT_PAY": "Ajouter un paiement",
-    "VIEW_HISTORY": "Voir l'historique des paiements"
+    "VIEW_HISTORY": "Voir l'historique des paiements",
+    "LOADING": "Chargement...",
+    "SAVE": "Enregistrer"
   },
   "COACH_STATS": {
     "TITLE": "Statistiques des entraîneurs",
@@ -1538,7 +1540,101 @@
     "TITLE_COL": "Titre",
     "AMOUNT": "Montant",
     "METHOD": "Méthode",
-    "TYPE": "Type"
+    "TYPE": "Type",
+    "PLAYER": "Joueur",
+    "TEAM": "Équipe",
+    "STATUS": "Statut",
+    "ACTIONS": "Actions",
+    "PAID": "Payé",
+    "REMAINING": "Restant",
+    "PROGRESS": "Progrès",
+    "MANDATORY_DEBT": "Dette obligatoire",
+    "SEARCH_PLAYER": "Rechercher un joueur...",
+    "ALL_TEAMS": "Toutes les équipes",
+    "ALL_STATUS": "Tous les statuts",
+    "STATUS_PAID": "À jour",
+    "STATUS_CURRENT": "En attente",
+    "STATUS_OVERDUE": "En retard",
+    "STATUS_NONE": "Aucun paiement",
+    "IMPUTE": "Imputer un paiement",
+    "HISTORY": "Historique",
+    "EDIT": "Modifier",
+    "CHARGE_CARD": "Débiter la carte",
+    "NO_PLAYERS": "Aucun joueur trouvé.",
+    "PLAYERS": "joueurs",
+    "NEW_TITLE": "Créer un nouveau paiement",
+    "EDIT_TITLE": "Modifier le paiement",
+    "FIELD_TITLE": "Titre",
+    "FIELD_DESCRIPTION": "Description",
+    "FIELD_AMOUNT": "Montant (€)",
+    "FIELD_DEADLINE": "Date limite",
+    "FIELD_MANDATORY": "Est-ce obligatoire ?",
+    "FIELD_CHARGE_TYPE": "Type de facturation",
+    "CHARGE_MANUAL": "Manuel (espèces, virement...)",
+    "CHARGE_STRIPE_ONE_TIME": "Stripe - Paiement ponctuel",
+    "CHARGE_STRIPE_SUBSCRIPTION": "Stripe - Abonnement",
+    "CHARGE_SAVED_CARD": "Débit carte enregistrée",
+    "SUBSCRIPTION_CONFIG": "Configuration abonnement",
+    "FIELD_INTERVAL": "Intervalle",
+    "FIELD_INTERVAL_COUNT": "Tous les combien de périodes",
+    "FIELD_START_DATE": "Date de début",
+    "FIELD_END_DATE": "Date de fin",
+    "FIELD_TEAMS": "Équipes",
+    "SELECT_ALL_TEAMS": "Tout sélectionner",
+    "NO_TEAMS_AVAILABLE": "Aucune équipe disponible",
+    "TEAMS_SELECTED": "équipes sélectionnées",
+    "BTN_CANCEL": "Annuler",
+    "BTN_UPDATE": "Mettre à jour",
+    "BTN_SAVE": "Enregistrer le paiement",
+    "IMPUTE_MODAL": {
+      "TITLE": "Imputation de paiement manuel",
+      "CUOTA": "Cotisation",
+      "SELECT_CUOTA": "Sélectionner la cotisation",
+      "AMOUNT": "Montant (€)",
+      "METHOD": "Mode de paiement",
+      "SELECT_METHOD": "Sélectionner le mode",
+      "METHOD_OTHER": "Autre mode",
+      "METHOD_OTHER_PLACEHOLDER": "Préciser le mode...",
+      "DATE": "Date du paiement",
+      "COMMENT": "Commentaire",
+      "COMMENT_PLACEHOLDER": "Notes optionnelles..."
+    },
+    "CHARGE_MODAL": {
+      "TITLE": "Débiter la carte enregistrée",
+      "NO_CARDS": "Ce joueur n'a pas de cartes autorisées.",
+      "SELECT_CARD": "Sélectionner la carte",
+      "SELECT_CUOTA": "Sélectionner la cotisation",
+      "AMOUNT": "Montant à débiter (€)",
+      "CHARGE": "Débiter"
+    },
+    "SUBSCRIPTIONS": {
+      "ALL_STATUS": "Tous les statuts",
+      "ACTIVE": "Actif",
+      "PAUSED_LABEL": "En pause",
+      "CANCELED_LABEL": "Annulé",
+      "CUOTA": "Cotisation",
+      "NEXT_CHARGE": "Prochain débit",
+      "START_DATE": "Date de début",
+      "END_DATE": "Date de fin",
+      "PAUSE": "Mettre en pause",
+      "RESUME": "Reprendre",
+      "CANCEL": "Annuler",
+      "NO_SUBSCRIPTIONS": "Aucun abonnement pour les filtres sélectionnés."
+    },
+    "EXPORT": {
+      "TITLE": "Exporter"
+    },
+    "HISTORY_MODAL": {
+      "TITLE": "Historique des paiements",
+      "REFUND_INFO": "Les remboursements ne peuvent pas être traités via Sphaira. Contactez directement le club.",
+      "EMPTY": "Aucun paiement enregistré.",
+      "DATE": "Date",
+      "CONCEPT": "Concept",
+      "AMOUNT": "Montant",
+      "METHOD": "Mode",
+      "COMMENT": "Commentaire",
+      "VIEW_RECEIPT": "Voir le reçu"
+    }
   },
   "NOTIFICATIONS": {
     "TITLE": "Notification",
@@ -2710,5 +2806,10 @@
     "GENERATING": "Génération...",
     "GENERATED": "Rapport généré par IA",
     "COPY": "Copier"
+  },
+  "NOTIF_BELL": {
+    "TITLE": "Notifications",
+    "MARK_ALL_READ": "Tout marquer comme lu",
+    "EMPTY": "Vous n'avez pas de notifications"
   }
 }

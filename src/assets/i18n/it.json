@@ -35,7 +35,9 @@
     "ERROR_GENERIC": "Si è verificato un errore. Riprova.",
     "CANCEL": "Annulla",
     "DELETE": "Elimina",
-    "ACCEPT": "Accetta"
+    "ACCEPT": "Accetta",
+    "LOADING": "Caricamento...",
+    "SAVE": "Salva"
   },
   "CUADROMANDO": {
     "LOAD_ERROR": "Impossibile caricare il cruscotto. Riprova.",
@@ -2327,7 +2329,101 @@
     "TITLE_COL": "Title",
     "AMOUNT": "Amount",
     "METHOD": "Method",
-    "TYPE": "Type"
+    "TYPE": "Type",
+    "PLAYER": "Giocatore",
+    "TEAM": "Squadra",
+    "STATUS": "Stato",
+    "ACTIONS": "Azioni",
+    "PAID": "Pagato",
+    "REMAINING": "Rimanente",
+    "PROGRESS": "Progresso",
+    "MANDATORY_DEBT": "Debito obbligatorio",
+    "SEARCH_PLAYER": "Cerca giocatore...",
+    "ALL_TEAMS": "Tutte le squadre",
+    "ALL_STATUS": "Tutti gli stati",
+    "STATUS_PAID": "In regola",
+    "STATUS_CURRENT": "In attesa",
+    "STATUS_OVERDUE": "Scaduto",
+    "STATUS_NONE": "Nessun pagamento",
+    "IMPUTE": "Imputare pagamento",
+    "HISTORY": "Storico",
+    "EDIT": "Modifica",
+    "CHARGE_CARD": "Addebita carta",
+    "NO_PLAYERS": "Nessun giocatore trovato.",
+    "PLAYERS": "giocatori",
+    "NEW_TITLE": "Crea nuovo pagamento",
+    "EDIT_TITLE": "Modifica pagamento",
+    "FIELD_TITLE": "Titolo",
+    "FIELD_DESCRIPTION": "Descrizione",
+    "FIELD_AMOUNT": "Importo (€)",
+    "FIELD_DEADLINE": "Scadenza",
+    "FIELD_MANDATORY": "È obbligatorio?",
+    "FIELD_CHARGE_TYPE": "Tipo di addebito",
+    "CHARGE_MANUAL": "Manuale (contanti, bonifico...)",
+    "CHARGE_STRIPE_ONE_TIME": "Stripe - Pagamento singolo",
+    "CHARGE_STRIPE_SUBSCRIPTION": "Stripe - Abbonamento",
+    "CHARGE_SAVED_CARD": "Addebito carta salvata",
+    "SUBSCRIPTION_CONFIG": "Configurazione abbonamento",
+    "FIELD_INTERVAL": "Intervallo",
+    "FIELD_INTERVAL_COUNT": "Ogni quanti periodi",
+    "FIELD_START_DATE": "Data di inizio",
+    "FIELD_END_DATE": "Data di fine",
+    "FIELD_TEAMS": "Squadre",
+    "SELECT_ALL_TEAMS": "Seleziona tutte",
+    "NO_TEAMS_AVAILABLE": "Nessuna squadra disponibile",
+    "TEAMS_SELECTED": "squadre selezionate",
+    "BTN_CANCEL": "Annulla",
+    "BTN_UPDATE": "Aggiorna pagamento",
+    "BTN_SAVE": "Salva pagamento",
+    "IMPUTE_MODAL": {
+      "TITLE": "Imputazione pagamento manuale",
+      "CUOTA": "Quota",
+      "SELECT_CUOTA": "Seleziona quota",
+      "AMOUNT": "Importo (€)",
+      "METHOD": "Metodo di pagamento",
+      "SELECT_METHOD": "Seleziona metodo",
+      "METHOD_OTHER": "Altro metodo",
+      "METHOD_OTHER_PLACEHOLDER": "Specifica il metodo...",
+      "DATE": "Data del pagamento",
+      "COMMENT": "Commento",
+      "COMMENT_PLACEHOLDER": "Note opzionali..."
+    },
+    "CHARGE_MODAL": {
+      "TITLE": "Addebita carta salvata",
+      "NO_CARDS": "Questo giocatore non ha carte autorizzate.",
+      "SELECT_CARD": "Seleziona carta",
+      "SELECT_CUOTA": "Seleziona quota",
+      "AMOUNT": "Importo da addebitare (€)",
+      "CHARGE": "Addebita"
+    },
+    "SUBSCRIPTIONS": {
+      "ALL_STATUS": "Tutti gli stati",
+      "ACTIVE": "Attivo",
+      "PAUSED_LABEL": "In pausa",
+      "CANCELED_LABEL": "Annullato",
+      "CUOTA": "Quota",
+      "NEXT_CHARGE": "Prossimo addebito",
+      "START_DATE": "Data di inizio",
+      "END_DATE": "Data di fine",
+      "PAUSE": "Metti in pausa",
+      "RESUME": "Riprendi",
+      "CANCEL": "Annulla",
+      "NO_SUBSCRIPTIONS": "Nessun abbonamento per i filtri selezionati."
+    },
+    "EXPORT": {
+      "TITLE": "Esporta"
+    },
+    "HISTORY_MODAL": {
+      "TITLE": "Storico pagamenti",
+      "REFUND_INFO": "I rimborsi non possono essere elaborati tramite Sphaira. Contatta direttamente il club.",
+      "EMPTY": "Nessun pagamento registrato.",
+      "DATE": "Data",
+      "CONCEPT": "Concetto",
+      "AMOUNT": "Importo",
+      "METHOD": "Metodo",
+      "COMMENT": "Commento",
+      "VIEW_RECEIPT": "Vedi ricevuta"
+    }
   },
   "NOTIFICATIONS": {
     "TITLE": "Notification",
@@ -2587,5 +2683,10 @@
     "VIDEO_UPLOAD_TITLE": "Carica il tuo video", "VIDEO_UPLOAD_DESC": "Abbonamento €2,99/mese",
     "VIDEO_UPGRADE": "Attiva abbonamento"
   },
-  "AI_REPORT": { "TITLE": "Report IA", "GENERATING": "Generazione...", "GENERATED": "Report generato dall'IA", "COPY": "Copia" }
+  "AI_REPORT": { "TITLE": "Report IA", "GENERATING": "Generazione...", "GENERATED": "Report generato dall'IA", "COPY": "Copia" },
+  "NOTIF_BELL": {
+    "TITLE": "Notifiche",
+    "MARK_ALL_READ": "Segna tutto come letto",
+    "EMPTY": "Non hai notifiche"
+  }
 }

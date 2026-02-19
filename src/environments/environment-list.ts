@@ -6,8 +6,10 @@ export const localenvironment = {
   apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
   prospectorApiUrl: 'http://localhost:8100/api/',
   images: `${APIURLPROD2}${ImageEnvironments.DESA}/`,
+  // BD cualquiera en local -> clave TEST (el backend hace fallback si el cliente es live)
   stripePublicKey: 'pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU',
-  //stripePublicKey: 'pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL'
+  // Produccion -> clave LIVE
+  //stripePublicKey: 'pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL',
   stripePrices: {
     clubMonthly: 'price_1QC6W3HzMBDrutQnKitrxLpV',
     clubAnnual: 'price_1QC6VpHzMBDrutQnbCKNmItj',

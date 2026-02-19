@@ -828,11 +828,78 @@ export class TeamService {
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));
         const url = `${this.base}stripe/subscriptions/verify`;
-        // elimina undefined/null/'' para no obligar al backend
         const cleaned = Object.fromEntries(
             Object.entries(body).filter(([, v]) => v !== undefined && v !== null && v !== '')
         );
         return this.http.post<any>(url, cleaned, { headers });
+    }
+
+    // --- Setup Intent (saved cards) ---
+    createSetupIntent(body: any): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        return this.http.post<any>(`${this.base}stripe/setup-intent/create`, body, { headers });
+    }
+
+    confirmSetupIntent(body: any): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        return this.http.post<any>(`${this.base}stripe/setup-intent/confirm`, body, { headers });
+    }
+
+    getSavedCards(playerId: number, clubId: number): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        return this.http.get<any>(`${this.base}stripe/saved-cards/${playerId}/${clubId}`, { headers });
+    }
+
+    deleteSavedCard(savedCardId: number): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        return this.http.delete<any>(`${this.base}stripe/saved-cards/${savedCardId}`, { headers });
+    }
+
+    chargeSavedCard(body: any): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        return this.http.post<any>(`${this.base}stripe/charge-saved-card`, body, { headers });
+    }
+
+    // --- Subscription management ---
+    pauseSubscription(body: any): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        return this.http.post<any>(`${this.base}stripe/subscriptions/pause`, body, { headers });
+    }
+
+    resumeSubscription(body: any): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        return this.http.post<any>(`${this.base}stripe/subscriptions/resume`, body, { headers });
+    }
+
+    cancelPlayerSubscription(body: any): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        return this.http.post<any>(`${this.base}stripe/subscriptions/cancel-player`, body, { headers });
+    }
+
+    getPlayerSubscriptions(playerId: number, clubId: number): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        return this.http.get<any>(`${this.base}stripe/subscriptions/player/${playerId}/${clubId}`, { headers });
+    }
+
+    getClubSubscriptions(clubId: number): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        return this.http.get<any>(`${this.base}stripe/subscriptions/club/${clubId}`, { headers });
+    }
+
+    desistirCuota(body: { pagoClubId: number; playerId: number; userId: number; clubId: number; temporada?: string; reason?: string }): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        return this.http.post<any>(`${this.base}stripe/cuotas/desistir`, body, { headers });
     }
 
     getOpcionesFederacionCombo(temporada: string, userId: number): Observable<Response> {
@@ -951,6 +1018,12 @@ export class TeamService {
         if (!token) return throwError(() => new Error('No auth token'));
         const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
         return this.http.delete<Response>(url, { headers });
+    }
+
+    getFeeConfig(): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        return this.http.get<any>(`${this.base}stripe/fee-config`, { headers });
     }
 
 }

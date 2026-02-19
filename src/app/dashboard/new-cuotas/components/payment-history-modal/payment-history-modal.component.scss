@@ -1,0 +1,45 @@
+.modal-overlay {
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1055;
+}
+
+.table th {
+  white-space: nowrap;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.badge {
+  font-size: 0.78rem;
+  padding: 0.35em 0.65em;
+}
+
+@media (max-width: 768px) {
+  .modal-dialog {
+    margin: 0.5rem;
+    max-width: calc(100vw - 1rem);
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.78rem;
+    padding: 0.35rem 0.4rem;
+  }
+
+  .table th {
+    white-space: normal;
+  }
+}
+
+@media (max-width: 480px) {
+  .table th,
+  .table td {
+    font-size: 0.72rem;
+    padding: 0.25rem 0.3rem;
+  }
+
+  .modal-body {
+    padding: 0.75rem;
+  }
+}

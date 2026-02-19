@@ -1,0 +1,78 @@
+<div class="subscription-manager-container">
+  <!-- Filter -->
+  <div class="row mb-3">
+    <div class="col-md-4">
+      <select class="form-select" [(ngModel)]="filterStatus">
+        <option value="">{{ 'PAYMENTS.SUBSCRIPTIONS.ALL_STATUS' | translate }}</option>
+        <option value="active">{{ 'PAYMENTS.SUBSCRIPTIONS.ACTIVE' | translate }}</option>
+        <option value="paused">{{ 'PAYMENTS.SUBSCRIPTIONS.PAUSED_LABEL' | translate }}</option>
+        <option value="canceled">{{ 'PAYMENTS.SUBSCRIPTIONS.CANCELED_LABEL' | translate }}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">{{ 'ACTIONS.LOADING' | translate }}</span>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-responsive" *ngIf="!loading">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>{{ 'PAYMENTS.PLAYER' | translate }}</th>
+          <th>{{ 'PAYMENTS.SUBSCRIPTIONS.CUOTA' | translate }}</th>
+          <th class="text-center">{{ 'PAYMENTS.STATUS' | translate }}</th>
+          <th>{{ 'PAYMENTS.SUBSCRIPTIONS.NEXT_CHARGE' | translate }}</th>
+          <th>{{ 'PAYMENTS.SUBSCRIPTIONS.START_DATE' | translate }}</th>
+          <th>{{ 'PAYMENTS.SUBSCRIPTIONS.END_DATE' | translate }}</th>
+          <th class="text-center">{{ 'PAYMENTS.ACTIONS' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let sub of filteredSubscriptions">
+          <td><strong>{{ sub.playerName }}</strong></td>
+          <td>{{ sub.cuotaName }}</td>
+          <td class="text-center">
+            <span class="badge" [ngClass]="getStatusClass(sub.status)">
+              {{ sub.status }}
+            </span>
+          </td>
+          <td>{{ sub.nextChargeDate }}</td>
+          <td>{{ sub.startDate }}</td>
+          <td>{{ sub.endDate || '—' }}</td>
+          <td class="text-center">
+            <div class="btn-group btn-group-sm">
+              <button *ngIf="sub.status === 'active'"
+                      class="btn btn-outline-warning"
+                      title="{{ 'PAYMENTS.SUBSCRIPTIONS.PAUSE' | translate }}"
+                      (click)="pauseSubscription(sub)">
+                <i class="fas fa-pause"></i>
+              </button>
+              <button *ngIf="sub.status === 'paused'"
+                      class="btn btn-outline-success"
+                      title="{{ 'PAYMENTS.SUBSCRIPTIONS.RESUME' | translate }}"
+                      (click)="resumeSubscription(sub)">
+                <i class="fas fa-play"></i>
+              </button>
+              <button *ngIf="sub.status !== 'canceled'"
+                      class="btn btn-outline-danger"
+                      title="{{ 'PAYMENTS.SUBSCRIPTIONS.CANCEL' | translate }}"
+                      (click)="cancelSubscription(sub)">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="filteredSubscriptions.length === 0">
+          <td colspan="7" class="text-center text-muted py-4">
+            {{ 'PAYMENTS.SUBSCRIPTIONS.NO_SUBSCRIPTIONS' | translate }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

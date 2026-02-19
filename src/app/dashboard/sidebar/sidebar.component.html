@@ -1,35 +1,44 @@
-<aside class="sidebar" [class.sidebar--collapsed]="collapsed">
+<aside class="sidebar"
+  [class.sidebar--collapsed]="isEffectivelyCollapsed"
+  [class.sidebar--hovering]="hoverExpanded && collapsed"
+  (mouseenter)="onMouseEnter()"
+  (mouseleave)="onMouseLeave()">
 
-  <!-- Toggle button -->
-  <button class="sidebar-toggle" (click)="toggle()">
-    <i class="bi" [ngClass]="collapsed ? 'bi-list' : 'bi-x-lg'"></i>
+  <!-- Toggle / pin button -->
+  <button class="sidebar-toggle" (click)="toggle()" [title]="isEffectivelyCollapsed ? 'Expandir' : 'Colapsar'">
+    <span class="sidebar-toggle-icon">
+      <i class="bi" [ngClass]="isEffectivelyCollapsed ? 'bi-layout-sidebar' : 'bi-layout-sidebar-inset'"></i>
+    </span>
+    <span class="sidebar-toggle-label" *ngIf="!isEffectivelyCollapsed">Menú</span>
   </button>
 
   <!-- Nav content -->
   <nav class="sidebar-nav">
     <div *ngFor="let section of sections" class="sidebar-section" [class.d-none]="!section.visible">
 
-      <span class="sidebar-section-title" *ngIf="!collapsed">{{ section.title | translate }}</span>
-      <div class="sidebar-section-divider" *ngIf="collapsed"></div>
+      <span class="sidebar-section-title" *ngIf="!isEffectivelyCollapsed">{{ section.title | translate }}</span>
+      <div class="sidebar-section-divider" *ngIf="isEffectivelyCollapsed"></div>
 
       <a *ngFor="let item of section.items"
          class="sidebar-item"
          [class.sidebar-item--active]="isActive(item)"
          (click)="navigate(item)"
-         [title]="collapsed ? (item.label | translate) : ''">
+         [title]="isEffectivelyCollapsed ? (item.label | translate) : ''">
         <i class="bi {{ item.icon }} sidebar-item-icon"></i>
-        <span class="sidebar-item-label" *ngIf="!collapsed">{{ item.label | translate }}</span>
+        <span class="sidebar-item-label" *ngIf="!isEffectivelyCollapsed">{{ item.label | translate }}</span>
+        <span class="sidebar-item-active-dot" *ngIf="isActive(item) && isEffectivelyCollapsed"></span>
       </a>
     </div>
   </nav>
 
   <!-- Footer -->
   <div class="sidebar-footer">
-    <div class="sidebar-brand" *ngIf="!collapsed">
+    <div class="sidebar-brand" *ngIf="!isEffectivelyCollapsed">
       <img src="assets/images/logosphairaw.png" alt="Sphaira Tech" class="brand-logo" />
     </div>
-    <div class="sidebar-brand-icon" *ngIf="collapsed">
+    <div class="sidebar-brand-icon" *ngIf="isEffectivelyCollapsed">
       <img src="assets/images/iconoSphaira.svg" alt="S" class="brand-icon" />
     </div>
   </div>
+
 </aside>

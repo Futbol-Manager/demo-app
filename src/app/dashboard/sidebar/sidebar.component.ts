@@ -32,6 +32,7 @@ export interface SidebarSection {
 export class SidebarComponent implements OnInit, OnDestroy {
 
   collapsed = true;
+  hoverExpanded = false;
   profileId = 0;
   userId = 0;
   clubId = 0;
@@ -80,6 +81,21 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   get isCollapsed(): boolean {
     return this.sidebarService.collapsed;
+  }
+
+  /** Sidebar visualmente colapsada (colapso real o hover no activo) */
+  get isEffectivelyCollapsed(): boolean {
+    return this.collapsed && !this.hoverExpanded;
+  }
+
+  onMouseEnter(): void {
+    if (this.collapsed) {
+      this.hoverExpanded = true;
+    }
+  }
+
+  onMouseLeave(): void {
+    this.hoverExpanded = false;
   }
 
   ngOnInit(): void {

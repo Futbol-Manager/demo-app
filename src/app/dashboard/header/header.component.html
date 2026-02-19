@@ -200,29 +200,17 @@
             </a>
 
             <div class="notifications-list">
-              <div class="notification-row" *ngFor="let notification of headerNotifications">
-                <div class="notification-item-clickable" (click)="openHeaderNotification(notification)">
+              <div class="notification-row" *ngFor="let notification of headerNotifications"
+                (click)="openNotificationModal(notification)">
+                <div class="notification-item-clickable">
                   <i class="bi" [ngClass]="notification.leido === 0 ? 'bi-envelope-fill' : 'bi-envelope-open'"></i>
                   <div class="notification-content">
                     <span class="notification-subject">{{ notification.asunto }}</span>
                     <span class="notification-meta">
                       {{ notification.remitente }} · {{ formatHeaderNotificationDate(notification.fechaCreate) }}
                     </span>
-                    <button type="button" class="notification-expand-btn"
-                      (click)="toggleNotificationPreview(notification.correoRecibidoId); $event.stopPropagation()"
-                      [attr.aria-expanded]="isNotificationExpanded(notification.correoRecibidoId)">
-                      <i class="bi" [ngClass]="isNotificationExpanded(notification.correoRecibidoId) ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
-                      {{ (isNotificationExpanded(notification.correoRecibidoId) ? 'HEADER.NOTIFICATIONS.COLLAPSE' : 'HEADER.NOTIFICATIONS.EXPAND') | translate }}
-                    </button>
                   </div>
-                </div>
-                <div class="notification-preview" *ngIf="isNotificationExpanded(notification.correoRecibidoId)"
-                  (click)="$event.stopPropagation()">
-                  <span *ngIf="loadingPreviewId === notification.correoRecibidoId" class="notification-preview-loading">
-                    <i class="bi bi-arrow-repeat"></i> {{ 'HEADER.NOTIFICATIONS.LOADING' | translate }}
-                  </span>
-                  <span *ngIf="loadingPreviewId !== notification.correoRecibidoId && notification.previewText">{{ notification.previewText }}</span>
-                  <span *ngIf="loadingPreviewId !== notification.correoRecibidoId && !notification.previewText" class="notification-preview-empty">{{ 'HEADER.NOTIFICATIONS.NO_PREVIEW' | translate }}</span>
+                  <i class="bi bi-chevron-right notification-arrow"></i>
                 </div>
               </div>
             </div>
@@ -236,30 +224,16 @@
           </div>
         </div>
 
-        <!-- ===== THEME SELECTOR ===== -->
-        <div class="dropdown">
-          <button class="btn-theme-toggle" data-bs-toggle="dropdown" aria-expanded="false"
-            [attr.aria-label]="(isDarkMode ? 'HEADER.LIGHT_MODE' : 'HEADER.DARK_MODE') | translate">
-            <i class="bi" [ngClass]="isDarkMode ? 'bi-sun-fill' : 'bi-moon-fill'"></i>
-          </button>
-
-          <div class="dropdown-menu dropdown-menu-end theme-dropdown">
-            <!-- Light mode -->
-            <button class="dropdown-item theme-option" [class.active]="!isDarkMode"
-              (click)="selectTheme('light')">
-              <i class="bi bi-sun-fill theme-option-icon light-icon"></i>
-              <span>{{ 'HEADER.LIGHT_MODE' | translate }}</span>
-              <i class="bi bi-check-lg theme-check" *ngIf="!isDarkMode"></i>
-            </button>
-            <!-- Dark mode -->
-            <button class="dropdown-item theme-option" [class.active]="isDarkMode"
-              (click)="selectTheme('dark')">
-              <i class="bi bi-moon-fill theme-option-icon dark-icon"></i>
-              <span>{{ 'HEADER.DARK_MODE' | translate }}</span>
-              <i class="bi bi-check-lg theme-check" *ngIf="isDarkMode"></i>
-            </button>
-          </div>
-        </div>
+        <!-- ===== THEME TOGGLE ===== -->
+        <button class="btn-theme-toggle"
+          [class.theme-toggling]="themeAnimating"
+          (click)="toggleTheme()"
+          [attr.aria-label]="(isDarkMode ? 'HEADER.LIGHT_MODE' : 'HEADER.DARK_MODE') | translate"
+          [title]="(isDarkMode ? 'HEADER.LIGHT_MODE' : 'HEADER.DARK_MODE') | translate">
+          <span class="theme-toggle-icon">
+            <i class="bi" [ngClass]="isDarkMode ? 'bi-sun-fill' : 'bi-moon-stars-fill'"></i>
+          </span>
+        </button>
 
         <!-- ===== USUARIO / PERFIL ===== -->
         <div class="dropdown" style="cursor: pointer; text-align: center;">
@@ -648,6 +622,59 @@
       </div>
 
     </div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE NOTIFICACIÓN -->
+<div class="notif-modal-overlay" *ngIf="showNotificationModal" (click)="closeNotificationModal()">
+  <div class="notif-modal-panel" (click)="$event.stopPropagation()">
+
+    <!-- HEADER -->
+    <div class="notif-modal-header">
+      <div class="notif-modal-icon">
+        <i class="bi bi-envelope-open-fill"></i>
+      </div>
+      <div class="notif-modal-meta">
+        <h5 class="notif-modal-subject">{{ modalNotification?.asunto }}</h5>
+        <div class="notif-modal-info">
+          <i class="bi bi-person-circle"></i>
+          <span>{{ modalNotification?.remitente }}</span>
+          <span class="notif-modal-dot">·</span>
+          <i class="bi bi-clock"></i>
+          <span>{{ formatHeaderNotificationDate(modalNotification?.fechaCreate || '') }}</span>
+        </div>
+      </div>
+      <button class="notif-modal-close" (click)="closeNotificationModal()" aria-label="Cerrar">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- BODY -->
+    <div class="notif-modal-body">
+      <div *ngIf="loadingModalBody" class="notif-modal-loading">
+        <i class="bi bi-arrow-repeat notif-spin"></i>
+        {{ 'HEADER.NOTIFICATIONS.LOADING' | translate }}
+      </div>
+      <div *ngIf="!loadingModalBody && modalBodyText" class="notif-modal-content">
+        {{ modalBodyText }}
+      </div>
+      <div *ngIf="!loadingModalBody && !modalBodyText" class="notif-modal-empty">
+        <i class="bi bi-inbox"></i>
+        <span>{{ 'HEADER.NOTIFICATIONS.NO_PREVIEW' | translate }}</span>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="notif-modal-footer">
+      <button class="notif-modal-btn-primary" (click)="goToNotificationsCenter(); closeNotificationModal()">
+        <i class="bi bi-arrow-right-circle"></i>
+        {{ 'HEADER.NOTIFICATIONS.SEE_MORE' | translate }}
+      </button>
+      <button class="notif-modal-btn-ghost" (click)="closeNotificationModal()">
+        {{ 'HEADER.CANCEL' | translate }}
+      </button>
+    </div>
+
   </div>
 </div>
 

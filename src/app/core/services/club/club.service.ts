@@ -2401,4 +2401,64 @@ export class ClubService {
       { headers: this.getAuthHeaders() }
     );
   }
+
+  // --- Pagos v2 ---
+  getListPlayersPagosClubV2(clubId: number, temporada: string, filters?: { pagos?: string; team?: string; estado?: string }): Observable<Response> {
+    let url = environment.apiUrl + `club/getlistplayerspagosclub-v2/${clubId}/${temporada}`;
+    const params: string[] = [];
+    if (filters?.pagos) params.push(`filterPagos=${filters.pagos}`);
+    if (filters?.team) params.push(`filterTeam=${filters.team}`);
+    if (filters?.estado) params.push(`filterEstado=${filters.estado}`);
+    if (params.length) url += '?' + params.join('&');
+    return this.http.get<Response>(url, { headers: this.getAuthHeaders() });
+  }
+
+  chargeSavedCardsBatch(body: any): Observable<Response> {
+    return this.http.post<Response>(
+      environment.apiUrl + 'club/charge-saved-cards-batch',
+      body,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  exportPagos(clubId: number, temporada: string, format: string): Observable<Blob> {
+    const token: string | null = localStorage.getItem('token');
+    const headers: any = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    return this.http.get(
+      environment.apiUrl + `club/export-pagos/${clubId}/${temporada}/${format}`,
+      { headers, responseType: 'blob' }
+    );
+  }
+
+  // --- Notifications ---
+  getNotifications(userId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + `notifications/${userId}`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getUnreadNotificationCount(userId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + `notifications/unread-count/${userId}`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  markNotificationRead(notificationId: number): Observable<Response> {
+    return this.http.put<Response>(
+      environment.apiUrl + `notifications/${notificationId}/read`,
+      {},
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  markAllNotificationsRead(userId: number): Observable<Response> {
+    return this.http.put<Response>(
+      environment.apiUrl + `notifications/read-all/${userId}`,
+      {},
+      { headers: this.getAuthHeaders() }
+    );
+  }
 }

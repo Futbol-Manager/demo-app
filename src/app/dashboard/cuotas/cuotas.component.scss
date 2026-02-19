@@ -6,6 +6,7 @@ $primary-dark: #002c40;
 $accent: #22bf63;
 $success: #22bf63;
 $warning: #f59e0b;
+$danger: #e53e3e;
 $bg-page: #f4f7fa;
 $card-bg: #ffffff;
 $text-primary: #1a2332;
@@ -81,7 +82,7 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
   padding: 0 1.25rem;
 }
 
-// ─── Banner (estilo Lesiones / Galería) ───────────────────────
+// ─── Banner ─────────────────────────────────────────────────
 .cuotas-page-banner {
   background: linear-gradient(135deg, $primary-dark 0%, #1f8f8a 100%);
   border-radius: 16px;
@@ -190,10 +191,10 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
   i { color: $primary; }
 }
 
-// ─── Estado financiero ──────────────────────────────────────
-.estado-grid {
+// ─── Top Grid (Estado + Shortcut) ───────────────────────────
+.cuotas-top-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: 1rem;
 }
 
@@ -248,75 +249,349 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
   color: $text-primary;
 }
 
-// ─── Tables ──────────────────────────────────────────────────
-.cuotas-tables-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+// ─── Shortcut Cards ─────────────────────────────────────────
+.shortcut-card {
+  background: $card-bg;
+  border-radius: $radius;
+  padding: 1.1rem 1.25rem;
+  box-shadow: $shadow;
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.25s;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: $shadow-lg;
+  }
+
+  &--tarjetas:hover { border-color: rgba($primary, 0.4); }
 }
 
-.cuotas-table-wrap {
+.shortcut-card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.35rem;
+
+  .shortcut-card--tarjetas & {
+    background: linear-gradient(135deg, rgba($primary, 0.12) 0%, rgba($primary, 0.06) 100%);
+    color: $primary;
+  }
+}
+
+.shortcut-card-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.shortcut-card-title {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: $text-primary;
+  line-height: 1.3;
+}
+
+.shortcut-card-subtitle {
+  display: block;
+  font-size: 0.78rem;
+  color: $text-muted;
+  margin-top: 0.15rem;
+}
+
+.shortcut-card-arrow {
+  font-size: 0.85rem;
+  color: $text-muted;
+  opacity: 0.5;
+  transition: opacity 0.2s, transform 0.2s;
+
+  .shortcut-card:hover & {
+    opacity: 1;
+    transform: translateX(2px);
+  }
+}
+
+// ─── Tables ──────────────────────────────────────────────────
+// ─── Premium Cuota List (cq-*) ──────────────────────────────
+.cq-panel {
   background: $card-bg;
   border-radius: $radius;
   box-shadow: $shadow;
+  border: 1px solid $border;
   overflow: hidden;
 }
 
-.table-caption {
+.cq-panel-header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 0;
-  padding: 1rem 1.25rem;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 2px solid $border;
+
+  &--obligatorias {
+    background: linear-gradient(135deg, rgba($primary, 0.07) 0%, rgba($primary-dark, 0.04) 100%);
+    border-bottom-color: rgba($primary, 0.2);
+  }
+
+  &--opcionales {
+    background: linear-gradient(135deg, rgba($accent, 0.06) 0%, rgba($primary-dark, 0.03) 100%);
+    border-bottom-color: rgba($accent, 0.18);
+  }
+}
+
+.cq-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 700;
   color: $text-primary;
-  background: rgba($primary-dark, 0.03);
+  letter-spacing: -0.01em;
+
+  i {
+    font-size: 1.1rem;
+    color: $primary;
+
+    .cq-panel-header--opcionales & { color: $accent; }
+  }
+}
+
+.cq-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 26px;
+  padding: 0 0.5rem;
+  border-radius: 50px;
+  font-size: 0.75rem;
+  font-weight: 700;
+
+  &--primary {
+    background: rgba($primary, 0.12);
+    color: $primary;
+  }
+
+  &--secondary {
+    background: rgba($accent, 0.12);
+    color: darken($accent, 10%);
+  }
+}
+
+// ─── List header (desktop) ──────────────────────────────────
+.cq-list-header {
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 0.8fr 0.8fr 1fr 1fr 2.5rem;
+  gap: 0;
+  padding: 0.55rem 1.25rem 0.55rem 1.5rem;
+  background: rgba($primary-dark, 0.04);
   border-bottom: 1px solid $border;
 
-  i { color: $primary; }
-}
-
-.table-scroll {
-  overflow-x: auto;
-}
-
-.cuotas-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.875rem;
-
-  th, td {
-    padding: 0.75rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid $border;
-  }
-
-  th {
-    font-weight: 600;
-    color: $text-muted;
+  span {
+    font-size: 0.7rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.03em;
-    font-size: 0.75rem;
-    background: rgba($primary-dark, 0.04);
-  }
-
-  td {
-    color: $text-primary;
-  }
-
-  tbody tr {
-    transition: background 0.15s;
-    &:hover { background: rgba($primary, 0.04); }
-    &:last-child td { border-bottom: none; }
-  }
-
-  .empty-row {
-    text-align: center;
+    letter-spacing: 0.06em;
     color: $text-muted;
-    font-style: italic;
-    padding: 1.5rem;
   }
+
+  @media (max-width: 640px) { display: none; }
+}
+
+// ─── Item ───────────────────────────────────────────────────
+.cq-item {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2fr 1.2fr 0.8fr 0.8fr 1fr 1fr 2.5rem;
+  align-items: center;
+  gap: 0;
+  padding: 0.9rem 1.25rem 0.9rem 1.5rem;
+  border-bottom: 1px solid $border;
+  transition: background 0.15s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: rgba($primary, 0.03); }
+
+  // Barra lateral de estado
+  .cq-status-bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    border-radius: 0 2px 2px 0;
+    background: $border;
+    transition: background 0.2s;
+  }
+
+  &.cq-item--paid .cq-status-bar    { background: $success; }
+  &.cq-item--pending .cq-status-bar { background: $warning; }
+  &.cq-item--overdue .cq-status-bar { background: $danger; }
+
+  // Importes coloreados por estado
+  &.cq-item--paid .cq-amount--paid    { color: $success; font-weight: 700; }
+  &.cq-item--pending .cq-amount--paid { color: $warning; font-weight: 700; }
+  &.cq-item--overdue .cq-amount--paid { color: $danger; font-weight: 700; }
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto auto;
+    gap: 0.3rem 0.75rem;
+    padding: 0.9rem 1rem 0.9rem 1.25rem;
+  }
+}
+
+// ─── Columnas ───────────────────────────────────────────────
+.cq-col-name {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+
+  @media (max-width: 640px) {
+    grid-column: 1 / -1;
+  }
+}
+
+.cq-col-tipo {
+  @media (max-width: 640px) { display: none; }
+}
+
+.cq-col-num {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  @media (max-width: 640px) {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.4rem;
+  }
+}
+
+.cq-col-fecha {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  @media (max-width: 640px) {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.4rem;
+  }
+}
+
+.cq-col-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  @media (max-width: 640px) {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
+  }
+}
+
+// ─── Contenido ──────────────────────────────────────────────
+.cq-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $text-primary;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cq-label-mobile {
+  display: none;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $text-muted;
+
+  @media (max-width: 640px) { display: inline; }
+}
+
+.cq-amount {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: $text-primary;
+  white-space: nowrap;
+}
+
+.cq-fecha {
+  font-size: 0.85rem;
+  color: $text-primary;
+  white-space: nowrap;
+}
+
+.cq-tipo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  font-size: 0.73rem;
+  font-weight: 600;
+  background: rgba($text-muted, 0.1);
+  color: $text-muted;
+  white-space: nowrap;
+  width: fit-content;
+
+  i { font-size: 0.75rem; }
+
+  &--sphaira {
+    background: linear-gradient(135deg, rgba($primary, 0.14), rgba($primary-dark, 0.08));
+    color: $primary;
+    border: 1px solid rgba($primary, 0.2);
+  }
+}
+
+// Visibilidad responsive del badge dentro de .cq-col-name
+.cq-show-mobile { display: none; @media (max-width: 640px) { display: inline-flex; } }
+.cq-hide-mobile { @media (max-width: 640px) { display: none !important; } }
+
+// ─── Botón cancelar ─────────────────────────────────────────
+.cq-btn-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: rgba($danger, 0.08);
+  color: $danger;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  font-size: 1rem;
+
+  &:hover { background: rgba($danger, 0.16); transform: scale(1.08); }
+  &:active { transform: scale(0.96); }
+}
+
+// ─── Estado vacío ───────────────────────────────────────────
+.cq-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2.5rem 1.5rem;
+  color: $text-muted;
+  font-size: 0.9rem;
+  font-style: italic;
+
+  i { font-size: 1.3rem; }
 }
 
 // ─── Transfer ────────────────────────────────────────────────
@@ -339,6 +614,7 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem 2rem;
+  border: 1px solid $border;
 }
 
 .transfer-row {
@@ -385,7 +661,183 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
   }
 }
 
-// ─── Modal ───────────────────────────────────────────────────
+// ─── Status indicator ───────────────────────────────────────
+.status-indicator {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ccc;
+  box-shadow: 0 0 0 3px rgba(#ccc, 0.2);
+
+  &.status-paid {
+    background: $success;
+    box-shadow: 0 0 0 3px rgba($success, 0.2);
+  }
+  &.status-pending {
+    background: $warning;
+    box-shadow: 0 0 0 3px rgba($warning, 0.2);
+  }
+  &.status-overdue {
+    background: $danger;
+    box-shadow: 0 0 0 3px rgba($danger, 0.2);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PREMIUM MODALS (Tarjetas & Suscripciones)
+// ═══════════════════════════════════════════════════════════════
+.premium-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 20, 35, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+
+  &--open {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+.premium-modal {
+  width: 100%;
+  max-width: 640px;
+  max-height: 90vh;
+  background: $card-bg;
+  border-radius: 20px;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: premiumModalIn 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+  &--wide {
+    max-width: 720px;
+  }
+}
+
+@keyframes premiumModalIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.premium-modal-header {
+  position: relative;
+  padding: 1.75rem 2rem 1.5rem;
+  overflow: hidden;
+
+  &--cards {
+    background: linear-gradient(135deg, $primary-dark 0%, #0c4a6e 50%, darken($primary, 8%) 100%);
+  }
+
+}
+
+.premium-modal-header-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.05) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.premium-modal-header-content {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: #fff;
+}
+
+.premium-modal-header-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  backdrop-filter: blur(10px);
+
+  i { font-size: 1.5rem; color: #fff; }
+}
+
+.premium-modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.premium-modal-subtitle {
+  margin: 0.2rem 0 0 0;
+  font-size: 0.88rem;
+  opacity: 0.75;
+  color: #fff;
+}
+
+.premium-modal-close {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.15s;
+  z-index: 1;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: scale(1.05);
+  }
+}
+
+.premium-modal-body {
+  padding: 1.75rem 2rem 2rem;
+  overflow-y: auto;
+  flex: 1;
+
+  &::-webkit-scrollbar { width: 6px; }
+  &::-webkit-scrollbar-track { background: transparent; }
+  &::-webkit-scrollbar-thumb {
+    background: rgba($primary-dark, 0.12);
+    border-radius: 10px;
+  }
+}
+
+.modal-add-action {
+  display: flex;
+  justify-content: center;
+  padding: 1rem 0 0.5rem;
+}
+
+// ─── Original modal (Stripe payment) ────────────────────────
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -502,21 +954,11 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
   &::-webkit-scrollbar-thumb { background: rgba(0, 44, 64, 0.25); border-radius: 10px; }
   &::-webkit-scrollbar-thumb:hover { background: rgba(0, 44, 64, 0.4); }
 
-  &--scroll {
-    max-height: 160px;
-  }
-
-  &--authorize {
-    max-height: none;
-    min-height: 4.5em;
-  }
-
-  p {
-    margin: 0;
-  }
+  &--scroll { max-height: 160px; }
+  &--authorize { max-height: none; min-height: 4.5em; }
+  p { margin: 0; }
 }
 
-// Bloque de aceptación de términos (checkbox visible y siempre clickeable)
 .terms-accept-block {
   margin-bottom: 1.5rem;
   padding: 1rem 1.25rem;
@@ -566,9 +1008,7 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
   background: $accent;
   border-color: $accent;
 
-  .terms-accept-icon {
-    opacity: 1;
-  }
+  .terms-accept-icon { opacity: 1; }
 }
 
 .terms-accept-label:hover .terms-accept-box {
@@ -740,7 +1180,6 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
     box-shadow: 0 0 0 3px rgba($primary, 0.1);
   }
 
-  // Stripe injects iframe here; ensure it looks clean
   iframe { border: none !important; }
 }
 
@@ -797,13 +1236,725 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
   border-top-color: #fff;
   border-radius: 50%;
   animation: cuotasSpin 0.7s linear infinite;
+
+  &--danger {
+    border-color: rgba($danger, 0.3);
+    border-top-color: $danger;
+  }
+}
+
+// ─── Tarjetas (inside modal) ─────────────────────────────────
+.tarjetas-loading {
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 0;
+}
+
+.btn-add-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  background: $primary;
+  color: #fff;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+  box-shadow: 0 3px 12px rgba($primary, 0.35);
+
+  i { font-size: 0.95rem; }
+
+  &:hover {
+    background: darken($primary, 8%);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 18px rgba($primary, 0.4);
+  }
+}
+
+.premium-cards-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.premium-card-visual {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  min-width: 260px;
+  border-radius: 18px;
+  padding: 1.5rem 1.6rem 1.2rem;
+  background: linear-gradient(135deg, $primary-dark 0%, #0c4a6e 45%, darken($primary, 10%) 100%);
+  color: #fff;
+  box-shadow: 0 12px 40px rgba(0, 44, 64, 0.28), 0 4px 16px rgba($primary, 0.2);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 50px rgba(0, 44, 64, 0.32), 0 6px 20px rgba($primary, 0.25);
+  }
+}
+
+.pcv-glow {
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba($primary, 0.25);
+  filter: blur(40px);
+  pointer-events: none;
+}
+
+.pcv-chip {
+  i {
+    font-size: 1.8rem;
+    color: rgba(255,255,255,0.85);
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
+  }
+}
+
+.pcv-number {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 1.2rem;
+  letter-spacing: 0.06em;
+
+  .pcv-dots {
+    opacity: 0.65;
+    font-size: 1rem;
+    letter-spacing: 0.25em;
+  }
+
+  .pcv-last4 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+  }
+}
+
+.pcv-footer {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+}
+
+.pcv-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: capitalize;
+  flex: 1;
+
+  i { font-size: 1.2rem; opacity: 0.9; }
+}
+
+.pcv-exp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  small {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    opacity: 0.65;
+  }
+
+  span {
+    font-size: 0.95rem;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+  }
+}
+
+.pcv-delete {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  flex-shrink: 0;
+
+  i { font-size: 0.9rem; }
+
+  &:hover {
+    background: rgba(229, 62, 62, 0.6);
+    border-color: rgba(229, 62, 62, 0.5);
+    transform: scale(1.05);
+  }
+}
+
+// ─── Empty state ─────────────────────────────────────────────
+.tarjetas-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2.5rem 1rem 2rem;
+  gap: 0.5rem;
+  color: $text-muted;
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: $text-primary;
+    margin: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    max-width: 320px;
+  }
+}
+
+.tarjetas-empty-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba($primary, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+
+  i {
+    font-size: 1.8rem;
+    color: $primary;
+  }
+}
+
+// ─── Save Card Panel ──────────────────────────────────────────
+.save-card-panel {
+  background: #fff;
+  border: 1.5px solid $border;
+  border-radius: $radius;
+  padding: 1.75rem;
+  box-shadow: $shadow;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-top: 1rem;
+}
+
+.scp-security-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.9rem;
+  background: rgba($accent, 0.08);
+  border: 1px solid rgba($accent, 0.2);
+  border-radius: 50px;
+  font-size: 0.82rem;
+  color: darken($accent, 10%);
+  align-self: flex-start;
+
+  i { font-size: 0.9rem; color: $accent; }
+}
+
+.scp-auth-box {
+  background: rgba($primary, 0.04);
+  border: 1.5px solid rgba($primary, 0.15);
+  border-radius: $radius-sm;
+  padding: 1.25rem 1.4rem;
+}
+
+.scp-auth-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  color: $primary-dark;
+  font-size: 0.95rem;
+
+  i { color: $primary; font-size: 1.05rem; }
+}
+
+.scp-auth-text {
+  margin: 0 0 1rem 0;
+  font-size: 0.875rem;
+  color: $text-primary;
+  line-height: 1.55;
+}
+
+.scp-check-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  cursor: pointer;
+  user-select: none;
+  font-size: 0.875rem;
+  color: $text-primary;
+  line-height: 1.4;
+}
+
+.scp-check-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.scp-check-box {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  border: 2px solid $border;
+  border-radius: 5px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, border-color 0.2s;
+  margin-top: 0.05rem;
+
+  i {
+    font-size: 0.75rem;
+    color: #fff;
+    opacity: 0;
+    transition: opacity 0.15s;
+  }
+}
+
+.scp-check-input:checked ~ .scp-check-box {
+  background: $primary;
+  border-color: $primary;
+
+  i { opacity: 1; }
+}
+
+.scp-card-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  transition: opacity 0.2s;
+
+  &--disabled {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+}
+
+.scp-card-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: $text-primary;
+}
+
+.stripe-card-wrap--premium {
+  padding: 1rem 1.1rem;
+  background: #fafbfd;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus-within {
+    border-color: $primary;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba($primary, 0.1);
+  }
+}
+
+.scp-card-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  color: $text-muted;
+  margin: 0;
+
+  i { font-size: 0.75rem; color: $accent; }
+}
+
+.scp-feedback {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.1rem;
+  border-radius: $radius-sm;
+  font-size: 0.88rem;
+  animation: scpFadeIn 0.25s ease;
+
+  > i {
+    font-size: 1.15rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  &--error {
+    background: #fff5f5;
+    border: 1.5px solid #fed7d7;
+    color: #742a2a;
+
+    > i { color: $danger; }
+  }
+
+  &--success {
+    background: #f0fff4;
+    border: 1.5px solid #c6f6d5;
+    color: #1a4731;
+
+    > i { color: $accent; }
+  }
+}
+
+.scp-feedback-body {
+  flex: 1;
+
+  strong {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.15rem;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.45;
+    opacity: 0.85;
+  }
+}
+
+.scp-feedback-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.5;
+  padding: 0;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+
+  &:hover { opacity: 1; }
+  i { font-size: 0.85rem; }
+}
+
+@keyframes scpFadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.scp-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.btn-save-card-primary {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.85rem 1.5rem;
+  background: linear-gradient(135deg, $accent 0%, darken($accent, 6%) 100%);
+  border: none;
+  border-radius: $radius-sm;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba($accent, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba($accent, 0.45);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+}
+
+.btn-cancel-card {
+  padding: 0.85rem 1.25rem;
+  background: transparent;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  color: $text-muted;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+
+  &:hover {
+    background: rgba($text-muted, 0.08);
+    color: $text-primary;
+    border-color: darken($border, 10%);
+  }
+}
+
+// ─── Tipo Pago Badge ──────────────────────────────────────────
+.tipo-pago-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 50px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: rgba($text-muted, 0.08);
+  color: $text-muted;
+  white-space: nowrap;
+
+  i { font-size: 0.8rem; }
+
+  &--sphaira {
+    background: linear-gradient(135deg, rgba($primary, 0.12) 0%, rgba($primary, 0.06) 100%);
+    color: $primary;
+    border: 1px solid rgba($primary, 0.25);
+
+    i { color: $primary; }
+  }
+}
+
+// ─── Delete Card Dialog ───────────────────────────────────────
+.delete-card-dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.75rem 1.5rem;
+  background: rgba($danger, 0.04);
+  border: 1.5px solid rgba($danger, 0.2);
+  border-radius: $radius;
+  margin-top: 1rem;
+  animation: scpFadeIn 0.25s ease;
+}
+
+.delete-card-dialog-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba($danger, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+
+  i { font-size: 1.4rem; color: $danger; }
+}
+
+.delete-card-dialog-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.delete-card-dialog-text {
+  margin: 0 0 1.25rem 0;
+  font-size: 0.9rem;
+  color: $text-muted;
+  max-width: 340px;
+  line-height: 1.5;
+}
+
+.delete-card-error {
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.delete-card-dialog-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-delete-confirm {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.25rem;
+  background: $danger;
+  border: none;
+  border-radius: $radius-sm;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba($danger, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 18px rgba($danger, 0.4);
+  }
+}
+
+.btn-delete-cancel {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.25rem;
+  background: transparent;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  color: $text-muted;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+
+  &:hover {
+    background: rgba($text-muted, 0.08);
+    color: $text-primary;
+    border-color: darken($border, 10%);
+  }
+}
+
+// ─── Link All Players Dialog ──────────────────────────────────
+.link-all-players-dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 1.5rem;
+  background: rgba($primary, 0.04);
+  border: 1.5px solid rgba($primary, 0.15);
+  border-radius: $radius;
+  margin-top: 1rem;
+  animation: scpFadeIn 0.25s ease;
+}
+
+.link-all-players-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba($primary, 0.12) 0%, rgba($accent, 0.08) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+
+  i { font-size: 1.5rem; color: $primary; }
+}
+
+.link-all-players-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: $text-primary;
+}
+
+.link-all-players-text {
+  margin: 0 0 1.25rem 0;
+  font-size: 0.9rem;
+  color: $text-muted;
+  max-width: 360px;
+  line-height: 1.5;
+}
+
+.link-all-players-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.btn-link-yes {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.25rem;
+  background: linear-gradient(135deg, $accent 0%, darken($accent, 6%) 100%);
+  border: none;
+  border-radius: $radius-sm;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba($accent, 0.35);
+  transition: transform 0.2s, box-shadow 0.2s;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 5px 18px rgba($accent, 0.4);
+  }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.btn-link-no {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.65rem 1.25rem;
+  background: transparent;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  color: $text-muted;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+
+  &:hover:not(:disabled) {
+    background: rgba($text-muted, 0.08);
+    color: $text-primary;
+    border-color: darken($border, 10%);
+  }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.payment-feedback {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+
+  &--success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  &--error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+  &--info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 1px solid #bee5eb;
+  }
 }
 
 // ─── Responsive ──────────────────────────────────────────────
-@media (max-width: 992px) {
-  .cuotas-tables-row {
-    grid-template-columns: 1fr;
+@media (max-width: 900px) {
+  .cuotas-top-grid {
+    grid-template-columns: 1fr 1fr;
   }
+}
+
+@media (max-width: 992px) {
+  .cq-list-header,
+  .cq-item {
+    grid-template-columns: 2fr 1.1fr 0.8fr 0.8fr 1fr 2.5rem;
+  }
+
+  .cq-col-fecha:last-of-type { display: none; }
 }
 
 @media (max-width: 768px) {
@@ -839,19 +1990,10 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
     border-left: none !important;
   }
 
-  .estado-grid {
-    grid-template-columns: 1fr;
-  }
-
   .estado-card-value {
     font-size: 1.35rem;
   }
 
-  .cuotas-table th,
-  .cuotas-table td {
-    padding: 0.6rem 0.75rem;
-    font-size: 0.8rem;
-  }
 
   .modal-pago {
     max-height: 95vh;
@@ -859,6 +2001,29 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
 
   .modal-pago-body {
     padding: 1.25rem;
+  }
+
+  .premium-modal {
+    max-height: 95vh;
+    border-radius: 16px;
+
+    &--wide {
+      max-width: 100%;
+    }
+  }
+
+  .premium-modal-body {
+    padding: 1.25rem;
+  }
+
+  .premium-modal-header {
+    padding: 1.25rem 1.5rem 1rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .cuotas-top-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -868,8 +2033,224 @@ $shadow-lg: 0 12px 40px rgba(0, 44, 64, 0.12);
     justify-content: center;
   }
 
-  .table-caption {
-    font-size: 0.9rem;
+  .cq-panel-header {
     padding: 0.85rem 1rem;
+  }
+
+  .cq-panel-title { font-size: 0.9rem; }
+
+  .premium-modal-overlay {
+    padding: 0.75rem;
+  }
+}
+
+// ─── Estado desistido en tabla ──────────────────────────────
+.row-desistido {
+  opacity: 0.6;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 6px,
+    rgba($danger, 0.03) 6px,
+    rgba($danger, 0.03) 12px
+  ) !important;
+
+  td { color: $text-muted !important; }
+}
+
+.status-cancelled {
+  background: $text-muted !important;
+}
+
+.badge-desistido {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-left: 0.5rem;
+  padding: 0.15rem 0.5rem;
+  background: rgba($danger, 0.1);
+  color: $danger;
+  border: 1px solid rgba($danger, 0.25);
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+// ─── Botón cancelar cuota (tabla) ───────────────────────────
+.td-actions {
+  width: 2.5rem;
+  text-align: center;
+}
+
+.btn-cuota-cancel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid rgba($danger, 0.35);
+  border-radius: 50%;
+  background: rgba($danger, 0.06);
+  color: $danger;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s, transform 0.15s;
+  font-size: 0.9rem;
+
+  &:hover {
+    background: rgba($danger, 0.15);
+    border-color: $danger;
+    transform: scale(1.1);
+  }
+}
+
+// ─── Modal desistimiento ─────────────────────────────────────
+.premium-modal-header--danger {
+  background: linear-gradient(135deg, #8b1a1a 0%, #c0392b 100%);
+
+  .premium-modal-header-bg {
+    background: radial-gradient(circle at 70% 50%, rgba(255,255,255,0.08) 0%, transparent 60%);
+  }
+}
+
+.premium-modal--cancel-cuota {
+  max-width: 500px;
+}
+
+.cancel-cuota-info {
+  display: flex;
+  gap: 0.75rem;
+  background: rgba($warning, 0.08);
+  border: 1px solid rgba($warning, 0.3);
+  border-radius: $radius-sm;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1.25rem;
+  color: $text-primary;
+  font-size: 0.9rem;
+  line-height: 1.5;
+
+  i {
+    color: $warning;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    margin-top: 0.1rem;
+  }
+
+  p { margin: 0; }
+}
+
+.cancel-cuota-reason-wrap {
+  position: relative;
+  margin-bottom: 1.25rem;
+}
+
+.cancel-cuota-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: $text-primary;
+  margin-bottom: 0.4rem;
+
+  .optional-hint {
+    font-weight: 400;
+    color: $text-muted;
+    font-size: 0.8rem;
+  }
+}
+
+.cancel-cuota-textarea {
+  width: 100%;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.9rem;
+  color: $text-primary;
+  resize: vertical;
+  transition: border-color 0.2s;
+  font-family: inherit;
+
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.cancel-cuota-chars {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.4rem;
+  font-size: 0.75rem;
+  color: $text-muted;
+}
+
+.cancel-cuota-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.btn-cancel-cuota-confirm {
+  flex: 1;
+  min-width: 180px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1.25rem;
+  background: linear-gradient(135deg, #c0392b 0%, #8b1a1a 100%);
+  color: #fff;
+  border: none;
+  border-radius: $radius-sm;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+
+  &:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.btn-cancel-cuota-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1.1rem;
+  background: transparent;
+  color: $text-muted;
+  border: 1.5px solid $border;
+  border-radius: $radius-sm;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+
+  &:hover:not(:disabled) { border-color: $text-muted; color: $text-primary; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+.cancel-cuota-success-body {
+  text-align: center;
+  padding: 2rem 1.5rem;
+}
+
+.cancel-cuota-success {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+
+  i {
+    font-size: 2.8rem;
+    color: $success;
+  }
+
+  p {
+    font-size: 0.95rem;
+    color: $text-primary;
+    line-height: 1.6;
+    margin: 0;
+    max-width: 340px;
   }
 }

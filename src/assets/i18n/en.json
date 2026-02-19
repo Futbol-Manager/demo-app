@@ -62,7 +62,18 @@
   "ACTIONS": {
     "EDIT": "Edit subscriber",
     "INSERT_PAY": "Add a payment",
-    "VIEW_HISTORY": "View payment history"
+    "VIEW_HISTORY": "View payment history",
+    "LOADING": "Loading...",
+    "SAVE": "Save",
+    "CANCEL": "Cancel",
+    "CONFIRM_TITLE": "Confirm",
+    "CONFIRM_DELETE_TITLE": "Confirm deletion",
+    "CONFIRM_DELETE_MESSAGE": "Are you sure? This action cannot be undone.",
+    "DELETE_SUCCESS": "Deleted successfully",
+    "SAVE_SUCCESS": "Saved successfully",
+    "ERROR_GENERIC": "An error occurred. Please try again.",
+    "DELETE": "Delete",
+    "ACCEPT": "Accept"
   },
   "COACH_STATS": {
     "TITLE": "Coach statistics",
@@ -1035,7 +1046,101 @@
     "TITLE_COL": "Title",
     "AMOUNT": "Amount",
     "METHOD": "Method",
-    "TYPE": "Type"
+    "TYPE": "Type",
+    "PLAYER": "Player",
+    "TEAM": "Team",
+    "STATUS": "Status",
+    "ACTIONS": "Actions",
+    "PAID": "Paid",
+    "REMAINING": "Remaining",
+    "PROGRESS": "Progress",
+    "MANDATORY_DEBT": "Mandatory debt",
+    "SEARCH_PLAYER": "Search player...",
+    "ALL_TEAMS": "All teams",
+    "ALL_STATUS": "All statuses",
+    "STATUS_PAID": "Up to date",
+    "STATUS_CURRENT": "Pending",
+    "STATUS_OVERDUE": "Overdue",
+    "STATUS_NONE": "No payments",
+    "IMPUTE": "Impute payment",
+    "HISTORY": "History",
+    "EDIT": "Edit",
+    "CHARGE_CARD": "Charge card",
+    "NO_PLAYERS": "No players found.",
+    "PLAYERS": "players",
+    "NEW_TITLE": "Create new payment",
+    "EDIT_TITLE": "Edit payment",
+    "FIELD_TITLE": "Title",
+    "FIELD_DESCRIPTION": "Description",
+    "FIELD_AMOUNT": "Amount (€)",
+    "FIELD_DEADLINE": "Deadline",
+    "FIELD_MANDATORY": "Is it mandatory?",
+    "FIELD_CHARGE_TYPE": "Charge type",
+    "CHARGE_MANUAL": "Manual (cash, transfer...)",
+    "CHARGE_STRIPE_ONE_TIME": "Stripe - One-time payment",
+    "CHARGE_STRIPE_SUBSCRIPTION": "Stripe - Subscription",
+    "CHARGE_SAVED_CARD": "Charge saved card",
+    "SUBSCRIPTION_CONFIG": "Subscription settings",
+    "FIELD_INTERVAL": "Interval",
+    "FIELD_INTERVAL_COUNT": "Every how many periods",
+    "FIELD_START_DATE": "Start date",
+    "FIELD_END_DATE": "End date",
+    "FIELD_TEAMS": "Teams",
+    "SELECT_ALL_TEAMS": "Select all",
+    "NO_TEAMS_AVAILABLE": "No teams available",
+    "TEAMS_SELECTED": "teams selected",
+    "BTN_CANCEL": "Cancel",
+    "BTN_UPDATE": "Update payment",
+    "BTN_SAVE": "Save payment",
+    "IMPUTE_MODAL": {
+      "TITLE": "Manual payment imputation",
+      "CUOTA": "Fee",
+      "SELECT_CUOTA": "Select fee",
+      "AMOUNT": "Amount (€)",
+      "METHOD": "Payment method",
+      "SELECT_METHOD": "Select method",
+      "METHOD_OTHER": "Other method",
+      "METHOD_OTHER_PLACEHOLDER": "Specify method...",
+      "DATE": "Payment date",
+      "COMMENT": "Comment",
+      "COMMENT_PLACEHOLDER": "Optional notes..."
+    },
+    "CHARGE_MODAL": {
+      "TITLE": "Charge saved card",
+      "NO_CARDS": "This player has no authorized cards.",
+      "SELECT_CARD": "Select card",
+      "SELECT_CUOTA": "Select fee",
+      "AMOUNT": "Amount to charge (€)",
+      "CHARGE": "Charge"
+    },
+    "SUBSCRIPTIONS": {
+      "ALL_STATUS": "All statuses",
+      "ACTIVE": "Active",
+      "PAUSED_LABEL": "Paused",
+      "CANCELED_LABEL": "Canceled",
+      "CUOTA": "Fee",
+      "NEXT_CHARGE": "Next charge",
+      "START_DATE": "Start date",
+      "END_DATE": "End date",
+      "PAUSE": "Pause",
+      "RESUME": "Resume",
+      "CANCEL": "Cancel",
+      "NO_SUBSCRIPTIONS": "No subscriptions match the selected filters."
+    },
+    "EXPORT": {
+      "TITLE": "Export"
+    },
+    "HISTORY_MODAL": {
+      "TITLE": "Payment history",
+      "REFUND_INFO": "Refunds cannot be processed through Sphaira. Contact the club directly to manage any refund.",
+      "EMPTY": "No payments recorded.",
+      "DATE": "Date",
+      "CONCEPT": "Concept",
+      "AMOUNT": "Amount",
+      "METHOD": "Method",
+      "COMMENT": "Comment",
+      "VIEW_RECEIPT": "View receipt"
+    }
   },
   "CLOTHES": {
     "TITLE": "Customize apparel",
@@ -2606,7 +2711,6 @@
     "PLAYERS_UPLOADED_SUCCESS": "Players successfully added to teams",
     "UPLOAD_ERROR": "Error uploading file",
     "ACCEPT_BROWSER_MANAGEMENT": "You must accept that the subscription is managed from the browser"
-    "HINT_CTRL_ENTER": "Press Ctrl+Enter to send"
   },
   "SCOUTING_CLUB": {
     "TITLE": "Club Scouting",
@@ -2722,6 +2826,11 @@
     "VIDEO_UPLOAD_TITLE": "Upload your own video",
     "VIDEO_UPLOAD_DESC": "Requires subscription €2.99/month",
     "VIDEO_UPGRADE": "Activate subscription"
+  },
+  "NOTIF_BELL": {
+    "TITLE": "Notifications",
+    "MARK_ALL_READ": "Mark all read",
+    "EMPTY": "You have no notifications"
   },
   "AI_REPORT": {
     "TITLE": "AI Report",

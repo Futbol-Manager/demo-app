@@ -35,7 +35,9 @@
     "ERROR_GENERIC": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut.",
     "CANCEL": "Abbrechen",
     "DELETE": "Löschen",
-    "ACCEPT": "Akzeptieren"
+    "ACCEPT": "Akzeptieren",
+    "LOADING": "Laden...",
+    "SAVE": "Speichern"
   },
   "CUADROMANDO": {
     "LOAD_ERROR": "Das Dashboard konnte nicht geladen werden. Bitte versuchen Sie es erneut.",
@@ -2332,7 +2334,101 @@
     "TITLE_COL": "Titel",
     "AMOUNT": "Betrag",
     "METHOD": "Methode",
-    "TYPE": "Typ"
+    "TYPE": "Typ",
+    "PLAYER": "Spieler",
+    "TEAM": "Mannschaft",
+    "STATUS": "Status",
+    "ACTIONS": "Aktionen",
+    "PAID": "Bezahlt",
+    "REMAINING": "Ausstehend",
+    "PROGRESS": "Fortschritt",
+    "MANDATORY_DEBT": "Pflichtschuld",
+    "SEARCH_PLAYER": "Spieler suchen...",
+    "ALL_TEAMS": "Alle Mannschaften",
+    "ALL_STATUS": "Alle Status",
+    "STATUS_PAID": "Aktuell",
+    "STATUS_CURRENT": "Ausstehend",
+    "STATUS_OVERDUE": "Überfällig",
+    "STATUS_NONE": "Keine Zahlungen",
+    "IMPUTE": "Zahlung zurechnen",
+    "HISTORY": "Verlauf",
+    "EDIT": "Bearbeiten",
+    "CHARGE_CARD": "Karte belasten",
+    "NO_PLAYERS": "Keine Spieler gefunden.",
+    "PLAYERS": "Spieler",
+    "NEW_TITLE": "Neue Zahlung erstellen",
+    "EDIT_TITLE": "Zahlung bearbeiten",
+    "FIELD_TITLE": "Titel",
+    "FIELD_DESCRIPTION": "Beschreibung",
+    "FIELD_AMOUNT": "Betrag (€)",
+    "FIELD_DEADLINE": "Frist",
+    "FIELD_MANDATORY": "Ist es Pflicht?",
+    "FIELD_CHARGE_TYPE": "Zahlungsart",
+    "CHARGE_MANUAL": "Manuell (Bargeld, Überweisung...)",
+    "CHARGE_STRIPE_ONE_TIME": "Stripe - Einmalzahlung",
+    "CHARGE_STRIPE_SUBSCRIPTION": "Stripe - Abonnement",
+    "CHARGE_SAVED_CARD": "Gespeicherte Karte belasten",
+    "SUBSCRIPTION_CONFIG": "Abonnement-Einstellungen",
+    "FIELD_INTERVAL": "Intervall",
+    "FIELD_INTERVAL_COUNT": "Alle wie viele Perioden",
+    "FIELD_START_DATE": "Startdatum",
+    "FIELD_END_DATE": "Enddatum",
+    "FIELD_TEAMS": "Mannschaften",
+    "SELECT_ALL_TEAMS": "Alle auswählen",
+    "NO_TEAMS_AVAILABLE": "Keine Mannschaften verfügbar",
+    "TEAMS_SELECTED": "Mannschaften ausgewählt",
+    "BTN_CANCEL": "Abbrechen",
+    "BTN_UPDATE": "Zahlung aktualisieren",
+    "BTN_SAVE": "Zahlung speichern",
+    "IMPUTE_MODAL": {
+      "TITLE": "Manuelle Zahlungszuordnung",
+      "CUOTA": "Beitrag",
+      "SELECT_CUOTA": "Beitrag auswählen",
+      "AMOUNT": "Betrag (€)",
+      "METHOD": "Zahlungsmethode",
+      "SELECT_METHOD": "Methode auswählen",
+      "METHOD_OTHER": "Andere Methode",
+      "METHOD_OTHER_PLACEHOLDER": "Methode angeben...",
+      "DATE": "Zahlungsdatum",
+      "COMMENT": "Kommentar",
+      "COMMENT_PLACEHOLDER": "Optionale Anmerkungen..."
+    },
+    "CHARGE_MODAL": {
+      "TITLE": "Gespeicherte Karte belasten",
+      "NO_CARDS": "Dieser Spieler hat keine autorisierten Karten.",
+      "SELECT_CARD": "Karte auswählen",
+      "SELECT_CUOTA": "Beitrag auswählen",
+      "AMOUNT": "Zu belastender Betrag (€)",
+      "CHARGE": "Belasten"
+    },
+    "SUBSCRIPTIONS": {
+      "ALL_STATUS": "Alle Status",
+      "ACTIVE": "Aktiv",
+      "PAUSED_LABEL": "Pausiert",
+      "CANCELED_LABEL": "Gekündigt",
+      "CUOTA": "Beitrag",
+      "NEXT_CHARGE": "Nächste Belastung",
+      "START_DATE": "Startdatum",
+      "END_DATE": "Enddatum",
+      "PAUSE": "Pausieren",
+      "RESUME": "Fortsetzen",
+      "CANCEL": "Kündigen",
+      "NO_SUBSCRIPTIONS": "Keine Abonnements für die ausgewählten Filter."
+    },
+    "EXPORT": {
+      "TITLE": "Exportieren"
+    },
+    "HISTORY_MODAL": {
+      "TITLE": "Zahlungsverlauf",
+      "REFUND_INFO": "Rückerstattungen können nicht über Sphaira abgewickelt werden. Kontaktieren Sie den Verein direkt.",
+      "EMPTY": "Keine Zahlungen verzeichnet.",
+      "DATE": "Datum",
+      "CONCEPT": "Konzept",
+      "AMOUNT": "Betrag",
+      "METHOD": "Methode",
+      "COMMENT": "Kommentar",
+      "VIEW_RECEIPT": "Quittung anzeigen"
+    }
   },
   "NOTIFICATIONS": {
     "TITLE": "Benachrichtigung",
@@ -2592,5 +2688,10 @@
     "VIDEO_UPLOAD_TITLE": "Video hochladen", "VIDEO_UPLOAD_DESC": "Abo €2,99/Monat",
     "VIDEO_UPGRADE": "Abonnement aktivieren"
   },
-  "AI_REPORT": { "TITLE": "KI-Bericht", "GENERATING": "Wird generiert...", "GENERATED": "KI-generierter Bericht", "COPY": "Kopieren" }
+  "AI_REPORT": { "TITLE": "KI-Bericht", "GENERATING": "Wird generiert...", "GENERATED": "KI-generierter Bericht", "COPY": "Kopieren" },
+  "NOTIF_BELL": {
+    "TITLE": "Benachrichtigungen",
+    "MARK_ALL_READ": "Alle als gelesen markieren",
+    "EMPTY": "Keine Benachrichtigungen"
+  }
 }
