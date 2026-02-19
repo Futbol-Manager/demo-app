@@ -5,6 +5,7 @@ import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { PlayerEstadistica } from 'src/app/core/services/player/player.model';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
+import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import * as $ from 'jquery';
 
@@ -57,7 +58,8 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
     private clubService: ClubService,
     private http: HttpClient,
     private elementRef: ElementRef,
-    private voiceRecognition: VoiceRecognitionService
+    private voiceRecognition: VoiceRecognitionService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {

@@ -301,6 +301,8 @@ export class HeaderComponent implements OnInit {
       this.linkCopied = true;
       setTimeout(() => this.linkCopied = false, 2000);
     });
+  }
+
   goToAdminCoaches(): void {
     this.router.navigate(['/dashboard/admin-coaches']);
   }

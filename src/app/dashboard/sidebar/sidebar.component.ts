@@ -194,11 +194,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     const generalItems: SidebarItem[] = [
       { id: 'home', label: 'SIDEBAR.HOME', icon: 'bi-house-door', route: '/dashboard/inicio' },
     ];
-    if (this.profileId === 2) {
-      generalItems.push({ id: 'ai', label: 'SIDEBAR.AI_ASSISTANT', icon: 'bi-robot', route: '/dashboard/asistente-ia-coach' });
-
     if (this.profileId === 2 || this.profileId === 6 || this.profileId === 7) {
-      generalItems.push({ id: 'ai', label: 'Asistente IA', icon: 'bi-robot', route: '/dashboard/asistente-ia-coach' });
+      generalItems.push({ id: 'ai', label: 'SIDEBAR.AI_ASSISTANT', icon: 'bi-robot', route: '/dashboard/asistente-ia-coach' });
     } else if (this.profileId === 1) {
       generalItems.push({ id: 'ai', label: 'SIDEBAR.AI_ASSISTANT', icon: 'bi-robot', route: '/dashboard/asistente-ia' });
     }
@@ -213,16 +210,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'cuotas', label: 'SIDEBAR.FEES', icon: 'bi-bank2', route: `/dashboard/new-cuotas/${this.clubId}` },
         { id: 'ropa', label: 'SIDEBAR.CLOTHING', icon: 'bi-backpack3', route: `/dashboard/ropa/${this.clubId}` },
         { id: 'patrocinadores', label: 'SIDEBAR.SPONSORS', icon: 'bi-collection', route: `/dashboard/patrocinadores/${this.clubId}` },
+        { id: 'scouting', label: 'SIDEBAR.SCOUTING', icon: 'bi-binoculars', route: `/dashboard/scouting-club/${this.clubId}` },
+        { id: 'videos', label: 'SIDEBAR.SCOUTING_VIDEOS', icon: 'bi-collection-play', route: `/dashboard/club-videos/${this.clubId}` },
         { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
-        { id: 'dashboard', label: 'Cuadro de mandos', icon: 'bi-clipboard2-data', route: `/dashboard/cuadro-de-mandos/${this.clubId}` },
-        { id: 'equipos', label: 'Equipos', icon: 'bi-people', route: '/dashboard/equipos' },
-        { id: 'docs', label: 'Documentos', icon: 'bi-file-earmark-pdf', route: `/dashboard/documentos-club/${this.clubId}` },
-        { id: 'cuotas', label: 'Cuotas', icon: 'bi-bank2', route: `/dashboard/new-cuotas/${this.clubId}` },
-        { id: 'ropa', label: 'Ropa', icon: 'bi-backpack3', route: `/dashboard/ropa/${this.clubId}` },
-        { id: 'patrocinadores', label: 'Patrocinadores', icon: 'bi-collection', route: `/dashboard/patrocinadores/${this.clubId}` },
-        { id: 'scouting', label: 'Scouting', icon: 'bi-binoculars', route: `/dashboard/scouting-club/${this.clubId}` },
-        { id: 'videos', label: 'Vídeos Scouting', icon: 'bi-collection-play', route: `/dashboard/club-videos/${this.clubId}` },
-        { id: 'notificaciones', label: 'Notificaciones', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
       ];
       this.sections.push({ id: 'club', title: 'SIDEBAR.SECTION_CLUB', items: clubItems, visible: true });
     }
@@ -260,8 +250,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
       this.sections.push({ id: 'team', title: 'SIDEBAR.SECTION_TEAM', items: teamItems, visible: true });
     }
 
-    // ─── Jugador (profileId >= 3) ───
-    if (this.profileId >= 3 && hasPlayer && !isOnPlayerMenu && !isOnInicio) {
+    // ─── Jugador (profileId 3, 4, 5) ───
+    if (this.profileId >= 3 && this.profileId <= 5 && hasPlayer && !isOnPlayerMenu && !isOnInicio) {
       const playerItems: SidebarItem[] = [
         { id: 'datos', label: 'SIDEBAR.PERSONAL_DATA', icon: 'bi-person', route: `/dashboard/jugadores/${this.teamId}` },
         { id: 'calendario', label: 'SIDEBAR.CALENDAR', icon: 'bi-calendar-event', route: `/dashboard/calendario/${this.teamId}/${this.playerId}` },
@@ -271,6 +261,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'clasificacion', label: 'SIDEBAR.STANDINGS', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
         { id: 'patrocinadores', label: 'SIDEBAR.SPONSORS', icon: 'bi-collection', route: '/dashboard/patrocinadores/0' },
         { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
+      ];
+      this.sections.push({ id: 'player', title: 'SIDEBAR.SECTION_PLAYER', items: playerItems, visible: true });
+    }
+
     // ─── Fisioterapeuta / Nutricionista (profileId 6 o 7) ───
     const isOnFisioMenu = this.currentUrl.includes('/menu-fisio/');
     if ((this.profileId === 6 || this.profileId === 7) && hasTeam && !isOnFisioMenu && !isOnInicio) {
@@ -287,22 +281,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'perfil', label: 'Mi perfil', icon: 'bi-person-badge', route: `/dashboard/perfil-entrenador/${this.teamId}/${this.playerId}` },
       ];
       this.sections.push({ id: 'fisio', title: sectionTitle, items: fisioItems, visible: true });
-    }
-
-    // ─── Jugador (profileId 3, 4, 5 - visible cuando tiene jugador Y NO está en menú jugador) ───
-    if (this.profileId >= 3 && this.profileId <= 5 && hasPlayer && !isOnPlayerMenu && !isOnInicio) {
-      const playerItems: SidebarItem[] = [
-        { id: 'datos', label: 'Datos personales', icon: 'bi-person', route: `/dashboard/jugadores/${this.teamId}` },
-        { id: 'calendario', label: 'Calendario', icon: 'bi-calendar-event', route: `/dashboard/calendario/${this.teamId}/${this.playerId}` },
-        { id: 'cuotas', label: 'Pagar cuotas', icon: 'bi-credit-card', route: `/dashboard/cuotas/${this.teamId}/${this.playerId}` },
-        { id: 'documentos', label: 'Documentación', icon: 'bi-file-earmark-pdf', route: `/dashboard/documentos-jugador/${this.teamId}/${this.playerId}` },
-        { id: 'galeria', label: 'Galería', icon: 'bi-images', route: `/dashboard/partidos-entrevistas/${this.teamId}/${this.playerId}` },
-        { id: 'clasificacion', label: 'Clasificación', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
-        { id: 'patrocinadores', label: 'Patrocinadores', icon: 'bi-collection', route: '/dashboard/patrocinadores/0' },
-        { id: 'notificaciones', label: 'Notificaciones', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
-        { id: 'scouting-profile', label: 'Perfil Scouting', icon: 'bi-binoculars', route: `/dashboard/scouting-player-profile/${this.playerId}` },
-      ];
-      this.sections.push({ id: 'player', title: 'SIDEBAR.SECTION_PLAYER', items: playerItems, visible: true });
     }
 
     // ─── Admin (solo userId 9) ───

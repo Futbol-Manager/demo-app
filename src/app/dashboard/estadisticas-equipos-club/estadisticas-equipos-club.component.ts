@@ -49,7 +49,8 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private elementRef: ElementRef,
     private location: Location,
-    private voiceRecognition: VoiceRecognitionService
+    private voiceRecognition: VoiceRecognitionService,
+    private translate: TranslateService,
   ) {}
 
   ngOnInit(): void {

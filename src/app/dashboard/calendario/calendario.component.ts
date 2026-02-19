@@ -883,6 +883,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     private toastr: ToastrService,
     private ngZone: NgZone,
     private formTemplateService: FormTemplateService,
+    private translate: TranslateService,
   ) { }
 
   ngOnInit(): void {

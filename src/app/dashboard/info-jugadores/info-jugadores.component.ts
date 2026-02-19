@@ -18,6 +18,7 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
 import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-info-jugadores',
@@ -119,7 +120,8 @@ export class InfoJugadoresComponent implements OnInit {
     private loginService: LoginService,
     private dialog: MatDialog,
     private notification: NotificationService,
-    private confirmation: ConfirmationService) { }
+    private confirmation: ConfirmationService,
+    private toastr: ToastrService) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {

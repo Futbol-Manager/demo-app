@@ -311,7 +311,6 @@
             </ng-container>
             <input type="file" hidden accept="image/png,image/jpeg,image/webp" (change)="onFileSelected($event)" [disabled]="uploadingPhoto" />
           </label>
-        </div>
 
         <form [formGroup]="userForm" #thisForm="ngForm" (ngSubmit)="saveChanges()" class="pm-form">
           <div class="pm-form-grid">
@@ -368,7 +367,6 @@
             </div>
           </div>
         </form>
-      </div>
 
         <hr />
 
@@ -434,8 +432,6 @@
           </div>
         </div>
       </div>
-
-    </div>
 
     <!-- FOOTER -->
     <div class="pm-footer">
