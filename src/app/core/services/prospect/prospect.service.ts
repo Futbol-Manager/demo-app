@@ -30,11 +30,32 @@ export class ProspectService {
   }
 
   // Prospects
-  getProspects(campaignId?: number, status?: string, page?: number, size: number = 50): Observable<any> {
-    let params: any = { size };
+  createProspect(data: {
+    campaign_id: number; name: string; city?: string; province?: string;
+    community?: string; category?: string; website?: string; email?: string;
+    phone?: string; instagram?: string; twitter?: string; facebook?: string;
+    estimated_teams?: number; has_youth_academy?: boolean;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.base}prospects`, data);
+  }
+
+  getProspectCampaigns(prospectId: number): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}prospects/${prospectId}/campaigns`);
+  }
+
+  generateEmailForProspect(prospectId: number, campaignId: number): Observable<any> {
+    return this.http.post<any>(`${this.base}prospects/${prospectId}/generate-email?campaign_id=${campaignId}`, {});
+  }
+
+  getProspects(
+    campaignId?: number, status?: string, page?: number, size: number = 50,
+    search?: string, sortBy: string = 'pain_score', sortDir: string = 'desc'
+  ): Observable<any> {
+    let params: any = { size, sort_by: sortBy, sort_dir: sortDir };
     if (campaignId != null) params.campaign_id = campaignId;
     if (status) params.status = status;
     if (page != null) params.page = page;
+    if (search) params.search = search;
     return this.http.get<any>(`${this.base}prospects`, { params });
   }
 
@@ -44,6 +65,10 @@ export class ProspectService {
 
   updateProspect(id: number, data: any): Observable<any> {
     return this.http.put<any>(`${this.base}prospects/${id}`, data);
+  }
+
+  deleteProspect(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.base}prospects/${id}`);
   }
 
   // Emails
@@ -64,6 +89,10 @@ export class ProspectService {
 
   regenerateEmail(emailId: number): Observable<any> {
     return this.http.post<any>(`${this.base}emails/${emailId}/regenerate`, {});
+  }
+
+  deleteEmail(emailId: number): Observable<any> {
+    return this.http.delete<any>(`${this.base}emails/${emailId}`);
   }
 
   // Pipeline actions
@@ -98,8 +127,31 @@ export class ProspectService {
     });
   }
 
+  deleteCampaign(campaignId: number): Observable<any> {
+    return this.http.delete<any>(`${this.base}campaigns/${campaignId}`);
+  }
+
+  addClubsToCampaign(campaignId: number, prospectIds: number[], abRatio = 0.5): Observable<any> {
+    return this.http.post<any>(`${this.base}campaigns/${campaignId}/clubs`, {
+      prospect_ids: prospectIds, ab_ratio: abRatio
+    });
+  }
+
+  removeClubFromCampaign(campaignId: number, prospectId: number): Observable<any> {
+    return this.http.delete<any>(`${this.base}campaigns/${campaignId}/clubs/${prospectId}`);
+  }
+
   // Jobs
   getJob(jobId: string): Observable<any> {
     return this.http.get<any>(`${this.base}jobs/${jobId}`);
+  }
+
+  // AI Settings
+  getSettings(): Observable<Record<string, string>> {
+    return this.http.get<Record<string, string>>(`${this.base}settings`);
+  }
+
+  updateSetting(key: string, value: string): Observable<any> {
+    return this.http.put<any>(`${this.base}settings/${key}`, { value });
   }
 }
