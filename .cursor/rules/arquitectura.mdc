@@ -1,0 +1,66 @@
+---
+description: Arquitectura y contexto del frontend web Angular Sphaira. Léeme antes de cualquier tarea en este proyecto.
+alwaysApply: true
+---
+
+# Rep Fútbol — Frontend Web Angular (Panel de gestión)
+
+## Auto-lectura obligatoria
+Antes de comenzar cualquier tarea, lee con la herramienta Read:
+- El componente `.ts` + `.html` sobre el que se va a trabajar
+- Si se modifica lógica de IA, leer también `src/app/core/services/ai-chat/ai-chat.service.ts`
+- Si se añade texto visible en pantalla, abrir los 4 ficheros i18n: `src/assets/i18n/{es,en,fr,pt}.json`
+
+## Stack
+- **Framework**: Angular con módulos lazy-loaded (`dashboard.module.ts`)
+- **HTTP**: `HttpClient` con `environment.apiUrl` como base
+- **i18n**: ngx-translate, 4 idiomas: `es` `en` `fr` `pt` — **todo texto visible necesita clave i18n**
+- **Estilos**: SCSS, global en `src/styles.scss`, estilos de componente en `.scss` propio
+- **Pagos**: Stripe (servicio en `core/services/stripe/`)
+- **Backend**: `https://appsphairatech.com/api`
+- **Rama de integración del equipo**: `PRUEBAIAEspinosa` (cada desarrollador trabaja en su rama personal y hace PR aquí)
+
+## Interfaces clave del servicio IA (`ai-chat.service.ts`)
+```typescript
+AiChatResponse    → { success, response, creditsRemaining, tokensUsed, error,
+                      hasActions, pendingActions, actionToken }
+AiPendingAction   → { function, arguments, preview }  // acción a confirmar por el usuario
+AiCreditsInfo     → { creditsFree, creditsPurchased, creditsUsed, creditsAvailable }
+AiActionResult    → { success, created, edited, deleted, details, summary, errors }
+```
+La IA puede devolver **acciones pendientes** (`hasActions: true`) que el usuario debe confirmar antes de ejecutar (via `actionToken`).
+
+## Estructura de la app
+```
+core/services/
+  ai-chat/      ← servicio central de chat IA + interfaces de tipos
+  crm/          ← CRM de prospectos
+  prospect/     ← gestión de prospectos
+  stripe/       ← suscripciones y pagos
+  sugerencia/   ← sistema de sugerencias
+
+dashboard/      ← módulo principal (lazy-loaded)
+  inicio/                      ← pantalla de inicio
+  info-jugadores/              ← listado y ficha de jugadores
+  info-entrenadores/           ← listado y ficha de entrenadores
+  asistente-ia/                ← chat IA para usuarios de club
+  asistente-ia-coach/          ← chat IA específico para entrenadores
+  ai-fab/                      ← botón flotante de acceso rápido a IA
+  estadisticas-equipos-club/   ← estadísticas por equipo
+  estadisticas-jugadores-club/ ← estadísticas por jugador
+  admin-ai-insights/           ← panel admin: insights de uso de IA
+  admin-charts/                ← gráficos y métricas (admin)
+  admin-club-detail/           ← detalle de club (admin)
+  admin-prospector/            ← gestión de prospectos (admin)
+  admin-sugerencias/           ← gestión de sugerencias (admin)
+  scouting-player-profile/     ← perfil de scouting de jugador
+  sugerencias-club/            ← sugerencias del club
+  suscripcion-coach/           ← flujo de suscripción (entrenadores)
+  credits-modal/               ← modal de compra de créditos IA
+  pipes/                       ← pipes personalizados (feature nueva)
+```
+
+## Reglas de desarrollo
+- Añadir clave i18n en los 4 JSONs para cualquier texto visible
+- La IA tiene dos flujos: confirmación de acciones (`pendingActions`) y respuesta directa
+- Los componentes admin son solo para rol administrador de Sphaira

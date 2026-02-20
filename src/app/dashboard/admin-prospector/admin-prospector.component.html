@@ -60,6 +60,12 @@
         <i class="bi bi-collection me-1"></i>Campañas
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'library'" (click)="selectTab('library')">
+        <i class="bi bi-buildings me-1"></i>Biblioteca
+        <span *ngIf="libraryTotal" class="badge ms-1 bg-light text-dark small">{{ libraryTotal }}</span>
+      </a>
+    </li>
     <li class="nav-item" *ngIf="selectedCampaign">
       <a class="nav-link" [class.active]="activeTab === 'pipeline'" (click)="selectTab('pipeline')">
         <i class="bi bi-diagram-3 me-1"></i>Pipeline
@@ -76,6 +82,11 @@
       <a class="nav-link" [class.active]="activeTab === 'emails'" (click)="selectTab('emails')">
         <i class="bi bi-envelope me-1"></i>Emails
         <span *ngIf="campaignStats?.total_emails" class="badge ms-1 bg-light text-dark small">{{ campaignStats.total_emails }}</span>
+      </a>
+    </li>
+    <li class="nav-item ms-auto">
+      <a class="nav-link" [class.active]="activeTab === 'settings'" (click)="selectTab('settings')">
+        <i class="bi bi-sliders me-1"></i>Configuración
       </a>
     </li>
   </ul>
@@ -133,9 +144,125 @@
             </td>
             <td class="small text-muted">{{ c.date_created | date:'dd/MM/yy' }}</td>
             <td>
-              <button class="btn btn-sm btn-refresh" (click)="selectCampaign(c)">
-                <i class="bi bi-play-circle"></i> Abrir
+              <div class="d-flex gap-1">
+                <button class="btn btn-sm btn-refresh" (click)="selectCampaign(c)">
+                  <i class="bi bi-play-circle"></i> Abrir
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="confirmDeleteCampaign(c)" title="Borrar campaña">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB: BIBLIOTECA GLOBAL
+  ═══════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab === 'library'">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h5 class="fw-bold mb-0"><i class="bi bi-buildings me-2 text-success"></i>Biblioteca de clubes</h5>
+        <p class="text-muted small mb-0">Todos los clubes descubiertos o añadidos manualmente. Independientes de cualquier campaña.</p>
+      </div>
+      <button class="btn btn-sm btn-refresh" (click)="openAddClubModal()">
+        <i class="bi bi-plus-lg"></i> Añadir club
+      </button>
+    </div>
+
+    <!-- Filtros -->
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body py-2">
+        <div class="row g-2 align-items-center">
+          <div class="col-md-5">
+            <div class="input-group input-group-sm">
+              <span class="input-group-text"><i class="bi bi-search"></i></span>
+              <input type="text" class="form-control" placeholder="Nombre, ciudad, provincia o email..."
+                     [(ngModel)]="librarySearch" (ngModelChange)="onLibrarySearchChange()">
+              <button *ngIf="librarySearch" class="btn btn-outline-secondary btn-sm"
+                      (click)="librarySearch=''; loadLibrary()">
+                <i class="bi bi-x"></i>
               </button>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <select class="form-select form-select-sm" [(ngModel)]="libraryFilterStatus" (change)="loadLibrary()">
+              <option value="">Todos los estados</option>
+              <option value="NEW">Sin enriquecer</option>
+              <option value="ENRICHED">Enriquecidos</option>
+              <option value="ANALYZED">Analizados</option>
+              <option value="EMAIL_READY">Email listo</option>
+              <option value="EMAIL_SENT">Email enviado</option>
+            </select>
+          </div>
+          <div class="col-md-3 d-flex justify-content-end align-items-center gap-2">
+            <span class="text-muted small">{{ libraryTotal }} clubes</span>
+            <button class="btn btn-sm btn-outline-secondary" (click)="loadLibrary()">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="libraryLoading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+    </div>
+
+    <div class="table-responsive" *ngIf="!libraryLoading">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th class="sortable" (click)="librarySortBy2('name')">Club <i class="bi ms-1" [ngClass]="librarySortIcon('name')"></i></th>
+            <th class="sortable" (click)="librarySortBy2('city')">Ciudad <i class="bi ms-1" [ngClass]="librarySortIcon('city')"></i></th>
+            <th class="sortable" (click)="librarySortBy2('province')">Provincia <i class="bi ms-1" [ngClass]="librarySortIcon('province')"></i></th>
+            <th>Email</th>
+            <th class="sortable" (click)="librarySortBy2('pain_score')">Pain <i class="bi ms-1" [ngClass]="librarySortIcon('pain_score')"></i></th>
+            <th class="sortable" (click)="librarySortBy2('status')">Estado <i class="bi ms-1" [ngClass]="librarySortIcon('status')"></i></th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let p of libraryProspects">
+            <td>
+              <div class="club-name" (click)="openProspectDetail(p)">{{ p.name }}</div>
+            </td>
+            <td class="small">{{ p.city || '—' }}</td>
+            <td class="small">{{ p.province }}</td>
+            <td class="small text-truncate" style="max-width:130px;">
+              <a *ngIf="p.email" href="mailto:{{ p.email }}" class="text-muted">{{ p.email }}</a>
+              <span *ngIf="!p.email" class="text-muted">—</span>
+            </td>
+            <td>
+              <div class="pain-score-bar">
+                <span class="pain-score-num fw-bold" [style.color]="painScoreColor(p.pain_score)">{{ p.pain_score || 0 }}</span>
+                <div class="pain-bar-track">
+                  <div class="pain-bar-fill" [style.width.%]="(p.pain_score || 0) * 10"
+                       [style.background]="painScoreColor(p.pain_score)"></div>
+                </div>
+              </div>
+            </td>
+            <td><span class="badge" [ngClass]="statusBadgeClass(p.status)">{{ statusLabel(p.status) }}</span></td>
+            <td>
+              <div class="d-flex gap-1">
+                <button class="btn btn-sm btn-outline-primary" (click)="openProspectDetail(p)" title="Ver detalle">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-success" (click)="openAddToCampaign(p)" title="Añadir a campaña">
+                  <i class="bi bi-plus-circle"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="confirmDeleteProspect(p)" title="Eliminar club">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+          <tr *ngIf="libraryProspects.length === 0 && !libraryLoading">
+            <td colspan="7" class="text-center text-muted py-4">
+              <i class="bi bi-buildings me-2"></i>No hay clubes en la biblioteca
             </td>
           </tr>
         </tbody>
@@ -335,8 +462,11 @@
           <div class="col-md-5">
             <div class="input-group input-group-sm">
               <span class="input-group-text"><i class="bi bi-search"></i></span>
-              <input type="text" class="form-control" placeholder="Buscar por nombre, ciudad o email..."
-                     [(ngModel)]="prospectSearch">
+              <input type="text" class="form-control" placeholder="Buscar por nombre, ciudad, provincia o email..."
+                     [(ngModel)]="prospectSearch" (ngModelChange)="onSearchChange()">
+              <button *ngIf="prospectSearch" class="btn btn-outline-secondary btn-sm" (click)="prospectSearch=''; filterProspects()">
+                <i class="bi bi-x"></i>
+              </button>
             </div>
           </div>
           <div class="col-md-4">
@@ -351,6 +481,12 @@
           </div>
           <div class="col-md-3 d-flex justify-content-end align-items-center gap-2">
             <span class="text-muted small">{{ prospectsTotal }} clubes</span>
+            <button class="btn btn-sm btn-outline-secondary" (click)="loadProspects()" title="Actualizar lista">
+              <i class="bi bi-arrow-clockwise"></i>
+            </button>
+            <button class="btn btn-sm btn-refresh" (click)="openAddClubModal()" title="Añadir club manualmente">
+              <i class="bi bi-plus-lg"></i> Añadir
+            </button>
           </div>
         </div>
       </div>
@@ -364,13 +500,24 @@
       <table class="table align-middle">
         <thead>
           <tr>
-            <th>Club</th>
-            <th>Provincia</th>
+            <th class="sortable" (click)="sortBy('name')">
+              Club <i class="bi ms-1" [ngClass]="sortIcon('name')"></i>
+            </th>
+            <th class="sortable" (click)="sortBy('city')">
+              Ciudad <i class="bi ms-1" [ngClass]="sortIcon('city')"></i>
+            </th>
+            <th class="sortable" (click)="sortBy('province')">
+              Provincia <i class="bi ms-1" [ngClass]="sortIcon('province')"></i>
+            </th>
             <th>Email</th>
             <th>Digitalización</th>
-            <th>Pain</th>
+            <th class="sortable" (click)="sortBy('pain_score')">
+              Pain <i class="bi ms-1" [ngClass]="sortIcon('pain_score')"></i>
+            </th>
             <th>Grupo</th>
-            <th>Estado</th>
+            <th class="sortable" (click)="sortBy('status')">
+              Estado <i class="bi ms-1" [ngClass]="sortIcon('status')"></i>
+            </th>
             <th></th>
           </tr>
         </thead>
@@ -378,10 +525,10 @@
           <tr *ngFor="let p of filteredProspects">
             <td>
               <div class="club-name" (click)="openProspectDetail(p)">{{ p.name }}</div>
-              <div class="small text-muted">{{ p.city }}</div>
             </td>
+            <td class="small">{{ p.city || '—' }}</td>
             <td class="small">{{ p.province }}</td>
-            <td class="small text-truncate" style="max-width:160px;">
+            <td class="small text-truncate" style="max-width:140px;">
               <a *ngIf="p.email" href="mailto:{{ p.email }}" class="text-muted">{{ p.email }}</a>
               <span *ngIf="!p.email" class="text-muted">—</span>
             </td>
@@ -409,13 +556,27 @@
             </td>
             <td><span class="badge" [ngClass]="statusBadgeClass(p.status)">{{ statusLabel(p.status) }}</span></td>
             <td>
-              <button class="btn btn-sm btn-outline-primary" (click)="openProspectDetail(p)" title="Ver detalle">
-                <i class="bi bi-eye"></i>
-              </button>
+              <div class="d-flex gap-1 flex-wrap">
+                <button class="btn btn-sm btn-outline-primary" (click)="openProspectDetail(p)" title="Ver detalle">
+                  <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-success" (click)="generateEmailForProspect(p)"
+                        title="Generar email con IA"
+                        [disabled]="isGeneratingEmail || !p.pain_points?.length">
+                  <i class="bi bi-envelope-plus" *ngIf="!isGeneratingEmail"></i>
+                  <i class="bi bi-hourglass-split spin-icon" *ngIf="isGeneratingEmail"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-warning" (click)="confirmRemoveFromCampaign(p)" title="Quitar de esta campaña">
+                  <i class="bi bi-dash-circle"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" (click)="confirmDeleteProspect(p)" title="Eliminar de la biblioteca">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
             </td>
           </tr>
           <tr *ngIf="filteredProspects.length === 0">
-            <td colspan="8" class="text-center text-muted py-4">
+            <td colspan="9" class="text-center text-muted py-4">
               <i class="bi bi-inbox me-2"></i>No hay clubes con ese filtro
             </td>
           </tr>
@@ -496,21 +657,63 @@
         <thead>
           <tr>
             <th>Club</th>
-            <th>Email destino</th>
             <th>Asunto</th>
             <th>Grupo</th>
+            <th class="text-center" title="Abierto">
+              <i class="bi bi-envelope-open"></i>
+            </th>
+            <th class="text-center" title="Clic en enlace">
+              <i class="bi bi-cursor"></i>
+            </th>
+            <th class="text-center" title="Respondió">
+              <i class="bi bi-reply"></i>
+            </th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let e of emails">
-            <td class="fw-semibold">{{ e.club_name }}</td>
-            <td class="small text-muted">{{ e.club_email || '—' }}</td>
-            <td class="small text-truncate" style="max-width:240px;" [title]="e.subject">{{ e.subject }}</td>
+          <tr *ngFor="let e of emails" [class.row-bounced]="e.bounced">
+            <td>
+              <div class="fw-semibold">{{ e.club_name }}</div>
+              <div class="small text-muted">{{ e.club_email || '—' }}</div>
+            </td>
+            <td class="small text-truncate" style="max-width:200px;" [title]="e.subject">{{ e.subject }}</td>
             <td>
               <span class="badge" [ngClass]="e.ab_variant === 'A' ? 'bg-primary' : 'bg-info'">
-                {{ e.ab_variant === 'A' ? 'A · Personalizado' : 'B · Genérico' }}
+                {{ e.ab_variant }}
+              </span>
+            </td>
+            <!-- Abierto -->
+            <td class="text-center">
+              <span *ngIf="e.opened_at" class="tracking-hit" [title]="'Abierto: ' + (e.opened_at | date:'dd/MM/yy HH:mm') + (e.open_count > 1 ? ' (' + e.open_count + 'x)' : '')">
+                <i class="bi bi-envelope-open-fill text-success"></i>
+                <span *ngIf="e.open_count > 1" class="tracking-count">{{ e.open_count }}</span>
+              </span>
+              <span *ngIf="!e.opened_at && e.status === 'SENT'" class="text-muted">
+                <i class="bi bi-envelope"></i>
+              </span>
+              <span *ngIf="e.status !== 'SENT'" class="text-muted small">—</span>
+            </td>
+            <!-- Clic -->
+            <td class="text-center">
+              <span *ngIf="e.clicked_at" class="tracking-hit" [title]="'Clic: ' + (e.clicked_at | date:'dd/MM/yy HH:mm')">
+                <i class="bi bi-cursor-fill text-primary"></i>
+              </span>
+              <span *ngIf="!e.clicked_at" class="text-muted">
+                <i class="bi bi-dash"></i>
+              </span>
+            </td>
+            <!-- Respondió -->
+            <td class="text-center">
+              <span *ngIf="e.replied_at" class="tracking-hit" [title]="'Respuesta: ' + (e.replied_at | date:'dd/MM/yy HH:mm')">
+                <i class="bi bi-reply-fill text-warning"></i>
+              </span>
+              <span *ngIf="e.bounced" class="tracking-hit" title="Email rebotado (inválido)">
+                <i class="bi bi-x-circle-fill text-danger"></i>
+              </span>
+              <span *ngIf="!e.replied_at && !e.bounced" class="text-muted">
+                <i class="bi bi-dash"></i>
               </span>
             </td>
             <td><span class="badge" [ngClass]="statusBadgeClass(e.status)">{{ statusLabel(e.status) }}</span></td>
@@ -523,16 +726,141 @@
                         [disabled]="e.status === 'SENT'">
                   <i class="bi bi-pencil"></i>
                 </button>
+                <button class="btn btn-xs btn-outline-danger" (click)="deleteEmail(e)" title="Borrar borrador"
+                        [disabled]="e.status === 'SENT'">
+                  <i class="bi bi-trash"></i>
+                </button>
               </div>
             </td>
           </tr>
           <tr *ngIf="emails.length === 0">
-            <td colspan="6" class="text-center text-muted py-4">
+            <td colspan="9" class="text-center text-muted py-4">
               <i class="bi bi-envelope-x me-2"></i>No hay emails generados todavía
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB: CONFIGURACIÓN
+  ═══════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab === 'settings'">
+    <div class="settings-header mb-4">
+      <h5 class="fw-bold mb-1"><i class="bi bi-robot me-2 text-success"></i>Modelos de IA</h5>
+      <p class="text-muted small mb-0">Elige qué modelo de OpenAI se usa en cada tarea del pipeline. El cambio se aplica en la próxima ejecución.</p>
+    </div>
+
+    <div *ngIf="settingsLoading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+    </div>
+
+    <div *ngIf="!settingsLoading" class="settings-grid">
+
+      <!-- Email -->
+      <div class="settings-card">
+        <div class="settings-card-left">
+          <div class="settings-icon settings-icon-email">
+            <i class="bi bi-envelope-paper-fill"></i>
+          </div>
+          <div>
+            <div class="settings-title">Escribir emails</div>
+            <div class="settings-desc">Regenera emails personalizados usando IA en lugar de la plantilla estática.</div>
+          </div>
+        </div>
+        <div class="settings-control">
+          <select class="form-select form-select-sm settings-select"
+                  [(ngModel)]="settings['model_email']"
+                  (change)="saveSetting('model_email', settings['model_email'])">
+            <option *ngFor="let m of aiModels" [value]="m.id">{{ m.label }}</option>
+          </select>
+          <span class="settings-saved" *ngIf="savedKeys['model_email']"><i class="bi bi-check-circle-fill text-success"></i></span>
+        </div>
+      </div>
+
+      <!-- Analyze -->
+      <div class="settings-card">
+        <div class="settings-card-left">
+          <div class="settings-icon settings-icon-analyze">
+            <i class="bi bi-robot"></i>
+          </div>
+          <div>
+            <div class="settings-title">Analizar pain points</div>
+            <div class="settings-desc">Modelo usado en el Paso 3 del pipeline: detecta problemas de cada club y asigna un pain score.</div>
+          </div>
+        </div>
+        <div class="settings-control">
+          <select class="form-select form-select-sm settings-select"
+                  [(ngModel)]="settings['model_analyze']"
+                  (change)="saveSetting('model_analyze', settings['model_analyze'])">
+            <option *ngFor="let m of aiModels" [value]="m.id">{{ m.label }}</option>
+          </select>
+          <span class="settings-saved" *ngIf="savedKeys['model_analyze']"><i class="bi bi-check-circle-fill text-success"></i></span>
+        </div>
+      </div>
+
+      <!-- Insights -->
+      <div class="settings-card">
+        <div class="settings-card-left">
+          <div class="settings-icon settings-icon-insights">
+            <i class="bi bi-lightbulb-fill"></i>
+          </div>
+          <div>
+            <div class="settings-title">Insights IA</div>
+            <div class="settings-desc">Análisis global de campañas: tendencias, segmentación y recomendaciones estratégicas.</div>
+          </div>
+        </div>
+        <div class="settings-control">
+          <select class="form-select form-select-sm settings-select"
+                  [(ngModel)]="settings['model_insights']"
+                  (change)="saveSetting('model_insights', settings['model_insights'])">
+            <option *ngFor="let m of aiModels" [value]="m.id">{{ m.label }}</option>
+          </select>
+          <span class="settings-saved" *ngIf="savedKeys['model_insights']"><i class="bi bi-check-circle-fill text-success"></i></span>
+        </div>
+      </div>
+
+      <!-- Risk -->
+      <div class="settings-card">
+        <div class="settings-card-left">
+          <div class="settings-icon settings-icon-risk">
+            <i class="bi bi-shield-exclamation"></i>
+          </div>
+          <div>
+            <div class="settings-title">Clubes en riesgo</div>
+            <div class="settings-desc">Detecta clubes que necesitan intervención urgente según sus datos y comportamiento.</div>
+          </div>
+        </div>
+        <div class="settings-control">
+          <select class="form-select form-select-sm settings-select"
+                  [(ngModel)]="settings['model_risk']"
+                  (change)="saveSetting('model_risk', settings['model_risk'])">
+            <option *ngFor="let m of aiModels" [value]="m.id">{{ m.label }}</option>
+          </select>
+          <span class="settings-saved" *ngIf="savedKeys['model_risk']"><i class="bi bi-check-circle-fill text-success"></i></span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Model legend -->
+    <div class="model-legend mt-4">
+      <div class="model-legend-title"><i class="bi bi-info-circle me-1"></i>Guía de modelos disponibles</div>
+      <div class="model-legend-tiers mb-2">
+        <span class="model-badge model-frontier">Frontier</span> Más inteligente &nbsp;·&nbsp;
+        <span class="model-badge model-smart">Smart</span> Alta calidad &nbsp;·&nbsp;
+        <span class="model-badge model-balanced">Balanced</span> Equilibrado &nbsp;·&nbsp;
+        <span class="model-badge model-fast">Fast</span> Rápido y económico &nbsp;·&nbsp;
+        <span class="model-badge model-reasoning">Reasoning</span> Razonamiento &nbsp;·&nbsp;
+        <span class="model-badge model-legacy">Legacy</span> Heredado
+      </div>
+      <div class="model-legend-grid">
+        <div *ngFor="let m of aiModels" class="model-legend-item">
+          <span class="model-badge" [ngClass]="'model-' + m.tier">{{ m.id }}</span>
+          <span class="model-legend-desc">{{ m.description }}</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -550,6 +878,28 @@
 <!-- ═══════════════════════════════════════════════════
      MODALS
 ═══════════════════════════════════════════════════ -->
+
+<!-- Confirmar borrado de prospect -->
+<div class="modal" [ngClass]="{'d-block': showDeleteProspectConfirm}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" *ngIf="prospectToDelete">
+      <div class="modal-header modal-header-danger">
+        <h5 class="modal-title"><i class="bi bi-trash me-2"></i>Eliminar club</h5>
+        <button type="button" class="btn-close" (click)="showDeleteProspectConfirm = false"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Eliminar <strong>{{ prospectToDelete.name }}</strong> de esta campaña?</p>
+        <p class="text-muted small mb-0">Se borrarán también todos los emails generados para este club. Esta acción no se puede deshacer.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showDeleteProspectConfirm = false">Cancelar</button>
+        <button class="btn btn-danger" (click)="deleteProspect()">
+          <i class="bi bi-trash"></i> Eliminar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- Nueva campaña -->
 <div class="modal" [ngClass]="{'d-block': showNewCampaignModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
@@ -679,6 +1029,12 @@
       </div>
       <div class="modal-footer">
         <span class="badge me-auto" [ngClass]="statusBadgeClass(selectedProspect.status)">{{ statusLabel(selectedProspect.status) }}</span>
+        <button class="btn btn-outline-success" (click)="generateEmailForProspect(selectedProspect)"
+                *ngIf="selectedCampaign && selectedProspect.pain_points?.length"
+                [disabled]="isGeneratingEmail">
+          <span *ngIf="!isGeneratingEmail"><i class="bi bi-envelope-plus me-1"></i>Generar email con IA</span>
+          <span *ngIf="isGeneratingEmail"><i class="bi bi-hourglass-split spin-icon me-1"></i>Generando...</span>
+        </button>
         <button class="btn btn-secondary" (click)="showProspectModal = false">Cerrar</button>
       </div>
     </div>
@@ -735,6 +1091,197 @@
         <button class="btn btn-secondary" (click)="showEditEmailModal = false">Cancelar</button>
         <button class="btn btn-refresh" (click)="saveEmail()" [disabled]="isSavingEmail">
           <i class="bi bi-floppy"></i> {{ isSavingEmail ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Borrar campaña -->
+<div class="modal" [ngClass]="{'d-block': showDeleteCampaignConfirm}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" *ngIf="campaignToDelete">
+      <div class="modal-header modal-header-danger">
+        <h5 class="modal-title"><i class="bi bi-trash me-2"></i>Borrar campaña</h5>
+        <button type="button" class="btn-close" (click)="showDeleteCampaignConfirm = false"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Borrar la campaña <strong>{{ campaignToDelete.name }}</strong>?</p>
+        <div class="alert alert-info small mb-0">
+          <i class="bi bi-info-circle me-1"></i>
+          <strong>Los clubes se conservan</strong> en la Biblioteca. Solo se borrarán los emails generados y la propia campaña.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showDeleteCampaignConfirm = false">Cancelar</button>
+        <button class="btn btn-danger" (click)="deleteCampaign()">
+          <i class="bi bi-trash"></i> Borrar campaña
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quitar club de campaña -->
+<div class="modal" [ngClass]="{'d-block': showRemoveFromCampaignConfirm}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" *ngIf="prospectToRemove">
+      <div class="modal-header modal-header-warning">
+        <h5 class="modal-title"><i class="bi bi-dash-circle me-2"></i>Quitar de la campaña</h5>
+        <button type="button" class="btn-close" (click)="showRemoveFromCampaignConfirm = false"></button>
+      </div>
+      <div class="modal-body">
+        <p>¿Quitar <strong>{{ prospectToRemove.name }}</strong> de la campaña <strong>{{ selectedCampaign?.name }}</strong>?</p>
+        <p class="text-muted small mb-0">El club seguirá en la Biblioteca y podrás añadirlo a otra campaña. Se borrarán los emails generados para este club en esta campaña.</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showRemoveFromCampaignConfirm = false">Cancelar</button>
+        <button class="btn btn-warning" (click)="removeFromCampaign()">
+          <i class="bi bi-dash-circle"></i> Quitar de campaña
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Añadir club a campaña(s) desde la biblioteca -->
+<div class="modal" [ngClass]="{'d-block': showAddToCampaignModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" *ngIf="addToCampaignProspect">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Añadir a campaña</h5>
+        <button type="button" class="btn-close" (click)="showAddToCampaignModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <p class="small text-muted mb-3">Selecciona a qué campaña(s) quieres añadir <strong>{{ addToCampaignProspect.name }}</strong>:</p>
+        <div *ngIf="addToCampaignList.length === 0" class="text-muted small fst-italic">
+          No hay campañas disponibles. Crea una campaña primero.
+        </div>
+        <div *ngFor="let c of addToCampaignList" class="form-check mb-2">
+          <input class="form-check-input" type="checkbox"
+                 [id]="'camp-' + c.campaign_id"
+                 [checked]="addToCampaignSelected.includes(c.campaign_id)"
+                 (change)="toggleCampaignSelection(c.campaign_id)">
+          <label class="form-check-label" [for]="'camp-' + c.campaign_id">
+            <strong>{{ c.name }}</strong>
+            <span class="text-muted small ms-2">{{ c.total_prospects || 0 }} clubes</span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showAddToCampaignModal = false">Cancelar</button>
+        <button class="btn btn-refresh" (click)="confirmAddToCampaign()"
+                [disabled]="isAddingToCampaign || addToCampaignSelected.length === 0">
+          <span *ngIf="!isAddingToCampaign"><i class="bi bi-plus-circle"></i> Añadir a {{ addToCampaignSelected.length }} campaña(s)</span>
+          <span *ngIf="isAddingToCampaign"><i class="bi bi-hourglass-split spin-icon"></i> Añadiendo...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Añadir club manualmente -->
+<div class="modal" [ngClass]="{'d-block': showAddClubModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Añadir club manualmente</h5>
+        <button type="button" class="btn-close" (click)="showAddClubModal = false"></button>
+      </div>
+      <div class="modal-body">
+
+        <div class="add-club-section">
+          <div class="add-club-section-title"><i class="bi bi-building me-2"></i>Información básica</div>
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">Nombre del club <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" [(ngModel)]="newClub.name"
+                     placeholder="Ej: C.D. Atlético Gijón">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Ciudad</label>
+              <input type="text" class="form-control" [(ngModel)]="newClub.city" placeholder="Ej: Gijón">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Provincia</label>
+              <input type="text" class="form-control" [(ngModel)]="newClub.province" placeholder="Ej: Asturias">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Comunidad autónoma</label>
+              <input type="text" class="form-control" [(ngModel)]="newClub.community" placeholder="Ej: Principado de Asturias">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Categoría / División</label>
+              <input type="text" class="form-control" [(ngModel)]="newClub.category" placeholder="Ej: Tercera RFEF">
+            </div>
+          </div>
+        </div>
+
+        <div class="add-club-section">
+          <div class="add-club-section-title"><i class="bi bi-envelope me-2"></i>Contacto</div>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Email</label>
+              <input type="email" class="form-control" [(ngModel)]="newClub.email" placeholder="club@ejemplo.com">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Teléfono</label>
+              <input type="text" class="form-control" [(ngModel)]="newClub.phone" placeholder="Ej: 985 123 456">
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">Web</label>
+              <input type="url" class="form-control" [(ngModel)]="newClub.website" placeholder="https://...">
+            </div>
+          </div>
+        </div>
+
+        <div class="add-club-section">
+          <div class="add-club-section-title"><i class="bi bi-share me-2"></i>Redes sociales</div>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label fw-semibold"><i class="bi bi-instagram me-1"></i>Instagram</label>
+              <input type="text" class="form-control" [(ngModel)]="newClub.instagram" placeholder="@nombre o URL">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold"><i class="bi bi-twitter-x me-1"></i>Twitter / X</label>
+              <input type="text" class="form-control" [(ngModel)]="newClub.twitter" placeholder="@nombre o URL">
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-semibold"><i class="bi bi-facebook me-1"></i>Facebook</label>
+              <input type="text" class="form-control" [(ngModel)]="newClub.facebook" placeholder="URL de página">
+            </div>
+          </div>
+        </div>
+
+        <div class="add-club-section border-0 pb-0">
+          <div class="add-club-section-title"><i class="bi bi-people me-2"></i>Estructura</div>
+          <div class="row g-3 align-items-center">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold">Número de equipos estimado</label>
+              <input type="number" class="form-control" [(ngModel)]="newClub.estimated_teams"
+                     min="1" max="100" placeholder="Ej: 8">
+            </div>
+            <div class="col-md-6 d-flex align-items-center gap-2 mt-md-4">
+              <div class="form-check form-switch mb-0">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       id="hasYouthAcademy" [(ngModel)]="newClub.has_youth_academy">
+                <label class="form-check-label fw-semibold" for="hasYouthAcademy">Tiene cantera</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <div class="text-muted small me-auto">
+          <i class="bi bi-info-circle me-1"></i>
+          El club se añadirá con estado <strong>Nuevo</strong>. Podrás enriquecerlo y analizarlo con IA desde el pipeline.
+        </div>
+        <button class="btn btn-secondary" (click)="showAddClubModal = false">Cancelar</button>
+        <button class="btn btn-refresh" (click)="saveNewClub()"
+                [disabled]="isSavingClub || !newClub.name.trim()">
+          <span *ngIf="!isSavingClub"><i class="bi bi-plus-lg"></i> Añadir club</span>
+          <span *ngIf="isSavingClub"><i class="bi bi-hourglass-split spin-icon"></i> Guardando...</span>
         </button>
       </div>
     </div>

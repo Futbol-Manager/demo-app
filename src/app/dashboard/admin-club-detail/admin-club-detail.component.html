@@ -179,6 +179,7 @@
           <table class="table align-middle mb-0">
             <thead>
               <tr>
+                <th class="text-center">ID</th>
                 <th class="text-center">Categoria</th>
                 <th class="text-center">Nivel</th>
                 <th class="text-center">Jugadores</th>
@@ -186,6 +187,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let team of group.equipos">
+                <td class="text-center"><span class="badge bg-secondary">{{ team.teamId }}</span></td>
                 <td class="text-center"><span class="badge bg-light text-dark border">{{ team.categoria || '-' }}</span></td>
                 <td class="text-center">{{ team.nivel || '-' }}</td>
                 <td class="text-center"><span class="badge rounded-pill bg-primary">{{ team.jugadores }}</span></td>
@@ -210,6 +212,7 @@
             <table class="table align-middle mb-0">
               <thead>
                 <tr>
+                  <th class="text-center">ID</th>
                   <th style="padding-left: 1rem;">Entrenador</th>
                   <th>Email</th>
                   <th>Telefono</th>
@@ -219,6 +222,7 @@
               </thead>
               <tbody>
                 <tr *ngFor="let coach of club.entrenadores">
+                  <td class="text-center"><span class="badge bg-secondary">{{ coach.userId }}</span></td>
                   <td style="padding-left: 1rem;">
                     <div class="d-flex align-items-center gap-2">
                       <img *ngIf="coach.picture" [src]="imageBaseUrl + coach.picture"
@@ -239,9 +243,9 @@
                     <span *ngIf="!coach.titulacion" class="text-muted small">-</span>
                   </td>
                   <td>
-                    <span *ngFor="let eq of coach.equipos" class="badge bg-primary bg-opacity-10 text-primary me-1" style="font-size: 0.7rem;">
-                      {{ eq }}
-                    </span>
+                    <div *ngFor="let eq of coach.equipos" class="mb-1">
+                      <span class="small text-muted">{{ eq.categoria || '-' }} · {{ eq.nivel || '-' }}</span>
+                    </div>
                     <span *ngIf="!coach.equipos || coach.equipos.length === 0" class="text-muted small">-</span>
                   </td>
                 </tr>
