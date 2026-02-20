@@ -332,6 +332,15 @@
       "COACH": {
         "TITLE": "Coach",
         "SUBTITLE": "Register as coach"
+      },
+      "PLAYER_PARENT": {
+        "TITLE": "Player/Parent"
+      },
+      "PLAYER": {
+        "TITLE": "Player"
+      },
+      "SCOUT": {
+        "TITLE": "Scout"
       }
     },
     "TABS": {
@@ -397,6 +406,77 @@
     "BUTTONS_MODALS": {
       "ACKNOWLEDGE": "Got it",
       "I_AM_COACH": "I am a coach"
+    },
+    "PANEL": {
+      "HEADLINE": "The leading platform in sports management",
+      "TAGLINE": "Everything your club needs, in one place.",
+      "FEATURES": {
+        "FINANCE": "Fee and finance control",
+        "TEAMS": "Team and player management",
+        "STATS": "Real-time statistics",
+        "APP": "Mobile app for parents",
+        "SECURITY": "Secure and protected data"
+      },
+      "TESTIMONIAL": {
+        "TEXT": "Sphaira has transformed our club management. Everything is now easier and faster.",
+        "AUTHOR": "Sphaira Sports Club"
+      }
+    },
+    "STEP2": {
+      "SUBTITLE": "Fill in your details to create your account"
+    },
+    "CARDS": {
+      "CLUB": {
+        "DESC": "Manage your club professionally",
+        "FEAT_1": "Team management",
+        "FEAT_2": "Fee management",
+        "FEAT_3": "Parent app"
+      },
+      "COACH": {
+        "DESC": "Join a club's technical staff",
+        "FEAT_1": "Player profiles",
+        "FEAT_2": "Technical tracking",
+        "FEAT_3": "Performance reports"
+      }
+    },
+    "ROLE": {
+      "LABEL": "What is your role?",
+      "TRAINER": "Coach",
+      "PHYSIO": "Physiotherapist",
+      "NUTRITIONIST": "Nutritionist"
+    },
+    "FORM": {
+      "PROFILE_DEFAULT": "Are you a club or a coach?",
+      "PROFILE_TYPE": "Profile type",
+      "FOUNDATION_DATE": "Foundation date",
+      "BIRTH_DATE": "Date of birth"
+    },
+    "MODAL_CLUB": {
+      "TITLE": "Confirmation required",
+      "SUBTITLE": "Registration exclusive for authorized clubs",
+      "SECURITY_TEXT": "For security, club registration requires an access password. If you don't have one, request it:",
+      "PASSWORD_LABEL": "Access password",
+      "PASSWORD_PLACEHOLDER": "Enter the password",
+      "CANCEL": "Cancel",
+      "SUBMIT": "Access"
+    },
+    "MODAL_COACH": {
+      "SUBTITLE": "Read this before continuing"
+    },
+    "MODAL_PRICING": {
+      "TITLE": "Registration complete!",
+      "SUBTITLE": "Welcome to Sphaira Tech",
+      "DISCOUNT": "50% DISCOUNT",
+      "HEADLINE": "Start free, grow without limits",
+      "TRIAL": "Try it 7 days and then:",
+      "FEAT_1": "Save more than 30% with this plan",
+      "FEAT_2": "1-year commitment",
+      "FEAT_3": "Full Control",
+      "FEAT_4": "Complete Features",
+      "FEAT_5": "Extended Collaboration",
+      "CTA": "Start free week",
+      "TERMS_PREFIX": "I accept the",
+      "TERMS_LINK": "contract terms"
     }
   },
   "ERRORS": {
@@ -2714,7 +2794,11 @@
   },
   "SCOUTING_CLUB": {
     "TITLE": "Club Scouting",
-    "TABS": { "SEARCH": "Search Players", "WATCHLIST": "My List", "PIPELINE": "Pipeline" },
+    "TABS": {
+      "SEARCH": "Search Players",
+      "WATCHLIST": "My List",
+      "PIPELINE": "Pipeline"
+    },
     "SEARCH": {
       "PLACEHOLDER": "Search by name...",
       "BTN": "Search",
@@ -2755,8 +2839,17 @@
       "REMOVE": "Remove from list",
       "GO_SEARCH": "Search players"
     },
-    "TABLE": { "NAME": "Name", "POSITION": "Position", "STATUS": "Status", "RATING": "Rating", "ACTIONS": "Actions" },
-    "DETAIL": { "TITLE": "Player Profile", "BIO": "Biography" },
+    "TABLE": {
+      "NAME": "Name",
+      "POSITION": "Position",
+      "STATUS": "Status",
+      "RATING": "Rating",
+      "ACTIONS": "Actions"
+    },
+    "DETAIL": {
+      "TITLE": "Player Profile",
+      "BIO": "Biography"
+    },
     "EVAL": {
       "TITLE": "Evaluations",
       "ADD": "New evaluation",
@@ -2770,8 +2863,21 @@
       "CONTEXT_PLACEHOLDER": "E.g. League match day 5",
       "EMPTY": "No evaluations yet"
     },
-    "SCORES": { "TECHNICAL": "Technical", "TACTICAL": "Tactical", "PHYSICAL": "Physical", "MENTAL": "Mental", "POTENTIAL": "Potential", "ATTITUDE": "Attitude" },
-    "FORM": { "NAME": "Name", "POSITION": "Position", "AGE": "Age", "TEAM": "Team", "NOTES": "Notes" },
+    "SCORES": {
+      "TECHNICAL": "Technical",
+      "TACTICAL": "Tactical",
+      "PHYSICAL": "Physical",
+      "MENTAL": "Mental",
+      "POTENTIAL": "Potential",
+      "ATTITUDE": "Attitude"
+    },
+    "FORM": {
+      "NAME": "Name",
+      "POSITION": "Position",
+      "AGE": "Age",
+      "TEAM": "Team",
+      "NOTES": "Notes"
+    },
     "CONFIG": {
       "TITLE": "Scouting Settings",
       "DESC": "Enable or disable advanced scouting features for your club",

@@ -29,12 +29,6 @@
           </h1>
           <p class="cuotas-page-subtitle">{{ nameClub }}</p>
         </div>
-        <div class="cuotas-banner-actions" *ngIf="stripeBtoShow">
-          <button type="button" class="btn-pagar-stripe btn-pagar-stripe--banner" (click)="openModalStripe()">
-            <i class="bi bi-credit-card"></i>
-            Pagar con tarjeta
-          </button>
-        </div>
       </div>
     </header>
 
@@ -66,6 +60,27 @@
       </div>
     </section>
 
+    <!-- BARRA DE SELECCIÓN (aparece al seleccionar cuotas) -->
+    <div class="cq-selection-bar" *ngIf="stripeBtoShow && selectedCuotas.length > 0">
+      <div class="cq-selection-info">
+        <i class="bi bi-check2-square"></i>
+        <span class="cq-selection-count">
+          {{ selectedCuotas.length }} cuota{{ selectedCuotas.length !== 1 ? 's' : '' }} seleccionada{{ selectedCuotas.length !== 1 ? 's' : '' }}
+        </span>
+        <span class="cq-selection-sep">·</span>
+        <span class="cq-selection-total">Total: {{ selectedCuotasGrossTotal }} €</span>
+      </div>
+      <div class="cq-selection-actions">
+        <button class="cq-btn-clear" (click)="clearSelection()">
+          <i class="bi bi-x-lg"></i> Limpiar
+        </button>
+        <button class="cq-btn-pay" (click)="openMultiPayModal()">
+          <i class="bi bi-lightning-charge-fill"></i>
+          Pagar {{ selectedCuotasGrossTotal }} €
+        </button>
+      </div>
+    </div>
+
     <!-- CUOTAS OBLIGATORIAS -->
     <section class="cuotas-section">
       <div class="cq-panel">
@@ -78,8 +93,8 @@
         </div>
 
         <div class="cq-list">
-          <!-- Cabecera visible solo en pantallas grandes -->
           <div class="cq-list-header">
+            <span class="cq-col-check" *ngIf="stripeBtoShow"></span>
             <span class="cq-col-name">Concepto</span>
             <span class="cq-col-tipo">Tipo de pago</span>
             <span class="cq-col-num">Importe</span>
@@ -93,23 +108,37 @@
                *ngFor="let cuota of cuotasObligatorias"
                [class.cq-item--paid]="cuota.pagado === cuota.importe"
                [class.cq-item--pending]="cuota.pagado !== cuota.importe && cuota.pagado !== '0'"
-               [class.cq-item--overdue]="cuota.pagado === '0'">
+               [class.cq-item--overdue]="cuota.pagado === '0'"
+               [class.cq-item--selected]="isCuotaSelected(cuota)"
+               [class.cq-item--selectable]="stripeBtoShow && canSelectCuota(cuota)"
+               (click)="stripeBtoShow && canSelectCuota(cuota) ? toggleCuotaSelection(cuota) : null">
 
-            <!-- Indicador lateral de color -->
             <span class="cq-status-bar"></span>
 
-            <!-- Nombre + tipo -->
+            <!-- Checkbox selección -->
+            <div class="cq-col-check" *ngIf="stripeBtoShow" (click)="$event.stopPropagation()">
+              <label class="cq-checkbox" *ngIf="canSelectCuota(cuota)" [class.cq-checkbox--checked]="isCuotaSelected(cuota)">
+                <input type="checkbox"
+                       [checked]="isCuotaSelected(cuota)"
+                       (change)="toggleCuotaSelection(cuota)">
+                <span class="cq-checkbox-box"><i class="bi bi-check-lg"></i></span>
+              </label>
+              <span class="cq-checkbox-locked" *ngIf="!canSelectCuota(cuota)">
+                <i class="bi bi-lock-fill" *ngIf="cuota.tipoPagoStripe === 1" title="Pago recurrente (Sphaira Pay)"></i>
+                <i class="bi bi-check2-all" *ngIf="cuota.tipoPagoStripe !== 1 && cuota.pagado >= cuota.importe" title="Ya pagada"></i>
+              </span>
+            </div>
+
             <div class="cq-col-name">
               <span class="cq-name">{{ cuota.nombre }}</span>
-              <span class="cq-tipo-badge cq-tipo-badge--sphaira" *ngIf="cuota.tipoPagoStripe === 1">
+              <span class="cq-tipo-badge cq-tipo-badge--sphaira cq-show-mobile" *ngIf="cuota.tipoPagoStripe === 1">
                 <i class="bi bi-lightning-charge-fill"></i> Sphaira Pay
               </span>
-              <span class="cq-tipo-badge" *ngIf="cuota.tipoPagoStripe !== 1">
+              <span class="cq-tipo-badge cq-show-mobile" *ngIf="cuota.tipoPagoStripe !== 1">
                 <i class="bi bi-cash-coin"></i> Puntual
               </span>
             </div>
 
-            <!-- Tipo (cabecera desktop, oculto en móvil porque ya está arriba) -->
             <div class="cq-col-tipo cq-hide-mobile">
               <span class="cq-tipo-badge cq-tipo-badge--sphaira" *ngIf="cuota.tipoPagoStripe === 1">
                 <i class="bi bi-lightning-charge-fill"></i> Sphaira Pay
@@ -119,17 +148,17 @@
               </span>
             </div>
 
-            <!-- Importes -->
             <div class="cq-col-num">
               <span class="cq-label-mobile">Importe</span>
-              <span class="cq-amount">{{ cuota.importe }} €</span>
+              <span class="cq-amount">
+                {{ cuota.stripe === 1 ? calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0) : cuota.importe }} €
+              </span>
             </div>
             <div class="cq-col-num">
               <span class="cq-label-mobile">Pagado</span>
               <span class="cq-amount cq-amount--paid">{{ cuota.pagado }} €</span>
             </div>
 
-            <!-- Fechas -->
             <div class="cq-col-fecha">
               <span class="cq-label-mobile">Vence</span>
               <span class="cq-fecha">{{ cuota.plazo || '-' }}</span>
@@ -139,8 +168,7 @@
               <span class="cq-fecha">{{ cuota.fechaPago || '-' }}</span>
             </div>
 
-            <!-- Acción -->
-            <div class="cq-col-action">
+            <div class="cq-col-action" (click)="$event.stopPropagation()">
               <button *ngIf="canCancelCuota(cuota)"
                       class="cq-btn-cancel"
                       title="Solicitar cancelación"
@@ -171,6 +199,7 @@
 
         <div class="cq-list">
           <div class="cq-list-header">
+            <span class="cq-col-check" *ngIf="stripeBtoShow"></span>
             <span class="cq-col-name">Concepto</span>
             <span class="cq-col-tipo">Tipo de pago</span>
             <span class="cq-col-num">Importe</span>
@@ -184,9 +213,25 @@
                *ngFor="let cuota of cuotasNoObligatorias"
                [class.cq-item--paid]="cuota.pagado === cuota.importe"
                [class.cq-item--pending]="cuota.pagado !== cuota.importe && cuota.pagado !== '0'"
-               [class.cq-item--overdue]="cuota.pagado === '0'">
+               [class.cq-item--overdue]="cuota.pagado === '0'"
+               [class.cq-item--selected]="isCuotaSelected(cuota)"
+               [class.cq-item--selectable]="stripeBtoShow && canSelectCuota(cuota)"
+               (click)="stripeBtoShow && canSelectCuota(cuota) ? toggleCuotaSelection(cuota) : null">
 
             <span class="cq-status-bar"></span>
+
+            <div class="cq-col-check" *ngIf="stripeBtoShow" (click)="$event.stopPropagation()">
+              <label class="cq-checkbox" *ngIf="canSelectCuota(cuota)" [class.cq-checkbox--checked]="isCuotaSelected(cuota)">
+                <input type="checkbox"
+                       [checked]="isCuotaSelected(cuota)"
+                       (change)="toggleCuotaSelection(cuota)">
+                <span class="cq-checkbox-box"><i class="bi bi-check-lg"></i></span>
+              </label>
+              <span class="cq-checkbox-locked" *ngIf="!canSelectCuota(cuota)">
+                <i class="bi bi-lock-fill" *ngIf="cuota.tipoPagoStripe === 1" title="Pago recurrente (Sphaira Pay)"></i>
+                <i class="bi bi-check2-all" *ngIf="cuota.tipoPagoStripe !== 1 && cuota.pagado >= cuota.importe" title="Ya pagada"></i>
+              </span>
+            </div>
 
             <div class="cq-col-name">
               <span class="cq-name">{{ cuota.nombre }}</span>
@@ -209,7 +254,9 @@
 
             <div class="cq-col-num">
               <span class="cq-label-mobile">Importe</span>
-              <span class="cq-amount">{{ cuota.importe }} €</span>
+              <span class="cq-amount">
+                {{ cuota.stripe === 1 ? calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0) : cuota.importe }} €
+              </span>
             </div>
             <div class="cq-col-num">
               <span class="cq-label-mobile">Pagado</span>
@@ -223,7 +270,7 @@
               <span class="cq-label-mobile">F. pago</span>
               <span class="cq-fecha">{{ cuota.fechaPago || '-' }}</span>
             </div>
-            <div class="cq-col-action">
+            <div class="cq-col-action" (click)="$event.stopPropagation()">
               <button *ngIf="canCancelCuota(cuota)"
                       class="cq-btn-cancel"
                       title="Solicitar cancelación"
@@ -269,12 +316,6 @@
       <div class="transfer-tip">
         <i class="bi bi-info-circle"></i>
         Notifica al club cuando hayas realizado la transferencia para que registre el pago.
-      </div>
-      <div class="cuotas-header-actions" *ngIf="stripeBtoShow">
-        <button type="button" class="btn-pagar-stripe btn-pagar-stripe--secondary" (click)="openModalStripe()">
-          <i class="bi bi-credit-card"></i>
-          Pagar con tarjeta (Stripe)
-        </button>
       </div>
     </section>
 
@@ -564,6 +605,319 @@
       <div class="cancel-cuota-success">
         <i class="bi bi-check-circle-fill"></i>
         <p>{{ cancelCuotaSuccess }}</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- MODAL MULTI-PAGO                                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="premium-modal-overlay" [class.premium-modal-overlay--open]="showMultiPayModal"
+     (click)="multiPayStep !== 'processing' && closeMultiPayModal()">
+  <div class="premium-modal premium-modal--multipago" (click)="$event.stopPropagation()"
+       role="dialog" aria-modal="true">
+
+    <!-- Header -->
+    <div class="premium-modal-header premium-modal-header--pay">
+      <div class="premium-modal-header-bg"></div>
+      <div class="premium-modal-header-content">
+        <div class="premium-modal-header-icon mp-header-icon">
+          <i class="bi bi-lightning-charge-fill"></i>
+        </div>
+        <div>
+          <h2 class="premium-modal-title">Pagar cuotas seleccionadas</h2>
+          <p class="premium-modal-subtitle">
+            {{ selectedCuotas.length }} cuota{{ selectedCuotas.length !== 1 ? 's' : '' }}
+            · {{ selectedCuotasGrossTotal }} €
+          </p>
+        </div>
+      </div>
+      <button class="premium-modal-close" (click)="closeMultiPayModal()" [disabled]="multiPayLoading">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- ── PASO: REVISIÓN ── -->
+    <div class="premium-modal-body" *ngIf="multiPayStep === 'review'">
+
+      <!-- Lista de cuotas a pagar -->
+      <div class="mp-section">
+        <h3 class="mp-section-title">
+          <i class="bi bi-list-check"></i> Cuotas a pagar
+        </h3>
+        <div class="mp-cuota-list">
+          <div class="mp-cuota-row" *ngFor="let cuota of selectedCuotas">
+            <div class="mp-cuota-info">
+              <span class="mp-cuota-name">{{ cuota.nombre }}</span>
+              <span class="mp-cuota-pending">Pendiente: {{ getPendiente(cuota) }} €</span>
+            </div>
+            <div class="mp-cuota-amounts">
+              <span class="mp-cuota-base">{{ calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0) }} €</span>
+            </div>
+            <button class="mp-cuota-remove" (click)="toggleCuotaSelection(cuota)" title="Quitar">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+        </div>
+        <div class="mp-total-row">
+          <span>Total a cobrar en tarjeta</span>
+          <strong class="mp-total-value">{{ selectedCuotasGrossTotal }} €</strong>
+        </div>
+      </div>
+
+      <!-- Método de pago -->
+      <div class="mp-section">
+        <h3 class="mp-section-title">
+          <i class="bi bi-credit-card-fill"></i> Método de pago
+        </h3>
+
+        <div class="mp-cards-loading" *ngIf="savedCardsLoading">
+          <div class="cuotas-spinner"></div>
+          <span>Cargando tarjetas guardadas...</span>
+        </div>
+
+        <div class="mp-card-options" *ngIf="!savedCardsLoading">
+
+          <!-- Tarjetas guardadas -->
+          <div class="mp-card-option"
+               *ngFor="let c of savedCards"
+               [class.mp-card-option--active]="!multiPayUseNewCard && multiPaySelectedCard?.id === c.id"
+               (click)="selectMultiPaySavedCard(c)">
+            <span class="mp-radio" [class.mp-radio--on]="!multiPayUseNewCard && multiPaySelectedCard?.id === c.id">
+              <span class="mp-radio-inner"></span>
+            </span>
+            <div class="mp-card-chip"><i class="bi bi-cpu"></i></div>
+            <div class="mp-card-data">
+              <span class="mp-card-brand">{{ c.brand | titlecase }}</span>
+              <span class="mp-card-num">•••• {{ c.last4 }}</span>
+            </div>
+            <span class="mp-card-exp">
+              {{ c.expMonth < 10 ? '0' + c.expMonth : c.expMonth }}/{{ c.expYear }}
+            </span>
+          </div>
+
+          <!-- Nueva tarjeta (sin guardar) -->
+          <div class="mp-card-option mp-card-option--new"
+               [class.mp-card-option--active]="multiPayUseNewCard"
+               (click)="selectMultiPayNewCard()">
+            <span class="mp-radio" [class.mp-radio--on]="multiPayUseNewCard">
+              <span class="mp-radio-inner"></span>
+            </span>
+            <i class="bi bi-plus-circle-fill mp-new-icon"></i>
+            <span class="mp-new-label">Nueva tarjeta <em>(sin guardar)</em></span>
+          </div>
+
+          <!-- Stripe card element -->
+          <div class="mp-new-card-wrap" *ngIf="multiPayUseNewCard">
+            <div class="scp-security-badge mp-security-badge">
+              <i class="bi bi-shield-lock-fill"></i>
+              <span>Cifrado SSL · Procesado por <strong>Stripe</strong></span>
+            </div>
+            <div id="multi-pay-card-element" class="stripe-card-wrap stripe-card-wrap--premium"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Términos y autorización -->
+      <div class="mp-section">
+        <div class="mp-auth-box">
+
+          <!-- Cabecera con toggle de T&C -->
+          <button type="button" class="mp-tc-toggle" (click)="showMultiPayTerminos = !showMultiPayTerminos">
+            <div class="mp-tc-toggle-left">
+              <i class="bi bi-file-earmark-text-fill"></i>
+              <span>Términos y condiciones <em>(Sphaira Tech)</em></span>
+            </div>
+            <i class="bi mp-tc-chevron"
+               [class.bi-chevron-down]="!showMultiPayTerminos"
+               [class.bi-chevron-up]="showMultiPayTerminos"></i>
+          </button>
+
+          <!-- Contenido expandible -->
+          <div class="mp-tc-body" [class.mp-tc-body--open]="showMultiPayTerminos">
+            <div class="mp-tc-content">
+
+              <div class="mp-tc-block">
+                <h4>1. Partes</h4>
+                <p>Estos Términos regulan el pago por parte del progenitor/tutor legal («Pago / Pagador») de las cuotas o importes creados por el club deportivo identificado en Sphaira («Club»). La plataforma de gestión es Sphaira Tech («Sphaira») y el proveedor de pago es Stripe, Inc. («Stripe»).</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>2. Alcance</h4>
+                <p>El Club crea los conceptos, importes, periodicidad y fechas de cobro. Sphaira facilita la interfaz técnica para la gestión y el flujo de cobro. Stripe gestiona el cobro y la transferencia del importe al Club. Sphaira solo recibe y dispone del 0,30&nbsp;% de los fondos pagados por el Pagador.</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>3. Aceptación y firma electrónica</h4>
+                <p>Para proceder al pago el Pagador deberá: (a) acceder a la web de Sphaira, (b) revisar el detalle del pago/suscripción y (c) marcar la casilla de aceptación de estos Términos antes de realizar el primer pago. La marcación de la casilla y la ejecución del pago constituyen firma electrónica y aceptación plena.</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>4. Primer pago y autorización de cobros recurrentes</h4>
+                <p><strong>4.1. Pago puntual:</strong> el Pagador realizará el pago manualmente desde la web antes de la fecha límite indicada.</p>
+                <p><strong>4.2. Suscripción / cobros periódicos:</strong> el Pagador autoriza expresamente a Stripe a cargar en la tarjeta o método elegido el primer pago y los siguientes pagos automáticamente según el calendario y los importes fijados por el Club. El Pagador reconoce que la primera autorización debe confirmarse en la web.</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>5. Datos, método de pago y responsabilidad</h4>
+                <p>El Pagador facilitará los datos de su tarjeta a Stripe a través de la interfaz. Es responsabilidad del Pagador mantener los datos actualizados. Fallos por tarjeta caducada, fondos insuficientes o rechazo del emisor serán responsabilidad del Pagador.</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>6. Importe, impuestos y gastos de gestión</h4>
+                <p>Los importes, frecuencia y fechas son establecidos por el Club. Sphaira y Stripe podrán aplicar un coste adicional por gastos de gestión, siempre mostrado antes del pago. Las comisiones bancarias del emisor son a cargo del Pagador salvo indicación contraria.</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>7. Transferencia de fondos</h4>
+                <p>Stripe transferirá los fondos al Club conforme a su propio proceso. Sphaira no participa en la custodia de fondos. Para reclamaciones dirigirse al Club.</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>8. Devoluciones, reembolsos y disputas</h4>
+                <p>Las políticas de reembolso las determina el Club. El Pagador acepta primero contactar con el Club. En caso de chargeback, el proceso lo gestiona el emisor y Stripe y puede implicar bloqueo temporal de la cuenta. Disputas comerciales deben plantearse con el Club.</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>9. Cancelación y finalización de suscripción</h4>
+                <p>La cancelación debe realizarse antes del siguiente periodo de cobro. Si se solicita tras un cobro ya procesado, ese cobro no será reembolsado automáticamente salvo acuerdo con el Club.</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>10. Fallos de cobro y recobros</h4>
+                <p>En caso de impago se podrá reintentar el cargo según la política de Stripe y del Club. El Club podrá suspender servicios hasta la regularización del pago.</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>11. Responsabilidad limitada de Sphaira</h4>
+                <p>Sphaira solo presta la plataforma tecnológica. No es parte del contrato entre el Club y el Pagador. Sphaira no será responsable por: (i) calidad del servicio del Club; (ii) errores en importes del Club; (iii) rechazos bancarios; (iv) pérdidas derivadas de decisiones del Club.</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>12. Protección de datos</h4>
+                <p>Al aceptar, el Pagador consiente el tratamiento de sus datos para la gestión del cobro por Sphaira y Stripe. Para el tratamiento de datos del menor, el Pagador declara ser padre, madre o tutor legal.</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>13. Menores</h4>
+                <p>Si el pago se realiza por un menor, la persona que acepta declara ser su progenitor/tutor legal y acepta responsabilidad por pagos y autorizaciones.</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>14. Modificaciones</h4>
+                <p>Sphaira y/o el Club pueden modificar las condiciones. Las modificaciones que afecten a cobros autorizados se comunicarán con antelación y, cuando la ley lo exija, requerirán nueva autorización.</p>
+              </div>
+
+              <div class="mp-tc-block">
+                <h4>15. Legislación y jurisdicción</h4>
+                <p>Estos Términos se rigen por la ley de España. Jurisdicción: tribunales de Murcia, salvo normas de consumidor aplicables.</p>
+              </div>
+
+              <div class="mp-tc-block mp-tc-contact">
+                <i class="bi bi-envelope-fill"></i>
+                <div>
+                  <strong>Contacto Sphaira</strong>
+                  <span>Alejandro Espinosa López · <a href="mailto:info@sphairatech.com">info@sphairatech.com</a> · +34 623 91 17 72</span>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Checkbox de aceptación -->
+          <label class="scp-check-label mp-check-accept">
+            <input type="checkbox" class="scp-check-input"
+                   [(ngModel)]="multiPayAcceptedTerms" [ngModelOptions]="{standalone: true}">
+            <span class="scp-check-box"><i class="bi bi-check-lg"></i></span>
+            <span>
+              He leído y acepto los <button type="button" class="mp-tc-inline-link" (click)="showMultiPayTerminos = !showMultiPayTerminos">Términos y Condiciones</button>.
+              Autorizo el cargo de <strong>{{ selectedCuotasGrossTotal }} €</strong> en mi tarjeta.
+              Soy mayor de edad o tutor legal del jugador.
+            </span>
+          </label>
+
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div class="scp-feedback scp-feedback--error" *ngIf="multiPayError">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div class="scp-feedback-body"><p>{{ multiPayError }}</p></div>
+      </div>
+
+      <!-- Acciones -->
+      <div class="mp-actions">
+        <button class="cq-btn-pay cq-btn-pay--lg"
+                [disabled]="!multiPayAcceptedTerms || (!multiPaySelectedCard && !multiPayUseNewCard) || multiPayLoading"
+                (click)="makeMultiPayment()">
+          <i class="bi bi-lightning-charge-fill"></i>
+          Pagar {{ selectedCuotasGrossTotal }} €
+        </button>
+        <button class="cq-btn-clear mp-btn-cancel" (click)="closeMultiPayModal()">
+          Cancelar
+        </button>
+      </div>
+    </div>
+
+    <!-- ── PASO: PROCESANDO ── -->
+    <div class="premium-modal-body mp-processing-body" *ngIf="multiPayStep === 'processing'">
+      <div class="mp-processing">
+        <div class="mp-spinner-ring"></div>
+        <h3 class="mp-processing-title">
+          Procesando pago {{ multiPayCurrentIndex + 1 }} de {{ selectedCuotas.length }}
+        </h3>
+        <p class="mp-processing-cuota">{{ selectedCuotas[multiPayCurrentIndex]?.nombre }}</p>
+        <p class="mp-processing-hint">
+          <i class="bi bi-shield-lock-fill"></i>
+          No cierres esta ventana mientras se procesan los pagos.
+        </p>
+      </div>
+    </div>
+
+    <!-- ── PASO: RESULTADOS ── -->
+    <div class="premium-modal-body" *ngIf="multiPayStep === 'success'">
+      <div class="mp-results">
+
+        <!-- Resumen global -->
+        <div class="mp-results-summary"
+             [class.mp-results-summary--ok]="allMultiPaySuccess()"
+             [class.mp-results-summary--partial]="someMultiPaySuccess() && someMultiPayFail()"
+             [class.mp-results-summary--fail]="allMultiPayFail()">
+          <i class="bi bi-patch-check-fill"      *ngIf="allMultiPaySuccess()"></i>
+          <i class="bi bi-exclamation-diamond-fill" *ngIf="!allMultiPaySuccess()"></i>
+          <div>
+            <h3 *ngIf="allMultiPaySuccess()">¡Todos los pagos completados!</h3>
+            <h3 *ngIf="someMultiPaySuccess() && someMultiPayFail()">Pagos procesados parcialmente</h3>
+            <h3 *ngIf="allMultiPayFail()">No se pudo procesar ningún pago</h3>
+            <p *ngIf="someMultiPaySuccess() && someMultiPayFail()">
+              {{ countMultiPaySuccess() }} correctos · {{ countMultiPayFail() }} con error
+            </p>
+          </div>
+        </div>
+
+        <!-- Detalle por cuota -->
+        <div class="mp-result-list">
+          <div class="mp-result-item"
+               *ngFor="let r of multiPayResults"
+               [class.mp-result-item--ok]="r.success"
+               [class.mp-result-item--fail]="!r.success">
+            <i class="bi bi-check-circle-fill" *ngIf="r.success"></i>
+            <i class="bi bi-x-circle-fill"     *ngIf="!r.success"></i>
+            <div class="mp-result-info">
+              <span class="mp-result-name">{{ r.cuota.nombre }}</span>
+              <span class="mp-result-err" *ngIf="!r.success">{{ r.error }}</span>
+            </div>
+            <span class="mp-result-amount">{{ r.cuota.importe }} €</span>
+          </div>
+        </div>
+
+        <div class="mp-actions">
+          <button class="cq-btn-pay" (click)="closeMultiPayModal()">
+            <i class="bi bi-check-lg"></i> Cerrar
+          </button>
+        </div>
       </div>
     </div>
 

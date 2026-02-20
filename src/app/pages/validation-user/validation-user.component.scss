@@ -1,112 +1,483 @@
-/* CONTENEDOR PRINCIPAL */
-.background {
+/* ===================================================
+   VALIDATION USER — PREMIUM UI
+=================================================== */
+
+/* ---------- FONDO ---------- */
+.vu-background {
   position: relative;
   min-height: 100vh;
   background-image: url("/assets/images/fondoLoginV1.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  overflow: hidden;
 }
 
-/* OVERLAY OSCURO PARA LEGIBILIDAD */
-.overlay {
+/* ---------- ORBES DECORATIVOS ---------- */
+.vu-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.35;
+  pointer-events: none;
+  animation: orbFloat 8s ease-in-out infinite;
+}
+
+.vu-orb--1 {
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, #31b270, transparent 70%);
+  top: -80px;
+  left: -100px;
+  animation-delay: 0s;
+}
+
+.vu-orb--2 {
+  width: 260px;
+  height: 260px;
+  background: radial-gradient(circle, #002c40, transparent 70%);
+  bottom: 80px;
+  right: -80px;
+  animation-delay: -3s;
+}
+
+.vu-orb--3 {
+  width: 180px;
+  height: 180px;
+  background: radial-gradient(circle, #22a862, transparent 70%);
+  bottom: -40px;
+  left: 30%;
+  animation-delay: -5s;
+}
+
+/* ---------- OVERLAY ---------- */
+.vu-overlay {
   min-height: 100vh;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
-}
-
-/* CENTRADO */
-.validate-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
-/* TARJETA */
-.validate-card {
-  width: 100%;
-  max-width: 520px;
-  background: #ffffff;
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
-  overflow: hidden;
-  animation: fadeIn 0.4s ease-in-out;
-}
-
-/* HEADER */
-.validate-header {
-  background: #31b270;
   padding: 1.5rem;
+}
+
+/* ---------- CONTENEDOR ---------- */
+.vu-container {
+  width: 100%;
   display: flex;
   justify-content: center;
 }
 
-.validate-logo {
-  max-width: 160px;
-}
-
-/* BODY */
-.validate-body {
-  padding: 2rem;
-  text-align: center;
-}
-
-.validate-title {
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: #0f172a;
-  margin-bottom: 1rem;
-}
-
-.validate-text {
-  font-size: 1rem;
-  color: #475569;
-  margin-bottom: 2rem;
-  line-height: 1.6;
-}
-
-/* BOTÓN */
-.btn-validate {
+/* ---------- TARJETA ---------- */
+.vu-card {
   width: 100%;
-  padding: 0.9rem 1rem;
-  font-size: 1.05rem;
+  max-width: 500px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.3),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  animation: cardEntrance 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  transition: box-shadow 0.4s ease;
+
+  &--success {
+    box-shadow:
+      0 25px 60px rgba(49, 178, 112, 0.25),
+      0 0 0 2px rgba(49, 178, 112, 0.3);
+  }
+
+  &--error {
+    box-shadow:
+      0 25px 60px rgba(234, 84, 85, 0.2),
+      0 0 0 2px rgba(234, 84, 85, 0.25);
+  }
+}
+
+/* ---------- HEADER ---------- */
+.vu-header {
+  position: relative;
+  background: linear-gradient(135deg, #31b270 0%, #1f8c5a 50%, #002c40 100%);
+  padding: 1.75rem 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.vu-header__shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.1) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite;
+}
+
+.vu-logo {
+  max-width: 150px;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.25));
+}
+
+.vu-header__badge {
+  position: absolute;
+  right: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ---------- BODY ---------- */
+.vu-body {
+  padding: 2.25rem 2rem;
+  text-align: center;
+  animation: fadeInUp 0.4s ease both;
+
+  &--loading { animation: fadeInUp 0.35s ease both; }
+  &--success { animation: fadeInUp 0.4s ease both; }
+  &--error   { animation: fadeInUp 0.4s ease both; }
+}
+
+/* ---------- ICONO CENTRAL ---------- */
+.vu-icon-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  margin-bottom: 1.5rem;
+
+  &--primary {
+    background: linear-gradient(135deg, rgba(49, 178, 112, 0.15), rgba(0, 44, 64, 0.08));
+    border: 2px solid rgba(49, 178, 112, 0.3);
+  }
+
+  &--success {
+    background: linear-gradient(135deg, rgba(49, 178, 112, 0.18), rgba(34, 168, 98, 0.1));
+    border: 2px solid rgba(49, 178, 112, 0.4);
+    animation: iconBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  &--error {
+    background: rgba(234, 84, 85, 0.1);
+    border: 2px solid rgba(234, 84, 85, 0.3);
+    animation: iconShake 0.5s ease both;
+  }
+}
+
+.vu-icon-pulse {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(49, 178, 112, 0.4);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.vu-icon-main {
+  font-size: 1.75rem;
+  color: #31b270;
+
+  .vu-icon-wrap--error & {
+    color: #ea5455;
+  }
+}
+
+/* ---------- TEXTOS ---------- */
+.vu-title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.3px;
+
+  &--success { color: #15803d; }
+  &--error   { color: #dc2626; }
+}
+
+.vu-text {
+  font-size: 0.975rem;
+  color: #475569;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+
+  &--muted {
+    color: #94a3b8;
+    margin-bottom: 1.5rem;
+  }
+}
+
+/* ---------- TAGS DE ÉXITO ---------- */
+.vu-success-tags {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
+.vu-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(49, 178, 112, 0.1);
+  color: #16a34a;
+  border: 1px solid rgba(49, 178, 112, 0.25);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.8rem;
   font-weight: 600;
-  border-radius: 10px;
+  animation: tagPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  &:nth-child(2) { animation-delay: 0.1s; }
+}
+
+/* ---------- BOTONES ---------- */
+.vu-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.875rem 1rem;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 12px;
   border: none;
-  background: #002c40;
-  color: #ffffff;
   cursor: pointer;
   transition: all 0.25s ease;
+  letter-spacing: 0.2px;
+  background: linear-gradient(135deg, #002c40 0%, #003d58 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(0, 44, 64, 0.25);
+
+  &:hover {
+    background: linear-gradient(135deg, #31b270 0%, #1f6f63 50%, #002c40 100%);
+    box-shadow: 0 8px 24px rgba(49, 178, 112, 0.4);
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &--success {
+    background: linear-gradient(135deg, #31b270 0%, #22a862 100%);
+    box-shadow: 0 4px 16px rgba(49, 178, 112, 0.3);
+
+    &:hover {
+      background: linear-gradient(135deg, #22a862 0%, #16a34a 100%);
+      box-shadow: 0 8px 24px rgba(49, 178, 112, 0.45);
+      transform: translateY(-2px);
+    }
+  }
+
+  &--outline {
+    background: transparent;
+    border: 2px solid #cbd5e1;
+    color: #475569;
+    box-shadow: none;
+
+    &:hover {
+      border-color: #31b270;
+      color: #31b270;
+      background: rgba(49, 178, 112, 0.06);
+      box-shadow: none;
+      transform: translateY(-1px);
+    }
+  }
 }
 
-.btn-validate:hover {
-  background: linear-gradient(135deg, #31b270 0%, #1f6f63 35%, #002c40 100%);
-  transform: translateY(-1px);
+/* ---------- SPINNER ---------- */
+.vu-spinner-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.75rem;
 }
 
-/* FOOTER */
-.validate-footer {
-  padding: 1rem;
+.vu-spinner {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vu-spinner__ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: #31b270;
+  animation: spin 0.9s linear infinite;
+
+  &--2 {
+    inset: 10px;
+    border-top-color: #002c40;
+    animation-duration: 1.4s;
+    animation-direction: reverse;
+  }
+}
+
+.vu-spinner__icon {
+  font-size: 1.4rem;
+  color: #31b270;
+  animation: iconPulse 1.2s ease-in-out infinite;
+}
+
+/* ---------- BARRA DE PROGRESO ---------- */
+.vu-progress {
+  height: 3px;
+  background: #f1f5f9;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.vu-progress__bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #31b270, #002c40, #31b270);
+  background-size: 200% 100%;
+  animation: progressAnim 1.8s ease-in-out infinite;
+}
+
+/* ---------- FOOTER ---------- */
+.vu-footer {
+  padding: 1rem 2rem 1.25rem;
   background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
   text-align: center;
 }
 
-.validate-footer-text {
-  font-size: 0.85rem;
-  color: #64748b;
+.vu-footer__text {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin: 0;
 }
 
-/* ANIMACIÓN */
-@keyframes fadeIn {
+/* ===================================================
+   ANIMACIONES
+=================================================== */
+
+@keyframes cardEntrance {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes orbFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50%       { transform: translateY(-20px) scale(1.04); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes iconPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.6; transform: scale(0.9); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1);    opacity: 0.4; }
+  50%       { transform: scale(1.15); opacity: 0; }
+}
+
+@keyframes iconBounce {
+  from { opacity: 0; transform: scale(0.5); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes iconShake {
+  0%, 100% { transform: translateX(0); }
+  20%       { transform: translateX(-6px); }
+  40%       { transform: translateX(6px); }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px); }
+}
+
+@keyframes tagPop {
+  from { opacity: 0; transform: scale(0.8) translateY(6px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes progressAnim {
+  0%   { background-position: 200% 0; width: 20%; }
+  50%  { width: 70%; }
+  100% { background-position: -200% 0; width: 100%; }
+}
+
+/* ===================================================
+   RESPONSIVE
+=================================================== */
+
+@media (max-width: 520px) {
+  .vu-body {
+    padding: 1.75rem 1.5rem;
+  }
+
+  .vu-footer {
+    padding: 0.875rem 1.5rem 1rem;
+  }
+
+  .vu-title {
+    font-size: 1.3rem;
+  }
+
+  .vu-icon-wrap {
+    width: 62px;
+    height: 62px;
+  }
+
+  .vu-icon-main {
+    font-size: 1.5rem;
+  }
+}
+
+@supports (-webkit-touch-callout: none) {
+  @media (max-width: 520px) {
+    .vu-overlay {
+      padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    }
   }
 }

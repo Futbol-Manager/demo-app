@@ -1987,6 +1987,15 @@
       "COACH": {
         "TITLE": "Coach",
         "SUBTITLE": "Register as coach"
+      },
+      "PLAYER_PARENT": {
+        "TITLE": "Giocatore/Genitore"
+      },
+      "PLAYER": {
+        "TITLE": "Giocatore"
+      },
+      "SCOUT": {
+        "TITLE": "Scout"
       }
     },
     "TABS": {
@@ -2052,6 +2061,77 @@
     "BUTTONS_MODALS": {
       "ACKNOWLEDGE": "Got it",
       "I_AM_COACH": "I am a coach"
+    },
+    "PANEL": {
+      "HEADLINE": "La piattaforma leader nella gestione sportiva",
+      "TAGLINE": "Tutto ciò di cui ha bisogno il tuo club, in un unico posto.",
+      "FEATURES": {
+        "FINANCE": "Controllo di quote e finanze",
+        "TEAMS": "Gestione di squadre e giocatori",
+        "STATS": "Statistiche in tempo reale",
+        "APP": "App mobile per i genitori",
+        "SECURITY": "Dati sicuri e protetti"
+      },
+      "TESTIMONIAL": {
+        "TEXT": "Sphaira ha trasformato la gestione del nostro club. Ora tutto è più semplice e veloce.",
+        "AUTHOR": "Club Sportivo Sphaira"
+      }
+    },
+    "STEP2": {
+      "SUBTITLE": "Inserisci i tuoi dati per creare il tuo account"
+    },
+    "CARDS": {
+      "CLUB": {
+        "DESC": "Gestisci il tuo club in modo professionale",
+        "FEAT_1": "Gestione delle squadre",
+        "FEAT_2": "Gestione delle quote",
+        "FEAT_3": "App per i genitori"
+      },
+      "COACH": {
+        "DESC": "Unisciti allo staff tecnico di un club",
+        "FEAT_1": "Schede dei giocatori",
+        "FEAT_2": "Monitoraggio tecnico",
+        "FEAT_3": "Rapporti di performance"
+      }
+    },
+    "ROLE": {
+      "LABEL": "Qual è il tuo ruolo?",
+      "TRAINER": "Allenatore",
+      "PHYSIO": "Fisioterapista",
+      "NUTRITIONIST": "Nutrizionista"
+    },
+    "FORM": {
+      "PROFILE_DEFAULT": "Sei un club o un allenatore?",
+      "PROFILE_TYPE": "Tipo di profilo",
+      "FOUNDATION_DATE": "Data di fondazione",
+      "BIRTH_DATE": "Data di nascita"
+    },
+    "MODAL_CLUB": {
+      "TITLE": "Conferma richiesta",
+      "SUBTITLE": "Registrazione esclusiva per club autorizzati",
+      "SECURITY_TEXT": "Per sicurezza, la registrazione dei club richiede una password di accesso. Se non la hai, richiedila:",
+      "PASSWORD_LABEL": "Password di accesso",
+      "PASSWORD_PLACEHOLDER": "Inserisci la password",
+      "CANCEL": "Annulla",
+      "SUBMIT": "Accedi"
+    },
+    "MODAL_COACH": {
+      "SUBTITLE": "Leggi questo prima di continuare"
+    },
+    "MODAL_PRICING": {
+      "TITLE": "Registrazione completata!",
+      "SUBTITLE": "Benvenuto in Sphaira Tech",
+      "DISCOUNT": "50% SCONTO",
+      "HEADLINE": "Inizia gratis, cresci senza limiti",
+      "TRIAL": "Provalo 7 giorni e poi:",
+      "FEAT_1": "Risparmia più del 30% con questo piano",
+      "FEAT_2": "Impegno di 1 anno",
+      "FEAT_3": "Controllo Totale",
+      "FEAT_4": "Funzionalità Complete",
+      "FEAT_5": "Collaborazione Ampliata",
+      "CTA": "Inizia la settimana gratuita",
+      "TERMS_PREFIX": "Accetto le",
+      "TERMS_LINK": "condizioni contrattuali"
     }
   },
   "AI_ASSISTANT": {
@@ -2594,7 +2674,11 @@
   },
   "SCOUTING_CLUB": {
     "TITLE": "Scouting del Club",
-    "TABS": { "SEARCH": "Cerca Giocatori", "WATCHLIST": "La Mia Lista", "PIPELINE": "Pipeline" },
+    "TABS": {
+      "SEARCH": "Cerca Giocatori",
+      "WATCHLIST": "La Mia Lista",
+      "PIPELINE": "Pipeline"
+    },
     "SEARCH": {
       "PLACEHOLDER": "Cerca per nome...",
       "BTN": "Cerca",
@@ -2635,8 +2719,17 @@
       "REMOVE": "Rimuovi dalla lista",
       "GO_SEARCH": "Cerca giocatori"
     },
-    "TABLE": { "NAME": "Nome", "POSITION": "Posizione", "STATUS": "Stato", "RATING": "Valutazione", "ACTIONS": "Azioni" },
-    "DETAIL": { "TITLE": "Scheda giocatore", "BIO": "Biografia" },
+    "TABLE": {
+      "NAME": "Nome",
+      "POSITION": "Posizione",
+      "STATUS": "Stato",
+      "RATING": "Valutazione",
+      "ACTIONS": "Azioni"
+    },
+    "DETAIL": {
+      "TITLE": "Scheda giocatore",
+      "BIO": "Biografia"
+    },
     "EVAL": {
       "TITLE": "Valutazioni",
       "ADD": "Nuova valutazione",
@@ -2647,8 +2740,21 @@
       "CONTEXT_PLACEHOLDER": "Es: Partita di campionato giornata 5",
       "EMPTY": "Nessuna valutazione ancora"
     },
-    "SCORES": { "TECHNICAL": "Tecnica", "TACTICAL": "Tattica", "PHYSICAL": "Fisico", "MENTAL": "Mentale", "POTENTIAL": "Potenziale", "ATTITUDE": "Atteggiamento" },
-    "FORM": { "NAME": "Nome", "POSITION": "Posizione", "AGE": "Età", "TEAM": "Squadra", "NOTES": "Note" },
+    "SCORES": {
+      "TECHNICAL": "Tecnica",
+      "TACTICAL": "Tattica",
+      "PHYSICAL": "Fisico",
+      "MENTAL": "Mentale",
+      "POTENTIAL": "Potenziale",
+      "ATTITUDE": "Atteggiamento"
+    },
+    "FORM": {
+      "NAME": "Nome",
+      "POSITION": "Posizione",
+      "AGE": "Età",
+      "TEAM": "Squadra",
+      "NOTES": "Note"
+    },
     "CONFIG": {
       "TITLE": "Impostazioni Scouting",
       "DESC": "Attiva o disattiva le funzionalità avanzate di scouting",
@@ -2664,26 +2770,52 @@
     "SAVE": "Salva"
   },
   "PLAYER_SCOUTING": {
-    "TITLE": "Il mio profilo Scouting", "SUBTITLE": "Profilo visibile ai club",
-    "SAVED": "Profilo salvato", "SAVE": "Salva profilo",
-    "VISIBLE_YES": "Profilo pubblico", "VISIBLE_NO": "Profilo privato",
-    "SEC_PERSONAL": "Dati personali", "SEC_POSITION": "Posizioni",
-    "SEC_SITUATION": "Situazione attuale", "SEC_CV": "CV calcistico",
-    "SEC_SELF": "Punti di forza e descrizione", "NAME": "Nome completo",
-    "NATIONALITY": "Nazionalità", "HEIGHT": "Altezza", "WEIGHT": "Peso",
-    "FOOT": "Piede preferito", "EMAIL": "Email di contatto", "PHONE": "Telefono",
-    "POSITIONS_HINT": "Seleziona le posizioni", "LEAGUE": "Lega attuale",
-    "LEAGUE_HINT": "Es: Serie B", "AVAILABILITY": "Disponibilità",
-    "CLUBS": "Club precedenti", "GOALS": "Gol", "ASSISTS": "Assist",
-    "TOURNAMENTS": "Tornei importanti", "AWARDS": "Premi",
-    "STRENGTHS": "I miei punti di forza", "IMPROVEMENT": "Aree di miglioramento",
-    "DESCRIPTION": "Descrizione libera", "VIDEOS": "I miei video",
-    "VIDEO_ADD": "Aggiungi", "VIDEO_PLATFORM": "Piattaforma", "VIDEO_TITLE": "Titolo",
-    "VIDEO_URL": "URL del video", "VIDEO_EMPTY": "Nessun video aggiunto",
-    "VIDEO_UPLOAD_TITLE": "Carica il tuo video", "VIDEO_UPLOAD_DESC": "Abbonamento €2,99/mese",
+    "TITLE": "Il mio profilo Scouting",
+    "SUBTITLE": "Profilo visibile ai club",
+    "SAVED": "Profilo salvato",
+    "SAVE": "Salva profilo",
+    "VISIBLE_YES": "Profilo pubblico",
+    "VISIBLE_NO": "Profilo privato",
+    "SEC_PERSONAL": "Dati personali",
+    "SEC_POSITION": "Posizioni",
+    "SEC_SITUATION": "Situazione attuale",
+    "SEC_CV": "CV calcistico",
+    "SEC_SELF": "Punti di forza e descrizione",
+    "NAME": "Nome completo",
+    "NATIONALITY": "Nazionalità",
+    "HEIGHT": "Altezza",
+    "WEIGHT": "Peso",
+    "FOOT": "Piede preferito",
+    "EMAIL": "Email di contatto",
+    "PHONE": "Telefono",
+    "POSITIONS_HINT": "Seleziona le posizioni",
+    "LEAGUE": "Lega attuale",
+    "LEAGUE_HINT": "Es: Serie B",
+    "AVAILABILITY": "Disponibilità",
+    "CLUBS": "Club precedenti",
+    "GOALS": "Gol",
+    "ASSISTS": "Assist",
+    "TOURNAMENTS": "Tornei importanti",
+    "AWARDS": "Premi",
+    "STRENGTHS": "I miei punti di forza",
+    "IMPROVEMENT": "Aree di miglioramento",
+    "DESCRIPTION": "Descrizione libera",
+    "VIDEOS": "I miei video",
+    "VIDEO_ADD": "Aggiungi",
+    "VIDEO_PLATFORM": "Piattaforma",
+    "VIDEO_TITLE": "Titolo",
+    "VIDEO_URL": "URL del video",
+    "VIDEO_EMPTY": "Nessun video aggiunto",
+    "VIDEO_UPLOAD_TITLE": "Carica il tuo video",
+    "VIDEO_UPLOAD_DESC": "Abbonamento €2,99/mese",
     "VIDEO_UPGRADE": "Attiva abbonamento"
   },
-  "AI_REPORT": { "TITLE": "Report IA", "GENERATING": "Generazione...", "GENERATED": "Report generato dall'IA", "COPY": "Copia" },
+  "AI_REPORT": {
+    "TITLE": "Report IA",
+    "GENERATING": "Generazione...",
+    "GENERATED": "Report generato dall'IA",
+    "COPY": "Copia"
+  },
   "NOTIF_BELL": {
     "TITLE": "Notifiche",
     "MARK_ALL_READ": "Segna tutto come letto",

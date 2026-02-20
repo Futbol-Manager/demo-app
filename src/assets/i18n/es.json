@@ -59,19 +59,6 @@
     "PATROCINADORES": "Patrocinadores",
     "LESIONES": "Lesiones"
   },
-  "ACTIONS": {
-    "CONFIRM_TITLE": "Confirmar",
-    "CONFIRM_DELETE_TITLE": "Confirmar eliminación",
-    "CONFIRM_DELETE_MESSAGE": "¿Estás seguro? Esta acción no se puede deshacer.",
-    "DELETE_SUCCESS": "Eliminado correctamente",
-    "SAVE_SUCCESS": "Guardado correctamente",
-    "ERROR_GENERIC": "Ha ocurrido un error. Inténtalo de nuevo.",
-    "CANCEL": "Cancelar",
-    "DELETE": "Eliminar",
-    "ACCEPT": "Aceptar",
-    "LOADING": "Cargando...",
-    "SAVE": "Guardar"
-  },
   "COACH_STATS": {
     "TITLE": "Estadísticas de entrenadores",
     "FEATURE_1": "Rendimiento por temporada y equipo",
@@ -801,6 +788,15 @@
       "COACH": {
         "TITLE": "Entrenador",
         "SUBTITLE": "Registrarse como entrenador"
+      },
+      "PLAYER_PARENT": {
+        "TITLE": "Jugador/Padre"
+      },
+      "PLAYER": {
+        "TITLE": "Jugador"
+      },
+      "SCOUT": {
+        "TITLE": "Scouter"
       }
     },
     "TABS": {
@@ -866,6 +862,77 @@
     "BUTTONS_MODALS": {
       "ACKNOWLEDGE": "Entendido",
       "I_AM_COACH": "Soy entrenador"
+    },
+    "PANEL": {
+      "HEADLINE": "La plataforma líder en gestión deportiva",
+      "TAGLINE": "Todo lo que necesita tu club, en un solo lugar.",
+      "FEATURES": {
+        "FINANCE": "Control de cuotas y finanzas",
+        "TEAMS": "Gestión de equipos y jugadores",
+        "STATS": "Estadísticas en tiempo real",
+        "APP": "App móvil para padres",
+        "SECURITY": "Datos seguros y protegidos"
+      },
+      "TESTIMONIAL": {
+        "TEXT": "Sphaira ha transformado la gestión de nuestro club. Ahora todo es más fácil y rápido.",
+        "AUTHOR": "Club Deportivo Sphaira"
+      }
+    },
+    "STEP2": {
+      "SUBTITLE": "Rellena tus datos para crear tu cuenta"
+    },
+    "CARDS": {
+      "CLUB": {
+        "DESC": "Gestiona tu club de forma profesional",
+        "FEAT_1": "Control de equipos",
+        "FEAT_2": "Gestión de cuotas",
+        "FEAT_3": "App para padres"
+      },
+      "COACH": {
+        "DESC": "Únete al cuerpo técnico de un club",
+        "FEAT_1": "Ficha de jugadores",
+        "FEAT_2": "Seguimiento técnico",
+        "FEAT_3": "Informes de rendimiento"
+      }
+    },
+    "ROLE": {
+      "LABEL": "¿Cuál es tu rol?",
+      "TRAINER": "Entrenador",
+      "PHYSIO": "Fisioterapeuta",
+      "NUTRITIONIST": "Nutricionista"
+    },
+    "FORM": {
+      "PROFILE_DEFAULT": "¿Eres un club o un entrenador?",
+      "PROFILE_TYPE": "Tipo de perfil",
+      "FOUNDATION_DATE": "Fecha de fundación",
+      "BIRTH_DATE": "Fecha de nacimiento"
+    },
+    "MODAL_CLUB": {
+      "TITLE": "Confirmación requerida",
+      "SUBTITLE": "Registro exclusivo para clubs autorizados",
+      "SECURITY_TEXT": "Por seguridad, el registro de clubs requiere una contraseña de acceso. Si no la tienes, solicítala:",
+      "PASSWORD_LABEL": "Contraseña de acceso",
+      "PASSWORD_PLACEHOLDER": "Introduce la contraseña",
+      "CANCEL": "Cancelar",
+      "SUBMIT": "Acceder"
+    },
+    "MODAL_COACH": {
+      "SUBTITLE": "Lee esto antes de continuar"
+    },
+    "MODAL_PRICING": {
+      "TITLE": "¡Registro completado!",
+      "SUBTITLE": "Bienvenido a Sphaira Tech",
+      "DISCOUNT": "50% DESCUENTO",
+      "HEADLINE": "Empieza gratis, crece sin límites",
+      "TRIAL": "Pruébalo 7 días y después:",
+      "FEAT_1": "Ahorra más de un 30% con este plan",
+      "FEAT_2": "Compromiso de 1 año",
+      "FEAT_3": "Control Total",
+      "FEAT_4": "Funcionalidades Completas",
+      "FEAT_5": "Colaboración Ampliada",
+      "CTA": "Empezar semana gratis",
+      "TERMS_PREFIX": "Acepto las",
+      "TERMS_LINK": "condiciones de contratación"
     }
   },
   "CUADROMANDO": {
@@ -1598,13 +1665,13 @@
   },
   "CLOTHES": {
     "TITLE": "Personalizar prendas",
-    "DESCRIPTION": "Activa o desactiva columnas y renombra prendas haciendo clic en el icono de l\u00e1piz. Los cambios se guardan por usuario.",
+    "DESCRIPTION": "Activa o desactiva columnas y renombra prendas haciendo clic en el icono de lápiz. Los cambios se guardan por usuario.",
     "RESET_DEFAULTS": "Restablecer todo por defecto",
     "GROUPS": {
-      "MATCH_1": "1\u00aa Equipaci\u00f3n",
-      "MATCH_2": "2\u00aa Equipaci\u00f3n",
+      "MATCH_1": "1ª Equipación",
+      "MATCH_2": "2ª Equipación",
       "TRAINING": "Entrenamiento",
-      "TRACKSUIT": "Ch\u00e1ndal",
+      "TRACKSUIT": "Chándal",
       "CASUAL": "Paseo",
       "ACCESSORIES": "Accesorios"
     },
@@ -2651,7 +2718,11 @@
   },
   "SCOUTING_CLUB": {
     "TITLE": "Scouting del Club",
-    "TABS": { "SEARCH": "Buscar Jugadores", "WATCHLIST": "Mis Scoutings", "PIPELINE": "Pipeline" },
+    "TABS": {
+      "SEARCH": "Buscar Jugadores",
+      "WATCHLIST": "Mis Scoutings",
+      "PIPELINE": "Pipeline"
+    },
     "SEARCH": {
       "PLACEHOLDER": "Buscar por nombre...",
       "BTN": "Buscar",
@@ -2692,8 +2763,17 @@
       "REMOVE": "Eliminar de la lista",
       "GO_SEARCH": "Buscar jugadores"
     },
-    "TABLE": { "NAME": "Nombre", "POSITION": "Posición", "STATUS": "Estado", "RATING": "Valoración", "ACTIONS": "Acciones" },
-    "DETAIL": { "TITLE": "Ficha del jugador", "BIO": "Biografía" },
+    "TABLE": {
+      "NAME": "Nombre",
+      "POSITION": "Posición",
+      "STATUS": "Estado",
+      "RATING": "Valoración",
+      "ACTIONS": "Acciones"
+    },
+    "DETAIL": {
+      "TITLE": "Ficha del jugador",
+      "BIO": "Biografía"
+    },
     "EVAL": {
       "TITLE": "Evaluaciones",
       "ADD": "Nueva evaluación",
@@ -2707,8 +2787,21 @@
       "CONTEXT_PLACEHOLDER": "Ej: Partido liga jornada 5",
       "EMPTY": "Sin evaluaciones todavía"
     },
-    "SCORES": { "TECHNICAL": "Técnica", "TACTICAL": "Táctica", "PHYSICAL": "Físico", "MENTAL": "Mental", "POTENTIAL": "Potencial", "ATTITUDE": "Actitud" },
-    "FORM": { "NAME": "Nombre", "POSITION": "Posición", "AGE": "Edad", "TEAM": "Equipo", "NOTES": "Notas" },
+    "SCORES": {
+      "TECHNICAL": "Técnica",
+      "TACTICAL": "Táctica",
+      "PHYSICAL": "Físico",
+      "MENTAL": "Mental",
+      "POTENTIAL": "Potencial",
+      "ATTITUDE": "Actitud"
+    },
+    "FORM": {
+      "NAME": "Nombre",
+      "POSITION": "Posición",
+      "AGE": "Edad",
+      "TEAM": "Equipo",
+      "NOTES": "Notas"
+    },
     "CONFIG": {
       "TITLE": "Configuración de Scouting",
       "DESC": "Activa o desactiva funcionalidades avanzadas de scouting para tu club",

@@ -945,6 +945,15 @@
       "COACH": {
         "TITLE": "Treinador",
         "SUBTITLE": "Registar-se como treinador"
+      },
+      "PLAYER_PARENT": {
+        "TITLE": "Jogador/Pai"
+      },
+      "PLAYER": {
+        "TITLE": "Jogador"
+      },
+      "SCOUT": {
+        "TITLE": "Scout"
       }
     },
     "TABS": {
@@ -1010,6 +1019,77 @@
     "BUTTONS_MODALS": {
       "ACKNOWLEDGE": "Entendido",
       "I_AM_COACH": "Sou treinador"
+    },
+    "PANEL": {
+      "HEADLINE": "A plataforma líder em gestão desportiva",
+      "TAGLINE": "Tudo o que o seu clube precisa, num só lugar.",
+      "FEATURES": {
+        "FINANCE": "Controlo de quotas e finanças",
+        "TEAMS": "Gestão de equipas e jogadores",
+        "STATS": "Estatísticas em tempo real",
+        "APP": "App móvel para pais",
+        "SECURITY": "Dados seguros e protegidos"
+      },
+      "TESTIMONIAL": {
+        "TEXT": "O Sphaira transformou a gestão do nosso clube. Agora tudo é mais fácil e rápido.",
+        "AUTHOR": "Clube Desportivo Sphaira"
+      }
+    },
+    "STEP2": {
+      "SUBTITLE": "Preencha os seus dados para criar a sua conta"
+    },
+    "CARDS": {
+      "CLUB": {
+        "DESC": "Gira o seu clube de forma profissional",
+        "FEAT_1": "Gestão de equipas",
+        "FEAT_2": "Gestão de quotas",
+        "FEAT_3": "App para pais"
+      },
+      "COACH": {
+        "DESC": "Junte-se à equipa técnica de um clube",
+        "FEAT_1": "Fichas de jogadores",
+        "FEAT_2": "Acompanhamento técnico",
+        "FEAT_3": "Relatórios de desempenho"
+      }
+    },
+    "ROLE": {
+      "LABEL": "Qual é o seu papel?",
+      "TRAINER": "Treinador",
+      "PHYSIO": "Fisioterapeuta",
+      "NUTRITIONIST": "Nutricionista"
+    },
+    "FORM": {
+      "PROFILE_DEFAULT": "É um clube ou um treinador?",
+      "PROFILE_TYPE": "Tipo de perfil",
+      "FOUNDATION_DATE": "Data de fundação",
+      "BIRTH_DATE": "Data de nascimento"
+    },
+    "MODAL_CLUB": {
+      "TITLE": "Confirmação necessária",
+      "SUBTITLE": "Registo exclusivo para clubes autorizados",
+      "SECURITY_TEXT": "Por segurança, o registo de clubes requer uma senha de acesso. Se não a tiver, solicite-a:",
+      "PASSWORD_LABEL": "Senha de acesso",
+      "PASSWORD_PLACEHOLDER": "Introduza a senha",
+      "CANCEL": "Cancelar",
+      "SUBMIT": "Aceder"
+    },
+    "MODAL_COACH": {
+      "SUBTITLE": "Leia isto antes de continuar"
+    },
+    "MODAL_PRICING": {
+      "TITLE": "Registo concluído!",
+      "SUBTITLE": "Bem-vindo ao Sphaira Tech",
+      "DISCOUNT": "50% DESCONTO",
+      "HEADLINE": "Comece grátis, cresça sem limites",
+      "TRIAL": "Experimente 7 dias e depois:",
+      "FEAT_1": "Poupe mais de 30% com este plano",
+      "FEAT_2": "Compromisso de 1 ano",
+      "FEAT_3": "Controlo Total",
+      "FEAT_4": "Funcionalidades Completas",
+      "FEAT_5": "Colaboração Alargada",
+      "CTA": "Começar semana gratuita",
+      "TERMS_PREFIX": "Aceito as",
+      "TERMS_LINK": "condições de contratação"
     }
   },
   "CUADROMANDO": {
@@ -2604,7 +2684,11 @@
   },
   "SCOUTING_CLUB": {
     "TITLE": "Scouting do Clube",
-    "TABS": { "SEARCH": "Procurar Jogadores", "WATCHLIST": "Minha Lista", "PIPELINE": "Pipeline" },
+    "TABS": {
+      "SEARCH": "Procurar Jogadores",
+      "WATCHLIST": "Minha Lista",
+      "PIPELINE": "Pipeline"
+    },
     "SEARCH": {
       "PLACEHOLDER": "Procurar por nome...",
       "BTN": "Procurar",
@@ -2645,8 +2729,17 @@
       "REMOVE": "Remover da lista",
       "GO_SEARCH": "Procurar jogadores"
     },
-    "TABLE": { "NAME": "Nome", "POSITION": "Posição", "STATUS": "Estado", "RATING": "Avaliação", "ACTIONS": "Ações" },
-    "DETAIL": { "TITLE": "Ficha do jogador", "BIO": "Biografia" },
+    "TABLE": {
+      "NAME": "Nome",
+      "POSITION": "Posição",
+      "STATUS": "Estado",
+      "RATING": "Avaliação",
+      "ACTIONS": "Ações"
+    },
+    "DETAIL": {
+      "TITLE": "Ficha do jogador",
+      "BIO": "Biografia"
+    },
     "EVAL": {
       "TITLE": "Avaliações",
       "ADD": "Nova avaliação",
@@ -2657,8 +2750,21 @@
       "CONTEXT_PLACEHOLDER": "Ex: Jogo do campeonato jornada 5",
       "EMPTY": "Sem avaliações ainda"
     },
-    "SCORES": { "TECHNICAL": "Técnica", "TACTICAL": "Tática", "PHYSICAL": "Físico", "MENTAL": "Mental", "POTENTIAL": "Potencial", "ATTITUDE": "Atitude" },
-    "FORM": { "NAME": "Nome", "POSITION": "Posição", "AGE": "Idade", "TEAM": "Equipa", "NOTES": "Notas" },
+    "SCORES": {
+      "TECHNICAL": "Técnica",
+      "TACTICAL": "Tática",
+      "PHYSICAL": "Físico",
+      "MENTAL": "Mental",
+      "POTENTIAL": "Potencial",
+      "ATTITUDE": "Atitude"
+    },
+    "FORM": {
+      "NAME": "Nome",
+      "POSITION": "Posição",
+      "AGE": "Idade",
+      "TEAM": "Equipa",
+      "NOTES": "Notas"
+    },
     "CONFIG": {
       "TITLE": "Configurações de Scouting",
       "DESC": "Ative ou desative funcionalidades avançadas de scouting",
@@ -2674,26 +2780,52 @@
     "SAVE": "Guardar"
   },
   "PLAYER_SCOUTING": {
-    "TITLE": "Meu perfil de Scouting", "SUBTITLE": "Perfil visível para os clubes",
-    "SAVED": "Perfil guardado", "SAVE": "Guardar perfil",
-    "VISIBLE_YES": "Perfil público", "VISIBLE_NO": "Perfil privado",
-    "SEC_PERSONAL": "Dados pessoais", "SEC_POSITION": "Posições",
-    "SEC_SITUATION": "Situação atual", "SEC_CV": "CV futebolístico",
-    "SEC_SELF": "Pontos fortes e descrição", "NAME": "Nome completo",
-    "NATIONALITY": "Nacionalidade", "HEIGHT": "Altura", "WEIGHT": "Peso",
-    "FOOT": "Pé preferido", "EMAIL": "Email de contacto", "PHONE": "Telefone",
-    "POSITIONS_HINT": "Selecione as suas posições", "LEAGUE": "Liga atual",
-    "LEAGUE_HINT": "Ex: Liga Portugal 2", "AVAILABILITY": "Disponibilidade",
-    "CLUBS": "Clubes anteriores", "GOALS": "Golos", "ASSISTS": "Assistências",
-    "TOURNAMENTS": "Torneios importantes", "AWARDS": "Prémios",
-    "STRENGTHS": "Os meus pontos fortes", "IMPROVEMENT": "Áreas de melhoria",
-    "DESCRIPTION": "Descrição livre", "VIDEOS": "Os meus vídeos",
-    "VIDEO_ADD": "Adicionar", "VIDEO_PLATFORM": "Plataforma", "VIDEO_TITLE": "Título",
-    "VIDEO_URL": "URL do vídeo", "VIDEO_EMPTY": "Nenhum vídeo adicionado",
-    "VIDEO_UPLOAD_TITLE": "Carregar o seu vídeo", "VIDEO_UPLOAD_DESC": "Subscrição €2,99/mês",
+    "TITLE": "Meu perfil de Scouting",
+    "SUBTITLE": "Perfil visível para os clubes",
+    "SAVED": "Perfil guardado",
+    "SAVE": "Guardar perfil",
+    "VISIBLE_YES": "Perfil público",
+    "VISIBLE_NO": "Perfil privado",
+    "SEC_PERSONAL": "Dados pessoais",
+    "SEC_POSITION": "Posições",
+    "SEC_SITUATION": "Situação atual",
+    "SEC_CV": "CV futebolístico",
+    "SEC_SELF": "Pontos fortes e descrição",
+    "NAME": "Nome completo",
+    "NATIONALITY": "Nacionalidade",
+    "HEIGHT": "Altura",
+    "WEIGHT": "Peso",
+    "FOOT": "Pé preferido",
+    "EMAIL": "Email de contacto",
+    "PHONE": "Telefone",
+    "POSITIONS_HINT": "Selecione as suas posições",
+    "LEAGUE": "Liga atual",
+    "LEAGUE_HINT": "Ex: Liga Portugal 2",
+    "AVAILABILITY": "Disponibilidade",
+    "CLUBS": "Clubes anteriores",
+    "GOALS": "Golos",
+    "ASSISTS": "Assistências",
+    "TOURNAMENTS": "Torneios importantes",
+    "AWARDS": "Prémios",
+    "STRENGTHS": "Os meus pontos fortes",
+    "IMPROVEMENT": "Áreas de melhoria",
+    "DESCRIPTION": "Descrição livre",
+    "VIDEOS": "Os meus vídeos",
+    "VIDEO_ADD": "Adicionar",
+    "VIDEO_PLATFORM": "Plataforma",
+    "VIDEO_TITLE": "Título",
+    "VIDEO_URL": "URL do vídeo",
+    "VIDEO_EMPTY": "Nenhum vídeo adicionado",
+    "VIDEO_UPLOAD_TITLE": "Carregar o seu vídeo",
+    "VIDEO_UPLOAD_DESC": "Subscrição €2,99/mês",
     "VIDEO_UPGRADE": "Ativar subscrição"
   },
-  "AI_REPORT": { "TITLE": "Relatório IA", "GENERATING": "A gerar...", "GENERATED": "Relatório gerado pela IA", "COPY": "Copiar" },
+  "AI_REPORT": {
+    "TITLE": "Relatório IA",
+    "GENERATING": "A gerar...",
+    "GENERATED": "Relatório gerado pela IA",
+    "COPY": "Copiar"
+  },
   "NOTIF_BELL": {
     "TITLE": "Notificações",
     "MARK_ALL_READ": "Marcar tudo como lido",

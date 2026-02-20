@@ -108,6 +108,90 @@ export class CuotasComponent implements OnInit {
   paymentMessage = '';
   paymentMessageType: 'success' | 'error' | 'info' = 'info';
 
+  // ── Multi-selección & pago múltiple ────────────────────────
+  selectedCuotas: any[] = [];
+  showMultiPayModal = false;
+  showMultiPayTerminos = false;
+  multiPayStep: 'review' | 'processing' | 'success' = 'review';
+  multiPaySelectedCard: any = null;
+  multiPayUseNewCard = false;
+  multiPayNewCardEl: any = null;
+  multiPayAcceptedTerms = false;
+  multiPayLoading = false;
+  multiPayError = '';
+  multiPayCurrentIndex = 0;
+  multiPayResults: { cuota: any; success: boolean; error?: string }[] = [];
+
+  get selectedCuotasTotal(): number {
+    return this.selectedCuotas.reduce((sum, c) => sum + (parseFloat(c.importe) || 0), 0);
+  }
+
+  calcGrossAmount(importe: string | number, comisionClubPct: number = 0): number {
+    const base = parseFloat(importe as any) || 0;
+    if (!this.feeConfigLoaded || base === 0) return base;
+    const toCents  = (x: number) => Math.round(x * 100);
+    const fromC    = (c: number) => +(c / 100).toFixed(2);
+    const clubFeeC = Math.round(toCents(base) * (comisionClubPct / 100));
+    const B        = toCents(base) + clubFeeC;          // base extendida: lo que recibe el club
+    const appFeeC  = Math.round(B * this.stripeFeePct) + toCents(this.stripeFeeFix);
+    const denom    = 1 - this.stripePct;
+    return fromC(Math.ceil((B + appFeeC) / denom));
+  }
+
+  get selectedCuotasGrossTotal(): string {
+    return this.selectedCuotas
+      .reduce((sum, c) => sum + this.calcGrossAmount(c.importe, c.comisionClub ?? 0), 0)
+      .toFixed(2);
+  }
+
+  getPendiente(cuota: any): string {
+    const imp = parseFloat(cuota.importe) || 0;
+    const pag = parseFloat(cuota.pagado)  || 0;
+    return Math.max(imp - pag, 0).toFixed(2);
+  }
+
+  canSelectCuota(cuota: any): boolean {
+    if (!cuota || cuota.desistido) return false;
+    if (cuota.tipoPagoStripe === 1) return false;
+    return (parseFloat(cuota.pagado) || 0) < (parseFloat(cuota.importe) || 0);
+  }
+
+  isCuotaSelected(cuota: any): boolean {
+    return this.selectedCuotas.some(c => c.pagoClubId === cuota.pagoClubId);
+  }
+
+  toggleCuotaSelection(cuota: any): void {
+    if (!this.canSelectCuota(cuota)) return;
+    const idx = this.selectedCuotas.findIndex(c => c.pagoClubId === cuota.pagoClubId);
+    if (idx >= 0) this.selectedCuotas.splice(idx, 1);
+    else this.selectedCuotas.push(cuota);
+  }
+
+  clearSelection(): void {
+    this.selectedCuotas = [];
+  }
+
+  // Helpers para template (arrow functions no soportadas en Angular templates)
+  allMultiPaySuccess(): boolean  { return this.multiPayResults.length > 0 && this.multiPayResults.every(r => r.success); }
+  someMultiPaySuccess(): boolean { return this.multiPayResults.some(r => r.success); }
+  someMultiPayFail(): boolean    { return this.multiPayResults.some(r => !r.success); }
+  allMultiPayFail(): boolean     { return this.multiPayResults.length > 0 && this.multiPayResults.every(r => !r.success); }
+  countMultiPaySuccess(): number { return this.multiPayResults.filter(r => r.success).length; }
+  countMultiPayFail(): number    { return this.multiPayResults.filter(r => !r.success).length; }
+  parseFloatHelper(v: string | number): number { return parseFloat(v as any) || 0; }
+
+  calcFee(importe: string | number, comisionClubPct: number = 0): number {
+    const base  = parseFloat(importe as any) || 0;
+    const gross = this.calcGrossAmount(importe, comisionClubPct);
+    return +(gross - base).toFixed(2);
+  }
+
+  get selectedCuotasNetTotal(): string {
+    return this.selectedCuotas
+      .reduce((sum, c) => sum + (parseFloat(c.importe) || 0), 0)
+      .toFixed(2);
+  }
+
   showPaymentFeedback(msg: string, type: 'success' | 'error' | 'info' = 'info') {
     this.paymentMessage = msg;
     this.paymentMessageType = type;
@@ -183,6 +267,8 @@ export class CuotasComponent implements OnInit {
           this.decodeAndSanitizeTerminos();
           if (this.historyCuotasPlayer.clubId == 83) this.stripeBtoShow = false;
           this.datosCargados = true;
+          // Recargar fee-config con el clubId ya conocido
+          this.loadFeeConfig();
         }
       },
       (error) => { console.error('Error al cargar cuotas', error); }
@@ -190,7 +276,7 @@ export class CuotasComponent implements OnInit {
   }
 
   loadFeeConfig(): void {
-    this.teamService.getFeeConfig().subscribe({
+    this.teamService.getFeeConfig(this.clubId > 0 ? this.clubId : undefined).subscribe({
       next: (res: any) => {
         if (res?.data) {
           this.stripeFeePct = res.data.appPct ?? 0;
@@ -513,29 +599,27 @@ export class CuotasComponent implements OnInit {
       return;
     }
 
-    // Base que debe recibir el club (ajusta el nombre del campo si no es 'importe')
-    const base = Number(c.importe ?? 0);
+    const base           = Number(c.importe ?? 0);
+    const comisionClubPct = Number(c.comisionClub ?? 0);
 
-    const APP_PCT = this.stripeFeePct;
-    const APP_FIX = this.stripeFeeFix;
+    const APP_PCT    = this.stripeFeePct;
+    const APP_FIX    = this.stripeFeeFix;
     const STRIPE_PCT = this.stripePct;
-    const STRIPE_FIX = 0;
 
-    // Helpers en céntimos para evitar errores de redondeo
     const toCents = (x: number) => Math.round(x * 100);
-    const fromC = (cents: number) => +(cents / 100).toFixed(2);
+    const fromC   = (cents: number) => +(cents / 100).toFixed(2);
 
-    // Cálculo:
-    const B = toCents(base);                                       // club neto deseado
-    const appFeeC = Math.round(B * APP_PCT) + toCents(APP_FIX);    // tu fee sobre B
-    const denom = 1 - STRIPE_PCT;
+    // Base extendida: el club recibe el importe base + su comisión adicional
+    const clubFeeC = Math.round(toCents(base) * (comisionClubPct / 100));
+    const B        = toCents(base) + clubFeeC;
 
-    // Gross-up: (1 - STRIPE_PCT) * A = B + appFeeC + STRIPE_FIX
-    const A = Math.ceil((B + appFeeC + toCents(STRIPE_FIX)) / denom); // total a cobrar al padre
+    const appFeeC = Math.round(B * APP_PCT) + toCents(APP_FIX);
+    const denom   = 1 - STRIPE_PCT;
 
-    // Actualiza UI
-    this.cantidadAPagar = fromC(B); // base que enviarás al backend como cantidadOriginal
-    this.amount = fromC(A); // total que verá/pagará el padre
+    const A = Math.ceil((B + appFeeC) / denom); // total que paga el padre
+
+    this.cantidadAPagar = fromC(B); // base extendida → cantidadOriginal para el backend
+    this.amount         = fromC(A); // total con todas las comisiones → lo que ve el padre
     this.pagarOk = B > 0;
 
     // Guarda datos de la cuota que usarás en makePayment()
@@ -810,6 +894,183 @@ export class CuotasComponent implements OnInit {
     this.showModalTarjetas = false;
     if (this.showSaveCardSection) {
       this.closeSaveCardSection();
+    }
+  }
+
+  // ── Modal de pago múltiple ────────────────────────────────────────
+
+  openMultiPayModal(): void {
+    if (!this.selectedCuotas.length) return;
+    this.multiPayStep = 'review';
+    this.multiPayError = '';
+    this.multiPayAcceptedTerms = false;
+    this.multiPayResults = [];
+    this.multiPayCurrentIndex = 0;
+    this.multiPaySelectedCard = null;
+    this.multiPayUseNewCard = false;
+    this.showMultiPayModal = true;
+
+    this.savedCardsLoading = true;
+    this.teamService.getSavedCards(this.playerId, this.clubId).subscribe({
+      next: (resp: any) => {
+        this.savedCards = resp.data || [];
+        this.savedCardsLoading = false;
+        if (this.savedCards.length > 0) {
+          this.multiPaySelectedCard = this.savedCards[0];
+        } else {
+          this.multiPayUseNewCard = true;
+          this._mountMultiPayCard();
+        }
+      },
+      error: () => {
+        this.savedCards = [];
+        this.savedCardsLoading = false;
+        this.multiPayUseNewCard = true;
+        this._mountMultiPayCard();
+      }
+    });
+  }
+
+  closeMultiPayModal(): void {
+    const hadSuccess = this.multiPayResults.some(r => r.success);
+    this.showMultiPayModal = false;
+    this.showMultiPayTerminos = false;
+    this._destroyMultiPayCard();
+    if (hadSuccess) {
+      this.loadCuotasData();
+    }
+  }
+
+  selectMultiPaySavedCard(card: any): void {
+    this.multiPaySelectedCard = card;
+    this.multiPayUseNewCard = false;
+    this._destroyMultiPayCard();
+  }
+
+  selectMultiPayNewCard(): void {
+    this.multiPaySelectedCard = null;
+    this.multiPayUseNewCard = true;
+    this._mountMultiPayCard();
+  }
+
+  private _mountMultiPayCard(): void {
+    this._destroyMultiPayCard();
+    setTimeout(() => {
+      const elements = this.stripe.elements();
+      this.multiPayNewCardEl = elements.create('card', {
+        style: {
+          base: {
+            fontSize: '16px', color: '#1a2332',
+            fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+            '::placeholder': { color: '#8fa0b3' }, iconColor: '#0fa3e8'
+          },
+          invalid: { color: '#e53e3e', iconColor: '#e53e3e' }
+        }
+      });
+      this.multiPayNewCardEl.mount('#multi-pay-card-element');
+    }, 150);
+  }
+
+  private _destroyMultiPayCard(): void {
+    if (this.multiPayNewCardEl) {
+      this.multiPayNewCardEl.destroy();
+      this.multiPayNewCardEl = null;
+    }
+  }
+
+  async makeMultiPayment(): Promise<void> {
+    if (!this.multiPayAcceptedTerms) return;
+    if (!this.multiPayUseNewCard && !this.multiPaySelectedCard) return;
+
+    this.multiPayLoading = true;
+    this.multiPayError = '';
+    this.multiPayStep = 'processing';
+    this.multiPayResults = [];
+
+    // ID del payment method reutilizable — debe ser siempre el pm_xxx de Stripe.
+    // NUNCA usar .id (es el ID numérico de BD y Stripe lo rechaza).
+    const rawPm = this.multiPaySelectedCard?.paymentMethodId
+               ?? this.multiPaySelectedCard?.stripePaymentMethodId;
+    let pmId: string | null = (typeof rawPm === 'string' && rawPm.startsWith('pm_')) ? rawPm : null;
+
+    const toCents = (x: number) => Math.round(x * 100);
+    const fromC   = (c: number) => +(c / 100).toFixed(2);
+
+    for (let i = 0; i < this.selectedCuotas.length; i++) {
+      this.multiPayCurrentIndex = i;
+      const cuota = this.selectedCuotas[i];
+
+      try {
+        const comisionClubPct = Number(cuota.comisionClub ?? 0);
+        const baseC    = toCents(parseFloat(cuota.importe || '0'));
+        const clubFeeC = Math.round(baseC * (comisionClubPct / 100));
+        const B        = baseC + clubFeeC;   // base extendida: lo que recibe el club
+        const appFeeC  = Math.round(B * this.stripeFeePct) + toCents(this.stripeFeeFix);
+        const denom    = 1 - this.stripePct;
+        const _A       = Math.ceil((B + appFeeC) / denom);
+
+        const payload = {
+          userId:           this.usuarioActual?.userId,
+          clubId:           this.clubId,
+          teamId:           this.teamId,
+          playerId:         this.playerIdUserActual,
+          nameClub:         this.nameClub,
+          cantidadOriginal: fromC(B),
+          accountId:        this.stripeId,
+          option:           null,
+          pagoClubId:       cuota.pagoClubId,
+          importe:          cuota.importe
+        };
+
+        const createResp: any = await firstValueFrom(this.teamService.createIntent(payload));
+        const clientSecret    = createResp?.data?.clientSecret;
+        const paymentIntentId = createResp?.data?.paymentIntentId;
+        if (!clientSecret) throw new Error('Sin clientSecret');
+
+        let confirmResult: any;
+
+        if (pmId) {
+          confirmResult = await this.stripe.confirmCardPayment(clientSecret, { payment_method: pmId });
+        } else {
+          confirmResult = await this.stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+              card: this.multiPayNewCardEl,
+              billing_details: {
+                name:  `${this.usuarioActual?.firstName || ''} ${this.usuarioActual?.secondName || ''}`.trim(),
+                email: this.usuarioActual?.mail || undefined
+              }
+            }
+          });
+          // Reutilizar el payment method en los siguientes pagos
+          if (!confirmResult.error && confirmResult.paymentIntent?.payment_method) {
+            pmId = confirmResult.paymentIntent.payment_method;
+          }
+        }
+
+        if (confirmResult.error) {
+          this.multiPayResults.push({ cuota, success: false, error: confirmResult.error.message });
+        } else if (confirmResult.paymentIntent?.status === 'succeeded') {
+          try {
+            await firstValueFrom(this.teamService.verifyPayment({ paymentIntentId }));
+          } catch (verifyErr: any) {
+            console.error('[verifyPayment] Error al registrar pago en BD, PI=' + paymentIntentId, verifyErr);
+          }
+          this.multiPayResults.push({ cuota, success: true });
+        } else {
+          this.multiPayResults.push({ cuota, success: false, error: 'Estado: ' + confirmResult.paymentIntent?.status });
+        }
+      } catch (ex: any) {
+        this.multiPayResults.push({ cuota, success: false, error: ex?.message || 'Error inesperado' });
+      }
+    }
+
+    this.multiPayLoading = false;
+    this.multiPayStep = 'success';
+
+    if (this.multiPayResults.some(r => r.success)) {
+      this.loadCuotasData();
+      const failedIds = new Set(this.multiPayResults.filter(r => !r.success).map(r => r.cuota.pagoClubId));
+      this.selectedCuotas = this.selectedCuotas.filter(c => failedIds.has(c.pagoClubId));
     }
   }
 

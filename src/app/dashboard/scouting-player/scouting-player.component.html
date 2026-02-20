@@ -9,32 +9,54 @@
   </div>
 
   <div class="mis-estadisticas-wrap" *ngIf="datosCargados">
-    <!-- Hero: foto + nombre + radar (compacto, una sola fila) -->
-    <section class="premium-hero premium-hero-compact">
+    <!-- Hero: foto + nombre + radar -->
+    <section class="premium-hero">
       <div class="premium-hero-inner">
+
+        <!-- Perfil del jugador -->
         <div class="premium-profile">
-          <ng-container *ngIf="profileImageUrl && !profileImageError">
-            <div class="premium-avatar-wrap">
-              <img [src]="profileImageUrl" alt="" class="premium-avatar" (error)="profileImageError = true">
-            </div>
-          </ng-container>
-          <ng-container *ngIf="!profileImageUrl || profileImageError">
-            <div class="premium-avatar-placeholder">
-              <i class="bi bi-person"></i>
-            </div>
-          </ng-container>
+          <div class="premium-avatar-ring">
+            <ng-container *ngIf="profileImageUrl && !profileImageError">
+              <div class="premium-avatar-inner">
+                <img [src]="profileImageUrl" alt="" class="premium-avatar" (error)="profileImageError = true">
+              </div>
+            </ng-container>
+            <ng-container *ngIf="!profileImageUrl || profileImageError">
+              <div class="premium-avatar-inner premium-avatar-placeholder">
+                <i class="bi bi-person-fill"></i>
+              </div>
+            </ng-container>
+          </div>
           <h1 class="premium-name">{{ displayName }}</h1>
-          <p class="premium-meta">
-            {{ (playerFromTeam?.posicion || scoutingPlayer?.posicionPrincipal) || '—' }}
-            <span class="premium-meta-sep">·</span>
-            {{ (playerFromTeam?.piernaNatural || scoutingPlayer?.piernaNatural) || '—' }}
-            <span class="premium-meta-sep" *ngIf="(playerFromTeam?.altura || scoutingPlayer?.altura)">·</span>
-            <span *ngIf="(playerFromTeam?.altura || scoutingPlayer?.altura)">{{ playerFromTeam?.altura || scoutingPlayer?.altura }} cm</span>
+          <div class="premium-pills">
+            <span class="premium-pill">
+              <i class="bi bi-geo-alt-fill"></i>
+              {{ (playerFromTeam?.posicion || scoutingPlayer?.posicionPrincipal) || '—' }}
+            </span>
+            <span class="premium-pill">
+              <i class="bi bi-lightning-fill"></i>
+              {{ (playerFromTeam?.piernaNatural || scoutingPlayer?.piernaNatural) || '—' }}
+            </span>
+            <span class="premium-pill" *ngIf="(playerFromTeam?.altura || scoutingPlayer?.altura)">
+              <i class="bi bi-rulers"></i>
+              {{ playerFromTeam?.altura || scoutingPlayer?.altura }} cm
+            </span>
+          </div>
+        </div>
+
+        <!-- Divisor vertical -->
+        <div class="hero-divider"></div>
+
+        <!-- Panel radar de habilidades -->
+        <div class="premium-radar-panel" *ngIf="playerFromTeam && (playerFromTeam.habilidadConBalon || playerFromTeam.pase)">
+          <p class="premium-radar-title">
+            <i class="bi bi-hexagon-half"></i>Perfil de habilidades
           </p>
+          <div class="premium-radar-wrap">
+            <canvas #radarCanvas></canvas>
+          </div>
         </div>
-        <div class="premium-radar-wrap" *ngIf="playerFromTeam && (playerFromTeam.habilidadConBalon || playerFromTeam.pase)">
-          <canvas #radarCanvas></canvas>
-        </div>
+
       </div>
     </section>
 

@@ -123,6 +123,7 @@ import { PaymentHistoryModalComponent } from './new-cuotas/components/payment-hi
 import { SubscriptionManagerComponent } from './new-cuotas/components/subscription-manager/subscription-manager.component';
 import { ChargeSavedCardModalComponent } from './new-cuotas/components/charge-saved-card-modal/charge-saved-card-modal.component';
 import { ExportButtonComponent } from './new-cuotas/components/export-button/export-button.component';
+import { AutomaticPaymentsComponent } from './new-cuotas/components/automatic-payments/automatic-payments.component';
 import { NotificationBellComponent } from './shared/notification-bell/notification-bell.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -248,6 +249,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ChargeSavedCardModalComponent,
     ExportButtonComponent,
     NotificationBellComponent,
+    AutomaticPaymentsComponent,
   ],
   imports: [
     CommonModule,

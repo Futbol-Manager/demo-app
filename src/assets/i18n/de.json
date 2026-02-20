@@ -1992,6 +1992,15 @@
       "COACH": {
         "TITLE": "Trainer",
         "SUBTITLE": "Als Trainer registrieren"
+      },
+      "PLAYER_PARENT": {
+        "TITLE": "Spieler/Elternteil"
+      },
+      "PLAYER": {
+        "TITLE": "Spieler"
+      },
+      "SCOUT": {
+        "TITLE": "Scout"
       }
     },
     "TABS": {
@@ -2057,6 +2066,77 @@
     "BUTTONS_MODALS": {
       "ACKNOWLEDGE": "Verstanden",
       "I_AM_COACH": "Ich bin Trainer"
+    },
+    "PANEL": {
+      "HEADLINE": "Die führende Plattform im Sportmanagement",
+      "TAGLINE": "Alles, was Ihr Verein braucht, an einem Ort.",
+      "FEATURES": {
+        "FINANCE": "Beitrags- und Finanzkontrolle",
+        "TEAMS": "Mannschafts- und Spielerverwaltung",
+        "STATS": "Echtzeit-Statistiken",
+        "APP": "Mobile App für Eltern",
+        "SECURITY": "Sichere und geschützte Daten"
+      },
+      "TESTIMONIAL": {
+        "TEXT": "Sphaira hat das Management unseres Vereins verändert. Alles ist jetzt einfacher und schneller.",
+        "AUTHOR": "Sphaira Sportverein"
+      }
+    },
+    "STEP2": {
+      "SUBTITLE": "Füllen Sie Ihre Daten aus, um Ihr Konto zu erstellen"
+    },
+    "CARDS": {
+      "CLUB": {
+        "DESC": "Verwalten Sie Ihren Verein professionell",
+        "FEAT_1": "Mannschaftsverwaltung",
+        "FEAT_2": "Beitragsverwaltung",
+        "FEAT_3": "Eltern-App"
+      },
+      "COACH": {
+        "DESC": "Treten Sie dem Trainerstab eines Vereins bei",
+        "FEAT_1": "Spielerprofile",
+        "FEAT_2": "Technisches Tracking",
+        "FEAT_3": "Leistungsberichte"
+      }
+    },
+    "ROLE": {
+      "LABEL": "Was ist Ihre Rolle?",
+      "TRAINER": "Trainer",
+      "PHYSIO": "Physiotherapeut",
+      "NUTRITIONIST": "Ernährungsberater"
+    },
+    "FORM": {
+      "PROFILE_DEFAULT": "Sind Sie ein Verein oder ein Trainer?",
+      "PROFILE_TYPE": "Profiltyp",
+      "FOUNDATION_DATE": "Gründungsdatum",
+      "BIRTH_DATE": "Geburtsdatum"
+    },
+    "MODAL_CLUB": {
+      "TITLE": "Bestätigung erforderlich",
+      "SUBTITLE": "Registrierung ausschließlich für autorisierte Vereine",
+      "SECURITY_TEXT": "Aus Sicherheitsgründen erfordert die Vereinsregistrierung ein Zugangspasswort. Wenn Sie keines haben, fordern Sie es an:",
+      "PASSWORD_LABEL": "Zugangspasswort",
+      "PASSWORD_PLACEHOLDER": "Passwort eingeben",
+      "CANCEL": "Abbrechen",
+      "SUBMIT": "Zugriff"
+    },
+    "MODAL_COACH": {
+      "SUBTITLE": "Lesen Sie dies vor dem Fortfahren"
+    },
+    "MODAL_PRICING": {
+      "TITLE": "Registrierung abgeschlossen!",
+      "SUBTITLE": "Willkommen bei Sphaira Tech",
+      "DISCOUNT": "50% RABATT",
+      "HEADLINE": "Kostenlos starten, unbegrenzt wachsen",
+      "TRIAL": "7 Tage testen und dann:",
+      "FEAT_1": "Sparen Sie mehr als 30% mit diesem Plan",
+      "FEAT_2": "1-Jahres-Verpflichtung",
+      "FEAT_3": "Vollständige Kontrolle",
+      "FEAT_4": "Vollständige Funktionen",
+      "FEAT_5": "Erweiterte Zusammenarbeit",
+      "CTA": "Gratiswoche starten",
+      "TERMS_PREFIX": "Ich akzeptiere die",
+      "TERMS_LINK": "Vertragsbedingungen"
     }
   },
   "AI_ASSISTANT": {
@@ -2599,7 +2679,11 @@
   },
   "SCOUTING_CLUB": {
     "TITLE": "Club-Scouting",
-    "TABS": { "SEARCH": "Spieler suchen", "WATCHLIST": "Meine Liste", "PIPELINE": "Pipeline" },
+    "TABS": {
+      "SEARCH": "Spieler suchen",
+      "WATCHLIST": "Meine Liste",
+      "PIPELINE": "Pipeline"
+    },
     "SEARCH": {
       "PLACEHOLDER": "Nach Name suchen...",
       "BTN": "Suchen",
@@ -2640,8 +2724,17 @@
       "REMOVE": "Von der Liste entfernen",
       "GO_SEARCH": "Spieler suchen"
     },
-    "TABLE": { "NAME": "Name", "POSITION": "Position", "STATUS": "Status", "RATING": "Bewertung", "ACTIONS": "Aktionen" },
-    "DETAIL": { "TITLE": "Spielerprofil", "BIO": "Biografie" },
+    "TABLE": {
+      "NAME": "Name",
+      "POSITION": "Position",
+      "STATUS": "Status",
+      "RATING": "Bewertung",
+      "ACTIONS": "Aktionen"
+    },
+    "DETAIL": {
+      "TITLE": "Spielerprofil",
+      "BIO": "Biografie"
+    },
     "EVAL": {
       "TITLE": "Bewertungen",
       "ADD": "Neue Bewertung",
@@ -2652,8 +2745,21 @@
       "CONTEXT_PLACEHOLDER": "Z.B. Ligaspiel Spieltag 5",
       "EMPTY": "Noch keine Bewertungen"
     },
-    "SCORES": { "TECHNICAL": "Technik", "TACTICAL": "Taktik", "PHYSICAL": "Physisch", "MENTAL": "Mental", "POTENTIAL": "Potenzial", "ATTITUDE": "Einstellung" },
-    "FORM": { "NAME": "Name", "POSITION": "Position", "AGE": "Alter", "TEAM": "Verein", "NOTES": "Notizen" },
+    "SCORES": {
+      "TECHNICAL": "Technik",
+      "TACTICAL": "Taktik",
+      "PHYSICAL": "Physisch",
+      "MENTAL": "Mental",
+      "POTENTIAL": "Potenzial",
+      "ATTITUDE": "Einstellung"
+    },
+    "FORM": {
+      "NAME": "Name",
+      "POSITION": "Position",
+      "AGE": "Alter",
+      "TEAM": "Verein",
+      "NOTES": "Notizen"
+    },
     "CONFIG": {
       "TITLE": "Scouting-Einstellungen",
       "DESC": "Aktivieren oder deaktivieren Sie erweiterte Scouting-Funktionen",
@@ -2669,26 +2775,52 @@
     "SAVE": "Speichern"
   },
   "PLAYER_SCOUTING": {
-    "TITLE": "Mein Scouting-Profil", "SUBTITLE": "Profil sichtbar für Vereine",
-    "SAVED": "Profil gespeichert", "SAVE": "Profil speichern",
-    "VISIBLE_YES": "Öffentliches Profil", "VISIBLE_NO": "Privates Profil",
-    "SEC_PERSONAL": "Persönliche Daten", "SEC_POSITION": "Positionen",
-    "SEC_SITUATION": "Aktuelle Situation", "SEC_CV": "Fußball-Lebenslauf",
-    "SEC_SELF": "Stärken und Beschreibung", "NAME": "Vollständiger Name",
-    "NATIONALITY": "Nationalität", "HEIGHT": "Größe", "WEIGHT": "Gewicht",
-    "FOOT": "Bevorzugter Fuß", "EMAIL": "Kontakt-E-Mail", "PHONE": "Telefon",
-    "POSITIONS_HINT": "Positionen auswählen", "LEAGUE": "Aktuelle Liga",
-    "LEAGUE_HINT": "Z.B.: Bundesliga", "AVAILABILITY": "Verfügbarkeit",
-    "CLUBS": "Frühere Vereine", "GOALS": "Tore", "ASSISTS": "Vorlagen",
-    "TOURNAMENTS": "Wichtige Turniere", "AWARDS": "Auszeichnungen",
-    "STRENGTHS": "Meine Stärken", "IMPROVEMENT": "Verbesserungsbereiche",
-    "DESCRIPTION": "Freie Beschreibung", "VIDEOS": "Meine Videos",
-    "VIDEO_ADD": "Hinzufügen", "VIDEO_PLATFORM": "Plattform", "VIDEO_TITLE": "Titel",
-    "VIDEO_URL": "Video-URL", "VIDEO_EMPTY": "Noch keine Videos",
-    "VIDEO_UPLOAD_TITLE": "Video hochladen", "VIDEO_UPLOAD_DESC": "Abo €2,99/Monat",
+    "TITLE": "Mein Scouting-Profil",
+    "SUBTITLE": "Profil sichtbar für Vereine",
+    "SAVED": "Profil gespeichert",
+    "SAVE": "Profil speichern",
+    "VISIBLE_YES": "Öffentliches Profil",
+    "VISIBLE_NO": "Privates Profil",
+    "SEC_PERSONAL": "Persönliche Daten",
+    "SEC_POSITION": "Positionen",
+    "SEC_SITUATION": "Aktuelle Situation",
+    "SEC_CV": "Fußball-Lebenslauf",
+    "SEC_SELF": "Stärken und Beschreibung",
+    "NAME": "Vollständiger Name",
+    "NATIONALITY": "Nationalität",
+    "HEIGHT": "Größe",
+    "WEIGHT": "Gewicht",
+    "FOOT": "Bevorzugter Fuß",
+    "EMAIL": "Kontakt-E-Mail",
+    "PHONE": "Telefon",
+    "POSITIONS_HINT": "Positionen auswählen",
+    "LEAGUE": "Aktuelle Liga",
+    "LEAGUE_HINT": "Z.B.: Bundesliga",
+    "AVAILABILITY": "Verfügbarkeit",
+    "CLUBS": "Frühere Vereine",
+    "GOALS": "Tore",
+    "ASSISTS": "Vorlagen",
+    "TOURNAMENTS": "Wichtige Turniere",
+    "AWARDS": "Auszeichnungen",
+    "STRENGTHS": "Meine Stärken",
+    "IMPROVEMENT": "Verbesserungsbereiche",
+    "DESCRIPTION": "Freie Beschreibung",
+    "VIDEOS": "Meine Videos",
+    "VIDEO_ADD": "Hinzufügen",
+    "VIDEO_PLATFORM": "Plattform",
+    "VIDEO_TITLE": "Titel",
+    "VIDEO_URL": "Video-URL",
+    "VIDEO_EMPTY": "Noch keine Videos",
+    "VIDEO_UPLOAD_TITLE": "Video hochladen",
+    "VIDEO_UPLOAD_DESC": "Abo €2,99/Monat",
     "VIDEO_UPGRADE": "Abonnement aktivieren"
   },
-  "AI_REPORT": { "TITLE": "KI-Bericht", "GENERATING": "Wird generiert...", "GENERATED": "KI-generierter Bericht", "COPY": "Kopieren" },
+  "AI_REPORT": {
+    "TITLE": "KI-Bericht",
+    "GENERATING": "Wird generiert...",
+    "GENERATED": "KI-generierter Bericht",
+    "COPY": "Kopieren"
+  },
   "NOTIF_BELL": {
     "TITLE": "Benachrichtigungen",
     "MARK_ALL_READ": "Alle als gelesen markieren",

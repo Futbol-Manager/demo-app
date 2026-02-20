@@ -19,6 +19,60 @@ import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
   styleUrls: ['./new-cuotas.component.scss'],
 })
 export class NewCuotasComponent implements OnInit {
+
+  /** IDs de modales en proceso de cierre (para animar la salida) */
+  closingModals = new Set<string>();
+
+  /** Diálogo de confirmación premium — reemplaza window.confirm() */
+  confirmDialog = {
+    show: false,
+    title: '',
+    message: '',
+    confirmText: 'Confirmar',
+    cancelText: 'Cancelar',
+    type: 'danger' as 'danger' | 'warning',
+    icon: 'bi-exclamation-triangle-fill',
+    callback: () => {},
+  };
+
+  /** Cierra un modal con animación de salida antes de ocultarlo */
+  private closeModal(id: string, hideFn: () => void, ms = 260): void {
+    this.closingModals.add(id);
+    setTimeout(() => {
+      hideFn();
+      this.closingModals.delete(id);
+    }, ms);
+  }
+
+  /** Abre el diálogo de confirmación premium */
+  openConfirm(cfg: {
+    title: string;
+    message: string;
+    confirmText?: string;
+    type?: 'danger' | 'warning';
+    icon?: string;
+    callback: () => void;
+  }): void {
+    this.confirmDialog = {
+      show: true,
+      title: cfg.title,
+      message: cfg.message,
+      confirmText: cfg.confirmText ?? 'Confirmar',
+      cancelText: 'Cancelar',
+      type: cfg.type ?? 'danger',
+      icon: cfg.icon ?? (cfg.type === 'warning' ? 'bi-exclamation-triangle-fill' : 'bi-trash3-fill'),
+      callback: cfg.callback,
+    };
+  }
+
+  onConfirmOk(): void {
+    const fn = this.confirmDialog.callback;
+    this.closeModal('confirm', () => { this.confirmDialog.show = false; fn(); });
+  }
+
+  onConfirmCancel(): void {
+    this.closeModal('confirm', () => { this.confirmDialog.show = false; });
+  }
   datosCargados = true;
   temporadaStoredValue = getCurrentSeasonString();
   clubId = 0;
@@ -28,6 +82,7 @@ export class NewCuotasComponent implements OnInit {
   showModalCuotas = false;
   filtroTitulo: string = '';
   filtroObligatoria: 'todas' | 'si' | 'no' = 'todas';
+  filtroTipoCobro: 'todos' | 'puntual' | 'suscripcion' = 'todos';
   showModalCuota = false;
   cuotaSeleccionada = false;
   nuevaCuota: any = {};
@@ -105,6 +160,14 @@ export class NewCuotasComponent implements OnInit {
 
   soloLectura = false;
 
+  // ── Comisiones ──
+  stripeFeePct = 0.015;   // Sphaira %  (decimal, ej: 0.015 = 1.5%)
+  stripePct    = 0.015;   // Stripe %   (decimal, para gross-up)
+  stripeFeeFix = 0.25;    // Stripe fijo (€)
+  aplicarComisionClub = false;
+  clubComisionPct = 2;
+  importeCalculoPreview = 50;
+
   // ── Filtro por pago individual ──
   listaPagosClub: any[] = [];                 // Todos los pagos creados por el club
   pagosSeleccionados: number[] = [];          // IDs de pagos seleccionados (pagoClubId)
@@ -113,6 +176,9 @@ export class NewCuotasComponent implements OnInit {
   playerDetailCache: Map<number, any[]> = new Map(); // Cache: playerId -> array de cuotas asignadas
   listaPlayersFiltradosPorPago: any[] = [];   // Jugadores recalculados según pagos seleccionados
   showPagoFilterDropdown = false;             // Mostrar/ocultar el dropdown de filtro
+
+  // Modal de pagos automáticos
+  showModalAutoPayments = false;
 
   constructor(
     private loginService: LoginService,
@@ -149,6 +215,7 @@ export class NewCuotasComponent implements OnInit {
 
       this.loadTabla();
       this.loadPagosClub();
+      this.loadStripeFeeConfig();
     });
   }
 
@@ -196,6 +263,55 @@ export class NewCuotasComponent implements OnInit {
         },
       });
   }
+
+  // ── Comisiones: carga, cálculo y helpers ──────────────────────────────────
+
+  loadStripeFeeConfig(): void {
+    this.teamService.getFeeConfig(this.clubId).subscribe({
+      next: (res: any) => {
+        if (res?.data) {
+          // appPct y stripePct ya vienen como decimales (0.015 = 1.5%)
+          this.stripeFeePct = res.data.appPct    ?? 0.015;
+          this.stripePct    = res.data.stripePct ?? 0.015;
+          this.stripeFeeFix = (res.data.fixedFeeCents ?? 25) / 100;
+        }
+      },
+      error: () => {
+        this.stripeFeePct = 0.015;
+        this.stripePct    = 0.015;
+        this.stripeFeeFix = 0.25;
+      },
+    });
+  }
+
+  calcularComisionSphaira(): number {
+    const base = Number(this.nuevaCuota?.importe) || 0;
+    return +(base * this.stripeFeePct).toFixed(2);
+  }
+
+  calcularComisionClub(): number {
+    const base = Number(this.nuevaCuota?.importe) || 0;
+    return +(base * (this.clubComisionPct / 100)).toFixed(2);
+  }
+
+  calcularTotalPadre(): number {
+    const base      = Number(this.nuevaCuota?.importe) || 0;
+    if (base === 0) return 0;
+    const clubFee   = this.aplicarComisionClub ? base * (this.clubComisionPct / 100) : 0;
+    const net       = base + clubFee;
+    const netCents  = Math.round(net * 100);
+    const appFeeC   = Math.round(netCents * this.stripeFeePct) + Math.round(this.stripeFeeFix * 100);
+    const denom     = 1 - this.stripePct;
+    return Math.ceil((netCents + appFeeC) / denom) / 100;
+  }
+
+  calcularComisionStripe(): number {
+    return +(this.calcularTotalPadre() - (Number(this.nuevaCuota?.importe) || 0)
+      - this.calcularComisionSphaira()
+      - (this.aplicarComisionClub ? this.calcularComisionClub() : 0)).toFixed(2);
+  }
+
+  // ── Toggle de selección de un pago en el filtro ──────────────────────────
 
   /** Toggle de selección de un pago en el filtro */
   togglePagoFilter(pagoClubId: number): void {
@@ -564,8 +680,10 @@ export class NewCuotasComponent implements OnInit {
   }
 
   cerrarModalHistorialPagos() {
-    this.listHistoryPagos = [];
-    this.showModalHistorialPagos = false;
+    this.closeModal('historial', () => {
+      this.listHistoryPagos = [];
+      this.showModalHistorialPagos = false;
+    });
   }
 
   openModalEditar(player: any) {
@@ -611,6 +729,14 @@ export class NewCuotasComponent implements OnInit {
     this.router.navigate(['/dashboard/historial-pagos-club', this.clubId]);
   }
 
+  openModalAutoPayments(): void {
+    this.showModalAutoPayments = true;
+  }
+
+  closeAutoPaymentsModal(): void {
+    this.closeModal('autoPayments', () => { this.showModalAutoPayments = false; });
+  }
+
   openModalBancoClub() {
     this.clubService
       .getBancoClub(this.clubId, this.temporadaStoredValue)
@@ -631,7 +757,7 @@ export class NewCuotasComponent implements OnInit {
   }
 
   cerrarModalBancoClub() {
-    this.showModalBanco = false;
+    this.closeModal('banco', () => { this.showModalBanco = false; });
   }
 
   guardarBancoClubData() {
@@ -680,12 +806,43 @@ export class NewCuotasComponent implements OnInit {
         (this.filtroObligatoria === 'si' && cuota.obligatorio) ||
         (this.filtroObligatoria === 'no' && !cuota.obligatorio);
 
-      return coincideTitulo && coincideObligatoria;
+      const esSuscripcion = this.esSuscripcion(cuota);
+      const coincideTipo =
+        this.filtroTipoCobro === 'todos' ||
+        (this.filtroTipoCobro === 'suscripcion' &&  esSuscripcion) ||
+        (this.filtroTipoCobro === 'puntual'     && !esSuscripcion);
+
+      return coincideTitulo && coincideObligatoria && coincideTipo;
     });
   }
 
+  /**
+   * Determina si una cuota es de tipo suscripción recurrente.
+   * Soporta tanto el DTO (tipoPagoStripe) como la entidad directa (tipoCobro).
+   */
+  private esSuscripcion(cuota: any): boolean {
+    // tipoCobro === 2 → stripe_suscripcion  (si la entidad se devuelve directamente)
+    if (cuota.tipoCobro != null) return cuota.tipoCobro === 2;
+    // tipoPagoStripe === 1 → recurrente  (campo del PagoClubDTO)
+    return cuota.tipoPagoStripe === 1;
+  }
+
+  contarPorTipo(tipo: 'puntual' | 'suscripcion'): number {
+    return this.listaCuotas.filter(c =>
+      tipo === 'suscripcion' ? this.esSuscripcion(c) : !this.esSuscripcion(c)
+    ).length;
+  }
+
+  contarObligatorias(): number {
+    return this.cuotasFiltradas().filter(c => c.obligatorio === 1 || c.obligatorio === true).length;
+  }
+
+  importeTotalCuotas(): number {
+    return this.cuotasFiltradas().reduce((sum, c) => sum + (parseFloat(c.importe) || 0), 0);
+  }
+
   cerrarModalCuotas() {
-    this.showModalCuotas = false;
+    this.closeModal('cuotas', () => { this.showModalCuotas = false; });
   }
 
   editarCuota(cuota: any, stripe: number) {
@@ -694,6 +851,9 @@ export class NewCuotasComponent implements OnInit {
     this.nuevaCuota = cuota;
     this.nuevaCuota.stripe = stripe;
     this.nuevaCuota.tipoPagoStripe = cuota.tipoPagoStripe;
+    this.clubComisionPct = cuota.comisionClub > 0 ? cuota.comisionClub : 2;
+    this.aplicarComisionClub = !!(cuota.comisionClub && cuota.comisionClub > 0);
+    this.importeCalculoPreview = Number(cuota.importe) || 50;
     this.rellenarCombo(cuota);
 
     if (stripe == 0) {
@@ -709,9 +869,17 @@ export class NewCuotasComponent implements OnInit {
   }
 
   eliminarCuota(cuota: any, index: number): void {
-    const ok = confirm(`¿Eliminar el pago "${cuota.titulo}"?`);
-    if (!ok) return;
+    this.openConfirm({
+      title: 'Eliminar pago',
+      message: `¿Seguro que quieres eliminar el pago <strong>"${cuota.titulo}"</strong>? Esta acción no se puede deshacer.`,
+      confirmText: 'Sí, eliminar',
+      type: 'danger',
+      icon: 'bi-trash3-fill',
+      callback: () => this._doEliminarCuota(cuota, index),
+    });
+  }
 
+  private _doEliminarCuota(cuota: any, index: number): void {
     let pago =
       cuota.PagoClubId != null && cuota.PagoClubId != undefined
         ? cuota.PagoClubId
@@ -740,6 +908,11 @@ export class NewCuotasComponent implements OnInit {
   abrirModalCuota() {
     this.listTeamsSelecteds = [];
     this.cuotaSeleccionada = false;
+    this.aplicarComisionClub = false;
+    this.clubComisionPct = 2;
+    this.importeCalculoPreview = 50;
+    this.showStripeConfig = false;
+    this.isSubscription = false;
     this.nuevaCuota = {
       pagoClubId: 0,
       clubId: this.clubId,
@@ -751,14 +924,19 @@ export class NewCuotasComponent implements OnInit {
       obligatorio: 0,
       importe: null,
       fechaLimite: null,
-      stripe: null,
+      stripe: 0,
+      tipoPagoStripe: 0,
+      intervalo: 'month',
+      intervaloCuenta: 1,
+      fechaInicio: null,
+      fechaFin: null,
     };
 
     this.rellenarCombo(null);
   }
 
   cerrarModalCuota() {
-    this.showModalCuota = false;
+    this.closeModal('cuota', () => { this.showModalCuota = false; });
   }
 
   guardarCuota() {
@@ -783,10 +961,10 @@ export class NewCuotasComponent implements OnInit {
         this.nuevaCuota.fechaLimite &&
         this.nuevaCuota.fechaLimite != ''
       ) {
-        // 🔁 Conversión explícita
         this.nuevaCuota.importe = String(this.nuevaCuota.importe);
         this.nuevaCuota.obligatorio = this.nuevaCuota.obligatorio ? 1 : 0;
         this.nuevaCuota.listTeams = this.listTeamsSelecteds;
+        this.nuevaCuota.comisionClub = this.aplicarComisionClub ? this.clubComisionPct : 0;
 
         if (
           this.nuevaCuota.stripe == 1 &&
@@ -808,8 +986,15 @@ export class NewCuotasComponent implements OnInit {
         }
         this.clubService.createUpdatePagoClub(this.nuevaCuota).subscribe(
           (response: Response) => {
-            // Verifica que la propiedad 'data' exista en la respuesta
             if (response.data !== null) {
+              // Sincronizamos el ID para que crearSuscripcion() lo use correctamente
+              const idGuardado =
+                response.data?.PagoClubId ??
+                response.data?.pagoClubId ??
+                this.nuevaCuota.pagoClubId;
+              this.nuevaCuota.pagoClubId = idGuardado;
+              this.nuevaCuota.PagoClubId  = idGuardado;
+
               this.crearSuscripcion();
               if (!this.cuotaSeleccionada) this.listaCuotas.push(response.data);
 
@@ -839,16 +1024,22 @@ export class NewCuotasComponent implements OnInit {
         ? this.nuevaCuota.PagoClubId
         : this.nuevaCuota.pagoClubId;
 
+    const baseImporte     = Number(this.nuevaCuota.importe) || 0;
+    const comisionClubPct = this.aplicarComisionClub ? this.clubComisionPct : 0;
+    const clubFeeImporte  = +(baseImporte * (comisionClubPct / 100)).toFixed(2);
+    // El importe enviado a create-plan es lo que recibirá el club (base + comisión del club)
+    const importeParaPlan = +(baseImporte + clubFeeImporte).toFixed(2);
+
     const body = {
-      pagoClubId: pago, // el ID devuelto al guardar
-      clubId: this.clubId, // o desde la cuota
-      accountId: this.accountIdDelClub, // acct_xxx del club
+      pagoClubId: pago,
+      clubId: this.clubId,
+      accountId: this.accountIdDelClub,
       titulo: this.nuevaCuota.titulo,
       descripcion: this.nuevaCuota.descripcion,
-      importe: Number(this.nuevaCuota.importe),
+      importe: importeParaPlan,
       currency: 'eur',
-      intervalo: this.nuevaCuota.intervalo, // 'month' por defecto
-      intervaloCuenta: this.nuevaCuota.intervaloCuenta, // 1 por defecto
+      intervalo: this.nuevaCuota.intervalo,
+      intervaloCuenta: this.nuevaCuota.intervaloCuenta,
       fechaInicio: this.nuevaCuota.fechaInicio || null,
       fechaFin: this.nuevaCuota.fechaFin || null,
     };
@@ -956,7 +1147,7 @@ export class NewCuotasComponent implements OnInit {
   }
 
   cerrarModalAddPago() {
-    this.showModalAddPago = false;
+    this.closeModal('addPago', () => { this.showModalAddPago = false; });
   }
 
   actualizarImporte(): void {
@@ -970,10 +1161,12 @@ export class NewCuotasComponent implements OnInit {
   }
 
   cancelarDevolucion() {
-    this.comentarioDevolucion = '';
-    this.metodoDevolucion = '';
-    this.pagoDevolucion = {};
-    this.showConfirmDevolucion = false;
+    this.closeModal('devolucion', () => {
+      this.comentarioDevolucion = '';
+      this.metodoDevolucion = '';
+      this.pagoDevolucion = {};
+      this.showConfirmDevolucion = false;
+    });
   }
 
   devolverPagoClub(historyPago: any) {
@@ -1067,8 +1260,10 @@ export class NewCuotasComponent implements OnInit {
   }
 
   cerrarModalCuotasAsignadas() {
-    this.listaCuotasAsignadas = [];
-    this.showModalCuotasAsignadas = false;
+    this.closeModal('cuotasAsignadas', () => {
+      this.listaCuotasAsignadas = [];
+      this.showModalCuotasAsignadas = false;
+    });
   }
 
   openModalStripe() {
@@ -1076,7 +1271,7 @@ export class NewCuotasComponent implements OnInit {
   }
 
   cerrarModalStripe() {
-    this.showModalStripe = false;
+    this.closeModal('stripe', () => { this.showModalStripe = false; });
   }
 
   onSubmit() {
@@ -1127,21 +1322,29 @@ export class NewCuotasComponent implements OnInit {
   }
 
   cerrarModalCuotasJugador(): void {
-    this.showModalCuotasJugador = false;
+    this.closeModal('cuotasJugador', () => { this.showModalCuotasJugador = false; });
   }
 
   addCuotaPlayer(): void {
     if (!this.cuotaSeleccionadaId) {
-       this.toastr.error('Selecciona una cuota primero.');
+      this.toastr.error('Selecciona una cuota primero.');
       return;
     }
 
-    const ok = confirm(`¿Añadir el pago del jugador?`);
-    if (!ok) return;
+    this.openConfirm({
+      title: 'Añadir pago al jugador',
+      message: '¿Confirmas que quieres asignar este pago al jugador?',
+      confirmText: 'Sí, añadir',
+      type: 'warning',
+      icon: 'bi-plus-circle-fill',
+      callback: () => this._doAddCuotaPlayer(),
+    });
+  }
 
+  private _doAddCuotaPlayer(): void {
     this.clubService
       .addPagoClubForPlayer(
-        this.cuotaSeleccionadaId,
+        this.cuotaSeleccionadaId!,
         this.playerSelected,
         this.temporadaStoredValue
       )
@@ -1167,25 +1370,35 @@ export class NewCuotasComponent implements OnInit {
   }
 
   editarCuotaPlayer(pago: any, index: number): void {
-    const msg =
-      'Esto no modifica el pago, crea uno nuevo con los datos modificados para poder usar los 2 en un futuro. ' +
-      'Para modificar un pago, ir al menú de Pagos.';
-
-    const ok = confirm(`"${msg}" ¿Ok?`);
-    if (!ok) return;
-
-    this.playerIndex = index;
-    this.cuotaPlayerEdit = pago;
-    this.showModalEditarCuotaPlayer = true;
-    console.log('Editar cuota del jugador:', pago);
-    // Abre tu modal de edición o navega a la vista de edición
+    this.openConfirm({
+      title: 'Editar cuota del jugador',
+      message:
+        'Al editar se creará una <strong>nueva versión</strong> del pago, manteniendo el historial anterior. ' +
+        'Para modificar el pago global, usa el menú <em>Pagos</em>.',
+      confirmText: 'Entendido, editar',
+      type: 'warning',
+      icon: 'bi-pencil-square',
+      callback: () => {
+        this.playerIndex = index;
+        this.cuotaPlayerEdit = pago;
+        this.showModalEditarCuotaPlayer = true;
+      },
+    });
   }
 
   eliminarCuotaPlayer(cuota: any, index: number): void {
-    const ok = confirm(`¿Eliminar el pago "${cuota.titulo}" del jugador?`);
-    if (!ok) return;
-    this.playerIndex = index;
+    this.openConfirm({
+      title: 'Eliminar pago del jugador',
+      message: `¿Seguro que quieres eliminar el pago <strong>"${cuota.titulo}"</strong> de este jugador?`,
+      confirmText: 'Sí, eliminar',
+      type: 'danger',
+      icon: 'bi-trash3-fill',
+      callback: () => this._doEliminarCuotaPlayer(cuota, index),
+    });
+  }
 
+  private _doEliminarCuotaPlayer(cuota: any, index: number): void {
+    this.playerIndex = index;
     this.clubService
       .deletePagoClubForPlayer(
         cuota.pagoClubId,
@@ -1232,7 +1445,7 @@ export class NewCuotasComponent implements OnInit {
   }
 
   cerrarModalEditarCuotaPlayer() {
-    this.showModalEditarCuotaPlayer = false;
+    this.closeModal('editarCuota', () => { this.showModalEditarCuotaPlayer = false; });
   }
 
   copy(text: string) {
@@ -1269,14 +1482,6 @@ export class NewCuotasComponent implements OnInit {
 
   // Toggle principal: 0/1 en el modelo
   onToggleStripe(ev: Event) {
-    if (this.nuevaCuota.pagoClubId == 0) {
-       this.toastr.error(
-        'Para habilitar Stripe sobre este pago, primero créalo y después lo buscas y desde edición, lo habilitas.'
-      );
-      this.nuevaCuota.stripe = 0;
-      return;
-    }
-
     const checked = (ev.target as HTMLInputElement).checked;
     if (!checked) {
       //this.cerrarDatosStripe();

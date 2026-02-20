@@ -771,6 +771,15 @@
       "COACH": {
         "TITLE": "Entraîneur",
         "SUBTITLE": "S’inscrire en tant qu’entraîneur"
+      },
+      "PLAYER_PARENT": {
+        "TITLE": "Joueur/Parent"
+      },
+      "PLAYER": {
+        "TITLE": "Joueur"
+      },
+      "SCOUT": {
+        "TITLE": "Recruteur"
       }
     },
     "TABS": {
@@ -836,6 +845,77 @@
     "BUTTONS_MODALS": {
       "ACKNOWLEDGE": "J’ai compris",
       "I_AM_COACH": "Je suis entraîneur"
+    },
+    "PANEL": {
+      "HEADLINE": "La plateforme leader en gestion sportive",
+      "TAGLINE": "Tout ce dont votre club a besoin, en un seul endroit.",
+      "FEATURES": {
+        "FINANCE": "Contrôle des cotisations et finances",
+        "TEAMS": "Gestion des équipes et joueurs",
+        "STATS": "Statistiques en temps réel",
+        "APP": "Application mobile pour les parents",
+        "SECURITY": "Données sécurisées et protégées"
+      },
+      "TESTIMONIAL": {
+        "TEXT": "Sphaira a transformé la gestion de notre club. Tout est maintenant plus facile et plus rapide.",
+        "AUTHOR": "Club Sportif Sphaira"
+      }
+    },
+    "STEP2": {
+      "SUBTITLE": "Renseignez vos données pour créer votre compte"
+    },
+    "CARDS": {
+      "CLUB": {
+        "DESC": "Gérez votre club de manière professionnelle",
+        "FEAT_1": "Gestion des équipes",
+        "FEAT_2": "Gestion des cotisations",
+        "FEAT_3": "App pour les parents"
+      },
+      "COACH": {
+        "DESC": "Rejoignez le staff technique d'un club",
+        "FEAT_1": "Fiches des joueurs",
+        "FEAT_2": "Suivi technique",
+        "FEAT_3": "Rapports de performance"
+      }
+    },
+    "ROLE": {
+      "LABEL": "Quel est votre rôle ?",
+      "TRAINER": "Entraîneur",
+      "PHYSIO": "Kinésithérapeute",
+      "NUTRITIONIST": "Nutritionniste"
+    },
+    "FORM": {
+      "PROFILE_DEFAULT": "Êtes-vous un club ou un entraîneur ?",
+      "PROFILE_TYPE": "Type de profil",
+      "FOUNDATION_DATE": "Date de fondation",
+      "BIRTH_DATE": "Date de naissance"
+    },
+    "MODAL_CLUB": {
+      "TITLE": "Confirmation requise",
+      "SUBTITLE": "Inscription exclusive pour les clubs autorisés",
+      "SECURITY_TEXT": "Pour la sécurité, l'inscription des clubs nécessite un mot de passe d'accès. Si vous ne l'avez pas, demandez-le :",
+      "PASSWORD_LABEL": "Mot de passe d'accès",
+      "PASSWORD_PLACEHOLDER": "Saisissez le mot de passe",
+      "CANCEL": "Annuler",
+      "SUBMIT": "Accéder"
+    },
+    "MODAL_COACH": {
+      "SUBTITLE": "Lisez ceci avant de continuer"
+    },
+    "MODAL_PRICING": {
+      "TITLE": "Inscription terminée !",
+      "SUBTITLE": "Bienvenue chez Sphaira Tech",
+      "DISCOUNT": "50% DE RÉDUCTION",
+      "HEADLINE": "Commencez gratuitement, grandissez sans limites",
+      "TRIAL": "Essayez 7 jours puis :",
+      "FEAT_1": "Économisez plus de 30% avec ce plan",
+      "FEAT_2": "Engagement d'1 an",
+      "FEAT_3": "Contrôle Total",
+      "FEAT_4": "Fonctionnalités Complètes",
+      "FEAT_5": "Collaboration Élargie",
+      "CTA": "Commencer la semaine gratuite",
+      "TERMS_PREFIX": "J'accepte les",
+      "TERMS_LINK": "conditions contractuelles"
     }
   },
   "ERRORS": {
