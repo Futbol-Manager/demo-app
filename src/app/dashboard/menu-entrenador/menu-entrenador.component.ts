@@ -182,6 +182,8 @@ export class MenuEntrenadorComponent implements OnInit {
       } else {
         alert('No se ha encontrado el club asociado.');
       }
+    } else if (id === 19) {
+      this.router.navigate(['/dashboard/video-analysis']);
     }
   }
 

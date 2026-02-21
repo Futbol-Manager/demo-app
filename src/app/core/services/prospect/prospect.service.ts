@@ -43,8 +43,21 @@ export class ProspectService {
     return this.http.get<any[]>(`${this.base}prospects/${prospectId}/campaigns`);
   }
 
-  generateEmailForProspect(prospectId: number, campaignId: number): Observable<any> {
-    return this.http.post<any>(`${this.base}prospects/${prospectId}/generate-email?campaign_id=${campaignId}`, {});
+  generateEmailForProspect(prospectId: number, campaignId: number, instruction?: string): Observable<any> {
+    const body = instruction ? { instruction } : {};
+    return this.http.post<any>(`${this.base}prospects/${prospectId}/generate-email?campaign_id=${campaignId}`, body);
+  }
+
+  sendSingleEmail(emailId: number, recipientEmail: string): Observable<any> {
+    return this.http.post<any>(`${this.base}emails/${emailId}/send-to`, { recipient_email: recipientEmail });
+  }
+
+  getCampaignPromptConfig(campaignId: number): Observable<any> {
+    return this.http.get<any>(`${this.base}campaigns/${campaignId}/prompt-config`);
+  }
+
+  updateCampaignPromptConfig(campaignId: number, config: any): Observable<any> {
+    return this.http.put<any>(`${this.base}campaigns/${campaignId}/prompt-config`, config);
   }
 
   getProspects(
@@ -69,6 +82,10 @@ export class ProspectService {
 
   deleteProspect(id: number): Observable<any> {
     return this.http.delete<any>(`${this.base}prospects/${id}`);
+  }
+
+  bulkDeleteProspects(ids: number[]): Observable<any> {
+    return this.http.post<any>(`${this.base}prospects/bulk-delete`, { prospect_ids: ids });
   }
 
   // Emails
@@ -131,6 +148,10 @@ export class ProspectService {
     return this.http.delete<any>(`${this.base}campaigns/${campaignId}`);
   }
 
+  archiveCampaign(campaignId: number): Observable<any> {
+    return this.http.put<any>(`${this.base}campaigns/${campaignId}/archive`, {});
+  }
+
   addClubsToCampaign(campaignId: number, prospectIds: number[], abRatio = 0.5): Observable<any> {
     return this.http.post<any>(`${this.base}campaigns/${campaignId}/clubs`, {
       prospect_ids: prospectIds, ab_ratio: abRatio
@@ -139,6 +160,13 @@ export class ProspectService {
 
   removeClubFromCampaign(campaignId: number, prospectId: number): Observable<any> {
     return this.http.delete<any>(`${this.base}campaigns/${campaignId}/clubs/${prospectId}`);
+  }
+
+  setClubAbGroup(campaignId: number, prospectId: number, abGroup: 'A' | 'B' | null): Observable<any> {
+    return this.http.patch<any>(
+      `${this.base}campaigns/${campaignId}/clubs/${prospectId}/ab-group`,
+      { ab_group: abGroup }
+    );
   }
 
   // Jobs

@@ -335,6 +335,14 @@ $accent: #00b4d8;
   font-size: 11px; color: #667; margin: 2px 0; display: flex; align-items: center; gap: 4px;
 }
 
+.btn-analyze {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 6px; border: 1px solid #d4edda;
+  background: #fff; color: #31b270; cursor: pointer; font-size: 14px;
+  transition: all .2s;
+  &:hover { background: #31b270; color: #fff; border-color: #31b270; }
+}
+
 /* Botón mover carpeta en tarjeta */
 .btn-move {
   background: #f0f7fb; border: 1px solid #d8e3ea; border-radius: 6px;

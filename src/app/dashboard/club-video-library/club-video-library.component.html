@@ -196,6 +196,9 @@
               [disabled]="driveExporting" title="Exportar a Google Drive">
               <i class="bi" [ngClass]="driveExportingVideoId === video.id ? 'bi-hourglass-split' : 'bi-google'"></i>
             </button>
+            <button class="btn-analyze" (click)="analyzeVideo(video)" title="Analizar vídeo">
+              <i class="bi bi-camera-reels"></i>
+            </button>
             <button class="btn-move" (click)="movingVideo = video" title="Mover a carpeta">
               <i class="bi bi-folder-symlink"></i>
             </button>

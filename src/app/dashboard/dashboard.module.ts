@@ -99,6 +99,7 @@ import { FormRendererComponent } from './shared/form-renderer/form-renderer.comp
 import { AdminRegistrosComponent } from './admin-registros/admin-registros.component';
 import { AdminActivityComponent } from './admin-activity/admin-activity.component';
 import { AdminAiUsageComponent } from './admin-ai-usage/admin-ai-usage.component';
+import { AdminAiConfigComponent } from './admin-ai-config/admin-ai-config.component';
 import { CreditsModalComponent } from './credits-modal/credits-modal.component';
 import { AiCreditsSuccessComponent } from './ai-credits-success/ai-credits-success.component';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
@@ -125,6 +126,20 @@ import { ChargeSavedCardModalComponent } from './new-cuotas/components/charge-sa
 import { ExportButtonComponent } from './new-cuotas/components/export-button/export-button.component';
 import { AutomaticPaymentsComponent } from './new-cuotas/components/automatic-payments/automatic-payments.component';
 import { NotificationBellComponent } from './shared/notification-bell/notification-bell.component';
+import { VideoAnalysisHubComponent } from './video-analysis/hub/video-analysis-hub.component';
+import { VideoAnalysisWorkspaceComponent } from './video-analysis/workspace/video-analysis-workspace.component';
+import { TemplateListComponent } from './video-analysis/templates/template-list.component';
+import { TemplateEditorComponent } from './video-analysis/templates/template-editor.component';
+import { VideoPlayerComponent } from './video-analysis/workspace/video-player/video-player.component';
+import { AnalysisTimelineComponent } from './video-analysis/workspace/analysis-timeline/analysis-timeline.component';
+import { TaggingPanelComponent } from './video-analysis/workspace/tagging-panel/tagging-panel.component';
+import { EventListComponent } from './video-analysis/workspace/event-list/event-list.component';
+import { DrawingOverlayComponent } from './video-analysis/workspace/drawing-overlay/drawing-overlay.component';
+import { FieldPositionComponent } from './video-analysis/workspace/field-position/field-position.component';
+import { HeatmapVisualizerComponent } from './video-analysis/heatmap/heatmap-visualizer.component';
+import { PlaylistBuilderComponent } from './video-analysis/playlists/playlist-builder.component';
+import { PlaylistViewerComponent } from './video-analysis/playlists/playlist-viewer.component';
+import { AiReportGeneratorComponent } from './video-analysis/reports/ai-report-generator.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -224,6 +239,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AdminRegistrosComponent,
     AdminActivityComponent,
     AdminAiUsageComponent,
+    AdminAiConfigComponent,
     CreditsModalComponent,
     AiCreditsSuccessComponent,
     ConfirmDialogComponent,
@@ -250,6 +266,20 @@ export function HttpLoaderFactory(http: HttpClient) {
     ExportButtonComponent,
     NotificationBellComponent,
     AutomaticPaymentsComponent,
+    VideoAnalysisHubComponent,
+    VideoAnalysisWorkspaceComponent,
+    TemplateListComponent,
+    TemplateEditorComponent,
+    VideoPlayerComponent,
+    AnalysisTimelineComponent,
+    TaggingPanelComponent,
+    EventListComponent,
+    DrawingOverlayComponent,
+    FieldPositionComponent,
+    HeatmapVisualizerComponent,
+    PlaylistBuilderComponent,
+    PlaylistViewerComponent,
+    AiReportGeneratorComponent,
   ],
   imports: [
     CommonModule,

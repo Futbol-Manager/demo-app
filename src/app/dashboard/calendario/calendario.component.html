@@ -237,7 +237,6 @@
               {{ mode === 'create-entrenamiento'
               ? ('CAL.TEXT_067' | translate)
               : (('CAL.TEXT_062' | translate) + ' ' + daySession) }}
-              : ('Entrenamiento ' + daySession) }}
               <span *ngIf="mode === 'view-entrenamiento' && trainingSession?.startTime" class="training-time-header">
                 {{ trainingSession.startTime }}<span *ngIf="trainingSession.endTime"> - {{ trainingSession.endTime }}</span>
               </span>
@@ -253,7 +252,7 @@
             <!-- BOTONES EXTRA -->
             <div class="saas-action-bar">
 
-              <button *ngIf="profileId !== 3" class="saas-btn saas-btn-primary"
+              <button type="button" *ngIf="profileId !== 3" class="saas-btn saas-btn-primary"
                 (click)="openModalAsistencia(trainingSession.trainingSessionId, daySession)">
                 <i class="bi bi-people-fill"></i>
                 <span>{{ 'TITLES.ASSISTANCE' | translate }}</span>
@@ -268,21 +267,21 @@
               </app-session-pdf>
 
               <!-- PRE-Entrenamiento: asignar formulario a players -->
-              <button *ngIf="profileId !== 3" class="saas-btn saas-btn-info"
+              <button type="button" *ngIf="profileId !== 3" class="saas-btn saas-btn-info"
                 (click)="openFormSelector('pre-training', trainingSession.trainingSessionId)">
                 <i class="bi bi-clipboard-plus"></i>
                 <span>PRE-Entrenamiento</span>
               </button>
 
               <!-- POST-Entrenamiento: asignar formulario a players -->
-              <button *ngIf="profileId !== 3" class="saas-btn saas-btn-info"
+              <button type="button" *ngIf="profileId !== 3" class="saas-btn saas-btn-info"
                 (click)="openFormSelector('post-training', trainingSession.trainingSessionId)">
                 <i class="bi bi-clipboard-check"></i>
                 <span>POST-Entrenamiento</span>
               </button>
 
               <!-- Análisis del entrenador: debrief del coach para el club -->
-              <button *ngIf="profileId !== 3" class="saas-btn saas-btn-warning"
+              <button type="button" *ngIf="profileId !== 3" class="saas-btn saas-btn-warning"
                 (click)="router.navigate(['/dashboard/debrief', 'training', teamId, trainingSession.trainingSessionId])">
                 <i class="bi bi-clipboard-pulse"></i>
                 <span>Análisis del entrenador</span>
@@ -290,12 +289,12 @@
 
               <!-- PLAYER: formularios asignados por el coach -->
               <ng-container *ngIf="profileId === 3">
-                <button class="saas-btn saas-btn-info"
+                <button type="button" class="saas-btn saas-btn-info"
                   (click)="openPlayerForm('pre-training', trainingSession.trainingSessionId)">
                   <i class="bi bi-clipboard-plus"></i>
                   <span>Formulario PRE</span>
                 </button>
-                <button class="saas-btn saas-btn-info"
+                <button type="button" class="saas-btn saas-btn-info"
                   (click)="openPlayerForm('post-training', trainingSession.trainingSessionId)">
                   <i class="bi bi-clipboard-check"></i>
                   <span>Formulario POST</span>

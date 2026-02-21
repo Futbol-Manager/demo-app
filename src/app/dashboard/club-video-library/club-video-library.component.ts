@@ -364,5 +364,11 @@ export class ClubVideoLibraryComponent implements OnInit {
     }
   }
 
+  analyzeVideo(video: any): void {
+    this.router.navigate(['/dashboard/video-analysis'], {
+      queryParams: { videoId: video.id, videoTitle: video.title || video.name }
+    });
+  }
+
   goBack(): void { this.router.navigate(['/dashboard']); }
 }

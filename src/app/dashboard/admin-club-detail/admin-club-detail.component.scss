@@ -370,3 +370,64 @@ h3 { color: var(--sphaira-night); font-family: 'Archivo', sans-serif; }
   .mini-kpi { border-radius: 8px; padding: 0.5rem; }
   .nav-tabs-sphaira .nav-link { padding: 0.5rem 0.7rem; font-size: 0.8rem; }
 }
+
+/* ===== SUSCRIPCIONES ===== */
+.sub-plan-badge {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid #0d6efd;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+
+  &--video {
+    border-left-color: #dc3545;
+  }
+}
+
+/* Plan selector cards */
+.plan-select-card {
+  border: 2px solid #dee2e6;
+  border-radius: 10px;
+  padding: 0.85rem 0.75rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
+
+  &:hover {
+    border-color: #0d6efd;
+    background: #f0f7ff;
+  }
+
+  &.selected {
+    background: #f0f7ff;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+  }
+
+  &--row {
+    text-align: left;
+    padding: 0.85rem 1rem;
+  }
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1055;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .modal-dialog {
+    width: 100%;
+    max-width: 500px;
+    margin: 1rem;
+    pointer-events: auto;
+  }
+
+  .modal-content {
+    border-radius: 16px;
+    border: none;
+  }
+}

@@ -1,0 +1,127 @@
+.heatmap-container {
+  background: var(--bs-body-bg, #fff);
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.heatmap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+
+  h5 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.heatmap-filters {
+  display: flex;
+  gap: 8px;
+
+  .form-select { font-size: 0.8rem; border-radius: 8px; min-width: 160px; }
+}
+
+.heatmap-body {
+  display: flex;
+  gap: 16px;
+  padding: 16px;
+}
+
+.field-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.stats-panel {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.stat-total {
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.stat-positioned {
+  font-size: 0.75rem;
+  color: #6c757d;
+}
+
+.stats-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-row-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 3px;
+}
+
+.stat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stat-name {
+  flex: 1;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.stat-count {
+  font-size: 0.78rem;
+  color: #6c757d;
+  font-weight: 600;
+}
+
+.stat-bar {
+  height: 4px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.stat-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+.empty-stats {
+  text-align: center;
+  padding: 24px;
+  color: #6c757d;
+  font-size: 0.85rem;
+
+  .bi { display: block; font-size: 1.5rem; margin-bottom: 4px; }
+}
+
+:host-context(body.dark) {
+  .heatmap-container { background: #1a2332; border-color: #2a3a4e; }
+  .heatmap-header { border-color: #2a3a4e; }
+  .stat-bar { background: rgba(255, 255, 255, 0.06); }
+}
+
+@media (max-width: 768px) {
+  .heatmap-body { flex-direction: column; }
+  .stats-panel { width: 100%; }
+}

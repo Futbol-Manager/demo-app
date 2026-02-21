@@ -1,0 +1,113 @@
+<!-- Loading -->
+<div class="workspace-loading" *ngIf="isLoading">
+  <div class="spinner-border text-primary" role="status"></div>
+</div>
+
+<div class="workspace" *ngIf="!isLoading && project">
+
+  <!-- Top Toolbar -->
+  <div class="workspace-toolbar">
+    <div class="toolbar-left">
+      <button class="btn-back" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+      </button>
+      <h5 class="project-title">{{ project.title }}</h5>
+      <span class="project-status">{{ project.status }}</span>
+    </div>
+    <div class="toolbar-right">
+      <button class="tool-btn" [class.active]="drawingMode" (click)="toggleDrawingMode()"
+              title="Modo dibujo (P)">
+        <i class="bi bi-pencil-square"></i>
+        <span class="d-none d-md-inline">Dibujar</span>
+      </button>
+      <button class="tool-btn" [class.active]="showFieldPicker" (click)="toggleFieldPicker()"
+              title="Posición en campo">
+        <i class="bi bi-geo-alt"></i>
+        <span class="d-none d-md-inline">Campo</span>
+      </button>
+      <app-ai-report-generator [projectId]="projectId" [clubId]="clubId" [userId]="userId">
+      </app-ai-report-generator>
+      <button class="btn btn-sm btn-success complete-btn" (click)="completeProject()">
+        <i class="bi bi-check-circle"></i> Completar
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="workspace-layout">
+
+    <!-- Left: Video + Timeline -->
+    <div class="workspace-main">
+      <div class="video-area">
+        <app-video-player [videoUrl]="videoUrl" [isHls]="isHls">
+          <app-drawing-overlay drawingOverlay [active]="drawingMode"
+                               (saved)="onDrawingSaved($event)">
+          </app-drawing-overlay>
+        </app-video-player>
+      </div>
+
+      <div class="timeline-area">
+        <app-analysis-timeline></app-analysis-timeline>
+      </div>
+    </div>
+
+    <!-- Right: Panels -->
+    <div class="workspace-sidebar">
+      <!-- Tagging Panel -->
+      <app-tagging-panel (tagged)="onTagged($event)"></app-tagging-panel>
+
+      <!-- Field Position (conditional) -->
+      <div class="field-section" *ngIf="showFieldPicker">
+        <div class="field-header">
+          <h6><i class="bi bi-geo-alt"></i> Posición en campo</h6>
+          <span class="field-hint">Selecciona un evento y haz clic en el campo</span>
+        </div>
+        <app-field-position [positions]="fieldPositions" [interactive]="true"
+                            (positionSelected)="onFieldPosition($event)">
+        </app-field-position>
+      </div>
+
+      <!-- Event List -->
+      <app-event-list (eventDelete)="onEventDelete($event)"
+                      (eventEdit)="onEventEdit($event)">
+      </app-event-list>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Event Modal -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="showEditModal = false">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+    <div class="modal-header-custom">
+      <h5>Editar evento</h5>
+      <button class="btn-close-modal" (click)="showEditModal = false">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body-custom">
+      <div class="form-group">
+        <label>Notas</label>
+        <textarea class="form-control" rows="3" [(ngModel)]="editNotes"
+                  placeholder="Añade notas sobre esta jugada..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer-custom">
+      <button class="btn btn-outline-secondary btn-sm" (click)="showEditModal = false">Cancelar</button>
+      <button class="btn btn-primary btn-sm" (click)="saveEventEdit()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Keyboard shortcuts help (floating) -->
+<div class="shortcuts-help" title="Atajos de teclado">
+  <i class="bi bi-keyboard"></i>
+  <div class="shortcuts-tooltip">
+    <div><strong>Espacio / K</strong> Play/Pause</div>
+    <div><strong>← →</strong> Frame a frame</div>
+    <div><strong>J / L</strong> Saltar 10s</div>
+    <div><strong>&lt; &gt;</strong> Velocidad</div>
+    <div><strong>P</strong> Modo dibujo</div>
+    <div><strong>Del</strong> Eliminar evento</div>
+    <div><strong>Letras</strong> Etiquetar (ver panel)</div>
+  </div>
+</div>

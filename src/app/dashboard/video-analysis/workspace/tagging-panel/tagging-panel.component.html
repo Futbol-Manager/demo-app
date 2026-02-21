@@ -1,0 +1,48 @@
+<div class="tagging-panel">
+  <div class="panel-header">
+    <h6><i class="bi bi-grid-3x3-gap"></i> Etiquetado</h6>
+    <span class="shortcut-hint" title="Pulsa la tecla de atajo para etiquetar rápidamente">
+      <i class="bi bi-keyboard"></i>
+    </span>
+  </div>
+
+  <!-- Feedback -->
+  <div class="tag-feedback" *ngIf="showFeedback" @fadeInOut>
+    <i class="bi bi-check-circle-fill"></i>
+    {{ lastTaggedCategory }} · {{ ps.formatTime(lastTaggedTime!) }}
+  </div>
+
+  <!-- Category buttons -->
+  <div class="categories-grid">
+    <div class="category-block" *ngFor="let cat of categories">
+      <!-- Main button -->
+      <div class="category-row">
+        <button class="category-btn" [style.border-left-color]="cat.color"
+                (click)="tagCategory(cat)" [title]="cat.shortcutKey ? 'Atajo: ' + cat.shortcutKey : ''">
+          <span class="cat-color-dot" [style.background-color]="cat.color"></span>
+          <span class="cat-name">{{ cat.name }}</span>
+          <span class="cat-shortcut" *ngIf="cat.shortcutKey">{{ cat.shortcutKey }}</span>
+        </button>
+        <button class="expand-btn" *ngIf="cat.tags && cat.tags.length > 0"
+                (click)="expandCategory(cat)" [class.expanded]="expandedCategoryId === cat.id">
+          <i class="bi bi-chevron-down"></i>
+        </button>
+      </div>
+
+      <!-- Sub-tags (expanded) -->
+      <div class="tags-dropdown" *ngIf="expandedCategoryId === cat.id && cat.tags && cat.tags.length > 0">
+        <button class="tag-chip" *ngFor="let tag of cat.tags"
+                [class.selected]="isTagSelected(tag.id)"
+                [style.border-color]="isTagSelected(tag.id) ? cat.color : 'transparent'"
+                (click)="toggleTag(tag)">
+          {{ tag.name }}
+        </button>
+        <button class="btn-apply-tags" [style.background-color]="cat.color"
+                (click)="tagAndClose(cat)">
+          <i class="bi bi-tag-fill"></i>
+          Etiquetar{{ selectedTags.length > 0 ? ' (' + selectedTags.length + ')' : '' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

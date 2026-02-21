@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Location } from '@angular/common';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { forkJoin } from 'rxjs';
 import { ProspectService } from 'src/app/core/services/prospect/prospect.service';
 
 @Component({
@@ -11,6 +12,7 @@ import { ProspectService } from 'src/app/core/services/prospect/prospect.service
 export class AdminProspectorComponent implements OnInit, OnDestroy {
 
   activeTab = 'campaigns';
+  activeMode: 'auto' | 'manual' = 'auto';
   isLoading = false;
 
   // Campaigns
@@ -122,6 +124,9 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   private librarySearchDebounce: any = null;
   filteredLibrary: any[] = [];
 
+  // ── Selección masiva en biblioteca ────────────────────────────────────
+  selectedLibraryIds: Set<number> = new Set();
+
   // ── Añadir clubes a campaña desde biblioteca ───────────────────────────
   showAddToCampaignModal = false;
   addToCampaignProspect: any = null;
@@ -130,6 +135,21 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   isAddingToCampaign = false;
   prospectCampaigns: any[] = [];         // campañas del club seleccionado en el detalle
 
+  // ── Eliminación masiva desde biblioteca ───────────────────────────────
+  showBulkDeleteConfirm = false;
+  isBulkDeleting = false;
+
+  // ── Importar desde biblioteca (vista campaña) ──────────────────────────
+  showImportFromLibraryModal = false;
+  importSearch = '';
+  importResults: any[] = [];
+  importTotal = 0;
+  importLoading = false;
+  selectedImportIds: Set<number> = new Set();
+  importCurrentProspectIds: Set<number> = new Set();
+  isConfirmingImport = false;
+  private importSearchDebounce: any = null;
+
   // ── Quitar club de campaña (vista de campaña) ──────────────────────────
   showRemoveFromCampaignConfirm = false;
   prospectToRemove: any = null;
@@ -137,6 +157,75 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   // ── Generar email individual ───────────────────────────────────────────
   isGeneratingEmail = false;
   generateEmailCampaignId: number | null = null;
+  manualInstruction = '';
+
+  // ── Selección masiva en modo manual (vista campaña) ───────────────────
+  selectedManualIds: Set<number> = new Set();
+
+  // ── Generación masiva (modo manual) ───────────────────────────────────
+  isBulkGenerating = false;
+  bulkGenerateDone = 0;
+  bulkGenerateTotal = 0;
+
+  // ── Envío individual (modo manual) ────────────────────────────────────
+  isSendingSingle = false;
+  editSendRecipient = '';
+
+  // ── Configuración de prompt de campaña ───────────────────────────────
+  showPromptConfigModal = false;
+  promptConfigCampaign: any = null;
+  isLoadingPromptConfig = false;
+  isSavingPromptConfig = false;
+  promptConfigSaved = false;
+  promptConfig = this.emptyPromptConfig();
+
+  emptyPromptConfig() {
+    return {
+      sender_name: '',
+      tone: '',
+      target: '',
+      features: '',
+      objective: '',
+      length: '',
+      extra_context: '',
+    };
+  }
+
+  openPromptConfigModal(campaign: any): void {
+    this.promptConfigCampaign = campaign;
+    this.promptConfig = this.emptyPromptConfig();
+    this.promptConfigSaved = false;
+    this.showPromptConfigModal = true;
+    this.isLoadingPromptConfig = true;
+    this.prospectService.getCampaignPromptConfig(campaign.campaign_id).subscribe({
+      next: (cfg: any) => {
+        if (cfg && Object.keys(cfg).length > 0) {
+          this.promptConfig = { ...this.emptyPromptConfig(), ...cfg };
+        }
+        this.isLoadingPromptConfig = false;
+      },
+      error: () => { this.isLoadingPromptConfig = false; }
+    });
+  }
+
+  savePromptConfig(): void {
+    if (!this.promptConfigCampaign) return;
+    this.isSavingPromptConfig = true;
+    this.prospectService.updateCampaignPromptConfig(
+      this.promptConfigCampaign.campaign_id, this.promptConfig
+    ).subscribe({
+      next: () => {
+        this.isSavingPromptConfig = false;
+        this.promptConfigSaved = true;
+        setTimeout(() => { this.promptConfigSaved = false; }, 2500);
+      },
+      error: () => { this.isSavingPromptConfig = false; }
+    });
+  }
+
+  setPromptChip(field: string, value: string): void {
+    (this.promptConfig as any)[field] = value;
+  }
 
   // ── Borrar campaña ────────────────────────────────────────────────────
   showDeleteCampaignConfirm = false;
@@ -202,7 +291,10 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
 
   selectTab(tab: string): void {
     this.activeTab = tab;
-    if (tab === 'prospects' && this.selectedCampaign) this.loadProspects();
+    if (tab === 'prospects' && this.selectedCampaign) {
+      this.loadProspects();
+      if (this.activeMode === 'manual') this.loadEmails();
+    }
     if (tab === 'emails' && this.selectedCampaign) this.loadEmails();
     if (tab === 'library') this.loadLibrary();
   }
@@ -211,6 +303,7 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
 
   loadLibrary(): void {
     this.libraryLoading = true;
+    this.selectedLibraryIds.clear();
     this.prospectService.getProspects(
       undefined, this.libraryFilterStatus || undefined,
       undefined, this.librarySize,
@@ -246,12 +339,54 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
     return this.librarySortDir === 'asc' ? 'bi-sort-up' : 'bi-sort-down';
   }
 
+  // ── Selección masiva en biblioteca ────────────────────────────────────
+
+  toggleLibrarySelection(id: number): void {
+    if (this.selectedLibraryIds.has(id)) this.selectedLibraryIds.delete(id);
+    else this.selectedLibraryIds.add(id);
+  }
+
+  get allLibrarySelected(): boolean {
+    return this.libraryProspects.length > 0
+      && this.libraryProspects.every(p => this.selectedLibraryIds.has(p.prospect_id));
+  }
+
+  toggleAllLibrary(): void {
+    if (this.allLibrarySelected) {
+      this.libraryProspects.forEach(p => this.selectedLibraryIds.delete(p.prospect_id));
+    } else {
+      this.libraryProspects.forEach(p => this.selectedLibraryIds.add(p.prospect_id));
+    }
+  }
+
+  openBulkAddToCampaign(): void {
+    this.addToCampaignProspect = null;
+    this.addToCampaignSelected = [];
+    this.addToCampaignList = this.visibleCampaigns;
+    this.showAddToCampaignModal = true;
+  }
+
+  bulkDelete(): void {
+    if (!this.selectedLibraryIds.size) return;
+    this.isBulkDeleting = true;
+    this.prospectService.bulkDeleteProspects([...this.selectedLibraryIds]).subscribe({
+      next: () => {
+        this.isBulkDeleting = false;
+        this.showBulkDeleteConfirm = false;
+        this.selectedLibraryIds.clear();
+        this.loadLibrary();
+        this.loadCampaigns();
+      },
+      error: () => { this.isBulkDeleting = false; }
+    });
+  }
+
   // ── Añadir club de biblioteca a campaña ───────────────────────────────
 
   openAddToCampaign(prospect: any): void {
     this.addToCampaignProspect = prospect;
     this.addToCampaignSelected = [];
-    this.addToCampaignList = this.campaigns;
+    this.addToCampaignList = this.visibleCampaigns;
     this.showAddToCampaignModal = true;
   }
 
@@ -262,16 +397,110 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   }
 
   confirmAddToCampaign(): void {
-    if (!this.addToCampaignProspect || !this.addToCampaignSelected.length) return;
+    const ids = this.addToCampaignProspect
+      ? [this.addToCampaignProspect.prospect_id]
+      : [...this.selectedLibraryIds];
+    if (!ids.length || !this.addToCampaignSelected.length) return;
     this.isAddingToCampaign = true;
     const calls = this.addToCampaignSelected.map(cid =>
-      this.prospectService.addClubsToCampaign(cid, [this.addToCampaignProspect.prospect_id])
+      this.prospectService.addClubsToCampaign(cid, ids)
     );
-    let done = 0;
-    calls.forEach(call => call.subscribe({
-      next: () => { if (++done === calls.length) { this.isAddingToCampaign = false; this.showAddToCampaignModal = false; } },
+    forkJoin(calls).subscribe({
+      next: () => {
+        this.isAddingToCampaign = false;
+        this.showAddToCampaignModal = false;
+        if (!this.addToCampaignProspect) this.selectedLibraryIds.clear();
+        this.addToCampaignProspect = null;
+        this.loadCampaigns();
+        if (this.selectedCampaign && this.addToCampaignSelected.includes(this.selectedCampaign.campaign_id)) {
+          this.loadProspects();
+          this.loadCampaignStats();
+        }
+      },
       error: () => { this.isAddingToCampaign = false; }
-    }));
+    });
+  }
+
+  // ── Importar desde biblioteca (vista campaña) ──────────────────────────
+
+  openImportFromLibrary(): void {
+    if (!this.selectedCampaign) return;
+    this.selectedImportIds.clear();
+    this.importSearch = '';
+    this.importCurrentProspectIds = new Set(this.prospects.map((p: any) => p.prospect_id));
+    this.showImportFromLibraryModal = true;
+    this.loadImportResults();
+  }
+
+  loadImportResults(): void {
+    this.importLoading = true;
+    this.prospectService.getProspects(
+      undefined, undefined, undefined, 100,
+      this.importSearch || undefined, 'pain_score', 'desc'
+    ).subscribe({
+      next: (data: any) => {
+        this.importResults = data.items || [];
+        this.importTotal = data.total || 0;
+        this.importLoading = false;
+      },
+      error: () => { this.importLoading = false; }
+    });
+  }
+
+  onImportSearchChange(): void {
+    clearTimeout(this.importSearchDebounce);
+    this.selectedImportIds.clear();
+    this.importSearchDebounce = setTimeout(() => this.loadImportResults(), 350);
+  }
+
+  toggleImportSelection(id: number): void {
+    if (this.importCurrentProspectIds.has(id)) return;
+    if (this.selectedImportIds.has(id)) this.selectedImportIds.delete(id);
+    else this.selectedImportIds.add(id);
+  }
+
+  get allImportSelected(): boolean {
+    const selectable = this.importResults.filter(p => !this.importCurrentProspectIds.has(p.prospect_id));
+    return selectable.length > 0 && selectable.every(p => this.selectedImportIds.has(p.prospect_id));
+  }
+
+  toggleAllImport(): void {
+    const selectable = this.importResults.filter(p => !this.importCurrentProspectIds.has(p.prospect_id));
+    if (this.allImportSelected) {
+      selectable.forEach(p => this.selectedImportIds.delete(p.prospect_id));
+    } else {
+      selectable.forEach(p => this.selectedImportIds.add(p.prospect_id));
+    }
+  }
+
+  confirmImport(): void {
+    if (!this.selectedCampaign || !this.selectedImportIds.size) return;
+    this.isConfirmingImport = true;
+    this.prospectService.addClubsToCampaign(
+      this.selectedCampaign.campaign_id, [...this.selectedImportIds]
+    ).subscribe({
+      next: () => {
+        this.isConfirmingImport = false;
+        this.showImportFromLibraryModal = false;
+        this.loadProspects();
+        this.loadCampaignStats();
+        this.loadCampaigns();
+      },
+      error: () => { this.isConfirmingImport = false; }
+    });
+  }
+
+  // ── Asignar grupo A/B (vista de campaña) ──────────────────────────────
+
+  setAbGroup(prospect: any, group: 'A' | 'B' | null): void {
+    if (!this.selectedCampaign) return;
+    const prev = prospect.ab_group;
+    prospect.ab_group = group;  // optimistic update
+    this.prospectService.setClubAbGroup(
+      this.selectedCampaign.campaign_id, prospect.prospect_id, group
+    ).subscribe({
+      error: () => { prospect.ab_group = prev; }  // rollback on error
+    });
   }
 
   // ── Quitar club de campaña (vista de campaña) ──────────────────────────
@@ -297,14 +526,14 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
 
   // ── Generar email individual ───────────────────────────────────────────
 
-  generateEmailForProspect(prospect: any): void {
+  generateEmailForProspect(prospect: any, instruction?: string): void {
     if (!this.selectedCampaign || this.isGeneratingEmail) return;
     this.isGeneratingEmail = true;
     this.generateEmailCampaignId = this.selectedCampaign.campaign_id;
     this.prospectService.generateEmailForProspect(
-      prospect.prospect_id, this.selectedCampaign.campaign_id
+      prospect.prospect_id, this.selectedCampaign.campaign_id, instruction
     ).subscribe({
-      next: () => {
+      next: (res: any) => {
         this.isGeneratingEmail = false;
         this.generateEmailCampaignId = null;
         this.loadCampaignStats();
@@ -312,6 +541,31 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
         if (this.showProspectModal) {
           this.selectedProspect = { ...this.selectedProspect, status: 'EMAIL_READY' };
         }
+        // Actualizar el array local de emails con el recién generado para que
+        // la tabla muestre el estado correcto y la preview use el email_id correcto.
+        if (res?.email_id) {
+          const generatedEmail = {
+            email_id: res.email_id,
+            subject: res.subject,
+            body_html: res.body_html || '',
+            club_name: prospect.name,
+            club_email: prospect.email || res.club_email || '',
+            prospect_id: prospect.prospect_id,
+            status: 'DRAFT',
+            ab_variant: prospect.ab_group || 'B',
+          };
+          // Reemplazar o insertar en el array local para que emailsByProspectId quede actualizado
+          const idx = this.emails.findIndex(e => e.prospect_id === prospect.prospect_id);
+          if (idx >= 0) {
+            this.emails[idx] = generatedEmail;
+          } else {
+            this.emails = [...this.emails, generatedEmail];
+          }
+          this.showProspectModal = false;
+          this.manualInstruction = '';
+          this.openEditEmail(generatedEmail);
+        }
+        this.loadEmails();
       },
       error: (err: any) => {
         this.isGeneratingEmail = false;
@@ -321,7 +575,90 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
     });
   }
 
-  // ── Borrar campaña ────────────────────────────────────────────────────
+  sendFromEdit(): void {
+    if (!this.editingEmail || !this.editSendRecipient.trim() || this.isSendingSingle) return;
+    this.isSendingSingle = true;
+    this.prospectService.sendSingleEmail(this.editingEmail.email_id, this.editSendRecipient).subscribe({
+      next: () => {
+        this.isSendingSingle = false;
+        this.editingEmail = { ...this.editingEmail, status: 'SENT' };
+        this.loadEmails();
+        this.loadCampaignStats();
+        this.loadProspects();
+      },
+      error: (err: any) => {
+        this.isSendingSingle = false;
+        alert(err?.error?.detail || 'Error al enviar el email');
+      }
+    });
+  }
+
+  // ── Emails por prospect (modo manual) ────────────────────────────────
+
+  get emailsByProspectId(): Record<number, any> {
+    const map: Record<number, any> = {};
+    this.emails.forEach(e => { map[e.prospect_id] = e; });
+    return map;
+  }
+
+  // ── Selección masiva modo manual ──────────────────────────────────────
+
+  get allManualSelected(): boolean {
+    return this.prospects.length > 0
+      && this.prospects.every(p => this.selectedManualIds.has(p.prospect_id));
+  }
+
+  toggleManualSelection(id: number): void {
+    if (this.selectedManualIds.has(id)) this.selectedManualIds.delete(id);
+    else this.selectedManualIds.add(id);
+  }
+
+  toggleAllManual(): void {
+    if (this.allManualSelected) {
+      this.prospects.forEach(p => this.selectedManualIds.delete(p.prospect_id));
+    } else {
+      this.prospects.forEach(p => this.selectedManualIds.add(p.prospect_id));
+    }
+  }
+
+  // ── Generación masiva modo manual ─────────────────────────────────────
+
+  generateSelected(): void {
+    const targets = this.prospects.filter(p => this.selectedManualIds.has(p.prospect_id));
+    if (!targets.length) return;
+    this.generateBulkQueue(targets);
+  }
+
+  generateAllPending(): void {
+    const targets = this.prospects.filter(p => !this.emailsByProspectId[p.prospect_id]);
+    if (!targets.length) return;
+    this.generateBulkQueue(targets);
+  }
+
+  private generateBulkQueue(targets: any[]): void {
+    this.isBulkGenerating = true;
+    this.bulkGenerateTotal = targets.length;
+    this.bulkGenerateDone = 0;
+    this.selectedManualIds.clear();
+
+    const next = (i: number) => {
+      if (i >= targets.length) {
+        this.isBulkGenerating = false;
+        this.loadProspects();
+        this.loadEmails();
+        this.loadCampaignStats();
+        return;
+      }
+      const p = targets[i];
+      this.prospectService.generateEmailForProspect(p.prospect_id, this.campaignId).subscribe({
+        next: () => { this.bulkGenerateDone++; next(i + 1); },
+        error: () => { this.bulkGenerateDone++; next(i + 1); },
+      });
+    };
+    next(0);
+  }
+
+  // ── Borrar / Archivar campaña ────────────────────────────────────────
 
   confirmDeleteCampaign(c: any): void {
     this.campaignToDelete = c;
@@ -331,6 +668,25 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   deleteCampaign(): void {
     if (!this.campaignToDelete) return;
     this.prospectService.deleteCampaign(this.campaignToDelete.campaign_id).subscribe({
+      next: () => {
+        this.showDeleteCampaignConfirm = false;
+        if (this.selectedCampaign?.campaign_id === this.campaignToDelete.campaign_id) {
+          this.selectedCampaign = null;
+          this.activeTab = 'campaigns';
+        }
+        this.campaignToDelete = null;
+        this.loadCampaigns();
+      },
+      error: (err: any) => {
+        this.showDeleteCampaignConfirm = false;
+        alert(err?.error?.detail || 'Error al borrar la campaña');
+      }
+    });
+  }
+
+  archiveCampaign(): void {
+    if (!this.campaignToDelete) return;
+    this.prospectService.archiveCampaign(this.campaignToDelete.campaign_id).subscribe({
       next: () => {
         this.showDeleteCampaignConfirm = false;
         if (this.selectedCampaign?.campaign_id === this.campaignToDelete.campaign_id) {
@@ -363,6 +719,15 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   }
 
   // ── Campaigns ──
+  showArchivedCampaigns = false;
+  get visibleCampaigns(): any[] {
+    return this.showArchivedCampaigns
+      ? this.campaigns
+      : this.campaigns.filter(c => c.status !== 'ARCHIVED');
+  }
+  get hasArchivedCampaigns(): boolean {
+    return this.campaigns.some(c => c.status === 'ARCHIVED');
+  }
 
   loadCampaigns(): void {
     this.isLoading = true;
@@ -372,11 +737,25 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
     });
   }
 
+  selectMode(mode: 'auto' | 'manual'): void {
+    this.activeMode = mode;
+    if (mode === 'manual') {
+      if (this.activeTab === 'pipeline') {
+        this.selectTab(this.selectedCampaign ? 'prospects' : 'campaigns');
+      } else if (this.activeTab === 'prospects' && this.selectedCampaign) {
+        // Ya en prospects: cargar emails para tener datos en la vista unificada
+        this.loadEmails();
+      }
+    }
+  }
+
   selectCampaign(c: any): void {
     this.selectedCampaign = c;
     this.stepResults = { discover: null, enrich: null, analyze: null, generate: null };
     this.loadCampaignStats();
-    this.activeTab = 'pipeline';
+    // En modo manual se va directamente a Clubes; en automático al Pipeline
+    this.activeTab = this.activeMode === 'manual' ? 'prospects' : 'pipeline';
+    if (this.activeMode === 'manual') this.loadProspects();
   }
 
   loadCampaignStats(): void {
@@ -699,6 +1078,7 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
     this.editingEmail = e;
     this.editEmailSubject = e.subject;
     this.editEmailBody = e.body_html || '';
+    this.editSendRecipient = e.club_email || '';
     this.showEditEmailModal = true;
   }
 

@@ -1,0 +1,219 @@
+.back-container {
+  padding: 0 0 12px;
+}
+
+.btn-back-clean {
+  background: none;
+  border: none;
+  color: var(--bs-body-color);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 6px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  &:hover { color: var(--sphaira-green, #31b270); }
+}
+
+.templates-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+}
+
+.templates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.templates-header-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.templates-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.4rem;
+}
+
+.templates-header-left h3 {
+  margin: 0;
+  font-weight: 700;
+}
+
+.template-count {
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+.btn-new {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+.loading-state {
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}
+
+.templates-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.template-card {
+  background: var(--bs-body-bg, #fff);
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 14px;
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+
+  &:hover {
+    border-color: var(--sphaira-green, #31b270);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  h5 { font-weight: 700; margin: 10px 0 4px; }
+  p { color: #6c757d; font-size: 0.85rem; margin-bottom: 8px; }
+}
+
+.template-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.system-badge, .custom-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.system-badge {
+  background: rgba(49, 178, 112, 0.12);
+  color: var(--sphaira-green, #31b270);
+}
+
+.custom-badge {
+  background: rgba(99, 102, 241, 0.12);
+  color: #6366f1;
+}
+
+.template-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  padding: 4px 8px;
+  border-radius: 6px;
+  color: #6c757d;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+
+  &:hover { background: rgba(0, 0, 0, 0.06); color: #333; }
+}
+
+.btn-danger-icon:hover { color: #dc3545 !important; background: rgba(220, 53, 69, 0.08) !important; }
+
+.template-meta {
+  font-size: 0.8rem;
+  color: #6c757d;
+}
+
+// Modal styles (same as hub)
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-panel {
+  background: var(--bs-body-bg, #fff);
+  border-radius: 16px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header-custom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+
+  h4 { margin: 0; font-weight: 700; }
+}
+
+.btn-close-modal {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #6c757d;
+  cursor: pointer;
+
+  &:hover { color: #333; }
+}
+
+.modal-body-custom { padding: 20px 24px; }
+
+.form-group {
+  margin-bottom: 16px;
+
+  label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .form-control { border-radius: 8px; }
+}
+
+.modal-footer-custom {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px 20px;
+  border-top: 1px solid var(--bs-border-color, #dee2e6);
+}
+
+// Dark mode
+:host-context(body.dark) {
+  .template-card, .modal-panel {
+    background: #1a2332;
+    border-color: #2a3a4e;
+  }
+}

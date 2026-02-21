@@ -1,0 +1,316 @@
+:host {
+  --sphaira-green:  #31b270;
+  --sphaira-night:  #002c40;
+  --sphaira-teal:   #1f8f8a;
+  --card-radius:    18px;
+  --card-shadow:    0 2px 12px rgba(0,0,0,0.07);
+}
+
+/* ── Back button ── */
+.back-container { padding: 0; }
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 16px 0 0 24px;
+  background: rgba(15,163,232,0.08);
+  color: var(--sphaira-night);
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 0.35rem 0.6rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  i { font-size: 1.1rem; }
+  &:hover { background: rgba(15,163,232,0.15); transform: translateX(-2px); }
+}
+
+/* ── Page header ── */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+
+  h4 { color: var(--sphaira-night); }
+}
+.page-header-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--sphaira-green), var(--sphaira-teal));
+  color: #fff;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── Grid de tarjetas ── */
+.config-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+/* ── Tarjeta de configuración ── */
+.config-card {
+  background: #fff;
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  border: 1px solid #e2e8f0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: box-shadow 0.2s;
+
+  &:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.11); }
+}
+
+.config-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.provider-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  i { font-size: 0.9rem; }
+}
+
+.config-key-badge {
+  font-family: monospace;
+  font-size: 0.72rem;
+  color: #6b7a8d;
+  background: #f1f5f9;
+  padding: 2px 8px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.config-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--sphaira-night);
+  line-height: 1.3;
+}
+
+.config-desc {
+  font-size: 0.82rem;
+  color: #6b7a8d;
+  line-height: 1.45;
+}
+
+/* ── Controles ── */
+.config-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.control-label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--sphaira-night);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* Selector de proveedor (botones toggle) */
+.provider-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.provider-btn {
+  flex: 1;
+  padding: 7px 10px;
+  border-radius: 10px;
+  border: 1.5px solid #d1d9e0;
+  background: #f8fafc;
+  color: #6b7a8d;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s;
+
+  &:hover {
+    border-color: var(--sphaira-green);
+    color: var(--sphaira-green);
+    background: rgba(49,178,112,0.06);
+  }
+
+  &.active {
+    border-color: var(--sphaira-green);
+    background: rgba(49,178,112,0.1);
+    color: var(--sphaira-green);
+    font-weight: 700;
+  }
+}
+
+/* Select de modelo */
+.model-select {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1.5px solid #d1d9e0;
+  background: #f8fafc;
+  font-size: 0.88rem;
+  color: var(--sphaira-night);
+  cursor: pointer;
+  appearance: auto;
+  transition: border-color 0.18s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--sphaira-green);
+  }
+}
+
+/* Modelo actual en BD */
+.current-model {
+  font-size: 0.82rem;
+  color: #6b7a8d;
+  padding: 8px 12px;
+  background: #f4f7fa;
+  border-radius: 8px;
+
+  strong { color: var(--sphaira-night); }
+}
+
+/* ── Pricing ── */
+.pricing-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  font-size: 0.78rem;
+  color: #6b7a8d;
+  padding: 7px 10px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e8edf2;
+
+  i { color: #94a3b8; font-size: 0.82rem; }
+}
+
+.pricing-label {
+  font-weight: 600;
+  color: var(--sphaira-night);
+  margin-right: 2px;
+}
+
+.pricing-in  { color: #16a34a; font-weight: 500; }
+.pricing-out { color: #dc6803; font-weight: 500; }
+.pricing-sep { color: #cbd5e1; }
+.pricing-note { font-style: italic; color: #4285f4; }
+
+/* ── Acciones ── */
+.config-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.btn-save {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: none;
+  background: var(--sphaira-green);
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.15s;
+
+  &:hover:not([disabled]) {
+    background: darken(#31b270, 8%);
+    transform: translateY(-1px);
+  }
+
+  &[disabled] {
+    opacity: 0.45;
+    cursor: default;
+    transform: none;
+  }
+}
+
+.feedback-ok {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--sphaira-green);
+  animation: fadeIn 0.2s ease;
+}
+.feedback-err {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #dc3545;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Nota informativa ── */
+.info-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 14px 18px;
+  background: rgba(66,133,244,0.07);
+  border: 1px solid rgba(66,133,244,0.2);
+  border-radius: 12px;
+  font-size: 0.84rem;
+  color: #2d4a72;
+
+  i { color: #4285f4; flex-shrink: 0; margin-top: 2px; }
+  code {
+    background: rgba(66,133,244,0.12);
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 0.82rem;
+  }
+}
+
+/* ── Responsive ── */
+@media (max-width: 576px) {
+  .config-grid { grid-template-columns: 1fr; }
+  .page-header { flex-wrap: wrap; .ms-auto { margin-left: 0 !important; } }
+}
+
+/* ── Dark mode ── */
+:host-context(body.dark) {
+  .config-card {
+    background: #1a2332;
+    border-color: #2d3748;
+  }
+  .config-name, h4 { color: #e2e8f0; }
+  .config-key-badge { background: #2d3748; color: #94a3b8; }
+  .current-model { background: #233044; color: #94a3b8; strong { color: #e2e8f0; } }
+  .provider-btn {
+    background: #233044;
+    border-color: #3a4a5c;
+    color: #94a3b8;
+    &.active { background: rgba(49,178,112,0.15); }
+  }
+  .model-select { background: #233044; color: #e2e8f0; border-color: #3a4a5c; }
+  .control-label { color: #94a3b8; }
+}

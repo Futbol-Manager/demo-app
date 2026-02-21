@@ -89,48 +89,27 @@ export class DriveService {
   }
 
   async uploadToDrive(accessToken: string, blob: Blob, filename: string, mimeType: string): Promise<any> {
-    const metadata = JSON.stringify({
-      name: filename,
-      mimeType
-    });
+    const metadata = new Blob(
+      [JSON.stringify({ name: filename, mimeType })],
+      { type: 'application/json' }
+    );
 
-    const boundary = '-------sphaira_boundary';
-    const delimiter = '\r\n--' + boundary + '\r\n';
-    const closeDelimiter = '\r\n--' + boundary + '--';
-
-    const reader = new FileReader();
-    const base64Data: string = await new Promise((resolve) => {
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        resolve(result.split(',')[1]);
-      };
-      reader.readAsDataURL(blob);
-    });
-
-    const body =
-      delimiter +
-      'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-      metadata +
-      delimiter +
-      'Content-Type: ' + mimeType + '\r\n' +
-      'Content-Transfer-Encoding: base64\r\n\r\n' +
-      base64Data +
-      closeDelimiter;
+    const form = new FormData();
+    form.append('metadata', metadata);
+    form.append('file', blob, filename);
 
     const response = await fetch(
       'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
       {
         method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + accessToken,
-          'Content-Type': 'multipart/related; boundary=' + boundary
-        },
-        body
+        headers: { 'Authorization': 'Bearer ' + accessToken },
+        body: form
       }
     );
 
     if (!response.ok) {
-      throw new Error('Error subiendo a Drive: ' + response.status);
+      const errText = await response.text();
+      throw new Error('Error subiendo a Drive (' + response.status + '): ' + errText);
     }
     return response.json();
   }

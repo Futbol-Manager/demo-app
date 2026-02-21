@@ -86,6 +86,20 @@ export class VideoStorageService {
     );
   }
 
+  // ── Admin overrides ────────────────────────────────────────
+  setVideoPlanAdmin(clubId: number, planKey: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl.replace('/club', '')}/admin/${clubId}/set-plan`,
+      { planKey },
+      { headers: this.getHeaders() }
+    );
+  }
+
+  cancelVideoPlanAdmin(clubId: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl.replace('/club', '')}/admin/${clubId}/cancel-plan`,
+      { headers: this.getHeaders() }
+    );
+  }
+
   importFromDrive(clubId: number, driveFileId: string, accessToken: string, meta: {
     title?: string; description?: string; tags?: string; folderId?: number; uploadedBy?: number;
   }): Observable<any> {

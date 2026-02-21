@@ -1,0 +1,345 @@
+<div class="editor-page" *ngIf="!isLoading; else loadingTpl">
+
+  <!-- Header -->
+  <div class="editor-header">
+    <div class="editor-header-left">
+      <button class="btn-back-clean" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i> Plantillas
+      </button>
+      <div class="header-title-group">
+        <input *ngIf="!isSystemTemplate" type="text" class="title-input"
+               [(ngModel)]="editName" (ngModelChange)="onTemplateNameChange()"
+               placeholder="Nombre de la plantilla" />
+        <h3 *ngIf="isSystemTemplate" class="system-title">{{ template?.name }}</h3>
+        <span class="badge-system" *ngIf="isSystemTemplate">
+          <i class="bi bi-shield-check"></i> Plantilla Sphaira
+        </span>
+        <span class="badge-cats">{{ categories.length }} categorías</span>
+        <span class="badge-saving" *ngIf="isSavingTemplate">
+          <i class="bi bi-arrow-repeat spin"></i> Guardando...
+        </span>
+      </div>
+    </div>
+    <div class="editor-header-right">
+      <button *ngIf="isSystemTemplate" class="btn-duplicate" (click)="duplicateTemplate()">
+        <i class="bi bi-copy"></i> Duplicar para editar
+      </button>
+      <button *ngIf="!isSystemTemplate" class="btn-add-cat" (click)="addNewCategory()">
+        <i class="bi bi-plus-lg"></i> Añadir categoría
+      </button>
+    </div>
+  </div>
+
+  <!-- System banner -->
+  <div class="system-banner" *ngIf="isSystemTemplate">
+    <i class="bi bi-info-circle-fill"></i>
+    Esta es una plantilla del sistema y no puede modificarse. Duplícala para crear tu propia versión personalizada.
+  </div>
+
+  <!-- Body -->
+  <div class="editor-body">
+
+    <!-- LEFT: Free Canvas -->
+    <div class="canvas-wrapper">
+      <div class="canvas-toolbar">
+        <span><i class="bi bi-easel-fill"></i> Canvas</span>
+        <div class="toolbar-actions" *ngIf="!isSystemTemplate">
+          <input #bgFileInput type="file" accept="image/*" hidden
+                 (change)="onBackgroundFileSelected($event)" />
+          <button class="btn-bg-upload" title="Subir imagen de fondo" (click)="bgFileInput.click()">
+            <i class="bi bi-image"></i> Subir imagen
+          </button>
+          <input type="text" class="bg-url-input"
+                 [(ngModel)]="backgroundImage" (ngModelChange)="onBackgroundChange()"
+                 placeholder="O pega una URL de imagen..." />
+          <button *ngIf="backgroundImage" class="btn-clear-bg" (click)="clearBackground()" title="Quitar fondo">
+            <i class="bi bi-x-lg"></i>
+          </button>
+          <div class="opacity-control" *ngIf="backgroundImage">
+            <i class="bi bi-circle-half" title="Transparencia"></i>
+            <input type="range" class="opacity-slider" min="0.05" max="1" step="0.05"
+                   [(ngModel)]="bgOpacity" (ngModelChange)="onBgOpacityChange()" />
+            <span class="opacity-value">{{ (bgOpacity * 100).toFixed(0) }}%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="canvas-surface" #canvasArea (click)="onCanvasClick($event)">
+        <!-- Background -->
+        <img *ngIf="backgroundImage" [src]="backgroundImage" class="canvas-bg" draggable="false"
+             [style.opacity]="bgOpacity"
+             (click)="onCanvasClick($event)" />
+
+        <!-- Ghost preview -->
+        <div class="ghost-preview" *ngIf="showGhost"
+             [style.left.%]="ghostX" [style.top.%]="ghostY"
+             [style.width.%]="ghostW" [style.height.%]="ghostH"
+             [class.ghost-square]="ghostShape === 'SQUARE' || ghostShape === 'CIRCLE' || ghostShape === 'DIAMOND'"
+             [style.borderRadius]="getShapeRadius(ghostShape)"
+             [style.clipPath]="getShapeClip(ghostShape)">
+        </div>
+
+        <!-- Category buttons -->
+        <div *ngFor="let cat of categories; trackBy: trackByCategory"
+             class="canvas-btn"
+             [class.selected]="selectedCategory?.id === cat.id"
+             [class.is-new]="cat.isNew"
+             [class.is-dragging]="dragging && dragCat?.id === cat.id"
+             [class.is-resizing]="resizing && resizeCat?.id === cat.id"
+             [class.shape-diamond]="cat.shape === 'DIAMOND'"
+             [class.shape-square]="cat.shape === 'SQUARE'"
+             [class.shape-circle]="cat.shape === 'CIRCLE'"
+             [style.left.%]="cat.posX"
+             [style.top.%]="cat.posY"
+             [style.width.%]="cat.sizeW"
+             [style.height.%]="cat.sizeH"
+             [style.--cat-color]="cat.color"
+             [style.borderRadius]="getShapeRadius(cat.shape)"
+             [style.clipPath]="getShapeClip(cat.shape)"
+             (mousedown)="onBtnMouseDown($event, cat)"
+             (click)="$event.stopPropagation()">
+
+          <div class="canvas-btn-bg" [style.background]="cat.color"></div>
+          <span class="canvas-btn-name"
+                [style.fontSize.px]="cat.textSize || 13"
+                [style.color]="cat.textColor || '#FFFFFF'">{{ cat.name }}</span>
+          <span class="canvas-btn-shortcut" *ngIf="cat.shortcutKey && cat.shape !== 'DIAMOND'"
+                [style.color]="cat.textColor || '#FFFFFF'">{{ cat.shortcutKey }}</span>
+        </div>
+
+        <!-- Resize handles overlay (separate from clip-path container) -->
+        <ng-container *ngIf="!isSystemTemplate && selectedCategory">
+          <ng-container *ngFor="let cat of categories; trackBy: trackByCategory">
+            <ng-container *ngIf="selectedCategory!.id === cat.id">
+              <div class="resize-handles-overlay"
+                   [class.shape-square]="cat.shape === 'SQUARE'"
+                   [class.shape-circle]="cat.shape === 'CIRCLE'"
+                   [class.shape-diamond]="cat.shape === 'DIAMOND'"
+                   [style.left.%]="cat.posX" [style.top.%]="cat.posY"
+                   [style.width.%]="cat.sizeW" [style.height.%]="cat.sizeH">
+                <div class="resize-handle rh-n" (mousedown)="onResizeMouseDown($event, cat, 'n')"></div>
+                <div class="resize-handle rh-s" (mousedown)="onResizeMouseDown($event, cat, 's')"></div>
+                <div class="resize-handle rh-e" (mousedown)="onResizeMouseDown($event, cat, 'e')"></div>
+                <div class="resize-handle rh-w" (mousedown)="onResizeMouseDown($event, cat, 'w')"></div>
+                <div class="resize-handle rh-se" (mousedown)="onResizeMouseDown($event, cat, 'se')"></div>
+                <div class="resize-handle rh-sw" (mousedown)="onResizeMouseDown($event, cat, 'sw')"></div>
+                <div class="resize-handle rh-ne" (mousedown)="onResizeMouseDown($event, cat, 'ne')"></div>
+                <div class="resize-handle rh-nw" (mousedown)="onResizeMouseDown($event, cat, 'nw')"></div>
+              </div>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+
+        <!-- Empty state -->
+        <div class="canvas-empty" *ngIf="categories.length === 0">
+          <i class="bi bi-easel"></i>
+          <p>Añade categorías para construir tu plantilla</p>
+          <button *ngIf="!isSystemTemplate" class="btn-add-first" (click)="addNewCategory()">
+            <i class="bi bi-plus-lg"></i> Añadir primera categoría
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Category editor panel -->
+    <div class="editor-panel" [class.has-selection]="selectedCategory !== null">
+
+      <div class="editor-empty" *ngIf="!selectedCategory">
+        <div class="editor-empty-icon"><i class="bi bi-cursor-fill"></i></div>
+        <p>Selecciona una categoría del canvas para editar sus propiedades</p>
+      </div>
+
+      <ng-container *ngIf="selectedCategory">
+        <div class="editor-form-header" [style.background]="catColor">
+          <span class="editor-form-title">{{ isSystemTemplate ? selectedCategory.name : 'Editando categoría' }}</span>
+          <div class="editor-form-header-right">
+            <span class="saving-indicator" *ngIf="isSavingCategory && !selectedCategory.isNew">
+              <i class="bi bi-arrow-repeat spin"></i>
+            </span>
+            <button class="btn-close-editor" (click)="deselectCategory()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="editor-form-body" [class.readonly]="isSystemTemplate">
+          <!-- Name -->
+          <div class="form-row">
+            <label>Nombre</label>
+            <input type="text" class="form-ctrl" [(ngModel)]="catName"
+                   (ngModelChange)="onCatFieldChange()"
+                   [readonly]="isSystemTemplate" placeholder="Ej: Gol, Tiro a puerta..." />
+          </div>
+
+          <!-- Shape selector -->
+          <div class="form-row">
+            <label>Forma</label>
+            <div class="shape-selector">
+              <button *ngFor="let s of SHAPES" class="shape-option"
+                      [class.active]="catShape === s.id"
+                      [class.disabled]="isSystemTemplate"
+                      (click)="onShapeChange(s.id)">
+                <i class="bi" [ngClass]="s.icon"></i>
+                <span>{{ s.label }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Text style -->
+          <div class="form-row">
+            <label><i class="bi bi-type"></i> Texto</label>
+            <div class="text-style-row">
+              <div class="text-size-group">
+                <span class="text-style-label">Tamaño</span>
+                <div class="text-size-ctrl">
+                  <button class="btn-size-step" [disabled]="isSystemTemplate || catTextSize <= 8"
+                          (click)="catTextSize = catTextSize - 1; onCatFieldChange()">−</button>
+                  <input type="number" class="form-ctrl size-input" [(ngModel)]="catTextSize"
+                         (ngModelChange)="onCatFieldChange()"
+                         min="8" max="48" [readonly]="isSystemTemplate" />
+                  <button class="btn-size-step" [disabled]="isSystemTemplate || catTextSize >= 48"
+                          (click)="catTextSize = catTextSize + 1; onCatFieldChange()">+</button>
+                </div>
+              </div>
+              <div class="text-color-group">
+                <span class="text-style-label">Color texto</span>
+                <div class="text-color-row">
+                  <input type="color" class="text-color-picker" [(ngModel)]="catTextColor"
+                         (ngModelChange)="onCatFieldChange()"
+                         [disabled]="isSystemTemplate" />
+                  <span class="text-color-preview" [style.background]="catTextColor">Aa</span>
+                </div>
+              </div>
+            </div>
+            <!-- Quick text color presets -->
+            <div class="text-color-presets">
+              <div *ngFor="let tc of TEXT_COLOR_PRESETS" class="text-color-swatch"
+                   [class.active]="catTextColor === tc" [style.background]="tc"
+                   [class.is-white]="tc === '#FFFFFF'"
+                   (click)="!isSystemTemplate && (catTextColor = tc); !isSystemTemplate && onCatFieldChange()">
+              </div>
+            </div>
+          </div>
+
+          <!-- Color de fondo -->
+          <div class="form-row">
+            <label>Color de fondo</label>
+            <div class="color-palette">
+              <div *ngFor="let c of COLOR_PALETTE" class="color-swatch"
+                   [class.active]="catColor === c" [style.background]="c"
+                   [class.disabled]="isSystemTemplate" (click)="selectColor(c)">
+                <i class="bi bi-check-lg" *ngIf="catColor === c"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shortcut -->
+          <div class="form-row">
+            <label>Atajo de teclado</label>
+            <div class="shortcut-field">
+              <div class="shortcut-preview" [class.empty]="!catShortcut">
+                <span *ngIf="catShortcut; else noKey">{{ catShortcut }}</span>
+                <ng-template #noKey><span class="shortcut-placeholder">—</span></ng-template>
+              </div>
+              <input *ngIf="!isSystemTemplate" type="text" class="form-ctrl shortcut-input"
+                     placeholder="Pulsa una tecla" [value]="catShortcut"
+                     (keydown)="onShortcutInput($event)" readonly />
+              <button *ngIf="catShortcut && !isSystemTemplate" class="btn-clear-shortcut"
+                      (click)="catShortcut = ''; onCatFieldChange()">
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Clip times -->
+          <div class="form-row">
+            <label>Tiempos del clip</label>
+            <div class="times-grid">
+              <div class="time-field">
+                <div class="time-icon pre"><i class="bi bi-skip-backward-fill"></i></div>
+                <div class="time-input-wrap">
+                  <input type="number" class="form-ctrl time-input"
+                         [(ngModel)]="catPreTime" (ngModelChange)="onCatFieldChange()"
+                         min="1" max="120" [readonly]="isSystemTemplate" />
+                  <span class="time-unit">s</span>
+                </div>
+              </div>
+              <div class="time-divider"><i class="bi bi-play-fill"></i></div>
+              <div class="time-field">
+                <div class="time-icon post"><i class="bi bi-skip-forward-fill"></i></div>
+                <div class="time-input-wrap">
+                  <input type="number" class="form-ctrl time-input"
+                         [(ngModel)]="catPostTime" (ngModelChange)="onCatFieldChange()"
+                         min="1" max="120" [readonly]="isSystemTemplate" />
+                  <span class="time-unit">s</span>
+                </div>
+              </div>
+            </div>
+            <div class="clip-hint">
+              <i class="bi bi-film"></i> Total: <strong>{{ catPreTime + catPostTime }}s</strong>
+            </div>
+          </div>
+
+          <!-- Tags -->
+          <div class="form-row tags-section">
+            <label>
+              Descriptores
+              <span class="tag-count-badge">{{ selectedCategory.tags.length }}</span>
+            </label>
+            <div class="tags-list">
+              <div *ngFor="let tag of selectedCategory.tags; trackBy: trackByTag" class="tag-chip">
+                <!-- Punto = selector de color inline -->
+                <label class="tag-color-btn" [title]="isSystemTemplate ? '' : 'Cambiar color'"
+                       [class.readonly]="isSystemTemplate">
+                  <span class="tag-chip-dot" [style.background]="tag.color || catColor"></span>
+                  <input *ngIf="!isSystemTemplate" type="color"
+                         class="tag-color-input"
+                         [value]="tag.color || catColor"
+                         (change)="updateTagColor(tag, $event)"
+                         (click)="$event.stopPropagation()" />
+                </label>
+                <span>{{ tag.name }}</span>
+                <button *ngIf="!isSystemTemplate" class="tag-chip-del" (click)="deleteTag(tag, $event)">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+              <div class="tags-empty" *ngIf="!selectedCategory.tags.length">
+                <i class="bi bi-tag-fill"></i> Sin descriptores
+              </div>
+            </div>
+            <div class="add-tag-row" *ngIf="!isSystemTemplate && !selectedCategory.isNew">
+              <input type="text" class="form-ctrl" [(ngModel)]="newTagName"
+                     placeholder="Nuevo descriptor..." (keydown.enter)="addTag()" />
+              <button class="btn-add-tag" [disabled]="!newTagName.trim()" (click)="addTag()">
+                <i class="bi bi-plus-lg"></i>
+              </button>
+            </div>
+            <p class="tags-warning" *ngIf="selectedCategory.isNew">
+              <i class="bi bi-exclamation-circle"></i> Crea la categoría primero.
+            </p>
+          </div>
+
+          <!-- Actions: only shown for NEW categories -->
+          <div class="editor-form-actions" *ngIf="!isSystemTemplate">
+            <button class="btn-delete-cat" (click)="deleteCategory()">
+              <i class="bi bi-trash3"></i> Eliminar
+            </button>
+            <button *ngIf="selectedCategory.isNew" class="btn-save-cat"
+                    [disabled]="!catName.trim() || isSavingCategory" (click)="createCategory()">
+              <i class="bi bi-plus-circle"></i>
+              {{ isSavingCategory ? 'Creando...' : 'Crear categoría' }}
+            </button>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="loading-page">
+    <div class="spinner-border text-success" role="status"></div>
+    <p>Cargando plantilla...</p>
+  </div>
+</ng-template>

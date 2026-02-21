@@ -21,6 +21,31 @@
     </button>
   </div>
 
+  <!-- ── Selector de modo ── -->
+  <div class="mode-toggle-bar d-flex align-items-center gap-3 mb-4 p-3 rounded-3" style="background: var(--bg-surface); border: 1px solid var(--border-color);">
+    <span class="fw-semibold small text-muted text-nowrap">Modo de trabajo:</span>
+    <div class="btn-group btn-group-sm" role="group">
+      <button type="button" class="btn"
+              [ngClass]="activeMode === 'auto' ? 'btn-success' : 'btn-outline-secondary'"
+              (click)="selectMode('auto')">
+        <i class="bi bi-diagram-3 me-1"></i>Automático
+      </button>
+      <button type="button" class="btn"
+              [ngClass]="activeMode === 'manual' ? 'btn-success' : 'btn-outline-secondary'"
+              (click)="selectMode('manual')">
+        <i class="bi bi-pencil-square me-1"></i>Manual
+      </button>
+    </div>
+    <span class="text-muted small">
+      <ng-container *ngIf="activeMode === 'auto'">
+        <i class="bi bi-info-circle me-1"></i>Pipeline completo: descubrir → enriquecer → analizar con IA → generar emails → enviar
+      </ng-container>
+      <ng-container *ngIf="activeMode === 'manual'">
+        <i class="bi bi-info-circle me-1"></i>Añade clubes manualmente, genera emails con IA directamente y envíalos sin pasar por el pipeline
+      </ng-container>
+    </span>
+  </div>
+
   <!-- ── KPI Cards ── -->
   <div *ngIf="campaignStats && selectedCampaign" class="row g-3 mb-4">
     <div class="col-6 col-md-3">
@@ -66,7 +91,7 @@
         <span *ngIf="libraryTotal" class="badge ms-1 bg-light text-dark small">{{ libraryTotal }}</span>
       </a>
     </li>
-    <li class="nav-item" *ngIf="selectedCampaign">
+    <li class="nav-item" *ngIf="selectedCampaign && activeMode === 'auto'">
       <a class="nav-link" [class.active]="activeTab === 'pipeline'" (click)="selectTab('pipeline')">
         <i class="bi bi-diagram-3 me-1"></i>Pipeline
         <span *ngIf="isJobRunning" class="ms-1 pulse-dot"></span>
@@ -78,7 +103,7 @@
         <span *ngIf="campaignStats?.total" class="badge ms-1 bg-light text-dark small">{{ campaignStats.total }}</span>
       </a>
     </li>
-    <li class="nav-item" *ngIf="selectedCampaign">
+    <li class="nav-item" *ngIf="selectedCampaign && activeMode === 'auto'">
       <a class="nav-link" [class.active]="activeTab === 'emails'" (click)="selectTab('emails')">
         <i class="bi bi-envelope me-1"></i>Emails
         <span *ngIf="campaignStats?.total_emails" class="badge ms-1 bg-light text-dark small">{{ campaignStats.total_emails }}</span>
@@ -100,9 +125,16 @@
         <h5 class="fw-bold mb-0">Campañas de prospección</h5>
         <p class="text-muted small mb-0">Cada campaña es un ciclo de descubrimiento → enriquecimiento → análisis → email.</p>
       </div>
-      <button class="btn btn-sm btn-refresh" (click)="openNewCampaignModal()">
-        <i class="bi bi-plus-lg"></i> Nueva campaña
-      </button>
+      <div class="d-flex gap-2 align-items-center">
+        <div class="form-check form-switch mb-0" *ngIf="hasArchivedCampaigns">
+          <input class="form-check-input" type="checkbox" role="switch" id="showArchived"
+                 [(ngModel)]="showArchivedCampaigns">
+          <label class="form-check-label small text-muted" for="showArchived">Ver archivadas</label>
+        </div>
+        <button class="btn btn-sm btn-refresh" (click)="openNewCampaignModal()">
+          <i class="bi bi-plus-lg"></i> Nueva campaña
+        </button>
+      </div>
     </div>
 
     <div *ngIf="isLoading" class="text-center py-5">
@@ -129,7 +161,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let c of campaigns" [class.row-selected]="selectedCampaign?.campaign_id === c.campaign_id">
+          <tr *ngFor="let c of visibleCampaigns" [class.row-selected]="selectedCampaign?.campaign_id === c.campaign_id"
+              [class.opacity-50]="c.status === 'ARCHIVED'">
             <td>
               <div class="fw-semibold">{{ c.name }}</div>
               <div class="text-muted small" *ngIf="c.description">{{ c.description }}</div>
@@ -140,16 +173,23 @@
               <span class="badge bg-info">B: {{ c.group_b_count || 0 }}</span>
             </td>
             <td>
-              <span class="badge" [ngClass]="campaignStatusClass(c)">{{ campaignStatusLabel(c) }}</span>
+              <span *ngIf="c.status === 'ARCHIVED'" class="badge bg-secondary">
+                <i class="bi bi-archive me-1"></i>Archivada
+              </span>
+              <span *ngIf="c.status !== 'ARCHIVED'" class="badge" [ngClass]="campaignStatusClass(c)">{{ campaignStatusLabel(c) }}</span>
             </td>
             <td class="small text-muted">{{ c.date_created | date:'dd/MM/yy' }}</td>
             <td>
               <div class="d-flex gap-1">
-                <button class="btn btn-sm btn-refresh" (click)="selectCampaign(c)">
+                <button class="btn btn-sm btn-refresh" (click)="selectCampaign(c)" *ngIf="c.status !== 'ARCHIVED'">
                   <i class="bi bi-play-circle"></i> Abrir
                 </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="confirmDeleteCampaign(c)" title="Borrar campaña">
-                  <i class="bi bi-trash"></i>
+                <button class="btn btn-sm btn-outline-primary" (click)="openPromptConfigModal(c)"
+                        title="Configurar estilo e instrucciones de los emails de esta campaña">
+                  <i class="bi bi-sliders2"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-secondary" (click)="confirmDeleteCampaign(c)" title="Archivar o borrar">
+                  <i class="bi bi-three-dots"></i>
                 </button>
               </div>
             </td>
@@ -208,6 +248,20 @@
       </div>
     </div>
 
+    <!-- Barra de acciones masivas -->
+    <div *ngIf="selectedLibraryIds.size > 0" class="bulk-action-bar d-flex align-items-center gap-3 px-3 py-2 mb-3">
+      <span class="fw-semibold"><i class="bi bi-check2-square me-2"></i>{{ selectedLibraryIds.size }} club{{ selectedLibraryIds.size !== 1 ? 'es' : '' }} seleccionado{{ selectedLibraryIds.size !== 1 ? 's' : '' }}</span>
+      <button class="btn btn-sm btn-refresh" (click)="openBulkAddToCampaign()">
+        <i class="bi bi-plus-circle me-1"></i> Añadir a campaña
+      </button>
+      <button class="btn btn-sm btn-outline-danger" (click)="showBulkDeleteConfirm = true">
+        <i class="bi bi-trash me-1"></i> Eliminar seleccionados
+      </button>
+      <button class="btn btn-sm btn-outline-secondary ms-auto" (click)="selectedLibraryIds.clear()">
+        <i class="bi bi-x-lg me-1"></i> Limpiar selección
+      </button>
+    </div>
+
     <div *ngIf="libraryLoading" class="text-center py-5">
       <div class="spinner-border text-success" role="status"></div>
     </div>
@@ -216,6 +270,12 @@
       <table class="table align-middle">
         <thead>
           <tr>
+            <th style="width:40px;">
+              <input type="checkbox" class="form-check-input"
+                     [checked]="allLibrarySelected"
+                     [indeterminate]="selectedLibraryIds.size > 0 && !allLibrarySelected"
+                     (change)="toggleAllLibrary()">
+            </th>
             <th class="sortable" (click)="librarySortBy2('name')">Club <i class="bi ms-1" [ngClass]="librarySortIcon('name')"></i></th>
             <th class="sortable" (click)="librarySortBy2('city')">Ciudad <i class="bi ms-1" [ngClass]="librarySortIcon('city')"></i></th>
             <th class="sortable" (click)="librarySortBy2('province')">Provincia <i class="bi ms-1" [ngClass]="librarySortIcon('province')"></i></th>
@@ -226,7 +286,12 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let p of libraryProspects">
+          <tr *ngFor="let p of libraryProspects" [class.table-active]="selectedLibraryIds.has(p.prospect_id)">
+            <td>
+              <input type="checkbox" class="form-check-input"
+                     [checked]="selectedLibraryIds.has(p.prospect_id)"
+                     (change)="toggleLibrarySelection(p.prospect_id)">
+            </td>
             <td>
               <div class="club-name" (click)="openProspectDetail(p)">{{ p.name }}</div>
             </td>
@@ -261,7 +326,7 @@
             </td>
           </tr>
           <tr *ngIf="libraryProspects.length === 0 && !libraryLoading">
-            <td colspan="7" class="text-center text-muted py-4">
+            <td colspan="8" class="text-center text-muted py-4">
               <i class="bi bi-buildings me-2"></i>No hay clubes en la biblioteca
             </td>
           </tr>
@@ -273,7 +338,7 @@
   <!-- ═══════════════════════════════════════════════════
        TAB: PIPELINE
   ═══════════════════════════════════════════════════ -->
-  <div *ngIf="activeTab === 'pipeline' && selectedCampaign">
+  <div *ngIf="activeTab === 'pipeline' && selectedCampaign && activeMode === 'auto'">
 
     <!-- Job progress bar (when running) -->
     <div *ngIf="isJobRunning" class="job-progress-banner mb-4">
@@ -455,145 +520,348 @@
   ═══════════════════════════════════════════════════ -->
   <div *ngIf="activeTab === 'prospects' && selectedCampaign">
 
-    <!-- Filters -->
-    <div class="card mb-3 shadow-sm">
-      <div class="card-body py-2">
-        <div class="row g-2 align-items-center">
-          <div class="col-md-5">
-            <div class="input-group input-group-sm">
-              <span class="input-group-text"><i class="bi bi-search"></i></span>
-              <input type="text" class="form-control" placeholder="Buscar por nombre, ciudad, provincia o email..."
-                     [(ngModel)]="prospectSearch" (ngModelChange)="onSearchChange()">
-              <button *ngIf="prospectSearch" class="btn btn-outline-secondary btn-sm" (click)="prospectSearch=''; filterProspects()">
-                <i class="bi bi-x"></i>
+    <!-- ══ MODO MANUAL: tabla unificada clubes + emails ══ -->
+    <ng-container *ngIf="activeMode === 'manual'">
+
+      <!-- Barra de progreso de generación masiva -->
+      <div *ngIf="isBulkGenerating" class="job-progress-banner mb-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span><i class="bi bi-hourglass-split me-2 spin-icon"></i><strong>Generando emails...</strong></span>
+          <span class="small">{{ bulkGenerateDone }} / {{ bulkGenerateTotal }}</span>
+        </div>
+        <div class="progress" style="height:8px; border-radius:8px;">
+          <div class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+               [style.width.%]="bulkGenerateTotal ? (bulkGenerateDone / bulkGenerateTotal * 100) : 0"></div>
+        </div>
+      </div>
+
+      <!-- Barra de acciones masivas (selección) -->
+      <div *ngIf="selectedManualIds.size > 0 && !isBulkGenerating"
+           class="bulk-action-bar d-flex align-items-center gap-3 px-3 py-2 mb-3">
+        <span class="fw-semibold"><i class="bi bi-check2-square me-2"></i>{{ selectedManualIds.size }} club{{ selectedManualIds.size !== 1 ? 'es' : '' }} seleccionado{{ selectedManualIds.size !== 1 ? 's' : '' }}</span>
+        <button class="btn btn-sm btn-success" (click)="generateSelected()">
+          <i class="bi bi-robot me-1"></i>Generar emails seleccionados
+        </button>
+        <button class="btn btn-sm btn-outline-secondary ms-auto" (click)="selectedManualIds.clear()">
+          <i class="bi bi-x-lg me-1"></i>Limpiar selección
+        </button>
+      </div>
+
+      <!-- Filtros + acciones -->
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body py-2">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-4">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" placeholder="Buscar por nombre, ciudad o email..."
+                       [(ngModel)]="prospectSearch" (ngModelChange)="onSearchChange()">
+                <button *ngIf="prospectSearch" class="btn btn-outline-secondary btn-sm" (click)="prospectSearch=''; filterProspects()">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <select class="form-select form-select-sm" [(ngModel)]="prospectFilterStatus" (change)="filterProspects()">
+                <option value="">Todos los estados</option>
+                <option value="NEW">Sin email generado</option>
+                <option value="EMAIL_READY">Email en borrador</option>
+                <option value="EMAIL_SENT">Email enviado</option>
+              </select>
+            </div>
+            <div class="col-md-5 d-flex justify-content-end align-items-center gap-2 flex-wrap">
+              <span class="text-muted small">{{ prospectsTotal }} clubes</span>
+              <button class="btn btn-sm btn-outline-secondary" (click)="loadProspects(); loadEmails()" title="Actualizar">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-primary" (click)="generateAllPending()"
+                      [disabled]="isBulkGenerating"
+                      title="Genera emails para todos los clubes que aún no tienen uno">
+                <i class="bi bi-robot me-1"></i>Generar todos los pendientes
+              </button>
+              <button class="btn btn-sm btn-outline-secondary" (click)="openPromptConfigModal(selectedCampaign)"
+                      title="Configurar instrucciones y estilo de los emails de esta campaña">
+                <i class="bi bi-sliders2 me-1"></i>Estilo de emails
+              </button>
+              <button class="btn btn-sm btn-outline-success" (click)="openImportFromLibrary()">
+                <i class="bi bi-box-arrow-in-down me-1"></i>Importar
+              </button>
+              <button class="btn btn-sm btn-refresh" (click)="openAddClubModal()">
+                <i class="bi bi-plus-lg"></i>Añadir
               </button>
             </div>
           </div>
-          <div class="col-md-4">
-            <select class="form-select form-select-sm" [(ngModel)]="prospectFilterStatus" (change)="filterProspects()">
-              <option value="">Todos los estados</option>
-              <option value="NEW">Nuevos (sin enriquecer)</option>
-              <option value="ENRICHED">Enriquecidos</option>
-              <option value="ANALYZED">Analizados</option>
-              <option value="EMAIL_READY">Email listo</option>
-              <option value="EMAIL_SENT">Email enviado</option>
-            </select>
-          </div>
-          <div class="col-md-3 d-flex justify-content-end align-items-center gap-2">
-            <span class="text-muted small">{{ prospectsTotal }} clubes</span>
-            <button class="btn btn-sm btn-outline-secondary" (click)="loadProspects()" title="Actualizar lista">
-              <i class="bi bi-arrow-clockwise"></i>
-            </button>
-            <button class="btn btn-sm btn-refresh" (click)="openAddClubModal()" title="Añadir club manualmente">
-              <i class="bi bi-plus-lg"></i> Añadir
-            </button>
+        </div>
+      </div>
+
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-success" role="status"></div>
+      </div>
+
+      <!-- Tabla unificada -->
+      <div class="table-responsive" *ngIf="!isLoading">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th style="width:40px;">
+                <input type="checkbox" class="form-check-input"
+                       [checked]="allManualSelected"
+                       [indeterminate]="selectedManualIds.size > 0 && !allManualSelected"
+                       (change)="toggleAllManual()" [disabled]="isBulkGenerating">
+              </th>
+              <th class="sortable" (click)="sortBy('name')">Club <i class="bi ms-1" [ngClass]="sortIcon('name')"></i></th>
+              <th>Email contacto</th>
+              <th class="sortable" (click)="sortBy('pain_score')">Pain <i class="bi ms-1" [ngClass]="sortIcon('pain_score')"></i></th>
+              <th>Estado email</th>
+              <th>Asunto generado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of filteredProspects"
+                [class.table-active]="selectedManualIds.has(p.prospect_id)">
+              <!-- Checkbox -->
+              <td>
+                <input type="checkbox" class="form-check-input"
+                       [checked]="selectedManualIds.has(p.prospect_id)"
+                       (change)="toggleManualSelection(p.prospect_id)"
+                       [disabled]="isBulkGenerating">
+              </td>
+              <!-- Club -->
+              <td>
+                <div class="club-name" (click)="openProspectDetail(p)">{{ p.name }}</div>
+                <div class="text-muted small">{{ p.city || '—' }}<span *ngIf="p.city && p.province">, </span>{{ p.province }}</div>
+              </td>
+              <!-- Email contacto -->
+              <td class="small text-truncate" style="max-width:150px;">
+                <a *ngIf="p.email" href="mailto:{{ p.email }}" class="text-muted">{{ p.email }}</a>
+                <span *ngIf="!p.email" class="text-muted fst-italic">Sin email</span>
+              </td>
+              <!-- Pain -->
+              <td>
+                <div class="pain-score-bar">
+                  <span class="pain-score-num fw-bold" [style.color]="painScoreColor(p.pain_score)">{{ p.pain_score || 0 }}</span>
+                  <div class="pain-bar-track">
+                    <div class="pain-bar-fill" [style.width.%]="(p.pain_score || 0) * 10"
+                         [style.background]="painScoreColor(p.pain_score)"></div>
+                  </div>
+                </div>
+              </td>
+              <!-- Estado email -->
+              <td>
+                <ng-container *ngIf="emailsByProspectId[p.prospect_id] as em; else noEmail">
+                  <span class="badge" [ngClass]="statusBadgeClass(em.status)">{{ statusLabel(em.status) }}</span>
+                </ng-container>
+                <ng-template #noEmail>
+                  <span class="badge badge-st-new">Sin generar</span>
+                </ng-template>
+              </td>
+              <!-- Asunto generado -->
+              <td class="small text-truncate" style="max-width:200px;"
+                  [title]="emailsByProspectId[p.prospect_id]?.subject || ''">
+                <span *ngIf="emailsByProspectId[p.prospect_id]">
+                  {{ emailsByProspectId[p.prospect_id].subject }}
+                </span>
+                <span *ngIf="!emailsByProspectId[p.prospect_id]" class="text-muted fst-italic">—</span>
+              </td>
+              <!-- Acciones -->
+              <td>
+                <div class="d-flex gap-1">
+                  <!-- Ver detalle club -->
+                  <button class="btn btn-xs btn-outline-secondary" (click)="openProspectDetail(p)" title="Ver ficha del club">
+                    <i class="bi bi-building"></i>
+                  </button>
+                  <!-- Generar / Regenerar email -->
+                  <button class="btn btn-xs btn-outline-success"
+                          (click)="generateEmailForProspect(p)"
+                          [disabled]="isGeneratingEmail || isBulkGenerating"
+                          [title]="emailsByProspectId[p.prospect_id] ? 'Regenerar email con IA' : 'Generar email con IA'">
+                    <i class="bi" [ngClass]="emailsByProspectId[p.prospect_id] ? 'bi-arrow-repeat' : 'bi-robot'"></i>
+                  </button>
+                  <!-- Editar HTML + enviar -->
+                  <button class="btn btn-xs btn-outline-primary"
+                          (click)="openEditEmail(emailsByProspectId[p.prospect_id])"
+                          [disabled]="!emailsByProspectId[p.prospect_id]"
+                          title="Editar HTML y enviar">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <!-- Preview -->
+                  <button class="btn btn-xs btn-outline-info"
+                          (click)="openEmailPreview(emailsByProspectId[p.prospect_id])"
+                          [disabled]="!emailsByProspectId[p.prospect_id]"
+                          title="Vista previa del email">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <!-- Quitar de campaña -->
+                  <button class="btn btn-xs btn-outline-warning" (click)="confirmRemoveFromCampaign(p)" title="Quitar de esta campaña">
+                    <i class="bi bi-dash-circle"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredProspects.length === 0">
+              <td colspan="7" class="text-center text-muted py-5">
+                <i class="bi bi-inbox fs-3 d-block mb-2 opacity-50"></i>
+                No hay clubes en esta campaña.<br>
+                <button class="btn btn-sm btn-refresh mt-2" (click)="openAddClubModal()">
+                  <i class="bi bi-plus-lg me-1"></i>Añadir primer club
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="totalPages > 1">
+        <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="prospectsPage === 0">
+          <i class="bi bi-chevron-left"></i> Anterior
+        </button>
+        <span class="small text-muted">Página {{ prospectsPage + 1 }} de {{ totalPages }}</span>
+        <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="prospectsPage + 1 >= totalPages">
+          Siguiente <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
+    </ng-container>
+
+    <!-- ══ MODO AUTOMÁTICO: tabla original de clubes ══ -->
+    <ng-container *ngIf="activeMode === 'auto'">
+
+      <!-- Filters -->
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body py-2">
+          <div class="row g-2 align-items-center">
+            <div class="col-md-5">
+              <div class="input-group input-group-sm">
+                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control" placeholder="Buscar por nombre, ciudad, provincia o email..."
+                       [(ngModel)]="prospectSearch" (ngModelChange)="onSearchChange()">
+                <button *ngIf="prospectSearch" class="btn btn-outline-secondary btn-sm" (click)="prospectSearch=''; filterProspects()">
+                  <i class="bi bi-x"></i>
+                </button>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <select class="form-select form-select-sm" [(ngModel)]="prospectFilterStatus" (change)="filterProspects()">
+                <option value="">Todos los estados</option>
+                <option value="NEW">Nuevos (sin enriquecer)</option>
+                <option value="ENRICHED">Enriquecidos</option>
+                <option value="ANALYZED">Analizados</option>
+                <option value="EMAIL_READY">Email listo</option>
+                <option value="EMAIL_SENT">Email enviado</option>
+              </select>
+            </div>
+            <div class="col-md-3 d-flex justify-content-end align-items-center gap-2 flex-wrap">
+              <span class="text-muted small">{{ prospectsTotal }} clubes</span>
+              <button class="btn btn-sm btn-outline-secondary" (click)="loadProspects()" title="Actualizar lista">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-success" (click)="openImportFromLibrary()">
+                <i class="bi bi-box-arrow-in-down me-1"></i>Importar
+              </button>
+              <button class="btn btn-sm btn-refresh" (click)="openAddClubModal()">
+                <i class="bi bi-plus-lg"></i>Añadir
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div *ngIf="isLoading" class="text-center py-5">
-      <div class="spinner-border text-success" role="status"></div>
-    </div>
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-success" role="status"></div>
+      </div>
 
-    <div class="table-responsive" *ngIf="!isLoading">
-      <table class="table align-middle">
-        <thead>
-          <tr>
-            <th class="sortable" (click)="sortBy('name')">
-              Club <i class="bi ms-1" [ngClass]="sortIcon('name')"></i>
-            </th>
-            <th class="sortable" (click)="sortBy('city')">
-              Ciudad <i class="bi ms-1" [ngClass]="sortIcon('city')"></i>
-            </th>
-            <th class="sortable" (click)="sortBy('province')">
-              Provincia <i class="bi ms-1" [ngClass]="sortIcon('province')"></i>
-            </th>
-            <th>Email</th>
-            <th>Digitalización</th>
-            <th class="sortable" (click)="sortBy('pain_score')">
-              Pain <i class="bi ms-1" [ngClass]="sortIcon('pain_score')"></i>
-            </th>
-            <th>Grupo</th>
-            <th class="sortable" (click)="sortBy('status')">
-              Estado <i class="bi ms-1" [ngClass]="sortIcon('status')"></i>
-            </th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let p of filteredProspects">
-            <td>
-              <div class="club-name" (click)="openProspectDetail(p)">{{ p.name }}</div>
-            </td>
-            <td class="small">{{ p.city || '—' }}</td>
-            <td class="small">{{ p.province }}</td>
-            <td class="small text-truncate" style="max-width:140px;">
-              <a *ngIf="p.email" href="mailto:{{ p.email }}" class="text-muted">{{ p.email }}</a>
-              <span *ngIf="!p.email" class="text-muted">—</span>
-            </td>
-            <td>
-              <span class="badge digit-badge" [ngClass]="digitalizationLevel(p).cssClass">
-                {{ digitalizationLevel(p).label }}
-              </span>
-            </td>
-            <td>
-              <div class="pain-score-bar">
-                <span class="pain-score-num fw-bold" [style.color]="painScoreColor(p.pain_score)">
-                  {{ p.pain_score || 0 }}
-                </span>
-                <div class="pain-bar-track">
-                  <div class="pain-bar-fill" [style.width.%]="(p.pain_score || 0) * 10"
-                       [style.background]="painScoreColor(p.pain_score)"></div>
+      <div class="table-responsive" *ngIf="!isLoading">
+        <table class="table align-middle">
+          <thead>
+            <tr>
+              <th class="sortable" (click)="sortBy('name')">Club <i class="bi ms-1" [ngClass]="sortIcon('name')"></i></th>
+              <th class="sortable" (click)="sortBy('city')">Ciudad <i class="bi ms-1" [ngClass]="sortIcon('city')"></i></th>
+              <th class="sortable" (click)="sortBy('province')">Provincia <i class="bi ms-1" [ngClass]="sortIcon('province')"></i></th>
+              <th>Email</th>
+              <th>Digitalización</th>
+              <th class="sortable" (click)="sortBy('pain_score')">Pain <i class="bi ms-1" [ngClass]="sortIcon('pain_score')"></i></th>
+              <th>Grupo</th>
+              <th class="sortable" (click)="sortBy('status')">Estado <i class="bi ms-1" [ngClass]="sortIcon('status')"></i></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of filteredProspects">
+              <td><div class="club-name" (click)="openProspectDetail(p)">{{ p.name }}</div></td>
+              <td class="small">{{ p.city || '—' }}</td>
+              <td class="small">{{ p.province }}</td>
+              <td class="small text-truncate" style="max-width:140px;">
+                <a *ngIf="p.email" href="mailto:{{ p.email }}" class="text-muted">{{ p.email }}</a>
+                <span *ngIf="!p.email" class="text-muted">—</span>
+              </td>
+              <td>
+                <span class="badge digit-badge" [ngClass]="digitalizationLevel(p).cssClass">{{ digitalizationLevel(p).label }}</span>
+              </td>
+              <td>
+                <div class="pain-score-bar">
+                  <span class="pain-score-num fw-bold" [style.color]="painScoreColor(p.pain_score)">{{ p.pain_score || 0 }}</span>
+                  <div class="pain-bar-track">
+                    <div class="pain-bar-fill" [style.width.%]="(p.pain_score || 0) * 10"
+                         [style.background]="painScoreColor(p.pain_score)"></div>
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td>
-              <span *ngIf="p.ab_group" class="badge" [ngClass]="p.ab_group === 'A' ? 'bg-primary' : 'bg-info'">
-                {{ p.ab_group }}
-              </span>
-              <span *ngIf="!p.ab_group" class="text-muted small">—</span>
-            </td>
-            <td><span class="badge" [ngClass]="statusBadgeClass(p.status)">{{ statusLabel(p.status) }}</span></td>
-            <td>
-              <div class="d-flex gap-1 flex-wrap">
-                <button class="btn btn-sm btn-outline-primary" (click)="openProspectDetail(p)" title="Ver detalle">
-                  <i class="bi bi-eye"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-success" (click)="generateEmailForProspect(p)"
-                        title="Generar email con IA"
-                        [disabled]="isGeneratingEmail || !p.pain_points?.length">
-                  <i class="bi bi-envelope-plus" *ngIf="!isGeneratingEmail"></i>
-                  <i class="bi bi-hourglass-split spin-icon" *ngIf="isGeneratingEmail"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-warning" (click)="confirmRemoveFromCampaign(p)" title="Quitar de esta campaña">
-                  <i class="bi bi-dash-circle"></i>
-                </button>
-                <button class="btn btn-sm btn-outline-danger" (click)="confirmDeleteProspect(p)" title="Eliminar de la biblioteca">
-                  <i class="bi bi-trash"></i>
-                </button>
-              </div>
-            </td>
-          </tr>
-          <tr *ngIf="filteredProspects.length === 0">
-            <td colspan="9" class="text-center text-muted py-4">
-              <i class="bi bi-inbox me-2"></i>No hay clubes con ese filtro
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+              </td>
+              <td>
+                <div class="ab-selector btn-group btn-group-sm" role="group">
+                  <button type="button" class="btn"
+                          [ngClass]="p.ab_group === 'A' ? 'btn-primary' : 'btn-outline-secondary'"
+                          (click)="setAbGroup(p, p.ab_group === 'A' ? null : 'A')"
+                          title="Grupo A — email muy personalizado">A</button>
+                  <button type="button" class="btn"
+                          [ngClass]="p.ab_group === 'B' ? 'btn-info' : 'btn-outline-secondary'"
+                          (click)="setAbGroup(p, p.ab_group === 'B' ? null : 'B')"
+                          title="Grupo B — email menos personalizado">B</button>
+                </div>
+              </td>
+              <td><span class="badge" [ngClass]="statusBadgeClass(p.status)">{{ statusLabel(p.status) }}</span></td>
+              <td>
+                <div class="d-flex gap-1 flex-wrap">
+                  <button class="btn btn-sm btn-outline-primary" (click)="openProspectDetail(p)" title="Ver detalle">
+                    <i class="bi bi-eye"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-success" (click)="generateEmailForProspect(p)"
+                          title="Generar email con IA" [disabled]="isGeneratingEmail">
+                    <i class="bi bi-envelope-plus" *ngIf="!isGeneratingEmail"></i>
+                    <i class="bi bi-hourglass-split spin-icon" *ngIf="isGeneratingEmail"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-warning" (click)="confirmRemoveFromCampaign(p)" title="Quitar de esta campaña">
+                    <i class="bi bi-dash-circle"></i>
+                  </button>
+                  <button class="btn btn-sm btn-outline-danger" (click)="confirmDeleteProspect(p)" title="Eliminar de la biblioteca">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <tr *ngIf="filteredProspects.length === 0">
+              <td colspan="9" class="text-center text-muted py-4">
+                <i class="bi bi-inbox me-2"></i>No hay clubes con ese filtro
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-    <!-- Pagination -->
-    <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="totalPages > 1">
-      <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="prospectsPage === 0">
-        <i class="bi bi-chevron-left"></i> Anterior
-      </button>
-      <span class="small text-muted">Página {{ prospectsPage + 1 }} de {{ totalPages }}</span>
-      <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="prospectsPage + 1 >= totalPages">
-        Siguiente <i class="bi bi-chevron-right"></i>
-      </button>
-    </div>
+      <!-- Pagination -->
+      <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="totalPages > 1">
+        <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="prospectsPage === 0">
+          <i class="bi bi-chevron-left"></i> Anterior
+        </button>
+        <span class="small text-muted">Página {{ prospectsPage + 1 }} de {{ totalPages }}</span>
+        <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="prospectsPage + 1 >= totalPages">
+          Siguiente <i class="bi bi-chevron-right"></i>
+        </button>
+      </div>
+
+    </ng-container>
+
   </div>
 
   <!-- ═══════════════════════════════════════════════════
@@ -866,6 +1134,185 @@
 
 </div><!-- /container -->
 
+<!-- ═══════════════════════════════════════════════════
+     MODAL: Configuración de prompt de campaña
+═══════════════════════════════════════════════════ -->
+<div class="modal" [ngClass]="{'d-block': showPromptConfigModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable" style="margin: 1.5rem auto;">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title mb-0">
+            <i class="bi bi-sliders2 me-2 text-primary"></i>Instrucciones para la IA
+          </h5>
+          <div class="small text-muted mt-1" *ngIf="promptConfigCampaign">
+            Campaña: <strong>{{ promptConfigCampaign.name }}</strong> · Estos ajustes se aplican a todos los emails generados en esta campaña.
+          </div>
+        </div>
+        <button type="button" class="btn-close" (click)="showPromptConfigModal = false"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <div *ngIf="isLoadingPromptConfig" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+        </div>
+
+        <ng-container *ngIf="!isLoadingPromptConfig">
+
+          <!-- 1. Firmante -->
+          <div class="prompt-field mb-4">
+            <div class="prompt-field-header">
+              <span class="prompt-field-num">1</span>
+              <div>
+                <div class="fw-semibold">¿Quién firma el email?</div>
+                <div class="text-muted small">Nombre y cargo del remitente tal como aparecerá en la firma</div>
+              </div>
+            </div>
+            <input type="text" class="form-control mt-2"
+                   [(ngModel)]="promptConfig.sender_name"
+                   placeholder="Ej: Alejandro Espinosa, Co-fundador de Sphaira">
+            <div class="prompt-chips mt-2">
+              <span class="prompt-chip" (click)="setPromptChip('sender_name', 'Alejandro Espinosa, Co-fundador de Sphaira')">Alejandro Espinosa, Co-fundador de Sphaira</span>
+              <span class="prompt-chip" (click)="setPromptChip('sender_name', 'Alejandro Espinosa, Director Comercial de Sphaira')">Alejandro Espinosa, Director Comercial</span>
+              <span class="prompt-chip" (click)="setPromptChip('sender_name', 'Alejandro del equipo de Sphaira')">Alejandro del equipo de Sphaira</span>
+            </div>
+          </div>
+
+          <!-- 2. Tono -->
+          <div class="prompt-field mb-4">
+            <div class="prompt-field-header">
+              <span class="prompt-field-num">2</span>
+              <div>
+                <div class="fw-semibold">Tono del email</div>
+                <div class="text-muted small">¿Cómo quieres sonar en el email?</div>
+              </div>
+            </div>
+            <input type="text" class="form-control mt-2"
+                   [(ngModel)]="promptConfig.tone"
+                   placeholder="Ej: profesional y cercano, directo, muy formal...">
+            <div class="prompt-chips mt-2">
+              <span class="prompt-chip" (click)="setPromptChip('tone', 'Profesional y cercano, como si ya conocieras al club')">Profesional y cercano</span>
+              <span class="prompt-chip" (click)="setPromptChip('tone', 'Muy formal y corporativo, para directivos')">Muy formal</span>
+              <span class="prompt-chip" (click)="setPromptChip('tone', 'Directo e informal, como si ya tuviérais confianza')">Directo e informal</span>
+              <span class="prompt-chip" (click)="setPromptChip('tone', 'Entusiasta y motivador, enfocado en el impacto real')">Entusiasta y motivador</span>
+            </div>
+          </div>
+
+          <!-- 3. Destinatario -->
+          <div class="prompt-field mb-4">
+            <div class="prompt-field-header">
+              <span class="prompt-field-num">3</span>
+              <div>
+                <div class="fw-semibold">¿A quién va dirigido principalmente?</div>
+                <div class="text-muted small">El perfil del receptor condiciona el lenguaje y los argumentos</div>
+              </div>
+            </div>
+            <input type="text" class="form-control mt-2"
+                   [(ngModel)]="promptConfig.target"
+                   placeholder="Ej: presidente del club, director deportivo, entrenador...">
+            <div class="prompt-chips mt-2">
+              <span class="prompt-chip" (click)="setPromptChip('target', 'Presidente o directivo del club')">Presidente del club</span>
+              <span class="prompt-chip" (click)="setPromptChip('target', 'Director deportivo o coordinador')">Director deportivo</span>
+              <span class="prompt-chip" (click)="setPromptChip('target', 'Entrenador principal del primer equipo')">Entrenador principal</span>
+              <span class="prompt-chip" (click)="setPromptChip('target', 'Administrador o gerente del club')">Administrador / Gerente</span>
+            </div>
+          </div>
+
+          <!-- 4. Características a destacar -->
+          <div class="prompt-field mb-4">
+            <div class="prompt-field-header">
+              <span class="prompt-field-num">4</span>
+              <div>
+                <div class="fw-semibold">¿Qué aspecto de Sphaira quieres destacar?</div>
+                <div class="text-muted small">Puedes combinar varios aspectos o escribir lo que quieras</div>
+              </div>
+            </div>
+            <input type="text" class="form-control mt-2"
+                   [(ngModel)]="promptConfig.features"
+                   placeholder="Ej: gestión de pagos y cuotas, módulo de lesiones, estadísticas...">
+            <div class="prompt-chips mt-2">
+              <span class="prompt-chip" (click)="setPromptChip('features', 'Gestión de pagos y cuotas de socios')">Pagos y cuotas</span>
+              <span class="prompt-chip" (click)="setPromptChip('features', 'Control de entrenamientos y tareas tácticas')">Entrenamientos</span>
+              <span class="prompt-chip" (click)="setPromptChip('features', 'Estadísticas y rendimiento de jugadores')">Estadísticas</span>
+              <span class="prompt-chip" (click)="setPromptChip('features', 'Comunicación con familias y jugadores')">Comunicación familias</span>
+              <span class="prompt-chip" (click)="setPromptChip('features', 'Gestión documental y contratos')">Gestión documental</span>
+              <span class="prompt-chip" (click)="setPromptChip('features', 'Módulo de lesiones y seguimiento RTP')">Lesiones y RTP</span>
+              <span class="prompt-chip" (click)="setPromptChip('features', 'Toda la plataforma: gestión integral del club')">Plataforma completa</span>
+            </div>
+          </div>
+
+          <!-- 5. Objetivo -->
+          <div class="prompt-field mb-4">
+            <div class="prompt-field-header">
+              <span class="prompt-field-num">5</span>
+              <div>
+                <div class="fw-semibold">Objetivo del email (llamada a la acción)</div>
+                <div class="text-muted small">¿Qué quieres que haga el receptor al terminar de leerlo?</div>
+              </div>
+            </div>
+            <input type="text" class="form-control mt-2"
+                   [(ngModel)]="promptConfig.objective"
+                   placeholder="Ej: solicitar una demo gratuita, agendar una llamada de 15 minutos...">
+            <div class="prompt-chips mt-2">
+              <span class="prompt-chip" (click)="setPromptChip('objective', 'Solicitar una demo gratuita de Sphaira')">Demo gratuita</span>
+              <span class="prompt-chip" (click)="setPromptChip('objective', 'Agendar una llamada de 15 minutos para presentar la plataforma')">Llamada de 15 min</span>
+              <span class="prompt-chip" (click)="setPromptChip('objective', 'Visitar la web de Sphaira para más información')">Visitar la web</span>
+              <span class="prompt-chip" (click)="setPromptChip('objective', 'Solo darse a conocer, sin CTA agresivo')">Solo presentación</span>
+            </div>
+          </div>
+
+          <!-- 6. Longitud -->
+          <div class="prompt-field mb-4">
+            <div class="prompt-field-header">
+              <span class="prompt-field-num">6</span>
+              <div>
+                <div class="fw-semibold">Longitud del email</div>
+                <div class="text-muted small">¿Cuánto texto quieres en el cuerpo del email?</div>
+              </div>
+            </div>
+            <input type="text" class="form-control mt-2"
+                   [(ngModel)]="promptConfig.length"
+                   placeholder="Ej: corto y directo (~100 palabras), medio (~200 palabras)...">
+            <div class="prompt-chips mt-2">
+              <span class="prompt-chip" (click)="setPromptChip('length', 'Corto (~100 palabras): impacto inmediato, sin rodeos')">Corto ~100 palabras</span>
+              <span class="prompt-chip" (click)="setPromptChip('length', 'Medio (~200 palabras): equilibrado y completo')">Medio ~200 palabras</span>
+              <span class="prompt-chip" (click)="setPromptChip('length', 'Detallado (~300 palabras): más argumentación y contexto')">Detallado ~300 palabras</span>
+            </div>
+          </div>
+
+          <!-- 7. Contexto adicional libre -->
+          <div class="prompt-field mb-2">
+            <div class="prompt-field-header">
+              <span class="prompt-field-num">7</span>
+              <div>
+                <div class="fw-semibold">Instrucciones adicionales libres</div>
+                <div class="text-muted small">Cualquier otra cosa que quieras que tenga en cuenta la IA: links de botones, menciones específicas, formato especial, etc.</div>
+              </div>
+            </div>
+            <textarea class="form-control mt-2" [(ngModel)]="promptConfig.extra_context" rows="4"
+                      placeholder="Ej: El botón de demo debe enlazar a https://sphairatech.com/demo&#10;Menciona que llevamos más de 500 clubes en la plataforma&#10;No usar la palabra 'software', usar siempre 'plataforma'"></textarea>
+          </div>
+
+        </ng-container>
+      </div>
+
+      <div class="modal-footer">
+        <div *ngIf="promptConfigSaved" class="me-auto text-success small fw-semibold">
+          <i class="bi bi-check-circle-fill me-1"></i>Configuración guardada. Se aplicará en los próximos emails generados.
+        </div>
+        <button class="btn btn-secondary" (click)="showPromptConfigModal = false">Cerrar</button>
+        <button class="btn btn-primary" (click)="savePromptConfig()" [disabled]="isSavingPromptConfig">
+          <span *ngIf="!isSavingPromptConfig"><i class="bi bi-floppy me-1"></i>Guardar instrucciones</span>
+          <span *ngIf="isSavingPromptConfig"><i class="bi bi-hourglass-split spin-icon me-1"></i>Guardando...</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <!-- Footer -->
 <footer class="admin-footer">
   <div class="container text-center">
@@ -1027,14 +1474,41 @@
           </div>
         </div>
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer flex-column align-items-stretch gap-2 pt-2" *ngIf="selectedCampaign">
+        <!-- Instrucción adicional (opcional) -->
+        <div class="generate-instruction-area">
+          <label class="form-label small fw-semibold mb-1">
+            <i class="bi bi-chat-left-text me-1 text-success"></i>Instrucción para la IA
+            <span class="text-muted fw-normal">(opcional)</span>
+          </label>
+          <div class="d-flex gap-2">
+            <input type="text" class="form-control form-control-sm"
+                   [(ngModel)]="manualInstruction"
+                   placeholder="Ej: enfócate en la gestión de pagos, menciona la cantera, tono más formal..."
+                   [disabled]="isGeneratingEmail">
+            <button class="btn btn-success btn-sm text-nowrap"
+                    (click)="generateEmailForProspect(selectedProspect, manualInstruction || undefined)"
+                    [disabled]="isGeneratingEmail">
+              <span *ngIf="!isGeneratingEmail"><i class="bi bi-robot me-1"></i>Generar email con IA</span>
+              <span *ngIf="isGeneratingEmail"><i class="bi bi-hourglass-split spin-icon me-1"></i>Generando...</span>
+            </button>
+          </div>
+          <div class="text-muted" style="font-size: 0.74rem; margin-top: 3px;">
+            <span *ngIf="!selectedProspect.pain_points?.length">
+              <i class="bi bi-info-circle me-1"></i>Este club no ha pasado por el análisis IA — se generará el email con los datos disponibles.
+            </span>
+            <span *ngIf="selectedProspect.pain_points?.length">
+              <i class="bi bi-check-circle text-success me-1"></i>El club tiene pain points analizados — el email será más preciso.
+            </span>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <span class="badge" [ngClass]="statusBadgeClass(selectedProspect.status)">{{ statusLabel(selectedProspect.status) }}</span>
+          <button class="btn btn-secondary btn-sm" (click)="showProspectModal = false">Cerrar</button>
+        </div>
+      </div>
+      <div class="modal-footer" *ngIf="!selectedCampaign">
         <span class="badge me-auto" [ngClass]="statusBadgeClass(selectedProspect.status)">{{ statusLabel(selectedProspect.status) }}</span>
-        <button class="btn btn-outline-success" (click)="generateEmailForProspect(selectedProspect)"
-                *ngIf="selectedCampaign && selectedProspect.pain_points?.length"
-                [disabled]="isGeneratingEmail">
-          <span *ngIf="!isGeneratingEmail"><i class="bi bi-envelope-plus me-1"></i>Generar email con IA</span>
-          <span *ngIf="isGeneratingEmail"><i class="bi bi-hourglass-split spin-icon me-1"></i>Generando...</span>
-        </button>
         <button class="btn btn-secondary" (click)="showProspectModal = false">Cerrar</button>
       </div>
     </div>
@@ -1043,14 +1517,14 @@
 
 <!-- Preview email -->
 <div class="modal" [ngClass]="{'d-block': showEmailPreviewModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
-  <div class="modal-dialog modal-dialog-centered modal-xl">
-    <div class="modal-content">
+  <div class="modal-dialog modal-xl" style="margin: 1.5rem auto; max-height: 95vh;">
+    <div class="modal-content" style="max-height: 95vh;">
       <div class="modal-header">
         <h5 class="modal-title text-truncate" style="max-width:85%;"><i class="bi bi-envelope-open me-2"></i>{{ previewEmailSubject }}</h5>
         <button type="button" class="btn-close" (click)="showEmailPreviewModal = false"></button>
       </div>
-      <div class="modal-body p-0">
-        <iframe [src]="previewEmailUrl" style="width:100%; height:520px; border:none;"></iframe>
+      <div class="modal-body p-0" style="overflow: hidden;">
+        <iframe [src]="previewEmailUrl" style="width:100%; height:calc(95vh - 130px); border:none; display:block;"></iframe>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" (click)="showEmailPreviewModal = false">Cerrar</button>
@@ -1086,10 +1560,35 @@
           <i class="bi bi-lightbulb me-1"></i>
           Puedes editar el HTML directamente, o usar <strong>Regenerar con IA</strong> para que la IA cree una nueva versión basada en los pain points del club.
         </div>
+
+        <!-- ── Sección de envío ── -->
+        <div class="send-section mt-3 p-3 rounded-3" style="background: var(--bg-surface); border: 1px solid var(--border-color);">
+          <div class="fw-semibold small mb-2"><i class="bi bi-send me-1 text-success"></i>Enviar este email</div>
+          <div *ngIf="editingEmail?.status !== 'SENT'" class="d-flex gap-2 align-items-center flex-wrap">
+            <input type="email" class="form-control form-control-sm flex-grow-1"
+                   [(ngModel)]="editSendRecipient"
+                   placeholder="email@club.com"
+                   style="max-width: 280px;"
+                   [disabled]="isSendingSingle">
+            <button class="btn btn-sm btn-success text-nowrap"
+                    (click)="sendFromEdit()"
+                    [disabled]="isSendingSingle || !editSendRecipient.trim()">
+              <span *ngIf="!isSendingSingle"><i class="bi bi-send me-1"></i>Enviar ahora</span>
+              <span *ngIf="isSendingSingle"><i class="bi bi-hourglass-split spin-icon me-1"></i>Enviando...</span>
+            </button>
+          </div>
+          <div *ngIf="editingEmail?.status !== 'SENT'" class="text-muted mt-1" style="font-size: 0.74rem;">
+            Confirma o cambia el email destinatario antes de enviar. Esta acción no se puede deshacer.
+          </div>
+          <div *ngIf="editingEmail?.status === 'SENT'" class="d-flex align-items-center gap-2 text-success small">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>Email enviado correctamente.</span>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-secondary" (click)="showEditEmailModal = false">Cancelar</button>
-        <button class="btn btn-refresh" (click)="saveEmail()" [disabled]="isSavingEmail">
+        <button class="btn btn-secondary" (click)="showEditEmailModal = false">Cerrar</button>
+        <button class="btn btn-refresh" (click)="saveEmail()" [disabled]="isSavingEmail || editingEmail?.status === 'SENT'">
           <i class="bi bi-floppy"></i> {{ isSavingEmail ? 'Guardando...' : 'Guardar cambios' }}
         </button>
       </div>
@@ -1097,26 +1596,39 @@
   </div>
 </div>
 
-<!-- Borrar campaña -->
+<!-- Borrar / Archivar campaña -->
 <div class="modal" [ngClass]="{'d-block': showDeleteCampaignConfirm}" tabindex="-1" style="background:rgba(0,0,0,.6);">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content" *ngIf="campaignToDelete">
       <div class="modal-header modal-header-danger">
-        <h5 class="modal-title"><i class="bi bi-trash me-2"></i>Borrar campaña</h5>
+        <h5 class="modal-title"><i class="bi bi-trash me-2"></i>Gestionar campaña</h5>
         <button type="button" class="btn-close" (click)="showDeleteCampaignConfirm = false"></button>
       </div>
       <div class="modal-body">
-        <p>¿Borrar la campaña <strong>{{ campaignToDelete.name }}</strong>?</p>
-        <div class="alert alert-info small mb-0">
-          <i class="bi bi-info-circle me-1"></i>
-          <strong>Los clubes se conservan</strong> en la Biblioteca. Solo se borrarán los emails generados y la propia campaña.
+        <p class="fw-semibold mb-3">Campaña: <span class="text-success">{{ campaignToDelete.name }}</span></p>
+
+        <div class="campaign-action-option mb-3" (click)="archiveCampaign()" style="cursor:pointer;">
+          <div class="d-flex align-items-start gap-3 p-3 border rounded-3 border-warning bg-warning bg-opacity-10">
+            <i class="bi bi-archive-fill text-warning fs-4 flex-shrink-0"></i>
+            <div>
+              <div class="fw-semibold">Archivar campaña</div>
+              <div class="small text-muted">La campaña queda oculta pero se conservan todos los datos: clubes, emails y estadísticas. Recomendado.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="campaign-action-option" (click)="deleteCampaign()" style="cursor:pointer;">
+          <div class="d-flex align-items-start gap-3 p-3 border rounded-3 border-danger bg-danger bg-opacity-10">
+            <i class="bi bi-trash-fill text-danger fs-4 flex-shrink-0"></i>
+            <div>
+              <div class="fw-semibold text-danger">Borrar campaña definitivamente</div>
+              <div class="small text-muted">Se eliminan los emails generados y la campaña. <strong>Los clubes se conservan</strong> en la Biblioteca. Esta acción no se puede deshacer.</div>
+            </div>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-secondary" (click)="showDeleteCampaignConfirm = false">Cancelar</button>
-        <button class="btn btn-danger" (click)="deleteCampaign()">
-          <i class="bi bi-trash"></i> Borrar campaña
-        </button>
       </div>
     </div>
   </div>
@@ -1144,16 +1656,24 @@
   </div>
 </div>
 
-<!-- Añadir club a campaña(s) desde la biblioteca -->
+<!-- Añadir club(es) a campaña(s) desde la biblioteca -->
 <div class="modal" [ngClass]="{'d-block': showAddToCampaignModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content" *ngIf="addToCampaignProspect">
+    <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title"><i class="bi bi-plus-circle me-2"></i>Añadir a campaña</h5>
         <button type="button" class="btn-close" (click)="showAddToCampaignModal = false"></button>
       </div>
       <div class="modal-body">
-        <p class="small text-muted mb-3">Selecciona a qué campaña(s) quieres añadir <strong>{{ addToCampaignProspect.name }}</strong>:</p>
+        <!-- Modo individual -->
+        <p *ngIf="addToCampaignProspect" class="small text-muted mb-3">
+          Selecciona a qué campaña(s) quieres añadir <strong>{{ addToCampaignProspect.name }}</strong>:
+        </p>
+        <!-- Modo masivo -->
+        <p *ngIf="!addToCampaignProspect" class="small text-muted mb-3">
+          Selecciona a qué campaña(s) quieres añadir los
+          <strong>{{ selectedLibraryIds.size }} club{{ selectedLibraryIds.size !== 1 ? 'es' : '' }} seleccionado{{ selectedLibraryIds.size !== 1 ? 's' : '' }}</strong>:
+        </p>
         <div *ngIf="addToCampaignList.length === 0" class="text-muted small fst-italic">
           No hay campañas disponibles. Crea una campaña primero.
         </div>
@@ -1174,6 +1694,32 @@
                 [disabled]="isAddingToCampaign || addToCampaignSelected.length === 0">
           <span *ngIf="!isAddingToCampaign"><i class="bi bi-plus-circle"></i> Añadir a {{ addToCampaignSelected.length }} campaña(s)</span>
           <span *ngIf="isAddingToCampaign"><i class="bi bi-hourglass-split spin-icon"></i> Añadiendo...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: confirmación eliminación masiva -->
+<div class="modal" [ngClass]="{'d-block': showBulkDeleteConfirm}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title text-danger"><i class="bi bi-exclamation-triangle-fill me-2"></i>Eliminar clubes</h5>
+        <button type="button" class="btn-close" (click)="showBulkDeleteConfirm = false" [disabled]="isBulkDeleting"></button>
+      </div>
+      <div class="modal-body">
+        <p>Vas a eliminar <strong>{{ selectedLibraryIds.size }} club{{ selectedLibraryIds.size !== 1 ? 'es' : '' }}</strong> de la biblioteca de forma permanente.</p>
+        <div class="alert alert-warning py-2 small mb-0">
+          <i class="bi bi-info-circle me-1"></i>
+          Esta acción también los quitará de todas las campañas a las que pertenezcan y eliminará sus emails generados. <strong>No se puede deshacer.</strong>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showBulkDeleteConfirm = false" [disabled]="isBulkDeleting">Cancelar</button>
+        <button class="btn btn-danger" (click)="bulkDelete()" [disabled]="isBulkDeleting">
+          <span *ngIf="!isBulkDeleting"><i class="bi bi-trash me-1"></i>Sí, eliminar {{ selectedLibraryIds.size }} club{{ selectedLibraryIds.size !== 1 ? 'es' : '' }}</span>
+          <span *ngIf="isBulkDeleting"><i class="bi bi-hourglass-split spin-icon me-1"></i>Eliminando...</span>
         </button>
       </div>
     </div>
@@ -1336,6 +1882,111 @@
         </button>
         <button class="btn btn-danger" (click)="confirmSend()" *ngIf="sendResult?.dry_run">
           <i class="bi bi-send"></i> Enviar de verdad ({{ sendResult.count }})
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Importar clubes desde biblioteca (vista campaña) -->
+<div class="modal" [ngClass]="{'d-block': showImportFromLibraryModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title mb-0"><i class="bi bi-box-arrow-in-down me-2"></i>Importar clubes desde biblioteca</h5>
+          <p class="small text-muted mb-0 mt-1">Campaña: <strong>{{ selectedCampaign?.name }}</strong></p>
+        </div>
+        <button type="button" class="btn-close" (click)="showImportFromLibraryModal = false"></button>
+      </div>
+      <div class="modal-body">
+
+        <!-- Barra de búsqueda + contador -->
+        <div class="d-flex gap-2 align-items-center mb-3">
+          <div class="input-group input-group-sm flex-grow-1">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text" class="form-control" placeholder="Buscar por nombre, ciudad o provincia..."
+                   [(ngModel)]="importSearch" (ngModelChange)="onImportSearchChange()">
+            <button *ngIf="importSearch" class="btn btn-outline-secondary btn-sm"
+                    (click)="importSearch=''; loadImportResults()">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+          <span class="text-muted small text-nowrap">{{ importTotal }} en biblioteca</span>
+        </div>
+
+        <!-- Barra de seleccionados (flotante dentro del modal) -->
+        <div *ngIf="selectedImportIds.size > 0" class="bulk-action-bar d-flex align-items-center gap-2 px-3 py-2 mb-3">
+          <i class="bi bi-check2-square"></i>
+          <span class="fw-semibold">{{ selectedImportIds.size }} seleccionado{{ selectedImportIds.size !== 1 ? 's' : '' }}</span>
+          <button class="btn btn-sm btn-outline-secondary ms-auto" (click)="selectedImportIds.clear()">
+            <i class="bi bi-x-lg me-1"></i> Limpiar
+          </button>
+        </div>
+
+        <!-- Spinner -->
+        <div *ngIf="importLoading" class="text-center py-4">
+          <div class="spinner-border text-success" role="status"></div>
+        </div>
+
+        <!-- Tabla de resultados -->
+        <div class="table-responsive" *ngIf="!importLoading">
+          <table class="table align-middle table-sm">
+            <thead>
+              <tr>
+                <th style="width:40px;">
+                  <input type="checkbox" class="form-check-input"
+                         [checked]="allImportSelected"
+                         [indeterminate]="selectedImportIds.size > 0 && !allImportSelected"
+                         (change)="toggleAllImport()">
+                </th>
+                <th>Club</th>
+                <th>Provincia</th>
+                <th>Pain</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of importResults"
+                  [class.table-active]="selectedImportIds.has(p.prospect_id)"
+                  [class.opacity-50]="importCurrentProspectIds.has(p.prospect_id)">
+                <td>
+                  <input type="checkbox" class="form-check-input"
+                         [checked]="selectedImportIds.has(p.prospect_id) || importCurrentProspectIds.has(p.prospect_id)"
+                         [disabled]="importCurrentProspectIds.has(p.prospect_id)"
+                         (change)="toggleImportSelection(p.prospect_id)">
+                </td>
+                <td>
+                  <div class="fw-semibold small">{{ p.name }}</div>
+                  <div class="text-muted" style="font-size:0.75rem;">{{ p.city || '—' }}</div>
+                </td>
+                <td class="small">{{ p.province }}</td>
+                <td>
+                  <span class="fw-bold small" [style.color]="painScoreColor(p.pain_score)">{{ p.pain_score || 0 }}</span>
+                </td>
+                <td>
+                  <span *ngIf="importCurrentProspectIds.has(p.prospect_id)" class="badge bg-secondary">Ya en campaña</span>
+                  <span *ngIf="!importCurrentProspectIds.has(p.prospect_id)" class="badge" [ngClass]="statusBadgeClass(p.status)">{{ statusLabel(p.status) }}</span>
+                </td>
+              </tr>
+              <tr *ngIf="importResults.length === 0 && !importLoading">
+                <td colspan="5" class="text-center text-muted py-4">
+                  <i class="bi bi-buildings me-2"></i>No se encontraron clubes
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="showImportFromLibraryModal = false">Cancelar</button>
+        <button class="btn btn-refresh" (click)="confirmImport()"
+                [disabled]="isConfirmingImport || selectedImportIds.size === 0">
+          <span *ngIf="!isConfirmingImport">
+            <i class="bi bi-box-arrow-in-down me-1"></i>
+            Importar {{ selectedImportIds.size }} club{{ selectedImportIds.size !== 1 ? 'es' : '' }}
+          </span>
+          <span *ngIf="isConfirmingImport"><i class="bi bi-hourglass-split spin-icon me-1"></i> Importando...</span>
         </button>
       </div>
     </div>

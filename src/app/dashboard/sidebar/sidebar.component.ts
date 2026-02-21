@@ -50,6 +50,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     'asistente-ia-coach':        'Asistente IA (entrenador)',
     'scouting-club':             'Scouting',
     'club-videos':               'Vídeos Scouting',
+    'video-analysis':            'Análisis de Vídeo',
     'equipos':                   'Equipos',
     'cuadro-de-mandos':          'Cuadro de mandos',
     'documentos-club':           'Documentos',
@@ -228,6 +229,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'patrocinadores', label: 'SIDEBAR.SPONSORS', icon: 'bi-collection', route: `/dashboard/patrocinadores/${this.clubId}` },
         { id: 'scouting', label: 'SIDEBAR.SCOUTING', icon: 'bi-binoculars', route: `/dashboard/scouting-club/${this.clubId}` },
         { id: 'videos', label: 'SIDEBAR.SCOUTING_VIDEOS', icon: 'bi-collection-play', route: `/dashboard/club-videos/${this.clubId}` },
+        { id: 'video-analysis', label: 'SIDEBAR.VIDEO_ANALYSIS', icon: 'bi-camera-reels', route: '/dashboard/video-analysis' },
         { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
       ];
       this.sections.push({ id: 'club', title: 'SIDEBAR.SECTION_CLUB', items: clubItems, visible: true });
@@ -247,6 +249,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'lesiones', label: 'SIDEBAR.INJURIES', icon: 'bi-heart-pulse', route: `/dashboard/lesiones/${this.teamId}` },
         { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
         { id: 'debrief', label: 'SIDEBAR.DEBRIEF', icon: 'bi-clipboard-pulse', route: `/dashboard/debrief/history/${this.teamId}` },
+        { id: 'video-analysis', label: 'SIDEBAR.VIDEO_ANALYSIS', icon: 'bi-camera-reels', route: '/dashboard/video-analysis' },
         { id: 'perfil', label: 'SIDEBAR.MY_PROFILE', icon: 'bi-person-badge', route: `/dashboard/perfil-entrenador/${this.teamId}/${this.playerId}` },
       ];
       this.sections.push({ id: 'coach', title: 'SIDEBAR.SECTION_COACH', items: coachItems, visible: true });

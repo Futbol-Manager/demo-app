@@ -1,0 +1,102 @@
+<div class="player-container" (mousemove)="onMouseMove()" [class.hide-cursor]="!showControls && ps.state.isPlaying">
+
+  <!-- Video Element -->
+  <div class="video-wrapper" [style.transform]="'scale(' + zoomLevel + ')'"
+       [style.transform-origin]="'center center'">
+    <video #videoElement crossorigin="anonymous" playsinline
+           (click)="togglePlay()" (dblclick)="toggleFullscreen()">
+    </video>
+  </div>
+
+  <!-- Drawing overlay goes here (separate component) -->
+  <ng-content select="[drawingOverlay]"></ng-content>
+
+  <!-- Big Play Button (when paused and controls visible) -->
+  <div class="big-play-btn" *ngIf="!ps.state.isPlaying && ps.state.videoReady" (click)="togglePlay()">
+    <i class="bi bi-play-fill"></i>
+  </div>
+
+  <!-- Controls Bar -->
+  <div class="controls-bar" [class.visible]="showControls || !ps.state.isPlaying">
+
+    <!-- Progress Bar -->
+    <div class="progress-container" #progressBar
+         (click)="onProgressClick($event)"
+         (mousemove)="onProgressDrag($event)">
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="progressPercent"></div>
+        <div class="progress-handle" [style.left.%]="progressPercent"></div>
+      </div>
+    </div>
+
+    <div class="controls-row">
+      <!-- Left controls -->
+      <div class="controls-left">
+        <button class="ctrl-btn" (click)="togglePlay()" [title]="ps.state.isPlaying ? 'Pausar (K)' : 'Reproducir (K)'">
+          <i class="bi" [ngClass]="ps.state.isPlaying ? 'bi-pause-fill' : 'bi-play-fill'"></i>
+        </button>
+
+        <button class="ctrl-btn" (click)="skipBackward()" title="Retroceder 10s (J)">
+          <i class="bi bi-skip-backward-fill"></i>
+        </button>
+
+        <button class="ctrl-btn" (click)="stepBackward()" title="Frame anterior (←)">
+          <i class="bi bi-chevron-bar-left"></i>
+        </button>
+
+        <button class="ctrl-btn" (click)="stepForward()" title="Frame siguiente (→)">
+          <i class="bi bi-chevron-bar-right"></i>
+        </button>
+
+        <button class="ctrl-btn" (click)="skipForward()" title="Avanzar 10s (L)">
+          <i class="bi bi-skip-forward-fill"></i>
+        </button>
+
+        <!-- Time display -->
+        <span class="time-display">
+          {{ currentTime }} / {{ duration }}
+        </span>
+      </div>
+
+      <!-- Right controls -->
+      <div class="controls-right">
+        <!-- Volume -->
+        <div class="volume-group">
+          <button class="ctrl-btn" (click)="toggleMute()">
+            <i class="bi" [ngClass]="ps.state.isMuted ? 'bi-volume-mute-fill' : 'bi-volume-up-fill'"></i>
+          </button>
+          <input type="range" class="volume-slider" min="0" max="1" step="0.05"
+                 [value]="ps.state.volume" (input)="onVolumeChange($event)">
+        </div>
+
+        <!-- Speed -->
+        <div class="speed-group">
+          <button class="ctrl-btn speed-btn" (click)="showSpeedMenu = !showSpeedMenu">
+            {{ ps.state.playbackRate }}x
+          </button>
+          <div class="speed-menu" *ngIf="showSpeedMenu">
+            <button *ngFor="let s of speedOptions" (click)="setSpeed(s)"
+                    [class.active]="ps.state.playbackRate === s">
+              {{ s }}x
+            </button>
+          </div>
+        </div>
+
+        <!-- Zoom -->
+        <div class="zoom-group" *ngIf="zoomLevel > 1">
+          <button class="ctrl-btn" (click)="resetZoom()" title="Reset zoom">
+            <i class="bi bi-zoom-out"></i> {{ (zoomLevel * 100).toFixed(0) }}%
+          </button>
+        </div>
+        <button class="ctrl-btn" (click)="zoomIn()" title="Zoom in" *ngIf="zoomLevel < 3">
+          <i class="bi bi-zoom-in"></i>
+        </button>
+
+        <!-- Fullscreen -->
+        <button class="ctrl-btn" (click)="toggleFullscreen()" title="Pantalla completa (F)">
+          <i class="bi" [ngClass]="ps.state.isFullscreen ? 'bi-fullscreen-exit' : 'bi-fullscreen'"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

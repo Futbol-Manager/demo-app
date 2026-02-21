@@ -1394,31 +1394,29 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   crearEntrenamiento() {
     this.trainingSession.daySession = this.daySession + 'T12:00:00';
 
-    console.log(this.trainingSession)
     if (
       this.trainingSession.infoVisible === undefined ||
       this.trainingSession.infoVisible === null
     ) {
       this.trainingSession.infoVisible = 0;
     }
-    console.log("TRAI", this.trainingSession)
     this.trainingService
       .createUpdateTrainingSession(this.teamId.toString(), this.trainingSession)
       .subscribe(
         (response) => {
-          // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
           this.getListaEntrenamientos();
-          // Cerrar el modal después de crear el equipo
-          // NUEVO: decidir cierre según modo
-          if (this.mode === 'create-entrenamiento') {
-            this.cerrarModal();
-          } else {
-            this.cerrarModalEntrenamiento();
-          }
+          const isCreating = this.mode === 'create-entrenamiento';
+          this.cerrarModal();
+          this.toastr.success(
+            isCreating
+              ? this.translate.instant('CAL.TEXT_067') || 'Entrenamiento creado correctamente'
+              : 'Entrenamiento actualizado correctamente',
+            '✓'
+          );
         },
         (error) => {
           console.error('Error al guardar la sesión de entrenamiento:', error);
-          // Aquí puedes manejar el error, si es necesario
+          this.toastr.error('Error al guardar el entrenamiento. Inténtalo de nuevo.', 'Error');
         },
       );
   }
@@ -1436,13 +1434,13 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       .deleteTrainingSession(this.teamId.toString(), this.trainingSession)
       .subscribe(
         (response) => {
-          console.log('Sesión de entrenamiento eliminada con éxito:', response);
           this.getListaEntrenamientos();
-          if (this.trainingSession.trainingSessionId === 0) this.cerrarModal();
-          else this.cerrarModalEntrenamiento();
+          this.cerrarModal();
+          this.toastr.success('Entrenamiento eliminado correctamente', '✓');
         },
         (error) => {
           console.error('Error al eliminar la sesión de entrenamiento:', error);
+          this.toastr.error('Error al eliminar el entrenamiento. Inténtalo de nuevo.', 'Error');
         },
       );
   }

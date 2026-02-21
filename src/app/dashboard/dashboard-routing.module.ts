@@ -85,11 +85,18 @@ import { AdminProspectorComponent } from './admin-prospector/admin-prospector.co
 import { AdminRegistrosComponent } from './admin-registros/admin-registros.component';
 import { AdminActivityComponent } from './admin-activity/admin-activity.component';
 import { AdminAiUsageComponent } from './admin-ai-usage/admin-ai-usage.component';
+import { AdminAiConfigComponent } from './admin-ai-config/admin-ai-config.component';
 import { AiCreditsSuccessComponent } from './ai-credits-success/ai-credits-success.component';
 import { ScoutingClubComponent } from './scouting-club/scouting-club.component';
 import { ScoutingPlayerProfileComponent } from './scouting-player-profile/scouting-player-profile.component';
 import { ClubVideoLibraryComponent } from './club-video-library/club-video-library.component';
 import { VideoPlanSuccessComponent } from './video-plan-success/video-plan-success.component';
+import { VideoAnalysisHubComponent } from './video-analysis/hub/video-analysis-hub.component';
+import { VideoAnalysisWorkspaceComponent } from './video-analysis/workspace/video-analysis-workspace.component';
+import { TemplateListComponent } from './video-analysis/templates/template-list.component';
+import { TemplateEditorComponent } from './video-analysis/templates/template-editor.component';
+import { PlaylistBuilderComponent } from './video-analysis/playlists/playlist-builder.component';
+import { PlaylistViewerComponent } from './video-analysis/playlists/playlist-viewer.component';
 
 const routes: Routes = [
   {
@@ -165,11 +172,18 @@ const routes: Routes = [
       { path: 'admin-registros', component: AdminRegistrosComponent, canActivate: [AdminGuard] },
       { path: 'admin-activity', component: AdminActivityComponent, canActivate: [AdminGuard] },
       { path: 'admin-ai-usage', component: AdminAiUsageComponent, canActivate: [AdminGuard] },
+      { path: 'admin-ai-config', component: AdminAiConfigComponent, canActivate: [AdminGuard] },
       { path: 'admin-coaches', component: AdminCoachesComponent, canActivate: [AdminGuard] },
       { path: 'admin-prospector', component: AdminProspectorComponent, canActivate: [AdminGuard] },
       { path: 'ai-credits-success', component: AiCreditsSuccessComponent },
       { path: 'video-plan-success', component: VideoPlanSuccessComponent },
       { path: 'club-videos/:clubId', component: ClubVideoLibraryComponent, canActivate: [ClubOwnerGuard, ClubPlanGuard] },
+      { path: 'video-analysis', component: VideoAnalysisHubComponent },
+      { path: 'video-analysis/workspace/:projectId', component: VideoAnalysisWorkspaceComponent },
+      { path: 'video-analysis/templates', component: TemplateListComponent },
+      { path: 'video-analysis/template/:id', component: TemplateEditorComponent },
+      { path: 'video-analysis/playlists', component: PlaylistBuilderComponent },
+      { path: 'video-analysis/playlist/:id', component: PlaylistViewerComponent },
       { path: 'scouting-club/:clubId', component: ScoutingClubComponent, canActivate: [ClubOwnerGuard, ClubPlanGuard] },
       { path: 'scouting-player-profile/:playerId', component: ScoutingPlayerProfileComponent },
       { path: 'suscripcion-club', component: SuscripcionClubComponent },

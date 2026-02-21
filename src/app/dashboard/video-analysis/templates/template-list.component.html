@@ -1,0 +1,84 @@
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i> Análisis de Vídeo
+  </button>
+</div>
+
+<div class="templates-container">
+  <div class="templates-header">
+    <div class="templates-header-left">
+      <div class="templates-icon"><i class="bi bi-grid-3x3-gap"></i></div>
+      <div>
+        <h3>Plantillas de análisis</h3>
+        <span class="template-count">{{ templates.length }} plantillas</span>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-new" (click)="openCreateModal()">
+      <i class="bi bi-plus-lg"></i> Nueva plantilla
+    </button>
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <div class="templates-grid" *ngIf="!isLoading">
+    <div class="template-card" *ngFor="let tpl of templates" (click)="openTemplate(tpl)">
+      <div class="template-card-top">
+        <span class="system-badge" *ngIf="tpl.isSystem">
+          <i class="bi bi-shield-check"></i> Sphaira
+        </span>
+        <span class="custom-badge" *ngIf="!tpl.isSystem">
+          <i class="bi bi-person"></i> Personalizada
+        </span>
+        <div class="template-actions">
+          <button class="btn-icon" (click)="duplicateTemplate(tpl, $event)" title="Duplicar">
+            <i class="bi bi-copy"></i>
+          </button>
+          <button class="btn-icon btn-danger-icon" *ngIf="!tpl.isSystem"
+                  (click)="deleteTemplate(tpl, $event)" title="Eliminar">
+            <i class="bi bi-trash3"></i>
+          </button>
+        </div>
+      </div>
+      <h5>{{ tpl.name }}</h5>
+      <p *ngIf="tpl.description">{{ tpl.description }}</p>
+      <div class="template-meta">
+        <span *ngIf="tpl.categories">{{ tpl.categories.length }} categorías</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Modal -->
+<div class="modal-overlay" *ngIf="showCreateModal" (click)="showCreateModal = false">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+    <div class="modal-header-custom">
+      <h4>Nueva Plantilla</h4>
+      <button class="btn-close-modal" (click)="showCreateModal = false">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body-custom">
+      <div class="form-group">
+        <label>Nombre *</label>
+        <input type="text" class="form-control" placeholder="Ej: Análisis de corners"
+               [(ngModel)]="newTemplateName">
+      </div>
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea class="form-control" rows="2" [(ngModel)]="newTemplateDescription"></textarea>
+      </div>
+    </div>
+    <div class="alert alert-danger mx-3" *ngIf="createError" style="font-size: .85rem; margin-bottom: 0;">
+      <i class="bi bi-exclamation-triangle-fill"></i> {{ createError }}
+    </div>
+    <div class="modal-footer-custom">
+      <button class="btn btn-outline-secondary" (click)="showCreateModal = false">Cancelar</button>
+      <button class="btn btn-primary" (click)="createTemplate()"
+              [disabled]="!newTemplateName.trim() || isCreating">
+        {{ isCreating ? 'Creando...' : 'Crear plantilla' }}
+      </button>
+    </div>
+  </div>
+</div>

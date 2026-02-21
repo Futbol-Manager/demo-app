@@ -3,6 +3,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { ToastrService } from 'ngx-toastr';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { DebriefService } from 'src/app/core/services/debrief/debrief.service';
 import { SpeechRecognitionService } from 'src/app/core/services/speech/speech-recognition.service';
@@ -75,7 +76,8 @@ export class DebriefTrainingComponent implements OnInit, OnDestroy {
     private speechService: SpeechRecognitionService,
     private trainingService: TrainingService,
     private playerService: PlayerService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -381,16 +383,21 @@ export class DebriefTrainingComponent implements OnInit, OnDestroy {
 
     this.debriefService.saveTrainingDebrief(debrief)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(saved => {
-        this.isCompleted = true;
-        this.isSaving = false;
-        // Navegar al informe
-        this.router.navigate([
-          '/dashboard/debrief/report',
-          saved.debriefId,
-          'training'
-        ]);
-      });
+      .subscribe(
+        saved => {
+          this.isCompleted = true;
+          this.isSaving = false;
+          if (saved.debriefId) {
+            this.router.navigate(['/dashboard/debrief/report', saved.debriefId, 'training']);
+          } else {
+            this.toastr.error('Error al guardar el análisis. Inténtalo de nuevo.', 'Error');
+          }
+        },
+        () => {
+          this.isSaving = false;
+          this.toastr.error('Error al guardar el análisis. Inténtalo de nuevo.', 'Error');
+        }
+      );
   }
 
   saveDraft(): void {
@@ -406,9 +413,10 @@ export class DebriefTrainingComponent implements OnInit, OnDestroy {
 
     this.debriefService.saveTrainingDebrief(debrief)
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        // Mostrar feedback visual
-      });
+      .subscribe(
+        () => { this.toastr.success('Borrador guardado correctamente', '✓'); },
+        () => { this.toastr.error('Error al guardar el borrador', 'Error'); }
+      );
   }
 
   goBack(): void {

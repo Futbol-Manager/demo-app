@@ -1,0 +1,71 @@
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i> Playlists
+  </button>
+</div>
+
+<div class="viewer-loading" *ngIf="isLoading">
+  <div class="spinner-border text-primary" role="status"></div>
+</div>
+
+<div class="viewer-container" *ngIf="!isLoading && playlist">
+  <div class="viewer-header">
+    <h4>{{ playlist.title }}</h4>
+    <p *ngIf="playlist.description">{{ playlist.description }}</p>
+    <span class="clip-count">{{ items.length }} clips</span>
+  </div>
+
+  <div class="viewer-layout">
+    <!-- Player area -->
+    <div class="viewer-player">
+      <div class="player-placeholder" *ngIf="!isPlaying">
+        <i class="bi bi-play-circle"></i>
+        <span>Selecciona un clip para reproducir</span>
+      </div>
+
+      <!-- Navigation controls -->
+      <div class="player-nav" *ngIf="items.length > 0">
+        <button class="nav-btn" (click)="prevClip()" [disabled]="currentItemIndex === 0">
+          <i class="bi bi-skip-start-fill"></i>
+        </button>
+        <span class="clip-indicator">
+          Clip {{ currentItemIndex + 1 }} / {{ items.length }}
+        </span>
+        <button class="nav-btn" (click)="nextClip()" [disabled]="currentItemIndex >= items.length - 1">
+          <i class="bi bi-skip-end-fill"></i>
+        </button>
+        <label class="auto-advance">
+          <input type="checkbox" [(ngModel)]="autoAdvance"> Auto-avance
+        </label>
+      </div>
+    </div>
+
+    <!-- Clip list -->
+    <div class="clip-list">
+      <h6><i class="bi bi-list-ol"></i> Clips</h6>
+      <div class="clips-scroll">
+        <div class="clip-item" *ngFor="let item of items; let i = index"
+             [class.active]="currentItemIndex === i"
+             (click)="playItem(i)">
+          <span class="clip-number">{{ i + 1 }}</span>
+          <div class="clip-info">
+            <span class="clip-category" *ngIf="item.event?.categoryName">{{ item.event?.categoryName }}</span>
+            <span class="clip-time" *ngIf="item.event">
+              {{ formatTime(item.customStartMs || item.event.startTimeMs) }} -
+              {{ formatTime(item.customEndMs || item.event.endTimeMs) }}
+            </span>
+            <span class="clip-note" *ngIf="item.notes">{{ item.notes }}</span>
+          </div>
+          <button class="clip-remove" (click)="removeItem(item, $event)" title="Quitar">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
+
+        <div class="empty-clips" *ngIf="items.length === 0">
+          <i class="bi bi-film"></i>
+          <span>Sin clips aún. Añade eventos desde el workspace de análisis.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

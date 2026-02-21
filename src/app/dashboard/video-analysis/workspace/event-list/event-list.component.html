@@ -1,0 +1,60 @@
+<div class="event-list-panel">
+  <div class="panel-header">
+    <h6><i class="bi bi-list-ul"></i> Eventos</h6>
+    <span class="event-total">{{ filteredEvents.length }}/{{ events.length }}</span>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-row">
+    <select class="filter-select" [(ngModel)]="filterCategoryId" (ngModelChange)="applyFilter()">
+      <option [ngValue]="null">Todas las categorías</option>
+      <option *ngFor="let cat of categories" [ngValue]="cat.id">{{ cat.name }}</option>
+    </select>
+    <button class="filter-clear" *ngIf="filterCategoryId || searchQuery" (click)="clearFilter()">
+      <i class="bi bi-x-circle"></i>
+    </button>
+  </div>
+
+  <!-- Search -->
+  <div class="search-row">
+    <input type="text" class="search-input" placeholder="Buscar eventos..."
+           [(ngModel)]="searchQuery" (input)="applyFilter()">
+  </div>
+
+  <!-- Event list -->
+  <div class="events-scroll">
+    <div class="empty-events" *ngIf="filteredEvents.length === 0">
+      <i class="bi bi-tag"></i>
+      <span>Sin eventos aún</span>
+    </div>
+
+    <div class="event-item" *ngFor="let evt of filteredEvents"
+         [class.selected]="selectedEventId === evt.id"
+         (click)="selectEvent(evt)">
+      <div class="event-color-bar" [style.background-color]="evt.categoryColor"></div>
+      <div class="event-info">
+        <div class="event-top-row">
+          <span class="event-category">{{ evt.categoryName }}</span>
+          <span class="event-time">{{ ps.formatTime(evt.startTimeMs) }}</span>
+        </div>
+        <div class="event-details" *ngIf="evt.playerName || evt.notes">
+          <span class="event-player" *ngIf="evt.playerName">
+            <i class="bi bi-person-fill"></i> {{ evt.playerName }}
+          </span>
+          <span class="event-note" *ngIf="evt.notes">{{ evt.notes }}</span>
+        </div>
+        <div class="event-tags" *ngIf="evt.tagIds && evt.tagIds.length > 0">
+          <span class="mini-tag" *ngFor="let _ of evt.tagIds">●</span>
+        </div>
+      </div>
+      <div class="event-actions">
+        <button class="ev-btn" (click)="onEdit(evt, $event)" title="Editar">
+          <i class="bi bi-pencil"></i>
+        </button>
+        <button class="ev-btn ev-btn-danger" (click)="onDelete(evt, $event)" title="Eliminar">
+          <i class="bi bi-trash3"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
