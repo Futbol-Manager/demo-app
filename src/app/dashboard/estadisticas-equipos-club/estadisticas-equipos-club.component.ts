@@ -8,6 +8,7 @@ import { Location } from '@angular/common';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
 import { Subscription } from 'rxjs';
 import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { AiPageContextService } from 'src/app/core/services/ai-chat/ai-page-context.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 
 @Component({
@@ -57,6 +58,7 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
     private voiceRecognition: VoiceRecognitionService,
     private translate: TranslateService,
     private aiChatService: AiChatService,
+    private aiPageContext: AiPageContextService,
     private loginService: LoginService,
   ) {}
 
@@ -118,6 +120,8 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
     this.voiceTranscriptSub?.unsubscribe();
     this.voiceListeningSub?.unsubscribe();
     this.voiceErrorSub?.unsubscribe();
+    // El contexto se mantiene activo para que el chatbot FAB pueda usarlo
+    // desde cualquier otra página. El usuario puede descartarlo manualmente.
   }
 
   // Método para redirigir a la pantalla de jugadores con el teamId
@@ -147,6 +151,7 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
           }
           this.datosCargados = true;
           this.loading = false;
+          this.publishPageContext();
         } else {
           console.error(
             'La respuesta del servicio no tiene la estructura esperada',
@@ -331,6 +336,11 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
         setTimeout(() => this.scrollAiToBottom(), 100);
       }
     });
+  }
+
+  private publishPageContext(): void {
+    const { contextText, codeToReal } = this.buildAnonymizedTeamStats();
+    this.aiPageContext.setContext({ type: 'estadisticas-equipos', contextText, codeToReal });
   }
 
   private buildAnonymizedTeamStats(): { contextText: string; codeToReal: Map<string, string> } {

@@ -604,6 +604,51 @@ $border-color: #e2e8f0;
   &:hover { background: #c82333; transform: scale(1.05); }
 }
 
+/* ─── Context banners ───────────────────────────────────────────────────── */
+.fab-context-banner {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+
+  i { font-size: 0.78rem; opacity: 0.85; }
+  span { flex: 1; }
+
+  .fab-context-dismiss {
+    background: none;
+    border: none;
+    padding: 0 2px;
+    cursor: pointer;
+    opacity: 0.6;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+
+    i { font-size: 0.9rem; }
+    &:hover { opacity: 1; }
+  }
+
+  /* Página específica (al navegar a estadísticas) */
+  &.fab-context-page {
+    background: rgba(49, 178, 112, 0.10);
+    border-top: 1px solid rgba(49, 178, 112, 0.20);
+    color: $green-primary;
+    .fab-context-dismiss { color: $green-primary; }
+  }
+
+  /* Fondo (precargado al login) */
+  &.fab-context-bg {
+    background: rgba(31, 143, 138, 0.10);
+    border-top: 1px solid rgba(31, 143, 138, 0.20);
+    color: $teal;
+    .fab-context-dismiss { color: $teal; }
+  }
+}
+
 .credits-link {
   cursor: pointer;
   text-decoration: underline;

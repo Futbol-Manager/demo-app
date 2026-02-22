@@ -5,10 +5,12 @@ import { filter, finalize } from 'rxjs/operators';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { AiChatService, AiCreditsInfo, AiPendingAction } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { AiPageContextService, BackgroundStatsContext, PageContext } from 'src/app/core/services/ai-chat/ai-page-context.service';
 import { InjuryService } from 'src/app/core/services/injury/injury.service';
 import { Injury } from 'src/app/core/services/injury/injury.model';
 import { User } from 'src/app/core/models/users/user.model';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
+import * as XLSX from 'xlsx';
 
 interface ChatMessage {
   id: number;
@@ -102,6 +104,10 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   quickSuggestions: SuggestionChip[] = [];
   showSuggestions = true;
+
+  // Page context (estadísticas de equipos/jugadores disponibles para la IA)
+  activePageContext: PageContext | null = null;
+  backgroundStats: BackgroundStatsContext | null = null;
 
   // Voice recognition
   isRecording = false;
@@ -269,6 +275,7 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     private router: Router,
     private sanitizer: DomSanitizer,
     private aiChatService: AiChatService,
+    private aiPageContextService: AiPageContextService,
     private voiceRecognition: VoiceRecognitionService,
     private injuryService: InjuryService
   ) {}
@@ -308,6 +315,18 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.detectScreenContext(this.router.url);
     this.updateSuggestions();
     this.initVoiceRecognition();
+
+    this.subs.push(
+      this.aiPageContextService.getContext().subscribe(ctx => {
+        this.activePageContext = ctx;
+      })
+    );
+
+    this.subs.push(
+      this.aiPageContextService.getBackgroundStats().subscribe(stats => {
+        this.backgroundStats = stats;
+      })
+    );
   }
 
   private initVoiceRecognition(): void {
@@ -728,8 +747,60 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
       .slice(-10)
       .map(m => ({ role: m.role, text: m.isActionPreview ? '[Acción propuesta: ' + m.text + ']' : m.text }));
 
+    // Enrich message with statistics context (page-specific or background)
+    const pageCtx = this.activePageContext;
+    let messageToSend = text;
+    let activeCodeToReal: Map<string, string> | null = null;
+
+    if (pageCtx) {
+      // Priority 1: page-specific context (user is on a stats page)
+      let anonymizedText = text;
+      pageCtx.codeToReal.forEach((real, code) => {
+        anonymizedText = anonymizedText.replace(
+          new RegExp(real.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), code
+        );
+      });
+      const label = pageCtx.type === 'estadisticas-equipos'
+        ? '[ESTADÍSTICAS DE EQUIPOS - DATOS ANONIMIZADOS]'
+        : '[ESTADÍSTICAS DE JUGADORES - DATOS ANONIMIZADOS]';
+      messageToSend = anonymizedText + '\n\n' + label + '\n' + pageCtx.contextText;
+      activeCodeToReal = pageCtx.codeToReal;
+
+    } else if (this.backgroundStats) {
+      // Priority 2: background stats loaded at login
+      const allCodes = new Map<string, string>();
+      const parts: string[] = [];
+
+      if (this.backgroundStats.teamStats) {
+        const { contextText, codeToReal } = this.backgroundStats.teamStats;
+        parts.push('[ESTADÍSTICAS DE EQUIPOS - DATOS ANONIMIZADOS]\n' + contextText);
+        codeToReal.forEach((v, k) => allCodes.set(k, v));
+      }
+      if (this.backgroundStats.playerStats) {
+        const { contextText, codeToReal } = this.backgroundStats.playerStats;
+        parts.push('[ESTADÍSTICAS DE JUGADORES - DATOS ANONIMIZADOS]\n' + contextText);
+        codeToReal.forEach((v, k) => allCodes.set(k, v));
+      }
+      if (this.backgroundStats.paymentStats) {
+        const { contextText, codeToReal } = this.backgroundStats.paymentStats;
+        parts.push('[PAGOS Y CUOTAS DE JUGADORES - DATOS ANONIMIZADOS]\n' + contextText);
+        codeToReal.forEach((v, k) => allCodes.set(k, v));
+      }
+
+      if (parts.length > 0) {
+        let anonymizedText = text;
+        allCodes.forEach((real, code) => {
+          anonymizedText = anonymizedText.replace(
+            new RegExp(real.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), code
+          );
+        });
+        messageToSend = anonymizedText + '\n\n' + parts.join('\n\n');
+        activeCodeToReal = allCodes;
+      }
+    }
+
     this.chatSub?.unsubscribe();
-    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, this.currentScreenContext, text, apiKeyType, this.currentTeamId, history)
+    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, this.currentScreenContext, messageToSend, apiKeyType, this.currentTeamId, history)
       .pipe(
         finalize(() => {
           this.isResponding = false;
@@ -742,10 +813,16 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
 
           if (resp.success && resp.hasActions && resp.pendingActions && resp.pendingActions.length > 0) {
             // AI proposed actions - show preview for confirmation
+            let actionText = resp.response || '';
+            if (activeCodeToReal) {
+              Array.from(activeCodeToReal.entries())
+                .sort((a, b) => b[0].length - a[0].length)
+                .forEach(([code, real]) => { actionText = actionText.split(code).join(real); });
+            }
             this.messages.push({
               id: ++this.msgIdCounter,
               role: 'assistant',
-              text: resp.response || '',
+              text: actionText,
               timestamp: new Date(),
               isActionPreview: true,
               pendingActions: resp.pendingActions,
@@ -755,7 +832,13 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
               this.creditsAvailable = resp.creditsRemaining;
             }
           } else if (resp.success && resp.response) {
-            this.addAssistantMessage(resp.response);
+            let responseText = resp.response;
+            if (activeCodeToReal) {
+              Array.from(activeCodeToReal.entries())
+                .sort((a, b) => b[0].length - a[0].length)
+                .forEach(([code, real]) => { responseText = responseText.split(code).join(real); });
+            }
+            this.addAssistantMessage(responseText);
             if (resp.creditsRemaining !== undefined) {
               this.creditsAvailable = resp.creditsRemaining;
             }
@@ -780,6 +863,23 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   confirmActions(msg: ChatMessage): void {
     if (!msg.actionToken || msg.actionExecuted) return;
+
+    // Handle exportTableToExcel entirely in the frontend (no backend call needed)
+    const exportAction = (msg.pendingActions || []).find(a => a.function === 'exportTableToExcel');
+    if (exportAction) {
+      msg.actionExecuted = true;
+      try {
+        const args = JSON.parse(exportAction.arguments || '{}');
+        this.generateExcel(args.tableType, args.filterPending === true);
+      } catch (e) {
+        this.addAssistantMessage('❌ Error al generar el Excel.');
+      }
+      this.shouldScroll = true;
+      this.saveConversation();
+      this.focusChatInput();
+      return;
+    }
+
     msg.isExecutingAction = true;
     this.aiChatService.executeActions(msg.actionToken).subscribe({
       next: (result) => {
@@ -820,6 +920,82 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     });
   }
 
+  private generateExcel(tableType: string, filterPending: boolean): void {
+    const bg = this.backgroundStats;
+    const pageCtx = this.activePageContext;
+
+    let contextText: string | null = null;
+    let codeToReal: Map<string, string> | null = null;
+    let fileName = 'exportacion';
+
+    if (tableType === 'pagos' && bg?.paymentStats) {
+      contextText = bg.paymentStats.contextText;
+      codeToReal = bg.paymentStats.codeToReal;
+      fileName = filterPending ? 'pagos_pendientes' : 'pagos_cuotas';
+    } else if (tableType === 'estadisticas-equipos') {
+      const src = bg?.teamStats || (pageCtx?.type === 'estadisticas-equipos' ? pageCtx : null);
+      if (src) { contextText = src.contextText; codeToReal = src.codeToReal; }
+      fileName = 'estadisticas_equipos';
+    } else if (tableType === 'estadisticas-jugadores') {
+      const src = bg?.playerStats || (pageCtx?.type === 'estadisticas-jugadores' ? pageCtx : null);
+      if (src) { contextText = src.contextText; codeToReal = src.codeToReal; }
+      fileName = 'estadisticas_jugadores';
+    }
+
+    if (!contextText) {
+      this.addAssistantMessage('❌ No hay datos disponibles para exportar. Asegúrate de que los datos estén cargados.');
+      return;
+    }
+
+    // Parse pipe-separated table and de-anonymize
+    const lines = contextText.split('\n').filter(l => l.trim());
+    if (lines.length < 2) {
+      this.addAssistantMessage('❌ La tabla no tiene datos suficientes para exportar.');
+      return;
+    }
+
+    const headers = lines[0].split('|').map(h => h.trim());
+    let dataRows = lines.slice(1).map(line => line.split('|').map(cell => cell.trim()));
+
+    // Filter pending payments if requested
+    if (filterPending && tableType === 'pagos') {
+      const estadoIdx = headers.findIndex(h => h.toLowerCase() === 'estado');
+      if (estadoIdx >= 0) {
+        dataRows = dataRows.filter(row => row[estadoIdx]?.toLowerCase() === 'pendiente');
+      }
+    }
+
+    // De-anonymize: replace codes with real names
+    if (codeToReal) {
+      const codeEntries = Array.from(codeToReal.entries())
+        .sort((a, b) => b[0].length - a[0].length);
+      dataRows = dataRows.map(row =>
+        row.map(cell => {
+          let val = cell;
+          for (const [code, real] of codeEntries) {
+            if (val === code) { val = real; break; }
+          }
+          return val;
+        })
+      );
+    }
+
+    // Build worksheet
+    const wsData = [headers, ...dataRows];
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Datos');
+
+    // Auto-width for columns
+    const colWidths = headers.map((h, i) => ({
+      wch: Math.max(h.length, ...dataRows.map(r => (r[i] || '').length))
+    }));
+    ws['!cols'] = colWidths;
+
+    XLSX.writeFile(wb, `${fileName}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    this.addAssistantMessage(`✅ Excel generado: **${fileName}_${new Date().toISOString().slice(0, 10)}.xlsx** — ${dataRows.length} filas exportadas.`);
+  }
+
   cancelActions(msg: ChatMessage): void {
     msg.actionExecuted = true;
     this.addAssistantMessage('Acción cancelada.');
@@ -846,6 +1022,14 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (typingIdx > -1) this.messages.splice(typingIdx, 1);
     this.addAssistantMessage('Peticion cancelada.');
     this.showSuggestions = true;
+  }
+
+  dismissPageContext(): void {
+    this.aiPageContextService.clearContext();
+  }
+
+  dismissBackgroundStats(): void {
+    this.aiPageContextService.invalidateClubCache();
   }
 
   openCreditsModal(): void {

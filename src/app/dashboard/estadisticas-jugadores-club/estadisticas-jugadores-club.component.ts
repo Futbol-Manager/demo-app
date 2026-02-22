@@ -8,6 +8,7 @@ import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition
 import { TranslateService } from '@ngx-translate/core';
 import { Subscription } from 'rxjs';
 import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { AiPageContextService } from 'src/app/core/services/ai-chat/ai-page-context.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import * as $ from 'jquery';
 
@@ -66,6 +67,7 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
     private voiceRecognition: VoiceRecognitionService,
     private translate: TranslateService,
     private aiChatService: AiChatService,
+    private aiPageContext: AiPageContextService,
     private loginService: LoginService,
   ) {}
 
@@ -127,6 +129,8 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
     this.voiceTranscriptSub?.unsubscribe();
     this.voiceListeningSub?.unsubscribe();
     this.voiceErrorSub?.unsubscribe();
+    // El contexto se mantiene activo para que el chatbot FAB pueda usarlo
+    // desde cualquier otra página. El usuario puede descartarlo manualmente.
   }
 
   // Método para redirigir a la pantalla de jugadores con el teamId
@@ -156,6 +160,7 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
           this.page = 1;
           this.actualizarPaginacion();
           this.datosCargados = true;
+          this.publishPageContext();
         } else {
           console.error(
             'La respuesta del servicio no tiene la estructura esperada',
@@ -444,6 +449,11 @@ export class EstadisticasJugadoresClubComponent implements OnInit, OnDestroy {
         setTimeout(() => this.scrollAiToBottom(), 100);
       }
     });
+  }
+
+  private publishPageContext(): void {
+    const { contextText, codeToReal } = this.buildAnonymizedStats();
+    this.aiPageContext.setContext({ type: 'estadisticas-jugadores', contextText, codeToReal });
   }
 
   private buildAnonymizedStats(): { contextText: string; codeToReal: Map<string, string> } {

@@ -290,10 +290,145 @@
   }
 }
 
+/* ── Formula card ── */
+.formula-card {
+  background: linear-gradient(135deg, #f0f9f4 0%, #e8f4fd 100%);
+  border: 1px solid #c3e6d0;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+}
+.formula-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: #1a4731;
+  margin-bottom: 0.5rem;
+}
+.formula-body { }
+.formula-eq {
+  display: inline-block;
+  background: rgba(49,178,112,0.12);
+  color: #1a6b3a;
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.formula-desc {
+  font-size: 0.875rem;
+  color: #3a5c47;
+}
+
+/* ── Token tiers table ── */
+.tiers-table {
+  border: 1px solid #c3e6d0;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 0.84rem;
+}
+.tiers-header {
+  display: grid;
+  grid-template-columns: 1.8fr 0.7fr 1.8fr;
+  gap: 0;
+  background: rgba(49,178,112,0.12);
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  color: #1a4731;
+}
+.tiers-row {
+  display: grid;
+  grid-template-columns: 1.8fr 0.7fr 1.8fr;
+  padding: 0.45rem 1rem;
+  border-top: 1px solid #d4f0e2;
+  align-items: center;
+  &:hover { background: rgba(49,178,112,0.04); }
+}
+.tier-mult {
+  font-weight: 700;
+  color: #31b270;
+  text-align: center;
+}
+
+/* ── Credits table ── */
+.credits-table-wrapper {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+.credits-table {
+  margin: 0;
+  th {
+    background: #f8fafc;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #64748b;
+    padding: 0.6rem 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+  }
+  td {
+    padding: 0.55rem 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.86rem;
+  }
+  tr:last-child td { border-bottom: none; }
+}
+.model-code {
+  background: #f1f5f9;
+  color: #334155;
+  padding: 2px 7px;
+  border-radius: 5px;
+  font-size: 0.82rem;
+}
+.credits-input {
+  width: 64px;
+  text-align: center;
+  border: 1px solid #d1d5db;
+  border-radius: 7px;
+  padding: 0.25rem 0.4rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #1e293b;
+  transition: border-color 0.2s;
+  &:focus { outline: none; border-color: #31b270; box-shadow: 0 0 0 2px rgba(49,178,112,0.2); }
+  &.dirty { border-color: #f59e0b; color: #b45309; background: #fffbeb; }
+}
+.badge-credits {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  background: #eff6ff;
+  color: #2563eb;
+  border-radius: 6px;
+  padding: 1px 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+.btn-save-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: var(--sphaira-green);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s, opacity 0.2s;
+  &:hover:not(:disabled) { background: #28a060; }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+.feedback-ok-sm { color: #22c55e; font-size: 1rem; }
+.feedback-err-sm { color: #ef4444; font-size: 1rem; }
+
 /* ── Responsive ── */
 @media (max-width: 576px) {
   .config-grid { grid-template-columns: 1fr; }
   .page-header { flex-wrap: wrap; .ms-auto { margin-left: 0 !important; } }
+  .tiers-header, .tiers-row { grid-template-columns: 1.5fr 0.6fr; }
+  .tiers-header span:last-child, .tier-example { display: none; }
 }
 
 /* ── Dark mode ── */
@@ -313,4 +448,29 @@
   }
   .model-select { background: #233044; color: #e2e8f0; border-color: #3a4a5c; }
   .control-label { color: #94a3b8; }
+
+  .formula-card {
+    background: #1a2e3b;
+    border-color: #2d4a3e;
+    .formula-title { color: #7dd3b0; }
+    .formula-eq { background: rgba(49,178,112,0.15); color: #7dd3b0; }
+    .formula-desc { color: #94a3b8; }
+  }
+  .tiers-table {
+    border-color: #2d3748;
+    .tiers-header { background: rgba(49,178,112,0.1); color: #7dd3b0; }
+    .tiers-row { border-top-color: #2d3748; color: #cbd5e1; }
+  }
+  .credits-table-wrapper { border-color: #2d3748; }
+  .credits-table {
+    th { background: #1e2d3d; color: #94a3b8; border-color: #2d3748; }
+    td { border-color: #1e2d3d; color: #e2e8f0; }
+  }
+  .model-code { background: #2d3748; color: #94a3b8; }
+  .credits-input {
+    background: #233044;
+    border-color: #3a4a5c;
+    color: #e2e8f0;
+    &.dirty { background: #2d2710; border-color: #f59e0b; color: #fcd34d; }
+  }
 }

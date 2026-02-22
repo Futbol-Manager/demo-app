@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-import { AiConfig, AiConfigService } from 'src/app/core/services/ai-config/ai-config.service';
+import { AiConfig, AiConfigService, AiCreditConfig } from 'src/app/core/services/ai-config/ai-config.service';
 
 interface ModelOption {
   value: string;
@@ -22,6 +22,8 @@ interface ModelPricing {
 })
 export class AdminAiConfigComponent implements OnInit {
 
+  activeTab: 'models' | 'credits' = 'models';
+
   configs: AiConfig[] = [];
   isLoading = true;
   error = false;
@@ -32,6 +34,26 @@ export class AdminAiConfigComponent implements OnInit {
 
   /** Mapa: configKey → modelo seleccionado en el dropdown */
   selectedModels: Record<string, string> = {};
+
+  // ── Credit config ────────────────────────────────────────────────────────
+  creditConfigs: AiCreditConfig[] = [];
+  isLoadingCredits = false;
+  creditError = false;
+
+  /** Mapa: model → baseCredits editado (antes de guardar) */
+  editedCredits: Record<string, number> = {};
+
+  savingCreditModel: string | null = null;
+  savedCreditModel: string | null = null;
+  saveCreditError: string | null = null;
+
+  /** Multiplicadores de tokens (sólo informativo, fijos en backend) */
+  readonly tokenTiers = [
+    { label: '< 2.000 tokens',       multiplier: '×1', example: 'Saludo, consulta simple' },
+    { label: '2.000 – 9.999 tokens', multiplier: '×2', example: 'Consulta con contexto de equipo' },
+    { label: '10.000 – 49.999',      multiplier: '×4', example: 'Análisis de plantilla completa' },
+    { label: '≥ 50.000 tokens',      multiplier: '×8', example: 'Análisis masivo de temporada' },
+  ];
 
   readonly openaiModels: ModelOption[] = [
     // ── GPT-5 ──
@@ -153,6 +175,7 @@ export class AdminAiConfigComponent implements OnInit {
 
   ngOnInit(): void {
     this.load();
+    this.loadCreditConfigs();
   }
 
   load(): void {
@@ -171,8 +194,57 @@ export class AdminAiConfigComponent implements OnInit {
     });
   }
 
+  loadCreditConfigs(): void {
+    this.isLoadingCredits = true;
+    this.creditError = false;
+    this.aiConfigService.getAllCreditConfigs().subscribe({
+      next: (data) => {
+        this.creditConfigs = data;
+        data.forEach(c => { this.editedCredits[c.model] = c.baseCredits; });
+        this.isLoadingCredits = false;
+      },
+      error: () => {
+        this.creditError = true;
+        this.isLoadingCredits = false;
+      }
+    });
+  }
+
   goBack(): void {
     this.location.back();
+  }
+
+  isCreditDirty(cfg: AiCreditConfig): boolean {
+    return this.editedCredits[cfg.model] !== cfg.baseCredits;
+  }
+
+  saveCredit(cfg: AiCreditConfig): void {
+    const newValue = this.editedCredits[cfg.model];
+    if (!newValue || newValue < 1) return;
+    this.savingCreditModel = cfg.model;
+    this.savedCreditModel = null;
+    this.saveCreditError = null;
+
+    this.aiConfigService.updateCreditConfig(cfg.model, newValue).subscribe({
+      next: (updated) => {
+        cfg.baseCredits = updated.baseCredits;
+        cfg.updatedAt = updated.updatedAt;
+        this.editedCredits[cfg.model] = updated.baseCredits;
+        this.savingCreditModel = null;
+        this.savedCreditModel = cfg.model;
+        setTimeout(() => { if (this.savedCreditModel === cfg.model) this.savedCreditModel = null; }, 2500);
+      },
+      error: () => {
+        this.savingCreditModel = null;
+        this.saveCreditError = cfg.model;
+        setTimeout(() => { if (this.saveCreditError === cfg.model) this.saveCreditError = null; }, 3000);
+      }
+    });
+  }
+
+  /** Ejemplo de créditos con ambas variables: base × multiplicador */
+  exampleCredits(baseCredits: number, multiplier: number): number {
+    return Math.max(1, baseCredits * multiplier);
   }
 
   modelsForProvider(provider: string): ModelOption[] {

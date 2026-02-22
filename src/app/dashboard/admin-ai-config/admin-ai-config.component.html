@@ -7,200 +7,348 @@
 
 <div class="container mt-4 pb-5">
 
-  <!-- Loading -->
-  <div *ngIf="isLoading" class="text-center py-5">
-    <div class="spinner-border text-success" role="status"></div>
-    <div class="mt-3 text-muted">Cargando configuración de IA...</div>
+  <!-- Header -->
+  <div class="page-header mb-4">
+    <div class="page-header-icon">
+      <i class="bi bi-sliders2"></i>
+    </div>
+    <div>
+      <h4 class="fw-bold mb-1">Configuración de IA</h4>
+      <p class="text-muted small mb-0">
+        Gestiona los modelos activos y el coste en créditos por uso.
+      </p>
+    </div>
   </div>
 
-  <!-- Error -->
-  <div *ngIf="error && !isLoading" class="text-center py-5">
-    <i class="bi bi-exclamation-triangle fs-1 text-warning d-block mb-2"></i>
-    <p class="text-muted">Error al cargar la configuración</p>
-    <button class="btn btn-primary" (click)="load()">Reintentar</button>
-  </div>
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-4">
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'models'" (click)="activeTab = 'models'">
+        <i class="bi bi-cpu me-1"></i>Modelos activos
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link" [class.active]="activeTab === 'credits'" (click)="activeTab = 'credits'">
+        <i class="bi bi-coin me-1"></i>Créditos por modelo
+      </button>
+    </li>
+  </ul>
 
-  <div *ngIf="!isLoading && !error">
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- TAB 1: MODELOS ACTIVOS                                       -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab === 'models'">
 
-    <!-- Header -->
-    <div class="page-header mb-4">
-      <div class="page-header-icon">
-        <i class="bi bi-sliders2"></i>
+    <!-- Loading -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+      <div class="mt-3 text-muted">Cargando configuración de modelos...</div>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error && !isLoading" class="text-center py-5">
+      <i class="bi bi-exclamation-triangle fs-1 text-warning d-block mb-2"></i>
+      <p class="text-muted">Error al cargar la configuración</p>
+      <button class="btn btn-primary" (click)="load()">Reintentar</button>
+    </div>
+
+    <div *ngIf="!isLoading && !error">
+      <div class="d-flex justify-content-end mb-3">
+        <button class="btn btn-outline-success btn-sm" (click)="load()">
+          <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+        </button>
       </div>
-      <div>
-        <h4 class="fw-bold mb-1">Configuración de IA</h4>
-        <p class="text-muted small mb-0">
-          Selecciona qué modelo de inteligencia artificial se usa en cada parte de la plataforma.
-          Los cambios se aplican inmediatamente.
+
+      <!-- Tarjetas de configuración -->
+      <div class="config-grid">
+        <div class="config-card" *ngFor="let cfg of configs">
+
+          <!-- Cabecera de la tarjeta -->
+          <div class="config-card-header">
+            <div class="provider-badge" [style.background]="providerColors[cfg.provider] + '18'"
+                 [style.color]="providerColors[cfg.provider]">
+              <i class="bi" [ngClass]="providerIcons[cfg.provider]"></i>
+              {{ providerLabels[cfg.provider] }}
+            </div>
+            <span class="config-key-badge">{{ cfg.configKey }}</span>
+          </div>
+
+          <!-- Nombre y descripción -->
+          <div class="config-name">{{ cfg.displayName }}</div>
+          <div class="config-desc">{{ cfg.description }}</div>
+
+          <!-- Selector de proveedor + modelo -->
+          <div class="config-controls">
+
+            <!-- Proveedor -->
+            <div class="control-group">
+              <label class="control-label">Proveedor</label>
+              <div class="provider-selector">
+                <button class="provider-btn"
+                        [class.active]="cfg.provider === 'openai'"
+                        (click)="onProviderChange(cfg, 'openai')">
+                  <i class="bi bi-stars me-1"></i>OpenAI
+                </button>
+                <button class="provider-btn"
+                        [class.active]="cfg.provider === 'gemini'"
+                        (click)="onProviderChange(cfg, 'gemini')">
+                  <i class="bi bi-gem me-1"></i>Gemini
+                </button>
+              </div>
+            </div>
+
+            <!-- Modelo -->
+            <div class="control-group">
+              <label class="control-label">Modelo</label>
+              <select class="model-select" [(ngModel)]="selectedModels[cfg.configKey]">
+                <ng-container *ngIf="cfg.provider === 'openai'">
+                  <optgroup label="── GPT-5">
+                    <option value="gpt-5">★ GPT-5</option>
+                    <option value="gpt-5-mini">★ GPT-5 mini</option>
+                    <option value="gpt-5-nano">★ GPT-5 nano</option>
+                  </optgroup>
+                  <optgroup label="── Razonamiento (o-series)">
+                    <option value="o4-mini">★ o4 mini</option>
+                    <option value="o3">★ o3</option>
+                    <option value="o3-pro">★ o3 pro</option>
+                    <option value="o3-mini">o3 mini</option>
+                    <option value="o1-pro">o1 pro</option>
+                    <option value="o1">o1</option>
+                    <option value="o1-mini">o1 mini</option>
+                  </optgroup>
+                  <optgroup label="── GPT-4.1 (2025)">
+                    <option value="gpt-4.1">★ GPT-4.1</option>
+                    <option value="gpt-4.1-mini">GPT-4.1 mini</option>
+                    <option value="gpt-4.1-nano">GPT-4.1 nano</option>
+                  </optgroup>
+                  <optgroup label="── GPT-4o">
+                    <option value="gpt-4o">GPT-4o</option>
+                    <option value="gpt-4o-mini">GPT-4o mini</option>
+                  </optgroup>
+                  <optgroup label="── Legado">
+                    <option value="gpt-4-turbo">GPT-4 Turbo</option>
+                    <option value="gpt-4">GPT-4</option>
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                  </optgroup>
+                </ng-container>
+                <ng-container *ngIf="cfg.provider === 'gemini'">
+                  <optgroup label="── Gemini 3 (nov 2025)">
+                    <option value="gemini-3-pro-preview">★ Gemini 3 Pro (Preview)</option>
+                    <option value="gemini-3-flash-preview">★ Gemini 3 Flash (Preview)</option>
+                  </optgroup>
+                  <optgroup label="── Gemini 2.5">
+                    <option value="gemini-2.5-pro">★ Gemini 2.5 Pro</option>
+                    <option value="gemini-2.5-flash">★ Gemini 2.5 Flash</option>
+                    <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
+                    <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro (Exp 03-25)</option>
+                  </optgroup>
+                  <optgroup label="── Gemini 2.0">
+                    <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                    <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
+                  </optgroup>
+                  <optgroup label="── Gemini 1.5">
+                    <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                    <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+                  </optgroup>
+                </ng-container>
+              </select>
+            </div>
+
+          </div>
+
+          <!-- Modelo actual en BD -->
+          <div class="current-model">
+            <i class="bi bi-check2-circle me-1 text-success"></i>
+            Activo: <strong>{{ labelFor(cfg.model) }}</strong>
+            <span *ngIf="cfg.updatedAt" class="text-muted ms-2 small">
+              · {{ cfg.updatedAt | date:'dd/MM/yy HH:mm' }}
+            </span>
+          </div>
+
+          <!-- Coste del modelo seleccionado -->
+          <ng-container *ngIf="pricingFor(selectedModels[cfg.configKey]) as p">
+            <div class="pricing-row" *ngIf="p.note; else showPrices">
+              <i class="bi bi-tag me-1"></i>
+              <span class="pricing-note">{{ p.note }}</span>
+            </div>
+            <ng-template #showPrices>
+              <div class="pricing-row">
+                <i class="bi bi-tag me-1"></i>
+                <span class="pricing-label">Coste / 1M tokens:</span>
+                <span class="pricing-in">
+                  <i class="bi bi-arrow-right-circle me-1"></i>{{ formatPrice(p.in) }} entrada
+                </span>
+                <span class="pricing-sep">·</span>
+                <span class="pricing-out">
+                  <i class="bi bi-arrow-left-circle me-1"></i>{{ formatPrice(p.out) }} salida
+                </span>
+              </div>
+            </ng-template>
+          </ng-container>
+
+          <!-- Acciones -->
+          <div class="config-actions">
+            <button class="btn-save"
+                    [disabled]="savingKey === cfg.configKey || !isDirty(cfg)"
+                    (click)="save(cfg)">
+              <span *ngIf="savingKey === cfg.configKey">
+                <span class="spinner-border spinner-border-sm me-1"></span>Guardando...
+              </span>
+              <span *ngIf="savingKey !== cfg.configKey">
+                <i class="bi bi-floppy me-1"></i>Guardar cambios
+              </span>
+            </button>
+            <div *ngIf="savedKey === cfg.configKey" class="feedback-ok">
+              <i class="bi bi-check-circle-fill me-1"></i>Guardado
+            </div>
+            <div *ngIf="saveError === cfg.configKey" class="feedback-err">
+              <i class="bi bi-x-circle-fill me-1"></i>Error al guardar
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Nota informativa -->
+      <div class="info-note mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        <span>
+          Para usar <strong>Google Gemini</strong> debes tener configurada la clave
+          <code>gemini.api.key</code> en el servidor. Si no está configurada, el sistema
+          usará automáticamente el modelo de fallback de OpenAI.
+        </span>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <!-- TAB 2: CRÉDITOS POR MODELO                                   -->
+  <!-- ════════════════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab === 'credits'">
+
+    <!-- Explicación de la fórmula -->
+    <div class="formula-card mb-4">
+      <div class="formula-title">
+        <i class="bi bi-calculator me-2"></i>Fórmula de créditos
+      </div>
+      <div class="formula-body">
+        <code class="formula-eq">créditos consumidos = créditos_base(modelo) × multiplicador_tokens</code>
+        <p class="formula-desc mt-2 mb-0">
+          El <strong>crédito base</strong> refleja el coste relativo del modelo.
+          El <strong>multiplicador</strong> penaliza las consultas largas (mucho contexto, plantillas completas...).
+          El mínimo siempre es <strong>1 crédito</strong>.
         </p>
       </div>
-      <button class="btn btn-outline-success btn-sm ms-auto" (click)="load()">
-        <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
-      </button>
-    </div>
 
-    <!-- Tarjetas de configuración -->
-    <div class="config-grid">
-      <div class="config-card" *ngFor="let cfg of configs">
-
-        <!-- Cabecera de la tarjeta -->
-        <div class="config-card-header">
-          <div class="provider-badge" [style.background]="providerColors[cfg.provider] + '18'"
-               [style.color]="providerColors[cfg.provider]">
-            <i class="bi" [ngClass]="providerIcons[cfg.provider]"></i>
-            {{ providerLabels[cfg.provider] }}
-          </div>
-          <span class="config-key-badge">{{ cfg.configKey }}</span>
+      <!-- Tabla de multiplicadores -->
+      <div class="tiers-table mt-3">
+        <div class="tiers-header">
+          <span>Tokens totales (entrada + salida)</span>
+          <span>Multiplicador</span>
+          <span>Ejemplo</span>
         </div>
-
-        <!-- Nombre y descripción -->
-        <div class="config-name">{{ cfg.displayName }}</div>
-        <div class="config-desc">{{ cfg.description }}</div>
-
-        <!-- Selector de proveedor + modelo -->
-        <div class="config-controls">
-
-          <!-- Proveedor -->
-          <div class="control-group">
-            <label class="control-label">Proveedor</label>
-            <div class="provider-selector">
-              <button class="provider-btn"
-                      [class.active]="cfg.provider === 'openai'"
-                      (click)="onProviderChange(cfg, 'openai')">
-                <i class="bi bi-stars me-1"></i>OpenAI
-              </button>
-              <button class="provider-btn"
-                      [class.active]="cfg.provider === 'gemini'"
-                      (click)="onProviderChange(cfg, 'gemini')">
-                <i class="bi bi-gem me-1"></i>Gemini
-              </button>
-            </div>
-          </div>
-
-          <!-- Modelo -->
-          <div class="control-group">
-            <label class="control-label">Modelo</label>
-            <select class="model-select"
-                    [(ngModel)]="selectedModels[cfg.configKey]">
-              <ng-container *ngIf="cfg.provider === 'openai'">
-                <optgroup label="── GPT-5">
-                  <option value="gpt-5">★ GPT-5</option>
-                  <option value="gpt-5-mini">★ GPT-5 mini</option>
-                  <option value="gpt-5-nano">★ GPT-5 nano</option>
-                </optgroup>
-                <optgroup label="── Razonamiento (o-series)">
-                  <option value="o4-mini">★ o4 mini</option>
-                  <option value="o3">★ o3</option>
-                  <option value="o3-pro">★ o3 pro</option>
-                  <option value="o3-mini">o3 mini</option>
-                  <option value="o1-pro">o1 pro</option>
-                  <option value="o1">o1</option>
-                  <option value="o1-mini">o1 mini</option>
-                </optgroup>
-                <optgroup label="── GPT-4.1 (2025)">
-                  <option value="gpt-4.1">★ GPT-4.1</option>
-                  <option value="gpt-4.1-mini">GPT-4.1 mini</option>
-                  <option value="gpt-4.1-nano">GPT-4.1 nano</option>
-                </optgroup>
-                <optgroup label="── GPT-4o">
-                  <option value="gpt-4o">GPT-4o</option>
-                  <option value="gpt-4o-mini">GPT-4o mini</option>
-                </optgroup>
-                <optgroup label="── Legado">
-                  <option value="gpt-4-turbo">GPT-4 Turbo</option>
-                  <option value="gpt-4">GPT-4</option>
-                  <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-                </optgroup>
-              </ng-container>
-              <ng-container *ngIf="cfg.provider === 'gemini'">
-                <optgroup label="── Gemini 3 (nov 2025)">
-                  <option value="gemini-3-pro-preview">★ Gemini 3 Pro (Preview)</option>
-                  <option value="gemini-3-flash-preview">★ Gemini 3 Flash (Preview)</option>
-                </optgroup>
-                <optgroup label="── Gemini 2.5">
-                  <option value="gemini-2.5-pro">★ Gemini 2.5 Pro</option>
-                  <option value="gemini-2.5-flash">★ Gemini 2.5 Flash</option>
-                  <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash Lite</option>
-                  <option value="gemini-2.5-pro-exp-03-25">Gemini 2.5 Pro (Exp 03-25)</option>
-                </optgroup>
-                <optgroup label="── Gemini 2.0">
-                  <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                  <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash Lite</option>
-                </optgroup>
-                <optgroup label="── Gemini 1.5">
-                  <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-                  <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-                </optgroup>
-              </ng-container>
-            </select>
-          </div>
-
+        <div class="tiers-row" *ngFor="let tier of tokenTiers">
+          <span class="tier-range">{{ tier.label }}</span>
+          <span class="tier-mult">{{ tier.multiplier }}</span>
+          <span class="tier-example text-muted">{{ tier.example }}</span>
         </div>
-
-        <!-- Modelo actual en BD -->
-        <div class="current-model">
-          <i class="bi bi-check2-circle me-1 text-success"></i>
-          Activo: <strong>{{ labelFor(cfg.model) }}</strong>
-          <span *ngIf="cfg.updatedAt" class="text-muted ms-2 small">
-            · {{ cfg.updatedAt | date:'dd/MM/yy HH:mm' }}
-          </span>
-        </div>
-
-        <!-- Coste del modelo seleccionado -->
-        <ng-container *ngIf="pricingFor(selectedModels[cfg.configKey]) as p">
-          <div class="pricing-row" *ngIf="p.note; else showPrices">
-            <i class="bi bi-tag me-1"></i>
-            <span class="pricing-note">{{ p.note }}</span>
-          </div>
-          <ng-template #showPrices>
-            <div class="pricing-row">
-              <i class="bi bi-tag me-1"></i>
-              <span class="pricing-label">Coste / 1M tokens:</span>
-              <span class="pricing-in">
-                <i class="bi bi-arrow-right-circle me-1"></i>{{ formatPrice(p.in) }} entrada
-              </span>
-              <span class="pricing-sep">·</span>
-              <span class="pricing-out">
-                <i class="bi bi-arrow-left-circle me-1"></i>{{ formatPrice(p.out) }} salida
-              </span>
-            </div>
-          </ng-template>
-        </ng-container>
-
-        <!-- Acciones -->
-        <div class="config-actions">
-          <button class="btn-save"
-                  [disabled]="savingKey === cfg.configKey || !isDirty(cfg)"
-                  (click)="save(cfg)">
-            <span *ngIf="savingKey === cfg.configKey">
-              <span class="spinner-border spinner-border-sm me-1"></span>Guardando...
-            </span>
-            <span *ngIf="savingKey !== cfg.configKey">
-              <i class="bi bi-floppy me-1"></i>Guardar cambios
-            </span>
-          </button>
-
-          <!-- Feedback -->
-          <div *ngIf="savedKey === cfg.configKey" class="feedback-ok">
-            <i class="bi bi-check-circle-fill me-1"></i>Guardado
-          </div>
-          <div *ngIf="saveError === cfg.configKey" class="feedback-err">
-            <i class="bi bi-x-circle-fill me-1"></i>Error al guardar
-          </div>
-        </div>
-
       </div>
     </div>
 
-    <!-- Nota informativa -->
-    <div class="info-note mt-4">
-      <i class="bi bi-info-circle me-2"></i>
-      <span>
-        Para usar <strong>Google Gemini</strong> debes tener configurada la clave
-        <code>gemini.api.key</code> en el servidor. Si no está configurada, el sistema
-        usará automáticamente el modelo de fallback de OpenAI.
-      </span>
+    <!-- Loading -->
+    <div *ngIf="isLoadingCredits" class="text-center py-5">
+      <div class="spinner-border text-success" role="status"></div>
+      <div class="mt-3 text-muted">Cargando configuración de créditos...</div>
     </div>
 
+    <!-- Error -->
+    <div *ngIf="creditError && !isLoadingCredits" class="text-center py-4">
+      <i class="bi bi-exclamation-triangle fs-1 text-warning d-block mb-2"></i>
+      <p class="text-muted">Error al cargar los créditos</p>
+      <button class="btn btn-primary" (click)="loadCreditConfigs()">Reintentar</button>
+    </div>
+
+    <div *ngIf="!isLoadingCredits && !creditError">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted small">{{ creditConfigs.length }} modelos configurados</span>
+        <button class="btn btn-outline-success btn-sm" (click)="loadCreditConfigs()">
+          <i class="bi bi-arrow-clockwise me-1"></i>Actualizar
+        </button>
+      </div>
+
+      <!-- Tabla de créditos -->
+      <div class="credits-table-wrapper">
+        <table class="table align-middle credits-table">
+          <thead>
+            <tr>
+              <th>Modelo</th>
+              <th class="text-center">Créditos base</th>
+              <th class="text-center d-none d-md-table-cell">Ejemplo ×1</th>
+              <th class="text-center d-none d-md-table-cell">Ejemplo ×2</th>
+              <th class="text-center d-none d-md-table-cell">Ejemplo ×4</th>
+              <th class="text-center">Última edición</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cfg of creditConfigs">
+              <td>
+                <code class="model-code">{{ cfg.model }}</code>
+              </td>
+              <td class="text-center">
+                <input type="number"
+                       class="credits-input"
+                       [(ngModel)]="editedCredits[cfg.model]"
+                       min="1" max="100"
+                       [class.dirty]="isCreditDirty(cfg)">
+              </td>
+              <td class="text-center d-none d-md-table-cell">
+                <span class="badge-credits">{{ exampleCredits(editedCredits[cfg.model] || cfg.baseCredits, 1) }}</span>
+              </td>
+              <td class="text-center d-none d-md-table-cell">
+                <span class="badge-credits">{{ exampleCredits(editedCredits[cfg.model] || cfg.baseCredits, 2) }}</span>
+              </td>
+              <td class="text-center d-none d-md-table-cell">
+                <span class="badge-credits">{{ exampleCredits(editedCredits[cfg.model] || cfg.baseCredits, 4) }}</span>
+              </td>
+              <td class="text-center text-muted small">
+                {{ cfg.updatedAt ? (cfg.updatedAt | date:'dd/MM/yy') : '—' }}
+              </td>
+              <td class="text-end">
+                <div class="d-flex align-items-center gap-2 justify-content-end">
+                  <button class="btn-save-sm"
+                          [disabled]="savingCreditModel === cfg.model || !isCreditDirty(cfg)"
+                          (click)="saveCredit(cfg)">
+                    <span *ngIf="savingCreditModel === cfg.model">
+                      <span class="spinner-border spinner-border-sm"></span>
+                    </span>
+                    <span *ngIf="savingCreditModel !== cfg.model">
+                      <i class="bi bi-floppy"></i>
+                    </span>
+                  </button>
+                  <span *ngIf="savedCreditModel === cfg.model" class="feedback-ok-sm">
+                    <i class="bi bi-check-circle-fill"></i>
+                  </span>
+                  <span *ngIf="saveCreditError === cfg.model" class="feedback-err-sm">
+                    <i class="bi bi-x-circle-fill"></i>
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="info-note mt-4">
+        <i class="bi bi-info-circle me-2"></i>
+        <span>
+          Los cambios se aplican <strong>inmediatamente</strong> a todas las nuevas solicitudes al asistente.
+          Los créditos ya consumidos no se recalculan. Si configuras un modelo que no está en la lista,
+          el sistema usará <strong>1 crédito base</strong> por defecto.
+        </span>
+      </div>
+    </div>
   </div>
+
 </div>

@@ -8,6 +8,7 @@ import { TeamService } from 'src/app/core/services/team/team.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { Response } from 'src/app/core/services/models/response.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
+import { AiPageContextService } from 'src/app/core/services/ai-chat/ai-page-context.service';
 import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
@@ -61,7 +62,8 @@ export class InicioComponent implements OnInit {
     private loginService: LoginService,
     private teamService: TeamService,
     private router: Router,
-    private playerservice: PlayerService
+    private playerservice: PlayerService,
+    private aiPageContext: AiPageContextService,
   ) { }
 
   // =========================
@@ -236,6 +238,9 @@ export class InicioComponent implements OnInit {
       this.clubOk = cachedClubOk === 'true';
       this.clubId = Number(cachedClubId);
       this.clubLoading = false;
+      if (this.clubId > 0) {
+        this.aiPageContext.preloadForClub(this.clubId);
+      }
     }
   }
 
@@ -298,6 +303,9 @@ export class InicioComponent implements OnInit {
 
           // Cachear SIEMPRE
           sessionStorage.setItem(this.CLUB_ID_KEY, String(this.clubId));
+
+          // Precargar estadísticas para el chatbot IA
+          this.aiPageContext.preloadForClub(this.clubId);
 
           this.verificarSuscripcion();
         },

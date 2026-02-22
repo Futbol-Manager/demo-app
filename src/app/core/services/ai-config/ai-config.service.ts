@@ -12,6 +12,12 @@ export interface AiConfig {
   updatedAt: string | null;
 }
 
+export interface AiCreditConfig {
+  model: string;
+  baseCredits: number;
+  updatedAt: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AiConfigService {
 
@@ -36,6 +42,21 @@ export class AiConfigService {
     return this.http.put<AiConfig>(
       `${this.baseUrl}/${encodedKey}`,
       { model, provider },
+      { headers: this.getHeaders() }
+    );
+  }
+
+  // ── Credit config ──────────────────────────────────────────────────────────
+
+  getAllCreditConfigs(): Observable<AiCreditConfig[]> {
+    return this.http.get<AiCreditConfig[]>(`${this.baseUrl}/credits`, { headers: this.getHeaders() });
+  }
+
+  updateCreditConfig(model: string, baseCredits: number): Observable<AiCreditConfig> {
+    const encodedModel = encodeURIComponent(model);
+    return this.http.put<AiCreditConfig>(
+      `${this.baseUrl}/credits/${encodedModel}`,
+      { baseCredits },
       { headers: this.getHeaders() }
     );
   }
