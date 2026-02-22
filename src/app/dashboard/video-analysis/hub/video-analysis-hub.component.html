@@ -137,7 +137,10 @@
           <h5 class="project-title">{{ project.title }}</h5>
           <p class="project-description" *ngIf="project.description">{{ project.description }}</p>
           <div class="project-meta">
-            <span class="meta-item" *ngIf="project.videoTitle">
+            <span class="meta-item" *ngIf="project.localFileName">
+              <i class="bi bi-pc-display"></i> {{ project.localFileName }}
+            </span>
+            <span class="meta-item" *ngIf="!project.localFileName && project.videoTitle">
               <i class="bi bi-film"></i> {{ project.videoTitle }}
             </span>
             <span class="meta-item" *ngIf="project.teamName">
@@ -191,30 +194,57 @@
                   [(ngModel)]="newProject.description"></textarea>
       </div>
 
-      <!-- Seleccionar vídeo -->
+      <!-- Seleccionar vídeo local -->
       <div class="form-group">
-        <label>Vídeo a analizar *</label>
-        <select class="form-select" [(ngModel)]="newProject.videoId">
-          <option [ngValue]="0" disabled>Selecciona un vídeo de la biblioteca</option>
-          <option *ngFor="let video of clubVideos" [ngValue]="video.id">
-            {{ video.title || video.playerName || 'Vídeo #' + video.id }}
-          </option>
-        </select>
-        <small class="text-muted" *ngIf="clubVideos.length === 0">
-          No hay vídeos disponibles. Sube un vídeo primero desde la Biblioteca de Vídeos.
+        <label>Archivo de vídeo (desde tu PC) *</label>
+        <div class="local-file-picker">
+          <input #fileInput type="file" accept="video/*" class="d-none"
+                 (change)="onLocalFileSelected($event)">
+          <button class="btn btn-outline-primary btn-sm w-100"
+                  (click)="fileInput.click()"
+                  [disabled]="isExtractingMeta">
+            <i class="bi bi-folder2-open me-1"></i>
+            {{ selectedFileMeta ? 'Cambiar archivo' : 'Seleccionar archivo de vídeo' }}
+          </button>
+          <div class="local-file-info" *ngIf="selectedFileMeta">
+            <i class="bi bi-file-earmark-play-fill"></i>
+            <div class="file-details">
+              <span class="file-name">{{ selectedFileMeta.fileName }}</span>
+              <span class="file-meta">
+                {{ localVideoService.formatFileSize(selectedFileMeta.fileSize) }}
+                &middot;
+                {{ localVideoService.formatDuration(selectedFileMeta.durationMs) }}
+              </span>
+            </div>
+            <i class="bi bi-check-circle-fill text-success"></i>
+          </div>
+          <div class="extracting-meta" *ngIf="isExtractingMeta">
+            <span class="spinner-border spinner-border-sm me-1"></span>
+            Leyendo información del vídeo…
+          </div>
+        </div>
+        <small class="text-muted">
+          El vídeo no se sube a ningún servidor. Se reproduce directamente desde tu ordenador.
         </small>
       </div>
 
       <!-- Plantilla de análisis -->
       <div class="form-group">
         <label>Plantilla de análisis *</label>
-        <select class="form-select" [(ngModel)]="newProject.templateId">
+        <select class="form-select" [(ngModel)]="newProject.templateId" [disabled]="templates.length === 0">
           <option [ngValue]="0" disabled>Selecciona una plantilla</option>
           <option *ngFor="let tpl of templates" [ngValue]="tpl.id">
             {{ tpl.name }}
             <span *ngIf="tpl.isSystem"> (Sphaira)</span>
           </option>
         </select>
+        <div class="alert-no-templates" *ngIf="templates.length === 0">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          No tienes plantillas creadas aún. Las plantillas definen la botonera de etiquetado (categorías y descriptores).
+          <a routerLink="/dashboard/video-analysis/templates" (click)="closeNewProjectModal()">
+            Crear mi primera plantilla
+          </a>
+        </div>
       </div>
 
       <!-- Contexto -->
@@ -237,10 +267,13 @@
       </div>
 
     </div>
+    <div *ngIf="createError" class="create-error-banner">
+      <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ createError }}
+    </div>
     <div class="modal-footer-custom">
       <button class="btn btn-outline-secondary" (click)="closeNewProjectModal()">Cancelar</button>
       <button class="btn btn-primary" (click)="createProject()"
-              [disabled]="!newProject.title || !newProject.videoId || !newProject.templateId || isCreating">
+              [disabled]="!newProject.title || !selectedFileMeta || !newProject.templateId || isCreating">
         <span *ngIf="isCreating" class="spinner-border spinner-border-sm me-1"></span>
         <i class="bi bi-play-circle" *ngIf="!isCreating"></i>
         {{ isCreating ? 'Creando...' : 'Crear y abrir workspace' }}

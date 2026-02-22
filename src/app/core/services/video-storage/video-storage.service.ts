@@ -109,6 +109,14 @@ export class VideoStorageService {
     );
   }
 
+  exportToDrive(clubId: number, videoId: number, accessToken: string, filename: string): Observable<any> {
+    return this.http.post<any>(
+      `${this.baseUrl}/${clubId}/video/${videoId}/export-to-drive`,
+      { accessToken, filename },
+      { headers: this.getHeaders() }
+    );
+  }
+
   // ── Upload ─────────────────────────────────────────────
   uploadVideo(clubId: number, uploadedBy: number, file: File, meta: {
     title?: string; description?: string; tags?: string;

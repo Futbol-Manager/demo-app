@@ -26,6 +26,11 @@ export class TemplateListComponent implements OnInit, OnDestroy {
   isCreating = false;
   createError = '';
 
+  // Edit description
+  editingDescriptionId: number | null = null;
+  editDescriptionValue = '';
+  isSavingDescription = false;
+
   constructor(
     private router: Router,
     private analysisService: VideoAnalysisService,
@@ -79,14 +84,49 @@ export class TemplateListComponent implements OnInit, OnDestroy {
   deleteTemplate(template: AnalysisTemplate, event: Event): void {
     event.stopPropagation();
     if (template.isSystem) return;
-    if (!confirm('¿Eliminar esta plantilla?')) return;
+    if (!confirm('¿Eliminar esta plantilla? Esta acción no se puede deshacer.')) return;
     this.analysisService.deleteTemplate(template.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.templates = this.templates.filter(t => t.id !== template.id);
+        },
+        error: (err) => {
+          const msg = err?.error?.error?.msg || err?.error?.message || `Error ${err?.status || ''}`;
+          alert(`No se pudo eliminar la plantilla: ${msg}`);
         }
       });
+  }
+
+  startEditDescription(template: AnalysisTemplate, event: Event): void {
+    event.stopPropagation();
+    if (template.isSystem) return;
+    this.editingDescriptionId = template.id;
+    this.editDescriptionValue = template.description || '';
+  }
+
+  saveDescription(template: AnalysisTemplate, event: Event): void {
+    event.stopPropagation();
+    if (this.isSavingDescription) return;
+    this.isSavingDescription = true;
+    this.analysisService.updateTemplate(template.id, { description: this.editDescriptionValue })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: () => {
+          template.description = this.editDescriptionValue;
+          this.editingDescriptionId = null;
+          this.isSavingDescription = false;
+        },
+        error: (err) => {
+          this.isSavingDescription = false;
+          alert('No se pudo guardar la descripción.');
+        }
+      });
+  }
+
+  cancelEditDescription(event: Event): void {
+    event.stopPropagation();
+    this.editingDescriptionId = null;
   }
 
   openCreateModal(): void {

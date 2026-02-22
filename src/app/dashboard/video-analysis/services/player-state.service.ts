@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { AnalysisEvent, AnalysisCategory, AnalysisDrawing } from '../models/analysis.models';
+import { AnalysisEvent, AnalysisCategory, AnalysisDrawing, AnalysisTemplate, AnalysisTag } from '../models/analysis.models';
 
 export interface PlayerState {
   currentTimeMs: number;
@@ -31,7 +31,9 @@ export class PlayerStateService {
 
   events$ = new BehaviorSubject<AnalysisEvent[]>([]);
   categories$ = new BehaviorSubject<AnalysisCategory[]>([]);
+  descriptors$ = new BehaviorSubject<AnalysisTag[]>([]);
   drawings$ = new BehaviorSubject<AnalysisDrawing[]>([]);
+  template$ = new BehaviorSubject<AnalysisTemplate | null>(null);
 
   seekTo$ = new Subject<number>();
   eventCreated$ = new Subject<AnalysisEvent>();
@@ -110,6 +112,14 @@ export class PlayerStateService {
     this.categories$.next(categories);
   }
 
+  setDescriptors(descriptors: AnalysisTag[]): void {
+    this.descriptors$.next(descriptors);
+  }
+
+  setTemplate(template: AnalysisTemplate | null): void {
+    this.template$.next(template);
+  }
+
   setDrawings(drawings: AnalysisDrawing[]): void {
     this.drawings$.next(drawings);
   }
@@ -130,7 +140,9 @@ export class PlayerStateService {
     this.state$.next({ ...this.initialState });
     this.events$.next([]);
     this.categories$.next([]);
+    this.descriptors$.next([]);
     this.drawings$.next([]);
+    this.template$.next(null);
     this.selectedEventId$.next(null);
     this.activeDrawingTool$.next(null);
   }

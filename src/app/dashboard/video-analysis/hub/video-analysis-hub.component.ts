@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VideoAnalysisService } from '../../../core/services/video-analysis/video-analysis.service';
-import { VideoStorageService } from '../../../core/services/video-storage/video-storage.service';
 import { LoginService } from '../../../core/services/login/login.service';
+import { LocalVideoService, LocalVideoMeta } from '../services/local-video.service';
 import { AnalysisProject, AnalysisTemplate, ProjectStatus, PROJECT_STATUS_LABELS, PROJECT_STATUS_COLORS } from '../models/analysis.models';
 
 @Component({
@@ -19,7 +19,6 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
   projects: AnalysisProject[] = [];
   filteredProjects: AnalysisProject[] = [];
   templates: AnalysisTemplate[] = [];
-  clubVideos: any[] = [];
   isLoading = true;
   clubId = 0;
   userId = 0;
@@ -31,23 +30,27 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
   newProject = {
     title: '',
     description: '',
-    videoId: 0,
     templateId: 0,
     teamId: null as number | null,
     matchId: null as number | null,
     trainingId: null as number | null,
     contextType: 'free' as 'free' | 'match' | 'training'
   };
+  selectedFile: File | null = null;
+  selectedFileMeta: LocalVideoMeta | null = null;
+  isExtractingMeta = false;
   isCreating = false;
+  createError = '';
 
   statusLabels = PROJECT_STATUS_LABELS;
   statusColors = PROJECT_STATUS_COLORS;
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private analysisService: VideoAnalysisService,
-    private videoService: VideoStorageService,
-    private loginService: LoginService
+    private loginService: LoginService,
+    public localVideoService: LocalVideoService
   ) {}
 
   ngOnInit(): void {
@@ -89,13 +92,6 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
         next: (res) => { this.templates = res.data || []; },
         error: () => { this.templates = []; }
       });
-
-    this.videoService.listVideos(this.clubId)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res) => { this.clubVideos = res.data || []; },
-        error: () => { this.clubVideos = []; }
-      });
   }
 
   setFilter(filter: ProjectStatus | 'ALL'): void {
@@ -124,9 +120,12 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
 
   openNewProjectModal(): void {
     this.newProject = {
-      title: '', description: '', videoId: 0, templateId: 0,
+      title: '', description: '', templateId: 0,
       teamId: null, matchId: null, trainingId: null, contextType: 'free'
     };
+    this.selectedFile = null;
+    this.selectedFileMeta = null;
+    this.createError = '';
     if (this.templates.length > 0) {
       this.newProject.templateId = this.templates[0].id;
     }
@@ -137,17 +136,58 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
     this.showNewProjectModal = false;
   }
 
+  async onLocalFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.isExtractingMeta = true;
+    this.selectedFile = null;
+    this.selectedFileMeta = null;
+
+    try {
+      const meta = await LocalVideoService.extractMeta(file);
+      this.selectedFile = file;
+      this.selectedFileMeta = meta;
+      if (!this.newProject.title) {
+        const nameWithoutExt = file.name.replace(/\.[^.]+$/, '');
+        this.newProject.title = `Análisis – ${nameWithoutExt}`;
+      }
+    } catch {
+      alert('No se pudo leer la información del archivo. Asegúrate de que es un archivo de vídeo válido.');
+    } finally {
+      this.isExtractingMeta = false;
+      input.value = '';
+    }
+  }
+
   createProject(): void {
-    if (!this.newProject.title || !this.newProject.videoId || !this.newProject.templateId) return;
+    const missing: string[] = [];
+    if (!this.newProject.title) missing.push('título');
+    if (!this.selectedFileMeta) missing.push('archivo de vídeo');
+    if (!this.selectedFile) missing.push('archivo de vídeo (objeto)');
+    if (!this.newProject.templateId) missing.push('plantilla');
+
+    if (missing.length > 0) {
+      console.warn('createProject guard: faltan campos:', missing);
+      return;
+    }
+
     this.isCreating = true;
+    this.createError = '';
+
+    this.localVideoService.setFile(this.selectedFile!, this.selectedFileMeta!);
 
     const body: any = {
       clubId: this.clubId,
       createdBy: this.userId,
-      videoId: this.newProject.videoId,
+      videoId: null,
       title: this.newProject.title,
-      description: this.newProject.description,
-      templateId: this.newProject.templateId
+      description: this.newProject.description || '',
+      templateId: this.newProject.templateId,
+      localFileName: this.selectedFileMeta!.fileName,
+      localFileSize: this.selectedFileMeta!.fileSize,
+      localFileDurationMs: this.selectedFileMeta!.durationMs
     };
     if (this.newProject.contextType === 'match' && this.newProject.matchId) {
       body.matchId = this.newProject.matchId;
@@ -156,18 +196,25 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
       body.trainingId = this.newProject.trainingId;
     }
 
+    console.log('createProject body:', body);
+
     this.analysisService.createProject(body)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
           this.isCreating = false;
-          this.showNewProjectModal = false;
-          if (res.data) {
+          if (res?.data?.id) {
+            this.showNewProjectModal = false;
             this.router.navigate(['/dashboard/video-analysis/workspace', res.data.id]);
+          } else {
+            this.createError = 'El servidor no devolvió el proyecto creado. Inténtalo de nuevo.';
           }
         },
-        error: () => {
+        error: (err) => {
           this.isCreating = false;
+          const msg = err?.error?.message || err?.error?.msg || err?.message || 'Error al crear el proyecto.';
+          this.createError = msg;
+          console.error('createProject error:', err);
         }
       });
   }

@@ -18,9 +18,10 @@ export class VideoAnalysisService {
   // ── Projects ──
 
   createProject(body: {
-    clubId: number; createdBy: number; videoId: number; title: string;
+    clubId: number; createdBy: number; videoId?: number; title: string;
     description?: string; templateId: number; teamId?: number;
     matchId?: number; trainingId?: number;
+    localFileName?: string; localFileSize?: number; localFileDurationMs?: number;
   }): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/project`, body, { headers: this.getHeaders() });
   }
@@ -70,7 +71,7 @@ export class VideoAnalysisService {
     return this.http.post<any>(`${this.baseUrl}/template`, body, { headers: this.getHeaders() });
   }
 
-  updateTemplate(templateId: number, body: { name?: string; description?: string; backgroundImage?: string | null; backgroundOpacity?: number }): Observable<any> {
+  updateTemplate(templateId: number, body: { name?: string; description?: string; backgroundImage?: string | null; backgroundOpacity?: number; bgColor?: string | null; bgImgX?: number; bgImgY?: number; bgImgW?: number; bgImgH?: number; bgImgLocked?: boolean }): Observable<any> {
     return this.http.put<any>(`${this.baseUrl}/template/${templateId}`, body, { headers: this.getHeaders() });
   }
 
@@ -87,6 +88,9 @@ export class VideoAnalysisService {
   addCategory(templateId: number, body: {
     name: string; color: string; icon?: string; shortcutKey?: string;
     defaultDurationSec?: number; sortOrder: number; parentId?: number;
+    preTimeSec?: number; postTimeSec?: number;
+    posX?: number; posY?: number; sizeW?: number; sizeH?: number;
+    shape?: string; textSize?: number; textColor?: string;
   }): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/template/${templateId}/category`, body, { headers: this.getHeaders() });
   }
@@ -99,13 +103,33 @@ export class VideoAnalysisService {
     return this.http.delete<any>(`${this.baseUrl}/category/${categoryId}`, { headers: this.getHeaders() });
   }
 
+  categoryToDescriptor(categoryId: number): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/category/${categoryId}/to-descriptor`, {}, { headers: this.getHeaders() });
+  }
+
+  descriptorToCategory(tagId: number): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/tag/${tagId}/to-category`, {}, { headers: this.getHeaders() });
+  }
+
   // ── Tags ──
 
   addTag(categoryId: number, body: { name: string; color?: string; sortOrder: number }): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/category/${categoryId}/tag`, body, { headers: this.getHeaders() });
   }
 
-  updateTag(tagId: number, body: { name?: string; color?: string; sortOrder?: number }): Observable<any> {
+  addDescriptor(templateId: number, body: {
+    name: string; color?: string; sortOrder?: number;
+    posX?: number; posY?: number; sizeW?: number; sizeH?: number;
+    shape?: string; textSize?: number; textColor?: string; opacity?: number;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/template/${templateId}/descriptor`, body, { headers: this.getHeaders() });
+  }
+
+  updateTag(tagId: number, body: {
+    name?: string; color?: string; sortOrder?: number;
+    posX?: number; posY?: number; sizeW?: number; sizeH?: number;
+    shape?: string; textSize?: number; textColor?: string; opacity?: number; locked?: boolean;
+  }): Observable<any> {
     return this.http.put<any>(`${this.baseUrl}/tag/${tagId}`, body, { headers: this.getHeaders() });
   }
 
@@ -199,6 +223,37 @@ export class VideoAnalysisService {
 
   reorderPlaylistItems(playlistId: number, itemIds: number[]): Observable<any> {
     return this.http.put<any>(`${this.baseUrl}/playlist/${playlistId}/reorder`, { itemIds }, { headers: this.getHeaders() });
+  }
+
+  updatePlaylistItem(itemId: number, body: {
+    customStartMs?: number | null;
+    customEndMs?: number | null;
+    notes?: string;
+  }): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/playlist/item/${itemId}`, body, { headers: this.getHeaders() });
+  }
+
+  // ── Clip Annotations ──
+
+  listClipAnnotations(eventId: number): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/event/${eventId}/annotations`, { headers: this.getHeaders() });
+  }
+
+  createClipAnnotation(eventId: number, body: {
+    frameTimeMs: number; frameDurationMs: number; drawingData: string;
+    sortOrder: number; createdBy: number;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/event/${eventId}/annotation`, body, { headers: this.getHeaders() });
+  }
+
+  updateClipAnnotation(annotationId: number, body: {
+    frameTimeMs?: number; frameDurationMs?: number; drawingData?: string; sortOrder?: number;
+  }): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/annotation/${annotationId}`, body, { headers: this.getHeaders() });
+  }
+
+  deleteClipAnnotation(annotationId: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/annotation/${annotationId}`, { headers: this.getHeaders() });
   }
 
   // ── Presentations ──

@@ -4,7 +4,7 @@ declare var google: any;
 declare var gapi: any;
 
 const CLIENT_ID = '114221488480-qkrnl83879rjqds3499f7k0kti562ni1.apps.googleusercontent.com';
-const API_KEY = '';
+const API_KEY = 'AIzaSyCkp6qhDyLf1fKl-E0uWGg5mIlFwrVvjoE';
 const SCOPES_IMPORT = 'https://www.googleapis.com/auth/drive.readonly';
 const SCOPES_EXPORT = 'https://www.googleapis.com/auth/drive.file';
 

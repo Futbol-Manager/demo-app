@@ -26,6 +26,18 @@
     min-height: calc(100vh - 60px);
   }
 
+  // Fullscreen mode (canvas-tagger, etc.)
+  .dashboard-fullscreen {
+    margin-left: 0 !important;
+    transition: none !important;
+  }
+
+  .dashboard-content--fullscreen {
+    height: 100vh;
+    overflow: hidden;
+    padding: 0 !important;
+  }
+
   @media (max-width: 768px) {
     .dashboard-main,
     .dashboard-main--collapsed {

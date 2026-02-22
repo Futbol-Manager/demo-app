@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, OnChanges, SimpleChanges, ViewChild, ElementRef, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PlayerStateService } from '../../services/player-state.service';
@@ -10,7 +10,7 @@ declare var Hls: any;
   templateUrl: './video-player.component.html',
   styleUrls: ['./video-player.component.scss']
 })
-export class VideoPlayerComponent implements OnInit, OnDestroy {
+export class VideoPlayerComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() videoUrl = '';
   @Input() isHls = false;
@@ -23,6 +23,7 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
   private animFrameId: number | null = null;
 
   showControls = true;
+  isLoadingVideo = false;
   private hideControlsTimer: any;
 
   readonly speedOptions = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 2, 4];
@@ -54,8 +55,16 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     });
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    const urlChange = changes['videoUrl'];
+    if (urlChange && !urlChange.isFirstChange() && urlChange.currentValue) {
+      this.loadVideoSource();
+    }
+  }
+
   ngAfterViewInit(): void {
-    this.setupVideo();
+    this.setupVideoListeners();
+    this.loadVideoSource();
     this.startTimeLoop();
   }
 
@@ -71,31 +80,50 @@ export class VideoPlayerComponent implements OnInit, OnDestroy {
     clearTimeout(this.hideControlsTimer);
   }
 
-  private setupVideo(): void {
+  private setupVideoListeners(): void {
     const video = this.videoRef.nativeElement;
 
-    if (this.isHls && typeof Hls !== 'undefined' && Hls.isSupported()) {
-      this.hls = new Hls({ maxBufferLength: 30, maxMaxBufferLength: 60 });
-      this.hls.loadSource(this.videoUrl);
-      this.hls.attachMedia(video);
-      this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
-        this.ps.updateState({ videoReady: true });
-      });
-    } else if (this.videoUrl) {
-      video.src = this.videoUrl;
-      video.load();
-    }
-
     video.addEventListener('loadedmetadata', () => {
+      this.isLoadingVideo = false;
       this.ps.updateState({
         durationMs: video.duration * 1000,
         videoReady: true
       });
     });
 
+    video.addEventListener('error', () => {
+      this.isLoadingVideo = false;
+    });
+
     video.addEventListener('play', () => this.ps.updateState({ isPlaying: true }));
     video.addEventListener('pause', () => this.ps.updateState({ isPlaying: false }));
     video.addEventListener('ended', () => this.ps.updateState({ isPlaying: false }));
+  }
+
+  private loadVideoSource(): void {
+    if (!this.videoUrl) return;
+    const video = this.videoRef.nativeElement;
+
+    if (this.hls) {
+      this.hls.destroy();
+      this.hls = null;
+    }
+
+    this.isLoadingVideo = true;
+    this.ps.updateState({ videoReady: false });
+
+    if (this.isHls && typeof Hls !== 'undefined' && Hls.isSupported()) {
+      this.hls = new Hls({ maxBufferLength: 30, maxMaxBufferLength: 60 });
+      this.hls.loadSource(this.videoUrl);
+      this.hls.attachMedia(video);
+      this.hls.on(Hls.Events.MANIFEST_PARSED, () => {
+        this.isLoadingVideo = false;
+        this.ps.updateState({ videoReady: true });
+      });
+    } else {
+      video.src = this.videoUrl;
+      video.load();
+    }
   }
 
   private startTimeLoop(): void {

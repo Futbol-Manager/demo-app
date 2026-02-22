@@ -51,6 +51,7 @@ export class ClubVideoLibraryComponent implements OnInit {
   driveImportProgress = '';
   driveExporting = false;
   driveExportingVideoId: number | null = null;
+  driveExportProgress = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -327,40 +328,46 @@ export class ClubVideoLibraryComponent implements OnInit {
     try {
       this.driveExporting = true;
       this.driveExportingVideoId = video.id;
-
-      let videoUrl = video.videoUrl;
-      if (!videoUrl) {
-        const urlRes: any = await this.videoService.getVideoUrl(this.clubId, video.id).toPromise();
-        videoUrl = urlRes?.data?.url;
-      }
-      if (!videoUrl) {
-        alert('No se pudo obtener la URL del vídeo.');
-        this.driveExporting = false;
-        this.driveExportingVideoId = null;
-        return;
-      }
+      this.driveExportProgress = 'Conectando con Google Drive…';
 
       const accessToken = await this.driveService.getExportToken();
 
-      const response = await fetch(videoUrl);
-      const blob = await response.blob();
+      const ext = (video.contentType || 'video/mp4').includes('mp4') ? '.mp4' : '';
+      const filename = (video.title || 'video') + ext;
 
-      const filename = (video.title || 'video') + (video.contentType === 'video/mp4' ? '.mp4' : '');
-      await this.driveService.uploadToDrive(accessToken, blob, filename, video.contentType || 'video/mp4');
+      this.driveExportProgress = `Exportando "${video.title || 'vídeo'}" a Google Drive (puede tardar unos minutos)…`;
 
-      alert('Vídeo exportado a Google Drive correctamente.');
-      this.driveExporting = false;
-      this.driveExportingVideoId = null;
-    } catch (e) {
+      const res: any = await this.videoService
+        .exportToDrive(this.clubId, video.id, accessToken, filename)
+        .toPromise();
+
+      if (res?.status !== 200) {
+        throw new Error(res?.error?.msg || 'Error desconocido');
+      }
+
+      this.driveExportProgress = '¡Exportación completada!';
+      setTimeout(() => {
+        this.driveExporting = false;
+        this.driveExportingVideoId = null;
+        this.driveExportProgress = '';
+      }, 1500);
+
+    } catch (e: any) {
       if (e === 'cancelled') {
         this.driveExporting = false;
         this.driveExportingVideoId = null;
+        this.driveExportProgress = '';
         return;
       }
-      console.error('Error exportando a Drive:', e);
-      alert('Error al exportar el vídeo a Google Drive.');
+      const msg = e?.error?.error?.msg
+        || e?.error?.message
+        || e?.message
+        || (typeof e === 'string' ? e : JSON.stringify(e));
+      console.error('[Drive export] Error completo:', e);
+      alert('Error al exportar el vídeo a Google Drive.\n\nDetalle: ' + msg);
       this.driveExporting = false;
       this.driveExportingVideoId = null;
+      this.driveExportProgress = '';
     }
   }
 

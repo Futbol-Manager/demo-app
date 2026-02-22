@@ -3,8 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VideoAnalysisService } from '../../../core/services/video-analysis/video-analysis.service';
-import { VideoStorageService } from '../../../core/services/video-storage/video-storage.service';
-import { LoginService } from '../../../core/services/login/login.service';
 import { AnalysisPlaylist, AnalysisPlaylistItem } from '../models/analysis.models';
 
 @Component({
@@ -21,18 +19,12 @@ export class PlaylistViewerComponent implements OnInit, OnDestroy {
   playlist: AnalysisPlaylist | null = null;
   items: AnalysisPlaylistItem[] = [];
   isLoading = true;
-
   currentItemIndex = 0;
-  videoUrl = '';
-  isPlaying = false;
-  autoAdvance = true;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private analysisService: VideoAnalysisService,
-    private videoService: VideoStorageService,
-    private loginService: LoginService
+    private analysisService: VideoAnalysisService
   ) {}
 
   ngOnInit(): void {
@@ -54,7 +46,7 @@ export class PlaylistViewerComponent implements OnInit, OnDestroy {
         next: (res) => {
           if (res.data) {
             this.playlist = res.data.playlist || res.data;
-            this.items = res.data.items || res.data.items || [];
+            this.items   = res.data.items || [];
           }
           this.isLoading = false;
         },
@@ -62,52 +54,80 @@ export class PlaylistViewerComponent implements OnInit, OnDestroy {
       });
   }
 
-  playItem(index: number): void {
+  selectItem(index: number): void {
     if (index < 0 || index >= this.items.length) return;
     this.currentItemIndex = index;
-    this.isPlaying = true;
-  }
-
-  onClipEnded(): void {
-    if (this.autoAdvance && this.currentItemIndex < this.items.length - 1) {
-      this.currentItemIndex++;
-    } else {
-      this.isPlaying = false;
-    }
   }
 
   nextClip(): void {
-    if (this.currentItemIndex < this.items.length - 1) {
-      this.currentItemIndex++;
-    }
+    if (this.currentItemIndex < this.items.length - 1) this.currentItemIndex++;
   }
 
   prevClip(): void {
-    if (this.currentItemIndex > 0) {
-      this.currentItemIndex--;
-    }
+    if (this.currentItemIndex > 0) this.currentItemIndex--;
   }
 
-  removeItem(item: AnalysisPlaylistItem, event: Event): void {
-    event.stopPropagation();
+  removeItem(item: AnalysisPlaylistItem, e: Event): void {
+    e.stopPropagation();
+    if (!confirm('¿Quitar este clip de la playlist?')) return;
     this.analysisService.removePlaylistItem(this.playlistId, item.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.items = this.items.filter(i => i.id !== item.id);
+          if (this.currentItemIndex >= this.items.length) {
+            this.currentItemIndex = Math.max(0, this.items.length - 1);
+          }
         }
       });
+  }
+
+  goToWorkspace(item: AnalysisPlaylistItem, e: Event): void {
+    e.stopPropagation();
+    const projectId = item.event?.projectId;
+    if (projectId) {
+      this.router.navigate(['/dashboard/video-analysis/workspace', projectId]);
+    }
   }
 
   get currentItem(): AnalysisPlaylistItem | null {
     return this.items[this.currentItemIndex] || null;
   }
 
+  // ── Helpers to read enriched data safely ──
+
+  getEventCategory(item: AnalysisPlaylistItem): string {
+    return (item.event as any)?.categoryName || `Evento #${item.eventId}`;
+  }
+
+  getEventColor(item: AnalysisPlaylistItem): string {
+    return (item.event as any)?.categoryColor || '#6c757d';
+  }
+
+  getStartMs(item: AnalysisPlaylistItem): number {
+    return item.customStartMs ?? item.event?.startTimeMs ?? 0;
+  }
+
+  getEndMs(item: AnalysisPlaylistItem): number {
+    return item.customEndMs ?? item.event?.endTimeMs ?? 0;
+  }
+
   formatTime(ms: number): string {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    if (!ms || ms < 0) return '0:00';
+    const totalSec = Math.floor(ms / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
+  formatDuration(ms: number): string {
+    if (!ms || ms <= 0) return '-';
+    const totalSec = Math.floor(ms / 1000);
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    return m > 0 ? `${m}m ${s}s` : `${s}s`;
   }
 
   goBack(): void {

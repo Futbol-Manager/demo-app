@@ -56,6 +56,16 @@
     <span>{{ driveImportProgress }}</span>
   </div>
 
+  <!-- DRIVE EXPORT PROGRESS -->
+  <div class="drive-export-bar" *ngIf="driveExporting">
+    <div class="spinner-sm export-spinner"></div>
+    <i class="bi bi-google"></i>
+    <span>{{ driveExportProgress }}</span>
+  </div>
+
+  <!-- Logo Sphaira parpadeando durante el export -->
+  <app-logo-spinner *ngIf="driveExporting"></app-logo-spinner>
+
   <!-- CARPETAS + BUSCADOR -->
   <div class="library-body" *ngIf="!planLoading">
 

@@ -140,6 +140,8 @@ import { HeatmapVisualizerComponent } from './video-analysis/heatmap/heatmap-vis
 import { PlaylistBuilderComponent } from './video-analysis/playlists/playlist-builder.component';
 import { PlaylistViewerComponent } from './video-analysis/playlists/playlist-viewer.component';
 import { AiReportGeneratorComponent } from './video-analysis/reports/ai-report-generator.component';
+import { CanvasTaggerWindowComponent } from './video-analysis/canvas-tagger-window/canvas-tagger-window.component';
+import { ClipAnnotationEditorComponent } from './video-analysis/workspace/clip-annotation-editor/clip-annotation-editor.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -280,6 +282,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     PlaylistBuilderComponent,
     PlaylistViewerComponent,
     AiReportGeneratorComponent,
+    CanvasTaggerWindowComponent,
+    ClipAnnotationEditorComponent,
   ],
   imports: [
     CommonModule,

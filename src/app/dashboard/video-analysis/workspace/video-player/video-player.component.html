@@ -3,13 +3,21 @@
   <!-- Video Element -->
   <div class="video-wrapper" [style.transform]="'scale(' + zoomLevel + ')'"
        [style.transform-origin]="'center center'">
-    <video #videoElement crossorigin="anonymous" playsinline
+    <video #videoElement playsinline
            (click)="togglePlay()" (dblclick)="toggleFullscreen()">
     </video>
   </div>
 
   <!-- Drawing overlay goes here (separate component) -->
   <ng-content select="[drawingOverlay]"></ng-content>
+
+  <!-- Loading spinner -->
+  <div class="video-loading" *ngIf="isLoadingVideo">
+    <div class="spinner-border text-light" role="status">
+      <span class="visually-hidden">Cargando vídeo…</span>
+    </div>
+    <span class="loading-text">Cargando vídeo…</span>
+  </div>
 
   <!-- Big Play Button (when paused and controls visible) -->
   <div class="big-play-btn" *ngIf="!ps.state.isPlaying && ps.state.videoReady" (click)="togglePlay()">

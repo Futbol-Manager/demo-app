@@ -3,7 +3,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VideoAnalysisService } from '../../../core/services/video-analysis/video-analysis.service';
 import { PlayerStateService } from '../services/player-state.service';
-import { AnalysisEvent } from '../models/analysis.models';
+import { AnalysisEvent, AnalysisCategory } from '../models/analysis.models';
 
 @Component({
   selector: 'app-ai-report-generator',
@@ -19,6 +19,8 @@ export class AiReportGeneratorComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   events: AnalysisEvent[] = [];
+  private categories: AnalysisCategory[] = [];
+  private tagMap = new Map<number, string>();
   isGenerating = false;
   generatedReport: any = null;
   reportError = '';
@@ -40,6 +42,15 @@ export class AiReportGeneratorComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.ps.events$.pipe(takeUntil(this.destroy$)).subscribe(events => {
       this.events = events;
+    });
+    this.ps.categories$.pipe(takeUntil(this.destroy$)).subscribe(cats => {
+      this.categories = cats;
+      this.tagMap.clear();
+      for (const cat of cats) {
+        for (const tag of cat.tags || []) {
+          this.tagMap.set(tag.id, tag.name);
+        }
+      }
     });
   }
 
@@ -84,31 +95,55 @@ export class AiReportGeneratorComponent implements OnInit, OnDestroy {
       });
   }
 
+  private msToMatchTime(ms: number): string {
+    const totalSec = Math.floor(ms / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    const s = totalSec % 60;
+    if (h > 0) {
+      return `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    }
+    return `${m}:${String(s).padStart(2, '0')}`;
+  }
+
   private buildEventsSummary(): any {
     const categoryCounts: { [key: string]: number } = {};
     const categoryTimes: { [key: string]: number } = {};
+    const categoryDescriptors: { [key: string]: { [desc: string]: number } } = {};
 
     for (const e of this.events) {
-      const name = e.categoryName || 'Sin categoría';
-      categoryCounts[name] = (categoryCounts[name] || 0) + 1;
-      categoryTimes[name] = (categoryTimes[name] || 0) + (e.endTimeMs - e.startTimeMs);
+      const catName = e.categoryName || 'Sin categoría';
+      categoryCounts[catName] = (categoryCounts[catName] || 0) + 1;
+      categoryTimes[catName] = (categoryTimes[catName] || 0) + (e.endTimeMs - e.startTimeMs);
+
+      if (!categoryDescriptors[catName]) {
+        categoryDescriptors[catName] = {};
+      }
+      for (const tagId of e.tagIds || []) {
+        const tagName = this.tagMap.get(tagId) || `#${tagId}`;
+        categoryDescriptors[catName][tagName] = (categoryDescriptors[catName][tagName] || 0) + 1;
+      }
     }
 
     return {
       totalEvents: this.events.length,
       categoryCounts,
       categoryTimes,
+      categoryDescriptors,
       firstEventMs: this.events.length > 0 ? this.events[0].startTimeMs : 0,
       lastEventMs: this.events.length > 0 ? this.events[this.events.length - 1].endTimeMs : 0,
       eventsWithPosition: this.events.filter(e => e.fieldX != null).length,
       events: this.events.map(e => ({
-        category: e.categoryName,
+        button: e.categoryName || 'Sin categoría',
+        matchTime: this.msToMatchTime(e.startTimeMs),
         startMs: e.startTimeMs,
         endMs: e.endTimeMs,
-        player: e.playerName,
-        notes: e.notes,
-        fieldX: e.fieldX,
-        fieldY: e.fieldY
+        durationSec: Math.round((e.endTimeMs - e.startTimeMs) / 1000),
+        descriptors: (e.tagIds || []).map(id => this.tagMap.get(id) || `#${id}`),
+        player: e.playerName || null,
+        notes: e.notes || null,
+        fieldX: e.fieldX ?? null,
+        fieldY: e.fieldY ?? null
       }))
     };
   }

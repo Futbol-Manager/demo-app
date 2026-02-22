@@ -1,5 +1,20 @@
 <div class="editor-page" *ngIf="!isLoading; else loadingTpl">
 
+  <!-- Save success toast -->
+  <div class="save-toast" [class.show]="savedOk">
+    <i class="bi bi-check-circle-fill"></i> Plantilla guardada correctamente
+  </div>
+
+  <!-- Copied flash toast -->
+  <div class="save-toast save-toast-copied" [class.show]="copiedFlash">
+    <i class="bi bi-clipboard-check-fill"></i> Copiado · Ctrl+V para pegar
+  </div>
+
+  <!-- Save error toast -->
+  <div class="save-toast save-toast-error" [class.show]="!!saveInfoError">
+    <i class="bi bi-exclamation-triangle-fill"></i> {{ saveInfoError }}
+  </div>
+
   <!-- Header -->
   <div class="editor-header">
     <div class="editor-header-left">
@@ -14,7 +29,7 @@
         <span class="badge-system" *ngIf="isSystemTemplate">
           <i class="bi bi-shield-check"></i> Plantilla Sphaira
         </span>
-        <span class="badge-cats">{{ categories.length }} categorías</span>
+        <span class="badge-cats">{{ categoryCount }} cat. · {{ descriptorCount }} desc.</span>
         <span class="badge-saving" *ngIf="isSavingTemplate">
           <i class="bi bi-arrow-repeat spin"></i> Guardando...
         </span>
@@ -24,9 +39,17 @@
       <button *ngIf="isSystemTemplate" class="btn-duplicate" (click)="duplicateTemplate()">
         <i class="bi bi-copy"></i> Duplicar para editar
       </button>
-      <button *ngIf="!isSystemTemplate" class="btn-add-cat" (click)="addNewCategory()">
-        <i class="bi bi-plus-lg"></i> Añadir categoría
-      </button>
+      <ng-container *ngIf="!isSystemTemplate">
+        <button class="btn-add-cat" (click)="addNewCategory()">
+          <i class="bi bi-plus-lg"></i> Añadir botón
+        </button>
+        <button class="btn-save-all" [disabled]="isSavingAll" (click)="saveAll()">
+          <span class="spinner-btn" *ngIf="isSavingAll"></span>
+          <i class="bi bi-floppy-fill" *ngIf="!isSavingAll"></i>
+          {{ isSavingAll ? 'Guardando...' : 'Guardar plantilla' }}
+          <span class="unsaved-dot" *ngIf="hasUnsavedChanges && !isSavingAll"></span>
+        </button>
+      </ng-container>
     </div>
   </div>
 
@@ -42,18 +65,58 @@
     <!-- LEFT: Free Canvas -->
     <div class="canvas-wrapper">
       <div class="canvas-toolbar">
-        <span><i class="bi bi-easel-fill"></i> Canvas</span>
+        <div class="canvas-toolbar-left">
+          <span><i class="bi bi-easel-fill"></i> Canvas</span>
+          <div class="keyboard-hints" *ngIf="!isSystemTemplate">
+            <span class="kb-hint" title="Copiar botón seleccionado"><kbd>Ctrl+C</kbd> Copiar</span>
+            <span class="kb-hint" title="Pegar botón copiado"><kbd>Ctrl+V</kbd> Pegar</span>
+            <span class="kb-hint" title="Eliminar botón seleccionado"><kbd>Supr</kbd> Eliminar</span>
+          </div>
+        </div>
         <div class="toolbar-actions" *ngIf="!isSystemTemplate">
+          <!-- Canvas background color (collapsed behind a button) -->
+          <div class="canvas-bg-color-control" [class.panel-open]="showBgColorPanel">
+            <button class="btn-bg-color-toggle"
+                    (click)="showBgColorPanel = !showBgColorPanel"
+                    title="Color de fondo del canvas">
+              <i class="bi bi-palette-fill"></i>
+              <span class="btn-bg-color-swatch"
+                    [style.background]="bgColor || 'transparent'"
+                    [class.swatch-empty]="!bgColor"></span>
+              <span>Fondo</span>
+              <i class="bi" [class.bi-chevron-down]="!showBgColorPanel" [class.bi-chevron-up]="showBgColorPanel"></i>
+            </button>
+            <div class="canvas-bg-presets" *ngIf="showBgColorPanel">
+              <div *ngFor="let c of BG_COLOR_PRESETS"
+                   class="canvas-bg-swatch"
+                   [class.active]="bgColor === c"
+                   [class.swatch-transparent]="c === ''"
+                   [style.background]="c || 'transparent'"
+                   (click)="selectBgColor(c); showBgColorPanel = false"
+                   [title]="c === '' ? 'Transparente' : c">
+              </div>
+              <input type="color" class="canvas-bg-color-input"
+                     [value]="bgColor || '#1a1a2e'"
+                     (change)="bgColor = $any($event.target).value; onBgColorChange(); showBgColorPanel = false"
+                     title="Color personalizado" />
+            </div>
+          </div>
+          <!-- Separator -->
+          <span class="toolbar-sep"></span>
+          <!-- Background image -->
           <input #bgFileInput type="file" accept="image/*" hidden
                  (change)="onBackgroundFileSelected($event)" />
           <button class="btn-bg-upload" title="Subir imagen de fondo" (click)="bgFileInput.click()">
-            <i class="bi bi-image"></i> Subir imagen
+            <i class="bi bi-image"></i> Imagen de fondo
           </button>
-          <input type="text" class="bg-url-input"
-                 [(ngModel)]="backgroundImage" (ngModelChange)="onBackgroundChange()"
-                 placeholder="O pega una URL de imagen..." />
-          <button *ngIf="backgroundImage" class="btn-clear-bg" (click)="clearBackground()" title="Quitar fondo">
+          <button *ngIf="backgroundImage" class="btn-clear-bg" (click)="clearBackground()" title="Quitar imagen de fondo">
             <i class="bi bi-x-lg"></i>
+          </button>
+          <button *ngIf="backgroundImage" class="btn-bg-lock"
+                  [class.btn-bg-lock-active]="bgImgLocked"
+                  [title]="bgImgLocked ? 'Desbloquear imagen de fondo' : 'Bloquear imagen de fondo'"
+                  (click)="toggleBgLock()">
+            <i class="bi" [class.bi-lock-fill]="bgImgLocked" [class.bi-unlock]="!bgImgLocked"></i>
           </button>
           <div class="opacity-control" *ngIf="backgroundImage">
             <i class="bi bi-circle-half" title="Transparencia"></i>
@@ -64,11 +127,37 @@
         </div>
       </div>
 
-      <div class="canvas-surface" #canvasArea (click)="onCanvasClick($event)">
-        <!-- Background -->
-        <img *ngIf="backgroundImage" [src]="backgroundImage" class="canvas-bg" draggable="false"
-             [style.opacity]="bgOpacity"
-             (click)="onCanvasClick($event)" />
+      <div class="canvas-surface" #canvasArea
+           [style.background]="bgColor || null"
+           (click)="onCanvasClick($event)">
+
+        <!-- Background image — draggable & resizable -->
+        <div *ngIf="backgroundImage"
+             class="canvas-bg-container"
+             [class.bg-img-selected]="bgImgSelected && !isSystemTemplate"
+             [class.bg-img-locked]="bgImgLocked"
+             [style.left.%]="bgImgX" [style.top.%]="bgImgY"
+             [style.width.%]="bgImgW" [style.height.%]="bgImgH"
+             (mousedown)="onBgMouseDown($event)"
+             (click)="bgImgSelected = true; $event.stopPropagation()">
+          <img [src]="backgroundImage" class="canvas-bg-img" draggable="false"
+               [style.opacity]="bgOpacity" />
+          <!-- Resize handles when selected -->
+          <ng-container *ngIf="bgImgSelected && !isSystemTemplate">
+            <div class="resize-handle rh-n"  (mousedown)="onBgResizeDown($event, 'n')"></div>
+            <div class="resize-handle rh-s"  (mousedown)="onBgResizeDown($event, 's')"></div>
+            <div class="resize-handle rh-e"  (mousedown)="onBgResizeDown($event, 'e')"></div>
+            <div class="resize-handle rh-w"  (mousedown)="onBgResizeDown($event, 'w')"></div>
+            <div class="resize-handle rh-se" (mousedown)="onBgResizeDown($event, 'se')"></div>
+            <div class="resize-handle rh-sw" (mousedown)="onBgResizeDown($event, 'sw')"></div>
+            <div class="resize-handle rh-ne" (mousedown)="onBgResizeDown($event, 'ne')"></div>
+            <div class="resize-handle rh-nw" (mousedown)="onBgResizeDown($event, 'nw')"></div>
+          </ng-container>
+          <!-- Tooltip hint -->
+          <div class="bg-img-hint" *ngIf="bgImgSelected && !isSystemTemplate">
+            <i class="bi bi-arrows-move"></i> Arrastra para mover · Handles para redimensionar
+          </div>
+        </div>
 
         <!-- Ghost preview -->
         <div class="ghost-preview" *ngIf="showGhost"
@@ -79,11 +168,13 @@
              [style.clipPath]="getShapeClip(ghostShape)">
         </div>
 
-        <!-- Category buttons -->
+        <!-- Category & Descriptor buttons -->
         <div *ngFor="let cat of categories; trackBy: trackByCategory"
              class="canvas-btn"
+             [class.canvas-btn-descriptor]="cat.buttonType === 'DESCRIPTOR'"
              [class.selected]="selectedCategory?.id === cat.id"
              [class.is-new]="cat.isNew"
+             [class.is-locked]="cat.locked"
              [class.is-dragging]="dragging && dragCat?.id === cat.id"
              [class.is-resizing]="resizing && resizeCat?.id === cat.id"
              [class.shape-diamond]="cat.shape === 'DIAMOND'"
@@ -95,16 +186,28 @@
              [style.height.%]="cat.sizeH"
              [style.--cat-color]="cat.color"
              [style.borderRadius]="getShapeRadius(cat.shape)"
-             [style.clipPath]="getShapeClip(cat.shape)"
              (mousedown)="onBtnMouseDown($event, cat)"
              (click)="$event.stopPropagation()">
 
-          <div class="canvas-btn-bg" [style.background]="cat.color"></div>
+          <div class="canvas-btn-bg" [style.background]="cat.color"
+               [style.borderRadius]="getShapeRadius(cat.shape)"
+               [style.clipPath]="getShapeClip(cat.shape)"
+               [style.opacity]="cat.buttonType === 'DESCRIPTOR' ? (cat.opacity ?? 1) : 1"></div>
+          <!-- Descriptor badge (outside clip so always visible) -->
+          <span class="canvas-desc-badge" *ngIf="cat.buttonType === 'DESCRIPTOR'">D</span>
+          <!-- Lock icon (outside clip so always visible) -->
+          <span class="canvas-lock-icon" *ngIf="cat.locked"><i class="bi bi-lock-fill"></i></span>
           <span class="canvas-btn-name"
                 [style.fontSize.px]="cat.textSize || 13"
                 [style.color]="cat.textColor || '#FFFFFF'">{{ cat.name }}</span>
-          <span class="canvas-btn-shortcut" *ngIf="cat.shortcutKey && cat.shape !== 'DIAMOND'"
+          <span class="canvas-btn-shortcut" *ngIf="cat.shortcutKey && cat.shape !== 'DIAMOND' && cat.buttonType !== 'DESCRIPTOR'"
                 [style.color]="cat.textColor || '#FFFFFF'">{{ cat.shortcutKey }}</span>
+          <div class="cat-tag-dots" *ngIf="cat.tags && cat.tags.length && cat.shape !== 'DIAMOND' && cat.buttonType !== 'DESCRIPTOR'">
+            <span *ngFor="let tag of cat.tags | slice:0:10"
+                  class="cat-tag-dot"
+                  [style.background]="tag.color || 'rgba(255,255,255,0.7)'"></span>
+            <span *ngIf="cat.tags.length > 10" class="cat-tag-more">+{{ cat.tags.length - 10 }}</span>
+          </div>
         </div>
 
         <!-- Resize handles overlay (separate from clip-path container) -->
@@ -131,7 +234,7 @@
         </ng-container>
 
         <!-- Empty state -->
-        <div class="canvas-empty" *ngIf="categories.length === 0">
+        <div class="canvas-empty" *ngIf="categories.length === 0 && !backgroundImage">
           <i class="bi bi-easel"></i>
           <p>Añade categorías para construir tu plantilla</p>
           <button *ngIf="!isSystemTemplate" class="btn-add-first" (click)="addNewCategory()">
@@ -146,16 +249,27 @@
 
       <div class="editor-empty" *ngIf="!selectedCategory">
         <div class="editor-empty-icon"><i class="bi bi-cursor-fill"></i></div>
-        <p>Selecciona una categoría del canvas para editar sus propiedades</p>
+        <p>Selecciona una categoría o descriptor del canvas para editar</p>
       </div>
 
       <ng-container *ngIf="selectedCategory">
         <div class="editor-form-header" [style.background]="catColor">
-          <span class="editor-form-title">{{ isSystemTemplate ? selectedCategory.name : 'Editando categoría' }}</span>
+          <span class="editor-form-title">{{ selectedCategory.name || 'Nuevo botón' }}</span>
           <div class="editor-form-header-right">
             <span class="saving-indicator" *ngIf="isSavingCategory && !selectedCategory.isNew">
               <i class="bi bi-arrow-repeat spin"></i>
             </span>
+            <button *ngIf="!isSystemTemplate && !selectedCategory.isNew"
+                    class="btn-header-lock"
+                    [class.btn-header-lock-active]="selectedCategory.locked"
+                    [title]="selectedCategory.locked ? 'Desbloquear posición' : 'Bloquear posición'"
+                    (click)="toggleLock()">
+              <i class="bi" [class.bi-lock-fill]="selectedCategory.locked" [class.bi-unlock]="!selectedCategory.locked"></i>
+            </button>
+            <button *ngIf="!isSystemTemplate" class="btn-header-delete"
+                    title="Eliminar botón" (click)="deleteCategory()">
+              <i class="bi bi-trash3"></i>
+            </button>
             <button class="btn-close-editor" (click)="deselectCategory()">
               <i class="bi bi-x-lg"></i>
             </button>
@@ -163,6 +277,36 @@
         </div>
 
         <div class="editor-form-body" [class.readonly]="isSystemTemplate">
+          <!-- Tipo de botón (toggle) -->
+          <div class="form-row" *ngIf="!isSystemTemplate">
+            <label>
+              Tipo de botón
+              <span class="saving-indicator" *ngIf="isSavingCategory">
+                <i class="bi bi-arrow-repeat spin"></i>
+              </span>
+            </label>
+            <div class="type-toggle" [class.toggle-disabled]="isSavingCategory">
+              <button class="type-opt"
+                      [class.active-cat]="selectedCategory.buttonType !== 'DESCRIPTOR'"
+                      [disabled]="isSavingCategory"
+                      (click)="setButtonType('CATEGORY')">
+                <i class="bi bi-collection-fill"></i> Categoría
+              </button>
+              <button class="type-opt"
+                      [class.active-desc]="selectedCategory.buttonType === 'DESCRIPTOR'"
+                      [disabled]="isSavingCategory"
+                      (click)="setButtonType('DESCRIPTOR')">
+                <i class="bi bi-tag-fill"></i> Descriptor
+              </button>
+            </div>
+            <span class="type-hint" *ngIf="selectedCategory.buttonType !== 'DESCRIPTOR'">
+              Registra eventos. Al pulsarlo, el analista puede seleccionar descriptores.
+            </span>
+            <span class="type-hint" *ngIf="selectedCategory.buttonType === 'DESCRIPTOR'">
+              Botón posicionado en el canvas. Se selecciona tras elegir una categoría.
+            </span>
+          </div>
+
           <!-- Name -->
           <div class="form-row">
             <label>Nombre</label>
@@ -233,8 +377,8 @@
             </div>
           </div>
 
-          <!-- Shortcut -->
-          <div class="form-row">
+          <!-- Shortcut (solo categorías) -->
+          <div class="form-row" *ngIf="selectedCategory.buttonType !== 'DESCRIPTOR'">
             <label>Atajo de teclado</label>
             <div class="shortcut-field">
               <div class="shortcut-preview" [class.empty]="!catShortcut">
@@ -251,8 +395,8 @@
             </div>
           </div>
 
-          <!-- Clip times -->
-          <div class="form-row">
+          <!-- Clip times (solo categorías) -->
+          <div class="form-row" *ngIf="selectedCategory.buttonType !== 'DESCRIPTOR'">
             <label>Tiempos del clip</label>
             <div class="times-grid">
               <div class="time-field">
@@ -280,56 +424,31 @@
             </div>
           </div>
 
-          <!-- Tags -->
-          <div class="form-row tags-section">
-            <label>
-              Descriptores
-              <span class="tag-count-badge">{{ selectedCategory.tags.length }}</span>
-            </label>
-            <div class="tags-list">
-              <div *ngFor="let tag of selectedCategory.tags; trackBy: trackByTag" class="tag-chip">
-                <!-- Punto = selector de color inline -->
-                <label class="tag-color-btn" [title]="isSystemTemplate ? '' : 'Cambiar color'"
-                       [class.readonly]="isSystemTemplate">
-                  <span class="tag-chip-dot" [style.background]="tag.color || catColor"></span>
-                  <input *ngIf="!isSystemTemplate" type="color"
-                         class="tag-color-input"
-                         [value]="tag.color || catColor"
-                         (change)="updateTagColor(tag, $event)"
-                         (click)="$event.stopPropagation()" />
-                </label>
-                <span>{{ tag.name }}</span>
-                <button *ngIf="!isSystemTemplate" class="tag-chip-del" (click)="deleteTag(tag, $event)">
-                  <i class="bi bi-x"></i>
-                </button>
-              </div>
-              <div class="tags-empty" *ngIf="!selectedCategory.tags.length">
-                <i class="bi bi-tag-fill"></i> Sin descriptores
-              </div>
-            </div>
-            <div class="add-tag-row" *ngIf="!isSystemTemplate && !selectedCategory.isNew">
-              <input type="text" class="form-ctrl" [(ngModel)]="newTagName"
-                     placeholder="Nuevo descriptor..." (keydown.enter)="addTag()" />
-              <button class="btn-add-tag" [disabled]="!newTagName.trim()" (click)="addTag()">
-                <i class="bi bi-plus-lg"></i>
-              </button>
-            </div>
-            <p class="tags-warning" *ngIf="selectedCategory.isNew">
-              <i class="bi bi-exclamation-circle"></i> Crea la categoría primero.
-            </p>
+          <!-- Descriptor info (solo descriptores) -->
+          <div class="form-row descriptor-info-row" *ngIf="selectedCategory.buttonType === 'DESCRIPTOR'">
+            <i class="bi bi-info-circle"></i>
+            <span>Los descriptores son botones del canvas que el analista puede seleccionar al etiquetar un evento (tras elegir la categoría).</span>
           </div>
 
-          <!-- Actions: only shown for NEW categories -->
-          <div class="editor-form-actions" *ngIf="!isSystemTemplate">
-            <button class="btn-delete-cat" (click)="deleteCategory()">
-              <i class="bi bi-trash3"></i> Eliminar
-            </button>
-            <button *ngIf="selectedCategory.isNew" class="btn-save-cat"
-                    [disabled]="!catName.trim() || isSavingCategory" (click)="createCategory()">
-              <i class="bi bi-plus-circle"></i>
-              {{ isSavingCategory ? 'Creando...' : 'Crear categoría' }}
-            </button>
+          <!-- Opacidad (solo descriptores) -->
+          <div class="form-row" *ngIf="selectedCategory.buttonType === 'DESCRIPTOR'">
+            <label>
+              Transparencia del botón
+              <span class="opacity-value-badge">{{ (catOpacity * 100) | number:'1.0-0' }}%</span>
+            </label>
+            <div class="opacity-slider-row">
+              <span class="opacity-icon"><i class="bi bi-eye-slash"></i></span>
+              <input
+                type="range" min="0.05" max="1" step="0.05"
+                class="opacity-slider"
+                [disabled]="isSystemTemplate"
+                [(ngModel)]="catOpacity"
+                (ngModelChange)="onCatFieldChange()"
+              />
+              <span class="opacity-icon"><i class="bi bi-eye"></i></span>
+            </div>
           </div>
+
         </div>
       </ng-container>
     </div>
@@ -343,3 +462,25 @@
     <p>Cargando plantilla...</p>
   </div>
 </ng-template>
+
+<!-- Unsaved changes modal -->
+<div class="unsaved-overlay" *ngIf="showUnsavedModal" (click)="cancelLeave()">
+  <div class="unsaved-modal" (click)="$event.stopPropagation()">
+    <div class="unsaved-icon">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+    </div>
+    <h4 class="unsaved-title">Cambios sin guardar</h4>
+    <p class="unsaved-body">Vas a salir sin guardar los cambios, ¿estás seguro?</p>
+    <div class="unsaved-actions">
+      <button class="btn-unsaved-save" [disabled]="isSavingAll" (click)="confirmSaveAndLeave()">
+        <span class="spinner-btn" *ngIf="isSavingAll"></span>
+        <i class="bi bi-floppy-fill" *ngIf="!isSavingAll"></i>
+        {{ isSavingAll ? 'Guardando...' : 'Guardar cambios' }}
+      </button>
+      <button class="btn-unsaved-leave" [disabled]="isSavingAll" (click)="confirmLeaveWithoutSave()">
+        <i class="bi bi-box-arrow-right"></i> Salir sin guardar
+      </button>
+    </div>
+    <button class="btn-unsaved-cancel" (click)="cancelLeave()">Cancelar</button>
+  </div>
+</div>

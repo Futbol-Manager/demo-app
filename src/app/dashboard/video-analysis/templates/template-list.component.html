@@ -1,5 +1,5 @@
 <div class="back-container">
-  <button class="btn-back-clean" (click)="goBack()">
+  <button class="btn-back-sphaira" (click)="goBack()">
     <i class="bi bi-arrow-left"></i> Análisis de Vídeo
   </button>
 </div>
@@ -13,13 +13,13 @@
         <span class="template-count">{{ templates.length }} plantillas</span>
       </div>
     </div>
-    <button class="btn btn-primary btn-new" (click)="openCreateModal()">
+    <button class="btn-sphaira-primary btn-new" (click)="openCreateModal()">
       <i class="bi bi-plus-lg"></i> Nueva plantilla
     </button>
   </div>
 
   <div class="loading-state" *ngIf="isLoading">
-    <div class="spinner-border text-primary" role="status"></div>
+    <div class="spinner-border text-success" role="status"></div>
   </div>
 
   <div class="templates-grid" *ngIf="!isLoading">
@@ -32,6 +32,10 @@
           <i class="bi bi-person"></i> Personalizada
         </span>
         <div class="template-actions">
+          <button class="btn-icon" *ngIf="!tpl.isSystem"
+                  (click)="startEditDescription(tpl, $event)" title="Editar descripción">
+            <i class="bi bi-pencil"></i>
+          </button>
           <button class="btn-icon" (click)="duplicateTemplate(tpl, $event)" title="Duplicar">
             <i class="bi bi-copy"></i>
           </button>
@@ -42,7 +46,31 @@
         </div>
       </div>
       <h5>{{ tpl.name }}</h5>
-      <p *ngIf="tpl.description">{{ tpl.description }}</p>
+
+      <!-- Description — view or edit inline -->
+      <ng-container *ngIf="editingDescriptionId === tpl.id; else descView">
+        <div class="desc-edit-wrap" (click)="$event.stopPropagation()">
+          <textarea class="desc-edit-input" rows="2" [(ngModel)]="editDescriptionValue"
+                    placeholder="Descripción de la plantilla…"></textarea>
+          <div class="desc-edit-actions">
+            <button class="btn-desc-save" [disabled]="isSavingDescription"
+                    (click)="saveDescription(tpl, $event)">
+              <span *ngIf="isSavingDescription" class="spinner-border spinner-border-sm me-1"></span>
+              <i *ngIf="!isSavingDescription" class="bi bi-check2 me-1"></i>Guardar
+            </button>
+            <button class="btn-desc-cancel" (click)="cancelEditDescription($event)">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+      <ng-template #descView>
+        <p *ngIf="tpl.description">{{ tpl.description }}</p>
+        <p class="no-desc" *ngIf="!tpl.description && !tpl.isSystem">
+          <i class="bi bi-pencil me-1"></i>Sin descripción — haz clic en <i class="bi bi-pencil"></i> para añadir
+        </p>
+      </ng-template>
+
       <div class="template-meta">
         <span *ngIf="tpl.categories">{{ tpl.categories.length }} categorías</span>
       </div>
@@ -54,7 +82,7 @@
 <div class="modal-overlay" *ngIf="showCreateModal" (click)="showCreateModal = false">
   <div class="modal-panel" (click)="$event.stopPropagation()">
     <div class="modal-header-custom">
-      <h4>Nueva Plantilla</h4>
+      <h4><i class="bi bi-grid-3x3-gap me-2"></i>Nueva Plantilla</h4>
       <button class="btn-close-modal" (click)="showCreateModal = false">
         <i class="bi bi-x-lg"></i>
       </button>
@@ -75,8 +103,10 @@
     </div>
     <div class="modal-footer-custom">
       <button class="btn btn-outline-secondary" (click)="showCreateModal = false">Cancelar</button>
-      <button class="btn btn-primary" (click)="createTemplate()"
+      <button class="btn-sphaira-primary" (click)="createTemplate()"
               [disabled]="!newTemplateName.trim() || isCreating">
+        <span *ngIf="isCreating" class="spinner-border spinner-border-sm me-1"></span>
+        <i *ngIf="!isCreating" class="bi bi-check2-circle me-1"></i>
         {{ isCreating ? 'Creando...' : 'Crear plantilla' }}
       </button>
     </div>

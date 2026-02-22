@@ -2,7 +2,7 @@ export interface AnalysisProject {
   id: number;
   clubId: number;
   teamId?: number;
-  videoId: number;
+  videoId?: number;
   matchId?: number;
   trainingId?: number;
   templateId: number;
@@ -15,6 +15,9 @@ export interface AnalysisProject {
   eventCount?: number;
   videoTitle?: string;
   teamName?: string;
+  localFileName?: string;
+  localFileSize?: number;
+  localFileDurationMs?: number;
 }
 
 export interface AnalysisTemplate {
@@ -27,7 +30,14 @@ export interface AnalysisTemplate {
   createdAt: string;
   backgroundImage?: string;
   backgroundOpacity?: number;
+  bgColor?: string;
+  bgImgX?: number;
+  bgImgY?: number;
+  bgImgW?: number;
+  bgImgH?: number;
+  bgImgLocked?: boolean;
   categories?: AnalysisCategory[];
+  descriptors?: AnalysisTag[];
 }
 
 export interface AnalysisCategory {
@@ -53,16 +63,29 @@ export interface AnalysisCategory {
   shape: 'RECTANGLE' | 'CIRCLE' | 'DIAMOND' | 'SQUARE';
   textSize: number;
   textColor: string;
+  locked?: boolean;
   tags?: AnalysisTag[];
   children?: AnalysisCategory[];
 }
 
 export interface AnalysisTag {
   id: number;
-  categoryId: number;
+  categoryId?: number;    // null for template-level descriptors
+  templateId?: number;    // set for template-level descriptors
   name: string;
   color?: string;
   sortOrder: number;
+  // Canvas position fields (used for descriptor buttons)
+  posX?: number;
+  posY?: number;
+  sizeW?: number;
+  sizeH?: number;
+  shape?: 'RECTANGLE' | 'CIRCLE' | 'DIAMOND' | 'SQUARE';
+  textSize?: number;
+  textColor?: string;
+  /** Opacity 0–1 for the descriptor button (default 1). */
+  opacity?: number;
+  locked?: boolean;
 }
 
 export interface AnalysisEvent {
@@ -139,6 +162,41 @@ export interface AnalysisReport {
   statisticsJson?: string;
   modelUsed: string;
   createdAt: string;
+}
+
+// ─── Clip Annotations ────────────────────────────────────────────────────────
+
+export type DrawingTool = 'select' | 'freeDraw' | 'circle' | 'arrow' | 'line' | 'dashedLine' | 'text' | 'spotlight';
+
+export interface DrawingPoint { x: number; y: number; }
+
+export interface DrawingElement {
+  type: DrawingTool;
+  id: string;
+  /** All coords are percentages (0–100) relative to canvas W/H */
+  x?: number;
+  y?: number;
+  x2?: number;
+  y2?: number;
+  radius?: number;
+  points?: DrawingPoint[];
+  text?: string;
+  color: string;
+  strokeWidth: number;
+  fontSize?: number;
+}
+
+export interface ClipAnnotation {
+  id?: number;
+  eventId: number;
+  /** Absolute ms within the original video. */
+  frameTimeMs: number;
+  /** How long (ms) this freeze-frame lasts in the rendered clip. */
+  frameDurationMs: number;
+  drawingData: DrawingElement[];
+  sortOrder: number;
+  /** Local only – not persisted. Snapshot of the video frame with drawings. */
+  thumbnailDataUrl?: string;
 }
 
 export type ProjectStatus = 'DRAFT' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
