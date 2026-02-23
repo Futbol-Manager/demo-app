@@ -130,7 +130,14 @@
   align-items: center;
 }
 
-.system-badge, .custom-badge {
+.template-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.system-badge, .custom-badge, .default-badge {
   font-size: 0.72rem;
   font-weight: 600;
   padding: 3px 10px;
@@ -148,6 +155,23 @@
 .custom-badge {
   background: rgba(99, 102, 241, 0.12);
   color: #6366f1;
+}
+
+.default-badge {
+  background: rgba(255, 193, 7, 0.15);
+  color: #e6a800;
+}
+
+// Tarjeta con borde dorado cuando es la plantilla por defecto
+.template-card--default {
+  border-color: #ffc107 !important;
+  box-shadow: 0 0 0 2px rgba(255, 193, 7, 0.25), 0 4px 16px rgba(255, 193, 7, 0.1);
+}
+
+.btn-default-icon {
+  color: #adb5bd;
+  &:hover { color: #ffc107 !important; background: rgba(255, 193, 7, 0.1) !important; }
+  &--active { color: #ffc107 !important; }
 }
 
 .template-actions { display: flex; gap: 4px; }

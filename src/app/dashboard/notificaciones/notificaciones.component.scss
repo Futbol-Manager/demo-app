@@ -703,3 +703,324 @@
   .mail-list-toolbar { flex-direction: column; align-items: stretch; }
   .search-wrap { min-width: 0; }
 }
+
+/* ===== Selector de destinatarios Gmail-style ===== */
+
+.recipient-wrapper {
+  position: relative;
+}
+
+.recipient-field {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.45rem 0.75rem;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: #fff;
+  cursor: text;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+
+  &:focus-within {
+    border-color: var(--sphaira-green);
+    box-shadow: 0 0 0 3px rgba(49, 178, 112, 0.15);
+  }
+}
+
+.recipient-input {
+  flex: 1;
+  min-width: 160px;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.875rem;
+  color: var(--text-main);
+  padding: 0.1rem 0;
+
+  &::placeholder {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+  }
+}
+
+.recipient-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.55rem 0.25rem 0.5rem;
+  background: rgba(49, 178, 112, 0.1);
+  border: 1px solid rgba(49, 178, 112, 0.3);
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: var(--text-main);
+  white-space: nowrap;
+  max-width: 260px;
+
+  i { font-size: 0.75rem; color: var(--sphaira-green); flex-shrink: 0; }
+
+  .chip-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+  }
+
+  .chip-role {
+    font-size: 0.68rem;
+    padding: 0.05rem 0.35rem;
+    border-radius: 10px;
+    font-weight: 600;
+    flex-shrink: 0;
+
+    &--coach  { background: rgba(59, 130, 246, 0.12); color: #1d4ed8; }
+    &--player { background: rgba(49, 178, 112, 0.12); color: #166534; }
+    &--team   { background: rgba(168, 85, 247, 0.12); color: #6b21a8; }
+  }
+
+  .chip-remove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    color: var(--text-muted);
+    line-height: 1;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+    transition: color 0.15s ease;
+
+    &:hover { color: #dc3545; }
+  }
+}
+
+.recipient-suggestions {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 44, 64, 0.12);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.suggestion-item {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover { background: rgba(49, 178, 112, 0.06); }
+  &:not(:last-child) { border-bottom: 1px solid rgba(0, 44, 64, 0.06); }
+}
+
+.suggestion-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(49, 178, 112, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--sphaira-green);
+  font-size: 0.9rem;
+
+  &--team {
+    background: rgba(168, 85, 247, 0.1);
+    color: #6b21a8;
+  }
+}
+
+.suggestion-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.suggestion-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-main);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.suggestion-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.suggestion-item {
+  &--disabled {
+    cursor: not-allowed;
+    background: transparent !important;
+
+    &:hover {
+      background: rgba(0,0,0,0.02) !important;
+    }
+
+    .suggestion-icon,
+    .suggestion-name,
+    .suggestion-sub,
+    .suggestion-no-account {
+      opacity: 0.5;
+    }
+
+    .suggestion-name,
+    .suggestion-sub {
+      color: #9ca3af !important;
+    }
+  }
+}
+
+.suggestion-icon {
+  &--disabled {
+    background: rgba(156, 163, 175, 0.15) !important;
+    color: #9ca3af !important;
+  }
+}
+
+.suggestion-badge {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  font-weight: 600;
+  flex-shrink: 0;
+
+  &--coach      { background: rgba(59, 130, 246, 0.12); color: #1d4ed8; }
+  &--player     { background: rgba(49, 178, 112, 0.12); color: #166534; }
+  &--team       { background: rgba(168, 85, 247, 0.12); color: #6b21a8; }
+  &--no-account { background: rgba(156, 163, 175, 0.12); color: #6b7280; }
+}
+
+.suggestion-no-account {
+  font-size: 0.7rem;
+  color: #d97706;
+  margin-top: 2px;
+  display: block;
+  font-style: italic;
+
+  i { font-size: 0.65rem; margin-right: 3px; }
+}
+
+.suggestions-loading {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+// ── Botón invitar jugador sin cuenta ─────────────────────────────────────────
+
+.btn-invite-player {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.28rem 0.7rem;
+  border-radius: 8px;
+  border: none;
+  background: #16a34a;
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(22, 163, 74, 0.35);
+
+  i { font-size: 0.75rem; }
+
+  &:hover {
+    background: #15803d;
+  }
+}
+
+// ── Modal de invitación ───────────────────────────────────────────────────────
+
+.invite-modal-pro {
+  .modal-confirm-content {
+    max-width: 420px;
+  }
+}
+
+.invite-modal-icon {
+  background: rgba(59, 130, 246, 0.1) !important;
+  color: #2563eb !important;
+}
+
+.invite-input-group {
+  margin: 1rem 0 0.5rem;
+
+  .invite-email-input {
+    width: 100%;
+    border-radius: 8px;
+    border: 1.5px solid #d1d5db;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.15s;
+
+    &:focus { border-color: #3b82f6; }
+  }
+}
+
+.invite-error {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: #dc2626;
+  margin-bottom: 0.75rem;
+  background: rgba(220, 38, 38, 0.07);
+  padding: 0.4rem 0.65rem;
+  border-radius: 6px;
+
+  i { flex-shrink: 0; }
+}
+
+.invite-success {
+  text-align: center;
+  padding: 0.75rem 0 0.5rem;
+  color: #166534;
+
+  i {
+    font-size: 2.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #22c55e;
+  }
+
+  p { margin: 0; font-weight: 600; }
+}
+
+.btn-invite-send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover:not(:disabled) { opacity: 0.88; }
+  &:disabled { opacity: 0.5; cursor: not-allowed; }
+}

@@ -1017,7 +1017,8 @@
     "SEND_SUCCESS": "Message sent successfully",
     "TO_CLUB": "To entire club",
     "TO_ALL_COACHES": "To all coaches",
-    "TO_TEAM": "To team {{name}}"
+    "TO_TEAM": "To team {{name}}",
+    "TO_PLACEHOLDER": "Search for a recipient..."
   },
   "TAREAS": {
     "TITLE": "Tactical tasks",

@@ -7,6 +7,7 @@ import { VideoAnalysisService } from '../../../../core/services/video-analysis/v
 import { LoginService } from '../../../../core/services/login/login.service';
 import { ClipExportService } from '../../services/clip-export.service';
 import { LocalVideoService } from '../../services/local-video.service';
+import { ScreenCaptureService } from '../../services/screen-capture.service';
 
 @Component({
   selector: 'app-event-list',
@@ -16,6 +17,12 @@ import { LocalVideoService } from '../../services/local-video.service';
 export class EventListComponent implements OnInit, OnDestroy {
 
   @Input() showHeader = true;
+
+  /**
+   * Cuando se proporciona, indica que el vídeo es de YouTube y los clips se
+   * exportarán mediante grabación de pantalla en lugar de FFmpeg.
+   */
+  @Input() youtubeId: string | null = null;
 
   /** When set, checkboxes appear on each event row for one-click playlist addition. */
   @Input() quickPlaylistId: number | null = null;
@@ -79,7 +86,8 @@ export class EventListComponent implements OnInit, OnDestroy {
     private analysisService: VideoAnalysisService,
     private loginService: LoginService,
     private clipExport: ClipExportService,
-    private localVideo: LocalVideoService
+    private localVideo: LocalVideoService,
+    private screenCapture: ScreenCaptureService
   ) {}
 
   ngOnInit(): void {
@@ -279,54 +287,60 @@ export class EventListComponent implements OnInit, OnDestroy {
 
   async downloadClip(evt: AnalysisEvent, e: Event): Promise<void> {
     e.stopPropagation();
-    if (!this.localVideo.file) {
-      alert('No hay vídeo cargado. Carga el archivo de vídeo primero.');
-      return;
-    }
     if (this.downloadingEventId !== null) return;
 
     this.downloadingEventId = evt.id;
     this.downloadProgress   = 0;
-    this.downloadStep       = 'Cargando anotaciones…';
 
     const label = `${evt.categoryName || 'clip'}_${this.msToHms(evt.startTimeMs).replace(/:/g, '-')}`;
 
     try {
-      // Fetch annotations saved on the server for this event
-      const raw = await this.analysisService.listClipAnnotations(evt.id).toPromise().catch(() => null);
-      let annotations: any[] = (raw?.data || raw || []);
-      // drawingData comes as a JSON string from the backend — parse it
-      annotations = annotations.map((a: any) => ({
-        ...a,
-        drawingData: typeof a.drawingData === 'string'
-          ? (() => { try { return JSON.parse(a.drawingData); } catch { return []; } })()
-          : (a.drawingData || [])
-      }));
-
-      if (annotations.length === 0) {
-        // Simple export — no freeze-frames
-        this.downloadStep = 'Exportando…';
-        await this.clipExport.exportClip(
-          this.localVideo.file!,
-          evt.startTimeMs,
-          evt.endTimeMs,
-          label,
-          (pct) => { this.downloadProgress = pct; }
-        );
-      } else {
-        // Generate thumbnails for annotations (seek video + render drawings)
-        this.downloadStep = 'Preparando frames anotados…';
-        const ready = await this.clipExport.prepareAnnotationThumbnails(this.localVideo.file!, annotations);
-
-        await this.clipExport.exportClipWithAnnotations(
-          this.localVideo.file!,
-          evt.startTimeMs,
-          evt.endTimeMs,
-          label,
-          ready,
-          (pct)  => { this.downloadProgress = pct; },
+      if (this.youtubeId) {
+        // ── Modo YouTube: grabación de pantalla ──────────────────────────────
+        this.downloadStep = 'Solicitando captura de pantalla…';
+        await this.recordScreenClip(evt.startTimeMs, evt.endTimeMs, label,
+          (pct) => { this.downloadProgress = pct; },
           (step) => { this.downloadStep = step; }
         );
+      } else {
+        // ── Modo local: FFmpeg ───────────────────────────────────────────────
+        if (!this.localVideo.file) {
+          alert('No hay vídeo cargado. Carga el archivo de vídeo primero.');
+          return;
+        }
+        this.downloadStep = 'Cargando anotaciones…';
+
+        const raw = await this.analysisService.listClipAnnotations(evt.id).toPromise().catch(() => null);
+        let annotations: any[] = (raw?.data || raw || []);
+        annotations = annotations.map((a: any) => ({
+          ...a,
+          drawingData: typeof a.drawingData === 'string'
+            ? (() => { try { return JSON.parse(a.drawingData); } catch { return []; } })()
+            : (a.drawingData || [])
+        }));
+
+        if (annotations.length === 0) {
+          this.downloadStep = 'Exportando…';
+          await this.clipExport.exportClip(
+            this.localVideo.file!,
+            evt.startTimeMs,
+            evt.endTimeMs,
+            label,
+            (pct) => { this.downloadProgress = pct; }
+          );
+        } else {
+          this.downloadStep = 'Preparando frames anotados…';
+          const ready = await this.clipExport.prepareAnnotationThumbnails(this.localVideo.file!, annotations);
+          await this.clipExport.exportClipWithAnnotations(
+            this.localVideo.file!,
+            evt.startTimeMs,
+            evt.endTimeMs,
+            label,
+            ready,
+            (pct)  => { this.downloadProgress = pct; },
+            (step) => { this.downloadStep = step; }
+          );
+        }
       }
     } catch (err: any) {
       console.error('[ClipExport] Error:', err);
@@ -337,6 +351,103 @@ export class EventListComponent implements OnInit, OnDestroy {
       this.downloadProgress   = 0;
       this.downloadStep       = '';
     }
+  }
+
+  /**
+   * Graba el clip de YouTube usando el ScreenCaptureService.
+   * - El permiso se pide una sola vez; las siguientes llamadas reutilizan el stream.
+   * - Si Region Capture está disponible (Chrome 104+), recorta al reproductor de YouTube.
+   */
+  private async recordScreenClip(
+    startMs: number,
+    endMs: number,
+    label: string,
+    onProgress?: (pct: number) => void,
+    onStep?: (step: string) => void
+  ): Promise<void> {
+    const durationMs = Math.max(0, endMs - startMs);
+    const step = (s: string) => { if (onStep) onStep(s); };
+    const prog = (p: number) => { if (onProgress) onProgress(p); };
+
+    step('Posicionando vídeo…');
+    prog(5);
+    this.ps.updateState({ isPlaying: false });
+    this.ps.seekTo(startMs);
+    await new Promise(r => setTimeout(r, 700));
+
+    // Elemento del reproductor para Region Capture
+    const cropEl = document.getElementById('yt-player-embed');
+
+    if (!this.screenCapture.isActive) {
+      step('Selecciona esta pestaña para compartir el vídeo…');
+    }
+    prog(10);
+
+    let stream: MediaStream;
+    try {
+      stream = await this.screenCapture.acquireStream(cropEl);
+    } catch {
+      throw new Error('Se canceló la selección de pantalla.');
+    }
+
+    await this.runRecording(stream, startMs, durationMs, label, prog, step);
+  }
+
+  /** Graba durationMs ms del stream y descarga el resultado. */
+  private runRecording(
+    stream: MediaStream,
+    startMs: number,
+    durationMs: number,
+    label: string,
+    prog: (p: number) => void,
+    step: (s: string) => void
+  ): Promise<void> {
+    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+      ? 'video/webm;codecs=vp9,opus'
+      : MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : 'video/mp4';
+
+    const recorder = new MediaRecorder(stream, { mimeType });
+    const chunks: Blob[] = [];
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+
+    return new Promise<void>((resolve, reject) => {
+      recorder.onstop = () => {
+        prog(95);
+        const blob = new Blob(chunks, { type: mimeType });
+        const ext  = mimeType.includes('mp4') ? 'mp4' : 'webm';
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = `${label.replace(/[\\/:*?"<>|]/g, '_')}.${ext}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+        prog(100);
+        resolve();
+      };
+      recorder.onerror = (e: any) => reject(e.error || new Error('Error en MediaRecorder'));
+
+      recorder.start(500);
+      step('Grabando…');
+      prog(20);
+      this.ps.updateState({ isPlaying: true });
+
+      const tickMs = 500;
+      let elapsed  = 0;
+      const interval = setInterval(() => {
+        elapsed += tickMs;
+        prog(20 + Math.min(73, Math.round((elapsed / durationMs) * 73)));
+        step(`Grabando… ${Math.round(elapsed / 1000)}s / ${Math.round(durationMs / 1000)}s`);
+      }, tickMs);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        this.ps.updateState({ isPlaying: false });
+        step('Finalizando…');
+        recorder.stop();
+      }, durationMs + 300);
+    });
   }
 
   // ── Quick add to playlist (checkbox mode) ──

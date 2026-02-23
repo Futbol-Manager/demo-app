@@ -23,15 +23,27 @@
   </div>
 
   <div class="templates-grid" *ngIf="!isLoading">
-    <div class="template-card" *ngFor="let tpl of templates" (click)="openTemplate(tpl)">
+    <div class="template-card" *ngFor="let tpl of templates" (click)="openTemplate(tpl)"
+         [class.template-card--default]="isDefault(tpl)">
       <div class="template-card-top">
-        <span class="system-badge" *ngIf="tpl.isSystem">
-          <i class="bi bi-shield-check"></i> Sphaira
-        </span>
-        <span class="custom-badge" *ngIf="!tpl.isSystem">
-          <i class="bi bi-person"></i> Personalizada
-        </span>
+        <div class="template-badges">
+          <span class="system-badge" *ngIf="tpl.isSystem">
+            <i class="bi bi-shield-check"></i> Sphaira
+          </span>
+          <span class="custom-badge" *ngIf="!tpl.isSystem">
+            <i class="bi bi-person"></i> Personalizada
+          </span>
+          <span class="default-badge" *ngIf="isDefault(tpl)">
+            <i class="bi bi-star-fill"></i> Por defecto
+          </span>
+        </div>
         <div class="template-actions">
+          <button class="btn-icon btn-default-icon"
+                  (click)="setAsDefault(tpl, $event)"
+                  [title]="isDefault(tpl) ? 'Plantilla por defecto' : 'Establecer como plantilla por defecto'"
+                  [class.btn-default-icon--active]="isDefault(tpl)">
+            <i class="bi" [class.bi-star-fill]="isDefault(tpl)" [class.bi-star]="!isDefault(tpl)"></i>
+          </button>
           <button class="btn-icon" *ngIf="!tpl.isSystem"
                   (click)="startEditDescription(tpl, $event)" title="Editar descripción">
             <i class="bi bi-pencil"></i>

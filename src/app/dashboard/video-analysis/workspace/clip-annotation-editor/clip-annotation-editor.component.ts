@@ -1,15 +1,19 @@
 import {
-  Component, OnInit, OnDestroy,
+  Component, OnInit, AfterViewInit, OnDestroy,
   Input, Output, EventEmitter,
-  ViewChild, ElementRef, HostListener
+  ViewChild, ElementRef, HostListener,
+  NgZone
 } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VideoAnalysisService } from '../../../../core/services/video-analysis/video-analysis.service';
 import { ClipExportService } from '../../services/clip-export.service';
+import { ScreenCaptureService } from '../../services/screen-capture.service';
 import {
   AnalysisEvent, ClipAnnotation, DrawingElement, DrawingTool, DrawingPoint
 } from '../../models/analysis.models';
+
+declare var YT: any;
 
 interface DragState {
   mode: 'move' | 'handle';
@@ -23,10 +27,11 @@ interface DragState {
   templateUrl: './clip-annotation-editor.component.html',
   styleUrls: ['./clip-annotation-editor.component.scss']
 })
-export class ClipAnnotationEditorComponent implements OnInit, OnDestroy {
+export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() event!: AnalysisEvent;
-  @Input() videoFile!: File;
+  @Input() videoFile: File | null = null;
+  @Input() youtubeId: string | null = null;
   @Input() userId = 0;
   @Output() closed = new EventEmitter<void>();
   @Output() annotationsSaved = new EventEmitter<ClipAnnotation[]>();
@@ -137,27 +142,100 @@ export class ClipAnnotationEditorComponent implements OnInit, OnDestroy {
   downloadProgress = 0;
   downloadStep = '';
 
+  // ── YouTube mini-player ───────────────────────────────────────────────────
+  private ytMiniPlayer: any = null;
+  private ytMiniReady = false;
+  private rafId: number | null = null;
+
   constructor(
     private analysisService: VideoAnalysisService,
-    private clipExport: ClipExportService
+    private clipExport: ClipExportService,
+    private screenCapture: ScreenCaptureService,
+    private zone: NgZone
   ) {}
 
   ngOnInit(): void {
-    this._rawVideoUrl = URL.createObjectURL(this.videoFile);
     this.clipDurationMs = this.event.endTimeMs - this.event.startTimeMs;
     this.loadAnnotations();
+
+    if (!this.youtubeId && this.videoFile) {
+      this._rawVideoUrl = URL.createObjectURL(this.videoFile);
+    }
+  }
+
+  ngAfterViewInit(): void {
+    // El div #yt-mini-embed existe en el DOM solo después de que Angular renderiza el template
+    if (this.youtubeId) {
+      this.initYouTubeMiniPlayer();
+    }
   }
 
   ngOnDestroy(): void {
     this.cancelAnnotationOverlay();
     this.destroy$.next();
     this.destroy$.complete();
+    if (this.rafId !== null) cancelAnimationFrame(this.rafId);
     if (this.videoEl) {
       this.videoEl.pause();
       this.videoEl.src = '';
       this.videoEl = null;
     }
-    URL.revokeObjectURL(this._rawVideoUrl);
+    if (this._rawVideoUrl) URL.revokeObjectURL(this._rawVideoUrl);
+    if (this.ytMiniPlayer) { try { this.ytMiniPlayer.destroy(); } catch {} }
+  }
+
+  // ── YouTube mini-player ───────────────────────────────────────────────────
+
+  private initYouTubeMiniPlayer(): void {
+    const create = () => {
+      this.ytMiniPlayer = new YT.Player('yt-mini-embed', {
+        videoId: this.youtubeId,
+        playerVars: { rel: 0, modestbranding: 1, playsinline: 1, start: Math.floor(this.event.startTimeMs / 1000) },
+        events: {
+          onReady: () => this.zone.run(() => {
+            this.ytMiniReady = true;
+            this.ytMiniPlayer.pauseVideo();
+            this.startYtTimeLoop();
+          }),
+          onStateChange: (e: any) => this.zone.run(() => {
+            if (e.data === YT.PlayerState.PLAYING) this.isPlaying = true;
+            if (e.data === YT.PlayerState.PAUSED || e.data === YT.PlayerState.ENDED) this.isPlaying = false;
+          })
+        }
+      });
+    };
+
+    if (typeof YT !== 'undefined' && YT.Player) {
+      create();
+    } else {
+      if (!document.getElementById('yt-api-script')) {
+        const tag = document.createElement('script');
+        tag.id = 'yt-api-script';
+        tag.src = 'https://www.youtube.com/iframe_api';
+        document.head.appendChild(tag);
+      }
+      (window as any)['onYouTubeIframeAPIReady'] = () => this.zone.run(() => create());
+    }
+  }
+
+  private startYtTimeLoop(): void {
+    const update = () => {
+      if (this.ytMiniPlayer && this.ytMiniReady) {
+        const absMs = (this.ytMiniPlayer.getCurrentTime?.() || 0) * 1000;
+        this.zone.run(() => {
+          if (absMs >= this.event.endTimeMs) {
+            this.ytMiniPlayer.pauseVideo();
+            this.ytMiniPlayer.seekTo(this.event.startTimeMs / 1000, true);
+            this.isPlaying = false;
+            this.currentRelMs = this.clipDurationMs;
+          } else {
+            this.currentRelMs = Math.max(0, absMs - this.event.startTimeMs);
+          }
+        });
+      }
+      this.rafId = requestAnimationFrame(update);
+    };
+    this.rafId = requestAnimationFrame(update);
   }
 
   // ── Tool switching ─────────────────────────────────────────────────────────
@@ -254,7 +332,19 @@ export class ClipAnnotationEditorComponent implements OnInit, OnDestroy {
   }
 
   togglePlay(): void {
-    // If showing annotation overlay, cancel it and resume
+    if (this.youtubeId && this.ytMiniPlayer && this.ytMiniReady) {
+      if (this.isPlaying) {
+        this.ytMiniPlayer.pauseVideo();
+      } else {
+        const absMs = (this.ytMiniPlayer.getCurrentTime?.() || 0) * 1000;
+        if (absMs >= this.event.endTimeMs) {
+          this.ytMiniPlayer.seekTo(this.event.startTimeMs / 1000, true);
+        }
+        this.ytMiniPlayer.playVideo();
+      }
+      return;
+    }
+
     if (this.showingAnnotation) {
       this.cancelAnnotationOverlay();
       this.videoEl?.play().catch(() => {});
@@ -279,26 +369,42 @@ export class ClipAnnotationEditorComponent implements OnInit, OnDestroy {
   seekVideo(e: Event): void {
     const relMs = +(e.target as HTMLInputElement).value;
     this.cancelAnnotationOverlay();
-    // Clear shown annotations for those after the new seek position
     const newAbsMs = this.event.startTimeMs + relMs;
+
+    if (this.youtubeId && this.ytMiniPlayer && this.ytMiniReady) {
+      this.ytMiniPlayer.seekTo(newAbsMs / 1000, true);
+      this.currentRelMs = relMs;
+      return;
+    }
+
     for (const ann of this.annotations) {
       const key = String(ann.id ?? ann.frameTimeMs);
       if (ann.frameTimeMs >= newAbsMs) this.shownAnnotations.delete(key);
     }
     if (this.videoEl) {
-      this.videoEl.currentTime = (this.event.startTimeMs + relMs) / 1000;
+      this.videoEl.currentTime = newAbsMs / 1000;
       this.currentRelMs = relMs;
     }
   }
 
   stepBack(): void {
     this.cancelAnnotationOverlay();
+    if (this.youtubeId && this.ytMiniPlayer && this.ytMiniReady) {
+      const t = Math.max(this.event.startTimeMs / 1000, (this.ytMiniPlayer.getCurrentTime?.() || 0) - 5);
+      this.ytMiniPlayer.seekTo(t, true);
+      return;
+    }
     this.shownAnnotations.clear();
     if (this.videoEl) this.videoEl.currentTime =
       Math.max(this.event.startTimeMs / 1000, this.videoEl.currentTime - 5);
   }
 
   stepForward(): void {
+    if (this.youtubeId && this.ytMiniPlayer && this.ytMiniReady) {
+      const t = Math.min(this.event.endTimeMs / 1000, (this.ytMiniPlayer.getCurrentTime?.() || 0) + 5);
+      this.ytMiniPlayer.seekTo(t, true);
+      return;
+    }
     if (this.videoEl) this.videoEl.currentTime =
       Math.min(this.event.endTimeMs / 1000, this.videoEl.currentTime + 5);
   }
@@ -340,6 +446,10 @@ export class ClipAnnotationEditorComponent implements OnInit, OnDestroy {
   // ── Capture frame ─────────────────────────────────────────────────────────
 
   captureCurrentFrame(existing?: ClipAnnotation): void {
+    if (this.youtubeId) {
+      this.captureYouTubeFrame(existing);
+      return;
+    }
     const video = this.videoEl;
     if (!video) return;
     video.pause();
@@ -352,7 +462,67 @@ export class ClipAnnotationEditorComponent implements OnInit, OnDestroy {
     this.capturedFrameDataUrl = tc.toDataURL('image/jpeg', 0.95);
 
     const frameTimeMs = this.event.startTimeMs + this.currentRelMs;
+    this.openFrameEditor(frameTimeMs, existing);
+  }
 
+  private captureYouTubeFrame(existing?: ClipAnnotation): void {
+    if (this.ytMiniPlayer && this.ytMiniReady) {
+      this.ytMiniPlayer.pauseVideo();
+      this.isPlaying = false;
+    }
+
+    const frameTimeMs = this.event.startTimeMs + this.currentRelMs;
+    const cropEl = document.getElementById('yt-mini-embed');
+
+    // Solo intentar captura si ya hay un stream activo (para no mostrar el diálogo al anotar).
+    // Si no hay stream, usar placeholder inmediatamente → el usuario dibuja encima.
+    if (this.screenCapture.isActive) {
+      this.screenCapture.grabFrame(cropEl).then(dataUrl => {
+        this.zone.run(() => {
+          this.capturedFrameDataUrl = dataUrl || this.buildPlaceholderFrame(frameTimeMs);
+          this.openFrameEditor(frameTimeMs, existing);
+        });
+      }).catch(() => {
+        this.zone.run(() => {
+          this.capturedFrameDataUrl = this.buildPlaceholderFrame(frameTimeMs);
+          this.openFrameEditor(frameTimeMs, existing);
+        });
+      });
+    } else {
+      // Sin captura de pantalla activa: usar placeholder de inmediato
+      this.capturedFrameDataUrl = this.buildPlaceholderFrame(frameTimeMs);
+      this.openFrameEditor(frameTimeMs, existing);
+    }
+  }
+
+  private buildPlaceholderFrame(frameTimeMs: number): string {
+    const canvas = document.createElement('canvas');
+    canvas.width  = 1280;
+    canvas.height = 720;
+    const ctx = canvas.getContext('2d')!;
+    const grad = ctx.createLinearGradient(0, 0, 0, 720);
+    grad.addColorStop(0, '#0f1923');
+    grad.addColorStop(1, '#1a2a3a');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, 1280, 720);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.font = 'bold 64px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('▶', 640, 340);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.55)';
+    ctx.font = '24px Arial';
+    ctx.fillText(`t = ${this.formatMs(frameTimeMs - this.event.startTimeMs)}`, 640, 420);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.font = '16px Arial';
+    ctx.fillText('Frame de YouTube — dibuja encima para anotar', 640, 660);
+    return canvas.toDataURL('image/jpeg', 0.9);
+  }
+
+  private openFrameEditor(frameTimeMs: number, existing?: ClipAnnotation): void {
     if (existing) {
       this.editingAnnotation = { ...existing };
       this.drawingElements   = existing.drawingData ? [...existing.drawingData] : [];
@@ -365,7 +535,6 @@ export class ClipAnnotationEditorComponent implements OnInit, OnDestroy {
       this.drawingElements  = [];
       this.frameDurationSec = 3;
     }
-
     this.undoStack = [];
     this.selectedElementId = null;
     this.view = 'frame-editor';
@@ -373,6 +542,11 @@ export class ClipAnnotationEditorComponent implements OnInit, OnDestroy {
   }
 
   editAnnotation(ann: ClipAnnotation): void {
+    if (this.youtubeId && this.ytMiniPlayer && this.ytMiniReady) {
+      this.ytMiniPlayer.seekTo(ann.frameTimeMs / 1000, true);
+      setTimeout(() => this.captureCurrentFrame(ann), 400);
+      return;
+    }
     if (this.videoEl) this.videoEl.currentTime = ann.frameTimeMs / 1000;
     setTimeout(() => this.captureCurrentFrame(ann), 200);
   }
@@ -934,28 +1108,33 @@ export class ClipAnnotationEditorComponent implements OnInit, OnDestroy {
     const label = `${this.event.categoryName || 'clip'}_${this.msToHms(this.event.startTimeMs).replace(/:/g, '-')}`;
 
     try {
-      if (!this.annotations.length) {
-        this.downloadStep = 'Exportando…';
-        await this.clipExport.exportClip(
-          this.videoFile,
-          this.event.startTimeMs,
-          this.event.endTimeMs,
-          label,
-          (pct) => { this.downloadProgress = pct; }
-        );
-      } else {
-        // Use thumbnails already captured during saveFrame(); regenerate any missing ones
-        this.downloadStep = 'Preparando frames anotados…';
-        const ready = await this.clipExport.prepareAnnotationThumbnails(this.videoFile, this.annotations);
-        await this.clipExport.exportClipWithAnnotations(
-          this.videoFile,
-          this.event.startTimeMs,
-          this.event.endTimeMs,
-          label,
-          ready,
-          (pct)  => { this.downloadProgress = pct; },
-          (step) => { this.downloadStep = step; }
-        );
+      if (this.youtubeId) {
+        // ── YouTube: grabación de pantalla del mini-player ──
+        await this.downloadYouTubeClip(label);
+      } else if (this.videoFile) {
+        // ── Local: FFmpeg ──
+        if (!this.annotations.length) {
+          this.downloadStep = 'Exportando…';
+          await this.clipExport.exportClip(
+            this.videoFile,
+            this.event.startTimeMs,
+            this.event.endTimeMs,
+            label,
+            (pct) => { this.downloadProgress = pct; }
+          );
+        } else {
+          this.downloadStep = 'Preparando frames anotados…';
+          const ready = await this.clipExport.prepareAnnotationThumbnails(this.videoFile, this.annotations);
+          await this.clipExport.exportClipWithAnnotations(
+            this.videoFile,
+            this.event.startTimeMs,
+            this.event.endTimeMs,
+            label,
+            ready,
+            (pct)  => { this.downloadProgress = pct; },
+            (step) => { this.downloadStep = step; }
+          );
+        }
       }
     } catch (err: any) {
       console.error('[CAE Download]', err);
@@ -965,6 +1144,74 @@ export class ClipAnnotationEditorComponent implements OnInit, OnDestroy {
       this.downloadProgress = 0;
       this.downloadStep     = '';
     }
+  }
+
+  private async downloadYouTubeClip(label: string): Promise<void> {
+    const durationMs = this.event.endTimeMs - this.event.startTimeMs;
+    const step = (s: string) => { this.downloadStep = s; };
+    const prog = (p: number) => { this.downloadProgress = p; };
+
+    step('Posicionando vídeo…');
+    prog(5);
+    if (this.ytMiniPlayer && this.ytMiniReady) {
+      this.ytMiniPlayer.seekTo(this.event.startTimeMs / 1000, true);
+      this.ytMiniPlayer.pauseVideo();
+    }
+    await new Promise(r => setTimeout(r, 700));
+
+    const cropEl = document.getElementById('yt-mini-embed');
+    if (!this.screenCapture.isActive) step('Selecciona esta pestaña para compartir…');
+    prog(10);
+
+    let stream: MediaStream;
+    try {
+      stream = await this.screenCapture.acquireStream(cropEl);
+    } catch {
+      throw new Error('Se canceló la selección de pantalla.');
+    }
+
+    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+      ? 'video/webm;codecs=vp9,opus'
+      : MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : 'video/mp4';
+
+    const recorder = new MediaRecorder(stream, { mimeType });
+    const chunks: Blob[] = [];
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+
+    await new Promise<void>((resolve, reject) => {
+      recorder.onstop = () => {
+        prog(95);
+        const blob = new Blob(chunks, { type: mimeType });
+        const ext  = mimeType.includes('mp4') ? 'mp4' : 'webm';
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href = url; a.download = `${label}.${ext}`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+        prog(100);
+        resolve();
+      };
+      recorder.onerror = (e: any) => reject(e.error || new Error('MediaRecorder error'));
+
+      recorder.start(500);
+      step('Grabando…');
+      prog(20);
+      if (this.ytMiniPlayer && this.ytMiniReady) this.ytMiniPlayer.playVideo();
+
+      let elapsed = 0;
+      const iv = setInterval(() => {
+        elapsed += 500;
+        prog(20 + Math.min(73, Math.round((elapsed / durationMs) * 73)));
+        step(`Grabando… ${Math.round(elapsed / 1000)}s / ${Math.round(durationMs / 1000)}s`);
+      }, 500);
+
+      setTimeout(() => {
+        clearInterval(iv);
+        if (this.ytMiniPlayer && this.ytMiniReady) this.ytMiniPlayer.pauseVideo();
+        step('Finalizando…');
+        recorder.stop();
+      }, durationMs + 300);
+    });
   }
 
   close(): void {

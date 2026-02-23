@@ -19,6 +19,7 @@ export class TemplateListComponent implements OnInit, OnDestroy {
   isLoading = true;
   clubId = 0;
   userId = 0;
+  defaultTemplateId: number | null = null;
 
   showCreateModal = false;
   newTemplateName = '';
@@ -44,6 +45,8 @@ export class TemplateListComponent implements OnInit, OnDestroy {
         this.userId = user.userId;
       }
     });
+    const stored = localStorage.getItem(`defaultTemplate_${this.clubId}`);
+    this.defaultTemplateId = stored ? Number(stored) : null;
     this.loadTemplates();
   }
 
@@ -58,7 +61,10 @@ export class TemplateListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
-          this.templates = res.data || [];
+          this.templates = (res.data || []).map((t: AnalysisTemplate) => ({
+            ...t,
+            isDefault: t.id === this.defaultTemplateId
+          }));
           this.isLoading = false;
         },
         error: () => {
@@ -66,6 +72,17 @@ export class TemplateListComponent implements OnInit, OnDestroy {
           this.isLoading = false;
         }
       });
+  }
+
+  setAsDefault(template: AnalysisTemplate, event: Event): void {
+    event.stopPropagation();
+    this.defaultTemplateId = template.id;
+    localStorage.setItem(`defaultTemplate_${this.clubId}`, String(template.id));
+    this.templates = this.templates.map(t => ({ ...t, isDefault: t.id === template.id }));
+  }
+
+  isDefault(template: AnalysisTemplate): boolean {
+    return template.id === this.defaultTemplateId;
   }
 
   openTemplate(template: AnalysisTemplate): void {

@@ -172,19 +172,77 @@
             <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModalNew()"></button>
           </div>
           <div class="modal-body">
-            <div class="mb-3">
+            <div class="mb-3 recipient-wrapper">
               <label class="form-label">{{ 'NOTIFICATIONS.TO' | translate }}</label>
-              <select [(ngModel)]="correoNew.destinatarios" class="form-control form-select-pro" id="destinatarios">
-                <option *ngIf="usuarioActual?.profileType?.profileId == 1" value="0">
-                  {{ 'NOTIFICATIONS.TO_CLUB' | translate }}
-                </option>
-                <option *ngIf="usuarioActual?.profileType?.profileId == 1" value="1">
-                  {{ 'NOTIFICATIONS.TO_ALL_COACHES' | translate }}
-                </option>
-                <option *ngFor="let team of listTeamsForCombo" [value]="team.value">
-                  {{ 'NOTIFICATIONS.TO_TEAM' | translate:{ name: team.name } }}
-                </option>
-              </select>
+
+              <!-- Campo de destinatarios estilo Gmail -->
+              <div class="recipient-field" (click)="focusRecipientInput()">
+                <span class="recipient-chip" *ngFor="let chip of selectedRecipients; let i = index">
+                  <i class="bi"
+                     [class.bi-person-fill]="chip.type === 'user'"
+                     [class.bi-people-fill]="chip.type === 'team'"></i>
+                  <span class="chip-label">{{ chip.label }}</span>
+                  <span class="chip-role"
+                        [class.chip-role--coach]="chip.role === 'COACH'"
+                        [class.chip-role--player]="chip.role === 'PLAYER'"
+                        [class.chip-role--team]="chip.type === 'team'">
+                    {{ chip.type === 'team' ? 'Equipo' : (chip.role === 'COACH' ? 'Coach' : 'Jugador') }}
+                  </span>
+                  <button type="button" class="chip-remove" (click)="removeRecipient(i); $event.stopPropagation()">
+                    <i class="bi bi-x"></i>
+                  </button>
+                </span>
+                <input #recipientInputEl
+                       type="text"
+                       class="recipient-input"
+                       [(ngModel)]="recipientInput"
+                       (input)="onRecipientInputChange()"
+                       (keydown.backspace)="onRecipientBackspace()"
+                       (blur)="hideSuggestionsDelayed()"
+                       [placeholder]="selectedRecipients.length === 0 ? ('NOTIFICATIONS.TO_PLACEHOLDER' | translate) : ''" />
+              </div>
+
+              <!-- Dropdown de sugerencias -->
+              <div class="recipient-suggestions" *ngIf="recipientSuggestions.length > 0 || isSearchingRecipients">
+                <div class="suggestion-item"
+                     *ngFor="let s of recipientSuggestions"
+                     [class.suggestion-item--disabled]="s.hasAccount === false"
+                     (mousedown)="s.hasAccount !== false ? addRecipient(s) : $event.preventDefault()">
+                  <div class="suggestion-icon"
+                       [class.suggestion-icon--team]="s.type === 'team'"
+                       [class.suggestion-icon--disabled]="s.hasAccount === false">
+                    <i class="bi"
+                       [class.bi-person-fill]="s.type === 'user'"
+                       [class.bi-people-fill]="s.type === 'team'"></i>
+                  </div>
+                  <div class="suggestion-text">
+                    <span class="suggestion-name">{{ s.label }}</span>
+                    <span class="suggestion-sub">{{ s.sublabel }}</span>
+                    <span *ngIf="s.hasAccount === false" class="suggestion-no-account">
+                      <i class="bi bi-exclamation-circle-fill"></i> No tiene usuario registrado en la app
+                    </span>
+                  </div>
+                  <ng-container *ngIf="s.hasAccount === false; else normalBadge">
+                    <button type="button" class="btn-invite-player"
+                            (mousedown)="openInviteModal(s, $event)">
+                      <i class="bi bi-send-plus"></i>
+                      Invitar
+                    </button>
+                  </ng-container>
+                  <ng-template #normalBadge>
+                    <span class="suggestion-badge"
+                          [class.badge--coach]="s.role === 'COACH'"
+                          [class.badge--player]="s.role === 'PLAYER'"
+                          [class.badge--team]="s.type === 'team'">
+                      {{ s.type === 'team' ? 'Equipo' : (s.role === 'COACH' ? 'Coach' : 'Jugador') }}
+                    </span>
+                  </ng-template>
+                </div>
+                <div class="suggestions-loading" *ngIf="isSearchingRecipients && recipientSuggestions.length === 0">
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                  <span>Buscando...</span>
+                </div>
+              </div>
             </div>
             <div class="mb-3">
               <label class="form-label">{{ 'NOTIFICATIONS.SUBJECT' | translate }}</label>
@@ -199,7 +257,7 @@
             <button type="button" class="btn btn-cancel-pro" (click)="cerrarModalNew()">
               {{ 'NOTIFICATIONS.CANCEL' | translate }}
             </button>
-            <button type="button" class="btn btn-send-pro" (click)="guardarCorreo()" [disabled]="!correoNew.asunto || isSending">
+            <button type="button" class="btn btn-send-pro" (click)="guardarCorreo()" [disabled]="!correoNew.asunto || isSending || selectedRecipients.length === 0">
               <i class="bi bi-send me-1" *ngIf="!isSending"></i>
               <span *ngIf="isSending">{{ 'TITLES.LOAD' | translate }}</span>
               <span *ngIf="!isSending">{{ 'NOTIFICATIONS.SEND' | translate }}</span>
@@ -207,6 +265,55 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal invitación a Sphaira Player -->
+  <div class="modal-backdrop-pro" *ngIf="inviteModal.show" (click)="closeInviteModal()"></div>
+  <div class="modal-confirm-pro invite-modal-pro" *ngIf="inviteModal.show" (click)="closeInviteModal()">
+    <div class="modal-confirm-content" (click)="$event.stopPropagation()">
+      <div class="modal-confirm-icon invite-modal-icon">
+        <i class="bi bi-person-plus-fill"></i>
+      </div>
+      <h3 class="modal-confirm-title">Invitar a Sphaira Player</h3>
+      <p class="modal-confirm-message">
+        Envía una invitación a <strong>{{ inviteModal.player?.label }}</strong> para que se una a la app.
+        Introduce el email del jugador o de su padre/tutor.
+      </p>
+
+      <ng-container *ngIf="inviteModal.result !== 'success'; else inviteSuccess">
+        <div class="invite-input-group">
+          <input type="email"
+                 class="form-control invite-email-input"
+                 placeholder="Email del jugador o tutor"
+                 [(ngModel)]="inviteModal.email"
+                 (keydown.enter)="sendInvitation()"
+                 [disabled]="inviteModal.sending" />
+        </div>
+        <div class="invite-error" *ngIf="inviteModal.result === 'error'">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          No se pudo enviar la invitación. Verifica el email e inténtalo de nuevo.
+        </div>
+        <div class="modal-confirm-actions">
+          <button type="button" class="btn-cancel-pro" (click)="closeInviteModal()" [disabled]="inviteModal.sending">
+            Cancelar
+          </button>
+          <button type="button" class="btn-invite-send"
+                  (click)="sendInvitation()"
+                  [disabled]="!inviteModal.email.trim() || inviteModal.sending">
+            <span *ngIf="inviteModal.sending" class="spinner-border spinner-border-sm me-1"></span>
+            <i class="bi bi-send-fill me-1" *ngIf="!inviteModal.sending"></i>
+            {{ inviteModal.sending ? 'Enviando...' : 'Enviar invitación' }}
+          </button>
+        </div>
+      </ng-container>
+
+      <ng-template #inviteSuccess>
+        <div class="invite-success">
+          <i class="bi bi-check-circle-fill"></i>
+          <p>¡Invitación enviada correctamente!</p>
+        </div>
+      </ng-template>
     </div>
   </div>
 

@@ -18,6 +18,8 @@ export interface AnalysisProject {
   localFileName?: string;
   localFileSize?: number;
   localFileDurationMs?: number;
+  externalVideoUrl?: string;
+  defaultPlaylistId?: number;
 }
 
 export interface AnalysisTemplate {
@@ -26,6 +28,7 @@ export interface AnalysisTemplate {
   name: string;
   description?: string;
   isSystem: boolean;
+  isDefault?: boolean;
   createdBy?: number;
   createdAt: string;
   backgroundImage?: string;

@@ -1563,7 +1563,8 @@
     "SEND_SUCCESS": "Mensaje enviado correctamente",
     "TO_CLUB": "Para todo el club",
     "TO_ALL_COACHES": "Para todos los entrenadores",
-    "TO_TEAM": "Para el equipo {{name}}"
+    "TO_TEAM": "Para el equipo {{name}}",
+    "TO_PLACEHOLDER": "Escribe un nombre para buscar destinatarios..."
   },
   "TAREAS": {
     "TITLE": "Tareas tácticas",

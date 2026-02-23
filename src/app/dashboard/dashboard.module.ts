@@ -142,6 +142,7 @@ import { PlaylistViewerComponent } from './video-analysis/playlists/playlist-vie
 import { AiReportGeneratorComponent } from './video-analysis/reports/ai-report-generator.component';
 import { CanvasTaggerWindowComponent } from './video-analysis/canvas-tagger-window/canvas-tagger-window.component';
 import { ScreenCaptureWorkspaceComponent } from './video-analysis/screen-capture/screen-capture-workspace.component';
+import { ExternalVideoWorkspaceComponent } from './video-analysis/external-workspace/external-video-workspace.component';
 import { ClipAnnotationEditorComponent } from './video-analysis/workspace/clip-annotation-editor/clip-annotation-editor.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
@@ -285,6 +286,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AiReportGeneratorComponent,
     CanvasTaggerWindowComponent,
     ScreenCaptureWorkspaceComponent,
+    ExternalVideoWorkspaceComponent,
     ClipAnnotationEditorComponent,
   ],
   imports: [

@@ -221,7 +221,8 @@
               [disabled]="driveExporting" title="Exportar a Google Drive">
               <i class="bi" [ngClass]="driveExportingVideoId === video.id ? 'bi-hourglass-split' : 'bi-google'"></i>
             </button>
-            <button class="btn-analyze" (click)="analyzeVideo(video)" title="Analizar vídeo">
+            <button class="btn-analyze" *ngIf="!isExternal(video)"
+                    (click)="analyzeVideo(video)" title="Analizar vídeo">
               <i class="bi bi-camera-reels"></i>
             </button>
             <button class="btn-move" (click)="movingVideo = video" title="Mover a carpeta">
@@ -257,6 +258,27 @@
         allowfullscreen
         frameborder="0">
       </iframe>
+    </div>
+  </div>
+
+  <!-- MODAL: VEO (no embebible) -->
+  <div class="modal-backdrop" *ngIf="veoPreviewVideo" (click)="veoPreviewVideo = null">
+    <div class="veo-modal" (click)="$event.stopPropagation()">
+      <div class="move-modal-header">
+        <h4><i class="bi bi-camera-video-fill"></i> {{ veoPreviewVideo.title }}</h4>
+        <button class="btn-close-player" (click)="veoPreviewVideo = null"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <div class="veo-modal-body">
+        <i class="bi bi-info-circle-fill veo-info-icon"></i>
+        <p>
+          <strong>VEO</strong> no permite reproducir sus vídeos embebidos en otras aplicaciones.<br>
+          Pulsa el botón para verlo directamente en VEO en una nueva pestaña.
+        </p>
+        <a class="btn-open-veo" [href]="veoPreviewVideo.externalUrl" target="_blank" rel="noopener noreferrer"
+           (click)="veoPreviewVideo = null">
+          <i class="bi bi-box-arrow-up-right"></i> Abrir vídeo en VEO
+        </a>
+      </div>
     </div>
   </div>
 

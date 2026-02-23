@@ -22,6 +22,7 @@ export class VideoAnalysisService {
     description?: string; templateId: number; teamId?: number;
     matchId?: number; trainingId?: number;
     localFileName?: string; localFileSize?: number; localFileDurationMs?: number;
+    externalVideoUrl?: string;
   }): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/project`, body, { headers: this.getHeaders() });
   }
@@ -43,7 +44,7 @@ export class VideoAnalysisService {
     return this.http.get<any>(`${this.baseUrl}/project/${projectId}?clubId=${clubId}`, { headers: this.getHeaders() });
   }
 
-  updateProject(projectId: number, body: { title?: string; description?: string }): Observable<any> {
+  updateProject(projectId: number, body: { title?: string; description?: string; defaultPlaylistId?: number }): Observable<any> {
     return this.http.put<any>(`${this.baseUrl}/project/${projectId}`, body, { headers: this.getHeaders() });
   }
 

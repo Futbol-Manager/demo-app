@@ -95,7 +95,7 @@
     <!-- Left: Video + Timeline -->
     <div class="workspace-main">
       <div class="video-area">
-        <app-video-player [videoUrl]="videoUrl" [isHls]="isHls">
+        <app-video-player [videoUrl]="videoUrl" [isHls]="isHls" [youtubeId]="youtubeId">
           <app-drawing-overlay drawingOverlay [active]="drawingMode"
                                (saved)="onDrawingSaved($event)">
           </app-drawing-overlay>
@@ -154,6 +154,7 @@
 
         <app-event-list
           [showHeader]="false"
+          [youtubeId]="youtubeId"
           [quickPlaylistId]="quickPlaylistId"
           [quickPlaylistEventMap]="quickPlaylistEventMap"
           (eventDelete)="onEventDelete($event)"
@@ -418,9 +419,10 @@
 
 <!-- Clip annotation editor modal -->
 <app-clip-annotation-editor
-  *ngIf="clipEditorEvent && localVideoService.file"
+  *ngIf="clipEditorEvent && (localVideoService.file || youtubeId)"
   [event]="clipEditorEvent!"
-  [videoFile]="localVideoService.file!"
+  [videoFile]="localVideoService.file"
+  [youtubeId]="youtubeId"
   [userId]="userId"
   (closed)="closeClipEditor()"
   (annotationsSaved)="closeClipEditor()">

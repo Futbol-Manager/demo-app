@@ -99,16 +99,19 @@ export class LocalVideoService {
   }
 
   /**
-   * Descarga un vídeo desde una URL remota (p. ej. B2 signed URL) mostrando progreso.
+   * Descarga un vídeo desde una URL remota mostrando progreso.
    * Emite valores 0–99 con el porcentaje descargado y finaliza emitiendo 100 cuando
    * el archivo ya está en memoria y listo en el LocalVideoService.
+   * @param authToken  JWT token para cabecera Authorization (necesario si la URL es del proxy de la API)
    */
-  loadFromUrl(url: string, fileName: string, contentType = 'video/mp4'): Observable<number> {
+  loadFromUrl(url: string, fileName: string, contentType = 'video/mp4', authToken?: string): Observable<number> {
     return new Observable<number>(observer => {
       (async () => {
         try {
           this.revoke();
-          const response = await fetch(url);
+          const headers: Record<string, string> = {};
+          if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
+          const response = await fetch(url, { headers });
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
           const contentLength = Number(response.headers.get('Content-Length') || '0');

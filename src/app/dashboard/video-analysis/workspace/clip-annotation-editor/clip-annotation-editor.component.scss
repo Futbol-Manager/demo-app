@@ -125,6 +125,51 @@
   cursor: pointer;
 }
 
+// Mini-player YouTube dentro del editor de anotaciones
+.cae-yt-embed {
+  width: 100%;
+  height: 100%;
+  min-height: 200px;
+
+  ::ng-deep iframe {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 200px;
+    display: block;
+    pointer-events: none; // el escudo absorbe los clicks
+  }
+}
+
+.cae-yt-shield {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  cursor: pointer;
+  background: transparent;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // Cuando está pausado: overlay oscuro que tapa las sugerencias de YouTube
+  &--paused {
+    background: rgba(0, 0, 0, 0.65);
+  }
+}
+
+.cae-yt-play-icon {
+  font-size: 3.5rem;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
+  pointer-events: none;
+  animation: yt-icon-in 0.15s ease-out;
+
+  @keyframes yt-icon-in {
+    from { transform: scale(0.7); opacity: 0; }
+    to   { transform: scale(1);   opacity: 1; }
+  }
+}
+
 .cae-frame-markers {
   position: absolute;
   bottom: 0;

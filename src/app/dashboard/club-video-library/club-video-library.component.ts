@@ -5,6 +5,7 @@ import { VideoStorageService } from 'src/app/core/services/video-storage/video-s
 import { DriveService } from 'src/app/core/services/drive/drive.service';
 import { LocalVideoService } from 'src/app/dashboard/video-analysis/services/local-video.service';
 import { timeout } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-club-video-library',
@@ -339,8 +340,16 @@ export class ClubVideoLibraryComponent implements OnInit {
     return this.folders.find(f => f.id === folderId)?.[prop] || '';
   }
 
+  // VEO no permite embedding: muestra un modal con enlace directo
+  veoPreviewVideo: any = null;
+
   playVideo(video: any): void {
     if (this.isExternal(video)) {
+      if (video.sourceType === 'veo') {
+        // VEO bloquea iframes → abrir directamente en nueva pestaña
+        window.open(video.externalUrl, '_blank', 'noopener');
+        return;
+      }
       const embedUrl = this.buildEmbedUrl(video.externalUrl, video.sourceType);
       this.activeIframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
       this.activeVideo = video;
@@ -514,15 +523,26 @@ export class ClubVideoLibraryComponent implements OnInit {
 
   analyzeVideo(video: any): void {
     if (this.isExternal(video)) {
-      // Vídeo externo (YouTube / Vimeo / VEO) → grabación de pantalla
-      const embedUrl = this.buildEmbedUrl(video.externalUrl, video.sourceType);
-      this.router.navigate(['/dashboard/video-analysis/screen-capture'], {
-        queryParams: {
-          title: video.title || 'Análisis de vídeo',
-          sourceType: video.sourceType,
-          externalUrl: embedUrl
-        }
-      });
+      if (video.sourceType === 'youtube') {
+        // YouTube → ir al hub de análisis con la URL pre-rellenada (mismo flujo que vídeo local)
+        this.router.navigate(['/dashboard/video-analysis'], {
+          queryParams: {
+            youtubeUrl: video.externalUrl,
+            videoTitle: video.title || ''
+          }
+        });
+      } else {
+        // Vimeo / VEO / externo → ir al workspace simplificado de marcado manual
+        this.router.navigate(['/dashboard/video-analysis/external-workspace'], {
+          queryParams: {
+            videoUrl:   video.externalUrl,
+            title:      video.title || 'Análisis de vídeo',
+            sourceType: video.sourceType,
+            clubId:     this.clubId
+          }
+        });
+      }
+      return;
     } else {
       // Vídeo nativo (B2) → descargar y abrir en workspace
       this.analyzeConfirmVideo = video;
@@ -539,39 +559,29 @@ export class ClubVideoLibraryComponent implements OnInit {
     this.analyzeDownloadError = '';
     this.analyzeDownloadProgress = 0;
 
-    // Obtener la URL firmada de B2
-    this.videoService.getVideoUrl(this.clubId, video.id).subscribe({
-      next: (res) => {
-        const signedUrl: string = res?.data?.url || '';
-        if (!signedUrl) {
-          this.analyzeDownloadError = 'No se pudo obtener la URL del vídeo.';
+    // Usar el endpoint proxy de la API para evitar problemas de CORS con B2.
+    // El navegador no puede hacer fetch() directamente a dominios de B2 sin CORS configurado.
+    const token = localStorage.getItem('token') || '';
+    const proxyUrl = `${environment.apiUrl}video/club/${this.clubId}/video/${video.id}/stream`;
+    const fileName = (video.title || `video-${video.id}`) + '.mp4';
+
+    this.localVideoService.loadFromUrl(proxyUrl, fileName, video.contentType || 'video/mp4', token)
+      .subscribe({
+        next: (pct: number) => { this.analyzeDownloadProgress = pct; },
+        error: (err: any) => {
           this.analyzeDownloading = false;
-          return;
-        }
-        const fileName = (video.title || `video-${video.id}`) + '.mp4';
-        this.localVideoService.loadFromUrl(signedUrl, fileName, video.contentType || 'video/mp4')
-          .subscribe({
-            next: (pct: number) => { this.analyzeDownloadProgress = pct; },
-            error: (err: any) => {
-              this.analyzeDownloading = false;
-              this.analyzeDownloadError =
-                'Error al descargar el vídeo. Comprueba tu conexión e inténtalo de nuevo.';
-              console.error('[analyzeVideo] download error:', err);
-            },
-            complete: () => {
-              this.analyzeDownloading = false;
-              this.analyzeConfirmVideo = null;
-              this.router.navigate(['/dashboard/video-analysis'], {
-                queryParams: { fromLibrary: 1, videoTitle: video.title || video.name }
-              });
-            }
+          this.analyzeDownloadError =
+            'Error al descargar el vídeo. Comprueba tu conexión e inténtalo de nuevo.';
+          console.error('[analyzeVideo] download error:', err);
+        },
+        complete: () => {
+          this.analyzeDownloading = false;
+          this.analyzeConfirmVideo = null;
+          this.router.navigate(['/dashboard/video-analysis'], {
+            queryParams: { fromLibrary: 1, videoTitle: video.title || video.name }
           });
-      },
-      error: () => {
-        this.analyzeDownloading = false;
-        this.analyzeDownloadError = 'Error al obtener la URL del vídeo.';
-      }
-    });
+        }
+      });
   }
 
   goBack(): void { this.router.navigate(['/dashboard']); }

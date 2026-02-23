@@ -235,6 +235,8 @@ export class CorreoEnviado {
     remitente: string;
     destinatario: string;
     temporada: string;
+    recipientUserIds?: number[];
+    recipientTeamIds?: number[];
 
     constructor(object: any) {
         this.correoEnviadoId = object.correoEnviadoId || 0;
@@ -248,6 +250,8 @@ export class CorreoEnviado {
         this.remitente = object.remitente || '';
         this.destinatario = object.destinatario || '';
         this.temporada = object.temporada || '';
+        this.recipientUserIds = object.recipientUserIds || [];
+        this.recipientTeamIds = object.recipientTeamIds || [];
     }
 }
 

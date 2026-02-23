@@ -2488,4 +2488,11 @@ export class ClubService {
       { headers: this.getAuthHeaders() }
     );
   }
+
+  searchClubMembers(clubId: number, q: string, temporada: string): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + `club/search-members/${clubId}?q=${encodeURIComponent(q)}&temporada=${temporada}`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
 }

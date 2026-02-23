@@ -140,7 +140,12 @@
             <span class="meta-item" *ngIf="project.localFileName">
               <i class="bi bi-pc-display"></i> {{ project.localFileName }}
             </span>
-            <span class="meta-item" *ngIf="!project.localFileName && project.videoTitle">
+            <span class="meta-item" *ngIf="project.externalVideoUrl">
+              <i class="bi bi-youtube" *ngIf="isYouTubeUrl(project.externalVideoUrl!)"></i>
+              <i class="bi bi-link-45deg" *ngIf="!isYouTubeUrl(project.externalVideoUrl!)"></i>
+              Vídeo online
+            </span>
+            <span class="meta-item" *ngIf="!project.localFileName && !project.externalVideoUrl && project.videoTitle">
               <i class="bi bi-film"></i> {{ project.videoTitle }}
             </span>
             <span class="meta-item" *ngIf="project.teamName">
@@ -194,9 +199,9 @@
                   [(ngModel)]="newProject.description"></textarea>
       </div>
 
-      <!-- Seleccionar vídeo local -->
+      <!-- Origen del vídeo: solo archivo local -->
       <div class="form-group">
-        <label>Archivo de vídeo (desde tu PC) *</label>
+        <label>Archivo de vídeo *</label>
         <div class="local-file-picker">
           <input #fileInput type="file" accept="video/*" class="d-none"
                  (change)="onLocalFileSelected($event)">
@@ -273,7 +278,7 @@
     <div class="modal-footer-custom">
       <button class="btn btn-outline-secondary" (click)="closeNewProjectModal()">Cancelar</button>
       <button class="btn btn-primary" (click)="createProject()"
-              [disabled]="!newProject.title || !selectedFileMeta || !newProject.templateId || isCreating">
+              [disabled]="!newProject.title || !newProject.templateId || isCreating || !selectedFileMeta">
         <span *ngIf="isCreating" class="spinner-border spinner-border-sm me-1"></span>
         <i class="bi bi-play-circle" *ngIf="!isCreating"></i>
         {{ isCreating ? 'Creando...' : 'Crear y abrir workspace' }}

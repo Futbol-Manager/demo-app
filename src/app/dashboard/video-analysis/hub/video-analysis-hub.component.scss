@@ -704,6 +704,99 @@ $gradient:    linear-gradient(135deg, $verde 0%, $azul 100%);
   }
 }
 
+// ── Selector dual: PC / Enlace ────────────────────────────────────────────
+
+.video-source-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.video-source-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 12px;
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  background: #fff;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all 0.18s;
+
+  i { font-size: 1rem; }
+
+  &:hover {
+    border-color: $verde;
+    color: $text-dark;
+  }
+
+  &.active {
+    border-color: $azul;
+    background: rgba($azul, 0.05);
+    color: $azul;
+    font-weight: 700;
+  }
+}
+
+.video-source-panel {
+  animation: fade-in 0.18s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+// ── URL input ─────────────────────────────────────────────────────────────
+
+.url-input-group {
+  position: relative;
+  margin-top: 4px;
+
+  .url-input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem;
+    color: $text-muted;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  .url-input {
+    padding-left: 38px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+
+    &:focus {
+      border-color: $azul;
+      box-shadow: 0 0 0 3px rgba($azul, 0.12);
+    }
+  }
+}
+
+.url-detected-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 6px;
+  padding: 4px 10px;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #16a34a;
+
+  .bi-youtube { color: #ff0000; }
+}
+
 .local-file-picker {
   margin-top: 6px;
 }

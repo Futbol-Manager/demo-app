@@ -9,6 +9,7 @@ import { PlayerStateService } from '../services/player-state.service';
 import { KeyboardShortcutsService, ShortcutAction } from '../services/keyboard-shortcuts.service';
 import { LocalVideoService, FingerprintResult } from '../services/local-video.service';
 import { ClipExportService } from '../services/clip-export.service';
+import { ScreenCaptureService } from '../services/screen-capture.service';
 import { AnalysisProject, AnalysisCategory, AnalysisTag, AnalysisEvent, AnalysisPlaylist, AnalysisPlaylistItem } from '../models/analysis.models';
 import { TaggingEvent } from './tagging-panel/tagging-panel.component';
 import { SaveDrawingEvent } from './drawing-overlay/drawing-overlay.component';
@@ -34,6 +35,9 @@ export class VideoAnalysisWorkspaceComponent implements OnInit, OnDestroy {
   needsFileSelection = false;
   fingerprintError = '';
 
+  /** YouTube ID extraído de project.externalVideoUrl (null si no es YouTube) */
+  youtubeId: string | null = null;
+
   drawingMode = false;
   showFieldPicker = false;
   pendingFieldEvent: AnalysisEvent | null = null;
@@ -55,6 +59,7 @@ export class VideoAnalysisWorkspaceComponent implements OnInit, OnDestroy {
   isLoadingPlaylists = false;
   isLoadingPlaylistItems = false;
   playlistsLoadedOnce = false;
+  projectLoadedOnce = false;
   showNewPlaylistForm = false;
   newPlaylistTitle = '';
   isCreatingPlaylist = false;
@@ -100,7 +105,8 @@ export class VideoAnalysisWorkspaceComponent implements OnInit, OnDestroy {
     public ps: PlayerStateService,
     private shortcuts: KeyboardShortcutsService,
     public localVideoService: LocalVideoService,
-    private clipExport: ClipExportService
+    private clipExport: ClipExportService,
+    private screenCapture: ScreenCaptureService
   ) {}
 
   ngOnInit(): void {
@@ -198,20 +204,55 @@ export class VideoAnalysisWorkspaceComponent implements OnInit, OnDestroy {
             this.loadEvents();
 
             if (this.project.status === 'DRAFT') {
+              // Primer acceso: cambiar estado y crear playlist automática con el nombre del proyecto
               this.analysisService.updateProjectStatus(this.projectId, 'IN_PROGRESS')
                 .pipe(takeUntil(this.destroy$))
                 .subscribe();
+
+              this.analysisService.createPlaylist({
+                clubId:    this.clubId,
+                createdBy: this.userId,
+                title:     this.project.title
+              }).pipe(takeUntil(this.destroy$)).subscribe({
+                next: (res: any) => {
+                  if (res?.data) {
+                    const newPlaylist = res.data;
+                    this.playlists = [...this.playlists, newPlaylist];
+                    // Vincular la playlist al proyecto para que siempre se auto-seleccione
+                    this.project!.defaultPlaylistId = newPlaylist.id;
+                    this.analysisService.updateProject(this.projectId, { defaultPlaylistId: newPlaylist.id })
+                      .pipe(takeUntil(this.destroy$)).subscribe();
+                    if (!this.selectedPlaylist) {
+                      this.onPlaylistSelected(newPlaylist);
+                    }
+                  }
+                }
+              });
             }
           }
           this.isLoading = false;
+          this.projectLoadedOnce = true;
+          this.maybeAutoSelectPlaylist();
         },
         error: () => {
           this.isLoading = false;
+          this.projectLoadedOnce = true;
         }
       });
   }
 
   private tryLoadLocalVideo(): void {
+    // Si el proyecto tiene una URL de vídeo externa (YouTube), usamos YouTube IFrame
+    if (this.project?.externalVideoUrl) {
+      const ytId = this.extractYouTubeId(this.project.externalVideoUrl);
+      if (ytId) {
+        this.youtubeId = ytId;
+        this.needsFileSelection = false;
+        this.openTaggerWindow();
+        return;
+      }
+    }
+
     if (this.localVideoService.hasFile()) {
       const result = this.localVideoService.verifyFingerprint(
         this.project?.localFileSize,
@@ -222,12 +263,16 @@ export class VideoAnalysisWorkspaceComponent implements OnInit, OnDestroy {
         this.videoUrl = this.localVideoService.blobUrl!;
         this.isHls = false;
         this.needsFileSelection = false;
-        // Video is ready — open tagger now
         this.openTaggerWindow();
         return;
       }
     }
     this.needsFileSelection = true;
+  }
+
+  private extractYouTubeId(url: string): string | null {
+    const m = url.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
+    return m ? m[1] : null;
   }
 
   async onLocalFileSelected(event: Event): Promise<void> {
@@ -486,16 +531,30 @@ export class VideoAnalysisWorkspaceComponent implements OnInit, OnDestroy {
           this.playlists = res.data || [];
           this.playlistsLoadedOnce = true;
           this.isLoadingPlaylists = false;
-          if (this.playlists.length > 0 && !this.selectedPlaylist) {
-            this.onPlaylistSelected(this.playlists[0]);
-          }
           // Auto-select quick playlist if not set
           if (this.playlists.length > 0 && this.quickPlaylistId === null) {
             this.setQuickPlaylist(this.playlists[0].id);
           }
+          this.maybeAutoSelectPlaylist();
         },
         error: () => { this.isLoadingPlaylists = false; }
       });
+  }
+
+  /**
+   * Selecciona automáticamente la playlist vinculada al proyecto (defaultPlaylistId).
+   * Solo actúa cuando AMBAS llamadas (loadProject + loadPlaylists) han terminado.
+   * Si el proyecto no tiene playlist vinculada, coge la primera de la lista.
+   */
+  private maybeAutoSelectPlaylist(): void {
+    if (!this.projectLoadedOnce || !this.playlistsLoadedOnce) return;
+    if (this.selectedPlaylist) return;
+    if (this.playlists.length === 0) return;
+
+    const defaultId = this.project?.defaultPlaylistId;
+    const linkedPlaylist = defaultId ? this.playlists.find(p => p.id === defaultId) : null;
+    const toSelect = linkedPlaylist ?? this.playlists[0];
+    this.onPlaylistSelected(toSelect);
   }
 
   // ── Quick-add playlist methods ────────────────────────────────────────────
@@ -788,14 +847,44 @@ export class VideoAnalysisWorkspaceComponent implements OnInit, OnDestroy {
   }
 
   async exportSelectedPlaylistItems(): Promise<void> {
+    const items = this.exportableItems;
+    if (!items.length) return;
+    if (this.isExportingPlaylist) return;
+
+    // Modo YouTube → grabar pantalla clip a clip
+    if (this.youtubeId) {
+      this.isExportingPlaylist    = true;
+      this.exportPlaylistProgress = 0;
+      this.exportPlaylistStep     = 'Preparando grabación…';
+      try {
+        for (let i = 0; i < items.length; i++) {
+          const item    = items[i];
+          const startMs = item.customStartMs ?? item.event?.startTimeMs ?? 0;
+          const endMs   = item.customEndMs   ?? item.event?.endTimeMs   ?? 0;
+          const label   = `${this.selectedPlaylist?.title || 'clip'}_${i + 1}_${item.event?.categoryName || ''}`;
+          this.exportPlaylistStep = `Grabando clip ${i + 1} de ${items.length}…`;
+          await this.recordScreenClipForYoutube(
+            startMs, endMs, label,
+            (pct)  => { this.exportPlaylistProgress = pct; },
+            (step) => { this.exportPlaylistStep = step; }
+          );
+        }
+      } catch (err: any) {
+        console.error('[PlaylistExport YouTube]', err);
+        alert(`Error al exportar: ${err?.message || err}`);
+      } finally {
+        this.isExportingPlaylist    = false;
+        this.exportPlaylistProgress = 0;
+        this.exportPlaylistStep     = '';
+      }
+      return;
+    }
+
     const file = this.localVideoService.file;
     if (!file) {
       alert('Carga el archivo de vídeo primero para poder exportar los clips.');
       return;
     }
-    const items = this.exportableItems;
-    if (!items.length) return;
-    if (this.isExportingPlaylist) return;
 
     this.isExportingPlaylist    = true;
     this.exportPlaylistProgress = 0;
@@ -839,6 +928,96 @@ export class VideoAnalysisWorkspaceComponent implements OnInit, OnDestroy {
     }
   }
 
+  // ── Screen recording para clips de YouTube ───────────────────────────────
+
+  async recordScreenClipForYoutube(
+    startMs: number,
+    endMs: number,
+    label: string,
+    onProgress?: (pct: number) => void,
+    onStep?: (step: string) => void
+  ): Promise<void> {
+    const durationMs = Math.max(0, endMs - startMs);
+    const step = (s: string) => { if (onStep) onStep(s); };
+    const prog = (p: number) => { if (onProgress) onProgress(p); };
+
+    step('Posicionando vídeo…');
+    prog(5);
+    this.ps.updateState({ isPlaying: false });
+    this.ps.seekTo(startMs);
+    await new Promise(r => setTimeout(r, 700));
+
+    const cropEl = document.getElementById('yt-player-embed');
+    if (!this.screenCapture.isActive) {
+      step('Selecciona esta pestaña para compartir el vídeo…');
+    }
+    prog(10);
+
+    let stream: MediaStream;
+    try {
+      stream = await this.screenCapture.acquireStream(cropEl);
+    } catch {
+      throw new Error('Se canceló la selección de pantalla.');
+    }
+
+    await this.runYouTubeRecording(stream, durationMs, label, prog, step);
+  }
+
+  private runYouTubeRecording(
+    stream: MediaStream,
+    durationMs: number,
+    label: string,
+    prog: (p: number) => void,
+    step: (s: string) => void
+  ): Promise<void> {
+    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+      ? 'video/webm;codecs=vp9,opus'
+      : MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : 'video/mp4';
+
+    const recorder = new MediaRecorder(stream, { mimeType });
+    const chunks: Blob[] = [];
+    recorder.ondataavailable = (e) => { if (e.data.size > 0) chunks.push(e.data); };
+
+    return new Promise<void>((resolve, reject) => {
+      recorder.onstop = () => {
+        prog(95);
+        const blob = new Blob(chunks, { type: mimeType });
+        const ext  = mimeType.includes('mp4') ? 'mp4' : 'webm';
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = `${label.replace(/[\\/:*?"<>|]/g, '_')}.${ext}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 3000);
+        prog(100);
+        resolve();
+      };
+      recorder.onerror = (e: any) => reject(e.error || new Error('Error en MediaRecorder'));
+
+      recorder.start(500);
+      step('Grabando…');
+      prog(20);
+      this.ps.updateState({ isPlaying: true });
+
+      const tickMs = 500;
+      let elapsed  = 0;
+      const interval = setInterval(() => {
+        elapsed += tickMs;
+        prog(20 + Math.min(73, Math.round((elapsed / durationMs) * 73)));
+        step(`Grabando… ${Math.round(elapsed / 1000)}s / ${Math.round(durationMs / 1000)}s`);
+      }, tickMs);
+
+      setTimeout(() => {
+        clearInterval(interval);
+        this.ps.updateState({ isPlaying: false });
+        step('Finalizando…');
+        recorder.stop();
+      }, durationMs + 300);
+    });
+  }
+
   private buildTagMap(): void {
     this.tagMap = new Map();
     for (const cat of this.ps.categories$.value) {
@@ -858,7 +1037,7 @@ export class VideoAnalysisWorkspaceComponent implements OnInit, OnDestroy {
   // ── Clip annotation editor modal ──────────────────────────────────────────
 
   openClipEditor(event: AnalysisEvent): void {
-    if (!this.localVideoService.file) {
+    if (!this.localVideoService.file && !this.youtubeId) {
       alert('Carga el archivo de vídeo primero para poder editar los clips.');
       return;
     }

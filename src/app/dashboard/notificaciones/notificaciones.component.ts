@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, ElementRef, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { ClubService } from 'src/app/core/services/club/club.service';
@@ -7,9 +7,22 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { CorreoEnviado } from 'src/app/core/services/models/club.model';
 import { Response } from 'src/app/core/services/models/response.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
+import { RegisterService } from 'src/app/core/services/register/register.service';
 import { Location } from '@angular/common';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 declare var $: any; // Declaración para usar jQuery
+
+interface RecipientChip {
+  id: string;
+  type: 'user' | 'team';
+  label: string;
+  sublabel: string;
+  userId?: number;
+  teamId?: number;
+  playerId?: number;
+  role?: string;
+  hasAccount?: boolean;
+}
 
 @Component({
   selector: 'app-notificaciones',
@@ -17,9 +30,11 @@ declare var $: any; // Declaración para usar jQuery
   styleUrls: ['./notificaciones.component.scss'],
 })
 export class NotificacionesComponent implements OnInit {
+  @ViewChild('recipientInputEl') recipientInputEl?: ElementRef<HTMLInputElement>;
+
   datosCargados = false;
   usuarioActual!: User | null;
-  clubId!: number; // Ajusta el valor según el clubId del equipo actual
+  clubId!: number;
   userId!: number;
   correoSelected = {
     destinatarios: '',
@@ -34,7 +49,7 @@ export class NotificacionesComponent implements OnInit {
   correosRecibidosSinFiltro: any = [];
   correosSinFiltro: any = [];
   selectCorreo: boolean = true;
-  correos = [...this.correosSinFiltro]; // Inicialmente, muestra todos los correos
+  correos = [...this.correosSinFiltro];
   loadingCorreos: boolean = true;
   receivedCount: number = 0;
 
@@ -44,17 +59,25 @@ export class NotificacionesComponent implements OnInit {
 
   listTeamsForCombo: any[] = [];
   correoNew: CorreoEnviado = new CorreoEnviado({});
-  /*correoNew = {
-    destinatarios: '0',
-    asunto: '',
-    body: '',
-    correoEnviadoId: 0,
-    clubId: 0,
-    teamId: 0,
-    userId: 0,
-    fechaCreate: ''
-  };*/
+
+  // ── Selector de destinatarios estilo Gmail ──
+  selectedRecipients: RecipientChip[] = [];
+  recipientInput = '';
+  recipientSuggestions: any[] = [];
+  isSearchingRecipients = false;
+  private searchTimeout: any;
+
   isSending: boolean = false;
+
+  // ── Modal de invitación a Sphaira Player ──
+  inviteModal: {
+    show: boolean;
+    player: any | null;
+    email: string;
+    sending: boolean;
+    result: 'success' | 'error' | null;
+  } = { show: false, player: null, email: '', sending: false, result: null };
+
   currentFolder: 'inbox' | 'sent' = 'inbox';
   currentFilter: 'all' | 'read' | 'unread' = 'all';
   searchQuery = '';
@@ -72,6 +95,7 @@ export class NotificacionesComponent implements OnInit {
     private teamService: TeamService,
     private http: HttpClient,
     private clubService: ClubService,
+    private registerService: RegisterService,
     private location: Location,
   ) { }
 
@@ -466,28 +490,120 @@ export class NotificacionesComponent implements OnInit {
     this.selectCorreo = false;
   }
 
-  // Método para codificar en Base64 antes de guardar
+  // ── Métodos del selector de destinatarios Gmail-style ──────────────────────
+
+  focusRecipientInput(): void {
+    this.recipientInputEl?.nativeElement.focus();
+  }
+
+  onRecipientInputChange(): void {
+    clearTimeout(this.searchTimeout);
+    const q = this.recipientInput.trim();
+    if (q.length < 2) {
+      this.recipientSuggestions = [];
+      return;
+    }
+
+    // Sugerencias de equipos completos (de la lista ya cargada)
+    const qLow = q.toLowerCase();
+    const teamSuggestions = this.listTeamsForCombo
+      .filter((t: any) => t.name?.toLowerCase().includes(qLow))
+      .slice(0, 2)
+      .map((t: any) => ({
+        type: 'team',
+        teamId: +t.value,
+        label: t.name,
+        sublabel: 'Equipo completo',
+        id: 'team_' + t.value,
+      }));
+
+    this.searchTimeout = setTimeout(() => {
+      this.isSearchingRecipients = true;
+      this.clubService.searchClubMembers(this.clubId, q, this.temporadaStoredValue).subscribe({
+        next: (res: any) => {
+          const members = (res.data || []).map((m: any) => ({
+            type: 'user',
+            userId: m.userId,
+            playerId: m.playerId,
+            label: m.fullName,
+            sublabel: (m.role === 'COACH' ? 'Entrenador' : 'Jugador') + ' · ' + m.teamName,
+            role: m.role,
+            hasAccount: m.hasAccount !== false,
+            id: m.userId ? 'user_' + m.userId : 'player_' + m.playerId,
+          }));
+          const combined = [...teamSuggestions, ...members].slice(0, 5);
+          // Quitar los ya seleccionados
+          this.recipientSuggestions = combined.filter(
+            s => !this.selectedRecipients.some(r => r.id === s.id)
+          );
+          this.isSearchingRecipients = false;
+        },
+        error: () => { this.isSearchingRecipients = false; }
+      });
+    }, 300);
+  }
+
+  addRecipient(suggestion: any): void {
+    if (!this.selectedRecipients.some(r => r.id === suggestion.id)) {
+      this.selectedRecipients.push(suggestion);
+    }
+    this.recipientInput = '';
+    this.recipientSuggestions = [];
+    setTimeout(() => this.recipientInputEl?.nativeElement.focus(), 0);
+  }
+
+  removeRecipient(idx: number): void {
+    this.selectedRecipients.splice(idx, 1);
+  }
+
+  onRecipientBackspace(): void {
+    if (!this.recipientInput && this.selectedRecipients.length > 0) {
+      this.selectedRecipients.pop();
+    }
+  }
+
+  hideSuggestionsDelayed(): void {
+    setTimeout(() => { this.recipientSuggestions = []; }, 200);
+  }
+
+  // ── Envío del correo ─────────────────────────────────────────────────────────
+
   guardarCorreo(): void {
     this.isSending = true;
-    const contenidoHTML = this.correoSelected.body;
-    // Codifica el contenido en Base64
+    const contenidoHTML = this.correoNew.body;
     const contenidoBase64 = btoa(unescape(encodeURIComponent(contenidoHTML)));
 
     this.correoNew.body = contenidoBase64;
     this.correoNew.clubId = this.clubId;
-    this.correoNew.teamId = parseInt(this.correoNew.destinatarios);
     this.correoNew.userId = this.userId;
     this.correoNew.correoEnviadoId = 0;
     this.correoNew.temporada = this.temporadaStoredValue;
 
-    //console.log('Contenido en Base64:', contenidoBase64);
+    // Mapear chips a las nuevas listas de destinatarios (solo usuarios con cuenta)
+    this.correoNew.recipientUserIds = this.selectedRecipients
+      .filter(r => r.type === 'user' && r.hasAccount !== false && r.userId)
+      .map(r => r.userId!);
+    this.correoNew.recipientTeamIds = this.selectedRecipients
+      .filter(r => r.type === 'team')
+      .map(r => r.teamId!);
+
+    // Retrocompatibilidad: si solo hay equipos, usar el primero como teamId
+    const firstTeamId = this.correoNew.recipientTeamIds[0];
+    this.correoNew.teamId = firstTeamId ?? 0;
+    this.correoNew.destinatarios = firstTeamId ? String(firstTeamId) : '0';
 
     this.clubService.createCorreo(this.correoNew).subscribe(
       (response: Response) => {
         if (response.data !== 0) {
-          this.correoNew = response.data;
           if (!this.correosEnviadosSinFiltro) this.correosEnviadosSinFiltro = [];
-          this.correosEnviadosSinFiltro.unshift(this.correoNew);
+          // Construir entrada en enviados con los nombres de destinatarios
+          const destinatarioLabel = this.selectedRecipients.map(r => r.label).join(', ');
+          const enviadoEntry = {
+            ...this.correoNew,
+            destinatario: destinatarioLabel,
+            fechaCreate: new Date().toISOString(),
+          };
+          this.correosEnviadosSinFiltro.unshift(enviadoEntry);
           if (this.currentFolder === 'sent') this.correos = [...this.correosEnviadosSinFiltro];
           this.sendSuccess = true;
           setTimeout(() => { this.sendSuccess = false; }, 3500);
@@ -495,7 +611,8 @@ export class NotificacionesComponent implements OnInit {
         this.cerrarEnviando();
       },
       (error) => {
-        console.error('Error al cargar el listado de equipos', error);
+        console.error('Error al enviar correo', error);
+        this.isSending = false;
       },
     );
   }
@@ -521,7 +638,7 @@ export class NotificacionesComponent implements OnInit {
       $('.note-modal, .note-modal-backdrop').remove();
     }, 0);
 
-    this.correoNew = {
+    this.correoNew = new CorreoEnviado({
       destinatarios: '0',
       asunto: '',
       body: '',
@@ -533,7 +650,52 @@ export class NotificacionesComponent implements OnInit {
       remitente: '',
       destinatario: '',
       temporada: this.temporadaStoredValue,
+    });
+
+    // Resetear selector de destinatarios
+    this.selectedRecipients = [];
+    this.recipientInput = '';
+    this.recipientSuggestions = [];
+    clearTimeout(this.searchTimeout);
+  }
+
+  // ── Invitación a Sphaira Player ─────────────────────────────────────────────
+
+  openInviteModal(suggestion: any, event: Event): void {
+    event.stopPropagation();
+    event.preventDefault();
+    this.inviteModal = {
+      show: true,
+      player: suggestion,
+      email: '',
+      sending: false,
+      result: null,
     };
+  }
+
+  closeInviteModal(): void {
+    this.inviteModal = { show: false, player: null, email: '', sending: false, result: null };
+  }
+
+  sendInvitation(): void {
+    const { player, email } = this.inviteModal;
+    if (!email.trim() || !player?.playerId) return;
+    this.inviteModal.sending = true;
+    this.inviteModal.result = null;
+    this.registerService.invitePlayer(email.trim(), player.playerId, 1, player.teamId ?? 0)
+      .subscribe({
+        next: (res: any) => {
+          this.inviteModal.sending = false;
+          this.inviteModal.result = res.data != null ? 'success' : 'error';
+          if (this.inviteModal.result === 'success') {
+            setTimeout(() => this.closeInviteModal(), 2500);
+          }
+        },
+        error: () => {
+          this.inviteModal.sending = false;
+          this.inviteModal.result = 'error';
+        },
+      });
   }
 
   isBase64(str: string): boolean {

@@ -31,11 +31,28 @@
         <!-- Left: video player -->
         <div class="cae-video-col">
           <div class="cae-video-wrap">
+
+            <!-- Reproductor nativo (vídeo local) -->
             <video #videoEl class="cae-video" preload="auto"
+                   *ngIf="!youtubeId"
                    (click)="togglePlay()"
                    (loadedmetadata)="onVideoMetaLoaded($event)"
                    (timeupdate)="onVideoTimeUpdate($event)"
                    (ended)="isPlaying = false"></video>
+
+            <!-- Mini-player YouTube -->
+            <ng-container *ngIf="youtubeId">
+              <div id="yt-mini-embed" class="cae-yt-embed"></div>
+              <!-- Escudo transparente cuando reproduce; oscuro cuando está pausado
+                   (cubre las sugerencias de YouTube que aparecen al pausar) -->
+              <div class="cae-yt-shield"
+                   [class.cae-yt-shield--paused]="!isPlaying"
+                   (click)="togglePlay()">
+                <div class="cae-yt-play-icon" *ngIf="!isPlaying">
+                  <i class="bi bi-play-circle-fill"></i>
+                </div>
+              </div>
+            </ng-container>
 
             <!-- Annotation frame overlay (freeze-frame with drawings) -->
             <canvas #annotationCanvas class="cae-annotation-overlay"

@@ -17,6 +17,38 @@
   &.hide-cursor { cursor: none; }
 }
 
+// YouTube embed wrapper — ocupa todo el espacio disponible del player
+.yt-wrapper {
+  width: 100%;
+  height: 100%;
+  min-height: 220px;
+  position: relative;
+  background: #000;
+
+  #yt-player-embed {
+    width: 100%;
+    height: 100%;
+    min-height: 220px;
+  }
+
+  // Forzar el iframe de YouTube a ocupar todo el contenedor
+  ::ng-deep iframe {
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 220px;
+    display: block;
+  }
+
+  // Capa transparente que bloquea la interacción directa con el iframe
+  .yt-click-shield {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    cursor: pointer;
+    background: transparent;
+  }
+}
+
 .video-wrapper {
   width: 100%;
   display: flex;

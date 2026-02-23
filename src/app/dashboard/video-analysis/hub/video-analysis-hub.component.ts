@@ -27,6 +27,8 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
   searchQuery = '';
 
   showNewProjectModal = false;
+  videoSourceMode: 'local' | 'url' = 'local';
+
   newProject = {
     title: '',
     description: '',
@@ -34,7 +36,8 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
     teamId: null as number | null,
     matchId: null as number | null,
     trainingId: null as number | null,
-    contextType: 'free' as 'free' | 'match' | 'training'
+    contextType: 'free' as 'free' | 'match' | 'training',
+    externalVideoUrl: '' // URL de YouTube/Vimeo/VEO cuando viene desde la biblioteca
   };
   selectedFile: File | null = null;
   selectedFileMeta: LocalVideoMeta | null = null;
@@ -60,18 +63,31 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
     });
     this.loadData();
 
-    // Si viene desde la biblioteca con un vídeo ya descargado, auto-abre el modal
+    // Detectar navegación desde la biblioteca (vídeo local descargado O YouTube)
     this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
-      if (params['fromLibrary'] && this.localVideoService.hasFile()) {
-        const videoTitle = params['videoTitle'] || '';
-        // Espera a que las plantillas carguen antes de abrir el modal
+      const videoTitle  = params['videoTitle'] || '';
+      const youtubeUrl  = params['youtubeUrl']  || '';
+
+      if (youtubeUrl) {
+        // Vídeo de YouTube → abrir modal con URL pre-rellenada y modo "url"
         const tryOpen = () => {
           if (this.templates.length > 0) {
             this.openNewProjectModal();
-            if (videoTitle) {
-              this.newProject.title = `Análisis – ${videoTitle}`;
-            }
-            // Marcar como pre-cargado para saltar el file picker
+            this.videoSourceMode = 'url';
+            this.newProject.externalVideoUrl = youtubeUrl;
+            if (videoTitle) this.newProject.title = `Análisis – ${videoTitle}`;
+          } else {
+            setTimeout(tryOpen, 200);
+          }
+        };
+        setTimeout(tryOpen, 400);
+
+      } else if (params['fromLibrary'] && this.localVideoService.hasFile()) {
+        // Vídeo local ya descargado desde B2
+        const tryOpen = () => {
+          if (this.templates.length > 0) {
+            this.openNewProjectModal();
+            if (videoTitle) this.newProject.title = `Análisis – ${videoTitle}`;
             this.selectedFile = this.localVideoService.file;
             this.selectedFileMeta = this.localVideoService.meta;
           } else {
@@ -139,21 +155,40 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
   }
 
   openNewProjectModal(): void {
+    this.videoSourceMode = 'local';
     this.newProject = {
       title: '', description: '', templateId: 0,
-      teamId: null, matchId: null, trainingId: null, contextType: 'free'
+      teamId: null, matchId: null, trainingId: null, contextType: 'free',
+      externalVideoUrl: ''
     };
     this.selectedFile = null;
     this.selectedFileMeta = null;
     this.createError = '';
     if (this.templates.length > 0) {
-      this.newProject.templateId = this.templates[0].id;
+      const storedDefault = localStorage.getItem(`defaultTemplate_${this.clubId}`);
+      const defaultId = storedDefault ? Number(storedDefault) : null;
+      const defaultTpl = defaultId ? this.templates.find(t => t.id === defaultId) : null;
+      this.newProject.templateId = (defaultTpl ?? this.templates[0]).id;
     }
     this.showNewProjectModal = true;
   }
 
   closeNewProjectModal(): void {
     this.showNewProjectModal = false;
+  }
+
+  setVideoSourceMode(mode: 'local' | 'url'): void {
+    this.videoSourceMode = mode;
+    if (mode === 'local') {
+      this.newProject.externalVideoUrl = '';
+    } else {
+      this.selectedFile = null;
+      this.selectedFileMeta = null;
+    }
+  }
+
+  isYouTubeUrl(url: string): boolean {
+    return /youtube\.com|youtu\.be/i.test(url || '');
   }
 
   async onLocalFileSelected(event: Event): Promise<void> {
@@ -182,33 +217,43 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
   }
 
   createProject(): void {
+    const isExternal = !!this.newProject.externalVideoUrl;
+
     const missing: string[] = [];
     if (!this.newProject.title) missing.push('título');
-    if (!this.selectedFileMeta) missing.push('archivo de vídeo');
-    if (!this.selectedFile) missing.push('archivo de vídeo (objeto)');
+    if (!isExternal && !this.selectedFileMeta) missing.push('archivo de vídeo');
+    if (!isExternal && !this.selectedFile)     missing.push('archivo de vídeo (objeto)');
     if (!this.newProject.templateId) missing.push('plantilla');
 
     if (missing.length > 0) {
-      console.warn('createProject guard: faltan campos:', missing);
+      this.createError = `Faltan campos: ${missing.join(', ')}`;
       return;
     }
 
     this.isCreating = true;
     this.createError = '';
 
-    this.localVideoService.setFile(this.selectedFile!, this.selectedFileMeta!);
+    if (!isExternal) {
+      this.localVideoService.setFile(this.selectedFile!, this.selectedFileMeta!);
+    }
 
     const body: any = {
       clubId: this.clubId,
       createdBy: this.userId,
-      videoId: null,
+      videoId: undefined,
       title: this.newProject.title,
       description: this.newProject.description || '',
-      templateId: this.newProject.templateId,
-      localFileName: this.selectedFileMeta!.fileName,
-      localFileSize: this.selectedFileMeta!.fileSize,
-      localFileDurationMs: this.selectedFileMeta!.durationMs
+      templateId: this.newProject.templateId
     };
+
+    if (isExternal) {
+      body.externalVideoUrl = this.newProject.externalVideoUrl;
+    } else {
+      body.localFileName      = this.selectedFileMeta!.fileName;
+      body.localFileSize      = this.selectedFileMeta!.fileSize;
+      body.localFileDurationMs = this.selectedFileMeta!.durationMs;
+    }
+
     if (this.newProject.contextType === 'match' && this.newProject.matchId) {
       body.matchId = this.newProject.matchId;
     }
@@ -216,16 +261,15 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
       body.trainingId = this.newProject.trainingId;
     }
 
-    console.log('createProject body:', body);
-
     this.analysisService.createProject(body)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
           this.isCreating = false;
           if (res?.data?.id) {
+            const project = res.data;
             this.showNewProjectModal = false;
-            this.router.navigate(['/dashboard/video-analysis/workspace', res.data.id]);
+            this.router.navigate(['/dashboard/video-analysis/workspace', project.id]);
           } else {
             this.createError = 'El servidor no devolvió el proyecto creado. Inténtalo de nuevo.';
           }
