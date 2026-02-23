@@ -35,6 +35,7 @@ export class ClasificacionResultadosComponent implements OnInit {
   codGrupo = '';
   codCompeticion = '';
   loading = true;
+  refreshing = false;
   datosNulos = false;
 
   // --- Wizard de configuración ---
@@ -172,9 +173,10 @@ export class ClasificacionResultadosComponent implements OnInit {
 
   refresh(): void {
     const jornada = this.jornadaSeleccionada || 1;
-    this.datosCargados = false;
+    this.refreshing = true;
     this.clubService.refreshClasificacion(this.teamId, jornada.toString()).subscribe(
       (resp: Response) => {
+        this.refreshing = false;
         if (resp && resp.status === 200 && resp.data) {
           this.applyData(resp.data);
           this.datosCargados = true;
@@ -183,7 +185,10 @@ export class ClasificacionResultadosComponent implements OnInit {
           this.loadTableTodo(jornada);
         }
       },
-      () => this.loadTableTodo(jornada)
+      () => {
+        this.refreshing = false;
+        this.loadTableTodo(jornada);
+      }
     );
   }
 

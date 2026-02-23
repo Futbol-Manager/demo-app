@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { AiChatService, AiPendingAction } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { AiPageContextService, CoachTeamContext } from 'src/app/core/services/ai-chat/ai-page-context.service';
 import { InjuryService } from 'src/app/core/services/injury/injury.service';
 import { Injury } from 'src/app/core/services/injury/injury.model';
 import { User } from 'src/app/core/models/users/user.model';
@@ -152,6 +153,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   private clubId: number | null = null;
   private teamId: number | null = null;
   private chatSub: Subscription | null = null;
+  private coachTeamContext: CoachTeamContext | null = null;
 
   // Voice recognition
   isRecording = false;
@@ -188,6 +190,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     private location: Location,
     private translate: TranslateService,
     private aiChatService: AiChatService,
+    private aiPageContextService: AiPageContextService,
     private voiceRecognition: VoiceRecognitionService,
     private injuryService: InjuryService
   ) {}
@@ -224,6 +227,14 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     if (!this.teamId) {
       const storedTeamId = sessionStorage.getItem('teamId');
       if (storedTeamId) this.teamId = parseInt(storedTeamId, 10);
+    }
+
+    // Precargar partidos y clasificación del equipo para el contexto de la IA
+    if (this.teamId) {
+      this.aiPageContextService.preloadForCoachTeam(this.teamId);
+      this.aiPageContextService.getCoachTeamContext().subscribe(ctx => {
+        this.coachTeamContext = ctx;
+      });
     }
 
     // Check if arriving from lesiones screen (set by FAB or direct nav)
@@ -481,8 +492,23 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       .slice(-10)
       .map(m => ({ role: m.role, text: m.isActionPreview ? '[Acción propuesta: ' + m.text + ']' : m.text }));
 
+    // Enriquecer el mensaje con el contexto del equipo (partidos + clasificación)
+    let enrichedText = text;
+    if (this.coachTeamContext) {
+      const coachParts: string[] = [];
+      if (this.coachTeamContext.matchStats) {
+        coachParts.push('[RESULTADOS Y ESTADÍSTICAS DE PARTIDOS DEL EQUIPO (Liga, Amistoso, Copa, etc.)]\n' + this.coachTeamContext.matchStats);
+      }
+      if (this.coachTeamContext.classification) {
+        coachParts.push('[CLASIFICACIÓN ACTUAL DE LIGA]\n' + this.coachTeamContext.classification);
+      }
+      if (coachParts.length > 0) {
+        enrichedText = text + '\n\n' + coachParts.join('\n\n');
+      }
+    }
+
     this.chatSub?.unsubscribe();
-    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, 'dashboard', text, 'users', this.teamId, history)
+    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, 'dashboard', enrichedText, 'users', this.teamId, history)
       .pipe(
         finalize(() => {
           this.isResponding = false;

@@ -4,6 +4,12 @@ import { catchError } from 'rxjs/operators';
 import { ClubService } from '../club/club.service';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
+export interface CoachTeamContext {
+  teamId: number;
+  matchStats: string;
+  classification: string;
+}
+
 export type PageContextType = 'estadisticas-equipos' | 'estadisticas-jugadores';
 
 export interface PageContext {
@@ -33,9 +39,12 @@ export class AiPageContextService {
 
   private readonly activeContext$ = new BehaviorSubject<PageContext | null>(null);
   private readonly backgroundStats$ = new BehaviorSubject<BackgroundStatsContext | null>(null);
+  private readonly coachTeamContext$ = new BehaviorSubject<CoachTeamContext | null>(null);
 
   /** Evita recargar si ya están los datos del mismo club en esta sesión */
   private loadedForClubId: number | null = null;
+  /** Evita recargar si ya están los datos del mismo equipo de coach */
+  private loadedForTeamId: number | null = null;
 
   constructor(private clubService: ClubService) {}
 
@@ -104,6 +113,54 @@ export class AiPageContextService {
     return this.backgroundStats$.getValue();
   }
 
+  // ─── Contexto específico del equipo coach (partidos + clasificación) ─────
+
+  /**
+   * Carga en segundo plano los partidos de todos los tipos y la clasificación
+   * para el equipo del coach. Solo realiza la llamada una vez por teamId.
+   */
+  preloadForCoachTeam(teamId: number): void {
+    if (!teamId || this.loadedForTeamId === teamId) return;
+
+    const tipos = ['Liga', 'Copa', 'Amistoso', 'Torneo'];
+    const matchRequests: { [key: string]: Observable<any> } = {};
+    tipos.forEach(tipo => {
+      matchRequests[tipo] = this.clubService.getMatchesByTeamAndType(teamId, tipo).pipe(catchError(() => of(null)));
+    });
+
+    forkJoin({
+      ...matchRequests,
+      clasificacion: this.clubService.getTodo(teamId, 'current').pipe(catchError(() => of(null))),
+    }).subscribe((results: any) => {
+      const allMatches: any[] = [];
+      tipos.forEach(tipo => {
+        const res = results[tipo];
+        if (res?.data && Array.isArray(res.data) && res.data.length > 0) {
+          res.data.forEach((m: any) => allMatches.push({ ...m, _tipoPartido: tipo }));
+        }
+      });
+
+      const matchStats = this.buildCoachMatchContext(allMatches);
+      const classification = this.buildCoachClassificationContext(results['clasificacion']);
+
+      this.coachTeamContext$.next({ teamId, matchStats, classification });
+      this.loadedForTeamId = teamId;
+    });
+  }
+
+  invalidateCoachTeamCache(): void {
+    this.loadedForTeamId = null;
+    this.coachTeamContext$.next(null);
+  }
+
+  getCoachTeamContext(): Observable<CoachTeamContext | null> {
+    return this.coachTeamContext$.asObservable();
+  }
+
+  getCoachTeamContextSnapshot(): CoachTeamContext | null {
+    return this.coachTeamContext$.getValue();
+  }
+
   // ─── Construcción de contexto anonimizado ────────────────────────────────
 
   private buildTeamContext(teamsData: any[]): { contextText: string; codeToReal: Map<string, string> } {
@@ -145,6 +202,93 @@ export class AiPageContextService {
     });
 
     return { contextText: lines.join('\n'), codeToReal };
+  }
+
+  private buildCoachMatchContext(matches: any[]): string {
+    if (!matches || matches.length === 0) return '';
+
+    // Agrupar por tipo
+    const byTipo: { [tipo: string]: any[] } = {};
+    matches.forEach(m => {
+      const mp = m.matchPreparation;
+      const tipo = mp?.tipoPartido || m._tipoPartido || 'Otro';
+      if (!byTipo[tipo]) byTipo[tipo] = [];
+      byTipo[tipo].push(m);
+    });
+
+    let totalPlayed = 0, totalWins = 0, totalDraws = 0, totalLosses = 0;
+    let totalGf = 0, totalGc = 0;
+    const formaGlobal: string[] = [];
+    const lines: string[] = [];
+
+    for (const tipo of ['Liga', 'Copa', 'Amistoso', 'Torneo', 'Otro']) {
+      const tipoMatches = byTipo[tipo];
+      if (!tipoMatches || tipoMatches.length === 0) continue;
+
+      let wins = 0, draws = 0, losses = 0, gf = 0, gc = 0;
+      const matchLines: string[] = [];
+
+      tipoMatches.forEach(m => {
+        const mp = m.matchPreparation;
+        const result: string = m.resultado || '';
+        const rival = mp?.rivalName || '?';
+        const date = mp?.matchDate || '?';
+        const terreno = mp?.terreno || '?';
+        const matchGf: number = m.golesAFavor || 0;
+        const matchGc: number = m.golesEnContra || 0;
+
+        if (result === 'V') wins++;
+        else if (result === 'E') draws++;
+        else if (result === 'D') losses++;
+        gf += matchGf;
+        gc += matchGc;
+        formaGlobal.push(result || '?');
+
+        const resultLabel = result === 'V' ? 'Victoria' : result === 'E' ? 'Empate' : result === 'D' ? 'Derrota' : result;
+        matchLines.push(`  ${date} | vs ${rival} (${terreno}) | ${matchGf}-${matchGc} | ${resultLabel}`);
+      });
+
+      totalPlayed += tipoMatches.length;
+      totalWins += wins;
+      totalDraws += draws;
+      totalLosses += losses;
+      totalGf += gf;
+      totalGc += gc;
+
+      const pts = wins * 3 + draws;
+      lines.push(`[${tipo}] ${tipoMatches.length}PJ | ${wins}V ${draws}E ${losses}D | ${gf}:${gc} | ${pts}pts`);
+      matchLines.forEach(l => lines.push(l));
+    }
+
+    const dg = totalGf - totalGc;
+    const dgStr = dg >= 0 ? `+${dg}` : `${dg}`;
+    const totalPts = totalWins * 3 + totalDraws;
+    const forma = formaGlobal.slice(-5).join(' ');
+
+    const header = `TOTAL: ${totalPlayed}PJ | ${totalWins}V ${totalDraws}E ${totalLosses}D | ${totalGf}:${totalGc} (DG ${dgStr}) | ${totalPts}pts\nÚltima forma (5 últimos): ${forma}`;
+    return header + '\n\n' + lines.join('\n');
+  }
+
+  private buildCoachClassificationContext(response: any): string {
+    if (!response?.data) return '';
+    const data = response.data;
+    const clasificacion = data.clasificacion;
+    if (!Array.isArray(clasificacion) || clasificacion.length === 0) return '';
+
+    const competicion: string = data.competicion || '';
+    const grupo: string = data.grupo || '';
+    const jornada: string = data.jornada || '';
+
+    const rows: string[] = [];
+    if (competicion) {
+      rows.push(`Competición: ${competicion}${grupo ? ` (${grupo})` : ''} — Jornada ${jornada}`);
+    }
+    rows.push('Pos | Equipo | Pts | PJ | PG | PE | PP | GF | GC');
+    clasificacion.slice(0, 20).forEach((r: any) => {
+      rows.push(`${r.posicion || '-'} | ${r.nombre || '-'} | ${r.puntos || '-'} | ${r.jugados || '-'} | ${r.ganados || '-'} | ${r.empatados || '-'} | ${r.perdidos || '-'} | ${r.golesAFavor || '-'} | ${r.golesEnContra || '-'}`);
+    });
+
+    return rows.join('\n');
   }
 
   private buildPaymentContext(playersData: any[]): { contextText: string; codeToReal: Map<string, string> } {

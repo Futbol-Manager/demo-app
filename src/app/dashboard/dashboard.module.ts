@@ -144,6 +144,18 @@ import { CanvasTaggerWindowComponent } from './video-analysis/canvas-tagger-wind
 import { ScreenCaptureWorkspaceComponent } from './video-analysis/screen-capture/screen-capture-workspace.component';
 import { ExternalVideoWorkspaceComponent } from './video-analysis/external-workspace/external-video-workspace.component';
 import { ClipAnnotationEditorComponent } from './video-analysis/workspace/clip-annotation-editor/clip-annotation-editor.component';
+import { ErpDashboardComponent } from './erp/erp-dashboard/erp-dashboard.component';
+import { ErpAccountsComponent } from './erp/erp-accounts/erp-accounts.component';
+import { ErpJournalEntriesComponent } from './erp/erp-journal-entries/erp-journal-entries.component';
+import { ErpSalesInvoicesComponent } from './erp/erp-sales-invoices/erp-sales-invoices.component';
+import { ErpPurchaseInvoicesComponent } from './erp/erp-purchase-invoices/erp-purchase-invoices.component';
+import { ErpPaymentsComponent } from './erp/erp-payments/erp-payments.component';
+import { ErpCustomersComponent } from './erp/erp-customers/erp-customers.component';
+import { ErpSuppliersComponent } from './erp/erp-suppliers/erp-suppliers.component';
+import { ErpBudgetsComponent } from './erp/erp-budgets/erp-budgets.component';
+import { ErpReportsComponent } from './erp/erp-reports/erp-reports.component';
+import { ErpSetupComponent } from './erp/erp-setup/erp-setup.component';
+import { ErpAiConsentModalComponent } from './erp/erp-ai-consent-modal/erp-ai-consent-modal.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -288,6 +300,18 @@ export function HttpLoaderFactory(http: HttpClient) {
     ScreenCaptureWorkspaceComponent,
     ExternalVideoWorkspaceComponent,
     ClipAnnotationEditorComponent,
+    ErpDashboardComponent,
+    ErpAccountsComponent,
+    ErpJournalEntriesComponent,
+    ErpSalesInvoicesComponent,
+    ErpPurchaseInvoicesComponent,
+    ErpPaymentsComponent,
+    ErpCustomersComponent,
+    ErpSuppliersComponent,
+    ErpBudgetsComponent,
+    ErpReportsComponent,
+    ErpSetupComponent,
+    ErpAiConsentModalComponent,
   ],
   imports: [
     CommonModule,

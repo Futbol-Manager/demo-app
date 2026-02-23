@@ -624,6 +624,34 @@
   background: linear-gradient(135deg, #fff7ed 0%, #fff 100%);
 }
 
+/* ───────────── OVERLAY REFRESH ───────────── */
+.refresh-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  background: rgba(0, 44, 64, 0.72);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.refresh-overlay-card {
+  background: #fff;
+  border-radius: 20px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 12px 48px rgba(0, 44, 64, 0.25);
+  animation: overlay-in 0.25s ease-out;
+}
+
+@keyframes overlay-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
 /* ───────────── SPINNER SPHAIRA ───────────── */
 .sphaira-spinner-container {
   position: relative;

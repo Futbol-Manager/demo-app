@@ -1,0 +1,36 @@
+<div class="erp-page">
+  <div class="erp-header"><button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i> Volver</button><h2><i class="bi bi-gear"></i> Configuración ERP</h2></div>
+  <div *ngIf="loading" class="erp-loading"><i class="bi bi-arrow-repeat spin"></i> Cargando...</div>
+  <div *ngIf="!loading">
+    <section class="setup-section">
+      <h3>Ejercicios fiscales</h3>
+      <p class="setup-hint"><i class="bi bi-info-circle"></i> El ejercicio <strong>activo</strong> determina el rango de fechas que se muestra por defecto en el dashboard financiero. Puedes cambiar el rango manualmente en el dashboard en cualquier momento.</p>
+      <button class="btn-erp-outline mb-2" (click)="openFyForm()"><i class="bi bi-plus"></i> Nuevo ejercicio</button>
+      <div *ngIf="showFyForm" class="form-card">
+        <p class="setup-hint mb-2">Elige un tipo de año fiscal o personaliza las fechas:</p>
+        <div class="fy-presets">
+          <button *ngFor="let p of fyPresets" class="btn-fy-preset" (click)="applyPreset(p)">{{ p.label }}</button>
+        </div>
+        <div class="form-grid mt-2">
+          <div class="form-group"><label>Nombre</label><input [(ngModel)]="fyForm.name"></div>
+          <div class="form-group"><label>Inicio</label><input type="date" [(ngModel)]="fyForm.startDate"></div>
+          <div class="form-group"><label>Fin</label><input type="date" [(ngModel)]="fyForm.endDate"></div>
+        </div>
+        <div class="form-actions"><button class="btn-erp-primary" (click)="createFy()">Crear</button><button class="btn-erp-outline" (click)="showFyForm=false">Cancelar</button></div>
+      </div>
+      <div *ngIf="fiscalYears.length===0 && !showFyForm" class="erp-empty"><i class="bi bi-calendar-x"></i> Sin ejercicios fiscales. Crea uno para que el dashboard use el rango correcto.</div>
+      <table *ngIf="fiscalYears.length>0" class="erp-table"><thead><tr><th>Nombre</th><th>Inicio</th><th>Fin</th><th>Estado</th><th></th></tr></thead><tbody>
+        <tr *ngFor="let fy of fiscalYears"><td>{{ fy.name }}</td><td>{{ fy.startDate | date:'dd/MM/yyyy' }}</td><td>{{ fy.endDate | date:'dd/MM/yyyy' }}</td>
+          <td><span class="status-badge" [ngClass]="fy.isActive ? 'st-active' : 'st-draft'">{{ fy.isActive ? 'Activo' : 'Inactivo' }}</span></td>
+          <td><button *ngIf="!fy.isActive" class="btn-erp-outline btn-sm" (click)="activateFy(fy)">Activar</button></td></tr>
+      </tbody></table>
+    </section>
+    <section class="setup-section">
+      <h3>Centros de coste</h3>
+      <div *ngIf="costCenters.length===0" class="erp-empty"><i class="bi bi-diagram-3"></i> No hay centros</div>
+      <table *ngIf="costCenters.length>0" class="erp-table"><thead><tr><th>Nombre</th><th>Tipo</th></tr></thead><tbody>
+        <tr *ngFor="let cc of costCenters"><td [style.paddingLeft.px]="cc.parentId ? 32 : 16">{{ cc.name }}</td><td><span *ngIf="cc.isGroup" class="badge-group">Grupo</span></td></tr>
+      </tbody></table>
+    </section>
+  </div>
+</div>

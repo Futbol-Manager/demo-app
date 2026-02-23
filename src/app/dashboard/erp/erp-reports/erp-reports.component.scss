@@ -1,0 +1,9 @@
+@import '../erp-shared';
+.report-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; label { font-size: .8rem; font-weight: 600; color: #6c757d; } input { padding: 6px 10px; border: 1px solid $border; border-radius: 6px; font-size: .85rem; } }
+.filter-select { padding: 6px 10px; border: 1px solid $border; border-radius: 6px; font-size: .85rem; }
+.report-section { margin-bottom: 32px; }
+.report-block { margin-bottom: 20px; h5 { font-size: .95rem; font-weight: 700; margin-bottom: 8px; &.text-income { color: $green; } &.text-expense { color: $red; } } }
+.row-total td { background: rgba(0,0,0,.03); }
+.report-net { font-size: 1.2rem; padding: 16px; border-radius: 8px; text-align: center; &.positive { background: rgba($green,.08); color: $green; } &.negative { background: rgba($red,.08); color: $red; } }
+.bs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.amount { text-align: right; font-family: monospace; }

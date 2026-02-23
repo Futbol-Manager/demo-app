@@ -100,6 +100,17 @@ import { PlaylistViewerComponent } from './video-analysis/playlists/playlist-vie
 import { CanvasTaggerWindowComponent } from './video-analysis/canvas-tagger-window/canvas-tagger-window.component';
 import { ScreenCaptureWorkspaceComponent } from './video-analysis/screen-capture/screen-capture-workspace.component';
 import { ExternalVideoWorkspaceComponent } from './video-analysis/external-workspace/external-video-workspace.component';
+import { ErpDashboardComponent } from './erp/erp-dashboard/erp-dashboard.component';
+import { ErpAccountsComponent } from './erp/erp-accounts/erp-accounts.component';
+import { ErpJournalEntriesComponent } from './erp/erp-journal-entries/erp-journal-entries.component';
+import { ErpSalesInvoicesComponent } from './erp/erp-sales-invoices/erp-sales-invoices.component';
+import { ErpPurchaseInvoicesComponent } from './erp/erp-purchase-invoices/erp-purchase-invoices.component';
+import { ErpPaymentsComponent } from './erp/erp-payments/erp-payments.component';
+import { ErpCustomersComponent } from './erp/erp-customers/erp-customers.component';
+import { ErpSuppliersComponent } from './erp/erp-suppliers/erp-suppliers.component';
+import { ErpBudgetsComponent } from './erp/erp-budgets/erp-budgets.component';
+import { ErpReportsComponent } from './erp/erp-reports/erp-reports.component';
+import { ErpSetupComponent } from './erp/erp-setup/erp-setup.component';
 
 const routes: Routes = [
   {
@@ -192,6 +203,17 @@ const routes: Routes = [
       { path: 'video-analysis/external-workspace', component: ExternalVideoWorkspaceComponent },
       { path: 'scouting-club/:clubId', component: ScoutingClubComponent, canActivate: [ClubOwnerGuard, ClubPlanGuard] },
       { path: 'scouting-player-profile/:playerId', component: ScoutingPlayerProfileComponent },
+      { path: 'erp', component: ErpDashboardComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/accounts', component: ErpAccountsComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/journal-entries', component: ErpJournalEntriesComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/sales-invoices', component: ErpSalesInvoicesComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/purchase-invoices', component: ErpPurchaseInvoicesComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/payments', component: ErpPaymentsComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/customers', component: ErpCustomersComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/suppliers', component: ErpSuppliersComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/budgets', component: ErpBudgetsComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/reports', component: ErpReportsComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/setup', component: ErpSetupComponent, canActivate: [ClubOwnerGuard] },
       { path: 'suscripcion-club', component: SuscripcionClubComponent },
       { path: 'suscripcion-club/wizard/familia', component: WizardFamiliaComponent },
       { path: 'suscripcion-club/wizard/club', component: WizardClubComponent },

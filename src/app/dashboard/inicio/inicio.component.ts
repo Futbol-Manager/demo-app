@@ -197,6 +197,9 @@ export class InicioComponent implements OnInit {
       case 14:
         this.router.navigate(['/dashboard/video-analysis']);
         break;
+      case 15:
+        this.router.navigate(['/dashboard/erp']);
+        break;
     }
   }
 

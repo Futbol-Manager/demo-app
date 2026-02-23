@@ -2151,6 +2151,17 @@ export class ClubService {
     }
   }
 
+  getMatchesByTeamAndType(teamId: number, tipoPartido: string): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      const url: string = environment.apiUrl + `match/getlistpostpartidobyteam/${teamId}/${tipoPartido}`;
+      return this.http.get<Response>(url, { headers });
+    } else {
+      return EMPTY;
+    }
+  }
+
   saveTeamUrl(teamId: number, url: string): Observable<Response> {
     const token: string | null = localStorage.getItem('token');
     if (token) {

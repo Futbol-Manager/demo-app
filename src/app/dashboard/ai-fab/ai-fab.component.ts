@@ -5,7 +5,7 @@ import { filter, finalize } from 'rxjs/operators';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { AiChatService, AiCreditsInfo, AiPendingAction } from 'src/app/core/services/ai-chat/ai-chat.service';
-import { AiPageContextService, BackgroundStatsContext, PageContext } from 'src/app/core/services/ai-chat/ai-page-context.service';
+import { AiPageContextService, BackgroundStatsContext, CoachTeamContext, PageContext } from 'src/app/core/services/ai-chat/ai-page-context.service';
 import { InjuryService } from 'src/app/core/services/injury/injury.service';
 import { Injury } from 'src/app/core/services/injury/injury.model';
 import { User } from 'src/app/core/models/users/user.model';
@@ -108,6 +108,7 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   // Page context (estadísticas de equipos/jugadores disponibles para la IA)
   activePageContext: PageContext | null = null;
   backgroundStats: BackgroundStatsContext | null = null;
+  coachTeamContext: CoachTeamContext | null = null;
 
   // Voice recognition
   isRecording = false;
@@ -325,6 +326,12 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.subs.push(
       this.aiPageContextService.getBackgroundStats().subscribe(stats => {
         this.backgroundStats = stats;
+      })
+    );
+
+    this.subs.push(
+      this.aiPageContextService.getCoachTeamContext().subscribe(ctx => {
+        this.coachTeamContext = ctx;
       })
     );
   }
@@ -554,6 +561,11 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.currentScreenContext = 'scouting';
     } else {
       this.currentScreenContext = 'dashboard';
+    }
+
+    // Precargar el contexto del equipo coach cuando hay teamId y el usuario es coach
+    if (this.currentTeamId && (this.profileId === 2 || this.profileId === 6 || this.profileId === 7)) {
+      this.aiPageContextService.preloadForCoachTeam(this.currentTeamId);
     }
   }
 
@@ -796,6 +808,20 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
         });
         messageToSend = anonymizedText + '\n\n' + parts.join('\n\n');
         activeCodeToReal = allCodes;
+      }
+    }
+
+    // Añadir contexto específico del equipo coach (partidos por tipo + clasificación)
+    if (this.coachTeamContext) {
+      const coachParts: string[] = [];
+      if (this.coachTeamContext.matchStats) {
+        coachParts.push('[RESULTADOS Y ESTADÍSTICAS DE PARTIDOS DEL EQUIPO (Liga, Amistoso, Copa, etc.)]\n' + this.coachTeamContext.matchStats);
+      }
+      if (this.coachTeamContext.classification) {
+        coachParts.push('[CLASIFICACIÓN ACTUAL DE LIGA]\n' + this.coachTeamContext.classification);
+      }
+      if (coachParts.length > 0) {
+        messageToSend = messageToSend + '\n\n' + coachParts.join('\n\n');
       }
     }
 

@@ -81,6 +81,8 @@ export class MenuClubComponent implements OnInit {
       ]);
     } else if (id === 9) {
       this.router.navigate(['/dashboard/video-analysis']);
+    } else if (id === 10) {
+      this.router.navigate(['/dashboard/erp']);
     }
   }
   goBack(): void {

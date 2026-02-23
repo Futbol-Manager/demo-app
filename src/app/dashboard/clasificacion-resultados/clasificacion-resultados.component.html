@@ -5,6 +5,18 @@
   </div>
 </div>
 
+<!-- Overlay spinner Sphaira durante el refresh (sin borrar la tabla) -->
+<div *ngIf="refreshing" class="refresh-overlay">
+  <div class="refresh-overlay-card">
+    <div class="sphaira-spinner-container">
+      <div class="sphaira-spinner-ring"></div>
+      <img src="assets/images/Logo_SphairaTech1.svg" alt="Sphaira" class="sphaira-spinner-logo" />
+    </div>
+    <h5 class="wizard-title mt-3">Actualizando clasificación...</h5>
+    <p class="wizard-message">La IA está analizando la página de tu federación.<br>Esto puede tardar entre 20 y 40 segundos.</p>
+  </div>
+</div>
+
 <!-- Loading con spinner Sphaira + mensaje IA -->
 <div *ngIf="loading" class="wizard-wrapper">
   <div class="wizard-card wizard-loading">

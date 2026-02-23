@@ -163,6 +163,7 @@
     "SCOUTING": "Scouting",
     "VIDEO_LIBRARY": "Biblioteca de Vídeos",
     "VIDEO_ANALYSIS": "Análisis de vídeo",
+    "ERP": "Gestión / ERP",
     "CREATE": "Crear"
   },
   "HEADER": {
@@ -1037,7 +1038,14 @@
     "VIDEO_ANALYSIS_FIELD": "Posición en campo",
     "VIDEO_ANALYSIS_COMPLETE": "Completar análisis",
     "VIDEO_ANALYSIS_SHORTCUTS": "Atajos de teclado",
-    "VIDEO_ANALYSIS_ANALYZE": "Analizar"
+    "VIDEO_ANALYSIS_ANALYZE": "Analizar",
+    "SECTION_ERP": "Gestión / ERP",
+    "ERP_DASHBOARD": "Dashboard ERP",
+    "ERP_INVOICES": "Facturas",
+    "ERP_PAYMENTS": "Cobros y Pagos",
+    "ERP_BUDGETS": "Presupuestos",
+    "ERP_REPORTS": "Informes",
+    "ERP_SETUP": "Configuración ERP"
   },
   "CALENDAR_CLUB": {
     "TITLE": "Calendario del club",
@@ -1883,7 +1891,8 @@
     "RANKING_RESULTS": "Clasificación y resultados",
     "GALLERY": "Galería",
     "TEAM_INFO": "Información del equipo",
-    "VIDEO_ANALYSIS": "Análisis de vídeo"
+    "VIDEO_ANALYSIS": "Análisis de vídeo",
+    "ERP": "Gestión / ERP"
   },
   "VALIDATION": {
     "TITLE": "Valida tu usuario",

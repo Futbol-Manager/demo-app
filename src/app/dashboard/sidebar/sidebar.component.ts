@@ -235,6 +235,19 @@ export class SidebarComponent implements OnInit, OnDestroy {
       this.sections.push({ id: 'club', title: 'SIDEBAR.SECTION_CLUB', items: clubItems, visible: true });
     }
 
+    // ─── ERP / Gestión (profileId 1 - Club) ───
+    if (this.profileId === 1) {
+      const erpItems: SidebarItem[] = [
+        { id: 'erp-dash', label: 'SIDEBAR.ERP_DASHBOARD', icon: 'bi-speedometer2', route: '/dashboard/erp' },
+        { id: 'erp-invoices', label: 'SIDEBAR.ERP_INVOICES', icon: 'bi-receipt', route: '/dashboard/erp/sales-invoices' },
+        { id: 'erp-payments', label: 'SIDEBAR.ERP_PAYMENTS', icon: 'bi-cash-stack', route: '/dashboard/erp/payments' },
+        { id: 'erp-budgets', label: 'SIDEBAR.ERP_BUDGETS', icon: 'bi-piggy-bank', route: '/dashboard/erp/budgets' },
+        { id: 'erp-reports', label: 'SIDEBAR.ERP_REPORTS', icon: 'bi-file-earmark-bar-graph', route: '/dashboard/erp/reports' },
+        { id: 'erp-setup', label: 'SIDEBAR.ERP_SETUP', icon: 'bi-gear', route: '/dashboard/erp/setup' },
+      ];
+      this.sections.push({ id: 'erp', title: 'SIDEBAR.SECTION_ERP', items: erpItems, visible: true });
+    }
+
     // ─── Entrenador (profileId 2) ───
     if (this.profileId === 2 && hasTeam && !isOnCoachMenu && !isOnInicio) {
       const coachItems: SidebarItem[] = [

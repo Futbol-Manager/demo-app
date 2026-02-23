@@ -1,0 +1,39 @@
+@import '../erp-shared';
+
+.accounts-tree {
+  background: var(--bs-body-bg, #fff);
+  border: 1px solid $border;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tree-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(0,0,0,.04);
+  font-size: .88rem;
+  &.is-group { font-weight: 700; background: rgba(0,0,0,.02); }
+  &:last-child { border-bottom: none; }
+}
+
+.acct-number {
+  font-family: 'SF Mono', monospace;
+  color: #6c757d;
+  min-width: 40px;
+}
+
+.acct-name { flex: 1; }
+
+.badge-rt {
+  padding: 2px 8px; border-radius: 4px; font-size: .7rem; font-weight: 700;
+  &.rt-asset { background: rgba(13,110,253,.1); color: #0d6efd; }
+  &.rt-liability { background: rgba(220,53,69,.1); color: #dc3545; }
+  &.rt-equity { background: rgba(111,66,193,.1); color: #6f42c1; }
+  &.rt-income { background: rgba(49,178,112,.1); color: #31b270; }
+  &.rt-expense { background: rgba(253,126,20,.1); color: #fd7e14; }
+}
+
+.badge-group {
+  padding: 2px 6px; border-radius: 4px; font-size: .65rem; font-weight: 700;
+  background: rgba(0,0,0,.06); color: #6c757d;
+}

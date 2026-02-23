@@ -1,0 +1,55 @@
+<div class="erp-page">
+  <div class="erp-header"><button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i> Volver</button><h2><i class="bi bi-file-earmark-bar-graph"></i> Informes Financieros</h2></div>
+
+  <div class="report-controls">
+    <select [(ngModel)]="reportType" class="filter-select">
+      <option value="profit-loss">Cuenta de resultados</option><option value="balance-sheet">Balance de situación</option>
+      <option value="trial-balance">Balance sumas y saldos</option><option value="general-ledger">Libro mayor</option>
+    </select>
+    <ng-container *ngIf="reportType !== 'balance-sheet'"><label>Desde</label><input type="date" [(ngModel)]="fromDate"><label>Hasta</label><input type="date" [(ngModel)]="toDate"></ng-container>
+    <ng-container *ngIf="reportType === 'balance-sheet'"><label>A fecha</label><input type="date" [(ngModel)]="asOfDate"></ng-container>
+    <button class="btn-erp-primary" (click)="generate()"><i class="bi bi-play-fill"></i> Generar</button>
+  </div>
+
+  <div *ngIf="loading" class="erp-loading"><i class="bi bi-arrow-repeat spin"></i> Generando...</div>
+
+  <div *ngIf="reportData && reportType === 'profit-loss'" class="report-section">
+    <div class="report-block"><h5 class="text-income">Ingresos</h5><table class="erp-table"><thead><tr><th>Cuenta</th><th>Nombre</th><th>Importe</th></tr></thead><tbody>
+      <tr *ngFor="let r of reportData.income"><td>{{ r.accountNumber }}</td><td>{{ r.accountName }}</td><td class="amount amount-positive">{{ fmt(r.amount) }} €</td></tr>
+      <tr class="row-total"><td colspan="2"><strong>Total Ingresos</strong></td><td class="amount amount-positive"><strong>{{ fmt(reportData.totalIncome) }} €</strong></td></tr>
+    </tbody></table></div>
+    <div class="report-block"><h5 class="text-expense">Gastos</h5><table class="erp-table"><thead><tr><th>Cuenta</th><th>Nombre</th><th>Importe</th></tr></thead><tbody>
+      <tr *ngFor="let r of reportData.expense"><td>{{ r.accountNumber }}</td><td>{{ r.accountName }}</td><td class="amount amount-negative">{{ fmt(r.amount) }} €</td></tr>
+      <tr class="row-total"><td colspan="2"><strong>Total Gastos</strong></td><td class="amount amount-negative"><strong>{{ fmt(reportData.totalExpense) }} €</strong></td></tr>
+    </tbody></table></div>
+    <div class="report-net" [class.positive]="reportData.netProfit>=0" [class.negative]="reportData.netProfit<0">Resultado neto: <strong>{{ fmt(reportData.netProfit) }} €</strong></div>
+  </div>
+
+  <div *ngIf="reportData && reportType === 'balance-sheet'" class="report-section">
+    <div class="bs-grid">
+      <div class="report-block"><h5>Activo</h5><table class="erp-table"><thead><tr><th>Cta</th><th>Nombre</th><th>Saldo</th></tr></thead><tbody>
+        <tr *ngFor="let r of reportData.assets"><td>{{ r.accountNumber }}</td><td>{{ r.accountName }}</td><td class="amount">{{ fmt(r.amount) }} €</td></tr>
+        <tr class="row-total"><td colspan="2"><strong>Total</strong></td><td class="amount"><strong>{{ fmt(reportData.totalAssets) }} €</strong></td></tr>
+      </tbody></table></div>
+      <div class="report-block"><h5>Pasivo + Patrimonio</h5><table class="erp-table"><thead><tr><th>Cta</th><th>Nombre</th><th>Saldo</th></tr></thead><tbody>
+        <tr *ngFor="let r of reportData.liabilities"><td>{{ r.accountNumber }}</td><td>{{ r.accountName }}</td><td class="amount">{{ fmt(r.amount) }} €</td></tr>
+        <tr *ngFor="let r of reportData.equity"><td>{{ r.accountNumber }}</td><td>{{ r.accountName }}</td><td class="amount">{{ fmt(r.amount) }} €</td></tr>
+        <tr class="row-total"><td colspan="2"><strong>Total</strong></td><td class="amount"><strong>{{ fmt(reportData.totalLiabilities + reportData.totalEquity) }} €</strong></td></tr>
+      </tbody></table></div>
+    </div>
+  </div>
+
+  <div *ngIf="reportData && reportType === 'trial-balance'" class="report-section">
+    <table class="erp-table"><thead><tr><th>Cuenta</th><th>Nombre</th><th>Debe</th><th>Haber</th><th>Saldo</th></tr></thead><tbody>
+      <tr *ngFor="let r of reportData.rows"><td>{{ r.accountNumber }}</td><td>{{ r.accountName }}</td><td class="amount">{{ fmt(r.debit) }}</td><td class="amount">{{ fmt(r.credit) }}</td><td class="amount">{{ fmt(r.balance) }}</td></tr>
+      <tr class="row-total"><td colspan="2"><strong>Totales</strong></td><td class="amount"><strong>{{ fmt(reportData.totalDebit) }}</strong></td><td class="amount"><strong>{{ fmt(reportData.totalCredit) }}</strong></td><td></td></tr>
+    </tbody></table>
+  </div>
+
+  <div *ngIf="reportData && reportType === 'general-ledger'" class="report-section">
+    <div *ngIf="reportData.length===0" class="erp-empty"><i class="bi bi-journal-text"></i> Sin movimientos</div>
+    <table *ngIf="reportData.length>0" class="erp-table"><thead><tr><th>#</th><th>Fecha</th><th>Tipo</th><th>Cuenta</th><th>Debe</th><th>Haber</th><th>Observaciones</th></tr></thead><tbody>
+      <tr *ngFor="let r of reportData"><td>{{ r.entryId }}</td><td>{{ r.postingDate | date:'dd/MM/yyyy' }}</td><td>{{ r.entryType }}</td><td>{{ r.accountId }}</td><td class="amount">{{ fmt(r.debit) }}</td><td class="amount">{{ fmt(r.credit) }}</td><td>{{ r.remarks || '—' }}</td></tr>
+    </tbody></table>
+  </div>
+</div>
