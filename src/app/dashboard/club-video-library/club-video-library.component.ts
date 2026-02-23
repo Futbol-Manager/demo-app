@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { VideoStorageService } from 'src/app/core/services/video-storage/video-storage.service';
 import { DriveService } from 'src/app/core/services/drive/drive.service';
+import { LocalVideoService } from 'src/app/dashboard/video-analysis/services/local-video.service';
+import { timeout } from 'rxjs/operators';
 
 @Component({
   selector: 'app-club-video-library',
@@ -46,6 +49,8 @@ export class ClubVideoLibraryComponent implements OnInit {
 
   folderColors = ['#3b82f6','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#06b6d4','#f97316'];
 
+  syncingFolders = false; // sync manual
+
   // ── Google Drive ──────────────────────────────────────
   driveImporting = false;
   driveImportProgress = '';
@@ -53,11 +58,30 @@ export class ClubVideoLibraryComponent implements OnInit {
   driveExportingVideoId: number | null = null;
   driveExportProgress = '';
 
+  // ── Análisis de vídeo ────────────────────────────────────
+  analyzeConfirmVideo: any = null;   // vídeo pendiente de confirmar descarga
+  analyzeDownloading = false;
+  analyzeDownloadProgress = 0;       // 0-100
+  analyzeDownloadError = '';
+
+  // ── Enlace externo ────────────────────────────────────────
+  showLinkModal = false;
+  newLinkUrl    = '';
+  newLinkTitle  = '';
+  newLinkTags   = '';
+  linkSaving    = false;
+  linkError     = '';
+
+  // Player externo (iframe)
+  activeIframeUrl: SafeResourceUrl | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private sanitizer: DomSanitizer,
     private videoService: VideoStorageService,
-    private driveService: DriveService
+    private driveService: DriveService,
+    private localVideoService: LocalVideoService
   ) {}
 
   ngOnInit(): void {
@@ -70,10 +94,47 @@ export class ClubVideoLibraryComponent implements OnInit {
     this.loadFolders();
   }
 
+  syncMessage = '';
+
+  manualSyncFolders(): void {
+    if (this.syncingFolders) return;
+
+    // Intentar recuperar clubId desde la URL si no lo tenemos aún
+    if (!this.clubId) {
+      const m = window.location.pathname.match(/club-videos\/(\d+)/);
+      if (m) this.clubId = Number(m[1]);
+    }
+
+    if (!this.clubId) {
+      this.syncMessage = 'No se pudo determinar el club.';
+      setTimeout(() => this.syncMessage = '', 3000);
+      return;
+    }
+
+    this.syncingFolders = true;
+    this.syncMessage = '';
+    this.videoService.syncTeamFolders(this.clubId).pipe(timeout(20000)).subscribe({
+      next: (res) => {
+        this.folders = res?.data || [];
+        this.syncingFolders = false;
+        this.syncMessage = this.folders.length > 0
+          ? `${this.folders.length} carpeta(s) sincronizadas`
+          : 'No se encontraron equipos';
+        setTimeout(() => this.syncMessage = '', 3000);
+      },
+      error: (err) => {
+        this.syncingFolders = false;
+        this.syncMessage = 'Error al conectar con el servidor';
+        setTimeout(() => this.syncMessage = '', 3000);
+        this.loadFolders();
+      }
+    });
+  }
+
   loadPlan(): void {
     this.planLoading = true;
     if (!this.clubId) { this.planLoading = false; return; }
-    this.videoService.getPlan(this.clubId).subscribe({
+    this.videoService.getPlan(this.clubId).pipe(timeout(12000)).subscribe({
       next: (res) => {
         this.hasPlan = res?.data?.hasPlan || false;
         this.plan    = res?.data || null;
@@ -128,9 +189,79 @@ export class ClubVideoLibraryComponent implements OnInit {
 
   loadFolders(): void {
     if (!this.clubId) return;
-    this.videoService.getFolders(this.clubId).subscribe({
+    this.videoService.getFolders(this.clubId).pipe(timeout(12000)).subscribe({
       next: (res) => { this.folders = res?.data || []; },
       error: () => {}
+    });
+  }
+
+  // ── Enlace externo ────────────────────────────────────────
+
+  detectSourceType(url: string): string {
+    const u = url.toLowerCase();
+    if (u.includes('youtube.com') || u.includes('youtu.be')) return 'youtube';
+    if (u.includes('vimeo.com')) return 'vimeo';
+    if (u.includes('veo.me') || u.includes('veo.camera')) return 'veo';
+    return 'external';
+  }
+
+  sourceIcon(video: any): string {
+    switch (video.sourceType) {
+      case 'youtube': return 'bi-youtube';
+      case 'vimeo':   return 'bi-vimeo';
+      case 'veo':     return 'bi-camera-video-fill';
+      case 'external': return 'bi-link-45deg';
+      default:         return 'bi-play-circle-fill';
+    }
+  }
+
+  isExternal(video: any): boolean {
+    return video.sourceType && video.sourceType !== 'native';
+  }
+
+  buildEmbedUrl(url: string, type: string): string {
+    if (type === 'youtube') {
+      const m = url.match(/(?:v=|youtu\.be\/)([A-Za-z0-9_-]{11})/);
+      if (m) return `https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1`;
+    }
+    if (type === 'vimeo') {
+      const m = url.match(/vimeo\.com\/(\d+)/);
+      if (m) return `https://player.vimeo.com/video/${m[1]}?byline=0&portrait=0`;
+    }
+    if (type === 'veo') {
+      // VEO share URL → embed con parámetro
+      return url.includes('?') ? url + '&embed=1' : url + '?embed=1';
+    }
+    return url; // para 'external' intentamos cargarlo directamente
+  }
+
+  addExternalLink(): void {
+    if (!this.newLinkUrl.trim()) return;
+    this.linkSaving = true;
+    this.linkError  = '';
+    const userId = Number(localStorage.getItem('userId')) || 0;
+    this.videoService.addExternalLink(this.clubId, {
+      url: this.newLinkUrl.trim(),
+      title: this.newLinkTitle.trim() || this.newLinkUrl.trim(),
+      tags: this.newLinkTags.trim(),
+      folderId: typeof this.activeFolderId === 'number' ? this.activeFolderId : null,
+      uploadedBy: userId
+    }).subscribe({
+      next: (res) => {
+        if (res?.data) {
+          this.videos.unshift(res.data);
+          this.applyFilter();
+        }
+        this.linkSaving   = false;
+        this.showLinkModal = false;
+        this.newLinkUrl    = '';
+        this.newLinkTitle  = '';
+        this.newLinkTags   = '';
+      },
+      error: () => {
+        this.linkSaving = false;
+        this.linkError  = 'Error al guardar el enlace. Inténtalo de nuevo.';
+      }
     });
   }
 
@@ -209,15 +340,24 @@ export class ClubVideoLibraryComponent implements OnInit {
   }
 
   playVideo(video: any): void {
+    if (this.isExternal(video)) {
+      const embedUrl = this.buildEmbedUrl(video.externalUrl, video.sourceType);
+      this.activeIframeUrl = this.sanitizer.bypassSecurityTrustResourceUrl(embedUrl);
+      this.activeVideo = video;
+      this.activeVideoUrl = '';
+      return;
+    }
     if (video.videoUrl) {
       this.activeVideo = video;
       this.activeVideoUrl = video.videoUrl;
+      this.activeIframeUrl = null;
       return;
     }
     this.videoUrlLoading = true;
     this.videoService.getVideoUrl(this.clubId, video.id).subscribe({
       next: (res) => {
         this.activeVideoUrl = res?.data?.url || '';
+        this.activeIframeUrl = null;
         this.activeVideo = video;
         this.videoUrlLoading = false;
       },
@@ -228,6 +368,7 @@ export class ClubVideoLibraryComponent implements OnInit {
   closePlayer(): void {
     this.activeVideo = null;
     this.activeVideoUrl = '';
+    this.activeIframeUrl = null;
   }
 
   confirmDelete(id: number): void {
@@ -372,8 +513,64 @@ export class ClubVideoLibraryComponent implements OnInit {
   }
 
   analyzeVideo(video: any): void {
-    this.router.navigate(['/dashboard/video-analysis'], {
-      queryParams: { videoId: video.id, videoTitle: video.title || video.name }
+    if (this.isExternal(video)) {
+      // Vídeo externo (YouTube / Vimeo / VEO) → grabación de pantalla
+      const embedUrl = this.buildEmbedUrl(video.externalUrl, video.sourceType);
+      this.router.navigate(['/dashboard/video-analysis/screen-capture'], {
+        queryParams: {
+          title: video.title || 'Análisis de vídeo',
+          sourceType: video.sourceType,
+          externalUrl: embedUrl
+        }
+      });
+    } else {
+      // Vídeo nativo (B2) → descargar y abrir en workspace
+      this.analyzeConfirmVideo = video;
+      this.analyzeDownloadProgress = 0;
+      this.analyzeDownloadError = '';
+    }
+  }
+
+  confirmAnalyzeDownload(): void {
+    const video = this.analyzeConfirmVideo;
+    if (!video || this.analyzeDownloading) return;
+
+    this.analyzeDownloading = true;
+    this.analyzeDownloadError = '';
+    this.analyzeDownloadProgress = 0;
+
+    // Obtener la URL firmada de B2
+    this.videoService.getVideoUrl(this.clubId, video.id).subscribe({
+      next: (res) => {
+        const signedUrl: string = res?.data?.url || '';
+        if (!signedUrl) {
+          this.analyzeDownloadError = 'No se pudo obtener la URL del vídeo.';
+          this.analyzeDownloading = false;
+          return;
+        }
+        const fileName = (video.title || `video-${video.id}`) + '.mp4';
+        this.localVideoService.loadFromUrl(signedUrl, fileName, video.contentType || 'video/mp4')
+          .subscribe({
+            next: (pct: number) => { this.analyzeDownloadProgress = pct; },
+            error: (err: any) => {
+              this.analyzeDownloading = false;
+              this.analyzeDownloadError =
+                'Error al descargar el vídeo. Comprueba tu conexión e inténtalo de nuevo.';
+              console.error('[analyzeVideo] download error:', err);
+            },
+            complete: () => {
+              this.analyzeDownloading = false;
+              this.analyzeConfirmVideo = null;
+              this.router.navigate(['/dashboard/video-analysis'], {
+                queryParams: { fromLibrary: 1, videoTitle: video.title || video.name }
+              });
+            }
+          });
+      },
+      error: () => {
+        this.analyzeDownloading = false;
+        this.analyzeDownloadError = 'Error al obtener la URL del vídeo.';
+      }
     });
   }
 

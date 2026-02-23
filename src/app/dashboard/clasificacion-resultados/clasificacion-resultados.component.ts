@@ -6,6 +6,8 @@ import { ActivatedRoute } from '@angular/router';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import * as bootstrap from 'bootstrap';
 
+type WizardStep = 'url' | 'loading' | 'success' | 'error';
+
 @Component({
   selector: 'app-clasificacion-resultados',
   templateUrl: './clasificacion-resultados.component.html',
@@ -13,44 +15,19 @@ import * as bootstrap from 'bootstrap';
 })
 export class ClasificacionResultadosComponent implements OnInit {
 
-  equipos: any[] = [];/*[
-    { nombre: 'Real Madrid', puntos: 50, jugados: 20, ganados: 15, empatados: 5, perdidos: 0, ultimosPartidos: ['G', 'G', 'E', 'P', 'G'] },
-    { nombre: 'FC Barcelona', puntos: 47, jugados: 20, ganados: 14, empatados: 5, perdidos: 1, ultimosPartidos: ['E', 'G', 'G', 'E', 'P'] },
-    { nombre: 'Atlético Madrid', puntos: 42, jugados: 20, ganados: 13, empatados: 3, perdidos: 4, ultimosPartidos: ['P', 'G', 'P', 'G', 'E'] },
-    { nombre: 'Real Sociedad', puntos: 38, jugados: 20, ganados: 11, empatados: 5, perdidos: 4, ultimosPartidos: ['G', 'E', 'G', 'P', 'G'] },
-    { nombre: 'Athletic Club', puntos: 36, jugados: 20, ganados: 10, empatados: 6, perdidos: 4, ultimosPartidos: ['G', 'P', 'E', 'G', 'P'] },
-    { nombre: 'Villarreal', puntos: 34, jugados: 20, ganados: 9, empatados: 7, perdidos: 4, ultimosPartidos: ['P', 'G', 'E', 'G', 'P'] },
-    { nombre: 'Real Betis', puntos: 33, jugados: 20, ganados: 9, empatados: 6, perdidos: 5, ultimosPartidos: ['E', 'P', 'G', 'G', 'E'] },
-    { nombre: 'Valencia', puntos: 30, jugados: 20, ganados: 8, empatados: 6, perdidos: 6, ultimosPartidos: ['G', 'P', 'E', 'E', 'G'] },
-    { nombre: 'Sevilla', puntos: 28, jugados: 20, ganados: 7, empatados: 7, perdidos: 6, ultimosPartidos: ['P', 'G', 'G', 'P', 'E'] },
-    { nombre: 'Celta de Vigo', puntos: 27, jugados: 20, ganados: 7, empatados: 6, perdidos: 7, ultimosPartidos: ['E', 'G', 'P', 'P', 'G'] },
-    { nombre: 'Osasuna', puntos: 26, jugados: 20, ganados: 7, empatados: 5, perdidos: 8, ultimosPartidos: ['P', 'E', 'G', 'G', 'P'] },
-    { nombre: 'Rayo Vallecano', puntos: 25, jugados: 20, ganados: 6, empatados: 7, perdidos: 7, ultimosPartidos: ['E', 'P', 'G', 'P', 'G'] },
-    { nombre: 'Getafe', puntos: 24, jugados: 20, ganados: 6, empatados: 6, perdidos: 8, ultimosPartidos: ['G', 'P', 'E', 'E', 'P'] },
-    { nombre: 'Mallorca', puntos: 22, jugados: 20, ganados: 5, empatados: 7, perdidos: 8, ultimosPartidos: ['G', 'E', 'P', 'G', 'P'] },
-    { nombre: 'Granada', puntos: 20, jugados: 20, ganados: 5, empatados: 5, perdidos: 10, ultimosPartidos: ['P', 'P', 'G', 'E', 'P'] },
-    { nombre: 'Almería', puntos: 18, jugados: 20, ganados: 4, empatados: 6, perdidos: 10, ultimosPartidos: ['E', 'P', 'G', 'P', 'G'] },
-    { nombre: 'Cádiz', puntos: 16, jugados: 20, ganados: 4, empatados: 4, perdidos: 12, ultimosPartidos: ['P', 'G', 'P', 'E', 'P'] },
-    { nombre: 'Las Palmas', puntos: 15, jugados: 20, ganados: 3, empatados: 6, perdidos: 11, ultimosPartidos: ['G', 'P', 'P', 'E', 'P'] },
-    { nombre: 'Espanyol', puntos: 12, jugados: 20, ganados: 3, empatados: 3, perdidos: 14, ultimosPartidos: ['E', 'P', 'G', 'P', 'E'] },
-    { nombre: 'Elche', puntos: 10, jugados: 20, ganados: 2, empatados: 4, perdidos: 14, ultimosPartidos: ['P', 'P', 'E', 'P', 'G'] }
-  ];*/
-
-
-  /*resultados = [
-    { local: 'Real Madrid', golesLocal: 3, golesVisitante: 1, visitante: 'FC Barcelona', fecha: '20-02-2025', estadio: 'Santiago Bernabéu' },
-    { local: 'Atlético Madrid', golesLocal: 2, golesVisitante: 2, visitante: 'Real Sociedad', fecha: '20-02-2025', estadio: 'Wanda Metropolitano' },
-    { local: 'Villarreal', golesLocal: 1, golesVisitante: 0, visitante: 'Real Betis', fecha: '20-02-2025', estadio: 'Estadio de la Cerámica' },
-    { local: 'Sevilla', golesLocal: 0, golesVisitante: 1, visitante: 'Valencia', fecha: '20-02-2025', estadio: 'Ramón Sánchez-Pizjuán' },
-    { local: 'Osasuna', golesLocal: 2, golesVisitante: 3, visitante: 'Celta de Vigo', fecha: '20-02-2025', estadio: 'El Sadar' }
-  ];*/
-
-  contenidoActivo = false;  // Por defecto muestra la clasificación
+  equipos: any[] = [];
+  contenidoActivo = false;
   jornadas: number[] = [];
   jornadaSeleccionada: number = 1;
   resultados: any[] = [];
   datosCargados = false;
+  temporadaSinIniciar = false;
+  jornadaNavegable = true;
   teamId = 0;
+
+  // Columnas disponibles según los datos de la federación
+  tieneGoles = true;
+  tieneForma = false;
 
   showModalActa = false;
   showModalActa2 = false;
@@ -60,7 +37,19 @@ export class ClasificacionResultadosComponent implements OnInit {
   loading = true;
   datosNulos = false;
 
+  // --- Wizard de configuración ---
+  wizardStep: WizardStep = 'url';
+  wizardMessage = '';
+  urlInput = '';
+
+  // --- Reconfigurar URL cuando ya hay datos ---
+  urlReconfigInput = '';
+  savingReconfig = false;
+  reconfigFeedback = '';
+  reconfigFeedbackError = false;
+
   urlActa: SafeResourceUrl = '';
+  cachedActaUrl: SafeResourceUrl = '';
 
   constructor(
     private location: Location,
@@ -70,42 +59,177 @@ export class ClasificacionResultadosComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
-      // Obtener el valor de teamId de los parámetros
-      this.teamId = +params['teamId'];  // El + convierte el valor a número
-      //console.log('teamId:', this.teamId);
+      this.teamId = +params['teamId'];
     });
-    // Generar array de jornadas de 1 a 30
-    //this.jornadas = Array.from({ length: 30 }, (_, i) => i + 1);
-    this.jornadaSeleccionada = 1; // valor por defecto
-    //this.loadTable(1);
+    this.jornadaSeleccionada = 1;
     this.loadTableTodo(1);
   }
 
-
-
   loadTableTodo(jornada: number) {
+    this.loading = true;
+    this.datosNulos = false;
+    this.datosCargados = false;
     this.clubService.getTodo(this.teamId, jornada.toString()).subscribe(
       (response: Response) => {
         if (response != null && response.data != null) {
-          const list: any = response.data;
-          this.equipos = list.clasificacion;
-          this.resultados = list.partidos;
-          let numJ = list.totalJornadas;
-          if(numJ == null) numJ = 35;
-          this.jornadas = Array.from({ length: numJ }, (_, i) => i + 1);
-          
+          this.applyData(response.data);
           this.datosCargados = true;
           this.loading = false;
-          //this.loadResults(jornada);
-          //console.log(response);
         } else {
           this.datosNulos = true;
-          //this.datosCargados = false;
+          this.wizardStep = 'url';
           this.loading = false;
         }
       },
       (error) => {
-        console.error('Error al cargar el listado de equipos', error);
+        console.error('Error al cargar clasificación', error);
+        this.datosNulos = true;
+        this.wizardStep = 'url';
+        this.loading = false;
+      }
+    );
+  }
+
+  private applyData(data: any): void {
+    this.equipos = data.clasificacion || [];
+    this.resultados = data.partidos || [];
+    let numJ = data.totalJornadas;
+    if (!numJ) numJ = 35;
+    this.jornadas = Array.from({ length: parseInt(numJ, 10) }, (_, i) => i + 1);
+    // Si el backend indica que la jornada no es navegable, se muestra aviso
+    this.jornadaNavegable = data.jornadaNavegable !== false;
+    // Detectar columnas disponibles
+    const columnas: string[] = data.columnas || [];
+    this.tieneGoles = columnas.length === 0 || columnas.includes('goles');
+    this.tieneForma = columnas.includes('forma');
+    // Detectar si todos los puntos son 0 (temporada no iniciada o datos vacíos)
+    this.temporadaSinIniciar = this.equipos.length > 0
+      && this.equipos.every((e: any) => !e.puntos || e.puntos === '0' || e.puntos === '');
+  }
+
+  /** Extrae el número de jornada de una URL si está presente */
+  private jornadaDeUrl(url: string): string {
+    const m = url.match(/[?&](?:codjornada|round|jornada|codround|journee|matchday)=(\d+)/i);
+    return m ? m[1] : '1';
+  }
+
+  /** Wizard: paso 1 → 2 → 3 */
+  startWizard(): void {
+    const url = this.urlInput.trim();
+    if (!url) return;
+
+    this.wizardStep = 'loading';
+    this.wizardMessage = 'Guardando configuración...';
+
+    const jornadaInicial = this.jornadaDeUrl(url);
+
+    this.clubService.saveTeamUrl(this.teamId, url).subscribe(
+      (saveResp: Response) => {
+        if (saveResp && saveResp.status === 200) {
+          this.wizardMessage = 'Analizando la página de clasificación...';
+          this.clubService.refreshClasificacion(this.teamId, jornadaInicial).subscribe(
+            (dataResp: Response) => {
+              if (dataResp && dataResp.data != null) {
+                this.applyData(dataResp.data);
+                this.wizardStep = 'success';
+              } else {
+                this.wizardStep = 'error';
+                this.wizardMessage = 'No se encontraron datos de clasificación en esa URL. Prueba con otra URL o comprueba que la página tenga una tabla de clasificación visible.';
+              }
+            },
+            () => {
+              this.wizardStep = 'error';
+              this.wizardMessage = 'Error al cargar los datos desde la URL. Asegúrate de que la URL sea accesible y tenga una tabla de clasificación.';
+            }
+          );
+        } else {
+          this.wizardStep = 'error';
+          this.wizardMessage = 'No se pudo guardar la configuración. Inténtalo de nuevo.';
+        }
+      },
+      () => {
+        this.wizardStep = 'error';
+        this.wizardMessage = 'Error al conectar con el servidor. Comprueba tu conexión.';
+      }
+    );
+  }
+
+  /** Wizard: paso 3 → mostrar datos */
+  finishWizard(): void {
+    this.datosNulos = false;
+    this.datosCargados = true;
+    if (!this.jornadas.length) {
+      this.jornadas = Array.from({ length: 35 }, (_, i) => i + 1);
+    }
+  }
+
+  /** Wizard: volver a intentar con otra URL */
+  retryWizard(): void {
+    this.wizardStep = 'url';
+    this.wizardMessage = '';
+    this.urlInput = '';
+  }
+
+  refresh(): void {
+    const jornada = this.jornadaSeleccionada || 1;
+    this.datosCargados = false;
+    this.clubService.refreshClasificacion(this.teamId, jornada.toString()).subscribe(
+      (resp: Response) => {
+        if (resp && resp.status === 200 && resp.data) {
+          this.applyData(resp.data);
+          this.datosCargados = true;
+          this.datosNulos = false;
+        } else {
+          this.loadTableTodo(jornada);
+        }
+      },
+      () => this.loadTableTodo(jornada)
+    );
+  }
+
+  /** Reconfigurar URL desde pantalla de datos */
+  saveReconfigUrl(): void {
+    const url = this.urlReconfigInput.trim();
+    if (!url) return;
+    this.savingReconfig = true;
+    this.reconfigFeedback = '';
+    this.reconfigFeedbackError = false;
+
+    this.clubService.saveTeamUrl(this.teamId, url).subscribe(
+      (resp: Response) => {
+        if (resp && resp.status === 200) {
+          this.reconfigFeedback = 'URL guardada. Analizando nueva fuente...';
+          const jornadaReconfig = this.jornadaDeUrl(url);
+          this.urlReconfigInput = '';
+          this.clubService.refreshClasificacion(this.teamId, jornadaReconfig).subscribe(
+            (dataResp: Response) => {
+              this.savingReconfig = false;
+              this.reconfigFeedback = '';
+              if (dataResp && dataResp.data != null) {
+                this.applyData(dataResp.data);
+                this.datosCargados = true;
+                this.datosNulos = false;
+              } else {
+                this.reconfigFeedback = 'No se encontraron datos en la nueva URL.';
+                this.reconfigFeedbackError = true;
+              }
+            },
+            () => {
+              this.savingReconfig = false;
+              this.reconfigFeedback = 'Error al cargar datos de la nueva URL.';
+              this.reconfigFeedbackError = true;
+            }
+          );
+        } else {
+          this.savingReconfig = false;
+          this.reconfigFeedback = 'No se pudo guardar la URL.';
+          this.reconfigFeedbackError = true;
+        }
+      },
+      () => {
+        this.savingReconfig = false;
+        this.reconfigFeedback = 'Error al conectar con el servidor.';
+        this.reconfigFeedbackError = true;
       }
     );
   }
@@ -117,7 +241,6 @@ export class ClasificacionResultadosComponent implements OnInit {
           const list: any = response;
           this.equipos = list.clasificacion;
           this.loadResults(jornada);
-          //console.log(response);
         } else {
           this.loading = false;
         }
@@ -132,13 +255,10 @@ export class ClasificacionResultadosComponent implements OnInit {
     this.clubService.getResults(this.teamId, jornada).subscribe(
       (response: Response) => {
         const list: any = response;
-
         this.codCompeticion = list.codigo_competicion;
         this.codGrupo = list.codigo_grupo;
-
         const numJ = list.listado_jornadas[0].jornadas.length;
         this.jornadas = Array.from({ length: numJ }, (_, i) => i + 1);
-
         this.resultados = list.partidos.map((p: any) => ({
           nombreLocal: p.Nombre_equipo_local,
           nombreVisitante: p.Nombre_equipo_visitante,
@@ -148,10 +268,7 @@ export class ClasificacionResultadosComponent implements OnInit {
           estadio: p.campojuego,
           codActa: p.codacta,
           hora: p.hora != '' ? p.hora + 'h' : 'Sin hora establecida',
-          urlImgLocal: `https://www.rffm.es${p.url_img_local}`,
-          urlImgVisitante: `https://www.rffm.es${p.url_img_visitante}`
         }));
-        //console.log(response);
         this.datosCargados = true;
         this.loading = false;
       },
@@ -170,13 +287,10 @@ export class ClasificacionResultadosComponent implements OnInit {
   }
 
   cambiarJornada(): void {
-    // Aquí puedes hacer una llamada a la API o actualizar los datos
-    console.log('Jornada seleccionada:', this.jornadaSeleccionada);
     this.obtenerDatosJornada(this.jornadaSeleccionada);
   }
 
   obtenerDatosJornada(jornada: number): void {
-    //this.loadTable(jornada);
     this.loadTableTodo(jornada);
   }
 
@@ -185,12 +299,10 @@ export class ClasificacionResultadosComponent implements OnInit {
       (response: Response) => {
         const list: any = response;
         this.actaSeleccionada = list.pageProps.game;
-        //this.showModalActa = true;
         this.abrirActaEnNuevaPestana('541628');
-        console.log(this.actaSeleccionada);
       },
       (error) => {
-        console.error('Error al cargar el listado de equipos', error);
+        console.error('Error al cargar el acta', error);
       }
     );
   }
@@ -221,12 +333,13 @@ export class ClasificacionResultadosComponent implements OnInit {
   }
 
   sanitizarUrl(): SafeResourceUrl {
-    const url = 'https://www.ffcm.es/pnfg/NFG_CmpPartido?cod_primaria=1000120&CodActa=541628';
-    return this.sanitizer.bypassSecurityTrustResourceUrl(url);
+    if (!this.cachedActaUrl) {
+      this.cachedActaUrl = this.sanitizer.bypassSecurityTrustResourceUrl(this.urlActa as string || '');
+    }
+    return this.cachedActaUrl;
   }
 
   abrirActaEnPestanaNueva(url: string): void {
     window.open(url, '_blank');
   }
-
 }

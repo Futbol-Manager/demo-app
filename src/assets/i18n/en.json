@@ -126,6 +126,7 @@
     "CREATETEAM": "Create a Team",
     "SCOUTING": "Scouting",
     "VIDEO_LIBRARY": "Video Library",
+    "VIDEO_ANALYSIS": "Video analysis",
     "CREATE": "Create"
   },
   "TITLES": {
@@ -1439,7 +1440,8 @@
     "STATS_TEAM": "Team statistics",
     "RANKING_RESULTS": "Standings and results",
     "GALLERY": "Gallery",
-    "TEAM_INFO": "Team information"
+    "TEAM_INFO": "Team information",
+    "VIDEO_ANALYSIS": "Video analysis"
   },
   "VALIDATION": {
     "TITLE": "Validate your account",

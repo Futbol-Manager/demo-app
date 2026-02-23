@@ -6,7 +6,10 @@ import { TrackingService } from '../core/services/tracking/tracking.service';
 import { SidebarService } from '../core/services/sidebar/sidebar.service';
 
 /** Routes that should render fullscreen (no sidebar, header, FAB) */
-const FULLSCREEN_ROUTES = ['/dashboard/video-analysis/canvas-tagger'];
+const FULLSCREEN_ROUTES = [
+  '/dashboard/video-analysis/canvas-tagger',
+  '/dashboard/video-analysis/screen-capture'
+];
 
 @Component({
   selector: 'app-dashboard',

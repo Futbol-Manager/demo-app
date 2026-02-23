@@ -506,7 +506,7 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (foundClubId) {
       this.clubId = foundClubId;
     } else {
-      const storedClubId = localStorage.getItem('clubId');
+      const storedClubId = sessionStorage.getItem('clubId') || localStorage.getItem('clubId');
       if (storedClubId) this.clubId = parseInt(storedClubId, 10);
     }
 

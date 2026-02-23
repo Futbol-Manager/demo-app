@@ -162,6 +162,7 @@
     "CREATETEAM": "Crear un equipo",
     "SCOUTING": "Scouting",
     "VIDEO_LIBRARY": "Biblioteca de Vídeos",
+    "VIDEO_ANALYSIS": "Análisis de vídeo",
     "CREATE": "Crear"
   },
   "HEADER": {
@@ -1880,7 +1881,8 @@
     "STATS_TEAM": "Estadísticas del equipo",
     "RANKING_RESULTS": "Clasificación y resultados",
     "GALLERY": "Galería",
-    "TEAM_INFO": "Información del equipo"
+    "TEAM_INFO": "Información del equipo",
+    "VIDEO_ANALYSIS": "Análisis de vídeo"
   },
   "VALIDATION": {
     "TITLE": "Valida tu usuario",

@@ -2151,6 +2151,33 @@ export class ClubService {
     }
   }
 
+  saveTeamUrl(teamId: number, url: string): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      });
+      const apiUrl: string = environment.apiUrl + `club/team-url/${teamId}`;
+      return this.http.post<Response>(apiUrl, { url }, { headers });
+    } else {
+      return EMPTY;
+    }
+  }
+
+  refreshClasificacion(teamId: number, codJornada: string): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      });
+      const apiUrl: string = environment.apiUrl + `club/clasificacion-refresh/${teamId}/${codJornada}`;
+      return this.http.post<Response>(apiUrl, {}, { headers });
+    } else {
+      return EMPTY;
+    }
+  }
+
   /**************************PERFIL ENTRENADOR************************** */
 
   private getAuthHeaders(): HttpHeaders {

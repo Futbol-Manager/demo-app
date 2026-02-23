@@ -20,6 +20,9 @@
       <button class="btn-drive-import" *ngIf="hasPlan" (click)="importFromDrive()" [disabled]="driveImporting">
         <i class="bi bi-google"></i> Importar desde Drive
       </button>
+      <button class="btn-add-link" (click)="showLinkModal = true" title="Añadir enlace de YouTube, Vimeo, VEO…">
+        <i class="bi bi-link-45deg"></i> Añadir enlace
+      </button>
     </div>
   </div>
 
@@ -67,16 +70,23 @@
   <app-logo-spinner *ngIf="driveExporting"></app-logo-spinner>
 
   <!-- CARPETAS + BUSCADOR -->
-  <div class="library-body" *ngIf="!planLoading">
+  <div class="library-body">
 
     <!-- SIDEBAR CARPETAS -->
     <div class="folders-sidebar">
       <div class="folders-header">
         <span class="folders-title"><i class="bi bi-folder2"></i> Carpetas</span>
-        <button class="btn-new-folder" (click)="showCreateFolder = !showCreateFolder" title="Nueva carpeta">
-          <i class="bi bi-folder-plus"></i>
-        </button>
+        <div class="folders-header-actions">
+          <button class="btn-sync-teams" (click)="manualSyncFolders()" [disabled]="syncingFolders" title="Crear carpetas de equipos">
+            <i *ngIf="!syncingFolders" class="bi bi-people-fill"></i>
+            <i *ngIf="syncingFolders" class="bi bi-arrow-repeat spin-icon"></i>
+          </button>
+          <button class="btn-new-folder" (click)="showCreateFolder = !showCreateFolder" title="Nueva carpeta">
+            <i class="bi bi-folder-plus"></i>
+          </button>
+        </div>
       </div>
+      <div *ngIf="syncMessage" class="sync-message">{{ syncMessage }}</div>
 
       <!-- Formulario nueva carpeta -->
       <div class="new-folder-form" *ngIf="showCreateFolder">
@@ -117,7 +127,7 @@
             <i class="bi bi-folder-fill" [style.color]="folder.color || '#3b82f6'"></i>
             <span class="folder-label">{{ folder.name }}</span>
             <span class="folder-count">{{ videoCountInFolder(folder.id) }}</span>
-            <div class="folder-item-actions">
+            <div class="folder-item-actions" *ngIf="!folder.isTeamFolder">
               <button class="btn-folder-edit" (click)="$event.stopPropagation(); startEditFolder(folder)" title="Renombrar">
                 <i class="bi bi-pencil"></i>
               </button>
@@ -125,6 +135,8 @@
                 <i class="bi bi-trash3"></i>
               </button>
             </div>
+            <i *ngIf="folder.isTeamFolder" class="bi bi-lock-fill folder-lock-icon"
+               title="Carpeta de equipo — no se puede eliminar"></i>
           </ng-container>
           <!-- Edición inline -->
           <ng-container *ngIf="editingFolder?.id === folder.id">
@@ -177,9 +189,12 @@
       <!-- GRID DE VÍDEOS -->
       <div class="video-grid" *ngIf="!loading && filteredVideos.length > 0">
         <div class="video-card" *ngFor="let video of filteredVideos">
-          <div class="video-thumb" (click)="playVideo(video)">
-            <i class="bi bi-play-circle-fill play-icon"></i>
-            <div class="video-overlay">
+          <div class="video-thumb" [class.external-thumb]="isExternal(video)" (click)="playVideo(video)">
+            <i class="bi play-icon" [ngClass]="sourceIcon(video)"></i>
+            <span *ngIf="isExternal(video)" class="source-badge">
+              {{ video.sourceType === 'youtube' ? 'YouTube' : video.sourceType === 'vimeo' ? 'Vimeo' : video.sourceType === 'veo' ? 'VEO' : 'Enlace' }}
+            </span>
+            <div class="video-overlay" *ngIf="!isExternal(video)">
               <span class="video-size">{{ video.fileSizeHuman }}</span>
             </div>
           </div>
@@ -199,10 +214,10 @@
             <p class="video-date"><i class="bi bi-calendar3"></i> {{ video.uploadedAt | date:'dd/MM/yyyy' }}</p>
           </div>
           <div class="video-actions">
-            <button class="btn-play" (click)="playVideo(video)" [disabled]="videoUrlLoading">
+            <button class="btn-play" (click)="playVideo(video)" [disabled]="videoUrlLoading && !isExternal(video)">
               <i class="bi bi-play-fill"></i> Ver
             </button>
-            <button class="btn-drive-export" (click)="exportToDrive(video)"
+            <button class="btn-drive-export" *ngIf="!isExternal(video)" (click)="exportToDrive(video)"
               [disabled]="driveExporting" title="Exportar a Google Drive">
               <i class="bi" [ngClass]="driveExportingVideoId === video.id ? 'bi-hourglass-split' : 'bi-google'"></i>
             </button>
@@ -224,15 +239,74 @@
 
   <!-- REPRODUCTOR MODAL -->
   <div class="player-backdrop" *ngIf="activeVideo" (click)="closePlayer()">
-    <div class="player-modal" (click)="$event.stopPropagation()">
+    <div class="player-modal" [class.player-modal-iframe]="activeIframeUrl" (click)="$event.stopPropagation()">
       <div class="player-header">
         <span>{{ activeVideo.title }}</span>
         <button class="btn-close-player" (click)="closePlayer()"><i class="bi bi-x-lg"></i></button>
       </div>
-      <video *ngIf="activeVideoUrl" class="video-player" controls autoplay>
+      <!-- Vídeo nativo -->
+      <video *ngIf="activeVideoUrl && !activeIframeUrl" class="video-player" controls autoplay>
         <source [src]="activeVideoUrl" [type]="activeVideo.contentType || 'video/mp4'">
         Tu navegador no soporta vídeo HTML5.
       </video>
+      <!-- Vídeo externo (YouTube, Vimeo, VEO) -->
+      <iframe *ngIf="activeIframeUrl"
+        [src]="activeIframeUrl"
+        class="video-iframe"
+        allow="autoplay; fullscreen; picture-in-picture"
+        allowfullscreen
+        frameborder="0">
+      </iframe>
+    </div>
+  </div>
+
+  <!-- MODAL: Añadir enlace externo -->
+  <div class="modal-backdrop" *ngIf="showLinkModal" (click)="showLinkModal = false">
+    <div class="link-modal" (click)="$event.stopPropagation()">
+      <div class="move-modal-header">
+        <h4><i class="bi bi-link-45deg"></i> Añadir enlace de vídeo</h4>
+        <button class="btn-close-player" (click)="showLinkModal = false"><i class="bi bi-x-lg"></i></button>
+      </div>
+      <p class="link-modal-hint">
+        Pega un enlace de <strong>YouTube</strong>, <strong>Vimeo</strong>, <strong>VEO</strong> u otro servicio.
+        El vídeo se añadirá a tu biblioteca sin consumir almacenamiento.
+      </p>
+      <div class="link-form">
+        <label class="link-label">URL del vídeo <span class="required">*</span></label>
+        <input type="url" [(ngModel)]="newLinkUrl" placeholder="https://www.youtube.com/watch?v=…"
+          class="folder-name-input" (keydown.enter)="addExternalLink()">
+
+        <label class="link-label" style="margin-top:12px">Título (opcional)</label>
+        <input type="text" [(ngModel)]="newLinkTitle" placeholder="Título del vídeo"
+          class="folder-name-input" maxlength="120">
+
+        <label class="link-label" style="margin-top:12px">Etiquetas (opcional)</label>
+        <input type="text" [(ngModel)]="newLinkTags" placeholder="defensa, partido, juvenil"
+          class="folder-name-input">
+      </div>
+
+      <!-- Preview del tipo detectado -->
+      <p class="link-type-preview" *ngIf="newLinkUrl">
+        <i class="bi" [ngClass]="{
+          'bi-youtube text-youtube': detectSourceType(newLinkUrl) === 'youtube',
+          'bi-vimeo text-vimeo': detectSourceType(newLinkUrl) === 'vimeo',
+          'bi-camera-video-fill text-veo': detectSourceType(newLinkUrl) === 'veo',
+          'bi-link-45deg': detectSourceType(newLinkUrl) === 'external'
+        }"></i>
+        {{ detectSourceType(newLinkUrl) === 'youtube' ? 'Enlace de YouTube detectado' :
+           detectSourceType(newLinkUrl) === 'vimeo'   ? 'Enlace de Vimeo detectado'   :
+           detectSourceType(newLinkUrl) === 'veo'     ? 'Enlace de VEO detectado'     : 'Enlace externo' }}
+      </p>
+
+      <p class="folder-error" *ngIf="linkError">{{ linkError }}</p>
+
+      <div class="new-folder-actions" style="margin-top:16px">
+        <button class="btn-cancel-folder" (click)="showLinkModal = false; linkError = ''">Cancelar</button>
+        <button class="btn-save-folder" (click)="addExternalLink()"
+          [disabled]="linkSaving || !newLinkUrl.trim()">
+          {{ linkSaving ? 'Guardando…' : 'Añadir vídeo' }}
+        </button>
+      </div>
     </div>
   </div>
 
@@ -268,6 +342,53 @@
           {{ folder.name }}
         </li>
       </ul>
+    </div>
+  </div>
+
+  <!-- MODAL: Confirmar análisis (descarga B2) -->
+  <div class="modal-backdrop" *ngIf="analyzeConfirmVideo" (click)="!analyzeDownloading && (analyzeConfirmVideo = null)">
+    <div class="analyze-confirm-modal" (click)="$event.stopPropagation()">
+      <div class="move-modal-header">
+        <h4><i class="bi bi-camera-reels"></i> Analizar vídeo</h4>
+        <button class="btn-close-player" *ngIf="!analyzeDownloading" (click)="analyzeConfirmVideo = null">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <ng-container *ngIf="!analyzeDownloading">
+        <p class="analyze-modal-desc">
+          Para analizar <strong>{{ analyzeConfirmVideo?.title }}</strong>, el vídeo se descargará
+          de tu almacenamiento cloud a tu navegador.
+        </p>
+        <p class="analyze-modal-size" *ngIf="analyzeConfirmVideo?.fileSizeHuman">
+          <i class="bi bi-hdd"></i> Tamaño: <strong>{{ analyzeConfirmVideo.fileSizeHuman }}</strong>
+        </p>
+        <p class="analyze-modal-note">
+          <i class="bi bi-info-circle"></i>
+          Una vez descargado, el análisis es completamente local: sin tráfico adicional de red
+          hasta que cierres el proyecto.
+        </p>
+        <p class="folder-error" *ngIf="analyzeDownloadError">{{ analyzeDownloadError }}</p>
+        <div class="new-folder-actions" style="margin-top:16px">
+          <button class="btn-cancel-folder" (click)="analyzeConfirmVideo = null">Cancelar</button>
+          <button class="btn-save-folder" (click)="confirmAnalyzeDownload()">
+            <i class="bi bi-download"></i> Descargar y analizar
+          </button>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="analyzeDownloading">
+        <p class="analyze-modal-desc">Descargando vídeo…</p>
+        <div class="analyze-progress-track">
+          <div class="analyze-progress-fill" [style.width.%]="analyzeDownloadProgress"></div>
+        </div>
+        <p class="analyze-progress-pct">{{ analyzeDownloadProgress }}%</p>
+        <p class="analyze-modal-note" *ngIf="analyzeDownloadProgress === 100">
+          <i class="bi bi-check-circle-fill" style="color:#10b981"></i>
+          Procesando vídeo… redirigiendo al análisis.
+        </p>
+        <p class="folder-error" *ngIf="analyzeDownloadError">{{ analyzeDownloadError }}</p>
+      </ng-container>
     </div>
   </div>
 

@@ -79,6 +79,8 @@ export class MenuClubComponent implements OnInit {
         '/dashboard/clasificacion-resultados',
         this.teamId,
       ]);
+    } else if (id === 9) {
+      this.router.navigate(['/dashboard/video-analysis']);
     }
   }
   goBack(): void {

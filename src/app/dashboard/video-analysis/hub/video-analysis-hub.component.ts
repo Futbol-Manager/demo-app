@@ -56,11 +56,31 @@ export class VideoAnalysisHubComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.clubId = Number(sessionStorage.getItem('clubId')) || Number(localStorage.getItem('clubId')) || 0;
     this.loginService.usuarioActual.pipe(takeUntil(this.destroy$)).subscribe(user => {
-      if (user) {
-        this.userId = user.userId;
-      }
+      if (user) { this.userId = user.userId; }
     });
     this.loadData();
+
+    // Si viene desde la biblioteca con un vídeo ya descargado, auto-abre el modal
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      if (params['fromLibrary'] && this.localVideoService.hasFile()) {
+        const videoTitle = params['videoTitle'] || '';
+        // Espera a que las plantillas carguen antes de abrir el modal
+        const tryOpen = () => {
+          if (this.templates.length > 0) {
+            this.openNewProjectModal();
+            if (videoTitle) {
+              this.newProject.title = `Análisis – ${videoTitle}`;
+            }
+            // Marcar como pre-cargado para saltar el file picker
+            this.selectedFile = this.localVideoService.file;
+            this.selectedFileMeta = this.localVideoService.meta;
+          } else {
+            setTimeout(tryOpen, 200);
+          }
+        };
+        setTimeout(tryOpen, 400);
+      }
+    });
   }
 
   ngOnDestroy(): void {

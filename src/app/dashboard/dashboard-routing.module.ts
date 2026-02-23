@@ -98,6 +98,7 @@ import { TemplateEditorComponent } from './video-analysis/templates/template-edi
 import { PlaylistBuilderComponent } from './video-analysis/playlists/playlist-builder.component';
 import { PlaylistViewerComponent } from './video-analysis/playlists/playlist-viewer.component';
 import { CanvasTaggerWindowComponent } from './video-analysis/canvas-tagger-window/canvas-tagger-window.component';
+import { ScreenCaptureWorkspaceComponent } from './video-analysis/screen-capture/screen-capture-workspace.component';
 
 const routes: Routes = [
   {
@@ -186,6 +187,7 @@ const routes: Routes = [
       { path: 'video-analysis/playlists', component: PlaylistBuilderComponent },
       { path: 'video-analysis/playlist/:id', component: PlaylistViewerComponent },
       { path: 'video-analysis/canvas-tagger/:projectId', component: CanvasTaggerWindowComponent },
+      { path: 'video-analysis/screen-capture', component: ScreenCaptureWorkspaceComponent },
       { path: 'scouting-club/:clubId', component: ScoutingClubComponent, canActivate: [ClubOwnerGuard, ClubPlanGuard] },
       { path: 'scouting-player-profile/:playerId', component: ScoutingPlayerProfileComponent },
       { path: 'suscripcion-club', component: SuscripcionClubComponent },

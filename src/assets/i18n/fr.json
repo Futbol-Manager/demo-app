@@ -154,6 +154,7 @@
     "CREATETEAM": "Créer une équipe",
     "SCOUTING": "Scouting",
     "VIDEO_LIBRARY": "Vidéothèque",
+    "VIDEO_ANALYSIS": "Analyse vidéo",
     "CREATE": "Créer"
   },
   "HEADER": {
@@ -2068,7 +2069,8 @@
     "STATS_TEAM": "Statistiques de l'équipe",
     "RANKING_RESULTS": "Classement et résultats",
     "GALLERY": "Galerie",
-    "TEAM_INFO": "Informations de l'équipe"
+    "TEAM_INFO": "Informations de l'équipe",
+    "VIDEO_ANALYSIS": "Analyse vidéo"
   },
   "SESSION_PDF": {
     "TITLE": "Séance d'Entraînement",

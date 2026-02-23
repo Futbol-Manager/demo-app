@@ -1364,6 +1364,7 @@
     "NOTIFICATIONS": "Notifications",
     "AI_ASSISTANT": "AI Assistant",
     "CREATETEAM": "Create a Team",
+    "VIDEO_ANALYSIS": "Analisi video",
     "CREATE": "Create"
   },
   "PROFILE": {
@@ -2660,7 +2661,8 @@
     "STATS_TEAM": "Statistiche squadra",
     "RANKING_RESULTS": "Classifica e risultati",
     "GALLERY": "Galleria",
-    "TEAM_INFO": "Informazioni squadra"
+    "TEAM_INFO": "Informazioni squadra",
+    "VIDEO_ANALYSIS": "Analisi video"
   },
   "VALIDATION": {
     "TITLE": "Validate your account",

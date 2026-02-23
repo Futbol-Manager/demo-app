@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 export type FingerprintResult = 'match' | 'size_mismatch' | 'duration_warning';
 
@@ -95,5 +96,46 @@ export class LocalVideoService {
     const s = totalSec % 60;
     if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
+  /**
+   * Descarga un vídeo desde una URL remota (p. ej. B2 signed URL) mostrando progreso.
+   * Emite valores 0–99 con el porcentaje descargado y finaliza emitiendo 100 cuando
+   * el archivo ya está en memoria y listo en el LocalVideoService.
+   */
+  loadFromUrl(url: string, fileName: string, contentType = 'video/mp4'): Observable<number> {
+    return new Observable<number>(observer => {
+      (async () => {
+        try {
+          this.revoke();
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+          const contentLength = Number(response.headers.get('Content-Length') || '0');
+          const reader = response.body!.getReader();
+          const chunks: Uint8Array[] = [];
+          let received = 0;
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+            received += value.length;
+            if (contentLength > 0) {
+              observer.next(Math.min(99, Math.round((received / contentLength) * 99)));
+            }
+          }
+
+          const blob = new Blob(chunks, { type: contentType });
+          const file = new File([blob], fileName, { type: contentType });
+          const meta = await LocalVideoService.extractMeta(file);
+          this.setFile(file, meta);
+          observer.next(100);
+          observer.complete();
+        } catch (err: any) {
+          observer.error(err);
+        }
+      })();
+    });
   }
 }
