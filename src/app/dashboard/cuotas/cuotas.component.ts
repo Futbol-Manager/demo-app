@@ -122,20 +122,90 @@ export class CuotasComponent implements OnInit {
   multiPayCurrentIndex = 0;
   multiPayResults: { cuota: any; success: boolean; error?: string }[] = [];
 
+  // ── Suscripciones activas del jugador (pagoClubIds ya suscritos) ──
+  activePagoClubIds = new Set<number>();
+  multiPayIsSubscription = false;
+  multiPaySubscriptionCuota: any = null;
+
   get selectedCuotasTotal(): number {
     return this.selectedCuotas.reduce((sum, c) => sum + (parseFloat(c.importe) || 0), 0);
+  }
+
+  /** True si la cuota es Sphaira Pay: tipoCobro=3 (nuevo modelo) o stripe=1/tipoPagoStripe=1 (compatibilidad) */
+  isSphaira(c: any): boolean {
+    return c?.tipoCobro === 3 || c?.stripe === 1 || c?.tipoPagoStripe === 1;
+  }
+
+  /** True si hay al menos una cuota configurada como Sphaira Pay */
+  get hasSphairaPayCuotas(): boolean {
+    const todas = [...(this.cuotasObligatorias || []), ...(this.cuotasNoObligatorias || [])];
+    return todas.some((c: any) => this.isSphaira(c));
+  }
+
+  // ── Filtros de tabla ──────────────────────────────────────────────────
+  filtroConcepto    = '';
+  filtroTipoPago    = '';   // '' | '0' | '1'
+  filtroEstadoPago  = '';   // '' | 'pagado' | 'parcial' | 'pendiente'
+  filtroVencimiento = '';   // YYYY-MM-DD
+  filtroFechaPago   = '';   // '' | 'conFecha' | 'pendiente'
+
+  get hayFiltrosActivos(): boolean {
+    return !!(this.filtroConcepto || this.filtroTipoPago ||
+              this.filtroEstadoPago || this.filtroVencimiento || this.filtroFechaPago);
+  }
+
+  get cuotasObligatoriasFiltered(): any[] {
+    return this._filtrarCuotas(this.cuotasObligatorias || []);
+  }
+
+  get cuotasNoObligatoriasFiltered(): any[] {
+    return this._filtrarCuotas(this.cuotasNoObligatorias || []);
+  }
+
+  resetFiltros(): void {
+    this.filtroConcepto = '';
+    this.filtroTipoPago = '';
+    this.filtroEstadoPago = '';
+    this.filtroVencimiento = '';
+    this.filtroFechaPago = '';
+  }
+
+  private _filtrarCuotas(cuotas: any[]): any[] {
+    return cuotas.filter((c: any) => {
+      if (this.filtroConcepto &&
+          !c.nombre?.toLowerCase().includes(this.filtroConcepto.toLowerCase())) return false;
+      if (this.filtroTipoPago !== '') {
+        const t = parseInt(this.filtroTipoPago, 10);
+        const esSphaira = this.isSphaira(c) ? 1 : 0;
+        if (esSphaira !== t) return false;
+      }
+      if (this.filtroEstadoPago) {
+        const imp = parseFloat(c.importe) || 0;
+        const pag = parseFloat(c.pagado)  || 0;
+        if (this.filtroEstadoPago === 'pagado'    && pag < imp)                 return false;
+        if (this.filtroEstadoPago === 'pendiente' && pag > 0)                   return false;
+        if (this.filtroEstadoPago === 'parcial'   && (pag === 0 || pag >= imp)) return false;
+      }
+      if (this.filtroVencimiento && c.plazo !== this.filtroVencimiento)         return false;
+      if (this.filtroFechaPago === 'conFecha'  &&
+          (!c.fechaPago || c.fechaPago === 'Pendiente'))                         return false;
+      if (this.filtroFechaPago === 'pendiente' &&
+          c.fechaPago && c.fechaPago !== 'Pendiente')                            return false;
+      return true;
+    });
   }
 
   calcGrossAmount(importe: string | number, comisionClubPct: number = 0): number {
     const base = parseFloat(importe as any) || 0;
     if (!this.feeConfigLoaded || base === 0) return base;
     const toCents  = (x: number) => Math.round(x * 100);
-    const fromC    = (c: number) => +(c / 100).toFixed(2);
+    const fromC    = (c: number) => Math.ceil(c) / 100;
     const clubFeeC = Math.round(toCents(base) * (comisionClubPct / 100));
-    const B        = toCents(base) + clubFeeC;          // base extendida: lo que recibe el club
-    const appFeeC  = Math.round(B * this.stripeFeePct) + toCents(this.stripeFeeFix);
-    const denom    = 1 - this.stripePct;
-    return fromC(Math.ceil((B + appFeeC) / denom));
+    const B        = toCents(base) + clubFeeC;   // base extendida en centavos
+    // Mantener precisión decimal en appFee para evitar truncar comisiones pequeñas (ej: 0.3 ct)
+    const appFeeDecimal = B * this.stripeFeePct;
+    const denom         = 1 - this.stripePct;
+    return fromC((B + appFeeDecimal + toCents(this.stripeFeeFix)) / denom);
   }
 
   get selectedCuotasGrossTotal(): string {
@@ -152,7 +222,7 @@ export class CuotasComponent implements OnInit {
 
   canSelectCuota(cuota: any): boolean {
     if (!cuota || cuota.desistido) return false;
-    if (cuota.tipoPagoStripe === 1) return false;
+    if (this.isSphaira(cuota)) return false;
     return (parseFloat(cuota.pagado) || 0) < (parseFloat(cuota.importe) || 0);
   }
 
@@ -267,12 +337,38 @@ export class CuotasComponent implements OnInit {
           this.decodeAndSanitizeTerminos();
           if (this.historyCuotasPlayer.clubId == 83) this.stripeBtoShow = false;
           this.datosCargados = true;
-          // Recargar fee-config con el clubId ya conocido
           this.loadFeeConfig();
+          this.loadActiveSubscriptions();
+          if (this.stripeBtoShow) this.loadSavedCards();
         }
       },
       (error) => { console.error('Error al cargar cuotas', error); }
     );
+  }
+
+  /** Carga los pagoClubId activos del jugador para ocultar el botón Suscribirse */
+  private loadActiveSubscriptions(): void {
+    if (!this.playerId || !this.clubId) return;
+    this.teamService.getPlayerSubscriptions(this.playerId, this.clubId).subscribe({
+      next: (res: any) => {
+        const subs: any[] = Array.isArray(res?.data) ? res.data : [];
+        this.activePagoClubIds = new Set(
+          subs
+            .filter((s: any) => s.status === 'active' || s.status === 'trialing' || s.status === 'paused')
+            .map((s: any) => s.pagoClubId)
+            .filter((id: any) => !!id)
+        );
+      },
+      error: () => { this.activePagoClubIds = new Set(); }
+    });
+  }
+
+  isAlreadySubscribed(cuota: any): boolean {
+    // Para Sphaira Pay (tipoCobro=3): "suscrito" = tarjeta vinculada
+    if (cuota?.tipoCobro === 3 || (cuota?.stripe === 1 && cuota?.tipoPagoStripe !== 1)) {
+      return this.savedCards.length > 0;
+    }
+    return this.activePagoClubIds.has(cuota?.pagoClubId);
   }
 
   loadFeeConfig(): void {
@@ -305,6 +401,40 @@ export class CuotasComponent implements OnInit {
     this.getCuotas();
   }
 
+  /** Abre el modal multi-pago adaptado para suscripción */
+  openModalStripeParaCuota(cuota: any): void {
+    this.multiPayIsSubscription = true;
+    this.multiPaySubscriptionCuota = cuota;
+    this.multiPayStep = 'review';
+    this.multiPayError = '';
+    this.multiPayAcceptedTerms = false;
+    this.multiPayResults = [];
+    this.multiPayCurrentIndex = 0;
+    this.multiPaySelectedCard = null;
+    this.multiPayUseNewCard = false;
+    this.showMultiPayModal = true;
+
+    this.savedCardsLoading = true;
+    this.teamService.getSavedCards(this.playerId, this.clubId).subscribe({
+      next: (resp: any) => {
+        this.savedCards = resp.data || [];
+        this.savedCardsLoading = false;
+        if (this.savedCards.length > 0) {
+          this.multiPaySelectedCard = this.savedCards[0];
+        } else {
+          this.multiPayUseNewCard = true;
+          this._mountMultiPayCard();
+        }
+      },
+      error: () => {
+        this.savedCards = [];
+        this.savedCardsLoading = false;
+        this.multiPayUseNewCard = true;
+        this._mountMultiPayCard();
+      }
+    });
+  }
+
   closeModal(): void {
     this.showModalStripe = false;
     this.cantidadAPagar = 0;
@@ -314,9 +444,8 @@ export class CuotasComponent implements OnInit {
     this.listCuotasLoading = false;
   }
 
-  // Helper opcional
   private isSubscriptionSelected(): boolean {
-    return this.selectedCuota?.tipoPagoStripe === 1;
+    return this.isSphaira(this.selectedCuota);
   }
 
   async makePayment(): Promise<void> {
@@ -379,7 +508,7 @@ export class CuotasComponent implements OnInit {
           } catch { }
           this.showPaymentFeedback('Suscripción iniciada correctamente.', 'success');
           this.closeModal();
-          this.goBack();
+          this.loadCuotasData();
           return;
         }
 
@@ -412,7 +541,7 @@ export class CuotasComponent implements OnInit {
 
           this.showPaymentFeedback('Primer cobro confirmado correctamente.', 'success');
           this.closeModal();
-          this.goBack();
+          this.loadCuotasData();
           return;
         }
 
@@ -447,13 +576,13 @@ export class CuotasComponent implements OnInit {
 
           this.showPaymentFeedback('Tarjeta guardada. Se cobrará automáticamente cuando empiece la suscripción.', 'success');
           this.closeModal();
-          this.goBack();
+          this.loadCuotasData();
           return;
         }
 
         this.showPaymentFeedback('Suscripción creada correctamente.', 'success');
         this.closeModal();
-        this.goBack();
+        this.loadCuotasData();
         return;
       }
 
@@ -634,18 +763,16 @@ export class CuotasComponent implements OnInit {
     // this.desglose = { club: fromC(B), tuFee: fromC(appFeeC), stripe: fromC(stripeFeeEst), total: this.amount };
 
 
-    if (c.tipoPagoStripe == 1) {
-      //significa que laq cuota es recurrente, mostrar div info
-      this.infoRecurrente = `El pago se realizará automaticamente. Las cuotas son de ${this.amount}€ y son de ` + this.formatText(c);
+    if (this.isSphaira(c)) {
+      this.infoRecurrente = `El pago se realizará automáticamente. La cuota es de ${this.amount}€.`;
     } else {
       this.infoRecurrente = '';
     }
   }
 
   isRecurrente(c: any) {
-    if (c.tipoPagoStripe == 1) {
-      //significa que laq cuota es recurrente
-      return ' - Recurrente';
+    if (this.isSphaira(c)) {
+      return ' - Sphaira Pay';
     }
     return '';
   }
@@ -901,6 +1028,8 @@ export class CuotasComponent implements OnInit {
 
   openMultiPayModal(): void {
     if (!this.selectedCuotas.length) return;
+    this.multiPayIsSubscription = false;
+    this.multiPaySubscriptionCuota = null;
     this.multiPayStep = 'review';
     this.multiPayError = '';
     this.multiPayAcceptedTerms = false;
@@ -935,6 +1064,8 @@ export class CuotasComponent implements OnInit {
     const hadSuccess = this.multiPayResults.some(r => r.success);
     this.showMultiPayModal = false;
     this.showMultiPayTerminos = false;
+    this.multiPayIsSubscription = false;
+    this.multiPaySubscriptionCuota = null;
     this._destroyMultiPayCard();
     if (hadSuccess) {
       this.loadCuotasData();
@@ -982,6 +1113,13 @@ export class CuotasComponent implements OnInit {
     if (!this.multiPayAcceptedTerms) return;
     if (!this.multiPayUseNewCard && !this.multiPaySelectedCard) return;
 
+    // ── Rama suscripción ────────────────────────────────────────────
+    if (this.multiPayIsSubscription && this.multiPaySubscriptionCuota) {
+      await this._makeSubscriptionPayment();
+      return;
+    }
+    // ── Rama pago puntual ──────────────────────────────────────────
+
     this.multiPayLoading = true;
     this.multiPayError = '';
     this.multiPayStep = 'processing';
@@ -1005,9 +1143,10 @@ export class CuotasComponent implements OnInit {
         const baseC    = toCents(parseFloat(cuota.importe || '0'));
         const clubFeeC = Math.round(baseC * (comisionClubPct / 100));
         const B        = baseC + clubFeeC;   // base extendida: lo que recibe el club
-        const appFeeC  = Math.round(B * this.stripeFeePct) + toCents(this.stripeFeeFix);
+        // Precisión decimal completa para evitar truncar comisiones pequeñas (ej: 0.3 ct)
+        const appFeeDecimal = B * this.stripeFeePct;
         const denom    = 1 - this.stripePct;
-        const _A       = Math.ceil((B + appFeeC) / denom);
+        const _A       = Math.ceil((B + appFeeDecimal + toCents(this.stripeFeeFix)) / denom);
 
         const payload = {
           userId:           this.usuarioActual?.userId,
@@ -1071,6 +1210,105 @@ export class CuotasComponent implements OnInit {
       this.loadCuotasData();
       const failedIds = new Set(this.multiPayResults.filter(r => !r.success).map(r => r.cuota.pagoClubId));
       this.selectedCuotas = this.selectedCuotas.filter(c => failedIds.has(c.pagoClubId));
+    }
+  }
+
+  /** Flujo de suscripción dentro del modal multi-pago */
+  private async _makeSubscriptionPayment(): Promise<void> {
+    const cuota = this.multiPaySubscriptionCuota;
+    this.multiPayLoading = true;
+    this.multiPayError = '';
+    this.multiPayStep = 'processing';
+    this.multiPayResults = [];
+
+    try {
+      if (!this.stripeId?.startsWith('acct_')) throw new Error('El club no tiene cuenta de cobro configurada.');
+
+      // Si la cuota no tiene precio Stripe, lo creamos ahora (cuotas antiguas o race condition del @Async)
+      let priceId: string | undefined = cuota.stripePriceId;
+      if (!priceId) {
+        if (!cuota.intervalo || !cuota.importe) {
+          throw new Error('Esta cuota no tiene configuración de suscripción (intervalo/importe).');
+        }
+        const planResp: any = await firstValueFrom(this.teamService.createSubscriptionPlan({
+          pagoClubId:      cuota.pagoClubId,
+          clubId:          this.clubId,
+          accountId:       this.stripeId,
+          titulo:          cuota.titulo || cuota.nombre,
+          descripcion:     cuota.descripcion || undefined,
+          importe:         parseFloat(cuota.importe),
+          intervalo:       cuota.intervalo,
+          intervaloCuenta: cuota.intervaloCuenta ?? 1,
+          fechaInicio:     cuota.fechaInicio  || undefined,
+          fechaFin:        cuota.fechaFin     || undefined,
+        }));
+        priceId = planResp?.data?.stripePriceId;
+        if (!priceId) throw new Error('No se pudo crear el precio en Stripe. Contacta con el club.');
+        // Actualizar la cuota local para no volver a crearlo
+        cuota.stripePriceId   = priceId;
+        cuota.stripeProductId = planResp?.data?.stripeProductId;
+      }
+
+      const body: any = {
+        userId:     this.usuarioActual?.userId,
+        priceId,
+        accountId:  this.stripeId,
+        clubId:     this.clubId,
+        teamId:     this.teamId ?? undefined,
+        playerId:   this.playerIdUserActual ?? undefined,
+        pagoClubId: cuota.pagoClubId ?? undefined,
+        fechaInicio: cuota.fechaInicio || undefined,
+        fechaFin:    cuota.fechaFin    || undefined,
+      };
+
+      const resp: any = await firstValueFrom(this.teamService.subscribeToPlan(body));
+      const data = resp?.data || {};
+      const subscriptionId: string | undefined = data.subscriptionId;
+      const latestInvoiceId: string | undefined = data.latestInvoiceId;
+      const clientSecret: string | undefined = data.clientSecret;
+      const confirmationMode: 'payment' | 'setup' | undefined =
+        data.confirmationMode ?? (clientSecret ? (latestInvoiceId ? 'payment' : 'setup') : undefined);
+
+      // Determinar el card element o pm guardado
+      const cardEl  = this.multiPayUseNewCard ? this.multiPayNewCardEl : null;
+      const savedPm = !this.multiPayUseNewCard
+        ? (this.multiPaySelectedCard?.paymentMethodId ?? this.multiPaySelectedCard?.stripePaymentMethodId ?? null)
+        : null;
+      const billingDetails = {
+        name:  `${this.usuarioActual?.firstName || ''} ${this.usuarioActual?.secondName || ''}`.trim(),
+        email: this.usuarioActual?.mail    || undefined,
+        phone: this.usuarioActual?.mobile  || undefined,
+      };
+
+      // Sin confirmación (trial futuro, etc.)
+      if (!confirmationMode || !clientSecret) {
+        try { await firstValueFrom(this.teamService.verifySubscription({ subscriptionId: subscriptionId ?? '', clubId: this.clubId, teamId: this.teamId, playerId: this.playerIdUserActual, pagoClubId: cuota.pagoClubId })); } catch {}
+        this.multiPayResults.push({ cuota, success: true });
+      } else if (confirmationMode === 'payment') {
+        const pm = savedPm ? savedPm : { card: cardEl, billing_details: billingDetails };
+        const { error, paymentIntent } = await this.stripe.confirmCardPayment(clientSecret, { payment_method: pm });
+        if (error) throw new Error(error.message || 'No se pudo confirmar el primer cobro.');
+        try { await firstValueFrom(this.teamService.verifySubscription({ subscriptionId: subscriptionId ?? '', paymentIntentId: paymentIntent?.id, invoiceId: latestInvoiceId, clubId: this.clubId, teamId: this.teamId, playerId: this.playerIdUserActual, pagoClubId: cuota.pagoClubId })); } catch {}
+        this.multiPayResults.push({ cuota, success: true });
+      } else if (confirmationMode === 'setup') {
+        const pm = savedPm ? savedPm : { card: cardEl, billing_details: billingDetails };
+        const { error, setupIntent } = await this.stripe.confirmCardSetup(clientSecret, { payment_method: pm });
+        if (error) throw new Error(error.message || 'No se pudo guardar el método de pago.');
+        try { await firstValueFrom(this.teamService.verifySubscription({ subscriptionId: subscriptionId ?? '', setupIntentId: setupIntent?.id, clubId: this.clubId, teamId: this.teamId, playerId: this.playerIdUserActual, pagoClubId: cuota.pagoClubId })); } catch {}
+        this.multiPayResults.push({ cuota, success: true });
+      }
+
+      // Marcar como suscrito para ocultar el botón
+      if (cuota.pagoClubId) this.activePagoClubIds.add(cuota.pagoClubId);
+
+    } catch (ex: any) {
+      this.multiPayResults.push({ cuota, success: false, error: ex?.message || 'Error inesperado.' });
+    }
+
+    this.multiPayLoading = false;
+    this.multiPayStep = 'success';
+    if (this.multiPayResults.some(r => r.success)) {
+      this.loadCuotasData();
     }
   }
 

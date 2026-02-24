@@ -904,6 +904,13 @@ export class TeamService {
         return this.http.get<any>(`${this.base}stripe/subscriptions/club/${clubId}/auto-payments`, { headers });
     }
 
+    /** Devuelve cuotas Sphaira Pay (tipoCobro=3) del club con estado de tarjeta por jugador. */
+    getSphairaPayScheduled(clubId: number, temporada: string): Observable<any> {
+        const headers = this.authHeaders();
+        if (!headers) return throwError(() => new Error('No auth token'));
+        return this.http.get<any>(`${this.base}club/sphaira-pay/${clubId}/${temporada}`, { headers });
+    }
+
     desistirCuota(body: { pagoClubId: number; playerId: number; userId: number; clubId: number; temporada?: string; reason?: string }): Observable<any> {
         const headers = this.authHeaders();
         if (!headers) return throwError(() => new Error('No auth token'));

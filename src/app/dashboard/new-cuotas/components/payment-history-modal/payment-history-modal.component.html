@@ -1,99 +1,165 @@
-<div class="modal d-block modal-overlay" *ngIf="visible" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl modal-dialog-centered">
-    <div class="modal-content modern-modal">
+<div class="phm-overlay" *ngIf="visible" tabindex="-1" role="dialog" aria-modal="true" (click)="onOverlayClick($event)">
+  <div class="phm-dialog" role="document">
 
-      <!-- HEADER -->
-      <div class="modal-header modern-header">
-        <h5 class="modal-title">
-          <i class="bi bi-clock-history me-2"></i>
-          {{ 'PAYMENTS.HISTORY_MODAL.TITLE' | translate }}
-          <span *ngIf="player" class="ms-2">&ndash; {{ player.nombre }}</span>
-        </h5>
-        <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+    <!-- ══════════ HEADER ══════════ -->
+    <div class="phm-header">
+      <div class="phm-header__left">
+        <div class="phm-avatar" *ngIf="player">
+          {{ getInitials(player.nombre) }}
+        </div>
+        <div class="phm-header__info">
+          <p class="phm-header__eyebrow">
+            <i class="bi bi-clock-history"></i>
+            {{ 'PAYMENTS.HISTORY_MODAL.TITLE' | translate }}
+          </p>
+          <h5 class="phm-header__name">{{ player?.nombre || '—' }}</h5>
+          <span class="phm-header__team" *ngIf="player?.teamName && player.teamName !== '—'">
+            <i class="bi bi-people-fill"></i>
+            {{ player.teamName }}
+          </span>
+        </div>
+      </div>
+      <button class="phm-close" type="button" aria-label="Cerrar" (click)="close()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- ══════════ STATS BAR ══════════ -->
+    <div class="phm-stats" *ngIf="!loading && payments.length > 0">
+      <div class="phm-stat phm-stat--blue">
+        <i class="bi bi-receipt-cutoff phm-stat__icon"></i>
+        <div>
+          <span class="phm-stat__value">{{ payments.length }}</span>
+          <span class="phm-stat__label">{{ 'PAYMENTS.HISTORY_MODAL.TOTAL_TRANSACTIONS' | translate }}</span>
+        </div>
+      </div>
+      <div class="phm-stat phm-stat--green">
+        <i class="bi bi-cash-coin phm-stat__icon"></i>
+        <div>
+          <span class="phm-stat__value">{{ getTotalPagado() | currency:'EUR':'symbol':'1.2-2' }}</span>
+          <span class="phm-stat__label">{{ 'PAYMENTS.HISTORY_MODAL.TOTAL_PAID' | translate }}</span>
+        </div>
+      </div>
+      <div class="phm-stat phm-stat--orange" *ngIf="getTotalReembolsado() < 0">
+        <i class="bi bi-arrow-counterclockwise phm-stat__icon"></i>
+        <div>
+          <span class="phm-stat__value">{{ getTotalReembolsado() | currency:'EUR':'symbol':'1.2-2' }}</span>
+          <span class="phm-stat__label">{{ 'PAYMENTS.HISTORY_MODAL.TOTAL_REFUNDS' | translate }}</span>
+        </div>
+      </div>
+      <div class="phm-stat phm-stat--navy">
+        <i class="bi bi-calendar-check phm-stat__icon"></i>
+        <div>
+          <span class="phm-stat__value">{{ getUltimoPago() | date:'dd/MM/yy' }}</span>
+          <span class="phm-stat__label">{{ 'PAYMENTS.HISTORY_MODAL.LAST_PAYMENT' | translate }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ BODY ══════════ -->
+    <div class="phm-body">
+
+      <!-- Alerta info -->
+      <div class="phm-info-banner">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>{{ 'PAYMENTS.HISTORY_MODAL.REFUND_INFO' | translate }}</span>
       </div>
 
-      <!-- BODY -->
-      <div class="modal-body modern-body">
-
-        <!-- Info alert -->
-        <div class="alert alert-info d-flex align-items-center mb-3">
-          <i class="bi bi-info-circle me-2"></i>
-          {{ 'PAYMENTS.HISTORY_MODAL.REFUND_INFO' | translate }}
+      <!-- LOADING — skeleton -->
+      <div *ngIf="loading" class="phm-skeleton-wrap">
+        <div class="phm-skeleton-row" *ngFor="let i of [1,2,3,4,5]">
+          <div class="phm-sk phm-sk--xs"></div>
+          <div class="phm-sk phm-sk--md"></div>
+          <div class="phm-sk phm-sk--lg"></div>
+          <div class="phm-sk phm-sk--sm"></div>
+          <div class="phm-sk phm-sk--badge"></div>
+          <div class="phm-sk phm-sk--sm"></div>
         </div>
-
-        <!-- Loading -->
-        <div *ngIf="loading" class="text-center py-4">
-          <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">{{ 'ACTIONS.LOADING' | translate }}</span>
-          </div>
-        </div>
-
-        <!-- Empty state -->
-        <div *ngIf="!loading && payments.length === 0" class="alert alert-secondary text-center">
-          <i class="bi bi-inbox me-2"></i>
-          {{ 'PAYMENTS.HISTORY_MODAL.EMPTY' | translate }}
-        </div>
-
-        <!-- Payments table -->
-        <div *ngIf="!loading && payments.length > 0" class="table-responsive">
-          <table class="table table-striped table-hover align-middle mb-0">
-            <thead class="table-light">
-              <tr>
-                <th>#</th>
-                <th>{{ 'PAYMENTS.HISTORY_MODAL.DATE' | translate }}</th>
-                <th>{{ 'PAYMENTS.HISTORY_MODAL.CONCEPT' | translate }}</th>
-                <th>{{ 'PAYMENTS.HISTORY_MODAL.AMOUNT' | translate }}</th>
-                <th>{{ 'PAYMENTS.HISTORY_MODAL.METHOD' | translate }}</th>
-                <th>{{ 'PAYMENTS.HISTORY_MODAL.COMMENT' | translate }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let pago of payments; let i = index">
-                <td>{{ i + 1 }}</td>
-                <td>{{ pago.datePago | date:'dd/MM/yyyy' }}</td>
-                <td>{{ pago.namePago }}</td>
-                <td>
-                  <strong [class.text-danger]="pago.importe?.toString().includes('-')">
-                    {{ pago.importe }}
-                  </strong>
-                </td>
-                <td>
-                  <span class="badge"
-                        [ngClass]="{
-                          'bg-primary': getMetodoLabel(pago.metodo) === 'Stripe',
-                          'bg-success': getMetodoLabel(pago.metodo) === 'Efectivo',
-                          'bg-info text-dark': getMetodoLabel(pago.metodo) === 'Transferencia',
-                          'bg-warning text-dark': getMetodoLabel(pago.metodo) === 'Bizum',
-                          'bg-secondary': getMetodoLabel(pago.metodo) === 'Otro'
-                        }">
-                    {{ getMetodoLabel(pago.metodo) }}
-                  </span>
-                </td>
-                <td>
-                  <ng-container *ngIf="isReceiptLink(pago.comentario); else plainText">
-                    <a [href]="pago.comentario" target="_blank" rel="noopener" class="btn btn-sm btn-outline-primary">
-                      <i class="bi bi-receipt me-1"></i>
-                      {{ 'PAYMENTS.HISTORY_MODAL.VIEW_RECEIPT' | translate }}
-                    </a>
-                  </ng-container>
-                  <ng-template #plainText>
-                    <span class="text-muted">{{ pago.comentario || '-' }}</span>
-                  </ng-template>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
       </div>
 
-      <!-- FOOTER -->
-      <div class="modal-footer modern-footer">
-        <button type="button" class="btn btn-secondary" (click)="close()">
-          {{ 'COMMON.CLOSE' | translate }}
-        </button>
+      <!-- EMPTY STATE -->
+      <div *ngIf="!loading && payments.length === 0" class="phm-empty">
+        <div class="phm-empty__icon">
+          <i class="bi bi-inbox"></i>
+        </div>
+        <p class="phm-empty__title">{{ 'PAYMENTS.HISTORY_MODAL.EMPTY' | translate }}</p>
+        <p class="phm-empty__sub">No se han registrado pagos para este jugador en la temporada actual.</p>
+      </div>
+
+      <!-- TABLA DE PAGOS -->
+      <div *ngIf="!loading && payments.length > 0" class="phm-table-wrap">
+        <table class="phm-table">
+          <thead>
+            <tr>
+              <th class="phm-th phm-th--num">#</th>
+              <th class="phm-th">{{ 'PAYMENTS.HISTORY_MODAL.DATE' | translate }}</th>
+              <th class="phm-th phm-th--grow">{{ 'PAYMENTS.HISTORY_MODAL.CONCEPT' | translate }}</th>
+              <th class="phm-th phm-th--right">{{ 'PAYMENTS.HISTORY_MODAL.AMOUNT' | translate }}</th>
+              <th class="phm-th">{{ 'PAYMENTS.HISTORY_MODAL.METHOD' | translate }}</th>
+              <th class="phm-th">{{ 'PAYMENTS.HISTORY_MODAL.COMMENT' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let pago of payments; let i = index"
+                class="phm-row"
+                [class.phm-row--refund]="isRefund(pago.importe)">
+              <td class="phm-td phm-td--num">{{ i + 1 }}</td>
+              <td class="phm-td phm-td--date">
+                <span class="phm-date">
+                  <i class="bi bi-calendar3"></i>
+                  {{ pago.datePago | date:'dd/MM/yyyy' }}
+                </span>
+              </td>
+              <td class="phm-td phm-td--concept">
+                <span class="phm-concept">{{ pago.namePago }}</span>
+              </td>
+              <td class="phm-td phm-td--amount">
+                <span class="phm-amount"
+                      [class.phm-amount--positive]="!isRefund(pago.importe)"
+                      [class.phm-amount--negative]="isRefund(pago.importe)">
+                  <i class="bi"
+                     [class.bi-arrow-up-circle-fill]="!isRefund(pago.importe)"
+                     [class.bi-arrow-down-circle-fill]="isRefund(pago.importe)">
+                  </i>
+                  {{ pago.importe }}
+                </span>
+              </td>
+              <td class="phm-td">
+                <span class="phm-method-badge"
+                      [attr.data-method]="getMetodoKey(pago.metodo)">
+                  <i class="bi" [ngClass]="getMetodoIcon(pago.metodo)"></i>
+                  {{ getMetodoLabel(pago.metodo) }}
+                </span>
+              </td>
+              <td class="phm-td phm-td--comment">
+                <ng-container *ngIf="isReceiptLink(pago.comentario); else plainText">
+                  <a [href]="pago.comentario" target="_blank" rel="noopener" class="phm-receipt-btn">
+                    <i class="bi bi-file-earmark-text"></i>
+                    {{ 'PAYMENTS.HISTORY_MODAL.VIEW_RECEIPT' | translate }}
+                  </a>
+                </ng-container>
+                <ng-template #plainText>
+                  <span class="phm-comment">{{ pago.comentario || '—' }}</span>
+                </ng-template>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
     </div>
+
+    <!-- ══════════ FOOTER ══════════ -->
+    <div class="phm-footer">
+      <span class="phm-footer__count" *ngIf="payments.length > 0">
+        <i class="bi bi-layers"></i>
+        {{ payments.length }} {{ payments.length === 1 ? 'registro' : 'registros' }}
+      </span>
+      <button type="button" class="phm-btn-close" (click)="close()">
+        <i class="bi bi-x-circle me-1"></i>
+        {{ 'COMMON.CLOSE' | translate }}
+      </button>
+    </div>
+
   </div>
 </div>

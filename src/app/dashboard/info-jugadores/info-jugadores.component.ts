@@ -96,6 +96,7 @@ export class InfoJugadoresComponent implements OnInit {
   listTeamsForCombo: any[] = [];
   showModalMover = false;
   teamId = 0;
+  teamDestino: number = 0;
   addPlayerMoved: boolean = false;
 
   /* ---- Campos personalizados dinámicos ---- */
@@ -181,20 +182,19 @@ export class InfoJugadoresComponent implements OnInit {
   cargarListadoJugadores(): void {
     this.clubService.getListJugadoresByClubForTemp(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data) {
-          // Mapea los datos bajo 'data' a instancias del modelo Team
           this.teams = response.data.teams;
+          this.players = [];
+          this.filteredPlayers = [];
           for (let i = 0; i < this.teams.length; i++) {
             for (let a = 0; a < this.teams[i].players.length; a++) {
-              const p = { ...this.teams[i].players[a] }; // Clonamos para no modificar el original
-              p.teamId = this.teams[i].teamId;           // Añades el nuevo campo
+              const p = { ...this.teams[i].players[a] };
+              p.teamId = this.teams[i].teamId;
               this.filteredPlayers.push(p);
-              //this.filteredPlayers.push(this.teams[i].players[a]);
-              //this.players.push(this.teams[i].players[a]);
               this.players.push(p);
             }
           }
+          this.loadPlayersOfTeam();
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -804,40 +804,41 @@ export class InfoJugadoresComponent implements OnInit {
   }
 
   moverJugador(): void {
-    let cuotaTbm = 0;
-    /*const confirmacion = confirm('Pulsa aceptar para cambiar también a las cuotas que tenga ese equipo o pulsa para cancelar y mantener la propia cuota que tenga este jugador.');
-    if (confirmacion) {
-      cuotaTbm = 1;
-    }*/
+    const cuotaTbm = 0;
 
-    if (this.teamSelected == 0) {
+    if (!this.teamDestino || this.teamDestino == 0) {
       this.notification.warning('PLAYERS.MESSAGES.SELECT_TEAM_DROPDOWN');
-    } else {
-      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected, cuotaTbm, this.addPlayerMoved ? 1 : 0).subscribe({
-        next: (response: Response) => {
-          if (response.data !== null) {
-            this.notification.success('PLAYERS.MESSAGES.MOVED_SUCCESS');
-            this.showModalMover = false;
-            this.addPlayerMoved = false;
-            this.teamSelected = 0;
-          } else {
-            this.notification.errorGeneric();
-          }
-        },
-        error: () => this.notification.errorGeneric()
-      });
+      return;
     }
+
+    this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamDestino, cuotaTbm, this.addPlayerMoved ? 1 : 0).subscribe({
+      next: (response: Response) => {
+        if (response.data !== null) {
+          this.notification.success('PLAYERS.MESSAGES.MOVED_SUCCESS');
+          this.showModalMover = false;
+          this.teamDestino = 0;
+          this.addPlayerMoved = false;
+          this.cargarListadoJugadores();
+        } else {
+          this.notification.errorGeneric();
+        }
+      },
+      error: () => this.notification.errorGeneric()
+    });
   }
 
   openShowModalMover(playerId: number, player: any): void {
-    const jugadorSeleccionado = this.players.find(player => player.playerId === playerId);
-    this.nombreJugador = jugadorSeleccionado.nombre + ' ' + jugadorSeleccionado.apellido;
+    const jugadorSeleccionado = this.players.find(p => p.playerId === playerId);
+    this.nombreJugador = jugadorSeleccionado
+      ? jugadorSeleccionado.nombre + ' ' + jugadorSeleccionado.apellido
+      : '';
     this.playerIdSelected = playerId;
     this.teamId = player.teamId;
+    this.teamDestino = 0;
+    this.addPlayerMoved = false;
 
     this.teamService.getTeamsByClubForCombo(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.listTeamsForCombo = response.data;
           this.showModalMover = true;

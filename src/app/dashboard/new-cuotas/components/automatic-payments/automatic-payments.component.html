@@ -1,6 +1,6 @@
 <div class="auto-pay-wrap">
 
-  <!-- ── ESTADO: CARGANDO ── -->
+  <!-- ── CARGANDO ── -->
   <div *ngIf="isLoading" class="ap-loading">
     <div class="ap-skeleton" *ngFor="let i of [1,2,3]">
       <div class="sk-header"></div>
@@ -9,97 +9,88 @@
     </div>
   </div>
 
-  <!-- ── ESTADO: ERROR ── -->
+  <!-- ── ERROR ── -->
   <div *ngIf="!isLoading && hasError" class="ap-empty">
     <i class="bi bi-exclamation-circle-fill text-danger fs-2 mb-2"></i>
-    <p class="mb-2">No se pudieron cargar los pagos automáticos.</p>
+    <p class="mb-2">No se pudieron cargar los cobros programados.</p>
     <button class="btn btn-sm btn-outline-primary" (click)="load()">
       <i class="bi bi-arrow-clockwise me-1"></i> Reintentar
     </button>
   </div>
 
-  <!-- ── ESTADO: SIN DATOS ── -->
+  <!-- ── SIN DATOS ── -->
   <div *ngIf="!isLoading && !hasError && cuotas.length === 0" class="ap-empty">
-    <i class="bi bi-calendar2-x fs-2 mb-2 text-muted"></i>
-    <p class="text-muted">No hay cuotas con pagos automáticos activos para este club.</p>
+    <i class="bi bi-lightning-charge fs-2 mb-2 text-muted"></i>
+    <p class="text-muted">No hay cuotas Sphaira Pay configuradas para esta temporada.</p>
+    <p class="text-muted small">Selecciona "Sphaira Pay" al crear una cuota para activar el cobro automático.</p>
   </div>
 
   <!-- ── CONTENIDO ── -->
   <ng-container *ngIf="!isLoading && !hasError && cuotas.length > 0">
 
-    <!-- Barra superior de métricas globales -->
+    <!-- Métricas globales -->
     <div class="ap-global-bar">
       <div class="ap-metric">
         <span class="ap-metric-val">{{ cuotas.length }}</span>
-        <span class="ap-metric-lbl">Cuotas con suscripciones</span>
+        <span class="ap-metric-lbl">Cuotas Sphaira Pay</span>
       </div>
       <div class="ap-metric">
-        <span class="ap-metric-val text-success">{{ totalActive }}</span>
-        <span class="ap-metric-lbl">Activas</span>
+        <span class="ap-metric-val">{{ totalJugadores }}</span>
+        <span class="ap-metric-lbl">Total jugadores</span>
       </div>
       <div class="ap-metric">
-        <span class="ap-metric-val text-danger">{{ totalFailed }}</span>
-        <span class="ap-metric-lbl">Con fallo</span>
+        <span class="ap-metric-val text-success">{{ totalConTarjeta }}</span>
+        <span class="ap-metric-lbl">Con tarjeta vinculada</span>
       </div>
       <div class="ap-metric">
-        <span class="ap-metric-val text-warning">{{ totalPaused }}</span>
-        <span class="ap-metric-lbl">Pausadas</span>
+        <span class="ap-metric-val text-warning">{{ totalSinTarjeta }}</span>
+        <span class="ap-metric-lbl">Sin tarjeta</span>
       </div>
       <div class="ap-metric">
-        <span class="ap-metric-val text-muted">{{ totalCanceled }}</span>
-        <span class="ap-metric-lbl">Canceladas</span>
+        <span class="ap-metric-val text-primary">{{ totalCobrados }}</span>
+        <span class="ap-metric-lbl">Ya cobrados</span>
       </div>
     </div>
 
-    <!-- Tarjeta por cuota (accordion) -->
+    <!-- Tarjeta por cuota -->
     <div class="ap-cuota-card" *ngFor="let cuota of cuotas; trackBy: trackByCuota">
 
-      <!-- Cabecera del accordion -->
+      <!-- Cabecera accordion -->
       <div class="ap-cuota-header" (click)="cuota.expanded = !cuota.expanded">
 
-        <!-- IZQUIERDA: icono + nombre de la cuota -->
         <div class="ap-cuota-title-block">
           <div class="ap-cuota-icon">
-            <i class="bi bi-arrow-repeat"></i>
+            <i class="bi bi-lightning-charge-fill"></i>
           </div>
           <div class="ap-cuota-texts">
             <p class="ap-cuota-name">{{ cuota.titulo || '(Sin título)' }}</p>
             <p class="ap-cuota-meta">
-              <ng-container *ngIf="cuota.intervalo">
-                {{ formatInterval(cuota.intervalo, cuota.intervaloCuenta) }}
-              </ng-container>
-              <ng-container *ngIf="cuota.importe">
-                <span class="ap-sep" *ngIf="cuota.intervalo">·</span>
-                <strong>{{ cuota.importe }} €</strong>
-              </ng-container>
-              <ng-container *ngIf="cuota.fechaInicio">
-                <span class="ap-sep">·</span>
-                {{ cuota.fechaInicio }} → {{ cuota.fechaFin || '∞' }}
-              </ng-container>
+              <span *ngIf="cuota.fechaCobro">
+                <i class="bi bi-calendar-event me-1"></i>Cobro: <strong>{{ formatDate(cuota.fechaCobro) }}</strong>
+              </span>
+              <span class="ap-sep" *ngIf="cuota.fechaCobro && cuota.importe">·</span>
+              <strong *ngIf="cuota.importe" [title]="'Base: ' + cuota.importe + ' €'">
+                {{ cuota.importeTotal || cuota.importe }} €
+              </strong>
             </p>
           </div>
         </div>
 
-        <!-- DERECHA: contadores por estado -->
+        <!-- Contadores -->
         <div class="ap-cuota-counters">
           <div class="ap-counter ap-counter--active">
-            <span class="ap-counter-val">{{ cuota.activeCount }}</span>
-            <span class="ap-counter-lbl">Confirmadas</span>
+            <span class="ap-counter-val">{{ cuota.conTarjeta }}</span>
+            <span class="ap-counter-lbl">Con tarjeta</span>
           </div>
           <div class="ap-counter-divider"></div>
           <div class="ap-counter ap-counter--failed">
-            <span class="ap-counter-val">{{ cuota.pastDueCount }}</span>
-            <span class="ap-counter-lbl">Fallidas</span>
+            <span class="ap-counter-val">{{ cuota.sinTarjeta }}</span>
+            <span class="ap-counter-lbl">Sin tarjeta</span>
           </div>
           <div class="ap-counter-divider"></div>
           <div class="ap-counter ap-counter--paused">
-            <span class="ap-counter-val">{{ cuota.pausedCount }}</span>
-            <span class="ap-counter-lbl">Pausadas</span>
-          </div>
-          <div class="ap-counter-divider"></div>
-          <div class="ap-counter ap-counter--canceled">
-            <span class="ap-counter-val">{{ cuota.canceledCount }}</span>
-            <span class="ap-counter-lbl">Canceladas</span>
+            <span class="ap-counter-val">{{ cuota.cobrados }}</span>
+            <span class="ap-counter-lbl">Cobrados</span>
           </div>
         </div>
 
@@ -111,7 +102,7 @@
       <!-- Cuerpo expandible -->
       <div class="ap-cuota-body" *ngIf="cuota.expanded">
 
-        <!-- Filtros inline -->
+        <!-- Filtros -->
         <div class="ap-inline-filters">
           <div class="ap-search">
             <i class="bi bi-search"></i>
@@ -122,102 +113,110 @@
               class="ap-search-input" />
           </div>
           <div class="ap-status-tabs">
-            <button [class.active]="cuota.statusFilter === 'all'"     (click)="cuota.statusFilter = 'all'">Todos</button>
-            <button [class.active]="cuota.statusFilter === 'active'"  (click)="cuota.statusFilter = 'active'">Activas</button>
-            <button [class.active]="cuota.statusFilter === 'failed'"  (click)="cuota.statusFilter = 'failed'" class="tab-failed">Fallidas</button>
-            <button [class.active]="cuota.statusFilter === 'paused'"  (click)="cuota.statusFilter = 'paused'">Pausadas</button>
-            <button [class.active]="cuota.statusFilter === 'canceled'"(click)="cuota.statusFilter = 'canceled'">Canceladas</button>
+            <button [class.active]="cuota.statusFilter === 'all'"        (click)="cuota.statusFilter = 'all'">Todos</button>
+            <button [class.active]="cuota.statusFilter === 'conTarjeta'" (click)="cuota.statusFilter = 'conTarjeta'">Con tarjeta</button>
+            <button [class.active]="cuota.statusFilter === 'sinTarjeta'" (click)="cuota.statusFilter = 'sinTarjeta'" class="tab-failed">Sin tarjeta</button>
+            <button [class.active]="cuota.statusFilter === 'cobrado'"    (click)="cuota.statusFilter = 'cobrado'">Cobrados</button>
           </div>
         </div>
 
-        <!-- Tabla de jugadores -->
+        <!-- Tabla -->
         <div class="ap-table-wrap">
           <table class="ap-table" *ngIf="filteredPlayers(cuota).length > 0; else noPlayers">
             <thead>
               <tr>
                 <th>Jugador</th>
                 <th>Equipo</th>
-                <th>Estado suscripción</th>
-                <th>Inicio</th>
-                <th>Cancelación</th>
-                <th>Último pago</th>
-                <th>Importe cobrado</th>
-                <th>Fecha pago</th>
+                <th>Tarjeta</th>
+                <th>Estado cobro</th>
+                <th>Último cobro</th>
                 <th>Recibo</th>
-                <th>Información de fallo</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let p of filteredPlayers(cuota); trackBy: trackByPlayer"
-                  [class.row-failed]="hasFailure(p)">
+                  [class.row-failed]="!p.tieneTarjeta">
+
                 <!-- Jugador -->
                 <td class="td-player">
                   <div class="player-cell">
-                    <img *ngIf="p.playerPhoto"
-                         [src]="p.playerPhoto"
-                         class="player-avatar"
-                         alt="foto"
-                         onerror="this.style.display='none'" />
-                    <span *ngIf="!p.playerPhoto" class="player-avatar-placeholder">
+                    <span class="player-avatar-placeholder">
                       <i class="bi bi-person-fill"></i>
                     </span>
                     <span class="player-name">{{ p.playerName || '(sin nombre)' }}</span>
                   </div>
                 </td>
+
                 <!-- Equipo -->
-                <td class="td-team">{{ p.teamName || '—' }}</td>
-                <!-- Estado suscripción -->
-                <td>
-                  <span class="sub-status-badge" [ngClass]="getStatusClass(p.status)">
-                    {{ getStatusLabel(p.status) }}
-                  </span>
-                </td>
-                <!-- Inicio de suscripción -->
-                <td class="td-date">{{ formatDate(p.createdAt) }}</td>
-                <!-- Cancelación programada -->
-                <td class="td-date">
-                  <ng-container *ngIf="p.cancelAt">
-                    <span class="cancel-date">{{ formatDate(p.cancelAt) }}</span>
+                <td class="td-team">
+                  <ng-container *ngIf="p.teamName && p.teamName !== '—'; else noTeam">
+                    <span class="team-chip">
+                      <i class="bi bi-people-fill"></i>
+                      {{ p.teamName }}
+                    </span>
                   </ng-container>
-                  <span *ngIf="!p.cancelAt" class="text-muted">—</span>
+                  <ng-template #noTeam>
+                    <span class="td-empty">—</span>
+                  </ng-template>
                 </td>
-                <!-- Estado del último pago -->
+
+                <!-- Tarjeta -->
                 <td>
-                  <span *ngIf="p.latestPaymentStatus"
-                        class="pay-badge"
-                        [ngClass]="getPaymentStatusClass(p.latestPaymentStatus)">
-                    {{ getPaymentStatusLabel(p.latestPaymentStatus) }}
-                  </span>
-                  <span *ngIf="!p.latestPaymentStatus" class="text-muted">Sin pagos</span>
+                  <ng-container *ngIf="p.tieneTarjeta; else noCard">
+                    <div class="card-chip">
+                      <i class="bi bi-credit-card-fill card-chip-icon"></i>
+                      <div class="card-chip-info">
+                        <span class="card-chip-number">{{ maskCard(p.cardLast4) }}</span>
+                        <span class="card-chip-brand" *ngIf="p.cardBrand">{{ p.cardBrand }}</span>
+                      </div>
+                    </div>
+                  </ng-container>
+                  <ng-template #noCard>
+                    <span class="sub-status-badge status-failed">
+                      <i class="bi bi-credit-card-2-front me-1"></i>Sin tarjeta
+                    </span>
+                  </ng-template>
                 </td>
-                <!-- Importe cobrado -->
-                <td class="td-amount">{{ formatAmount(p.amountReceived, p.currency) }}</td>
-                <!-- Fecha último pago -->
-                <td class="td-date">{{ formatDate(p.latestPaymentDate) }}</td>
-                <!-- Recibo -->
+
+                <!-- Estado cobro -->
+                <td>
+                  <span *ngIf="p.cobrado" class="sub-status-badge status-active">
+                    <i class="bi bi-check-circle-fill me-1"></i>Cobrado
+                  </span>
+                  <span *ngIf="!p.cobrado && p.tieneTarjeta" class="sub-status-badge status-paused">
+                    <i class="bi bi-clock-fill me-1"></i>Pendiente
+                  </span>
+                  <span *ngIf="!p.cobrado && !p.tieneTarjeta" class="sub-status-badge status-failed">
+                    <i class="bi bi-exclamation-circle-fill me-1"></i>Sin tarjeta
+                  </span>
+                </td>
+
+                <!-- Último cobro: fecha + hora -->
+                <td class="td-date">
+                  <ng-container *ngIf="formatDateTime(p.ultimoPago) as dt; else noPago">
+                    <div class="dt-block">
+                      <span class="dt-date">{{ dt.date }}</span>
+                      <span class="dt-time"><i class="bi bi-clock me-1"></i>{{ dt.time }}</span>
+                    </div>
+                  </ng-container>
+                  <ng-template #noPago>
+                    <span class="td-empty">—</span>
+                  </ng-template>
+                </td>
+
+                <!-- Factura: recibo público de Stripe -->
                 <td class="td-receipt">
                   <a *ngIf="p.receiptUrl"
                      [href]="p.receiptUrl"
                      target="_blank"
                      rel="noopener"
-                     class="receipt-link"
-                     title="Ver recibo Stripe">
+                     class="btn-stripe-pay"
+                     title="Ver recibo · {{ p.importe }} €">
                     <i class="bi bi-receipt"></i>
                   </a>
-                  <span *ngIf="!p.receiptUrl" class="text-muted">—</span>
+                  <span *ngIf="!p.receiptUrl" class="td-empty">—</span>
                 </td>
-                <!-- Información de fallo -->
-                <td class="td-failure">
-                  <ng-container *ngIf="hasFailure(p)">
-                    <div class="failure-block">
-                      <span class="failure-code">{{ p.failureCode }}</span>
-                      <span class="failure-msg" [title]="p.failureMessage || ''">
-                        {{ p.failureMessage || '—' }}
-                      </span>
-                    </div>
-                  </ng-container>
-                  <span *ngIf="!hasFailure(p)" class="text-muted">—</span>
-                </td>
+
               </tr>
             </tbody>
           </table>
@@ -225,7 +224,7 @@
           <ng-template #noPlayers>
             <div class="ap-empty-filter">
               <i class="bi bi-funnel text-muted"></i>
-              <p class="text-muted mb-0">No hay suscripciones que coincidan con el filtro.</p>
+              <p class="text-muted mb-0">No hay jugadores que coincidan con el filtro.</p>
             </div>
           </ng-template>
         </div>
@@ -234,3 +233,4 @@
   </ng-container>
 
 </div>
+

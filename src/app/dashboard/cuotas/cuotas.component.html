@@ -48,17 +48,89 @@
         <span class="estado-card-label">Pendiente</span>
         <span class="estado-card-value">{{ pdte }} €</span>
       </div>
-      <div class="shortcut-card shortcut-card--tarjetas" (click)="openModalTarjetas()">
-        <div class="shortcut-card-icon">
-          <i class="bi bi-lightning-charge-fill"></i>
-        </div>
-        <div class="shortcut-card-text">
-          <span class="shortcut-card-title">Sphaira Pay</span>
-          <span class="shortcut-card-subtitle">Información de pago guardada</span>
-        </div>
-        <i class="bi bi-chevron-right shortcut-card-arrow"></i>
+      <div class="shortcut-card shortcut-card--tarjetas"
+           [class.shortcut-card--tarjetas-warning]="!savedCardsLoading && savedCards.length === 0 && stripeBtoShow"
+           [class.shortcut-card--tarjetas-ok]="!savedCardsLoading && savedCards.length > 0"
+           (click)="openModalTarjetas()">
+
+        <!-- Estado: cargando -->
+        <ng-container *ngIf="savedCardsLoading">
+          <div class="shortcut-card-icon">
+            <span class="shortcut-card-spinner"></span>
+          </div>
+          <div class="shortcut-card-text">
+            <span class="shortcut-card-title">Sphaira Pay</span>
+            <span class="shortcut-card-subtitle">Verificando...</span>
+          </div>
+        </ng-container>
+
+        <!-- Estado: sin tarjeta vinculada -->
+        <ng-container *ngIf="!savedCardsLoading && savedCards.length === 0 && stripeBtoShow">
+          <div class="shortcut-card-icon shortcut-card-icon--warning">
+            <i class="bi bi-credit-card-2-front"></i>
+          </div>
+          <div class="shortcut-card-text">
+            <span class="shortcut-card-title">Vincular tarjeta</span>
+            <span class="shortcut-card-subtitle shortcut-card-subtitle--warning">
+              <i class="bi bi-exclamation-circle-fill me-1"></i>Sin tarjeta asociada
+            </span>
+          </div>
+          <i class="bi bi-chevron-right shortcut-card-arrow"></i>
+        </ng-container>
+
+        <!-- Estado: tarjeta vinculada -->
+        <ng-container *ngIf="!savedCardsLoading && savedCards.length > 0">
+          <div class="shortcut-card-icon shortcut-card-icon--ok">
+            <i class="bi bi-patch-check-fill"></i>
+          </div>
+          <div class="shortcut-card-text">
+            <span class="shortcut-card-title">Sphaira Pay</span>
+            <span class="shortcut-card-subtitle shortcut-card-subtitle--ok">
+              <i class="bi bi-credit-card-fill me-1"></i>
+              •••• {{ savedCards[0].last4 }}
+              <span class="shortcut-card-brand">{{ savedCards[0].brand }}</span>
+            </span>
+          </div>
+          <i class="bi bi-chevron-right shortcut-card-arrow"></i>
+        </ng-container>
+
       </div>
     </section>
+
+    <!-- BANNER SPHAIRA PAY — sin tarjeta vinculada -->
+    <div class="cq-sphaira-banner cq-sphaira-banner--warning"
+         *ngIf="hasSphairaPayCuotas && stripeBtoShow && savedCards.length === 0 && !savedCardsLoading">
+      <div class="cq-sphaira-banner-icon">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <div class="cq-sphaira-banner-body">
+        <span class="cq-sphaira-banner-title">
+          Tienes cuotas con <strong>Sphaira Pay</strong> que requieren una tarjeta vinculada
+        </span>
+        <span class="cq-sphaira-banner-sub">
+          Vincula una tarjeta para activar el cobro automático. Una vez vinculada, los pagos se procesarán de forma recurrente.
+        </span>
+      </div>
+      <button class="cq-sphaira-banner-btn" (click)="openModalTarjetas()">
+        <i class="bi bi-plus-circle-fill me-1"></i>Vincular tarjeta
+      </button>
+    </div>
+
+    <!-- BANNER SPHAIRA PAY — cobros automáticos configurados por el club -->
+    <div class="cq-sphaira-banner"
+         *ngIf="hasSphairaPayCuotas && savedCards.length > 0">
+      <div class="cq-sphaira-banner-icon">
+        <i class="bi bi-shield-check-fill"></i>
+      </div>
+      <div class="cq-sphaira-banner-body">
+        <span class="cq-sphaira-banner-title">
+          <strong>{{ nameClub }}</strong> ha configurado cobros automáticos con Sphaira Pay
+        </span>
+        <span class="cq-sphaira-banner-sub">
+          Tu tarjeta vinculada será cargada automáticamente en la fecha indicada en cada cuota.
+        </span>
+      </div>
+    </div>
 
     <!-- BARRA DE SELECCIÓN (aparece al seleccionar cuotas) -->
     <div class="cq-selection-bar" *ngIf="stripeBtoShow && selectedCuotas.length > 0">
@@ -89,7 +161,12 @@
             <i class="bi bi-shield-check-fill"></i>
             <span>Cuotas obligatorias</span>
           </div>
-          <span class="cq-badge cq-badge--primary">{{ cuotasObligatorias?.length || 0 }}</span>
+          <div class="cq-panel-header-right">
+            <button *ngIf="hayFiltrosActivos" class="cq-filter-clear-btn" (click)="resetFiltros()">
+              <i class="bi bi-x-lg"></i> Limpiar filtros
+            </button>
+            <span class="cq-badge cq-badge--primary">{{ cuotasObligatoriasFiltered.length }}</span>
+          </div>
         </div>
 
         <div class="cq-list">
@@ -101,11 +178,59 @@
             <span class="cq-col-num">Pagado</span>
             <span class="cq-col-fecha">Vencimiento</span>
             <span class="cq-col-fecha">Fecha pago</span>
+            <span class="cq-col-action cq-col-action--header">Acciones</span>
+          </div>
+
+          <!-- Fila de filtros por columna -->
+          <div class="cq-list-filters">
+            <span class="cq-col-check" *ngIf="stripeBtoShow"></span>
+            <div class="cq-col-name">
+              <input class="cq-filter-input" type="text"
+                     [(ngModel)]="filtroConcepto"
+                     placeholder="Buscar concepto..."
+                     [class.cq-filter-active]="filtroConcepto" />
+            </div>
+            <div class="cq-col-tipo">
+              <select class="cq-filter-select"
+                      [(ngModel)]="filtroTipoPago"
+                      [class.cq-filter-active]="filtroTipoPago">
+                <option value="">Todos</option>
+                <option value="0">Puntual</option>
+                <option value="1">Sphaira Pay</option>
+              </select>
+            </div>
+            <div class="cq-col-num">
+              <!-- importe: sin filtro, solo visual -->
+            </div>
+            <div class="cq-col-num">
+              <select class="cq-filter-select"
+                      [(ngModel)]="filtroEstadoPago"
+                      [class.cq-filter-active]="filtroEstadoPago">
+                <option value="">Todos</option>
+                <option value="pagado">Pagado</option>
+                <option value="parcial">Parcial</option>
+                <option value="pendiente">Pendiente</option>
+              </select>
+            </div>
+            <div class="cq-col-fecha">
+              <input class="cq-filter-input" type="date"
+                     [(ngModel)]="filtroVencimiento"
+                     [class.cq-filter-active]="filtroVencimiento" />
+            </div>
+            <div class="cq-col-fecha">
+              <select class="cq-filter-select"
+                      [(ngModel)]="filtroFechaPago"
+                      [class.cq-filter-active]="filtroFechaPago">
+                <option value="">Todos</option>
+                <option value="conFecha">Con fecha</option>
+                <option value="pendiente">Pendiente</option>
+              </select>
+            </div>
             <span class="cq-col-action"></span>
           </div>
 
           <div class="cq-item"
-               *ngFor="let cuota of cuotasObligatorias"
+               *ngFor="let cuota of cuotasObligatoriasFiltered"
                [class.cq-item--paid]="cuota.pagado === cuota.importe"
                [class.cq-item--pending]="cuota.pagado !== cuota.importe && cuota.pagado !== '0'"
                [class.cq-item--overdue]="cuota.pagado === '0'"
@@ -124,26 +249,26 @@
                 <span class="cq-checkbox-box"><i class="bi bi-check-lg"></i></span>
               </label>
               <span class="cq-checkbox-locked" *ngIf="!canSelectCuota(cuota)">
-                <i class="bi bi-lock-fill" *ngIf="cuota.tipoPagoStripe === 1" title="Pago recurrente (Sphaira Pay)"></i>
-                <i class="bi bi-check2-all" *ngIf="cuota.tipoPagoStripe !== 1 && cuota.pagado >= cuota.importe" title="Ya pagada"></i>
+                <i class="bi bi-lock-fill" *ngIf="isSphaira(cuota)" title="Pago recurrente (Sphaira Pay)"></i>
+                <i class="bi bi-check2-all" *ngIf="!isSphaira(cuota) && cuota.pagado >= cuota.importe" title="Ya pagada"></i>
               </span>
             </div>
 
             <div class="cq-col-name">
               <span class="cq-name">{{ cuota.nombre }}</span>
-              <span class="cq-tipo-badge cq-tipo-badge--sphaira cq-show-mobile" *ngIf="cuota.tipoPagoStripe === 1">
+              <span class="cq-tipo-badge cq-tipo-badge--sphaira cq-show-mobile" *ngIf="isSphaira(cuota)">
                 <i class="bi bi-lightning-charge-fill"></i> Sphaira Pay
               </span>
-              <span class="cq-tipo-badge cq-show-mobile" *ngIf="cuota.tipoPagoStripe !== 1">
+              <span class="cq-tipo-badge cq-show-mobile" *ngIf="!isSphaira(cuota)">
                 <i class="bi bi-cash-coin"></i> Puntual
               </span>
             </div>
 
             <div class="cq-col-tipo cq-hide-mobile">
-              <span class="cq-tipo-badge cq-tipo-badge--sphaira" *ngIf="cuota.tipoPagoStripe === 1">
+              <span class="cq-tipo-badge cq-tipo-badge--sphaira" *ngIf="isSphaira(cuota)">
                 <i class="bi bi-lightning-charge-fill"></i> Sphaira Pay
               </span>
-              <span class="cq-tipo-badge" *ngIf="cuota.tipoPagoStripe !== 1">
+              <span class="cq-tipo-badge" *ngIf="!isSphaira(cuota)">
                 <i class="bi bi-cash-coin"></i> Puntual
               </span>
             </div>
@@ -151,7 +276,7 @@
             <div class="cq-col-num">
               <span class="cq-label-mobile">Importe</span>
               <span class="cq-amount">
-                {{ cuota.stripe === 1 ? calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0) : cuota.importe }} €
+                {{ calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0) }} €
               </span>
             </div>
             <div class="cq-col-num">
@@ -168,17 +293,33 @@
               <span class="cq-fecha">{{ cuota.fechaPago || '-' }}</span>
             </div>
 
-            <div class="cq-col-action" (click)="$event.stopPropagation()">
+            <div class="cq-col-action cq-action-group" (click)="$event.stopPropagation()">
+              <span *ngIf="isSphaira(cuota) && stripeBtoShow && !isAlreadySubscribed(cuota) && savedCards.length > 0"
+                    class="cq-action-btn cq-action-btn--sphaira-auto">
+                    <i class="bi bi-patch-check-fill"></i>
+                <span class="cq-action-tooltip cq-action-tooltip--left">Cobro automático con Sphaira Pay</span>
+              </span>
+              <button *ngIf="isSphaira(cuota) && stripeBtoShow && !isAlreadySubscribed(cuota) && savedCards.length === 0"
+                      class="cq-action-btn cq-action-btn--subscribe"
+                      (click)="openModalStripeParaCuota(cuota)">
+                <i class="bi bi-lightning-charge-fill"></i>
+                <span class="cq-action-tooltip cq-action-tooltip--left">Vincular tarjeta</span>
+              </button>
+              <span *ngIf="isSphaira(cuota) && isAlreadySubscribed(cuota)"
+                    class="cq-action-btn cq-action-btn--subscribed">
+                <i class="bi bi-check2"></i>
+                <span class="cq-action-tooltip cq-action-tooltip--left">Suscrito</span>
+              </span>
               <button *ngIf="canCancelCuota(cuota)"
-                      class="cq-btn-cancel"
-                      title="Solicitar cancelación"
+                      class="cq-action-btn cq-action-btn--cancel"
                       (click)="requestCancelCuota(cuota)">
-                <i class="bi bi-x-circle-fill"></i>
+                <i class="bi bi-x-lg"></i>
+                <span class="cq-action-tooltip cq-action-tooltip--left">Cancelar</span>
               </button>
             </div>
           </div>
 
-          <div class="cq-empty" *ngIf="!cuotasObligatorias?.length">
+          <div class="cq-empty" *ngIf="!cuotasObligatoriasFiltered.length">
             <i class="bi bi-inbox"></i>
             <span>Sin cuotas obligatorias asignadas</span>
           </div>
@@ -194,7 +335,12 @@
             <i class="bi bi-bookmark-star-fill"></i>
             <span>Cuotas opcionales</span>
           </div>
-          <span class="cq-badge cq-badge--secondary">{{ cuotasNoObligatorias?.length || 0 }}</span>
+          <div class="cq-panel-header-right">
+            <button *ngIf="hayFiltrosActivos" class="cq-filter-clear-btn" (click)="resetFiltros()">
+              <i class="bi bi-x-lg"></i> Limpiar filtros
+            </button>
+            <span class="cq-badge cq-badge--secondary">{{ cuotasNoObligatoriasFiltered.length }}</span>
+          </div>
         </div>
 
         <div class="cq-list">
@@ -206,11 +352,57 @@
             <span class="cq-col-num">Pagado</span>
             <span class="cq-col-fecha">Vencimiento</span>
             <span class="cq-col-fecha">Fecha pago</span>
+            <span class="cq-col-action cq-col-action--header">Acciones</span>
+          </div>
+
+          <!-- Fila de filtros por columna -->
+          <div class="cq-list-filters">
+            <span class="cq-col-check" *ngIf="stripeBtoShow"></span>
+            <div class="cq-col-name">
+              <input class="cq-filter-input" type="text"
+                     [(ngModel)]="filtroConcepto"
+                     placeholder="Buscar concepto..."
+                     [class.cq-filter-active]="filtroConcepto" />
+            </div>
+            <div class="cq-col-tipo">
+              <select class="cq-filter-select"
+                      [(ngModel)]="filtroTipoPago"
+                      [class.cq-filter-active]="filtroTipoPago">
+                <option value="">Todos</option>
+                <option value="0">Puntual</option>
+                <option value="1">Sphaira Pay</option>
+              </select>
+            </div>
+            <div class="cq-col-num"></div>
+            <div class="cq-col-num">
+              <select class="cq-filter-select"
+                      [(ngModel)]="filtroEstadoPago"
+                      [class.cq-filter-active]="filtroEstadoPago">
+                <option value="">Todos</option>
+                <option value="pagado">Pagado</option>
+                <option value="parcial">Parcial</option>
+                <option value="pendiente">Pendiente</option>
+              </select>
+            </div>
+            <div class="cq-col-fecha">
+              <input class="cq-filter-input" type="date"
+                     [(ngModel)]="filtroVencimiento"
+                     [class.cq-filter-active]="filtroVencimiento" />
+            </div>
+            <div class="cq-col-fecha">
+              <select class="cq-filter-select"
+                      [(ngModel)]="filtroFechaPago"
+                      [class.cq-filter-active]="filtroFechaPago">
+                <option value="">Todos</option>
+                <option value="conFecha">Con fecha</option>
+                <option value="pendiente">Pendiente</option>
+              </select>
+            </div>
             <span class="cq-col-action"></span>
           </div>
 
           <div class="cq-item"
-               *ngFor="let cuota of cuotasNoObligatorias"
+               *ngFor="let cuota of cuotasNoObligatoriasFiltered"
                [class.cq-item--paid]="cuota.pagado === cuota.importe"
                [class.cq-item--pending]="cuota.pagado !== cuota.importe && cuota.pagado !== '0'"
                [class.cq-item--overdue]="cuota.pagado === '0'"
@@ -228,26 +420,26 @@
                 <span class="cq-checkbox-box"><i class="bi bi-check-lg"></i></span>
               </label>
               <span class="cq-checkbox-locked" *ngIf="!canSelectCuota(cuota)">
-                <i class="bi bi-lock-fill" *ngIf="cuota.tipoPagoStripe === 1" title="Pago recurrente (Sphaira Pay)"></i>
-                <i class="bi bi-check2-all" *ngIf="cuota.tipoPagoStripe !== 1 && cuota.pagado >= cuota.importe" title="Ya pagada"></i>
+                <i class="bi bi-lock-fill" *ngIf="isSphaira(cuota)" title="Pago recurrente (Sphaira Pay)"></i>
+                <i class="bi bi-check2-all" *ngIf="!isSphaira(cuota) && cuota.pagado >= cuota.importe" title="Ya pagada"></i>
               </span>
             </div>
 
             <div class="cq-col-name">
               <span class="cq-name">{{ cuota.nombre }}</span>
-              <span class="cq-tipo-badge cq-tipo-badge--sphaira cq-show-mobile" *ngIf="cuota.tipoPagoStripe === 1">
+              <span class="cq-tipo-badge cq-tipo-badge--sphaira cq-show-mobile" *ngIf="isSphaira(cuota)">
                 <i class="bi bi-lightning-charge-fill"></i> Sphaira Pay
               </span>
-              <span class="cq-tipo-badge cq-show-mobile" *ngIf="cuota.tipoPagoStripe !== 1">
+              <span class="cq-tipo-badge cq-show-mobile" *ngIf="!isSphaira(cuota)">
                 <i class="bi bi-cash-coin"></i> Puntual
               </span>
             </div>
 
             <div class="cq-col-tipo cq-hide-mobile">
-              <span class="cq-tipo-badge cq-tipo-badge--sphaira" *ngIf="cuota.tipoPagoStripe === 1">
+              <span class="cq-tipo-badge cq-tipo-badge--sphaira" *ngIf="isSphaira(cuota)">
                 <i class="bi bi-lightning-charge-fill"></i> Sphaira Pay
               </span>
-              <span class="cq-tipo-badge" *ngIf="cuota.tipoPagoStripe !== 1">
+              <span class="cq-tipo-badge" *ngIf="!isSphaira(cuota)">
                 <i class="bi bi-cash-coin"></i> Puntual
               </span>
             </div>
@@ -255,7 +447,7 @@
             <div class="cq-col-num">
               <span class="cq-label-mobile">Importe</span>
               <span class="cq-amount">
-                {{ cuota.stripe === 1 ? calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0) : cuota.importe }} €
+                {{ calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0) }} €
               </span>
             </div>
             <div class="cq-col-num">
@@ -270,17 +462,35 @@
               <span class="cq-label-mobile">F. pago</span>
               <span class="cq-fecha">{{ cuota.fechaPago || '-' }}</span>
             </div>
-            <div class="cq-col-action" (click)="$event.stopPropagation()">
+            <div class="cq-col-action cq-action-group" (click)="$event.stopPropagation()">
+              <!-- Sphaira Pay: tarjeta vinculada → chip informativo (sin botón) -->
+              <span *ngIf="isSphaira(cuota) && stripeBtoShow && !isAlreadySubscribed(cuota) && savedCards.length > 0"
+                    class="cq-action-btn cq-action-btn--sphaira-auto">
+                <i class="bi bi-check-circle-fill"></i>
+                <span class="cq-action-tooltip cq-action-tooltip--left">Cobro automático con Sphaira Pay</span>
+              </span>
+              <!-- Sphaira Pay: sin tarjeta → mostrar botón para vincular y suscribirse -->
+              <button *ngIf="isSphaira(cuota) && stripeBtoShow && !isAlreadySubscribed(cuota) && savedCards.length === 0"
+                      class="cq-action-btn cq-action-btn--subscribe"
+                      (click)="openModalStripeParaCuota(cuota)">
+                <i class="bi bi-lightning-charge-fill"></i>
+                <span class="cq-action-tooltip cq-action-tooltip--left">Vincular tarjeta</span>
+              </button>
+              <span *ngIf="isSphaira(cuota) && isAlreadySubscribed(cuota)"
+                    class="cq-action-btn cq-action-btn--subscribed">
+                <i class="bi bi-check2"></i>
+                <span class="cq-action-tooltip cq-action-tooltip--left">Suscrito</span>
+              </span>
               <button *ngIf="canCancelCuota(cuota)"
-                      class="cq-btn-cancel"
-                      title="Solicitar cancelación"
+                      class="cq-action-btn cq-action-btn--cancel"
                       (click)="requestCancelCuota(cuota)">
-                <i class="bi bi-x-circle-fill"></i>
+                <i class="bi bi-x-lg"></i>
+                <span class="cq-action-tooltip cq-action-tooltip--left">Cancelar</span>
               </button>
             </div>
           </div>
 
-          <div class="cq-empty" *ngIf="!cuotasNoObligatorias?.length">
+          <div class="cq-empty" *ngIf="!cuotasNoObligatoriasFiltered.length">
             <i class="bi bi-inbox"></i>
             <span>Sin cuotas opcionales asignadas</span>
           </div>
@@ -538,7 +748,7 @@
           <i class="bi bi-x-circle-fill"></i>
         </div>
         <div>
-          <h2 class="premium-modal-title">Cancelar suscripción</h2>
+          <h2 class="premium-modal-title">Cancelar couta</h2>
           <p class="premium-modal-subtitle">Solicitar el desistimiento de esta cuota al club</p>
         </div>
       </div>
@@ -554,7 +764,7 @@
         <p>
           Estás a punto de solicitar la cancelación de
           <strong>{{ cuotaToCancel?.nombre }}</strong>
-          ({{ cuotaToCancel?.importe }} €).
+          ({{ calcGrossAmount(cuotaToCancel?.importe, cuotaToCancel?.comisionClub ?? 0) }} €).
           El club recibirá una notificación y deberá confirmar el desistimiento.
           <br>
           <span *ngIf="cuotaToCancel?.tipoCobro === 2">
@@ -589,7 +799,7 @@
                 [disabled]="cancelCuotaLoading"
                 (click)="confirmCancelCuota()">
           <span *ngIf="!cancelCuotaLoading">
-            <i class="bi bi-x-circle me-1"></i>Confirmar desistimiento
+            <i class="bi bi-x-circle me-1"></i>Confirmar cancelación
           </span>
           <span *ngIf="cancelCuotaLoading" class="btn-loading">
             <span class="btn-spinner btn-spinner--danger"></span>Procesando...
@@ -620,17 +830,24 @@
        role="dialog" aria-modal="true">
 
     <!-- Header -->
-    <div class="premium-modal-header premium-modal-header--pay">
+    <div class="premium-modal-header premium-modal-header--pay"
+         [class.premium-modal-header--sub]="multiPayIsSubscription">
       <div class="premium-modal-header-bg"></div>
       <div class="premium-modal-header-content">
         <div class="premium-modal-header-icon mp-header-icon">
-          <i class="bi bi-lightning-charge-fill"></i>
+          <i [class]="multiPayIsSubscription ? 'bi bi-arrow-repeat' : 'bi bi-lightning-charge-fill'"></i>
         </div>
         <div>
-          <h2 class="premium-modal-title">Pagar cuotas seleccionadas</h2>
-          <p class="premium-modal-subtitle">
+          <h2 class="premium-modal-title">
+            {{ multiPayIsSubscription ? 'Suscribirse a cuota' : 'Pagar cuotas seleccionadas' }}
+          </h2>
+          <p class="premium-modal-subtitle" *ngIf="!multiPayIsSubscription">
             {{ selectedCuotas.length }} cuota{{ selectedCuotas.length !== 1 ? 's' : '' }}
             · {{ selectedCuotasGrossTotal }} €
+          </p>
+          <p class="premium-modal-subtitle" *ngIf="multiPayIsSubscription">
+            {{ multiPaySubscriptionCuota?.titulo || multiPaySubscriptionCuota?.nombre }}
+            · {{ calcGrossAmount(multiPaySubscriptionCuota?.importe, multiPaySubscriptionCuota?.comisionClub ?? 0) }} € / ciclo
           </p>
         </div>
       </div>
@@ -642,8 +859,52 @@
     <!-- ── PASO: REVISIÓN ── -->
     <div class="premium-modal-body" *ngIf="multiPayStep === 'review'">
 
-      <!-- Lista de cuotas a pagar -->
-      <div class="mp-section">
+      <!-- ── SUSCRIPCIÓN: detalle de la cuota recurrente ── -->
+      <div class="mp-section" *ngIf="multiPayIsSubscription && multiPaySubscriptionCuota">
+        <h3 class="mp-section-title">
+          <i class="bi bi-arrow-repeat"></i> Detalle de la suscripción
+        </h3>
+        <div class="mp-sub-detail">
+          <div class="mp-sub-row">
+            <span class="mp-sub-label">Cuota</span>
+            <span class="mp-sub-val">{{ multiPaySubscriptionCuota?.titulo || multiPaySubscriptionCuota?.nombre }}</span>
+          </div>
+          <div class="mp-sub-row" *ngIf="multiPaySubscriptionCuota?.descripcion">
+            <span class="mp-sub-label">Descripción</span>
+            <span class="mp-sub-val">{{ multiPaySubscriptionCuota.descripcion }}</span>
+          </div>
+          <div class="mp-sub-row">
+            <span class="mp-sub-label">Frecuencia</span>
+            <span class="mp-sub-val mp-sub-val--highlight">
+              Cada {{ multiPaySubscriptionCuota?.intervaloCuenta || 1 }}
+              {{ multiPaySubscriptionCuota?.intervalo === 'day'   ? 'día(s)'    :
+                 multiPaySubscriptionCuota?.intervalo === 'week'  ? 'semana(s)' :
+                 multiPaySubscriptionCuota?.intervalo === 'month' ? 'mes(es)'   :
+                 multiPaySubscriptionCuota?.intervalo === 'year'  ? 'año(s)'    : (multiPaySubscriptionCuota?.intervalo || 'período(s)') }}
+            </span>
+          </div>
+          <div class="mp-sub-row" *ngIf="multiPaySubscriptionCuota?.fechaInicio">
+            <span class="mp-sub-label">Inicio → Fin</span>
+            <span class="mp-sub-val">
+              {{ multiPaySubscriptionCuota.fechaInicio }}
+              → {{ multiPaySubscriptionCuota.fechaFin || '∞' }}
+            </span>
+          </div>
+          <div class="mp-sub-row mp-sub-row--total">
+            <span class="mp-sub-label">Primer cobro</span>
+            <strong class="mp-sub-val mp-sub-val--amount">
+              {{ calcGrossAmount(multiPaySubscriptionCuota?.importe, multiPaySubscriptionCuota?.comisionClub ?? 0) }} €
+            </strong>
+          </div>
+        </div>
+        <p class="mp-sub-note">
+          <i class="bi bi-info-circle-fill"></i>
+          El primer cobro se realiza ahora. Los siguientes se cargarán automáticamente según la frecuencia indicada hasta la fecha de fin.
+        </p>
+      </div>
+
+      <!-- ── PAGO PUNTUAL: lista de cuotas seleccionadas ── -->
+      <div class="mp-section" *ngIf="!multiPayIsSubscription">
         <h3 class="mp-section-title">
           <i class="bi bi-list-check"></i> Cuotas a pagar
         </h3>
@@ -831,9 +1092,14 @@
             <input type="checkbox" class="scp-check-input"
                    [(ngModel)]="multiPayAcceptedTerms" [ngModelOptions]="{standalone: true}">
             <span class="scp-check-box"><i class="bi bi-check-lg"></i></span>
-            <span>
+            <span *ngIf="!multiPayIsSubscription">
               He leído y acepto los <button type="button" class="mp-tc-inline-link" (click)="showMultiPayTerminos = !showMultiPayTerminos">Términos y Condiciones</button>.
               Autorizo el cargo de <strong>{{ selectedCuotasGrossTotal }} €</strong> en mi tarjeta.
+              Soy mayor de edad o tutor legal del jugador.
+            </span>
+            <span *ngIf="multiPayIsSubscription">
+              He leído y acepto los <button type="button" class="mp-tc-inline-link" (click)="showMultiPayTerminos = !showMultiPayTerminos">Términos y Condiciones</button>.
+              Autorizo el primer cobro de <strong>{{ calcGrossAmount(multiPaySubscriptionCuota?.importe, multiPaySubscriptionCuota?.comisionClub ?? 0) }} €</strong> y los cobros automáticos recurrentes según la frecuencia indicada.
               Soy mayor de edad o tutor legal del jugador.
             </span>
           </label>
@@ -850,10 +1116,16 @@
       <!-- Acciones -->
       <div class="mp-actions">
         <button class="cq-btn-pay cq-btn-pay--lg"
+                [class.cq-btn-pay--sub]="multiPayIsSubscription"
                 [disabled]="!multiPayAcceptedTerms || (!multiPaySelectedCard && !multiPayUseNewCard) || multiPayLoading"
                 (click)="makeMultiPayment()">
-          <i class="bi bi-lightning-charge-fill"></i>
-          Pagar {{ selectedCuotasGrossTotal }} €
+          <i [class]="multiPayIsSubscription ? 'bi bi-arrow-repeat' : 'bi bi-lightning-charge-fill'"></i>
+          <ng-container *ngIf="!multiPayIsSubscription">
+            Pagar {{ selectedCuotasGrossTotal }} €
+          </ng-container>
+          <ng-container *ngIf="multiPayIsSubscription">
+            Suscribirse · {{ calcGrossAmount(multiPaySubscriptionCuota?.importe, multiPaySubscriptionCuota?.comisionClub ?? 0) }} €
+          </ng-container>
         </button>
         <button class="cq-btn-clear mp-btn-cancel" (click)="closeMultiPayModal()">
           Cancelar
@@ -865,13 +1137,20 @@
     <div class="premium-modal-body mp-processing-body" *ngIf="multiPayStep === 'processing'">
       <div class="mp-processing">
         <div class="mp-spinner-ring"></div>
-        <h3 class="mp-processing-title">
+        <h3 class="mp-processing-title" *ngIf="!multiPayIsSubscription">
           Procesando pago {{ multiPayCurrentIndex + 1 }} de {{ selectedCuotas.length }}
         </h3>
-        <p class="mp-processing-cuota">{{ selectedCuotas[multiPayCurrentIndex]?.nombre }}</p>
+        <h3 class="mp-processing-title" *ngIf="multiPayIsSubscription">
+          Activando suscripción…
+        </h3>
+        <p class="mp-processing-cuota">
+          {{ multiPayIsSubscription
+              ? (multiPaySubscriptionCuota?.titulo || multiPaySubscriptionCuota?.nombre)
+              : selectedCuotas[multiPayCurrentIndex]?.nombre }}
+        </p>
         <p class="mp-processing-hint">
           <i class="bi bi-shield-lock-fill"></i>
-          No cierres esta ventana mientras se procesan los pagos.
+          No cierres esta ventana mientras se procesa el pago.
         </p>
       </div>
     </div>
@@ -909,7 +1188,7 @@
               <span class="mp-result-name">{{ r.cuota.nombre }}</span>
               <span class="mp-result-err" *ngIf="!r.success">{{ r.error }}</span>
             </div>
-            <span class="mp-result-amount">{{ r.cuota.importe }} €</span>
+            <span class="mp-result-amount">{{ calcGrossAmount(r.cuota.importe, r.cuota.comisionClub ?? 0) }} €</span>
           </div>
         </div>
 

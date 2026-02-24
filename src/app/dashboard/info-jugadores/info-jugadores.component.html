@@ -686,8 +686,8 @@
             {{ 'PLAYERS.MODAL_MOVE_PLAYER.SELECT_TEAM' | translate }}
           </label>
 
-          <select class="form-select" [(ngModel)]="teamSelected" name="teamSelected">
-            <option value="0">
+          <select class="form-select" [(ngModel)]="teamDestino" name="teamDestino">
+            <option [value]="0">
               {{ 'PLAYERS.MODAL_MOVE_PLAYER.SELECT_TEAM' | translate }}
             </option>
 

@@ -26,8 +26,8 @@
     </button>
 
     <button class="action-btn" (click)="openModalAutoPayments()">
-      <i class="bi bi-arrow-repeat"></i>
-      <span>Automáticos</span>
+      <i class="bi bi-lightning-charge-fill"></i>
+      <span>Sphaira Pay</span>
     </button>
 
     <button class="action-btn" (click)="openModalBancoClub()">
@@ -116,7 +116,7 @@
                   (click)="togglePagoFilter(pago.pagoClubId)">
             <i class="bi" [ngClass]="pagosSeleccionados.includes(pago.pagoClubId) ? 'bi-check-circle-fill' : 'bi-circle'"></i>
             {{ pago.titulo }}
-            <span class="pago-chip-amount">{{ pago.importe }} €</span>
+            <span class="pago-chip-amount">{{ calcularImporteTotalCuota(pago) | number:'1.2-2' }} €</span>
           </button>
         </div>
 
@@ -719,7 +719,7 @@
           <button class="gp-filter-pill gp-filter-pill--sub"
             [class.gp-filter-pill--active]="filtroTipoCobro === 'suscripcion'"
             (click)="filtroTipoCobro='suscripcion'">
-            <i class="bi bi-arrow-repeat me-1"></i>Suscripción
+            <i class="bi bi-lightning-charge-fill"></i>Sphaira Pay
             <span class="gp-pill-count">{{ contarPorTipo('suscripcion') }}</span>
           </button>
         </div>
@@ -794,7 +794,10 @@
                 <div class="gp-card-meta">
                   <div class="gp-meta-item">
                     <i class="bi bi-cash-coin gp-meta-icon gp-meta-icon--green"></i>
-                    <span class="gp-meta-amount">{{ cuota.importe | number:'1.2-2' }}€</span>
+                    <span class="gp-meta-amount"
+                          [title]="cuota.stripe === 1 ? 'Base: ' + cuota.importe + ' €' : ''">
+                      {{ calcularImporteTotalCuota(cuota) | number:'1.2-2' }}€
+                    </span>
                   </div>
                   <div class="gp-meta-sep"></div>
                   <div class="gp-meta-item">
@@ -804,6 +807,12 @@
                 </div>
 
                 <div class="gp-card-actions">
+                  <button *ngIf="cuota.tipoPagoStripe === 1 && cuota.tipoCobro !== 3 && !cuota.stripePriceId"
+                    class="gp-action-btn gp-action-btn--stripe-sync"
+                    title="Configurar en Stripe (sin precio asociado)"
+                    (click)="regenerarPlanStripe(cuota)">
+                    <i class="bi bi-arrow-repeat"></i>
+                  </button>
                   <button class="gp-action-btn gp-action-btn--edit"
                     title="Editar"
                     (click)="editarCuota(cuota, cuota.stripe)">
@@ -870,8 +879,6 @@
           <div class="nc-step nc-step--done"><span>3</span><small>Equipos</small></div>
           <div class="nc-step-line"></div>
           <div class="nc-step nc-step--done"><span>4</span><small>Pago</small></div>
-          <div class="nc-step-line"></div>
-          <div class="nc-step nc-step--done"><span>5</span><small>Comisiones</small></div>
         </div>
 
         <button class="nc-close" aria-label="Cerrar" (click)="cerrarModalCuota()">
@@ -907,7 +914,7 @@
                 <span class="nc-input-hint">Nombre que verán los padres al recibir el cobro</span>
               </div>
 
-              <div class="nc-field mb-0">
+              <div class="nc-field">
                 <label class="nc-label">Descripción <span class="nc-optional">(opcional)</span></label>
                 <textarea class="form-control nc-input nc-textarea"
                   [(ngModel)]="nuevaCuota.descripcion"
@@ -915,70 +922,163 @@
                   rows="2"
                   placeholder="Añade detalles adicionales sobre esta cuota…"></textarea>
               </div>
+
+              <!-- Tipo de cuota -->
+              <div class="nc-field mb-0">
+                <label class="nc-label">Tipo de cuota</label>
+                <label class="nc-toggle-pill"
+                  [class.nc-toggle-pill--on]="nuevaCuota.obligatorio">
+                  <input type="checkbox"
+                    id="obligatoriaSwitch"
+                    class="d-none"
+                    [(ngModel)]="nuevaCuota.obligatorio"
+                    name="obligatorio">
+                  <div class="nc-toggle-pill-icon"
+                    [class.nc-toggle-pill-icon--on]="nuevaCuota.obligatorio">
+                    <i class="bi" [ngClass]="nuevaCuota.obligatorio ? 'bi-lock-fill' : 'bi-unlock'"></i>
+                  </div>
+                  <div class="nc-toggle-pill-text">
+                    <strong>{{ nuevaCuota.obligatorio ? 'Obligatoria' : 'Opcional' }}</strong>
+                    <span>{{ nuevaCuota.obligatorio ? 'El padre está obligado a pagarla' : 'El padre puede elegir pagarla' }}</span>
+                  </div>
+                </label>
+              </div>
             </div>
           </div>
 
           <!-- ────────────────────────────────────────────────
-               BLOQUE 2 · Importe y plazos
+               BLOQUE 2 · Importe y comisiones
           ──────────────────────────────────────────────────── -->
           <div class="nc-block">
             <div class="nc-block-tag">
               <span class="nc-tag-num">2</span>
-              <span class="nc-tag-label">Importe y plazos</span>
+              <span class="nc-tag-label">Importe y comisiones</span>
+              <span class="nc-tag-live">
+                <span class="nc-live-dot"></span>En tiempo real
+              </span>
             </div>
 
             <div class="nc-block-body">
+              <div class="nc-amount-fee-layout">
 
-              <!-- Importe hero -->
-              <div class="nc-amount-hero">
-                <div class="nc-amount-wrap">
-                  <input type="number"
-                    class="form-control nc-amount-input"
-                    [(ngModel)]="nuevaCuota.importe"
-                    name="importe"
-                    placeholder="0"
-                    min="0"
-                    step="0.01">
-                  <span class="nc-amount-currency">€</span>
-                </div>
-                <span class="nc-amount-hint">Importe base que recibirá el club</span>
-              </div>
-
-              <div class="nc-row-2col">
-                <!-- Fecha límite -->
-                <div class="nc-field mb-0">
-                  <label class="nc-label">
-                    <i class="bi bi-calendar3 me-1 text-danger"></i>
-                    Fecha límite <span class="nc-req">*</span>
-                  </label>
-                  <input type="date"
-                    class="form-control nc-input"
-                    [(ngModel)]="nuevaCuota.fechaLimite"
-                    name="fechaLimite">
-                </div>
-
-                <!-- Obligatoria -->
-                <div class="nc-field mb-0">
-                  <label class="nc-label">Tipo de cuota</label>
-                  <label class="nc-toggle-pill"
-                    [class.nc-toggle-pill--on]="nuevaCuota.obligatorio">
-                    <input type="checkbox"
-                      id="obligatoriaSwitch"
-                      class="d-none"
-                      [(ngModel)]="nuevaCuota.obligatorio"
-                      name="obligatorio">
-                    <div class="nc-toggle-pill-icon"
-                      [class.nc-toggle-pill-icon--on]="nuevaCuota.obligatorio">
-                      <i class="bi" [ngClass]="nuevaCuota.obligatorio ? 'bi-lock-fill' : 'bi-unlock'"></i>
+                <!-- Columna izquierda: importe -->
+                <div class="nc-amount-col">
+                  <div class="nc-amount-hero">
+                    <div class="nc-amount-wrap">
+                      <input type="number"
+                        class="form-control nc-amount-input"
+                        [(ngModel)]="nuevaCuota.importe"
+                        name="importe"
+                        placeholder="0"
+                        min="0"
+                        step="0.01">
+                      <span class="nc-amount-currency">€</span>
                     </div>
-                    <div class="nc-toggle-pill-text">
-                      <strong>{{ nuevaCuota.obligatorio ? 'Obligatoria' : 'Opcional' }}</strong>
-                      <span>{{ nuevaCuota.obligatorio ? 'El padre no puede ignorarla' : 'El padre puede elegir pagarla' }}</span>
+                    <span class="nc-amount-hint">Importe base que recibirá el club</span>
+                  </div>
+
+                  <!-- Tarjetas de comisión fijas -->
+                  <div class="nc-sphaira-card">
+                    <div class="nc-sphaira-icon">
+                      <i class="bi bi-star-fill"></i>
+                    </div>
+                    <div>
+                      <p class="nc-sphaira-name">Comisión Sphaira</p>
+                      <p class="nc-sphaira-amount">{{ (stripeFeePct * 100) | number:'1.0-1' }}%</p>
+                      <p class="nc-sphaira-note">Fija · no modificable</p>
+                    </div>
+                  </div>
+
+                  <div class="nc-sphaira-card nc-sphaira-card--stripe">
+                    <div class="nc-sphaira-icon nc-sphaira-icon--stripe">
+                      <i class="bi bi-credit-card-fill"></i>
+                    </div>
+                    <div>
+                      <p class="nc-sphaira-name">Comisión Stripe</p>
+                      <p class="nc-sphaira-amount">
+                        {{ (stripePct * 100) | number:'1.0-1' }}% + {{ stripeFeeFix | number:'1.2-2' }}€
+                      </p>
+                      <p class="nc-sphaira-note">Procesador · no modificable</p>
+                    </div>
+                  </div>
+
+                  <!-- Toggle comisión del club -->
+                  <label class="nc-fee-toggle"
+                    [class.nc-fee-toggle--on]="aplicarComisionClub">
+                    <input type="checkbox" class="d-none"
+                      id="comisionToggle"
+                      [(ngModel)]="aplicarComisionClub"
+                      name="aplicarComisionClub" />
+                    <div class="nc-fee-toggle-dot"></div>
+                    <div class="nc-fee-toggle-text">
+                      <strong>Comisión del club</strong>
+                      <span *ngIf="!aplicarComisionClub">Sin comisión adicional</span>
+                      <span *ngIf="aplicarComisionClub">{{ clubComisionPct }}% sobre el importe base</span>
                     </div>
                   </label>
-                </div>
-              </div>
 
+                  <div *ngIf="aplicarComisionClub" class="nc-slider-wrap">
+                    <div class="nc-slider-header">
+                      <span class="nc-slider-label">Porcentaje del club</span>
+                      <span class="nc-slider-value">{{ clubComisionPct }}%</span>
+                    </div>
+                    <input type="range"
+                      class="nc-slider"
+                      min="0" max="50" step="0.5"
+                      [(ngModel)]="clubComisionPct"
+                      name="clubComisionPct" />
+                    <div class="nc-slider-marks">
+                      <span>0%</span><span>25%</span><span>50%</span>
+                    </div>
+                  </div>
+                </div><!-- /nc-amount-col -->
+
+                <!-- Columna derecha: desglose en vivo -->
+                <div class="nc-fee-breakdown">
+                  <div class="nc-breakdown-header">
+                    <i class="bi bi-receipt me-1"></i>
+                    <span>Lo que paga el padre</span>
+                  </div>
+
+                  <div class="nc-breakdown-rows">
+                    <div class="nc-breakdown-row">
+                      <span>Cuota base</span>
+                      <span>{{ (nuevaCuota?.importe || 0) | number:'1.2-2' }}€</span>
+                    </div>
+                    <div *ngIf="aplicarComisionClub" class="nc-breakdown-row nc-breakdown-row--add">
+                      <span>
+                        <i class="bi bi-building me-1"></i>
+                        Club ({{ clubComisionPct }}%)
+                      </span>
+                      <span>+{{ calcularComisionClub() | number:'1.2-2' }}€</span>
+                    </div>
+                    <div class="nc-breakdown-row nc-breakdown-row--add">
+                      <span>
+                        <i class="bi bi-star-fill nc-star-icon me-1"></i>
+                        Sphaira ({{ (stripeFeePct * 100) | number:'1.0-1' }}%)
+                      </span>
+                      <span>+{{ calcularComisionSphaira() | number:'1.2-2' }}€</span>
+                    </div>
+                    <div class="nc-breakdown-row nc-breakdown-row--add">
+                      <span>
+                        <i class="bi bi-credit-card-fill me-1"></i>
+                        Stripe ({{ (stripePct * 100) | number:'1.0-1' }}% + {{ stripeFeeFix | number:'1.2-2' }}€)
+                      </span>
+                      <span>+{{ calcularComisionStripe() | number:'1.2-2' }}€</span>
+                    </div>
+                    <div class="nc-breakdown-total">
+                      <span>Total a pagar</span>
+                      <span>{{ calcularTotalPadre() | number:'1.2-2' }}€</span>
+                    </div>
+                  </div>
+
+                  <p class="nc-breakdown-note">
+                    <i class="bi bi-info-circle-fill me-1"></i>
+                    Los padres ven el importe total al realizar el pago.
+                  </p>
+                </div><!-- /nc-fee-breakdown -->
+
+              </div><!-- /nc-amount-fee-layout -->
             </div>
           </div>
 
@@ -1034,279 +1134,104 @@
             <div class="nc-block-tag">
               <span class="nc-tag-num nc-tag-num--stripe">4</span>
               <span class="nc-tag-label">Pago digital</span>
-              <span class="nc-stripe-badge">
-                <i class="bi bi-shield-lock-fill me-1"></i>Stripe
+              <span class="nc-stripe-badge" *ngIf="nuevaCuota.stripe !== 1">
+                <i class="bi bi-receipt me-1"></i>Pago puntual
+              </span>
+              <span class="nc-stripe-badge nc-stripe-badge--sphaira" *ngIf="nuevaCuota.stripe === 1">
+                Sphaira Pay
               </span>
             </div>
 
             <div class="nc-block-body">
 
-              <!-- Toggle Stripe -->
-              <label class="nc-stripe-toggle"
-                [class.nc-stripe-toggle--on]="nuevaCuota.stripe === 1">
-                <div class="nc-stripe-toggle-left">
-                  <div class="nc-stripe-icon"
-                    [class.nc-stripe-icon--on]="nuevaCuota.stripe === 1">
+              <!-- Selector de tipo de pago: dos opciones -->
+              <div class="nc-payment-selector">
+
+                <!-- Opción A: Pago puntual -->
+                <button type="button"
+                  class="nc-payment-option"
+                  [class.nc-payment-option--active]="nuevaCuota.stripe !== 1"
+                  (click)="seleccionarTipoPago(0)">
+                  <div class="nc-payment-option-icon">
+                    <i class="bi bi-receipt"></i>
+                  </div>
+                  <div class="nc-payment-option-body">
+                    <span class="nc-payment-option-title">Pago puntual</span>
+                    <span class="nc-payment-option-sub">Cobro único, sin recurrencia</span>
+                  </div>
+                  <i class="bi bi-check-circle-fill nc-payment-option-check"
+                    *ngIf="nuevaCuota.stripe !== 1"></i>
+                </button>
+
+                <!-- Opción B: Sphaira Pay -->
+                <button type="button"
+                  class="nc-payment-option nc-payment-option--sphaira"
+                  [class.nc-payment-option--active]="nuevaCuota.stripe === 1"
+                  (click)="seleccionarTipoPago(1)">
+                  <div class="nc-payment-option-icon nc-payment-option-icon--sphaira">
+                    <i class="bi bi-lightning-charge-fill"></i>
+                  </div>
+                  <div class="nc-payment-option-body">
+                    <span class="nc-payment-option-title">Sphaira Pay</span>
+                    <span class="nc-payment-option-sub">Cobro automático con tarjeta</span>
+                  </div>
+                  <i class="bi bi-check-circle-fill nc-payment-option-check"
+                    *ngIf="nuevaCuota.stripe === 1"></i>
+                </button>
+
+              </div>
+
+              <!-- Fecha límite · solo cuando Pago puntual, debajo de los cards -->
+              <div class="nc-fecha-limite-field" *ngIf="nuevaCuota.stripe !== 1">
+                <div class="nc-field mb-0">
+                  <label class="nc-label">
+                    <i class="bi bi-calendar-event me-1 text-danger"></i>
+                    Fecha límite <span class="nc-req">*</span>
+                  </label>
+                  <input type="date"
+                    class="form-control nc-input"
+                    [(ngModel)]="nuevaCuota.fechaLimite"
+                    name="fechaLimite">
+                  <span class="nc-input-hint">Fecha límite para que los padres realicen el pago</span>
+                </div>
+              </div>
+
+              <!-- Panel de config Sphaira Pay — cobro único en fecha -->
+              <div *ngIf="showStripeConfig" class="nc-stripe-panel">
+
+                <!-- Header -->
+                <div class="nc-billing-header">
+                  <div class="nc-billing-header-icon">
                     <i class="bi bi-lightning-charge-fill"></i>
                   </div>
                   <div>
-                    <div class="nc-stripe-toggle-title">Cobro online con Stripe</div>
-                    <div class="nc-stripe-toggle-sub">
-                      Los padres pagan con tarjeta directamente desde la app
-                    </div>
+                    <p class="nc-billing-header-title">Cobro automático</p>
+                    <p class="nc-billing-header-sub">El sistema cargará la tarjeta del padre/tutor en la fecha seleccionada</p>
                   </div>
                 </div>
-                <div class="form-check form-switch mb-0">
-                  <input class="form-check-input nc-stripe-switch"
-                    type="checkbox"
-                    id="stripeToggle"
-                    [checked]="nuevaCuota.stripe === 1"
-                    (change)="onToggleStripe($event)" />
+
+                <!-- Fecha de cobro única -->
+                <div class="nc-billing-fecha-cobro">
+                  <label class="nc-label">
+                    <i class="bi bi-calendar-event me-1"></i>Fecha de cobro
+                  </label>
+                  <input type="date"
+                    class="form-control nc-input"
+                    [(ngModel)]="nuevaCuota.fechaInicio"
+                    name="fechaInicio" />
+                  <span class="nc-input-hint">Fecha en la que se cargará automáticamente la cuota</span>
                 </div>
-              </label>
 
-              <!-- Panel de config Stripe -->
-              <div *ngIf="showStripeConfig" class="nc-stripe-panel">
-
-                <p class="nc-stripe-panel-title">
-                  <i class="bi bi-sliders2 me-1"></i>Tipo de cobro
-                </p>
-
-                <div class="nc-type-grid">
-
-                  <!-- Pago puntual -->
-                  <label class="nc-type-card"
-                    [class.nc-type-card--on]="nuevaCuota.tipoPagoStripe === 0">
-                    <input type="radio" class="d-none"
-                      [checked]="nuevaCuota.tipoPagoStripe === 0"
-                      (change)="onTipoPagoChange(0)" />
-                    <div class="nc-type-icon nc-type-icon--once">
-                      <i class="bi bi-send-fill"></i>
-                    </div>
-                    <div class="nc-type-body">
-                      <strong>Pago puntual</strong>
-                      <span>El padre paga una sola vez</span>
-                    </div>
-                    <div class="nc-type-check" *ngIf="nuevaCuota.tipoPagoStripe === 0">
-                      <i class="bi bi-check-circle-fill"></i>
-                    </div>
-                  </label>
-
-                  <!-- Suscripción -->
-                  <label class="nc-type-card"
-                    [class.nc-type-card--on]="nuevaCuota.tipoPagoStripe === 1">
-                    <input type="radio" class="d-none"
-                      [checked]="nuevaCuota.tipoPagoStripe === 1"
-                      (change)="onTipoPagoChange(1)" />
-                    <div class="nc-type-icon nc-type-icon--sub">
-                      <i class="bi bi-arrow-repeat"></i>
-                    </div>
-                    <div class="nc-type-body">
-                      <strong>Suscripción</strong>
-                      <span>Cobro automático periódico</span>
-                    </div>
-                    <div class="nc-type-check" *ngIf="nuevaCuota.tipoPagoStripe === 1">
-                      <i class="bi bi-check-circle-fill"></i>
-                    </div>
-                  </label>
-
-                </div><!-- /nc-type-grid -->
-
-                <!-- Configuración de suscripción -->
-                <div *ngIf="isSubscription" class="nc-sub-box">
-
-                  <div class="nc-sub-grid">
-
-                    <!-- Periodicidad -->
-                    <div class="nc-field mb-0">
-                      <label class="nc-label">
-                        <i class="bi bi-arrow-repeat me-1 text-success"></i>
-                        Repetir cada
-                      </label>
-                      <div class="nc-sub-period">
-                        <input type="number"
-                          class="form-control nc-input nc-period-num"
-                          [(ngModel)]="nuevaCuota.intervaloCuenta"
-                          name="intervaloCuenta"
-                          min="1"
-                          placeholder="1" />
-                        <select class="form-select nc-input"
-                          [(ngModel)]="nuevaCuota.intervalo"
-                          name="intervalo">
-                          <option *ngFor="let p of periodos" [ngValue]="p.value">
-                            {{ p.label }}
-                          </option>
-                        </select>
-                      </div>
-                    </div>
-
-                    <!-- Vigencia -->
-                    <div class="nc-field mb-0">
-                      <label class="nc-label">
-                        <i class="bi bi-calendar-range me-1 text-danger"></i>
-                        Vigencia
-                      </label>
-                      <div class="nc-date-range">
-                        <div class="nc-date-item">
-                          <small>Inicio</small>
-                          <input type="date"
-                            class="form-control nc-input"
-                            [(ngModel)]="nuevaCuota.fechaInicio"
-                            name="fechaInicio" />
-                        </div>
-                        <i class="bi bi-arrow-right nc-date-sep"></i>
-                        <div class="nc-date-item">
-                          <small>Fin</small>
-                          <input type="date"
-                            class="form-control nc-input"
-                            [(ngModel)]="nuevaCuota.fechaFin"
-                            name="fechaFin" />
-                        </div>
-                      </div>
-                    </div>
-
-                  </div>
-
-                  <div class="nc-sub-note">
-                    <i class="bi bi-info-circle-fill"></i>
-                    <span>El padre paga el primer mes manualmente; los siguientes se cobran
-                      automáticamente hasta la fecha de fin.</span>
-                  </div>
-
-                </div><!-- /nc-sub-box -->
+                <div class="nc-sub-note">
+                  <i class="bi bi-info-circle-fill"></i>
+                  <span>Solo se cobra a jugadores cuyo responsable haya vinculado una tarjeta.</span>
+                </div>
 
               </div><!-- /nc-stripe-panel -->
 
             </div>
           </div><!-- /bloque 4 -->
 
-          <!-- ────────────────────────────────────────────────
-               BLOQUE 5 · Comisiones
-          ──────────────────────────────────────────────────── -->
-          <div class="nc-block">
-            <div class="nc-block-tag">
-              <span class="nc-tag-num">5</span>
-              <span class="nc-tag-label">Comisiones</span>
-              <span class="nc-tag-live">
-                <span class="nc-live-dot"></span>En tiempo real
-              </span>
-            </div>
-
-            <div class="nc-block-body">
-              <div class="nc-fee-layout">
-
-                <!-- Columna izquierda: configuración -->
-                <div class="nc-fee-config">
-
-                  <!-- Sphaira fija -->
-                  <div class="nc-sphaira-card">
-                    <div class="nc-sphaira-icon">
-                      <i class="bi bi-star-fill"></i>
-                    </div>
-                    <div>
-                      <p class="nc-sphaira-name">Comisión Sphaira Tech</p>
-                      <p class="nc-sphaira-amount">
-                        {{ (stripeFeePct * 100) | number:'1.0-1' }}%
-                      </p>
-                      <p class="nc-sphaira-note">Fija · no modificable</p>
-                    </div>
-                  </div>
-
-                  <!-- Stripe fija -->
-                  <div class="nc-sphaira-card nc-sphaira-card--stripe">
-                    <div class="nc-sphaira-icon nc-sphaira-icon--stripe">
-                      <i class="bi bi-credit-card-fill"></i>
-                    </div>
-                    <div>
-                      <p class="nc-sphaira-name">Comisión Stripe</p>
-                      <p class="nc-sphaira-amount">
-                        {{ (stripePct * 100) | number:'1.0-1' }}% + {{ stripeFeeFix | number:'1.2-2' }}€
-                      </p>
-                      <p class="nc-sphaira-note">Procesador de pagos · no modificable</p>
-                    </div>
-                  </div>
-
-                  <!-- Toggle club -->
-                  <label class="nc-fee-toggle"
-                    [class.nc-fee-toggle--on]="aplicarComisionClub">
-                    <input type="checkbox" class="d-none"
-                      id="comisionToggle"
-                      [(ngModel)]="aplicarComisionClub"
-                      name="aplicarComisionClub" />
-                    <div class="nc-fee-toggle-dot"></div>
-                    <div class="nc-fee-toggle-text">
-                      <strong>Comisión del club</strong>
-                      <span *ngIf="!aplicarComisionClub">Sin comisión adicional</span>
-                      <span *ngIf="aplicarComisionClub">{{ clubComisionPct }}% sobre el importe base</span>
-                    </div>
-                  </label>
-
-                  <!-- Slider -->
-                  <div *ngIf="aplicarComisionClub" class="nc-slider-wrap">
-                    <div class="nc-slider-header">
-                      <span class="nc-slider-label">Porcentaje del club</span>
-                      <span class="nc-slider-value">{{ clubComisionPct }}%</span>
-                    </div>
-                    <input type="range"
-                      class="nc-slider"
-                      min="0" max="50" step="0.5"
-                      [(ngModel)]="clubComisionPct"
-                      name="clubComisionPct" />
-                    <div class="nc-slider-marks">
-                      <span>0%</span><span>25%</span><span>50%</span>
-                    </div>
-                  </div>
-
-                </div><!-- /nc-fee-config -->
-
-                <!-- Columna derecha: desglose en vivo -->
-                <div class="nc-fee-breakdown">
-                  <div class="nc-breakdown-header">
-                    <i class="bi bi-receipt me-1"></i>
-                    <span>Lo que paga el padre</span>
-                  </div>
-
-                  <div class="nc-breakdown-rows">
-                    <div class="nc-breakdown-row">
-                      <span>Cuota base</span>
-                      <span>{{ (nuevaCuota?.importe || 0) | number:'1.2-2' }}€</span>
-                    </div>
-                    <div *ngIf="aplicarComisionClub" class="nc-breakdown-row nc-breakdown-row--add">
-                      <span>
-                        <i class="bi bi-building me-1"></i>
-                        Club ({{ clubComisionPct }}%)
-                      </span>
-                      <span>+{{ calcularComisionClub() | number:'1.2-2' }}€</span>
-                    </div>
-                    <div class="nc-breakdown-row nc-breakdown-row--add">
-                      <span>
-                        <i class="bi bi-star-fill nc-star-icon me-1"></i>
-                        Sphaira ({{ (stripeFeePct * 100) | number:'1.0-1' }}%)
-                      </span>
-                      <span>+{{ calcularComisionSphaira() | number:'1.2-2' }}€</span>
-                    </div>
-                    <div class="nc-breakdown-row nc-breakdown-row--add">
-                      <span>
-                        <i class="bi bi-credit-card-fill me-1"></i>
-                        Stripe ({{ (stripePct * 100) | number:'1.0-1' }}% + {{ stripeFeeFix | number:'1.2-2' }}€)
-                      </span>
-                      <span>+{{ calcularComisionStripe() | number:'1.2-2' }}€</span>
-                    </div>
-                    <div class="nc-breakdown-total">
-                      <span>Total a pagar</span>
-                      <span>{{ calcularTotalPadre() | number:'1.2-2' }}€</span>
-                    </div>
-                  </div>
-
-                  <p class="nc-breakdown-note">
-                    <i class="bi bi-info-circle-fill me-1"></i>
-                    Los padres ven el importe total al realizar el pago.
-                  </p>
-                </div><!-- /nc-fee-breakdown -->
-
-              </div><!-- /nc-fee-layout -->
-            </div>
-          </div><!-- /bloque 5 -->
 
         </form>
       </div>
@@ -1617,8 +1542,9 @@
                 <span class="meta-label">
                   {{ 'CUOTAS.CUOTAS_ASSIGNED.AMOUNT' | translate }}
                 </span>
-                <span class="meta-value">
-                  {{ cuota.importe }} €
+                <span class="meta-value"
+                      [title]="cuota.stripe === 1 ? 'Base: ' + cuota.importe + ' €' : ''">
+                  {{ calcularImporteTotalCuota(cuota) | number:'1.2-2' }} €
                 </span>
               </div>
 
@@ -1711,7 +1637,10 @@
             <div class="payment-meta">
               <div class="meta-item">
                 <span class="meta-label">Importe</span>
-                <span class="meta-value">{{ cuota.importe }} €</span>
+                <span class="meta-value"
+                      [title]="cuota.stripe === 1 ? 'Base: ' + cuota.importe + ' €' : ''">
+                  {{ calcularImporteTotalCuota(cuota) | number:'1.2-2' }} €
+                </span>
               </div>
 
               <div class="meta-item">
@@ -1985,8 +1914,8 @@
           <i class="bi bi-arrow-repeat"></i>
         </div>
         <div class="apm-header-text">
-          <h5 class="apm-header-title">Pagos Automáticos</h5>
-          <span class="apm-header-sub">Suscripciones recurrentes agrupadas por cuota</span>
+          <h5 class="apm-header-title">Cobros Sphaira Pay</h5>
+          <span class="apm-header-sub">Cobros programados por tarjeta guardada agrupados por cuota</span>
         </div>
         <button class="apm-close" aria-label="Cerrar" (click)="closeAutoPaymentsModal()">
           <i class="bi bi-x-lg"></i>
@@ -1997,6 +1926,7 @@
       <div class="apm-body">
         <app-automatic-payments
           [clubId]="clubId"
+          [temporada]="temporadaStoredValue"
           [visible]="showModalAutoPayments">
         </app-automatic-payments>
       </div>

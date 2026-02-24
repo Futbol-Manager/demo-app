@@ -286,7 +286,8 @@ export class NewCuotasComponent implements OnInit {
 
   calcularComisionSphaira(): number {
     const base = Number(this.nuevaCuota?.importe) || 0;
-    return +(base * this.stripeFeePct).toFixed(2);
+    // Math.ceil para que fees pequeños (ej: 0.003€) muestren 0.01€ en vez de 0.00€
+    return Math.ceil(base * this.stripeFeePct * 100) / 100;
   }
 
   calcularComisionClub(): number {
@@ -295,20 +296,38 @@ export class NewCuotasComponent implements OnInit {
   }
 
   calcularTotalPadre(): number {
-    const base      = Number(this.nuevaCuota?.importe) || 0;
+    const base    = Number(this.nuevaCuota?.importe) || 0;
     if (base === 0) return 0;
-    const clubFee   = this.aplicarComisionClub ? base * (this.clubComisionPct / 100) : 0;
-    const net       = base + clubFee;
-    const netCents  = Math.round(net * 100);
-    const appFeeC   = Math.round(netCents * this.stripeFeePct) + Math.round(this.stripeFeeFix * 100);
-    const denom     = 1 - this.stripePct;
-    return Math.ceil((netCents + appFeeC) / denom) / 100;
+    const clubFee = this.aplicarComisionClub ? base * (this.clubComisionPct / 100) : 0;
+    const net     = base + clubFee;
+    // Usar precisión decimal completa — no redondear appFee antes del gross-up
+    // Fórmula: gross = (net + appFee% + fixedFee) / (1 - stripePct)
+    const appFee  = net * this.stripeFeePct;
+    const gross   = (net + appFee + this.stripeFeeFix) / (1 - this.stripePct);
+    return Math.ceil(gross * 100) / 100;
   }
 
   calcularComisionStripe(): number {
     return +(this.calcularTotalPadre() - (Number(this.nuevaCuota?.importe) || 0)
       - this.calcularComisionSphaira()
       - (this.aplicarComisionClub ? this.calcularComisionClub() : 0)).toFixed(2);
+  }
+
+  /**
+   * Calcula el importe total (lo que paga el padre) para cualquier cuota,
+   * aplicando las comisiones del club + fees de Stripe/Sphaira.
+   * Solo aplica para cuotas Stripe (stripe === 1). Las manuales devuelven base.
+   */
+  calcularImporteTotalCuota(cuota: any): number {
+    const base = parseFloat(cuota?.importe) || 0;
+    if (base === 0) return 0;
+    if (!cuota?.stripe || cuota.stripe !== 1) return base;
+    const comisionClubPct = cuota?.comisionClub > 0 ? +cuota.comisionClub : 0;
+    const clubFee = base * (comisionClubPct / 100);
+    const net     = base + clubFee;
+    const appFee  = net * this.stripeFeePct;
+    const gross   = (net + appFee + this.stripeFeeFix) / (1 - this.stripePct);
+    return Math.ceil(gross * 100) / 100;
   }
 
   // ── Toggle de selección de un pago en el filtro ──────────────────────────
@@ -416,8 +435,10 @@ export class NewCuotasComponent implements OnInit {
 
         if (cuotasFiltradas.length === 0) return null; // Este jugador no tiene estos pagos
 
-        // Recalcular totales basados en las cuotas filtradas
-        const totalAPagar = cuotasFiltradas.reduce((sum: number, c: any) => sum + (parseFloat(c.importe) || 0), 0);
+        // Recalcular totales basados en las cuotas filtradas (importe total = base + comisiones)
+        const totalAPagar = cuotasFiltradas.reduce(
+          (sum: number, c: any) => sum + this.calcularImporteTotalCuota(c), 0
+        );
 
         // Para saber cuánto ha pagado de estos pagos concretos, usamos los datos del historial
         // si están disponibles. Si no, usamos la proporción del total.
@@ -817,14 +838,14 @@ export class NewCuotasComponent implements OnInit {
   }
 
   /**
-   * Determina si una cuota es de tipo suscripción recurrente.
-   * Soporta tanto el DTO (tipoPagoStripe) como la entidad directa (tipoCobro).
+   * Determina si una cuota es de tipo Sphaira Pay (cobro automático).
+   * tipoCobro=3 = Sphaira Pay nuevo modelo (fecha única)
+   * tipoCobro=2 = stripe_suscripcion (modelo antiguo)
+   * stripe=1 = Sphaira Pay activado (fallback cuando tipoCobro no viene)
    */
   private esSuscripcion(cuota: any): boolean {
-    // tipoCobro === 2 → stripe_suscripcion  (si la entidad se devuelve directamente)
-    if (cuota.tipoCobro != null) return cuota.tipoCobro === 2;
-    // tipoPagoStripe === 1 → recurrente  (campo del PagoClubDTO)
-    return cuota.tipoPagoStripe === 1;
+    if (cuota.tipoCobro != null) return cuota.tipoCobro === 3 || cuota.tipoCobro === 2;
+    return cuota.stripe === 1 || cuota.tipoPagoStripe === 1;
   }
 
   contarPorTipo(tipo: 'puntual' | 'suscripcion'): number {
@@ -838,7 +859,7 @@ export class NewCuotasComponent implements OnInit {
   }
 
   importeTotalCuotas(): number {
-    return this.cuotasFiltradas().reduce((sum, c) => sum + (parseFloat(c.importe) || 0), 0);
+    return this.cuotasFiltradas().reduce((sum, c) => sum + this.calcularImporteTotalCuota(c), 0);
   }
 
   cerrarModalCuotas() {
@@ -859,11 +880,11 @@ export class NewCuotasComponent implements OnInit {
     if (stripe == 0) {
       this.cerrarDatosStripe();
     } else {
+      // Sphaira Pay siempre = suscripción automática
       this.showStripeConfig = true;
-      if (cuota.tipoPagoStripe == 1) {
-        this.isSubscription = true;
-        this.soloLectura = true;
-      } else this.isSubscription = false;
+      this.isSubscription = true;
+      this.nuevaCuota.tipoPagoStripe = 1;
+      if (cuota.stripePriceId) this.soloLectura = true;
     }
     this.showModalCuota = true;
   }
@@ -926,8 +947,7 @@ export class NewCuotasComponent implements OnInit {
       fechaLimite: null,
       stripe: 0,
       tipoPagoStripe: 0,
-      intervalo: 'month',
-      intervaloCuenta: 1,
+      tipoCobro: 0,
       fechaInicio: null,
       fechaFin: null,
     };
@@ -951,6 +971,10 @@ export class NewCuotasComponent implements OnInit {
        this.toastr.error('Por favor, selecciona mínimo un equipo.');
       return;
     } else {
+      const fechaLimiteOk =
+        this.nuevaCuota.stripe === 1 ||
+        (this.nuevaCuota.fechaLimite != null && this.nuevaCuota.fechaLimite !== '');
+
       if (
         this.nuevaCuota.titulo &&
         this.nuevaCuota.titulo != '' &&
@@ -958,29 +982,16 @@ export class NewCuotasComponent implements OnInit {
         this.nuevaCuota.descripcion != '' &&
         this.nuevaCuota.importe &&
         this.nuevaCuota.importe != '' &&
-        this.nuevaCuota.fechaLimite &&
-        this.nuevaCuota.fechaLimite != ''
+        fechaLimiteOk
       ) {
         this.nuevaCuota.importe = String(this.nuevaCuota.importe);
         this.nuevaCuota.obligatorio = this.nuevaCuota.obligatorio ? 1 : 0;
         this.nuevaCuota.listTeams = this.listTeamsSelecteds;
         this.nuevaCuota.comisionClub = this.aplicarComisionClub ? this.clubComisionPct : 0;
 
-        if (
-          this.nuevaCuota.stripe == 1 &&
-          this.nuevaCuota.tipoPagoStripe == 1
-        ) {
-          if (
-            this.nuevaCuota.fechaInicio == null ||
-            this.nuevaCuota.fechaInicio == undefined ||
-            this.nuevaCuota.fechaInicio == '' ||
-            this.nuevaCuota.fechaFin == null ||
-            this.nuevaCuota.fechaFin == undefined ||
-            this.nuevaCuota.fechaFin == ''
-          ) {
-             this.toastr.error(
-              'Por favor, Para una suscripción con Stripe, es obligatorio poner las fechas de inicio y de fin.'
-            );
+        if (this.nuevaCuota.stripe == 1 && this.nuevaCuota.tipoCobro == 3) {
+          if (!this.nuevaCuota.fechaInicio) {
+            this.toastr.error('Selecciona una fecha de cobro para Sphaira Pay.');
             return;
           }
         }
@@ -1027,7 +1038,6 @@ export class NewCuotasComponent implements OnInit {
     const baseImporte     = Number(this.nuevaCuota.importe) || 0;
     const comisionClubPct = this.aplicarComisionClub ? this.clubComisionPct : 0;
     const clubFeeImporte  = +(baseImporte * (comisionClubPct / 100)).toFixed(2);
-    // El importe enviado a create-plan es lo que recibirá el club (base + comisión del club)
     const importeParaPlan = +(baseImporte + clubFeeImporte).toFixed(2);
 
     const body = {
@@ -1044,18 +1054,53 @@ export class NewCuotasComponent implements OnInit {
       fechaFin: this.nuevaCuota.fechaFin || null,
     };
 
+    this.enviarPlanStripe(body);
+  }
+
+  /** Dispara createSubscriptionPlan directamente desde la tarjeta (cuotas sin stripePriceId). */
+  regenerarPlanStripe(cuota: any): void {
+    if (!cuota?.tipoPagoStripe || cuota.tipoPagoStripe !== 1) return;
+
+    const pagoClubId = cuota.PagoClubId ?? cuota.pagoClubId;
+    const baseImporte = Number(cuota.importe) || 0;
+    const comisionClubPct = Number(cuota.comisionClub) || 0;
+    const clubFeeImporte  = +(baseImporte * (comisionClubPct / 100)).toFixed(2);
+    const importeParaPlan = +(baseImporte + clubFeeImporte).toFixed(2);
+
+    const body = {
+      pagoClubId,
+      clubId: this.clubId,
+      accountId: this.accountIdDelClub,
+      titulo: cuota.titulo,
+      descripcion: cuota.descripcion,
+      importe: importeParaPlan,
+      currency: 'eur',
+      intervalo: cuota.intervalo,
+      intervaloCuenta: cuota.intervaloCuenta,
+      fechaInicio: cuota.fechaInicio || null,
+      fechaFin:    cuota.fechaFin    || null,
+    };
+
+    this.enviarPlanStripe(body, cuota);
+  }
+
+  private enviarPlanStripe(body: any, cuotaRef?: any): void {
     this.teamService.createSubscriptionPlan(body).subscribe({
       next: (resp) => {
-        if (resp.status === 200) {
-          // puedes guardar stripePriceId/productId en tu modelo si te los devuelve también el clubService
-          console.log('Plan creado:', resp.data);
+        if (resp?.status === 200 || resp?.data) {
+          this.toastr.success('Plan de suscripción configurado en Stripe correctamente.');
+          if (cuotaRef && resp.data?.stripePriceId) {
+            cuotaRef.stripePriceId  = resp.data.stripePriceId;
+            cuotaRef.stripeProductId = resp.data.stripeProductId;
+          }
         } else {
           this.toastr.error('Error creando plan de suscripción.');
         }
       },
       error: (err) => {
-        console.error(err);
-        this.toastr.error('Error creando plan de suscripción.');
+        console.error('createSubscriptionPlan error:', err);
+        const msg = err?.error?.error?.msg || err?.message || 'Error creando plan de suscripción.';
+        this.toastr.error(msg);
       },
     });
   }
@@ -1466,18 +1511,60 @@ export class NewCuotasComponent implements OnInit {
     ) {
       this.nuevaCuota.tipoPagoStripe = 0; // puntual por defecto
     }
-    if (!this.nuevaCuota.intervalo) {
-      this.nuevaCuota.intervalo = 'month';
-    }
-    if (
-      !this.nuevaCuota.intervaloCuenta ||
-      this.nuevaCuota.intervaloCuenta < 1
-    ) {
-      this.nuevaCuota.intervaloCuenta = 1;
-    }
   }
   trackByPlayerId(index: number, player: any) {
     return player.playerId;
+  }
+
+  seleccionarTipoPago(tipo: number): void {
+    if (tipo === 0) {
+      this.nuevaCuota.stripe = 0;
+      this.nuevaCuota.tipoCobro = 0;
+      this.nuevaCuota.tipoPagoStripe = 0;
+      this.showStripeConfig = false;
+      this.isSubscription = false;
+      this.nuevaCuota.fechaInicio = null;
+      this.nuevaCuota.fechaFin = null;
+      return;
+    }
+
+    // tipo === 1: Sphaira Pay — verificar cuenta Stripe
+    this.clubService
+      .getBancoClub(this.clubId, this.temporadaStoredValue)
+      .subscribe(
+        (response: Response) => {
+          if (response.data !== null) {
+            this.infoClub = response.data;
+            if (this.infoClub.banco == null && this.infoClub.banco == undefined) {
+              this.toastr.error(
+                'Por favor, completa esta información para poder acceder a Stripe.'
+              );
+              this.cerrarDatosStripe();
+              this.showModalBanco = true;
+              return;
+            }
+            if (
+              this.infoClub.stripeId !== null &&
+              this.infoClub.stripeId !== undefined &&
+              this.infoClub.stripeId !== ''
+            ) {
+              this.accountIdDelClub = this.infoClub.stripeId;
+              this.nuevaCuota.stripe = 1;
+              this.nuevaCuota.fechaLimite = null;
+              this.mostrarDatosStripe();
+            } else {
+              this.cerrarDatosStripe();
+              this.toastr.error('Por favor, crea primero la cuenta en Stripe.');
+              this.showModalStripe = true;
+            }
+          } else {
+            this.cerrarDatosStripe();
+          }
+        },
+        (error) => {
+          console.error('Error al verificar cuenta Stripe', error);
+        }
+      );
   }
 
   // Toggle principal: 0/1 en el modelo
@@ -1536,16 +1623,18 @@ export class NewCuotasComponent implements OnInit {
   // Pediste que al cambiar llame a este método
   mostrarDatosStripe() {
     this.showStripeConfig = this.nuevaCuota.stripe === 1;
-    this.isSubscription =
-      this.showStripeConfig && this.nuevaCuota.tipoPagoStripe === 1;
 
-    // Si desactivas Stripe, limpia campos de suscripción
-    if (!this.showStripeConfig) {
+    if (this.showStripeConfig) {
+      // Sphaira Pay = cobro único en fecha con tarjeta guardada
+      this.nuevaCuota.tipoCobro = 3;
       this.nuevaCuota.tipoPagoStripe = 0;
-      this.nuevaCuota.intervalo = 'month';
-      this.nuevaCuota.intervaloCuenta = 1;
+      this.isSubscription = false;
+    } else {
+      // Sin Stripe = pago puntual manual
+      this.nuevaCuota.tipoCobro = 0;
+      this.nuevaCuota.tipoPagoStripe = 0;
+      this.isSubscription = false;
       this.nuevaCuota.fechaInicio = null;
-      this.nuevaCuota.fechaFin = null;
     }
   }
 
@@ -1556,47 +1645,34 @@ export class NewCuotasComponent implements OnInit {
     this.showStripeConfig = false;
     this.isSubscription = false;
     this.nuevaCuota.stripe = 0;
-
-    // Si desactivas Stripe, limpia campos de suscripción
+    this.nuevaCuota.tipoCobro = 0;
     this.nuevaCuota.tipoPagoStripe = 0;
-    this.nuevaCuota.intervalo = 'month';
-    this.nuevaCuota.intervaloCuenta = 1;
     this.nuevaCuota.fechaInicio = null;
     this.nuevaCuota.fechaFin = null;
   }
 
-  // Cambiar tipo puntual/suscripción
+  // Cambiar tipo puntual/suscripción (llamado internamente)
   onTipoPagoChange(tipo: 0 | 1) {
     this.nuevaCuota.tipoPagoStripe = tipo;
     this.isSubscription = tipo === 1;
 
     if (tipo === 0) {
-      // Si vuelven a puntual, oculta y limpia fechas/periodicidad
-      this.nuevaCuota.intervalo = 'month';
-      this.nuevaCuota.intervaloCuenta = 1;
+      this.nuevaCuota.tipoCobro = 0;
       this.nuevaCuota.fechaInicio = null;
       this.nuevaCuota.fechaFin = null;
     }
   }
 
-  // (Opcional) al guardar, puedes validar si falta algo cuando es suscripción
+  // Toggle del switch "Cobro recurrente" en el panel Sphaira Pay
+  onToggleRecurrente(ev: Event) {
+    const checked = (ev.target as HTMLInputElement).checked;
+    this.onTipoPagoChange(checked ? 1 : 0);
+  }
+
   validarStripe(): string | null {
     if (this.nuevaCuota.stripe !== 1) return null;
-    if (this.nuevaCuota.tipoPagoStripe === 1) {
-      if (!this.nuevaCuota.intervalo || !this.nuevaCuota.intervaloCuenta) {
-        return 'Selecciona el periodo y la cantidad de periodos para la suscripción.';
-      }
-      if (this.nuevaCuota.intervaloCuenta < 1) {
-        return 'La “cantidad de periodos” debe ser al menos 1.';
-      }
-      // Fechas son opcionales; si las usas, asegúrate de que inicio <= fin
-      if (
-        this.nuevaCuota.fechaInicio &&
-        this.nuevaCuota.fechaFin &&
-        this.nuevaCuota.fechaInicio > this.nuevaCuota.fechaFin
-      ) {
-        return 'La fecha de inicio no puede ser posterior a la fecha de fin.';
-      }
+    if (this.nuevaCuota.tipoCobro === 3 && !this.nuevaCuota.fechaInicio) {
+      return 'Selecciona una fecha de cobro para Sphaira Pay.';
     }
     return null;
   }
