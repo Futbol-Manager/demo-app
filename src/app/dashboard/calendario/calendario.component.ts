@@ -43,6 +43,11 @@ import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
 import { Location } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
+import { TranslateService } from '@ngx-translate/core';
+import { FormTemplateSelectorResult } from 'src/app/dashboard/shared/form-template-selector/form-template-selector.component';
+import { FormTemplate } from 'src/app/core/services/form-template/form-template.model';
+import { FormTemplateService } from 'src/app/core/services/form-template/form-template.service';
+import { finalize } from 'rxjs/operators';
 
 declare var html2pdf: any;
 
@@ -76,7 +81,22 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   datosCargados: boolean = false;
   teamId!: number; // Ajusta el valor según el teamId del equipo actual
+  clubId: number = 0;
   calendario: any[][] = [];
+
+  // ── Selector de formularios pre/post para coaches ─────────────────────────
+  showFormTemplateSelector = false;
+  formSelectorTipo: 'pre-match' | 'post-match' | 'pre-training' | 'post-training' = 'post-match';
+  formSelectorEntityId: number = 0;
+
+  // ── Modal de formulario del player ─────────────────────────────────────────
+  showPlayerFormModal = false;
+  playerFormTemplate: FormTemplate | null = null;
+  playerFormTipo: 'pre-match' | 'post-match' | 'pre-training' | 'post-training' = 'pre-training';
+  playerFormEntityId: number = 0;
+  playerFormLoading = false;
+  playerFormAnswers: { [campoId: string]: string } = {};
+  playerFormSaving = false;
   mesActual: Date = new Date();
   /** Vista actual: año (grid 12 meses), mes (tabla), semana (7 días) */
   vistaCalendario: 'year' | 'month' | 'week' = 'month';
@@ -872,6 +892,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     private location: Location,
     private toastr: ToastrService,
     private ngZone: NgZone,
+    private formTemplateService: FormTemplateService,
+    private translate: TranslateService,
   ) { }
 
   ngOnInit(): void {
@@ -907,6 +929,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
               (response.data.levelLeague || '');
             this.categoryTeam = response.data.categoryTypeId;
             this.imgClub = response.data.imgClub;
+            this.clubId = response.data.clubId || 0;
             this.match2.imgClub =
               this.imageBaseUrl + 'user/' + response.data.imgClub;
             if (this.categoryTeam === 14) this.irAPantalla(2);
@@ -1039,8 +1062,117 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     }
   }
 
-  navigateToDebrief(type: 'training' | 'match', entityId: number): void {
-    this.router.navigate(['/dashboard/debrief', type, this.teamId, entityId]);
+  /** Abre el selector de formularios para asignarlo a players en un entrenamiento/partido */
+  openFormSelector(tipo: 'pre-match' | 'post-match' | 'pre-training' | 'post-training', entityId: number): void {
+    this.formSelectorTipo = tipo;
+    this.formSelectorEntityId = entityId;
+    this.showFormTemplateSelector = true;
+  }
+
+  onFormTemplateSelected(result: FormTemplateSelectorResult): void {
+    this.showFormTemplateSelector = false;
+    if (result.type === 'custom' && result.template) {
+      this.assignFormToPlayers(result.template);
+    }
+  }
+
+  /** Asigna el template seleccionado como formulario activo para ese entrenamiento/partido y notifica a los players */
+  private assignFormToPlayers(template: FormTemplate): void {
+    const isMatch = this.formSelectorTipo === 'pre-match' || this.formSelectorTipo === 'post-match';
+    const payload: any = {
+      formTemplateId: template.formTemplateId,
+      coachUserId: this.userId,
+      teamId: this.teamId,
+      tipo: this.formSelectorTipo,
+    };
+    if (isMatch) {
+      payload.matchPreparationId = this.formSelectorEntityId;
+    } else {
+      payload.trainingSessionId = this.formSelectorEntityId;
+    }
+    this.formTemplateService.assignTemplate(payload).subscribe(
+      () => {
+        this.toastr.success(
+          `Formulario "${template.nombre}" asignado. Los jugadores recibirán una notificación.`,
+          'Formulario asignado'
+        );
+      },
+      () => {
+        this.toastr.error('Error al asignar el formulario', 'Error');
+      }
+    );
+  }
+
+  onFormTemplateSelectorClosed(): void {
+    this.showFormTemplateSelector = false;
+  }
+
+  /** Player: abre el formulario asignado por el coach para este entrenamiento/partido */
+  openPlayerForm(tipo: 'pre-match' | 'post-match' | 'pre-training' | 'post-training', entityId: number): void {
+    this.playerFormTipo = tipo;
+    this.playerFormEntityId = entityId;
+    this.playerFormTemplate = null;
+    this.playerFormAnswers = {};
+    this.playerFormLoading = true;
+    this.showPlayerFormModal = true;
+
+    this.formTemplateService.getAssignment(tipo, entityId, this.teamId).pipe(
+      finalize(() => { this.playerFormLoading = false; })
+    ).subscribe({
+      next: (res: any) => {
+        this.playerFormTemplate = res?.data || null;
+        if (this.playerFormTemplate?.campos) {
+          try {
+            const campos = typeof this.playerFormTemplate.campos === 'string'
+              ? JSON.parse(this.playerFormTemplate.campos as any)
+              : this.playerFormTemplate.campos;
+            // Guardamos el array parseado para que getPlayerFormCampos() no haga JSON.parse en cada render
+            (this.playerFormTemplate as any).campos = campos;
+            campos.forEach((c: any) => { this.playerFormAnswers[c.id || c.etiqueta] = ''; });
+          } catch (e) {
+            this.playerFormTemplate = null;
+          }
+        }
+      },
+      error: () => { this.playerFormTemplate = null; }
+    });
+  }
+
+  closePlayerFormModal(): void {
+    this.showPlayerFormModal = false;
+    this.playerFormTemplate = null;
+  }
+
+  getPlayerFormCampos(): any[] {
+    if (!this.playerFormTemplate?.campos) return [];
+    const raw = this.playerFormTemplate.campos as any;
+    return typeof raw === 'string' ? JSON.parse(raw) : raw;
+  }
+
+  submitPlayerForm(): void {
+    if (!this.playerFormTemplate) return;
+    this.playerFormSaving = true;
+    const respuestas = Object.entries(this.playerFormAnswers).map(([campoId, valor]) => ({ campoId, valor }));
+    const isMatch = this.playerFormTipo === 'pre-match' || this.playerFormTipo === 'post-match';
+    const payload: any = {
+      formTemplateId: this.playerFormTemplate.formTemplateId,
+      coachUserId: 0,
+      teamId: this.teamId,
+      tipo: this.playerFormTipo,
+      respuestas: JSON.stringify(respuestas),
+      isStandard: 0,
+    };
+    if (isMatch) payload.matchPreparationId = this.playerFormEntityId;
+    else payload.trainingSessionId = this.playerFormEntityId;
+
+    this.formTemplateService.saveResponse(payload).subscribe(
+      () => {
+        this.playerFormSaving = false;
+        this.showPlayerFormModal = false;
+        this.toastr.success('Formulario enviado correctamente', '¡Listo!');
+      },
+      () => { this.playerFormSaving = false; this.toastr.error('Error al enviar el formulario', 'Error'); }
+    );
   }
 
   navegarAInicio(): void {
@@ -1262,31 +1394,29 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   crearEntrenamiento() {
     this.trainingSession.daySession = this.daySession + 'T12:00:00';
 
-    console.log(this.trainingSession)
     if (
       this.trainingSession.infoVisible === undefined ||
       this.trainingSession.infoVisible === null
     ) {
       this.trainingSession.infoVisible = 0;
     }
-    console.log("TRAI", this.trainingSession)
     this.trainingService
       .createUpdateTrainingSession(this.teamId.toString(), this.trainingSession)
       .subscribe(
         (response) => {
-          // Vuelve a cargar la lista de entrenamientos y genera el calendario actualizado
           this.getListaEntrenamientos();
-          // Cerrar el modal después de crear el equipo
-          // NUEVO: decidir cierre según modo
-          if (this.mode === 'create-entrenamiento') {
-            this.cerrarModal();
-          } else {
-            this.cerrarModalEntrenamiento();
-          }
+          const isCreating = this.mode === 'create-entrenamiento';
+          this.cerrarModal();
+          this.toastr.success(
+            isCreating
+              ? this.translate.instant('CAL.TEXT_067') || 'Entrenamiento creado correctamente'
+              : 'Entrenamiento actualizado correctamente',
+            '✓'
+          );
         },
         (error) => {
           console.error('Error al guardar la sesión de entrenamiento:', error);
-          // Aquí puedes manejar el error, si es necesario
+          this.toastr.error('Error al guardar el entrenamiento. Inténtalo de nuevo.', 'Error');
         },
       );
   }
@@ -1304,13 +1434,13 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       .deleteTrainingSession(this.teamId.toString(), this.trainingSession)
       .subscribe(
         (response) => {
-          console.log('Sesión de entrenamiento eliminada con éxito:', response);
           this.getListaEntrenamientos();
-          if (this.trainingSession.trainingSessionId === 0) this.cerrarModal();
-          else this.cerrarModalEntrenamiento();
+          this.cerrarModal();
+          this.toastr.success('Entrenamiento eliminado correctamente', '✓');
         },
         (error) => {
           console.error('Error al eliminar la sesión de entrenamiento:', error);
+          this.toastr.error('Error al eliminar el entrenamiento. Inténtalo de nuevo.', 'Error');
         },
       );
   }
@@ -2572,11 +2702,9 @@ export class CalendarioComponent implements OnInit, OnDestroy {
         this.respPostPartido = new RespPostPartido({});
         this.showModalFormPostPartido = false;
         if (!response.data) {
-          this.toastr.warning(
-            'No se han enviado las respuestas porque ya se rellenó anteriormente y solo se puede una vez por partido.',
-          );
+          this.toastr.warning(this.translate.instant('CAL.TEXT_393'));
         } else {
-          this.toastr.success('Respuestas enviadas correctamente.');
+          this.toastr.success(this.translate.instant('CAL.TEXT_394'));
         }
       },
       (error) => {
@@ -2723,6 +2851,10 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   cerrarModalAsistencia() {
     this.showModalAsistencia = false;
+  }
+
+  countAsistencia(value: number): number {
+    return this.listAsistencia.filter((j: any) => j.asistencia === value).length;
   }
 
   toggleAsistencia(index: number, value: number) {
@@ -3067,11 +3199,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   toggleChangeSubirTarea(actualValue: number) {
     const nuevoValor = actualValue === 0 ? 1 : 0;
-    const confirmacion = confirm(
-      'AVISO: Al activar esta opción, su tarea de entrenamiento será pública y visible para otros entrenadores. ' +
-      'Cualquier dato ingresado será accesible. No está permitido publicar información, datos o imágenes con derechos de autor sin el permiso del autor. ' +
-      'Cualquier contenido que infrinja esta norma será eliminado. ¿Estás seguro?',
-    );
+    const confirmacion = confirm(this.translate.instant('CAL.TEXT_395'));
 
     if (confirmacion) {
       this.subirTarea = nuevoValor;
@@ -3269,7 +3397,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     this.playerService
       .updateConvocatoria(this.convocatoriaJSON, this.matchPreparationId)
       .subscribe(() => {
-        this.toastr.success('Convocatoria guardada');
+        this.toastr.success(this.translate.instant('CAL.TEXT_396'));
         this.showNotificar = true;
       });
   }
@@ -3367,7 +3495,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     this.playerService
       .notificateMatchPlayer(ui, this.teamId)
       .subscribe((response) => {
-        this.toastr.success('Notificados con éxito.');
+        this.toastr.success(this.translate.instant('CAL.TEXT_397'));
       });
   }
 
@@ -3413,9 +3541,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     this.playerService
       .notificateMatchPlayer(ui, this.teamId)
       .subscribe((response) => {
-        this.toastr.info(
-          'Pre-aviso enviado a los padres, en No convocados solo veras a los jugadores que han confirmado asistencia.',
-        );
+        this.toastr.info(this.translate.instant('CAL.TEXT_398'));
       });
   }
 
@@ -3460,7 +3586,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       .subscribe(
         (resp) => {
           if (resp.data) {
-            this.toastr.success('Cambio guardado.');
+            this.toastr.success(this.translate.instant('CAL.TEXT_399'));
           }
         },
         (error) => {
@@ -3564,7 +3690,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     };
 
     this.playerService.notificarNoAsistencia(dto).subscribe((response) => {
-      this.toastr.success('Notificación enviada.');
+      this.toastr.success(this.translate.instant('CAL.TEXT_400'));
       this.motivoNoAsistencia = '';
     });
   }

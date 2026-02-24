@@ -1420,22 +1420,31 @@
     </div>
 </div>
 
-<!-- Modal para invitar un jugador por mail -->
-<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalMover}">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Vas a mover de equipo a {{ nombreJugador }}</h5>
-                <!-- Botón de cerrar con un icono -->
-                <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalMover()"></button>
+<!-- Modal mover jugador de equipo (premium) -->
+<div class="modal move-player-modal" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalMover}" (click)="showModalMover && $event.target === $event.currentTarget && cerrarModalMover()">
+    <div class="move-player-modal-dialog" role="document">
+        <div class="move-player-modal-content">
+            <button type="button" class="move-player-modal-close" aria-label="Cerrar" (click)="cerrarModalMover()">
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+            <div class="move-player-modal-header">
+                <div class="move-player-modal-icon">
+                    <i class="bi bi-arrow-left-right"></i>
+                </div>
+                <h2 class="move-player-modal-title">Mover jugador</h2>
+                <p class="move-player-modal-subtitle">Vas a cambiar de equipo a <strong>{{ nombreJugador }}</strong></p>
             </div>
-            <div class="modal-body">
-                <p>Elige el equipo al que quieres mover el jugador.</p>
-                <form class="form-login" (ngSubmit)="moverJugador()">
-                    <div class="mb-3" style="text-align: center;">
-                        <div class="col">
-                            <label for="teamSelected" class="form-label">Selecciona el equipo:</label>
-                            <select class="form-control" id="teamSelected" name="teamSelected"
+
+            <form class="move-player-form" (ngSubmit)="moverJugador()">
+                <div class="move-player-body">
+                    <p class="move-player-hint">Elige el equipo de destino. Por defecto el jugador saldrá del equipo actual y pasará al seleccionado.</p>
+
+                    <div class="move-player-field">
+                        <label for="teamSelected" class="move-player-label">Equipo de destino</label>
+                        <div class="move-player-select-wrap">
+                            <i class="bi bi-people-fill move-player-select-icon"></i>
+                            <select class="move-player-select" id="teamSelected" name="teamSelected"
                                 [(ngModel)]="teamSelected">
                                 <option value="0">Escoge un equipo</option>
                                 <ng-container *ngFor="let team of listTeamsForCombo">
@@ -1445,22 +1454,29 @@
                                 </ng-container>
                             </select>
                         </div>
-
-                        <!-- Checkbox añadido -->
-                        <div class="form-check mt-3">
-                            <input class="form-check-input" type="checkbox" id="addPlayerMoved"
-                                [(ngModel)]="addPlayerMoved" name="addPlayerMoved">
-                            <label class="form-check-label" for="addPlayerMoved" style="color: red">
-                                Si activas el check box, el jugador será añadido al equipo seleccionado, además de permanecer en el que ya está.
-                            </label>
-                        </div>
-
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary float-end">Aceptar</button>
-                        </div>
                     </div>
-                </form>
-            </div>
+
+                    <div class="move-player-option">
+                        <label class="move-player-checkbox-label">
+                            <input type="checkbox" class="move-player-checkbox" id="addPlayerMoved"
+                                [(ngModel)]="addPlayerMoved" name="addPlayerMoved">
+                            <span class="move-player-checkbox-custom"></span>
+                            <span class="move-player-checkbox-text">Añadir al nuevo equipo sin quitarle del actual</span>
+                        </label>
+                        <p class="move-player-option-hint">
+                            <i class="bi bi-info-circle"></i>
+                            Si marcas esta opción, el jugador permanecerá en el equipo actual y además se añadirá al equipo seleccionado.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="move-player-footer">
+                    <button type="button" class="move-player-btn move-player-btn--ghost" (click)="cerrarModalMover()">Cancelar</button>
+                    <button type="submit" class="move-player-btn move-player-btn--primary">
+                        <i class="bi bi-check-lg me-1"></i> Aceptar
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

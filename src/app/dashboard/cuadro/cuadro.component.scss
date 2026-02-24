@@ -1,38 +1,32 @@
+/* Tema: variables CSS (light/dark en themes.scss) */
 .cuadro-dashboard {
-  background: #f8f9fa;
+  background: var(--bg-main);
   padding: 1.5rem;
 }
-/* BOTÓN VOLVER */
+
 .btn-back-clean {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
   margin-top: 16px;
   margin-left: 24px;
-  background: transparent;
-  border: none;
-  background-color: rgba(15, 163, 232, 0.08);
-  color: #002c40;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 500;
-
   padding: 0.35rem 0.6rem;
   border-radius: 8px;
-
   cursor: pointer;
-  transition:
-    background-color 0.2s ease,
-    transform 0.15s ease;
+  transition: background-color 0.2s ease, transform 0.15s ease;
 }
 
-/* ICONO */
 .btn-back-clean i {
   font-size: 1.1rem;
 }
 
-/* HOVER */
 .btn-back-clean:hover {
-  background-color: rgba(0, 44, 64, 0.08);
+  background-color: var(--bg-hover);
   transform: translateX(-2px);
 }
 
@@ -48,33 +42,39 @@
 
 /* OPCIONES */
 .option-card {
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 20px;
   padding: 1.4rem;
   text-align: center;
-  border: 1px solid #bababa;
+  border: 1px solid var(--border-color);
   cursor: pointer;
   transition: 0.25s;
+  color: var(--text-primary);
 }
 
 .option-card i {
   font-size: 1.6rem;
   display: block;
   margin-bottom: 0.4rem;
+  color: var(--color-primary);
 }
 
 .option-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-md);
 }
 
-/* INFO */
 .info-card {
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 20px;
   padding: 1.4rem;
-  border: 1px solid #e6e6e6;
+  border: 1px solid var(--border-color);
   margin-bottom: 1.5rem;
+  color: var(--text-primary);
+}
+
+.info-card h5 {
+  color: var(--text-primary);
 }
 .option-card.disabled {
   opacity: 0.6;
@@ -97,11 +97,11 @@
 }
 
 .option-card-injuries {
-  border-color: #1f8f8a;
-  i { color: #1f8f8a; }
+  border-color: var(--color-primary);
+  i { color: var(--color-primary); }
   &:hover {
-    border-color: #31b270;
-    box-shadow: 0 8px 18px rgba(31, 143, 138, 0.15);
+    border-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-md);
   }
 }
 
@@ -112,7 +112,7 @@
 .skeleton-line,
 .skeleton-badge,
 .skeleton-hour {
-  background: linear-gradient(90deg, #eeeeee 25%, #f5f5f5 37%, #eeeeee 63%);
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-hover) 37%, var(--bg-surface) 63%);
   background-size: 400% 100%;
   animation: shimmer 1.4s ease infinite;
   border-radius: 6px;
@@ -128,9 +128,8 @@
   }
 }
 
-/* RESULTADOS */
 .skeleton-card {
-  border: 1px solid #eee;
+  border: 1px solid var(--border-color);
   border-radius: 14px;
   padding: 1rem;
   margin-bottom: 1rem;
@@ -187,13 +186,13 @@
 }
 
 .match-card.victoria {
-  border-color: #b7e5c7;
+  border-color: rgba(var(--color-primary-rgb, 49, 178, 112), 0.4);
 }
 .match-card.empate {
-  border-color: #ffd8a8;
+  border-color: rgba(245, 158, 11, 0.5);
 }
 .match-card.derrota {
-  border-color: #f5b7b1;
+  border-color: rgba(220, 38, 38, 0.4);
 }
 
 .match-header {
@@ -210,21 +209,21 @@
 }
 
 .badge.victoria {
-  background: #e6f4ea;
-  color: #1e7e34;
+  background: rgba(30, 126, 52, 0.15);
+  color: var(--badge-success, #22c55e);
 }
 .badge.empate {
-  background: #fff3cd;
-  color: #d39e00;
+  background: rgba(211, 158, 0, 0.15);
+  color: var(--badge-warning, #f59e0b);
 }
 .badge.derrota {
-  background: #fdecea;
-  color: #c82333;
+  background: rgba(200, 35, 51, 0.15);
+  color: var(--badge-danger, #dc2626);
 }
 
 .status {
   font-size: 0.75rem;
-  color: #9aa0a6;
+  color: var(--text-muted);
 }
 
 .match-body {
@@ -271,7 +270,7 @@
 /* Local / Visitante */
 .team-role {
   font-size: 0.7rem;
-  color: #9aa0a6;
+  color: var(--text-muted);
   margin-top: 2px;
 }
 .score-wrapper {
@@ -287,7 +286,7 @@
   top: -6px;
   width: 20px;
   height: 2px;
-  background: #e9ecef;
+  background: var(--border-color);
   border-radius: 2px;
 }
 
@@ -296,14 +295,13 @@
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #8a97a3;
+  color: var(--text-muted);
   margin-bottom: 0.5rem;
 }
 
-/* Marcador */
 .score {
-  background: #f1f3f5;
-  color: #212529;
+  background: var(--bg-surface);
+  color: var(--text-primary);
   font-size: 1.05rem;
   font-weight: 700;
   padding: 0.35rem 0.75rem;
@@ -328,25 +326,23 @@
 }
 
 .hour {
-  height: 32px; /* 🔑 1 hora = 32px */
+  height: 32px;
   font-size: 0.7rem;
-  color: #6c757d;
+  color: var(--text-muted);
   text-align: right;
   padding-right: 6px;
 }
 
-/* CUERPO DEL CALENDARIO */
 .calendar-body {
   position: relative;
-  border-left: 1px solid #e0e0e0;
-  overflow: hidden; /* 🔑 evita desbordes */
+  border-left: 1px solid var(--border-color);
+  overflow: hidden;
 }
 
-/* EVENTOS */
 .calendar-event {
   position: absolute;
-  background: #e6f4ea;
-  border-left: 3px solid #28a745;
+  background: rgba(var(--color-primary-rgb, 49, 178, 112), 0.12);
+  border-left: 3px solid var(--color-primary);
   border-radius: 6px;
   padding: 4px 6px;
   font-size: 0.7rem;
@@ -361,11 +357,12 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--text-primary);
 }
 
 .calendar-event small {
   font-size: 0.65rem;
-  color: #495057;
+  color: var(--text-secondary);
 }
 
 /* ==============================
@@ -388,28 +385,29 @@
   top: -14px;
   font-size: 0.58rem;
   font-weight: 700;
-  color: #002c40;
-  background: rgba(255, 255, 255, 0.85);
+  color: var(--text-primary);
+  background: var(--bg-card);
   padding: 1px 4px;
   border-radius: 3px;
   line-height: 1.2;
+  border: 1px solid var(--border-color);
 }
 
 .current-time-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #002c40;
+  background: var(--color-primary);
   flex-shrink: 0;
   margin-left: -5px;
-  box-shadow: 0 0 4px rgba(0, 44, 64, 0.4);
+  box-shadow: 0 0 4px rgba(var(--color-primary-rgb, 49, 178, 112), 0.4);
 }
 
 .current-time-rule {
   flex: 1;
   height: 2px;
-  background: #002c40;
-  box-shadow: 0 1px 2px rgba(0, 44, 64, 0.2);
+  background: var(--color-primary);
+  box-shadow: 0 1px 2px rgba(var(--color-primary-rgb, 49, 178, 112), 0.2);
 }
 
 /* =========================
@@ -427,10 +425,11 @@
   gap: 1rem;
   padding: 1rem;
   margin-bottom: 1rem;
-  background: linear-gradient(180deg, #0b3a53, #062737);
+  background: var(--header-gradient);
   border-radius: 16px;
-  color: #fff;
+  color: var(--text-on-navy);
   position: relative;
+  border: 1px solid var(--border-color);
 }
 .center-box {
   position: relative;
@@ -518,14 +517,13 @@
 
 /* LOCAL */
 .team-badge.local {
-  background: #dee2e6;
-  color: #495057;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
 }
 
-/* VISITANTE */
 .team-badge.visitante {
-  background: #d4edda;
-  color: #1e7e34;
+  background: rgba(var(--color-primary-rgb, 49, 178, 112), 0.2);
+  color: var(--color-primary);
 }
 
 /* =========================
@@ -539,26 +537,24 @@
   align-items: center;
   padding: 1rem;
   margin-bottom: 1rem;
-  background: #f8f9fa; /* 🔑 CLARO */
+  background: var(--bg-surface);
   border-radius: 16px;
 }
 
-/* CÍRCULOS */
 .skeleton-circle {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  background: linear-gradient(90deg, #e0e0e0 25%, #f3f3f3 37%, #e0e0e0 63%);
+  background: linear-gradient(90deg, var(--bg-hover) 25%, var(--bg-surface) 37%, var(--bg-hover) 63%);
   background-size: 400% 100%;
   animation: shimmer 1.4s infinite linear;
 }
 
-/* VS */
 .skeleton-vs {
   width: 36px;
   height: 20px;
   border-radius: 6px;
-  background: #e0e0e0;
+  background: var(--bg-hover);
 }
 @keyframes shimmer {
   0% {
@@ -571,27 +567,27 @@
 .date-badge {
   position: relative;
   z-index: 2;
-  border: 1px solid rgba(0, 44, 64, 0.08);
-  background: #ffffff;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
   border-radius: 10px;
   padding: 0.35rem 0.6rem;
   min-width: 100px;
-  max-width: 130x;
+  max-width: 130px;
   text-align: center;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-md);
 }
 
 .date-badge .day {
   font-size: 0.68rem;
   font-weight: 700;
-  color: #002c40;
+  color: var(--text-primary);
   display: block;
   line-height: 1.1;
 }
 
 .date-badge .date {
   font-size: 0.62rem;
-  color: #6c757d;
+  color: var(--text-secondary);
   display: block;
   line-height: 1.1;
 }
@@ -599,7 +595,7 @@
 .date-badge .time {
   font-size: 0.68rem;
   font-weight: 700;
-  color: #31b270;
+  color: var(--color-primary);
   margin-top: 2px;
   display: block;
 }
@@ -661,83 +657,7 @@
   
 }
 
-/* ===== DARK MODE ===== */
-:host-context(body.dark) {
-  .cuadro-dashboard {
-    background: var(--bg-main);
-  }
-
-  .btn-back-clean {
-    color: var(--text-secondary);
-    background-color: rgba(15, 163, 232, 0.12);
-    &:hover { background-color: var(--bg-hover); }
-  }
-
-  .section-title { color: var(--text-primary); }
-
-  .option-card {
-    background: var(--bg-card);
-    border-color: var(--border-color);
-    &:hover { box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2); }
-  }
-
-  .info-card {
-    background: var(--bg-card);
-    border-color: var(--border-color);
-  }
-
-  /* Skeleton */
-  .skeleton-line, .skeleton-badge, .skeleton-hour {
-    background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-hover) 37%, var(--bg-surface) 63%);
-    background-size: 400% 100%;
-  }
-
-  .skeleton-card { border-color: var(--border-color); }
-
-  /* Match cards */
-  .match-card.victoria { border-color: rgba(63, 201, 130, 0.4); }
-  .match-card.empate { border-color: rgba(255, 193, 7, 0.4); }
-  .match-card.derrota { border-color: rgba(220, 53, 69, 0.4); }
-
-  .badge.victoria { background: rgba(30, 126, 52, 0.15); color: #4ade80; }
-  .badge.empate { background: rgba(211, 158, 0, 0.15); color: #fbbf24; }
-  .badge.derrota { background: rgba(200, 35, 51, 0.15); color: #f87171; }
-
-  .status { color: var(--text-muted); }
-
-  .score {
-    background: var(--bg-surface);
-    color: var(--text-primary);
-  }
-
-  .team-role { color: var(--text-muted); }
-  .match-date { color: var(--text-muted); }
-
-  /* Calendar */
-  .hour { color: var(--text-muted); }
-  .calendar-body { border-color: var(--border-color); }
-  .calendar-event {
-    background: rgba(63, 201, 130, 0.12);
-    small { color: var(--text-secondary); }
-  }
-
-  /* Next matches skeleton */
-  .match-skeleton {
-    background: var(--bg-surface);
-  }
-  .skeleton-circle, .skeleton-vs {
-    background: linear-gradient(90deg, var(--bg-hover) 25%, var(--bg-surface) 37%, var(--bg-hover) 63%);
-    background-size: 400% 100%;
-  }
-
-  /* Date badge */
-  .date-badge {
-    background: var(--bg-card);
-    border-color: var(--border-color);
-    .day { color: var(--text-primary); }
-    .date { color: var(--text-secondary); }
-  }
-}
+/* Dark: las variables se aplican con body.dark en themes.scss; no hace falta bloque extra */
 
 /* ═══════════════════════════════════════
    RESPONSIVE

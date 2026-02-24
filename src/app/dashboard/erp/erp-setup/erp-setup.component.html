@@ -1,0 +1,106 @@
+<div class="erp-page">
+  <div class="erp-header"><button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i> Volver</button><h2><i class="bi bi-gear"></i> Configuración ERP</h2></div>
+  <div *ngIf="loading" class="erp-loading"><i class="bi bi-arrow-repeat spin"></i> Cargando...</div>
+  <div *ngIf="!loading">
+    <section class="setup-section">
+      <h3>Ejercicios fiscales</h3>
+      <p class="setup-hint"><i class="bi bi-info-circle"></i> El ejercicio <strong>activo</strong> determina el rango de fechas que se muestra por defecto en el dashboard financiero. Puedes cambiar el rango manualmente en el dashboard en cualquier momento.</p>
+      <button class="btn-erp-outline mb-2" (click)="openFyForm()"><i class="bi bi-plus"></i> Nuevo ejercicio</button>
+      <div *ngIf="showFyForm" class="form-card">
+        <p class="setup-hint mb-2">Elige un tipo de año fiscal o personaliza las fechas:</p>
+        <div class="fy-presets">
+          <button *ngFor="let p of fyPresets; let i = index"
+                  class="btn-fy-preset"
+                  [class.selected]="selectedPresetIndex === i"
+                  (click)="applyPreset(p, i)">{{ p.label }}</button>
+        </div>
+        <div class="form-grid mt-2">
+          <div class="form-group"><label>Nombre</label><input [(ngModel)]="fyForm.name"></div>
+          <div class="form-group"><label>Inicio</label><input type="date" [(ngModel)]="fyForm.startDate"></div>
+          <div class="form-group"><label>Fin</label><input type="date" [(ngModel)]="fyForm.endDate"></div>
+        </div>
+        <div class="form-actions"><button class="btn-erp-primary" (click)="createFy()">Crear</button><button class="btn-erp-outline" (click)="showFyForm=false">Cancelar</button></div>
+      </div>
+      <div *ngIf="fiscalYears.length===0 && !showFyForm" class="erp-empty"><i class="bi bi-calendar-x"></i> Sin ejercicios fiscales. Crea uno para que el dashboard use el rango correcto.</div>
+      <table *ngIf="fiscalYears.length>0" class="erp-table"><thead><tr><th>Nombre</th><th>Inicio</th><th>Fin</th><th>Estado</th><th></th></tr></thead><tbody>
+        <tr *ngFor="let fy of fiscalYears"><td>{{ fy.name }}</td><td>{{ fy.startDate | date:'dd/MM/yyyy' }}</td><td>{{ fy.endDate | date:'dd/MM/yyyy' }}</td>
+          <td><span class="status-badge" [ngClass]="fy.isActive ? 'st-active' : 'st-draft'">{{ fy.isActive ? 'Activo' : 'Inactivo' }}</span></td>
+          <td><button *ngIf="!fy.isActive" class="btn-erp-outline btn-sm" (click)="activateFy(fy)">Activar</button></td></tr>
+      </tbody></table>
+    </section>
+    <section class="setup-section">
+      <h3>Centros de coste</h3>
+      <p class="setup-hint"><i class="bi bi-info-circle"></i> Un <strong>centro de coste</strong> es una sección o departamento del club (ej: "Primer equipo", "Cantera", "Administración"). Los equipos están etiquetados por temporada; los generales (Administración, Instalaciones…) son permanentes.</p>
+
+      <!-- Selector de temporada -->
+      <div class="cc-season-row mb-2">
+        <label class="cc-season-label"><i class="bi bi-calendar-event"></i> Temporada</label>
+        <select class="cc-season-select" [(ngModel)]="ccTemporada" (change)="onTemporadaChange()">
+          <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
+        </select>
+      </div>
+
+      <div class="cc-actions mb-2">
+        <button class="btn-erp-outline" (click)="openCcForm()"><i class="bi bi-plus"></i> Nuevo</button>
+        <button class="btn-erp-outline" (click)="generateFromTeams()" [disabled]="generatingCc">
+          <i class="bi bi-magic"></i> {{ generatingCc ? 'Generando…' : 'Generar desde equipos' }}
+        </button>
+        <button class="btn-wip" disabled title="En construcción">
+          <i class="bi bi-hammer"></i> En construcción
+        </button>
+      </div>
+      <div *ngIf="showCcForm" class="form-card">
+        <p class="setup-hint mb-2">Sugerencias habituales en un club:</p>
+        <div class="fy-presets">
+          <button *ngFor="let s of ccSuggestions" class="btn-fy-preset"
+                  [class.selected]="ccName === s"
+                  (click)="applyCcSuggestion(s)">{{ s }}</button>
+        </div>
+        <div class="form-grid mt-2">
+          <div class="form-group" style="grid-column: 1/-1">
+            <label>Nombre del centro</label>
+            <input [(ngModel)]="ccName" placeholder="Ej: Primer equipo">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-erp-primary" (click)="createCc()" [disabled]="!ccName.trim() || ccSaving">
+            <i class="bi bi-plus-circle"></i> {{ ccSaving ? 'Guardando…' : 'Crear' }}
+          </button>
+          <button class="btn-erp-outline" (click)="showCcForm=false">Cancelar</button>
+        </div>
+      </div>
+      <div *ngIf="costCenters.length===0 && !showCcForm" class="erp-empty"><i class="bi bi-diagram-3"></i> Sin centros de coste. Pulsa "Generar desde equipos" para crearlos automáticamente.</div>
+      <table *ngIf="costCenters.length>0" class="erp-table">
+        <thead><tr><th style="width:32px"></th><th>Nombre</th><th>Tipo</th><th></th></tr></thead>
+        <tbody cdkDropList (cdkDropListDropped)="dropCc($event)">
+          <tr *ngFor="let cc of costCenters" cdkDrag class="cc-drag-row">
+            <td class="cc-drag-handle" cdkDragHandle title="Arrastra para reordenar">
+              <i class="bi bi-grip-vertical"></i>
+            </td>
+            <td>
+              <span *ngIf="editingCcId !== cc.id">{{ cc.name }}</span>
+              <input *ngIf="editingCcId === cc.id" [(ngModel)]="editingCcName"
+                     class="inline-edit-input"
+                     (keydown.enter)="saveEditCc(cc)"
+                     (keydown.escape)="cancelEditCc()">
+            </td>
+            <td>
+              <span *ngIf="cc.temporada" class="cc-badge-team"><i class="bi bi-people-fill"></i> {{ cc.temporada }}/{{ (+cc.temporada)+1 }}</span>
+              <span *ngIf="!cc.temporada" class="cc-badge-general"><i class="bi bi-building"></i> General</span>
+            </td>
+            <td class="text-end cc-row-actions">
+              <ng-container *ngIf="editingCcId !== cc.id">
+                <button class="btn-icon" (click)="startEditCc(cc)" title="Editar"><i class="bi bi-pencil"></i></button>
+                <button class="btn-icon btn-icon-danger" (click)="deleteCc(cc)" title="Eliminar"><i class="bi bi-trash"></i></button>
+              </ng-container>
+              <ng-container *ngIf="editingCcId === cc.id">
+                <button class="btn-erp-primary btn-sm" (click)="saveEditCc(cc)">Guardar</button>
+                <button class="btn-erp-outline btn-sm" (click)="cancelEditCc()">Cancelar</button>
+              </ng-container>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</div>

@@ -109,6 +109,11 @@
         <i class="bi bi-activity me-1"></i>Sesiones
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'suscripcion'" (click)="setTab('suscripcion')">
+        <i class="bi bi-credit-card me-1"></i>Suscripción
+      </a>
+    </li>
   </ul>
 
   <!-- TAB: Info General -->
@@ -179,6 +184,7 @@
           <table class="table align-middle mb-0">
             <thead>
               <tr>
+                <th class="text-center">ID</th>
                 <th class="text-center">Categoria</th>
                 <th class="text-center">Nivel</th>
                 <th class="text-center">Jugadores</th>
@@ -186,6 +192,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let team of group.equipos">
+                <td class="text-center"><span class="badge bg-secondary">{{ team.teamId }}</span></td>
                 <td class="text-center"><span class="badge bg-light text-dark border">{{ team.categoria || '-' }}</span></td>
                 <td class="text-center">{{ team.nivel || '-' }}</td>
                 <td class="text-center"><span class="badge rounded-pill bg-primary">{{ team.jugadores }}</span></td>
@@ -210,6 +217,7 @@
             <table class="table align-middle mb-0">
               <thead>
                 <tr>
+                  <th class="text-center">ID</th>
                   <th style="padding-left: 1rem;">Entrenador</th>
                   <th>Email</th>
                   <th>Telefono</th>
@@ -219,12 +227,15 @@
               </thead>
               <tbody>
                 <tr *ngFor="let coach of club.entrenadores">
+                  <td class="text-center"><span class="badge bg-secondary">{{ coach.userId }}</span></td>
                   <td style="padding-left: 1rem;">
                     <div class="d-flex align-items-center gap-2">
-                      <img *ngIf="coach.picture" [src]="imageBaseUrl + coach.picture"
-                        alt="" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover;">
-                      <div *ngIf="!coach.picture" class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center"
-                        style="width: 32px; height: 32px;">
+                      <img *ngIf="coach.picturePlayer || coach.picture"
+                        [src]="imageBaseUrl + (coach.picturePlayer || coach.picture)"
+                        alt="" class="rounded-circle" style="width: 36px; height: 36px; object-fit: cover;">
+                      <div *ngIf="!coach.picturePlayer && !coach.picture"
+                        class="rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center"
+                        style="width: 36px; height: 36px; flex-shrink: 0;">
                         <i class="bi bi-person-fill text-primary" style="font-size: 0.9rem;"></i>
                       </div>
                       <span class="fw-semibold">{{ coach.nombre }} {{ coach.apellido }}</span>
@@ -239,9 +250,9 @@
                     <span *ngIf="!coach.titulacion" class="text-muted small">-</span>
                   </td>
                   <td>
-                    <span *ngFor="let eq of coach.equipos" class="badge bg-primary bg-opacity-10 text-primary me-1" style="font-size: 0.7rem;">
-                      {{ eq }}
-                    </span>
+                    <div *ngFor="let eq of coach.equipos" class="mb-1">
+                      <span class="small text-muted">{{ eq.categoria || '-' }} · {{ eq.nivel || '-' }}</span>
+                    </div>
                     <span *ngIf="!coach.equipos || coach.equipos.length === 0" class="text-muted small">-</span>
                   </td>
                 </tr>
@@ -504,6 +515,165 @@
     </div>
   </div>
 
+  <!-- TAB: Suscripción -->
+  <div *ngIf="activeTab === 'suscripcion'" class="tab-content-section">
+
+    <!-- Loading -->
+    <div *ngIf="isLoadingSubs" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <div class="mt-2 text-muted small">Cargando suscripciones...</div>
+    </div>
+
+    <div *ngIf="!isLoadingSubs" class="row g-4">
+
+      <!-- ── Plan de la App ─────────────────────────────────── -->
+      <div class="col-12 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">
+                <i class="bi bi-shield-check me-2 text-primary"></i>Plan de la App
+              </h5>
+              <button class="btn btn-sm btn-outline-primary" (click)="openAppPlanModal()">
+                <i class="bi bi-pencil me-1"></i>Cambiar plan
+              </button>
+            </div>
+
+            <!-- Sin plan -->
+            <div *ngIf="!appPlan" class="text-center py-4">
+              <i class="bi bi-slash-circle fs-2 text-muted"></i>
+              <p class="text-muted mt-2 mb-3">Este club no tiene ningún plan activo</p>
+              <button class="btn btn-primary btn-sm" (click)="openAppPlanModal()">
+                <i class="bi bi-plus-circle me-1"></i>Asignar plan
+              </button>
+            </div>
+
+            <!-- Plan activo -->
+            <div *ngIf="appPlan">
+              <div class="sub-plan-badge mb-3"
+                   [style.borderLeftColor]="getAppPlanColor(appPlan.planType)">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi fs-4" [ngClass]="getAppPlanIcon(appPlan.planType)"
+                     [style.color]="getAppPlanColor(appPlan.planType)"></i>
+                  <div>
+                    <div class="fw-bold">{{ getAppPlanLabel(appPlan.planType) }}</div>
+                    <div class="small text-muted text-capitalize">
+                      {{ appPlan.status === 'active' ? 'Activo' : appPlan.status }} ·
+                      {{ appPlan.period === 'monthly' ? 'Mensual' : 'Anual' }}
+                    </div>
+                  </div>
+                  <span class="ms-auto badge"
+                        [ngClass]="appPlan.status === 'active' ? 'bg-success' : 'bg-secondary'">
+                    {{ appPlan.status === 'active' ? 'Activo' : appPlan.status }}
+                  </span>
+                </div>
+              </div>
+
+              <div class="row g-2 small text-muted">
+                <div class="col-6" *ngIf="appPlan.startDate">
+                  <i class="bi bi-calendar-check me-1"></i>
+                  Alta: {{ appPlan.startDate | date:'dd/MM/yyyy' }}
+                </div>
+                <div class="col-6" *ngIf="appPlan.renewDate">
+                  <i class="bi bi-arrow-repeat me-1"></i>
+                  Renovación: {{ appPlan.renewDate | date:'dd/MM/yyyy' }}
+                </div>
+                <div class="col-6" *ngIf="appPlan.planType === 'club' && appPlan.playerCount">
+                  <i class="bi bi-people me-1"></i>
+                  Jugadores: {{ appPlan.playerCount }}
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <button class="btn btn-sm btn-outline-danger" (click)="cancelAppPlan()">
+                  <i class="bi bi-x-circle me-1"></i>Cancelar plan
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Plan de Vídeo ───────────────────────────────────── -->
+      <div class="col-12 col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="mb-0">
+                <i class="bi bi-camera-video me-2 text-danger"></i>Plan de Vídeo
+              </h5>
+              <button class="btn btn-sm btn-outline-primary" (click)="openVideoPlanModal()">
+                <i class="bi bi-pencil me-1"></i>Cambiar plan
+              </button>
+            </div>
+
+            <!-- Sin plan -->
+            <div *ngIf="!videoPlan" class="text-center py-4">
+              <i class="bi bi-film fs-2 text-muted"></i>
+              <p class="text-muted mt-2 mb-3">Este club no tiene suscripción de vídeo</p>
+              <button class="btn btn-primary btn-sm" (click)="openVideoPlanModal()">
+                <i class="bi bi-plus-circle me-1"></i>Asignar plan de vídeo
+              </button>
+            </div>
+
+            <!-- Plan activo -->
+            <div *ngIf="videoPlan">
+              <div class="sub-plan-badge sub-plan-badge--video mb-3">
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-camera-video-fill fs-4 text-danger"></i>
+                  <div>
+                    <div class="fw-bold">{{ getVideoPlanLabel(videoPlan.planKey) }}</div>
+                    <div class="small text-muted">
+                      {{ videoPlan.status === 'ACTIVE' ? 'Activo' : videoPlan.status }}
+                    </div>
+                  </div>
+                  <span class="ms-auto badge"
+                        [ngClass]="videoPlan.status === 'ACTIVE' ? 'bg-success' : 'bg-secondary'">
+                    {{ videoPlan.status === 'ACTIVE' ? 'Activo' : videoPlan.status }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Uso de almacenamiento -->
+              <div class="mb-2 small">
+                <div class="d-flex justify-content-between mb-1">
+                  <span>Almacenamiento usado</span>
+                  <span class="fw-semibold">
+                    {{ videoPlan.storageUsedHuman }} / {{ videoPlan.storageLimitHuman }}
+                  </span>
+                </div>
+                <div class="progress" style="height:8px;">
+                  <div class="progress-bar bg-danger"
+                       [style.width.%]="videoPlan.usedPercent || 0"></div>
+                </div>
+                <div class="text-end text-muted" style="font-size:11px;">
+                  {{ videoPlan.usedPercent | number:'1.1-1' }}% usado
+                </div>
+              </div>
+
+              <div class="row g-2 small text-muted mt-1">
+                <div class="col-6" *ngIf="videoPlan.createdAt">
+                  <i class="bi bi-calendar-check me-1"></i>
+                  Alta: {{ videoPlan.createdAt | date:'dd/MM/yyyy' }}
+                </div>
+                <div class="col-6" *ngIf="videoPlan.nextBillingDate">
+                  <i class="bi bi-arrow-repeat me-1"></i>
+                  Próxima factura: {{ videoPlan.nextBillingDate | date:'dd/MM/yyyy' }}
+                </div>
+              </div>
+
+              <div class="mt-3">
+                <button class="btn btn-sm btn-outline-danger" (click)="cancelVideoPlan()">
+                  <i class="bi bi-x-circle me-1"></i>Cancelar plan de vídeo
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <!-- No club found -->
@@ -545,6 +715,112 @@
         <button class="btn btn-primary" (click)="saveStatus()" [disabled]="isSavingStatus">
           <span *ngIf="isSavingStatus" class="spinner-border spinner-border-sm me-1"></span>
           {{ isSavingStatus ? 'Guardando...' : 'Guardar' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Modal: Cambiar Plan App -->
+<div class="modal-overlay" *ngIf="showAppPlanModal" (click)="showAppPlanModal = false">
+  <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-shield-check me-2 text-primary"></i>Asignar Plan de la App
+        </h5>
+        <button type="button" class="btn-close" (click)="showAppPlanModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small mb-3">Este cambio se aplica de forma inmediata y sin pasar por Stripe.</p>
+
+        <!-- Tipo de plan -->
+        <div class="mb-3">
+          <label class="form-label fw-semibold">Tipo de plan</label>
+          <div class="row g-2">
+            <div class="col-4" *ngFor="let opt of appPlanOptions">
+              <div class="plan-select-card"
+                   [class.selected]="selectedAppPlanType === opt.value"
+                   (click)="selectedAppPlanType = opt.value"
+                   [style.borderColor]="selectedAppPlanType === opt.value ? opt.color : '#dee2e6'">
+                <i class="bi fs-4" [ngClass]="opt.icon" [style.color]="opt.color"></i>
+                <div class="small mt-1 fw-semibold">{{ opt.label }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Periodo -->
+        <div class="mb-3" *ngIf="selectedAppPlanType !== 'gratuito'">
+          <label class="form-label fw-semibold">Periodo</label>
+          <div class="d-flex gap-2">
+            <button class="btn flex-fill"
+                    [ngClass]="selectedAppPlanPeriod === 'monthly' ? 'btn-primary' : 'btn-outline-secondary'"
+                    (click)="selectedAppPlanPeriod = 'monthly'">
+              Mensual
+            </button>
+            <button class="btn flex-fill"
+                    [ngClass]="selectedAppPlanPeriod === 'annual' ? 'btn-primary' : 'btn-outline-secondary'"
+                    (click)="selectedAppPlanPeriod = 'annual'">
+              Anual
+            </button>
+          </div>
+        </div>
+
+        <!-- Nº jugadores (solo Plan Club) -->
+        <div class="mb-3" *ngIf="selectedAppPlanType === 'club'">
+          <label class="form-label fw-semibold">Número de jugadores</label>
+          <input type="number" class="form-control" min="0"
+                 [(ngModel)]="selectedAppPlanPlayerCount"
+                 placeholder="0">
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button class="btn btn-outline-secondary" (click)="showAppPlanModal = false">Cancelar</button>
+        <button class="btn btn-primary" (click)="saveAppPlan()" [disabled]="isSavingAppPlan">
+          <span *ngIf="isSavingAppPlan" class="spinner-border spinner-border-sm me-1"></span>
+          {{ isSavingAppPlan ? 'Guardando...' : 'Guardar plan' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Cambiar Plan Vídeo -->
+<div class="modal-overlay" *ngIf="showVideoPlanModal" (click)="showVideoPlanModal = false">
+  <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+    <div class="modal-content shadow-lg">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-camera-video me-2 text-danger"></i>Asignar Plan de Vídeo
+        </h5>
+        <button type="button" class="btn-close" (click)="showVideoPlanModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small mb-3">Este cambio se aplica de forma inmediata y sin pasar por Stripe.</p>
+        <div class="row g-3">
+          <div class="col-12" *ngFor="let opt of videoPlanOptions">
+            <div class="plan-select-card plan-select-card--row"
+                 [class.selected]="selectedVideoPlanKey === opt.value"
+                 (click)="selectedVideoPlanKey = opt.value">
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi fs-4 text-danger" [ngClass]="opt.icon"></i>
+                <div class="flex-grow-1">
+                  <div class="fw-semibold">{{ opt.label }}</div>
+                  <div class="small text-muted">{{ opt.price }}</div>
+                </div>
+                <i class="bi" [ngClass]="selectedVideoPlanKey === opt.value ? 'bi-check-circle-fill text-primary' : 'bi-circle text-muted'"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button class="btn btn-outline-secondary" (click)="showVideoPlanModal = false">Cancelar</button>
+        <button class="btn btn-primary" (click)="saveVideoPlan()" [disabled]="isSavingVideoPlan">
+          <span *ngIf="isSavingVideoPlan" class="spinner-border spinner-border-sm me-1"></span>
+          {{ isSavingVideoPlan ? 'Guardando...' : 'Guardar plan' }}
         </button>
       </div>
     </div>

@@ -47,6 +47,34 @@
     "TOTAL_RECORDS": "total records",
     "NO_RESULTS": "No results found."
   },
+  "OPCIONES_JUGADOR": {
+    "DATOS_PERSONALES": "Personal data",
+    "CALENDARIO": "Calendar",
+    "PAGAR_CUOTAS": "Pay fees",
+    "DOCUMENTACION": "Documentation",
+    "CLASIFICACION_RESULTADOS": "Standings and results",
+    "MIS_ESTADISTICAS": "My statistics",
+    "GALERIA": "Gallery",
+    "NOTIFICACIONES": "Notifications",
+    "PATROCINADORES": "Sponsors",
+    "LESIONES": "Injuries"
+  },
+  "ACTIONS": {
+    "EDIT": "Edit subscriber",
+    "INSERT_PAY": "Add a payment",
+    "VIEW_HISTORY": "View payment history",
+    "LOADING": "Loading...",
+    "SAVE": "Save",
+    "CANCEL": "Cancel",
+    "CONFIRM_TITLE": "Confirm",
+    "CONFIRM_DELETE_TITLE": "Confirm deletion",
+    "CONFIRM_DELETE_MESSAGE": "Are you sure? This action cannot be undone.",
+    "DELETE_SUCCESS": "Deleted successfully",
+    "SAVE_SUCCESS": "Saved successfully",
+    "ERROR_GENERIC": "An error occurred. Please try again.",
+    "DELETE": "Delete",
+    "ACCEPT": "Accept"
+  },
   "COACH_STATS": {
     "TITLE": "Coach statistics",
     "FEATURE_1": "Performance by season and team",
@@ -97,6 +125,9 @@
     "AI_ASSISTANT": "AI Assistant",
     "CREATETEAM": "Create a Team",
     "SCOUTING": "Scouting",
+    "VIDEO_LIBRARY": "Video Library",
+    "VIDEO_ANALYSIS": "Video analysis",
+    "ERP": "Management / ERP",
     "CREATE": "Create"
   },
   "TITLES": {
@@ -143,6 +174,17 @@
     "CREDITS": {
       "LABEL": "Credits",
       "TOOLTIP": "Available AI credits. Click to buy more."
+    },
+    "NOTIFICATIONS": {
+      "TITLE": "Notifications",
+      "UNREAD": "unread",
+      "SEE_MORE": "See more",
+      "EMPTY": "No recent messages",
+      "NO_SUBJECT": "No subject",
+      "EXPAND": "Expand",
+      "COLLAPSE": "Collapse",
+      "LOADING": "Loading…",
+      "NO_PREVIEW": "No content to preview"
     },
     "HELP": {
       "TITLE": "Help",
@@ -286,11 +328,21 @@
           "WARNING_HIGHLIGHT_2": "PARENT/GUARDIAN, THIS IS NOT YOUR REGISTRATION",
           "WARNING_HIGHLIGHT_3": "EXCLUSIVELY FOR COACH",
           "WARNING_SUFFIX": "Talk to your club to receive the registration link"
-        }
+        },
+        "NAME": "Club"
       },
       "COACH": {
         "TITLE": "Coach",
         "SUBTITLE": "Register as coach"
+      },
+      "PLAYER_PARENT": {
+        "TITLE": "Player/Parent"
+      },
+      "PLAYER": {
+        "TITLE": "Player"
+      },
+      "SCOUT": {
+        "TITLE": "Scout"
       }
     },
     "TABS": {
@@ -356,6 +408,77 @@
     "BUTTONS_MODALS": {
       "ACKNOWLEDGE": "Got it",
       "I_AM_COACH": "I am a coach"
+    },
+    "PANEL": {
+      "HEADLINE": "The leading platform in sports management",
+      "TAGLINE": "Everything your club needs, in one place.",
+      "FEATURES": {
+        "FINANCE": "Fee and finance control",
+        "TEAMS": "Team and player management",
+        "STATS": "Real-time statistics",
+        "APP": "Mobile app for parents",
+        "SECURITY": "Secure and protected data"
+      },
+      "TESTIMONIAL": {
+        "TEXT": "Sphaira has transformed our club management. Everything is now easier and faster.",
+        "AUTHOR": "Sphaira Sports Club"
+      }
+    },
+    "STEP2": {
+      "SUBTITLE": "Fill in your details to create your account"
+    },
+    "CARDS": {
+      "CLUB": {
+        "DESC": "Manage your club professionally",
+        "FEAT_1": "Team management",
+        "FEAT_2": "Fee management",
+        "FEAT_3": "Parent app"
+      },
+      "COACH": {
+        "DESC": "Join a club's technical staff",
+        "FEAT_1": "Player profiles",
+        "FEAT_2": "Technical tracking",
+        "FEAT_3": "Performance reports"
+      }
+    },
+    "ROLE": {
+      "LABEL": "What is your role?",
+      "TRAINER": "Coach",
+      "PHYSIO": "Physiotherapist",
+      "NUTRITIONIST": "Nutritionist"
+    },
+    "FORM": {
+      "PROFILE_DEFAULT": "Are you a club or a coach?",
+      "PROFILE_TYPE": "Profile type",
+      "FOUNDATION_DATE": "Foundation date",
+      "BIRTH_DATE": "Date of birth"
+    },
+    "MODAL_CLUB": {
+      "TITLE": "Confirmation required",
+      "SUBTITLE": "Registration exclusive for authorized clubs",
+      "SECURITY_TEXT": "For security, club registration requires an access password. If you don't have one, request it:",
+      "PASSWORD_LABEL": "Access password",
+      "PASSWORD_PLACEHOLDER": "Enter the password",
+      "CANCEL": "Cancel",
+      "SUBMIT": "Access"
+    },
+    "MODAL_COACH": {
+      "SUBTITLE": "Read this before continuing"
+    },
+    "MODAL_PRICING": {
+      "TITLE": "Registration complete!",
+      "SUBTITLE": "Welcome to Sphaira Tech",
+      "DISCOUNT": "50% DISCOUNT",
+      "HEADLINE": "Start free, grow without limits",
+      "TRIAL": "Try it 7 days and then:",
+      "FEAT_1": "Save more than 30% with this plan",
+      "FEAT_2": "1-year commitment",
+      "FEAT_3": "Full Control",
+      "FEAT_4": "Complete Features",
+      "FEAT_5": "Extended Collaboration",
+      "CTA": "Start free week",
+      "TERMS_PREFIX": "I accept the",
+      "TERMS_LINK": "contract terms"
     }
   },
   "ERRORS": {
@@ -374,6 +497,7 @@
     "TERMS_REQUIRED": "You must accept the terms and conditions"
   },
   "CUADROMANDO": {
+    "LOAD_ERROR": "Could not load the dashboard. Please try again.",
     "SUBMENU": {
       "BACK": "Dashboard"
     },
@@ -419,11 +543,97 @@
       "VS": "VS"
     }
   },
+  "SIDEBAR": {
+    "SECTION_GENERAL": "General",
+    "SECTION_CLUB": "Club",
+    "SECTION_COACH": "Coach",
+    "SECTION_TEAM": "Team",
+    "SECTION_PLAYER": "Player",
+    "SECTION_ADMIN": "Administration",
+    "HOME": "Home",
+    "AI_ASSISTANT": "AI Assistant",
+    "DASHBOARD": "Dashboard",
+    "TEAMS": "Teams",
+    "DOCUMENTS": "Documents",
+    "FEES": "Fees",
+    "CLOTHING": "Clothing",
+    "SPONSORS": "Sponsors",
+    "NOTIFICATIONS": "Notifications",
+    "CALENDAR": "Calendar",
+    "TASKS": "Tasks",
+    "PLAYERS": "Players",
+    "INFO_TEAM": "Team info",
+    "STATS_TEAM": "Team statistics",
+    "STATS_PLAYERS": "Player statistics",
+    "STATS_PLAYERS_SHORT": "Player stats",
+    "STATS_TEAM_SHORT": "Team stats",
+    "STANDINGS": "Standings",
+    "GALLERY": "Gallery",
+    "INJURIES": "Injuries",
+    "DEBRIEF": "Debrief",
+    "MY_PROFILE": "My profile",
+    "PERSONAL_DATA": "Personal data",
+    "PAY_FEES": "Pay fees",
+    "DOCUMENTATION": "Documentation",
+    "ADMIN": "Admin",
+    "REGISTERS": "Registers",
+    "ACTIVITY": "Activity",
+    "CHARTS": "Charts",
+    "SUGGESTIONS": "Suggestions",
+    "SCOUTING": "Scouting",
+    "SCOUTING_VIDEOS": "Scouting Videos",
+    "VIDEO_ANALYSIS": "Video Analysis",
+    "VIDEO_ANALYSIS_HUB": "Video Analysis",
+    "VIDEO_ANALYSIS_PROJECTS": "Analysis projects",
+    "VIDEO_ANALYSIS_NEW_PROJECT": "New project",
+    "VIDEO_ANALYSIS_WORKSPACE": "Analysis workspace",
+    "VIDEO_ANALYSIS_TEMPLATES": "Analysis templates",
+    "VIDEO_ANALYSIS_PLAYLISTS": "Playlists",
+    "VIDEO_ANALYSIS_HEATMAP": "Heatmap",
+    "VIDEO_ANALYSIS_REPORTS": "AI Reports",
+    "VIDEO_ANALYSIS_EVENTS": "Events",
+    "VIDEO_ANALYSIS_TAGGING": "Tagging",
+    "VIDEO_ANALYSIS_DRAWING": "Draw",
+    "VIDEO_ANALYSIS_FIELD": "Field position",
+    "VIDEO_ANALYSIS_COMPLETE": "Complete analysis",
+    "VIDEO_ANALYSIS_SHORTCUTS": "Keyboard shortcuts",
+    "VIDEO_ANALYSIS_ANALYZE": "Analyze",
+    "SECTION_ERP": "Management / ERP",
+    "ERP_DASHBOARD": "ERP Dashboard",
+    "ERP_INVOICES": "Invoices",
+    "ERP_PAYMENTS": "Payments",
+    "ERP_BUDGETS": "Budgets",
+    "ERP_REPORTS": "Reports",
+    "ERP_SETUP": "ERP Setup"
+  },
   "CALENDAR_CLUB": {
     "TITLE": "Club calendar",
     "SUBTITLE": "All trainings and matches from all your teams in one calendar.",
     "LOADING": "Loading calendar...",
     "TODAY": "Today",
+    "DAYS": {
+      "MON": "MON",
+      "TUE": "TUE",
+      "WED": "WED",
+      "THU": "THU",
+      "FRI": "FRI",
+      "SAT": "SAT",
+      "SUN": "SUN"
+    },
+    "MONTHS": {
+      "JAN": "January",
+      "FEB": "February",
+      "MAR": "March",
+      "APR": "April",
+      "MAY": "May",
+      "JUN": "June",
+      "JUL": "July",
+      "AUG": "August",
+      "SEP": "September",
+      "OCT": "October",
+      "NOV": "November",
+      "DEC": "December"
+    },
     "FILTER": {
       "TITLE": "Teams",
       "SHOW_ALL": "Show all",
@@ -441,8 +651,75 @@
       "EMPTY": "No activities scheduled for this day.",
       "TRAINING": "Training",
       "MATCH": "Match",
+      "VS": "vs",
       "GO_TO_CALENDAR": "Go to team calendar",
       "VIEW_DETAIL": "View detail"
+    },
+    "MODAL": {
+      "DATE": "Date",
+      "LOCATION": "Location",
+      "RIVAL": "Rival",
+      "VENUE": "Venue",
+      "TIME": "Time",
+      "GO_TO_DETAIL": "View full detail",
+      "SCHEDULE": "Schedule",
+      "OBJECTIVE": "Objective",
+      "WARMUP": "Warm-up",
+      "MATCH_TYPE": "Match type",
+      "STADIUM": "Stadium / Venue",
+      "MEET_TIME": "Arrival time",
+      "TERRAIN_LOCAL": "Home",
+      "TERRAIN_AWAY": "Away"
+    }
+  },
+  "INJURIES_CLUB": {
+    "TITLE": "Injury management",
+    "SUBTITLE": "Club injury control and tracking",
+    "KPI": {
+      "TOTAL": "Total injuries",
+      "ACTIVE": "Active",
+      "RECOVERING": "Recovering",
+      "CLOSED": "Closed",
+      "PLAYERS_AFFECTED": "Players affected"
+    },
+    "SIDEBAR": {
+      "TITLE": "By player",
+      "NO_DATA": "No data",
+      "ACTIVE_PLURAL": "active",
+      "ACTIVE_SINGULAR": "active"
+    },
+    "FILTERS": {
+      "STATUS": "Status",
+      "ALL": "All",
+      "ACTIVE": "Active",
+      "RECOVERING": "Recovering",
+      "CLOSED": "Closed",
+      "SEVERITY": "Severity",
+      "SEARCH_PLACEHOLDER": "Search player, injury..."
+    },
+    "TABLE": {
+      "PLAYER": "Player",
+      "INJURY": "Injury",
+      "TYPE": "Type",
+      "DATE": "Date",
+      "DAYS": "Days",
+      "STATUS": "Status",
+      "SEVERITY": "Severity",
+      "ACTIONS": "Actions"
+    },
+    "STATUS": {
+      "ACTIVE": "Active",
+      "RECOVERING": "Recovering",
+      "CLOSED": "Closed"
+    },
+    "SEVERITY": {
+      "LEVE": "Mild",
+      "MODERADA": "Moderate",
+      "GRAVE": "Severe"
+    },
+    "EMPTY": {
+      "TITLE": "No injuries",
+      "MESSAGE": "No injuries recorded with current filters."
     }
   },
   "AI_ASSISTANT": {
@@ -577,7 +854,8 @@
       "DATE": "Date",
       "VISIBILITY": "Visibility",
       "REQUIRE_UPLOAD": "Allow upload",
-      "OPEN": "Open document"
+      "OPEN": "Open document",
+      "CREATE_FORM": "Create document"
     },
     "MODAL": {
       "UPLOAD_TITLE": "Upload Document (PDF or Word)",
@@ -598,7 +876,9 @@
       "UPLOAD_PROGRESS": "Upload progress",
       "UPLOAD_SUCCESS": "Document uploaded successfully",
       "UPLOAD_ERROR": "Error uploading document",
-      "UPLOAD_WAIT": "Please wait while the upload completes"
+      "UPLOAD_WAIT": "Please wait while the upload completes",
+      "AUTH_TEXT_LABEL": "Authorization text",
+      "AUTH_TEXT_HINT": "This text will appear in the document for the guardian to authorize."
     }
   },
   "CUOTAS": {
@@ -745,7 +1025,8 @@
     "SEND_SUCCESS": "Message sent successfully",
     "TO_CLUB": "To entire club",
     "TO_ALL_COACHES": "To all coaches",
-    "TO_TEAM": "To team {{name}}"
+    "TO_TEAM": "To team {{name}}",
+    "TO_PLACEHOLDER": "Search for a recipient..."
   },
   "TAREAS": {
     "TITLE": "Tactical tasks",
@@ -873,7 +1154,101 @@
     "TITLE_COL": "Title",
     "AMOUNT": "Amount",
     "METHOD": "Method",
-    "TYPE": "Type"
+    "TYPE": "Type",
+    "PLAYER": "Player",
+    "TEAM": "Team",
+    "STATUS": "Status",
+    "ACTIONS": "Actions",
+    "PAID": "Paid",
+    "REMAINING": "Remaining",
+    "PROGRESS": "Progress",
+    "MANDATORY_DEBT": "Mandatory debt",
+    "SEARCH_PLAYER": "Search player...",
+    "ALL_TEAMS": "All teams",
+    "ALL_STATUS": "All statuses",
+    "STATUS_PAID": "Up to date",
+    "STATUS_CURRENT": "Pending",
+    "STATUS_OVERDUE": "Overdue",
+    "STATUS_NONE": "No payments",
+    "IMPUTE": "Impute payment",
+    "HISTORY": "History",
+    "EDIT": "Edit",
+    "CHARGE_CARD": "Charge card",
+    "NO_PLAYERS": "No players found.",
+    "PLAYERS": "players",
+    "NEW_TITLE": "Create new payment",
+    "EDIT_TITLE": "Edit payment",
+    "FIELD_TITLE": "Title",
+    "FIELD_DESCRIPTION": "Description",
+    "FIELD_AMOUNT": "Amount (€)",
+    "FIELD_DEADLINE": "Deadline",
+    "FIELD_MANDATORY": "Is it mandatory?",
+    "FIELD_CHARGE_TYPE": "Charge type",
+    "CHARGE_MANUAL": "Manual (cash, transfer...)",
+    "CHARGE_STRIPE_ONE_TIME": "Stripe - One-time payment",
+    "CHARGE_STRIPE_SUBSCRIPTION": "Stripe - Subscription",
+    "CHARGE_SAVED_CARD": "Charge saved card",
+    "SUBSCRIPTION_CONFIG": "Subscription settings",
+    "FIELD_INTERVAL": "Interval",
+    "FIELD_INTERVAL_COUNT": "Every how many periods",
+    "FIELD_START_DATE": "Start date",
+    "FIELD_END_DATE": "End date",
+    "FIELD_TEAMS": "Teams",
+    "SELECT_ALL_TEAMS": "Select all",
+    "NO_TEAMS_AVAILABLE": "No teams available",
+    "TEAMS_SELECTED": "teams selected",
+    "BTN_CANCEL": "Cancel",
+    "BTN_UPDATE": "Update payment",
+    "BTN_SAVE": "Save payment",
+    "IMPUTE_MODAL": {
+      "TITLE": "Manual payment imputation",
+      "CUOTA": "Fee",
+      "SELECT_CUOTA": "Select fee",
+      "AMOUNT": "Amount (€)",
+      "METHOD": "Payment method",
+      "SELECT_METHOD": "Select method",
+      "METHOD_OTHER": "Other method",
+      "METHOD_OTHER_PLACEHOLDER": "Specify method...",
+      "DATE": "Payment date",
+      "COMMENT": "Comment",
+      "COMMENT_PLACEHOLDER": "Optional notes..."
+    },
+    "CHARGE_MODAL": {
+      "TITLE": "Charge saved card",
+      "NO_CARDS": "This player has no authorized cards.",
+      "SELECT_CARD": "Select card",
+      "SELECT_CUOTA": "Select fee",
+      "AMOUNT": "Amount to charge (€)",
+      "CHARGE": "Charge"
+    },
+    "SUBSCRIPTIONS": {
+      "ALL_STATUS": "All statuses",
+      "ACTIVE": "Active",
+      "PAUSED_LABEL": "Paused",
+      "CANCELED_LABEL": "Canceled",
+      "CUOTA": "Fee",
+      "NEXT_CHARGE": "Next charge",
+      "START_DATE": "Start date",
+      "END_DATE": "End date",
+      "PAUSE": "Pause",
+      "RESUME": "Resume",
+      "CANCEL": "Cancel",
+      "NO_SUBSCRIPTIONS": "No subscriptions match the selected filters."
+    },
+    "EXPORT": {
+      "TITLE": "Export"
+    },
+    "HISTORY_MODAL": {
+      "TITLE": "Payment history",
+      "REFUND_INFO": "Refunds cannot be processed through Sphaira. Contact the club directly to manage any refund.",
+      "EMPTY": "No payments recorded.",
+      "DATE": "Date",
+      "CONCEPT": "Concept",
+      "AMOUNT": "Amount",
+      "METHOD": "Method",
+      "COMMENT": "Comment",
+      "VIEW_RECEIPT": "View receipt"
+    }
   },
   "CLOTHES": {
     "TITLE": "Customize apparel",
@@ -1025,7 +1400,21 @@
     },
     "CUSTOM_FIELDS_BTN": "Customize fields",
     "CUSTOM_FIELDS_TITLE": "Player custom fields",
-    "CUSTOM_FIELDS_DESC": "Define the additional fields that players or parents/guardians of your club will need to complete in their profile."
+    "CUSTOM_FIELDS_DESC": "Define the additional fields that players or parents/guardians of your club will need to complete in their profile.",
+    "MESSAGES": {
+      "DOC_UPLOAD_SUCCESS": "Document uploaded successfully",
+      "DOC_UPLOAD_ERROR": "Error uploading document",
+      "SELECT_FILE": "Please select a file to upload.",
+      "INVALID_IMAGE_FORMAT": "Invalid file format. Please upload an image in PNG or JPEG format.",
+      "PDF_WORD_ONLY": "Only PDF or Word files are allowed.",
+      "ACCEPT_AUTHORIZATION": "You must accept the authorization or terms set by the club.",
+      "CONTENT_UPDATED": "Content updated successfully",
+      "SELECT_TEAM_DROPDOWN": "Select a team from the dropdown.",
+      "MOVED_SUCCESS": "Moved successfully. Refresh to see changes.",
+      "MOVE_SEASON_CONFIRM": "You are about to move this player to another season; they will remain in the current one. Continue?",
+      "PLAYER_MOVED_SUCCESS": "Player moved successfully",
+      "LOAD_ERROR": "Error loading list."
+    }
   },
   "SPONSOR": {
     "TITLE": "Sponsor",
@@ -1060,7 +1449,9 @@
     "STATS_TEAM": "Team statistics",
     "RANKING_RESULTS": "Standings and results",
     "GALLERY": "Gallery",
-    "TEAM_INFO": "Team information"
+    "TEAM_INFO": "Team information",
+    "VIDEO_ANALYSIS": "Video analysis",
+    "ERP": "Management / ERP"
   },
   "VALIDATION": {
     "TITLE": "Validate your account",
@@ -1068,7 +1459,7 @@
     "BUTTON": "Validate account",
     "FOOTER": "Thank you for trusting Sphaira Tech"
   },
-   "DASHBOARD_COACH": {
+  "DASHBOARD_COACH": {
     "TRAINING": "Create training",
     "TASKS": "Tasks",
     "MATCH": "Create match",
@@ -1139,7 +1530,18 @@
       "DNI": "ID number",
       "TEAM": "Team(s)",
       "YEARS": "years",
-      "CLOSE": "Close"
+      "CLOSE": "Close",
+      "ID_DOCUMENT": "ID Document",
+      "NATIONALITY": "Nationality",
+      "ADDRESS": "Address",
+      "FED_LICENSE": "Federation License",
+      "SPORTS_QUAL": "Sports Qualification",
+      "EMERGENCY": "Emergency Contact",
+      "CERTIFICATES": "Certificates",
+      "CERT_SEX": "Sex Offenses Certificate",
+      "CERT_CRIMINAL": "Criminal Record Certificate",
+      "INSURANCE": "Insurance",
+      "FIRST_AID": "First Aid"
     },
     "DNI_MODAL": {
       "TITLE": "Identity document",
@@ -1186,7 +1588,14 @@
     },
     "CUSTOM_FIELDS_BTN": "Custom fields",
     "CUSTOM_FIELDS_TITLE": "Custom profile fields",
-    "CUSTOM_FIELDS_DESC": "Define additional fields that your club's coaches will need to fill in their profile."
+    "CUSTOM_FIELDS_DESC": "Define additional fields that your club's coaches will need to fill in their profile.",
+    "MESSAGES": {
+      "DOC_UPLOAD_SUCCESS": "Document uploaded successfully",
+      "DOC_UPLOAD_ERROR": "Error uploading document",
+      "SELECT_FILE": "Please select a file to upload.",
+      "CUSTOM_FIELDS_SAVED": "Custom fields saved",
+      "LOAD_ERROR": "Error loading list."
+    }
   },
   "DOCUMENTS_CLUB": {
     "TAB_PLAYERS": "Players",
@@ -1229,7 +1638,9 @@
     "UPLOADED": "Uploaded",
     "PENDING": "Pending",
     "CUSTOM_FIELDS_TITLE": "Club custom fields",
-    "CUSTOM_FIELDS_HINT": "These fields have been defined by your club. Please fill in the required information."
+    "CUSTOM_FIELDS_HINT": "These fields have been defined by your club. Please fill in the required information.",
+    "CLUB_DOCS_TITLE": "Club Documents",
+    "CHANGE_PHOTO": "Change photo"
   },
   "DAYS": {
     "MONDAY": "Monday",
@@ -1244,11 +1655,6 @@
     "NONE": "No payment",
     "PENDING": "Pending payments",
     "DONE": "Completed"
-  },
-  "ACTIONS": {
-    "EDIT": "Edit subscriber",
-    "INSERT_PAY": "Add a payment",
-    "VIEW_HISTORY": "View payment history"
   },
   "MODAL": {
     "TITLE": "Subscriber",
@@ -1730,7 +2136,22 @@
     "TEXT_383": "Sat",
     "TEXT_384": "Sun",
     "TEXT_385": "Prev.",
-    "TEXT_386": "Next"
+    "TEXT_386": "Next",
+    "TEXT_387": "Other",
+    "TEXT_388": "Day activities",
+    "TEXT_389": "New activity",
+    "TEXT_390": "Training details",
+    "TEXT_391": "No activity selected",
+    "TEXT_392": "Select an activity from the list or create a new one via \"New activity\".",
+    "TEXT_393": "Responses were not sent because they were already submitted and can only be done once per match.",
+    "TEXT_394": "Responses sent successfully.",
+    "TEXT_395": "WARNING: By enabling this option, your training task will be public and visible to other coaches. Any entered data will be accessible. It is not allowed to publish copyrighted information, data or images without the author's permission. Any content that violates this rule will be removed. Are you sure?",
+    "TEXT_396": "Squad saved",
+    "TEXT_397": "Notifications sent.",
+    "TEXT_398": "Pre-notification sent to parents. Under Not called up you will only see players who have confirmed attendance.",
+    "TEXT_399": "Change saved.",
+    "TEXT_400": "Notification sent.",
+    "TEXT_401": "Match details"
   },
   "SESSION_PDF": {
     "TITLE": "Training Session",
@@ -2100,7 +2521,22 @@
       "PAYMENT_TITLE": "Summary and payment",
       "PAYMENT_DESC": "Review your order summary before proceeding to secure payment.",
       "ORDER_SUMMARY": "Order summary",
-      "SECURE_PAYMENT": "Payment will be securely processed through Stripe."
+      "SECURE_PAYMENT": "Payment will be securely processed through Stripe.",
+      "TAX_ID": "Tax ID / CIF",
+      "TAX_ID_PH": "Enter tax ID",
+      "TAX_ID_INVALID": "Invalid tax ID format",
+      "POSTAL_CODE_PH": "Postal code",
+      "COUNTRY": "Country",
+      "COUNTRY_PH": "Select country",
+      "RESPONSIBLE_ID": "Responsible ID",
+      "RESPONSIBLE_ID_PH": "Enter responsible ID",
+      "RESPONSIBLE_PHONE_PH": "Responsible phone",
+      "CURRENCY": "Currency",
+      "LOCAL_EQUIVALENT": "Local equivalent",
+      "CURRENCY_NOTE": "The currency shown in the app for fees and payments.",
+      "CONTRACT_WITH_TAX_ID": "Contract with Tax ID",
+      "CONTRACT_COUNTRY": "Contract country",
+      "CONTRACT_WITH_ID": "Contract with ID"
     },
     "WIZARD_FREE": {
       "SUBTITLE": "Set up the Free plan for your club",
@@ -2356,17 +2792,43 @@
     "SUGGESTION_AVG_MINUTES": "Average minutes",
     "SUGGESTION_BEST_TEAM": "Best team",
     "SUGGESTION_POINTS_CHART": "Points chart",
+    "SUGGESTION_PERFORMANCE_ANALYSIS": "Performance analysis",
     "SUGGESTION_GOALS_COMPARISON": "Goals comparison",
     "SUGGESTION_AVG_WINS": "Average wins",
     "SUGGESTION_RECENT_STREAKS": "Recent streaks",
     "USER_LABEL": "You:",
     "PLACEHOLDER": "Write your query here...",
     "SEND": "Send",
-    "HINT_CTRL_ENTER": "Press Ctrl+Enter to send"
+    "HINT_CTRL_ENTER": "Press Ctrl+Enter to send",
+    "WELCOME_PLAYERS": "Hello! 👋 I'm your statistics analysis assistant. I can help you visualize and analyze your players' data. How can I help you?",
+    "WELCOME_TEAMS": "Hello! 👋 I'm your statistics analysis assistant. I can help you visualize and analyze your teams' data. How can I help you?",
+    "ERROR_MESSAGE": "❌ Sorry, an error occurred while processing your query. Please try again.",
+    "SHOWING": "Showing",
+    "OF": "of"
+  },
+  "EQUIPOS": {
+    "LINK_COPIED": "Link copied to clipboard!",
+    "LINK_COPY_ERROR": "Could not copy link. Please try again.",
+    "SUBSCRIPTION_REQUIRED_TITLE": "Subscription required",
+    "SUBSCRIPTION_REQUIRED_MESSAGE": "You cannot create more teams. You need to upgrade your subscription. If your club belongs to a federation, contact them to increase the limit.",
+    "GO_TO_SUBSCRIPTION": "Go to subscription",
+    "SELECT_CATEGORY_FIRST": "You must select or create the category first. Writing it is not enough.",
+    "DELETE_TEAM_TITLE": "Delete team",
+    "DELETE_TEAM_MESSAGE": "Are you sure you want to delete the team {{name}}?",
+    "TEAM_DELETED_SUCCESS": "Team deleted successfully",
+    "TEAM_DELETED_ERROR": "Error deleting team",
+    "SELECT_XLSX_FILE": "Please select a file in .xlsx format",
+    "PLAYERS_UPLOADED_SUCCESS": "Players successfully added to teams",
+    "UPLOAD_ERROR": "Error uploading file",
+    "ACCEPT_BROWSER_MANAGEMENT": "You must accept that the subscription is managed from the browser"
   },
   "SCOUTING_CLUB": {
     "TITLE": "Club Scouting",
-    "TABS": { "SEARCH": "Search Players", "WATCHLIST": "My List", "PIPELINE": "Pipeline" },
+    "TABS": {
+      "SEARCH": "Search Players",
+      "WATCHLIST": "My List",
+      "PIPELINE": "Pipeline"
+    },
     "SEARCH": {
       "PLACEHOLDER": "Search by name...",
       "BTN": "Search",
@@ -2407,8 +2869,17 @@
       "REMOVE": "Remove from list",
       "GO_SEARCH": "Search players"
     },
-    "TABLE": { "NAME": "Name", "POSITION": "Position", "STATUS": "Status", "RATING": "Rating", "ACTIONS": "Actions" },
-    "DETAIL": { "TITLE": "Player Profile", "BIO": "Biography" },
+    "TABLE": {
+      "NAME": "Name",
+      "POSITION": "Position",
+      "STATUS": "Status",
+      "RATING": "Rating",
+      "ACTIONS": "Actions"
+    },
+    "DETAIL": {
+      "TITLE": "Player Profile",
+      "BIO": "Biography"
+    },
     "EVAL": {
       "TITLE": "Evaluations",
       "ADD": "New evaluation",
@@ -2422,8 +2893,21 @@
       "CONTEXT_PLACEHOLDER": "E.g. League match day 5",
       "EMPTY": "No evaluations yet"
     },
-    "SCORES": { "TECHNICAL": "Technical", "TACTICAL": "Tactical", "PHYSICAL": "Physical", "MENTAL": "Mental", "POTENTIAL": "Potential", "ATTITUDE": "Attitude" },
-    "FORM": { "NAME": "Name", "POSITION": "Position", "AGE": "Age", "TEAM": "Team", "NOTES": "Notes" },
+    "SCORES": {
+      "TECHNICAL": "Technical",
+      "TACTICAL": "Tactical",
+      "PHYSICAL": "Physical",
+      "MENTAL": "Mental",
+      "POTENTIAL": "Potential",
+      "ATTITUDE": "Attitude"
+    },
+    "FORM": {
+      "NAME": "Name",
+      "POSITION": "Position",
+      "AGE": "Age",
+      "TEAM": "Team",
+      "NOTES": "Notes"
+    },
     "CONFIG": {
       "TITLE": "Scouting Settings",
       "DESC": "Enable or disable advanced scouting features for your club",
@@ -2478,6 +2962,11 @@
     "VIDEO_UPLOAD_TITLE": "Upload your own video",
     "VIDEO_UPLOAD_DESC": "Requires subscription €2.99/month",
     "VIDEO_UPGRADE": "Activate subscription"
+  },
+  "NOTIF_BELL": {
+    "TITLE": "Notifications",
+    "MARK_ALL_READ": "Mark all read",
+    "EMPTY": "You have no notifications"
   },
   "AI_REPORT": {
     "TITLE": "AI Report",

@@ -143,137 +143,145 @@
       </div>
     </div>
 
-    <!-- ACCESO RAPIDO + ACTUALIZAR -->
-    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-        <div class="d-flex gap-2 flex-wrap">
-            <button class="btn btn-outline-primary btn-sm" routerLink="/dashboard/admin-charts">
-                <i class="bi bi-bar-chart-line me-1"></i>Graficas y Estadisticas
-            </button>
-            <button class="btn btn-outline-primary btn-sm" routerLink="/dashboard/admin-sugerencias">
-                <i class="bi bi-chat-left-text me-1"></i>Sugerencias
-            </button>
-            <button class="btn btn-outline-primary btn-sm" routerLink="/dashboard/admin-ai-insights">
-                <i class="bi bi-cpu me-1"></i>Insights IA
-            </button>
-            <button class="btn btn-outline-primary btn-sm" routerLink="/dashboard/admin-ai-usage">
-                <i class="bi bi-robot me-1"></i>Uso de IA
-            </button>
-            <button class="btn btn-outline-primary btn-sm" routerLink="/dashboard/admin-registros">
-                <i class="bi bi-person-plus me-1"></i>Nuevos Registros
-            </button>
+    <!-- PANEL DE HERRAMIENTAS ADMIN -->
+    <div class="admin-toolbar mb-4">
+        <div class="toolbar-header">
+            <span class="toolbar-title"><i class="bi bi-grid-3x3-gap me-2"></i>Herramientas de administración</span>
+            <div class="d-flex align-items-center gap-2">
+                <span *ngIf="lastUpdated" class="text-muted small">
+                    <i class="bi bi-clock me-1"></i>{{ lastUpdated | date:'HH:mm' }}
+                </span>
+                <button class="btn btn-sm btn-refresh" (click)="refreshData()" [disabled]="isRefreshing">
+                    <i class="bi bi-arrow-clockwise me-1" [class.spin-icon]="isRefreshing"></i>
+                    {{ isRefreshing ? 'Actualizando...' : 'Actualizar' }}
+                </button>
+            </div>
         </div>
-        <div class="d-flex align-items-center gap-2">
-            <span *ngIf="lastUpdated" class="text-muted small">
-                <i class="bi bi-clock me-1"></i>Actualizado: {{ lastUpdated | date:'HH:mm' }}
-            </span>
-            <button class="btn btn-sm btn-refresh" (click)="refreshData()" [disabled]="isRefreshing">
-                <i class="bi bi-arrow-clockwise me-1" [class.spin-icon]="isRefreshing"></i>
-                {{ isRefreshing ? 'Actualizando...' : 'Actualizar datos' }}
-            </button>
-        </div>
-    </div>
-
-    <!-- CRM RESUMEN (arriba de la tabla) -->
-    <div class="row g-3 mb-4">
-        <!-- Recordatorios Pendientes -->
-        <div class="col-md-4">
-            <div class="crm-card">
-                <h6 class="crm-card-title"><i class="bi bi-bell me-2"></i>Recordatorios Pendientes</h6>
-                <div *ngIf="pendingReminders.length === 0" class="text-muted small text-center py-3">
-                    Sin recordatorios pendientes
+        <div class="toolbar-groups">
+            <!-- Grupo: Análisis -->
+            <div class="toolbar-group">
+                <div class="toolbar-group-label">Análisis</div>
+                <div class="toolbar-group-buttons">
+                    <a class="tool-btn" routerLink="/dashboard/admin-charts">
+                        <i class="bi bi-bar-chart-line"></i>
+                        <span>Gráficas</span>
+                    </a>
+                    <a class="tool-btn" routerLink="/dashboard/admin-registros">
+                        <i class="bi bi-person-plus"></i>
+                        <span>Registros</span>
+                    </a>
+                    <a class="tool-btn" routerLink="/dashboard/admin-sugerencias">
+                        <i class="bi bi-chat-left-text"></i>
+                        <span>Sugerencias</span>
+                    </a>
+                    <a class="tool-btn" routerLink="/dashboard/admin-prospector">
+                        <i class="bi bi-bullseye"></i>
+                        <span>Prospector</span>
+                    </a>
                 </div>
-                <div *ngFor="let r of pendingReminders" class="crm-item d-flex align-items-start gap-2">
-                    <button class="btn btn-sm btn-outline-success p-0 flex-shrink-0"
-                        style="width: 28px; height: 28px; border-radius: 50%; line-height: 1; margin-top: 1px;"
-                        title="Marcar como hecho"
-                        (click)="completeReminderFromList(r, $event)">
-                        <i class="bi bi-check" style="font-size: 0.8rem;"></i>
-                    </button>
-                    <div class="flex-grow-1 cursor-pointer" (click)="goToClubCrm(r.clubId)">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <span class="fw-semibold small">{{ r.title }}</span>
-                            <span class="text-muted" style="font-size: 0.75rem;">{{ r.dueDate }}</span>
-                        </div>
-                        <div class="text-muted" style="font-size: 0.75rem;">
-                            <i class="bi bi-building me-1"></i>{{ r.clubName }}
-                        </div>
-                    </div>
+            </div>
+            <!-- Separador -->
+            <div class="toolbar-divider"></div>
+            <!-- Grupo: Inteligencia Artificial -->
+            <div class="toolbar-group">
+                <div class="toolbar-group-label">Inteligencia Artificial</div>
+                <div class="toolbar-group-buttons">
+                    <a class="tool-btn tool-btn-ai" routerLink="/dashboard/admin-ai-insights">
+                        <i class="bi bi-cpu"></i>
+                        <span>Insights IA</span>
+                    </a>
+                    <a class="tool-btn tool-btn-ai" routerLink="/dashboard/admin-ai-usage">
+                        <i class="bi bi-robot"></i>
+                        <span>Uso de IA</span>
+                    </a>
+                    <a class="tool-btn tool-btn-ai" routerLink="/dashboard/admin-ai-config">
+                        <i class="bi bi-sliders2"></i>
+                        <span>Config. IA</span>
+                    </a>
                 </div>
             </div>
         </div>
-        <!-- Actividad Reciente de Clubes -->
+    </div>
+
+    <!-- CRM RESUMEN (compacto) -->
+    <div class="row g-2 mb-4">
+        <!-- Recordatorios Pendientes -->
         <div class="col-md-4">
-            <div class="crm-card">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="crm-card-title mb-0"><i class="bi bi-clock-history me-2"></i>Actividad Reciente</h6>
-                    <button class="btn btn-sm btn-ver-todo" routerLink="/dashboard/admin-activity">
-                        Ver todo <i class="bi bi-arrow-right ms-1"></i>
-                    </button>
+            <div class="crm-card crm-card-compact">
+                <div class="crm-card-compact-header">
+                    <span><i class="bi bi-bell me-1"></i>Recordatorios</span>
+                    <span class="crm-count-badge">{{ pendingReminders.length }}</span>
                 </div>
-                <div *ngIf="recentInteractions.length === 0" class="text-muted small text-center py-3">
-                    Sin actividad reciente
-                </div>
-                <div *ngFor="let a of recentInteractions" class="crm-item" (click)="goToClubCrm(a.clubId)">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi {{ getActivityIcon(a.actionType) }} text-muted"></i>
-                        <div class="flex-grow-1">
-                            <div class="fw-semibold small">{{ a.clubName }}</div>
-                            <div class="text-muted" style="font-size: 0.8rem;">{{ a.description | slice:0:60 }}{{ a.description?.length > 60 ? '...' : '' }}</div>
+                <div *ngIf="pendingReminders.length === 0" class="crm-empty">Sin recordatorios pendientes</div>
+                <div *ngFor="let r of pendingReminders; let i = index">
+                    <div *ngIf="i < 4" class="crm-item-compact d-flex align-items-center gap-2">
+                        <button class="btn-check-mini" title="Marcar como hecho"
+                            (click)="completeReminderFromList(r, $event)">
+                            <i class="bi bi-check"></i>
+                        </button>
+                        <div class="flex-grow-1 cursor-pointer" (click)="goToClubCrm(r.clubId)">
+                            <span class="crm-item-title">{{ r.title }}</span>
+                            <span class="crm-item-sub">{{ r.clubName }}</span>
                         </div>
-                        <span class="text-muted" style="font-size: 0.75rem; white-space: nowrap;">{{ a.dateCreated | date:'dd/MM HH:mm' }}</span>
+                        <span class="crm-item-date">{{ r.dueDate }}</span>
+                    </div>
+                </div>
+                <div *ngIf="pendingReminders.length > 4" class="crm-more">+{{ pendingReminders.length - 4 }} más</div>
+            </div>
+        </div>
+        <!-- Actividad Reciente -->
+        <div class="col-md-4">
+            <div class="crm-card crm-card-compact">
+                <div class="crm-card-compact-header">
+                    <span><i class="bi bi-clock-history me-1"></i>Actividad reciente</span>
+                    <a class="crm-ver-todo" routerLink="/dashboard/admin-activity">Ver todo →</a>
+                </div>
+                <div *ngIf="recentInteractions.length === 0" class="crm-empty">Sin actividad reciente</div>
+                <div *ngFor="let a of recentInteractions; let i = index">
+                    <div *ngIf="i < 4" class="crm-item-compact d-flex align-items-center gap-2" (click)="goToClubCrm(a.clubId)">
+                        <i class="bi {{ getActivityIcon(a.actionType) }} crm-act-icon"></i>
+                        <div class="flex-grow-1">
+                            <span class="crm-item-title">{{ a.clubName }}</span>
+                            <span class="crm-item-sub">{{ a.description | slice:0:50 }}{{ a.description?.length > 50 ? '…' : '' }}</span>
+                        </div>
+                        <span class="crm-item-date">{{ a.dateCreated | date:'dd/MM' }}</span>
                     </div>
                 </div>
             </div>
         </div>
         <!-- Clubes en Riesgo (IA) -->
         <div class="col-md-4">
-            <div class="crm-card">
-                <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h6 class="crm-card-title mb-0">
-                        <i class="bi bi-exclamation-triangle me-2"></i>Clubes en Riesgo
-                        <span class="badge badge-ia ms-2">
-                            <i class="bi bi-cpu me-1"></i>IA
-                        </span>
-                    </h6>
-                    <button class="btn btn-sm btn-scan" (click)="scanRiskClubs()" [disabled]="isLoadingRisk" title="Escanear clubes en riesgo con IA">
+            <div class="crm-card crm-card-compact">
+                <div class="crm-card-compact-header">
+                    <span>
+                        <i class="bi bi-exclamation-triangle me-1"></i>Clubes en riesgo
+                        <span class="badge-ia-inline ms-1"><i class="bi bi-cpu"></i> IA</span>
+                    </span>
+                    <button class="btn-scan-mini" (click)="scanRiskClubs()" [disabled]="isLoadingRisk">
                         <i class="bi me-1" [ngClass]="isLoadingRisk ? 'bi-hourglass-split spin-icon' : 'bi-search'"></i>
-                        {{ isLoadingRisk ? 'Analizando...' : 'Escanear' }}
+                        {{ isLoadingRisk ? '…' : 'Escanear' }}
                     </button>
                 </div>
-                <div *ngIf="isLoadingRisk" class="text-center py-3">
-                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-                    <div class="text-muted small mt-1">Analizando con IA...</div>
+                <div *ngIf="isLoadingRisk" class="crm-empty">
+                    <span class="spinner-border spinner-border-sm me-1"></span>Analizando…
                 </div>
-                <div *ngIf="!isLoadingRisk && atRiskClubs.length === 0" class="text-muted small text-center py-3">
-                    <i class="bi bi-shield-check text-success me-1"></i>Pulsa "Escanear" para analizar clubes en riesgo
+                <div *ngIf="!isLoadingRisk && atRiskClubs.length === 0" class="crm-empty">
+                    Pulsa "Escanear" para analizar
                 </div>
                 <ng-container *ngFor="let c of atRiskClubs; let i = index">
-                <div *ngIf="i < 10" class="crm-item crm-risk" (click)="goToClubCrm(c.clubId)"
-                    [ngClass]="{'border-start border-3': true, 'border-danger': c.riskLevel === 'ALTO', 'border-warning': c.riskLevel === 'MEDIO', 'border-info': c.riskLevel === 'BAJO'}">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <span class="fw-semibold small">{{ c.clubName }}</span>
-                        <span class="badge"
-                            [ngClass]="c.riskLevel === 'ALTO' ? 'bg-danger' : c.riskLevel === 'MEDIO' ? 'bg-warning text-dark' : 'bg-info'">
+                    <div *ngIf="i < 4" class="crm-item-compact d-flex align-items-center gap-2" (click)="goToClubCrm(c.clubId)"
+                        [ngClass]="{'risk-alto': c.riskLevel==='ALTO', 'risk-medio': c.riskLevel==='MEDIO', 'risk-bajo': c.riskLevel==='BAJO'}">
+                        <div class="flex-grow-1">
+                            <span class="crm-item-title">{{ c.clubName }}</span>
+                            <span *ngIf="c.reason" class="crm-item-sub">{{ c.reason | slice:0:45 }}{{ c.reason?.length > 45 ? '…' : '' }}</span>
+                        </div>
+                        <span class="risk-badge"
+                            [ngClass]="c.riskLevel==='ALTO' ? 'risk-badge-alto' : c.riskLevel==='MEDIO' ? 'risk-badge-medio' : 'risk-badge-bajo'">
                             {{ c.riskLevel }}
                         </span>
                     </div>
-                    <div *ngIf="c.reason" class="text-muted" style="font-size: 0.7rem;">{{ c.reason }}</div>
-                    <div *ngIf="c.action" class="text-primary" style="font-size: 0.75rem;">
-                        <i class="bi bi-lightbulb me-1"></i>{{ c.action }}
-                    </div>
-                    <div class="d-flex gap-2 mt-1" style="font-size: 0.75rem;">
-                        <span *ngIf="c.actionsLast30 !== undefined" class="text-muted">
-                            <i class="bi bi-activity me-1"></i>{{ c.actionsLast30 }} acciones/30d
-                        </span>
-                        <span *ngIf="c.aiPowered" class="badge-ia-small">
-                            <i class="bi bi-cpu"></i> IA
-                        </span>
-                    </div>
-                </div>
                 </ng-container>
-                <div *ngIf="!isLoadingRisk && atRiskClubs.length > 10" class="text-center mt-2">
-                    <span class="text-muted small">+{{ atRiskClubs.length - 10 }} clubes mas en riesgo</span>
-                </div>
+                <div *ngIf="!isLoadingRisk && atRiskClubs.length > 4" class="crm-more">+{{ atRiskClubs.length - 4 }} más</div>
             </div>
         </div>
     </div>

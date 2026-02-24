@@ -1,0 +1,34 @@
+---
+description: Reglas de seguridad para proteger el entorno de producción de Sphaira. Aplica siempre.
+alwaysApply: true
+---
+
+# PROHIBIDO: Afectar producción
+
+## Entorno de producción activo
+- **API producción**: `https://appsphairatech.com/api`
+- **Panel desplegado**: `https://app.sphairatech.com` o `https://web.appsphairatech.com`
+- **Stripe**: modo **LIVE** — cualquier llamada de pago real cobra dinero real
+
+## Reglas absolutas
+
+### NUNCA hacer sin aprobación explícita del usuario:
+- Modificar `environment.prod.ts` (apunta a producción)
+- Hacer commit o push a ramas de producción (`main`, `master`)
+- Cambiar la URL base de la API en entorno de producción
+- Eliminar o renombrar claves i18n existentes sin verificar todos los usos
+
+### Al trabajar con llamadas a la API:
+- Por defecto asumir que los cambios se prueban en local apuntando a dev
+- Advertir si un cambio en el frontend requiere también un cambio en el backend de producción
+
+### Al modificar estilos globales (`styles.scss`):
+- Advertir que afecta a todas las pantallas en producción
+- Proponer probar visualmente antes de hacer deploy
+
+## Flujo recomendado
+```
+1. Desarrollar en tu rama personal de feature
+2. Probar en local con environment.ts (dev)
+3. PR hacia la rama de integración del equipo → revisión → merge a producción
+```

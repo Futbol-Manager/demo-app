@@ -1,0 +1,132 @@
+<div class="payment-table-container">
+  <!-- Filters -->
+  <div class="row mb-3">
+    <div class="col-md-3">
+      <input type="text" class="form-control" placeholder="{{ 'PAYMENTS.SEARCH_PLAYER' | translate }}"
+             [(ngModel)]="filterNombre" (ngModelChange)="applyFilters()">
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" [(ngModel)]="filterTeamId" (ngModelChange)="onFilterChange()">
+        <option [ngValue]="null">{{ 'PAYMENTS.ALL_TEAMS' | translate }}</option>
+        <option *ngFor="let team of teams" [ngValue]="team.teamId">{{ team.name }}</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" [(ngModel)]="filterEstado" (ngModelChange)="onFilterChange()">
+        <option [ngValue]="null">{{ 'PAYMENTS.ALL_STATUS' | translate }}</option>
+        <option [ngValue]="3">{{ 'PAYMENTS.STATUS_PAID' | translate }}</option>
+        <option [ngValue]="2">{{ 'PAYMENTS.STATUS_CURRENT' | translate }}</option>
+        <option [ngValue]="1">{{ 'PAYMENTS.STATUS_OVERDUE' | translate }}</option>
+        <option [ngValue]="0">{{ 'PAYMENTS.STATUS_NONE' | translate }}</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <div class="d-flex flex-wrap gap-1">
+        <span *ngFor="let pago of pagosClub"
+              class="badge cursor-pointer"
+              [class.bg-primary]="filterPagoIds.includes(pago.pagoClubId)"
+              [class.bg-secondary]="!filterPagoIds.includes(pago.pagoClubId)"
+              (click)="togglePagoFilter(pago.pagoClubId)">
+          {{ pago.titulo }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-4">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">{{ 'ACTIONS.LOADING' | translate }}</span>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-responsive" *ngIf="!loading">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th></th>
+          <th class="cursor-pointer" (click)="toggleSort('nombre')">
+            {{ 'PAYMENTS.PLAYER' | translate }}
+            <i *ngIf="sortColumn === 'nombre'" class="fas" [class.fa-sort-up]="sortDirection === 'asc'" [class.fa-sort-down]="sortDirection === 'desc'"></i>
+          </th>
+          <th class="cursor-pointer" (click)="toggleSort('nameTeam')">{{ 'PAYMENTS.TEAM' | translate }}</th>
+          <th class="text-center">{{ 'PAYMENTS.STATUS' | translate }}</th>
+          <th class="cursor-pointer text-end" (click)="toggleSort('totalDeuda')">{{ 'PAYMENTS.MANDATORY_DEBT' | translate }}</th>
+          <th class="cursor-pointer text-end" (click)="toggleSort('totalPagado')">{{ 'PAYMENTS.PAID' | translate }}</th>
+          <th class="cursor-pointer text-end" (click)="toggleSort('restante')">{{ 'PAYMENTS.REMAINING' | translate }}</th>
+          <th class="text-center">{{ 'PAYMENTS.PROGRESS' | translate }}</th>
+          <th class="text-center">{{ 'PAYMENTS.ACTIONS' | translate }}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let player of paginatedPlayers">
+          <td>
+            <img [src]="player.picturePlayer || 'assets/img/default-avatar.png'"
+                 class="rounded-circle" width="36" height="36" [alt]="player.nombre">
+          </td>
+          <td><strong>{{ player.nombre }}</strong></td>
+          <td>{{ player.nameTeam }}</td>
+          <td class="text-center">
+            <span class="status-dot" [ngClass]="getEstadoClass(player.estado)"
+                  [title]="getEstadoTooltip(player.estado)"></span>
+          </td>
+          <td class="text-end">{{ player.totalDeuda | number:'1.2-2' }}€</td>
+          <td class="text-end">{{ player.totalPagado | number:'1.2-2' }}€</td>
+          <td class="text-end">{{ player.restante | number:'1.2-2' }}€</td>
+          <td class="text-center">
+            <span class="badge bg-info">{{ player.progreso }}</span>
+          </td>
+          <td class="text-center">
+            <div class="btn-group btn-group-sm">
+              <button class="btn btn-outline-success" title="{{ 'PAYMENTS.IMPUTE' | translate }}"
+                      (click)="imputePayment(player)">
+                <i class="fas fa-money-bill-wave"></i>
+              </button>
+              <button class="btn btn-outline-primary" title="{{ 'PAYMENTS.HISTORY' | translate }}"
+                      (click)="viewHistory(player)">
+                <i class="fas fa-history"></i>
+              </button>
+              <button class="btn btn-outline-warning" title="{{ 'PAYMENTS.EDIT' | translate }}"
+                      (click)="editPlayer(player)">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-outline-info" title="{{ 'PAYMENTS.CHARGE_CARD' | translate }}"
+                      (click)="chargeSavedCard(player)">
+                <i class="fas fa-credit-card"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="filteredPlayers.length === 0">
+          <td colspan="9" class="text-center text-muted py-4">
+            {{ 'PAYMENTS.NO_PLAYERS' | translate }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="d-flex justify-content-between align-items-center mt-2" *ngIf="filteredPlayers.length > 0">
+    <div>
+      <select class="form-select form-select-sm d-inline-block" style="width: auto" [(ngModel)]="pageSize" (ngModelChange)="page = 1">
+        <option *ngFor="let size of pageSizes" [ngValue]="size">{{ size }}</option>
+      </select>
+      <span class="ms-2 text-muted">{{ filteredPlayers.length }} {{ 'PAYMENTS.PLAYERS' | translate }}</span>
+    </div>
+    <nav>
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item" [class.disabled]="page === 1">
+          <a class="page-link" (click)="page = page - 1">&laquo;</a>
+        </li>
+        <li class="page-item active">
+          <span class="page-link">{{ page }} / {{ totalPages }}</span>
+        </li>
+        <li class="page-item" [class.disabled]="page >= totalPages">
+          <a class="page-link" (click)="page = page + 1">&raquo;</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

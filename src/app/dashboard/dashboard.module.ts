@@ -1,4 +1,5 @@
 import { NgModule } from '@angular/core';
+import { MarkdownAiPipe } from './pipes/markdown.pipe';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard.component';
 import { HeaderComponent } from './header/header.component';
@@ -83,6 +84,7 @@ import { InfoEntrenadoresComponent } from './info-entrenadores/info-entrenadores
 import { PerfilEntrenadorComponent } from './perfil-entrenador/perfil-entrenador.component';
 import { SessionPdfComponent } from './menu-entrenador/session-pdf/session-pdf.component';
 import { EmptyStateComponent } from '../shared/empty-state/empty-state.component';
+import { DashboardCardComponent } from '../shared/dashboard-card/dashboard-card.component';
 import { SuscripcionClubComponent } from './suscripcion-club/suscripcion-club.component';
 import { WizardFamiliaComponent } from './suscripcion-club/wizard-familia/wizard-familia.component';
 import { WizardClubComponent } from './suscripcion-club/wizard-club/wizard-club.component';
@@ -97,6 +99,7 @@ import { FormRendererComponent } from './shared/form-renderer/form-renderer.comp
 import { AdminRegistrosComponent } from './admin-registros/admin-registros.component';
 import { AdminActivityComponent } from './admin-activity/admin-activity.component';
 import { AdminAiUsageComponent } from './admin-ai-usage/admin-ai-usage.component';
+import { AdminAiConfigComponent } from './admin-ai-config/admin-ai-config.component';
 import { CreditsModalComponent } from './credits-modal/credits-modal.component';
 import { AiCreditsSuccessComponent } from './ai-credits-success/ai-credits-success.component';
 import { ConfirmDialogComponent } from './shared/confirm-dialog/confirm-dialog.component';
@@ -110,7 +113,49 @@ import { VideoPlanSuccessComponent } from './video-plan-success/video-plan-succe
 import { SuscripcionCoachComponent } from './suscripcion-coach/suscripcion-coach.component';
 import { CoachSuscripcionSuccessComponent } from './coach-suscripcion-success/coach-suscripcion-success.component';
 import { AdminCoachesComponent } from './admin-coaches/admin-coaches.component';
+import { AdminProspectorComponent } from './admin-prospector/admin-prospector.component';
 import { TaskEditModalComponent } from './task-edit-modal/task-edit-modal.component';
+import { FormTemplateSelectorComponent } from './shared/form-template-selector/form-template-selector.component';
+import { FormTemplatesComponent } from './debrief/form-templates/form-templates.component';
+import { PaymentTableComponent } from './new-cuotas/components/payment-table/payment-table.component';
+import { PaymentFormModalComponent } from './new-cuotas/components/payment-form-modal/payment-form-modal.component';
+import { ImputePaymentModalComponent } from './new-cuotas/components/impute-payment-modal/impute-payment-modal.component';
+import { PaymentHistoryModalComponent } from './new-cuotas/components/payment-history-modal/payment-history-modal.component';
+import { SubscriptionManagerComponent } from './new-cuotas/components/subscription-manager/subscription-manager.component';
+import { ChargeSavedCardModalComponent } from './new-cuotas/components/charge-saved-card-modal/charge-saved-card-modal.component';
+import { ExportButtonComponent } from './new-cuotas/components/export-button/export-button.component';
+import { AutomaticPaymentsComponent } from './new-cuotas/components/automatic-payments/automatic-payments.component';
+import { NotificationBellComponent } from './shared/notification-bell/notification-bell.component';
+import { VideoAnalysisHubComponent } from './video-analysis/hub/video-analysis-hub.component';
+import { VideoAnalysisWorkspaceComponent } from './video-analysis/workspace/video-analysis-workspace.component';
+import { TemplateListComponent } from './video-analysis/templates/template-list.component';
+import { TemplateEditorComponent } from './video-analysis/templates/template-editor.component';
+import { VideoPlayerComponent } from './video-analysis/workspace/video-player/video-player.component';
+import { AnalysisTimelineComponent } from './video-analysis/workspace/analysis-timeline/analysis-timeline.component';
+import { TaggingPanelComponent } from './video-analysis/workspace/tagging-panel/tagging-panel.component';
+import { EventListComponent } from './video-analysis/workspace/event-list/event-list.component';
+import { DrawingOverlayComponent } from './video-analysis/workspace/drawing-overlay/drawing-overlay.component';
+import { FieldPositionComponent } from './video-analysis/workspace/field-position/field-position.component';
+import { HeatmapVisualizerComponent } from './video-analysis/heatmap/heatmap-visualizer.component';
+import { PlaylistBuilderComponent } from './video-analysis/playlists/playlist-builder.component';
+import { PlaylistViewerComponent } from './video-analysis/playlists/playlist-viewer.component';
+import { AiReportGeneratorComponent } from './video-analysis/reports/ai-report-generator.component';
+import { CanvasTaggerWindowComponent } from './video-analysis/canvas-tagger-window/canvas-tagger-window.component';
+import { ScreenCaptureWorkspaceComponent } from './video-analysis/screen-capture/screen-capture-workspace.component';
+import { ExternalVideoWorkspaceComponent } from './video-analysis/external-workspace/external-video-workspace.component';
+import { ClipAnnotationEditorComponent } from './video-analysis/workspace/clip-annotation-editor/clip-annotation-editor.component';
+import { ErpDashboardComponent } from './erp/erp-dashboard/erp-dashboard.component';
+import { ErpAccountsComponent } from './erp/erp-accounts/erp-accounts.component';
+import { ErpJournalEntriesComponent } from './erp/erp-journal-entries/erp-journal-entries.component';
+import { ErpSalesInvoicesComponent } from './erp/erp-sales-invoices/erp-sales-invoices.component';
+import { ErpPurchaseInvoicesComponent } from './erp/erp-purchase-invoices/erp-purchase-invoices.component';
+import { ErpPaymentsComponent } from './erp/erp-payments/erp-payments.component';
+import { ErpCustomersComponent } from './erp/erp-customers/erp-customers.component';
+import { ErpSuppliersComponent } from './erp/erp-suppliers/erp-suppliers.component';
+import { ErpBudgetsComponent } from './erp/erp-budgets/erp-budgets.component';
+import { ErpReportsComponent } from './erp/erp-reports/erp-reports.component';
+import { ErpSetupComponent } from './erp/erp-setup/erp-setup.component';
+import { ErpAiConsentModalComponent } from './erp/erp-ai-consent-modal/erp-ai-consent-modal.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -187,6 +232,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AsistenteIaCoachComponent,
     AiFabComponent,
     Nl2brPipe,
+    MarkdownAiPipe,
     LesionesComponent,
     LesionesEquipoComponent,
     LesionesClubComponent,
@@ -194,6 +240,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     PerfilEntrenadorComponent,
     SessionPdfComponent,
     EmptyStateComponent,
+    DashboardCardComponent,
     SuscripcionClubComponent,
     WizardFamiliaComponent,
     WizardClubComponent,
@@ -208,6 +255,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AdminRegistrosComponent,
     AdminActivityComponent,
     AdminAiUsageComponent,
+    AdminAiConfigComponent,
     CreditsModalComponent,
     AiCreditsSuccessComponent,
     ConfirmDialogComponent,
@@ -221,7 +269,49 @@ export function HttpLoaderFactory(http: HttpClient) {
     SuscripcionCoachComponent,
     CoachSuscripcionSuccessComponent,
     AdminCoachesComponent,
+    AdminProspectorComponent,
     TaskEditModalComponent,
+    FormTemplateSelectorComponent,
+    FormTemplatesComponent,
+    PaymentTableComponent,
+    PaymentFormModalComponent,
+    ImputePaymentModalComponent,
+    PaymentHistoryModalComponent,
+    SubscriptionManagerComponent,
+    ChargeSavedCardModalComponent,
+    ExportButtonComponent,
+    NotificationBellComponent,
+    AutomaticPaymentsComponent,
+    VideoAnalysisHubComponent,
+    VideoAnalysisWorkspaceComponent,
+    TemplateListComponent,
+    TemplateEditorComponent,
+    VideoPlayerComponent,
+    AnalysisTimelineComponent,
+    TaggingPanelComponent,
+    EventListComponent,
+    DrawingOverlayComponent,
+    FieldPositionComponent,
+    HeatmapVisualizerComponent,
+    PlaylistBuilderComponent,
+    PlaylistViewerComponent,
+    AiReportGeneratorComponent,
+    CanvasTaggerWindowComponent,
+    ScreenCaptureWorkspaceComponent,
+    ExternalVideoWorkspaceComponent,
+    ClipAnnotationEditorComponent,
+    ErpDashboardComponent,
+    ErpAccountsComponent,
+    ErpJournalEntriesComponent,
+    ErpSalesInvoicesComponent,
+    ErpPurchaseInvoicesComponent,
+    ErpPaymentsComponent,
+    ErpCustomersComponent,
+    ErpSuppliersComponent,
+    ErpBudgetsComponent,
+    ErpReportsComponent,
+    ErpSetupComponent,
+    ErpAiConsentModalComponent,
   ],
   imports: [
     CommonModule,

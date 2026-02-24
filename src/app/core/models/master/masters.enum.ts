@@ -16,6 +16,6 @@ export enum ApiEnvironments{
  * Carpetas de las imágenes según el entorno en el que nos encontremos
  */
 export enum ImageEnvironments{
-    DESA = '/images-desa',
+    DESA = '/images',
     PRO = '/images',
 }

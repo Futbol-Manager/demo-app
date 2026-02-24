@@ -156,6 +156,16 @@ export class MisTareasComponent implements OnInit, OnDestroy {
       : 'https://appsphairatech.com/images/task-board/blank.png';
   }
 
+  parseExtraFields(raw: string | undefined): { name: string; value: string }[] {
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
   private emptyForm(): Partial<StoredTask> {
     return {
       slogans: '',

@@ -2,12 +2,6 @@
    SPHAIRA – Club Dashboard: Lesiones
    ═══════════════════════════════════════════════════════════════════ */
 
-$sphaira-green: #31b270;
-$sphaira-night: #002c40;
-$sphaira-teal: #1f8f8a;
-$sphaira-accent: #22bf63;
-$sphaira-bg: #f4f7fa;
-
 :host {
   display: block;
   font-family: 'Archivo', sans-serif;
@@ -22,7 +16,7 @@ $sphaira-bg: #f4f7fa;
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  color: $sphaira-night;
+  color: var(--color-navy);
   font-weight: 600;
   font-size: 0.9rem;
   opacity: 0.7;
@@ -33,11 +27,11 @@ $sphaira-bg: #f4f7fa;
 
 /* ═══════ HEADER ═══════ */
 .lesiones-club-header {
-  background: linear-gradient(135deg, $sphaira-night 0%, $sphaira-teal 100%);
+  background: var(--header-gradient);
   border-radius: 16px;
   padding: 1.5rem 2rem;
   margin-bottom: 1.25rem;
-  color: #fff;
+  color: var(--text-on-navy);
 }
 .page-title {
   font-size: 1.4rem;
@@ -63,11 +57,11 @@ $sphaira-bg: #f4f7fa;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 14px;
   padding: 1rem 1.25rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e9ecef;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
 }
 .kpi-icon {
   width: 44px;
@@ -79,21 +73,29 @@ $sphaira-bg: #f4f7fa;
   font-size: 1.25rem;
   flex-shrink: 0;
 }
-.kpi-total .kpi-icon { background: rgba(31, 143, 138, 0.12); color: $sphaira-teal; }
-.kpi-active .kpi-icon { background: rgba(220, 53, 69, 0.12); color: #dc3545; }
-.kpi-recovering .kpi-icon { background: rgba(255, 193, 7, 0.12); color: #e0a800; }
-.kpi-closed .kpi-icon { background: rgba(49, 178, 112, 0.12); color: $sphaira-green; }
-.kpi-players .kpi-icon { background: rgba(13, 110, 253, 0.12); color: #0d6efd; }
+.kpi-total .kpi-icon { background: rgba(31, 143, 138, 0.12); color: #1f8f8a; }
+.kpi-active .kpi-icon { background: rgba(220, 53, 69, 0.12); color: var(--badge-danger); }
+.kpi-recovering .kpi-icon { background: rgba(255, 193, 7, 0.12); color: var(--badge-warning); }
+.kpi-closed .kpi-icon { background: rgba(var(--color-primary-rgb), 0.12); color: var(--color-primary); }
+.kpi-players .kpi-icon { background: rgba(13, 110, 253, 0.12); color: var(--badge-info); }
+
+body.dark {
+  .kpi-total .kpi-icon { background: rgba(31, 143, 138, 0.20); }
+  .kpi-active .kpi-icon { background: rgba(220, 53, 69, 0.20); }
+  .kpi-recovering .kpi-icon { background: rgba(255, 193, 7, 0.20); }
+  .kpi-closed .kpi-icon { background: rgba(var(--color-primary-rgb), 0.20); }
+  .kpi-players .kpi-icon { background: rgba(13, 110, 253, 0.20); }
+}
 
 .kpi-number {
   font-size: 1.5rem;
   font-weight: 800;
-  color: $sphaira-night;
+  color: var(--text-primary);
   line-height: 1;
 }
 .kpi-label {
   font-size: 0.75rem;
-  color: #8a9bab;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 .kpi-info {
@@ -112,20 +114,20 @@ $sphaira-bg: #f4f7fa;
 
 /* ═══════ SIDEBAR ═══════ */
 .sidebar-panel {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 14px;
   padding: 1.25rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e9ecef;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
   max-height: 600px;
   overflow-y: auto;
 }
 .panel-title {
   font-size: 0.95rem;
   font-weight: 700;
-  color: $sphaira-night;
+  color: var(--text-primary);
   margin-bottom: 1rem;
-  i { color: $sphaira-teal; }
+  i { color: var(--color-primary); }
 }
 .team-stats-list {
   display: flex;
@@ -142,18 +144,18 @@ $sphaira-bg: #f4f7fa;
   transition: all 0.2s;
   border: 1px solid transparent;
   &:hover {
-    background: #f4f7fa;
-    border-color: #e0e5ea;
+    background: var(--bg-hover);
+    border-color: var(--border-color);
   }
   &.active {
-    background: rgba(31, 143, 138, 0.08);
-    border-color: $sphaira-teal;
+    background: rgba(var(--color-primary-rgb), 0.08);
+    border-color: var(--color-primary);
   }
 }
 .team-stat-name {
   font-size: 0.82rem;
   font-weight: 600;
-  color: $sphaira-night;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -166,15 +168,15 @@ $sphaira-bg: #f4f7fa;
 }
 .badge-active {
   background: rgba(220, 53, 69, 0.12);
-  color: #dc3545;
+  color: var(--badge-danger);
   font-size: 0.7rem;
   font-weight: 700;
   padding: 2px 8px;
   border-radius: 8px;
 }
 .badge-total {
-  background: #f0f2f5;
-  color: #5a6a7a;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   font-size: 0.7rem;
   font-weight: 700;
   padding: 2px 8px;
@@ -183,18 +185,18 @@ $sphaira-bg: #f4f7fa;
 .empty-sidebar {
   text-align: center;
   padding: 2rem 1rem;
-  color: #8a9bab;
+  color: var(--text-muted);
   i { font-size: 2rem; display: block; margin-bottom: 0.5rem; }
   span { font-size: 0.82rem; }
 }
 
 /* ═══════ MAIN PANEL ═══════ */
 .main-panel {
-  background: #fff;
+  background: var(--bg-card);
   border-radius: 14px;
   padding: 1.25rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
-  border: 1px solid #e9ecef;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
 }
 
 /* ═══════ FILTERS BAR ═══════ */
@@ -211,24 +213,24 @@ $sphaira-bg: #f4f7fa;
   flex-wrap: wrap;
 }
 .filter-chip {
-  border: 1px solid #e0e5ea;
-  background: #fff;
-  color: #5a6a7a;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-secondary);
   font-size: 0.78rem;
   font-weight: 600;
   padding: 0.35rem 0.85rem;
   border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s;
-  &:hover { background: #f4f7fa; }
+  &:hover { background: var(--bg-hover); }
   &.active {
-    background: $sphaira-night;
-    color: #fff;
-    border-color: $sphaira-night;
+    background: var(--color-navy);
+    color: var(--text-on-navy);
+    border-color: var(--color-navy);
   }
-  &.chip-active.active { background: #dc3545; border-color: #dc3545; }
-  &.chip-recovering.active { background: #e0a800; border-color: #e0a800; }
-  &.chip-closed.active { background: $sphaira-green; border-color: $sphaira-green; }
+  &.chip-active.active { background: var(--badge-danger); border-color: var(--badge-danger); color: var(--text-on-primary); }
+  &.chip-recovering.active { background: var(--badge-warning); border-color: var(--badge-warning); color: var(--text-on-primary); }
+  &.chip-closed.active { background: var(--color-primary); border-color: var(--color-primary); color: var(--text-on-primary); }
 }
 
 .filter-controls {
@@ -241,7 +243,7 @@ $sphaira-bg: #f4f7fa;
   border-radius: 10px;
   font-size: 0.8rem;
   max-width: 180px;
-  border-color: #e0e5ea;
+  border-color: var(--border-input);
 }
 .search-input-wrap {
   position: relative;
@@ -250,24 +252,24 @@ $sphaira-bg: #f4f7fa;
     left: 10px;
     top: 50%;
     transform: translateY(-50%);
-    color: #8a9bab;
+    color: var(--text-muted);
     font-size: 0.85rem;
   }
   input {
     padding-left: 2rem;
     border-radius: 10px;
     font-size: 0.8rem;
-    border-color: #e0e5ea;
+    border-color: var(--border-input);
     min-width: 180px;
     &:focus {
-      border-color: $sphaira-teal;
-      box-shadow: 0 0 0 3px rgba(31, 143, 138, 0.1);
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
     }
   }
 }
 .results-count {
   font-size: 0.78rem;
-  color: #8a9bab;
+  color: var(--text-muted);
   margin-bottom: 0.5rem;
 }
 
@@ -285,28 +287,28 @@ $sphaira-bg: #f4f7fa;
     white-space: nowrap;
   }
   thead th {
-    background: #f8fafb;
+    background: var(--bg-surface);
     font-weight: 700;
-    color: $sphaira-night;
-    border-bottom: 2px solid #e9ecef;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-color);
     font-size: 0.78rem;
     text-transform: uppercase;
     letter-spacing: 0.3px;
   }
   tbody tr {
-    border-bottom: 1px solid #f0f2f5;
+    border-bottom: 1px solid var(--border-color);
     transition: background 0.15s;
-    &:hover { background: #fafbfc; }
+    &:hover { background: var(--bg-hover); }
   }
 }
 .td-player {
   font-weight: 600;
-  color: $sphaira-night;
-  i { color: $sphaira-teal; }
+  color: var(--text-primary);
+  i { color: var(--color-primary); }
 }
 .td-days {
   font-weight: 700;
-  color: $sphaira-night;
+  color: var(--text-primary);
 }
 .severity-badge {
   display: inline-block;
@@ -324,7 +326,7 @@ $sphaira-bg: #f4f7fa;
 .empty-table {
   text-align: center;
   padding: 3rem 2rem;
-  color: #8a9bab;
+  color: var(--text-muted);
   p { margin: 1rem 0; font-size: 0.9rem; }
 }
 
@@ -334,7 +336,7 @@ $sphaira-bg: #f4f7fa;
 }
 .skeleton-bar {
   height: 40px;
-  background: linear-gradient(90deg, #f0f2f5 25%, #e8eaed 50%, #f0f2f5 75%);
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-hover) 50%, var(--bg-surface) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 10px;
@@ -351,7 +353,7 @@ $sphaira-bg: #f4f7fa;
 }
 .skeleton-cell {
   height: 20px;
-  background: linear-gradient(90deg, #f0f2f5 25%, #e8eaed 50%, #f0f2f5 75%);
+  background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-hover) 50%, var(--bg-surface) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s infinite;
   border-radius: 6px;

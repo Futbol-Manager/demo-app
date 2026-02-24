@@ -1,0 +1,21 @@
+.list-group-item {
+  cursor: pointer;
+
+  &.active {
+    background-color: #e8f0fe;
+    border-color: #4285f4;
+    color: inherit;
+  }
+
+  .form-check-input {
+    margin-top: 0;
+  }
+}
+
+.modal-backdrop {
+  z-index: 1040;
+}
+
+.modal {
+  z-index: 1050;
+}

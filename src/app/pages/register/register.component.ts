@@ -47,13 +47,12 @@ export class RegisterComponent implements OnInit {
   newRegistro: boolean = false;
   activeTab: 'padre' | 'hijos' = 'padre';
   selectOptions = [
-    { value: '0', label: '¿Eres un club o un entrenador?' },
-    { value: '1', label: 'Club' },
-    { value: '2', label: 'Entrenador' },
-    // Opciones eliminadas
-    { value: '3', label: 'Jugador/Padre' },
-    { value: '4', label: 'Jugador' },
-    { value: '5', label: 'Scouter' },
+    { value: '0', label: 'REGISTER.FORM.PROFILE_DEFAULT' },
+    { value: '1', label: 'REGISTER.USER_TYPE.CLUB.TITLE' },
+    { value: '2', label: 'REGISTER.USER_TYPE.COACH.TITLE' },
+    { value: '3', label: 'REGISTER.USER_TYPE.PLAYER_PARENT.TITLE' },
+    { value: '4', label: 'REGISTER.USER_TYPE.PLAYER.TITLE' },
+    { value: '5', label: 'REGISTER.USER_TYPE.SCOUT.TITLE' },
   ];
   msgForm = false;
   showPPlayer = false;
@@ -78,11 +77,29 @@ export class RegisterComponent implements OnInit {
   passwordValida: boolean | null = null;
 
   staffRoleOptions = [
-    { value: 2, label: 'Entrenador' },
-    { value: 6, label: 'Fisioterapeuta' },
-    { value: 7, label: 'Nutricionista' },
+    { value: 2, label: 'REGISTER.ROLE.TRAINER' },
+    { value: 6, label: 'REGISTER.ROLE.PHYSIO' },
+    { value: 7, label: 'REGISTER.ROLE.NUTRITIONIST' },
   ];
   selectedStaffRole: number = 2;
+
+  /* ── Password visibility toggles ── */
+  showPassClub      = false;
+  showPassClub2     = false;
+  showPassCoach     = false;
+  showPassCoach2    = false;
+  showPassClubModal = false;
+
+  /** Retorna 1-4 según fortaleza de la contraseña */
+  getPasswordStrength(pwd: string): number {
+    if (!pwd) return 0;
+    let score = 0;
+    if (pwd.length >= 8)  score++;
+    if (pwd.length >= 12) score++;
+    if (/[A-Z]/.test(pwd) && /[a-z]/.test(pwd)) score++;
+    if (/[0-9]/.test(pwd) && /[^A-Za-z0-9]/.test(pwd)) score++;
+    return Math.max(1, score);
+  }
 
   inputPassword: string = '';
   readonly realPassword = 'RegistroClubesST2025'; // la contraseña que quieras validar

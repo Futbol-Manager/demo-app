@@ -39,6 +39,8 @@ export class PlayerInfoDialogComponent implements OnInit, OnDestroy, AfterViewIn
   pagosCuotasLoading = false;
   pagosCuotasError = false;
   usuarioActual: any = null;
+  consentRequestLoading = false;
+  consentRequestSent = false;
   radarChart: Chart | null = null;
   partidos: any[] = [];
   partidos2: any[] = [];
@@ -233,6 +235,20 @@ export class PlayerInfoDialogComponent implements OnInit, OnDestroy, AfterViewIn
             ticks: { display: true, stepSize: 25 }
           }
         }
+      }
+    });
+  }
+
+  solicitarConsentimientoIA(): void {
+    if (this.consentRequestLoading || this.consentRequestSent) return;
+    this.consentRequestLoading = true;
+    this.playerService.solicitarConsentimientoIA(this.selectedPlayer.playerId).subscribe({
+      next: () => {
+        this.consentRequestLoading = false;
+        this.consentRequestSent = true;
+      },
+      error: () => {
+        this.consentRequestLoading = false;
       }
     });
   }

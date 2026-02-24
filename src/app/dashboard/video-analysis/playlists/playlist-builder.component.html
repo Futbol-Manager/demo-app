@@ -1,0 +1,82 @@
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i> Análisis de Vídeo
+  </button>
+</div>
+
+<div class="playlists-container">
+  <div class="playlists-header">
+    <div class="playlists-header-left">
+      <div class="playlists-icon"><i class="bi bi-collection-play"></i></div>
+      <div>
+        <h3>Playlists</h3>
+        <span class="playlist-count">{{ playlists.length }} playlists</span>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-new" (click)="openCreateModal()">
+      <i class="bi bi-plus-lg"></i> Nueva playlist
+    </button>
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <div class="empty-state" *ngIf="!isLoading && playlists.length === 0">
+    <div class="empty-card">
+      <i class="bi bi-collection-play"></i>
+      <h5>Sin playlists aún</h5>
+      <p>Crea una playlist para agrupar clips de tus análisis y compartirlos con tu equipo.</p>
+      <button class="btn btn-primary" (click)="openCreateModal()">
+        <i class="bi bi-plus-lg"></i> Crear primera playlist
+      </button>
+    </div>
+  </div>
+
+  <div class="playlists-grid" *ngIf="!isLoading && playlists.length > 0">
+    <div class="playlist-card" *ngFor="let pl of playlists" (click)="openPlaylist(pl)">
+      <div class="playlist-card-top">
+        <div class="playlist-thumb">
+          <i class="bi bi-play-circle"></i>
+        </div>
+        <div class="playlist-info">
+          <h5>{{ pl.title }}</h5>
+          <p *ngIf="pl.description">{{ pl.description }}</p>
+        </div>
+        <button class="btn-icon btn-danger-icon" (click)="deletePlaylist(pl, $event)" title="Eliminar">
+          <i class="bi bi-trash3"></i>
+        </button>
+      </div>
+      <div class="playlist-card-footer">
+        <span><i class="bi bi-film"></i> {{ pl.itemCount || 0 }} clips</span>
+        <span><i class="bi bi-calendar3"></i> {{ formatDate(pl.createdAt) }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Create Modal -->
+<div class="modal-overlay" *ngIf="showCreateModal" (click)="showCreateModal = false">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+    <div class="modal-header-custom">
+      <h4>Nueva Playlist</h4>
+      <button class="btn-close-modal" (click)="showCreateModal = false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="modal-body-custom">
+      <div class="form-group">
+        <label>Título *</label>
+        <input type="text" class="form-control" placeholder="Ej: Mejores jugadas vs Madrid" [(ngModel)]="newTitle">
+      </div>
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea class="form-control" rows="2" [(ngModel)]="newDescription"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer-custom">
+      <button class="btn btn-outline-secondary" (click)="showCreateModal = false">Cancelar</button>
+      <button class="btn btn-primary" (click)="createPlaylist()" [disabled]="!newTitle.trim() || isCreating">
+        {{ isCreating ? 'Creando...' : 'Crear playlist' }}
+      </button>
+    </div>
+  </div>
+</div>

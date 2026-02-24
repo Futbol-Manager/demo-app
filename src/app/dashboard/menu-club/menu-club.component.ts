@@ -54,7 +54,6 @@ export class MenuClubComponent implements OnInit {
       this.route.params.subscribe((params) => {
         // Obtener el valor de teamId de los parámetros
         this.teamId = +params['teamId']; // El + convierte el valor a número
-        //console.log('teamId:', this.teamId);
       });
     });
   }
@@ -80,6 +79,10 @@ export class MenuClubComponent implements OnInit {
         '/dashboard/clasificacion-resultados',
         this.teamId,
       ]);
+    } else if (id === 9) {
+      this.router.navigate(['/dashboard/video-analysis']);
+    } else if (id === 10) {
+      this.router.navigate(['/dashboard/erp']);
     }
   }
   goBack(): void {

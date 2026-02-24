@@ -1,0 +1,286 @@
+$green: #31b270;
+$shadow: 0 8px 40px rgba(0,0,0,.28), 0 2px 12px rgba(0,0,0,.12);
+$radius: 10px;
+
+:host { display: block; }
+
+// ── Floating window ──────────────────────────────────────────────────────────
+.canvas-tagger {
+  position: fixed;
+  z-index: 1200;
+  border-radius: $radius;
+  overflow: hidden;
+  box-shadow: $shadow;
+  border: 1px solid rgba($green, .35);
+  background: #1a1a2e;
+  user-select: none;
+  min-width: 320px;
+  max-width: 1400px;
+}
+
+// ── Header ───────────────────────────────────────────────────────────────────
+.ct-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 0 10px;
+  background: linear-gradient(90deg, #0d1b2a 60%, #102040);
+  cursor: grab;
+  flex-shrink: 0;
+  &:active { cursor: grabbing; }
+}
+.ct-title {
+  font-size: .82rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  i { color: $green; }
+}
+.ct-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.ct-btn {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  font-size: .85rem;
+  padding: 4px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+  &:hover { background: rgba(255,255,255,.08); color: #e2e8f0; }
+}
+.ct-feedback-badge {
+  font-size: .72rem;
+  font-weight: 600;
+  color: $green;
+  background: rgba($green,.12);
+  padding: 3px 8px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+// ── Canvas wrap: maintains 16:9 ───────────────────────────────────────────────
+.ct-canvas-wrap {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%; // 16:9
+}
+
+.ct-canvas {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+// ── Background image ─────────────────────────────────────────────────────────
+.ct-bg-container {
+  position: absolute;
+  pointer-events: none;
+}
+.ct-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  user-select: none;
+}
+
+// ── Category buttons ─────────────────────────────────────────────────────────
+.ct-cat-btn {
+  position: absolute;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  overflow: hidden;
+  padding: 4px 6px;
+  transition: transform .12s, box-shadow .12s, opacity .12s;
+  box-shadow: 0 2px 8px rgba(0,0,0,.3);
+  z-index: 10;
+
+  &:hover {
+    transform: scale(1.04);
+    box-shadow: 0 4px 16px rgba(0,0,0,.45);
+    z-index: 11;
+  }
+  &:active { transform: scale(.96); }
+
+  &.is-active {
+    outline: 3px solid #fff;
+    outline-offset: 2px;
+    z-index: 12;
+  }
+
+  &.shape-circle { border-radius: 50%; }
+  &.shape-diamond { border-radius: 0; }
+  &.shape-square { border-radius: 4px; }
+}
+.ct-cat-name {
+  display: block;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0,0,0,.5);
+}
+.ct-cat-key {
+  font-size: .6rem;
+  font-weight: 800;
+  background: rgba(0,0,0,.35);
+  color: rgba(255,255,255,.9);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-family: 'SF Mono', 'Fira Mono', monospace;
+  letter-spacing: .5px;
+}
+
+// ── Descriptor popup ─────────────────────────────────────────────────────────
+.ct-popup {
+  position: absolute;
+  z-index: 50;
+  width: 240px;
+  background: #0f172a;
+  border: 1px solid rgba($green,.3);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0,0,0,.55);
+  animation: popIn .15s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.ct-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  span { font-size: .82rem; font-weight: 700; color: #fff; }
+  small { font-size: .72rem; color: rgba(255,255,255,.75); font-variant-numeric: tabular-nums; }
+}
+.ct-popup-tags {
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-height: 160px;
+  overflow-y: auto;
+}
+.ct-tag-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border: 1.5px solid transparent;
+  border-radius: 20px;
+  background: rgba(255,255,255,.06);
+  color: #e2e8f0;
+  font-size: .75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  &:hover { background: rgba(255,255,255,.12); }
+  &.selected { background: rgba(255,255,255,.14); font-weight: 700; }
+}
+.ct-tag-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ct-no-tags {
+  color: #64748b; font-size: .75rem; margin: 4px 0; width: 100%; text-align: center;
+}
+.ct-popup-actions {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+.ct-btn-cancel {
+  flex: 0 0 auto;
+  background: none;
+  border: 1px solid rgba(255,255,255,.15);
+  color: #94a3b8;
+  padding: 6px 10px;
+  border-radius: 7px;
+  font-size: .75rem;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 4px;
+  transition: background .15s;
+  &:hover { background: rgba(255,255,255,.06); }
+}
+.ct-btn-confirm {
+  flex: 1;
+  border: none;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 7px;
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  transition: opacity .15s;
+  &:hover { opacity: .85; }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.ct-empty {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; color: #475569;
+  i { font-size: 2.5rem; opacity: .3; }
+  p { margin: 0; font-size: .88rem; font-weight: 600; }
+  small { font-size: .75rem; text-align: center; max-width: 200px; }
+}
+
+// ── SE Resize handle ─────────────────────────────────────────────────────────
+.ct-resize {
+  position: absolute;
+  right: 0; bottom: 0;
+  width: 20px; height: 20px;
+  cursor: se-resize;
+  background: linear-gradient(135deg, transparent 50%, rgba($green,.4) 50%);
+  border-bottom-right-radius: $radius;
+  z-index: 20;
+  &:hover { background: linear-gradient(135deg, transparent 50%, rgba($green,.7) 50%); }
+}
+
+// ── Restore button ────────────────────────────────────────────────────────────
+.ct-restore {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  z-index: 1200;
+  background: #0d1b2a;
+  border: 1px solid rgba($green,.4);
+  color: $green;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: .8rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 6px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.3);
+  transition: background .15s, box-shadow .15s;
+  &:hover { background: #102040; box-shadow: 0 6px 20px rgba(0,0,0,.4); }
+}

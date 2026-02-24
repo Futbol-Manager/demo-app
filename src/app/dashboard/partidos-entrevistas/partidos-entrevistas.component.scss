@@ -1541,3 +1541,148 @@ $transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   .preview-img { width: 140px; height: 140px; }
   .modal-panel { margin: 0 12px; }
 }
+
+// ── Variante azul Sphaira para el modal de suscripción bloqueada ──
+
+.modal-pro-badge--locked {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.45);
+
+  i { font-size: 1rem; }
+}
+
+.modal-pro-header--sphaira {
+  background: linear-gradient(145deg, $primary 0%, #0a3a50 40%, #0c4a60 70%, darken($primary-light, 5%) 100%);
+
+  &::before {
+    background:
+      radial-gradient(circle at 10% 20%,  rgba(14, 165, 233, 0.25),  transparent 40%),
+      radial-gradient(circle at 90% 80%,  rgba($accent, 0.22),        transparent 40%),
+      radial-gradient(circle at 55% 105%, rgba($accent, 0.12),        transparent 50%),
+      radial-gradient(circle at 50% 0%,   rgba(14, 165, 233, 0.1),   transparent 45%);
+  }
+
+  .modal-pro-title    { color: #ffffff; }
+  .modal-pro-subtitle { color: rgba(255, 255, 255, 0.72); }
+}
+
+.modal-pro-icon-ring {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba($accent, 0.18));
+  border: 2px solid rgba(14, 165, 233, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 0 8px rgba($accent, 0.08), 0 0 0 16px rgba(14, 165, 233, 0.04);
+
+  i {
+    font-size: 1.9rem;
+    background: linear-gradient(135deg, #38bdf8, $accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+}
+
+.modal-pro-badge--locked {
+  background: linear-gradient(135deg, #0ea5e9, $accent);
+  box-shadow: 0 4px 16px rgba(14, 165, 233, 0.4);
+  i { font-size: 0.8rem; }
+}
+
+.modal-feature-icon--blue-sphaira {
+  background: linear-gradient(135deg, rgba(14,165,233,0.1), rgba($accent, 0.08));
+  border: 1px solid rgba(14, 165, 233, 0.22);
+  i { background: linear-gradient(135deg, #0ea5e9, $accent); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+}
+
+.modal-feature-icon--navy {
+  background: linear-gradient(135deg, rgba($primary, 0.08), rgba($primary-light, 0.1));
+  border: 1px solid rgba($accent, 0.2);
+  i { color: $accent; }
+}
+
+.btn-request-plan {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 15px 24px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #0ea5e9 0%, #0878b8 40%, $accent 100%);
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all $transition;
+  box-shadow: 0 6px 24px rgba(14, 165, 233, 0.35), 0 2px 8px rgba($accent, 0.2);
+  margin-bottom: 12px;
+  letter-spacing: 0.01em;
+
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 32px rgba(14, 165, 233, 0.45), 0 4px 12px rgba($accent, 0.25);
+  }
+
+  &:active:not(:disabled) { transform: translateY(0); }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+}
+
+.btn-pro-subscribe:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.spin-icon {
+  display: inline-block;
+  animation: spinAnim 0.8s linear infinite;
+}
+
+@keyframes spinAnim {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.request-sent-msg {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px;
+  background: linear-gradient(135deg, rgba(49,178,112,0.08), rgba(34,191,99,0.06));
+  border: 1px solid rgba(49, 178, 112, 0.3);
+  border-radius: 14px;
+  margin-bottom: 16px;
+
+  i {
+    font-size: 2.2rem;
+    color: $accent;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: $text;
+    text-align: center;
+    line-height: 1.5;
+    font-weight: 500;
+  }
+}
+
+.modal-pro-divider {
+  height: 1px;
+  background: $border;
+  margin: 0 28px;
+}

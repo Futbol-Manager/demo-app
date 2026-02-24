@@ -572,7 +572,6 @@ export class PlayerComponent implements OnInit, OnDestroy {
       },
       (error) => {
         console.error('Error al eliminar el jugador:', error);
-        // Puedes manejar el error según tus necesidades
       }
     );
   }
@@ -742,7 +741,8 @@ export class PlayerComponent implements OnInit, OnDestroy {
       parentesco2: 0,
       entidad: '',
       titularBanco: '',
-      iban: ''
+      iban: '',
+      consentimientoIA: 0
     };
   }
 

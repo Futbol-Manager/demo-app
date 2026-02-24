@@ -31,6 +31,11 @@ export class HomeComponent implements OnInit {
   ngOnInit(): void {
   }
 
+  get loginLogoSrc(): string {
+    const isDark = typeof document !== 'undefined' && document.body.classList.contains('dark');
+    return isDark ? 'assets/images/logosphairaw.png' : 'assets/images/Logo_SphairaTech1.png';
+  }
+
   toRegister(event: Event) {
     event.preventDefault();
     this.router.navigate(['/registro']);

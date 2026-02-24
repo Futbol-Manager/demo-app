@@ -1,0 +1,70 @@
+<div class="drawing-container" [class.active]="active">
+  <!-- Canvas overlay -->
+  <canvas #drawingCanvas class="drawing-canvas" [class.drawing-active]="active"
+          (mousedown)="onMouseDown($event)"
+          (mousemove)="onMouseMove($event)"
+          (mouseup)="onMouseUp($event)">
+  </canvas>
+
+  <!-- Drawing toolbar -->
+  <div class="drawing-toolbar" *ngIf="active">
+    <!-- Tools -->
+    <div class="tool-group">
+      <button *ngFor="let tool of tools" class="tool-btn"
+              [class.active]="currentTool === tool.id"
+              (click)="setTool(tool.id)" [title]="tool.label">
+        <i class="bi" [ngClass]="tool.icon"></i>
+      </button>
+    </div>
+
+    <div class="toolbar-divider"></div>
+
+    <!-- Colors -->
+    <div class="color-group">
+      <button *ngFor="let c of colors" class="color-btn"
+              [style.background-color]="c"
+              [class.active]="currentColor === c"
+              (click)="currentColor = c">
+      </button>
+    </div>
+
+    <div class="toolbar-divider"></div>
+
+    <!-- Line width -->
+    <div class="width-group">
+      <input type="range" min="1" max="8" step="1"
+             [(ngModel)]="currentLineWidth" class="width-slider">
+    </div>
+
+    <div class="toolbar-divider"></div>
+
+    <!-- Duration -->
+    <div class="duration-group">
+      <label>Duración:</label>
+      <select [(ngModel)]="drawingDurationMs" class="duration-select">
+        <option [ngValue]="500">0.5s</option>
+        <option [ngValue]="1000">1s</option>
+        <option [ngValue]="2000">2s</option>
+        <option [ngValue]="3000">3s</option>
+        <option [ngValue]="5000">5s</option>
+        <option [ngValue]="10000">10s</option>
+      </select>
+    </div>
+
+    <div class="toolbar-divider"></div>
+
+    <!-- Actions -->
+    <div class="action-group">
+      <button class="action-btn" (click)="undo()" title="Deshacer (Ctrl+Z)">
+        <i class="bi bi-arrow-counterclockwise"></i>
+      </button>
+      <button class="action-btn" (click)="clearAll()" title="Limpiar todo">
+        <i class="bi bi-trash3"></i>
+      </button>
+      <button class="action-btn save-btn" (click)="saveDrawing()" title="Guardar dibujo"
+              [disabled]="shapes.length === 0">
+        <i class="bi bi-check-lg"></i> Guardar
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,4 +1,6 @@
 import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import { forkJoin } from 'rxjs';
+import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
 import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -10,12 +12,13 @@ import * as XLSX from "xlsx";
 import { Player } from 'src/app/core/services/player/player.model';
 import { Location } from '@angular/common';
 import { PlayerService } from 'src/app/core/services/player/player.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { environment } from 'src/environments/environment';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { NotificationService } from 'src/app/core/services/notification/notification.service';
+import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -93,6 +96,7 @@ export class InfoJugadoresComponent implements OnInit {
   listTeamsForCombo: any[] = [];
   showModalMover = false;
   teamId = 0;
+  teamDestino: number = 0;
   addPlayerMoved: boolean = false;
 
   /* ---- Campos personalizados dinámicos ---- */
@@ -104,17 +108,31 @@ export class InfoJugadoresComponent implements OnInit {
   mostrarModalFirma = false;
   firmaUrl = '';
 
+  /* ---- Solicitud masiva de consentimiento IA ---- */
+  solicitudMasivaLoading = false;
+  solicitudMasivaEnviada = false;
+
+  /* ---- Panel IA ---- */
+  aiPanelOpen = false;
+  aiPrompt = '';
+  aiMessages: { role: 'user' | 'assistant'; content: string }[] = [];
+  aiLoading = false;
+  @ViewChild('aiMessagesContainer') aiMessagesContainer!: ElementRef;
+  private historyConvId: string | null = null;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private snackBar: MatSnackBar,
     private clubService: ClubService,
     private playerService: PlayerService,
     private location: Location,
     private teamService: TeamService,
     private loginService: LoginService,
     private dialog: MatDialog,
-    private toastr: ToastrService) { }
+    private notification: NotificationService,
+    private confirmation: ConfirmationService,
+    private toastr: ToastrService,
+    private aiChatService: AiChatService) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -164,20 +182,19 @@ export class InfoJugadoresComponent implements OnInit {
   cargarListadoJugadores(): void {
     this.clubService.getListJugadoresByClubForTemp(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
         if (response && response.data) {
-          // Mapea los datos bajo 'data' a instancias del modelo Team
           this.teams = response.data.teams;
+          this.players = [];
+          this.filteredPlayers = [];
           for (let i = 0; i < this.teams.length; i++) {
             for (let a = 0; a < this.teams[i].players.length; a++) {
-              const p = { ...this.teams[i].players[a] }; // Clonamos para no modificar el original
-              p.teamId = this.teams[i].teamId;           // Añades el nuevo campo
+              const p = { ...this.teams[i].players[a] };
+              p.teamId = this.teams[i].teamId;
               this.filteredPlayers.push(p);
-              //this.filteredPlayers.push(this.teams[i].players[a]);
-              //this.players.push(this.teams[i].players[a]);
               this.players.push(p);
             }
           }
+          this.loadPlayersOfTeam();
         } else {
           console.error('La respuesta del servicio no tiene la estructura esperada', response);
         }
@@ -430,17 +447,16 @@ export class InfoJugadoresComponent implements OnInit {
       this.clubService.uploadDocPadres(file, dto).subscribe({
         next: (res) => {
           this.loadDocuments();
-          this.toastr.success('Documento subido correctamente');
+          this.notification.success('PLAYERS.MESSAGES.DOC_UPLOAD_SUCCESS');
           this.cerrarModalDocumento();
-          // refrescar lista si hace falta
         },
         error: (err) => {
           console.error(err);
-          this.toastr.error('Error al subir el documento');
+          this.notification.error('PLAYERS.MESSAGES.DOC_UPLOAD_ERROR');
         }
       });
     } else {
-      this.toastr.warning('Selecciona un archivo para subir.');
+      this.notification.warning('PLAYERS.MESSAGES.SELECT_FILE');
     }
   }
 
@@ -493,8 +509,7 @@ export class InfoJugadoresComponent implements OnInit {
           this.subirCaraDni(cara);
         }, 1000);
       } else {
-        // Muestra un mensaje de error si el archivo no es PNG o JPEG
-        this.toastr.warning('Formato de archivo no válido. Por favor, sube una imagen en formato PNG o JPEG.');
+        this.notification.warning('PLAYERS.MESSAGES.INVALID_IMAGE_FORMAT');
       }
     }
   }
@@ -558,9 +573,7 @@ export class InfoJugadoresComponent implements OnInit {
                 break;
             }
 
-            this.snackBar.open('Imagen subida correctamente.', 'Cerrar', {
-              duration: 3000,
-            });
+            this.notification.success('PLAYERS.MESSAGES.DOC_UPLOAD_SUCCESS');
           },
           error => {
             console.error('Error al subir la imagen', error);
@@ -634,7 +647,7 @@ export class InfoJugadoresComponent implements OnInit {
       if (['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'].includes(ext || '')) {
         this.archivoSeleccionado = file;
       } else {
-        this.toastr.warning('Solo se permiten archivos PDF o Word.');
+        this.notification.warning('PLAYERS.MESSAGES.PDF_WORD_ONLY');
         this.archivoSeleccionado = null;
       }
     }
@@ -665,7 +678,7 @@ export class InfoJugadoresComponent implements OnInit {
 
   guardarEdicionPersonalizado(): void {
     if (!this.requiereRespuesta) {
-      this.toastr.warning('Debes aceptar la autorización o condiciones puestas por el club.');
+      this.notification.warning('PLAYERS.MESSAGES.ACCEPT_AUTHORIZATION');
       return;
     }
 
@@ -687,14 +700,12 @@ export class InfoJugadoresComponent implements OnInit {
 
     this.clubService.uploadDocPadresPersonalizado(dto).subscribe({
       next: (res) => {
-        //this.loadDocuments();
-        this.toastr.success('Contenido actualizado correctamente');
+        this.notification.success('PLAYERS.MESSAGES.CONTENT_UPDATED');
         this.cerrarModalEditarPersonalizado();
-        // refrescar lista si hace falta
       },
       error: (err) => {
         console.error(err);
-        this.toastr.error('Error al subir el documento');
+        this.notification.error('PLAYERS.MESSAGES.DOC_UPLOAD_ERROR');
       }
     });
   }
@@ -793,43 +804,41 @@ export class InfoJugadoresComponent implements OnInit {
   }
 
   moverJugador(): void {
-    let cuotaTbm = 0;
-    /*const confirmacion = confirm('Pulsa aceptar para cambiar también a las cuotas que tenga ese equipo o pulsa para cancelar y mantener la propia cuota que tenga este jugador.');
-    if (confirmacion) {
-      cuotaTbm = 1;
-    }*/
+    const cuotaTbm = 0;
 
-    if (this.teamSelected == 0) {
-      this.toastr.warning('Selecciona un equipo del desplegable.');
-    } else {
-      this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamSelected, cuotaTbm, this.addPlayerMoved ? 1 : 0).subscribe(
-        (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
-          if (response.data !== null) {
-            this.toastr.success('Movido correctamente, cuando vuelvas a entrar verás los cambios.');
-            this.showModalMover = false;
-            this.addPlayerMoved = false;
-            this.teamSelected = 0;
-          } else {
-            console.error('La respuesta del servicio no tiene la estructura esperada', response);
-          }
-        },
-        (error) => {
-          console.error('Error al cargar el listado de equipos', error);
-        }
-      );
+    if (!this.teamDestino || this.teamDestino == 0) {
+      this.notification.warning('PLAYERS.MESSAGES.SELECT_TEAM_DROPDOWN');
+      return;
     }
+
+    this.teamService.movePlayer(this.playerIdSelected, this.teamId, this.teamDestino, cuotaTbm, this.addPlayerMoved ? 1 : 0).subscribe({
+      next: (response: Response) => {
+        if (response.data !== null) {
+          this.notification.success('PLAYERS.MESSAGES.MOVED_SUCCESS');
+          this.showModalMover = false;
+          this.teamDestino = 0;
+          this.addPlayerMoved = false;
+          this.cargarListadoJugadores();
+        } else {
+          this.notification.errorGeneric();
+        }
+      },
+      error: () => this.notification.errorGeneric()
+    });
   }
 
   openShowModalMover(playerId: number, player: any): void {
-    const jugadorSeleccionado = this.players.find(player => player.playerId === playerId);
-    this.nombreJugador = jugadorSeleccionado.nombre + ' ' + jugadorSeleccionado.apellido;
+    const jugadorSeleccionado = this.players.find(p => p.playerId === playerId);
+    this.nombreJugador = jugadorSeleccionado
+      ? jugadorSeleccionado.nombre + ' ' + jugadorSeleccionado.apellido
+      : '';
     this.playerIdSelected = playerId;
     this.teamId = player.teamId;
+    this.teamDestino = 0;
+    this.addPlayerMoved = false;
 
     this.teamService.getTeamsByClubForCombo(this.clubId, this.temporadaStoredValue).subscribe(
       (response: Response) => {
-        // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null) {
           this.listTeamsForCombo = response.data;
           this.showModalMover = true;
@@ -868,24 +877,158 @@ export class InfoJugadoresComponent implements OnInit {
     return fecha;
   }
 
-  updateTemporada(player: any) {
-    const confirmacion = confirm('Vas a mover este jugador a otra temporada, esto no significa que desaparezca de la actual, ¿estás seguro?');
-    if (confirmacion) {
-      this.clubService.moverPlayerTemporada(this.clubId, player.playerId, this.temporadaStoredValue).subscribe(
-        (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
-          if (response.data) {
-            this.toastr.success('Jugador movido correctamente');
-          } else {
-            console.error('La respuesta del servicio no tiene la estructura esperada', response);
-            this.toastr.error(response.error.msg);
-          }
-        },
-        (error) => {
-          console.error('Error al cargar el listado de equipos', error);
-        }
-      );
+  solicitarConsentimientoMasivo(): void {
+    if (this.solicitudMasivaLoading || this.solicitudMasivaEnviada) return;
+    const sinConsent = this.players.filter(p => !p.consentimientoIA);
+    if (!sinConsent.length) {
+      this.toastr.info('Todos los jugadores ya tienen el consentimiento firmado.');
+      return;
     }
+    this.solicitudMasivaLoading = true;
+    const peticiones = sinConsent.map(p => this.playerService.solicitarConsentimientoIA(p.playerId));
+    forkJoin(peticiones).subscribe({
+      next: () => {
+        this.solicitudMasivaLoading = false;
+        this.solicitudMasivaEnviada = true;
+        this.toastr.success(`Notificación enviada a los tutores de ${sinConsent.length} jugador(es).`);
+      },
+      error: () => {
+        this.solicitudMasivaLoading = false;
+        this.toastr.error('Error al enviar algunas notificaciones.');
+      }
+    });
+  }
+
+  // ===== AI PANEL =====
+  toggleAiPanel(): void {
+    this.aiPanelOpen = !this.aiPanelOpen;
+    if (this.aiPanelOpen && this.aiMessages.length === 0) {
+      this.aiMessages.push({
+        role: 'assistant',
+        content: 'Hola, soy tu asistente IA para la sección de jugadores. Tengo acceso a los datos anonimizados del listado actual. ¿En qué puedo ayudarte?'
+      });
+    }
+  }
+
+  useSuggestion(suggestion: string): void {
+    this.aiPrompt = suggestion;
+    this.sendAiMessage();
+  }
+
+  onKeyDown(event: KeyboardEvent): void {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.sendAiMessage();
+    }
+  }
+
+  sendAiMessage(): void {
+    if (!this.aiPrompt.trim() || this.aiLoading) return;
+
+    const userMessage = this.aiPrompt.trim();
+    this.aiMessages.push({ role: 'user', content: userMessage });
+    this.aiPrompt = '';
+    this.aiLoading = true;
+    setTimeout(() => this.scrollAiToBottom(), 100);
+
+    const { contextText, codeToReal } = this.buildAnonymizedPlayersContext();
+
+    let anonymizedMessage = userMessage;
+    codeToReal.forEach((real, code) => {
+      anonymizedMessage = anonymizedMessage.replace(
+        new RegExp(real.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), code
+      );
+    });
+
+    const enrichedMessage = anonymizedMessage
+      + '\n\n[LISTADO DE JUGADORES - DATOS ANONIMIZADOS]\n' + contextText;
+
+    const history = this.aiMessages.slice(-6).map(m => ({ role: m.role, text: m.content }));
+
+    this.aiChatService.sendMessage(
+      this.userId, this.clubId, 'jugadores', enrichedMessage, 'users', null, history
+    ).subscribe({
+      next: (resp) => {
+        let response = resp.success
+          ? (resp.response || 'Sin respuesta.')
+          : (resp.message || 'Error al consultar la IA.');
+        // De-anonymize: longest codes first to avoid partial matches (JUGADOR_1 inside JUGADOR_10)
+        Array.from(codeToReal.entries())
+          .sort((a, b) => b[0].length - a[0].length)
+          .forEach(([code, real]) => { response = response.split(code).join(real); });
+        this.aiMessages.push({ role: 'assistant', content: response });
+        this.aiLoading = false;
+        this.saveToHistory();
+        setTimeout(() => this.scrollAiToBottom(), 100);
+      },
+      error: () => {
+        this.aiMessages.push({ role: 'assistant', content: 'Error al conectar con la IA. Inténtalo de nuevo.' });
+        this.aiLoading = false;
+        setTimeout(() => this.scrollAiToBottom(), 100);
+      }
+    });
+  }
+
+  private buildAnonymizedPlayersContext(): { contextText: string; codeToReal: Map<string, string> } {
+    const codeToReal = new Map<string, string>();
+    const lines: string[] = ['Código | Posición | Dorsal | Equipo'];
+    const source = this.filteredPlayers.length ? this.filteredPlayers : this.players;
+    source.forEach((p, i) => {
+      const code = `JUGADOR_${i + 1}`;
+      const fullName = `${p.nombre || ''} ${p.apellido || ''}`.trim() || `Jugador ${i + 1}`;
+      codeToReal.set(code, fullName);
+      lines.push(
+        `${code} | ${p.posicion || p.posicionGlobal || '-'} | ${p.dorsal ?? p.numDorsal ?? '-'} | ${p.nameTeam || '-'}`
+      );
+    });
+    return { contextText: lines.join('\n'), codeToReal };
+  }
+
+  private scrollAiToBottom(): void {
+    if (this.aiMessagesContainer) {
+      const element = this.aiMessagesContainer.nativeElement;
+      element.scrollTop = element.scrollHeight;
+    }
+  }
+
+  private saveToHistory(): void {
+    const userMsgs = this.aiMessages.filter(m => m.role === 'user');
+    if (userMsgs.length === 0 || !this.userId) return;
+    const title = '[Jugadores] ' + userMsgs[0].content.substring(0, 40)
+      + (userMsgs[0].content.length > 40 ? '...' : '');
+    const convId = this.historyConvId || ('conv_jugadores_' + Date.now());
+    this.historyConvId = convId;
+    const messages = this.aiMessages
+      .filter(m => m.role === 'user' || m.role === 'assistant')
+      .map(m => ({ role: m.role, text: m.content }));
+    this.aiChatService.saveHistory(this.userId, convId, title, this.clubId, 'info-jugadores', messages).subscribe();
+  }
+
+  updateTemporada(player: any) {
+    this.confirmation.confirm({
+      titleKey: 'ACTIONS.CONFIRM_TITLE',
+      messageKey: 'PLAYERS.MESSAGES.MOVE_SEASON_CONFIRM',
+      confirmKey: 'COMMON.ACCEPT',
+      cancelKey: 'COMMON.CANCEL'
+    }).subscribe((confirmed) => {
+      if (confirmed) {
+        this.clubService.moverPlayerTemporada(this.clubId, player.playerId, this.temporadaStoredValue).subscribe({
+          next: (response: Response) => {
+            if (response.data) {
+              this.notification.success('PLAYERS.MESSAGES.PLAYER_MOVED_SUCCESS');
+            } else {
+              const msg = response?.error?.msg;
+              if (msg) {
+                this.notification.error(msg, false);
+              } else {
+                this.notification.error('PLAYERS.MESSAGES.LOAD_ERROR');
+              }
+            }
+          },
+          error: () => this.notification.errorGeneric()
+        });
+      }
+    });
   }
 
 }

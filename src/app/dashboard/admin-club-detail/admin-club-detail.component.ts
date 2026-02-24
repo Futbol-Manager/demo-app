@@ -4,8 +4,11 @@ import { Location } from '@angular/common';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { CrmService } from 'src/app/core/services/crm/crm.service';
 import { TrackingService } from 'src/app/core/services/tracking/tracking.service';
+import { ClubSubscriptionService } from 'src/app/core/services/subscription/club-subscription.service';
+import { VideoStorageService } from 'src/app/core/services/video-storage/video-storage.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { environment } from 'src/environments/environment';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-admin-club-detail',
@@ -18,7 +21,7 @@ export class AdminClubDetailComponent implements OnInit {
   clubId = 0;
   club: any = null;
   isLoading = true;
-  activeTab: 'info' | 'equipos' | 'entrenadores' | 'crm' | 'sesiones' = 'info';
+  activeTab: 'info' | 'equipos' | 'entrenadores' | 'crm' | 'sesiones' | 'suscripcion' = 'info';
 
   // CRM
   interactions: any[] = [];
@@ -52,6 +55,36 @@ export class AdminClubDetailComponent implements OnInit {
   sessionDateFrom = '';
   sessionDateTo = '';
 
+  // Suscripciones
+  appPlan: any = null;
+  videoPlan: any = null;
+  availableVideoPlans: any[] = [];
+  isLoadingSubs = false;
+
+  // Estado del modal de edición de plan app
+  showAppPlanModal = false;
+  selectedAppPlanType = 'gratuito';
+  selectedAppPlanPeriod = 'monthly';
+  selectedAppPlanPlayerCount = 0;
+  isSavingAppPlan = false;
+
+  // Estado del modal de edición de plan vídeo
+  showVideoPlanModal = false;
+  selectedVideoPlanKey = 'STARTER_1TB';
+  isSavingVideoPlan = false;
+
+  readonly appPlanOptions = [
+    { value: 'gratuito', label: 'Plan Gratuito', icon: 'bi-gift', color: '#6c757d' },
+    { value: 'familia',  label: 'Plan Familia',  icon: 'bi-people', color: '#0d6efd' },
+    { value: 'club',     label: 'Plan Club',     icon: 'bi-shield-check', color: '#198754' },
+  ];
+
+  readonly videoPlanOptions = [
+    { value: 'STARTER_1TB', label: 'Starter 1 TB',  price: '29€/mes',  icon: 'bi-camera-video' },
+    { value: 'PRO_5TB',     label: 'Pro 5 TB',       price: '79€/mes',  icon: 'bi-camera-video-fill' },
+    { value: 'ELITE_10TB',  label: 'Elite 10 TB',    price: '149€/mes', icon: 'bi-collection-play-fill' },
+  ];
+
   // Feedback
   toastMessage = '';
   toastType: 'success' | 'error' = 'success';
@@ -77,7 +110,9 @@ export class AdminClubDetailComponent implements OnInit {
     private location: Location,
     private teamService: TeamService,
     private crmService: CrmService,
-    private trackingService: TrackingService
+    private trackingService: TrackingService,
+    private clubSubscriptionService: ClubSubscriptionService,
+    private videoStorageService: VideoStorageService
   ) { }
 
   ngOnInit(): void {
@@ -102,14 +137,11 @@ export class AdminClubDetailComponent implements OnInit {
       .map(temp => ({ temporada: temp, equipos: grouped[temp] }));
   }
 
-  setTab(tab: 'info' | 'equipos' | 'entrenadores' | 'crm' | 'sesiones'): void {
+  setTab(tab: 'info' | 'equipos' | 'entrenadores' | 'crm' | 'sesiones' | 'suscripcion'): void {
     this.activeTab = tab;
-    if (tab === 'crm') {
-      this.loadCrmData();
-    }
-    if (tab === 'sesiones') {
-      this.loadSessions();
-    }
+    if (tab === 'crm') this.loadCrmData();
+    if (tab === 'sesiones') this.loadSessions();
+    if (tab === 'suscripcion') this.loadSubscriptions();
   }
 
   loadClubDetail(): void {
@@ -399,6 +431,125 @@ export class AdminClubDetailComponent implements OnInit {
     const remainMins = mins % 60;
     return hrs + 'h ' + remainMins + 'm';
   }
+
+  // ── Suscripciones ──────────────────────────────────────────────────────────
+
+  loadSubscriptions(): void {
+    this.isLoadingSubs = true;
+    forkJoin({
+      app: this.clubSubscriptionService.getCurrentSubscription(this.clubId),
+      video: this.videoStorageService.getPlan(this.clubId)
+    }).subscribe({
+      next: ({ app, video }) => {
+        this.appPlan = app || null;
+        // getPlan devuelve Response completo: { status, data: { hasPlan, planKey, ... }, error }
+        const videoData = video?.data ?? video;
+        if (videoData?.hasPlan) {
+          this.videoPlan = videoData;
+        } else {
+          this.videoPlan = null;
+        }
+        this.availableVideoPlans = videoData?.plans || [];
+        this.isLoadingSubs = false;
+      },
+      error: () => { this.isLoadingSubs = false; }
+    });
+  }
+
+  // ── App Plan ──────────────────────────────────────────────────────────────
+
+  openAppPlanModal(): void {
+    this.selectedAppPlanType   = this.appPlan?.planType   || 'gratuito';
+    this.selectedAppPlanPeriod = this.appPlan?.period     || 'monthly';
+    this.selectedAppPlanPlayerCount = this.appPlan?.playerCount || 0;
+    this.showAppPlanModal = true;
+  }
+
+  saveAppPlan(): void {
+    this.isSavingAppPlan = true;
+    this.clubSubscriptionService.adminSetPlan(
+      this.clubId,
+      this.selectedAppPlanType,
+      this.selectedAppPlanPeriod,
+      this.selectedAppPlanPlayerCount
+    ).subscribe({
+      next: () => {
+        this.isSavingAppPlan = false;
+        this.showAppPlanModal = false;
+        this.loadSubscriptions();
+        this.showNotification('Plan de la app actualizado correctamente', 'success');
+      },
+      error: (err: any) => {
+        this.isSavingAppPlan = false;
+        console.error('[Subs] Error guardando plan app:', err);
+        this.showNotification('Error al actualizar el plan: ' + (err?.error?.message || err?.status || ''), 'error');
+      }
+    });
+  }
+
+  cancelAppPlan(): void {
+    if (!confirm('¿Seguro que quieres cancelar el plan activo de este club?')) return;
+    this.clubSubscriptionService.adminCancelPlan(this.clubId).subscribe({
+      next: () => {
+        this.loadSubscriptions();
+        this.showNotification('Plan cancelado correctamente', 'success');
+      },
+      error: () => this.showNotification('Error al cancelar el plan', 'error')
+    });
+  }
+
+  // ── Video Plan ────────────────────────────────────────────────────────────
+
+  openVideoPlanModal(): void {
+    this.selectedVideoPlanKey = this.videoPlan?.planKey || 'STARTER_1TB';
+    this.showVideoPlanModal = true;
+  }
+
+  saveVideoPlan(): void {
+    this.isSavingVideoPlan = true;
+    this.videoStorageService.setVideoPlanAdmin(this.clubId, this.selectedVideoPlanKey).subscribe({
+      next: () => {
+        this.isSavingVideoPlan = false;
+        this.showVideoPlanModal = false;
+        this.loadSubscriptions();
+        this.showNotification('Plan de vídeo actualizado correctamente', 'success');
+      },
+      error: (err: any) => {
+        this.isSavingVideoPlan = false;
+        console.error('[Subs] Error guardando plan vídeo:', err);
+        this.showNotification('Error al actualizar el plan de vídeo: ' + (err?.error?.message || err?.status || ''), 'error');
+      }
+    });
+  }
+
+  cancelVideoPlan(): void {
+    if (!confirm('¿Seguro que quieres cancelar el plan de vídeo de este club?')) return;
+    this.videoStorageService.cancelVideoPlanAdmin(this.clubId).subscribe({
+      next: () => {
+        this.loadSubscriptions();
+        this.showNotification('Plan de vídeo cancelado correctamente', 'success');
+      },
+      error: () => this.showNotification('Error al cancelar el plan de vídeo', 'error')
+    });
+  }
+
+  getAppPlanLabel(type: string): string {
+    return this.appPlanOptions.find(p => p.value === type)?.label || type;
+  }
+
+  getAppPlanIcon(type: string): string {
+    return this.appPlanOptions.find(p => p.value === type)?.icon || 'bi-box';
+  }
+
+  getAppPlanColor(type: string): string {
+    return this.appPlanOptions.find(p => p.value === type)?.color || '#6c757d';
+  }
+
+  getVideoPlanLabel(key: string): string {
+    return this.videoPlanOptions.find(p => p.value === key)?.label || key;
+  }
+
+  // ──────────────────────────────────────────────────────────────────────────
 
   showNotification(message: string, type: 'success' | 'error'): void {
     this.toastMessage = message;

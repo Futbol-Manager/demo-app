@@ -1,0 +1,8 @@
+.dropdown-item {
+  cursor: pointer;
+
+  &:active {
+    background-color: #e9ecef;
+    color: inherit;
+  }
+}

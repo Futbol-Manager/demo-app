@@ -1,0 +1,141 @@
+<div class="sc-page">
+
+  <!-- HEADER -->
+  <div class="sc-header">
+    <button class="btn-back" (click)="goBack()"><i class="bi bi-arrow-left"></i></button>
+    <div class="sc-header-info">
+      <h2>
+        <i class="bi"
+          [ngClass]="{
+            'bi-youtube':           sourceType === 'youtube',
+            'bi-vimeo':             sourceType === 'vimeo',
+            'bi-camera-video-fill': sourceType === 'veo',
+            'bi-link-45deg':        sourceType === 'external'
+          }"></i>
+        Análisis: <span class="sc-video-title">{{ videoTitle }}</span>
+      </h2>
+      <p class="sc-sub">Graba la pantalla mientras ves el vídeo para crear clips y anotaciones</p>
+    </div>
+
+    <!-- Badge de estado de grabación -->
+    <div class="sc-rec-badge" [ngClass]="'sc-rec-badge--' + recState">
+      <span *ngIf="recState === 'idle'"><i class="bi bi-circle"></i> Listo</span>
+      <span *ngIf="recState === 'recording'"><i class="bi bi-record-circle-fill blink"></i> Grabando {{ recLabel }}</span>
+      <span *ngIf="recState === 'processing'"><i class="bi bi-hourglass-split"></i> Procesando…</span>
+      <span *ngIf="recState === 'ready'"><i class="bi bi-check-circle-fill"></i> Grabación lista</span>
+    </div>
+  </div>
+
+  <!-- CUERPO PRINCIPAL: iframe izquierda + panel derecha -->
+  <div class="sc-body">
+
+    <!-- PANEL IZQUIERDO: vídeo embebido -->
+    <div class="sc-video-panel">
+      <div class="sc-video-wrapper" *ngIf="externalUrl">
+        <iframe [src]="iframeSrc"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen frameborder="0" class="sc-iframe">
+        </iframe>
+      </div>
+      <div class="sc-no-url" *ngIf="!externalUrl">
+        <i class="bi bi-exclamation-triangle"></i>
+        <p>No se especificó ningún enlace de vídeo.</p>
+        <button class="btn-back-lg" (click)="goBack()">Volver</button>
+      </div>
+    </div>
+
+    <!-- PANEL DERECHO: controles -->
+    <div class="sc-control-panel">
+
+      <!-- ── PASO 1: Grabar ──────────────────────── -->
+      <div class="sc-step" [class.sc-step--active]="recState === 'idle' || recState === 'recording'">
+        <div class="sc-step-header">
+          <span class="sc-step-num">1</span>
+          <span class="sc-step-label">Graba la pantalla</span>
+        </div>
+        <div class="sc-step-body">
+
+          <ng-container *ngIf="recState === 'idle'">
+            <p class="sc-hint">
+              Pulsa el botón de grabación, selecciona la <strong>pestaña del navegador</strong>
+              donde se está reproduciendo el vídeo y acepta el permiso.
+            </p>
+            <p class="sc-hint sc-hint--tip">
+              <i class="bi bi-lightbulb-fill"></i>
+              <span>Consejo: reproduce el vídeo a pantalla completa para mejor calidad. Puedes grabar con audio del sistema marcando la casilla que aparece en la ventana de permisos.</span>
+            </p>
+            <button class="btn-rec-start" (click)="startRecording()">
+              <i class="bi bi-record-circle"></i> Iniciar grabación
+            </button>
+          </ng-container>
+
+          <ng-container *ngIf="recState === 'recording'">
+            <p class="sc-hint sc-hint--recording">
+              Reproduciendo… cuando hayas capturado lo que necesitas pulsa "Detener".
+            </p>
+            <div class="rec-timer">{{ recLabel }}</div>
+            <button class="btn-rec-stop" (click)="stopRecording()">
+              <i class="bi bi-stop-circle-fill"></i> Detener grabación
+            </button>
+          </ng-container>
+
+          <ng-container *ngIf="recState === 'processing'">
+            <div class="sc-spinner"></div>
+            <p class="sc-hint">Procesando el vídeo grabado…</p>
+          </ng-container>
+
+          <p class="sc-error" *ngIf="recError">
+            <i class="bi bi-exclamation-circle"></i> {{ recError }}
+          </p>
+        </div>
+      </div>
+
+      <!-- ── PASO 2: Crear proyecto ─────────────── -->
+      <div class="sc-step" [class.sc-step--active]="recState === 'ready'" [class.sc-step--disabled]="recState !== 'ready'">
+        <div class="sc-step-header">
+          <span class="sc-step-num">2</span>
+          <span class="sc-step-label">Crea el proyecto de análisis</span>
+        </div>
+        <div class="sc-step-body" *ngIf="recState === 'ready'">
+          <p class="sc-hint sc-hint--success">
+            <i class="bi bi-check-circle-fill"></i>
+            Vídeo grabado correctamente.
+            Configura el proyecto y pulsa "Analizar".
+          </p>
+
+          <label class="sc-label">Título del análisis</label>
+          <input type="text" [(ngModel)]="projectTitle" class="sc-input" maxlength="120"
+            placeholder="Ej. Análisis partido jornada 5">
+
+          <label class="sc-label" style="margin-top:12px">Plantilla de etiquetado</label>
+          <select [(ngModel)]="selectedTemplateId" class="sc-select">
+            <option [value]="0" disabled>Selecciona una plantilla…</option>
+            <option *ngFor="let t of templates" [value]="t.id">{{ t.name }}</option>
+          </select>
+
+          <p class="sc-error" *ngIf="createError">
+            <i class="bi bi-exclamation-circle"></i> {{ createError }}
+          </p>
+
+          <button class="btn-analyze-go" (click)="createProject()" [disabled]="isCreating">
+            <ng-container *ngIf="!isCreating">
+              <i class="bi bi-camera-reels"></i> Abrir análisis
+            </ng-container>
+            <ng-container *ngIf="isCreating">
+              <div class="sc-spinner-sm"></div> Creando proyecto…
+            </ng-container>
+          </button>
+
+          <button class="btn-rec-again" (click)="recState = 'idle'; recSeconds = 0">
+            <i class="bi bi-arrow-counterclockwise"></i> Grabar de nuevo
+          </button>
+        </div>
+
+        <div class="sc-step-placeholder" *ngIf="recState !== 'ready'">
+          Completa la grabación primero.
+        </div>
+      </div>
+
+    </div><!-- /sc-control-panel -->
+  </div><!-- /sc-body -->
+</div>

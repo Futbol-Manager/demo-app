@@ -47,6 +47,25 @@
     "TOTAL_RECORDS": "registros totais",
     "NO_RESULTS": "Nenhum resultado encontrado."
   },
+  "OPCIONES_JUGADOR": {
+    "DATOS_PERSONALES": "Dados pessoais",
+    "CALENDARIO": "Calendário",
+    "PAGAR_CUOTAS": "Pagar quotas",
+    "DOCUMENTACION": "Documentação",
+    "CLASIFICACION_RESULTADOS": "Classificação e resultados",
+    "MIS_ESTADISTICAS": "As minhas estatísticas",
+    "GALERIA": "Galeria",
+    "NOTIFICACIONES": "Notificações",
+    "PATROCINADORES": "Patrocinadores",
+    "LESIONES": "Lesões"
+  },
+  "ACTIONS": {
+    "EDIT": "Editar associado",
+    "INSERT_PAY": "Introduzir um pagamento",
+    "VIEW_HISTORY": "Ver histórico de pagamentos",
+    "LOADING": "Carregando...",
+    "SAVE": "Salvar"
+  },
   "COACH_STATS": {
     "TITLE": "Estatísticas dos treinadores",
     "FEATURE_1": "Desempenho por temporada e equipa",
@@ -149,6 +168,8 @@
     "AI_ASSISTANT": "Assistente de IA",
     "CREATETEAM": "Criar uma equipa",
     "SCOUTING": "Scouting",
+    "VIDEO_LIBRARY": "Biblioteca de Vídeos",
+    "VIDEO_ANALYSIS": "Análise de vídeo",
     "CREATE": "Criar"
   },
   "HEADER": {
@@ -164,6 +185,17 @@
     "SUBSCRIPTION": "Subscrição",
     "CLUB_SUBSCRIPTION": "Subscrição do Clube",
     "LOGOUT": "Sair",
+    "NOTIFICATIONS": {
+      "TITLE": "Notificações",
+      "UNREAD": "não lidas",
+      "SEE_MORE": "Ver mais",
+      "EMPTY": "Sem mensagens recentes",
+      "NO_SUBJECT": "Sem assunto",
+      "EXPAND": "Expandir",
+      "COLLAPSE": "Recolher",
+      "LOADING": "A carregar…",
+      "NO_PREVIEW": "Sem conteúdo para pré-visualizar"
+    },
     "HELP": {
       "TITLE": "Ajuda",
       "SUGGESTIONS": "Sugestões",
@@ -236,11 +268,6 @@
     "NONE": "Nenhum pagamento",
     "PENDING": "Pagamentos PEND.",
     "DONE": "Concluído"
-  },
-  "ACTIONS": {
-    "EDIT": "Editar associado",
-    "INSERT_PAY": "Introduzir um pagamento",
-    "VIEW_HISTORY": "Ver histórico de pagamentos"
   },
   "MODAL": {
     "TITLE": "Associado",
@@ -443,6 +470,16 @@
       "GA": "GS",
       "NO_HISTORY": "Não há histórico desportivo registado",
       "CLOSE": "Fechar"
+    },
+    "CUSTOM_FIELDS_BTN": "Personalizar campos",
+    "CUSTOM_FIELDS_TITLE": "Campos personalizados do perfil",
+    "CUSTOM_FIELDS_DESC": "Defina os campos adicionais que os treinadores do seu clube deverão preencher no seu perfil.",
+    "MESSAGES": {
+      "DOC_UPLOAD_SUCCESS": "Documento carregado com sucesso",
+      "DOC_UPLOAD_ERROR": "Erro ao carregar o documento",
+      "SELECT_FILE": "Selecione um ficheiro para carregar.",
+      "CUSTOM_FIELDS_SAVED": "Campos personalizados guardados",
+      "LOAD_ERROR": "Erro ao carregar a lista."
     }
   },
   "COACH_PROFILE": {
@@ -871,7 +908,22 @@
     "TEXT_383": "Sáb",
     "TEXT_384": "Dom",
     "TEXT_385": "Ant.",
-    "TEXT_386": "Seg."
+    "TEXT_386": "Seg.",
+    "TEXT_387": "Outro",
+    "TEXT_388": "Atividades do dia",
+    "TEXT_389": "Nova atividade",
+    "TEXT_390": "Detalhes do treino",
+    "TEXT_391": "Nenhuma atividade selecionada",
+    "TEXT_392": "Selecione uma atividade da lista ou crie uma nova em \"Nova atividade\".",
+    "TEXT_393": "As respostas nao foram enviadas porque ja foram preenchidas e so podem ser enviadas uma vez por jogo.",
+    "TEXT_394": "Respostas enviadas com sucesso.",
+    "TEXT_395": "AVISO: Ao ativar esta opcao, sua tarefa de treino sera publica e visivel para outros treinadores. Todos os dados inseridos serao acessiveis. Nao e permitido publicar informacoes, dados ou imagens com direitos autorais sem a permissao do autor. Qualquer conteudo que viole esta regra sera removido. Tem certeza?",
+    "TEXT_396": "Convocacao salva",
+    "TEXT_397": "Notificacoes enviadas.",
+    "TEXT_398": "Pre-aviso enviado aos pais. Em Nao convocados voce vera apenas os jogadores que confirmaram presenca.",
+    "TEXT_399": "Alteracao guardada.",
+    "TEXT_400": "Notificacao enviada.",
+    "TEXT_401": "Detalhes do jogo"
   },
   "REGISTER": {
     "TITLE": "Registo de utilizador",
@@ -894,6 +946,15 @@
       "COACH": {
         "TITLE": "Treinador",
         "SUBTITLE": "Registar-se como treinador"
+      },
+      "PLAYER_PARENT": {
+        "TITLE": "Jogador/Pai"
+      },
+      "PLAYER": {
+        "TITLE": "Jogador"
+      },
+      "SCOUT": {
+        "TITLE": "Scout"
       }
     },
     "TABS": {
@@ -959,9 +1020,81 @@
     "BUTTONS_MODALS": {
       "ACKNOWLEDGE": "Entendido",
       "I_AM_COACH": "Sou treinador"
+    },
+    "PANEL": {
+      "HEADLINE": "A plataforma líder em gestão desportiva",
+      "TAGLINE": "Tudo o que o seu clube precisa, num só lugar.",
+      "FEATURES": {
+        "FINANCE": "Controlo de quotas e finanças",
+        "TEAMS": "Gestão de equipas e jogadores",
+        "STATS": "Estatísticas em tempo real",
+        "APP": "App móvel para pais",
+        "SECURITY": "Dados seguros e protegidos"
+      },
+      "TESTIMONIAL": {
+        "TEXT": "O Sphaira transformou a gestão do nosso clube. Agora tudo é mais fácil e rápido.",
+        "AUTHOR": "Clube Desportivo Sphaira"
+      }
+    },
+    "STEP2": {
+      "SUBTITLE": "Preencha os seus dados para criar a sua conta"
+    },
+    "CARDS": {
+      "CLUB": {
+        "DESC": "Gira o seu clube de forma profissional",
+        "FEAT_1": "Gestão de equipas",
+        "FEAT_2": "Gestão de quotas",
+        "FEAT_3": "App para pais"
+      },
+      "COACH": {
+        "DESC": "Junte-se à equipa técnica de um clube",
+        "FEAT_1": "Fichas de jogadores",
+        "FEAT_2": "Acompanhamento técnico",
+        "FEAT_3": "Relatórios de desempenho"
+      }
+    },
+    "ROLE": {
+      "LABEL": "Qual é o seu papel?",
+      "TRAINER": "Treinador",
+      "PHYSIO": "Fisioterapeuta",
+      "NUTRITIONIST": "Nutricionista"
+    },
+    "FORM": {
+      "PROFILE_DEFAULT": "É um clube ou um treinador?",
+      "PROFILE_TYPE": "Tipo de perfil",
+      "FOUNDATION_DATE": "Data de fundação",
+      "BIRTH_DATE": "Data de nascimento"
+    },
+    "MODAL_CLUB": {
+      "TITLE": "Confirmação necessária",
+      "SUBTITLE": "Registo exclusivo para clubes autorizados",
+      "SECURITY_TEXT": "Por segurança, o registo de clubes requer uma senha de acesso. Se não a tiver, solicite-a:",
+      "PASSWORD_LABEL": "Senha de acesso",
+      "PASSWORD_PLACEHOLDER": "Introduza a senha",
+      "CANCEL": "Cancelar",
+      "SUBMIT": "Aceder"
+    },
+    "MODAL_COACH": {
+      "SUBTITLE": "Leia isto antes de continuar"
+    },
+    "MODAL_PRICING": {
+      "TITLE": "Registo concluído!",
+      "SUBTITLE": "Bem-vindo ao Sphaira Tech",
+      "DISCOUNT": "50% DESCONTO",
+      "HEADLINE": "Comece grátis, cresça sem limites",
+      "TRIAL": "Experimente 7 dias e depois:",
+      "FEAT_1": "Poupe mais de 30% com este plano",
+      "FEAT_2": "Compromisso de 1 ano",
+      "FEAT_3": "Controlo Total",
+      "FEAT_4": "Funcionalidades Completas",
+      "FEAT_5": "Colaboração Alargada",
+      "CTA": "Começar semana gratuita",
+      "TERMS_PREFIX": "Aceito as",
+      "TERMS_LINK": "condições de contratação"
     }
   },
   "CUADROMANDO": {
+    "LOAD_ERROR": "Não foi possível carregar o painel. Tente novamente.",
     "SUBMENU": {
       "BACK": "Painel de Controlo"
     },
@@ -1007,11 +1140,72 @@
       "VS": "VS"
     }
   },
+  "SIDEBAR": {
+    "SECTION_GENERAL": "Geral",
+    "SECTION_CLUB": "Clube",
+    "SECTION_COACH": "Treinador",
+    "SECTION_TEAM": "Equipa",
+    "SECTION_PLAYER": "Jogador",
+    "SECTION_ADMIN": "Administração",
+    "HOME": "Início",
+    "AI_ASSISTANT": "Assistente IA",
+    "DASHBOARD": "Painel de controlo",
+    "TEAMS": "Equipas",
+    "DOCUMENTS": "Documentos",
+    "FEES": "Quotas",
+    "CLOTHING": "Roupa",
+    "SPONSORS": "Patrocinadores",
+    "NOTIFICATIONS": "Notificações",
+    "CALENDAR": "Calendário",
+    "TASKS": "Tarefas",
+    "PLAYERS": "Jogadores",
+    "INFO_TEAM": "Info equipa",
+    "STATS_TEAM": "Estatísticas equipa",
+    "STATS_PLAYERS": "Estatísticas jogadores",
+    "STATS_PLAYERS_SHORT": "Est. jogadores",
+    "STATS_TEAM_SHORT": "Est. equipa",
+    "STANDINGS": "Classificação",
+    "GALLERY": "Galeria",
+    "INJURIES": "Lesões",
+    "DEBRIEF": "Debrief",
+    "MY_PROFILE": "O meu perfil",
+    "PERSONAL_DATA": "Dados pessoais",
+    "PAY_FEES": "Pagar quotas",
+    "DOCUMENTATION": "Documentação",
+    "ADMIN": "Admin",
+    "REGISTERS": "Registos",
+    "ACTIVITY": "Atividade",
+    "CHARTS": "Gráficos",
+    "SUGGESTIONS": "Sugestões"
+  },
   "CALENDAR_CLUB": {
     "TITLE": "Calendário do clube",
     "SUBTITLE": "Todos os treinos e jogos de todas as suas equipas num único calendário.",
     "LOADING": "A carregar calendário...",
     "TODAY": "Hoje",
+    "DAYS": {
+      "MON": "SEG",
+      "TUE": "TER",
+      "WED": "QUA",
+      "THU": "QUI",
+      "FRI": "SEX",
+      "SAT": "SÁB",
+      "SUN": "DOM"
+    },
+    "MONTHS": {
+      "JAN": "Janeiro",
+      "FEB": "Fevereiro",
+      "MAR": "Março",
+      "APR": "Abril",
+      "MAY": "Maio",
+      "JUN": "Junho",
+      "JUL": "Julho",
+      "AUG": "Agosto",
+      "SEP": "Setembro",
+      "OCT": "Outubro",
+      "NOV": "Novembro",
+      "DEC": "Dezembro"
+    },
     "FILTER": {
       "TITLE": "Equipas",
       "SHOW_ALL": "Mostrar todos",
@@ -1029,8 +1223,75 @@
       "EMPTY": "Não há atividades programadas para este dia.",
       "TRAINING": "Treino",
       "MATCH": "Jogo",
+      "VS": "vs",
       "GO_TO_CALENDAR": "Ir ao calendário da equipa",
       "VIEW_DETAIL": "Ver detalhe"
+    },
+    "MODAL": {
+      "DATE": "Data",
+      "LOCATION": "Local",
+      "RIVAL": "Adversário",
+      "VENUE": "Local do jogo",
+      "TIME": "Hora",
+      "GO_TO_DETAIL": "Ver detalhe completo",
+      "SCHEDULE": "Horário",
+      "OBJECTIVE": "Objetivo",
+      "WARMUP": "Aquecimento",
+      "MATCH_TYPE": "Tipo de jogo",
+      "STADIUM": "Estádio / Local",
+      "MEET_TIME": "Hora de chegada",
+      "TERRAIN_LOCAL": "Casa",
+      "TERRAIN_AWAY": "Fora"
+    }
+  },
+  "INJURIES_CLUB": {
+    "TITLE": "Gestão de lesões",
+    "SUBTITLE": "Controlo e acompanhamento de lesões do clube",
+    "KPI": {
+      "TOTAL": "Total de lesões",
+      "ACTIVE": "Ativas",
+      "RECOVERING": "Recuperação",
+      "CLOSED": "Encerradas",
+      "PLAYERS_AFFECTED": "Jogadores afetados"
+    },
+    "SIDEBAR": {
+      "TITLE": "Por jogador",
+      "NO_DATA": "Sem dados",
+      "ACTIVE_PLURAL": "ativas",
+      "ACTIVE_SINGULAR": "ativa"
+    },
+    "FILTERS": {
+      "STATUS": "Estado",
+      "ALL": "Todas",
+      "ACTIVE": "Ativas",
+      "RECOVERING": "Recuperação",
+      "CLOSED": "Encerradas",
+      "SEVERITY": "Gravidade",
+      "SEARCH_PLACEHOLDER": "Procurar jogador, lesão..."
+    },
+    "TABLE": {
+      "PLAYER": "Jogador",
+      "INJURY": "Lesão",
+      "TYPE": "Tipo",
+      "DATE": "Data",
+      "DAYS": "Dias",
+      "STATUS": "Estado",
+      "SEVERITY": "Gravidade",
+      "ACTIONS": "Ações"
+    },
+    "STATUS": {
+      "ACTIVE": "Ativa",
+      "RECOVERING": "Recuperação",
+      "CLOSED": "Encerrada"
+    },
+    "SEVERITY": {
+      "LEVE": "Leve",
+      "MODERADA": "Moderada",
+      "GRAVE": "Grave"
+    },
+    "EMPTY": {
+      "TITLE": "Sem lesões",
+      "MESSAGE": "Não há lesões registadas com os filtros atuais."
     }
   },
   "AI_ASSISTANT": {
@@ -1308,7 +1569,101 @@
     "TITLE_COL": "Título",
     "AMOUNT": "Valor",
     "METHOD": "Método",
-    "TYPE": "Tipo"
+    "TYPE": "Tipo",
+    "PLAYER": "Jogador",
+    "TEAM": "Equipa",
+    "STATUS": "Estado",
+    "ACTIONS": "Ações",
+    "PAID": "Pago",
+    "REMAINING": "Restante",
+    "PROGRESS": "Progresso",
+    "MANDATORY_DEBT": "Dívida obrigatória",
+    "SEARCH_PLAYER": "Procurar jogador...",
+    "ALL_TEAMS": "Todas as equipas",
+    "ALL_STATUS": "Todos os estados",
+    "STATUS_PAID": "Em dia",
+    "STATUS_CURRENT": "Pendente",
+    "STATUS_OVERDUE": "Vencido",
+    "STATUS_NONE": "Sem pagamentos",
+    "IMPUTE": "Imputar pagamento",
+    "HISTORY": "Histórico",
+    "EDIT": "Editar",
+    "CHARGE_CARD": "Cobrar cartão",
+    "NO_PLAYERS": "Nenhum jogador encontrado.",
+    "PLAYERS": "jogadores",
+    "NEW_TITLE": "Criar novo pagamento",
+    "EDIT_TITLE": "Editar pagamento",
+    "FIELD_TITLE": "Título",
+    "FIELD_DESCRIPTION": "Descrição",
+    "FIELD_AMOUNT": "Montante (€)",
+    "FIELD_DEADLINE": "Prazo",
+    "FIELD_MANDATORY": "É obrigatório?",
+    "FIELD_CHARGE_TYPE": "Tipo de cobrança",
+    "CHARGE_MANUAL": "Manual (dinheiro, transferência...)",
+    "CHARGE_STRIPE_ONE_TIME": "Stripe - Pagamento pontual",
+    "CHARGE_STRIPE_SUBSCRIPTION": "Stripe - Subscrição",
+    "CHARGE_SAVED_CARD": "Cobrar cartão guardado",
+    "SUBSCRIPTION_CONFIG": "Configuração da subscrição",
+    "FIELD_INTERVAL": "Intervalo",
+    "FIELD_INTERVAL_COUNT": "A cada quantos períodos",
+    "FIELD_START_DATE": "Data de início",
+    "FIELD_END_DATE": "Data de fim",
+    "FIELD_TEAMS": "Equipas",
+    "SELECT_ALL_TEAMS": "Selecionar todas",
+    "NO_TEAMS_AVAILABLE": "Nenhuma equipa disponível",
+    "TEAMS_SELECTED": "equipas selecionadas",
+    "BTN_CANCEL": "Cancelar",
+    "BTN_UPDATE": "Atualizar pagamento",
+    "BTN_SAVE": "Guardar pagamento",
+    "IMPUTE_MODAL": {
+      "TITLE": "Imputação de pagamento manual",
+      "CUOTA": "Quota",
+      "SELECT_CUOTA": "Selecionar quota",
+      "AMOUNT": "Montante (€)",
+      "METHOD": "Método de pagamento",
+      "SELECT_METHOD": "Selecionar método",
+      "METHOD_OTHER": "Outro método",
+      "METHOD_OTHER_PLACEHOLDER": "Especificar método...",
+      "DATE": "Data do pagamento",
+      "COMMENT": "Comentário",
+      "COMMENT_PLACEHOLDER": "Notas opcionais..."
+    },
+    "CHARGE_MODAL": {
+      "TITLE": "Cobrar cartão guardado",
+      "NO_CARDS": "Este jogador não tem cartões autorizados.",
+      "SELECT_CARD": "Selecionar cartão",
+      "SELECT_CUOTA": "Selecionar quota",
+      "AMOUNT": "Montante a cobrar (€)",
+      "CHARGE": "Cobrar"
+    },
+    "SUBSCRIPTIONS": {
+      "ALL_STATUS": "Todos os estados",
+      "ACTIVE": "Ativo",
+      "PAUSED_LABEL": "Pausado",
+      "CANCELED_LABEL": "Cancelado",
+      "CUOTA": "Quota",
+      "NEXT_CHARGE": "Próxima cobrança",
+      "START_DATE": "Data de início",
+      "END_DATE": "Data de fim",
+      "PAUSE": "Pausar",
+      "RESUME": "Retomar",
+      "CANCEL": "Cancelar",
+      "NO_SUBSCRIPTIONS": "Nenhuma subscrição para os filtros selecionados."
+    },
+    "EXPORT": {
+      "TITLE": "Exportar"
+    },
+    "HISTORY_MODAL": {
+      "TITLE": "Histórico de pagamentos",
+      "REFUND_INFO": "Os reembolsos não podem ser processados através do Sphaira. Contacte o clube diretamente.",
+      "EMPTY": "Nenhum pagamento registado.",
+      "DATE": "Data",
+      "CONCEPT": "Conceito",
+      "AMOUNT": "Montante",
+      "METHOD": "Método",
+      "COMMENT": "Comentário",
+      "VIEW_RECEIPT": "Ver recibo"
+    }
   },
   "NOTIFICATIONS": {
     "TITLE": "Notificação",
@@ -1464,16 +1819,16 @@
     "DELETE_NO_ALLOWED": "Esta equipa não pode ser eliminada (equipa padrão de novos jogadores)."
   },
   "CLOTHES": {
-    "TITLE": "Personalizar vestu\u00e1rio",
-    "DESCRIPTION": "Ative ou desative colunas e renomeie itens clicando no \u00edcone de l\u00e1pis. As altera\u00e7\u00f5es s\u00e3o guardadas por utilizador.",
-    "RESET_DEFAULTS": "Repor tudo por predefini\u00e7\u00e3o",
+    "TITLE": "Personalizar vestuário",
+    "DESCRIPTION": "Ative ou desative colunas e renomeie itens clicando no ícone de lápis. As alterações são guardadas por utilizador.",
+    "RESET_DEFAULTS": "Repor tudo por predefinição",
     "GROUPS": {
-      "MATCH_1": "1\u00ba Equipamento",
-      "MATCH_2": "2\u00ba Equipamento",
+      "MATCH_1": "1º Equipamento",
+      "MATCH_2": "2º Equipamento",
       "TRAINING": "Treino",
       "TRACKSUIT": "Fato de treino",
       "CASUAL": "Passeio",
-      "ACCESSORIES": "Acess\u00f3rios"
+      "ACCESSORIES": "Acessórios"
     },
     "TABLE": {
       "ID": "ID",
@@ -1613,7 +1968,21 @@
     },
     "CUSTOM_FIELDS_BTN": "Personalizar campos",
     "CUSTOM_FIELDS_TITLE": "Campos personalizados do jogador",
-    "CUSTOM_FIELDS_DESC": "Defina os campos adicionais que os jogadores ou pais/tutores do seu clube deverão preencher no seu perfil."
+    "CUSTOM_FIELDS_DESC": "Defina os campos adicionais que os jogadores ou pais/tutores do seu clube deverão preencher no seu perfil.",
+    "MESSAGES": {
+      "DOC_UPLOAD_SUCCESS": "Documento carregado com sucesso",
+      "DOC_UPLOAD_ERROR": "Erro ao carregar o documento",
+      "SELECT_FILE": "Selecione um ficheiro para carregar.",
+      "INVALID_IMAGE_FORMAT": "Formato inválido. Carregue uma imagem PNG ou JPEG.",
+      "PDF_WORD_ONLY": "Apenas ficheiros PDF ou Word são permitidos.",
+      "ACCEPT_AUTHORIZATION": "Deve aceitar a autorização ou condições do clube.",
+      "CONTENT_UPDATED": "Conteúdo atualizado com sucesso",
+      "SELECT_TEAM_DROPDOWN": "Selecione uma equipa na lista.",
+      "MOVED_SUCCESS": "Movido com sucesso. Atualize para ver as alterações.",
+      "MOVE_SEASON_CONFIRM": "Vai mover este jogador para outra temporada; continuará na atual. Continuar?",
+      "PLAYER_MOVED_SUCCESS": "Jogador movido com sucesso",
+      "LOAD_ERROR": "Erro ao carregar a lista."
+    }
   },
   "SPONSOR": {
     "TITLE": "Patrocinador",
@@ -1648,7 +2017,8 @@
     "STATS_TEAM": "Estatísticas da equipa",
     "RANKING_RESULTS": "Classificação e resultados",
     "GALLERY": "Galeria",
-    "TEAM_INFO": "Informação da equipa"
+    "TEAM_INFO": "Informação da equipa",
+    "VIDEO_ANALYSIS": "Análise de vídeo"
   },
   "VALIDATION": {
     "TITLE": "Valide o seu utilizador",
@@ -2252,9 +2622,75 @@
       "STATUS_REPORT-GENERATED": "Relatório gerado"
     }
   },
+  "STATS": {
+    "NO_PLAYER_DATA": "Nenhum dado de jogadores disponível",
+    "NO_TEAM_DATA": "Nenhum dado de equipas disponível"
+  },
+  "AI_PANEL": {
+    "CONSULT_BUTTON": "Consultar IA",
+    "PLAYER_DESCRIPTION": "Peça à IA para gerar gráficos e análises com os dados dos jogadores",
+    "TEAM_DESCRIPTION": "Peça à IA para gerar gráficos e análises com os dados das equipas",
+    "SIDEBAR_TITLE_PLAYERS": "Assistente IA - Estatísticas de jogadores",
+    "SIDEBAR_TITLE_TEAMS": "Assistente IA - Estatísticas de equipas",
+    "HELP_TEXT": "Pergunte-me sobre os dados. Posso ajudá-lo com:",
+    "SUGGESTION_TOP_SCORER": "Melhor marcador",
+    "SUGGESTION_ASSISTS": "Gráfico de assistências",
+    "SUGGESTION_PERFORMANCE": "Análise de desempenho",
+    "SUGGESTION_CARDS": "Cartões",
+    "SUGGESTION_COMPARISON": "Comparação",
+    "SUGGESTION_AVG_MINUTES": "Minutos médios",
+    "SUGGESTION_BEST_TEAM": "Melhor equipa",
+    "SUGGESTION_POINTS_CHART": "Gráfico de pontos",
+    "SUGGESTION_PERFORMANCE_ANALYSIS": "Análise de desempenho",
+    "SUGGESTION_GOALS_COMPARISON": "Comparação de golos",
+    "SUGGESTION_AVG_WINS": "Vitórias médias",
+    "SUGGESTION_RECENT_STREAKS": "Séries recentes",
+    "USER_LABEL": "Você:",
+    "PLACEHOLDER": "Escreva a sua pergunta aqui...",
+    "SEND": "Enviar",
+    "HINT_CTRL_ENTER": "Pressione Ctrl+Enter para enviar",
+    "WELCOME_PLAYERS": "Olá! 👋 Sou o seu assistente de análise de estatísticas. Posso ajudá-lo a visualizar e analisar os dados dos seus jogadores. Como posso ajudar?",
+    "WELCOME_TEAMS": "Olá! 👋 Sou o seu assistente de análise de estatísticas. Posso ajudá-lo a visualizar e analisar os dados das suas equipas. Como posso ajudar?",
+    "ERROR_MESSAGE": "❌ Desculpe, ocorreu um erro ao processar a sua consulta. Por favor, tente novamente.",
+    "SHOWING": "A mostrar",
+    "OF": "de"
+  },
+  "EQUIPOS": {
+    "LINK_COPIED": "Link copiado para a área de transferência!",
+    "LINK_COPY_ERROR": "Não foi possível copiar o link. Tente novamente.",
+    "SUBSCRIPTION_REQUIRED_TITLE": "Subscrição necessária",
+    "SUBSCRIPTION_REQUIRED_MESSAGE": "Não pode criar mais equipas. Precisa de atualizar a sua subscrição. Se o seu clube pertence a uma federação, contacte-os para aumentar o limite.",
+    "GO_TO_SUBSCRIPTION": "Ir para subscrição",
+    "SELECT_CATEGORY_FIRST": "Deve selecionar ou criar a categoria primeiro. Apenas escrever não é suficiente.",
+    "DELETE_TEAM_TITLE": "Eliminar equipa",
+    "DELETE_TEAM_MESSAGE": "Tem a certeza de que deseja eliminar a equipa {{name}}?",
+    "TEAM_DELETED_SUCCESS": "Equipa eliminada com sucesso",
+    "TEAM_DELETED_ERROR": "Erro ao eliminar equipa",
+    "SELECT_XLSX_FILE": "Por favor selecione um ficheiro em formato .xlsx",
+    "PLAYERS_UPLOADED_SUCCESS": "Jogadores inseridos nas equipas com sucesso",
+    "UPLOAD_ERROR": "Erro ao carregar o ficheiro",
+    "ACCEPT_BROWSER_MANAGEMENT": "Deve aceitar que a subscrição é gerida a partir do navegador"
+  },
+  "DOCUMENTS_CLUB": {
+    "TAB_PLAYERS": "Players",
+    "TAB_COACHES": "Coaches"
+  },
+  "ADMIN_MENU": {
+    "TITLE": "Administrador",
+    "GENERAL_PANEL": "Painel Geral",
+    "SUGGESTIONS": "Sugestões",
+    "CHARTS": "Gráficos",
+    "AI_INSIGHTS": "Insights IA",
+    "AI_USAGE": "Uso de IA",
+    "RECORDS": "Registos"
+  },
   "SCOUTING_CLUB": {
     "TITLE": "Scouting do Clube",
-    "TABS": { "SEARCH": "Procurar Jogadores", "WATCHLIST": "Minha Lista", "PIPELINE": "Pipeline" },
+    "TABS": {
+      "SEARCH": "Procurar Jogadores",
+      "WATCHLIST": "Minha Lista",
+      "PIPELINE": "Pipeline"
+    },
     "SEARCH": {
       "PLACEHOLDER": "Procurar por nome...",
       "BTN": "Procurar",
@@ -2295,8 +2731,17 @@
       "REMOVE": "Remover da lista",
       "GO_SEARCH": "Procurar jogadores"
     },
-    "TABLE": { "NAME": "Nome", "POSITION": "Posição", "STATUS": "Estado", "RATING": "Avaliação", "ACTIONS": "Ações" },
-    "DETAIL": { "TITLE": "Ficha do jogador", "BIO": "Biografia" },
+    "TABLE": {
+      "NAME": "Nome",
+      "POSITION": "Posição",
+      "STATUS": "Estado",
+      "RATING": "Avaliação",
+      "ACTIONS": "Ações"
+    },
+    "DETAIL": {
+      "TITLE": "Ficha do jogador",
+      "BIO": "Biografia"
+    },
     "EVAL": {
       "TITLE": "Avaliações",
       "ADD": "Nova avaliação",
@@ -2307,8 +2752,21 @@
       "CONTEXT_PLACEHOLDER": "Ex: Jogo do campeonato jornada 5",
       "EMPTY": "Sem avaliações ainda"
     },
-    "SCORES": { "TECHNICAL": "Técnica", "TACTICAL": "Tática", "PHYSICAL": "Físico", "MENTAL": "Mental", "POTENTIAL": "Potencial", "ATTITUDE": "Atitude" },
-    "FORM": { "NAME": "Nome", "POSITION": "Posição", "AGE": "Idade", "TEAM": "Equipa", "NOTES": "Notas" },
+    "SCORES": {
+      "TECHNICAL": "Técnica",
+      "TACTICAL": "Tática",
+      "PHYSICAL": "Físico",
+      "MENTAL": "Mental",
+      "POTENTIAL": "Potencial",
+      "ATTITUDE": "Atitude"
+    },
+    "FORM": {
+      "NAME": "Nome",
+      "POSITION": "Posição",
+      "AGE": "Idade",
+      "TEAM": "Equipa",
+      "NOTES": "Notas"
+    },
     "CONFIG": {
       "TITLE": "Configurações de Scouting",
       "DESC": "Ative ou desative funcionalidades avançadas de scouting",
@@ -2324,24 +2782,55 @@
     "SAVE": "Guardar"
   },
   "PLAYER_SCOUTING": {
-    "TITLE": "Meu perfil de Scouting", "SUBTITLE": "Perfil visível para os clubes",
-    "SAVED": "Perfil guardado", "SAVE": "Guardar perfil",
-    "VISIBLE_YES": "Perfil público", "VISIBLE_NO": "Perfil privado",
-    "SEC_PERSONAL": "Dados pessoais", "SEC_POSITION": "Posições",
-    "SEC_SITUATION": "Situação atual", "SEC_CV": "CV futebolístico",
-    "SEC_SELF": "Pontos fortes e descrição", "NAME": "Nome completo",
-    "NATIONALITY": "Nacionalidade", "HEIGHT": "Altura", "WEIGHT": "Peso",
-    "FOOT": "Pé preferido", "EMAIL": "Email de contacto", "PHONE": "Telefone",
-    "POSITIONS_HINT": "Selecione as suas posições", "LEAGUE": "Liga atual",
-    "LEAGUE_HINT": "Ex: Liga Portugal 2", "AVAILABILITY": "Disponibilidade",
-    "CLUBS": "Clubes anteriores", "GOALS": "Golos", "ASSISTS": "Assistências",
-    "TOURNAMENTS": "Torneios importantes", "AWARDS": "Prémios",
-    "STRENGTHS": "Os meus pontos fortes", "IMPROVEMENT": "Áreas de melhoria",
-    "DESCRIPTION": "Descrição livre", "VIDEOS": "Os meus vídeos",
-    "VIDEO_ADD": "Adicionar", "VIDEO_PLATFORM": "Plataforma", "VIDEO_TITLE": "Título",
-    "VIDEO_URL": "URL do vídeo", "VIDEO_EMPTY": "Nenhum vídeo adicionado",
-    "VIDEO_UPLOAD_TITLE": "Carregar o seu vídeo", "VIDEO_UPLOAD_DESC": "Subscrição €2,99/mês",
+    "TITLE": "Meu perfil de Scouting",
+    "SUBTITLE": "Perfil visível para os clubes",
+    "SAVED": "Perfil guardado",
+    "SAVE": "Guardar perfil",
+    "VISIBLE_YES": "Perfil público",
+    "VISIBLE_NO": "Perfil privado",
+    "SEC_PERSONAL": "Dados pessoais",
+    "SEC_POSITION": "Posições",
+    "SEC_SITUATION": "Situação atual",
+    "SEC_CV": "CV futebolístico",
+    "SEC_SELF": "Pontos fortes e descrição",
+    "NAME": "Nome completo",
+    "NATIONALITY": "Nacionalidade",
+    "HEIGHT": "Altura",
+    "WEIGHT": "Peso",
+    "FOOT": "Pé preferido",
+    "EMAIL": "Email de contacto",
+    "PHONE": "Telefone",
+    "POSITIONS_HINT": "Selecione as suas posições",
+    "LEAGUE": "Liga atual",
+    "LEAGUE_HINT": "Ex: Liga Portugal 2",
+    "AVAILABILITY": "Disponibilidade",
+    "CLUBS": "Clubes anteriores",
+    "GOALS": "Golos",
+    "ASSISTS": "Assistências",
+    "TOURNAMENTS": "Torneios importantes",
+    "AWARDS": "Prémios",
+    "STRENGTHS": "Os meus pontos fortes",
+    "IMPROVEMENT": "Áreas de melhoria",
+    "DESCRIPTION": "Descrição livre",
+    "VIDEOS": "Os meus vídeos",
+    "VIDEO_ADD": "Adicionar",
+    "VIDEO_PLATFORM": "Plataforma",
+    "VIDEO_TITLE": "Título",
+    "VIDEO_URL": "URL do vídeo",
+    "VIDEO_EMPTY": "Nenhum vídeo adicionado",
+    "VIDEO_UPLOAD_TITLE": "Carregar o seu vídeo",
+    "VIDEO_UPLOAD_DESC": "Subscrição €2,99/mês",
     "VIDEO_UPGRADE": "Ativar subscrição"
   },
-  "AI_REPORT": { "TITLE": "Relatório IA", "GENERATING": "A gerar...", "GENERATED": "Relatório gerado pela IA", "COPY": "Copiar" }
+  "AI_REPORT": {
+    "TITLE": "Relatório IA",
+    "GENERATING": "A gerar...",
+    "GENERATED": "Relatório gerado pela IA",
+    "COPY": "Copiar"
+  },
+  "NOTIF_BELL": {
+    "TITLE": "Notificações",
+    "MARK_ALL_READ": "Marcar tudo como lido",
+    "EMPTY": "Não tem notificações"
+  }
 }

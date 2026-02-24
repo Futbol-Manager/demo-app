@@ -1,0 +1,285 @@
+<div class="ext-workspace">
+
+  <!-- ───────── Header ───────── -->
+  <header class="ext-header">
+    <button class="back-btn" (click)="goBack()" title="Volver">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <div class="header-title">
+      <i class="bi" [ngClass]="sourceIcon()"></i>
+      <span>{{ project?.title || 'Análisis de vídeo externo' }}</span>
+    </div>
+    <div class="header-meta" *ngIf="project?.videoTitle">
+      {{ project?.videoTitle }}
+    </div>
+  </header>
+
+  <!-- ───────── Loading / Error ───────── -->
+  <div class="loading-panel" *ngIf="!project && !playerError">
+    <div class="spinner"></div>
+    <p>Cargando proyecto…</p>
+  </div>
+  <div class="error-panel" *ngIf="playerError">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <p>{{ playerError }}</p>
+    <button class="btn-back" (click)="goBack()">Volver</button>
+  </div>
+
+  <!-- ───────── Main layout ───────── -->
+  <div class="ext-main" *ngIf="project && !playerError">
+
+    <!-- ── Panel izquierdo: player ── -->
+    <section class="player-panel">
+
+      <!-- ▸ MODO NO EMBEBIBLE (VEO / externo) -->
+      <ng-container *ngIf="!isEmbeddable">
+        <div class="no-embed-panel">
+          <i class="bi bi-camera-video-fill no-embed-icon"></i>
+          <h2>{{ project?.videoTitle || project?.title }}</h2>
+          <p>
+            <strong>VEO</strong> no permite incrustar sus vídeos en otras aplicaciones.
+            Para marcar clips, abre el vídeo en VEO en otra pestaña y observa el tiempo
+            que indica el reproductor de VEO. Luego usa los controles de abajo para
+            introducir el tiempo manualmente.
+          </p>
+          <button class="btn-open-veo" (click)="openExternalVideo()">
+            <i class="bi bi-box-arrow-up-right"></i> Abrir vídeo en VEO
+          </button>
+
+          <!-- Reloj manual -->
+          <div class="manual-time-block">
+            <label>Tiempo actual (mm:ss o segundos):</label>
+            <div class="manual-time-row">
+              <input type="number" min="0" step="1"
+                     [value]="currentTimeSec"
+                     (change)="setManualTime(+$any($event.target).value)"
+                     class="manual-time-input"
+                     placeholder="0" />
+              <span class="manual-time-display">{{ formatTime(currentTimeSec) }}</span>
+            </div>
+            <div class="manual-time-btns">
+              <button (click)="setManualTime(currentTimeSec - 10)">-10s</button>
+              <button (click)="setManualTime(currentTimeSec - 1)">-1s</button>
+              <button (click)="setManualTime(currentTimeSec + 1)">+1s</button>
+              <button (click)="setManualTime(currentTimeSec + 10)">+10s</button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- ▸ MODO YOUTUBE EMBEBIDO -->
+      <ng-container *ngIf="isEmbeddable">
+        <!-- YouTube embed -->
+        <div class="yt-wrapper">
+          <div id="yt-player-container"></div>
+          <div class="player-loading" *ngIf="!playerReady">
+            <div class="spinner"></div>
+            <span>Cargando vídeo…</span>
+          </div>
+        </div>
+
+        <!-- Progress bar personalizada -->
+        <div class="progress-bar-container" #progressBar
+             (click)="seekFromBar($event, progressBar)">
+          <div class="progress-bar-fill" [style.width.%]="progressPercent()"></div>
+          <!-- Marcas de clips -->
+          <div class="clip-marker"
+               *ngFor="let c of clips"
+               [style.left.%]="duration > 0 ? (c.startSec / duration * 100) : 0"
+               [title]="c.title || 'Clip'"
+               (click)="$event.stopPropagation(); previewClip(c)">
+          </div>
+        </div>
+
+        <!-- Controles -->
+        <div class="player-controls">
+          <span class="time-label">{{ formatTime(currentTimeSec) }}</span>
+          <div class="ctrl-btns">
+            <button (click)="seekRelative(-10)" title="-10s"><i class="bi bi-skip-backward-fill"></i></button>
+            <button class="play-btn" (click)="togglePlay()">
+              <i class="bi" [ngClass]="isPlaying ? 'bi-pause-fill' : 'bi-play-fill'"></i>
+            </button>
+            <button (click)="seekRelative(10)" title="+10s"><i class="bi bi-skip-forward-fill"></i></button>
+          </div>
+          <span class="time-label">{{ formatTime(duration) }}</span>
+        </div>
+      </ng-container>
+
+    </section>
+
+    <!-- ── Panel derecho: clips ── -->
+    <aside class="clips-panel">
+
+      <!-- Marcado de clip -->
+      <div class="mark-section">
+        <h3>Marcar clip</h3>
+
+        <div *ngIf="pendingStart === null" class="mark-idle">
+          <button class="btn-mark-start" (click)="markStart()" [disabled]="!playerReady">
+            <i class="bi bi-record-circle"></i> Marcar inicio
+            <small>{{ formatTime(currentTimeSec) }}</small>
+          </button>
+          <p class="hint">Posiciónate en el inicio del momento que quieres guardar y pulsa este botón.</p>
+        </div>
+
+        <div *ngIf="pendingStart !== null" class="mark-active">
+          <div class="mark-banner">
+            <i class="bi bi-record-circle-fill text-red"></i>
+            Inicio marcado en <strong>{{ formatTime(pendingStart) }}</strong>
+          </div>
+          <input class="clip-title-input" [(ngModel)]="newClipTitle"
+                 placeholder="Nombre del clip (opcional)" maxlength="100" />
+          <div class="mark-actions">
+            <button class="btn-mark-end" (click)="markEndAndSave()" [disabled]="currentTimeSec <= pendingStart">
+              <i class="bi bi-stop-circle"></i> Guardar clip hasta {{ formatTime(currentTimeSec) }}
+            </button>
+            <button class="btn-cancel-mark" (click)="cancelMark()">
+              <i class="bi bi-x"></i> Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de clips guardados -->
+      <div class="clips-list-section">
+        <h3>
+          <i class="bi bi-scissors"></i> Clips guardados
+          <span class="badge-count">{{ clips.length }}</span>
+        </h3>
+
+        <p *ngIf="!clips.length" class="no-clips">
+          Aún no has marcado ningún clip. Empieza marcando el inicio de un momento clave.
+        </p>
+
+        <div class="clip-card" *ngFor="let clip of clips; let i = index">
+
+          <!-- Vista normal -->
+          <div *ngIf="editingClip?.id !== clip.id" class="clip-card-content">
+            <div class="clip-top">
+              <span class="clip-index">{{ i + 1 }}</span>
+              <span class="clip-title">{{ clip.title || 'Clip ' + (i+1) }}</span>
+              <span class="clip-duration">{{ formatTime(clip.startSec) }} → {{ formatTime(clip.endSec) }}</span>
+            </div>
+            <div class="clip-notes" *ngIf="clip.notes">{{ clip.notes }}</div>
+            <div class="clip-actions">
+              <button title="Previsualizar" (click)="previewClip(clip)"><i class="bi bi-play-circle"></i></button>
+              <button title="Editar" (click)="startEditClip(clip)"><i class="bi bi-pencil"></i></button>
+              <button title="Eliminar" class="btn-delete" (click)="deleteClip(clip)"><i class="bi bi-trash"></i></button>
+            </div>
+          </div>
+
+          <!-- Vista de edición -->
+          <div *ngIf="editingClip?.id === clip.id" class="clip-edit-form">
+            <input [(ngModel)]="editTitle" placeholder="Nombre del clip" class="edit-input" />
+            <textarea [(ngModel)]="editNotes" placeholder="Notas…" rows="2" class="edit-textarea"></textarea>
+            <div class="edit-actions">
+              <button class="btn-save-edit" (click)="saveEditClip()"><i class="bi bi-check-lg"></i> Guardar</button>
+              <button class="btn-cancel-edit" (click)="editingClip = null"><i class="bi bi-x"></i> Cancelar</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Botón compilar -->
+      <div class="compile-section" *ngIf="clips.length > 0 && compileState === 'idle'">
+        <!-- YouTube: compilación automática por clip -->
+        <ng-container *ngIf="isEmbeddable">
+          <button class="btn-compile" (click)="startCompile()">
+            <i class="bi bi-film"></i> Compilar clips ({{ clips.length }})
+          </button>
+          <p class="compile-hint">
+            Se te pedirá compartir la pestaña del navegador. Los clips se grabarán automáticamente uno a uno.
+          </p>
+        </ng-container>
+
+        <!-- VEO: no hay player automático, se exporta como lista de tiempos -->
+        <ng-container *ngIf="!isEmbeddable">
+          <button class="btn-compile" (click)="exportTimestamps()">
+            <i class="bi bi-download"></i> Exportar lista de clips ({{ clips.length }})
+          </button>
+          <p class="compile-hint">
+            Descarga un archivo con los tiempos de todos tus clips para usarlos en el editor de VEO o editar con otro software.
+          </p>
+        </ng-container>
+      </div>
+
+    </aside>
+  </div>
+
+  <!-- ───────── Panel de compilación (overlay) ───────── -->
+  <div class="compile-overlay" *ngIf="compileState !== 'idle'">
+    <div class="compile-card">
+
+      <!-- Solicitando permiso -->
+      <ng-container *ngIf="compileState === 'requesting'">
+        <div class="spinner big"></div>
+        <h2>Compartir pestaña</h2>
+        <p>El navegador te pedirá que selecciones <strong>esta pestaña</strong> para capturar.
+           Asegúrate de elegir la pestaña correcta y pulsa "Compartir".</p>
+      </ng-container>
+
+      <!-- Compilando -->
+      <ng-container *ngIf="compileState === 'compiling'">
+        <div class="compile-progress-header">
+          <i class="bi bi-record-fill text-red pulse"></i>
+          <h2>Grabando clips…</h2>
+        </div>
+        <div class="compile-bar-wrap">
+          <div class="compile-bar-fill"
+               [style.width.%]="compileTotal > 0 ? ((compileIndex - 1) / compileTotal * 100) : 0">
+          </div>
+        </div>
+        <p class="compile-step">
+          Clip <strong>{{ compileIndex }}</strong> de <strong>{{ compileTotal }}</strong>:
+          {{ clips[compileIndex - 1]?.title }}
+        </p>
+        <p class="compile-note">
+          <i class="bi bi-info-circle"></i>
+          No cambies de pestaña ni minimices el navegador durante la grabación.
+        </p>
+      </ng-container>
+
+      <!-- Error -->
+      <ng-container *ngIf="compileState === 'error'">
+        <i class="bi bi-exclamation-triangle-fill compile-icon-err"></i>
+        <h2>Error en la compilación</h2>
+        <p>{{ compileError }}</p>
+        <div class="compile-done-actions" *ngIf="compiledBlobs.length">
+          <h4>Clips grabados antes del error ({{ compiledBlobs.length }}):</h4>
+          <div class="blob-list">
+            <div class="blob-item" *ngFor="let item of compiledBlobs; let i = index">
+              <span>{{ item.clip.title || 'Clip ' + (i+1) }}</span>
+              <button (click)="downloadClip(item, i)"><i class="bi bi-download"></i></button>
+            </div>
+          </div>
+        </div>
+        <button class="btn-reset" (click)="resetCompile()">Cerrar</button>
+      </ng-container>
+
+      <!-- Done -->
+      <ng-container *ngIf="compileState === 'done'">
+        <i class="bi bi-check-circle-fill compile-icon-ok"></i>
+        <h2>¡Clips listos!</h2>
+        <p>{{ compiledBlobs.length }} clips grabados correctamente.</p>
+        <div class="blob-list">
+          <div class="blob-item" *ngFor="let item of compiledBlobs; let i = index">
+            <span>{{ item.clip.title || 'Clip ' + (i+1) }}</span>
+            <small>{{ formatTime(item.clip.endSec - item.clip.startSec) }}</small>
+            <button (click)="downloadClip(item, i)">
+              <i class="bi bi-download"></i> Descargar
+            </button>
+          </div>
+        </div>
+        <div class="compile-done-actions">
+          <button class="btn-download-all" (click)="downloadAll()">
+            <i class="bi bi-cloud-arrow-down-fill"></i> Descargar todos
+          </button>
+          <button class="btn-reset" (click)="resetCompile()">Cerrar</button>
+        </div>
+      </ng-container>
+
+    </div>
+  </div>
+
+</div>

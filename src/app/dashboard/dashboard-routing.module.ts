@@ -73,6 +73,7 @@ import { DebriefTrainingComponent } from './debrief/debrief-training/debrief-tra
 import { DebriefMatchComponent } from './debrief/debrief-match/debrief-match.component';
 import { DebriefReportComponent } from './debrief/debrief-report/debrief-report.component';
 import { DebriefHistoryComponent } from './debrief/debrief-history/debrief-history.component';
+import { FormTemplatesComponent } from './debrief/form-templates/form-templates.component';
 import { ClubOwnerGuard } from '../club-owner.guard';
 import { AdminGuard } from '../admin.guard';
 import { CoachSubscriptionGuard } from '../coach-subscription.guard';
@@ -80,14 +81,36 @@ import { ClubPlanGuard } from '../guards/club-plan.guard';
 import { SuscripcionCoachComponent } from './suscripcion-coach/suscripcion-coach.component';
 import { CoachSuscripcionSuccessComponent } from './coach-suscripcion-success/coach-suscripcion-success.component';
 import { AdminCoachesComponent } from './admin-coaches/admin-coaches.component';
+import { AdminProspectorComponent } from './admin-prospector/admin-prospector.component';
 import { AdminRegistrosComponent } from './admin-registros/admin-registros.component';
 import { AdminActivityComponent } from './admin-activity/admin-activity.component';
 import { AdminAiUsageComponent } from './admin-ai-usage/admin-ai-usage.component';
+import { AdminAiConfigComponent } from './admin-ai-config/admin-ai-config.component';
 import { AiCreditsSuccessComponent } from './ai-credits-success/ai-credits-success.component';
 import { ScoutingClubComponent } from './scouting-club/scouting-club.component';
 import { ScoutingPlayerProfileComponent } from './scouting-player-profile/scouting-player-profile.component';
 import { ClubVideoLibraryComponent } from './club-video-library/club-video-library.component';
 import { VideoPlanSuccessComponent } from './video-plan-success/video-plan-success.component';
+import { VideoAnalysisHubComponent } from './video-analysis/hub/video-analysis-hub.component';
+import { VideoAnalysisWorkspaceComponent } from './video-analysis/workspace/video-analysis-workspace.component';
+import { TemplateListComponent } from './video-analysis/templates/template-list.component';
+import { TemplateEditorComponent } from './video-analysis/templates/template-editor.component';
+import { PlaylistBuilderComponent } from './video-analysis/playlists/playlist-builder.component';
+import { PlaylistViewerComponent } from './video-analysis/playlists/playlist-viewer.component';
+import { CanvasTaggerWindowComponent } from './video-analysis/canvas-tagger-window/canvas-tagger-window.component';
+import { ScreenCaptureWorkspaceComponent } from './video-analysis/screen-capture/screen-capture-workspace.component';
+import { ExternalVideoWorkspaceComponent } from './video-analysis/external-workspace/external-video-workspace.component';
+import { ErpDashboardComponent } from './erp/erp-dashboard/erp-dashboard.component';
+import { ErpAccountsComponent } from './erp/erp-accounts/erp-accounts.component';
+import { ErpJournalEntriesComponent } from './erp/erp-journal-entries/erp-journal-entries.component';
+import { ErpSalesInvoicesComponent } from './erp/erp-sales-invoices/erp-sales-invoices.component';
+import { ErpPurchaseInvoicesComponent } from './erp/erp-purchase-invoices/erp-purchase-invoices.component';
+import { ErpPaymentsComponent } from './erp/erp-payments/erp-payments.component';
+import { ErpCustomersComponent } from './erp/erp-customers/erp-customers.component';
+import { ErpSuppliersComponent } from './erp/erp-suppliers/erp-suppliers.component';
+import { ErpBudgetsComponent } from './erp/erp-budgets/erp-budgets.component';
+import { ErpReportsComponent } from './erp/erp-reports/erp-reports.component';
+import { ErpSetupComponent } from './erp/erp-setup/erp-setup.component';
 
 const routes: Routes = [
   {
@@ -163,12 +186,34 @@ const routes: Routes = [
       { path: 'admin-registros', component: AdminRegistrosComponent, canActivate: [AdminGuard] },
       { path: 'admin-activity', component: AdminActivityComponent, canActivate: [AdminGuard] },
       { path: 'admin-ai-usage', component: AdminAiUsageComponent, canActivate: [AdminGuard] },
+      { path: 'admin-ai-config', component: AdminAiConfigComponent, canActivate: [AdminGuard] },
       { path: 'admin-coaches', component: AdminCoachesComponent, canActivate: [AdminGuard] },
+      { path: 'admin-prospector', component: AdminProspectorComponent, canActivate: [AdminGuard] },
       { path: 'ai-credits-success', component: AiCreditsSuccessComponent },
       { path: 'video-plan-success', component: VideoPlanSuccessComponent },
       { path: 'club-videos/:clubId', component: ClubVideoLibraryComponent, canActivate: [ClubOwnerGuard, ClubPlanGuard] },
+      { path: 'video-analysis', component: VideoAnalysisHubComponent },
+      { path: 'video-analysis/workspace/:projectId', component: VideoAnalysisWorkspaceComponent },
+      { path: 'video-analysis/templates', component: TemplateListComponent },
+      { path: 'video-analysis/template/:id', component: TemplateEditorComponent },
+      { path: 'video-analysis/playlists', component: PlaylistBuilderComponent },
+      { path: 'video-analysis/playlist/:id', component: PlaylistViewerComponent },
+      { path: 'video-analysis/canvas-tagger/:projectId', component: CanvasTaggerWindowComponent },
+      { path: 'video-analysis/screen-capture', component: ScreenCaptureWorkspaceComponent },
+      { path: 'video-analysis/external-workspace', component: ExternalVideoWorkspaceComponent },
       { path: 'scouting-club/:clubId', component: ScoutingClubComponent, canActivate: [ClubOwnerGuard, ClubPlanGuard] },
       { path: 'scouting-player-profile/:playerId', component: ScoutingPlayerProfileComponent },
+      { path: 'erp', component: ErpDashboardComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/accounts', component: ErpAccountsComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/journal-entries', component: ErpJournalEntriesComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/sales-invoices', component: ErpSalesInvoicesComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/purchase-invoices', component: ErpPurchaseInvoicesComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/payments', component: ErpPaymentsComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/customers', component: ErpCustomersComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/suppliers', component: ErpSuppliersComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/budgets', component: ErpBudgetsComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/reports', component: ErpReportsComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'erp/setup', component: ErpSetupComponent, canActivate: [ClubOwnerGuard] },
       { path: 'suscripcion-club', component: SuscripcionClubComponent },
       { path: 'suscripcion-club/wizard/familia', component: WizardFamiliaComponent },
       { path: 'suscripcion-club/wizard/club', component: WizardClubComponent },
@@ -177,6 +222,7 @@ const routes: Routes = [
       { path: 'debrief/match/:teamId/:matchId', component: DebriefMatchComponent },
       { path: 'debrief/report/:debriefId/:type', component: DebriefReportComponent },
       { path: 'debrief/history/:teamId', component: DebriefHistoryComponent },
+      { path: 'debrief/templates/:clubId', component: FormTemplatesComponent },
       { path: 'suscripcion-coach', component: SuscripcionCoachComponent },
       { path: 'coach-suscripcion-success', component: CoachSuscripcionSuccessComponent },
       { path: '**', redirectTo: 'inicio' },

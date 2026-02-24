@@ -180,7 +180,7 @@
 
       <div class="modal-left">
 
-        <h6 class="section-title">Actividades del día</h6>
+        <h6 class="section-title">{{ 'CAL.TEXT_388' | translate }}</h6>
 
         <!-- LISTA CON SCROLL -->
         <div class="activities-list">
@@ -209,14 +209,14 @@
         <!-- FOOTER FIJO -->
         <div class="left-footer position-relative" *ngIf="this.usuarioActual!.profileType.profileId != 3">
           <button class="btn btn-primary-pro w-100" type="button" (click)="toggleNewActivityMenu($event)">
-            <i class="bi bi-plus-circle"></i> Nueva actividad
+            <i class="bi bi-plus-circle"></i> {{ 'CAL.TEXT_389' | translate }}
           </button>
 
           <div class="new-activity-menu" *ngIf="showNewActivityMenu">
             <button (click)="selectNewActivity('entrenamiento')"><i class="fa-solid fa-dumbbell"></i>
-              Entrenamiento</button>
-            <button (click)="selectNewActivity('partido')"><i class="fa-solid fa-futbol"></i> Partido</button>
-            <button (click)="selectNewActivity('otra')"><i class="fa-regular fa-square-plus"></i> Otra</button>
+              {{ 'CAL.TEXT_062' | translate }}</button>
+            <button (click)="selectNewActivity('partido')"><i class="fa-solid fa-futbol"></i> {{ 'CAL.TEXT_066' | translate }}</button>
+            <button (click)="selectNewActivity('otra')"><i class="fa-regular fa-square-plus"></i> {{ 'CAL.TEXT_387' | translate }}</button>
           </div>
         </div>
 
@@ -236,7 +236,7 @@
             <h4>
               {{ mode === 'create-entrenamiento'
               ? ('CAL.TEXT_067' | translate)
-              : ('Entrenamiento ' + daySession) }}
+              : (('CAL.TEXT_062' | translate) + ' ' + daySession) }}
               <span *ngIf="mode === 'view-entrenamiento' && trainingSession?.startTime" class="training-time-header">
                 {{ trainingSession.startTime }}<span *ngIf="trainingSession.endTime"> - {{ trainingSession.endTime }}</span>
               </span>
@@ -252,19 +252,7 @@
             <!-- BOTONES EXTRA -->
             <div class="saas-action-bar">
 
-              <button *ngIf="profileId !== 3" class="saas-btn saas-btn-outline"
-                (click)="openModalPreEntrenamiento(trainingSession.trainingSessionId)">
-                <i class="bi bi-clipboard-check"></i>
-                <span>{{ 'CAL.TEXT_097' | translate }}</span>
-              </button>
-
-              <button *ngIf="profileId !== 3" class="saas-btn saas-btn-success"
-                (click)="openModalPostEntrenamiento(trainingSession.trainingSessionId)">
-                <i class="bi bi-graph-up-arrow"></i>
-                <span>{{ 'CAL.TEXT_098' | translate }}</span>
-              </button>
-
-              <button *ngIf="profileId !== 3" class="saas-btn saas-btn-primary"
+              <button type="button" *ngIf="profileId !== 3" class="saas-btn saas-btn-primary"
                 (click)="openModalAsistencia(trainingSession.trainingSessionId, daySession)">
                 <i class="bi bi-people-fill"></i>
                 <span>{{ 'TITLES.ASSISTANCE' | translate }}</span>
@@ -278,12 +266,40 @@
                 [teamName]="''">
               </app-session-pdf>
 
-              <!-- Análisis Rápido -->
-              <button *ngIf="profileId !== 3" class="saas-btn saas-btn-warning"
-                (click)="navigateToDebrief('training', trainingSession.trainingSessionId)">
-                <i class="bi bi-clipboard-pulse"></i>
-                <span>{{ 'DASHBOARD_COACH.DEBRIEF' | translate }}</span>
+              <!-- PRE-Entrenamiento: asignar formulario a players -->
+              <button type="button" *ngIf="profileId !== 3" class="saas-btn saas-btn-info"
+                (click)="openFormSelector('pre-training', trainingSession.trainingSessionId)">
+                <i class="bi bi-clipboard-plus"></i>
+                <span>PRE-Entrenamiento</span>
               </button>
+
+              <!-- POST-Entrenamiento: asignar formulario a players -->
+              <button type="button" *ngIf="profileId !== 3" class="saas-btn saas-btn-info"
+                (click)="openFormSelector('post-training', trainingSession.trainingSessionId)">
+                <i class="bi bi-clipboard-check"></i>
+                <span>POST-Entrenamiento</span>
+              </button>
+
+              <!-- Análisis del entrenador: debrief del coach para el club -->
+              <button type="button" *ngIf="profileId !== 3" class="saas-btn saas-btn-warning"
+                (click)="router.navigate(['/dashboard/debrief', 'training', teamId, trainingSession.trainingSessionId])">
+                <i class="bi bi-clipboard-pulse"></i>
+                <span>Análisis del entrenador</span>
+              </button>
+
+              <!-- PLAYER: formularios asignados por el coach -->
+              <ng-container *ngIf="profileId === 3">
+                <button type="button" class="saas-btn saas-btn-info"
+                  (click)="openPlayerForm('pre-training', trainingSession.trainingSessionId)">
+                  <i class="bi bi-clipboard-plus"></i>
+                  <span>Formulario PRE</span>
+                </button>
+                <button type="button" class="saas-btn saas-btn-info"
+                  (click)="openPlayerForm('post-training', trainingSession.trainingSessionId)">
+                  <i class="bi bi-clipboard-check"></i>
+                  <span>Formulario POST</span>
+                </button>
+              </ng-container>
 
             </div>
 
@@ -297,7 +313,7 @@
             <section class="settings-section">
               <!-- TÍTULO Entrenamiento -->
               <h2 class="section-title">
-                Detalles del entrenamiento
+                {{ 'CAL.TEXT_390' | translate }}
               </h2>
 
               <!-- DIVISOR SUTIL -->
@@ -633,7 +649,7 @@
           <!-- HEADER -->
           <div class="detail-header">
             <h5 class="modal-title">
-              {{ isCreate ? ('CAL.TEXT_070' | translate) : ('Partido ' + daySession) }}
+              {{ isCreate ? ('CAL.TEXT_070' | translate) : (('CAL.TEXT_066' | translate) + ' ' + daySession) }}
             </h5>
           </div>
           <div>
@@ -699,13 +715,40 @@
                 </button>
               </div>
 
-              <!-- ================= ANÁLISIS RÁPIDO ================= -->
+              <!-- ================= FORMULARIOS PRE/POST PARTIDO + ANÁLISIS ================= -->
               <div class="action-group"
                    *ngIf="usuarioActual!.profileType.profileId === 2 && match.matchPreparationId !== 0">
+                <!-- PRE-Partido: asignar formulario a players -->
+                <button type="button" class="saas-btn saas-btn-info"
+                  (click)="openFormSelector('pre-match', match.matchPreparationId)">
+                  <i class="bi bi-clipboard-plus"></i>
+                  PRE-Partido
+                </button>
+                <!-- POST-Partido: asignar formulario a players -->
+                <button type="button" class="saas-btn saas-btn-info"
+                  (click)="openFormSelector('post-match', match.matchPreparationId)">
+                  <i class="bi bi-clipboard-check"></i>
+                  POST-Partido
+                </button>
+                <!-- Análisis del entrenador: debrief del coach para el club -->
                 <button type="button" class="saas-btn saas-btn-warning"
-                  (click)="navigateToDebrief('match', match.matchPreparationId)">
+                  (click)="router.navigate(['/dashboard/debrief', 'match', teamId, match.matchPreparationId])">
                   <i class="bi bi-clipboard-pulse"></i>
-                  {{ 'DASHBOARD_COACH.DEBRIEF' | translate }}
+                  Análisis del entrenador
+                </button>
+              </div>
+
+              <!-- PLAYER: formularios asignados por el coach -->
+              <div class="action-group" *ngIf="usuarioActual!.profileType.profileId === 3 && match.matchPreparationId !== 0">
+                <button type="button" class="saas-btn saas-btn-info"
+                  (click)="openPlayerForm('pre-match', match.matchPreparationId)">
+                  <i class="bi bi-clipboard-plus"></i>
+                  Formulario PRE
+                </button>
+                <button type="button" class="saas-btn saas-btn-info"
+                  (click)="openPlayerForm('post-match', match.matchPreparationId)">
+                  <i class="bi bi-clipboard-check"></i>
+                  Formulario POST
                 </button>
               </div>
             </div>
@@ -716,7 +759,7 @@
               <section class="settings-section">
                 <!-- TÍTULO Entrenamiento -->
                 <h2 class="section-title">
-                  Detalles del Patido
+                  {{ 'CAL.TEXT_401' | translate }}
                 </h2>
 
                 <!-- DIVISOR SUTIL -->
@@ -1071,11 +1114,8 @@
             <div class="empty-icon">
               <i class="bi bi-calendar-plus"></i>
             </div>
-            <h5 class="empty-title">No hay ninguna actividad seleccionada</h5>
-            <p class="empty-text">
-              Selecciona una actividad del listado o crea una nueva desde
-              <strong>“Nueva actividad”</strong>.
-            </p>
+            <h5 class="empty-title">{{ 'CAL.TEXT_391' | translate }}</h5>
+            <p class="empty-text">{{ 'CAL.TEXT_392' | translate }}</p>
           </div>
         </div>
       </div>
@@ -1223,14 +1263,14 @@
   </div>
   <div class="modal saas-modal-post-partido d-block" tabindex="-1" role="dialog" style="z-index: 1060;">
     <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content rounded-4 shadow-lg">
-        <div class="modal-header border-0 pb-2 bg-light d-flex align-items-center"
+      <div class="modal-content rounded-4 shadow-lg pp-modal-content">
+        <div class="modal-header border-0 pb-2 pp-modal-header d-flex align-items-center"
           style="border-top-left-radius: 1.2rem; border-top-right-radius: 1.2rem;">
-          <h5 class="modal-title fw-bold" style="font-size: 1.5rem; color: #222;">{{ 'CAL.TEXT_100' | translate }}</h5>
+          <h5 class="modal-title fw-bold pp-modal-title">{{ 'CAL.TEXT_100' | translate }}</h5>
           <button type="button" class="btn-close custom-close-btn" aria-label="Close"
             (click)="cerrarModalPostPartido()"></button>
         </div>
-        <div class="modal-body pt-0 pb-3 px-4" style="background: #F8FAFD;">
+        <div class="modal-body pt-0 pb-3 px-4 pp-modal-body">
           <ul class="nav nav-tabs border-0 saas-nav-tabs" id="myTab" role="tablist" style="margin-bottom: 1.5rem;">
             <li class="nav-item" role="presentation">
               <button class="nav-link saas-nav-link active" id="simple-tab" data-bs-toggle="tab"
@@ -2492,9 +2532,26 @@
         </button>
       </div>
       <div class="modal-asistencia-body">
+        <!-- Resumen de asistencia -->
+        <div class="modal-asistencia-summary" *ngIf="listAsistencia.length > 0">
+          <div class="asistencia-summary-pill asistencia-pill-ok">
+            <i class="bi bi-check-circle-fill"></i>
+            <span>{{ countAsistencia(1) }} confirman</span>
+          </div>
+          <div class="asistencia-summary-counter">
+            <span class="asistencia-counter-num">{{ countAsistencia(1) }}</span>
+            <span class="asistencia-counter-sep">/</span>
+            <span class="asistencia-counter-total">{{ listAsistencia.length }}</span>
+          </div>
+          <div class="asistencia-summary-pill asistencia-pill-no">
+            <i class="bi bi-x-circle-fill"></i>
+            <span>{{ countAsistencia(0) }} no vienen</span>
+          </div>
+        </div>
         <p class="modal-asistencia-intro">{{ 'CAL.TEXT_298' | translate }}</p>
         <div class="modal-asistencia-list">
-          <div *ngFor="let jugador of listAsistencia; let i = index" class="modal-asistencia-row">
+          <div *ngFor="let jugador of listAsistencia; let i = index" class="modal-asistencia-row"
+               [class.asistencia-row-absent]="jugador.asistencia === 0">
             <div class="modal-asistencia-player">
               <span class="modal-asistencia-name">{{ jugador.player.nombre }} {{ jugador.player.apellido }}</span>
             </div>
@@ -3108,5 +3165,115 @@
   (saved)="onTaskSaved($event)"
   (closed)="onEditModalClosed()">
 </app-task-edit-modal>
+
+<!-- ── Selector de formulario pre/post (coaches) ──────────────────────── -->
+<app-form-template-selector
+  [show]="showFormTemplateSelector"
+  [tipo]="formSelectorTipo"
+  [clubId]="clubId"
+  [teamId]="teamId"
+  [entityId]="formSelectorEntityId"
+  [coachUserId]="userId"
+  (selected)="onFormTemplateSelected($event)"
+  (closed)="onFormTemplateSelectorClosed()">
+</app-form-template-selector>
+
+<!-- ── Modal formulario del player ───────────────────────────────────── -->
+<div *ngIf="showPlayerFormModal" class="player-form-backdrop" (click)="$event.target === $event.currentTarget && closePlayerFormModal()">
+  <div class="player-form-modal">
+
+    <div class="player-form-modal__header">
+      <div>
+        <h5>{{ playerFormTipo | titlecase }}</h5>
+        <span class="player-form-modal__subtitle" *ngIf="playerFormTemplate">{{ playerFormTemplate.nombre }}</span>
+      </div>
+      <button class="player-form-modal__close" (click)="closePlayerFormModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="playerFormLoading" class="player-form-modal__loading">
+      <div class="spinner-border spinner-border-sm text-primary"></div>
+      <span>Cargando formulario...</span>
+    </div>
+
+    <!-- Sin formulario asignado -->
+    <div *ngIf="!playerFormLoading && !playerFormTemplate" class="player-form-modal__empty">
+      <i class="bi bi-inbox"></i>
+      <p>El entrenador aún no ha asignado un formulario para este momento.</p>
+      <button class="btn btn-secondary btn-sm" (click)="closePlayerFormModal()">Cerrar</button>
+    </div>
+
+    <!-- Campos del formulario -->
+    <div *ngIf="!playerFormLoading && playerFormTemplate" class="player-form-modal__body">
+      <div *ngFor="let campo of getPlayerFormCampos()" class="player-form-field">
+        <label class="player-form-field__label">
+          {{ campo.etiqueta }}
+          <span *ngIf="campo.obligatorio" class="text-danger">*</span>
+        </label>
+
+        <!-- TEXT_SHORT -->
+        <input *ngIf="campo.tipoCampo === 'TEXT_SHORT' || campo.tipo === 'TEXT_SHORT'"
+          type="text" class="form-control form-control-sm"
+          [(ngModel)]="playerFormAnswers[campo.id || campo.etiqueta]"
+          [placeholder]="campo.etiqueta" />
+
+        <!-- TEXT_LONG -->
+        <textarea *ngIf="campo.tipoCampo === 'TEXT_LONG' || campo.tipo === 'TEXT_LONG'"
+          class="form-control form-control-sm" rows="3"
+          [(ngModel)]="playerFormAnswers[campo.id || campo.etiqueta]"></textarea>
+
+        <!-- NUMBER -->
+        <input *ngIf="campo.tipoCampo === 'NUMBER' || campo.tipo === 'NUMBER'"
+          type="number" class="form-control form-control-sm"
+          [(ngModel)]="playerFormAnswers[campo.id || campo.etiqueta]" />
+
+        <!-- CHECKBOX (Sí/No) -->
+        <div *ngIf="campo.tipoCampo === 'CHECKBOX' || campo.tipo === 'CHECKBOX'" class="form-check mt-1">
+          <input type="checkbox" class="form-check-input"
+            [checked]="playerFormAnswers[campo.id || campo.etiqueta] === 'true'"
+            (change)="playerFormAnswers[campo.id || campo.etiqueta] = $any($event.target).checked ? 'true' : 'false'" />
+          <label class="form-check-label">Sí</label>
+        </div>
+
+        <!-- SELECT -->
+        <select *ngIf="campo.tipoCampo === 'SELECT' || campo.tipo === 'SELECT'"
+          class="form-select form-select-sm"
+          [(ngModel)]="playerFormAnswers[campo.id || campo.etiqueta]">
+          <option value="">-- Selecciona --</option>
+          <option *ngFor="let opt of (campo.opciones || [])" [value]="opt">{{ opt }}</option>
+        </select>
+
+        <!-- SCALE (1-10) -->
+        <div *ngIf="campo.tipoCampo === 'SCALE' || campo.tipo === 'SCALE'" class="player-form-scale">
+          <button *ngFor="let n of [1,2,3,4,5,6,7,8,9,10]" type="button"
+            class="scale-btn"
+            [class.scale-btn--active]="playerFormAnswers[campo.id || campo.etiqueta] === n.toString()"
+            (click)="playerFormAnswers[campo.id || campo.etiqueta] = n.toString()">{{ n }}</button>
+        </div>
+
+        <!-- RATING (1-5 estrellas) -->
+        <div *ngIf="campo.tipoCampo === 'RATING' || campo.tipo === 'RATING'" class="player-form-rating">
+          <button *ngFor="let n of [1,2,3,4,5]" type="button" class="rating-star"
+            [class.rating-star--active]="+(playerFormAnswers[campo.id || campo.etiqueta]) >= n"
+            (click)="playerFormAnswers[campo.id || campo.etiqueta] = n.toString()">
+            <i class="bi bi-star-fill"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div *ngIf="!playerFormLoading && playerFormTemplate" class="player-form-modal__footer">
+      <button class="btn btn-secondary btn-sm" (click)="closePlayerFormModal()">Cancelar</button>
+      <button class="btn btn-success btn-sm" (click)="submitPlayerForm()" [disabled]="playerFormSaving">
+        <i class="bi bi-send"></i>
+        {{ playerFormSaving ? 'Enviando...' : 'Enviar respuestas' }}
+      </button>
+    </div>
+
+  </div>
+</div>
 
 <app-footer></app-footer>

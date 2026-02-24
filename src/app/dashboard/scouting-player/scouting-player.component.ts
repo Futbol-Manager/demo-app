@@ -182,6 +182,10 @@ export class ScoutingPlayerComponent implements OnInit, AfterViewInit, OnDestroy
       labelsRadar = [...labels, 'Portero'];
       data = [...data, parseInt(p.portero, 10) || 0];
     }
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(49, 178, 112, 0.35)');
+    gradient.addColorStop(0.6, 'rgba(49, 178, 112, 0.15)');
+    gradient.addColorStop(1, 'rgba(49, 178, 112, 0.05)');
     this.radarChart = new Chart(ctx, {
       type: 'radar',
       data: {
@@ -189,27 +193,46 @@ export class ScoutingPlayerComponent implements OnInit, AfterViewInit, OnDestroy
         datasets: [{
           label: '',
           data,
-          backgroundColor: 'rgba(49, 178, 112, 0.2)',
-          borderColor: 'rgba(0, 80, 40, 0.9)',
-          borderWidth: 2,
-          pointBackgroundColor: 'rgba(0, 80, 40, 0.9)',
+          backgroundColor: gradient,
+          borderColor: 'rgba(0, 80, 40, 0.95)',
+          borderWidth: 2.5,
+          pointBackgroundColor: '#31b270',
           pointBorderColor: '#fff',
-          pointBorderWidth: 1,
-          pointRadius: 4
+          pointBorderWidth: 2,
+          pointRadius: 5,
+          pointHoverRadius: 7
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: true,
-        plugins: { legend: { display: false } },
+        animation: { duration: 800 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0, 44, 64, 0.9)',
+            titleFont: { size: 12, weight: 600 },
+            bodyFont: { size: 13 },
+            padding: 10,
+            cornerRadius: 8
+          }
+        },
         scales: {
           r: {
             min: 0,
             max: 100,
-            angleLines: { color: 'rgba(0, 44, 64, 0.12)' },
-            grid: { color: 'rgba(0, 44, 64, 0.08)' },
-            pointLabels: { font: { size: 11 }, color: '#002c40' },
-            ticks: { stepSize: 25 }
+            angleLines: { color: 'rgba(0, 44, 64, 0.1)' },
+            grid: { color: 'rgba(0, 44, 64, 0.06)' },
+            pointLabels: {
+              font: { size: 10, family: "'Archivo', sans-serif", weight: 600 },
+              color: 'rgba(255, 255, 255, 0.95)'
+            },
+            ticks: {
+              display: true,
+              stepSize: 25,
+              color: 'rgba(255, 255, 255, 0.5)',
+              font: { size: 9 }
+            }
           }
         }
       }
@@ -231,7 +254,20 @@ export class ScoutingPlayerComponent implements OnInit, AfterViewInit, OnDestroy
       this.tarjetasAmarillas,
       this.tarjetasRojas
     ];
-    const colores = ['#31b270', '#1f8f8a', '#002c40', '#0d9488', '#eab308', '#dc2626'];
+    const baseColors = [
+      { top: '#31b270', bottom: '#228b5a' },
+      { top: '#1f8f8a', bottom: '#167a75' },
+      { top: '#0d9488', bottom: '#0f766e' },
+      { top: '#14b8a6', bottom: '#0d9488' },
+      { top: '#f59e0b', bottom: '#d97706' },
+      { top: '#ef4444', bottom: '#dc2626' }
+    ];
+    const bgColors = baseColors.map((c, i) => {
+      const g = ctx.createLinearGradient(0, 0, 0, 250);
+      g.addColorStop(0, c.top);
+      g.addColorStop(1, c.bottom);
+      return g;
+    });
     this.chartEstadisticas = new Chart(ctx, {
       type: 'bar',
       data: {
@@ -239,23 +275,52 @@ export class ScoutingPlayerComponent implements OnInit, AfterViewInit, OnDestroy
         datasets: [{
           label: 'Valor',
           data: values,
-          backgroundColor: colores,
-          borderColor: colores.map(c => c),
-          borderWidth: 1
+          backgroundColor: bgColors,
+          borderColor: baseColors.map(c => c.bottom),
+          borderWidth: 1,
+          borderRadius: 8,
+          borderSkipped: false
         }]
       },
       options: {
         responsive: true,
         maintainAspectRatio: true,
-        plugins: { legend: { display: false } },
+        animation: { duration: 600 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: 'rgba(0, 44, 64, 0.92)',
+            titleFont: { size: 12, weight: 600 },
+            bodyFont: { size: 13 },
+            padding: 12,
+            cornerRadius: 10,
+            displayColors: true
+          }
+        },
         scales: {
           y: {
             beginAtZero: true,
-            ticks: { stepSize: 1 },
-            grid: { color: 'rgba(0, 44, 64, 0.06)' }
+            ticks: {
+              stepSize: 1,
+              font: { size: 11 },
+              color: '#64748b'
+            },
+            grid: { color: 'rgba(0, 44, 64, 0.05)' },
+            border: { display: false }
           },
           x: {
-            grid: { display: false }
+            grid: { display: false },
+            ticks: {
+              font: { size: 11 },
+              color: '#64748b'
+            },
+            border: { display: false }
+          }
+        },
+        datasets: {
+          bar: {
+            barPercentage: 0.7,
+            categoryPercentage: 0.85
           }
         }
       }
@@ -300,22 +365,86 @@ export class ScoutingPlayerComponent implements OnInit, AfterViewInit, OnDestroy
     if (labels.length === 0) return;
     const ctx = this.barAsistenciaCanvas.nativeElement.getContext('2d');
     if (!ctx) return;
+    const gradAsist = ctx.createLinearGradient(0, 0, 0, 250);
+    gradAsist.addColorStop(0, '#31b270');
+    gradAsist.addColorStop(1, '#228b5a');
+    const gradFaltas = ctx.createLinearGradient(0, 0, 0, 250);
+    gradFaltas.addColorStop(0, '#f87171');
+    gradFaltas.addColorStop(1, '#dc2626');
     this.chartAsistencia = new Chart(ctx, {
       type: 'bar',
       data: {
         labels,
         datasets: [
-          { label: 'Asistencias', data: asistencias, backgroundColor: '#31b270', borderColor: '#31b270', borderWidth: 1 },
-          { label: 'Faltas', data: faltas, backgroundColor: '#dc2626', borderColor: '#dc2626', borderWidth: 1 }
+          {
+            label: 'Asistencias',
+            data: asistencias,
+            backgroundColor: gradAsist,
+            borderColor: '#228b5a',
+            borderWidth: 1,
+            borderRadius: 6,
+            borderSkipped: false
+          },
+          {
+            label: 'Faltas',
+            data: faltas,
+            backgroundColor: gradFaltas,
+            borderColor: '#b91c1c',
+            borderWidth: 1,
+            borderRadius: 6,
+            borderSkipped: false
+          }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: true,
-        plugins: { legend: { position: 'top' } },
+        animation: { duration: 600 },
+        plugins: {
+          legend: {
+            position: 'top',
+            align: 'end',
+            labels: {
+              usePointStyle: true,
+              pointStyle: 'circle',
+              padding: 16,
+              font: { size: 12, weight: 600 },
+              color: '#002c40'
+            }
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 44, 64, 0.92)',
+            titleFont: { size: 12, weight: 600 },
+            bodyFont: { size: 13 },
+            padding: 12,
+            cornerRadius: 10
+          }
+        },
         scales: {
-          y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(0, 44, 64, 0.06)' } },
-          x: { grid: { display: false } }
+          y: {
+            beginAtZero: true,
+            ticks: {
+              stepSize: 1,
+              font: { size: 11 },
+              color: '#64748b'
+            },
+            grid: { color: 'rgba(0, 44, 64, 0.05)' },
+            border: { display: false }
+          },
+          x: {
+            grid: { display: false },
+            ticks: {
+              font: { size: 11 },
+              color: '#64748b'
+            },
+            border: { display: false }
+          }
+        },
+        datasets: {
+          bar: {
+            barPercentage: 0.75,
+            categoryPercentage: 0.8
+          }
         }
       }
     });

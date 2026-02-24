@@ -15,6 +15,8 @@ export class AiActionPreviewComponent {
 
   getActionIcon(action: AiPendingAction): string {
     const fn = action.function || '';
+    if (fn === 'exportTableToExcel') return 'fas fa-file-excel';
+    if (fn === 'movePlayerToTeam') return 'fas fa-exchange-alt';
     if (fn.includes('Injury') || fn.includes('injury')) return 'fas fa-medkit';
     if (fn.includes('Training') || fn.includes('training')) return 'fas fa-running';
     if (fn.includes('Match') || fn.includes('match')) return 'fas fa-futbol';
@@ -25,6 +27,8 @@ export class AiActionPreviewComponent {
 
   getActionType(action: AiPendingAction): string {
     const fn = action.function || '';
+    if (fn === 'exportTableToExcel') return 'other';
+    if (fn === 'movePlayerToTeam') return 'edit';
     if (fn.startsWith('create')) return 'create';
     if (fn.startsWith('edit')) return 'edit';
     if (fn.startsWith('delete')) return 'delete';

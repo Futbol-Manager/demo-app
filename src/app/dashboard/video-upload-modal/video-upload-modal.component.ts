@@ -13,18 +13,19 @@ export class VideoUploadModalComponent {
   @Input() playerName?: string;
   @Output() closed = new EventEmitter<void>();
   @Output() uploaded = new EventEmitter<any>();
+  @Output() viewPlans = new EventEmitter<void>();
 
   selectedFile: File | null = null;
   title = '';
-  description = '';
   tags = '';
 
   uploading = false;
   progress = 0;
   error = '';
   success = false;
+  noPlanError = false;
 
-  maxFileSizeMb = 500;
+  maxFileSizeMb = 512;
 
   constructor(private videoService: VideoStorageService) {}
 
@@ -69,6 +70,7 @@ export class VideoUploadModalComponent {
   removeFile(): void {
     this.selectedFile = null;
     this.error = '';
+    this.noPlanError = false;
   }
 
   upload(): void {
@@ -87,7 +89,6 @@ export class VideoUploadModalComponent {
     const userId = Number(localStorage.getItem('userId')) || 0;
     this.videoService.uploadVideo(this.clubId, userId, this.selectedFile, {
       title: this.title,
-      description: this.description,
       tags: this.tags,
       watchlistId: this.watchlistId,
       playerName: this.playerName
@@ -96,15 +97,24 @@ export class VideoUploadModalComponent {
         clearInterval(progressInterval);
         this.progress = 100;
         const data = res?.data;
+        const bodyStatus = res?.status ?? res?.error?.code;
         if (data) {
           setTimeout(() => {
             this.uploading = false;
             this.success = true;
             this.uploaded.emit(data);
           }, 400);
+        } else if (bodyStatus === 402) {
+          this.uploading = false;
+          this.noPlanError = true;
+          this.progress = 0;
+        } else if (bodyStatus === 413) {
+          this.uploading = false;
+          this.error = res?.error?.msg || 'No hay suficiente espacio en tu plan.';
+          this.progress = 0;
         } else {
           this.uploading = false;
-          this.error = res?.error?.msg || 'Error al subir el vídeo.';
+          this.error = res?.error?.msg || 'Error al subir el vídeo. Inténtalo de nuevo.';
           this.progress = 0;
         }
       },
@@ -114,11 +124,20 @@ export class VideoUploadModalComponent {
         this.progress = 0;
         const statusCode = err?.status;
         if (statusCode === 402) {
-          this.error = 'Plan de vídeo no activo. Contrata un plan para subir vídeos.';
+          this.noPlanError = true;
+          this.error = '';
         } else if (statusCode === 413) {
-          this.error = err?.error?.error?.msg || 'No hay suficiente espacio en tu plan.';
+          this.error = err?.error?.error?.msg || err?.error?.message || 'No hay suficiente espacio en tu plan.';
+        } else if (statusCode === 401 || statusCode === 403) {
+          this.error = 'Sesión expirada. Por favor, recarga la página e inténtalo de nuevo.';
         } else {
-          this.error = err?.error?.error?.msg || 'Error al subir el vídeo.';
+          // err.error es el cuerpo JSON: { status, error: { code, msg }, data }
+          const serverMsg = err?.error?.error?.msg || err?.error?.message;
+          if (statusCode === 0 || !statusCode) {
+            this.error = 'No se pudo conectar con el servidor. Comprueba que la API está en marcha y vuelve a intentarlo.';
+          } else {
+            this.error = serverMsg || `Error al subir el vídeo (código ${statusCode}).`;
+          }
         }
       }
     });

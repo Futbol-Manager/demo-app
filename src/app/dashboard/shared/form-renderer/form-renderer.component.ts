@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { environment } from 'src/environments/environment';
+import { finalize } from 'rxjs/operators';
 
 export interface FormFieldDef {
   formularioCampoId: number;
@@ -58,25 +59,35 @@ export class FormRendererComponent implements OnInit {
     this.loading = true;
 
     if (this.docClubesId) {
-      // document context
-      this.clubService.getFormCamposByDoc(this.docClubesId).subscribe(
-        (res: any) => {
+      this.clubService.getFormCamposByDoc(this.docClubesId).pipe(
+        finalize(() => { if (this.fields.length === 0) this.loading = false; })
+      ).subscribe({
+        next: (res: any) => {
           this.fields = (res?.data || []).sort((a: any, b: any) => a.orden - b.orden);
           this.onFieldsLoaded.emit(this.fields.length);
-          this.loadResponses();
+          if (this.fields.length > 0) {
+            this.loadResponses();
+          } else {
+            this.loading = false;
+          }
         },
-        () => { this.loading = false; this.onFieldsLoaded.emit(0); }
-      );
+        error: () => { this.loading = false; this.onFieldsLoaded.emit(0); }
+      });
     } else if (this.clubId) {
-      // profile context
-      this.clubService.getFormCamposByClub(this.clubId, this.contexto).subscribe(
-        (res: any) => {
+      this.clubService.getFormCamposByClub(this.clubId, this.contexto).pipe(
+        finalize(() => { if (this.fields.length === 0) this.loading = false; })
+      ).subscribe({
+        next: (res: any) => {
           this.fields = (res?.data || []).sort((a: any, b: any) => a.orden - b.orden);
           this.onFieldsLoaded.emit(this.fields.length);
-          this.loadResponses();
+          if (this.fields.length > 0) {
+            this.loadResponses();
+          } else {
+            this.loading = false;
+          }
         },
-        () => { this.loading = false; this.onFieldsLoaded.emit(0); }
-      );
+        error: () => { this.loading = false; this.onFieldsLoaded.emit(0); }
+      });
     } else {
       this.loading = false;
       this.onFieldsLoaded.emit(0);
@@ -90,21 +101,38 @@ export class FormRendererComponent implements OnInit {
     }
 
     if (this.docClubesId) {
-      this.clubService.getFormRespuestasByDoc(this.docClubesId, this.userId, this.playerId).subscribe(
-        (res: any) => {
-          this.mapResponses(res?.data || []);
-          this.loading = false;
+      this.clubService.getFormRespuestasByDoc(this.docClubesId, this.userId, this.playerId).pipe(
+        finalize(() => { this.loading = false; })
+      ).subscribe({
+        next: (res: any) => {
+          try {
+            this.mapResponses(res?.data || []);
+          } catch (e) {
+            this.responses = {};
+            this.fields.forEach(f => {
+              this.responses[f.formularioCampoId] = {
+                formularioRespuestaId: 0, formularioCampoId: f.formularioCampoId,
+                userId: this.userId, playerId: this.playerId,
+                valor: f.tipoCampo === 'CHECKBOX' ? 'false' : '', file: '',
+              };
+            });
+          }
         },
-        () => { this.loading = false; }
-      );
+        error: () => {}
+      });
     } else if (this.clubId) {
-      this.clubService.getFormRespuestasByProfile(this.clubId, this.userId).subscribe(
-        (res: any) => {
-          this.mapResponses(res?.data || []);
-          this.loading = false;
+      this.clubService.getFormRespuestasByProfile(this.clubId, this.userId).pipe(
+        finalize(() => { this.loading = false; })
+      ).subscribe({
+        next: (res: any) => {
+          try {
+            this.mapResponses(res?.data || []);
+          } catch (e) {
+            this.responses = {};
+          }
         },
-        () => { this.loading = false; }
-      );
+        error: () => {}
+      });
     } else {
       this.loading = false;
     }

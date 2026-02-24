@@ -1,0 +1,57 @@
+/* Usa variables de tema (light/dark) */
+.confirmation-dialog {
+  padding: 0.25rem;
+  min-width: 320px;
+  max-width: 440px;
+}
+
+.confirmation-dialog__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.confirmation-dialog__message {
+  margin: 0 0 1.25rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.confirmation-dialog__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.confirmation-dialog__btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, opacity 0.2s;
+  border: none;
+
+  &--cancel {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+
+    &:hover {
+      background-color: var(--bg-hover);
+    }
+  }
+
+  &--confirm {
+    background-color: var(--color-primary);
+    color: var(--text-on-primary);
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    &.confirmation-dialog__btn--warn {
+      background-color: var(--badge-danger, #dc2626);
+    }
+  }
+}

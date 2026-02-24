@@ -940,6 +940,42 @@ export class ClubService {
     }
   }
 
+  getCorreosProgramados(userId: number): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      return this.http.get<Response>(environment.apiUrl + `club/correos-programados/${userId}`, { headers });
+    }
+    return EMPTY;
+  }
+
+  getCorreoProgramado(correoEnviadoId: number): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      return this.http.get<Response>(environment.apiUrl + `club/correo-programado/${correoEnviadoId}`, { headers });
+    }
+    return EMPTY;
+  }
+
+  updateCorreoProgramado(correoEnviadoId: number, dto: any): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      return this.http.put<Response>(environment.apiUrl + `club/correo-programado/${correoEnviadoId}`, dto, { headers });
+    }
+    return EMPTY;
+  }
+
+  cancelCorreoProgramado(correoEnviadoId: number): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      return this.http.delete<Response>(environment.apiUrl + `club/correo-programado/${correoEnviadoId}`, { headers });
+    }
+    return EMPTY;
+  }
+
   openCorreoRecibido(correoRecibidoId: number): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');
@@ -960,6 +996,20 @@ export class ClubService {
       // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
       return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
     }
+  }
+
+  /** Obtiene un correo recibido por id (incluye body). No marca como leído. */
+  getCorreoRecibido(correoRecibidoId: number): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      });
+      const url: string =
+        environment.apiUrl + `club/get-correo-recibido/${correoRecibidoId}`;
+      return this.http.get<Response>(url, { headers });
+    }
+    return EMPTY;
   }
 
   deleteCorreo(id: number, option: number): Observable<Response> {
@@ -2137,6 +2187,44 @@ export class ClubService {
     }
   }
 
+  getMatchesByTeamAndType(teamId: number, tipoPartido: string): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      const url: string = environment.apiUrl + `match/getlistpostpartidobyteam/${teamId}/${tipoPartido}`;
+      return this.http.get<Response>(url, { headers });
+    } else {
+      return EMPTY;
+    }
+  }
+
+  saveTeamUrl(teamId: number, url: string): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      });
+      const apiUrl: string = environment.apiUrl + `club/team-url/${teamId}`;
+      return this.http.post<Response>(apiUrl, { url }, { headers });
+    } else {
+      return EMPTY;
+    }
+  }
+
+  refreshClasificacion(teamId: number, codJornada: string): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({
+        Authorization: `Bearer ${token}`,
+      });
+      const apiUrl: string = environment.apiUrl + `club/clasificacion-refresh/${teamId}/${codJornada}`;
+      return this.http.post<Response>(apiUrl, {}, { headers });
+    } else {
+      return EMPTY;
+    }
+  }
+
   /**************************PERFIL ENTRENADOR************************** */
 
   private getAuthHeaders(): HttpHeaders {
@@ -2384,6 +2472,73 @@ export class ClubService {
     return this.http.post<Response>(
       environment.apiUrl + 'club/calendario-team-order/' + userId + '/' + clubId,
       teamIdsOrder,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  // --- Pagos v2 ---
+  getListPlayersPagosClubV2(clubId: number, temporada: string, filters?: { pagos?: string; team?: string; estado?: string }): Observable<Response> {
+    let url = environment.apiUrl + `club/getlistplayerspagosclub-v2/${clubId}/${temporada}`;
+    const params: string[] = [];
+    if (filters?.pagos) params.push(`filterPagos=${filters.pagos}`);
+    if (filters?.team) params.push(`filterTeam=${filters.team}`);
+    if (filters?.estado) params.push(`filterEstado=${filters.estado}`);
+    if (params.length) url += '?' + params.join('&');
+    return this.http.get<Response>(url, { headers: this.getAuthHeaders() });
+  }
+
+  chargeSavedCardsBatch(body: any): Observable<Response> {
+    return this.http.post<Response>(
+      environment.apiUrl + 'club/charge-saved-cards-batch',
+      body,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  exportPagos(clubId: number, temporada: string, format: string): Observable<Blob> {
+    const token: string | null = localStorage.getItem('token');
+    const headers: any = {};
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    return this.http.get(
+      environment.apiUrl + `club/export-pagos/${clubId}/${temporada}/${format}`,
+      { headers, responseType: 'blob' }
+    );
+  }
+
+  // --- Notifications ---
+  getNotifications(userId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + `notifications/${userId}`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getUnreadNotificationCount(userId: number): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + `notifications/unread-count/${userId}`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  markNotificationRead(notificationId: number): Observable<Response> {
+    return this.http.put<Response>(
+      environment.apiUrl + `notifications/${notificationId}/read`,
+      {},
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  markAllNotificationsRead(userId: number): Observable<Response> {
+    return this.http.put<Response>(
+      environment.apiUrl + `notifications/read-all/${userId}`,
+      {},
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  searchClubMembers(clubId: number, q: string, temporada: string): Observable<Response> {
+    return this.http.get<Response>(
+      environment.apiUrl + `club/search-members/${clubId}?q=${encodeURIComponent(q)}&temporada=${temporada}`,
       { headers: this.getAuthHeaders() }
     );
   }

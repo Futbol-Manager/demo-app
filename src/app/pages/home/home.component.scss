@@ -82,12 +82,17 @@ $border: #f4f4f4;
   height: auto;
   max-width: none;       /* ⬅️ CLAVE: quita el límite */
   cursor: pointer;
-  transition: transform 0.25s ease;
+  transition: transform 0.25s ease, filter 0.3s ease;
 }
 
 /* Hover elegante */
 .logo-header:hover {
   transform: scale(1.05);
+}
+
+/* Logo ya se cambia por asset blanco en tema dark */
+body.dark .logo-header {
+  filter: none;
 }
 
 @media (max-width: 768px) {

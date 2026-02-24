@@ -9,7 +9,7 @@
   background: transparent;
   border: none;
   background-color: rgba(15, 163, 232, 0.08);
-  color: #002c40;
+  color: var(--text-primary);
   font-size: 0.9rem;
   font-weight: 500;
 
@@ -47,7 +47,7 @@
 
 .skeleton-header {
   height: 40px;
-  background: #e5e7eb;
+  background: var(--bg-surface);
   border-radius: 6px;
   margin-bottom: 1rem;
 }
@@ -64,9 +64,9 @@
   border-radius: 4px;
   background: linear-gradient(
     90deg,
-    #e5e7eb 25%,
-    #f3f4f6 37%,
-    #e5e7eb 63%
+    var(--bg-surface) 25%,
+    var(--bg-hover) 37%,
+    var(--bg-surface) 63%
   );
   background-size: 400% 100%;
   animation: shimmer 1.4s infinite;
@@ -79,9 +79,9 @@
 
 /* ===== WRAPPER ===== */
 .modern-table-wrapper {
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 14px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-md);
   padding: 0.75rem;
 }
 
@@ -101,8 +101,8 @@
 }
 
 .modern-table thead th {
-  background: #002c40;
-  color: #ffffff;
+  background: var(--submenu-bg);
+  color: var(--submenu-text);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-size: 0.8rem;
@@ -123,15 +123,22 @@
 }
 
 .modern-table tbody tr {
-  background: white;
+  background: var(--bg-card);
   border-radius: 12px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.modern-table tbody tr:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .modern-table tbody td {
   padding: 0.8rem;
   font-size: 0.85rem;
   text-align: center;
+  color: var(--text-primary);
 }
 
 .fila-completa {
@@ -184,12 +191,12 @@
   padding: 0.85rem 1rem;
   font-weight: 700;
   font-size: 0.85rem;
-  color: #002c40;
-  border-bottom: 1px solid #e9ecef;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
 
-  i { color: #31b270; }
+  i { color: var(--color-primary); }
 }
 
 .chart-body {
@@ -224,23 +231,24 @@
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 1.25rem;
-  background: #ffffff;
+  background: var(--bg-card);
   border-radius: 14px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-md);
 }
 
 .pagination-info {
   font-size: 0.85rem;
-  color: #6b7280;
+  color: var(--text-secondary);
   white-space: nowrap;
 }
 
 .pagination-select {
   border-radius: 10px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-input);
   padding: 0.35rem 0.5rem;
   font-size: 0.85rem;
-  background: #f9fafb;
+  background: var(--bg-input);
+  color: var(--text-primary);
 }
 
 .pagination-controls {
@@ -254,26 +262,29 @@
   height: 36px;
   border-radius: 10px;
   border: none;
-  background: #f3f4f6;
-  color: #374151;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .page-btn:hover:not(:disabled) {
-  background: #31b270;
-  color: #ffffff;
+  background: var(--color-primary);
+  color: var(--text-on-primary);
 }
 
 .page-btn:disabled {
   opacity: 0.4;
+  cursor: not-allowed;
 }
 
 .page-indicator {
   font-size: 0.85rem;
   font-weight: 600;
-  color: #002c40;
+  color: var(--text-primary);
   min-width: 50px;
   text-align: center;
 }
@@ -301,6 +312,7 @@
 
   .modern-table thead th {
     background: #0a2a3c;
+    color: var(--text-on-navy) !important;
   }
 
   .modern-table tbody tr {
@@ -380,7 +392,7 @@
   i.bi-chevron-up,
   i.bi-chevron-down {
     opacity: 1;
-    color: #002c40;
+    color: var(--text-primary);
   }
 }
 
@@ -547,13 +559,13 @@
       font-size: 0.85rem;
       cursor: pointer;
       transition: all 0.2s ease;
-      color: #002c40;
+      color: var(--text-primary);
 
       &:hover {
-        background: #002c40;
-        color: white;
+        background: var(--color-primary);
+        color: var(--text-on-primary);
         transform: translateY(-1px);
-        box-shadow: 0 2px 8px rgba(0, 44, 64, 0.2);
+        box-shadow: var(--shadow-sm);
       }
     }
   }
@@ -647,7 +659,7 @@
 
     &:focus {
       outline: none;
-      border-color: #002c40;
+      border-color: var(--color-primary);
     }
 
     &:disabled {

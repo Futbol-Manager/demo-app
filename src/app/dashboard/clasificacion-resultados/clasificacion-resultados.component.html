@@ -1,352 +1,311 @@
 <div class="back-container">
-  <div class="btn-back-clean" href="javascript:void(0)" (click)="goBack()">
+  <div class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
   </div>
 </div>
-<div *ngIf="loading" class="table-skeleton">
-    <div class="skeleton-header"></div>
-    <div class="skeleton-row" *ngFor="let i of [].constructor(8)">
-        <div class="skeleton-cell" *ngFor="let j of [].constructor(8)"></div>
+
+<!-- Overlay spinner Sphaira durante el refresh (sin borrar la tabla) -->
+<div *ngIf="refreshing" class="refresh-overlay">
+  <div class="refresh-overlay-card">
+    <div class="sphaira-spinner-container">
+      <div class="sphaira-spinner-ring"></div>
+      <img src="assets/images/Logo_SphairaTech1.svg" alt="Sphaira" class="sphaira-spinner-logo" />
     </div>
+    <h5 class="wizard-title mt-3">Actualizando clasificación...</h5>
+    <p class="wizard-message">La IA está analizando la página de tu federación.<br>Esto puede tardar entre 20 y 40 segundos.</p>
+  </div>
 </div>
+
+<!-- Loading con spinner Sphaira + mensaje IA -->
+<div *ngIf="loading" class="wizard-wrapper">
+  <div class="wizard-card wizard-loading">
+    <div class="sphaira-spinner-container">
+      <div class="sphaira-spinner-ring"></div>
+      <img src="assets/images/Logo_SphairaTech1.svg" alt="Sphaira" class="sphaira-spinner-logo" />
+    </div>
+    <h5 class="wizard-title mt-4">Cargando clasificación...</h5>
+    <p class="wizard-message">La IA está analizando la página de tu federación.<br>Esto puede tardar entre 20 y 40 segundos.</p>
+    <div class="wizard-steps-indicator mt-3">
+      <span class="step-dot active"></span>
+      <span class="step-dot active"></span>
+      <span class="step-dot"></span>
+    </div>
+  </div>
+</div>
+
 <div *ngIf="!loading">
-    <div class="container mt-4" [ngStyle]="{ display: datosCargados ? 'none' : 'block' }">
-        <h3>{{ 'CAL.TEXT_357' | translate }}</h3>
+
+  <!-- ══════════ WIZARD (sin URL configurada) ══════════ -->
+  <div *ngIf="datosNulos" class="wizard-wrapper">
+
+    <!-- Paso 1: URL -->
+    <div *ngIf="wizardStep === 'url'" class="wizard-card">
+      <div class="wizard-icon">🔗</div>
+      <h5 class="wizard-title">Configura tu clasificación</h5>
+      <p class="wizard-desc">
+        Introduce la URL de la página de clasificación de tu federación o liga.<br>
+        Sphaira extraerá los datos automáticamente.
+      </p>
+      <div class="wizard-form">
+        <label class="wizard-label">URL de clasificación</label>
+        <input
+          type="url"
+          class="wizard-input"
+          [(ngModel)]="urlInput"
+          placeholder="https://www.tufederacion.es/clasificacion?grupo=XXXXX"
+          (keyup.enter)="startWizard()"
+          autofocus
+        />
+        <button class="wizard-btn" (click)="startWizard()" [disabled]="!urlInput.trim()">
+          <i class="bi bi-search me-2"></i>Analizar y cargar
+        </button>
+      </div>
+      <div class="wizard-hint">
+        Introduce la URL exacta de la página de clasificación de tu federación o liga.
+      </div>
     </div>
 
-    <div class="container mt-4" [ngStyle]="{ display: datosNulos ? 'block' : 'none' }">
-        <h3>{{ 'CAL.TEXT_364' | translate }}</h3>
+    <!-- Paso 2: Cargando -->
+    <div *ngIf="wizardStep === 'loading'" class="wizard-card wizard-loading">
+      <div class="sphaira-spinner-container">
+        <div class="sphaira-spinner-ring"></div>
+        <img src="assets/images/Logo_SphairaTech1.svg" alt="Sphaira" class="sphaira-spinner-logo" />
+      </div>
+      <h5 class="wizard-title mt-4">Procesando...</h5>
+      <p class="wizard-message">{{ wizardMessage }}</p>
+      <div class="wizard-steps-indicator mt-3">
+        <span class="step-dot active"></span>
+        <span class="step-dot active"></span>
+        <span class="step-dot"></span>
+      </div>
     </div>
 
-    <div class="container mt-4" [ngStyle]="{ display: datosCargados ? 'block' : 'none' }">
-        <h5>{{ 'CAL.TEXT_362' | translate }}</h5>
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <!-- Botones de navegación -->
-            <div class="d-flex">
-                <button class="btn btn-custom me-2" id="btn-clasificacion" (click)="mostrarContenido(false)">
-                    {{ 'TITLES.STANDINGS' | translate }}
-                </button>
-                <button class="btn btn-custom" id="btn-resultados" (click)="mostrarContenido(true)">
-                    {{ 'TITLES.RESULTS' | translate }}
-                </button>
-            </div>
+    <!-- Paso 3: Éxito -->
+    <div *ngIf="wizardStep === 'success'" class="wizard-card wizard-success">
+      <div class="wizard-success-icon">✅</div>
+      <h5 class="wizard-title">¡Datos cargados!</h5>
+      <p class="wizard-desc">
+        La clasificación y los resultados se han importado correctamente.<br>
+        Pulsa el botón para verlos.
+      </p>
+      <button class="wizard-btn" (click)="finishWizard()">
+        <i class="bi bi-table me-2"></i>Ver clasificación
+      </button>
+      <div class="wizard-steps-indicator mt-4">
+        <span class="step-dot done"></span>
+        <span class="step-dot done"></span>
+        <span class="step-dot done"></span>
+      </div>
+    </div>
 
-            <!-- Combo de jornada -->
-            <div class="form-group d-flex align-items-center">
-                <select id="jornadaSelect" class="form-select" [(ngModel)]="jornadaSeleccionada"
-                    (change)="cambiarJornada()">
-                    <option *ngFor="let j of jornadas" [value]="j">{{ 'TITLES.ROUND' | translate }} {{ j }}</option>
-                </select>
-            </div>
+    <!-- Error -->
+    <div *ngIf="wizardStep === 'error'" class="wizard-card wizard-error">
+      <div class="wizard-error-icon">⚠️</div>
+      <h5 class="wizard-title">No se pudieron cargar los datos</h5>
+      <p class="wizard-message">{{ wizardMessage }}</p>
+      <button class="wizard-btn btn-outline mt-3" (click)="retryWizard()">
+        <i class="bi bi-arrow-counterclockwise me-2"></i>Intentar con otra URL
+      </button>
+    </div>
+
+  </div>
+  <!-- /WIZARD -->
+
+  <!-- ══════════ DATOS CARGADOS ══════════ -->
+  <div *ngIf="datosCargados" class="container mt-3">
+
+    <!-- Cabecera -->
+    <div class="sph-section-header">
+      <h5>
+        <i class="bi bi-bar-chart-steps me-1"></i>
+        {{ 'CAL.TEXT_362' | translate }}
+        <span class="sph-badge-ai" *ngIf="!jornadaNavegable">IA</span>
+      </h5>
+    </div>
+
+    <!-- Toolbar: tabs + jornada + refresh -->
+    <div class="sph-toolbar">
+      <div class="sph-tab-btns">
+        <button class="btn-sph-tab" [class.active]="!contenidoActivo" (click)="mostrarContenido(false)">
+          <i class="bi bi-list-ol me-1"></i>{{ 'TITLES.STANDINGS' | translate }}
+        </button>
+        <button class="btn-sph-tab" [class.active]="contenidoActivo" (click)="mostrarContenido(true)">
+          <i class="bi bi-calendar2-check me-1"></i>{{ 'TITLES.RESULTS' | translate }}
+        </button>
+      </div>
+
+      <div class="sph-controls">
+        <ng-container *ngIf="jornadaNavegable; else jornadaFija">
+          <select class="sph-select" [(ngModel)]="jornadaSeleccionada" (change)="cambiarJornada()">
+            <option *ngFor="let j of jornadas" [value]="j">{{ 'TITLES.ROUND' | translate }} {{ j }}</option>
+          </select>
+        </ng-container>
+        <ng-template #jornadaFija>
+          <span class="badge-jornada-fija" title="Esta fuente muestra siempre la jornada actual">
+            <i class="bi bi-calendar-event"></i> Jornada actual
+          </span>
+        </ng-template>
+        <button class="btn-refresh" (click)="refresh()" title="Actualizar datos">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Aviso temporada sin iniciar -->
+    <div *ngIf="temporadaSinIniciar" class="container px-0">
+      <div class="sph-info-banner mt-2">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>La fase actual aún no ha comenzado — todos los equipos tienen 0 puntos. Los datos se actualizarán cuando empiecen los partidos. Pulsa <strong>actualizar</strong> cuando quieras.</span>
+      </div>
+    </div>
+
+    <!-- TABLA CLASIFICACIÓN -->
+    <div *ngIf="!contenidoActivo" class="sph-table-wrapper">
+      <div class="table-responsive">
+        <table class="sph-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th style="text-align:left">Equipo</th>
+              <th>Pts</th>
+              <th>J</th>
+              <th>G</th>
+              <th>E</th>
+              <th>P</th>
+              <th *ngIf="tieneGoles">GF — GC</th>
+              <th *ngIf="tieneForma" title="Últimos resultados">Forma</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let equipo of equipos; let i = index"
+                [class.row-promotion]="i < 2"
+                [class.row-playoff]="i >= 2 && i < 4"
+                [class.row-relegation]="i >= equipos.length - 3">
+              <td><span class="pos-badge">{{ equipo.posicion }}</span></td>
+              <td class="team-name-cell">{{ equipo.nombre }}</td>
+              <td class="pts-cell">{{ equipo.puntos }}</td>
+              <td>{{ equipo.jugados }}</td>
+              <td>{{ equipo.ganados }}</td>
+              <td>{{ equipo.empatados }}</td>
+              <td>{{ equipo.perdidos }}</td>
+              <td *ngIf="tieneGoles">{{ equipo.golesAFavor }} — {{ equipo.golesEnContra }}</td>
+              <td *ngIf="tieneForma" class="forma-cell">
+                <span *ngFor="let r of (equipo.forma || '').split(' ')" class="forma-badge"
+                      [class.forma-w]="r==='G'||r==='W'||r==='V'"
+                      [class.forma-d]="r==='E'||r==='D'||r==='U'||r==='N'"
+                      [class.forma-l]="r==='P'||r==='L'||r==='D'">{{ r }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- RESULTADOS -->
+    <div *ngIf="contenidoActivo" class="resultados-grid">
+      <div class="resultado-card" *ngFor="let resultado of resultados">
+        <div class="resultado-equipos">
+          <div class="equipo-nombre text-end">{{ resultado.nombreEquipoLocal }}</div>
+          <div class="marcador-box">
+            {{ resultado.golesLocal !== null ? resultado.golesLocal : '–' }}
+            &nbsp;:&nbsp;
+            {{ resultado.golesVisitante !== null ? resultado.golesVisitante : '–' }}
+          </div>
+          <div class="equipo-nombre text-start">{{ resultado.nombreEquipoVisitante }}</div>
         </div>
-
-        <!-- Contenido de la tabla -->
-        <div class="tab-content mt-3">
-            <!-- TABLA CLASIFICACIÓN -->
-            <div id="clasificacion" *ngIf="!contenidoActivo">
-                <div class="table-responsive">
-                    <table class="table table-striped table-hover text-center">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>#</th>
-                                <th>Equipo</th>
-                                <th>Pts</th>
-                                <th>J</th>
-                                <th>G</th>
-                                <th>E</th>
-                                <th>P</th>
-                                <th>GF - GC</th>
-                                <!-- <th>{{ 'CAL.TEXT_359' | translate }}</th> -->
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let equipo of equipos; let i = index">
-                                <td [ngClass]="{ 'top-rank': i < 2, 'danger-zone': i >= equipos.length - 3 }">{{
-                                    equipo.posicion }}</td>
-                                <td class="team-name">
-                                    <!-- <img *ngIf="equipo.url_img" [src]="'https://www.rffm.es' + equipo.url_img" alt="Escudo"
-                                    width="30" height="30" class="me-2" /> -->
-                                    {{ equipo.nombre }}
-                                </td>
-                                <td>{{ equipo.puntos }}</td>
-                                <td>{{ equipo.jugados }}</td>
-                                <td>{{ equipo.ganados }}</td>
-                                <td>{{ equipo.empatados }}</td>
-                                <td>{{ equipo.perdidos }}</td>
-                                <td>{{ equipo.golesAFavor }} - {{ equipo.golesEnContra }}</td>
-                                <!--<td>
-                                    <span *ngFor="let racha of equipo.racha_partidos" class="badge me-1" [ngClass]="{
-                                        'bg-success': racha.tipo === 'G',
-                                        'bg-warning text-dark': racha.tipo === 'E',
-                                        'bg-danger': racha.tipo === 'P'
-                                    }">
-                                        {{ racha.tipo }}
-                                    </span>
-                                </td>-->
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- RESULTADOS -->
-            <div id="resultados" *ngIf="contenidoActivo">
-                <div class="resultados-container">
-                    <div class="resultado-card" *ngFor="let resultado of resultados">
-                        <div class="resultado d-flex align-items-center">
-                            <div class="equipo fw-bold text-end flex-fill">
-                                {{ resultado.nombreEquipoLocal }}
-                            </div>
-                            <div class="marcador mx-2">
-                                {{ resultado.golesLocal }} - {{ resultado.golesVisitante }}
-                            </div>
-                            <div class="equipo fw-bold text-start flex-fill">
-                                {{ resultado.nombreEquipoVisitante }}
-                            </div>
-                        </div>
-
-                        <!-- 🗓️ Línea de fecha y estadio -->
-                        <div class="detalle mt-1 d-flex justify-content-between text-muted small px-2">
-                            <span class="d-flex align-items-center">
-                                📅 {{ resultado.fecha }} - {{ resultado.hora }}
-                            </span>
-                            <span class="d-flex align-items-center">
-                                🏟️ {{ resultado.campoJuego }}
-                            </span>
-                        </div>
-
-                        <!-- 📄 Botón centrado -->
-                        <div class="text-center mt-2">
-                            <button class="btn btn-custom btn-sm" (click)="abrirActaEnPestanaNueva(resultado.codActa)">
-                                📄 {{ 'CAL.TEXT_358' | translate }}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="resultado-meta">
+          <span><i class="bi bi-calendar3 me-1"></i>{{ resultado.fecha }} {{ resultado.hora }}</span>
+          <span><i class="bi bi-geo-alt me-1"></i>{{ resultado.campoJuego }}</span>
         </div>
+        <button class="btn-acta" (click)="abrirActaEnPestanaNueva(resultado.codActa)">
+          <i class="bi bi-file-earmark-text me-1"></i>{{ 'CAL.TEXT_358' | translate }}
+        </button>
+      </div>
     </div>
+
+    <!-- Cambiar URL -->
+    <div class="url-reconfig-section mt-0">
+      <span class="url-reconfig-label"><i class="bi bi-link-45deg me-1"></i>¿Cambiar fuente?</span>
+      <input
+        type="url"
+        class="url-reconfig-input"
+        [(ngModel)]="urlReconfigInput"
+        placeholder="https://www.nueva-federacion.es/clasificacion?..."
+        [disabled]="savingReconfig"
+      />
+      <button class="btn-reconfig" (click)="saveReconfigUrl()" [disabled]="savingReconfig || !urlReconfigInput.trim()">
+        <span *ngIf="savingReconfig" class="spinner-border spinner-border-sm me-1"></span>
+        <i *ngIf="!savingReconfig" class="bi bi-cloud-arrow-up me-1"></i>
+        {{ savingReconfig ? 'Guardando...' : 'Actualizar URL' }}
+      </button>
+      <div *ngIf="reconfigFeedback" class="reconfig-feedback"
+           [ngClass]="{'text-success': !reconfigFeedbackError, 'text-danger': reconfigFeedbackError}">
+        {{ reconfigFeedback }}
+      </div>
+    </div>
+
+  </div>
 </div>
 
 
 <!-- MODAL ACTA PROFESIONAL -->
 <div class="modal fade show" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': showModalActa }"
     style="background: rgba(0,0,0,0.6);" *ngIf="actaSeleccionada">
-    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-        <div class="modal-content shadow-lg border-0">
-            <div class="modal-header bg-dark text-white">
-                <h5 class="modal-title">
-                    📝 {{ 'CAL.TEXT_360' | translate }} - {{ actaSeleccionada.fecha }} {{ actaSeleccionada.hora }}
-                </h5>
-                <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModalActa()"></button>
-            </div>
-
-            <div class="modal-body">
-                <!-- Resultado -->
-                <div class="text-center mb-4">
-                    <h4 class="fw-bold">
-                        {{ actaSeleccionada.equipo_local }} {{ actaSeleccionada.goles_local }} - {{
-                        actaSeleccionada.goles_visitante }} {{ actaSeleccionada.equipo_visitante }}
-                    </h4>
-                    <small class="text-muted">{{ actaSeleccionada.nombre_competicion }} / {{
-                        actaSeleccionada.nombre_grupo }} - {{ 'TITLES.ROUND' | translate }} {{ actaSeleccionada.jornada
-                        }}</small>
-                </div>
-
-                <!-- Goles -->
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <h6 class="text-primary">⚽ {{ 'CAL.TEXT_167' | translate }} - {{ actaSeleccionada.equipo_local
-                            }}</h6>
-                        <ul class="list-group">
-                            <li *ngFor="let gol of actaSeleccionada.goles_equipo_local" class="list-group-item">
-                                {{ gol.minuto }}' - {{ gol.nombre_jugador }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6">
-                        <h6 class="text-danger">⚽ {{ 'CAL.TEXT_167' | translate }} - {{
-                            actaSeleccionada.equipo_visitante }}</h6>
-                        <ul class="list-group">
-                            <li *ngFor="let gol of actaSeleccionada.goles_equipo_visitante" class="list-group-item">
-                                {{ gol.minuto }}' - {{ gol.nombre_jugador }}
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-
-                <!-- Titulares y Suplentes -->
-                <div class="row mb-4">
-                    <!-- Titulares Local -->
-                    <div class="col-md-6">
-                        <h6 class="text-primary">👕 {{ 'CAL.TEXT_094' | translate }} - {{ actaSeleccionada.equipo_local
-                            }}</h6>
-                        <table class="table table-bordered table-sm table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 20%;">Nº</th>
-                                    <th>Nombre</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <ng-container *ngFor="let jugador of actaSeleccionada.jugadores_equipo_local">
-                                    <tr *ngIf="jugador.titular === '1'">
-                                        <td>{{ jugador.dorsal }}</td>
-                                        <td>{{ jugador.nombre_jugador }}</td>
-                                    </tr>
-                                </ng-container>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Titulares Visitante -->
-                    <div class="col-md-6">
-                        <h6 class="text-danger">👕 {{ 'CAL.TEXT_094' | translate }} - {{
-                            actaSeleccionada.equipo_visitante }}</h6>
-                        <table class="table table-bordered table-sm table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 20%;">Nº</th>
-                                    <th>{{ 'PROFILE.FIELDS.NAME' | translate }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <ng-container *ngFor="let jugador of actaSeleccionada.jugadores_equipo_visitante">
-                                    <tr *ngIf="jugador.titular === '1'">
-                                        <td>{{ jugador.dorsal }}</td>
-                                        <td>{{ jugador.nombre_jugador }}</td>
-                                    </tr>
-                                </ng-container>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="row mb-4">
-                    <!-- Suplentes Local -->
-                    <div class="col-md-6">
-                        <h6 class="text-primary">🧤 {{ 'CAL.TEXT_095' | translate }} - {{ actaSeleccionada.equipo_local
-                            }}</h6>
-                        <table class="table table-bordered table-sm table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 20%;">Nº</th>
-                                    <th>{{ 'PROFILE.FIELDS.NAME' | translate }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <ng-container *ngFor="let jugador of actaSeleccionada.jugadores_equipo_local">
-                                    <tr *ngIf="jugador.titular === '0'">
-                                        <td>{{ jugador.dorsal }}</td>
-                                        <td>{{ jugador.nombre_jugador }}</td>
-                                    </tr>
-                                </ng-container>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Suplentes Visitante -->
-                    <div class="col-md-6">
-                        <h6 class="text-danger">🧤 {{ 'CAL.TEXT_095' | translate }} - {{
-                            actaSeleccionada.equipo_visitante }}</h6>
-                        <table class="table table-bordered table-sm table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 20%;">Nº</th>
-                                    <th>{{ 'PROFILE.FIELDS.NAME' | translate }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <ng-container *ngFor="let jugador of actaSeleccionada.jugadores_equipo_visitante">
-                                    <tr *ngIf="jugador.titular === '0'">
-                                        <td>{{ jugador.dorsal }}</td>
-                                        <td>{{ jugador.nombre_jugador }}</td>
-                                    </tr>
-                                </ng-container>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Tarjetas -->
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <h6 class="text-warning">🟨 {{ 'CAL.TEXT_361' | translate }} - {{ actaSeleccionada.equipo_local
-                            }}</h6>
-                        <ul class="list-group">
-                            <li *ngFor="let t of actaSeleccionada.tarjetas_equipo_local" class="list-group-item">
-                                {{ t.minuto }}' - {{ t.nombre_jugador }}
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="col-md-6" *ngIf="actaSeleccionada.tarjetas_equipo_visitante.length > 0">
-                        <h6 class="text-warning">🟨 {{ 'CAL.TEXT_361' | translate }} - {{
-                            actaSeleccionada.equipo_visitante }}</h6>
-                        <ul class="list-group">
-                            <li *ngFor="let t of actaSeleccionada.tarjetas_equipo_visitante" class="list-group-item">
-                                {{ t.minuto }}' - {{ t.nombre_jugador }}
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Técnicos -->
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <h6>👨‍🏫 {{ 'TITLES.TECNICS' | translate }} {{ actaSeleccionada.equipo_local }}</h6>
-                        <p><b>{{ 'TITLES.TRAINER' | translate }}:</b> {{ actaSeleccionada.entrenador_local }}</p>
-                        <p *ngIf="actaSeleccionada.delegadolocal"><b>{{ 'TITLES.DELEGADO' | translate }}:</b> {{
-                            actaSeleccionada.delegadolocal }}
-                        </p>
-                    </div>
-                    <div class="col-md-6">
-                        <h6>👨‍🏫 {{ 'TITLES.TECNICS' | translate }} {{ actaSeleccionada.equipo_visitante }}</h6>
-                        <p><b>{{ 'TITLES.TRAINER' | translate }}:</b> {{ actaSeleccionada.entrenador_visitante }}</p>
-                        <p *ngIf="actaSeleccionada.delegado_visitante"><b>{{ 'TITLES.DELEGADO' | translate }}:</b> {{
-                            actaSeleccionada.delegado_visitante }}</p>
-                        <div *ngIf="actaSeleccionada.otros_tecnicos_visitante.length > 0">
-                            <p *ngFor="let tecnico of actaSeleccionada.otros_tecnicos_visitante">
-                                <b>{{ tecnico.tipo }}:</b> {{ tecnico.nombre }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Árbitro y campo -->
-                <div class="row text-center text-muted">
-                    <div class="col-md-6">
-                        <h6>👨‍⚖️ {{ 'TITLES.REFEREE' | translate }}</h6>
-                        <p *ngFor="let arb of actaSeleccionada.arbitros_partido">{{ arb.tipo_arbitro }}: {{
-                            arb.nombre_arbitro }}</p>
-                    </div>
-                    <div class="col-md-6">
-                        <h6>🏟️ {{ 'TITLES.FIELD' | translate }}</h6>
-                        <p>{{ actaSeleccionada.campo }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-footer bg-light">
-                <button class="btn btn-secondary" (click)="cerrarModalActa()">Cerrar</button>
-            </div>
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content shadow-lg border-0">
+      <div class="modal-header" style="background: var(--sph-night); color:#fff;">
+        <h5 class="modal-title">
+          📝 {{ 'CAL.TEXT_360' | translate }} — {{ actaSeleccionada.fecha }} {{ actaSeleccionada.hora }}
+        </h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalActa()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="text-center mb-4">
+          <h4 class="fw-bold">
+            {{ actaSeleccionada.equipo_local }} {{ actaSeleccionada.goles_local }} -
+            {{ actaSeleccionada.goles_visitante }} {{ actaSeleccionada.equipo_visitante }}
+          </h4>
+          <small class="text-muted">{{ actaSeleccionada.nombre_competicion }} / {{ actaSeleccionada.nombre_grupo }} - {{ 'TITLES.ROUND' | translate }} {{ actaSeleccionada.jornada }}</small>
         </div>
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <h6 style="color:var(--sph-night)">⚽ {{ 'CAL.TEXT_167' | translate }} — {{ actaSeleccionada.equipo_local }}</h6>
+            <ul class="list-group list-group-flush">
+              <li *ngFor="let gol of actaSeleccionada.goles_equipo_local" class="list-group-item">
+                {{ gol.minuto }}' — {{ gol.nombre_jugador }}
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6 style="color:#ef4444">⚽ {{ 'CAL.TEXT_167' | translate }} — {{ actaSeleccionada.equipo_visitante }}</h6>
+            <ul class="list-group list-group-flush">
+              <li *ngFor="let gol of actaSeleccionada.goles_equipo_visitante" class="list-group-item">
+                {{ gol.minuto }}' — {{ gol.nombre_jugador }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer bg-light">
+        <button class="btn btn-secondary" (click)="cerrarModalActa()">Cerrar</button>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- Modal Ver Acta -->
-<div class="modal fade show" tabindex="-1" role="dialog" [ngClass]="{ 'd-block': showModalActa2 }"
+<!-- Modal Ver Acta iframe -->
+<div *ngIf="showModalActa2" class="modal fade show d-block" tabindex="-1" role="dialog"
     style="background: rgba(0,0,0,0.6);">
-    <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 95%;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">📄 Acta del partido</h5>
-                <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModalActa2()"></button>
-            </div>
-            <div class="modal-body p-0" style="height: 90vh;">
-                <iframe [src]="sanitizarUrl()" width="100%" height="100%" frameborder="0"></iframe>
-            </div>
-        </div>
+  <div class="modal-dialog modal-xl modal-dialog-centered" style="max-width: 95%;">
+    <div class="modal-content">
+      <div class="modal-header" style="background: var(--sph-night); color:#fff;">
+        <h5 class="modal-title">📄 Acta del partido</h5>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalActa2()"></button>
+      </div>
+      <div class="modal-body p-0" style="height: 90vh;">
+        <iframe [src]="urlActa" width="100%" height="100%" frameborder="0"></iframe>
+      </div>
     </div>
+  </div>
 </div>

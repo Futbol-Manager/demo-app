@@ -453,4 +453,18 @@ export class ClubSubscriptionService {
       catchError(() => of({ success: false }))
     );
   }
+
+  // ── Admin overrides (sin Stripe) ────────────────────────────────────────
+
+  adminSetPlan(clubId: number, planType: string, period: string = 'monthly', playerCount: number = 0): Observable<any> {
+    return this.http.post<any>(
+      `${this.apiUrl}club-plan/admin/${clubId}/set`,
+      { planType, period, playerCount }
+    );
+  }
+
+  adminCancelPlan(clubId: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}club-plan/admin/${clubId}/cancel`);
+  }
+
 }

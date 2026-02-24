@@ -3,9 +3,13 @@ import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/co
 import { Router, ActivatedRoute } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { Response } from 'src/app/core/services/models/response.model';
+import { TranslateService } from '@ngx-translate/core';
 import { Location } from '@angular/common';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
 import { Subscription } from 'rxjs';
+import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { AiPageContextService } from 'src/app/core/services/ai-chat/ai-page-context.service';
+import { LoginService } from 'src/app/core/services/login/login.service';
 
 @Component({
   selector: 'app-estadisticas-equipos-club',
@@ -32,6 +36,7 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
   aiMessages: { role: 'user' | 'assistant'; content: string }[] = [];
   aiLoading = false;
   @ViewChild('aiMessagesContainer') aiMessagesContainer!: ElementRef;
+  private historyConvId: string | null = null;
 
   // Voice recognition
   isRecording = false;
@@ -41,6 +46,8 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
   private voiceErrorSub: Subscription | null = null;
   private voiceTranscriptBase = '';
 
+  userId = 0;
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -48,14 +55,19 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
     private http: HttpClient,
     private elementRef: ElementRef,
     private location: Location,
-    private voiceRecognition: VoiceRecognitionService
+    private voiceRecognition: VoiceRecognitionService,
+    private translate: TranslateService,
+    private aiChatService: AiChatService,
+    private aiPageContext: AiPageContextService,
+    private loginService: LoginService,
   ) {}
 
   ngOnInit(): void {
-    // Suscribirse a los cambios en los parámetros de la URL
+    this.loginService.usuarioActual.pipe().subscribe(user => {
+      if (user) this.userId = user.userId;
+    });
     this.route.params.subscribe((params) => {
-      // Obtener el valor de teamId de los parámetros
-      this.clubId = +params['clubId']; // El + convierte el valor a número
+      this.clubId = +params['clubId'];
     });
     this.getListaPostpartidos();
     this.initVoiceRecognition();
@@ -108,6 +120,8 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
     this.voiceTranscriptSub?.unsubscribe();
     this.voiceListeningSub?.unsubscribe();
     this.voiceErrorSub?.unsubscribe();
+    // El contexto se mantiene activo para que el chatbot FAB pueda usarlo
+    // desde cualquier otra página. El usuario puede descartarlo manualmente.
   }
 
   // Método para redirigir a la pantalla de jugadores con el teamId
@@ -137,6 +151,7 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
           }
           this.datosCargados = true;
           this.loading = false;
+          this.publishPageContext();
         } else {
           console.error(
             'La respuesta del servicio no tiene la estructura esperada',
@@ -254,7 +269,7 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
 
   // ===== AI PANEL METHODS =====
   onKeyDown(event: KeyboardEvent): void {
-    if (event.key === 'Enter' && event.ctrlKey) {
+    if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       this.sendAiMessage();
     }
@@ -266,7 +281,7 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
       // Mensaje de bienvenida
       this.aiMessages.push({
         role: 'assistant',
-        content: '¡Hola! 👋 Soy tu asistente de análisis de estadísticas. Puedo ayudarte a visualizar y analizar los datos de tus equipos. ¿En qué te puedo ayudar?'
+        content: this.translate.instant('AI_PANEL.WELCOME_TEAMS')
       });
     }
   }
@@ -276,68 +291,73 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
     this.sendAiMessage();
   }
 
-  async sendAiMessage(): Promise<void> {
+  sendAiMessage(): void {
     if (!this.aiPrompt.trim() || this.aiLoading) return;
 
     const userMessage = this.aiPrompt.trim();
-    this.aiMessages.push({
-      role: 'user',
-      content: userMessage
-    });
-
+    this.aiMessages.push({ role: 'user', content: userMessage });
     this.aiPrompt = '';
     this.aiLoading = true;
-
-    // Scroll to bottom
     setTimeout(() => this.scrollAiToBottom(), 100);
 
-    try {
-      // Aquí se integrará con el servicio real de IA
-      // Por ahora, una respuesta simulada
-      await this.simulateAiResponse(userMessage);
-    } catch (error) {
-      this.aiMessages.push({
-        role: 'assistant',
-        content: '❌ Lo siento, ha ocurrido un error al procesar tu consulta. Por favor, intenta de nuevo.'
-      });
-    } finally {
-      this.aiLoading = false;
-      setTimeout(() => this.scrollAiToBottom(), 100);
-    }
+    const { contextText, codeToReal } = this.buildAnonymizedTeamStats();
+
+    let anonymizedMessage = userMessage;
+    codeToReal.forEach((real, code) => {
+      anonymizedMessage = anonymizedMessage.replace(
+        new RegExp(real.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), code
+      );
+    });
+
+    const enrichedMessage = anonymizedMessage
+      + '\n\n[ESTADÍSTICAS DE EQUIPOS - DATOS ANONIMIZADOS]\n' + contextText;
+
+    const history = this.aiMessages.slice(-6).map(m => ({ role: m.role, text: m.content }));
+
+    this.aiChatService.sendMessage(
+      this.userId, this.clubId, 'estadisticas-equipos', enrichedMessage, 'users', null, history
+    ).subscribe({
+      next: (resp) => {
+        let response = resp.success
+          ? (resp.response || 'Sin respuesta.')
+          : (resp.message || this.translate.instant('AI_PANEL.ERROR_MESSAGE'));
+        // De-anonymize: longest codes first to avoid partial matches
+        Array.from(codeToReal.entries())
+          .sort((a, b) => b[0].length - a[0].length)
+          .forEach(([code, real]) => { response = response.split(code).join(real); });
+        this.aiMessages.push({ role: 'assistant', content: response });
+        this.aiLoading = false;
+        this.saveToHistory();
+        setTimeout(() => this.scrollAiToBottom(), 100);
+      },
+      error: () => {
+        this.aiMessages.push({ role: 'assistant', content: this.translate.instant('AI_PANEL.ERROR_MESSAGE') });
+        this.aiLoading = false;
+        setTimeout(() => this.scrollAiToBottom(), 100);
+      }
+    });
   }
 
-  private async simulateAiResponse(userMessage: string): Promise<void> {
-    // Simulación temporal hasta integrar el servicio real
-    await new Promise(resolve => setTimeout(resolve, 1500));
+  private publishPageContext(): void {
+    const { contextText, codeToReal } = this.buildAnonymizedTeamStats();
+    this.aiPageContext.setContext({ type: 'estadisticas-equipos', contextText, codeToReal });
+  }
 
-    let response = '';
-    
-    if (userMessage.toLowerCase().includes('victoria') || userMessage.toLowerCase().includes('mejor')) {
-      const topTeam = this.resumentotales.reduce((max, t) => t.victorias > max.victorias ? t : max, this.resumentotales[0]);
-      response = `🏆 **Mejor Equipo por Victorias**<br><br>El equipo con más victorias es <strong>${topTeam?.equipo}</strong> con <strong>${topTeam?.victorias} victorias</strong> de ${topTeam?.partidos} partidos jugados (${((topTeam?.victorias / topTeam?.partidos) * 100).toFixed(1)}% efectividad).`;
-    } else if (userMessage.toLowerCase().includes('punto') || userMessage.toLowerCase().includes('puntos')) {
-      const topPoints = this.resumentotales.reduce((max, t) => t.puntos > max.puntos ? t : max, this.resumentotales[0]);
-      response = `📊 **Líder en Puntos**<br><br>El equipo con más puntos es <strong>${topPoints?.equipo}</strong> con <strong>${topPoints?.puntos} puntos</strong>.`;
-    } else if (userMessage.toLowerCase().includes('goles')) {
-      const topScorer = this.resumentotales.reduce((max, t) => t.gf > max.gf ? t : max, this.resumentotales[0]);
-      response = `⚽ **Equipo Más Goleador**<br><br>El equipo con más goles a favor es <strong>${topScorer?.equipo}</strong> con <strong>${topScorer?.gf} goles</strong> (promedio de ${(topScorer?.gf / topScorer?.partidos).toFixed(1)} goles por partido).`;
-    } else if (userMessage.toLowerCase().includes('racha')) {
-      response = `🎯 **Análisis de Rachas**<br><br>Estoy analizando las últimas 5 rachas de resultados de cada equipo. Esta información te ayuda a ver la tendencia actual. Las rachas se muestran en la tabla principal con las últimas 5 resultados.`;
-    } else if (userMessage.toLowerCase().includes('gráfica') || userMessage.toLowerCase().includes('grafica')) {
-      response = `📊 **Generación de Gráficas**<br><br>¡Excelente idea! Puedo generar gráficas de:<br>• Puntos por equipo<br>• Victorias/Empates/Derrotas<br>• Goles a favor vs en contra<br>• Diferencia de goles<br>• Comparativas de rendimiento<br><br>Próximamente podrás ver estas gráficas directamente aquí.`;
-    } else {
-      response = `Entiendo tu consulta sobre "${userMessage}". Actualmente puedo ayudarte con:<br><br>
-        🏆 Análisis de victorias y rendimiento<br>
-        📊 Estadísticas de puntos<br>
-        ⚽ Información sobre goles<br>
-        📈 Comparativas entre equipos<br><br>
-        ¿Qué te gustaría saber específicamente?`;
-    }
-
-    this.aiMessages.push({
-      role: 'assistant',
-      content: response
+  private buildAnonymizedTeamStats(): { contextText: string; codeToReal: Map<string, string> } {
+    const codeToReal = new Map<string, string>();
+    const lines: string[] = [
+      'Código | Partidos | Victorias | Empates | Derrotas | GF | GC | DG | Puntos'
+    ];
+    this.resumentotales.forEach((t, i) => {
+      const code = `EQUIPO_STAT_${i + 1}`;
+      codeToReal.set(code, t.equipo || `Equipo ${i + 1}`);
+      lines.push(
+        `${code} | ${t.partidos || '0'} | ${t.victorias || '0'} | `
+        + `${t.empates || '0'} | ${t.derrotas || '0'} | ${t.gf || '0'} | `
+        + `${t.gc || '0'} | ${t.dg || '0'} | ${t.puntos || '0'}`
+      );
     });
+    return { contextText: lines.join('\n'), codeToReal };
   }
 
   private scrollAiToBottom(): void {
@@ -345,6 +365,19 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
       const element = this.aiMessagesContainer.nativeElement;
       element.scrollTop = element.scrollHeight;
     }
+  }
+
+  private saveToHistory(): void {
+    const userMsgs = this.aiMessages.filter(m => m.role === 'user');
+    if (userMsgs.length === 0 || !this.userId) return;
+    const title = '[Estadísticas Equipos] ' + userMsgs[0].content.substring(0, 40)
+      + (userMsgs[0].content.length > 40 ? '...' : '');
+    const convId = this.historyConvId || ('conv_estadequip_' + Date.now());
+    this.historyConvId = convId;
+    const messages = this.aiMessages
+      .filter(m => m.role === 'user' || m.role === 'assistant')
+      .map(m => ({ role: m.role, text: m.content }));
+    this.aiChatService.saveHistory(this.userId, convId, title, this.clubId, 'estadisticas-equipos', messages).subscribe();
   }
 
 }

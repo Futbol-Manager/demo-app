@@ -429,6 +429,17 @@ export class PlayerService {
         }
     }
 
+    solicitarConsentimientoIA(playerId: number): Observable<Response> {
+        const token: string | null = localStorage.getItem('token');
+        if (token) {
+            const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+            const url: string = environment.apiUrl + `player/solicitarconsentimientoia/${playerId}`;
+            return this.http.post<Response>(url, {}, { headers });
+        } else {
+            return EMPTY;
+        }
+    }
+
     getscoutingplayerbyplayerid(playerId: number, userId: number): Observable<Response> {
         // Obtén el token almacenado en localStorage
         const token: string | null = localStorage.getItem('token');
@@ -559,25 +570,9 @@ export class PlayerService {
         }
     }
 
+    /** @deprecated Use getPagocuotasPlayer instead */
     getPagoCuotasPlayer(teamId: number, playerId: number): Observable<Response> {
-        // Obtén el token almacenado en localStorage
-        const token: string | null = localStorage.getItem('token');
-        // Verifica si el token está presente
-        if (token) {
-            // Configura las cabeceras con el token para la solicitud HTTP
-            const headers = new HttpHeaders({
-                'Authorization': `Bearer ${token}`
-            });
-
-            // Construye la URL para la solicitud
-            const url: string = environment.apiUrl + `player/getpagocuotasplayer/${teamId}/${playerId}`;
-
-            // Realiza la solicitud HTTP con las cabeceras configuradas
-            return this.http.get<Response>(url, { headers });
-        } else {
-            // Manejo de error si el token no está presente (puedes personalizar según tus necesidades)
-            return EMPTY; // Puedes devolver un Observable vacío o manejar el error de otra manera
-        }
+        return this.getPagocuotasPlayer(teamId, playerId);
     }
 
     getAsistenciaPartido(matchPreparationId: number, playerId: number): Observable<Response> {

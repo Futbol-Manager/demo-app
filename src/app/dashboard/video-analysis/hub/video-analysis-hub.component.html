@@ -1,0 +1,288 @@
+<!-- Back -->
+<div class="back-container">
+  <button class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    Volver
+  </button>
+</div>
+
+<div class="hub-container">
+
+  <!-- Header -->
+  <div class="hub-header">
+    <div class="hub-header-left">
+      <div class="hub-icon">
+        <i class="bi bi-camera-reels"></i>
+      </div>
+      <div class="hub-info">
+        <h3>Análisis de Vídeo</h3>
+        <span class="hub-count">{{ projects.length }} análisis</span>
+      </div>
+    </div>
+    <button class="btn btn-primary btn-new-analysis" (click)="openNewProjectModal()">
+      <i class="bi bi-plus-lg"></i>
+      Nuevo análisis
+    </button>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-row" *ngIf="projects.length > 0">
+    <div class="kpi-card" (click)="setFilter('ALL')" [class.active]="activeFilter === 'ALL'">
+      <div class="kpi-value">{{ projects.length }}</div>
+      <div class="kpi-label">Total</div>
+    </div>
+    <div class="kpi-card" (click)="setFilter('IN_PROGRESS')" [class.active]="activeFilter === 'IN_PROGRESS'">
+      <div class="kpi-value" style="color: #0d6efd">{{ getStatusCount('IN_PROGRESS') }}</div>
+      <div class="kpi-label">En progreso</div>
+    </div>
+    <div class="kpi-card" (click)="setFilter('COMPLETED')" [class.active]="activeFilter === 'COMPLETED'">
+      <div class="kpi-value" style="color: #198754">{{ getStatusCount('COMPLETED') }}</div>
+      <div class="kpi-label">Completados</div>
+    </div>
+    <div class="kpi-card" (click)="setFilter('DRAFT')" [class.active]="activeFilter === 'DRAFT'">
+      <div class="kpi-value" style="color: #6c757d">{{ getStatusCount('DRAFT') }}</div>
+      <div class="kpi-label">Borradores</div>
+    </div>
+  </div>
+
+  <!-- Search -->
+  <div class="search-bar" *ngIf="projects.length > 0">
+    <i class="bi bi-search"></i>
+    <input type="text" class="form-control" placeholder="Buscar análisis por título..."
+           [(ngModel)]="searchQuery" (input)="onSearch()">
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!isLoading && projects.length === 0">
+    <div class="empty-card">
+      <i class="bi bi-camera-reels"></i>
+      <h5>Empieza a analizar tus vídeos</h5>
+      <p>Crea tu primer análisis de vídeo para etiquetar jugadas, crear playlists y compartir con tu equipo.</p>
+      <button class="btn btn-success" (click)="openNewProjectModal()">
+        <i class="bi bi-plus-lg"></i>
+        Crear primer análisis
+      </button>
+    </div>
+  </div>
+
+  <!-- No results -->
+  <div class="empty-state" *ngIf="!isLoading && projects.length > 0 && filteredProjects.length === 0">
+    <div class="empty-card">
+      <i class="bi bi-search"></i>
+      <h5>Sin resultados</h5>
+      <p>No se encontraron análisis con los filtros actuales.</p>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="quick-actions" *ngIf="!isLoading">
+    <a class="quick-action" routerLink="/dashboard/video-analysis/templates">
+      <div class="qa-icon" style="background: linear-gradient(135deg, #3498db, #2980b9)">
+        <i class="bi bi-grid-3x3-gap"></i>
+      </div>
+      <div class="qa-info">
+        <span class="qa-title">Plantillas</span>
+        <span class="qa-desc">Gestiona categorías de etiquetado</span>
+      </div>
+    </a>
+    <a class="quick-action" routerLink="/dashboard/video-analysis/playlists">
+      <div class="qa-icon" style="background: linear-gradient(135deg, #e67e22, #d35400)">
+        <i class="bi bi-collection-play"></i>
+      </div>
+      <div class="qa-info">
+        <span class="qa-title">Playlists</span>
+        <span class="qa-desc">Crea y comparte clips</span>
+      </div>
+    </a>
+    <a class="quick-action" routerLink="/dashboard/club-videos/{{ clubId }}">
+      <div class="qa-icon" style="background: linear-gradient(135deg, #9b59b6, #8e44ad)">
+        <i class="bi bi-film"></i>
+      </div>
+      <div class="qa-info">
+        <span class="qa-title">Biblioteca</span>
+        <span class="qa-desc">Vídeos del club</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- Projects Grid -->
+  <div *ngIf="!isLoading && filteredProjects.length > 0">
+    <p class="projects-section-title">{{ filteredProjects.length }} análisis encontrados</p>
+    <div class="projects-grid">
+      <div class="project-card" *ngFor="let project of filteredProjects" (click)="openProject(project)">
+        <!-- Accent bar -->
+        <div class="project-card-accent" [style.background-color]="statusColors[project.status]"></div>
+
+        <div class="project-card-header">
+          <span class="project-status-badge" [style.background-color]="statusColors[project.status]">
+            {{ statusLabels[project.status] }}
+          </span>
+          <div class="project-actions">
+            <button class="btn-icon" *ngIf="project.status !== 'ARCHIVED'"
+                    (click)="archiveProject(project, $event)" title="Archivar">
+              <i class="bi bi-archive"></i>
+            </button>
+            <button class="btn-icon btn-danger-icon" (click)="deleteProject(project, $event)" title="Eliminar">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="project-card-body">
+          <h5 class="project-title">{{ project.title }}</h5>
+          <p class="project-description" *ngIf="project.description">{{ project.description }}</p>
+          <div class="project-meta">
+            <span class="meta-item" *ngIf="project.localFileName">
+              <i class="bi bi-pc-display"></i> {{ project.localFileName }}
+            </span>
+            <span class="meta-item" *ngIf="project.externalVideoUrl">
+              <i class="bi bi-youtube" *ngIf="isYouTubeUrl(project.externalVideoUrl!)"></i>
+              <i class="bi bi-link-45deg" *ngIf="!isYouTubeUrl(project.externalVideoUrl!)"></i>
+              Vídeo online
+            </span>
+            <span class="meta-item" *ngIf="!project.localFileName && !project.externalVideoUrl && project.videoTitle">
+              <i class="bi bi-film"></i> {{ project.videoTitle }}
+            </span>
+            <span class="meta-item" *ngIf="project.teamName">
+              <i class="bi bi-people"></i> {{ project.teamName }}
+            </span>
+            <span class="meta-item" *ngIf="project.matchId">
+              <i class="bi bi-trophy"></i> Partido
+            </span>
+            <span class="meta-item" *ngIf="project.trainingId">
+              <i class="bi bi-clipboard-check"></i> Entrenamiento
+            </span>
+          </div>
+        </div>
+
+        <div class="project-card-footer">
+          <span class="project-date">
+            <i class="bi bi-calendar3"></i> {{ formatDate(project.createdAt) }}
+          </span>
+          <span class="project-events" *ngIf="project.eventCount">
+            <i class="bi bi-tag-fill"></i> {{ project.eventCount }} eventos
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- New Project Modal -->
+<div class="modal-overlay" *ngIf="showNewProjectModal" (click)="closeNewProjectModal()">
+  <div class="modal-panel" (click)="$event.stopPropagation()">
+    <div class="modal-header-custom">
+      <h4><i class="bi bi-camera-reels"></i> Nuevo Análisis de Vídeo</h4>
+      <button class="btn-close-modal" (click)="closeNewProjectModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <div class="modal-body-custom">
+
+      <!-- Título -->
+      <div class="form-group">
+        <label>Título del análisis *</label>
+        <input type="text" class="form-control" placeholder="Ej: Análisis partido vs Real Madrid"
+               [(ngModel)]="newProject.title">
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label>Descripción</label>
+        <textarea class="form-control" rows="2" placeholder="Notas adicionales..."
+                  [(ngModel)]="newProject.description"></textarea>
+      </div>
+
+      <!-- Origen del vídeo: solo archivo local -->
+      <div class="form-group">
+        <label>Archivo de vídeo *</label>
+        <div class="local-file-picker">
+          <input #fileInput type="file" accept="video/*" class="d-none"
+                 (change)="onLocalFileSelected($event)">
+          <button class="btn btn-outline-primary btn-sm w-100"
+                  (click)="fileInput.click()"
+                  [disabled]="isExtractingMeta">
+            <i class="bi bi-folder2-open me-1"></i>
+            {{ selectedFileMeta ? 'Cambiar archivo' : 'Seleccionar archivo de vídeo' }}
+          </button>
+          <div class="local-file-info" *ngIf="selectedFileMeta">
+            <i class="bi bi-file-earmark-play-fill"></i>
+            <div class="file-details">
+              <span class="file-name">{{ selectedFileMeta.fileName }}</span>
+              <span class="file-meta">
+                {{ localVideoService.formatFileSize(selectedFileMeta.fileSize) }}
+                &middot;
+                {{ localVideoService.formatDuration(selectedFileMeta.durationMs) }}
+              </span>
+            </div>
+            <i class="bi bi-check-circle-fill text-success"></i>
+          </div>
+          <div class="extracting-meta" *ngIf="isExtractingMeta">
+            <span class="spinner-border spinner-border-sm me-1"></span>
+            Leyendo información del vídeo…
+          </div>
+        </div>
+        <small class="text-muted">
+          El vídeo no se sube a ningún servidor. Se reproduce directamente desde tu ordenador.
+        </small>
+      </div>
+
+      <!-- Plantilla de análisis -->
+      <div class="form-group">
+        <label>Plantilla de análisis *</label>
+        <select class="form-select" [(ngModel)]="newProject.templateId" [disabled]="templates.length === 0">
+          <option [ngValue]="0" disabled>Selecciona una plantilla</option>
+          <option *ngFor="let tpl of templates" [ngValue]="tpl.id">
+            {{ tpl.name }}
+            <span *ngIf="tpl.isSystem"> (Sphaira)</span>
+          </option>
+        </select>
+        <div class="alert-no-templates" *ngIf="templates.length === 0">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          No tienes plantillas creadas aún. Las plantillas definen la botonera de etiquetado (categorías y descriptores).
+          <a routerLink="/dashboard/video-analysis/templates" (click)="closeNewProjectModal()">
+            Crear mi primera plantilla
+          </a>
+        </div>
+      </div>
+
+      <!-- Contexto -->
+      <div class="form-group">
+        <label>Contexto</label>
+        <div class="context-selector">
+          <button class="context-btn" [class.active]="newProject.contextType === 'free'"
+                  (click)="newProject.contextType = 'free'">
+            <i class="bi bi-camera-video"></i> Libre
+          </button>
+          <button class="context-btn" [class.active]="newProject.contextType === 'match'"
+                  (click)="newProject.contextType = 'match'">
+            <i class="bi bi-trophy"></i> Partido
+          </button>
+          <button class="context-btn" [class.active]="newProject.contextType === 'training'"
+                  (click)="newProject.contextType = 'training'">
+            <i class="bi bi-clipboard-check"></i> Entrenamiento
+          </button>
+        </div>
+      </div>
+
+    </div>
+    <div *ngIf="createError" class="create-error-banner">
+      <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ createError }}
+    </div>
+    <div class="modal-footer-custom">
+      <button class="btn btn-outline-secondary" (click)="closeNewProjectModal()">Cancelar</button>
+      <button class="btn btn-primary" (click)="createProject()"
+              [disabled]="!newProject.title || !newProject.templateId || isCreating || !selectedFileMeta">
+        <span *ngIf="isCreating" class="spinner-border spinner-border-sm me-1"></span>
+        <i class="bi bi-play-circle" *ngIf="!isCreating"></i>
+        {{ isCreating ? 'Creando...' : 'Crear y abrir workspace' }}
+      </button>
+    </div>
+  </div>
+</div>

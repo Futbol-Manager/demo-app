@@ -11,6 +11,8 @@ import { LoginService } from 'src/app/core/services/login/login.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 import { User } from 'src/app/core/models/users/user.model';
+import { NotificationService } from 'src/app/core/services/notification/notification.service';
+import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
 
 /* ═══════════════════════════════════════
    PALETA DE 30 COLORES PARA EQUIPOS
@@ -51,8 +53,15 @@ interface CalendarEvent {
   teamColor: string;
   date: string;
   time?: string;
+  startTime?: string;
+  endTime?: string;
+  objective?: string;
+  warmUp?: string;
   rivalName?: string;
   terreno?: string;       // 'Local' | 'Visitante'
+  matchType?: string;
+  stadium?: string;
+  meetTime?: string;
   visible?: number;
 }
 
@@ -92,17 +101,18 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
   selectedDay: DayDetail | null = null;
   showDayPanel = false;
 
+  /* ─── Modal detalle de evento ─── */
+  selectedEvent: CalendarEvent | null = null;
+  showEventModal = false;
+
   /* ─── Subscriptions ─── */
   private subs: Subscription[] = [];
 
   /* ─── Días de la semana (se traducen) ─── */
-  weekDays = ['LUN', 'MAR', 'MIÉ', 'JUE', 'VIE', 'SÁB', 'DOM'];
+  weekDays: string[] = [];
 
   /* ─── Nombres de meses ─── */
-  monthNames = [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
-    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-  ];
+  monthNames: string[] = [];
 
   userId = 0;
 
@@ -114,6 +124,8 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
     private clubService: ClubService,
     private loginService: LoginService,
     private translate: TranslateService,
+    private notificationService: NotificationService,
+    private confirmationService: ConfirmationService
   ) {}
 
   /* ═══════════════════════════════════════
@@ -121,6 +133,13 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
   ═══════════════════════════════════════ */
 
   ngOnInit(): void {
+    this.updateCalendarTexts();
+    this.subs.push(
+      this.translate.onLangChange.subscribe(() => {
+        this.updateCalendarTexts();
+      })
+    );
+
     this.loginService.usuarioActual.subscribe((user: User | null) => {
       if (user) this.userId = user.userId;
     });
@@ -252,6 +271,10 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
                 teamColor: team.color,
                 date: t.daySession,
                 time: t.addressSession || '',
+                startTime: t.startTime || '',
+                endTime: t.endTime || '',
+                objective: t.objectiveSession || '',
+                warmUp: t.warmUp || '',
                 visible: t.visible,
               });
             }
@@ -266,6 +289,9 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
               const hora = m.hora != null && m.minutos != null
                 ? `${String(m.hora).padStart(2, '0')}:${String(m.minutos).padStart(2, '0')}`
                 : '';
+              const horaLlegada = m.horaEmpieza != null && m.minutosEmpieza != null
+                ? `${String(m.horaEmpieza).padStart(2, '0')}:${String(m.minutosEmpieza).padStart(2, '0')}`
+                : '';
               events.push({
                 id: m.matchPreparationId,
                 type: 'match',
@@ -276,6 +302,9 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
                 time: hora,
                 rivalName: m.rivalName || '',
                 terreno: m.terreno || '',
+                matchType: m.tipoPartido || '',
+                stadium: m.lugar || '',
+                meetTime: horaLlegada,
                 visible: m.visible,
               });
             }
@@ -497,6 +526,34 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
   closeDayPanel(): void {
     this.showDayPanel = false;
     this.selectedDay = null;
+    this.showEventModal = false;
+    this.selectedEvent = null;
+  }
+
+  openEventModal(event: CalendarEvent): void {
+    this.selectedEvent = event;
+    this.showEventModal = true;
+  }
+
+  onEventCardClick(domEvent: Event, event: CalendarEvent): void {
+    domEvent.preventDefault();
+    domEvent.stopPropagation();
+    this.openEventModal(event);
+  }
+
+  closeEventModal(): void {
+    this.showEventModal = false;
+    this.selectedEvent = null;
+  }
+
+  goToEventInCalendar(event: CalendarEvent): void {
+    this.router.navigate(['/dashboard/calendario', event.teamId, 0], {
+      queryParams: {
+        eventType: event.type === 'training' ? 'entrenamiento' : 'partido',
+        eventId: event.id,
+        eventDate: event.date,
+      },
+    });
   }
 
   /* ═══════════════════════════════════════
@@ -595,6 +652,18 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
     return `${parts[2]}/${parts[1]}/${parts[0]}`;
   }
 
+  getTerrenoLabel(terreno?: string): string {
+    if (!terreno) return '';
+    const normalized = terreno.trim().toLowerCase();
+    if (normalized === 'local' || normalized === 'home') {
+      return this.translate.instant('CALENDAR_CLUB.MODAL.TERRAIN_LOCAL');
+    }
+    if (normalized === 'visitante' || normalized === 'away') {
+      return this.translate.instant('CALENDAR_CLUB.MODAL.TERRAIN_AWAY');
+    }
+    return terreno;
+  }
+
   /** Agrupa eventos por equipo para el panel lateral */
   groupByTeam(events: CalendarEvent[]): { team: TeamInfo; trainings: CalendarEvent[]; matches: CalendarEvent[] }[] {
     const map = new Map<number, { team: TeamInfo; trainings: CalendarEvent[]; matches: CalendarEvent[] }>();
@@ -629,5 +698,32 @@ export class CalendarioClubComponent implements OnInit, OnDestroy {
 
   trackByEvent(index: number, event: CalendarEvent): string {
     return `${event.type}_${event.id}`;
+  }
+
+  private updateCalendarTexts(): void {
+    this.weekDays = [
+      this.translate.instant('CALENDAR_CLUB.DAYS.MON'),
+      this.translate.instant('CALENDAR_CLUB.DAYS.TUE'),
+      this.translate.instant('CALENDAR_CLUB.DAYS.WED'),
+      this.translate.instant('CALENDAR_CLUB.DAYS.THU'),
+      this.translate.instant('CALENDAR_CLUB.DAYS.FRI'),
+      this.translate.instant('CALENDAR_CLUB.DAYS.SAT'),
+      this.translate.instant('CALENDAR_CLUB.DAYS.SUN')
+    ];
+
+    this.monthNames = [
+      this.translate.instant('CALENDAR_CLUB.MONTHS.JAN'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.FEB'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.MAR'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.APR'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.MAY'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.JUN'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.JUL'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.AUG'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.SEP'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.OCT'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.NOV'),
+      this.translate.instant('CALENDAR_CLUB.MONTHS.DEC')
+    ];
   }
 }

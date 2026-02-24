@@ -48,13 +48,11 @@ export class ThemeService {
 
   /** Read stored preference, defaulting to light */
   private getStoredTheme(): ThemeMode {
-    // Dark mode is disabled for now — always force light
+    const stored = localStorage.getItem(this.STORAGE_KEY);
+    if (stored === 'dark' || stored === 'light') return stored;
+    if (typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
     return 'light';
-    // const stored = localStorage.getItem(this.STORAGE_KEY);
-    // if (stored === 'dark' || stored === 'light') return stored;
-    // if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
-    //   return 'dark';
-    // }
-    // return 'light';
   }
 }

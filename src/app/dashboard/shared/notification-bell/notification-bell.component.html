@@ -1,0 +1,54 @@
+<div class="notif-bell-wrapper" (clickOutside)="showDropdown = false">
+  <!-- Bell button -->
+  <button class="notif-bell-btn" (click)="toggleDropdown()" [class.has-unread]="unreadCount > 0"
+    [attr.aria-label]="'NOTIF_BELL.TITLE' | translate">
+    <i class="bi bi-bell-fill"></i>
+    <span class="notif-badge" *ngIf="unreadCount > 0">
+      {{ unreadCount > 99 ? '99+' : unreadCount }}
+    </span>
+  </button>
+
+  <!-- Dropdown panel -->
+  <div class="notif-dropdown" *ngIf="showDropdown" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="notif-dropdown-header">
+      <span class="notif-dropdown-title">{{ 'NOTIF_BELL.TITLE' | translate }}</span>
+      <button class="notif-mark-all-btn" *ngIf="unreadCount > 0" (click)="markAllRead()">
+        <i class="bi bi-check-all"></i> {{ 'NOTIF_BELL.MARK_ALL_READ' | translate }}
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div class="notif-loading" *ngIf="loading">
+      <div class="notif-spinner"></div>
+      <span>{{ 'ACTIONS.LOADING' | translate }}</span>
+    </div>
+
+    <!-- Empty state -->
+    <div class="notif-empty" *ngIf="!loading && notifications.length === 0">
+      <i class="bi bi-bell-slash"></i>
+      <span>{{ 'NOTIF_BELL.EMPTY' | translate }}</span>
+    </div>
+
+    <!-- Notification list -->
+    <div class="notif-list" *ngIf="!loading && notifications.length > 0">
+      <div class="notif-item" *ngFor="let notif of notifications"
+        [class.notif-unread]="!notif.leida"
+        (click)="markAsRead(notif)">
+        <div class="notif-icon-wrap">
+          <i class="bi" [ngClass]="getNotifIcon(notif.tipo)"></i>
+        </div>
+        <div class="notif-content">
+          <span class="notif-title">{{ notif.titulo }}</span>
+          <span class="notif-message">{{ notif.mensaje }}</span>
+          <span class="notif-time">
+            <i class="bi bi-clock"></i> {{ notif.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}
+          </span>
+        </div>
+        <span class="notif-unread-dot" *ngIf="!notif.leida"></span>
+      </div>
+    </div>
+
+  </div>
+</div>

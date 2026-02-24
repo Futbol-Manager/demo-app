@@ -1,5 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ClubService } from 'src/app/core/services/club/club.service';
+import { FormTemplate, FormTemplateTipo } from 'src/app/core/services/form-template/form-template.model';
 
 export interface FormField {
   formularioCampoId: number;
@@ -19,23 +21,41 @@ export interface FormField {
   styleUrls: ['./form-builder.component.scss'],
 })
 export class FormBuilderComponent implements OnInit {
+  // ── Modo clásico (documentos / perfiles) ──────────────────────────────────
   @Input() docClubesId: number | null = null;
   @Input() clubId: number | null = null;
   @Input() contexto: string = 'DOCUMENTO';
+
+  // ── Modo template (formularios pre/post partido/entrenamiento) ─────────────
+  /** Cuando es true el builder trabaja en modo autónomo sin persistir en FormularioCampo */
+  @Input() templateMode = false;
+  /** Tipo de formulario (pre-match, post-match, pre-training, post-training) */
+  @Input() tipoFormulario: FormTemplateTipo | null = null;
+  /** Nombre del template (two-way binding en templateMode) */
+  @Input() templateNombre: string = '';
+  /** Campos iniciales para edición de template existente */
+  @Input() initialCampos: FormField[] = [];
+
   @Output() onSave = new EventEmitter<FormField[]>();
   @Output() onClose = new EventEmitter<void>();
+  /** Emitido en templateMode al guardar, devuelve {nombre, campos} */
+  @Output() templateSaved = new EventEmitter<{ nombre: string; campos: FormField[] }>();
 
   fields: FormField[] = [];
   loading = false;
   saving = false;
+  nombreTemplate: string = '';
+  nombreError = false;
 
   fieldTypes = [
     { value: 'TEXT_SHORT', label: 'Texto corto' },
     { value: 'TEXT_LONG', label: 'Texto largo' },
     { value: 'NUMBER', label: 'Número' },
     { value: 'DATE', label: 'Fecha' },
-    { value: 'CHECKBOX', label: 'Sí / No (checkbox)' },
+    { value: 'CHECKBOX', label: 'Sí / No' },
     { value: 'SELECT', label: 'Desplegable (opciones)' },
+    { value: 'RATING', label: 'Valoración (1-5 estrellas)' },
+    { value: 'SCALE', label: 'Escala (1-10)' },
     { value: 'FILE', label: 'Subida de archivo' },
     { value: 'SIGNATURE', label: 'Firma' },
   ];
@@ -45,25 +65,25 @@ export class FormBuilderComponent implements OnInit {
   constructor(private clubService: ClubService) {}
 
   ngOnInit(): void {
-    this.loadExistingFields();
+    this.nombreTemplate = this.templateNombre || '';
+    if (this.templateMode) {
+      this.fields = this.initialCampos.length ? [...this.initialCampos] : [];
+      this.loading = false;
+    } else {
+      this.loadExistingFields();
+    }
   }
 
   loadExistingFields(): void {
     this.loading = true;
     if (this.docClubesId) {
       this.clubService.getFormCamposByDoc(this.docClubesId).subscribe(
-        (res: any) => {
-          this.fields = res?.data || [];
-          this.loading = false;
-        },
+        (res: any) => { this.fields = res?.data || []; this.loading = false; },
         () => { this.loading = false; }
       );
     } else if (this.clubId) {
       this.clubService.getFormCamposByClub(this.clubId, this.contexto).subscribe(
-        (res: any) => {
-          this.fields = res?.data || [];
-          this.loading = false;
-        },
+        (res: any) => { this.fields = res?.data || []; this.loading = false; },
         () => { this.loading = false; }
       );
     } else {
@@ -87,13 +107,20 @@ export class FormBuilderComponent implements OnInit {
 
   removeField(index: number): void {
     const field = this.fields[index];
-    if (field.formularioCampoId > 0) {
+    if (!this.templateMode && field.formularioCampoId > 0) {
       this.clubService.deleteFormCampo(field.formularioCampoId).subscribe();
     }
     this.fields.splice(index, 1);
     this.updateOrders();
   }
 
+  /** CDK Drag & Drop handler */
+  onDrop(event: CdkDragDrop<FormField[]>): void {
+    moveItemInArray(this.fields, event.previousIndex, event.currentIndex);
+    this.updateOrders();
+  }
+
+  /** Fallback: reorder with buttons */
   moveField(index: number, direction: -1 | 1): void {
     const newIndex = index + direction;
     if (newIndex < 0 || newIndex >= this.fields.length) return;
@@ -108,11 +135,7 @@ export class FormBuilderComponent implements OnInit {
   }
 
   getOpciones(field: FormField): string[] {
-    try {
-      return JSON.parse(field.opciones || '[]');
-    } catch {
-      return [];
-    }
+    try { return JSON.parse(field.opciones || '[]'); } catch { return []; }
   }
 
   addOpcion(field: FormField, opcion: string): void {
@@ -130,6 +153,16 @@ export class FormBuilderComponent implements OnInit {
   }
 
   saveFields(): void {
+    if (this.templateMode) {
+      if (!this.nombreTemplate.trim()) {
+        this.nombreError = true;
+        return;
+      }
+      this.nombreError = false;
+      this.updateOrders();
+      this.templateSaved.emit({ nombre: this.nombreTemplate, campos: this.fields });
+      return;
+    }
     this.saving = true;
     this.updateOrders();
     this.clubService.saveFormCampos(this.fields).subscribe(
@@ -138,10 +171,7 @@ export class FormBuilderComponent implements OnInit {
         this.saving = false;
         this.onSave.emit(this.fields);
       },
-      () => {
-        this.saving = false;
-        alert('Error al guardar los campos');
-      }
+      () => { this.saving = false; alert('Error al guardar los campos'); }
     );
   }
 

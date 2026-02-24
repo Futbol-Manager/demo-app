@@ -37,6 +37,12 @@ export class ParentChildrenComponent implements OnInit {
   hijosVisibles: number[] = [];
   registerFormPadreHijos!: FormGroup;
   isLoading: boolean = false;
+
+  showConsentModal = false;
+  modalConsentChecked = false;
+  showConsentWarning = false;
+  pendingConsentAction: 'club' | 'email' | null = null;
+
   showLangDropdown = false;
   selectedLang = localStorage.getItem('lang') || 'es';
   constructor(
@@ -160,14 +166,14 @@ export class ParentChildrenComponent implements OnInit {
       this.parentForm.markAllAsTouched();
       return;
     }
-    console.log(this.modo, this.esPadreAsociadoAJugador)
-    // 🟡 CASO EMAIL → FINALIZAR DIRECTO
+
     if (this.modo === 'email' && this.esPadreAsociadoAJugador) {
-      this.finish(); // 👉 registerPadreAsociadoAJugador()
+      this.pendingConsentAction = 'email';
+      this.modalConsentChecked = false;
+      this.showConsentModal = true;
       return;
     }
 
-    // 🟢 CASO NORMAL (club o email menor)
     this.activeTab = 'hijos';
   }
 
@@ -280,10 +286,6 @@ export class ParentChildrenComponent implements OnInit {
     });
   }
   async finish(): Promise<void> {
-    if (this.modo === 'email' && this.esPadreAsociadoAJugador) {
-      this.registerPadreAsociadoAJugador();
-      return;
-    }
     const text =
       this.hijosVisibles.length === 1
         ? '1 hijo.'
@@ -295,7 +297,6 @@ export class ParentChildrenComponent implements OnInit {
 
     if (!confirmacion) return;
 
-    // 1️⃣ VALIDAR FORMULARIOS
     if (this.parentForm.invalid || this.childrenForm.invalid) {
       this.parentForm.markAllAsTouched();
       this.childrenForm.markAllAsTouched();
@@ -304,7 +305,6 @@ export class ParentChildrenComponent implements OnInit {
 
     this.isLoading = true;
 
-    // 2️⃣ VALIDAR DNIs (ESPERAR)
     const hijosValidos = await this.validarTodosLosHijos();
 
     if (!hijosValidos) {
@@ -313,7 +313,55 @@ export class ParentChildrenComponent implements OnInit {
       return;
     }
 
-    // 3️⃣ PAYLOAD PADRE
+    this.isLoading = false;
+    this.pendingConsentAction = 'club';
+    this.modalConsentChecked = false;
+    this.showConsentModal = true;
+  }
+
+  confirmConsent(): void {
+    if (!this.modalConsentChecked) return;
+
+    this.showConsentModal = false;
+    this.showConsentWarning = false;
+
+    if (this.pendingConsentAction === 'club') {
+      this.doRegistrarClub(1);
+    } else if (this.pendingConsentAction === 'email') {
+      this.doRegistrarEmail(1);
+    }
+  }
+
+  closeConsentModal(): void {
+    this.showConsentModal = false;
+    this.modalConsentChecked = false;
+    this.showConsentWarning = false;
+    this.isLoading = false;
+  }
+
+  declineConsent(): void {
+    this.showConsentWarning = true;
+  }
+
+  backToConsent(): void {
+    this.showConsentWarning = false;
+  }
+
+  confirmNoConsent(): void {
+    this.showConsentModal = false;
+    this.showConsentWarning = false;
+    this.modalConsentChecked = false;
+
+    if (this.pendingConsentAction === 'club') {
+      this.doRegistrarClub(0);
+    } else if (this.pendingConsentAction === 'email') {
+      this.doRegistrarEmail(0);
+    }
+  }
+
+  private doRegistrarClub(consentimientoIA: 0 | 1 = 1): void {
+    this.isLoading = true;
+
     const padreData = {
       parentesco: this.parentForm.get('parentesco')?.value,
       firstName: this.parentForm.get('name')?.value,
@@ -324,10 +372,10 @@ export class ParentChildrenComponent implements OnInit {
       mobile: this.parentForm.get('phone')?.value,
       password: this.parentForm.get('password')?.value,
       comunicaciones: this.parentForm.get('comunicaciones')?.value ? 1 : 0,
+      consentimientoIA,
       clubId: this.clubId,
     };
 
-    // 4️⃣ PAYLOAD HIJOS
     const hijosData = this.hijosVisibles.map((index) => ({
       nombre: this.childrenForm.get('hijo' + (index + 1))?.value,
       apellidos: this.childrenForm.get('ape' + (index + 1))?.value,
@@ -335,12 +383,8 @@ export class ParentChildrenComponent implements OnInit {
       dni: this.childrenForm.get('dni' + (index + 1))?.value,
     }));
 
-    // 5️⃣ ENVÍO
     this.registerService
-      .registerPadreHijos({
-        padre: padreData,
-        hijos: hijosData,
-      })
+      .registerPadreHijos({ padre: padreData, hijos: hijosData })
       .subscribe({
         next: () => {
           this.isLoading = false;
@@ -349,17 +393,13 @@ export class ParentChildrenComponent implements OnInit {
         },
         error: () => {
           this.isLoading = false;
-          this.snackBar.open('Error al registrar.', 'Cerrar', {
-            duration: 5000,
-          });
+          this.snackBar.open('Error al registrar.', 'Cerrar', { duration: 5000 });
         },
       });
   }
-  private registerPadreAsociadoAJugador(): void {
-    if (this.parentForm.invalid) {
-      this.parentForm.markAllAsTouched();
-      return;
-    }
+
+  private doRegistrarEmail(consentimientoIA: 0 | 1 = 1): void {
+    this.isLoading = true;
 
     const padreData = {
       parentesco: this.parentForm.get('parentesco')?.value,
@@ -371,22 +411,13 @@ export class ParentChildrenComponent implements OnInit {
       mobile: this.parentForm.get('phone')?.value,
       password: this.parentForm.get('password')?.value,
       comunicaciones: this.parentForm.get('comunicaciones')?.value ? 1 : 0,
-
-      // 🔑 CLAVES IMPORTANTES
+      consentimientoIA,
       clubId: 0,
       playerId: this.playerId,
     };
 
-    // hijo ficticio (como antes)
-    const hijosData = [{}];
-
-    this.isLoading = true;
-
     this.registerService
-      .registerPadreHijos({
-        padre: padreData,
-        hijos: hijosData,
-      })
+      .registerPadreHijos({ padre: padreData, hijos: [{}] })
       .subscribe({
         next: () => {
           this.isLoading = false;
@@ -395,9 +426,7 @@ export class ParentChildrenComponent implements OnInit {
         },
         error: () => {
           this.isLoading = false;
-          this.snackBar.open('Error al registrar.', 'Cerrar', {
-            duration: 5000,
-          });
+          this.snackBar.open('Error al registrar.', 'Cerrar', { duration: 5000 });
         },
       });
   }

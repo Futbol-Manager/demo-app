@@ -92,6 +92,17 @@
           </div>
         </div>
 
+        <!-- BIBLIOTECA DE VÍDEOS -->
+        <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(13)" class="dashboard-card" role="button" tabindex="0">
+            <img src="assets/images/video-biblioteca.jpg" alt="Biblioteca de Vídeos">
+            <div class="overlay">
+              <i class="bi bi-play-btn-fill"></i>
+              <span>{{ 'NAV.VIDEO_LIBRARY' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
         <!-- SCOUTING -->
         <div *ngIf="!clubLoading && clubOk" class="col-6 col-md-4">
           <div (click)="irAPantallaClub(12)" class="dashboard-card" role="button" tabindex="0">
@@ -110,6 +121,31 @@
             <div class="overlay">
               <i class="bi bi-robot"></i>
               <span>{{ 'NAV.AI_ASSISTANT' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ANÁLISIS DE VÍDEO -->
+        <div class="col-6 col-md-4">
+          <div (click)="irAPantallaClub(14)" class="dashboard-card" role="button" tabindex="0">
+            <img src="assets/images/video-analysis.jpg" alt="Análisis de vídeo">
+            <div class="overlay">
+              <i class="bi bi-camera-reels"></i>
+              <span>{{ 'NAV.VIDEO_ANALYSIS' | translate }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- GESTIÓN / ERP — En construcción -->
+        <div class="col-6 col-md-4">
+          <div class="dashboard-card erp-card wip-card">
+            <div class="overlay">
+              <i class="bi bi-building-gear"></i>
+              <span>{{ 'NAV.ERP' | translate }}</span>
+            </div>
+            <div class="overlay-wip-center">
+              <i class="bi bi-hammer"></i>
+              <span>En construcción</span>
             </div>
           </div>
         </div>

@@ -1,0 +1,183 @@
+<div class="erp-page">
+  <div class="erp-header">
+    <h2><i class="bi bi-speedometer2"></i> ERP - Dashboard Financiero</h2>
+  </div>
+
+  <!-- Not initialized -->
+  <div *ngIf="!loading && !erpInitialized" class="erp-init-card">
+    <i class="bi bi-building-gear erp-init-icon"></i>
+    <h3>Módulo ERP no configurado</h3>
+    <p>Inicializa el módulo ERP para tu club. Se creará automáticamente un plan contable adaptado al fútbol, centros de coste por departamento y el ejercicio fiscal actual.</p>
+    <button class="btn-erp-primary" (click)="initializeErp()">
+      <i class="bi bi-rocket-takeoff"></i> Inicializar ERP
+    </button>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="errorMsg" class="erp-error-msg">
+    <i class="bi bi-exclamation-triangle-fill"></i> {{ errorMsg }}
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="erp-loading">
+    <i class="bi bi-arrow-repeat spin"></i> Cargando...
+  </div>
+
+  <!-- Dashboard KPIs -->
+  <div *ngIf="!loading && erpInitialized && kpis" class="erp-dash-content">
+    <div class="erp-date-range">
+      <div class="fiscal-year-label" *ngIf="activeFiscalYear">
+        <i class="bi bi-calendar-check"></i>
+        <span>{{ activeFiscalYear.name }}</span>
+        <button class="btn-reset-fy" (click)="resetToFiscalYear()" title="Volver al rango del ejercicio fiscal">
+          <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
+      </div>
+      <label>Desde</label>
+      <input type="date" [(ngModel)]="fromDate" (change)="onDateChange()">
+      <label>Hasta</label>
+      <input type="date" [(ngModel)]="toDate" (change)="onDateChange()">
+      <a routerLink="/dashboard/erp/setup" class="btn-config-fy" title="Gestionar ejercicios fiscales">
+        <i class="bi bi-gear"></i>
+      </a>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-income">
+        <div class="kpi-icon"><i class="bi bi-arrow-down-circle"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-label">Ingresos</span>
+          <span class="kpi-value">{{ fmt(kpis.totalIncome) }}</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-expense">
+        <div class="kpi-icon"><i class="bi bi-arrow-up-circle"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-label">Gastos</span>
+          <span class="kpi-value">{{ fmt(kpis.totalExpense) }}</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-profit" [class.kpi-loss]="kpis.netProfit < 0">
+        <div class="kpi-icon"><i class="bi bi-graph-up-arrow"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-label">Resultado neto</span>
+          <span class="kpi-value">{{ fmt(kpis.netProfit) }}</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-pending">
+        <div class="kpi-icon"><i class="bi bi-clock-history"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-label">Facturas pendientes</span>
+          <span class="kpi-value">{{ kpis.pendingSalesInvoices + kpis.pendingPurchaseInvoices }}</span>
+        </div>
+      </div>
+      <div class="kpi-card kpi-overdue">
+        <div class="kpi-icon"><i class="bi bi-exclamation-triangle"></i></div>
+        <div class="kpi-body">
+          <span class="kpi-label">Facturas vencidas</span>
+          <span class="kpi-value">{{ kpis.overdueCount }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ingresos por centro de coste -->
+    <div class="erp-section-card" *ngIf="incomeByCc || loadingIncomeByCc">
+      <div class="section-header">
+        <div class="section-title">
+          <i class="bi bi-bar-chart-steps"></i>
+          <span>Ingresos por centro de coste</span>
+          <span class="section-total" *ngIf="incomeByCc">{{ fmt(incomeByCc.grandTotal) }}</span>
+        </div>
+        <button class="btn-toggle-detail" (click)="showIncomeByCcDetail = !showIncomeByCcDetail" *ngIf="incomeByCc?.rows?.length">
+          <i class="bi" [class.bi-chevron-down]="!showIncomeByCcDetail" [class.bi-chevron-up]="showIncomeByCcDetail"></i>
+          {{ showIncomeByCcDetail ? 'Ocultar detalle' : 'Ver detalle' }}
+        </button>
+      </div>
+
+      <div *ngIf="loadingIncomeByCc" class="cc-loading">
+        <i class="bi bi-arrow-repeat spin"></i> Cargando…
+      </div>
+
+      <div *ngIf="!loadingIncomeByCc && incomeByCc && incomeByCc.rows.length === 0" class="cc-empty">
+        <i class="bi bi-inbox"></i> Sin ingresos asignados a centros de coste en este período.
+      </div>
+
+      <div *ngIf="!loadingIncomeByCc && incomeByCc && incomeByCc.rows.length > 0" class="cc-bars">
+        <div class="cc-bar-row" *ngFor="let row of incomeByCc.rows">
+          <div class="cc-bar-label" [title]="row.costCenterName">{{ row.costCenterName }}</div>
+          <div class="cc-bar-track">
+            <div class="cc-bar-fill" [style.width.%]="maxIncomeByCc() > 0 ? (row.totalIncome / maxIncomeByCc() * 100) : 0"></div>
+          </div>
+          <div class="cc-bar-amount">{{ fmt(row.totalIncome) }}</div>
+          <div class="cc-bar-pct">{{ row.percentage }}%</div>
+        </div>
+      </div>
+
+      <!-- Tabla de detalle desplegable -->
+      <div *ngIf="showIncomeByCcDetail && incomeByCc && incomeByCc.rows.length > 0" class="cc-detail-table-wrap">
+        <table class="cc-detail-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Centro de coste</th>
+              <th class="text-right">Importe</th>
+              <th class="text-right">% del total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of incomeByCc.rows; let i = index">
+              <td class="row-num">{{ i + 1 }}</td>
+              <td>
+                <i class="bi bi-people-fill cc-icon-team" *ngIf="row.costCenterId != null"></i>
+                <i class="bi bi-building cc-icon-general" *ngIf="row.costCenterId == null"></i>
+                {{ row.costCenterName }}
+              </td>
+              <td class="text-right fw-bold text-income">{{ fmt(row.totalIncome) }}</td>
+              <td class="text-right text-muted">{{ row.percentage }}%</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2" class="fw-bold">Total</td>
+              <td class="text-right fw-bold text-income">{{ fmt(incomeByCc.grandTotal) }}</td>
+              <td class="text-right fw-bold">100%</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <div class="erp-quick-links">
+      <h4>Accesos rápidos</h4>
+      <div class="quick-grid">
+        <a routerLink="/dashboard/erp/sales-invoices" class="quick-link">
+          <i class="bi bi-receipt"></i> Facturas emitidas
+        </a>
+        <a routerLink="/dashboard/erp/purchase-invoices" class="quick-link">
+          <i class="bi bi-receipt-cutoff"></i> Facturas recibidas
+        </a>
+        <a routerLink="/dashboard/erp/payments" class="quick-link">
+          <i class="bi bi-cash-stack"></i> Cobros y pagos
+        </a>
+        <a routerLink="/dashboard/erp/accounts" class="quick-link">
+          <i class="bi bi-diagram-3"></i> Plan contable
+        </a>
+        <a routerLink="/dashboard/erp/reports" class="quick-link">
+          <i class="bi bi-file-earmark-bar-graph"></i> Informes
+        </a>
+        <a routerLink="/dashboard/erp/budgets" class="quick-link">
+          <i class="bi bi-piggy-bank"></i> Presupuestos
+        </a>
+        <a routerLink="/dashboard/erp/customers" class="quick-link">
+          <i class="bi bi-people"></i> Clientes
+        </a>
+        <a routerLink="/dashboard/erp/suppliers" class="quick-link">
+          <i class="bi bi-truck"></i> Proveedores
+        </a>
+        <a routerLink="/dashboard/erp/setup" class="quick-link">
+          <i class="bi bi-gear"></i> Configuración
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

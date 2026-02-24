@@ -16,6 +16,7 @@ export class DocumentosJugadorComponent implements OnInit {
   teamId = 0;
   playerId = 0;
   listaDocumentos: any[] = [];
+  searchDoc = '';
   usuarioActual!: User | null;
   userId!: number;
   mostrarModalDocumento = false;
@@ -203,5 +204,14 @@ export class DocumentosJugadorComponent implements OnInit {
 
   onFormRendererClosed(): void {
     this.cerrarModalEditarPersonalizado();
+  }
+
+  get documentosFiltrados(): any[] {
+    if (!this.searchDoc.trim()) return this.listaDocumentos;
+    const q = this.searchDoc.toLowerCase().trim();
+    return this.listaDocumentos.filter(d =>
+      (d.nombre || '').toLowerCase().includes(q) ||
+      (d.descripcion || '').toLowerCase().includes(q)
+    );
   }
 }

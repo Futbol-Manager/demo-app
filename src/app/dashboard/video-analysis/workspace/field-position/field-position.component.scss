@@ -1,0 +1,18 @@
+.field-container {
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #1a5c32;
+}
+
+.field-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+
+  &.interactive { cursor: crosshair; }
+}
+
+:host-context(body.dark) {
+  .field-container { border-color: #2a3a4e; }
+}

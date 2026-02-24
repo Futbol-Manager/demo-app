@@ -1,0 +1,449 @@
+<!-- Loading -->
+<div class="workspace-loading" *ngIf="isLoading">
+  <div class="spinner-border text-primary" role="status"></div>
+</div>
+
+<div class="workspace" *ngIf="!isLoading && project">
+
+  <!-- Top Toolbar -->
+  <div class="workspace-toolbar">
+    <div class="toolbar-left">
+      <button class="btn-back-sphaira" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        <span class="d-none d-sm-inline">Volver</span>
+      </button>
+      <h5 class="project-title">{{ project.title }}</h5>
+      <span class="project-status">{{ project.status }}</span>
+    </div>
+    <div class="toolbar-right">
+      <button class="tool-btn tagger-btn" (click)="openTaggerWindow()"
+              title="Abrir panel de etiquetado en ventana externa">
+        <i class="bi bi-grid-3x3-gap"></i>
+        <span class="d-none d-md-inline">Etiquetado</span>
+        <i class="bi bi-box-arrow-up-right tagger-btn-ext-icon"></i>
+      </button>
+      <app-ai-report-generator [projectId]="projectId" [clubId]="clubId" [userId]="userId">
+      </app-ai-report-generator>
+      <button class="tool-btn" routerLink="/dashboard/video-analysis/playlists"
+              title="Ver mis playlists">
+        <i class="bi bi-collection-play"></i>
+        <span class="d-none d-md-inline">Playlists</span>
+      </button>
+      <button class="btn-sphaira-outline save-project-btn" (click)="saveProject()"
+              title="Guardar avances y continuar más tarde">
+        <i class="bi bi-floppy me-1"></i>
+        <span class="d-none d-md-inline">Guardar</span>
+      </button>
+      <button class="btn-sphaira-solid complete-btn" (click)="completeProject()">
+        <i class="bi bi-check-circle me-1"></i>
+        <span class="d-none d-md-inline">Completar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Popup-blocked banner -->
+  <div class="tagger-blocked-banner" *ngIf="taggerBlocked">
+    <i class="bi bi-window-stack"></i>
+    <span>Tu navegador bloqueó la ventana de etiquetado.</span>
+    <button class="tbb-btn" (click)="openTaggerWindow()">
+      <i class="bi bi-box-arrow-up-right"></i> Abrir ventana de etiquetado
+    </button>
+    <button class="tbb-close" (click)="taggerBlocked = false">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <!-- File Selection Overlay -->
+  <div class="file-selection-overlay" *ngIf="needsFileSelection">
+    <div class="file-selection-card">
+      <div class="fsc-icon">
+        <i class="bi bi-file-earmark-play"></i>
+      </div>
+      <h5>Selecciona el archivo de vídeo</h5>
+      <p *ngIf="project?.localFileName">
+        Archivo esperado: <strong>{{ project.localFileName }}</strong>
+        <br>
+        <span class="file-expected-meta" *ngIf="project?.localFileSize">
+          {{ localVideoService.formatFileSize(project.localFileSize!) }}
+          <span *ngIf="project?.localFileDurationMs">
+            &middot; {{ localVideoService.formatDuration(project.localFileDurationMs!) }}
+          </span>
+        </span>
+      </p>
+      <p *ngIf="!project?.localFileName">
+        Selecciona el archivo de vídeo desde tu ordenador para continuar el análisis.
+      </p>
+      <input #wsFileInput type="file" accept="video/*" class="d-none"
+             (change)="onLocalFileSelected($event)">
+      <button class="btn btn-primary" (click)="wsFileInput.click()">
+        <i class="bi bi-folder2-open me-1"></i>
+        Seleccionar archivo
+      </button>
+      <div class="fingerprint-error" *ngIf="fingerprintError">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        {{ fingerprintError }}
+      </div>
+      <small class="text-muted mt-2">
+        El vídeo se reproduce desde tu ordenador. No se sube a ningún servidor.
+      </small>
+    </div>
+  </div>
+
+  <!-- Main Layout -->
+  <div class="workspace-layout" *ngIf="!needsFileSelection">
+
+    <!-- Left: Video + Timeline -->
+    <div class="workspace-main">
+      <div class="video-area">
+        <app-video-player [videoUrl]="videoUrl" [isHls]="isHls" [youtubeId]="youtubeId">
+          <app-drawing-overlay drawingOverlay [active]="drawingMode"
+                               (saved)="onDrawingSaved($event)">
+          </app-drawing-overlay>
+        </app-video-player>
+      </div>
+
+      <div class="timeline-area">
+        <app-analysis-timeline></app-analysis-timeline>
+      </div>
+    </div>
+
+    <!-- Right: Panels -->
+    <div class="workspace-sidebar">
+
+      <!-- Field Position (conditional) -->
+      <div class="field-section" *ngIf="showFieldPicker">
+        <div class="field-header">
+          <h6><i class="bi bi-geo-alt"></i> Posición en campo</h6>
+          <span class="field-hint">Selecciona un evento y haz clic en el campo</span>
+        </div>
+        <app-field-position [positions]="fieldPositions" [interactive]="true"
+                            (positionSelected)="onFieldPosition($event)">
+        </app-field-position>
+      </div>
+
+      <!-- Right panel tabs -->
+      <div class="sidebar-tabs">
+        <button class="sidebar-tab" [class.active]="rightPanelTab === 'events'"
+                (click)="switchRightTab('events')">
+          <i class="bi bi-list-ul"></i> Eventos
+        </button>
+        <button class="sidebar-tab" [class.active]="rightPanelTab === 'playlists'"
+                (click)="switchRightTab('playlists')">
+          <i class="bi bi-collection-play"></i> Playlists
+          <span class="tab-badge" *ngIf="playlists.length > 0">{{ playlists.length }}</span>
+        </button>
+      </div>
+
+      <!-- Tab: Events -->
+      <ng-container *ngIf="rightPanelTab === 'events'">
+
+        <!-- Quick-add playlist bar -->
+        <div class="quick-playlist-bar" *ngIf="playlists.length > 0">
+          <span class="qpb-label"><i class="bi bi-collection-play me-1"></i>Añadir a:</span>
+          <select class="qpb-select" [ngModel]="quickPlaylistId"
+                  (ngModelChange)="setQuickPlaylist($event)">
+            <option [ngValue]="null">— ninguna —</option>
+            <option *ngFor="let pl of playlists" [ngValue]="pl.id">
+              {{ pl.title }}
+            </option>
+          </select>
+          <span class="qpb-spinner" *ngIf="isLoadingQuickPlaylist">
+            <span class="spinner-border spinner-border-sm"></span>
+          </span>
+        </div>
+
+        <app-event-list
+          [showHeader]="false"
+          [youtubeId]="youtubeId"
+          [quickPlaylistId]="quickPlaylistId"
+          [quickPlaylistEventMap]="quickPlaylistEventMap"
+          (eventDelete)="onEventDelete($event)"
+          (playlistItemAdded)="onPlaylistItemAdded($event)"
+          (onEditClip)="openClipEditor($event)"
+          (quickAdd)="onQuickAdd($event)"
+          (quickRemove)="onQuickRemove($event)">
+        </app-event-list>
+      </ng-container>
+
+      <!-- Tab: Playlists -->
+      <div class="playlist-panel" *ngIf="rightPanelTab === 'playlists'">
+
+        <!-- Selector + actions row -->
+        <div class="pl-selector-row">
+          <select class="pl-select" [(ngModel)]="selectedPlaylist"
+                  (ngModelChange)="onPlaylistSelected($event)">
+            <option [ngValue]="null" disabled>Seleccionar playlist...</option>
+            <option *ngFor="let pl of playlists" [ngValue]="pl">
+              {{ pl.title }}
+              <span *ngIf="pl.itemCount"> ({{ pl.itemCount }})</span>
+            </option>
+          </select>
+          <button class="pl-btn-icon" (click)="showNewPlaylistForm = !showNewPlaylistForm"
+                  title="Nueva playlist">
+            <i class="bi bi-plus-lg"></i>
+          </button>
+          <button class="pl-btn-icon" (click)="loadPlaylists()" title="Recargar playlists">
+            <i class="bi bi-arrow-clockwise" [class.spinning]="isLoadingPlaylists"></i>
+          </button>
+        </div>
+
+        <!-- New playlist inline form -->
+        <div class="pl-new-form" *ngIf="showNewPlaylistForm">
+          <input type="text" class="pl-new-input" placeholder="Nombre de la playlist..."
+                 [(ngModel)]="newPlaylistTitle"
+                 (keyup.enter)="createNewPlaylist()"
+                 (keyup.escape)="cancelNewPlaylist()">
+          <div class="pl-new-actions">
+            <button class="pl-btn-cancel" (click)="cancelNewPlaylist()">Cancelar</button>
+            <button class="pl-btn-create" (click)="createNewPlaylist()"
+                    [disabled]="isCreatingPlaylist || !newPlaylistTitle.trim()">
+              <i class="bi bi-plus-lg"></i> Crear
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading playlists -->
+        <div class="pl-state-msg" *ngIf="isLoadingPlaylists">
+          <div class="spinner-border spinner-border-sm"></div>
+          <span>Cargando playlists...</span>
+        </div>
+
+        <!-- Empty state -->
+        <div class="pl-state-msg pl-empty" *ngIf="!isLoadingPlaylists && playlists.length === 0">
+          <i class="bi bi-collection-play fs-3"></i>
+          <p>No hay playlists todavía</p>
+          <small>Pulsa <strong>+</strong> para crear una</small>
+        </div>
+
+        <!-- Items -->
+        <div class="pl-items-scroll" *ngIf="!isLoadingPlaylists && selectedPlaylist">
+
+          <!-- Loading items -->
+          <div class="pl-state-msg" *ngIf="isLoadingPlaylistItems">
+            <div class="spinner-border spinner-border-sm"></div>
+          </div>
+
+          <!-- No clips -->
+          <div class="pl-state-msg" *ngIf="!isLoadingPlaylistItems && playlistItems.length === 0">
+            <i class="bi bi-inbox fs-3"></i>
+            <p>Esta playlist está vacía</p>
+          </div>
+
+          <!-- Export selection toolbar (appears when items are selected) -->
+          <div class="pl-export-bar" *ngIf="playlistItems.length > 0 && localVideoService.file">
+            <label class="pl-export-sel-all" title="Seleccionar todos los clips de este proyecto">
+              <input type="checkbox"
+                     [checked]="selectedExportItemIds.size > 0"
+                     (change)="$any($event.target).checked ? selectAllExportItems() : deselectAllExportItems()">
+              <span>Seleccionar todos</span>
+            </label>
+
+            <button class="pl-export-btn"
+                    [disabled]="selectedExportItemIds.size === 0 || isExportingPlaylist"
+                    (click)="exportSelectedPlaylistItems()"
+                    [title]="selectedExportItemIds.size + ' clips seleccionados'">
+              <span *ngIf="isExportingPlaylist">
+                <span class="spinner-border spinner-border-sm me-1"></span>
+                <span *ngIf="exportPlaylistStep">{{ exportPlaylistStep }}</span>
+                <span *ngIf="!exportPlaylistStep">{{ exportPlaylistProgress }}%</span>
+              </span>
+              <span *ngIf="!isExportingPlaylist">
+                <i class="bi bi-film me-1"></i>
+                Exportar ({{ selectedExportItemIds.size }})
+              </span>
+            </button>
+          </div>
+
+          <!-- Clip rows (drag-and-drop reorderable) -->
+          <div class="pl-drag-list"
+               cdkDropList
+               [cdkDropListData]="playlistItems"
+               (cdkDropListDropped)="onPlaylistItemDrop($event)">
+
+          <div class="pl-item-wrapper" cdkDrag
+               *ngFor="let item of playlistItems; let i = index">
+
+            <!-- Drag preview (shown while dragging) -->
+            <div class="pl-drag-preview" *cdkDragPreview>
+              <span class="pl-drag-preview-num">{{ i + 1 }}</span>
+              <span class="pl-drag-preview-name">{{ getItemEventCategory(item) }}</span>
+              <span class="pl-drag-preview-dur">{{ formatItemDuration(item) }}</span>
+            </div>
+
+            <!-- Row -->
+            <div class="pl-item"
+                 [class.expanded]="expandedPlaylistItemId === item.id"
+                 [class.same-project]="item.event?.projectId === projectId"
+                 [class.export-selected]="selectedExportItemIds.has(item.id)"
+                 (click)="seekToClipInWorkspace(item)">
+
+              <!-- Drag handle -->
+              <div class="pl-drag-handle" cdkDragHandle
+                   title="Arrastrar para reordenar"
+                   (click)="$event.stopPropagation()">
+                <i class="bi bi-grip-vertical"></i>
+              </div>
+
+              <!-- Export checkbox -->
+              <label class="pl-export-check"
+                     *ngIf="item.event?.projectId === projectId && localVideoService.file"
+                     (click)="$event.stopPropagation()"
+                     title="Incluir en exportación">
+                <input type="checkbox"
+                       [checked]="selectedExportItemIds.has(item.id)"
+                       (change)="toggleExportItem(item)">
+              </label>
+
+              <div class="pl-item-num">{{ i + 1 }}</div>
+              <div class="pl-item-color-bar" [style.background]="getItemEventColor(item)"></div>
+              <div class="pl-item-info">
+                <div class="pl-item-name">{{ getItemEventCategory(item) }}</div>
+                <div class="pl-item-times">
+                  {{ formatMs(getItemStartMs(item)) }} → {{ formatMs(getItemEndMs(item)) }}
+                  <span class="pl-item-dur">{{ formatItemDuration(item) }}</span>
+                </div>
+              </div>
+              <div class="pl-item-actions">
+                <i class="bi bi-play-circle-fill pl-item-play-icon"
+                   *ngIf="item.event?.projectId === projectId"
+                   title="Ir a este momento"></i>
+                <button class="pl-item-edit-btn"
+                        title="Editar clip / añadir anotaciones"
+                        *ngIf="item.event?.projectId === projectId"
+                        (click)="$event.stopPropagation(); openClipEditor(getEventById(item.eventId)!)">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="pl-item-expand-btn"
+                        [title]="expandedPlaylistItemId === item.id ? 'Cerrar detalle' : 'Ver detalle'"
+                        (click)="togglePlaylistItemDetail(item, $event)">
+                  <i class="bi"
+                     [class.bi-chevron-up]="expandedPlaylistItemId === item.id"
+                     [class.bi-chevron-down]="expandedPlaylistItemId !== item.id"></i>
+                </button>
+                <button class="pl-item-delete-btn"
+                        title="Eliminar de la playlist"
+                        [disabled]="deletingPlaylistItemId === item.id"
+                        (click)="removePlaylistItem(item, $event)">
+                  <span *ngIf="deletingPlaylistItemId === item.id"
+                        class="spinner-border spinner-border-sm"></span>
+                  <i *ngIf="deletingPlaylistItemId !== item.id" class="bi bi-trash3"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Detail panel -->
+            <div class="pl-item-detail" *ngIf="expandedPlaylistItemId === item.id"
+                 (click)="$event.stopPropagation()">
+
+              <!-- Category -->
+              <div class="pld-category">
+                <span class="pld-color-dot" [style.background]="getItemEventColor(item)"></span>
+                <strong>{{ getItemEventCategory(item) }}</strong>
+              </div>
+
+              <!-- Tags/Descriptors -->
+              <div class="pld-tags" *ngIf="item.event?.tagIds && item.event!.tagIds!.length > 0">
+                <span class="pld-label">Descriptores</span>
+                <div class="pld-tag-chips">
+                  <span class="pld-tag-chip" *ngFor="let tid of item.event!.tagIds">
+                    {{ getTagName(tid) }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- ── Edit clip duration ── -->
+              <div class="pld-edit-section">
+                <span class="pld-label"><i class="bi bi-scissors me-1"></i>Duración del clip</span>
+
+                <div class="pld-time-fields">
+                  <div class="pld-time-field">
+                    <label class="pld-time-label">Inicio</label>
+                    <input class="pld-time-input" type="text" placeholder="hh:mm:ss"
+                           [(ngModel)]="editItemStartHms"
+                           (click)="$event.stopPropagation()">
+                  </div>
+                  <span class="pld-time-arrow">→</span>
+                  <div class="pld-time-field">
+                    <label class="pld-time-label">Fin</label>
+                    <input class="pld-time-input" type="text" placeholder="hh:mm:ss"
+                           [(ngModel)]="editItemEndHms"
+                           (click)="$event.stopPropagation()">
+                  </div>
+                </div>
+
+                <div class="pld-time-field pld-notes-field">
+                  <label class="pld-time-label">Notas</label>
+                  <input class="pld-time-input pld-notes-input" type="text"
+                         placeholder="Notas opcionales…"
+                         [(ngModel)]="editItemNotes"
+                         (click)="$event.stopPropagation()">
+                </div>
+
+                <div class="pld-edit-actions">
+                  <span class="pld-saved-flash" *ngIf="playlistItemSavedFlash === item.id">
+                    <i class="bi bi-check-circle-fill me-1"></i>Guardado
+                  </span>
+                  <button class="pld-btn-save"
+                          [disabled]="isSavingPlaylistItem"
+                          (click)="savePlaylistItemEdit(item, $event)">
+                    <span *ngIf="isSavingPlaylistItem" class="spinner-border spinner-border-sm me-1"></span>
+                    <i *ngIf="!isSavingPlaylistItem" class="bi bi-floppy me-1"></i>
+                    Guardar
+                  </button>
+                </div>
+              </div>
+
+              <!-- Project indicator -->
+              <div class="pld-project" *ngIf="item.event?.projectId !== projectId">
+                <i class="bi bi-info-circle"></i>
+                Clip de otro proyecto
+              </div>
+
+              <!-- Actions -->
+              <div class="pld-actions">
+                <button class="pld-btn-seek" *ngIf="item.event?.projectId === projectId"
+                        (click)="seekToClipInWorkspace(item)">
+                  <i class="bi bi-play-circle me-1"></i>Ir al momento
+                </button>
+              </div>
+            </div>
+          </div>
+
+          </div><!-- /cdkDropList -->
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Clip annotation editor modal -->
+<app-clip-annotation-editor
+  *ngIf="clipEditorEvent && (localVideoService.file || youtubeId)"
+  [event]="clipEditorEvent!"
+  [videoFile]="localVideoService.file"
+  [youtubeId]="youtubeId"
+  [userId]="userId"
+  (closed)="closeClipEditor()"
+  (annotationsSaved)="closeClipEditor()">
+</app-clip-annotation-editor>
+
+<!-- Saved toast -->
+<div class="workspace-saved-toast" [class.visible]="savedToast">
+  <i class="bi bi-cloud-check-fill"></i>
+  Proyecto guardado
+</div>
+
+<!-- Keyboard shortcuts help (floating) -->
+<div class="shortcuts-help" title="Atajos de teclado">
+  <i class="bi bi-keyboard"></i>
+  <div class="shortcuts-tooltip">
+    <div><strong>Espacio / K</strong> Play/Pause</div>
+    <div><strong>← →</strong> Frame a frame</div>
+    <div><strong>J / L</strong> Saltar 10s</div>
+    <div><strong>&lt; &gt;</strong> Velocidad</div>
+    <div><strong>P</strong> Modo dibujo</div>
+    <div><strong>Del</strong> Eliminar evento</div>
+    <div><strong>Letras</strong> Etiquetar (ver panel)</div>
+  </div>
+</div>

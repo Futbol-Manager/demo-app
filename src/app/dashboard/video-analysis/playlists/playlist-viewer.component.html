@@ -1,0 +1,128 @@
+<div class="viewer-page">
+
+  <!-- Header -->
+  <div class="viewer-topbar">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i> Playlists
+    </button>
+    <div class="viewer-title-area" *ngIf="playlist">
+      <h5>{{ playlist.title }}</h5>
+      <span class="clip-badge">{{ items.length }} clips</span>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="viewer-loading" *ngIf="isLoading">
+    <div class="spinner-border text-primary" role="status"></div>
+  </div>
+
+  <!-- Error / empty playlist -->
+  <div class="viewer-empty-page" *ngIf="!isLoading && !playlist">
+    <i class="bi bi-exclamation-circle"></i>
+    <p>Playlist no encontrada.</p>
+    <button class="btn btn-primary btn-sm" (click)="goBack()">Volver</button>
+  </div>
+
+  <!-- Content -->
+  <div class="viewer-layout" *ngIf="!isLoading && playlist">
+
+    <!-- Left: clip list -->
+    <div class="clip-list-panel">
+      <div class="clip-list-header">
+        <i class="bi bi-list-ol me-1"></i> Clips
+      </div>
+
+      <div class="empty-clips" *ngIf="items.length === 0">
+        <i class="bi bi-film"></i>
+        <span>Sin clips. Añádelos desde el workspace de análisis usando el botón
+          <i class="bi bi-collection-play"></i> en cada evento.</span>
+      </div>
+
+      <div class="clip-items-scroll">
+        <div class="clip-item"
+             *ngFor="let item of items; let i = index"
+             [class.active]="currentItemIndex === i"
+             (click)="selectItem(i)">
+
+          <div class="clip-color-bar"
+               [style.background-color]="getEventColor(item)"></div>
+
+          <div class="clip-num">{{ i + 1 }}</div>
+
+          <div class="clip-info">
+            <span class="clip-category">{{ getEventCategory(item) }}</span>
+            <div class="clip-times">
+              <span class="clip-time-val">
+                <i class="bi bi-play-fill"></i>
+                {{ formatTime(getStartMs(item)) }}
+              </span>
+              <span class="clip-sep">→</span>
+              <span class="clip-time-val">{{ formatTime(getEndMs(item)) }}</span>
+              <span class="clip-dur">({{ formatDuration(getEndMs(item) - getStartMs(item)) }})</span>
+            </div>
+            <span class="clip-note" *ngIf="item.notes">{{ item.notes }}</span>
+          </div>
+
+          <div class="clip-actions">
+            <button class="clip-go-btn" title="Abrir en workspace"
+                    (click)="goToWorkspace(item, $event)">
+              <i class="bi bi-box-arrow-up-right"></i>
+            </button>
+            <button class="clip-remove-btn" title="Quitar de la playlist"
+                    (click)="removeItem(item, $event)">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: detail panel for selected clip -->
+    <div class="clip-detail-panel" *ngIf="items.length > 0">
+      <div class="detail-inner" *ngIf="currentItem">
+        <div class="detail-header">
+          <div class="detail-color-dot"
+               [style.background-color]="getEventColor(currentItem)"></div>
+          <h6>{{ getEventCategory(currentItem) }}</h6>
+          <span class="detail-num">Clip {{ currentItemIndex + 1 }}/{{ items.length }}</span>
+        </div>
+
+        <div class="detail-times">
+          <div class="dt-field">
+            <label>Inicio</label>
+            <span>{{ formatTime(getStartMs(currentItem)) }}</span>
+          </div>
+          <div class="dt-field">
+            <label>Fin</label>
+            <span>{{ formatTime(getEndMs(currentItem)) }}</span>
+          </div>
+          <div class="dt-field">
+            <label>Duración</label>
+            <span class="dur-val">{{ formatDuration(getEndMs(currentItem) - getStartMs(currentItem)) }}</span>
+          </div>
+        </div>
+
+        <div class="detail-note" *ngIf="currentItem.notes">
+          <label>Nota</label>
+          <p>{{ currentItem.notes }}</p>
+        </div>
+
+        <div class="detail-nav">
+          <button class="nav-btn" (click)="prevClip()" [disabled]="currentItemIndex === 0">
+            <i class="bi bi-skip-start-fill"></i> Anterior
+          </button>
+          <button class="nav-btn nav-btn-next" (click)="nextClip()"
+                  [disabled]="currentItemIndex >= items.length - 1">
+            Siguiente <i class="bi bi-skip-end-fill"></i>
+          </button>
+        </div>
+
+        <button class="btn-open-workspace" (click)="goToWorkspace(currentItem, $event)">
+          <i class="bi bi-box-arrow-up-right me-1"></i>
+          Abrir en workspace
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
