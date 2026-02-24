@@ -64,6 +64,31 @@ app-root {
   background: url("/assets/images/erp-management.jpg") center / cover no-repeat;
 }
 
+.wip-card {
+  cursor: not-allowed;
+  filter: grayscale(100%) brightness(0.6);
+  pointer-events: none;
+}
+
+.wip-card:hover {
+  transform: none;
+}
+
+.overlay-wip-center {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #fff;
+
+  i { font-size: 1.8rem; display: block; }
+  span { font-size: 0.85rem; font-weight: 700; letter-spacing: .03em; text-transform: uppercase; }
+}
+
 .dashboard-card img {
   width: 100%;
   height: 100%;

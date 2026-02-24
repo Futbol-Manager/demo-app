@@ -237,6 +237,7 @@ export class CorreoEnviado {
     temporada: string;
     recipientUserIds?: number[];
     recipientTeamIds?: number[];
+    scheduledAt?: string;
 
     constructor(object: any) {
         this.correoEnviadoId = object.correoEnviadoId || 0;

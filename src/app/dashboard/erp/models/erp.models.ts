@@ -34,6 +34,8 @@ export interface ErpCostCenter {
   parentId?: number;
   isGroup: boolean;
   sortOrder: number;
+  temporada?: string | null;
+  teamId?: number | null;
   createdAt?: string;
   children?: ErpCostCenter[];
 }
@@ -188,6 +190,7 @@ export interface ErpPayment {
   referenceNumber?: string;
   referenceDocType?: string; // SalesInvoice, PurchaseInvoice
   referenceDocId?: number;
+  costCenterId?: number | null;
   status: string;       // Draft, Submitted, Cancelled
   remarks?: string;
   createdBy?: number;
@@ -243,6 +246,19 @@ export interface ErpTrialBalanceRow {
   debit: number;
   credit: number;
   balance: number;
+}
+
+// ── Income by Cost Center ──
+export interface ErpIncomeByCCRow {
+  costCenterId: number | null;
+  costCenterName: string;
+  totalIncome: number;
+  percentage: number;
+}
+
+export interface ErpIncomeByCCReport {
+  rows: ErpIncomeByCCRow[];
+  grandTotal: number;
 }
 
 export const ERP_INVOICE_STATUSES = ['Draft', 'Submitted', 'PartiallyPaid', 'Paid', 'Overdue', 'Cancelled'] as const;

@@ -82,7 +82,7 @@
       <div *ngFor="let team of listTeam" class="team-card" cdkDrag (click)="navegarACalendario(team.teamId, 0)">
 
         <div class="team-header mb-2">
-          <strong class="team-name">{{ team.category }} {{ team.name }}</strong>
+          <strong class="team-name">{{ team.category }} {{ team.levelLeague }} {{ team.name }}</strong>
           <span class="team-id">ID: {{ team.teamId }}</span>
         </div>
 

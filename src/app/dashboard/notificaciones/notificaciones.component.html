@@ -24,6 +24,11 @@
           <i class="bi bi-send"></i>
           <span class="label">{{ 'NOTIFICATIONS.SENT' | translate }}</span>
         </a>
+        <a class="nav-item" [class.active]="currentFolder === 'scheduled'" (click)="mostrarProgramados()">
+          <i class="bi bi-clock"></i>
+          <span class="label">{{ 'NOTIFICATIONS.SCHEDULED' | translate }}</span>
+          <span class="badge badge-scheduled" *ngIf="correosProgramados.length > 0">{{ correosProgramados.length }}</span>
+        </a>
       </nav>
     </aside>
 
@@ -42,6 +47,48 @@
         </button>
       </div>
 
+      <!-- Carpeta Programados -->
+      <ng-container *ngIf="currentFolder === 'scheduled'">
+        <div class="mail-skeleton" *ngIf="loadingProgramados">
+          <div class="sk-left"><div class="sk-line sk-from"></div><div class="sk-line sk-subject"></div></div>
+          <div class="sk-date"></div>
+        </div>
+        <app-empty-state *ngIf="!loadingProgramados && correosProgramados.length === 0"
+          icon="bi-clock"
+          [title]="'NOTIFICATIONS.EMPTY_SCHEDULED' | translate"
+          [message]="'NOTIFICATIONS.EMPTY_SCHEDULED_MSG' | translate"
+          [ctaText]="'NOTIFICATIONS.COMPOSE' | translate"
+          ctaIcon="bi-pencil-square"
+          (ctaClick)="newCorreo()">
+        </app-empty-state>
+        <div class="mail-item scheduled-item" *ngFor="let prog of correosProgramados">
+          <div class="mail-main">
+            <span class="from">
+              <i class="bi bi-clock-fill me-1 text-warning"></i>
+              {{ prog.destinatario || 'Destinatario' }}
+            </span>
+            <span class="subject">{{ prog.asunto }}</span>
+          </div>
+          <div class="mail-actions">
+            <span class="date scheduled-date">
+              <i class="bi bi-calendar-event me-1"></i>
+              {{ formatScheduledDate(prog.scheduledAt) }}
+            </span>
+            <button type="button" class="action-btn edit-btn"
+              (click)="openEditScheduled(prog.correoEnviadoId)"
+              title="{{ 'NOTIFICATIONS.EDIT_SCHEDULED' | translate }}">
+              <i class="bi bi-pencil"></i>
+            </button>
+            <button type="button" class="action-btn delete-btn"
+              (click)="openCancelScheduleConfirm(prog.correoEnviadoId, $event)"
+              title="{{ 'NOTIFICATIONS.CANCEL_SCHEDULED' | translate }}">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="currentFolder !== 'scheduled'">
       <ng-container *ngIf="loadingCorreos; else correoList">
         <div class="mail-skeleton" *ngFor="let sk of [1,2,3,4,5,6,7,8]">
           <div class="sk-left">
@@ -116,6 +163,7 @@
           </div>
         </div>
       </ng-template>
+      </ng-container>
     </section>
 
     <!-- Panel lectura -->
@@ -154,9 +202,15 @@
   </div>
 
   <!-- Toast envío correcto -->
-  <div class="toast-send-success" *ngIf="sendSuccess">
+  <div class="toast-send-success" *ngIf="sendSuccess && !scheduleSuccess">
     <i class="bi bi-check-circle-fill"></i>
     <span>{{ 'NOTIFICATIONS.SEND_SUCCESS' | translate }}</span>
+  </div>
+
+  <!-- Toast programación correcta -->
+  <div class="toast-send-success toast-schedule-success" *ngIf="scheduleSuccess">
+    <i class="bi bi-clock-fill"></i>
+    <span>{{ 'NOTIFICATIONS.SCHEDULE_SUCCESS' | translate }}</span>
   </div>
 
   <!-- Modal nuevo correo -->
@@ -166,8 +220,8 @@
         <div class="modal-content mail-compose-modal">
           <div class="modal-header modal-header-pro">
             <h5 class="modal-title">
-              <i class="bi bi-envelope-paper me-2"></i>
-              {{ 'NOTIFICATIONS.COMPOSE' | translate }}
+              <i class="bi me-2" [class.bi-envelope-paper]="!isEditingScheduled" [class.bi-pencil-square]="isEditingScheduled"></i>
+              {{ isEditingScheduled ? ('NOTIFICATIONS.EDIT_SCHEDULED_TITLE' | translate) : ('NOTIFICATIONS.COMPOSE' | translate) }}
             </h5>
             <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModalNew()"></button>
           </div>
@@ -178,11 +232,23 @@
               <!-- Campo de destinatarios estilo Gmail -->
               <div class="recipient-field" (click)="focusRecipientInput()">
                 <span class="recipient-chip" *ngFor="let chip of selectedRecipients; let i = index">
-                  <i class="bi"
-                     [class.bi-person-fill]="chip.type === 'user'"
-                     [class.bi-people-fill]="chip.type === 'team'"></i>
+                  <!-- Avatar del chip -->
+                  <span class="chip-avatar">
+                    <img *ngIf="chip.photoUrl" [src]="imageBaseUrl + chip.photoUrl" alt=""
+                         class="chip-avatar-img"
+                         (error)="chip.photoUrl = undefined" />
+                    <!-- Placeholder de edición: icono neutro de grupo -->
+                    <i *ngIf="!chip.photoUrl && chip.id === 'existing_recipients'" class="bi bi-people-fill"></i>
+                    <!-- Destinatario real sin foto: iniciales -->
+                    <span *ngIf="!chip.photoUrl && chip.type === 'user' && chip.id !== 'existing_recipients'"
+                          class="chip-avatar-initials"
+                          [style.background-color]="getInitialsBg(chip.label)">{{ getInitials(chip.label) }}</span>
+                    <i *ngIf="!chip.photoUrl && chip.type === 'team'" class="bi bi-people-fill"></i>
+                  </span>
                   <span class="chip-label">{{ chip.label }}</span>
-                  <span class="chip-role"
+                  <!-- Solo mostrar el badge de rol si el chip tiene rol conocido -->
+                  <span *ngIf="chip.role || chip.type === 'team'"
+                        class="chip-role"
                         [class.chip-role--coach]="chip.role === 'COACH'"
                         [class.chip-role--player]="chip.role === 'PLAYER'"
                         [class.chip-role--team]="chip.type === 'team'">
@@ -210,10 +276,15 @@
                      (mousedown)="s.hasAccount !== false ? addRecipient(s) : $event.preventDefault()">
                   <div class="suggestion-icon"
                        [class.suggestion-icon--team]="s.type === 'team'"
-                       [class.suggestion-icon--disabled]="s.hasAccount === false">
-                    <i class="bi"
-                       [class.bi-person-fill]="s.type === 'user'"
-                       [class.bi-people-fill]="s.type === 'team'"></i>
+                       [class.suggestion-icon--disabled]="s.hasAccount === false"
+                       [class.suggestion-icon--has-photo]="s.photoUrl">
+                    <img *ngIf="s.photoUrl" [src]="imageBaseUrl + s.photoUrl" alt=""
+                         class="suggestion-avatar-img"
+                         (error)="s.photoUrl = undefined" />
+                    <span *ngIf="!s.photoUrl && s.type === 'user'"
+                          class="suggestion-initials"
+                          [style.background-color]="getInitialsBg(s.label)">{{ getInitials(s.label) }}</span>
+                    <i *ngIf="!s.photoUrl && s.type === 'team'" class="bi bi-people-fill"></i>
                   </div>
                   <div class="suggestion-text">
                     <span class="suggestion-name">{{ s.label }}</span>
@@ -257,11 +328,54 @@
             <button type="button" class="btn btn-cancel-pro" (click)="cerrarModalNew()">
               {{ 'NOTIFICATIONS.CANCEL' | translate }}
             </button>
-            <button type="button" class="btn btn-send-pro" (click)="guardarCorreo()" [disabled]="!correoNew.asunto || isSending || selectedRecipients.length === 0">
-              <i class="bi bi-send me-1" *ngIf="!isSending"></i>
-              <span *ngIf="isSending">{{ 'TITLES.LOAD' | translate }}</span>
-              <span *ngIf="!isSending">{{ 'NOTIFICATIONS.SEND' | translate }}</span>
-            </button>
+
+            <!-- Selector de fecha si está en modo programado -->
+            <div class="schedule-picker-wrap" *ngIf="isScheduleMode">
+              <i class="bi bi-clock me-1 text-warning"></i>
+              <input type="datetime-local"
+                     class="form-control schedule-input"
+                     [(ngModel)]="scheduledAt"
+                     [min]="minScheduledAt" />
+              <button type="button" class="btn-cancel-schedule" (click)="disableScheduleMode()" title="Cancelar programación">
+                <i class="bi bi-x-lg"></i>
+              </button>
+            </div>
+
+            <!-- Botón principal de envío con dropdown -->
+            <div class="send-btn-group">
+              <button type="button" class="btn btn-send-pro send-main-btn"
+                (click)="isEditingScheduled ? guardarCorreoEditado() : guardarCorreo()"
+                [disabled]="!correoNew.asunto || isSending || selectedRecipients.length === 0 || (isScheduleMode && !scheduledAt)">
+                <ng-container *ngIf="!isSending">
+                  <i class="bi" [class.bi-send]="!isScheduleMode" [class.bi-clock-fill]="isScheduleMode"></i>
+                  <span class="ms-1">
+                    {{ isEditingScheduled
+                        ? ('NOTIFICATIONS.SAVE_CHANGES' | translate)
+                        : (isScheduleMode
+                            ? ('NOTIFICATIONS.SCHEDULE_SEND' | translate)
+                            : ('NOTIFICATIONS.SEND' | translate)) }}
+                  </span>
+                </ng-container>
+                <span *ngIf="isSending">{{ 'TITLES.LOAD' | translate }}</span>
+              </button>
+              <button type="button" class="btn btn-send-pro send-dropdown-toggle"
+                (click)="toggleScheduleDropdown()"
+                [disabled]="isSending || isEditingScheduled"
+                [class.d-none]="isEditingScheduled"
+                title="{{ 'NOTIFICATIONS.SCHEDULE_OPTIONS' | translate }}">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+              <div class="send-dropdown-menu" *ngIf="showScheduleDropdown" (clickOutside)="showScheduleDropdown = false">
+                <button type="button" class="send-dropdown-item" (click)="disableScheduleMode(); showScheduleDropdown = false">
+                  <i class="bi bi-send me-2"></i>
+                  {{ 'NOTIFICATIONS.SEND_NOW' | translate }}
+                </button>
+                <button type="button" class="send-dropdown-item" (click)="enableScheduleMode()">
+                  <i class="bi bi-clock me-2"></i>
+                  {{ 'NOTIFICATIONS.SCHEDULE_SEND_OPTION' | translate }}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -314,6 +428,24 @@
           <p>¡Invitación enviada correctamente!</p>
         </div>
       </ng-template>
+    </div>
+  </div>
+
+  <!-- Modal confirmar cancelar mensaje programado -->
+  <div class="modal-backdrop-pro" *ngIf="cancelScheduleConfirm.show" (click)="closeCancelScheduleConfirm()"></div>
+  <div class="modal-confirm-pro" *ngIf="cancelScheduleConfirm.show" (click)="closeCancelScheduleConfirm()">
+    <div class="modal-confirm-content" (click)="$event.stopPropagation()">
+      <div class="modal-confirm-icon"><i class="bi bi-clock text-warning"></i></div>
+      <h3 class="modal-confirm-title">{{ 'NOTIFICATIONS.CANCEL_SCHEDULED_TITLE' | translate }}</h3>
+      <p class="modal-confirm-message">{{ 'NOTIFICATIONS.CANCEL_SCHEDULED_MSG' | translate }}</p>
+      <div class="modal-confirm-actions">
+        <button type="button" class="btn-cancel-pro" (click)="closeCancelScheduleConfirm()">
+          {{ 'NOTIFICATIONS.CANCEL' | translate }}
+        </button>
+        <button type="button" class="btn-delete-pro" (click)="confirmCancelScheduled()">
+          {{ 'NOTIFICATIONS.CANCEL_SCHEDULED_CONFIRM' | translate }}
+        </button>
+      </div>
     </div>
   </div>
 

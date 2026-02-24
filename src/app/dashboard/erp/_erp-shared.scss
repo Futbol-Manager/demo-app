@@ -51,6 +51,15 @@ $border: var(--bs-border-color, #dee2e6);
   &:hover { background: $green; color: #fff; }
 }
 
+.btn-erp-danger {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px;
+  background: none; color: #dc3545; border: 1px solid #dc3545; border-radius: 7px;
+  font-weight: 600; font-size: .85rem; cursor: pointer;
+  transition: background .15s, color .15s;
+  &:hover { background: #dc3545; color: #fff; }
+}
+
 .erp-table {
   width: 100%;
   border-collapse: collapse;

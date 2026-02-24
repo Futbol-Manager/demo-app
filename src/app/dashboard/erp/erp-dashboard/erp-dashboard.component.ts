@@ -3,7 +3,7 @@ import { filter, take } from 'rxjs/operators';
 import { ErpService } from '../../../core/services/erp/erp.service';
 import { LoginService } from '../../../core/services/login/login.service';
 import { TeamService } from '../../../core/services/team/team.service';
-import { ErpDashboardKpis, ErpFiscalYear } from '../models/erp.models';
+import { ErpDashboardKpis, ErpFiscalYear, ErpIncomeByCCReport, ErpIncomeByCCRow } from '../models/erp.models';
 
 @Component({
   selector: 'app-erp-dashboard',
@@ -14,6 +14,9 @@ export class ErpDashboardComponent implements OnInit {
 
   clubId = 0;
   kpis: ErpDashboardKpis | null = null;
+  incomeByCc: ErpIncomeByCCReport | null = null;
+  loadingIncomeByCc = false;
+  showIncomeByCcDetail = false;
   loading = true;
   erpInitialized = false;
   errorMsg = '';
@@ -128,8 +131,20 @@ export class ErpDashboardComponent implements OnInit {
       next: (res) => {
         this.kpis = res?.data || null;
         this.loading = false;
+        this.loadIncomeByCc();
       },
       error: () => { this.loading = false; }
+    });
+  }
+
+  loadIncomeByCc(): void {
+    this.loadingIncomeByCc = true;
+    this.erp.getIncomeByCostCenter(this.clubId, this.fromDate, this.toDate).subscribe({
+      next: (res) => {
+        this.incomeByCc = res?.data || null;
+        this.loadingIncomeByCc = false;
+      },
+      error: () => { this.loadingIncomeByCc = false; }
     });
   }
 
@@ -144,7 +159,14 @@ export class ErpDashboardComponent implements OnInit {
   }
 
   onDateChange(): void {
-    if (this.fromDate && this.toDate) this.loadKpis();
+    if (this.fromDate && this.toDate) {
+      this.loadKpis();
+    }
+  }
+
+  maxIncomeByCc(): number {
+    if (!this.incomeByCc?.rows?.length) return 1;
+    return Math.max(...this.incomeByCc.rows.map(r => r.totalIncome));
   }
 
   fmt(n: number): string {

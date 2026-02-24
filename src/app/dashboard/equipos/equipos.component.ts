@@ -682,8 +682,7 @@ export class EquiposComponent implements OnInit {
 
   // Método para confirmar la eliminación del equipo
   confirmarEliminarEquipo(team: any, index: number): void {
-    let name = team.category + ' ' + team.name;
-    name = name.trim() + ' ' + team.levelLeague;
+    let name = [team.category, team.levelLeague, team.name].filter(Boolean).join(' ');
     
     this.confirmationService.confirm({
       titleKey: 'EQUIPOS.DELETE_TEAM_TITLE',

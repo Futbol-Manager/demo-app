@@ -80,6 +80,73 @@
       </div>
     </div>
 
+    <!-- Ingresos por centro de coste -->
+    <div class="erp-section-card" *ngIf="incomeByCc || loadingIncomeByCc">
+      <div class="section-header">
+        <div class="section-title">
+          <i class="bi bi-bar-chart-steps"></i>
+          <span>Ingresos por centro de coste</span>
+          <span class="section-total" *ngIf="incomeByCc">{{ fmt(incomeByCc.grandTotal) }}</span>
+        </div>
+        <button class="btn-toggle-detail" (click)="showIncomeByCcDetail = !showIncomeByCcDetail" *ngIf="incomeByCc?.rows?.length">
+          <i class="bi" [class.bi-chevron-down]="!showIncomeByCcDetail" [class.bi-chevron-up]="showIncomeByCcDetail"></i>
+          {{ showIncomeByCcDetail ? 'Ocultar detalle' : 'Ver detalle' }}
+        </button>
+      </div>
+
+      <div *ngIf="loadingIncomeByCc" class="cc-loading">
+        <i class="bi bi-arrow-repeat spin"></i> Cargando…
+      </div>
+
+      <div *ngIf="!loadingIncomeByCc && incomeByCc && incomeByCc.rows.length === 0" class="cc-empty">
+        <i class="bi bi-inbox"></i> Sin ingresos asignados a centros de coste en este período.
+      </div>
+
+      <div *ngIf="!loadingIncomeByCc && incomeByCc && incomeByCc.rows.length > 0" class="cc-bars">
+        <div class="cc-bar-row" *ngFor="let row of incomeByCc.rows">
+          <div class="cc-bar-label" [title]="row.costCenterName">{{ row.costCenterName }}</div>
+          <div class="cc-bar-track">
+            <div class="cc-bar-fill" [style.width.%]="maxIncomeByCc() > 0 ? (row.totalIncome / maxIncomeByCc() * 100) : 0"></div>
+          </div>
+          <div class="cc-bar-amount">{{ fmt(row.totalIncome) }}</div>
+          <div class="cc-bar-pct">{{ row.percentage }}%</div>
+        </div>
+      </div>
+
+      <!-- Tabla de detalle desplegable -->
+      <div *ngIf="showIncomeByCcDetail && incomeByCc && incomeByCc.rows.length > 0" class="cc-detail-table-wrap">
+        <table class="cc-detail-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Centro de coste</th>
+              <th class="text-right">Importe</th>
+              <th class="text-right">% del total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of incomeByCc.rows; let i = index">
+              <td class="row-num">{{ i + 1 }}</td>
+              <td>
+                <i class="bi bi-people-fill cc-icon-team" *ngIf="row.costCenterId != null"></i>
+                <i class="bi bi-building cc-icon-general" *ngIf="row.costCenterId == null"></i>
+                {{ row.costCenterName }}
+              </td>
+              <td class="text-right fw-bold text-income">{{ fmt(row.totalIncome) }}</td>
+              <td class="text-right text-muted">{{ row.percentage }}%</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2" class="fw-bold">Total</td>
+              <td class="text-right fw-bold text-income">{{ fmt(incomeByCc.grandTotal) }}</td>
+              <td class="text-right fw-bold">100%</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
     <div class="erp-quick-links">
       <h4>Accesos rápidos</h4>
       <div class="quick-grid">

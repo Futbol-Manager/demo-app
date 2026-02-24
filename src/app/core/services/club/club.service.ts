@@ -940,6 +940,42 @@ export class ClubService {
     }
   }
 
+  getCorreosProgramados(userId: number): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      return this.http.get<Response>(environment.apiUrl + `club/correos-programados/${userId}`, { headers });
+    }
+    return EMPTY;
+  }
+
+  getCorreoProgramado(correoEnviadoId: number): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      return this.http.get<Response>(environment.apiUrl + `club/correo-programado/${correoEnviadoId}`, { headers });
+    }
+    return EMPTY;
+  }
+
+  updateCorreoProgramado(correoEnviadoId: number, dto: any): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      return this.http.put<Response>(environment.apiUrl + `club/correo-programado/${correoEnviadoId}`, dto, { headers });
+    }
+    return EMPTY;
+  }
+
+  cancelCorreoProgramado(correoEnviadoId: number): Observable<Response> {
+    const token: string | null = localStorage.getItem('token');
+    if (token) {
+      const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+      return this.http.delete<Response>(environment.apiUrl + `club/correo-programado/${correoEnviadoId}`, { headers });
+    }
+    return EMPTY;
+  }
+
   openCorreoRecibido(correoRecibidoId: number): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');

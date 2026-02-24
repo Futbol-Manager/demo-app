@@ -16,6 +16,13 @@
       <div class="form-group"><label>Importe</label><input type="number" [(ngModel)]="form.paidAmount" step="0.01"></div>
       <div class="form-group"><label>Método</label><select [(ngModel)]="form.paymentMethod"><option *ngFor="let m of paymentMethods" [value]="m">{{ m }}</option></select></div>
       <div class="form-group"><label>Referencia</label><input [(ngModel)]="form.referenceNumber"></div>
+      <div class="form-group">
+        <label>Centro de coste</label>
+        <select [(ngModel)]="form.costCenterId">
+          <option [ngValue]="null">— Sin asignar —</option>
+          <option *ngFor="let cc of costCenters" [ngValue]="cc.id">{{ cc.name }}</option>
+        </select>
+      </div>
     </div>
     <div class="form-group"><label>Observaciones</label><textarea [(ngModel)]="form.remarks" rows="2"></textarea></div>
     <div class="form-actions">
@@ -26,9 +33,16 @@
   <div *ngIf="loading" class="erp-loading"><i class="bi bi-arrow-repeat spin"></i> Cargando...</div>
   <div *ngIf="!loading && !showForm">
     <div *ngIf="payments.length===0" class="erp-empty"><i class="bi bi-cash-stack"></i> No hay cobros ni pagos</div>
-    <table *ngIf="payments.length>0" class="erp-table"><thead><tr><th>Tipo</th><th>Fecha</th><th>Tercero</th><th>Importe</th><th>Método</th><th>Estado</th><th></th></tr></thead><tbody>
-      <tr *ngFor="let p of payments"><td><span class="type-badge" [class.type-receive]="p.paymentType==='Receive'" [class.type-pay]="p.paymentType==='Pay'">{{ p.paymentType==='Receive'?'Cobro':'Pago' }}</span></td><td>{{ p.postingDate | date:'dd/MM/yyyy' }}</td><td>{{ p.partyName || '—' }}</td><td class="amount">{{ fmt(p.paidAmount) }} €</td><td>{{ p.paymentMethod }}</td><td><span class="status-badge" [ngClass]="statusClass(p.status)">{{ p.status }}</span></td>
-        <td class="actions"><button *ngIf="p.status==='Draft'" class="btn-sm-action" (click)="submit(p)"><i class="bi bi-check2-circle"></i></button><button *ngIf="p.status!=='Cancelled'" class="btn-sm-action text-danger" (click)="cancelPay(p)"><i class="bi bi-x-circle"></i></button></td></tr>
+    <table *ngIf="payments.length>0" class="erp-table"><thead><tr><th>Tipo</th><th>Fecha</th><th>Tercero</th><th>Importe</th><th>Centro coste</th><th>Estado</th><th></th></tr></thead><tbody>
+      <tr *ngFor="let p of payments">
+        <td><span class="type-badge" [class.type-receive]="p.paymentType==='Receive'" [class.type-pay]="p.paymentType==='Pay'">{{ p.paymentType==='Receive'?'Cobro':'Pago' }}</span></td>
+        <td>{{ p.postingDate | date:'dd/MM/yyyy' }}</td>
+        <td>{{ p.partyName || '—' }}</td>
+        <td class="amount">{{ fmt(p.paidAmount) }} €</td>
+        <td>{{ ccName(p.costCenterId) }}</td>
+        <td><span class="status-badge" [ngClass]="statusClass(p.status)">{{ p.status }}</span></td>
+        <td class="actions"><button *ngIf="p.status==='Draft'" class="btn-sm-action" (click)="submit(p)"><i class="bi bi-check2-circle"></i></button><button *ngIf="p.status!=='Cancelled'" class="btn-sm-action text-danger" (click)="cancelPay(p)"><i class="bi bi-x-circle"></i></button></td>
+      </tr>
     </tbody></table>
   </div>
 </div>

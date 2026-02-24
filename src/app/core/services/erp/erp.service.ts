@@ -46,14 +46,33 @@ export class ErpService {
   }
 
   // ── Cost Centers ──
-  getCostCenters(clubId: number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/cost-centers?clubId=${clubId}`, { headers: this.headers() });
+  getCostCenters(clubId: number, temporada?: string): Observable<any> {
+    let url = `${this.baseUrl}/cost-centers?clubId=${clubId}`;
+    if (temporada) url += `&temporada=${temporada}`;
+    return this.http.get<any>(url, { headers: this.headers() });
   }
   createCostCenter(cc: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/cost-centers`, cc, { headers: this.headers() });
   }
   updateCostCenter(id: number, clubId: number, updates: any): Observable<any> {
     return this.http.put<any>(`${this.baseUrl}/cost-centers/${id}?clubId=${clubId}`, updates, { headers: this.headers() });
+  }
+  deleteCostCenter(id: number, clubId: number): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/cost-centers/${id}?clubId=${clubId}`, { headers: this.headers() });
+  }
+  generateCostCentersFromTeams(clubId: number, temporada: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/cost-centers/generate-from-teams?clubId=${clubId}&temporada=${temporada}`, {}, { headers: this.headers() });
+  }
+  reorderCostCenters(clubId: number, items: { id: number; sortOrder: number }[]): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/cost-centers/reorder?clubId=${clubId}`, items, { headers: this.headers() });
+  }
+
+  // ── Sync Sphaira → ERP ──
+  syncCuotas(clubId: number, temporada: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/sync/cuotas?clubId=${clubId}&temporada=${temporada}`, {}, { headers: this.headers() });
+  }
+  syncPagosClub(clubId: number, temporada: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/sync/pagos-club?clubId=${clubId}&temporada=${temporada}`, {}, { headers: this.headers() });
   }
 
   // ── Journal Entries ──
@@ -185,6 +204,9 @@ export class ErpService {
   }
   getTrialBalance(clubId: number, from: string, to: string): Observable<any> {
     return this.http.get<any>(`${this.baseUrl}/reports/trial-balance?clubId=${clubId}&from=${from}&to=${to}`, { headers: this.headers() });
+  }
+  getIncomeByCostCenter(clubId: number, from: string, to: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/reports/income-by-cc?clubId=${clubId}&from=${from}&to=${to}`, { headers: this.headers() });
   }
 
   // ── AI Consent ──

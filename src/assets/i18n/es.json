@@ -1572,7 +1572,22 @@
     "TO_CLUB": "Para todo el club",
     "TO_ALL_COACHES": "Para todos los entrenadores",
     "TO_TEAM": "Para el equipo {{name}}",
-    "TO_PLACEHOLDER": "Escribe un nombre para buscar destinatarios..."
+    "TO_PLACEHOLDER": "Escribe un nombre para buscar destinatarios...",
+    "SCHEDULED": "Programados",
+    "EMPTY_SCHEDULED": "No hay mensajes programados",
+    "EMPTY_SCHEDULED_MSG": "Aquí aparecerán los mensajes que programes para enviar en el futuro.",
+    "SCHEDULE_SEND": "Programar envío",
+    "SCHEDULE_SEND_OPTION": "Programar envío...",
+    "SEND_NOW": "Enviar ahora",
+    "SCHEDULE_OPTIONS": "Opciones de envío",
+    "SCHEDULE_SUCCESS": "Mensaje programado correctamente",
+    "CANCEL_SCHEDULED": "Cancelar mensaje programado",
+    "CANCEL_SCHEDULED_TITLE": "Cancelar mensaje programado",
+    "CANCEL_SCHEDULED_MSG": "¿Cancelar este mensaje programado? No se enviará.",
+    "CANCEL_SCHEDULED_CONFIRM": "Sí, cancelar",
+    "EDIT_SCHEDULED": "Editar mensaje programado",
+    "EDIT_SCHEDULED_TITLE": "Editar mensaje programado",
+    "SAVE_CHANGES": "Guardar cambios"
   },
   "TAREAS": {
     "TITLE": "Tareas tácticas",
