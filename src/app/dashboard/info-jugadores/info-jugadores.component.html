@@ -223,7 +223,7 @@
 </div>
 
 <!-- Modal para subir el DNI -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalDniJugador" (click)="cerrarModalDniJugador()">
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDniJugador" (click)="cerrarModalDniJugador()" appModalBackdrop>
 </div>
 <div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalDniJugador}"
   [style.display]="mostrarModalDniJugador ? 'block' : 'none'">
@@ -389,7 +389,7 @@
   </div>
 </div>
 <!-- Modal para ver documentación del jugador -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalDocJugador" (click)="cerrarModalDocJugador()">
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDocJugador" (click)="cerrarModalDocJugador()" appModalBackdrop>
 </div>
 <div class="modal fade" tabindex="-1" role="dialog" [ngClass]="{'show': mostrarModalDocJugador}"
   [style.display]="mostrarModalDocJugador ? 'block' : 'none'">
@@ -476,7 +476,7 @@
 
 <!-- Modal para subir documento del club -->
 <!-- BACKDROP -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalDocumento" (click)="cerrarModalDocumento()">
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDocumento" (click)="cerrarModalDocumento()" appModalBackdrop>
 </div>
 
 <!-- MODAL -->
@@ -528,7 +528,7 @@
 
 <!-- Modal texto personalizado -->
 <!-- BACKDROP -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalEditarPersonalizado" (click)="cerrarModalEditarPersonalizado()">
+<div class="modal-backdrop-custom" *ngIf="mostrarModalEditarPersonalizado" (click)="cerrarModalEditarPersonalizado()" appModalBackdrop>
 </div>
 
 <!-- MODAL -->
@@ -590,7 +590,7 @@
 
 <!-- Modal para subir documento del club -->
 <!-- BACKDROP -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalDocumentoOjo" (click)="cerrarModalDocumentoOjo()">
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDocumentoOjo" (click)="cerrarModalDocumentoOjo()" appModalBackdrop>
 </div>
 
 <!-- MODAL -->
@@ -655,7 +655,7 @@
 
 
 <!-- BACKDROP -->
-<div class="modal-backdrop-custom" *ngIf="showModalMover" (click)="cerrarModalMover()">
+<div class="modal-backdrop-custom" *ngIf="showModalMover" (click)="cerrarModalMover()" appModalBackdrop>
 </div>
 
 <!-- MODAL -->
@@ -723,7 +723,7 @@
 </div>
 
 <!-- ================= MODAL CAMPOS PERSONALIZADOS ================= -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalCustomFields" (click)="cerrarModalCustomFields()"></div>
+<div class="modal-backdrop-custom" *ngIf="mostrarModalCustomFields" (click)="cerrarModalCustomFields()" appModalBackdrop></div>
 <div class="modal fade" [ngClass]="{ 'show': mostrarModalCustomFields }"
   [style.display]="mostrarModalCustomFields ? 'block' : 'none'">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -750,7 +750,7 @@
 <!-- ============================================================ -->
 <!-- MODAL: VER FIRMA / ARCHIVO                                   -->
 <!-- ============================================================ -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalFirma" (click)="cerrarModalFirma()"></div>
+<div class="modal-backdrop-custom" *ngIf="mostrarModalFirma" (click)="cerrarModalFirma()" appModalBackdrop></div>
 <div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalFirma}"
   [style.display]="mostrarModalFirma ? 'block' : 'none'">
   <div class="modal-dialog modal-dialog-centered modal-lg">

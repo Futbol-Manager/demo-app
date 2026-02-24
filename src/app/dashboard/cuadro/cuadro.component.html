@@ -17,7 +17,7 @@
     <div class="col-12 col-xl-4 col-lg-5">
       <div class="row g-3">
 
-        <div class="col-6" (click)="irAPantalla(7)">
+        <div class="col-6" (click)="irAPantalla(7)" *ngIf="hasPermission('DASHBOARD_PLAYERS')">
           <div class="option-card">
             <i class="bi bi-person-badge"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.PLAYERS' | translate }}</h6>
@@ -25,7 +25,7 @@
           </div>
         </div>
 
-        <div class="col-6">
+        <div class="col-6" *ngIf="hasPermission('DASHBOARD_COACHES')">
           <div class="option-card" (click)="irAPantalla(12)">
             <i class="bi bi-person-raised-hand"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.COACH' | translate }}</h6>
@@ -33,7 +33,7 @@
           </div>
         </div>
 
-        <div class="col-6" (click)="irAPantalla(9)">
+        <div class="col-6" (click)="irAPantalla(9)" *ngIf="hasPermission('DASHBOARD_STATS_PLR')">
           <div class="option-card">
             <i class="bi bi-clipboard-data"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.PLAYER' | translate }}</h6>
@@ -41,7 +41,7 @@
           </div>
         </div>
 
-        <div class="col-6" (click)="irAPantalla(8)">
+        <div class="col-6" (click)="irAPantalla(8)" *ngIf="hasPermission('DASHBOARD_STATS_TEAM')">
           <div class="option-card">
             <i class="bi bi-diagram-3"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.TEAMS' | translate }}</h6>
@@ -58,7 +58,7 @@
           </div>
         </div>
 
-        <div class="col-6" (click)="irAPantalla(10)">
+        <div class="col-6" (click)="irAPantalla(10)" *ngIf="hasPermission('DASHBOARD_CALENDAR')">
           <div class="option-card">
             <i class="bi bi-calendar3"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.CALENDAR' | translate }}</h6>
@@ -66,7 +66,7 @@
           </div>
         </div>
 
-        <div class="col-6" (click)="irAPantalla(11)">
+        <div class="col-6" (click)="irAPantalla(11)" *ngIf="hasPermission('DASHBOARD_INJURIES')">
           <div class="option-card option-card-injuries">
             <i class="bi bi-heart-pulse"></i>
             <h6>{{ 'CUADROMANDO.OPTIONS.INJURIES' | translate }}</h6>

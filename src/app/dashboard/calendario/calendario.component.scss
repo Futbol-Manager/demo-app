@@ -601,6 +601,20 @@
   background: hsla(38, 16%, 90%, 0.868);
 }
 
+/* Drop target activo durante drag & drop */
+.calendar-cell.drag-over {
+  background: rgba(0, 44, 64, 0.10);
+  border: 2px dashed #002c40;
+  transform: translateY(-2px);
+}
+
+/* Eventos arrastrables: re-habilitar pointer-events (normalmente son none) */
+.activity[draggable="true"] {
+  pointer-events: auto;
+  cursor: grab;
+  &:active { cursor: grabbing; }
+}
+
 /* Badge del número en HOY */
 .calendar-cell.today .day-number {
   background: #002c40;
@@ -2580,6 +2594,15 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   overflow: hidden;
 }
 
+/* Modal de Convocatoria – pantalla completa */
+.saas-modal.convocatoria-modal {
+  width: 100vw;
+  height: 100vh;
+  max-width: 100vw;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 @keyframes modalIn {
   from {
     opacity: 0;
@@ -2617,6 +2640,64 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   font-weight: 700;
   letter-spacing: -0.02em;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Barra de resumen de convocatoria ────────────────────────────── */
+.conv-summary-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  padding: 10px 20px;
+  background: #1e293b;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.conv-summary-sep {
+  width: 1px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 0 10px;
+}
+
+.conv-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 14px;
+  border-radius: 10px;
+  transition: background 0.15s;
+
+  i {
+    font-size: 0.95rem;
+    opacity: 0.85;
+  }
+
+  .conv-summary-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.65);
+    white-space: nowrap;
+  }
+
+  .conv-summary-count {
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1;
+    min-width: 20px;
+    text-align: center;
+  }
+
+  &--green  { i, .conv-summary-count { color: #4ade80; } }
+  &--blue   { i, .conv-summary-count { color: #60a5fa; } }
+  &--amber  { i, .conv-summary-count { color: #fbbf24; } }
+  &--red    { i, .conv-summary-count { color: #f87171; } }
+  &--total  {
+    background: rgba(255, 255, 255, 0.06);
+    i, .conv-summary-count { color: #ffffff; }
+    .conv-summary-label { color: rgba(255, 255, 255, 0.85); font-weight: 600; }
+  }
 }
 
 .convocatoria-close {
@@ -2678,8 +2759,9 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
 /* ===== Layout ===== */
 .convocatoria-layout {
   display: grid;
-  grid-template-columns: 1.4fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 24px;
+  align-items: start;
   height: 100%;
 }
 
@@ -2756,16 +2838,16 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .convocatoria-pitch-wrapper {
-  flex: 1;
-  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ===== Right ===== */
 .convocatoria-right {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  min-height: 0;
+  gap: 10px;
 }
 
 /* ===== Titles ===== */
@@ -2786,8 +2868,8 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
   gap: 10px;
-  min-height: 140px;
-  max-height: 220px;
+  min-height: 80px;
+  max-height: 150px;
   overflow-y: auto;
   border: 2px dashed;
   border-radius: 12px;
@@ -2823,55 +2905,48 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   cursor: grab;
 }
 
-/* ===== CONTENEDOR GENERAL – Sin fondo, solo perspectiva (campo inclinado + contorno FIFA en .pitch-3d) ===== */
+/* ===== CONTENEDOR DEL CAMPO – Horizontal (105×68), portero izq / ataque dcha ===== */
 .pitch-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 9;
+  max-width: 840px;
+  aspect-ratio: 105 / 68;
   background: transparent;
-  border-radius: 20px;
-  overflow: visible;
-  perspective: 1200px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
-
-/* ===== CAMPO REAL – Contorno FIFA Pro (SOLO ESTO SE INCLINA) ===== */
+/* ===== CAMPO REAL – Vertical, con SVG interno ===== */
 .pitch-3d {
   position: relative;
-  width: 70%;
+  width: 100%;
   height: 100%;
-  border-radius: 12px;
-  background-image: url('/assets/images/campo_futbol.jpg');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  transform: rotateX(18deg);
-  transform-origin: center top;
-  transform-style: preserve-3d;
-
-  /* Contorno tipo FIFA: línea de cal + sombra 3D */
+  border-radius: 8px;
+  overflow: hidden;
   box-shadow:
-    inset 0 0 0 3px rgba(255, 255, 255, 0.5),
-    inset 0 0 30px rgba(0, 0, 0, 0.15),
-    0 25px 50px rgba(0, 0, 0, 0.45),
-    0 10px 25px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.25);
+    0 8px 32px rgba(0, 0, 0, 0.50),
+    0 2px 8px rgba(0, 0, 0, 0.30);
 }
 
-/* Vigneta sutil en los bordes del campo */
+/* SVG que rellena todo el campo */
+.pitch-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Viñeta sutil sobre el SVG */
 .pitch-3d::after {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: 12px;
+  border-radius: 8px;
   pointer-events: none;
+  z-index: 1;
   background: radial-gradient(
-    ellipse 85% 75% at 50% 50%,
-    transparent 50%,
-    rgba(0, 0, 0, 0.15) 100%
+    ellipse 80% 60% at 50% 50%,
+    transparent 60%,
+    rgba(0, 0, 0, 0.10) 100%
   );
 }
 
@@ -2880,67 +2955,46 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
 .slot {
   position: absolute;
   transform: translate(-50%, -50%);
-  transform-style: flat;
-  min-width: 42px;
-  min-height: 42px;
+  min-width: 68px;
+  min-height: 68px;
+  z-index: 2;
 }
 
-
 .slot-circle {
-  width: 42px;
-  height: 42px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
-  border: 2px dashed rgba(255, 255, 255, .8);
-  background: rgba(255, 255, 255, 0.638);
+  border: 2px dashed rgba(255, 255, 255, .75);
+  background: rgba(255, 255, 255, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  font-size: 22px;
+  color: rgba(255,255,255,0.85);
+  transition: background 0.15s;
+  &:hover { background: rgba(255,255,255,0.30); }
 }
 
-/* ===== Player ===== */
-.player-chip {
-
-  padding: 6px 10px;
-  border-radius: 14px;
-  font-size: 12px;
-  font-weight: 600;
-
-  transform: translateY(-12px) scaleY(1.12);
-
-  transform-style: flat;
-  white-space: nowrap;
-}
-
-
-
-/* ================= LISTAS (No convocados / Suplentes) ================= */
-
-.player-card {
+/* ===== Chip jugador sobre el campo ===== */
+.player-chip.broadcast {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  padding: 6px 4px;
-  border-radius: 10px;
-  background: #ffffff;
-
-  box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
+  gap: 4px;
   cursor: grab;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,0.60));
 }
 
 .player-avatar-wrapper {
-  width: 42px;
-  height: 42px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   overflow: hidden;
-
-  background: #002c40;
-  padding: 2px;
-
-  box-shadow: 0 4px 10px rgba(0, 0, 0, .35);
-  z-index: 2;
+  border: 3px solid #ffffff;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.55);
+  background: #0f172a;
+  flex-shrink: 0;
 }
 
 .player-avatar-sm {
@@ -2950,110 +3004,259 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   border-radius: 50%;
 }
 
-.player-avatar-lg {
-  width: 42px;
-  height: 52px;
-  border-radius: 10%;
-  object-fit: cover;
-}
-
-.player-name-vertical {
-  margin-top: 4px;
-  font-size: 11px;
-  font-weight: 600;
-  text-align: center;
-  line-height: 1.1;
-
-  max-width: 64px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.remove-icon {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  font-size: 12px;
-}
-
+/* Banda nombre + número bajo la foto */
 .player-label {
-  margin-top: -2px;
-  /* sube la banda bajo la foto */
-
   display: flex;
   align-items: center;
-  gap: 4px;
-
+  gap: 5px;
   padding: 3px 8px 3px 4px;
-  border-radius: 6px;
-
-  background: #0f172a;
-  /* azul oscuro broadcast */
+  border-radius: 20px;
+  background: rgba(0, 44, 64, 0.92);   /* navy Sphaira */
+  backdrop-filter: blur(4px);
   color: #ffffff;
-
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
-
-  box-shadow: 0 3px 8px rgba(0, 0, 0, .35);
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.50);
+  max-width: 110px;
 }
 
-.player-chip-name {
-  font-size: 9.5px;
+/* Número de dorsal: pastilla blanca sobre azul Sphaira */
+.player-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 6px;
+  background: #002c40;          /* navy Sphaira */
+  border: 1.5px solid #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  color: #ffffff;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.player-name {
+  font-size: 11px;
   font-weight: 600;
-  text-align: center;
-  line-height: 1.1;
-
-  max-width: 64px;
-
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  color: #002c40;
+  white-space: nowrap;
+  max-width: 82px;              /* más ancho para que quepan más letras */
 }
 
+/* ================= LISTAS (No convocados / Suplentes / Lesionados) ================= */
 
-.player-chip.broadcast {
+/* Zona de drop – lista horizontal con scroll */
+.list-drop {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-height: 100px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 10px;
+  border-radius: 12px;
+  border: 1.5px dashed;
+  transition: background 0.15s;
+}
+
+.list-drop.red {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.04);
+}
+.list-drop.blue {
+  border-color: rgba(59, 130, 246, 0.5);
+  background: rgba(59, 130, 246, 0.04);
+}
+.list-drop.lesionados {
+  border-color: rgba(245, 158, 11, 0.5);
+  background: rgba(245, 158, 11, 0.04);
+}
+
+/* Tarjeta de jugador en las listas */
+.player-card {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  transform: translateY(-12px) scaleY(1.08);
+  gap: 5px;
+  padding: 10px 8px 8px;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.10), 0 0 0 1px rgba(0,0,0,0.05);
+  cursor: grab;
+  transition: transform 0.12s, box-shadow 0.12s;
+  width: 88px;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+  }
+  &:active { cursor: grabbing; }
 }
 
+/* Contenedor relativo para foto + dorsal superpuesto */
+.player-card-avatar-wrap {
+  position: relative;
+  display: inline-flex;
+}
 
-.badge-pos {
+.player-avatar-lg {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2.5px solid #e2e8f0;
+  display: block;
+}
+
+/* Dorsal sobre la foto – esquina inferior derecha */
+.player-card-dorsal {
   position: absolute;
-  bottom: 20px;
-  font-size: 9px;
-  padding: 2px 4px;
-  border-radius: 4px;
-  color: #fff;
+  bottom: -3px;
+  right: -3px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  border-radius: 6px;
+  background: #002c40;          /* navy Sphaira */
+  border: 1.5px solid #ffffff;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.player-name-vertical {
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.2;
+  color: #1e293b;
+  width: 100%;
+  /* Permite 2 líneas cortas en lugar de cortar con puntos suspensivos */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+/* Badge de posición */
+.badge-pos {
+  display: inline-block;
+  font-size: 10px;
   font-weight: 700;
-}
-
-.por {
-  background: #3498db;
-}
-
-.def {
-  background: #e74c3c;
-}
-
-.med {
-  background: #f1c40f;
-  color: #000;
-}
-
-.del {
-  background: #2ecc71;
-}
-
-.badge-pos.lesionado {
-  background: #f59e0b;
+  padding: 2px 7px;
+  border-radius: 8px;
   color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.por { background: #0ea5e9; }
+.def { background: #ef4444; }
+.med { background: #f59e0b; color: #000; }
+.del { background: #22c55e; }
+.badge-pos.lesionado { background: #f59e0b; color: #fff; }
+
+/* Icono de estado (x / check / bandaid) */
+.player-card > i {
+  font-size: 14px;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+
+.remove-icon {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 12px;
+}
+
+/* Chip en campo – clases legacy no usadas pero mantenidas */
+.player-chip {
+  white-space: nowrap;
+}
+
+.player-chip-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 70px;
+}
+
+/* ===== Secciones No convocados / Suplentes / Lesionados ===== */
+.conv-section {
+  border-radius: 14px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.04);
+}
+
+.conv-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.conv-section-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.conv-section-dot--red   { background: #ef4444; }
+.conv-section-dot--blue  { background: #3b82f6; }
+.conv-section-dot--amber { background: #f59e0b; }
+
+.conv-section-title {
+  flex: 1;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #475569;
+  margin: 0;
+}
+
+.conv-section-count {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #94a3b8;
+  background: #f1f5f9;
+  border-radius: 20px;
+  padding: 1px 8px;
+  min-width: 22px;
+  text-align: center;
+}
+
+/* Acento de color lateral */
+.conv-section--red   { border-left: 3px solid #ef4444; }
+.conv-section--blue  { border-left: 3px solid #3b82f6; }
+.conv-section--amber { border-left: 3px solid #f59e0b; }
+
+/* Drop zone dentro de las secciones – sin borde propio */
+.conv-section .list-drop {
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  padding: 10px 12px;
+  max-height: 260px;
 }
 
 /* ===== Footer Convocatoria FIFA PRO ===== */
@@ -3520,14 +3723,15 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
 
   .pitch-wrapper {
-    max-height: none;
-    height: 42vh;
-    min-height: 300px;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 105 / 68;
+    max-height: 45vh;
   }
 
   .pitch-3d {
-    width: 92%;
-    transform: rotateX(12deg);
+    width: 100%;
+    height: 100%;
   }
 
   .convocatoria-right .card-section {

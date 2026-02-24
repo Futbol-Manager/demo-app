@@ -460,7 +460,7 @@
 </div>
 
 <!-- ========== MODAL VISOR DE ARCHIVOS ========== -->
-<div class="modal-overlay" *ngIf="mostrarModalVistaArchivo" (click)="cerrarModalVistaArchivo()">
+<div class="modal-overlay" *ngIf="mostrarModalVistaArchivo" (click)="cerrarModalVistaArchivo()" appModalBackdrop>
   <div class="sp-modal sp-modal-lg" (click)="$event.stopPropagation()">
     <div class="sp-modal-header">
       <h3><i class="bi bi-eye"></i> {{ vistaArchivoNombre }}</h3>
@@ -481,7 +481,7 @@
 </div>
 
 <!-- ========== MODAL DOCUMENTO DE IDENTIDAD ========== -->
-<div class="modal-overlay" *ngIf="mostrarModalDoc" (click)="cerrarModalDoc()">
+<div class="modal-overlay" *ngIf="mostrarModalDoc" (click)="cerrarModalDoc()" appModalBackdrop>
   <div class="sp-modal" (click)="$event.stopPropagation()">
     <div class="sp-modal-header">
       <h3><i class="bi bi-card-image"></i> {{ 'COACH_PROFILE.ID_DOC_MODAL_TITLE' | translate }}</h3>
@@ -525,7 +525,7 @@
 </div>
 
 <!-- ========== MODAL SUBIR CERTIFICADO ========== -->
-<div class="modal-overlay" *ngIf="mostrarModalCert" (click)="cerrarModalCert()">
+<div class="modal-overlay" *ngIf="mostrarModalCert" (click)="cerrarModalCert()" appModalBackdrop>
   <div class="sp-modal" (click)="$event.stopPropagation()">
     <div class="sp-modal-header">
       <h3><i class="bi bi-file-earmark-arrow-up"></i> {{ certLabel }}</h3>

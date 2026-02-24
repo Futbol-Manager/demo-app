@@ -500,7 +500,8 @@ export class DocumentosClubComponent implements OnInit {
   }
 
   crearDocYAbrirBuilder(): void {
-    if (!this.tituloPersonalizado.trim() || this.selectedTeamIds.length === 0) return;
+    if (!this.tituloPersonalizado.trim()) return;
+    if (this.equiposClub.length > 0 && this.selectedTeamIds.length === 0) return;
 
     const dto = {
       docClubesId: 0,

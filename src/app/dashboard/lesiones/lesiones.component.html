@@ -714,7 +714,7 @@
 <!-- ═══════════════════════════════════════════════════════════════════
      PHASE 3: NOTIFICATION DIALOG (overlay)
      ═══════════════════════════════════════════════════════════════════ -->
-<div class="notify-overlay" *ngIf="showNotifyDialog" (click)="cancelNotification()">
+<div class="notify-overlay" *ngIf="showNotifyDialog" (click)="cancelNotification()" appModalBackdrop>
   <div class="notify-dialog" (click)="$event.stopPropagation()">
     <div class="notify-dialog-icon">
       <i class="bi bi-bell-fill"></i>
@@ -752,7 +752,7 @@
 </div>
 
 <!-- ═══════ NOTIFICATION SETTINGS PANEL ═══════ -->
-<div class="notify-settings-overlay" *ngIf="showNotifySettings" (click)="showNotifySettings = false">
+<div class="notify-settings-overlay" *ngIf="showNotifySettings" (click)="showNotifySettings = false" appModalBackdrop>
   <div class="notify-settings-panel" (click)="$event.stopPropagation()">
     <div class="notify-settings-header">
       <h4><i class="bi bi-bell-fill me-2"></i>Notificaciones de lesiones</h4>

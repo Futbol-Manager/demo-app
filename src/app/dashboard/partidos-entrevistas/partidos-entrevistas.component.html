@@ -300,7 +300,7 @@
 </div>
 
 <!-- ════════ URL MODAL ════════ -->
-<div *ngIf="showUrlModal" class="modal-overlay" (click)="closeUrlModal()">
+<div *ngIf="showUrlModal" class="modal-overlay" (click)="closeUrlModal()" appModalBackdrop>
   <div class="modal-panel" (click)="$event.stopPropagation()">
     <div class="modal-header-bar">
       <div class="modal-header-icon">
@@ -344,7 +344,7 @@
 </div>
 
 <!-- ════════ MODAL: CLUB SIN SUSCRIPCIÓN DE VÍDEOS ════════ -->
-<div *ngIf="showVideoPlansModal" class="modal-overlay modal-overlay--pro" (click)="showVideoPlansModal = false">
+<div *ngIf="showVideoPlansModal" class="modal-overlay modal-overlay--pro" (click)="showVideoPlansModal = false" appModalBackdrop>
   <div class="modal-pro" (click)="$event.stopPropagation()">
 
     <button class="modal-pro-close" (click)="showVideoPlansModal = false">

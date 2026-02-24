@@ -464,7 +464,7 @@
 </ng-template>
 
 <!-- Unsaved changes modal -->
-<div class="unsaved-overlay" *ngIf="showUnsavedModal" (click)="cancelLeave()">
+<div class="unsaved-overlay" *ngIf="showUnsavedModal" (click)="cancelLeave()" appModalBackdrop>
   <div class="unsaved-modal" (click)="$event.stopPropagation()">
     <div class="unsaved-icon">
       <i class="bi bi-exclamation-triangle-fill"></i>

@@ -64,7 +64,7 @@
   </div>
 
   <!-- PANEL DETALLE -->
-  <div class="detail-backdrop" *ngIf="selectedTask" (click)="closeDetail()"></div>
+  <div class="detail-backdrop" *ngIf="selectedTask" (click)="closeDetail()" appModalBackdrop></div>
   <div class="detail-panel" *ngIf="selectedTask">
     <div class="detail-panel-inner" (click)="$event.stopPropagation()">
       <div class="detail-header">

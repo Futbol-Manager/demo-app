@@ -535,7 +535,7 @@
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- MODAL TARJETAS                                            -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div class="premium-modal-overlay" [class.premium-modal-overlay--open]="showModalTarjetas" (click)="closeModalTarjetas()">
+<div class="premium-modal-overlay" [class.premium-modal-overlay--open]="showModalTarjetas" (click)="closeModalTarjetas()" appModalBackdrop>
   <div class="premium-modal premium-modal--wide" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
 
     <div class="premium-modal-header premium-modal-header--cards">
@@ -738,7 +738,7 @@
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- MODAL DESISTIMIENTO DE CUOTA                             -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div class="premium-modal-overlay" [class.premium-modal-overlay--open]="showCancelCuotaDialog" (click)="dismissCancelCuota()">
+<div class="premium-modal-overlay" [class.premium-modal-overlay--open]="showCancelCuotaDialog" (click)="dismissCancelCuota()" appModalBackdrop>
   <div class="premium-modal premium-modal--cancel-cuota" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
 
     <div class="premium-modal-header premium-modal-header--danger">
@@ -1206,7 +1206,7 @@
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- MODAL PAGO STRIPE                                         -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div class="modal-overlay" [class.modal-overlay--open]="showModalStripe" (click)="showModalStripe && closeModal()">
+<div class="modal-overlay" [class.modal-overlay--open]="showModalStripe" (click)="showModalStripe && closeModal()" appModalBackdrop>
   <div class="modal-pago" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="modal-pago-title">
     <div class="modal-pago-header">
       <h2 id="modal-pago-title" class="modal-pago-title">

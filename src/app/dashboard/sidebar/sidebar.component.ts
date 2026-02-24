@@ -39,6 +39,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   teamId = 0;
   playerId = 0;
   currentUrl = '';
+  staffPermissions: string[] = [];
 
   sections: SidebarSection[] = [];
 
@@ -70,6 +71,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     'debrief':                   'Debrief',
     'perfil-entrenador':         'Perfil entrenador',
     'tactical-board':            'Pizarra táctica',
+    'staff-club':                'Gestión de Staff',
   };
 
   constructor(
@@ -111,6 +113,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
           this.profileId = user.profileType?.profileId ?? 0;
           this.userId = user.userId ?? 0;
           this.playerId = user.playerId ?? 0;
+          this.staffPermissions = user.staffPermissions ?? [];
           // Override admin: userId=9 siempre se comporta como Coach (profileId 2)
           if (this.userId === 9 && this.profileId !== 1 && this.profileId !== 2) {
             this.profileId = 2;
@@ -215,6 +218,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       generalItems.push({ id: 'ai', label: 'SIDEBAR.AI_ASSISTANT', icon: 'bi-robot', route: '/dashboard/asistente-ia-coach' });
     } else if (this.profileId === 1) {
       generalItems.push({ id: 'ai', label: 'SIDEBAR.AI_ASSISTANT', icon: 'bi-robot', route: '/dashboard/asistente-ia' });
+      generalItems.push({ id: 'staff', label: 'Gestión de Staff', icon: 'bi-person-badge', route: '/dashboard/staff-club' });
     }
     this.sections.push({ id: 'general', title: 'SIDEBAR.SECTION_GENERAL', items: generalItems, visible: true });
 
@@ -230,6 +234,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'scouting', label: 'SIDEBAR.SCOUTING', icon: 'bi-binoculars', route: `/dashboard/scouting-club/${this.clubId}` },
         { id: 'videos', label: 'SIDEBAR.SCOUTING_VIDEOS', icon: 'bi-collection-play', route: `/dashboard/club-videos/${this.clubId}` },
         { id: 'video-analysis', label: 'SIDEBAR.VIDEO_ANALYSIS', icon: 'bi-camera-reels', route: '/dashboard/video-analysis' },
+        { id: 'staff', label: 'Gestión de Staff', icon: 'bi-person-badge', route: '/dashboard/staff-club' },
         { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
       ];
       this.sections.push({ id: 'club', title: 'SIDEBAR.SECTION_CLUB', items: clubItems, visible: true });
@@ -300,6 +305,33 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'perfil', label: 'Mi perfil', icon: 'bi-person-badge', route: `/dashboard/perfil-entrenador/${this.teamId}/${this.playerId}` },
       ];
       this.sections.push({ id: 'fisio', title: sectionTitle, items: fisioItems, visible: true });
+    }
+
+    // ─── Staff (profileId 4) ─── muestra solo los módulos autorizados
+    if (this.profileId === 4) {
+      const perms = this.staffPermissions;
+      const has = (key: string) => perms.includes(key);
+      const hasDashboard = perms.some(p => p.startsWith('DASHBOARD_'));
+      const staffItems: SidebarItem[] = [];
+
+      if (hasDashboard) {
+        staffItems.push({ id: 'dashboard', label: 'Cuadro de mando', icon: 'bi-grid-1x2-fill', route: `/dashboard/cuadro-de-mandos/${this.clubId}` });
+      }
+      if (has('TEAMS'))         staffItems.push({ id: 'equipos',        label: 'Equipos',               icon: 'bi-people',           route: '/dashboard/equipos' });
+      if (has('DOCUMENTS'))     staffItems.push({ id: 'docs',           label: 'Documentos',            icon: 'bi-file-earmark-pdf', route: `/dashboard/documentos-club/${this.clubId}` });
+      if (has('PAYMENTS'))      staffItems.push({ id: 'cuotas',         label: 'Pagos',                 icon: 'bi-bank2',            route: `/dashboard/new-cuotas/${this.clubId}` });
+      if (has('CLOTHING'))      staffItems.push({ id: 'ropa',           label: 'Ropa',                  icon: 'bi-backpack3',        route: `/dashboard/ropa/${this.clubId}` });
+      if (has('SPONSORS'))      staffItems.push({ id: 'patrocinadores', label: 'Patrocinadores',        icon: 'bi-collection',       route: `/dashboard/patrocinadores/${this.clubId}` });
+      if (has('NOTIFICATIONS')) staffItems.push({ id: 'notificaciones', label: 'Notificaciones',        icon: 'bi-bell',             route: `/dashboard/notificaciones/${this.clubId}` });
+      if (has('VIDEO_LIBRARY')) staffItems.push({ id: 'videos',         label: 'Biblioteca de Vídeos', icon: 'bi-collection-play',  route: `/dashboard/club-videos/${this.clubId}` });
+      if (has('SCOUTING'))      staffItems.push({ id: 'scouting',       label: 'Scouting',              icon: 'bi-binoculars',       route: `/dashboard/scouting-club/${this.clubId}` });
+      if (has('AI_ASSISTANT'))  staffItems.push({ id: 'ai',             label: 'Asistente de IA',       icon: 'bi-robot',            route: '/dashboard/asistente-ia' });
+      if (has('VIDEO_ANALYSIS'))staffItems.push({ id: 'video-analysis', label: 'Análisis de vídeo',    icon: 'bi-camera-reels',     route: '/dashboard/video-analysis' });
+      if (has('ERP'))           staffItems.push({ id: 'erp',            label: 'Gestión / ERP',         icon: 'bi-gear',             route: '/dashboard/erp' });
+
+      if (staffItems.length > 0) {
+        this.sections.push({ id: 'staff', title: 'Mi acceso', items: staffItems, visible: true });
+      }
     }
 
     // ─── Admin (solo userId 9) ───

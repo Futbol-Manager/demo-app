@@ -56,7 +56,7 @@
 </div>
 
 <!-- Create Modal -->
-<div class="modal-overlay" *ngIf="showCreateModal" (click)="showCreateModal = false">
+<div class="modal-overlay" *ngIf="showCreateModal" (click)="showCreateModal = false" appModalBackdrop>
   <div class="modal-panel" (click)="$event.stopPropagation()">
     <div class="modal-header-custom">
       <h4>Nueva Playlist</h4>

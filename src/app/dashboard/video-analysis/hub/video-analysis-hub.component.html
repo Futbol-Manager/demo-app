@@ -175,7 +175,7 @@
 </div>
 
 <!-- New Project Modal -->
-<div class="modal-overlay" *ngIf="showNewProjectModal" (click)="closeNewProjectModal()">
+<div class="modal-overlay" *ngIf="showNewProjectModal" (click)="closeNewProjectModal()" appModalBackdrop>
   <div class="modal-panel" (click)="$event.stopPropagation()">
     <div class="modal-header-custom">
       <h4><i class="bi bi-camera-reels"></i> Nuevo Análisis de Vídeo</h4>

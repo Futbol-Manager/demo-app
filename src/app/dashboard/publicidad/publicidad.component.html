@@ -33,7 +33,7 @@
 </div>
 
 <!-- Modal premium para ver el patrocinador -->
-<div class="vs-overlay" *ngIf="showModalVerPatrocinador" (click)="cerrarVerPatrocinador()">
+<div class="vs-overlay" *ngIf="showModalVerPatrocinador" (click)="cerrarVerPatrocinador()" appModalBackdrop>
   <div class="vs-panel" (click)="$event.stopPropagation()">
 
     <!-- CLOSE -->

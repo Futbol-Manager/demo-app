@@ -865,8 +865,15 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   // Variables para el control táctil
   touchJugador: any;
+  touchFromSlot: any = null;
+  dragFromSlotId: number | null = null;
   startX: number = 0;
   startY: number = 0;
+
+  // Variables para drag & drop de eventos en el calendario
+  draggedEventData: any = null;
+  draggedEventType: 'training' | 'match' | null = null;
+  dragTargetDaysession: string | null = null;
 
   playerId = 0;
   imgClub = '';
@@ -1273,6 +1280,103 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       domingo.toLocaleDateString('es-ES', { month: 'short' }) +
       ' ' +
       domingo.getFullYear();
+  }
+
+  // ── Drag & drop de eventos en el calendario ─────────────────────────────
+
+  /** Solo coaches/club pueden arrastrar eventos */
+  get canDragEvents(): boolean {
+    return this.profileId < 3;
+  }
+
+  onEventDragStart(event: DragEvent, dia: any, type: 'training' | 'match'): void {
+    if (!this.canDragEvents) return;
+    this.draggedEventType = type;
+    this.draggedEventData = dia;
+    event.dataTransfer?.setData('text/plain', type);
+  }
+
+  onCellDragOver(event: DragEvent, dia: any): void {
+    event.preventDefault();
+    if (!this.canDragEvents) return;
+    this.dragTargetDaysession = dia?.daysession ?? null;
+  }
+
+  onCellDragLeave(clearAll = false): void {
+    this.dragTargetDaysession = null;
+    if (clearAll) {
+      this.draggedEventData = null;
+      this.draggedEventType = null;
+    }
+  }
+
+  onCellDrop(event: DragEvent, targetDia: any): void {
+    event.preventDefault();
+    this.dragTargetDaysession = null;
+
+    if (!this.canDragEvents || !this.draggedEventData || !this.draggedEventType) return;
+
+    const newDate: string = targetDia.daysession;
+    const sourceDia = this.draggedEventData;
+
+    if (newDate === sourceDia.daysession) {
+      this.draggedEventData = null;
+      this.draggedEventType = null;
+      return;
+    }
+
+    if (this.draggedEventType === 'training') {
+      const training = this.listTraining.find(
+        t => t.trainingSessionId === sourceDia.trainingId
+      );
+      if (!training) return;
+
+      const oldDate = training.daySession;
+      training.daySession = newDate;
+      this.generarCalendarioV2(this.mesActual);
+      if (this.vistaCalendario === 'week') this.generarVistaSemana();
+
+      this.trainingService.createUpdateTrainingSession(this.teamId.toString(), training).subscribe({
+        next: () => {
+          this.toastr.success('Entrenamiento movido al ' + newDate);
+        },
+        error: () => {
+          training.daySession = oldDate;
+          this.generarCalendarioV2(this.mesActual);
+          if (this.vistaCalendario === 'week') this.generarVistaSemana();
+          this.toastr.error('No se pudo mover el entrenamiento');
+        }
+      });
+    } else if (this.draggedEventType === 'match') {
+      const match = this.listMatchPreparation.find(
+        m => m.matchPreparationId === sourceDia.matchPreparationId
+      );
+      if (!match) return;
+
+      const oldDate = match.matchDate;
+      match.matchDate = newDate;
+      this.generarCalendarioV2(this.mesActual);
+      if (this.vistaCalendario === 'week') this.generarVistaSemana();
+
+      this.trainingService.createUpdatePartido(this.teamId.toString(), match).subscribe({
+        next: () => {
+          this.toastr.success('Partido movido al ' + newDate);
+        },
+        error: () => {
+          match.matchDate = oldDate;
+          this.generarCalendarioV2(this.mesActual);
+          if (this.vistaCalendario === 'week') this.generarVistaSemana();
+          this.toastr.error('No se pudo mover el partido');
+        }
+      });
+    }
+
+    this.draggedEventData = null;
+    this.draggedEventType = null;
+  }
+
+  isDragTarget(dia: any): boolean {
+    return !!dia?.daysession && this.dragTargetDaysession === dia.daysession;
   }
 
   /** Nombre del mes para vista año (0-11), primera letra en mayúscula */
@@ -1743,11 +1847,37 @@ export class CalendarioComponent implements OnInit, OnDestroy {
             };
 
             // Aplica el filtrado ANTES de asignar a las variables del componente
-            // this.jugadoresNoConvocados = filtrarPorAsistentes(convocatoria?.noConvocados ?? []);
-            this.jugadoresNoConvocados = convocatoria?.noConvocados ?? [];
-            this.jugadoresSuplentes = convocatoria?.suplentes ?? [];
-            this.jugadoresLesionados = convocatoria?.lesionados ?? [];
-            this.jugadoresTitulares = convocatoria?.titulares ?? [];
+            const enrich = (items: any[]) =>
+              (items ?? []).map((item: any) => {
+                const src = this.playersConvo?.find((p: any) => p.playerId === item.playerId);
+                const rawNombre: string = item.nombre || '';
+
+                // Separar número pegado al final del nombre (formato antiguo "García 7")
+                // Solo si rawNombre es un string limpio (no código de posición)
+                const m = rawNombre.match(/^(.+?)\s+(\d{1,3})\s*$/);
+                const cleanNombre = src
+                  ? (src.nick || src.nombre || rawNombre)
+                  : (m ? m[1].trim() : rawNombre);
+
+                // Dorsal: de playersConvo > del número extraído > del campo ya guardado > null
+                const dorsal: number | null =
+                  (src?.numero != null ? src.numero : null) ??
+                  (m ? parseInt(m[2], 10) : null) ??
+                  item.dorsal ?? null;
+
+                return {
+                  ...item,
+                  nombre: cleanNombre,
+                  dorsal,
+                  // Preservar numero original si dorsal no se pudo calcular
+                  numero: dorsal ?? item.numero ?? null,
+                };
+              });
+
+            this.jugadoresNoConvocados = enrich(convocatoria?.noConvocados);
+            this.jugadoresSuplentes   = enrich(convocatoria?.suplentes);
+            this.jugadoresLesionados  = enrich(convocatoria?.lesionados);
+            this.jugadoresTitulares   = enrich(convocatoria?.titulares);
 
             if (
               this.jugadoresTitulares.length > 0 ||
@@ -1763,16 +1893,15 @@ export class CalendarioComponent implements OnInit, OnDestroy {
                   new ConvocatoriaUI({
                     id: index,
                     playerId: player.playerId,
-                    nombre:
-                      (player.nick ? player.nick : player.nombre) +
-                      ' ' +
-                      (player.numero != null ? player.numero : ''),
+                    nombre: player.nick ? player.nick : player.nombre,
                     img: player.picturePlayer
                       ? this.imageBaseUrlUser + player.picturePlayer
                       : '',
                     posicion_x: player.posicion_x || null,
                     posicion_y: player.posicion_y || null,
                     confirmacion: player.confirmacion,
+                    dorsal: player.numero ?? null,
+                    numero: player.numero ?? null,
                   }),
               );
               this.startConvocarotia = [...nuevosNoConvocados];
@@ -1786,10 +1915,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
                   new ConvocatoriaUI({
                     id: index,
                     playerId: player.playerId,
-                    nombre:
-                      (player.nick ? player.nick : player.nombre) +
-                      ' ' +
-                      (player.numero != null ? player.numero : ''),
+                    nombre: player.nick ? player.nick : player.nombre,
                     img:
                       player.picturePlayer != null && player.picturePlayer != ''
                         ? this.imageBaseUrlUser + player.picturePlayer
@@ -1797,6 +1923,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
                     posicion_x: player.posicion_x || null,
                     posicion_y: player.posicion_y || null,
                     confirmacion: player.confirmacion,
+                    dorsal: player.numero ?? null,
+                    numero: player.numero ?? null,
                   }),
               );
 
@@ -3222,8 +3350,14 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   }
 
   // Evento para arrastrar con ratón (PC)
-  onDragStart(event: DragEvent, jugador: any) {
+  onDragStart(event: DragEvent, jugador: any, fromSlot?: any) {
     event.dataTransfer?.setData('jugador', JSON.stringify(jugador));
+    if (fromSlot != null) {
+      event.dataTransfer?.setData('fromSlotId', String(fromSlot.id));
+      this.dragFromSlotId = fromSlot.id;
+    } else {
+      this.dragFromSlotId = null;
+    }
   }
 
   // Permitir el arrastre
@@ -3336,12 +3470,12 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   }
 
   resetConvocatoria() {
-    this.jugadoresNoConvocados = this.startConvocarotia;
+    this.jugadoresNoConvocados = [...this.startConvocarotia];
     this.jugadoresSuplentes = [];
     this.jugadoresLesionados = [];
     this.jugadoresTitulares = [];
-    this.guardarConvocatoria();
-    this.mostrarModalConvocatoria = false;
+    // No guardar automáticamente: el usuario decide cuándo guardar
+    // (antes se sobreescribía el backend en cada apertura del modal)
   }
 
   removeJugador(jugador: any) {
@@ -3363,7 +3497,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
 
   /** Objeto solo con campos que el backend PlayerConvUI acepta (sin confirmacion para no romper deserialización). */
-  private convocatoriaItemToBackend(j: ConvocatoriaUI): { id: number; playerId: number; nombre: string; img: string; posicion_x: any; posicion_y: any } {
+  private convocatoriaItemToBackend(j: any): any {
     return {
       id: j.id,
       playerId: j.playerId,
@@ -3371,17 +3505,21 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       img: j.img,
       posicion_x: j.posicion_x,
       posicion_y: j.posicion_y,
+      posicion_slot: j.posicion_slot ?? null,
+      dorsal: j.dorsal ?? null,
     };
   }
 
   guardarConvocatoria() {
 
-    // traducir slot → coordenadas
-    this.jugadoresTitulares.forEach(j => {
-      const slot = this.slotsFormacion.find(s => s.id === j.posicion_slot);
+    // Traducir slot → coordenadas normalizadas 0.0–1.0
+    // Flutter espera valores relativos (≤ 1.0); si son > 1 los divide por 400/600
+    // lo que producía todos los jugadores en la esquina superior izquierda.
+    this.jugadoresTitulares.forEach((j: any) => {
+      const slot = this.slotsFormacion.find((s: any) => s.id === j.posicion_slot);
       if (slot) {
-        j.posicion_x = slot.x;
-        j.posicion_y = slot.y;
+        j.posicion_x = slot.x / 100;   // 0–100 → 0.0–1.0
+        j.posicion_y = slot.y / 100;   // 0–100 → 0.0–1.0
       }
     });
 
@@ -3397,6 +3535,10 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     this.playerService
       .updateConvocatoria(this.convocatoriaJSON, this.matchPreparationId)
       .subscribe(() => {
+        // Actualizar en memoria para que abrirModalConvocatoria() no resetee el estado
+        if (this.match) {
+          this.match.convocatoria = this.convocatoriaJSON;
+        }
         this.toastr.success(this.translate.instant('CAL.TEXT_396'));
         this.showNotificar = true;
       });
@@ -3404,7 +3546,9 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
 
   abrirModalConvocatoria() {
-    if (this.match.convocatoria == null || this.match.convocatoria == '') {
+    // Solo resetear si el match está cargado Y no tiene convocatoria guardada.
+    // Evitamos resetear (y sobrescribir en backend) por una carga aún no resuelta.
+    if (this.match && (this.match.convocatoria == null || this.match.convocatoria === '')) {
       this.resetConvocatoria();
     }
     this.generarSlotsFormacion();
@@ -3775,62 +3919,114 @@ export class CalendarioComponent implements OnInit, OnDestroy {
         jugador: null
       }));
 
-    // recolocar titulares ya asignados
-    this.jugadoresTitulares.forEach(j => {
-      if (j.posicion_slot) {
-        const slot = this.slotsFormacion.find(s => s.id === j.posicion_slot);
-        if (slot) slot.jugador = j;
+    // Recolocar titulares ya asignados.
+    // Primer intento: por posicion_slot (asignado en runtime).
+    // Segundo intento: por coordenadas posicion_x/posicion_y (cargado desde JSON guardado).
+    this.jugadoresTitulares.forEach((j: any) => {
+      let slot: any = null;
+
+      if (j.posicion_slot != null) {
+        slot = this.slotsFormacion.find((s: any) => s.id === j.posicion_slot);
+      }
+
+      if (!slot && j.posicion_x != null && j.posicion_y != null) {
+        // Normalizar: si están en rango 0.0–1.0, multiplicar × 100 para comparar con slots
+        const px = Number(j.posicion_x) <= 1 ? Number(j.posicion_x) * 100 : Number(j.posicion_x);
+        const py = Number(j.posicion_y) <= 1 ? Number(j.posicion_y) * 100 : Number(j.posicion_y);
+        slot = this.slotsFormacion.find(
+          (s: any) => Number(s.x) === px && Number(s.y) === py
+        );
+      }
+
+      if (slot && !slot.jugador) {
+        slot.jugador = j;
+        j.posicion_slot = slot.id;   // sincronizar para que los swaps funcionen
       }
     });
   }
-  ajustarY(y: number): number {
-    const factor = 0.75; // cuánto se comprime arriba
-    return y * factor + (100 - 100 * factor);
+  // Campo HORIZONTAL: left% = profundidad (eje y de la formación, invertido: portero=izq)
+  //                   top%  = anchura    (eje x de la formación, de arriba abajo)
+  ajustarX(y: number): number {
+    // y=100 (portero) → left≈12%  |  y=0 (ataque) → left≈88%
+    return 4 + ((100 - y) * 92) / 100;
   }
-  ajustarX(x: number): number {
-    const campoWidth = 70;
-    const paddingCampo = 8;
-
-    const margenExterno = (100 - campoWidth) / 2;
-    const anchoUtil = campoWidth - paddingCampo * 2;
-
-    return margenExterno + paddingCampo + (x * anchoUtil) / 100;
+  ajustarY(x: number): number {
+    // x=0 (extremo superior) → top≈4%  |  x=100 (extremo inferior) → top≈96%
+    return 4 + (x * 92) / 100;
   }
 
 
 
-  onDropSlot(event: DragEvent, slot: any) {
+  onDropSlot(event: DragEvent, targetSlot: any) {
     event.preventDefault();
 
     const data = event.dataTransfer?.getData('jugador');
-    if (!data || slot.jugador) return;
+    if (!data) return;
 
     const jugador = JSON.parse(data);
 
-    // 🔥 limpia slot anterior
-    this.liberarSlotJugador(jugador);
+    if (targetSlot.jugador) {
+      // ── INTERCAMBIO entre dos slots del campo ──────────────────────────
+      const fromSlotIdStr = event.dataTransfer?.getData('fromSlotId');
+      if (!fromSlotIdStr) return;           // arrastra desde lista → no intercambia
+      const sourceSlot = this.slotsFormacion.find(s => s.id === Number(fromSlotIdStr));
+      if (!sourceSlot || sourceSlot === targetSlot) return;
 
-    // 🔥 limpia listas
-    this.removeJugador(jugador);
+      const jugadorTarget = targetSlot.jugador;
 
-    jugador.posicion_slot = slot.id;
-    slot.jugador = jugador;
+      // Intercambia las referencias en los slots
+      targetSlot.jugador = sourceSlot.jugador;
+      sourceSlot.jugador = jugadorTarget;
 
-    this.jugadoresTitulares.push(jugador);
+      // Actualiza posicion_slot en los objetos
+      if (targetSlot.jugador) targetSlot.jugador.posicion_slot = targetSlot.id;
+      if (sourceSlot.jugador) sourceSlot.jugador.posicion_slot = sourceSlot.id;
+    } else {
+      // ── Drop en slot vacío (comportamiento original) ───────────────────
+      this.liberarSlotJugador(jugador);
+      this.removeJugador(jugador);
+
+      jugador.posicion_slot = targetSlot.id;
+      targetSlot.jugador = jugador;
+
+      this.jugadoresTitulares.push(jugador);
+    }
+
+    this.dragFromSlotId = null;
   }
 
 
   onTouchEndSlot(slot: any) {
-    if (!this.touchJugador || slot.jugador) return;
+    if (!this.touchJugador) return;
 
-    this.liberarSlotJugador(this.touchJugador);
-    this.removeJugador(this.touchJugador);
+    if (slot.jugador) {
+      // ── INTERCAMBIO táctil entre dos slots del campo ───────────────────
+      const sourceSlot = this.touchFromSlot;
+      if (!sourceSlot || sourceSlot === slot) {
+        this.touchJugador = null;
+        this.touchFromSlot = null;
+        return;
+      }
 
-    this.touchJugador.posicion_slot = slot.id;
-    slot.jugador = this.touchJugador;
+      const jugadorTarget = slot.jugador;
+      slot.jugador = sourceSlot.jugador;
+      sourceSlot.jugador = jugadorTarget;
 
-    this.jugadoresTitulares.push(this.touchJugador);
+      if (slot.jugador) slot.jugador.posicion_slot = slot.id;
+      if (sourceSlot.jugador) sourceSlot.jugador.posicion_slot = sourceSlot.id;
+    } else {
+      // ── Drop en slot vacío (comportamiento original) ───────────────────
+      this.liberarSlotJugador(this.touchJugador);
+      this.removeJugador(this.touchJugador);
+
+      this.touchJugador.posicion_slot = slot.id;
+      slot.jugador = this.touchJugador;
+
+      this.jugadoresTitulares.push(this.touchJugador);
+    }
+
     this.touchJugador = null;
+    this.touchFromSlot = null;
   }
 
   liberarSlotJugador(jugador: any) {

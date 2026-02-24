@@ -215,8 +215,9 @@ export class ConvocatoriaUI {
   posicion_x: any;
   posicion_y: any;
   confirmacion: number;
-  // ✅ NUEVO (solo frontend)
   posicion_slot?: number;
+  dorsal?: number | null;
+  numero?: number | null;
 
   constructor(object: any) {
     this.id = object.id || 0;
@@ -226,7 +227,8 @@ export class ConvocatoriaUI {
     this.posicion_x = object.posicion_x || null;
     this.posicion_y = object.posicion_y || null;
     this.confirmacion = object.confirmacion || 0;
-    // ✅ soporta carga desde backend si existe
     this.posicion_slot = object.posicion_slot ?? null;
+    this.dorsal = object.dorsal ?? null;
+    this.numero = object.numero ?? null;
   }
 }

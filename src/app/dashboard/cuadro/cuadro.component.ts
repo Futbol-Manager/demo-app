@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ClubService } from 'src/app/core/services/club/club.service';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
+import { LoginService } from 'src/app/core/services/login/login.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
@@ -92,12 +93,24 @@ export class CuadroComponent implements OnInit, OnDestroy {
      CONSTRUCTOR
   ========================= */
 
+  private staffPermissions: string[] = [];
+
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private clubService: ClubService,
     private notification: NotificationService,
+    private loginService: LoginService,
   ) {}
+
+  /** Para staff (profileId=4) comprueba el permiso; para el resto siempre true */
+  hasPermission(key: string): boolean {
+    const user: any = this.loginService['usuarioAutenticado']?.getValue?.();
+    const profileId = user?.profileType?.profileId ?? -1;
+    if (profileId !== 4) return true;
+    const perms: string[] = user?.staffPermissions ?? [];
+    return perms.includes(key);
+  }
 
   /* =========================
      INIT

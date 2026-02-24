@@ -156,6 +156,8 @@ import { ErpBudgetsComponent } from './erp/erp-budgets/erp-budgets.component';
 import { ErpReportsComponent } from './erp/erp-reports/erp-reports.component';
 import { ErpSetupComponent } from './erp/erp-setup/erp-setup.component';
 import { ErpAiConsentModalComponent } from './erp/erp-ai-consent-modal/erp-ai-consent-modal.component';
+import { StaffClubComponent } from './staff-club/staff-club.component';
+import { ModalBackdropDirective } from './shared/modal-backdrop.directive';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -312,6 +314,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ErpReportsComponent,
     ErpSetupComponent,
     ErpAiConsentModalComponent,
+    StaffClubComponent,
+    ModalBackdropDirective,
   ],
   imports: [
     CommonModule,

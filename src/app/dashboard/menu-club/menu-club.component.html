@@ -10,7 +10,7 @@
 <div class="container dashboard-container">
   <div class="dashboard-grid">
 
-    <div class="dashboard-item" (click)="irAPantalla(2)">
+    <div class="dashboard-item" (click)="irAPantalla(2)" *ngIf="hasPermission('DASHBOARD_CALENDAR')">
       <div class="dashboard-card bg-calendar">
         <div class="dashboard-content">
           <i class="bi bi-calendar4-week dashboard-icon"></i>
@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <div class="dashboard-item" (click)="irAPantalla(5)">
+    <div class="dashboard-item" (click)="irAPantalla(5)" *ngIf="hasPermission('DASHBOARD_PLAYERS')">
       <div class="dashboard-card bg-players">
         <div class="dashboard-content">
           <i class="bi bi-people-fill dashboard-icon"></i>
@@ -32,7 +32,7 @@
       </div>
     </div>
 
-    <div class="dashboard-item" (click)="irAPantalla(4)">
+    <div class="dashboard-item" (click)="irAPantalla(4)" *ngIf="hasPermission('DASHBOARD_STATS_PLR')">
       <div class="dashboard-card bg-stats-player">
         <div class="dashboard-content">
           <i class="bi bi-graph-up dashboard-icon"></i>
@@ -43,7 +43,7 @@
       </div>
     </div>
 
-    <div class="dashboard-item" (click)="irAPantalla(3)">
+    <div class="dashboard-item" (click)="irAPantalla(3)" *ngIf="hasPermission('DASHBOARD_STATS_TEAM')">
       <div class="dashboard-card bg-stats-team">
         <div class="dashboard-content">
           <i class="bi bi-bar-chart dashboard-icon"></i>
@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <div class="dashboard-item" (click)="irAPantalla(8)">
+    <div class="dashboard-item" (click)="irAPantalla(8)" *ngIf="hasPermission('DASHBOARD_STATS_TEAM')">
       <div class="dashboard-card bg-ranking">
         <div class="dashboard-content">
           <i class="bi bi-trophy dashboard-icon"></i>
@@ -65,7 +65,7 @@
       </div>
     </div>
 
-    <div class="dashboard-item" (click)="irAPantalla(7)">
+    <div class="dashboard-item" (click)="irAPantalla(7)" *ngIf="hasPermission('DASHBOARD_PLAYERS')">
       <div class="dashboard-card bg-gallery">
         <div class="dashboard-content">
           <i class="bi bi-collection-play dashboard-icon"></i>
@@ -76,13 +76,41 @@
       </div>
     </div>
 
-    <div class="dashboard-item" (click)="irAPantalla(6)">
+    <div class="dashboard-item" (click)="irAPantalla(6)" *ngIf="hasPermission('DASHBOARD_PLAYERS')">
       <div class="dashboard-card bg-info">
         <div class="dashboard-content">
           <i class="bi bi-info-circle dashboard-icon"></i>
           <span class="dashboard-title">
             {{ 'MENU_CLUB.TEAM_INFO' | translate }}
           </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(12)" *ngIf="hasPermission('DASHBOARD_INJURIES')">
+      <div class="dashboard-card bg-injuries">
+        <div class="dashboard-content">
+          <i class="bi bi-bandaid dashboard-icon"></i>
+          <span class="dashboard-title">Lesiones</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-item" (click)="irAPantalla(13)" *ngIf="hasPermission('DASHBOARD_COACHES')">
+      <div class="dashboard-card bg-coaches">
+        <div class="dashboard-content">
+          <i class="bi bi-person-video3 dashboard-icon"></i>
+          <span class="dashboard-title">Entrenadores</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Solo visible para admin del club (no players ni staff) -->
+    <div class="dashboard-item" (click)="irAPantalla(11)" *ngIf="!isStaffUser()">
+      <div class="dashboard-card bg-staff">
+        <div class="dashboard-content">
+          <i class="bi bi-person-badge dashboard-icon"></i>
+          <span class="dashboard-title">Gestión de Staff</span>
         </div>
       </div>
     </div>

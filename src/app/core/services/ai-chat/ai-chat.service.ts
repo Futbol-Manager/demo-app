@@ -206,6 +206,34 @@ export class AiChatService {
   }
 
   /**
+   * Importa un calendario de liga desde un PDF.
+   * La IA extrae los partidos del equipo y los propone como acciones createMatch.
+   */
+  importCalendar(userId: number, clubId: number | null, teamId: number, teamName: string, pdfFile: File): Observable<AiChatResponse> {
+    const token = localStorage.getItem('token') || '';
+    const formData = new FormData();
+    formData.append('pdfFile', pdfFile, pdfFile.name);
+    formData.append('userId', userId.toString());
+    formData.append('teamId', teamId.toString());
+    formData.append('teamName', teamName);
+    if (clubId != null) formData.append('clubId', clubId.toString());
+
+    return this.http.post<AiChatResponse>(`${this.baseUrl}/import-calendar`, formData, {
+      headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` })
+    }).pipe(
+      timeout(60000),
+      catchError(err => {
+        console.error('[AiChatService] importCalendar error:', err);
+        return of({
+          success: false,
+          error: 'NETWORK_ERROR',
+          message: 'Error al procesar el PDF. Inténtalo de nuevo.'
+        });
+      })
+    );
+  }
+
+  /**
    * Crea una Stripe Checkout Session para comprar créditos.
    * Redirige al usuario a la pagina de pago de Stripe.
    */

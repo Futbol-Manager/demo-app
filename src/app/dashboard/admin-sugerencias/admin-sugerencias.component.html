@@ -112,7 +112,7 @@
 </div>
 
 <!-- ================= MODAL DETALLE ================= -->
-<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()" appModalBackdrop>
   <div class="modal-container" (click)="$event.stopPropagation()">
     <div class="modal-header-custom">
       <h5 class="modal-title-custom">

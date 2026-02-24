@@ -181,7 +181,7 @@ export class FormRendererComponent implements OnInit {
         this.uploadingField = null;
       },
       () => {
-        alert('Error al subir el archivo');
+        this.snackBar.open('Error al subir el archivo', 'OK', { duration: 4000, panelClass: ['snackbar-error'] });
         this.uploadingField = null;
       }
     );
@@ -291,7 +291,7 @@ export class FormRendererComponent implements OnInit {
           this.signaturePadField = null;
         },
         () => {
-          alert('Error al guardar la firma');
+          this.snackBar.open('Error al guardar la firma', 'OK', { duration: 4000, panelClass: ['snackbar-error'] });
           this.uploadingField = null;
         }
       );

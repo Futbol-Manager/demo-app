@@ -101,7 +101,7 @@
 </main>
 
 <!-- MODAL SUBIR DOCUMENTO -->
-<div class="modal-overlay" [class.modal-overlay--open]="mostrarModalDocumento" (click)="mostrarModalDocumento && cerrarModalDocumento()">
+<div class="modal-overlay" [class.modal-overlay--open]="mostrarModalDocumento" (click)="mostrarModalDocumento && cerrarModalDocumento()" appModalBackdrop>
   <div class="modal-box" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="modal-upload-title">
     <div class="modal-box-header">
       <h2 id="modal-upload-title" class="modal-box-title">
@@ -139,7 +139,7 @@
 </div>
 
 <!-- MODAL FORMULARIO PERSONALIZADO -->
-<div class="modal-overlay" [class.modal-overlay--open]="mostrarModalEditarPersonalizado" (click)="mostrarModalEditarPersonalizado && cerrarModalEditarPersonalizado()">
+<div class="modal-overlay" [class.modal-overlay--open]="mostrarModalEditarPersonalizado" (click)="mostrarModalEditarPersonalizado && cerrarModalEditarPersonalizado()" appModalBackdrop>
   <div class="modal-box modal-box--lg" (click)="$event.stopPropagation()" role="dialog" aria-labelledby="modal-form-title">
     <div class="modal-box-header">
       <h2 id="modal-form-title" class="modal-box-title">{{ docEditando?.nombre }}</h2>

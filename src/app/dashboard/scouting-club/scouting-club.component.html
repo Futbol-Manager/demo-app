@@ -517,7 +517,7 @@
 </div>
 
 <!-- ═══════ CONFIG MODAL ═══════ -->
-<div class="modal-backdrop" *ngIf="showConfigModal" (click)="showConfigModal = false">
+<div class="modal-backdrop" *ngIf="showConfigModal" (click)="showConfigModal = false" appModalBackdrop>
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3><i class="bi bi-gear"></i> {{ 'SCOUTING_CLUB.CONFIG.TITLE' | translate }}</h3>
@@ -560,7 +560,7 @@
 </div>
 
 <!-- ═══════ ADD EXTERNAL PLAYER MODAL ═══════ -->
-<div class="modal-backdrop" *ngIf="showAddExternal" (click)="showAddExternal = false">
+<div class="modal-backdrop" *ngIf="showAddExternal" (click)="showAddExternal = false" appModalBackdrop>
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3><i class="bi bi-person-plus"></i> {{ 'SCOUTING_CLUB.WATCHLIST.ADD_EXTERNAL' | translate }}</h3>
@@ -603,7 +603,7 @@
 </div>
 
 <!-- ═══════ DETAIL MODAL ═══════ -->
-<div class="modal-backdrop" *ngIf="showDetailModal" (click)="showDetailModal = false">
+<div class="modal-backdrop" *ngIf="showDetailModal" (click)="showDetailModal = false" appModalBackdrop>
   <div class="modal-card modal-lg" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3><i class="bi bi-person-lines-fill"></i> {{ 'SCOUTING_CLUB.DETAIL.TITLE' | translate }}</h3>
@@ -1050,7 +1050,7 @@
 </app-video-plans-modal>
 
 <!-- ═══════ REPRODUCTOR DE VÍDEO B2 ═══════ -->
-<div class="modal-backdrop" *ngIf="playingVideoUrl" (click)="closeVideoPlayer()">
+<div class="modal-backdrop" *ngIf="playingVideoUrl" (click)="closeVideoPlayer()" appModalBackdrop>
   <div class="modal-card modal-player" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3><i class="bi bi-play-circle"></i> {{ playingVideoTitle }}</h3>
@@ -1063,7 +1063,7 @@
 </div>
 
 <!-- ═══════ EVALUATION FORM MODAL ═══════ -->
-<div class="modal-backdrop" *ngIf="showEvalForm" (click)="showEvalForm = false">
+<div class="modal-backdrop" *ngIf="showEvalForm" (click)="showEvalForm = false" appModalBackdrop>
   <div class="modal-card" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3>
@@ -1131,7 +1131,7 @@
 </div>
 
 <!-- ═══════ COMPARE MODAL ═══════ -->
-<div class="modal-backdrop compare-backdrop" *ngIf="showCompareModal" (click)="closeCompareModal()">
+<div class="modal-backdrop compare-backdrop" *ngIf="showCompareModal" (click)="closeCompareModal()" appModalBackdrop>
   <div class="modal-card compare-modal" (click)="$event.stopPropagation()">
     <div class="modal-header">
       <h3><i class="bi bi-bar-chart-steps"></i> Comparativa de jugadores</h3>

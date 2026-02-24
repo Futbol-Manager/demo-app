@@ -270,7 +270,7 @@
 <!-- ============================================================ -->
 <!-- MODAL: INFORMACIÓN DEL ENTRENADOR                            -->
 <!-- ============================================================ -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalInfo" (click)="cerrarModalInfo()"></div>
+<div class="modal-backdrop-custom" *ngIf="mostrarModalInfo" (click)="cerrarModalInfo()" appModalBackdrop></div>
 <div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalInfo}"
   [style.display]="mostrarModalInfo ? 'block' : 'none'">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -400,7 +400,7 @@
 <!-- ============================================================ -->
 <!-- MODAL: DOC. IDENTIDAD DEL ENTRENADOR                         -->
 <!-- ============================================================ -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalDni" (click)="cerrarModalDni()"></div>
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDni" (click)="cerrarModalDni()" appModalBackdrop></div>
 <div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalDni}"
   [style.display]="mostrarModalDni ? 'block' : 'none'">
   <div class="modal-dialog modal-dialog-centered modal-xl">
@@ -461,7 +461,7 @@
 <!-- ============================================================ -->
 <!-- MODAL: DOCUMENTOS DEL ENTRENADOR                             -->
 <!-- ============================================================ -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalDoc" (click)="cerrarModalDoc()"></div>
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDoc" (click)="cerrarModalDoc()" appModalBackdrop></div>
 <div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalDoc}"
   [style.display]="mostrarModalDoc ? 'block' : 'none'">
   <div class="modal-dialog modal-dialog-centered modal-xl">
@@ -506,7 +506,7 @@
 </div>
 
 <!-- MODAL: Subir documento -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalDocUpload" (click)="cerrarModalDocUpload()"></div>
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDocUpload" (click)="cerrarModalDocUpload()" appModalBackdrop></div>
 <div class="modal fade" tabindex="-1" [ngClass]="{ 'show': mostrarModalDocUpload }"
   [style.display]="mostrarModalDocUpload ? 'block' : 'none'">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -532,7 +532,7 @@
 </div>
 
 <!-- MODAL: Ver documento subido -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalDocView" (click)="cerrarModalDocView()"></div>
+<div class="modal-backdrop-custom" *ngIf="mostrarModalDocView" (click)="cerrarModalDocView()" appModalBackdrop></div>
 <div class="modal fade" tabindex="-1" [ngClass]="{ 'show': mostrarModalDocView }"
   [style.display]="mostrarModalDocView ? 'block' : 'none'">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -568,7 +568,7 @@
 <!-- ============================================================ -->
 <!-- MODAL: CERTIFICADOS DEL ENTRENADOR                           -->
 <!-- ============================================================ -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalCerts" (click)="cerrarModalCerts()"></div>
+<div class="modal-backdrop-custom" *ngIf="mostrarModalCerts" (click)="cerrarModalCerts()" appModalBackdrop></div>
 <div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalCerts}"
   [style.display]="mostrarModalCerts ? 'block' : 'none'">
   <div class="modal-dialog modal-dialog-centered modal-md">
@@ -652,7 +652,7 @@
 <!-- ============================================================ -->
 <!-- MODAL: HISTORIAL DEPORTIVO DEL ENTRENADOR                    -->
 <!-- ============================================================ -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalHistorial" (click)="cerrarModalHistorial()"></div>
+<div class="modal-backdrop-custom" *ngIf="mostrarModalHistorial" (click)="cerrarModalHistorial()" appModalBackdrop></div>
 <div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalHistorial}"
   [style.display]="mostrarModalHistorial ? 'block' : 'none'">
   <div class="modal-dialog modal-dialog-centered modal-xl">
@@ -730,7 +730,7 @@
 <!-- ============================================================ -->
 <!-- MODAL: VER FIRMA / ARCHIVO                                   -->
 <!-- ============================================================ -->
-<div class="modal-backdrop-custom" *ngIf="mostrarModalFirma" (click)="cerrarModalFirma()"></div>
+<div class="modal-backdrop-custom" *ngIf="mostrarModalFirma" (click)="cerrarModalFirma()" appModalBackdrop></div>
 <div class="modal fade" tabindex="-1" [ngClass]="{'show': mostrarModalFirma}"
   [style.display]="mostrarModalFirma ? 'block' : 'none'">
   <div class="modal-dialog modal-dialog-centered modal-lg">

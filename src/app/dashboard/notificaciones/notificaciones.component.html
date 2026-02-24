@@ -383,7 +383,7 @@
   </div>
 
   <!-- Modal invitación a Sphaira Player -->
-  <div class="modal-backdrop-pro" *ngIf="inviteModal.show" (click)="closeInviteModal()"></div>
+  <div class="modal-backdrop-pro" *ngIf="inviteModal.show" (click)="closeInviteModal()" appModalBackdrop></div>
   <div class="modal-confirm-pro invite-modal-pro" *ngIf="inviteModal.show" (click)="closeInviteModal()">
     <div class="modal-confirm-content" (click)="$event.stopPropagation()">
       <div class="modal-confirm-icon invite-modal-icon">
@@ -432,7 +432,7 @@
   </div>
 
   <!-- Modal confirmar cancelar mensaje programado -->
-  <div class="modal-backdrop-pro" *ngIf="cancelScheduleConfirm.show" (click)="closeCancelScheduleConfirm()"></div>
+  <div class="modal-backdrop-pro" *ngIf="cancelScheduleConfirm.show" (click)="closeCancelScheduleConfirm()" appModalBackdrop></div>
   <div class="modal-confirm-pro" *ngIf="cancelScheduleConfirm.show" (click)="closeCancelScheduleConfirm()">
     <div class="modal-confirm-content" (click)="$event.stopPropagation()">
       <div class="modal-confirm-icon"><i class="bi bi-clock text-warning"></i></div>
@@ -450,7 +450,7 @@
   </div>
 
   <!-- Modal confirmar eliminar -->
-  <div class="modal-backdrop-pro" *ngIf="showDeleteConfirm" (click)="cancelDelete()"></div>
+  <div class="modal-backdrop-pro" *ngIf="showDeleteConfirm" (click)="cancelDelete()" appModalBackdrop></div>
   <div class="modal-confirm-pro" *ngIf="showDeleteConfirm" (click)="cancelDelete()">
     <div class="modal-confirm-content" (click)="$event.stopPropagation()">
       <div class="modal-confirm-icon"><i class="bi bi-trash"></i></div>

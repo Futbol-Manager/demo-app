@@ -354,7 +354,7 @@
 
 
 <!-- Overlay VER patrocinador (premium) -->
-<div class="view-sponsor-overlay" *ngIf="showModalVerPatrocinador" (click)="cerrarVerPatrocinador()">
+<div class="view-sponsor-overlay" *ngIf="showModalVerPatrocinador" (click)="cerrarVerPatrocinador()" appModalBackdrop>
   <div class="view-sponsor-panel" (click)="$event.stopPropagation()">
 
     <!-- CLOSE -->

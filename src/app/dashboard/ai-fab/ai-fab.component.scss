@@ -18,7 +18,7 @@ $border-color: #e2e8f0;
 ═══════════════════════════════════════ */
 .ai-fab-btn-wrapper {
   position: fixed;
-  bottom: 24px;
+  bottom: 90px;   /* margen suficiente sobre cualquier footer fijo */
   right: 24px;
   z-index: 10000;
 }
@@ -658,12 +658,115 @@ $border-color: #e2e8f0;
   &:hover { opacity: 0.8; }
 }
 
+/* ─── PDF Import ───────────────────────────────────────────────────── */
+.fab-pdf-btn {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border: none;
+  border-radius: 8px;
+  background: #f8f9fa;
+  color: #e74c3c;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: #fdecea;
+    transform: scale(1.08);
+  }
+}
+
+.fab-pdf-bar {
+  border-top: 1px solid $border-color;
+  background: #fff8f7;
+  padding: 8px 12px;
+  animation: fadeIn 0.15s ease;
+  flex-shrink: 0;
+
+  .fab-pdf-bar-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 6px;
+
+    i { color: #e74c3c; font-size: 1rem; }
+
+    .fab-pdf-filename {
+      flex: 1;
+      font-size: 0.78rem;
+      color: $text-dark;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .fab-pdf-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: $text-light;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      font-size: 1rem;
+      &:hover { color: $text-dark; }
+    }
+  }
+
+  .fab-pdf-bar-body {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+
+    .fab-pdf-team-input {
+      flex: 1;
+      border: 1.5px solid $border-color;
+      border-radius: 8px;
+      padding: 5px 10px;
+      font-size: 0.82rem;
+      font-family: inherit;
+      color: $text-dark;
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s;
+
+      &::placeholder { color: $text-light; }
+      &:focus { border-color: #e74c3c; }
+    }
+
+    .fab-pdf-import-btn {
+      white-space: nowrap;
+      border: none;
+      border-radius: 8px;
+      padding: 5px 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: linear-gradient(135deg, #e74c3c, #c0392b);
+      color: #fff;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+
+      &:hover:not(:disabled) { opacity: 0.88; transform: scale(1.03); }
+      &:disabled { opacity: 0.5; cursor: not-allowed; }
+    }
+  }
+}
+
 /* ═══════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════ */
 @media (max-width: 480px) {
   .ai-fab-btn-wrapper {
-    bottom: 16px;
+    bottom: 80px;
     right: 16px;
   }
 
