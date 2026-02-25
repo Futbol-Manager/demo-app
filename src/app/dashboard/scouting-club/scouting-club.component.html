@@ -1,17 +1,20 @@
-<div class="scouting-container">
-
-  <!-- HEADER -->
-  <div class="scouting-header">
-    <div class="header-left">
-      <i class="bi bi-binoculars header-icon"></i>
-      <h2>{{ 'SCOUTING_CLUB.TITLE' | translate }}</h2>
-    </div>
-    <div class="header-actions">
-      <button class="btn-config" (click)="showConfigModal = true" title="{{ 'SCOUTING_CLUB.CONFIG.TITLE' | translate }}">
-        <i class="bi bi-gear"></i>
-      </button>
-    </div>
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
   </div>
+  <h2 class="table-title">{{ 'SCOUTING_CLUB.TITLE' | translate }}</h2>
+  <div class="header-actions-right">
+    <button class="btn-config-header" (click)="showConfigModal = true" title="{{ 'SCOUTING_CLUB.CONFIG.TITLE' | translate }}">
+      <i class="bi bi-gear"></i>
+    </button>
+  </div>
+</div>
+
+<div class="scouting-container">
 
   <!-- TAB NAV: Mis Scoutings primero, Buscar segundo -->
   <div class="scouting-tabs">

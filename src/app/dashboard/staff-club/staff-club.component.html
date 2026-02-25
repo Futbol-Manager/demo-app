@@ -1,21 +1,22 @@
-<div class="back-container">
-  <button class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>Volver</span>
-  </button>
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <div class="header-center">
+    <h2 class="table-title">Gestión de Staff</h2>
+    <p class="header-subtitle">Crea usuarios con acceso personalizado a los módulos del club.</p>
+  </div>
+  <div class="header-spacer"></div>
 </div>
 
 <div class="staff-container">
-  <div class="staff-header">
-    <div>
-      <h2 class="staff-title">
-        <i class="bi bi-person-badge"></i>
-        Gestión de Staff
-      </h2>
-      <p class="staff-subtitle">
-        Crea usuarios con acceso personalizado a los módulos del club.
-      </p>
-    </div>
+
+  <!-- Barra de acción -->
+  <div class="staff-action-bar">
     <button class="btn-create" (click)="openCreateModal()">
       <i class="bi bi-plus-lg"></i>
       Nuevo Staff

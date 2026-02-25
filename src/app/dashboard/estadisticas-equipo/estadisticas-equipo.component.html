@@ -1,16 +1,25 @@
 <app-publicidad></app-publicidad>
 
-<div class="back-container">
-  <button type="button" class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
-  </button>
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">{{ nombreEquipo }} – {{ 'ESTADIS_EQUIPO.PAGE_TITLE' | translate }}</h2>
+    <p class="header-subtitle">Análisis estadístico del rendimiento del equipo</p>
+  </div>
+
+  <div class="header-spacer"></div>
 </div>
 
 <ng-container *ngIf="datosCargados || graficasEquipo">
   <div class="stats-page">
     <header class="stats-header">
-      <h1 class="stats-title">{{ nombreEquipo }} – {{ 'ESTADIS_EQUIPO.PAGE_TITLE' | translate }}</h1>
       <div class="stats-filters card-pro">
         <div class="stats-filters-row">
           <div class="filter-group">

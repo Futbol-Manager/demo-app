@@ -1,41 +1,76 @@
 <app-publicidad></app-publicidad>
 
-<div class="back-container">
-  <button type="button" class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
-  </button>
+<!-- ===== PAGE HEADER PREMIUM ===== -->
+<div class="page-header">
+  <div class="back-container">
+    <button type="button" class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <div class="header-icon">
+      <i class="bi bi-person-lines-fill"></i>
+    </div>
+    <div class="header-titles">
+      <h1 class="page-title">{{ 'ESTADIS_JUGADORES.TITLE' | translate }}</h1>
+      <p class="header-subtitle">Análisis estadístico del rendimiento individual del jugador</p>
+      <div class="header-meta" *ngIf="datosCargados">
+        <span class="meta-chip">
+          <i class="bi bi-people-fill"></i>
+          {{ players.length }} jugadores
+        </span>
+        <span class="meta-chip">
+          <i class="bi bi-calendar3"></i>
+          {{ totalMatchs }} partidos
+        </span>
+        <span class="meta-chip meta-chip--type">
+          <i class="bi bi-award"></i>
+          {{ tipoPartidoSelected }}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="view-toggle-header">
+    <button type="button" class="toggle-btn-header" [class.active]="!graficasPlayers" (click)="verTablaPlayers()">
+      <i class="bi bi-table"></i>
+      <span>{{ 'ESTADIS_JUGADORES.VER_TABLA' | translate }}</span>
+    </button>
+    <button type="button" class="toggle-btn-header" [class.active]="graficasPlayers" (click)="verGraficaPlayers()">
+      <i class="bi bi-bar-chart-line"></i>
+      <span>{{ 'ESTADIS_JUGADORES.VER_GRAFICAS' | translate }}</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== FILTER TOOLBAR ===== -->
+<div class="filter-toolbar">
+  <div class="match-type-tabs">
+    <button type="button" class="match-tab"
+            [class.active]="tipoPartidoSelected === 'Liga'"
+            (click)="tipoPartidoSelected = 'Liga'; selectedTipoPartido()">
+      <i class="bi bi-award"></i>
+      <span>{{ 'ESTADIS_JUGADORES.LIGA' | translate }}</span>
+    </button>
+    <button type="button" class="match-tab"
+            [class.active]="tipoPartidoSelected === 'Amistoso'"
+            (click)="tipoPartidoSelected = 'Amistoso'; selectedTipoPartido()">
+      <i class="bi bi-handshake"></i>
+      <span>{{ 'ESTADIS_JUGADORES.AMISTOSO' | translate }}</span>
+    </button>
+    <button type="button" class="match-tab"
+            [class.active]="tipoPartidoSelected === 'Torneo'"
+            (click)="tipoPartidoSelected = 'Torneo'; selectedTipoPartido()">
+      <i class="bi bi-trophy"></i>
+      <span>{{ 'ESTADIS_JUGADORES.TORNEO' | translate }}</span>
+    </button>
+  </div>
 </div>
 
 <ng-container *ngIf="datosCargados || graficasPlayers">
   <div class="stats-page">
-    <!-- Header y filtros -->
-    <header class="stats-header">
-      <h1 class="stats-title">{{ 'ESTADIS_JUGADORES.TITLE' | translate }}</h1>
-      <div class="stats-filters card-pro">
-        <div class="stats-filters-row">
-          <div class="filter-group">
-            <label for="tipoPartidoSelected" class="filter-label">{{ 'ESTADIS_JUGADORES.TIPO_PARTIDO' | translate }}</label>
-            <select class="form-select form-select-pro" id="tipoPartidoSelected" name="tipoPartidoSelected"
-              [(ngModel)]="tipoPartidoSelected" (change)="selectedTipoPartido()">
-              <option value="Liga">{{ 'ESTADIS_JUGADORES.LIGA' | translate }}</option>
-              <option value="Amistoso">{{ 'ESTADIS_JUGADORES.AMISTOSO' | translate }}</option>
-              <option value="Torneo">{{ 'ESTADIS_JUGADORES.TORNEO' | translate }}</option>
-            </select>
-          </div>
-          <div class="view-toggle">
-            <button type="button" class="toggle-btn" [class.active]="!graficasPlayers" (click)="verTablaPlayers()">
-              <i class="bi bi-table"></i>
-              <span>{{ 'ESTADIS_JUGADORES.VER_TABLA' | translate }}</span>
-            </button>
-            <button type="button" class="toggle-btn" [class.active]="graficasPlayers" (click)="verGraficaPlayers()">
-              <i class="bi bi-bar-chart-line"></i>
-              <span>{{ 'ESTADIS_JUGADORES.VER_GRAFICAS' | translate }}</span>
-            </button>
-          </div>
-        </div>
-      </div>
-    </header>
 
     <!-- Vista Tabla -->
     <section *ngIf="datosCargados" class="stats-section">

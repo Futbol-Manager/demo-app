@@ -1,24 +1,32 @@
 <app-publicidad></app-publicidad>
 
-<div *ngIf="datosCargados" class="players-volver-bar">
+<div *ngIf="datosCargados" class="page-header">
     <button class="btn-back-clean" (click)="goBack()">
         <i class="bi bi-arrow-left"></i>
         <span>Volver</span>
     </button>
+
+    <div class="page-header-title">
+        <h2 *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3">
+            <i class="bi bi-people me-2"></i>Listado de Jugadores
+        </h2>
+        <h2 *ngIf="(usuarioActual?.profileType?.profileId ?? 0) > 2">
+            <i class="bi bi-person me-2"></i>Información
+        </h2>
+        <p class="header-subtitle">Consulta el listado y perfiles detallados de los jugadores</p>
+    </div>
+
+    <div *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3" class="players-header-actions">
+        <button type="button" class="btn-crear-jugador" (click)="abrirModalCrearJugador()">
+            <i class="bi bi-plus-lg"></i>
+            <span>Crear jugador</span>
+        </button>
+    </div>
+    <div *ngIf="(usuarioActual?.profileType?.profileId ?? 0) >= 3" class="page-header-spacer"></div>
 </div>
 
 <div *ngIf="datosCargados" class="container players-fifa-page">
     <div class="players-fifa-content">
-        <div class="players-page-header">
-            <h2 class="players-fifa-title mb-0" *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3">Listado de Jugadores</h2>
-            <h2 class="players-fifa-title mb-0" *ngIf="(usuarioActual?.profileType?.profileId ?? 0) > 2">Información</h2>
-            <div *ngIf="(usuarioActual?.profileType?.profileId ?? 0) < 3" class="players-header-actions">
-                <button type="button" class="btn-crear-jugador sphaira-pro-btn" (click)="abrirModalCrearJugador()">
-                    <i class="bi bi-plus-lg"></i>
-                    <span>Crear jugador</span>
-                </button>
-            </div>
-        </div>
         <ul class="nav nav-tabs players-tabs" id="myTab" role="tablist">
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="card-tab" data-bs-toggle="tab" data-bs-target="#card-content"

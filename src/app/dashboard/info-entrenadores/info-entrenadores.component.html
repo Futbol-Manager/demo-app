@@ -7,9 +7,10 @@
     </button>
   </div>
 
-  <h2 class="table-title">
-    {{ 'TRAINERS.TITLE' | translate }}
-  </h2>
+  <div class="header-center">
+    <h2 class="table-title">{{ 'TRAINERS.TITLE' | translate }}</h2>
+    <p class="header-subtitle">Consulta y gestiona el perfil de cada entrenador del club</p>
+  </div>
 
   <button class="btn-ai-consult" (click)="toggleAiPanel()">
     <i class="bi bi-robot"></i>
@@ -783,7 +784,7 @@
   <div class="ai-sidebar-header">
     <h3>
       <i class="bi bi-robot"></i>
-      Asistente IA — Entrenadores
+      Asistente IA &mdash; Entrenadores
     </h3>
     <button class="btn-close-ai" (click)="toggleAiPanel()">
       <i class="bi bi-x-lg"></i>
@@ -792,19 +793,19 @@
 
   <div class="ai-sidebar-body">
     <div class="ai-suggestions-section">
-      <p class="ai-intro">💡 Pregúntame sobre el cuerpo técnico (datos anonimizados)</p>
+      <p class="ai-intro"><i class="bi bi-lightbulb me-1"></i> Pregúntame sobre el cuerpo técnico (datos anonimizados)</p>
       <div class="suggestion-chips">
         <button class="suggestion-chip" (click)="useSuggestion('¿Cuántos entrenadores hay en el club?')">
-          👤 Total de entrenadores
+          <i class="bi bi-person me-1"></i> Total de entrenadores
         </button>
         <button class="suggestion-chip" (click)="useSuggestion('¿Qué equipos tienen entrenador asignado?')">
-          🏟️ Equipos con entrenador
+          <i class="bi bi-shield me-1"></i> Equipos con entrenador
         </button>
         <button class="suggestion-chip" (click)="useSuggestion('¿Qué perfiles hay en el cuerpo técnico (entrenador, fisio, etc.)?')">
-          📋 Distribución de perfiles
+          <i class="bi bi-clipboard-data me-1"></i> Distribución de perfiles
         </button>
         <button class="suggestion-chip" (click)="useSuggestion('¿Hay equipos sin entrenador asignado?')">
-          ⚠️ Equipos sin entrenador
+          <i class="bi bi-exclamation-triangle me-1"></i> Equipos sin entrenador
         </button>
       </div>
     </div>
@@ -813,14 +814,14 @@
       <div class="ai-messages" #aiMessagesContainerEnt>
         <div *ngFor="let message of aiMessages" class="ai-message" [ngClass]="message.role">
           <div class="message-content">
-            <strong *ngIf="message.role === 'assistant'">🤖 IA:</strong>
-            <strong *ngIf="message.role === 'user'">Tú:</strong>
+            <strong *ngIf="message.role === 'assistant'"><i class="bi bi-robot me-1"></i> Asistente IA</strong>
+            <strong *ngIf="message.role === 'user'"><i class="bi bi-person-fill me-1"></i> Tú</strong>
             <div [innerHTML]="message.content | markdownAi"></div>
           </div>
         </div>
         <div *ngIf="aiLoading" class="ai-message assistant">
           <div class="message-content">
-            <strong>🤖 IA:</strong>
+            <strong><i class="bi bi-robot me-1"></i> Asistente IA</strong>
             <p class="typing-indicator"><span></span><span></span><span></span></p>
           </div>
         </div>

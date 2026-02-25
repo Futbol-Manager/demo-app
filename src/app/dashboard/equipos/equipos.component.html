@@ -1,270 +1,307 @@
-<div class="back-container">
-  <button class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
-  </button>
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">{{ 'EQUIPOS.TITLE' | translate }}</h2>
+    <p class="header-subtitle">Explora y administra los equipos de la temporada</p>
+  </div>
+
+  <div class="header-spacer"></div>
 </div>
-<!-- ================= CONTENIDO ================= -->
-<div class="container equipos-container">
-  <div class="row g-4 mb-4 sphaira-action-cards" *ngIf="profileId === 1 || profileId === 2 || datosCargando">
-    <!-- Skeleton: misma zona que las cards de equipos -->
-    <ng-container *ngIf="datosCargando">
-      <div class="col-12 equipos-skeleton-wrap">
-        <div class="card-skeleton">
-          <div class="skeleton-card" *ngFor="let i of [].constructor(6)"></div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="equipos-content" *ngIf="profileId === 1 || profileId === 2 || datosCargando">
+
+  <!-- ===== SKELETON ===== -->
+  <ng-container *ngIf="datosCargando">
+    <div class="skeleton-wrap">
+      <div class="actions-skeleton">
+        <div class="skeleton-action" *ngFor="let i of [].constructor(3)">
+          <div class="sk-icon-circle shimmer"></div>
+          <div class="sk-label shimmer"></div>
         </div>
       </div>
-    </ng-container>
-
-    <!-- Contenido real cuando ya cargó -->
-    <ng-container *ngIf="!datosCargando">
-
-    <!-- SUBIR JUGADORES EXCEL -->
-    <div *ngIf="profileId === 1" class="col-12 col-md-4">
-      <div class="sphaira-action-card">
-
-        <div class="sphaira-action-icon green">
-          <i class="bi bi-file-earmark-spreadsheet"></i>
+      <div class="teams-skeleton">
+        <div class="skeleton-team-card" *ngFor="let i of [].constructor(6)">
+          <!-- Banner shimmer (igual que tc-banner) -->
+          <div class="sk-banner shimmer">
+            <div class="sk-shield-float">
+              <div class="sk-shield shimmer"></div>
+            </div>
+          </div>
+          <div class="sk-body">
+            <div class="sk-main-row">
+              <!-- espacio equivalente al escudo flotante -->
+              <div class="sk-shield-space"></div>
+              <div class="sk-info">
+                <div class="sk-line shimmer sk-tag"></div>
+                <div class="sk-line shimmer sk-title"></div>
+              </div>
+            </div>
+            <div class="sk-schedule">
+              <div class="sk-line shimmer sk-sched-label"></div>
+              <div class="sk-days-row">
+                <div class="sk-line shimmer sk-day"></div>
+                <div class="sk-line shimmer sk-day"></div>
+                <div class="sk-line shimmer sk-day sk-day--short"></div>
+                <div class="sk-line shimmer sk-day"></div>
+              </div>
+            </div>
+            <div class="sk-footer-row">
+              <div class="sk-line shimmer sk-stat"></div>
+              <div class="sk-line shimmer sk-arrow"></div>
+            </div>
+          </div>
         </div>
-
-        <button class="sphaira-action-btn green" (click)="openModalSubirJugadores()">
-          {{ 'TITLES.EXCELLOAD' | translate }}
-        </button>
-
       </div>
     </div>
+  </ng-container>
 
-    <!-- INVITAR PADRES -->
-    <div *ngIf="profileId === 1" class="col-12 col-md-4">
-      <div class="sphaira-action-card">
+  <!-- ===== REAL CONTENT ===== -->
+  <ng-container *ngIf="!datosCargando">
 
-        <div class="sphaira-action-icon blue">
+    <!-- ACTION CARDS -->
+    <div class="actions-row" *ngIf="profileId === 1 || profileId === 2">
+
+      <div class="action-card" *ngIf="profileId === 1" (click)="openModalSubirJugadores()">
+        <div class="action-icon-wrap green">
+          <i class="bi bi-file-earmark-spreadsheet-fill"></i>
+        </div>
+        <span class="action-label">{{ 'TITLES.EXCELLOAD' | translate }}</span>
+      </div>
+
+      <div class="action-card" *ngIf="profileId === 1" (click)="copyLink()">
+        <div class="action-icon-wrap blue">
           <i class="bi bi-link-45deg"></i>
         </div>
-
-        <button class="sphaira-action-btn blue" (click)="copyLink()">
-          {{ 'TITLES.INVITED' | translate }}
-        </button>
-
+        <span class="action-label">{{ 'TITLES.INVITED' | translate }}</span>
       </div>
-    </div>
 
-    <!-- CREAR EQUIPO -->
-    <div *ngIf="profileId === 1 || (profileId === 2 && !clubOk)" class="col-12 col-md-4">
-      <div class="sphaira-action-card">
-
-        <div class="sphaira-action-icon beige">
-          <i class="bi bi-plus-circle"></i>
+      <div class="action-card" *ngIf="profileId === 1 || (profileId === 2 && !clubOk)" (click)="abrirModalCrearEquipo()">
+        <div class="action-icon-wrap gold">
+          <i class="bi bi-plus-circle-fill"></i>
         </div>
-
-        <button class="sphaira-action-btn beige" (click)="abrirModalCrearEquipo()">
-          {{ 'NAV.CREATETEAM' | translate }}
-        </button>
-
+        <span class="action-label">{{ 'NAV.CREATETEAM' | translate }}</span>
       </div>
+
     </div>
 
-    <!-- ================= TEMPORADA (CENTRADA Y PEQUEÑA) ================= -->
-    <div class="season-wrapper mb-4">
+    <!-- SEASON SELECTOR -->
+    <div class="season-bar">
       <label class="season-label">
         <i class="bi bi-calendar-event"></i>
         {{ 'TITLES.SEASON' | translate }}
       </label>
-
-      <select class="form-control season-select mx-auto" [(ngModel)]="temporada"
+      <select class="season-select" [(ngModel)]="temporada"
         (change)="profileId === 1 ? cargarListadoEquiposForClub() : cargarListadoEquipos()">
         <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
       </select>
     </div>
 
-    <div *ngIf="profileId < 3" class="teams-mobile" cdkDropList (cdkDropListDropped)="dropTeam($event)">
+    <!-- TEAMS GRID -->
+    <div *ngIf="profileId < 3" class="teams-grid" cdkDropList (cdkDropListDropped)="dropTeam($event)">
 
       <div *ngFor="let team of listTeam" class="team-card" cdkDrag (click)="navegarACalendario(team.teamId, 0)">
 
-        <div class="team-header mb-2">
-          <strong class="team-name">{{ team.category }} {{ team.levelLeague }} {{ team.name }}</strong>
-          <span class="team-id">ID: {{ team.teamId }}</span>
+        <!-- Banner superior -->
+        <div class="tc-banner">
+          <div class="tc-banner-overlay"></div>
+          <div class="tc-shield-wrap">
+            <div class="tc-shield">
+              <img *ngIf="pictureClub"
+                   [src]="'https://appsphairatech.com/images/user/' + pictureClub"
+                   alt="Escudo del club"
+                   class="tc-shield-img" />
+              <div *ngIf="!pictureClub" class="tc-shield-placeholder">
+                <span class="tc-shield-letter">
+                  {{ (team.category || team.levelLeague || 'E')[0] | uppercase }}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="team-info-block team-schedule">
-          <i class="bi bi-clock-history team-info-icon"></i>
+        <div class="tc-body">
 
-          <div class="team-info-body">
-            <span class="team-info-label">
-              {{ 'COACH.MY_TEAMS.TRAINING_SCHEDULE' | translate }}
-            </span>
+          <!-- Row 1: Shield space + info (el escudo flota sobre el banner) -->
+          <div class="tc-main-row">
 
-            <ng-container *ngIf="parseTrainingDays(team.trainingDays)?.length; else noSchedule">
-              <div class="team-schedule-grid">
-                <div *ngFor="let d of parseTrainingDays(team.trainingDays)" class="team-schedule-item">
-                  <span class="team-schedule-day">
-                    {{ d.dayLabel | translate }}:
-                  </span>
-                  <span class="team-schedule-hours">
-                    {{ d.hours }}
-                  </span>
+            <!-- Espacio para el escudo flotante -->
+            <div style="width: 80px; flex-shrink: 0;"></div>
+
+            <!-- Nombre completo -->
+            <div class="tc-info">
+              <h3 class="tc-name">{{ getTeamFullName(team) }}</h3>
+            </div>
+
+          </div>
+
+          <!-- Row 2: Schedule -->
+          <div class="tc-schedule-wrap">
+            <div class="tc-schedule-label">
+              <i class="bi bi-clock-fill"></i>
+              <span>{{ 'COACH.MY_TEAMS.TRAINING_SCHEDULE' | translate }}</span>
+            </div>
+
+            <ng-container *ngIf="parseTrainingDays(team.trainingDays)?.length; else noScheduleCard">
+              <div class="tc-days-grid">
+                <div class="tc-day-item" *ngFor="let d of parseTrainingDays(team.trainingDays)">
+                  <span class="tc-day-name">{{ d.dayLabel | translate }}</span>
+                  <span class="tc-day-time">{{ d.hours }}</span>
                 </div>
               </div>
             </ng-container>
 
-            <ng-template #noSchedule>
-              <span class="team-info-muted">
-                {{ 'COACH.MY_TEAMS.NO_SCHEDULE' | translate }}
-              </span>
+            <ng-template #noScheduleCard>
+              <span class="tc-no-sched">{{ 'COACH.MY_TEAMS.NO_SCHEDULE' | translate }}</span>
             </ng-template>
           </div>
-        </div>
 
-        <div class="team-info-block team-players">
-          <i class="bi bi-people team-info-icon"></i>
-          <span class="team-players-count">
-            {{ team.jugadoresPorEquipo || '0' }}
-          </span>
+          <!-- Row 3: Footer stats + CTA -->
+          <div class="tc-footer">
+            <div class="tc-players-stat">
+              <i class="bi bi-people-fill"></i>
+              <strong class="tc-player-num">{{ team.jugadoresPorEquipo || '0' }}</strong>
+              <span class="tc-player-label">{{ 'COACH.MY_TEAMS.PLAYERS' | translate }}</span>
+            </div>
+            <div class="tc-go">
+              <i class="bi bi-arrow-right-circle-fill"></i>
+            </div>
+          </div>
+
         </div>
+      </div>
+
+      <!-- Empty teams -->
+      <div *ngIf="listTeam.length === 0" class="teams-empty">
+        <i class="bi bi-shield-slash"></i>
+        <p>{{ 'EQUIPOS.NO_TEAMS' | translate }}</p>
+      </div>
+
+    </div>
+
+    <!-- SUBSCRIPTION WALL -->
+    <div *ngIf="datosNoCargados" class="subscription-wall">
+      <div class="subscription-card">
+        <div class="subscription-icon-wrap">
+          <i class="bi bi-lock-fill"></i>
+        </div>
+        <h4 class="subscription-title">{{ 'TITLES.ACCESSREST' | translate }}</h4>
+        <p class="subscription-text">{{ 'PHRASES.INICIO2' | translate }}</p>
+        <button class="subscription-btn" (click)="goSuscripcion()">
+          <i class="bi bi-star-fill"></i>
+          {{ 'TITLES.GETSUS' | translate }}
+        </button>
       </div>
     </div>
 
-    <div [ngStyle]="{ display: !datosNoCargados ? 'none' : 'block' }">
-      <div class="d-flex justify-content-center align-items-center mt-3">
-        <div class="card text-center shadow-lg p-4">
-          <div class="card-body">
-            <h5 class="card-title mb-3">{{ 'TITLES.ACCESSREST' | translate }}</h5>
-            <p class="card-text text-muted">
-              {{ 'PHRASES.INICIO2' | translate }}
-            </p>
-            <button (click)="goSuscripcion()" class="btn btn-primary btn-lg">
-              <i class="mdi mdi-account-circle me-2"></i>
-              {{ 'TITLES.GETSUS' | translate }}
-            </button>
+  </ng-container>
+
+  <!-- ===== CREATE TEAM MODAL ===== -->
+  <div class="modal d-block" *ngIf="showModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-content modern-modal">
+
+        <div class="modal-header premium-header">
+          <div class="modal-header-inner">
+            <i class="bi bi-shield-plus"></i>
+            <h5 class="modal-title">{{ 'NAV.CREATETEAM' | translate }}</h5>
           </div>
+          <button type="button" class="modal-close-btn" aria-label="Cerrar" (click)="cerrarModal()">
+            <i class="bi bi-x-lg"></i>
+          </button>
         </div>
-      </div>
-    </div>
-    </ng-container>
-    <div class="modal d-block" *ngIf="showModal" tabindex="-1" role="dialog">
-      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-        <div class="modal-content modern-modal">
 
-          <!-- HEADER -->
-          <div class="modal-header modern-header">
-            <h5 class="modal-title">
-              {{ 'NAV.CREATETEAM' | translate }}
-            </h5>
-            <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModal()"></button>
-          </div>
+        <div class="modal-body modern-body">
+          <h6 class="section-title">{{ 'PROFILE.INSTRUCTIONS_TITLE' | translate }}</h6>
+          <p class="text-muted mb-4">{{ 'PHRASES.INICIO3' | translate }}</p>
 
-          <!-- BODY -->
-          <div class="modal-body modern-body">
+          <form [formGroup]="crearEquipoForm" (ngSubmit)="crearEquipo()">
 
-            <h6 class="section-title">
-              {{ 'PROFILE.INSTRUCTIONS_TITLE' | translate }}
-            </h6>
+            <!-- CATEGORÍA -->
+            <div class="form-field position-relative">
+              <label class="field-label">{{ 'TITLES.CATEGORYTEAM' | translate }}</label>
+              <input type="text" class="field-input" formControlName="categoriaNombre" autocomplete="off"
+                placeholder="Escribe la categoría de este equipo" (focus)="mostrarDropdown = true"
+                (blur)="ocultarDropdownConRetraso()" (input)="onInputCategoria($event)" />
+              <ul *ngIf="mostrarDropdown" class="dropdown-list">
+                <li *ngFor="let cat of categoriasFiltradas" class="dropdown-item-opt"
+                  (mousedown)="seleccionarCategoria(cat)">{{ cat.categoryName }}</li>
+                <li *ngIf="categoriaNombre.length > 3" class="dropdown-item-opt dropdown-create"
+                  (mousedown)="crearCategoria(categoriaNombre)">
+                  <i class="bi bi-plus-circle"></i>
+                  {{ 'NAV.CREATE' | translate }} "{{ categoriaNombre }}"
+                </li>
+              </ul>
+            </div>
 
-            <p class="text-muted mb-4">
-              {{ 'PHRASES.INICIO3' | translate }}
-            </p>
+            <!-- NIVEL -->
+            <div class="form-field position-relative">
+              <label class="field-label">{{ 'LABELS.INICIO1' | translate }}</label>
+              <input type="text" class="field-input" formControlName="levelLeague" autocomplete="off"
+                placeholder="Escribe el nivel de este equipo" (focus)="mostrarDropdown2 = true"
+                (blur)="ocultarDropdownConRetrasoNivel()" (input)="onInputNivel($event)" />
+              <ul *ngIf="mostrarDropdown2" class="dropdown-list">
+                <li *ngFor="let n of nivelesVisiblesFiltradas" class="dropdown-item-opt"
+                  (mousedown)="seleccionarNivel(n.label)">{{ n.label }}</li>
+                <li *ngIf="categoriaNivel" class="dropdown-item-opt dropdown-create"
+                  (mousedown)="crearNivel(categoriaNivel)">
+                  <i class="bi bi-check-circle"></i>
+                  {{ 'TITLES.SELECTED' | translate }} "{{ categoriaNivel }}"
+                </li>
+              </ul>
+            </div>
 
-            <form [formGroup]="crearEquipoForm" (ngSubmit)="crearEquipo()">
+            <!-- NOMBRE / LETRA -->
+            <div class="form-field">
+              <label class="field-label">{{ 'LABELS.INICIO2' | translate }}</label>
+              <select class="field-input field-select" formControlName="name">
+                <option value="">{{ 'SELECTS.NOLETTER' | translate }}</option>
+                <option *ngFor="let l of ['A','B','C','D','E','F','G','H','I','J','K','L','M']">{{ l }}</option>
+              </select>
+            </div>
 
-              <!-- CATEGORÍA -->
-              <div class="mb-4 position-relative">
-                <label class="form-label">
-                  {{ 'TITLES.CATEGORYTEAM' | translate }}
-                </label>
+            <div class="modal-actions">
+              <button type="submit" class="btn-primary-action">
+                <i class="bi bi-shield-check"></i>
+                {{ 'TITLES.CREATETEAM' | translate }}
+              </button>
+            </div>
 
-                <input type="text" class="form-control modern-input" formControlName="categoriaNombre"
-                  autocomplete="off" placeholder="Escribe la categoría de este equipo" (focus)="mostrarDropdown = true"
-                  (blur)="ocultarDropdownConRetraso()" (input)="onInputCategoria($event)" />
-
-                <ul *ngIf="mostrarDropdown" class="list-group dropdown-modern">
-                  <li *ngFor="let cat of categoriasFiltradas" class="list-group-item list-group-item-action"
-                    (mousedown)="seleccionarCategoria(cat)">
-                    {{ cat.categoryName }}
-                  </li>
-
-                  <li *ngIf="categoriaNombre.length > 3" class="list-group-item list-group-item-action text-primary"
-                    (mousedown)="crearCategoria(categoriaNombre)">
-                    {{ 'NAV.CREATE' | translate }} "{{ categoriaNombre }}"
-                  </li>
-                </ul>
-              </div>
-
-              <!-- NIVEL -->
-              <div class="mb-4 position-relative">
-                <label class="form-label">
-                  {{ 'LABELS.INICIO1' | translate }}
-                </label>
-
-                <input type="text" class="form-control modern-input" formControlName="levelLeague" autocomplete="off"
-                  placeholder="Escribe el nivel de este equipo" (focus)="mostrarDropdown2 = true"
-                  (blur)="ocultarDropdownConRetrasoNivel()" (input)="onInputNivel($event)" />
-
-                <ul *ngIf="mostrarDropdown2" class="list-group dropdown-modern">
-                  <li *ngFor="let n of nivelesVisiblesFiltradas" class="list-group-item list-group-item-action"
-                    (mousedown)="seleccionarNivel(n.label)">
-                    {{ n.label }}
-                  </li>
-
-                  <li *ngIf="categoriaNivel" class="list-group-item list-group-item-action text-primary"
-                    (mousedown)="crearNivel(categoriaNivel)">
-                    {{ 'TITLES.SELECTED' | translate }} "{{ categoriaNivel }}"
-                  </li>
-                </ul>
-              </div>
-
-              <!-- NOMBRE -->
-              <div class="mb-4">
-                <label class="form-label">
-                  {{ 'LABELS.INICIO2' | translate }}
-                </label>
-
-                <select class="form-select modern-input" formControlName="name">
-                  <option value="">{{ 'SELECTS.NOLETTER' | translate }}</option>
-                  <option *ngFor="let l of ['A','B','C','D','E','F','G','H','I','J','K','L','M']">
-                    {{ l }}
-                  </option>
-                </select>
-              </div>
-
-              <!-- FOOTER -->
-              <div class="modal-footer modern-footer">
-                <button type="submit" class="btn btn-success btn-save">
-                  {{ 'TITLES.CREATETEAM' | translate }}
-                </button>
-              </div>
-
-            </form>
-          </div>
+          </form>
         </div>
+
       </div>
     </div>
   </div>
+
 </div>
 
+<!-- ===== OVERLAY GLOBAL ===== -->
+<div class="modal-overlay" *ngIf="showModal || showModalSubirJugadores || showModalSubirJugadoresGesDesk || modalConfirAndroid"></div>
 
-<!-- OVERLAY GLOBAL -->
-<div class="modal-overlay" *ngIf="
-  showModal ||
-  showModalSubirJugadores ||
-  showModalSubirJugadoresGesDesk ||
-  modalConfirAndroid
-"></div>
-<!-- Modal para subir jugadores desde plantilla -->
+<!-- ===== UPLOAD EXCEL MODAL ===== -->
 <div class="modal d-block" *ngIf="showModalSubirJugadores" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
     <div class="modal-content modern-modal">
 
-      <!-- HEADER -->
-      <div class="modal-header modern-header">
-        <h5 class="modal-title">
-          {{ 'PHRASES.INICIO4' | translate }}
-        </h5>
-        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModalSubirJugadores()"></button>
+      <div class="modal-header premium-header">
+        <div class="modal-header-inner">
+          <i class="bi bi-file-earmark-spreadsheet"></i>
+          <h5 class="modal-title">{{ 'PHRASES.INICIO4' | translate }}</h5>
+        </div>
+        <button type="button" class="modal-close-btn" aria-label="Close" (click)="cerrarModalSubirJugadores()">
+          <i class="bi bi-x-lg"></i>
+        </button>
       </div>
 
-      <!-- BODY -->
       <div class="modal-body modern-body">
-
         <p class="text-muted mb-4">
           {{ 'PHRASES.INICIO5' | translate }}
           <a class="ms-1 fw-semibold link-success" href="https://appsphairatech.com/images/docs/Plantilla.xlsx"
@@ -274,79 +311,8 @@
         </p>
 
         <form [formGroup]="excelForm" (ngSubmit)="uploadExcel()" enctype="multipart/form-data" class="upload-form">
+          <h4 class="upload-title">{{ 'TITLES.UPFILEEXCEL' | translate }}</h4>
 
-          <h4 class="upload-title">
-            {{ 'TITLES.UPFILEEXCEL' | translate }}
-          </h4>
-
-          <!-- Zona de subida -->
-          <label for="excelFile" class="upload-zone">
-            <i class="bi bi-file-earmark-excel"></i>
-            <span>{{ 'LABELS.SELECTEDFILEXLSX' | translate }}</span>
-            <small>.xlsx</small>
-
-            <input id="excelFile" type="file" accept=".xlsx" hidden (change)="onFileSelected($event)" />
-          </label>
-
-          <!-- Archivo seleccionado -->
-          <div *ngIf="fileName" class="file-selected">
-            <i class="bi bi-check-circle"></i>
-            {{ 'LABELS.FILESELECTED' | translate }}:
-            <strong>{{ fileName }}</strong>
-          </div>
-
-          <!-- Botón subir -->
-          <div class="text-center mt-4">
-            <button *ngIf="showUploadButton" type="submit" class="btn btn-primary btn-upload">
-              <i class="bi bi-upload me-2"></i>
-              {{ 'APP.BUTTONS.UPFILE' | translate }}
-            </button>
-          </div>
-
-        </form>
-      </div>
-
-      <!-- FOOTER -->
-      <div class="modal-footer modern-footer">
-        <button type="button" class="btn btn-secondary" (click)="cerrarModalSubirJugadores()">
-          {{ 'APP.BUTTONS.CLOSE' | translate }}
-        </button>
-      </div>
-
-    </div>
-  </div>
-</div>
-
-
-<!-- Modal para subir jugadores desde plantilla -->
-<div class="modal-overlay" *ngIf="showModalSubirJugadoresGesDesk"></div>
-<div class="modal d-block " *ngIf="showModalSubirJugadoresGesDesk" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-    <div class="modal-content modern-modal">
-
-      <!-- HEADER -->
-      <div class="modal-header modern-header">
-        <h5 class="modal-title">
-          {{ 'PHRASES.INICIO6' | translate }}
-        </h5>
-        <button type="button" class="btn-close" aria-label="Cerrar" (click)="cerrarModalSubirJugadoresGesDesk()"></button>
-      </div>
-
-      <!-- BODY -->
-      <div class="modal-body modern-body">
-
-        <p class="text-muted mb-4">
-          {{ 'PHRASES.INICIO7' | translate }}
-        </p>
-
-        <form [formGroup]="excelForm" (ngSubmit)="uploadExcelGesDesk()" enctype="multipart/form-data"
-          class="upload-form">
-
-          <h4 class="upload-title">
-            {{ 'TITLES.UPFILEEXCEL' | translate }}
-          </h4>
-
-          <!-- Dropzone -->
           <label for="excelFile" class="upload-zone">
             <i class="bi bi-file-earmark-excel"></i>
             <span>{{ 'LABELS.SELECTEDFILEXLSX' | translate }}</span>
@@ -354,26 +320,22 @@
             <input id="excelFile" type="file" accept=".xlsx" hidden (change)="onFileSelected($event)" />
           </label>
 
-          <!-- Archivo seleccionado -->
           <div *ngIf="fileName" class="file-selected">
-            <i class="bi bi-check-circle"></i>
+            <i class="bi bi-check-circle-fill"></i>
             {{ 'LABELS.FILESELECTED' | translate }}: <strong>{{ fileName }}</strong>
           </div>
 
-          <!-- Botón subir -->
           <div class="text-center mt-4">
-            <button *ngIf="showUploadButton" type="submit" class="btn btn-primary btn-upload">
-              <i class="bi bi-upload me-2"></i>
+            <button *ngIf="showUploadButton" type="submit" class="btn-primary-action">
+              <i class="bi bi-upload"></i>
               {{ 'APP.BUTTONS.UPFILE' | translate }}
             </button>
           </div>
-
         </form>
       </div>
 
-      <!-- FOOTER -->
       <div class="modal-footer modern-footer">
-        <button type="button" class="btn btn-secondary" (click)="cerrarModalSubirJugadoresGesDesk()">
+        <button type="button" class="btn-secondary-action" (click)="cerrarModalSubirJugadores()">
           {{ 'APP.BUTTONS.CLOSE' | translate }}
         </button>
       </div>
@@ -382,24 +344,76 @@
   </div>
 </div>
 
+<!-- ===== UPLOAD GESDESK MODAL ===== -->
+<div class="modal-overlay" *ngIf="showModalSubirJugadoresGesDesk"></div>
+<div class="modal d-block" *ngIf="showModalSubirJugadoresGesDesk" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content modern-modal">
 
-<!-- MODAL -->
+      <div class="modal-header premium-header">
+        <div class="modal-header-inner">
+          <i class="bi bi-cloud-upload"></i>
+          <h5 class="modal-title">{{ 'PHRASES.INICIO6' | translate }}</h5>
+        </div>
+        <button type="button" class="modal-close-btn" aria-label="Cerrar" (click)="cerrarModalSubirJugadoresGesDesk()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="modal-body modern-body">
+        <p class="text-muted mb-4">{{ 'PHRASES.INICIO7' | translate }}</p>
+
+        <form [formGroup]="excelForm" (ngSubmit)="uploadExcelGesDesk()" enctype="multipart/form-data"
+          class="upload-form">
+          <h4 class="upload-title">{{ 'TITLES.UPFILEEXCEL' | translate }}</h4>
+
+          <label for="excelFileGesDesk" class="upload-zone">
+            <i class="bi bi-file-earmark-excel"></i>
+            <span>{{ 'LABELS.SELECTEDFILEXLSX' | translate }}</span>
+            <small>.xlsx</small>
+            <input id="excelFileGesDesk" type="file" accept=".xlsx" hidden (change)="onFileSelected($event)" />
+          </label>
+
+          <div *ngIf="fileName" class="file-selected">
+            <i class="bi bi-check-circle-fill"></i>
+            {{ 'LABELS.FILESELECTED' | translate }}: <strong>{{ fileName }}</strong>
+          </div>
+
+          <div class="text-center mt-4">
+            <button *ngIf="showUploadButton" type="submit" class="btn-primary-action">
+              <i class="bi bi-upload"></i>
+              {{ 'APP.BUTTONS.UPFILE' | translate }}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer modern-footer">
+        <button type="button" class="btn-secondary-action" (click)="cerrarModalSubirJugadoresGesDesk()">
+          {{ 'APP.BUTTONS.CLOSE' | translate }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== ANDROID / STORE MODAL ===== -->
 <div class="modal-overlay" *ngIf="showModalSubirJugadores"></div>
 <div [ngClass]="{'d-block': modalConfirAndroid}" class="modal" role="dialog" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 shadow">
-      <div class="modal-body p-4">
-        <div class="d-flex align-items-center mb-3">
-          <span class="me-2">⚠️</span>
-          <h5 class="m-0 text-danger fw-bold">{{ 'TITLES.ATENTION' | translate }}</h5>
+    <div class="modal-content modern-modal">
+      <div class="modal-body modern-body">
+
+        <div class="warning-header">
+          <div class="warning-icon-wrap">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+          </div>
+          <h5 class="warning-title">{{ 'TITLES.ATENTION' | translate }}</h5>
         </div>
 
-        <p class="mb-3">
-          {{ 'PHRASES.INICIO8' | translate }}
-        </p>
-        <p class="mb-3">
-          {{ 'PHRASES.INICIO9' | translate }}
-        </p>
+        <p class="mb-3">{{ 'PHRASES.INICIO8' | translate }}</p>
+        <p class="mb-3">{{ 'PHRASES.INICIO9' | translate }}</p>
 
         <div class="form-check my-3">
           <input [(ngModel)]="aceptoGestionNavegador" class="form-check-input" id="chkAceptoGestion" type="checkbox" />
@@ -408,12 +422,15 @@
           </label>
         </div>
 
-        <div class="d-flex justify-content-end gap-2 mt-4">
-          <button (click)="closeModalConfirAndroid()" class="btn btn-outline-secondary" type="button">{{
-            'APP.BUTTONS.CANCEL' | translate }}</button>
-          <button (click)="onAceptarDescarga()" class="btn btn-primary" type="button">{{ 'APP.BUTTONS.ACCEPT' |
-            translate }}</button>
+        <div class="modal-actions">
+          <button (click)="closeModalConfirAndroid()" class="btn-secondary-action" type="button">
+            {{ 'APP.BUTTONS.CANCEL' | translate }}
+          </button>
+          <button (click)="onAceptarDescarga()" class="btn-primary-action" type="button">
+            {{ 'APP.BUTTONS.ACCEPT' | translate }}
+          </button>
         </div>
+
       </div>
     </div>
   </div>

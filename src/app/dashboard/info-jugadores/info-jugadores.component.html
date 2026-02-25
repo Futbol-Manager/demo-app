@@ -7,9 +7,10 @@
     </button>
   </div>
 
-  <h2 class="table-title">
-    {{ 'PLAYERS.TITLE' | translate }}
-  </h2>
+  <div class="header-center">
+    <h2 class="table-title">{{ 'PLAYERS.TITLE' | translate }}</h2>
+    <p class="header-subtitle">Consulta y gestiona el perfil de cada jugador del club</p>
+  </div>
 
   <button class="btn-ai-consult" (click)="toggleAiPanel()">
     <i class="bi bi-robot"></i>
@@ -788,19 +789,19 @@
 
   <div class="ai-sidebar-body">
     <div class="ai-suggestions-section">
-      <p class="ai-intro">💡 Pregúntame sobre el listado de jugadores (datos anonimizados)</p>
+      <p class="ai-intro"><i class="bi bi-lightbulb me-1"></i> Pregúntame sobre el listado de jugadores (datos anonimizados)</p>
       <div class="suggestion-chips">
         <button class="suggestion-chip" (click)="useSuggestion('¿Cuántos jugadores hay por posición?')">
-          👥 Distribución por posición
+          <i class="bi bi-person-lines-fill me-1"></i> Distribución por posición
         </button>
         <button class="suggestion-chip" (click)="useSuggestion('¿Cuántos jugadores hay por equipo?')">
-          🏟️ Jugadores por equipo
+          <i class="bi bi-shield me-1"></i> Jugadores por equipo
         </button>
         <button class="suggestion-chip" (click)="useSuggestion('¿Qué posiciones tienen menos jugadores en el club?')">
-          📊 Posiciones con déficit
+          <i class="bi bi-bar-chart me-1"></i> Posiciones con déficit
         </button>
         <button class="suggestion-chip" (click)="useSuggestion('¿Hay jugadores sin dorsal asignado?')">
-          🔢 Sin dorsal asignado
+          <i class="bi bi-hash me-1"></i> Sin dorsal asignado
         </button>
       </div>
     </div>
@@ -809,14 +810,14 @@
       <div class="ai-messages" #aiMessagesContainer>
         <div *ngFor="let message of aiMessages" class="ai-message" [ngClass]="message.role">
           <div class="message-content">
-            <strong *ngIf="message.role === 'assistant'">🤖 IA:</strong>
+            <strong *ngIf="message.role === 'assistant'"><i class="bi bi-robot me-1"></i> IA:</strong>
             <strong *ngIf="message.role === 'user'">Tú:</strong>
             <div [innerHTML]="message.content | markdownAi"></div>
           </div>
         </div>
-        <div *ngIf="aiLoading" class="ai-message assistant">
+          <div *ngIf="aiLoading" class="ai-message assistant">
           <div class="message-content">
-            <strong>🤖 IA:</strong>
+            <strong><i class="bi bi-robot me-1"></i> IA:</strong>
             <p class="typing-indicator"><span></span><span></span><span></span></p>
           </div>
         </div>

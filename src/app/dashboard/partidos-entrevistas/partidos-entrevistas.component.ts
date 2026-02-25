@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { User } from 'src/app/core/models/users/user.model';
 import { ClubService } from 'src/app/core/services/club/club.service';
@@ -17,7 +17,7 @@ import { VideoStorageService } from 'src/app/core/services/video-storage/video-s
   templateUrl: './partidos-entrevistas.component.html',
   styleUrls: ['./partidos-entrevistas.component.scss']
 })
-export class PartidosEntrevistasComponent implements OnInit {
+export class PartidosEntrevistasComponent implements OnInit, AfterViewInit {
 
   teamId = 0;
   playerId = 0;
@@ -30,6 +30,9 @@ export class PartidosEntrevistasComponent implements OnInit {
   partidos: any = [];
 
   currentIndex = 0;
+  pageSize = 4;
+
+  @ViewChild('carouselContainer') carouselContainer!: ElementRef<HTMLDivElement>;
   selectedPartido: any = null;
   imageBaseUrlGaleria: string = environment.images + 'galeria/';
 
@@ -104,6 +107,28 @@ export class PartidosEntrevistasComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private videoService: VideoStorageService) { }
 
+  ngAfterViewInit(): void {
+    this.recalcPageSize();
+  }
+
+  @HostListener('window:resize')
+  recalcPageSize(): void {
+    if (!this.carouselContainer?.nativeElement) return;
+    const containerWidth = this.carouselContainer.nativeElement.offsetWidth;
+    const cardSlot = 168 + 12; // min-width + gap
+    const arrowsSpace = 2 * (38 + 10); // 2 flechas + sus gaps
+    const allFit = this.partidos.length * cardSlot - 12 <= containerWidth;
+    if (allFit) {
+      this.pageSize = this.partidos.length || 4;
+    } else {
+      this.pageSize = Math.max(1, Math.floor((containerWidth - arrowsSpace + 12) / cardSlot));
+    }
+  }
+
+  get showArrows(): boolean {
+    return this.partidos.length > this.pageSize;
+  }
+
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
       this.usuarioActual = user;
@@ -171,6 +196,7 @@ export class PartidosEntrevistasComponent implements OnInit {
         if (response && response.data && Array.isArray(response.data)) {
           this.partidos = response.data;
           this.calcularTotalesGlobales();
+          setTimeout(() => this.recalcPageSize());
           
           // Seleccionar automáticamente el primer partido si existe
           if (this.partidos.length > 0) {
@@ -201,19 +227,19 @@ export class PartidosEntrevistasComponent implements OnInit {
   }
 
   next() {
-    if (this.currentIndex + 4 < this.partidos.length) {
-      this.currentIndex += 4;
+    if (this.currentIndex + this.pageSize < this.partidos.length) {
+      this.currentIndex += this.pageSize;
     }
   }
 
   prev() {
-    if (this.currentIndex - 4 >= 0) {
-      this.currentIndex -= 4;
+    if (this.currentIndex - this.pageSize >= 0) {
+      this.currentIndex -= this.pageSize;
     }
   }
 
   getVisibleItems() {
-    return this.partidos.slice(this.currentIndex, this.currentIndex + 4);
+    return this.partidos.slice(this.currentIndex, this.currentIndex + this.pageSize);
   }
 
   seleccionarPartido(partido: any) {

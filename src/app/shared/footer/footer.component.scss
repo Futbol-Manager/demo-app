@@ -1,9 +1,14 @@
+:host {
+  display: block;
+  margin-top: auto;   /* empuja el host element al fondo del flex-column padre */
+}
+
 .footer {
   width: 100%;
   border-top: 1px solid #e5e5e5;
   padding: 12px 0;
   background-color: #ffffff00;
-  flex-shrink: 0;           /* nunca se comprime */
+  flex-shrink: 0;
 }
 
 .footer-inner {

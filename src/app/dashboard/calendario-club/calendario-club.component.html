@@ -1,25 +1,24 @@
 <!-- ═══════════════════════════════════════════════
-     BOTÓN VOLVER
+     CABECERA HERO — SphairaTech Premium
 ═══════════════════════════════════════════════ -->
-<div class="back-container">
+<div class="page-header">
   <button class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
   </button>
+
+  <div class="page-header-title">
+    <h2>
+      <i class="bi bi-calendar3 me-2"></i>
+      {{ 'CALENDAR_CLUB.TITLE' | translate }}
+    </h2>
+    <p class="page-subtitle">{{ 'CALENDAR_CLUB.SUBTITLE' | translate }}</p>
+  </div>
+
+  <div class="page-header-spacer"></div>
 </div>
 
 <div class="container-fluid calendario-club-page">
-
-  <!-- ═══════════════════════════════════════════════
-       CABECERA
-  ═══════════════════════════════════════════════ -->
-  <div class="page-header">
-    <h4>
-      <i class="bi bi-calendar3 me-2"></i>
-      {{ 'CALENDAR_CLUB.TITLE' | translate }}
-    </h4>
-    <p class="page-subtitle">{{ 'CALENDAR_CLUB.SUBTITLE' | translate }}</p>
-  </div>
 
   <!-- ═══════════════════════════════════════════════
        FILTRO DE EQUIPOS — CHIPS
@@ -129,7 +128,7 @@
                     [style.backgroundColor]="evt.teamColor"
                     [class.dot-training]="evt.type === 'training'"
                     [class.dot-match]="evt.type === 'match'"
-                    [title]="evt.teamName + (evt.type === 'match' ? ' ⚽' : ' 🏋️')">
+                    [title]="evt.teamName + (evt.type === 'match' ? ' (Partido)' : ' (Entrenamiento)')">
               </span>
               <span *ngIf="getExtraCount(day) > 0" class="dot-extra">
                 +{{ getExtraCount(day) }}

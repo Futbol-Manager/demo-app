@@ -9,7 +9,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ToastrService } from 'ngx-toastr';
 import { MatDialog } from '@angular/material/dialog';
 import { PlayerInfoDialogComponent, PlayerInfoDialogData } from '../player-info-dialog/player-info-dialog.component';
-import { combineLatest, forkJoin } from 'rxjs';
+import { combineLatest, forkJoin, of } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
@@ -116,13 +116,17 @@ export class NewCuotasComponent implements OnInit {
   showConfirmDevolucion = false;
   listaCuotasAsignadas: any[] = [];
   showModalCuotasAsignadas = false;
+  /** Jugador cuyo modal de pagos está abierto (para mostrar avatar/nombre en el header) */
+  playerModal: any = null;
+  /** Jugador cuyo historial de pagos está abierto */
+  playerHistorial: any = null;
 
   email: string = '';
   aceptStripe = false;
   showModalStripe = false;
   infoClub: any = {};
   paginaActual = 1;
-  itemsPorPagina = 50;
+  itemsPorPagina = 20;
 
   // Modal state
   showModalCuotasJugador = false;
@@ -133,6 +137,8 @@ export class NewCuotasComponent implements OnInit {
   // Lista de cuotas ya asignadas al jugador
   listCuotasPlayerPersonal: any[] = []; // usa tu DTO si lo tienes
   showModalEditarCuotaPlayer = false;
+  /** Jugador cuyo modal de gestión de pagos está abierto */
+  playerEdit: any = null;
 
   cuotaPlayerEdit: any = {
     // ejemplo de estructura; se sobreescribe al abrir
@@ -177,8 +183,30 @@ export class NewCuotasComponent implements OnInit {
   listaPlayersFiltradosPorPago: any[] = [];   // Jugadores recalculados según pagos seleccionados
   showPagoFilterDropdown = false;             // Mostrar/ocultar el dropdown de filtro
 
+  /** Caché de cuotas asignadas por jugador → evita llamadas HTTP repetidas al abrir modales */
+  playerCuotasCache: Map<number, any[]> = new Map();
+
+  /** Caché de historial de pagos por jugador */
+  playerHistoryCache: Map<number, any[]> = new Map();
+
+  /** Historial de pagos del jugador mostrado en el modal de cuotas asignadas */
+  historialPagosModal: any[] = [];
+
+  /** ID del jugador cuyo modal se está cargando (para mostrar spinner en su fila) */
+  loadingPlayerId: number | null = null;
+
   // Modal de pagos automáticos
   showModalAutoPayments = false;
+
+  // ── Modal configuración notificaciones ──────────────────────────────────────
+  showModalNotifConfig = false;
+  isSavingNotifConfig = false;
+  notifConfig = {
+    clubId: 0,
+    diasAntesRecordatorio: 1,
+    notifPushActiva: true,
+    notifEmailActiva: true,
+  };
 
   constructor(
     private loginService: LoginService,
@@ -456,7 +484,18 @@ export class NewCuotasComponent implements OnInit {
           totalPagadoFiltrado: totalPagadoEstimado.toFixed(2),
           restanteFiltrado: Math.max(0, restante).toFixed(2),
           cuotasFiltradas,
-          estadoFiltrado: restante <= 0 ? 1 : 0,
+          estadoFiltrado: (() => {
+            const hoyF = new Date(); hoyF.setHours(0, 0, 0, 0);
+            const vencida = cuotasFiltradas
+              .filter((c: any) => +c.obligatorio === 1)
+              .some((c: any) => {
+                if (!c.fechaLimite) return false;
+                const fl = new Date(c.fechaLimite); fl.setHours(0, 0, 0, 0);
+                const imp = parseFloat(c.importe) || 0;
+                return fl < hoyF && (imp * proporcion) < imp;
+              });
+            return vencida ? 0 : 1;
+          })(),
           pagadasFiltrado: `${cuotasFiltradas.filter((c: any) => {
             const imp = parseFloat(c.importe) || 0;
             const pagEst = imp * proporcion;
@@ -534,11 +573,10 @@ export class NewCuotasComponent implements OnInit {
       });
   }
   calcularProgreso(player: any): number {
-    if (!player.totalAPagar || player.totalAPagar === 0) {
-      return 0;
-    }
-
-    return Math.min((player.totalPagado / player.totalAPagar) * 100, 100);
+    const total = parseFloat(player.totalAPagar) || 0;
+    if (total === 0) return 0;
+    const pagado = parseFloat(player.totalPagado) || 0;
+    return Math.min((pagado / total) * 100, 100);
   }
 
   get totalPaginas(): number {
@@ -595,6 +633,11 @@ export class NewCuotasComponent implements OnInit {
   }
 
   resetPagosPlayers() {
+    // Limpiar todos los filtros activos antes de recargar
+    this.filtro = '';
+    this.showPagoFilterDropdown = false;
+    this.quitarFiltroPagos();
+
     this.isLoading = true;
     this.clubService
       .updateInfoPagosPlayer(this.clubId, this.temporadaStoredValue)
@@ -657,27 +700,34 @@ export class NewCuotasComponent implements OnInit {
     this.playerSelected = player.playerId;
     this.addPago = {};
     this.textoInfoTitlePagoPlayer = player.nombre;
+
+    if (this.playerCuotasCache.has(player.playerId)) {
+      this.listaCuotas = this.playerCuotasCache.get(player.playerId)!;
+      this.showModalAddPago = true;
+      return;
+    }
+
+    this.loadingPlayerId = player.playerId;
     this.clubService
-      .getListPagosClubForPlayer(
-        this.clubId,
-        this.temporadaStoredValue,
-        player.playerId
-      )
-      .subscribe(
-        (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
+      .getListPagosClubForPlayer(this.clubId, this.temporadaStoredValue, player.playerId)
+      .subscribe({
+        next: (response: Response) => {
           if (response.data !== null) {
             this.listaCuotas = response.data;
+            this.playerCuotasCache.set(player.playerId, response.data);
           }
+          this.loadingPlayerId = null;
           this.showModalAddPago = true;
         },
-        (error) => {
-          console.error('Error al cargar el listado de equipos', error);
-        }
-      );
+        error: (error) => {
+          this.loadingPlayerId = null;
+          console.error('Error al cargar cuotas del jugador', error);
+        },
+      });
   }
 
   openModalVerPagosPlayer(player: any) {
+    this.playerHistorial = player;
     this.clubService
       .getListHistoryPagosByPlayer(
         this.clubId,
@@ -704,42 +754,54 @@ export class NewCuotasComponent implements OnInit {
     this.closeModal('historial', () => {
       this.listHistoryPagos = [];
       this.showModalHistorialPagos = false;
+      this.playerHistorial = null;
     });
   }
 
+  get totalHistorialPagado(): number {
+    return this.listHistoryPagos
+      .filter((p: any) => !String(p.importe).includes('-'))
+      .reduce((s: number, p: any) => s + parseFloat(p.importe) || 0, 0);
+  }
+
+  get totalHistorialDevoluciones(): number {
+    return this.listHistoryPagos
+      .filter((p: any) => String(p.importe).includes('-'))
+      .reduce((s: number, p: any) => s + Math.abs(parseFloat(p.importe)) || 0, 0);
+  }
+
   openModalEditar(player: any) {
+    this.playerEdit = player;
     this.playerSelected = player.playerId;
-    this.clubService
-      .getListPagosClubForPlayer(
-        this.clubId,
-        this.temporadaStoredValue,
-        player.playerId
-      )
-      .subscribe(
-        (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
-          if (response.data !== null) {
-            this.listCuotasPlayerPersonal = response.data;
-          }
-          this.clubService
-            .getListPagosClub(this.clubId, this.temporadaStoredValue)
-            .subscribe(
-              (response: Response) => {
-                // Verifica que la propiedad 'data' exista en la respuesta
-                if (response.data !== null) {
-                  this.listAllCuotas = response.data;
-                }
-                this.showModalCuotasJugador = true;
-              },
-              (error) => {
-                console.error('Error al cargar el listado de equipos', error);
-              }
-            );
-        },
-        (error) => {
-          console.error('Error al cargar el listado de equipos', error);
+    this.loadingPlayerId = player.playerId;
+
+    // Reutilizar caché si ya se cargaron las cuotas de este jugador
+    const cuotasPlayer$ = this.playerCuotasCache.has(player.playerId)
+      ? of({ data: this.playerCuotasCache.get(player.playerId) } as Response)
+      : this.clubService.getListPagosClubForPlayer(this.clubId, this.temporadaStoredValue, player.playerId);
+
+    // Reutilizar listaPagosClub si ya está cargado (evita segunda llamada)
+    const allCuotas$ = this.listaPagosClub.length > 0
+      ? of({ data: this.listaPagosClub } as Response)
+      : this.clubService.getListPagosClub(this.clubId, this.temporadaStoredValue);
+
+    forkJoin([cuotasPlayer$, allCuotas$]).subscribe({
+      next: ([cuotasResp, allCuotasResp]: [any, any]) => {
+        if (cuotasResp?.data !== null) {
+          this.listCuotasPlayerPersonal = cuotasResp.data;
+          this.playerCuotasCache.set(player.playerId, cuotasResp.data);
         }
-      );
+        if (allCuotasResp?.data !== null) {
+          this.listAllCuotas = allCuotasResp.data;
+        }
+        this.loadingPlayerId = null;
+        this.showModalCuotasJugador = true;
+      },
+      error: (error) => {
+        this.loadingPlayerId = null;
+        console.error('Error al cargar datos del jugador', error);
+      },
+    });
   }
 
   goBack(): void {
@@ -978,8 +1040,6 @@ export class NewCuotasComponent implements OnInit {
       if (
         this.nuevaCuota.titulo &&
         this.nuevaCuota.titulo != '' &&
-        this.nuevaCuota.descripcion &&
-        this.nuevaCuota.descripcion != '' &&
         this.nuevaCuota.importe &&
         this.nuevaCuota.importe != '' &&
         fechaLimiteOk
@@ -1265,17 +1325,18 @@ export class NewCuotasComponent implements OnInit {
 
   reloadTabla() {
     this.isLoading = true;
+    // Invalidar caches para que los datos recargados sean frescos
+    this.playerCuotasCache.clear();
+    this.playerDetailCache.clear();
     this.clubService
       .getListPlayersPagosClub(this.clubId, this.temporadaStoredValue)
       .subscribe(
         (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
           if (response.data !== null) {
             this.listaPlayers = response.data;
             this.listaPlayersFiltrados = [...this.listaPlayers];
           }
           this.isLoading = false;
-          //this.datosCargados = true;
         },
         (error) => {
           console.error('Error al cargar el listado de equipos', error);
@@ -1283,32 +1344,161 @@ export class NewCuotasComponent implements OnInit {
       );
   }
 
+  /** Suma el importe pagado para una cuota concreta (usando el historial del modal) */
+  importePagadoPorCuota(pagoClubId: number): number {
+    return this.historialPagosModal
+      .filter((h: any) => h.pagoClubId === pagoClubId)
+      .reduce((sum: number, h: any) => sum + (parseFloat(h.importe) || 0), 0);
+  }
+
+  /** Estado de pago de una cuota para el jugador actual del modal */
+  estadoCuota(cuota: any): 'pagada' | 'parcial' | 'pendiente' {
+    const importe = parseFloat(cuota.importe) || 0;
+    if (importe === 0) return 'pagada';
+    const pagado = this.importePagadoPorCuota(cuota.pagoClubId);
+    if (pagado >= importe) return 'pagada';
+    if (pagado > 0) return 'parcial';
+    return 'pendiente';
+  }
+
+  /** Resumen de cuotas obligatorias pagadas para el modal */
+  get resumenObligatorias(): { pagadas: number; total: number } {
+    const obligatorias = this.listaCuotasAsignadas.filter((c: any) => c.obligatorio === 1);
+    const pagadas = obligatorias.filter((c: any) => this.estadoCuota(c) === 'pagada').length;
+    return { pagadas, total: obligatorias.length };
+  }
+
+  get cuotasObligatorias(): any[] {
+    return this.listaCuotasAsignadas.filter((c: any) => c.obligatorio === 1);
+  }
+
+  get cuotasOpcionales(): any[] {
+    return this.listaCuotasAsignadas.filter((c: any) => c.obligatorio !== 1);
+  }
+
+  get totalImporteModal(): number {
+    return this.listaCuotasAsignadas.reduce(
+      (s: number, c: any) => s + this.calcularImporteTotalCuota(c), 0
+    );
+  }
+
+  get totalPagadoModal(): number {
+    return this.listaCuotasAsignadas.reduce(
+      (s: number, c: any) => s + this.importePagadoPorCuota(c.pagoClubId), 0
+    );
+  }
+
+  get totalPendienteModal(): number {
+    return Math.max(0, this.totalImporteModal - this.totalPagadoModal);
+  }
+
+  progresoCardPct(cuota: any): number {
+    const total = this.calcularImporteTotalCuota(cuota);
+    if (total === 0) return 100;
+    return Math.min((this.importePagadoPorCuota(cuota.pagoClubId) / total) * 100, 100);
+  }
+
   openModalCuotasAsignadas(player: any) {
-    this.clubService
-      .getListPagosClubForPlayer(
-        this.clubId,
-        this.temporadaStoredValue,
-        player.playerId
-      )
-      .subscribe(
-        (response: Response) => {
-          // Verifica que la propiedad 'data' exista en la respuesta
-          if (response.data !== null) {
-            this.listaCuotasAsignadas = response.data;
-          }
-          this.showModalCuotasAsignadas = true;
-        },
-        (error) => {
-          console.error('Error al cargar el listado de equipos', error);
-        }
-      );
+    this.playerModal = player;
+    const cuotasCached = this.playerCuotasCache.get(player.playerId);
+    const historyCached = this.playerHistoryCache.get(player.playerId);
+
+    if (cuotasCached !== undefined && historyCached !== undefined) {
+      this.listaCuotasAsignadas = cuotasCached;
+      this.historialPagosModal = historyCached;
+      this.sincronizarFilaJugador(player.playerId, cuotasCached, historyCached);
+      this.showModalCuotasAsignadas = true;
+      return;
+    }
+
+    this.loadingPlayerId = player.playerId;
+
+    forkJoin({
+      cuotas: this.clubService.getListPagosClubForPlayer(this.clubId, this.temporadaStoredValue, player.playerId),
+      historial: this.clubService.getListHistoryPagosByPlayer(this.clubId, this.temporadaStoredValue, player.playerId),
+    }).subscribe({
+      next: ({ cuotas, historial }: { cuotas: Response; historial: Response }) => {
+        const cuotaData: any[] = cuotas?.data ?? [];
+        const historialData: any[] = historial?.data ?? [];
+        this.listaCuotasAsignadas = cuotaData;
+        this.historialPagosModal = historialData;
+        this.playerCuotasCache.set(player.playerId, cuotaData);
+        this.playerHistoryCache.set(player.playerId, historialData);
+
+        // Recalcular valores reales desde los datos actuales y sincronizar la fila del jugador
+        this.sincronizarFilaJugador(player.playerId, cuotaData, historialData);
+
+        this.loadingPlayerId = null;
+        this.showModalCuotasAsignadas = true;
+      },
+      error: () => {
+        this.loadingPlayerId = null;
+      },
+    });
   }
 
   cerrarModalCuotasAsignadas() {
     this.closeModal('cuotasAsignadas', () => {
       this.listaCuotasAsignadas = [];
+      this.historialPagosModal = [];
+      this.playerModal = null;
       this.showModalCuotasAsignadas = false;
     });
+  }
+
+  /**
+   * Recalcula pagadas/totalAPagar/totalPagado/restante/estado a partir de los datos
+   * reales actuales (cuotas asignadas + historial de pagos) y actualiza la fila del
+   * jugador en todas las listas de la tabla para que la barra y el modal coincidan.
+   */
+  private sincronizarFilaJugador(playerId: number, cuotaData: any[], historialData: any[]): void {
+    const obligatorias = cuotaData.filter((c: any) => c.obligatorio === 1);
+
+    const calcPagadoCuota = (pagoClubId: number): number =>
+      historialData
+        .filter((h: any) => h.pagoClubId === pagoClubId)
+        .reduce((s: number, h: any) => s + (parseFloat(h.importe) || 0), 0);
+
+    // Usar calcularImporteTotalCuota para incluir comisiones Stripe/club igual que el modal
+    const totalAPagar = obligatorias.reduce(
+      (s: number, c: any) => s + this.calcularImporteTotalCuota(c), 0
+    );
+    const totalPagado = obligatorias.reduce(
+      (s: number, c: any) => s + calcPagadoCuota(c.pagoClubId), 0
+    );
+    const restante = Math.max(0, totalAPagar - totalPagado);
+    const pagadasCount = obligatorias.filter((c: any) => {
+      const imp = this.calcularImporteTotalCuota(c);
+      return imp > 0 && calcPagadoCuota(c.pagoClubId) >= imp;
+    }).length;
+    const pagadasStr = `${pagadasCount}/${obligatorias.length}`;
+
+    // Estado basado en vencimiento: rojo si hay al menos una obligatoria vencida sin pagar
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const tieneObligatoriaVencida = obligatorias.some((c: any) => {
+      if (!c.fechaLimite) return false;
+      const fechaLimite = new Date(c.fechaLimite);
+      fechaLimite.setHours(0, 0, 0, 0);
+      const pagado = calcPagadoCuota(c.pagoClubId);
+      const importeTotal = this.calcularImporteTotalCuota(c);
+      return fechaLimite < hoy && pagado < importeTotal;
+    });
+    const estado = tieneObligatoriaVencida ? 0 : 1;
+
+    const patchPlayer = (p: any) => {
+      p.pagadas       = pagadasStr;
+      p.totalAPagar   = String(totalAPagar);
+      p.totalPagado   = String(totalPagado);
+      p.restante      = String(restante);
+      p.estado        = estado;
+    };
+
+    [this.listaPlayers, this.listaPlayersFiltrados, this.listaPlayersFiltradosPorPago]
+      .forEach(list => {
+        const found = list.find((p: any) => p.playerId === playerId);
+        if (found) patchPlayer(found);
+      });
   }
 
   openModalStripe() {
@@ -1367,7 +1557,24 @@ export class NewCuotasComponent implements OnInit {
   }
 
   cerrarModalCuotasJugador(): void {
-    this.closeModal('cuotasJugador', () => { this.showModalCuotasJugador = false; });
+    this.closeModal('cuotasJugador', () => {
+      this.showModalCuotasJugador = false;
+      this.playerEdit = null;
+    });
+  }
+
+  get cuotasPersonalObligatorias(): any[] {
+    return this.listCuotasPlayerPersonal.filter((c: any) => +c.obligatorio === 1);
+  }
+
+  get cuotasPersonalOpcionales(): any[] {
+    return this.listCuotasPlayerPersonal.filter((c: any) => +c.obligatorio !== 1);
+  }
+
+  get totalImportePersonal(): number {
+    return this.listCuotasPlayerPersonal.reduce(
+      (s: number, c: any) => s + this.calcularImporteTotalCuota(c), 0
+    );
   }
 
   addCuotaPlayer(): void {
@@ -1649,6 +1856,66 @@ export class NewCuotasComponent implements OnInit {
     this.nuevaCuota.tipoPagoStripe = 0;
     this.nuevaCuota.fechaInicio = null;
     this.nuevaCuota.fechaFin = null;
+  }
+
+  // ── Configuración de notificaciones ────────────────────────────────────────
+
+  openModalNotifConfig(): void {
+    this.notifConfig.clubId = this.clubId;
+    this.clubService.getNotifConfig(this.clubId).subscribe({
+      next: (res: any) => {
+        if (res?.data) {
+          this.notifConfig = {
+            clubId: res.data.clubId ?? this.clubId,
+            diasAntesRecordatorio: res.data.diasAntesRecordatorio ?? 1,
+            notifPushActiva: res.data.notifPushActiva ?? true,
+            notifEmailActiva: res.data.notifEmailActiva ?? true,
+          };
+        }
+        this.showModalNotifConfig = true;
+      },
+      error: () => {
+        this.notifConfig = { clubId: this.clubId, diasAntesRecordatorio: 1, notifPushActiva: true, notifEmailActiva: true };
+        this.showModalNotifConfig = true;
+      },
+    });
+  }
+
+  closeModalNotifConfig(): void {
+    this.closeModal('notifConfig', () => { this.showModalNotifConfig = false; });
+  }
+
+  increaseDias(): void {
+    if (this.notifConfig.diasAntesRecordatorio < 30) {
+      this.notifConfig.diasAntesRecordatorio++;
+    }
+  }
+
+  decreaseDias(): void {
+    if (this.notifConfig.diasAntesRecordatorio > 1) {
+      this.notifConfig.diasAntesRecordatorio--;
+    }
+  }
+
+  saveNotifConfig(): void {
+    if (this.isSavingNotifConfig) return;
+    this.isSavingNotifConfig = true;
+    const payload = { ...this.notifConfig, clubId: this.clubId };
+    this.clubService.saveNotifConfig(payload).subscribe({
+      next: (res: any) => {
+        this.isSavingNotifConfig = false;
+        if (res?.status === 200) {
+          this.toastr.success('Configuración de notificaciones guardada correctamente.');
+          this.closeModalNotifConfig();
+        } else {
+          this.toastr.error('Error al guardar la configuración.');
+        }
+      },
+      error: () => {
+        this.isSavingNotifConfig = false;
+        this.toastr.error('Error al guardar la configuración.');
+      },
+    });
   }
 
   // Cambiar tipo puntual/suscripción (llamado internamente)

@@ -1,8 +1,16 @@
-<div class="back-container">
-  <button class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
-  </button>
+<!-- ===== PAGE HEADER — Club: arriba del carrusel ===== -->
+<div class="page-header" *ngIf="profileId < 3">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <div class="header-center">
+    <h2 class="table-title">{{ 'NAV.SPONSORS' | translate }}</h2>
+    <p class="header-subtitle">Administra los patrocinadores y sus beneficios para el club</p>
+  </div>
+  <div class="header-spacer"></div>
 </div>
 
 <!-- HERO CARRUSEL -->
@@ -18,6 +26,21 @@
     </ng-container>
   </div>
 </section>
+
+<!-- ===== PAGE HEADER — Jugador/Entrenador: debajo del carrusel ===== -->
+<div class="page-header page-header--below" *ngIf="profileId >= 3">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <div class="header-center">
+    <h2 class="table-title">{{ 'NAV.SPONSORS' | translate }}</h2>
+    <p class="header-subtitle">Administra los patrocinadores y sus beneficios para el club</p>
+  </div>
+  <div class="header-spacer"></div>
+</div>
 
 <!-- GRID -->
 <section class="container sponsor-grid" *ngIf="datosCargados">
@@ -43,57 +66,63 @@
         <div class="card-logo">
           <img [src]="patro.imagen
               ? imageBaseUrl + patro.imagen
-              : 'https://appsphairatech.com/images/task-board/blank.png'">
+              : 'https://appsphairatech.com/images/task-board/blank.png'"
+              [alt]="patro.nombre">
         </div>
 
-        <!-- CONTENT -->
+        <!-- BODY -->
         <div class="card-content">
-          <h3>{{ patro.nombre }}</h3>
 
-          <p class="card-desc compact">
-            {{ patro.descripcion }}
-          </p>
+          <h3 class="card-name">{{ patro.nombre }}</h3>
 
+          <p class="card-desc" *ngIf="patro.descripcion">{{ patro.descripcion }}</p>
+
+          <!-- Contacto -->
           <div class="card-links">
-            <a [href]="patro.web" target="_blank" class="link-pill">
-              <i class="bi bi-globe"></i>
+            <a *ngIf="patro.web" [href]="patro.web" target="_blank" class="link-pill link-pill--web">
+              <i class="bi bi-globe2"></i>
               <span>{{ 'SPONSOR.WEB_LINK' | translate }}</span>
             </a>
-
-            <a href="mailto:{{patro.mail}}" class="link-pill">
-              <i class="bi bi-envelope"></i>
+            <a *ngIf="patro.mail" href="mailto:{{patro.mail}}" class="link-pill link-pill--mail">
+              <i class="bi bi-envelope-fill"></i>
               <span>{{ 'SPONSOR.EMAIL_LINK' | translate }}</span>
             </a>
-
-            <a href="tel:{{patro.telefono}}" class="link-pill">
-              <i class="bi bi-telephone"></i>
+            <a *ngIf="patro.telefono" href="tel:{{patro.telefono}}" class="link-pill link-pill--phone">
+              <i class="bi bi-telephone-fill"></i>
               <span>{{ 'SPONSOR.PHONE_LINK' | translate }}</span>
             </a>
           </div>
 
-
-          <div class="benefits">
-            <strong>{{ 'SPONSOR.BENEFITS_TITLE' | translate }}</strong>
-            <p>{{ patro.beneficios }}</p>
+          <!-- Beneficios -->
+          <div class="benefits-block" *ngIf="patro.beneficios">
+            <div class="benefits-header">
+              <i class="bi bi-gift-fill"></i>
+              <span>{{ 'SPONSOR.BENEFITS_TITLE' | translate }}</span>
+            </div>
+            <p class="benefits-text">{{ patro.beneficios }}</p>
           </div>
+
         </div>
 
         <!-- FOOTER -->
         <footer class="card-footer">
-          <div class="form-check form-switch" *ngIf="profileId < 3">
-            <input class="form-check-input" type="checkbox" [checked]="patro.oculto === 1"
-              (change)="toggleChaneOculto(patro.oculto, patro.patrocinadorId)">
-            <label>{{ 'SPONSOR.CAROUSEL' | translate }}</label>
+          <div class="carousel-toggle" *ngIf="profileId < 3">
+            <div class="form-check form-switch mb-0">
+              <input class="form-check-input" type="checkbox" [checked]="patro.oculto === 1"
+                (change)="toggleChaneOculto(patro.oculto, patro.patrocinadorId)">
+            </div>
+            <label class="toggle-label">{{ 'SPONSOR.CAROUSEL' | translate }}</label>
           </div>
 
-          <div class="footer-actions">
+          <div class="footer-actions" [class.ms-auto]="profileId >= 3">
             <button class="btn-view" (click)="openPatrocinador(patro, i)">
-              <i class="bi bi-eye"></i> {{ 'SPONSOR.VIEW' | translate }}
+              <i class="bi bi-eye-fill"></i>
+              <span>{{ 'SPONSOR.VIEW' | translate }}</span>
             </button>
-
-            <button *ngIf="profileId < 3" class="btn-delete" (click)="confirmDeletePatrocinador(
-                      patro.patrocinadorId, i, patro.nombre)">
-              <i class="bi bi-trash"></i> {{ 'SPONSOR.DELETE' | translate }}
+            <button *ngIf="profileId < 3" class="btn-delete"
+              (click)="confirmDeletePatrocinador(patro.patrocinadorId, i, patro.nombre)">
+              <i class="bi bi-trash3"></i>
+              <span>{{ 'SPONSOR.DELETE' | translate }}</span>
             </button>
           </div>
         </footer>

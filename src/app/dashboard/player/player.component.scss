@@ -1,82 +1,184 @@
+// ── SphairaTech Tokens ───────────────────────────────────
+$sp-navy:       #002c40;
+$sp-navy-mid:   #0a4a6e;
+$sp-ocean:      #0d7db5;
+$sp-green:      #31b270;
+$sp-green-dark: #1f8f5a;
+$sp-green-teal: #1a9471;
+$sp-sky:        #0fa3e8;
+$sp-green-lt:   #3dd68a;
+
+$g-header: linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 50%, #{$sp-green} 100%);
+
 :host {
-  --sphaira-green: #31b270;
-  --sphaira-night: #002c40;
+  --sphaira-green: #{$sp-green};
+  --sphaira-night: #{$sp-navy};
   --sphaira-ivory: #f4f4f4;
   --sphaira-beige: #efdcb6;
 }
 
-/* ========== VOLVER al lado izquierdo de la pantalla ========== */
-.players-volver-bar {
-  width: 100%;
-  padding-left: 1rem;
-  margin-top: 0.5rem;
-  margin-bottom: 0.25rem;
-}
-
-.btn-back-clean {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.6rem;
-  border: none;
-  border-radius: 8px;
-  background: rgba(0, 44, 64, 0.08);
-  color: var(--sphaira-night);
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.15s ease;
-}
-
-.btn-back-clean i {
-  font-size: 1.1rem;
-}
-
-.btn-back-clean:hover {
-  background: rgba(0, 44, 64, 0.14);
-  transform: translateX(-2px);
-}
-
-.btn-back-clean:active {
-  transform: translateX(0);
-}
-
-/* ========== CABECERA: título a la izquierda, Crear jugador a la derecha ========== */
-.players-page-header {
+/* =========================================================
+   PAGE HEADER — Hero Gradient Band (Sistema SphairaTech)
+========================================================= */
+.page-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 1rem;
-  margin-top: 1rem;
-  margin-bottom: 0.75rem;
+  min-height: 80px;
+  padding: 1.35rem 2rem;
+  margin-bottom: 1.75rem;
+  border-radius: 20px;
+  background: $g-header;
+  box-shadow:
+    0 14px 40px rgba($sp-navy, 0.32),
+    0 4px 12px rgba($sp-navy-mid, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+
+  // Radial green glow (top-right)
+  &::before {
+    content: '';
+    position: absolute;
+    top: -40%; right: -4%;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba($sp-green, 0.32) 0%, transparent 60%);
+    pointer-events: none;
+    border-radius: 50%;
+  }
+
+  // Green shimmer (bottom-left)
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -50%; left: 5%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba($sp-green, 0.18) 0%, transparent 65%);
+    pointer-events: none;
+    border-radius: 50%;
+  }
+}
+
+.page-header-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  pointer-events: none;
+
+  h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.025em;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+    white-space: nowrap;
+  }
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.page-header-spacer {
+  flex-shrink: 0;
+  width: 120px;
+}
+
+.btn-back-clean {
+  flex-shrink: 0;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  backdrop-filter: blur(4px);
+
+  i { font-size: 1rem; }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateX(-2px);
+  }
+
+  &:active { transform: translateX(0) scale(0.98); }
 }
 
 .players-header-actions {
-  margin-left: auto;
   flex-shrink: 0;
+  z-index: 1;
 }
 
-.btn-crear-jugador.sphaira-pro-btn {
+.btn-crear-jugador {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.25rem;
   border: none;
   border-radius: 12px;
-  background: var(--sphaira-green);
+  background: linear-gradient(135deg, $sp-green 0%, $sp-green-dark 100%);
   color: #fff;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.84rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 14px rgba(49, 178, 112, 0.35);
+  transition: all 0.22s ease;
+  box-shadow: 0 3px 12px rgba($sp-green, 0.35);
+  letter-spacing: 0.01em;
+
+  i { font-size: 1rem; }
+
+  &:hover {
+    background: linear-gradient(135deg, $sp-green-lt 0%, $sp-green 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba($sp-green, 0.45);
+  }
+
+  &:active { transform: translateY(0) scale(0.98); }
 }
 
-.btn-crear-jugador.sphaira-pro-btn i {
-  font-size: 1.1rem;
+// Responsive
+@media (max-width: 768px) {
+  .page-header {
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    min-height: 64px;
+    flex-wrap: wrap;
+  }
+
+  .page-header-title {
+    position: static;
+    transform: none;
+    order: -1;
+    width: 100%;
+    h2 { font-size: 1.1rem; }
+  }
+
+  .page-header-spacer { display: none; }
 }
 
+/* =====================================================
+   Legacy: selector referenced elsewhere - keep empty
+===================================================== */
 .btn-crear-jugador.sphaira-pro-btn:hover {
   background: #2aa463;
   box-shadow: 0 6px 20px rgba(49, 178, 112, 0.4);

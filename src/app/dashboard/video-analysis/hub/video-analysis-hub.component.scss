@@ -1,8 +1,10 @@
 /* ═══════════════════════════════════════════════
    Variables Sphaira
 ═══════════════════════════════════════════════ */
+$navy:        #002c40;
+$navy-mid:    #0a4a6e;
+$verde:       #31b270;
 $azul:        #002C3F;
-$verde:       #3BB271;
 $bg-page:     #f4f7fa;
 $text-dark:   #1a2332;
 $text-muted:  #6b7a8d;
@@ -10,7 +12,7 @@ $text-light:  #8e9bab;
 $border:      #e2e8f0;
 $shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.06);
 $shadow-md:   0 6px 24px rgba(0, 0, 0, 0.10);
-$gradient:    linear-gradient(135deg, $verde 0%, $azul 100%);
+$gradient-header: linear-gradient(135deg, #{$navy} 0%, #{$navy-mid} 50%, #{$verde} 100%);
 
 /* ═══════════════════════════════════════════════
    Layout base
@@ -21,87 +23,111 @@ $gradient:    linear-gradient(135deg, $verde 0%, $azul 100%);
   min-height: 100vh;
 }
 
-.back-container {
-  padding: 0.75rem 1.25rem 0;
-}
-
-.btn-back-clean {
-  margin-left: 4px;
-  padding: 0.35rem 0.75rem;
-  display: inline-flex;
+// ─── PAGE HEADER — gradiente unificado SphairaTech ───────────────────────────
+.page-header {
+  position: relative;
+  display: flex;
   align-items: center;
-  gap: 0.4rem;
-  background: rgba($verde, 0.09);
-  border: none;
-  border-radius: 8px;
-  color: $azul;
-  font-size: 0.88rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  min-height: 72px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 18px;
+  background: $gradient-header;
+  box-shadow:
+    0 8px 32px rgba(0, 44, 64, 0.28),
+    0 2px 8px rgba(49, 178, 112, 0.14);
+  overflow: hidden;
 
-  i { font-size: 1rem; }
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+    pointer-events: none;
+  }
 
-  &:hover {
-    background: rgba($azul, 0.08);
-    transform: translateX(-2px);
+  &::before {
+    content: '';
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(49,178,112,0.22) 0%, transparent 68%);
+    pointer-events: none;
   }
 }
+
+.back-container { flex-shrink: 0; z-index: 1; }
+
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  background: rgba(255,255,255,0.13);
+  border: 1px solid rgba(255,255,255,0.24);
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  backdrop-filter: blur(4px);
+
+  i { font-size: 1rem; }
+  &:hover  { background: rgba(255,255,255,0.22); transform: translateX(-2px); }
+  &:active { transform: translateX(0) scale(0.98); }
+}
+
+.table-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.header-spacer { flex-shrink: 0; width: 90px; }
 
 .hub-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1rem 1.25rem 3rem;
+  padding: 0 1.25rem 3rem;
 }
 
-/* ═══════════════════════════════════════════════
-   Header Banner — gradiente Sphaira
-═══════════════════════════════════════════════ */
-.hub-header {
+// ─── Barra de acción: contador + botón nuevo análisis ────────────────────────
+.hub-action-bar {
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  padding: 22px 28px;
-  border-radius: 20px;
-  background: $gradient;
-  box-shadow: $shadow-md;
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
   flex-wrap: wrap;
-  gap: 16px;
 }
 
-.hub-header-left {
-  display: flex;
+.hub-count-pill {
+  display: inline-flex;
   align-items: center;
-  gap: 16px;
-}
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: $text-muted;
+  background: rgba($navy, 0.05);
+  border: 1px solid rgba($navy, 0.09);
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
 
-.hub-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: rgba(#fff, 0.18);
-  backdrop-filter: blur(4px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 1.5rem;
-  flex-shrink: 0;
-}
-
-.hub-info {
-  h3 {
-    margin: 0;
-    font-weight: 700;
-    font-size: 1.35rem;
-    color: #fff;
-  }
-}
-
-.hub-count {
-  font-size: 0.82rem;
-  color: rgba(#fff, 0.78);
+  i { color: $verde; }
 }
 
 .btn-new-analysis {
@@ -110,19 +136,23 @@ $gradient:    linear-gradient(135deg, $verde 0%, $azul 100%);
   gap: 8px;
   font-weight: 600;
   font-size: 0.88rem;
-  padding: 10px 20px;
+  padding: 0.5rem 1.25rem;
   border-radius: 10px;
-  background: rgba(#fff, 0.18);
-  border: 1.5px solid rgba(#fff, 0.4);
+  background: linear-gradient(135deg, $verde, darken($verde, 6%));
+  border: none;
   color: #fff;
-  backdrop-filter: blur(4px);
-  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 4px 14px rgba($verde, 0.38);
+  cursor: pointer;
+  transition: all 0.22s ease;
+
+  i { font-size: 1rem; }
 
   &:hover {
-    background: rgba(#fff, 0.28);
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 22px rgba($verde, 0.48);
     color: #fff;
   }
+  &:active { transform: translateY(0) scale(0.97); }
 }
 
 /* ═══════════════════════════════════════════════
@@ -317,7 +347,7 @@ $gradient:    linear-gradient(135deg, $verde 0%, $azul 100%);
   }
 
   .btn {
-    background: $gradient;
+    background: $gradient-header;
     border: none;
     border-radius: 10px;
     font-weight: 600;
@@ -523,7 +553,7 @@ $gradient:    linear-gradient(135deg, $verde 0%, $azul 100%);
   align-items: center;
   padding: 20px 24px 16px;
   border-bottom: 1px solid $border;
-  background: $gradient;
+  background: $gradient-header;
   border-radius: 20px 20px 0 0;
 
   h4 {
@@ -631,7 +661,7 @@ $gradient:    linear-gradient(135deg, $verde 0%, $azul 100%);
   }
 
   .btn-primary {
-    background: $gradient;
+    background: $gradient-header;
     border: none;
     border-radius: 10px;
     font-weight: 600;

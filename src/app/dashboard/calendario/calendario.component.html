@@ -1,10 +1,28 @@
 <app-publicidad></app-publicidad>
-<!-- BOTÓN VOLVER (SE MANTIENE IGUAL) -->
-<div class="back-container">
-  <button class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
-  </button>
+
+<!-- PAGE HEADER — Card premium (referencia: info-jugadores) -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <h2 class="table-title" *ngIf="datosCargados && categoryTeam != 27">{{ nombreEquipo }}</h2>
+
+  <div class="calendar-view-switcher" *ngIf="datosCargados && categoryTeam != 27">
+    <button type="button" class="view-btn" [class.active]="vistaCalendario === 'year'" (click)="irAVistaAnio()">
+      {{ 'CAL.TEXT_371' | translate }}
+    </button>
+    <button type="button" class="view-btn" [class.active]="vistaCalendario === 'month'" (click)="irAVistaMes()">
+      {{ 'CAL.TEXT_372' | translate }}
+    </button>
+    <button type="button" class="view-btn" [class.active]="vistaCalendario === 'week'" (click)="irAVistaSemana()">
+      {{ 'CAL.TEXT_373' | translate }}
+    </button>
+  </div>
+  <div class="header-spacer" *ngIf="!datosCargados || categoryTeam == 27"></div>
 </div>
 
 <div *ngIf="datosCargados">
@@ -19,51 +37,29 @@
 
     <div class="calendar-inner">
 
-      <!-- HEADER -->
-      <div class="calendar-header">
+      <!-- NAVEGACIÓN (prev/next + título del periodo) -->
+      <div class="calendar-header-nav calendar-header-nav-responsive">
+        <button class="nav-btn" (click)="vistaCalendario === 'year' ? anioAnterior() : mesAnterior()">
+          <i class="bi bi-chevron-left"></i>
+          <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'year'">{{ 'CAL.TEXT_376' | translate }}</span>
+          <span class="nav-btn-text nav-month-full" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_052' | translate }}</span>
+          <span class="nav-btn-text nav-month-brief" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_385' | translate }}</span>
+          <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'week'">{{ 'CAL.TEXT_374' | translate }}</span>
+        </button>
 
-        <div class="calendar-header-top">
-          <h2 class="team-name">{{ nombreEquipo }}</h2>
+        <div class="month-title">
+          <ng-container *ngIf="vistaCalendario === 'year'">{{ anioActual }}</ng-container>
+          <ng-container *ngIf="vistaCalendario === 'month'">{{ tituloMesAnio }}</ng-container>
+          <ng-container *ngIf="vistaCalendario === 'week'">{{ tituloSemana }}</ng-container>
         </div>
 
-        <!-- Selector de vista: Año | Mes | Semana -->
-        <div class="calendar-view-switcher">
-          <button type="button" class="view-btn" [class.active]="vistaCalendario === 'year'" (click)="irAVistaAnio()">
-            {{ 'CAL.TEXT_371' | translate }}
-          </button>
-          <button type="button" class="view-btn" [class.active]="vistaCalendario === 'month'" (click)="irAVistaMes()">
-            {{ 'CAL.TEXT_372' | translate }}
-          </button>
-          <button type="button" class="view-btn" [class.active]="vistaCalendario === 'week'" (click)="irAVistaSemana()">
-            {{ 'CAL.TEXT_373' | translate }}
-          </button>
-        </div>
-
-        <!-- Navegación según vista -->
-        <div class="calendar-header-nav calendar-header-nav-responsive">
-          <button class="nav-btn" (click)="vistaCalendario === 'year' ? anioAnterior() : mesAnterior()">
-            <i class="bi bi-chevron-left"></i>
-            <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'year'">{{ 'CAL.TEXT_376' | translate }}</span>
-            <span class="nav-btn-text nav-month-full" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_052' | translate }}</span>
-            <span class="nav-btn-text nav-month-brief" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_385' | translate }}</span>
-            <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'week'">{{ 'CAL.TEXT_374' | translate }}</span>
-          </button>
-
-          <div class="month-title">
-            <ng-container *ngIf="vistaCalendario === 'year'">{{ anioActual }}</ng-container>
-            <ng-container *ngIf="vistaCalendario === 'month'">{{ tituloMesAnio }}</ng-container>
-            <ng-container *ngIf="vistaCalendario === 'week'">{{ tituloSemana }}</ng-container>
-          </div>
-
-          <button class="nav-btn" (click)="vistaCalendario === 'year' ? anioSiguiente() : mesSiguiente()">
-            <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'year'">{{ 'CAL.TEXT_377' | translate }}</span>
-            <span class="nav-btn-text nav-month-full" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_053' | translate }}</span>
-            <span class="nav-btn-text nav-month-brief" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_386' | translate }}</span>
-            <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'week'">{{ 'CAL.TEXT_375' | translate }}</span>
-            <i class="bi bi-chevron-right"></i>
-          </button>
-        </div>
-
+        <button class="nav-btn" (click)="vistaCalendario === 'year' ? anioSiguiente() : mesSiguiente()">
+          <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'year'">{{ 'CAL.TEXT_377' | translate }}</span>
+          <span class="nav-btn-text nav-month-full" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_053' | translate }}</span>
+          <span class="nav-btn-text nav-month-brief" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_386' | translate }}</span>
+          <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'week'">{{ 'CAL.TEXT_375' | translate }}</span>
+          <i class="bi bi-chevron-right"></i>
+        </button>
       </div>
 
       <!-- ========== VISTA AÑO: grid 12 meses ========== -->

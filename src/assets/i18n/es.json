@@ -2745,6 +2745,8 @@
     "OF": "de"
   },
   "EQUIPOS": {
+    "TITLE": "Mis Equipos",
+    "NO_TEAMS": "No hay equipos registrados para esta temporada",
     "LINK_COPIED": "¡Enlace copiado al portapapeles!",
     "LINK_COPY_ERROR": "No se pudo copiar el enlace. Intenta de nuevo.",
     "SUBSCRIPTION_REQUIRED_TITLE": "Suscripción requerida",

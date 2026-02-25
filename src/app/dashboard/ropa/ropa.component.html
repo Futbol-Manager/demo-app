@@ -1,17 +1,29 @@
-<div class="table-actions-row">
-  <!-- IZQUIERDA -->
-  <div class="table-actions-left">
+<!-- ================= PAGE HEADER ================= -->
+<div class="page-header">
+  <div class="back-container">
     <button class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
+  </div>
 
+  <div class="header-center">
+    <h2 class="page-title">Gestión de Ropa</h2>
+    <p class="header-subtitle">Gestiona los pedidos y el catálogo de ropa deportiva</p>
+  </div>
+
+  <div class="header-spacer"></div>
+</div>
+
+<div class="table-actions-row">
+  <!-- IZQUIERDA -->
+  <div class="table-actions-left">
     <!-- Buscador DataTable -->
     <div id="dt-search"></div>
   </div>
 
   <!-- DERECHA -->
-<div class="table-actions-right position-relative">
+  <div class="table-actions-right position-relative">
 
   <button class="action-btn excel" (click)="exportTableToExcel()">
     <i class="bi bi-file-earmark-spreadsheet-fill"></i>

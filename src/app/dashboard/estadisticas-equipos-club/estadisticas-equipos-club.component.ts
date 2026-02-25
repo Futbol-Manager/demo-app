@@ -181,6 +181,7 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
     const ultimosResultados = this.partidos
       .slice(0, 5)
       .map((partido) => partido.resultado)
+      .filter((r) => r === 'V' || r === 'E' || r === 'D')
       .reverse();
 
     for (let partido of team.partidos) {
@@ -207,6 +208,8 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
     const resumen = {
       teamId: team.teamId,
       equipo: team.nameTeam,
+      categoria: team.categoria || '',
+      division: team.division || '',
       partidos: team.partidos.length,
       victorias: vic,
       empates: emp,
@@ -215,7 +218,7 @@ export class EstadisticasEquiposClubComponent implements OnInit, OnDestroy {
       gc: gc,
       dg: dg,
       puntos: pun,
-      ultimos: ultimosResultados, //['Ganado', 'Empatado', 'Perdido', 'Ganado', 'Ganado']
+      ultimos: ultimosResultados,
     };
 
     this.resumentotales.push(resumen);

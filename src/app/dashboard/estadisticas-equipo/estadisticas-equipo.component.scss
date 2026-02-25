@@ -1,3 +1,14 @@
+/* =========================================================
+   SPHAIRATECH — ESTADÍSTICAS EQUIPO — PREMIUM REDESIGN
+   Palette: Navy #002c40 · Mid #004d6e · Green #31b270
+========================================================= */
+
+// ── Tokens ───────────────────────────────────────────────
+$sp-navy:       #002c40;
+$sp-navy-mid:   #004d6e;
+$sp-green:      #31b270;
+$sp-green-dark: #28a05e;
+
 :host {
   --sphaira-green: #31b270;
   --sphaira-night: #002c40;
@@ -7,32 +18,119 @@
   --sphaira-shadow-hover: 0 8px 28px rgba(0, 44, 64, 0.12);
 }
 
+// ── Gradient Presets ─────────────────────────────────────
+$g-header: linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp-green} 100%);
+
+/* =========================================================
+   PAGE HEADER
+========================================================= */
+.page-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  min-height: 72px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 18px;
+  background: $g-header;
+  box-shadow:
+    0 8px 32px rgba(0, 44, 64, 0.28),
+    0 2px 8px rgba(49, 178, 112, 0.14);
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+    pointer-events: none;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    right: -40px;
+    top: -40px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(49,178,112,0.22) 0%, transparent 68%);
+    pointer-events: none;
+  }
+}
+
 .back-container {
-  margin-bottom: 0.5rem;
+  flex-shrink: 0;
+  z-index: 1;
 }
 
 .btn-back-clean {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.6rem;
-  border: none;
-  border-radius: 8px;
-  background: rgba(0, 44, 64, 0.08);
-  color: var(--sphaira-night);
-  font-size: 0.9rem;
-  font-weight: 500;
+  gap: 0.45rem;
+  margin: 0;
+  background: rgba(255,255,255,0.13);
+  border: 1px solid rgba(255,255,255,0.24);
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
   cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.15s ease;
+  transition: background 0.2s ease, transform 0.15s ease;
+  backdrop-filter: blur(4px);
+
+  i { font-size: 1rem; }
+
+  &:hover {
+    background: rgba(255,255,255,0.22);
+    transform: translateX(-2px);
+  }
+
+  &:active { transform: translateX(0) scale(0.98); }
 }
 
-.btn-back-clean i {
-  font-size: 1.1rem;
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  pointer-events: none;
+  z-index: 1;
 }
 
-.btn-back-clean:hover {
-  background: rgba(0, 44, 64, 0.14);
-  transform: translateX(-2px);
+.header-subtitle {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.table-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+  z-index: 1;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.22);
+}
+
+.header-spacer {
+  flex-shrink: 0;
+  width: 80px;
 }
 
 .stats-page {
@@ -45,13 +143,6 @@
   margin-bottom: 1.5rem;
 }
 
-.stats-title {
-  color: var(--sphaira-night);
-  font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin: 0 0 1rem 0;
-}
 
 .card-pro {
   background: var(--sphaira-card-bg);
