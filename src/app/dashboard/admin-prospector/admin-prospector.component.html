@@ -1809,24 +1809,105 @@
                 Prompt de imagen
                 <span class="text-muted fw-normal">(en inglés · brand kit incluido)</span>
               </label>
-              <button class="btn btn-xs btn-outline-success"
-                      (click)="generateImagePrompt()"
-                      [disabled]="isGeneratingImagePrompt"
-                      title="Generar prompt con IA a partir del texto del post">
-                <span *ngIf="!isGeneratingImagePrompt">
-                  <i class="bi bi-magic me-1"></i>Generar prompt
-                </span>
-                <span *ngIf="isGeneratingImagePrompt">
-                  <i class="bi bi-hourglass-split spin-icon me-1"></i>Generando...
-                </span>
-              </button>
+              <div class="d-flex gap-1">
+                <button class="btn btn-xs btn-outline-secondary"
+                        (click)="showPromptGuide = !showPromptGuide"
+                        title="Ayuda para construir el prompt">
+                  <i class="bi bi-lightbulb me-1"></i>{{ showPromptGuide ? 'Ocultar guía' : 'Guía' }}
+                </button>
+                <button class="btn btn-xs btn-outline-success"
+                        (click)="generateImagePrompt()"
+                        [disabled]="isGeneratingImagePrompt"
+                        title="Si ya has escrito algo aquí, la IA lo usa como base. Si está vacío, genera desde el texto del post.">
+                  <span *ngIf="!isGeneratingImagePrompt">
+                    <i class="bi bi-magic me-1"></i>Generar prompt
+                  </span>
+                  <span *ngIf="isGeneratingImagePrompt">
+                    <i class="bi bi-hourglass-split spin-icon me-1"></i>Generando...
+                  </span>
+                </button>
+              </div>
             </div>
+
+            <!-- Panel guía de prompt -->
+            <div *ngIf="showPromptGuide" class="prompt-guide-panel mb-2">
+
+              <!-- Tipo de imagen -->
+              <div class="prompt-guide-section">
+                <span class="prompt-guide-label">Tipo</span>
+                <div class="prompt-chips">
+                  <button *ngFor="let chip of promptChips['tipo']"
+                          class="prompt-chip"
+                          [class.prompt-chip--active]="isChipActive(chip)"
+                          (click)="togglePromptChip(chip)">{{ chip.label }}</button>
+                </div>
+              </div>
+
+              <!-- Composición -->
+              <div class="prompt-guide-section">
+                <span class="prompt-guide-label">Composición</span>
+                <div class="prompt-chips">
+                  <button *ngFor="let chip of promptChips['composicion']"
+                          class="prompt-chip"
+                          [class.prompt-chip--active]="isChipActive(chip)"
+                          (click)="togglePromptChip(chip)">{{ chip.label }}</button>
+                </div>
+              </div>
+
+              <!-- Contenido -->
+              <div class="prompt-guide-section">
+                <span class="prompt-guide-label">Contenido</span>
+                <div class="prompt-chips">
+                  <button *ngFor="let chip of promptChips['contenido']"
+                          class="prompt-chip"
+                          [class.prompt-chip--active]="isChipActive(chip)"
+                          (click)="togglePromptChip(chip)">{{ chip.label }}</button>
+                </div>
+              </div>
+
+              <!-- Estilo visual -->
+              <div class="prompt-guide-section">
+                <span class="prompt-guide-label">Estilo</span>
+                <div class="prompt-chips">
+                  <button *ngFor="let chip of promptChips['estilo']"
+                          class="prompt-chip"
+                          [class.prompt-chip--active]="isChipActive(chip)"
+                          (click)="togglePromptChip(chip)">{{ chip.label }}</button>
+                </div>
+              </div>
+
+              <!-- Texto visible en imagen -->
+              <div class="prompt-guide-section">
+                <span class="prompt-guide-label">Texto visible</span>
+                <div class="prompt-chips">
+                  <button *ngFor="let chip of promptChips['texto']"
+                          class="prompt-chip"
+                          [class.prompt-chip--active]="isChipActive(chip)"
+                          (click)="togglePromptChip(chip)">{{ chip.label }}</button>
+                </div>
+              </div>
+
+              <!-- Acciones rápidas -->
+              <div class="d-flex justify-content-between align-items-center mt-2 pt-2" style="border-top:1px solid var(--border-color);">
+                <button class="btn btn-xs btn-outline-danger" (click)="clearPromptChips()">
+                  <i class="bi bi-x-circle me-1"></i>Limpiar selección
+                </button>
+                <button class="btn btn-xs btn-success" (click)="applyChipsAndGenerate()"
+                        [disabled]="isGeneratingImagePrompt">
+                  <i class="bi bi-magic me-1"></i>Aplicar y generar prompt
+                </button>
+              </div>
+            </div>
+
             <div class="badge bg-info text-dark mb-2" style="font-size:0.65rem; white-space:normal;">
               <i class="bi bi-palette me-1"></i>Colores navy + verde Sphaira aplicados automáticamente
             </div>
             <textarea class="form-control form-control-sm" rows="4"
                       [(ngModel)]="editSocialImagePrompt"
-                      placeholder="Escribe tú o pulsa ✨ Generar prompt para que la IA lo cree a partir del texto del post..."></textarea>
+                      placeholder="Describe aquí lo que quieres, o usa la guía ↑ para construirlo por pasos. Ejemplo: 'infografía comparativa en dos columnas, bullet points, lado izquierdo problemas sin Sphaira, lado derecho beneficios con Sphaira'"></textarea>
+            <div class="form-text text-muted mt-1" style="font-size:0.68rem;">
+              <i class="bi bi-info-circle me-1"></i>Escribe en español o inglés · la IA traduce y expande automáticamente
+            </div>
           </div>
 
         </div><!-- /post-edit-layout -->

@@ -293,12 +293,13 @@ export class ProspectService {
     return this.http.put<any>(`${this.base}social/image-model`, { model_key: modelKey });
   }
 
-  generateImagePrompt(textContent: string, network: string, contentType: string, imageModel: string): Observable<{ok: boolean, image_prompt: string}> {
+  generateImagePrompt(textContent: string, network: string, contentType: string, imageModel: string, userDescription?: string): Observable<{ok: boolean, image_prompt: string}> {
     return this.http.post<any>(`${this.base}social/generate-image-prompt`, {
       text_content: textContent,
       network,
       content_type: contentType,
       image_model: imageModel,
+      user_description: userDescription || '',
     }).pipe(timeout(30_000));
   }
 

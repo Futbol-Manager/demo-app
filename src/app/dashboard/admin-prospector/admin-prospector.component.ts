@@ -353,6 +353,86 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   imageModelUsed = '';
   isGeneratingImagePrompt = false;
 
+  // ── Guía de prompt por chips ──────────────────────────────────────────────
+  showPromptGuide = false;
+  activePromptChips: Set<string> = new Set();
+
+  promptChips: Record<string, { key: string; label: string; text: string }[]> = {
+    tipo: [
+      { key: 'infografia',  label: '📊 Infografía',          text: 'infografía con diseño gráfico flat' },
+      { key: 'foto',        label: '📸 Fotografía',           text: 'fotografía profesional cinematic' },
+      { key: 'mockup',      label: '📱 Mockup app',           text: 'mockup de pantalla de app en smartphone' },
+      { key: 'abstracto',   label: '✨ Abstracto / 3D',       text: 'diseño abstracto 3D moderno' },
+      { key: 'ilustracion', label: '🎨 Ilustración vectorial', text: 'ilustración vectorial flat design' },
+    ],
+    composicion: [
+      { key: 'dos-col',   label: '⬜⬜ Dos columnas',        text: 'dividida en dos columnas simétricas' },
+      { key: 'vertical',  label: '↕ Layout vertical',        text: 'composición vertical de arriba abajo' },
+      { key: 'centrado',  label: '◎ Elemento central',       text: 'elemento principal centrado con fondo' },
+      { key: 'comparativa', label: '⚖ Comparativa lado a lado', text: 'comparativa lado izquierdo vs lado derecho' },
+      { key: 'lista',     label: '≡ Lista con iconos',        text: 'lista vertical con iconos a la izquierda' },
+    ],
+    contenido: [
+      { key: 'pros-contras',  label: '✅❌ Pros y contras',      text: 'lado malo (sin Sphaira) vs lado bueno (con Sphaira)' },
+      { key: 'beneficios',    label: '🏆 Beneficios / ventajas', text: 'lista de beneficios y ventajas clave' },
+      { key: 'estadisticas',  label: '📈 Datos y estadísticas',  text: 'gráfico con números y estadísticas destacadas' },
+      { key: 'proceso',       label: '🔄 Pasos del proceso',     text: 'pasos del proceso numerados' },
+      { key: 'pantalla-app',  label: '🖥 Pantalla del dashboard', text: 'pantalla del dashboard de Sphaira visible' },
+      { key: 'personas',      label: '👥 Entrenador / director',  text: 'entrenador o director de club de fútbol' },
+    ],
+    estilo: [
+      { key: 'corporativo',  label: '💼 Profesional',     text: 'estilo profesional corporativo' },
+      { key: 'minimalista',  label: '◻ Minimalista',      text: 'minimalista, mucho espacio en blanco' },
+      { key: 'vibrante',     label: '🎯 Vibrante / bold',  text: 'colores vibrantes y contrastes fuertes' },
+      { key: 'oscuro',       label: '🌑 Dark mode',        text: 'dark mode, fondo oscuro navy predominante' },
+      { key: 'moderno',      label: '🚀 Tech / futurista', text: 'estilo tech futurista moderno' },
+    ],
+    texto: [
+      { key: 'titulos',    label: 'Títulos en la imagen',   text: 'con títulos grandes visibles en la imagen' },
+      { key: 'bullets',    label: 'Bullet points',          text: 'con bullet points de texto legible' },
+      { key: 'numeros',    label: 'Números / %',            text: 'con cifras y porcentajes destacados' },
+      { key: 'sin-texto',  label: 'Sin texto visible',      text: 'sin texto escrito en la imagen' },
+      { key: 'cta',        label: 'CTA / llamada a acción', text: 'con llamada a la acción visible' },
+    ],
+  };
+
+  isChipActive(chip: { key: string }): boolean {
+    return this.activePromptChips.has(chip.key);
+  }
+
+  togglePromptChip(chip: { key: string; text: string }): void {
+    if (this.activePromptChips.has(chip.key)) {
+      this.activePromptChips.delete(chip.key);
+    } else {
+      this.activePromptChips.add(chip.key);
+    }
+    this._rebuildPromptFromChips();
+  }
+
+  clearPromptChips(): void {
+    this.activePromptChips.clear();
+    this.editSocialImagePrompt = '';
+  }
+
+  applyChipsAndGenerate(): void {
+    this._rebuildPromptFromChips();
+    this.generateImagePrompt();
+  }
+
+  private _rebuildPromptFromChips(): void {
+    const parts: string[] = [];
+    for (const category of Object.values(this.promptChips)) {
+      for (const chip of category) {
+        if (this.activePromptChips.has(chip.key)) {
+          parts.push(chip.text);
+        }
+      }
+    }
+    if (parts.length > 0) {
+      this.editSocialImagePrompt = parts.join(', ');
+    }
+  }
+
   // Tokens de RRSS
   showSocialTokensModal = false;
   socialTokens: Record<string, boolean> = {};
@@ -1655,6 +1735,7 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
       this.editingSocialPost.network,
       this.editingSocialPost.content_type,
       this.selectedImageModel,
+      this.editSocialImagePrompt,  // descripción que el usuario haya escrito ya
     ).subscribe({
       next: (res) => {
         this.isGeneratingImagePrompt = false;
