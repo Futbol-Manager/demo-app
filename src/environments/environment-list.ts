@@ -4,7 +4,7 @@ export const localenvironment = {
   production: false,
   //para apuntar a la api local
   apiUrl: `${APIURLLOCAL}${ApiEnvironments.LOCAL}`,
-  prospectorApiUrl: 'http://localhost:8100/api/',
+  prospectorApiUrl: 'http://localhost:8001/api/',
   images: `${APIURLPROD2}${ImageEnvironments.DESA}/`,
   // BD cualquiera en local -> clave TEST (el backend hace fallback si el cliente es live)
   stripePublicKey: 'pk_test_51PIUivHzMBDrutQnxB3X6RlNQ2DR65e3hoDglo8Vo8zU23tmRuviJcQWGrLLUqFP4LK9RPa6czfJSh2w6V3eW7iL008i311mCU',
@@ -36,7 +36,7 @@ export const localenvironment = {
 export const prodenvironment = {
   production: true,
   apiUrl: `${APIURLPROD2}${ApiEnvironments.PRO}`,
-  prospectorApiUrl: 'http://localhost:8100/api/',
+  prospectorApiUrl: 'http://localhost:8001/api/',
   images: `${APIURLPROD2}${ImageEnvironments.PRO}/`,
   stripePublicKey: 'pk_live_51PIUivHzMBDrutQn6OvgtO0aQ3ixFWwxRdsvdGfFlUVNH3nErHwoqXMhJ5lEfxF42Bdm9xplEuYOwAb8Iz1hVWTM00HKWC1CkL',
   stripePrices: {

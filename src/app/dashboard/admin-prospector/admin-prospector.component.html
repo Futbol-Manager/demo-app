@@ -109,6 +109,12 @@
         <span *ngIf="campaignStats?.total_emails" class="badge ms-1 bg-light text-dark small">{{ campaignStats.total_emails }}</span>
       </a>
     </li>
+    <li class="nav-item">
+      <a class="nav-link" [class.active]="activeTab === 'social'" (click)="selectTab('social')">
+        <i class="bi bi-share me-1"></i>RRSS
+        <span *ngIf="socialPosts.length" class="badge ms-1 bg-light text-dark small">{{ socialPosts.length }}</span>
+      </a>
+    </li>
     <li class="nav-item ms-auto">
       <a class="nav-link" [class.active]="activeTab === 'settings'" (click)="selectTab('settings')">
         <i class="bi bi-sliders me-1"></i>Configuración
@@ -315,6 +321,9 @@
               <div class="d-flex gap-1">
                 <button class="btn btn-sm btn-outline-primary" (click)="openProspectDetail(p)" title="Ver detalle">
                   <i class="bi bi-eye"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-info" (click)="openDMsModal(p)" title="Mensajes directos RRSS">
+                  <i class="bi bi-chat-dots"></i>
                 </button>
                 <button class="btn btn-sm btn-outline-success" (click)="openAddToCampaign(p)" title="Añadir a campaña">
                   <i class="bi bi-plus-circle"></i>
@@ -583,6 +592,15 @@
                       title="Configurar instrucciones y estilo de los emails de esta campaña">
                 <i class="bi bi-sliders2 me-1"></i>Estilo de emails
               </button>
+              <button class="btn btn-sm btn-outline-warning" (click)="openFollowupConfig()"
+                      title="Configurar seguimiento automático para clubes que no abren el email">
+                <i class="bi bi-arrow-repeat me-1"></i>Follow-up
+              </button>
+              <button class="btn btn-sm btn-outline-info" (click)="recalculateScores()" [disabled]="isRecalculatingScores"
+                      title="Recalcular engagement score de todos los clubes">
+                <span *ngIf="!isRecalculatingScores"><i class="bi bi-graph-up me-1"></i>Score</span>
+                <span *ngIf="isRecalculatingScores"><i class="bi bi-hourglass-split spin-icon me-1"></i></span>
+              </button>
               <button class="btn btn-sm btn-outline-success" (click)="openImportFromLibrary()">
                 <i class="bi bi-box-arrow-in-down me-1"></i>Importar
               </button>
@@ -612,6 +630,7 @@
               <th class="sortable" (click)="sortBy('name')">Club <i class="bi ms-1" [ngClass]="sortIcon('name')"></i></th>
               <th>Email contacto</th>
               <th class="sortable" (click)="sortBy('pain_score')">Pain <i class="bi ms-1" [ngClass]="sortIcon('pain_score')"></i></th>
+              <th title="Engagement score: aperturas, clics, respuestas, DMs enviados">Score</th>
               <th>Estado email</th>
               <th>Asunto generado</th>
               <th>Acciones</th>
@@ -646,6 +665,16 @@
                          [style.background]="painScoreColor(p.pain_score)"></div>
                   </div>
                 </div>
+              </td>
+              <!-- Engagement score -->
+              <td class="text-center">
+                <ng-container *ngIf="p.engagement_score > 0">
+                  <span class="engagement-badge" [ngClass]="engagementScoreClass(p.engagement_score)"
+                        [title]="engagementScoreLabel(p.engagement_score)">
+                    {{ p.engagement_score }}
+                  </span>
+                </ng-container>
+                <span *ngIf="!p.engagement_score" class="text-muted" style="font-size:0.75rem;">—</span>
               </td>
               <!-- Estado email -->
               <td>
@@ -691,6 +720,10 @@
                           [disabled]="!emailsByProspectId[p.prospect_id]"
                           title="Vista previa del email">
                     <i class="bi bi-eye"></i>
+                  </button>
+                  <!-- DMs RRSS -->
+                  <button class="btn btn-xs btn-outline-secondary" (click)="openDMsModal(p)" title="Mensajes directos RRSS">
+                    <i class="bi bi-chat-dots"></i>
                   </button>
                   <!-- Quitar de campaña -->
                   <button class="btn btn-xs btn-outline-warning" (click)="confirmRemoveFromCampaign(p)" title="Quitar de esta campaña">
@@ -1008,6 +1041,1394 @@
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB: CONTENIDO RRSS
+  ═══════════════════════════════════════════════════ -->
+  <div *ngIf="activeTab === 'social'">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+      <div>
+        <h5 class="fw-bold mb-0"><i class="bi bi-share me-2 text-success"></i>Estudio de Contenido RRSS</h5>
+        <p class="text-muted small mb-0">Gestiona posts, responde comentarios con IA y reutiliza plantillas de DMs.</p>
+      </div>
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn btn-sm btn-outline-secondary" (click)="openSocialTokens()">
+          <i class="bi bi-key me-1"></i>Tokens API
+        </button>
+        <button class="btn btn-sm btn-outline-primary" *ngIf="socialSubTab === 'posts'" (click)="openAutoPlan()">
+          <i class="bi bi-calendar2-week me-1"></i>Planificar semana
+        </button>
+        <button class="btn btn-sm btn-refresh" *ngIf="socialSubTab === 'posts'" (click)="openSocialGenerator()">
+          <i class="bi bi-stars me-1"></i>Generar post
+        </button>
+        <button class="btn btn-sm btn-refresh" *ngIf="socialSubTab === 'templates'" (click)="openDMTemplatesModal()">
+          <i class="bi bi-plus-lg me-1"></i>Plantilla nueva
+        </button>
+      </div>
+    </div>
+
+    <!-- Sub-tabs -->
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="socialSubTab === 'posts'"
+           (click)="socialSubTab = 'posts'; loadSocialPosts()">
+          <i class="bi bi-grid me-1"></i>Posts
+          <span *ngIf="socialPosts.length" class="badge ms-1 bg-light text-dark small">{{ socialPosts.length }}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="socialSubTab === 'comments'"
+           (click)="socialSubTab = 'comments'; loadCommentLogs()">
+          <i class="bi bi-chat-dots me-1"></i>Respuestas Auto
+          <span *ngIf="commentLogs.length" class="badge ms-1 bg-light text-dark small">{{ commentLogs.length }}</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" [class.active]="socialSubTab === 'templates'"
+           (click)="socialSubTab = 'templates'; loadDMTemplates()">
+          <i class="bi bi-collection me-1"></i>Plantillas DM
+          <span *ngIf="dmTemplates.length" class="badge ms-1 bg-light text-dark small">{{ dmTemplates.length }}</span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- ─── SUB-TAB: POSTS ─────────────────────────────────────────────── -->
+    <ng-container *ngIf="socialSubTab === 'posts'">
+    <!-- Filtros -->
+    <div class="d-flex gap-2 mb-3 flex-wrap align-items-center">
+      <select class="form-select form-select-sm" style="width:auto;" [(ngModel)]="socialNetworkFilter" (change)="loadSocialPosts()">
+        <option value="">Todas las redes</option>
+        <option *ngFor="let n of socialNetworks" [value]="n">{{ socialNetworkLabels[n] }}</option>
+      </select>
+      <select class="form-select form-select-sm" style="width:auto;" [(ngModel)]="socialStatusFilter" (change)="loadSocialPosts()">
+        <option value="">Todos los estados</option>
+        <option value="DRAFT">Borrador</option>
+        <option value="APPROVED">Aprobado</option>
+        <option value="SCHEDULED">Programado</option>
+        <option value="PUBLISHED">Publicado</option>
+        <option value="REJECTED">Rechazado</option>
+      </select>
+      <button class="btn btn-sm btn-outline-secondary" (click)="loadSocialPosts()">
+        <i class="bi bi-arrow-clockwise"></i>
+      </button>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="socialLoading" class="text-center py-5 text-muted">
+      <i class="bi bi-hourglass-split spin-icon fs-3 d-block mb-2"></i>Cargando posts...
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="!socialLoading && socialPosts.length === 0" class="text-center py-5 text-muted">
+      <i class="bi bi-share fs-1 d-block mb-3 opacity-25"></i>
+      <p class="mb-1 fw-semibold">No hay posts generados todavía</p>
+      <p class="small mb-3">Genera un post individual o deja que la IA planifique toda la semana.</p>
+      <div class="d-flex justify-content-center gap-2">
+        <button class="btn btn-sm btn-outline-primary" (click)="openAutoPlan()">
+          <i class="bi bi-calendar2-week me-1"></i>Planificar semana con IA
+        </button>
+        <button class="btn btn-sm btn-refresh" (click)="openSocialGenerator()">
+          <i class="bi bi-stars me-1"></i>Generar un post
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Panel: Historial de publicaciones ── -->
+    <div *ngIf="socialHistory.length > 0" class="history-panel mb-4">
+      <button class="history-panel-toggle w-100" (click)="showHistoryPanel = !showHistoryPanel">
+        <span class="d-flex align-items-center gap-2">
+          <i class="bi bi-clock-history text-primary"></i>
+          <strong class="small">Historial de publicaciones</strong>
+          <span class="badge bg-primary rounded-pill">{{ socialHistory.length }}</span>
+          <span class="text-muted small ms-1">— la IA lo usa para planificar sin repetir contenido</span>
+        </span>
+        <i class="bi" [ngClass]="showHistoryPanel ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+      </button>
+      <div class="history-panel-body" *ngIf="showHistoryPanel">
+        <div *ngIf="isLoadingHistory" class="text-center py-3 text-muted small">
+          <i class="bi bi-hourglass-split spin-icon me-1"></i>Cargando historial...
+        </div>
+        <div class="history-table" *ngIf="!isLoadingHistory">
+          <div *ngFor="let h of socialHistory" class="history-row">
+            <div class="history-network">
+              <i class="bi {{ socialNetworkIcons[h.network] }} social-net-icon social-net--{{ h.network }}"></i>
+            </div>
+            <div class="history-type">
+              <span class="badge bg-secondary" style="font-size:0.68rem;">{{ socialContentTypeLabels[h.content_type] || h.content_type }}</span>
+            </div>
+            <div class="history-status">
+              <span class="badge" style="font-size:0.65rem;"
+                    [ngClass]="h.status === 'PUBLISHED' ? 'bg-success' : h.status === 'APPROVED' ? 'bg-primary' : h.status === 'REJECTED' ? 'bg-danger' : 'bg-secondary'">
+                {{ h.status }}
+              </span>
+            </div>
+            <div class="history-preview">
+              {{ (h.text_preview || '') | slice:0:120 }}{{ (h.text_preview?.length > 120) ? '...' : '' }}
+            </div>
+            <div class="history-date text-muted small">
+              {{ (h.published_at || h.created_at) | date:'dd/MM/yy' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grid de posts -->
+    <div *ngIf="!socialLoading && socialPosts.length > 0" class="row g-3">
+      <div *ngFor="let post of socialPosts" class="col-12 col-md-6 col-xl-4">
+        <div class="social-card" [class.social-card--published]="post.status === 'PUBLISHED'" [class.social-card--rejected]="post.status === 'REJECTED'">
+          <!-- Imagen generada por Flux 2 -->
+          <div *ngIf="post.image_url" class="social-card-image">
+            <img [src]="post.image_url" alt="Imagen generada" loading="lazy">
+          </div>
+          <!-- Header -->
+          <div class="social-card-header d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi {{ socialNetworkIcons[post.network] }} social-net-icon social-net--{{ post.network }}"></i>
+              <span class="fw-semibold small">{{ socialNetworkLabels[post.network] }}</span>
+            </div>
+            <div class="d-flex align-items-center gap-1">
+              <span class="badge small" [ngClass]="socialStatusClass(post.status)">{{ socialStatusLabel(post.status) }}</span>
+              <button class="btn btn-sm btn-icon text-danger ms-1" title="Borrar" (click)="deleteSocialPost(post)">
+                <i class="bi bi-trash3"></i>
+              </button>
+            </div>
+          </div>
+          <!-- Tipo de contenido -->
+          <div class="social-card-type small text-muted px-3 pt-1">
+            <i class="bi bi-tag me-1"></i>{{ socialContentTypeLabels[post.content_type] || post.content_type }}
+          </div>
+          <!-- Preview del texto -->
+          <div class="social-card-body px-3 py-2">
+            <p class="social-card-text">{{ post.text_content | slice:0:200 }}{{ post.text_content?.length > 200 ? '…' : '' }}</p>
+            <div *ngIf="post.image_prompt" class="social-card-image-prompt">
+              <i class="bi bi-image me-1"></i><span class="text-muted small">Prompt imagen:</span>
+              <span class="small ms-1">{{ post.image_prompt | slice:0:80 }}…</span>
+            </div>
+          </div>
+          <!-- Acciones -->
+          <div class="social-card-footer d-flex gap-1 px-3 pb-3 flex-wrap">
+            <button class="btn btn-xs btn-outline-secondary" (click)="openSocialEdit(post)">
+              <i class="bi bi-pencil me-1"></i>Editar
+            </button>
+            <button class="btn btn-xs btn-outline-secondary" (click)="copyPostText(post)" title="Copiar texto">
+              <i class="bi bi-clipboard me-1"></i>Copiar
+            </button>
+            <ng-container *ngIf="post.status === 'DRAFT'">
+              <button class="btn btn-xs btn-success" (click)="approveSocialPost(post)">
+                <i class="bi bi-check2 me-1"></i>Aprobar
+              </button>
+              <button class="btn btn-xs btn-outline-danger" (click)="rejectSocialPost(post)">
+                <i class="bi bi-x me-1"></i>Rechazar
+              </button>
+            </ng-container>
+            <ng-container *ngIf="post.status === 'APPROVED'">
+              <button class="btn btn-xs btn-primary" (click)="openSocialEdit(post)">
+                <i class="bi bi-send me-1"></i>Publicar
+              </button>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>
+    </ng-container><!-- fin sub-tab posts -->
+
+    <!-- ─── SUB-TAB: RESPUESTAS AUTOMÁTICAS ──────────────────────────────── -->
+    <ng-container *ngIf="socialSubTab === 'comments'">
+      <!-- Config de directrices -->
+      <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+              <h6 class="fw-bold mb-0"><i class="bi bi-robot me-2 text-success"></i>Directrices de respuesta automática</h6>
+              <p class="text-muted small mb-0">La IA responderá comentarios de IG y FB según estas instrucciones.</p>
+            </div>
+            <div class="form-check form-switch mb-0">
+              <input class="form-check-input" type="checkbox" id="autoReplyEnabled" [(ngModel)]="commentGuidelines.enabled">
+              <label class="form-check-label fw-semibold small" for="autoReplyEnabled">
+                {{ commentGuidelines.enabled ? 'Activado' : 'Desactivado' }}
+              </label>
+            </div>
+          </div>
+          <div *ngIf="isLoadingGuidelines" class="text-muted small"><i class="bi bi-hourglass-split spin-icon me-1"></i>Cargando...</div>
+          <div *ngIf="!isLoadingGuidelines" class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Tono</label>
+              <input class="form-control form-control-sm" [(ngModel)]="commentGuidelines.tone" placeholder="Ej: profesional y cercano">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Firma (opcional)</label>
+              <input class="form-control form-control-sm" [(ngModel)]="commentGuidelines.signature" placeholder="Ej: — Equipo Sphaira">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Temas a evitar</label>
+              <input class="form-control form-control-sm" [(ngModel)]="commentGuidelines.topics_avoid" placeholder="Ej: precios, competidores">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label fw-semibold small">Modelo IA</label>
+              <select class="form-select form-select-sm" [(ngModel)]="commentGuidelines.model">
+                <option value="gpt-4o-mini">GPT-4o mini (rápido, económico)</option>
+                <option value="gpt-4o">GPT-4o (más preciso)</option>
+              </select>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold small">Instrucciones adicionales</label>
+              <textarea class="form-control form-control-sm" rows="2" [(ngModel)]="commentGuidelines.custom_instructions"
+                        placeholder="Ej: Siempre invita al usuario a visitar nuestra web..."></textarea>
+            </div>
+            <div class="col-12 d-flex align-items-center gap-2 flex-wrap">
+              <button class="btn btn-sm btn-refresh" (click)="saveCommentGuidelines()" [disabled]="isSavingGuidelines">
+                <span *ngIf="!isSavingGuidelines"><i class="bi bi-floppy me-1"></i>Guardar directrices</span>
+                <span *ngIf="isSavingGuidelines"><i class="bi bi-hourglass-split spin-icon me-1"></i></span>
+              </button>
+              <span *ngIf="guidelinesSaved" class="text-success small"><i class="bi bi-check-circle me-1"></i>Guardado</span>
+            </div>
+          </div>
+          <!-- Info del webhook -->
+          <div *ngIf="webhookInfo" class="mt-3 p-3 rounded-2" style="background: var(--bg-surface); border: 1px dashed var(--border-color);">
+            <p class="small fw-semibold mb-2"><i class="bi bi-plug me-1"></i>Configuración del webhook en Meta</p>
+            <div class="mb-2">
+              <span class="text-muted small me-1">URL del webhook:</span>
+              <code class="small">{{ webhookInfo.webhook_url }}</code>
+              <button class="btn btn-xs btn-outline-secondary ms-2" (click)="copyWebhookUrl()"><i class="bi bi-clipboard"></i></button>
+            </div>
+            <div>
+              <span class="text-muted small me-1">Verify Token:</span>
+              <code class="small">{{ webhookInfo.verify_token }}</code>
+              <button class="btn btn-xs btn-outline-secondary ms-2" (click)="copyWebhookToken()"><i class="bi bi-clipboard"></i></button>
+            </div>
+            <p class="text-muted mt-2" style="font-size:0.75rem;">
+              <i class="bi bi-info-circle me-1"></i>
+              Ve a <strong>Meta for Developers → Webhooks</strong>, añade este endpoint y usa el Verify Token de arriba.
+              Suscríbete a <strong>comments</strong> (Instagram) y <strong>feed</strong> (Facebook).
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Log de comentarios -->
+      <div class="d-flex align-items-center gap-2 mb-3 flex-wrap">
+        <h6 class="fw-bold mb-0 me-auto"><i class="bi bi-list-ul me-2"></i>Historial de comentarios</h6>
+        <select class="form-select form-select-sm" style="width:auto;" [(ngModel)]="commentLogPlatformFilter" (change)="loadCommentLogs()">
+          <option value="">Todas las plataformas</option>
+          <option value="instagram">Instagram</option>
+          <option value="facebook">Facebook</option>
+        </select>
+        <select class="form-select form-select-sm" style="width:auto;" [(ngModel)]="commentLogStatusFilter" (change)="loadCommentLogs()">
+          <option value="">Todos los estados</option>
+          <option value="PENDING">Pendiente</option>
+          <option value="REPLIED">Respondido</option>
+          <option value="SKIPPED">Ignorado</option>
+        </select>
+        <button class="btn btn-sm btn-outline-secondary" (click)="loadCommentLogs()"><i class="bi bi-arrow-clockwise"></i></button>
+      </div>
+
+      <div *ngIf="commentLogsLoading" class="text-center py-4 text-muted">
+        <i class="bi bi-hourglass-split spin-icon me-1"></i>Cargando comentarios...
+      </div>
+      <div *ngIf="!commentLogsLoading && commentLogs.length === 0" class="text-center py-5 text-muted">
+        <i class="bi bi-chat-dots fs-1 d-block mb-3 opacity-25"></i>
+        <p class="fw-semibold mb-1">Sin comentarios todavía</p>
+        <p class="small">Cuando tu webhook esté activo, los comentarios aparecerán aquí.</p>
+      </div>
+      <div *ngIf="!commentLogsLoading && commentLogs.length > 0">
+        <div *ngFor="let log of commentLogs" class="comment-log-card mb-3">
+          <div class="d-flex align-items-start gap-3">
+            <i class="bi {{ socialNetworkIcons[log.platform] || 'bi-chat-dots' }} social-net-icon social-net--{{ log.platform }} mt-1"></i>
+            <div class="flex-grow-1">
+              <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                <span class="fw-semibold small">{{ log.commenter_name || log.commenter_id }}</span>
+                <span class="badge small" [ngClass]="commentStatusClass(log.status)">{{ commentStatusLabel(log.status) }}</span>
+                <span class="text-muted" style="font-size:0.72rem;">{{ log.received_at | date:'dd/MM/yy HH:mm' }}</span>
+                <span *ngIf="log.auto_replied" class="badge bg-success small"><i class="bi bi-robot me-1"></i>Auto</span>
+              </div>
+              <p class="mb-1 small" style="white-space:pre-line;">{{ log.comment_text }}</p>
+              <!-- Respuesta sugerida -->
+              <div *ngIf="log.suggested_reply && log.status !== 'REPLIED' && log.status !== 'SKIPPED'"
+                   class="comment-suggestion p-2 rounded mb-2 small">
+                <span class="text-muted me-1"><i class="bi bi-stars me-1"></i>Sugerencia IA:</span>
+                {{ log.suggested_reply }}
+              </div>
+              <div *ngIf="log.our_reply" class="comment-our-reply p-2 rounded mb-2 small">
+                <span class="text-muted me-1"><i class="bi bi-reply me-1"></i>Respondido:</span>
+                {{ log.our_reply }}
+              </div>
+              <!-- Área de respuesta manual -->
+              <div *ngIf="replyingLogId === log.log_id" class="mt-2">
+                <textarea class="form-control form-control-sm mb-1" rows="2" [(ngModel)]="replyText"></textarea>
+                <div class="d-flex gap-1">
+                  <button class="btn btn-xs btn-refresh" (click)="sendReply(log)" [disabled]="isSendingReply">
+                    <span *ngIf="!isSendingReply"><i class="bi bi-send me-1"></i>Enviar</span>
+                    <span *ngIf="isSendingReply"><i class="bi bi-hourglass-split spin-icon me-1"></i></span>
+                  </button>
+                  <button class="btn btn-xs btn-outline-secondary" (click)="replyingLogId = null">Cancelar</button>
+                </div>
+              </div>
+              <!-- Acciones -->
+              <div *ngIf="replyingLogId !== log.log_id && log.status === 'PENDING'" class="d-flex gap-1 mt-1">
+                <button class="btn btn-xs btn-outline-primary" (click)="openReply(log)">
+                  <i class="bi bi-reply me-1"></i>Responder
+                </button>
+                <button class="btn btn-xs btn-outline-secondary" (click)="skipCommentLog(log)">
+                  <i class="bi bi-skip-forward me-1"></i>Ignorar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container><!-- fin sub-tab comments -->
+
+    <!-- ─── SUB-TAB: PLANTILLAS DM ───────────────────────────────────────── -->
+    <ng-container *ngIf="socialSubTab === 'templates'">
+      <div *ngIf="dmTemplatesLoading" class="text-center py-4 text-muted">
+        <i class="bi bi-hourglass-split spin-icon me-1"></i>Cargando plantillas...
+      </div>
+      <div *ngIf="!dmTemplatesLoading && dmTemplates.length === 0" class="text-center py-5 text-muted">
+        <i class="bi bi-collection fs-1 d-block mb-3 opacity-25"></i>
+        <p class="fw-semibold mb-1">Sin plantillas todavía</p>
+        <p class="small mb-3">Crea plantillas de mensajes directos para reutilizarlas con distintos clubes.</p>
+        <button class="btn btn-sm btn-refresh" (click)="openDMTemplatesModal()"><i class="bi bi-plus-lg me-1"></i>Nueva plantilla</button>
+      </div>
+      <!-- Lista de plantillas -->
+      <div *ngIf="!dmTemplatesLoading && dmTemplates.length > 0" class="row g-3 mb-4">
+        <div *ngFor="let t of dmTemplates" class="col-12 col-md-6 col-xl-4">
+          <div class="dm-template-card">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi {{ socialNetworkIcons[t.network] || 'bi-chat-dots' }} social-net-icon social-net--{{ t.network }}"></i>
+                <span class="fw-semibold small">{{ t.template_name }}</span>
+              </div>
+              <div class="d-flex gap-1">
+                <span class="badge bg-light text-muted small">{{ t.use_count }} usos</span>
+                <button class="btn btn-xs btn-outline-danger" (click)="deleteDMTemplate(t)"><i class="bi bi-trash3"></i></button>
+              </div>
+            </div>
+            <p class="small text-muted mb-2" style="white-space:pre-line; max-height:80px; overflow:hidden;">{{ t.template_text | slice:0:150 }}{{ t.template_text?.length > 150 ? '…' : '' }}</p>
+            <button class="btn btn-xs btn-outline-secondary w-100" (click)="useTemplate(t)">
+              <i class="bi bi-clipboard me-1"></i>Copiar para usar
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- Formulario nueva plantilla -->
+      <div class="card border-0 shadow-sm">
+        <div class="card-body">
+          <h6 class="fw-semibold mb-3"><i class="bi bi-plus-circle me-2 text-success"></i>Añadir nueva plantilla</h6>
+          <div class="row g-2">
+            <div class="col-md-4">
+              <label class="form-label small fw-semibold">Red social</label>
+              <select class="form-select form-select-sm" [(ngModel)]="newTemplateNetwork">
+                <option *ngFor="let n of socialNetworks" [value]="n">{{ socialNetworkLabels[n] }}</option>
+              </select>
+            </div>
+            <div class="col-md-8">
+              <label class="form-label small fw-semibold">Nombre de la plantilla</label>
+              <input class="form-control form-control-sm" [(ngModel)]="newTemplateName" placeholder="Ej: Presentación inicial club pequeño">
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Texto del mensaje</label>
+              <textarea class="form-control form-control-sm" rows="4" [(ngModel)]="newTemplateText"
+                        placeholder="Hola [nombre_club], soy de Sphaira Tech..."></textarea>
+            </div>
+            <div class="col-12">
+              <button class="btn btn-sm btn-refresh" (click)="saveDMTemplate()" [disabled]="isSavingTemplate || !newTemplateName.trim() || !newTemplateText.trim()">
+                <span *ngIf="!isSavingTemplate"><i class="bi bi-floppy me-1"></i>Guardar plantilla</span>
+                <span *ngIf="isSavingTemplate"><i class="bi bi-hourglass-split spin-icon me-1"></i></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container><!-- fin sub-tab templates -->
+
+  </div>
+
+  <!-- ── Modal: Plan automático de contenido ── -->
+  <div class="modal-backdrop-custom" *ngIf="showAutoPlanModal" (click)="showAutoPlanModal = false"></div>
+  <div class="modal-panel autoplan-modal" *ngIf="showAutoPlanModal">
+    <div class="modal-content border-0">
+
+      <!-- Header -->
+      <div class="apm-header">
+        <div>
+          <h5 class="mb-0 fw-bold">
+            <i class="bi bi-calendar2-week me-2 text-primary"></i>Plan de contenido con IA
+          </h5>
+          <p class="text-muted small mb-0 mt-1">
+            Claude analiza tus posts recientes y decide qué publicar, dónde y con qué ángulo.
+          </p>
+        </div>
+        <button class="btn-close" (click)="showAutoPlanModal = false"></button>
+      </div>
+
+      <!-- Controles -->
+      <div class="apm-controls">
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+          <div class="d-flex align-items-center gap-2">
+            <label class="small fw-semibold mb-0">Posts a planificar:</label>
+            <div class="d-flex gap-1">
+              <button *ngFor="let n of [5,7,10,14]" class="btn btn-xs"
+                      [ngClass]="autoPlanNumPosts === n ? 'btn-dark' : 'btn-outline-secondary'"
+                      (click)="autoPlanNumPosts = n; runAutoPlan()">{{ n }}</button>
+            </div>
+          </div>
+          <button class="btn btn-sm btn-outline-primary ms-auto" (click)="runAutoPlan()" [disabled]="isGeneratingPlan">
+            <i class="bi bi-arrow-clockwise me-1" [class.spin-icon]="isGeneratingPlan"></i>
+            {{ isGeneratingPlan ? 'Planificando...' : 'Replanificar' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Cuerpo: loading / plan -->
+      <div class="apm-body">
+
+        <!-- Loading -->
+        <div *ngIf="isGeneratingPlan" class="apm-loading">
+          <div class="apm-loading-icon">
+            <i class="bi bi-stars spin-icon"></i>
+          </div>
+          <p class="fw-semibold mb-1">Claude está analizando tu historial de posts...</p>
+          <p class="text-muted small">Está revisando qué se publicó, qué falta cubrir y diseñando la secuencia óptima para la semana.</p>
+        </div>
+
+        <!-- Plan generado -->
+        <div *ngIf="!isGeneratingPlan && contentPlan.length > 0">
+          <div *ngFor="let item of contentPlan; let i = index" class="plan-item" [class.plan-item--generated]="item._generated">
+
+            <div class="plan-item-number">{{ i + 1 }}</div>
+
+            <div class="plan-item-network">
+              <i class="bi {{ socialNetworkIcons[item.network] }} social-net-icon social-net--{{ item.network }}"
+                 style="font-size:1.3rem;"></i>
+              <span class="small fw-semibold">{{ socialNetworkLabels[item.network] }}</span>
+            </div>
+
+            <div class="plan-item-content">
+              <div class="plan-item-headline">{{ item.headline }}</div>
+              <div class="plan-item-meta">
+                <span class="badge bg-secondary" style="font-size:0.68rem;">{{ socialContentTypeLabels[item.content_type] || item.content_type }}</span>
+                <span class="badge bg-light text-dark border" style="font-size:0.68rem;">{{ item.tone }}</span>
+                <span class="badge bg-light text-dark border" style="font-size:0.68rem;">{{ item.target_audience }}</span>
+              </div>
+              <p class="plan-item-angle">{{ item.angle }}</p>
+              <p class="plan-item-why"><i class="bi bi-lightbulb text-warning me-1"></i>{{ item.why }}</p>
+            </div>
+
+            <div class="plan-item-action">
+              <ng-container *ngIf="!item._generated">
+                <button class="btn btn-sm btn-refresh"
+                        (click)="generateFromPlan(item, i)"
+                        [disabled]="autoPlanGeneratingIdx !== null">
+                  <span *ngIf="autoPlanGeneratingIdx !== i">
+                    <i class="bi bi-stars me-1"></i>Generar
+                  </span>
+                  <span *ngIf="autoPlanGeneratingIdx === i">
+                    <i class="bi bi-hourglass-split spin-icon me-1"></i>...
+                  </span>
+                </button>
+              </ng-container>
+              <ng-container *ngIf="item._generated">
+                <span class="badge bg-success"><i class="bi bi-check2 me-1"></i>Generado</span>
+              </ng-container>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Empty state si no hay plan aún (primer render) -->
+        <div *ngIf="!isGeneratingPlan && contentPlan.length === 0" class="apm-loading">
+          <p class="text-muted small">No se ha generado ningún plan todavía.</p>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="apm-footer">
+        <button class="btn btn-outline-secondary" (click)="showAutoPlanModal = false">Cerrar</button>
+        <button class="btn btn-refresh btn-lg px-4"
+                (click)="generateAllPlan()"
+                [disabled]="isGeneratingPlan || autoPlanGeneratingIdx !== null || contentPlan.length === 0">
+          <i class="bi bi-stars me-2"></i>Generar todos los posts del plan
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Modal: Generar post con IA ── -->
+  <div class="modal-backdrop-custom" *ngIf="showSocialGeneratorModal" (click)="showSocialGeneratorModal = false"></div>
+  <div class="modal-panel social-gen-modal" *ngIf="showSocialGeneratorModal">
+    <div class="modal-content border-0">
+
+      <!-- Header -->
+      <div class="sgm-header">
+        <div>
+          <h5 class="mb-0 fw-bold"><i class="bi bi-stars me-2 text-warning"></i>Generar post con IA</h5>
+          <p class="text-muted small mb-0 mt-1">Configura los parámetros y Claude Sonnet 4.6 redactará el post.</p>
+        </div>
+        <button class="btn-close" (click)="showSocialGeneratorModal = false"></button>
+      </div>
+
+      <div class="sgm-body">
+
+        <!-- Bloque 1: Red social -->
+        <div class="sgm-section">
+          <div class="sgm-section-label">
+            <i class="bi bi-share-fill me-2"></i>Red social
+          </div>
+          <div class="d-flex gap-2 flex-wrap mt-2">
+            <button *ngFor="let n of socialNetworks"
+                    class="btn sgm-net-btn"
+                    [class.active]="socialGenNetwork === n"
+                    (click)="socialGenNetwork = n">
+              <i class="bi {{ socialNetworkIcons[n] }} me-1 social-net-icon social-net--{{ n }}"></i>
+              {{ socialNetworkLabels[n] }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Bloque 2: Tipo + Funcionalidad -->
+        <div class="sgm-section">
+          <div class="sgm-section-label"><i class="bi bi-layout-text-window-reverse me-2"></i>Contenido</div>
+          <div class="row g-3 mt-1">
+            <div class="col-md-7">
+              <label class="form-label small fw-semibold mb-1">Tipo de contenido</label>
+              <select class="form-select" [(ngModel)]="socialGenContentType">
+                <option *ngFor="let ct of socialContentTypes" [value]="ct">{{ socialContentTypeLabels[ct] || ct }}</option>
+              </select>
+            </div>
+            <div class="col-md-5">
+              <label class="form-label small fw-semibold mb-1">Funcionalidad a destacar</label>
+              <select class="form-select" [(ngModel)]="socialGenFeature">
+                <option *ngFor="let f of socialGenFeatures" [value]="f.value">{{ f.label }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloque 3: Tono de voz -->
+        <div class="sgm-section">
+          <div class="sgm-section-label"><i class="bi bi-chat-quote me-2"></i>Tono de voz</div>
+          <div class="d-flex flex-wrap gap-2 mt-2">
+            <button *ngFor="let t of socialGenTones"
+                    class="btn sgm-chip-btn"
+                    [class.active-tone]="socialGenTone === t.value"
+                    (click)="socialGenTone = t.value">{{ t.label }}</button>
+          </div>
+        </div>
+
+        <!-- Bloque 4: Objetivo + Audiencia en paralelo -->
+        <div class="sgm-section">
+          <div class="sgm-section-label"><i class="bi bi-bullseye me-2"></i>Objetivo y audiencia</div>
+          <div class="row g-3 mt-1">
+            <div class="col-md-5">
+              <label class="form-label small fw-semibold mb-1">Objetivo del post</label>
+              <select class="form-select" [(ngModel)]="socialGenObjective">
+                <option *ngFor="let o of socialGenObjectives" [value]="o.value">{{ o.label }}</option>
+              </select>
+            </div>
+            <div class="col-md-7">
+              <label class="form-label small fw-semibold mb-1">Audiencia objetivo</label>
+              <div class="d-flex flex-wrap gap-2">
+                <button *ngFor="let a of socialGenAudiences"
+                        class="btn sgm-chip-btn"
+                        [class.active-audience]="socialGenAudience === a.value"
+                        (click)="socialGenAudience = a.value">{{ a.label }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bloque 5: Contexto / Prompt -->
+        <div class="sgm-section">
+          <div class="d-flex justify-content-between align-items-center">
+            <div class="sgm-section-label mb-0">
+              <i class="bi bi-pencil-square me-2"></i>Contexto libre <span class="text-muted fw-normal">(opcional)</span>
+            </div>
+            <button class="btn btn-sm btn-outline-warning sgm-optimize-btn"
+                    (click)="optimizePrompt()"
+                    [disabled]="isOptimizingPrompt"
+                    title="Claude mejora automáticamente tu texto para obtener un post de mayor calidad">
+              <span *ngIf="!isOptimizingPrompt"><i class="bi bi-magic me-1"></i>✨ Optimizar prompt</span>
+              <span *ngIf="isOptimizingPrompt"><i class="bi bi-hourglass-split spin-icon me-1"></i>Optimizando...</span>
+            </button>
+          </div>
+          <textarea class="form-control mt-2" rows="4" [(ngModel)]="socialGenExtraContext"
+                    placeholder="Ej: Menciona que estamos en lanzamiento en Cataluña, habla del club UD Espai... Cuanto más detalle pongas, mejor resultado. O escribe algo breve y pulsa ✨ Optimizar para que la IA lo expanda."></textarea>
+          <div *ngIf="isOptimizingPrompt" class="sgm-optimizing-hint mt-2">
+            <i class="bi bi-stars text-warning me-1"></i>Claude está reescribiendo tu prompt para maximizar la calidad del post...
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="sgm-footer">
+        <button class="btn btn-outline-secondary" (click)="showSocialGeneratorModal = false">Cancelar</button>
+        <button class="btn btn-refresh btn-lg px-4"
+                (click)="generateSocialPost()"
+                [disabled]="isGeneratingSocial || isOptimizingPrompt">
+          <span *ngIf="!isGeneratingSocial"><i class="bi bi-stars me-2"></i>Generar post</span>
+          <span *ngIf="isGeneratingSocial"><i class="bi bi-hourglass-split spin-icon me-2"></i>Generando con IA...</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Modal: Editar / Aprobar / Publicar post ── -->
+  <div class="modal-backdrop-custom" *ngIf="showSocialEditModal" (click)="showSocialEditModal = false"></div>
+  <div class="modal-panel post-edit-modal" *ngIf="showSocialEditModal">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0" style="padding: 1.25rem 1.5rem 0.75rem;">
+        <h6 class="modal-title fw-bold fs-6">
+          <i class="bi {{ socialNetworkIcons[editingSocialPost?.network] }} me-2"></i>
+          {{ socialNetworkLabels[editingSocialPost?.network] }} — {{ socialContentTypeLabels[editingSocialPost?.content_type] || editingSocialPost?.content_type }}
+        </h6>
+        <button class="btn-close" (click)="showSocialEditModal = false"></button>
+      </div>
+
+      <div class="modal-body" *ngIf="editingSocialPost" style="padding: 1.25rem 1.5rem;">
+
+        <!-- Layout: dos columnas si hay imagen, una columna si no -->
+        <div class="post-edit-layout"
+             [class.has-image-col]="editingSocialPost.network === 'instagram' || editingSocialPost.network === 'facebook'">
+
+          <!-- ── Columna izquierda: texto + hashtags ── -->
+          <div class="post-edit-left">
+
+            <!-- Bloque que crece para llenar el espacio disponible -->
+            <div class="text-grow-wrap mb-2">
+              <label class="form-label fw-semibold mb-2">Texto del post</label>
+              <textarea class="form-control grow-textarea" [(ngModel)]="editSocialText"></textarea>
+              <div class="d-flex justify-content-between mt-2">
+                <span class="text-muted small">{{ editSocialText.length }} caracteres</span>
+                <span class="badge" [ngClass]="socialStatusClass(editingSocialPost.status)">{{ socialStatusLabel(editingSocialPost.status) }}</span>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold mb-2">Hashtags</label>
+              <input class="form-control" [(ngModel)]="editSocialHashtags" placeholder="#futbolbase #gestión...">
+            </div>
+
+            <!-- Resultado de publicación -->
+            <div *ngIf="publishResult" class="alert py-2 small mt-2"
+                 [ngClass]="publishResult.ok ? 'alert-success' : (publishResult.copy_ready ? 'alert-info' : 'alert-warning')">
+              <ng-container *ngIf="publishResult.ok">
+                <i class="bi bi-check-circle me-1"></i>¡Post publicado correctamente!
+              </ng-container>
+              <ng-container *ngIf="!publishResult.ok && publishResult.copy_ready">
+                <i class="bi bi-info-circle me-1"></i>
+                <strong>Token no configurado.</strong>
+                El texto está listo para copiar-pegar en {{ socialNetworkLabels[editingSocialPost.network] }}.
+                <span *ngIf="publishResult.note" class="d-block mt-1 text-muted">{{ publishResult.note }}</span>
+              </ng-container>
+              <ng-container *ngIf="!publishResult.ok && !publishResult.copy_ready">
+                <i class="bi bi-exclamation-triangle me-1"></i>Error: {{ publishResult.error }}
+              </ng-container>
+            </div>
+          </div>
+
+          <!-- ── Columna derecha: imagen (solo Instagram/Facebook) ── -->
+          <div class="post-edit-right"
+               *ngIf="editingSocialPost.network === 'instagram' || editingSocialPost.network === 'facebook'">
+
+            <!-- Selector de modelo -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold mb-1" style="font-size:0.82rem;">
+                <i class="bi bi-cpu me-1 text-success"></i>Modelo de imagen
+              </label>
+              <select class="form-select form-select-sm" [(ngModel)]="selectedImageModel"
+                      (ngModelChange)="onImageModelChange($event)">
+                <option *ngFor="let m of imageModels" [value]="m.key">{{ m.label }}</option>
+              </select>
+              <div class="mt-1" style="font-size:0.7rem; color:var(--text-muted);">
+                <span *ngIf="selectedImageModel === 'imagen3'">🍌 Google Imagen 3 Pro · máxima calidad nativa · requiere Google Cloud</span>
+                <span *ngIf="selectedImageModel === 'imagen3-fast'">🍌 Google Imagen 3 Fast · más rápido · requiere Google Cloud</span>
+                <span *ngIf="selectedImageModel === 'dalle3'">⭐ Recomendado · texto perfectamente legible · usa tu clave OpenAI</span>
+                <span *ngIf="selectedImageModel === 'recraft'">✅ Ilustración y diseño gráfico de marca · Replicate</span>
+                <span *ngIf="selectedImageModel === 'flux-pro'">📸 Fotorrealista, ideal con personas y estadios · Replicate</span>
+                <span *ngIf="selectedImageModel === 'ideogram'">⚠️ Texto a veces ilegible · usa DALL-E 3 si necesitas texto claro</span>
+                <span *ngIf="selectedImageModel === 'imagen4'">📸 Ultra fotorrealista, máxima calidad · Replicate</span>
+                <span *ngIf="selectedImageModel === 'flux-schnell'">⚡ Rápido y económico, menor calidad · Replicate</span>
+              </div>
+            </div>
+
+            <!-- Preview de imagen -->
+            <div class="img-preview-box mb-3" [class.has-image]="previewImageUrl">
+              <ng-container *ngIf="previewImageUrl && !isGeneratingImage">
+                <img [src]="previewImageUrl" alt="Preview del post" class="img-preview-img">
+                <div class="img-preview-overlay">
+                  <span class="img-preview-badge">
+                    <i class="bi bi-stars me-1"></i>
+                    {{ imageModelUsed || selectedImageModel }} · Brand kit Sphaira
+                  </span>
+                </div>
+              </ng-container>
+              <div *ngIf="isGeneratingImage" class="img-preview-loading">
+                <div class="spinner-border text-success" style="width:2.5rem;height:2.5rem;"></div>
+                <p class="mt-2 mb-0 small text-muted">Generando con {{ selectedImageModel }}...<br><span style="font-size:0.72rem;">~10-30 seg</span></p>
+              </div>
+              <div *ngIf="!previewImageUrl && !isGeneratingImage" class="img-preview-empty">
+                <i class="bi bi-image text-muted" style="font-size:2.5rem;"></i>
+                <p class="mt-2 mb-0 small text-muted">Sin imagen todavía</p>
+              </div>
+            </div>
+
+            <!-- Error -->
+            <div *ngIf="imageGenError" class="alert alert-danger py-2 small mb-3">
+              <i class="bi bi-exclamation-triangle me-1"></i>{{ imageGenError }}
+            </div>
+
+            <!-- Botón generar / regenerar -->
+            <div class="d-flex gap-2 mb-3">
+              <button class="btn btn-sm flex-grow-1"
+                      [ngClass]="previewImageUrl ? 'btn-outline-secondary' : 'btn-success'"
+                      (click)="generatePostImage()"
+                      [disabled]="isGeneratingImage">
+                <span *ngIf="!isGeneratingImage">
+                  <i class="bi" [ngClass]="previewImageUrl ? 'bi-arrow-repeat' : 'bi-magic'"></i>
+                  {{ previewImageUrl ? ' Regenerar imagen' : ' Generar imagen con IA' }}
+                </span>
+                <span *ngIf="isGeneratingImage"><i class="bi bi-hourglass-split spin-icon me-1"></i>Generando...</span>
+              </button>
+              <a *ngIf="previewImageUrl" [href]="previewImageUrl" target="_blank"
+                 class="btn btn-sm btn-outline-secondary" title="Ver a tamaño completo">
+                <i class="bi bi-box-arrow-up-right"></i>
+              </a>
+            </div>
+
+            <!-- Prompt de imagen -->
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <label class="form-label fw-semibold mb-0" style="font-size:0.85rem;">
+                Prompt de imagen
+                <span class="text-muted fw-normal">(en inglés · brand kit incluido)</span>
+              </label>
+              <button class="btn btn-xs btn-outline-success"
+                      (click)="generateImagePrompt()"
+                      [disabled]="isGeneratingImagePrompt"
+                      title="Generar prompt con IA a partir del texto del post">
+                <span *ngIf="!isGeneratingImagePrompt">
+                  <i class="bi bi-magic me-1"></i>Generar prompt
+                </span>
+                <span *ngIf="isGeneratingImagePrompt">
+                  <i class="bi bi-hourglass-split spin-icon me-1"></i>Generando...
+                </span>
+              </button>
+            </div>
+            <div class="badge bg-info text-dark mb-2" style="font-size:0.65rem; white-space:normal;">
+              <i class="bi bi-palette me-1"></i>Colores navy + verde Sphaira aplicados automáticamente
+            </div>
+            <textarea class="form-control form-control-sm" rows="4"
+                      [(ngModel)]="editSocialImagePrompt"
+                      placeholder="Escribe tú o pulsa ✨ Generar prompt para que la IA lo cree a partir del texto del post..."></textarea>
+          </div>
+
+        </div><!-- /post-edit-layout -->
+      </div>
+
+      <div class="modal-footer border-0 flex-wrap gap-2" style="padding: 0.75rem 1.5rem 1.25rem;">
+        <button class="btn btn-secondary btn-sm" (click)="showSocialEditModal = false">Cerrar</button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="copyPostText({text_content: editSocialText})">
+          <i class="bi bi-clipboard me-1"></i>Copiar texto
+        </button>
+        <button class="btn btn-outline-primary btn-sm" (click)="saveSocialPost()" [disabled]="isSavingSocialPost">
+          <span *ngIf="!isSavingSocialPost"><i class="bi bi-floppy me-1"></i>Guardar</span>
+          <span *ngIf="isSavingSocialPost"><i class="bi bi-hourglass-split spin-icon me-1"></i></span>
+        </button>
+        <ng-container *ngIf="editingSocialPost?.status === 'DRAFT'">
+          <button class="btn btn-success btn-sm" (click)="approveSocialPost(editingSocialPost)">
+            <i class="bi bi-check2-circle me-1"></i>Aprobar
+          </button>
+          <button class="btn btn-outline-danger btn-sm" (click)="rejectSocialPost(editingSocialPost)">
+            <i class="bi bi-x-circle me-1"></i>Rechazar
+          </button>
+        </ng-container>
+        <ng-container *ngIf="editingSocialPost?.status === 'APPROVED'">
+          <button class="btn btn-primary btn-sm" (click)="publishSocialPost()" [disabled]="isPublishingSocialPost">
+            <span *ngIf="!isPublishingSocialPost"><i class="bi bi-send me-1"></i>Publicar ahora</span>
+            <span *ngIf="isPublishingSocialPost"><i class="bi bi-hourglass-split spin-icon me-1"></i>Publicando...</span>
+          </button>
+          <!-- Programar -->
+          <div class="d-flex align-items-center gap-1 ms-2">
+            <input type="datetime-local" class="form-control form-control-sm" style="width:auto;"
+                   [(ngModel)]="scheduleDateTime" title="Fecha y hora de publicación programada">
+            <button class="btn btn-outline-primary btn-sm" (click)="schedulePost()"
+                    [disabled]="!scheduleDateTime || isSchedulingPost" title="Programar publicación">
+              <span *ngIf="!isSchedulingPost"><i class="bi bi-clock me-1"></i>Programar</span>
+              <span *ngIf="isSchedulingPost"><i class="bi bi-hourglass-split spin-icon me-1"></i></span>
+            </button>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Modal: Tokens RRSS ── -->
+  <div class="modal-backdrop-custom" *ngIf="showSocialTokensModal" (click)="showSocialTokensModal = false"></div>
+  <div class="modal-panel" *ngIf="showSocialTokensModal" style="max-width:880px;">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0 pb-1">
+        <h6 class="modal-title fw-bold"><i class="bi bi-key me-2"></i>Configuración de APIs</h6>
+        <button class="btn-close" (click)="showSocialTokensModal = false"></button>
+      </div>
+      <div class="modal-body" style="max-height:82vh; overflow-y:auto;">
+
+        <!-- ── Sección: Motor de IA (Claude + Flux 2) ── -->
+        <div class="p-3 rounded-3 mb-4" style="background:var(--bg-surface); border:1px solid var(--border-color);">
+          <p class="fw-bold small mb-1"><i class="bi bi-stars me-2 text-warning"></i>Motor de IA para posts</p>
+          <p class="text-muted small mb-3">
+            <strong>Claude Sonnet 4.6</strong> (Anthropic) genera el texto del post.
+            <strong>Flux 2</strong> (Replicate) genera la imagen. Sin estas claves se usa OpenAI como fallback.
+          </p>
+
+          <!-- Anthropic API Key -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold small d-flex align-items-center gap-2">
+              Anthropic API Key
+              <span class="badge" [ngClass]="aiKeys['anthropic_api_key'] ? 'bg-success' : 'bg-secondary'" style="font-size:0.68rem;">
+                {{ aiKeys['anthropic_api_key'] ? 'Configurado ✓' : 'No configurado' }}
+              </span>
+              <a href="https://console.anthropic.com/keys" target="_blank" class="text-muted small ms-auto">
+                <i class="bi bi-box-arrow-up-right me-1"></i>Obtener clave
+              </a>
+            </label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text"><i class="bi bi-robot"></i></span>
+              <input type="password" class="form-control"
+                     [(ngModel)]="aiKeyValues['anthropic_api_key']"
+                     [placeholder]="aiKeys['anthropic_api_key'] && !aiKeyValues['anthropic_api_key'] ? '••••••••••••••••••••••••••••••••' : 'sk-ant-api03-...'"
+                     [disabled]="keyStatus['anthropic_api_key'] === 'saving'">
+              <button class="btn save-key-btn"
+                      [ngClass]="{
+                        'btn-outline-success': !keyStatus['anthropic_api_key'] || keyStatus['anthropic_api_key'] === 'saving',
+                        'btn-success':  keyStatus['anthropic_api_key'] === 'saved',
+                        'btn-danger':   keyStatus['anthropic_api_key'] === 'error'
+                      }"
+                      (click)="saveAIKey('anthropic_api_key')"
+                      [disabled]="!aiKeyValues['anthropic_api_key']?.trim() || keyStatus['anthropic_api_key'] === 'saving'">
+                <span *ngIf="!keyStatus['anthropic_api_key']"><i class="bi bi-floppy me-1"></i>Guardar</span>
+                <span *ngIf="keyStatus['anthropic_api_key'] === 'saving'"><i class="bi bi-hourglass-split spin-icon me-1"></i>Guardando...</span>
+                <span *ngIf="keyStatus['anthropic_api_key'] === 'saved'"><i class="bi bi-check2-circle me-1"></i>¡Guardado!</span>
+                <span *ngIf="keyStatus['anthropic_api_key'] === 'error'"><i class="bi bi-x-circle me-1"></i>Error</span>
+              </button>
+            </div>
+            <div *ngIf="aiKeys['anthropic_api_key'] && !aiKeyValues['anthropic_api_key']" class="form-text text-success mt-1">
+              <i class="bi bi-shield-lock me-1"></i>Clave guardada · escribe una nueva para reemplazarla
+            </div>
+          </div>
+
+          <!-- Replicate API Token -->
+          <div class="mb-2">
+            <label class="form-label fw-semibold small d-flex align-items-center gap-2">
+              Replicate API Token <span class="badge bg-info text-dark" style="font-size:0.68rem;">Flux 2 — imágenes</span>
+              <span class="badge" [ngClass]="aiKeys['replicate_api_token'] ? 'bg-success' : 'bg-secondary'" style="font-size:0.68rem;">
+                {{ aiKeys['replicate_api_token'] ? 'Configurado ✓' : 'No configurado' }}
+              </span>
+              <a href="https://replicate.com/account/api-tokens" target="_blank" class="text-muted small ms-auto">
+                <i class="bi bi-box-arrow-up-right me-1"></i>Obtener token
+              </a>
+            </label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text"><i class="bi bi-image"></i></span>
+              <input type="password" class="form-control"
+                     [(ngModel)]="aiKeyValues['replicate_api_token']"
+                     [placeholder]="aiKeys['replicate_api_token'] && !aiKeyValues['replicate_api_token'] ? '••••••••••••••••••••••••••••••••' : 'r8_...'"
+                     [disabled]="keyStatus['replicate_api_token'] === 'saving'">
+              <button class="btn save-key-btn"
+                      [ngClass]="{
+                        'btn-outline-success': !keyStatus['replicate_api_token'] || keyStatus['replicate_api_token'] === 'saving',
+                        'btn-success':  keyStatus['replicate_api_token'] === 'saved',
+                        'btn-danger':   keyStatus['replicate_api_token'] === 'error'
+                      }"
+                      (click)="saveAIKey('replicate_api_token')"
+                      [disabled]="!aiKeyValues['replicate_api_token']?.trim() || keyStatus['replicate_api_token'] === 'saving'">
+                <span *ngIf="!keyStatus['replicate_api_token']"><i class="bi bi-floppy me-1"></i>Guardar</span>
+                <span *ngIf="keyStatus['replicate_api_token'] === 'saving'"><i class="bi bi-hourglass-split spin-icon me-1"></i>Guardando...</span>
+                <span *ngIf="keyStatus['replicate_api_token'] === 'saved'"><i class="bi bi-check2-circle me-1"></i>¡Guardado!</span>
+                <span *ngIf="keyStatus['replicate_api_token'] === 'error'"><i class="bi bi-x-circle me-1"></i>Error</span>
+              </button>
+            </div>
+            <div *ngIf="aiKeys['replicate_api_token'] && !aiKeyValues['replicate_api_token']" class="form-text text-success mt-1">
+              <i class="bi bi-shield-lock me-1"></i>Token guardado · escribe uno nuevo para reemplazarlo
+            </div>
+          </div>
+
+          <!-- ── Google Cloud / Vertex AI (Imagen 3) ── -->
+          <div class="mt-4 p-3 rounded-3" style="background:rgba(66,133,244,0.06); border:1px solid rgba(66,133,244,0.25);">
+            <p class="fw-bold small mb-1">
+              <i class="bi bi-cloud me-2 text-primary"></i>Google Cloud · Vertex AI
+              <span class="badge bg-primary ms-2" style="font-size:0.65rem;">Imagen 3 nativo</span>
+            </p>
+            <p class="text-muted small mb-3">
+              Necesario para los modelos <strong>Google Imagen 3</strong> y <strong>Imagen 3 Fast</strong>.
+              Crea una cuenta de servicio en
+              <a href="https://console.cloud.google.com/iam-admin/serviceaccounts" target="_blank">Google Cloud Console</a>
+              con el rol <strong>"Vertex AI User"</strong> y descarga su JSON.
+            </p>
+
+            <!-- Project ID -->
+            <div class="mb-3">
+              <label class="form-label fw-semibold small d-flex align-items-center gap-2">
+                Google Cloud Project ID
+                <span class="badge" [ngClass]="aiKeys['gcp_project_id'] ? 'bg-success' : 'bg-secondary'" style="font-size:0.68rem;">
+                  {{ aiKeys['gcp_project_id'] ? 'Configurado ✓' : 'No configurado' }}
+                </span>
+                <a href="https://console.cloud.google.com/home/dashboard" target="_blank" class="text-muted small ms-auto">
+                  <i class="bi bi-box-arrow-up-right me-1"></i>Abrir consola
+                </a>
+              </label>
+              <div class="input-group input-group-sm">
+                <span class="input-group-text"><i class="bi bi-diagram-3"></i></span>
+                <input type="text" class="form-control"
+                       [(ngModel)]="aiKeyValues['gcp_project_id']"
+                       [placeholder]="aiKeys['gcp_project_id'] && !aiKeyValues['gcp_project_id'] ? 'mi-proyecto-123456' : 'mi-proyecto-123456'"
+                       [disabled]="keyStatus['gcp_project_id'] === 'saving'">
+                <button class="btn save-key-btn"
+                        [ngClass]="{
+                          'btn-outline-primary': !keyStatus['gcp_project_id'] || keyStatus['gcp_project_id'] === 'saving',
+                          'btn-primary':  keyStatus['gcp_project_id'] === 'saved',
+                          'btn-danger':   keyStatus['gcp_project_id'] === 'error'
+                        }"
+                        (click)="saveAIKey('gcp_project_id')"
+                        [disabled]="!aiKeyValues['gcp_project_id']?.trim() || keyStatus['gcp_project_id'] === 'saving'">
+                  <span *ngIf="!keyStatus['gcp_project_id']"><i class="bi bi-floppy me-1"></i>Guardar</span>
+                  <span *ngIf="keyStatus['gcp_project_id'] === 'saving'"><i class="bi bi-hourglass-split spin-icon me-1"></i>Guardando...</span>
+                  <span *ngIf="keyStatus['gcp_project_id'] === 'saved'"><i class="bi bi-check2-circle me-1"></i>¡Guardado!</span>
+                  <span *ngIf="keyStatus['gcp_project_id'] === 'error'"><i class="bi bi-x-circle me-1"></i>Error</span>
+                </button>
+              </div>
+              <div *ngIf="aiKeys['gcp_project_id'] && !aiKeyValues['gcp_project_id']" class="form-text text-success mt-1">
+                <i class="bi bi-shield-lock me-1"></i>Project ID guardado · escribe uno nuevo para reemplazarlo
+              </div>
+            </div>
+
+            <!-- Ruta JSON de credenciales -->
+            <div class="mb-2">
+              <label class="form-label fw-semibold small d-flex align-items-center gap-2">
+                Ruta al JSON de cuenta de servicio (en el servidor)
+                <span class="badge" [ngClass]="aiKeys['gcp_credentials_path'] ? 'bg-success' : 'bg-secondary'" style="font-size:0.68rem;">
+                  {{ aiKeys['gcp_credentials_path'] ? 'Configurado ✓' : 'No configurado' }}
+                </span>
+              </label>
+              <div class="input-group input-group-sm">
+                <span class="input-group-text"><i class="bi bi-file-earmark-lock"></i></span>
+                <input type="text" class="form-control"
+                       [(ngModel)]="aiKeyValues['gcp_credentials_path']"
+                       [placeholder]="aiKeys['gcp_credentials_path'] && !aiKeyValues['gcp_credentials_path'] ? '/ruta/al/service-account.json' : '/ruta/al/service-account.json'"
+                       [disabled]="keyStatus['gcp_credentials_path'] === 'saving'">
+                <button class="btn save-key-btn"
+                        [ngClass]="{
+                          'btn-outline-primary': !keyStatus['gcp_credentials_path'] || keyStatus['gcp_credentials_path'] === 'saving',
+                          'btn-primary':  keyStatus['gcp_credentials_path'] === 'saved',
+                          'btn-danger':   keyStatus['gcp_credentials_path'] === 'error'
+                        }"
+                        (click)="saveAIKey('gcp_credentials_path')"
+                        [disabled]="!aiKeyValues['gcp_credentials_path']?.trim() || keyStatus['gcp_credentials_path'] === 'saving'">
+                  <span *ngIf="!keyStatus['gcp_credentials_path']"><i class="bi bi-floppy me-1"></i>Guardar</span>
+                  <span *ngIf="keyStatus['gcp_credentials_path'] === 'saving'"><i class="bi bi-hourglass-split spin-icon me-1"></i>Guardando...</span>
+                  <span *ngIf="keyStatus['gcp_credentials_path'] === 'saved'"><i class="bi bi-check2-circle me-1"></i>¡Guardado!</span>
+                  <span *ngIf="keyStatus['gcp_credentials_path'] === 'error'"><i class="bi bi-x-circle me-1"></i>Error</span>
+                </button>
+              </div>
+              <div *ngIf="aiKeys['gcp_credentials_path'] && !aiKeyValues['gcp_credentials_path']" class="form-text text-success mt-1">
+                <i class="bi bi-shield-lock me-1"></i>Ruta guardada · escribe una nueva para reemplazarla
+              </div>
+              <div class="form-text text-muted mt-1">
+                <i class="bi bi-info-circle me-1"></i>
+                Copia el archivo JSON descargado al servidor donde corre el backend (ej: <code>/opt/sphaira/gcp-key.json</code>)
+              </div>
+            </div>
+          </div>
+
+          <!-- URL CTA demo -->
+          <div class="mt-3">
+            <label class="form-label fw-semibold small">URL del CTA en los posts</label>
+            <div class="input-group input-group-sm">
+              <span class="input-group-text"><i class="bi bi-link-45deg"></i></span>
+              <input type="url" class="form-control"
+                     [(ngModel)]="aiKeyValues['cta_demo_url']"
+                     placeholder="https://demo.sphairatech.com"
+                     [disabled]="keyStatus['cta_demo_url'] === 'saving'">
+              <button class="btn save-key-btn"
+                      [ngClass]="{
+                        'btn-outline-secondary': !keyStatus['cta_demo_url'] || keyStatus['cta_demo_url'] === 'saving',
+                        'btn-success': keyStatus['cta_demo_url'] === 'saved',
+                        'btn-danger':  keyStatus['cta_demo_url'] === 'error'
+                      }"
+                      (click)="saveAIKey('cta_demo_url')"
+                      [disabled]="!aiKeyValues['cta_demo_url']?.trim() || keyStatus['cta_demo_url'] === 'saving'">
+                <span *ngIf="!keyStatus['cta_demo_url']"><i class="bi bi-floppy me-1"></i>Guardar</span>
+                <span *ngIf="keyStatus['cta_demo_url'] === 'saving'"><i class="bi bi-hourglass-split spin-icon me-1"></i>Guardando...</span>
+                <span *ngIf="keyStatus['cta_demo_url'] === 'saved'"><i class="bi bi-check2-circle me-1"></i>¡Guardado!</span>
+                <span *ngIf="keyStatus['cta_demo_url'] === 'error'"><i class="bi bi-x-circle me-1"></i>Error</span>
+              </button>
+            </div>
+            <div class="form-text">El enlace que el post incluye para llevar al usuario a la demo.</div>
+          </div>
+        </div>
+
+        <!-- ── Sección: Tokens de publicación RRSS ── -->
+        <hr class="my-3">
+        <p class="fw-bold small mb-1"><i class="bi bi-share me-2 text-primary"></i>Publicación automática en redes sociales</p>
+        <p class="text-muted small mb-3">Configura las credenciales de cada red para publicar directamente desde el panel. Sin credenciales, puedes copiar el texto y publicar manualmente.</p>
+
+        <!-- ────── Meta (Instagram + Facebook) ────── -->
+        <div class="api-platform-card mb-3">
+          <div class="api-platform-header">
+            <span class="d-flex align-items-center gap-2">
+              <i class="bi bi-meta social-net-icon social-net--facebook" style="font-size:1.1rem;"></i>
+              <strong class="small">Meta — Instagram &amp; Facebook</strong>
+            </span>
+            <div class="d-flex gap-1">
+              <span class="badge" [ngClass]="socialTokens['meta_access_token'] ? 'bg-success' : 'bg-secondary'">
+                {{ socialTokens['meta_access_token'] ? 'Conectado ✓' : 'Sin conectar' }}
+              </span>
+              <a href="https://developers.facebook.com/tools/explorer/" target="_blank"
+                 class="btn btn-xs btn-outline-secondary" title="Graph API Explorer">
+                <i class="bi bi-box-arrow-up-right"></i>
+              </a>
+            </div>
+          </div>
+          <div class="api-platform-body">
+            <ol class="api-steps">
+              <li>Ve a <a href="https://developers.facebook.com/apps/" target="_blank">developers.facebook.com/apps</a> y crea o selecciona tu app.</li>
+              <li>Activa el producto <strong>Instagram Graph API</strong> y conecta tu cuenta Business.</li>
+              <li>En <a href="https://developers.facebook.com/tools/explorer/" target="_blank">Graph API Explorer</a> genera un <strong>User Access Token</strong> con permisos <code>instagram_basic, instagram_content_publish, pages_manage_posts, pages_read_engagement</code>.</li>
+              <li>Conviértelo en <strong>Long-Lived Token</strong> (60 días) desde Graph API Explorer → Info → Extend.</li>
+              <li>Copia tu <strong>Instagram Business Account ID</strong> (Settings → Instagram → IG User ID) y tu <strong>Facebook Page ID</strong> (About del Page).</li>
+            </ol>
+            <div class="mb-2">
+              <label class="form-label fw-semibold small d-flex align-items-center gap-2">
+                Meta Access Token (Long-Lived)
+                <span class="badge" [ngClass]="socialTokens['meta_access_token'] ? 'bg-success' : 'bg-secondary'" style="font-size:0.65rem;">{{ socialTokens['meta_access_token'] ? '✓' : 'Vacío' }}</span>
+              </label>
+              <div class="input-group input-group-sm">
+                <span class="input-group-text"><i class="bi bi-key"></i></span>
+                <input type="password" class="form-control"
+                       [(ngModel)]="socialTokenValues['meta_access_token']"
+                       [placeholder]="socialTokens['meta_access_token'] ? '••••••••• (ya configurado)' : 'EAAxxxxxxxx...'">
+                <button class="btn save-key-btn"
+                        [ngClass]="{'btn-outline-success': !keyStatus['meta_access_token'] || keyStatus['meta_access_token']==='saving', 'btn-success': keyStatus['meta_access_token']==='saved', 'btn-danger': keyStatus['meta_access_token']==='error'}"
+                        (click)="saveSocialToken('meta_access_token')"
+                        [disabled]="!socialTokenValues['meta_access_token']?.trim() || keyStatus['meta_access_token']==='saving'">
+                  <span *ngIf="!keyStatus['meta_access_token']"><i class="bi bi-floppy me-1"></i>Guardar</span>
+                  <span *ngIf="keyStatus['meta_access_token']==='saving'"><i class="bi bi-hourglass-split spin-icon me-1"></i>Guardando...</span>
+                  <span *ngIf="keyStatus['meta_access_token']==='saved'"><i class="bi bi-check2-circle me-1"></i>¡Guardado!</span>
+                  <span *ngIf="keyStatus['meta_access_token']==='error'"><i class="bi bi-x-circle me-1"></i>Error</span>
+                </button>
+              </div>
+            </div>
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="form-label fw-semibold small d-flex align-items-center gap-1">
+                  Instagram Business User ID
+                  <span class="badge" [ngClass]="socialTokens['meta_ig_user_id'] ? 'bg-success' : 'bg-secondary'" style="font-size:0.65rem;">{{ socialTokens['meta_ig_user_id'] ? '✓' : 'Vacío' }}</span>
+                </label>
+                <div class="input-group input-group-sm">
+                  <input type="text" class="form-control"
+                         [(ngModel)]="socialTokenValues['meta_ig_user_id']"
+                         [placeholder]="socialTokens['meta_ig_user_id'] ? '(configurado)' : '17841400...'">
+                  <button class="btn save-key-btn" [ngClass]="keyBtnClass('meta_ig_user_id')"
+                          (click)="saveSocialToken('meta_ig_user_id')"
+                          [disabled]="!socialTokenValues['meta_ig_user_id']?.trim() || keyStatus['meta_ig_user_id']==='saving'">
+                    <ng-container *ngIf="keyStatus['meta_ig_user_id'] !== 'saved' && keyStatus['meta_ig_user_id'] !== 'error'"><i class="bi" [ngClass]="keyStatus['meta_ig_user_id']==='saving' ? 'bi-hourglass-split spin-icon' : 'bi-floppy'" ></i></ng-container>
+                    <i *ngIf="keyStatus['meta_ig_user_id']==='saved'" class="bi bi-check2-circle"></i>
+                    <i *ngIf="keyStatus['meta_ig_user_id']==='error'" class="bi bi-x-circle"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-semibold small d-flex align-items-center gap-1">
+                  Facebook Page ID
+                  <span class="badge" [ngClass]="socialTokens['meta_fb_page_id'] ? 'bg-success' : 'bg-secondary'" style="font-size:0.65rem;">{{ socialTokens['meta_fb_page_id'] ? '✓' : 'Vacío' }}</span>
+                </label>
+                <div class="input-group input-group-sm">
+                  <input type="text" class="form-control"
+                         [(ngModel)]="socialTokenValues['meta_fb_page_id']"
+                         [placeholder]="socialTokens['meta_fb_page_id'] ? '(configurado)' : '1024...'">
+                  <button class="btn save-key-btn" [ngClass]="keyBtnClass('meta_fb_page_id')" (click)="saveSocialToken('meta_fb_page_id')" [disabled]="!socialTokenValues['meta_fb_page_id']?.trim() || keyStatus['meta_fb_page_id']==='saving'">
+                    <i class="bi" [ngClass]="keyStatus['meta_fb_page_id']==='saved' ? 'bi-check2-circle' : keyStatus['meta_fb_page_id']==='error' ? 'bi-x-circle' : keyStatus['meta_fb_page_id']==='saving' ? 'bi-hourglass-split spin-icon' : 'bi-floppy'"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ────── LinkedIn ────── -->
+        <div class="api-platform-card mb-3">
+          <div class="api-platform-header">
+            <span class="d-flex align-items-center gap-2">
+              <i class="bi bi-linkedin social-net-icon social-net--linkedin" style="font-size:1.1rem;"></i>
+              <strong class="small">LinkedIn</strong>
+            </span>
+            <div class="d-flex gap-1">
+              <span class="badge" [ngClass]="socialTokens['linkedin_access_token'] ? 'bg-success' : 'bg-secondary'">
+                {{ socialTokens['linkedin_access_token'] ? 'Conectado ✓' : 'Sin conectar' }}
+              </span>
+              <a href="https://www.linkedin.com/developers/apps" target="_blank"
+                 class="btn btn-xs btn-outline-secondary" title="LinkedIn Developer Portal">
+                <i class="bi bi-box-arrow-up-right"></i>
+              </a>
+            </div>
+          </div>
+          <div class="api-platform-body">
+            <ol class="api-steps">
+              <li>Ve a <a href="https://www.linkedin.com/developers/apps/new" target="_blank">LinkedIn Developers → Crear app</a>. Necesitas una <strong>LinkedIn Page</strong> de empresa.</li>
+              <li>En tu app, ve a <strong>Products</strong> y solicita <em>Share on LinkedIn</em> y <em>Sign In with LinkedIn</em>.</li>
+              <li>En <strong>Auth</strong>, añade como Redirect URL: <code>https://www.linkedin.com/developers/tools/oauth/redirect</code></li>
+              <li>Ve a <a href="https://www.linkedin.com/developers/tools/oauth" target="_blank">OAuth 2.0 Token Generator</a>, selecciona tu app y los scopes <code>w_member_social, r_liteprofile</code>. Genera el token.</li>
+              <li>Para el <strong>Author URN</strong>: llama a <code>GET https://api.linkedin.com/v2/me</code> con el token y copia el campo <code>id</code> → el URN es <code>urn:li:person:TU_ID</code></li>
+            </ol>
+            <div class="mb-2">
+              <label class="form-label fw-semibold small d-flex align-items-center gap-2">
+                LinkedIn Access Token <span class="badge bg-warning text-dark" style="font-size:0.65rem;">Caduca en 60 días</span>
+                <span class="badge" [ngClass]="socialTokens['linkedin_access_token'] ? 'bg-success' : 'bg-secondary'" style="font-size:0.65rem;">{{ socialTokens['linkedin_access_token'] ? '✓' : 'Vacío' }}</span>
+              </label>
+              <div class="input-group input-group-sm">
+                <span class="input-group-text"><i class="bi bi-key"></i></span>
+                <input type="password" class="form-control"
+                       [(ngModel)]="socialTokenValues['linkedin_access_token']"
+                       [placeholder]="socialTokens['linkedin_access_token'] ? '••••••••• (ya configurado)' : 'AQV...'">
+                <button class="btn save-key-btn" [ngClass]="keyBtnClass('linkedin_access_token')" (click)="saveSocialToken('linkedin_access_token')" [disabled]="!socialTokenValues['linkedin_access_token']?.trim() || keyStatus['linkedin_access_token']==='saving'">
+                  <i class="bi" [ngClass]="keyStatus['linkedin_access_token']==='saved' ? 'bi-check2-circle' : keyStatus['linkedin_access_token']==='error' ? 'bi-x-circle' : keyStatus['linkedin_access_token']==='saving' ? 'bi-hourglass-split spin-icon' : 'bi-floppy'"></i>
+                </button>
+              </div>
+            </div>
+            <div>
+              <label class="form-label fw-semibold small d-flex align-items-center gap-2">
+                LinkedIn Author URN
+                <span class="badge" [ngClass]="socialTokens['linkedin_author_urn'] ? 'bg-success' : 'bg-secondary'" style="font-size:0.65rem;">{{ socialTokens['linkedin_author_urn'] ? '✓' : 'Vacío' }}</span>
+              </label>
+              <div class="input-group input-group-sm">
+                <span class="input-group-text"><code style="font-size:0.7rem;">urn:</code></span>
+                <input type="text" class="form-control"
+                       [(ngModel)]="socialTokenValues['linkedin_author_urn']"
+                       [placeholder]="socialTokens['linkedin_author_urn'] ? '(configurado)' : 'urn:li:person:XXXXXXXX'">
+                <button class="btn save-key-btn" [ngClass]="keyBtnClass('linkedin_author_urn')" (click)="saveSocialToken('linkedin_author_urn')" [disabled]="!socialTokenValues['linkedin_author_urn']?.trim() || keyStatus['linkedin_author_urn']==='saving'">
+                  <i class="bi" [ngClass]="keyStatus['linkedin_author_urn']==='saved' ? 'bi-check2-circle' : keyStatus['linkedin_author_urn']==='error' ? 'bi-x-circle' : keyStatus['linkedin_author_urn']==='saving' ? 'bi-hourglass-split spin-icon' : 'bi-floppy'"></i>
+                </button>
+              </div>
+              <div class="form-text">Ejemplo: <code>urn:li:person:AbCdEfGhIj</code>. Para páginas de empresa: <code>urn:li:organization:1234567</code></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ────── X / Twitter ────── -->
+        <div class="api-platform-card mb-2">
+          <div class="api-platform-header">
+            <span class="d-flex align-items-center gap-2">
+              <i class="bi bi-twitter-x social-net-icon social-net--twitter" style="font-size:1.1rem;"></i>
+              <strong class="small">X / Twitter</strong>
+            </span>
+            <div class="d-flex gap-1">
+              <span class="badge" [ngClass]="socialTokens['twitter_api_key'] ? 'bg-success' : 'bg-secondary'">
+                {{ socialTokens['twitter_api_key'] ? 'Conectado ✓' : 'Sin conectar' }}
+              </span>
+              <a href="https://developer.twitter.com/en/portal/dashboard" target="_blank"
+                 class="btn btn-xs btn-outline-secondary" title="Twitter Developer Portal">
+                <i class="bi bi-box-arrow-up-right"></i>
+              </a>
+            </div>
+          </div>
+          <div class="api-platform-body">
+            <ol class="api-steps">
+              <li>Ve a <a href="https://developer.twitter.com/en/portal/petition/essential/basic-info" target="_blank">developer.twitter.com</a> y crea una cuenta de desarrollador (requiere descripción del uso).</li>
+              <li>Crea un <strong>Project</strong> y dentro una <strong>App</strong>. Solicita acceso <em>Elevated</em> (gratis) para poder publicar tweets.</li>
+              <li>En tu App → <strong>Keys and Tokens</strong>: genera y copia <strong>API Key</strong> y <strong>API Key Secret</strong>.</li>
+              <li>En la misma pantalla, genera <strong>Access Token</strong> y <strong>Access Token Secret</strong> con permisos de lectura y escritura.</li>
+              <li>En <strong>Settings → App permissions</strong>, asegúrate de que está en <em>Read and Write</em>.</li>
+            </ol>
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="form-label fw-semibold small d-flex align-items-center gap-1">
+                  API Key (Consumer Key)
+                  <span class="badge" [ngClass]="socialTokens['twitter_api_key'] ? 'bg-success' : 'bg-secondary'" style="font-size:0.65rem;">{{ socialTokens['twitter_api_key'] ? '✓' : '' }}</span>
+                </label>
+                <div class="input-group input-group-sm">
+                  <input type="password" class="form-control"
+                         [(ngModel)]="socialTokenValues['twitter_api_key']"
+                         [placeholder]="socialTokens['twitter_api_key'] ? '(configurado)' : 'Xxxx...'">
+                  <button class="btn save-key-btn" [ngClass]="keyBtnClass('twitter_api_key')" (click)="saveSocialToken('twitter_api_key')" [disabled]="!socialTokenValues['twitter_api_key']?.trim() || keyStatus['twitter_api_key']==='saving'">
+                    <i class="bi" [ngClass]="keyStatus['twitter_api_key']==='saved' ? 'bi-check2-circle' : keyStatus['twitter_api_key']==='error' ? 'bi-x-circle' : keyStatus['twitter_api_key']==='saving' ? 'bi-hourglass-split spin-icon' : 'bi-floppy'"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-semibold small d-flex align-items-center gap-1">
+                  API Key Secret
+                  <span class="badge" [ngClass]="socialTokens['twitter_api_secret'] ? 'bg-success' : 'bg-secondary'" style="font-size:0.65rem;">{{ socialTokens['twitter_api_secret'] ? '✓' : '' }}</span>
+                </label>
+                <div class="input-group input-group-sm">
+                  <input type="password" class="form-control"
+                         [(ngModel)]="socialTokenValues['twitter_api_secret']"
+                         [placeholder]="socialTokens['twitter_api_secret'] ? '(configurado)' : 'Yyyy...'">
+                  <button class="btn save-key-btn" [ngClass]="keyBtnClass('twitter_api_secret')" (click)="saveSocialToken('twitter_api_secret')" [disabled]="!socialTokenValues['twitter_api_secret']?.trim() || keyStatus['twitter_api_secret']==='saving'">
+                    <i class="bi" [ngClass]="keyStatus['twitter_api_secret']==='saved' ? 'bi-check2-circle' : keyStatus['twitter_api_secret']==='error' ? 'bi-x-circle' : keyStatus['twitter_api_secret']==='saving' ? 'bi-hourglass-split spin-icon' : 'bi-floppy'"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-semibold small d-flex align-items-center gap-1">
+                  Access Token
+                  <span class="badge" [ngClass]="socialTokens['twitter_access_token'] ? 'bg-success' : 'bg-secondary'" style="font-size:0.65rem;">{{ socialTokens['twitter_access_token'] ? '✓' : '' }}</span>
+                </label>
+                <div class="input-group input-group-sm">
+                  <input type="password" class="form-control"
+                         [(ngModel)]="socialTokenValues['twitter_access_token']"
+                         [placeholder]="socialTokens['twitter_access_token'] ? '(configurado)' : '1234567890-xxx...'">
+                  <button class="btn save-key-btn" [ngClass]="keyBtnClass('twitter_access_token')" (click)="saveSocialToken('twitter_access_token')" [disabled]="!socialTokenValues['twitter_access_token']?.trim() || keyStatus['twitter_access_token']==='saving'">
+                    <i class="bi" [ngClass]="keyStatus['twitter_access_token']==='saved' ? 'bi-check2-circle' : keyStatus['twitter_access_token']==='error' ? 'bi-x-circle' : keyStatus['twitter_access_token']==='saving' ? 'bi-hourglass-split spin-icon' : 'bi-floppy'"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="col-6">
+                <label class="form-label fw-semibold small d-flex align-items-center gap-1">
+                  Access Token Secret
+                  <span class="badge" [ngClass]="socialTokens['twitter_access_secret'] ? 'bg-success' : 'bg-secondary'" style="font-size:0.65rem;">{{ socialTokens['twitter_access_secret'] ? '✓' : '' }}</span>
+                </label>
+                <div class="input-group input-group-sm">
+                  <input type="password" class="form-control"
+                         [(ngModel)]="socialTokenValues['twitter_access_secret']"
+                         [placeholder]="socialTokens['twitter_access_secret'] ? '(configurado)' : 'Zzzz...'">
+                  <button class="btn save-key-btn" [ngClass]="keyBtnClass('twitter_access_secret')" (click)="saveSocialToken('twitter_access_secret')" [disabled]="!socialTokenValues['twitter_access_secret']?.trim() || keyStatus['twitter_access_secret']==='saving'">
+                    <i class="bi" [ngClass]="keyStatus['twitter_access_secret']==='saved' ? 'bi-check2-circle' : keyStatus['twitter_access_secret']==='error' ? 'bi-x-circle' : keyStatus['twitter_access_secret']==='saving' ? 'bi-hourglass-split spin-icon' : 'bi-floppy'"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-secondary btn-sm" (click)="showSocialTokensModal = false">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Modal: DMs del prospect ── -->
+  <div class="modal-backdrop-custom" *ngIf="showDMsModal" (click)="showDMsModal = false"></div>
+  <div class="modal-panel" *ngIf="showDMsModal" style="max-width:560px;">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0 pb-1">
+        <h6 class="modal-title fw-bold">
+          <i class="bi bi-chat-dots me-2 text-success"></i>
+          DMs para {{ dmsProspect?.name }}
+        </h6>
+        <button class="btn-close" (click)="showDMsModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="isDMsLoading" class="text-center py-3 text-muted">
+          <i class="bi bi-hourglass-split spin-icon me-1"></i> Cargando...
+        </div>
+        <div *ngIf="!isDMsLoading && prospectDMs.length === 0" class="text-center py-3">
+          <p class="text-muted small mb-3">No hay mensajes generados todavía para este club.</p>
+          <button class="btn btn-sm btn-refresh" (click)="generateDMs()" [disabled]="isGeneratingDMs">
+            <span *ngIf="!isGeneratingDMs"><i class="bi bi-stars me-1"></i>Generar DMs con IA</span>
+            <span *ngIf="isGeneratingDMs"><i class="bi bi-hourglass-split spin-icon me-1"></i>Generando...</span>
+          </button>
+        </div>
+        <div *ngFor="let dm of prospectDMs" class="dm-card mb-3">
+          <div class="dm-card-header d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi {{ dmNetworkIcon(dm.network) }} social-net-icon social-net--{{ dm.network }}"></i>
+              <span class="fw-semibold small">{{ socialNetworkLabels[dm.network] || dm.network }}</span>
+              <span class="badge small" [ngClass]="dm.status === 'SENT_MANUAL' ? 'badge-st-sent' : dm.status === 'COPIED' ? 'badge-st-enriched' : 'bg-secondary'">{{ dmStatusLabel(dm.status) }}</span>
+            </div>
+            <div class="d-flex gap-1">
+              <button class="btn btn-xs btn-outline-secondary" (click)="copyDM(dm)">
+                <span *ngIf="copiedDMId !== dm.dm_id"><i class="bi bi-clipboard me-1"></i>Copiar</span>
+                <span *ngIf="copiedDMId === dm.dm_id" class="text-success"><i class="bi bi-check2 me-1"></i>Copiado</span>
+              </button>
+              <button *ngIf="dm.status !== 'SENT_MANUAL'" class="btn btn-xs btn-success" (click)="markDMSent(dm)">
+                <i class="bi bi-check2-all me-1"></i>Enviado
+              </button>
+            </div>
+          </div>
+          <div class="dm-card-text small">{{ dm.dm_text }}</div>
+          <div class="text-muted" style="font-size:0.7rem;">{{ dm.dm_text.length }} caracteres</div>
+        </div>
+        <div *ngIf="!isDMsLoading && prospectDMs.length > 0" class="mt-2 text-center">
+          <button class="btn btn-sm btn-outline-secondary" (click)="generateDMs()" [disabled]="isGeneratingDMs">
+            <span *ngIf="!isGeneratingDMs"><i class="bi bi-arrow-clockwise me-1"></i>Regenerar DMs</span>
+            <span *ngIf="isGeneratingDMs"><i class="bi bi-hourglass-split spin-icon me-1"></i>Generando...</span>
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-secondary btn-sm" (click)="showDMsModal = false">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Modal: Follow-up config ── -->
+  <div class="modal-backdrop-custom" *ngIf="showFollowupConfigModal" (click)="showFollowupConfigModal = false"></div>
+  <div class="modal-panel" *ngIf="showFollowupConfigModal" style="max-width:480px;">
+    <div class="modal-content border-0 shadow-lg">
+      <div class="modal-header border-0 pb-1">
+        <h6 class="modal-title fw-bold"><i class="bi bi-arrow-repeat me-2 text-warning"></i>Seguimiento automático (Follow-up)</h6>
+        <button class="btn-close" (click)="showFollowupConfigModal = false"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Stats actuales -->
+        <div *ngIf="followupStats" class="row g-2 mb-3">
+          <div class="col-4">
+            <div class="kpi-card p-2 text-center">
+              <div class="kpi-value small">{{ followupStats.followups_sent || 0 }}</div>
+              <div class="kpi-label" style="font-size:0.7rem;">Enviados</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="kpi-card p-2 text-center">
+              <div class="kpi-value small">{{ followupStats.followups_pending || 0 }}</div>
+              <div class="kpi-label" style="font-size:0.7rem;">Pendientes</div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="kpi-card p-2 text-center">
+              <div class="kpi-value small">{{ followupStats.followups_skipped || 0 }}</div>
+              <div class="kpi-label" style="font-size:0.7rem;">Omitidos</div>
+            </div>
+          </div>
+        </div>
+        <!-- Config -->
+        <div class="form-check form-switch mb-3">
+          <input class="form-check-input" type="checkbox" id="followupEnabled" [(ngModel)]="followupConfig.enabled">
+          <label class="form-check-label fw-semibold small" for="followupEnabled">Activar follow-up automático</label>
+        </div>
+        <div [class.opacity-50]="!followupConfig.enabled">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Número de follow-ups</label>
+            <div class="btn-group btn-group-sm w-100">
+              <button class="btn" [ngClass]="followupConfig.max_followups === 1 ? 'btn-dark' : 'btn-outline-secondary'" (click)="followupConfig.max_followups = 1">1 follow-up</button>
+              <button class="btn" [ngClass]="followupConfig.max_followups === 2 ? 'btn-dark' : 'btn-outline-secondary'" (click)="followupConfig.max_followups = 2">2 follow-ups</button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Días hasta el 1er follow-up</label>
+            <input type="number" class="form-control form-control-sm" [(ngModel)]="followupConfig.delay_days_1" min="1" max="30">
+            <div class="text-muted" style="font-size:0.75rem;">Si el club no abre el email en X días, se envía automáticamente.</div>
+          </div>
+          <div *ngIf="followupConfig.max_followups >= 2" class="mb-3">
+            <label class="form-label small fw-semibold">Días hasta el 2º follow-up</label>
+            <input type="number" class="form-control form-control-sm" [(ngModel)]="followupConfig.delay_days_2" min="1" max="60">
+          </div>
+        </div>
+        <div *ngIf="followupConfigSaved" class="alert alert-success py-2 small"><i class="bi bi-check-circle me-1"></i>Configuración guardada</div>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button class="btn btn-secondary btn-sm" (click)="showFollowupConfigModal = false">Cancelar</button>
+        <button class="btn btn-refresh btn-sm" (click)="saveFollowupConfig()" [disabled]="isSavingFollowup">
+          <span *ngIf="!isSavingFollowup"><i class="bi bi-floppy me-1"></i>Guardar</span>
+          <span *ngIf="isSavingFollowup"><i class="bi bi-hourglass-split spin-icon me-1"></i></span>
+        </button>
+      </div>
     </div>
   </div>
 
