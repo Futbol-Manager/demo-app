@@ -2018,6 +2018,7 @@
     "RANKING_RESULTS": "Classificação e resultados",
     "GALLERY": "Galeria",
     "TEAM_INFO": "Informação da equipa",
+    "INJURIES": "Lesões",
     "VIDEO_ANALYSIS": "Análise de vídeo"
   },
   "VALIDATION": {
@@ -2606,7 +2607,9 @@
       "SECTION_OBJECTIVES": "Cumprimento de Objetivos",
       "SECTION_ATTENDANCE": "Contexto de Presença",
       "SECTION_NOTES": "Notas e Observações",
-      "SECTION_HIGHLIGHTS": "Jogadores em Destaque"
+      "SECTION_HIGHLIGHTS": "Jogadores em Destaque",
+      "DOWNLOAD_PDF": "Baixar PDF",
+      "EXPORTING": "Exportando..."
     },
     "HISTORY": {
       "TITLE": "Histórico de Análises",
@@ -2832,5 +2835,17 @@
     "TITLE": "Notificações",
     "MARK_ALL_READ": "Marcar tudo como lido",
     "EMPTY": "Não tem notificações"
+  },
+  "INJURY_STATUS": {
+    "BAJA":        "Baixa médica",
+    "FISIOTERAPIA": "Fisioterapia",
+    "READAPTACION": "Reabilitação",
+    "CONDICIONADO": "Disponível condicionado",
+    "ALTA":        "Alta médica",
+    "TISSUE_MUSCULAR":    "Muscular",
+    "TISSUE_ARTICULAR":   "Articular",
+    "TISSUE_LIGAMENTOSO": "Ligamentar",
+    "TISSUE_TENDINOSO":   "Tendinoso",
+    "TISSUE_OSEO":        "Ósseo"
   }
 }

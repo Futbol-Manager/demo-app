@@ -86,9 +86,9 @@
     <div class="filters-bar">
       <div class="filter-chips">
         <button class="filter-chip" [class.active]="filterStatus === 'all'" (click)="setFilter('all')">{{ 'INJURIES_CLUB.FILTERS.ALL' | translate }}</button>
-        <button class="filter-chip chip-active" [class.active]="filterStatus === 'activa'" (click)="setFilter('activa')">{{ 'INJURIES_CLUB.FILTERS.ACTIVE' | translate }}</button>
-        <button class="filter-chip chip-recovering" [class.active]="filterStatus === 'recuperacion'" (click)="setFilter('recuperacion')">{{ 'INJURIES_CLUB.FILTERS.RECOVERING' | translate }}</button>
-        <button class="filter-chip chip-closed" [class.active]="filterStatus === 'cerrada'" (click)="setFilter('cerrada')">{{ 'INJURIES_CLUB.FILTERS.CLOSED' | translate }}</button>
+        <button class="filter-chip chip-active" [class.active]="filterStatus === 'baja'" (click)="setFilter('baja')">{{ 'INJURIES_CLUB.FILTERS.ACTIVE' | translate }}</button>
+        <button class="filter-chip chip-recovering" [class.active]="filterStatus === 'readaptacion'" (click)="setFilter('readaptacion')">{{ 'INJURIES_CLUB.FILTERS.RECOVERING' | translate }}</button>
+        <button class="filter-chip chip-closed" [class.active]="filterStatus === 'alta'" (click)="setFilter('alta')">{{ 'INJURIES_CLUB.FILTERS.CLOSED' | translate }}</button>
       </div>
       <div class="filter-controls">
         <select class="form-select form-select-sm filter-select" [(ngModel)]="filterSeverity" (change)="applyFilters()">
@@ -118,6 +118,7 @@
         <thead>
           <tr>
             <th>{{ 'INJURIES_CLUB.TABLE.PLAYER' | translate }}</th>
+            <th>Equipo</th>
             <th>{{ 'INJURIES_CLUB.TABLE.INJURY' | translate }}</th>
             <th>{{ 'INJURIES_CLUB.TABLE.TYPE' | translate }}</th>
             <th>{{ 'INJURIES_CLUB.TABLE.SEVERITY' | translate }}</th>
@@ -132,6 +133,7 @@
               <i class="bi bi-person-circle me-1"></i>
               {{ inj.playerName || 'Jugador ' + inj.playerId }}
             </td>
+            <td class="td-team">{{ inj.teamName || (inj.teamId ? 'Equipo ' + inj.teamId : '—') }}</td>
             <td>{{ inj.zoneLabel }}</td>
             <td>{{ inj.type }}</td>
             <td>

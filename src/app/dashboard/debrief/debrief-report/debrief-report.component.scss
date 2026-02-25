@@ -214,8 +214,31 @@ $gradient-match: linear-gradient(135deg, $azul 0%, #1f8f8a 60%, $verde 100%);
   }
 }
 
+/* ═══ ACTION BUTTONS ═══ */
+.btn-action-pdf {
+  background: rgba(239, 68, 68, 0.18) !important;
+  &:hover { background: rgba(239, 68, 68, 0.32) !important; }
+}
+
+/* ═══ PDF CONTENT WRAPPER ═══ */
+.pdf-content {
+  padding: 4px 0;
+}
+
+/* ═══ PDF BRANDING FOOTER (visible in captured screenshot) ═══ */
+.pdf-branding-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 24px; padding: 12px 20px; border-radius: 10px;
+  background: $bg-page; border: 1px solid $border-color;
+  span {
+    font-size: 0.78rem; color: $text-light;
+    display: flex; align-items: center; gap: 6px;
+    i { color: $verde; }
+  }
+}
+
 /* ═══ FOOTER ═══ */
-.report-footer { display: flex; justify-content: center; gap: 12px; padding-bottom: 20px; }
+.report-footer { display: flex; justify-content: center; gap: 12px; padding: 12px 0 20px; flex-wrap: wrap; }
 
 .btn-history {
   display: inline-flex; align-items: center; gap: 8px;
@@ -225,6 +248,18 @@ $gradient-match: linear-gradient(135deg, $azul 0%, #1f8f8a 60%, $verde 100%);
   cursor: pointer; transition: all 0.2s;
   i { color: $azul; }
   &:hover { border-color: $azul; color: $azul; transform: translateY(-1px); }
+}
+
+.btn-download {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 12px 24px; border-radius: 14px;
+  border: none; background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+  color: #fff; font-size: 0.92rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(239,68,68,0.3);
+  i { font-size: 1.1rem; }
+  &:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(239,68,68,0.4); }
+  &:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .spinner-border { width: 1rem; height: 1rem; border-width: 2px; }
 }
 
 /* ═══ RESPONSIVE ═══ */

@@ -78,6 +78,7 @@ import { AsistenteIaCoachComponent } from './asistente-ia-coach/asistente-ia-coa
 import { AiFabComponent } from './ai-fab/ai-fab.component';
 import { LesionesComponent } from './lesiones/lesiones.component';
 import { LesionesEquipoComponent } from './lesiones/lesiones-equipo.component';
+import { BodyMapAnatomicalComponent } from './lesiones/body-map-anatomical.component';
 import { LesionesClubComponent } from './lesiones-club/lesiones-club.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { InfoEntrenadoresComponent } from './info-entrenadores/info-entrenadores.component';
@@ -238,6 +239,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     LesionesComponent,
     LesionesEquipoComponent,
     LesionesClubComponent,
+    BodyMapAnatomicalComponent,
     InfoEntrenadoresComponent,
     PerfilEntrenadorComponent,
     SessionPdfComponent,

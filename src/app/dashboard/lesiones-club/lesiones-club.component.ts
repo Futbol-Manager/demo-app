@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { InjuryService } from 'src/app/core/services/injury/injury.service';
-import { Injury } from 'src/app/core/services/injury/injury.model';
+import { Injury, InjuryStatus } from 'src/app/core/services/injury/injury.model';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
 import { ConfirmationService } from 'src/app/core/services/confirmation/confirmation.service';
 
@@ -25,22 +25,22 @@ export class LesionesClubComponent implements OnInit, OnDestroy {
 
   // Filters
   filterTeam: string = '';
-  filterStatus: 'all' | 'activa' | 'recuperacion' | 'cerrada' = 'all';
+  filterStatus: 'all' | InjuryStatus = 'all';
   filterSeverity: string = '';
   searchTerm: string = '';
 
-  // Team list (derived from data)
-  teams: string[] = [];
+  // Team list (derived from data — uses teamName or "Equipo {teamId}" as fallback)
+  teams: { id: number; name: string }[] = [];
 
   // Stats
   get totalInjuries(): number { return this.allInjuries.length; }
-  get activeInjuries(): number { return this.allInjuries.filter(i => i.status === 'activa').length; }
-  get recoveringInjuries(): number { return this.allInjuries.filter(i => i.status === 'recuperacion').length; }
-  get closedInjuries(): number { return this.allInjuries.filter(i => i.status === 'cerrada').length; }
+  get activeInjuries(): number { return this.allInjuries.filter(i => i.status === 'baja').length; }
+  get recoveringInjuries(): number { return this.allInjuries.filter(i => i.status === 'readaptacion').length; }
+  get closedInjuries(): number { return this.allInjuries.filter(i => i.status === 'alta').length; }
 
   // Players with active injuries
   get playersAffected(): number {
-    const playerIds = new Set(this.allInjuries.filter(i => i.status !== 'cerrada').map(i => i.playerId));
+    const playerIds = new Set(this.allInjuries.filter(i => i.status !== 'alta').map(i => i.playerId));
     return playerIds.size;
   }
 
@@ -84,25 +84,23 @@ export class LesionesClubComponent implements OnInit, OnDestroy {
   }
 
   private buildTeamList(): void {
-    const teamSet = new Set<string>();
+    const teamMap = new Map<number, string>();
     this.allInjuries.forEach(i => {
-      if (i.playerName) {
-        // Extract team hint from mock data or use generic
-        teamSet.add(i.playerName);
+      if (i.teamId) {
+        const name = i.teamName || `Equipo ${i.teamId}`;
+        teamMap.set(i.teamId, name);
       }
     });
-    // Derive unique "team" names from the injuries (mock: we'll group by playerName)
-    // In real backend, injuries would have teamId/teamName
-    this.teams = [...teamSet];
+    this.teams = [...teamMap.entries()].map(([id, name]) => ({ id, name }));
   }
 
   private buildTeamStats(): void {
     const map: Record<string, { total: number; active: number }> = {};
     this.allInjuries.forEach(inj => {
-      const key = inj.playerName || 'Sin asignar';
+      const key = inj.teamName || (inj.teamId ? `Equipo ${inj.teamId}` : 'Sin equipo');
       if (!map[key]) map[key] = { total: 0, active: 0 };
       map[key].total++;
-      if (inj.status !== 'cerrada') map[key].active++;
+      if (inj.status !== 'alta') map[key].active++;
     });
     this.teamStats = Object.entries(map)
       .map(([team, stats]) => ({ team, ...stats }))
@@ -119,7 +117,10 @@ export class LesionesClubComponent implements OnInit, OnDestroy {
       result = result.filter(i => i.severity === this.filterSeverity);
     }
     if (this.filterTeam) {
-      result = result.filter(i => i.playerName === this.filterTeam);
+      result = result.filter(i => {
+        const tName = i.teamName || (i.teamId ? `Equipo ${i.teamId}` : 'Sin equipo');
+        return tName === this.filterTeam;
+      });
     }
     if (this.searchTerm.trim()) {
       const term = this.searchTerm.toLowerCase().trim();
@@ -131,7 +132,7 @@ export class LesionesClubComponent implements OnInit, OnDestroy {
     }
 
     // Sort: active first, then by date
-    const statusOrder: Record<string, number> = { 'activa': 0, 'recuperacion': 1, 'cerrada': 2 };
+    const statusOrder: Record<string, number> = { 'baja': 0, 'fisioterapia': 1, 'readaptacion': 2, 'condicionado': 3, 'alta': 4 };
     result.sort((a, b) => {
       const sa = statusOrder[a.status] ?? 9;
       const sb = statusOrder[b.status] ?? 9;
@@ -142,7 +143,7 @@ export class LesionesClubComponent implements OnInit, OnDestroy {
     this.filteredInjuries = result;
   }
 
-  setFilter(status: 'all' | 'activa' | 'recuperacion' | 'cerrada'): void {
+  setFilter(status: 'all' | InjuryStatus): void {
     this.filterStatus = status;
     this.applyFilters();
   }

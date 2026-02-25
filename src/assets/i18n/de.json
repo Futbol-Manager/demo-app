@@ -1045,7 +1045,9 @@
       "SECTION_OBJECTIVES": "Zielerreichung",
       "SECTION_ATTENDANCE": "Anwesenheitskontext",
       "SECTION_NOTES": "Notizen und Beobachtungen",
-      "SECTION_HIGHLIGHTS": "Herausragende Spieler"
+      "SECTION_HIGHLIGHTS": "Herausragende Spieler",
+      "DOWNLOAD_PDF": "PDF herunterladen",
+      "EXPORTING": "Exportieren..."
     },
     "HISTORY": {
       "TITLE": "Debrief-Verlauf",
@@ -2667,6 +2669,7 @@
     "RANKING_RESULTS": "Tabelle und Ergebnisse",
     "GALLERY": "Galerie",
     "TEAM_INFO": "Teaminformationen",
+    "INJURIES": "Verletzungen",
     "VIDEO_ANALYSIS": "Videoanalyse"
   },
   "VALIDATION": {
@@ -2827,5 +2830,17 @@
     "TITLE": "Benachrichtigungen",
     "MARK_ALL_READ": "Alle als gelesen markieren",
     "EMPTY": "Keine Benachrichtigungen"
+  },
+  "INJURY_STATUS": {
+    "BAJA":        "Verletzungspause",
+    "FISIOTERAPIA": "Physiotherapie",
+    "READAPTACION": "Rehabilitation",
+    "CONDICIONADO": "Bedingt verfügbar",
+    "ALTA":        "Ärztliche Freigabe",
+    "TISSUE_MUSCULAR":    "Muskulär",
+    "TISSUE_ARTICULAR":   "Artikulär",
+    "TISSUE_LIGAMENTOSO": "Ligamentär",
+    "TISSUE_TENDINOSO":   "Tendinös",
+    "TISSUE_OSEO":        "Ossär"
   }
 }

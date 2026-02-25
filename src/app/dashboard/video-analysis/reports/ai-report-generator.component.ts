@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input, ElementRef, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VideoAnalysisService } from '../../../core/services/video-analysis/video-analysis.service';
 import { PlayerStateService } from '../services/player-state.service';
 import { AnalysisEvent, AnalysisCategory } from '../models/analysis.models';
+import { PdfExportService } from '../../../core/services/pdf-export/pdf-export.service';
 
 @Component({
   selector: 'app-ai-report-generator',
@@ -15,6 +16,7 @@ export class AiReportGeneratorComponent implements OnInit, OnDestroy {
   @Input() projectId = 0;
   @Input() clubId = 0;
   @Input() userId = 0;
+  @ViewChild('reportResult') reportResultRef?: ElementRef<HTMLElement>;
 
   private destroy$ = new Subject<void>();
 
@@ -22,6 +24,7 @@ export class AiReportGeneratorComponent implements OnInit, OnDestroy {
   private categories: AnalysisCategory[] = [];
   private tagMap = new Map<number, string>();
   isGenerating = false;
+  isExporting = false;
   generatedReport: any = null;
   reportError = '';
   showPanel = false;
@@ -36,7 +39,8 @@ export class AiReportGeneratorComponent implements OnInit, OnDestroy {
 
   constructor(
     private analysisService: VideoAnalysisService,
-    private ps: PlayerStateService
+    private ps: PlayerStateService,
+    private pdfExport: PdfExportService
   ) {}
 
   ngOnInit(): void {
@@ -146,6 +150,26 @@ export class AiReportGeneratorComponent implements OnInit, OnDestroy {
         fieldY: e.fieldY ?? null
       }))
     };
+  }
+
+  async downloadPdf(): Promise<void> {
+    if (!this.reportResultRef || !this.generatedReport) return;
+    this.isExporting = true;
+
+    const dateStr = this.generatedReport.createdAt
+      ? new Date(this.generatedReport.createdAt).toLocaleDateString('es-ES')
+      : new Date().toLocaleDateString('es-ES');
+
+    try {
+      await this.pdfExport.exportReport(this.reportResultRef.nativeElement, {
+        fileName: `informe-video-analisis-${this.projectId}`,
+        title: 'Informe de Análisis de Vídeo',
+        subtitle: `Proyecto #${this.projectId} · ${dateStr}`,
+        type: 'video'
+      });
+    } finally {
+      this.isExporting = false;
+    }
   }
 
   get canGenerate(): boolean {

@@ -91,29 +91,11 @@
       <div class="dashboard-card bg-injuries">
         <div class="dashboard-content">
           <i class="bi bi-bandaid dashboard-icon"></i>
-          <span class="dashboard-title">Lesiones</span>
+          <span class="dashboard-title">{{ 'MENU_CLUB.INJURIES' | translate }}</span>
         </div>
       </div>
     </div>
 
-    <div class="dashboard-item" (click)="irAPantalla(13)" *ngIf="hasPermission('DASHBOARD_COACHES')">
-      <div class="dashboard-card bg-coaches">
-        <div class="dashboard-content">
-          <i class="bi bi-person-video3 dashboard-icon"></i>
-          <span class="dashboard-title">Entrenadores</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Solo visible para admin del club (no players ni staff) -->
-    <div class="dashboard-item" (click)="irAPantalla(11)" *ngIf="!isStaffUser()">
-      <div class="dashboard-card bg-staff">
-        <div class="dashboard-content">
-          <i class="bi bi-person-badge dashboard-icon"></i>
-          <span class="dashboard-title">Gestión de Staff</span>
-        </div>
-      </div>
-    </div>
 
   </div>
 </div>

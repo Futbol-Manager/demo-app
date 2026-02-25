@@ -610,8 +610,8 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private setInjurySuggestions(injuries: Injury[]): void {
-    const active = injuries.filter(i => i.status === 'activa');
-    const recovery = injuries.filter(i => i.status === 'recuperacion');
+    const active = injuries.filter(i => i.status === 'baja');
+    const recovery = injuries.filter(i => i.status !== 'baja' && i.status !== 'alta');
     const chips: SuggestionChip[] = [];
 
     // Jugadores con lesiones activas (máx. 2)

@@ -2,7 +2,7 @@
 <!-- ║  SPHAIRA – Módulo de Lesiones                                   ║ -->
 <!-- ╚══════════════════════════════════════════════════════════════════╝ -->
 
-<!-- ─── STANDALONE HEADER (only when NOT embedded) ──── -->
+<!-- ─── STANDALONE HEADER ──── -->
 <ng-container *ngIf="!embedded">
   <div class="lesiones-standalone-header">
     <div class="lesiones-header-content">
@@ -11,12 +11,12 @@
         <p class="lesiones-page-subtitle" *ngIf="playerName">{{ playerName }}</p>
       </div>
       <div class="lesiones-header-right">
-        <!-- Export / Print / Notifications buttons -->
         <div class="header-action-btns">
-          <button class="btn-header-action" title="Exportar informe" (click)="exportInjuryReport()">
-            <i class="bi bi-download"></i>
+          <button class="btn-header-action btn-export-pdf" title="Descargar informe PDF" (click)="exportInjuryReport()" [disabled]="isExporting">
+            <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf-fill"></i></span>
+            <span *ngIf="isExporting" class="spinner-border spinner-border-sm"></span>
           </button>
-          <button class="btn-header-action" title="Imprimir informe" (click)="printInjuryReport()">
+          <button class="btn-header-action" title="Imprimir / Exportar" (click)="printInjuryReport()" [disabled]="isExporting">
             <i class="bi bi-printer"></i>
           </button>
           <button class="btn-header-action" title="Configurar notificaciones" (click)="toggleNotifySettings()" *ngIf="!readOnly">
@@ -24,7 +24,6 @@
             <span class="notify-indicator" *ngIf="notificationConfig.autoNotify"></span>
           </button>
         </div>
-        <!-- Base / Pro Toggle -->
         <div class="mode-toggle-wrap">
           <span class="mode-label" [class.active]="!isPro">Base</span>
           <label class="mode-toggle">
@@ -40,17 +39,18 @@
   </div>
 </ng-container>
 
-<!-- ─── EMBEDDED HEADER (compact for tab view) ──── -->
+<!-- ─── EMBEDDED HEADER ──── -->
 <ng-container *ngIf="embedded">
   <div class="lesiones-embedded-header">
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
       <h3 class="lesiones-section-title mb-0"><i class="bi bi-heart-pulse me-2"></i>Historial de lesiones</h3>
       <div class="d-flex align-items-center gap-2 flex-wrap">
         <div class="header-action-btns header-action-btns-sm">
-          <button class="btn-header-action btn-header-action-sm" title="Exportar" (click)="exportInjuryReport()">
-            <i class="bi bi-download"></i>
+          <button class="btn-header-action btn-header-action-sm btn-export-pdf" title="Descargar informe PDF" (click)="exportInjuryReport()" [disabled]="isExporting">
+            <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf-fill"></i></span>
+            <span *ngIf="isExporting" class="spinner-border spinner-border-sm" style="width:0.85rem;height:0.85rem;border-width:2px;"></span>
           </button>
-          <button class="btn-header-action btn-header-action-sm" title="Imprimir" (click)="printInjuryReport()">
+          <button class="btn-header-action btn-header-action-sm" title="Imprimir" (click)="printInjuryReport()" [disabled]="isExporting">
             <i class="bi bi-printer"></i>
           </button>
           <button class="btn-header-action btn-header-action-sm" title="Notificaciones" (click)="toggleNotifySettings()" *ngIf="!readOnly">
@@ -84,7 +84,6 @@
   </button>
 </div>
 
-
 <!-- ═══════ STATS CARDS ═══════ -->
 <div class="lesiones-stats-row">
   <div class="lesion-stat-card stat-total">
@@ -95,95 +94,164 @@
     </div>
   </div>
   <div class="lesion-stat-card stat-active">
-    <i class="bi bi-exclamation-circle-fill"></i>
+    <i class="bi bi-hospital"></i>
     <div class="stat-info">
       <span class="stat-number">{{ activeInjuries }}</span>
-      <span class="stat-label">Activas</span>
+      <span class="stat-label">De baja</span>
     </div>
   </div>
   <div class="lesion-stat-card stat-recovering">
-    <i class="bi bi-arrow-repeat"></i>
+    <i class="bi bi-activity"></i>
     <div class="stat-info">
       <span class="stat-number">{{ recoveringInjuries }}</span>
-      <span class="stat-label">Recuperación</span>
+      <span class="stat-label">Readaptando</span>
     </div>
   </div>
   <div class="lesion-stat-card stat-closed">
-    <i class="bi bi-check-circle-fill"></i>
+    <i class="bi bi-trophy"></i>
     <div class="stat-info">
       <span class="stat-number">{{ closedInjuries }}</span>
-      <span class="stat-label">Cerradas</span>
+      <span class="stat-label">Alta médica</span>
     </div>
   </div>
 </div>
 
 
-<!-- ═══════ VIEW: BODY MAP (default) ═══════ -->
+<!-- ═══════ VIEW: BODY MAP ═══════ -->
 <div class="lesiones-main-layout" *ngIf="activeView === 'bodymap'">
 
-  <!-- ─── LEFT: SVG BODY MAP ──── -->
+  <!-- ─── LEFT: DUAL SVG BODY MAP ──── -->
   <div class="bodymap-container" [class.bodymap-embedded]="embedded">
-    <div class="bodymap-view-toggle">
-      <button class="btn-view" [class.active]="bodyView === 'front'" (click)="bodyView = 'front'">
-        <i class="bi bi-person-standing me-1"></i>Frontal
-      </button>
-      <button class="btn-view" [class.active]="bodyView === 'back'" (click)="bodyView = 'back'">
-        <i class="bi bi-person me-1"></i>Posterior
-      </button>
-    </div>
 
-    <div class="bodymap-svg-wrap">
-      <svg viewBox="85 0 130 305" class="bodymap-svg" xmlns="http://www.w3.org/2000/svg">
-        <!-- Body outline -->
-        <path [attr.d]="bodyView === 'front' ? getBodyOutlineFront() : getBodyOutlineBack()"
-              fill="#e8f0f6" stroke="#b0c4d4" stroke-width="1" />
+    <!-- Dual view: Front + Back simultaneously -->
+    <div class="bodymap-dual-wrap">
 
-        <!-- Clickable zones -->
-        <ng-container *ngFor="let zone of getZonesForView(bodyView)">
-          <path [attr.d]="zone.svgPath"
-                class="bodymap-zone"
-                [class.zone-hovered]="hoveredZone?.id === zone.id"
-                [class.zone-selected]="selectedZone?.id === zone.id"
-                [ngClass]="getZoneSeverityClass(zone.id)"
-                (mouseenter)="hoverZone(zone)"
-                (mouseleave)="hoverZone(null)"
-                (click)="selectZone(zone)" />
-        </ng-container>
+      <!-- FRONTAL -->
+      <div class="bodymap-view-panel">
+        <div class="bodymap-panel-label">
+          <i class="bi bi-person-standing me-1"></i>Frontal
+        </div>
+        <div class="bodymap-svg-wrap">
+          <svg viewBox="85 0 130 305" class="bodymap-svg" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="bodyGradFront" cx="50%" cy="38%" r="58%">
+                <stop offset="0%"   stop-color="#f2f7fb"/>
+                <stop offset="70%"  stop-color="#dce8f0"/>
+                <stop offset="100%" stop-color="#b5cce0"/>
+              </radialGradient>
+            </defs>
+            <path [attr.d]="getBodyOutlineFront()" fill="url(#bodyGradFront)" stroke="#7bacc8" stroke-width="1.2" />
 
-        <!-- Injury indicators (dots) -->
-        <ng-container *ngFor="let zone of getZonesForView(bodyView)">
-          <ng-container *ngIf="hasInjuryInZone(zone.id)">
-            <circle [attr.cx]="zone.cx" [attr.cy]="zone.cy" r="4"
-                    class="injury-dot" [ngClass]="getZoneSeverityClass(zone.id)" />
-            <text *ngIf="getZoneInjuryCount(zone.id) > 1"
-                  [attr.x]="zone.cx" [attr.y]="zone.cy + 1.5"
-                  class="injury-count-text">{{ getZoneInjuryCount(zone.id) }}</text>
-          </ng-container>
-        </ng-container>
-      </svg>
+            <ng-container *ngFor="let zone of getZonesForView('front')">
+              <!-- Heat-map fill layer -->
+              <path [attr.d]="zone.svgPath"
+                    class="bodymap-zone-heat"
+                    [style.fill]="getZoneHeatFill(zone)"
+                    [style.fill-opacity]="getZoneHeatOpacity(zone.id)" />
+              <!-- Interactive click zone -->
+              <path [attr.d]="zone.svgPath"
+                    class="bodymap-zone"
+                    [class.zone-hovered]="hoveredZone?.id === zone.id"
+                    [class.zone-selected]="selectedZone?.id === zone.id"
+                    [ngClass]="getZoneSeverityClass(zone.id)"
+                    (mouseenter)="hoverZone(zone)"
+                    (mouseleave)="hoverZone(null)"
+                    (click)="selectZone(zone)" />
+            </ng-container>
 
-      <!-- Tooltip -->
-      <div class="bodymap-tooltip" *ngIf="hoveredZone">
-        <strong>{{ getZoneLabel(hoveredZone) }}</strong>
-        <span *ngIf="hasInjuryInZone(hoveredZone.id)" class="tooltip-injury-badge">
-          {{ getZoneInjuryCount(hoveredZone.id) }} lesión{{ getZoneInjuryCount(hoveredZone.id) > 1 ? 'es' : '' }}
-        </span>
-        <span *ngIf="!readOnly && !hasInjuryInZone(hoveredZone.id)" class="tooltip-hint">
-          Click para registrar lesión
-        </span>
+            <!-- Injury markers -->
+            <ng-container *ngFor="let zone of getZonesForView('front')">
+              <ng-container *ngIf="hasInjuryInZone(zone.id)">
+                <circle [attr.cx]="zone.cx" [attr.cy]="zone.cy" r="5"
+                        class="injury-dot"
+                        [ngClass]="getInjuryDotClass(zone.id)" />
+                <text *ngIf="getZoneInjuryCount(zone.id) > 1"
+                      [attr.x]="zone.cx" [attr.y]="zone.cy + 1.5"
+                      class="injury-count-text">{{ getZoneInjuryCount(zone.id) }}</text>
+              </ng-container>
+            </ng-container>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div class="bodymap-divider"></div>
+
+      <!-- POSTERIOR -->
+      <div class="bodymap-view-panel">
+        <div class="bodymap-panel-label">
+          <i class="bi bi-person me-1"></i>Posterior
+        </div>
+        <div class="bodymap-svg-wrap">
+          <svg viewBox="85 0 130 305" class="bodymap-svg" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <radialGradient id="bodyGradBack" cx="50%" cy="38%" r="58%">
+                <stop offset="0%"   stop-color="#f2f7fb"/>
+                <stop offset="70%"  stop-color="#dce8f0"/>
+                <stop offset="100%" stop-color="#b5cce0"/>
+              </radialGradient>
+            </defs>
+            <path [attr.d]="getBodyOutlineBack()" fill="url(#bodyGradBack)" stroke="#7bacc8" stroke-width="1.2" />
+
+            <ng-container *ngFor="let zone of getZonesForView('back')">
+              <path [attr.d]="zone.svgPath"
+                    class="bodymap-zone-heat"
+                    [style.fill]="getZoneHeatFill(zone)"
+                    [style.fill-opacity]="getZoneHeatOpacity(zone.id)" />
+              <path [attr.d]="zone.svgPath"
+                    class="bodymap-zone"
+                    [class.zone-hovered]="hoveredZone?.id === zone.id"
+                    [class.zone-selected]="selectedZone?.id === zone.id"
+                    [ngClass]="getZoneSeverityClass(zone.id)"
+                    (mouseenter)="hoverZone(zone)"
+                    (mouseleave)="hoverZone(null)"
+                    (click)="selectZone(zone)" />
+            </ng-container>
+
+            <ng-container *ngFor="let zone of getZonesForView('back')">
+              <ng-container *ngIf="hasInjuryInZone(zone.id)">
+                <circle [attr.cx]="zone.cx" [attr.cy]="zone.cy" r="5"
+                        class="injury-dot"
+                        [ngClass]="getInjuryDotClass(zone.id)" />
+                <text *ngIf="getZoneInjuryCount(zone.id) > 1"
+                      [attr.x]="zone.cx" [attr.y]="zone.cy + 1.5"
+                      class="injury-count-text">{{ getZoneInjuryCount(zone.id) }}</text>
+              </ng-container>
+            </ng-container>
+          </svg>
+        </div>
       </div>
     </div>
 
-    <!-- Zone legend -->
+    <!-- Tooltip (shared for both views) -->
+    <div class="bodymap-tooltip" *ngIf="hoveredZone">
+      <div class="tooltip-zone-name">{{ getZoneLabel(hoveredZone) }}</div>
+      <span *ngIf="hasInjuryInZone(hoveredZone.id)" class="tooltip-injury-badge">
+        {{ getZoneInjuryCount(hoveredZone.id) }} lesión{{ getZoneInjuryCount(hoveredZone.id) > 1 ? 'es' : '' }} activa{{ getZoneInjuryCount(hoveredZone.id) > 1 ? 's' : '' }}
+      </span>
+      <span *ngIf="!readOnly && !hasInjuryInZone(hoveredZone.id)" class="tooltip-hint">
+        Clic para registrar lesión
+      </span>
+    </div>
+
+    <!-- Legend row -->
     <div class="bodymap-legend">
-      <span class="legend-item"><span class="legend-dot dot-leve"></span>Leve</span>
-      <span class="legend-item"><span class="legend-dot dot-moderada"></span>Moderada</span>
-      <span class="legend-item"><span class="legend-dot dot-grave"></span>Grave</span>
-      <span class="legend-item"><span class="legend-dot dot-none"></span>Sin lesión</span>
+      <div class="legend-col legend-col-severity">
+        <span class="legend-title">Gravedad:</span>
+        <span class="legend-item"><span class="legend-dot dot-leve"></span>Leve</span>
+        <span class="legend-item"><span class="legend-dot dot-moderada"></span>Moderada</span>
+        <span class="legend-item"><span class="legend-dot dot-grave"></span>Grave</span>
+      </div>
+      <div class="legend-col legend-col-status">
+        <span class="legend-title">Estado:</span>
+        <span class="legend-item"><span class="legend-dot dot-critical pulse-dot"></span>Baja / Fisio</span>
+        <span class="legend-item"><span class="legend-dot dot-readap"></span>Readaptación</span>
+        <span class="legend-item"><span class="legend-dot dot-condic"></span>Condicionado</span>
+      </div>
     </div>
   </div>
 
-  <!-- ─── RIGHT: PANEL (Form / Detail / RTP / List) ──── -->
+  <!-- ─── RIGHT: PANEL ──── -->
   <div class="lesiones-panel">
 
     <!-- ════ NEW / EDIT FORM ════ -->
@@ -194,7 +262,6 @@
       </div>
       <div class="form-card-body">
         <div class="row g-3">
-          <!-- Zona -->
           <div class="col-12">
             <label class="form-label">Zona corporal</label>
             <select class="form-select form-select-sphaira" [(ngModel)]="formData.zone" (change)="onZoneSelected($event)">
@@ -207,7 +274,6 @@
               </optgroup>
             </select>
           </div>
-          <!-- Tipo -->
           <div class="col-md-6">
             <label class="form-label">Tipo de lesión</label>
             <select class="form-select form-select-sphaira" [(ngModel)]="formData.type">
@@ -215,58 +281,146 @@
               <option *ngFor="let t of injuryTypes" [value]="t">{{ t }}</option>
             </select>
           </div>
-          <!-- Gravedad -->
           <div class="col-md-6">
             <label class="form-label">Gravedad</label>
             <select class="form-select form-select-sphaira" [(ngModel)]="formData.severity">
               <option *ngFor="let s of severities" [value]="s">{{ s | titlecase }}</option>
             </select>
           </div>
-          <!-- Fecha lesión -->
           <div class="col-md-6">
             <label class="form-label">Fecha de la lesión</label>
             <input type="date" class="form-control form-control-sphaira" [(ngModel)]="formData.dateInjury">
           </div>
-          <!-- Fecha retorno estimada -->
           <div class="col-md-6">
             <label class="form-label">Retorno estimado</label>
             <input type="date" class="form-control form-control-sphaira" [(ngModel)]="formData.dateReturn">
           </div>
-          <!-- Mecanismo -->
           <div class="col-12">
-            <label class="form-label">Mecanismo de lesión</label>
+            <div class="ai-field-label-row">
+              <label class="form-label">Mecanismo de lesión</label>
+              <button class="btn-ai-rewrite" type="button"
+                      *ngIf="formData.mechanism?.trim()"
+                      [disabled]="aiRewrite.loading && aiRewrite.field === 'mechanism'"
+                      (click)="rewriteWithAi('mechanism')">
+                <span *ngIf="!(aiRewrite.loading && aiRewrite.field === 'mechanism')">
+                  <i class="bi bi-stars me-1"></i>Reescribir con IA
+                </span>
+                <span *ngIf="aiRewrite.loading && aiRewrite.field === 'mechanism'">
+                  <span class="spinner-border spinner-border-sm me-1"></span>Generando...
+                </span>
+              </button>
+            </div>
             <input type="text" class="form-control form-control-sphaira" [(ngModel)]="formData.mechanism" placeholder="Ej: Sprint, entrada, giro brusco...">
+            <div class="ai-suggestion-panel" *ngIf="aiRewrite.field === 'mechanism' && (aiRewrite.suggestion || aiRewrite.error)">
+              <div class="ai-suggestion-label"><i class="bi bi-stars me-1"></i>Sugerencia IA</div>
+              <div class="ai-suggestion-error" *ngIf="aiRewrite.error"><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ aiRewrite.error }}</div>
+              <div class="ai-suggestion-text" *ngIf="aiRewrite.suggestion">{{ aiRewrite.suggestion }}</div>
+              <div class="ai-suggestion-actions">
+                <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>Usar esta versión</button>
+                <button class="btn-ai-discard" (click)="discardAiRewrite()"><i class="bi bi-x-lg me-1"></i>Descartar</button>
+              </div>
+            </div>
           </div>
-          <!-- Descripción -->
           <div class="col-12">
-            <label class="form-label">Descripción</label>
+            <div class="ai-field-label-row">
+              <label class="form-label">Descripción</label>
+              <button class="btn-ai-rewrite" type="button"
+                      *ngIf="formData.description?.trim()"
+                      [disabled]="aiRewrite.loading && aiRewrite.field === 'description'"
+                      (click)="rewriteWithAi('description')">
+                <span *ngIf="!(aiRewrite.loading && aiRewrite.field === 'description')">
+                  <i class="bi bi-stars me-1"></i>Reescribir con IA
+                </span>
+                <span *ngIf="aiRewrite.loading && aiRewrite.field === 'description'">
+                  <span class="spinner-border spinner-border-sm me-1"></span>Generando...
+                </span>
+              </button>
+            </div>
             <textarea class="form-control form-control-sphaira" rows="3" [(ngModel)]="formData.description" placeholder="Descripción detallada de la lesión..."></textarea>
+            <div class="ai-suggestion-panel" *ngIf="aiRewrite.field === 'description' && (aiRewrite.suggestion || aiRewrite.error)">
+              <div class="ai-suggestion-label"><i class="bi bi-stars me-1"></i>Sugerencia IA</div>
+              <div class="ai-suggestion-error" *ngIf="aiRewrite.error"><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ aiRewrite.error }}</div>
+              <div class="ai-suggestion-text" *ngIf="aiRewrite.suggestion">{{ aiRewrite.suggestion }}</div>
+              <div class="ai-suggestion-actions">
+                <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>Usar esta versión</button>
+                <button class="btn-ai-discard" (click)="discardAiRewrite()"><i class="bi bi-x-lg me-1"></i>Descartar</button>
+              </div>
+            </div>
           </div>
-          <!-- Tratamiento -->
           <div class="col-12">
-            <label class="form-label">Tratamiento</label>
+            <div class="ai-field-label-row">
+              <label class="form-label">Tratamiento</label>
+              <button class="btn-ai-rewrite" type="button"
+                      *ngIf="formData.treatment?.trim()"
+                      [disabled]="aiRewrite.loading && aiRewrite.field === 'treatment'"
+                      (click)="rewriteWithAi('treatment')">
+                <span *ngIf="!(aiRewrite.loading && aiRewrite.field === 'treatment')">
+                  <i class="bi bi-stars me-1"></i>Reescribir con IA
+                </span>
+                <span *ngIf="aiRewrite.loading && aiRewrite.field === 'treatment'">
+                  <span class="spinner-border spinner-border-sm me-1"></span>Generando...
+                </span>
+              </button>
+            </div>
             <textarea class="form-control form-control-sphaira" rows="2" [(ngModel)]="formData.treatment" placeholder="Tratamiento indicado..."></textarea>
+            <div class="ai-suggestion-panel" *ngIf="aiRewrite.field === 'treatment' && (aiRewrite.suggestion || aiRewrite.error)">
+              <div class="ai-suggestion-label"><i class="bi bi-stars me-1"></i>Sugerencia IA</div>
+              <div class="ai-suggestion-error" *ngIf="aiRewrite.error"><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ aiRewrite.error }}</div>
+              <div class="ai-suggestion-text" *ngIf="aiRewrite.suggestion">{{ aiRewrite.suggestion }}</div>
+              <div class="ai-suggestion-actions">
+                <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>Usar esta versión</button>
+                <button class="btn-ai-discard" (click)="discardAiRewrite()"><i class="bi bi-x-lg me-1"></i>Descartar</button>
+              </div>
+            </div>
           </div>
-          <!-- Notas (solo Pro) -->
           <div class="col-12" *ngIf="isPro">
-            <label class="form-label">Notas médicas <span class="badge-pro-field">PRO</span></label>
+            <div class="ai-field-label-row">
+              <label class="form-label">Notas médicas <span class="badge-pro-field">PRO</span></label>
+              <button class="btn-ai-rewrite" type="button"
+                      *ngIf="formData.notes?.trim()"
+                      [disabled]="aiRewrite.loading && aiRewrite.field === 'notes'"
+                      (click)="rewriteWithAi('notes')">
+                <span *ngIf="!(aiRewrite.loading && aiRewrite.field === 'notes')">
+                  <i class="bi bi-stars me-1"></i>Reescribir con IA
+                </span>
+                <span *ngIf="aiRewrite.loading && aiRewrite.field === 'notes'">
+                  <span class="spinner-border spinner-border-sm me-1"></span>Generando...
+                </span>
+              </button>
+            </div>
             <textarea class="form-control form-control-sphaira" rows="2" [(ngModel)]="formData.notes" placeholder="Notas adicionales..."></textarea>
+            <div class="ai-suggestion-panel" *ngIf="aiRewrite.field === 'notes' && (aiRewrite.suggestion || aiRewrite.error)">
+              <div class="ai-suggestion-label"><i class="bi bi-stars me-1"></i>Sugerencia IA</div>
+              <div class="ai-suggestion-error" *ngIf="aiRewrite.error"><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ aiRewrite.error }}</div>
+              <div class="ai-suggestion-text" *ngIf="aiRewrite.suggestion">{{ aiRewrite.suggestion }}</div>
+              <div class="ai-suggestion-actions">
+                <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>Usar esta versión</button>
+                <button class="btn-ai-discard" (click)="discardAiRewrite()"><i class="bi bi-x-lg me-1"></i>Descartar</button>
+              </div>
+            </div>
           </div>
-          <!-- Estado -->
+          <!-- Estado — 5 nuevos estados clínicos -->
           <div class="col-md-6">
-            <label class="form-label">Estado</label>
+            <label class="form-label">Estado clínico</label>
             <select class="form-select form-select-sphaira" [(ngModel)]="formData.status">
-              <option value="activa">Activa</option>
-              <option value="recuperacion">En recuperación</option>
-              <option value="cerrada">Cerrada</option>
+              <option *ngFor="let s of injuryStatuses" [value]="s.code">
+                {{ s.label }}
+              </option>
             </select>
+            <!-- Availability badge -->
+            <div class="status-availability-hint" *ngIf="formData.status">
+              <i class="bi me-1" [ngClass]="isAvailableForMatch(formData.status!) ? 'bi-check-circle-fill text-success' : 'bi-x-circle-fill text-danger'"></i>
+              <span>{{ isAvailableForMatch(formData.status!) ? 'Disponible para convocatoria' : 'No disponible para convocatoria' }}</span>
+            </div>
           </div>
-          <!-- RTP Phase (solo Pro) -->
           <div class="col-md-6" *ngIf="isPro">
             <label class="form-label">Fase RTP <span class="badge-pro-field">PRO</span></label>
             <select class="form-select form-select-sphaira" [(ngModel)]="formData.rtpPhase">
               <option *ngFor="let p of rtpPhases" [ngValue]="p.phase">{{ p.phase }}. {{ p.label }}</option>
             </select>
+            <div class="rtp-status-hint" *ngIf="formData.rtpPhase">
+              <small class="text-muted">Sugiere: <strong>{{ getSuggestedStatusLabel(formData.rtpPhase) }}</strong></small>
+            </div>
           </div>
         </div>
         <div class="form-actions mt-3">
@@ -285,9 +439,19 @@
         <button class="btn-close-panel" aria-label="Cerrar" (click)="closeDetail()"><i class="bi bi-x-lg"></i></button>
       </div>
       <div class="detail-card-body">
-        <!-- Severity badge -->
         <div class="detail-severity-bar" [style.background]="getSeverityColor(detailInjury.severity)">
           <span class="text-white fw-bold text-uppercase">{{ detailInjury.severity }}</span>
+        </div>
+
+        <!-- Status clinical badge -->
+        <div class="detail-status-banner" [style.background]="getStatusColor(detailInjury.status) + '18'" [style.border-left-color]="getStatusColor(detailInjury.status)">
+          <i class="bi me-2" [ngClass]="getStatusIcon(detailInjury.status)" [style.color]="getStatusColor(detailInjury.status)"></i>
+          <div class="detail-status-info">
+            <span class="detail-status-label" [style.color]="getStatusColor(detailInjury.status)">{{ getStatusLabel(detailInjury.status) }}</span>
+            <span class="detail-status-availability" *ngIf="isAvailableForMatch(detailInjury.status)">
+              <i class="bi bi-check-circle-fill text-success me-1"></i>Convocable
+            </span>
+          </div>
         </div>
 
         <div class="detail-grid">
@@ -312,13 +476,6 @@
             <span class="detail-value">{{ detailInjury.dateActualReturn }}</span>
           </div>
           <div class="detail-field">
-            <span class="detail-label">Estado</span>
-            <span class="detail-value">
-              <i class="bi me-1" [ngClass]="getStatusIcon(detailInjury.status)" [style.color]="getStatusColor(detailInjury.status)"></i>
-              {{ getStatusLabel(detailInjury.status) }}
-            </span>
-          </div>
-          <div class="detail-field">
             <span class="detail-label">Días desde lesión</span>
             <span class="detail-value">{{ getDaysSinceInjury(detailInjury.dateInjury) }} días</span>
           </div>
@@ -341,7 +498,7 @@
         </div>
 
         <!-- RTP Progress (Pro) -->
-        <div class="detail-rtp-section" *ngIf="isPro && detailInjury.status !== 'cerrada'">
+        <div class="detail-rtp-section" *ngIf="isPro && detailInjury.status !== 'alta'">
           <h5 class="rtp-section-title"><i class="bi bi-graph-up-arrow me-1"></i>Return to Play</h5>
           <div class="rtp-progress-bar-wrap">
             <div class="rtp-progress-bar" [style.width.%]="getRtpProgress(detailInjury)"></div>
@@ -357,7 +514,7 @@
           </div>
         </div>
 
-        <!-- ════ PHASE 3: MEDICAL DOCUMENTS ════ -->
+        <!-- MEDICAL DOCUMENTS -->
         <div class="detail-documents-section">
           <div class="documents-header">
             <h5 class="documents-title"><i class="bi bi-folder2-open me-2"></i>Documentos médicos</h5>
@@ -366,8 +523,6 @@
               <span class="ms-1">{{ showUploadForm ? 'Cancelar' : 'Adjuntar' }}</span>
             </button>
           </div>
-
-          <!-- Upload form -->
           <div class="documents-upload-form" *ngIf="showUploadForm">
             <div class="upload-drop-area" (click)="fileInput.click()">
               <i class="bi bi-cloud-arrow-up display-6 opacity-50"></i>
@@ -380,14 +535,18 @@
               <span>{{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})</span>
             </div>
             <div class="mt-2">
-              <input type="text" class="form-control form-control-sphaira form-control-sm" [(ngModel)]="uploadDescription" placeholder="Descripción del documento (opcional)">
+              <select class="form-select form-select-sphaira form-select-sm" [(ngModel)]="uploadDocumentCategory">
+                <option value="">-- Categoría del documento --</option>
+                <option *ngFor="let cat of documentCategories" [value]="cat.code">{{ cat.label }}</option>
+              </select>
+            </div>
+            <div class="mt-2">
+              <input type="text" class="form-control form-control-sphaira form-control-sm" [(ngModel)]="uploadDescription" placeholder="Descripción adicional (opcional)">
             </div>
             <button class="btn btn-sphaira-primary btn-sm mt-2" [disabled]="!selectedFile || uploadingDocument" (click)="uploadDocument()">
               <i class="bi bi-upload me-1"></i>{{ uploadingDocument ? 'Subiendo...' : 'Subir documento' }}
             </button>
           </div>
-
-          <!-- Documents list -->
           <div class="documents-list" *ngIf="!loadingDocuments">
             <div *ngIf="detailDocuments.length === 0 && !showUploadForm" class="documents-empty">
               <i class="bi bi-file-earmark-medical opacity-50"></i>
@@ -399,6 +558,7 @@
               </div>
               <div class="document-item-info">
                 <span class="document-name">{{ doc.fileName }}</span>
+                <span class="document-category-badge" *ngIf="doc.documentCategory">{{ getDocumentCategoryLabel(doc.documentCategory) }}</span>
                 <span class="document-meta">
                   {{ formatFileSize(doc.fileSize) }}
                   <span *ngIf="doc.uploadedBy"> · {{ doc.uploadedBy }}</span>
@@ -407,12 +567,8 @@
                 <span class="document-desc" *ngIf="doc.description">{{ doc.description }}</span>
               </div>
               <div class="document-item-actions">
-                <a class="btn-icon-sm" [href]="doc.fileUrl" target="_blank" title="Abrir">
-                  <i class="bi bi-box-arrow-up-right"></i>
-                </a>
-                <button class="btn-icon-sm btn-icon-danger" *ngIf="!readOnly" title="Eliminar" (click)="deleteDocument(doc)">
-                  <i class="bi bi-trash"></i>
-                </button>
+                <a class="btn-icon-sm" [href]="doc.fileUrl" target="_blank" title="Abrir"><i class="bi bi-box-arrow-up-right"></i></a>
+                <button class="btn-icon-sm btn-icon-danger" *ngIf="!readOnly" title="Eliminar" (click)="deleteDocument(doc)"><i class="bi bi-trash"></i></button>
               </div>
             </div>
           </div>
@@ -422,11 +578,102 @@
           </div>
         </div>
 
+        <!-- NOTAS DE EVOLUCIÓN -->
+        <div class="detail-notes-section">
+          <div class="notes-header">
+            <h5 class="notes-title"><i class="bi bi-journal-text me-2"></i>Notas de evolución</h5>
+            <button class="btn btn-sphaira-primary btn-sm" *ngIf="!readOnly" (click)="openNewNoteForm()">
+              <i class="bi bi-plus-lg me-1"></i>Nueva nota
+            </button>
+          </div>
+          <div class="note-form-card" *ngIf="showNoteForm">
+            <div class="row g-2">
+              <div class="col-md-6">
+                <label class="form-label form-label-sm">Fecha</label>
+                <input type="date" class="form-control form-control-sphaira form-control-sm" [(ngModel)]="noteFormData.noteDate">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label form-label-sm">Estado en ese momento</label>
+                <select class="form-select form-select-sphaira form-select-sm" [(ngModel)]="noteFormData.statusAtTime">
+                  <option value="">-- Sin especificar --</option>
+                  <option *ngFor="let s of injuryStatuses" [value]="s.code">{{ s.label }}</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <div class="ai-field-label-row">
+                  <label class="form-label form-label-sm">Contenido <span class="text-danger">*</span></label>
+                  <button class="btn-ai-rewrite btn-ai-rewrite-sm" type="button"
+                          *ngIf="noteFormData.content?.trim()"
+                          [disabled]="aiRewrite.loading && aiRewrite.field === 'noteContent'"
+                          (click)="rewriteWithAi('noteContent')">
+                    <span *ngIf="!(aiRewrite.loading && aiRewrite.field === 'noteContent')">
+                      <i class="bi bi-stars me-1"></i>Reescribir con IA
+                    </span>
+                    <span *ngIf="aiRewrite.loading && aiRewrite.field === 'noteContent'">
+                      <span class="spinner-border spinner-border-sm me-1"></span>Generando...
+                    </span>
+                  </button>
+                </div>
+                <textarea class="form-control form-control-sphaira" rows="4" [(ngModel)]="noteFormData.content"
+                  placeholder="Describe la evolución, observaciones del tratamiento..."></textarea>
+                <div class="ai-suggestion-panel" *ngIf="aiRewrite.field === 'noteContent' && (aiRewrite.suggestion || aiRewrite.error)">
+                  <div class="ai-suggestion-label"><i class="bi bi-stars me-1"></i>Sugerencia IA</div>
+                  <div class="ai-suggestion-error" *ngIf="aiRewrite.error"><i class="bi bi-exclamation-triangle-fill me-1"></i>{{ aiRewrite.error }}</div>
+                  <div class="ai-suggestion-text" *ngIf="aiRewrite.suggestion">{{ aiRewrite.suggestion }}</div>
+                  <div class="ai-suggestion-actions">
+                    <button class="btn-ai-accept" *ngIf="aiRewrite.suggestion" (click)="acceptAiRewrite()"><i class="bi bi-check-lg me-1"></i>Usar esta versión</button>
+                    <button class="btn-ai-discard" (click)="discardAiRewrite()"><i class="bi bi-x-lg me-1"></i>Descartar</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="note-form-actions mt-2">
+              <button class="btn btn-outline-secondary btn-sm" (click)="cancelNoteForm()">Cancelar</button>
+              <button class="btn btn-sphaira-primary btn-sm" [disabled]="!noteFormData.content || savingNote" (click)="saveNote()">
+                <i class="bi bi-check-lg me-1"></i>{{ savingNote ? 'Guardando...' : (editingNote ? 'Actualizar' : 'Guardar nota') }}
+              </button>
+            </div>
+          </div>
+          <div *ngIf="loadingNotes" class="notes-loading">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+            <span class="ms-2">Cargando notas...</span>
+          </div>
+          <div *ngIf="!loadingNotes">
+            <div *ngIf="detailNotes.length === 0 && !showNoteForm" class="notes-empty">
+              <i class="bi bi-journal opacity-50"></i>
+              <span>Sin notas de evolución registradas</span>
+            </div>
+            <div *ngFor="let note of detailNotes" class="note-item">
+              <div class="note-item-header">
+                <span class="note-date"><i class="bi bi-calendar3 me-1"></i>{{ note.noteDate | date:'dd/MM/yyyy' }}</span>
+                <span class="note-status" *ngIf="note.statusAtTime" [style.color]="getStatusColor(note.statusAtTime)">
+                  <i class="bi me-1" [ngClass]="getStatusIcon(note.statusAtTime)"></i>{{ getStatusLabel(note.statusAtTime) }}
+                </span>
+                <span class="note-author" *ngIf="note.createdByName">{{ note.createdByName }}</span>
+                <div class="note-item-actions" *ngIf="!readOnly">
+                  <button class="btn-icon-sm" title="Editar nota" (click)="openEditNoteForm(note)"><i class="bi bi-pencil"></i></button>
+                  <button class="btn-icon-sm btn-icon-danger" title="Eliminar nota" (click)="deleteNote(note)"><i class="bi bi-trash"></i></button>
+                </div>
+              </div>
+              <div class="note-content">{{ note.content }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-actions-export">
+          <button class="btn btn-outline-secondary btn-sm btn-export-evolution"
+                  (click)="exportEvolutionReport(detailInjury)"
+                  [disabled]="isExportingEvolution">
+            <span *ngIf="!isExportingEvolution"><i class="bi bi-file-earmark-pdf-fill me-1"></i>Exportar informe de evolución</span>
+            <span *ngIf="isExportingEvolution"><span class="spinner-border spinner-border-sm me-1" role="status"></span>Generando PDF...</span>
+          </button>
+        </div>
+
         <div class="detail-actions" *ngIf="!readOnly">
           <button class="btn btn-outline-primary btn-sm" (click)="openEditInjuryForm(detailInjury)">
             <i class="bi bi-pencil me-1"></i>Editar
           </button>
-          <button class="btn btn-outline-info btn-sm" *ngIf="isPro && detailInjury.status !== 'cerrada'" (click)="openRtp(detailInjury)">
+          <button class="btn btn-outline-info btn-sm" *ngIf="isPro && detailInjury.status !== 'alta'" (click)="openRtp(detailInjury)">
             <i class="bi bi-graph-up-arrow me-1"></i>Gestionar RTP
           </button>
           <button class="btn btn-outline-danger btn-sm" (click)="deleteInjury(detailInjury)">
@@ -436,7 +683,7 @@
       </div>
     </div>
 
-    <!-- ════ RTP PANEL (Pro only) ════ -->
+    <!-- ════ RTP PANEL ════ -->
     <div class="lesiones-rtp-card" *ngIf="showRtpPanel && rtpInjury && isPro">
       <div class="rtp-card-header">
         <h4><i class="bi bi-graph-up-arrow me-2"></i>Return to Play – Progreso</h4>
@@ -447,30 +694,38 @@
           <i class="bi bi-heart-pulse me-1"></i>
           <strong>{{ rtpInjury.zoneLabel }}</strong> – {{ rtpInjury.type }} ({{ rtpInjury.severity }})
         </p>
-
         <div class="rtp-progress-bar-wrap rtp-progress-lg">
           <div class="rtp-progress-bar" [style.width.%]="getRtpProgress(rtpInjury)"></div>
           <span class="rtp-progress-label">{{ getRtpProgress(rtpInjury) | number:'1.0-0' }}%</span>
         </div>
-
-        <div class="rtp-phases-list">
-          <div *ngFor="let p of rtpPhases" class="rtp-phase-item"
-               [class.rtp-phase-current]="rtpInjury.rtpPhase === p.phase"
-               [class.rtp-phase-completed]="(rtpInjury.rtpPhase || 0) > p.phase"
-               [class.rtp-phase-pending]="(rtpInjury.rtpPhase || 0) < p.phase"
-               (click)="!readOnly && setRtpPhase(p.phase)">
-            <div class="rtp-phase-icon" [style.borderColor]="p.color"
-                 [style.background]="(rtpInjury.rtpPhase || 0) >= p.phase ? p.color : 'transparent'">
-              <i class="bi" [ngClass]="(rtpInjury.rtpPhase || 0) > p.phase ? 'bi-check-lg' : p.icon"
-                 [style.color]="(rtpInjury.rtpPhase || 0) >= p.phase ? '#fff' : p.color"></i>
+        <div class="rtp-categories-list">
+          <div *ngFor="let cat of rtpCategories" class="rtp-category-group">
+            <div class="rtp-category-label" [style.color]="cat.color">
+              <span class="rtp-category-dot" [style.background]="cat.color"></span>{{ cat.label }}
             </div>
-            <div class="rtp-phase-info">
-              <span class="rtp-phase-number">Fase {{ p.phase }}</span>
-              <span class="rtp-phase-label">{{ p.label }}</span>
+            <div class="rtp-phases-list">
+              <ng-container *ngFor="let p of rtpPhases">
+                <div class="rtp-phase-item"
+                     [class.rtp-phase-current]="rtpInjury.rtpPhase === p.phase"
+                     [class.rtp-phase-completed]="(rtpInjury.rtpPhase || 0) > p.phase"
+                     [class.rtp-phase-pending]="(rtpInjury.rtpPhase || 0) < p.phase"
+                     (click)="!readOnly && setRtpPhase(p.phase)"
+                     *ngIf="cat.phases.includes(p.phase)">
+                  <div class="rtp-phase-icon" [style.borderColor]="p.color"
+                       [style.background]="(rtpInjury.rtpPhase || 0) >= p.phase ? p.color : 'transparent'">
+                    <i class="bi" [ngClass]="(rtpInjury.rtpPhase || 0) > p.phase ? 'bi-check-lg' : p.icon"
+                       [style.color]="(rtpInjury.rtpPhase || 0) >= p.phase ? '#fff' : p.color"></i>
+                  </div>
+                  <div class="rtp-phase-info">
+                    <span class="rtp-phase-number">Fase {{ p.phase }}</span>
+                    <span class="rtp-phase-label">{{ p.label }}</span>
+                    <span class="rtp-phase-status-hint">→ {{ getSuggestedStatusLabel(p.phase) }}</span>
+                  </div>
+                </div>
+              </ng-container>
             </div>
           </div>
         </div>
-
         <div class="rtp-actions" *ngIf="!readOnly">
           <button class="btn btn-sphaira-primary btn-sm" (click)="closeRtp()">
             <i class="bi bi-check-lg me-1"></i>Guardar progreso
@@ -488,12 +743,17 @@
         </button>
       </div>
 
-      <!-- Filters -->
+      <!-- Status Filters — 5 new clinical states -->
       <div class="list-filters">
         <button class="filter-chip" [class.active]="filterStatus === 'all'" (click)="setFilter('all')">Todas</button>
-        <button class="filter-chip chip-active" [class.active]="filterStatus === 'activa'" (click)="setFilter('activa')">Activas</button>
-        <button class="filter-chip chip-recovering" [class.active]="filterStatus === 'recuperacion'" (click)="setFilter('recuperacion')">Recuperación</button>
-        <button class="filter-chip chip-closed" [class.active]="filterStatus === 'cerrada'" (click)="setFilter('cerrada')">Cerradas</button>
+        <ng-container *ngFor="let s of injuryStatuses">
+          <button class="filter-chip"
+                  [class.active]="filterStatus === s.code"
+                  [style.--chip-color]="s.color"
+                  (click)="setFilter(s.code)">
+            <i class="bi me-1" [ngClass]="s.icon"></i>{{ s.labelShort }}
+          </button>
+        </ng-container>
       </div>
 
       <!-- Injury cards -->
@@ -516,13 +776,17 @@
             <div class="injury-item-meta">
               <span><i class="bi bi-calendar3 me-1"></i>{{ injury.dateInjury }}</span>
               <span><i class="bi bi-clock me-1"></i>{{ getDaysSinceInjury(injury.dateInjury) }}d</span>
-              <span>
-                <i class="bi me-1" [ngClass]="getStatusIcon(injury.status)" [style.color]="getStatusColor(injury.status)"></i>
-                {{ getStatusLabel(injury.status) }}
+              <!-- Clinical status badge -->
+              <span class="injury-status-badge" [style.background]="getStatusColor(injury.status) + '18'" [style.color]="getStatusColor(injury.status)">
+                <i class="bi me-1" [ngClass]="getStatusIcon(injury.status)"></i>{{ getStatusLabelShort(injury.status) }}
               </span>
             </div>
+            <!-- Availability indicator -->
+            <div class="injury-item-availability" *ngIf="isAvailableForMatch(injury.status)">
+              <i class="bi bi-check-circle-fill text-success me-1"></i><span class="text-success">Convocable</span>
+            </div>
             <!-- RTP mini bar (Pro) -->
-            <div class="injury-item-rtp" *ngIf="isPro && injury.status !== 'cerrada'">
+            <div class="injury-item-rtp" *ngIf="isPro && injury.status !== 'alta'">
               <div class="rtp-mini-bar">
                 <div class="rtp-mini-fill" [style.width.%]="getRtpProgress(injury)"></div>
               </div>
@@ -531,7 +795,7 @@
           </div>
           <div class="injury-item-actions" *ngIf="!readOnly" (click)="$event.stopPropagation()">
             <button class="btn-icon-sm" title="Editar" (click)="openEditInjuryForm(injury)"><i class="bi bi-pencil"></i></button>
-            <button class="btn-icon-sm" title="RTP" *ngIf="isPro && injury.status !== 'cerrada'" (click)="openRtp(injury)"><i class="bi bi-graph-up-arrow"></i></button>
+            <button class="btn-icon-sm" title="RTP" *ngIf="isPro && injury.status !== 'alta'" (click)="openRtp(injury)"><i class="bi bi-graph-up-arrow"></i></button>
             <button class="btn-icon-sm btn-icon-danger" title="Eliminar" (click)="deleteInjury(injury)"><i class="bi bi-trash"></i></button>
           </div>
         </div>
@@ -541,6 +805,7 @@
   </div>
 </div>
 
+
 <!-- ═══════ VIEW: TIMELINE ═══════ -->
 <div class="lesiones-timeline-view" *ngIf="activeView === 'timeline'">
   <div class="timeline-container">
@@ -548,19 +813,16 @@
       <i class="bi bi-clock-history display-5 opacity-50"></i>
       <p>No hay lesiones registradas para mostrar en la línea temporal.</p>
     </div>
-
     <div class="timeline-track" *ngIf="timelineEntries.length > 0">
       <ng-container *ngFor="let entry of timelineEntries; let idx = index">
-        <!-- Month separator -->
         <div class="timeline-month-label" *ngIf="entry.isFirst">
           <span class="month-badge">{{ entry.monthLabel }}</span>
         </div>
-
-        <!-- Timeline item -->
         <div class="timeline-item" [class.timeline-item-right]="idx % 2 !== 0"
-             [class.timeline-active]="entry.injury.status === 'activa'"
-             [class.timeline-recovering]="entry.injury.status === 'recuperacion'"
-             [class.timeline-closed]="entry.injury.status === 'cerrada'">
+             [class.timeline-critical]="entry.injury.status === 'baja' || entry.injury.status === 'fisioterapia'"
+             [class.timeline-readap]="entry.injury.status === 'readaptacion'"
+             [class.timeline-condic]="entry.injury.status === 'condicionado'"
+             [class.timeline-closed]="entry.injury.status === 'alta'">
           <div class="timeline-dot" [style.background]="getSeverityColor(entry.injury.severity)"></div>
           <div class="timeline-card" (click)="viewDetail(entry.injury); switchView('bodymap')">
             <div class="timeline-card-header">
@@ -577,13 +839,10 @@
               {{ entry.injury.description.length > 100 ? entry.injury.description.slice(0, 100) + '...' : entry.injury.description }}
             </div>
             <div class="timeline-card-footer">
-              <span class="timeline-status"
-                    [style.color]="getStatusColor(entry.injury.status)">
-                <i class="bi me-1" [ngClass]="getStatusIcon(entry.injury.status)"></i>
-                {{ getStatusLabel(entry.injury.status) }}
+              <span class="timeline-status" [style.color]="getStatusColor(entry.injury.status)">
+                <i class="bi me-1" [ngClass]="getStatusIcon(entry.injury.status)"></i>{{ getStatusLabelShort(entry.injury.status) }}
               </span>
               <span class="timeline-days">{{ getDaysSinceInjury(entry.injury.dateInjury) }}d</span>
-              <!-- RTP mini (Pro) -->
               <span class="timeline-rtp" *ngIf="isPro && entry.injury.rtpPhase">
                 RTP {{ getRtpProgress(entry.injury) | number:'1.0-0' }}%
               </span>
@@ -595,10 +854,8 @@
   </div>
 </div>
 
-<!-- ═══════ VIEW: STATISTICS (Pro only) ═══════ -->
+<!-- ═══════ VIEW: STATISTICS (Pro) ═══════ -->
 <div class="lesiones-stats-view" *ngIf="activeView === 'stats' && isPro">
-
-  <!-- KPI Cards Row -->
   <div class="stats-kpi-row">
     <div class="kpi-card">
       <div class="kpi-icon kpi-total"><i class="bi bi-clipboard2-pulse"></i></div>
@@ -629,11 +886,7 @@
       </div>
     </div>
   </div>
-
-  <!-- Charts Grid -->
   <div class="stats-charts-grid">
-
-    <!-- Monthly Trend Bar Chart -->
     <div class="chart-card chart-card-wide">
       <h5 class="chart-title"><i class="bi bi-graph-up me-2"></i>Tendencia mensual (12 meses)</h5>
       <div class="trend-chart">
@@ -642,8 +895,7 @@
             <div class="trend-bar-track">
               <div class="trend-bar-fill"
                    [style.height.%]="m.maxCount > 0 ? (m.count / m.maxCount) * 100 : 0"
-                   [style.background]="m.count > 0 ? '#1f8f8a' : '#e0e0e0'">
-              </div>
+                   [style.background]="m.count > 0 ? '#1f8f8a' : '#e0e0e0'"></div>
             </div>
             <span class="trend-bar-value" *ngIf="m.count > 0">{{ m.count }}</span>
             <span class="trend-bar-label">{{ m.label }}</span>
@@ -651,8 +903,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Severity Donut (CSS-only) -->
     <div class="chart-card">
       <h5 class="chart-title"><i class="bi bi-pie-chart me-2"></i>Gravedad</h5>
       <div class="donut-chart-wrap">
@@ -676,8 +926,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Zone Distribution -->
     <div class="chart-card">
       <h5 class="chart-title"><i class="bi bi-body-text me-2"></i>Zonas afectadas</h5>
       <div class="horizontal-bars">
@@ -691,8 +939,6 @@
         <div *ngIf="zoneStats.length === 0" class="chart-empty">Sin datos</div>
       </div>
     </div>
-
-    <!-- Type Distribution -->
     <div class="chart-card">
       <h5 class="chart-title"><i class="bi bi-tags me-2"></i>Tipos de lesión</h5>
       <div class="horizontal-bars">
@@ -706,43 +952,33 @@
         <div *ngIf="typeStats.length === 0" class="chart-empty">Sin datos</div>
       </div>
     </div>
-
   </div>
 </div>
 
 
+
 <!-- ═══════════════════════════════════════════════════════════════════
-     PHASE 3: NOTIFICATION DIALOG (overlay)
+     NOTIFICATION DIALOG
      ═══════════════════════════════════════════════════════════════════ -->
 <div class="notify-overlay" *ngIf="showNotifyDialog" (click)="cancelNotification()" appModalBackdrop>
   <div class="notify-dialog" (click)="$event.stopPropagation()">
-    <div class="notify-dialog-icon">
-      <i class="bi bi-bell-fill"></i>
-    </div>
+    <div class="notify-dialog-icon"><i class="bi bi-bell-fill"></i></div>
     <h4 class="notify-dialog-title">¿Enviar notificación?</h4>
     <p class="notify-dialog-text" *ngIf="pendingNotificationType === 'created'">
-      Se ha registrado una nueva lesión para <strong>{{ pendingNotifyInjury?.playerName }}</strong>.
-      ¿Deseas notificar al jugador y al club?
+      Se ha registrado una nueva lesión para <strong>{{ pendingNotifyInjury?.playerName }}</strong>. ¿Deseas notificar?
     </p>
     <p class="notify-dialog-text" *ngIf="pendingNotificationType === 'updated'">
-      Se ha actualizado la lesión de <strong>{{ pendingNotifyInjury?.playerName }}</strong>.
-      ¿Deseas enviar una notificación?
+      Se ha actualizado la lesión de <strong>{{ pendingNotifyInjury?.playerName }}</strong>. ¿Deseas enviar una notificación?
     </p>
     <p class="notify-dialog-text" *ngIf="pendingNotificationType === 'rtp_change'">
-      Avance de RTP: <strong>{{ pendingNotifyInjury?.playerName }}</strong> → Fase {{ pendingNotifyInjury?.rtpPhase }}/6.
-      ¿Notificar?
+      Avance de RTP: <strong>{{ pendingNotifyInjury?.playerName }}</strong> → Fase {{ pendingNotifyInjury?.rtpPhase }}/6. ¿Notificar?
     </p>
     <p class="notify-dialog-text" *ngIf="pendingNotificationType === 'status_change'">
-      El estado de la lesión de <strong>{{ pendingNotifyInjury?.playerName }}</strong> ha cambiado.
-      ¿Enviar notificación?
+      El estado de la lesión de <strong>{{ pendingNotifyInjury?.playerName }}</strong> ha cambiado. ¿Enviar notificación?
     </p>
     <div class="notify-dialog-actions">
-      <button class="btn btn-outline-secondary" (click)="cancelNotification()">
-        <i class="bi bi-x-lg me-1"></i>No enviar
-      </button>
-      <button class="btn btn-sphaira-primary" (click)="confirmSendNotification()">
-        <i class="bi bi-send me-1"></i>Enviar
-      </button>
+      <button class="btn btn-outline-secondary" (click)="cancelNotification()"><i class="bi bi-x-lg me-1"></i>No enviar</button>
+      <button class="btn btn-sphaira-primary" (click)="confirmSendNotification()"><i class="bi bi-send me-1"></i>Enviar</button>
     </div>
     <label class="notify-auto-hint">
       <input type="checkbox" [(ngModel)]="notificationConfig.autoNotify" (change)="saveNotifySettings()">
@@ -764,40 +1000,28 @@
           <span class="notify-setting-label">Envío automático</span>
           <span class="notify-setting-desc">Enviar notificaciones sin pedir confirmación</span>
         </div>
-        <label class="mode-toggle">
-          <input type="checkbox" [(ngModel)]="notificationConfig.autoNotify">
-          <span class="mode-slider"></span>
-        </label>
+        <label class="mode-toggle"><input type="checkbox" [(ngModel)]="notificationConfig.autoNotify"><span class="mode-slider"></span></label>
       </div>
       <div class="notify-setting-row">
         <div class="notify-setting-info">
           <span class="notify-setting-label">Al crear lesión</span>
           <span class="notify-setting-desc">Notificar cuando se registra una nueva lesión</span>
         </div>
-        <label class="mode-toggle">
-          <input type="checkbox" [(ngModel)]="notificationConfig.notifyOnCreate">
-          <span class="mode-slider"></span>
-        </label>
+        <label class="mode-toggle"><input type="checkbox" [(ngModel)]="notificationConfig.notifyOnCreate"><span class="mode-slider"></span></label>
       </div>
       <div class="notify-setting-row">
         <div class="notify-setting-info">
           <span class="notify-setting-label">Al cambiar estado</span>
           <span class="notify-setting-desc">Notificar cuando cambia el estado de una lesión</span>
         </div>
-        <label class="mode-toggle">
-          <input type="checkbox" [(ngModel)]="notificationConfig.notifyOnStatusChange">
-          <span class="mode-slider"></span>
-        </label>
+        <label class="mode-toggle"><input type="checkbox" [(ngModel)]="notificationConfig.notifyOnStatusChange"><span class="mode-slider"></span></label>
       </div>
       <div class="notify-setting-row">
         <div class="notify-setting-info">
           <span class="notify-setting-label">Al avanzar RTP</span>
           <span class="notify-setting-desc">Notificar al cambiar la fase de Return to Play</span>
         </div>
-        <label class="mode-toggle">
-          <input type="checkbox" [(ngModel)]="notificationConfig.notifyOnRtpChange">
-          <span class="mode-slider"></span>
-        </label>
+        <label class="mode-toggle"><input type="checkbox" [(ngModel)]="notificationConfig.notifyOnRtpChange"><span class="mode-slider"></span></label>
       </div>
     </div>
     <div class="notify-settings-footer">
@@ -811,4 +1035,225 @@
 <!-- ═══════ NOTIFICATION TOAST ═══════ -->
 <div class="notify-toast" [class.notify-toast-visible]="notificationSent">
   <i class="bi bi-check-circle-fill me-2"></i>Notificación enviada correctamente
+</div>
+
+<!-- ═══════ HIDDEN EVOLUTION PDF AREA ═══════ -->
+<div #evolutionPrintArea class="evolution-print-area" *ngIf="detailInjury">
+
+  <!-- Injury header banner -->
+  <div class="epa-header-banner" [style.borderColor]="getSeverityColor(detailInjury.severity)">
+    <div class="epa-severity-pill" [style.background]="getSeverityColor(detailInjury.severity)">
+      {{ detailInjury.severity | titlecase }}
+    </div>
+    <div class="epa-injury-title">
+      <h2 class="epa-injury-name">{{ detailInjury.zoneLabel }} – {{ detailInjury.type }}</h2>
+      <p class="epa-player-name" *ngIf="playerName || detailInjury.playerName">
+        <strong>Jugador:</strong> {{ playerName || detailInjury.playerName }}
+        <span *ngIf="teamName"> · {{ teamName }}</span>
+      </p>
+    </div>
+    <div class="epa-status-badge" [style.background]="getStatusColor(detailInjury.status) + '18'" [style.borderColor]="getStatusColor(detailInjury.status)">
+      <span [style.color]="getStatusColor(detailInjury.status)">{{ getStatusLabel(detailInjury.status) }}</span>
+    </div>
+  </div>
+
+  <!-- Metadata grid -->
+  <div class="epa-meta-grid">
+    <div class="epa-meta-item">
+      <span class="epa-meta-label">Fecha de lesión</span>
+      <span class="epa-meta-value">{{ detailInjury.dateInjury | date:'dd/MM/yyyy' }}</span>
+    </div>
+    <div class="epa-meta-item">
+      <span class="epa-meta-label">Retorno estimado</span>
+      <span class="epa-meta-value">{{ detailInjury.dateReturn ? (detailInjury.dateReturn | date:'dd/MM/yyyy') : '—' }}</span>
+    </div>
+    <div class="epa-meta-item" *ngIf="detailInjury.dateActualReturn">
+      <span class="epa-meta-label">Retorno real</span>
+      <span class="epa-meta-value">{{ detailInjury.dateActualReturn | date:'dd/MM/yyyy' }}</span>
+    </div>
+    <div class="epa-meta-item">
+      <span class="epa-meta-label">Días desde lesión</span>
+      <span class="epa-meta-value">{{ getDaysSinceInjury(detailInjury.dateInjury) }} días</span>
+    </div>
+    <div class="epa-meta-item epa-full" *ngIf="detailInjury.mechanism">
+      <span class="epa-meta-label">Mecanismo</span>
+      <span class="epa-meta-value">{{ detailInjury.mechanism }}</span>
+    </div>
+    <div class="epa-meta-item epa-full" *ngIf="detailInjury.description">
+      <span class="epa-meta-label">Descripción</span>
+      <span class="epa-meta-value">{{ detailInjury.description }}</span>
+    </div>
+    <div class="epa-meta-item epa-full" *ngIf="detailInjury.treatment">
+      <span class="epa-meta-label">Tratamiento</span>
+      <span class="epa-meta-value">{{ detailInjury.treatment }}</span>
+    </div>
+    <div class="epa-meta-item epa-full" *ngIf="detailInjury.notes && isPro">
+      <span class="epa-meta-label">Notas médicas</span>
+      <span class="epa-meta-value">{{ detailInjury.notes }}</span>
+    </div>
+  </div>
+
+  <!-- RTP progression -->
+  <div class="epa-section" *ngIf="isPro">
+    <div class="epa-section-title">
+      <span class="epa-section-dot epa-dot-rtp"></span>Progresión Return to Play
+    </div>
+    <div class="epa-rtp-track">
+      <ng-container *ngFor="let p of rtpPhases; let last = last">
+        <div class="epa-rtp-step" [class.epa-rtp-done]="(detailInjury.rtpPhase || 0) >= p.phase">
+          <div class="epa-rtp-circle"
+               [style.background]="(detailInjury.rtpPhase || 0) >= p.phase ? p.color : '#e8ecf0'"
+               [style.color]="(detailInjury.rtpPhase || 0) >= p.phase ? '#fff' : '#aab'">
+            {{ p.phase }}
+          </div>
+          <span class="epa-rtp-lbl">{{ p.label }}</span>
+        </div>
+        <div class="epa-rtp-connector" *ngIf="!last"
+             [style.background]="(detailInjury.rtpPhase || 0) > p.phase ? p.color : '#e8ecf0'">
+        </div>
+      </ng-container>
+    </div>
+    <p class="epa-rtp-summary">
+      Fase actual: <strong>{{ detailInjury.rtpPhase || 1 }}/6</strong> —
+      {{ getRtpPhaseLabel(detailInjury.rtpPhase || 1) }}
+    </p>
+  </div>
+
+  <!-- Evolution notes -->
+  <div class="epa-section">
+    <div class="epa-section-title">
+      <span class="epa-section-dot epa-dot-notes"></span>
+      Notas de evolución clínica
+      <span class="epa-notes-count">({{ detailNotes.length }} nota{{ detailNotes.length !== 1 ? 's' : '' }})</span>
+    </div>
+
+    <div *ngIf="detailNotes.length === 0" class="epa-no-notes">
+      Sin notas de evolución registradas para esta lesión.
+    </div>
+
+    <div *ngFor="let note of detailNotes; let idx = index" class="epa-note-row">
+      <div class="epa-note-index">{{ idx + 1 }}</div>
+      <div class="epa-note-body">
+        <div class="epa-note-meta">
+          <span class="epa-note-date"><i class="bi bi-calendar3 me-1"></i>{{ note.noteDate | date:'dd/MM/yyyy' }}</span>
+          <span class="epa-note-author" *ngIf="note.createdByName">
+            <i class="bi bi-person me-1"></i>{{ note.createdByName }}
+          </span>
+          <span class="epa-note-status" *ngIf="note.statusAtTime"
+                [style.background]="getStatusColor(note.statusAtTime) + '18'"
+                [style.color]="getStatusColor(note.statusAtTime)"
+                [style.borderColor]="getStatusColor(note.statusAtTime)">
+            {{ getStatusLabel(note.statusAtTime) }}
+          </span>
+          <span class="epa-note-rtp" *ngIf="note.rtpPhaseAtTime">
+            Fase RTP {{ note.rtpPhaseAtTime }}/6
+          </span>
+        </div>
+        <div class="epa-note-content">{{ note.content }}</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════ HIDDEN PRINT / PDF AREA ═══════ -->
+<div #reportPrintArea class="report-print-area">
+  <div class="rpa-kpis">
+    <div class="rpa-kpi rpa-kpi-total">
+      <span class="rpa-kpi-number">{{ totalInjuries }}</span>
+      <span class="rpa-kpi-label">Total</span>
+    </div>
+    <div class="rpa-kpi rpa-kpi-active">
+      <span class="rpa-kpi-number">{{ activeInjuries }}</span>
+      <span class="rpa-kpi-label">De baja</span>
+    </div>
+    <div class="rpa-kpi rpa-kpi-recovering">
+      <span class="rpa-kpi-number">{{ recoveringInjuries }}</span>
+      <span class="rpa-kpi-label">Readaptando</span>
+    </div>
+    <div class="rpa-kpi rpa-kpi-closed">
+      <span class="rpa-kpi-number">{{ closedInjuries }}</span>
+      <span class="rpa-kpi-label">Alta médica</span>
+    </div>
+    <div class="rpa-kpi rpa-kpi-days">
+      <span class="rpa-kpi-number">{{ avgRecoveryDays }}<small>d</small></span>
+      <span class="rpa-kpi-label">Recup. media</span>
+    </div>
+    <div class="rpa-kpi rpa-kpi-zone">
+      <span class="rpa-kpi-number rpa-kpi-text">{{ mostAffectedZone }}</span>
+      <span class="rpa-kpi-label">Zona más afectada</span>
+    </div>
+  </div>
+  <div class="rpa-section">
+    <div class="rpa-section-title"><span class="rpa-section-dot rpa-dot-primary"></span>Detalle de lesiones</div>
+    <table class="rpa-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Zona</th><th>Tipo de lesión</th><th>Gravedad</th>
+          <th>Fecha</th><th>Retorno est.</th><th>Estado clínico</th><th *ngIf="isPro">RTP</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let inj of injuries; let idx = index">
+          <td class="rpa-num">{{ idx + 1 }}</td>
+          <td><strong>{{ inj.zoneLabel }}</strong></td>
+          <td>{{ inj.type }}</td>
+          <td>
+            <span class="rpa-badge" [class.rpa-badge-leve]="inj.severity === 'leve'" [class.rpa-badge-moderada]="inj.severity === 'moderada'" [class.rpa-badge-grave]="inj.severity === 'grave'">{{ inj.severity | titlecase }}</span>
+          </td>
+          <td>{{ inj.dateInjury | date:'dd/MM/yyyy' }}</td>
+          <td>{{ inj.dateReturn ? (inj.dateReturn | date:'dd/MM/yyyy') : '—' }}</td>
+          <td>
+            <span class="rpa-status" [style.color]="getStatusColor(inj.status)">{{ getStatusLabel(inj.status) }}</span>
+          </td>
+          <td *ngIf="isPro">{{ inj.rtpPhase || 1 }}/6</td>
+        </tr>
+        <tr *ngIf="injuries.length === 0">
+          <td [attr.colspan]="isPro ? 8 : 7" class="rpa-empty">Sin lesiones registradas</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="rpa-section" *ngIf="injuries.length > 0">
+    <div class="rpa-section-title"><span class="rpa-section-dot rpa-dot-info"></span>Mecanismos y tratamientos</div>
+    <div class="rpa-notes-list">
+      <ng-container *ngFor="let inj of injuries; let idx = index">
+        <div class="rpa-note-row" *ngIf="inj.mechanism || inj.treatment || inj.description">
+          <span class="rpa-note-idx">{{ idx + 1 }}.</span>
+          <div class="rpa-note-content">
+            <strong>{{ inj.zoneLabel }} – {{ inj.type }}</strong>
+            <p *ngIf="inj.mechanism"><em>Mecanismo:</em> {{ inj.mechanism }}</p>
+            <p *ngIf="inj.description"><em>Descripción:</em> {{ inj.description }}</p>
+            <p *ngIf="inj.treatment"><em>Tratamiento:</em> {{ inj.treatment }}</p>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  <div class="rpa-distributions" *ngIf="zoneStats.length > 0 || typeStats.length > 0">
+    <div class="rpa-dist-block" *ngIf="zoneStats.length > 0">
+      <div class="rpa-section-title"><span class="rpa-section-dot rpa-dot-teal"></span>Zonas afectadas</div>
+      <div class="rpa-hbar-list">
+        <div *ngFor="let z of zoneStats" class="rpa-hbar-row">
+          <span class="rpa-hbar-label">{{ z.label }}</span>
+          <div class="rpa-hbar-track"><div class="rpa-hbar-fill rpa-fill-teal" [style.width.%]="z.pct"></div></div>
+          <span class="rpa-hbar-val">{{ z.count }} ({{ z.pct }}%)</span>
+        </div>
+      </div>
+    </div>
+    <div class="rpa-dist-block" *ngIf="typeStats.length > 0">
+      <div class="rpa-section-title"><span class="rpa-section-dot rpa-dot-green"></span>Tipos de lesión</div>
+      <div class="rpa-hbar-list">
+        <div *ngFor="let t of typeStats" class="rpa-hbar-row">
+          <span class="rpa-hbar-label">{{ t.type }}</span>
+          <div class="rpa-hbar-track"><div class="rpa-hbar-fill rpa-fill-green" [style.width.%]="t.pct"></div></div>
+          <span class="rpa-hbar-val">{{ t.count }} ({{ t.pct }}%)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="rpa-footer">
+    <span>Informe generado por Sphaira Tech Coach · appsphairatech.com</span>
+    <span>{{ today | date:'dd/MM/yyyy HH:mm' }}</span>
+  </div>
 </div>

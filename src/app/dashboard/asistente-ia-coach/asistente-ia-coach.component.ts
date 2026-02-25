@@ -384,7 +384,7 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       } else if (this.profileId === 1 || this.profileId === 2) {
         this.injuryService.getInjuriesByTeam(this.teamId).subscribe({
           next: (injuries) => {
-            if (injuries.filter(i => i.status === 'activa' || i.status === 'recuperacion').length > 0) {
+            if (injuries.filter(i => i.status !== 'alta').length > 0) {
               this.setSuggestionsForLesiones(injuries);
             }
           },
@@ -691,8 +691,8 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   ═══════════════════════════════════════ */
 
   private setSuggestionsForLesiones(injuries: Injury[]): void {
-    const active = injuries.filter(i => i.status === 'activa');
-    const recovery = injuries.filter(i => i.status === 'recuperacion');
+    const active = injuries.filter(i => i.status === 'baja');
+    const recovery = injuries.filter(i => i.status !== 'baja' && i.status !== 'alta');
     const chips: SuggestionChip[] = [];
 
     // Bajas activas que afectan disponibilidad (máx. 2)
@@ -742,8 +742,8 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
   ═══════════════════════════════════════ */
 
   private setSuggestionsForFisio(injuries: Injury[]): void {
-    const active = injuries.filter(i => i.status === 'activa');
-    const recovery = injuries.filter(i => i.status === 'recuperacion');
+    const active = injuries.filter(i => i.status === 'baja');
+    const recovery = injuries.filter(i => i.status !== 'baja' && i.status !== 'alta');
     const chips: SuggestionChip[] = [];
 
     // 1. Sugerencias basadas en lesiones activas (máx. 2)

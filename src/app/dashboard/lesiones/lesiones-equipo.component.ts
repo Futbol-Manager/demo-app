@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { PlayerService } from 'src/app/core/services/player/player.service';
+import { InjuryService } from 'src/app/core/services/injury/injury.service';
 import { User } from 'src/app/core/models/users/user.model';
 
 /**
@@ -203,7 +204,7 @@ export class LesionesEquipoComponent implements OnInit {
   /** true cuando se entra con ?playerId= (vista solo lesiones del jugador): oculta selector y pasa readOnly a app-lesiones */
   soloJugador: boolean = false;
 
-  // Hardcoded injury counts per player (mock)
+  // Injury counts per player loaded from backend
   private playerInjuryCounts: Record<number, number> = {};
 
   constructor(
@@ -211,7 +212,8 @@ export class LesionesEquipoComponent implements OnInit {
     private router: Router,
     private location: Location,
     private loginService: LoginService,
-    private playerService: PlayerService
+    private playerService: PlayerService,
+    private injuryService: InjuryService
   ) {}
 
   ngOnInit(): void {
@@ -243,11 +245,14 @@ export class LesionesEquipoComponent implements OnInit {
           if (!Array.isArray(list) && Array.isArray(data)) list = data;
           this.players = Array.isArray(list) ? list : [];
 
-          // Hardcoded: assign mock injury counts to first few players
-          this.players.forEach((p, idx) => {
-            if (idx === 0) this.playerInjuryCounts[p.playerId] = 2;
-            else if (idx === 1) this.playerInjuryCounts[p.playerId] = 1;
-            else this.playerInjuryCounts[p.playerId] = 0;
+          // Load real injury counts from backend for the whole team
+          this.injuryService.getInjuriesByTeam(this.teamId).subscribe(injuries => {
+            this.playerInjuryCounts = {};
+            injuries.forEach(inj => {
+              if (inj.status !== 'alta') {
+                this.playerInjuryCounts[inj.playerId] = (this.playerInjuryCounts[inj.playerId] || 0) + 1;
+              }
+            });
           });
 
           const queryPlayerId = this.route.snapshot.queryParamMap.get('playerId');
