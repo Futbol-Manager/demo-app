@@ -346,6 +346,10 @@ export class NewCuotasComponent implements OnInit {
    * aplicando las comisiones del club + fees de Stripe/Sphaira.
    * Solo aplica para cuotas Stripe (stripe === 1). Las manuales devuelven base.
    */
+  /**
+   * Importe bruto que se cobra al padre (base + comisionClub + Sphaira/Stripe fees).
+   * Usar SOLO en modales de pago y procesamiento de cargos.
+   */
   calcularImporteTotalCuota(cuota: any): number {
     const base = parseFloat(cuota?.importe) || 0;
     if (base === 0) return 0;
@@ -356,6 +360,20 @@ export class NewCuotasComponent implements OnInit {
     const appFee  = net * this.stripeFeePct;
     const gross   = (net + appFee + this.stripeFeeFix) / (1 - this.stripePct);
     return Math.ceil(gross * 100) / 100;
+  }
+
+  /**
+   * Importe de la cuota sin comisiones de Sphaira/Stripe:
+   *   base + comisionClub% (si el club la configuró), para ambos tipos de pago.
+   *   El campo `importe` en BD guarda SIEMPRE la base pura; `comisionClub` es el % aparte.
+   * Usar para columnas de tabla (Total a pagar, Pagado, Restante) y summary cards.
+   */
+  calcularImporteBaseCuota(cuota: any): number {
+    const base = parseFloat(cuota?.importe) || 0;
+    if (base === 0) return 0;
+    const comisionClubPct = cuota?.comisionClub > 0 ? +cuota.comisionClub : 0;
+    const clubFee = Math.round(base * (comisionClubPct / 100) * 100) / 100;
+    return base + clubFee;
   }
 
   // ── Toggle de selección de un pago en el filtro ──────────────────────────
@@ -463,9 +481,9 @@ export class NewCuotasComponent implements OnInit {
 
         if (cuotasFiltradas.length === 0) return null; // Este jugador no tiene estos pagos
 
-        // Recalcular totales basados en las cuotas filtradas (importe total = base + comisiones)
+        // Recalcular totales basados en las cuotas filtradas (base + comisionClub, sin fees de pasarela)
         const totalAPagar = cuotasFiltradas.reduce(
-          (sum: number, c: any) => sum + this.calcularImporteTotalCuota(c), 0
+          (sum: number, c: any) => sum + this.calcularImporteBaseCuota(c), 0
         );
 
         // Para saber cuánto ha pagado de estos pagos concretos, usamos los datos del historial
@@ -582,6 +600,33 @@ export class NewCuotasComponent implements OnInit {
   get totalPaginas(): number {
     return Math.ceil(this.listaPlayersFiltrados.length / this.itemsPorPagina);
   }
+
+  // ── Resumen global de cuotas (cards superiores) ─────────────────────────
+  get resumenTotalJugadores(): number {
+    return this.listaPlayers.length;
+  }
+
+  get resumenTotalAPagar(): number {
+    return this.listaPlayers.reduce(
+      (sum: number, p: any) => sum + (parseFloat(p.totalAPagar) || 0), 0
+    );
+  }
+
+  get resumenTotalPagado(): number {
+    return this.listaPlayers.reduce(
+      (sum: number, p: any) => sum + (parseFloat(p.totalPagado) || 0), 0
+    );
+  }
+
+  get resumenTotalRestante(): number {
+    return Math.max(0, this.resumenTotalAPagar - this.resumenTotalPagado);
+  }
+
+  get resumenPorcentajeCobrado(): number {
+    if (this.resumenTotalAPagar === 0) return 0;
+    return Math.min((this.resumenTotalPagado / this.resumenTotalAPagar) * 100, 100);
+  }
+  // ────────────────────────────────────────────────────────────────────────
 
   get paginaInicio(): number {
     return (this.paginaActual - 1) * this.itemsPorPagina;
@@ -1304,8 +1349,6 @@ export class NewCuotasComponent implements OnInit {
       (response: Response) => {
         // Verifica que la propiedad 'data' exista en la respuesta
         if (response.data !== null && response.status == 200) {
-          console.log(response.data);
-          this.listHistoryPagos.push(response.data);
           this.comentarioDevolucion = '';
           this.metodoDevolucion = '';
           this.pagoDevolucion = {};
@@ -1313,6 +1356,19 @@ export class NewCuotasComponent implements OnInit {
           this.reloadTabla();
           this.showConfirmDevolucion = false;
           this.toastr.success('Devolución hecha correctamente.');
+
+          // Recargar el historial desde el backend para evitar duplicados.
+          // Se evita el push optimista: la BD ya tiene el registro correcto.
+          const playerIdToReload = this.playerSelected;
+          this.clubService
+            .getListHistoryPagosByPlayer(this.clubId, this.temporadaStoredValue, playerIdToReload)
+            .subscribe({
+              next: (histResp: Response) => {
+                if (histResp.data !== null) {
+                  this.listHistoryPagos = histResp.data;
+                }
+              }
+            });
         } else {
           this.toastr.error('Error: ', response.error.msg);
         }
@@ -1459,16 +1515,16 @@ export class NewCuotasComponent implements OnInit {
         .filter((h: any) => h.pagoClubId === pagoClubId)
         .reduce((s: number, h: any) => s + (parseFloat(h.importe) || 0), 0);
 
-    // Usar calcularImporteTotalCuota para incluir comisiones Stripe/club igual que el modal
+    // Para columnas de tabla usamos la base sin fees de pasarela (solo base + comisionClub)
     const totalAPagar = obligatorias.reduce(
-      (s: number, c: any) => s + this.calcularImporteTotalCuota(c), 0
+      (s: number, c: any) => s + this.calcularImporteBaseCuota(c), 0
     );
     const totalPagado = obligatorias.reduce(
       (s: number, c: any) => s + calcPagadoCuota(c.pagoClubId), 0
     );
     const restante = Math.max(0, totalAPagar - totalPagado);
     const pagadasCount = obligatorias.filter((c: any) => {
-      const imp = this.calcularImporteTotalCuota(c);
+      const imp = this.calcularImporteBaseCuota(c);
       return imp > 0 && calcPagadoCuota(c.pagoClubId) >= imp;
     }).length;
     const pagadasStr = `${pagadasCount}/${obligatorias.length}`;
@@ -1481,8 +1537,8 @@ export class NewCuotasComponent implements OnInit {
       const fechaLimite = new Date(c.fechaLimite);
       fechaLimite.setHours(0, 0, 0, 0);
       const pagado = calcPagadoCuota(c.pagoClubId);
-      const importeTotal = this.calcularImporteTotalCuota(c);
-      return fechaLimite < hoy && pagado < importeTotal;
+      const importeBase = this.calcularImporteBaseCuota(c);
+      return fechaLimite < hoy && pagado < importeBase;
     });
     const estado = tieneObligatoriaVencida ? 0 : 1;
 
