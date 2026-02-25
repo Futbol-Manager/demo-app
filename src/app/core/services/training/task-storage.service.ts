@@ -69,14 +69,21 @@ export class TaskStorageService {
       next: (res: any) => {
         const backendTasks: StoredTask[] = (res?.data || []).map((t: any) => this.mapBackendTask(t, 'training'));
         const localList = this._favorites$.getValue();
-        // Conservar favoritos locales que no están en el backend (p.ej. tasksShopId sin taskId)
-        const localOnly = localList.filter(local =>
-          !backendTasks.some(b =>
-            (local.taskId && b.taskId === local.taskId) ||
-            (local.tasksShopId && b.tasksShopId === local.tasksShopId)
-          )
-        );
-        const merged = [...backendTasks, ...localOnly];
+
+        // Los datos locales vienen directamente de tasks_shop (título y origen correctos).
+        // Los datos del backend vienen de la tabla tasks (pueden tener slogans="-" u origen incorrecto).
+        // Estrategia: LOCAL tiene prioridad; el backend solo aporta items no presentes localmente.
+        const merged: StoredTask[] = [...localList];
+        for (const backend of backendTasks) {
+          const existsLocally = localList.some(local =>
+            (local.taskId && local.taskId === backend.taskId) ||
+            (local.tasksShopId && local.tasksShopId === backend.tasksShopId)
+          );
+          if (!existsLocally) {
+            merged.push(backend);
+          }
+        }
+
         this._favorites$.next(merged);
         this.save(FAVORITES_KEY, merged);
       },
@@ -112,11 +119,13 @@ export class TaskStorageService {
   }
 
   private mapBackendTask(t: any, origin: 'cloud' | 'training'): StoredTask {
+    // Si tiene tasksShopId es una tarea del catálogo (cloud), no de entrenamiento
+    const resolvedOrigin: 'cloud' | 'training' = t.tasksShopId ? 'cloud' : origin;
     return {
       localId: 'task_' + (t.taskId || this.uid()),
       taskId: t.taskId || undefined,
       tasksShopId: t.tasksShopId || undefined,
-      origin,
+      origin: resolvedOrigin,
       slogans: t.slogans || '',
       description: t.description || '',
       rules: t.rules || '',
