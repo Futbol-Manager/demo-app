@@ -32,7 +32,7 @@
 
 /* ─── PAGE ─── */
 .historial-page {
-  max-width: 1100px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 1rem 0 3rem;
 }
@@ -73,7 +73,7 @@
 /* ─── GRID ─── */
 .task-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 1.25rem;
 }
 
@@ -83,6 +83,8 @@
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
+  display: flex;
+  flex-direction: column;
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
   box-shadow: 0 4px 18px rgba(0, 44, 64, 0.07);
 }
@@ -100,7 +102,12 @@
   display: block;
 }
 
-.task-body { padding: 1rem; }
+.task-body {
+  padding: 1rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 
 .task-body-top {
   display: flex;
@@ -174,8 +181,49 @@
 .task-desc {
   font-size: 0.82rem;
   color: rgba(0, 44, 64, 0.6);
-  margin: 0;
+  margin: 0 0 0.5rem;
   line-height: 1.45;
+  flex: 1;
+}
+
+.task-used-date {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--fifa-green);
+  margin-top: auto;
+  padding-top: 0.4rem;
+  border-top: 1px solid var(--fifa-border);
+}
+
+/* ─── PAGINACIÓN ─── */
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1rem 0;
+}
+
+.btn-page {
+  background: var(--fifa-card-bg);
+  border: 1px solid var(--fifa-border);
+  border-radius: 8px;
+  width: 36px; height: 36px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  color: var(--fifa-night);
+  transition: border-color 0.2s;
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+  &:not(:disabled):hover { border-color: var(--fifa-green); color: var(--fifa-green); }
+}
+
+.page-info {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--fifa-night);
 }
 
 /* ─── DETAIL PANEL ─── */
@@ -312,6 +360,10 @@
 }
 
 /* ─── RESPONSIVE ─── */
+@media (max-width: 1100px) {
+  .task-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
 @media (max-width: 768px) {
   .task-grid { grid-template-columns: 1fr 1fr; gap: 0.85rem; }
   .detail-panel-inner { max-width: 100%; }

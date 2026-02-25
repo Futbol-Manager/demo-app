@@ -58,12 +58,15 @@
 }
 
 .tareas-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 1.5rem;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 1rem;
 }
 
 .fifa-card {
+  flex: 1 1 0;
+  min-width: 0;
   background: var(--fifa-card-bg);
   border: 2px solid var(--fifa-border);
   border-radius: 16px;
@@ -98,6 +101,12 @@
 .fifa-card-icon {
   max-width: 40px;
   max-height: 40px;
+}
+
+.fifa-card-icon-bi {
+  font-size: 2rem;
+  color: var(--fifa-green);
+  line-height: 1;
 }
 
 .fifa-card:hover .fifa-card-icon-wrap {
@@ -200,9 +209,15 @@
   display: block;
 }
 
+@media (max-width: 900px) {
+  .tareas-grid { flex-wrap: wrap; }
+  .fifa-card { flex: 1 1 calc(33% - 0.5rem); }
+}
+
 @media (max-width: 768px) {
   .tareas-title { font-size: 1.5rem; }
-  .tareas-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .tareas-grid { flex-wrap: wrap; gap: 1rem; }
+  .fifa-card { flex: 1 1 calc(50% - 0.5rem); }
   .fifa-card-inner { padding: 1.25rem; }
   .modal-tactica { padding: 0.5rem; }
   .modal-tactica-content { max-width: 100%; height: 85vh; }

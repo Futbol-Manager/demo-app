@@ -35,6 +35,7 @@ import { FavoritasComponent } from './tareas/favoritas/favoritas.component';
 import { HistorialComponent } from './tareas/historial/historial.component';
 import { MisTareasComponent } from './tareas/mis-tareas/mis-tareas.component';
 import { TacticalBoardComponent } from './tareas/tactical-board/tactical-board.component';
+import { TareasCatalogComponent } from './tareas/tareas-catalog/tareas-catalog.component';
 import { OpcionesjugadorComponent } from './opcionesjugador/opcionesjugador.component';
 import { HorariosequiposComponent } from './horariosequipos/horariosequipos.component';
 import { EntrenamientosCreadosComponent } from './entrenamientos-creados/entrenamientos-creados.component';
@@ -198,6 +199,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HistorialComponent,
     MisTareasComponent,
     TacticalBoardComponent,
+    TareasCatalogComponent,
     OpcionesjugadorComponent,
     HorariosequiposComponent,
     EntrenamientosCreadosComponent,

@@ -916,23 +916,16 @@ export class LesionesComponent implements OnInit, OnChanges, OnDestroy {
     ].filter(Boolean).join(', ');
 
     const fieldLabels: Record<string, string> = {
-      mechanism:   'mecanismo de lesión',
-      description: 'descripción de la lesión',
-      treatment:   'tratamiento indicado',
-      notes:       'notas médicas',
-      noteContent: 'nota de evolución clínica'
+      mechanism:   'Mecanismo de lesión',
+      description: 'Descripción de la lesión',
+      treatment:   'Tratamiento indicado',
+      notes:       'Notas médicas',
+      noteContent: 'Nota de evolución clínica'
     };
-
-    const prompt =
-      `Eres un médico deportivo experto. Reescribe el siguiente texto de "${fieldLabels[field] ?? field}" ` +
-      `de una lesión deportiva para mejorar su claridad, precisión clínica y redacción profesional. ` +
-      `Mantén toda la información original, usa terminología médica apropiada y escribe en español. ` +
-      (injuryCtx ? `Contexto de la lesión: ${injuryCtx}. ` : '') +
-      `Proporciona ÚNICAMENTE el texto mejorado, sin explicaciones ni encabezados.\n\nTexto original:\n"${currentText}"`;
 
     const userId = this.usuarioActual?.userId ?? 0;
 
-    this.aiChatService.sendMessage(userId, this.clubId || null, 'lesiones', prompt, 'users')
+    this.aiChatService.rewriteText(userId, this.clubId || null, fieldLabels[field] ?? field, currentText, injuryCtx)
       .subscribe({
         next: resp => {
           if (resp.creditsRemaining !== undefined) {

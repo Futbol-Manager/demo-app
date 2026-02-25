@@ -17,6 +17,20 @@ export class FavoritasComponent implements OnInit, OnDestroy {
   teamId = 0;
   imageBaseUrl: string = environment.images + 'task-board/';
 
+  currentPage = 0;
+  readonly pageSize = 20;
+
+  get totalPages(): number {
+    return Math.ceil(this.favoritas.length / this.pageSize);
+  }
+
+  get pagedFavoritas(): StoredTask[] {
+    return this.favoritas.slice(this.currentPage * this.pageSize, (this.currentPage + 1) * this.pageSize);
+  }
+
+  prevPage(): void { if (this.currentPage > 0) this.currentPage--; }
+  nextPage(): void { if (this.currentPage < this.totalPages - 1) this.currentPage++; }
+
   private sub!: Subscription;
 
   constructor(

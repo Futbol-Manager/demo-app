@@ -67,9 +67,18 @@ export class TaskStorageService {
 
     this.trainingService.getCoachTaskFavorites(userId).subscribe({
       next: (res: any) => {
-        const tasks: StoredTask[] = (res?.data || []).map((t: any) => this.mapBackendTask(t, 'training'));
-        this._favorites$.next(tasks);
-        this.save(FAVORITES_KEY, tasks);
+        const backendTasks: StoredTask[] = (res?.data || []).map((t: any) => this.mapBackendTask(t, 'training'));
+        const localList = this._favorites$.getValue();
+        // Conservar favoritos locales que no están en el backend (p.ej. tasksShopId sin taskId)
+        const localOnly = localList.filter(local =>
+          !backendTasks.some(b =>
+            (local.taskId && b.taskId === local.taskId) ||
+            (local.tasksShopId && b.tasksShopId === local.tasksShopId)
+          )
+        );
+        const merged = [...backendTasks, ...localOnly];
+        this._favorites$.next(merged);
+        this.save(FAVORITES_KEY, merged);
       },
       error: () => {}
     });
@@ -105,7 +114,8 @@ export class TaskStorageService {
   private mapBackendTask(t: any, origin: 'cloud' | 'training'): StoredTask {
     return {
       localId: 'task_' + (t.taskId || this.uid()),
-      taskId: t.taskId,
+      taskId: t.taskId || undefined,
+      tasksShopId: t.tasksShopId || undefined,
       origin,
       slogans: t.slogans || '',
       description: t.description || '',

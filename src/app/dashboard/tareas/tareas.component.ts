@@ -49,6 +49,9 @@ export class TareasComponent implements OnInit {
       case 4: // Mis Tareas
         this.router.navigate(['/dashboard/tareas-mis', this.teamId]);
         break;
+      case 5: // Nube de Tareas
+        this.router.navigate(['/dashboard/tareas-catalog', this.teamId]);
+        break;
     }
   }
 

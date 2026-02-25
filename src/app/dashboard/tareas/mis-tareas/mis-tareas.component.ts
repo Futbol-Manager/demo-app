@@ -47,6 +47,21 @@ export class MisTareasComponent implements OnInit, OnDestroy {
   showDeleteConfirm = false;
   deleteTarget: StoredTask | null = null;
 
+  /* ─── Paginación ─── */
+  currentPage = 0;
+  readonly pageSize = 20;
+
+  get totalPages(): number {
+    return Math.ceil(this.misTareas.length / this.pageSize);
+  }
+
+  get pagedMisTareas(): StoredTask[] {
+    return this.misTareas.slice(this.currentPage * this.pageSize, (this.currentPage + 1) * this.pageSize);
+  }
+
+  prevPage(): void { if (this.currentPage > 0) this.currentPage--; }
+  nextPage(): void { if (this.currentPage < this.totalPages - 1) this.currentPage++; }
+
   private sub!: Subscription;
 
   constructor(

@@ -61,6 +61,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     'notificaciones':            'Notificaciones',
     'calendario':                'Calendario',
     'tareas':                    'Tareas',
+    'tareas-catalog':            'Nube de Tareas',
     'jugadores':                 'Jugadores',
     'informacion_equipo':        'Información del equipo',
     'estadisticas_equipo':       'Estadísticas del equipo',
@@ -189,7 +190,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private extractRouteParams(): void {
     const url = this.currentUrl;
 
-    const teamMatch = url.match(/\/(menu-entrenador|menu-fisio|menu-club|calendario|jugadores|estadisticas_equipo|estadisticas_jugadores|informacion_equipo|tareas|partidos-entrevistas|clasificacion-resultados|lesiones|tactical-board|debrief)\/(\d+)/);
+    const teamMatch = url.match(/\/(menu-entrenador|menu-fisio|menu-club|calendario|jugadores|estadisticas_equipo|estadisticas_jugadores|informacion_equipo|tareas|tareas-catalog|tareas-favoritas|tareas-historial|tareas-mis|partidos-entrevistas|clasificacion-resultados|lesiones|tactical-board|debrief)\/(\d+)/);
     if (teamMatch) {
       this.teamId = +teamMatch[2];
     }
@@ -245,6 +246,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       const coachItems: SidebarItem[] = [
         { id: 'calendario', label: 'SIDEBAR.CALENDAR', icon: 'bi-calendar-event', route: `/dashboard/calendario/${this.teamId}/0` },
         { id: 'tareas', label: 'SIDEBAR.TASKS', icon: 'bi-list-task', route: `/dashboard/tareas/${this.teamId}` },
+        { id: 'tareas-catalog', label: 'SIDEBAR.TASK_CATALOG', icon: 'bi-cloud', route: `/dashboard/tareas-catalog/${this.teamId}` },
         { id: 'jugadores', label: 'SIDEBAR.PLAYERS', icon: 'bi-people', route: `/dashboard/jugadores/${this.teamId}` },
         { id: 'info-equipo', label: 'SIDEBAR.INFO_TEAM', icon: 'bi-info-circle', route: `/dashboard/informacion_equipo/${this.teamId}` },
         { id: 'stats-equipo', label: 'SIDEBAR.STATS_TEAM', icon: 'bi-bar-chart-line', route: `/dashboard/estadisticas_equipo/${this.teamId}` },
