@@ -1,5 +1,5 @@
 <!-- MODAL FLOTANTE DE CRÉDITOS -->
-<div class="credits-modal-overlay" (click)="close()"></div>
+<div class="credits-modal-overlay" (click)="close()" appModalBackdrop></div>
 
 <div class="credits-modal"
      [style.left.px]="modalX"
@@ -107,7 +107,7 @@
       <!-- INFO -->
       <div class="credits-info">
         <i class="bi bi-info-circle"></i>
-        <span>Cada mensaje al asistente IA consume 1 crédito. Los créditos no caducan.</span>
+        <span>Cada consulta al asistente IA consume entre 1 y 5 créditos según la complejidad de la tarea. Los créditos no caducan.</span>
       </div>
     </ng-container>
   </div>

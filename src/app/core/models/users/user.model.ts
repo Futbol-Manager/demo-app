@@ -19,7 +19,7 @@ export class User {
     playerIds: number[]; // Añadir playerIds como un array de números
     mobile: string;
     parentesco: number; //0 tutor, 1 padre y 2 madre
-
+    staffPermissions: string[];
 
     constructor( object: any){
         this.userId = (object.userId) ? object.userId : null;
@@ -36,8 +36,9 @@ export class User {
         this.dateCreate = (object.dateCreate) ? object.dateCreate : null;
         this.nameSon = (object.nameSon) ? object.nameSon : null;
         this.playerId = (object.playerId) ? object.playerId : null;
-        this.playerIds = object.playerIds ?? []; // Inicializar playerIds como un array vacío o con los valores del objeto
+        this.playerIds = object.playerIds ?? [];
         this.mobile = (object.mobile) ? object.mobile : null;
         this.parentesco = (object.parentesco) ? object.parentesco : null;
+        this.staffPermissions = object.staffPermissions ?? [];
     }
 }

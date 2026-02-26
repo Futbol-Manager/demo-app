@@ -66,25 +66,48 @@ export class MenuClubComponent implements OnInit {
       this.router.navigate(['/dashboard/calendario', this.teamId, 0]);
     } else if (id === 3) {
       this.router.navigate(['/dashboard/estadisticas_equipo', this.teamId]);
+    } else if (id === 4) {
+      this.router.navigate(['/dashboard/estadisticas_jugadores', this.teamId]);
     } else if (id === 5) {
       this.router.navigate(['/dashboard/jugadores', this.teamId]);
     } else if (id === 6) {
       this.router.navigate(['/dashboard/informacion_equipo', this.teamId]);
     } else if (id === 7) {
       this.router.navigate(['/dashboard/partidos-entrevistas', this.teamId, 0]);
-    } else if (id === 4) {
-      this.router.navigate(['/dashboard/estadisticas_jugadores', this.teamId]);
     } else if (id === 8) {
-      this.router.navigate([
-        '/dashboard/clasificacion-resultados',
-        this.teamId,
-      ]);
+      this.router.navigate(['/dashboard/clasificacion-resultados', this.teamId]);
     } else if (id === 9) {
       this.router.navigate(['/dashboard/video-analysis']);
     } else if (id === 10) {
       this.router.navigate(['/dashboard/erp']);
+    } else if (id === 11) {
+      this.router.navigate(['/dashboard/staff-club']);
+    } else if (id === 12) {
+      this.router.navigate(['/dashboard/lesiones', this.teamId]);
+    } else if (id === 13) {
+      this.router.navigate(['/dashboard/info-entrenadores', this.teamId]);
     }
   }
+
+  isClubAdmin(): boolean {
+    const profileId = this.usuarioActual?.profileType?.profileId;
+    return profileId === 1 || profileId === 2;
+  }
+
+  isStaffUser(): boolean {
+    return this.usuarioActual?.profileType?.profileId === 4;
+  }
+
+  /**
+   * Para usuarios Staff (profileId=4), devuelve true solo si tienen el permiso.
+   * Para cualquier otro perfil (admin, coach, etc.) siempre devuelve true.
+   */
+  hasPermission(permKey: string): boolean {
+    if (!this.isStaffUser()) return true;
+    const perms: string[] = (this.usuarioActual as any)?.staffPermissions ?? [];
+    return perms.includes(permKey);
+  }
+
   goBack(): void {
     this.location.back();
   }

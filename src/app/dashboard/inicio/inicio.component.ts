@@ -33,6 +33,21 @@ export class InicioComponent implements OnInit {
   userId = 0;
   profileId = 0;
   clubId = 0;
+  staffPermissions: string[] = [];
+
+  get hasStaffDashboard(): boolean {
+    return this.staffPermissions.some(p => p.startsWith('DASHBOARD_'));
+  }
+
+  navegarStaff(route: string, needsClubId = false): void {
+    const cId = this.clubId || Number(sessionStorage.getItem('clubId') ?? '0');
+    if (needsClubId) {
+      if (!cId) { console.warn('Staff: clubId no disponible aún'); return; }
+      this.router.navigate([route, cId]);
+    } else {
+      this.router.navigate([route]);
+    }
+  }
   pictureClub = '';
   noPicture = false;
   clubOk = false;
@@ -94,6 +109,7 @@ export class InicioComponent implements OnInit {
         this.usuarioActual = user!;
         this.profileId = user!.profileType.profileId;
         this.userId = this.obtenerUserIdPorPerfil(user!);
+        this.staffPermissions = user!.staffPermissions ?? [];
 
         // Override admin: si el profileId real no es club ni coach,
         // forzar como coach para que vea el dashboard correctamente
@@ -199,6 +215,9 @@ export class InicioComponent implements OnInit {
         break;
       case 15:
         this.router.navigate(['/dashboard/erp']);
+        break;
+      case 16:
+        this.router.navigate(['/dashboard/staff-club']);
         break;
     }
   }

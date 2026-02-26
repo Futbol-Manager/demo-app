@@ -294,28 +294,25 @@
             </div>
 
             <div class="cq-col-action cq-action-group" (click)="$event.stopPropagation()">
-              <span *ngIf="isSphaira(cuota) && stripeBtoShow && !isAlreadySubscribed(cuota) && savedCards.length > 0"
-                    class="cq-action-btn cq-action-btn--sphaira-auto">
-                    <i class="bi bi-patch-check-fill"></i>
-                <span class="cq-action-tooltip cq-action-tooltip--left">Cobro automático con Sphaira Pay</span>
-              </span>
-              <button *ngIf="isSphaira(cuota) && stripeBtoShow && !isAlreadySubscribed(cuota) && savedCards.length === 0"
-                      class="cq-action-btn cq-action-btn--subscribe"
-                      (click)="openModalStripeParaCuota(cuota)">
-                <i class="bi bi-lightning-charge-fill"></i>
-                <span class="cq-action-tooltip cq-action-tooltip--left">Vincular tarjeta</span>
-              </button>
-              <span *ngIf="isSphaira(cuota) && isAlreadySubscribed(cuota)"
-                    class="cq-action-btn cq-action-btn--subscribed">
-                <i class="bi bi-check2"></i>
-                <span class="cq-action-tooltip cq-action-tooltip--left">Suscrito</span>
-              </span>
-              <button *ngIf="canCancelCuota(cuota)"
-                      class="cq-action-btn cq-action-btn--cancel"
-                      (click)="requestCancelCuota(cuota)">
-                <i class="bi bi-x-lg"></i>
-                <span class="cq-action-tooltip cq-action-tooltip--left">Cancelar</span>
-              </button>
+              <ng-container *ngIf="(+cuota.pagado) < (+cuota.importe)">
+                <span *ngIf="isSphaira(cuota) && savedCards.length > 0"
+                      class="cq-action-btn cq-action-btn--sphaira-auto">
+                  <i class="bi bi-patch-check-fill"></i>
+                  <span class="cq-action-tooltip cq-action-tooltip--left">Cobro automático con Sphaira Pay</span>
+                </span>
+                <button *ngIf="isSphaira(cuota) && stripeBtoShow && savedCards.length === 0"
+                        class="cq-action-btn cq-action-btn--subscribe"
+                        (click)="openModalStripeParaCuota(cuota)">
+                  <i class="bi bi-lightning-charge-fill"></i>
+                  <span class="cq-action-tooltip cq-action-tooltip--left">Vincular tarjeta</span>
+                </button>
+                <button *ngIf="canCancelCuota(cuota)"
+                        class="cq-action-btn cq-action-btn--cancel"
+                        (click)="requestCancelCuota(cuota)">
+                  <i class="bi bi-x-lg"></i>
+                  <span class="cq-action-tooltip cq-action-tooltip--left">Cancelar</span>
+                </button>
+              </ng-container>
             </div>
           </div>
 
@@ -463,30 +460,25 @@
               <span class="cq-fecha">{{ cuota.fechaPago || '-' }}</span>
             </div>
             <div class="cq-col-action cq-action-group" (click)="$event.stopPropagation()">
-              <!-- Sphaira Pay: tarjeta vinculada → chip informativo (sin botón) -->
-              <span *ngIf="isSphaira(cuota) && stripeBtoShow && !isAlreadySubscribed(cuota) && savedCards.length > 0"
-                    class="cq-action-btn cq-action-btn--sphaira-auto">
-                <i class="bi bi-check-circle-fill"></i>
-                <span class="cq-action-tooltip cq-action-tooltip--left">Cobro automático con Sphaira Pay</span>
-              </span>
-              <!-- Sphaira Pay: sin tarjeta → mostrar botón para vincular y suscribirse -->
-              <button *ngIf="isSphaira(cuota) && stripeBtoShow && !isAlreadySubscribed(cuota) && savedCards.length === 0"
-                      class="cq-action-btn cq-action-btn--subscribe"
-                      (click)="openModalStripeParaCuota(cuota)">
-                <i class="bi bi-lightning-charge-fill"></i>
-                <span class="cq-action-tooltip cq-action-tooltip--left">Vincular tarjeta</span>
-              </button>
-              <span *ngIf="isSphaira(cuota) && isAlreadySubscribed(cuota)"
-                    class="cq-action-btn cq-action-btn--subscribed">
-                <i class="bi bi-check2"></i>
-                <span class="cq-action-tooltip cq-action-tooltip--left">Suscrito</span>
-              </span>
-              <button *ngIf="canCancelCuota(cuota)"
-                      class="cq-action-btn cq-action-btn--cancel"
-                      (click)="requestCancelCuota(cuota)">
-                <i class="bi bi-x-lg"></i>
-                <span class="cq-action-tooltip cq-action-tooltip--left">Cancelar</span>
-              </button>
+              <ng-container *ngIf="(+cuota.pagado) < (+cuota.importe)">
+                <span *ngIf="isSphaira(cuota) && savedCards.length > 0"
+                      class="cq-action-btn cq-action-btn--sphaira-auto">
+                  <i class="bi bi-patch-check-fill"></i>
+                  <span class="cq-action-tooltip cq-action-tooltip--left">Cobro automático con Sphaira Pay</span>
+                </span>
+                <button *ngIf="isSphaira(cuota) && stripeBtoShow && savedCards.length === 0"
+                        class="cq-action-btn cq-action-btn--subscribe"
+                        (click)="openModalStripeParaCuota(cuota)">
+                  <i class="bi bi-lightning-charge-fill"></i>
+                  <span class="cq-action-tooltip cq-action-tooltip--left">Vincular tarjeta</span>
+                </button>
+                <button *ngIf="canCancelCuota(cuota)"
+                        class="cq-action-btn cq-action-btn--cancel"
+                        (click)="requestCancelCuota(cuota)">
+                  <i class="bi bi-x-lg"></i>
+                  <span class="cq-action-tooltip cq-action-tooltip--left">Cancelar</span>
+                </button>
+              </ng-container>
             </div>
           </div>
 
@@ -535,7 +527,7 @@
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- MODAL TARJETAS                                            -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div class="premium-modal-overlay" [class.premium-modal-overlay--open]="showModalTarjetas" (click)="closeModalTarjetas()">
+<div class="premium-modal-overlay" [class.premium-modal-overlay--open]="showModalTarjetas" (click)="closeModalTarjetas()" appModalBackdrop>
   <div class="premium-modal premium-modal--wide" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
 
     <div class="premium-modal-header premium-modal-header--cards">
@@ -738,7 +730,7 @@
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- MODAL DESISTIMIENTO DE CUOTA                             -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div class="premium-modal-overlay" [class.premium-modal-overlay--open]="showCancelCuotaDialog" (click)="dismissCancelCuota()">
+<div class="premium-modal-overlay" [class.premium-modal-overlay--open]="showCancelCuotaDialog" (click)="dismissCancelCuota()" appModalBackdrop>
   <div class="premium-modal premium-modal--cancel-cuota" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
 
     <div class="premium-modal-header premium-modal-header--danger">
@@ -1206,7 +1198,7 @@
 <!-- ═══════════════════════════════════════════════════════════ -->
 <!-- MODAL PAGO STRIPE                                         -->
 <!-- ═══════════════════════════════════════════════════════════ -->
-<div class="modal-overlay" [class.modal-overlay--open]="showModalStripe" (click)="showModalStripe && closeModal()">
+<div class="modal-overlay" [class.modal-overlay--open]="showModalStripe" (click)="showModalStripe && closeModal()" appModalBackdrop>
   <div class="modal-pago" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="modal-pago-title">
     <div class="modal-pago-header">
       <h2 id="modal-pago-title" class="modal-pago-title">

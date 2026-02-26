@@ -1,0 +1,222 @@
+<!-- Botón atrás -->
+<div class="back-container">
+  <button type="button" class="btn-back-clean" (click)="goBack()">
+    <i class="bi bi-arrow-left"></i>
+    <span>{{ 'COMMON.BACK' | translate }}</span>
+  </button>
+</div>
+
+<div class="catalog-page">
+
+  <!-- HEADER -->
+  <header class="page-header">
+    <h1 class="page-title">
+      <i class="bi bi-cloud bi-cloud-icon"></i>
+      {{ 'TAREAS_CATALOG.TITLE' | translate }}
+    </h1>
+    <p class="page-subtitle">{{ 'TAREAS_CATALOG.SUBTITLE' | translate }}</p>
+  </header>
+
+  <!-- FILTROS -->
+  <div class="filter-bar">
+    <div class="filter-search">
+      <i class="bi bi-search filter-search-icon"></i>
+      <input
+        type="text"
+        class="filter-input"
+        [(ngModel)]="searchText"
+        (ngModelChange)="onSearchChange()"
+        [placeholder]="'TAREAS_CATALOG.SEARCH_PLACEHOLDER' | translate" />
+      <button *ngIf="searchText" class="filter-clear-btn" (click)="searchText = ''; onSearchChange()">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+
+    <button class="btn-toggle-filters" (click)="showAdvancedFilters = !showAdvancedFilters">
+      <i class="bi" [ngClass]="showAdvancedFilters ? 'bi-funnel-fill' : 'bi-funnel'"></i>
+      <span>{{ 'TAREAS_CATALOG.ADVANCED_FILTERS' | translate }}</span>
+      <span class="filter-dot" *ngIf="selectedEstrategia || selectedIntencion"></span>
+    </button>
+
+    <div class="advanced-filters" *ngIf="showAdvancedFilters">
+      <select class="filter-select" [(ngModel)]="selectedEstrategia" (ngModelChange)="onFilterChange()">
+        <option value="">{{ 'TAREAS_CATALOG.ALL_ESTRATEGIAS' | translate }}</option>
+        <option *ngFor="let e of estrategias" [value]="e">{{ e }}</option>
+      </select>
+      <select class="filter-select" [(ngModel)]="selectedIntencion" (ngModelChange)="onFilterChange()">
+        <option value="">{{ 'TAREAS_CATALOG.ALL_INTENCIONES' | translate }}</option>
+        <option *ngFor="let i of intenciones" [value]="i">{{ i }}</option>
+      </select>
+      <button *ngIf="selectedEstrategia || selectedIntencion" class="btn-clear-all" (click)="clearFilters()">
+        <i class="bi bi-x-circle"></i>
+        {{ 'TAREAS_CATALOG.CLEAR_FILTERS' | translate }}
+      </button>
+    </div>
+
+    <p class="result-count" *ngIf="!isLoading">
+      {{ filteredTasks.length }} {{ 'TAREAS_CATALOG.RESULTS' | translate }}
+    </p>
+  </div>
+
+  <!-- LOADING -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner-border text-success" role="status"></div>
+    <p>{{ 'TAREAS_CATALOG.LOADING' | translate }}</p>
+  </div>
+
+  <!-- VACÍO -->
+  <div class="empty-state" *ngIf="!isLoading && filteredTasks.length === 0">
+    <i class="bi bi-search empty-icon"></i>
+    <p>{{ 'TAREAS_CATALOG.EMPTY' | translate }}</p>
+  </div>
+
+  <!-- GRID DE TARJETAS -->
+  <div class="task-grid" *ngIf="!isLoading && filteredTasks.length > 0">
+    <div
+      class="task-card"
+      *ngFor="let task of pagedTasks"
+      [class.active]="selectedTask?.tasksShopId === task.tasksShopId"
+      (click)="openDetail(task)">
+
+      <div class="task-image">
+        <img [src]="getImage(task)" alt="" loading="lazy" />
+        <button
+          class="btn-fav"
+          [class.active]="isFav(task)"
+          (click)="toggleFav($event, task)"
+          [title]="isFav(task) ? ('TAREAS_CATALOG.REMOVE_FAV' | translate) : ('TAREAS_CATALOG.ADD_FAV' | translate)">
+          <i class="bi" [ngClass]="isFav(task) ? 'bi-star-fill' : 'bi-star'"></i>
+        </button>
+      </div>
+
+      <div class="task-body">
+        <div class="task-tags" *ngIf="task.estrategia || task.intencion">
+          <span class="badge badge-secondary" *ngIf="task.estrategia && task.estrategia !== '-'">{{ task.estrategia }}</span>
+          <span class="badge badge-primary" *ngIf="task.intencion && task.intencion !== '-'">{{ task.intencion }}</span>
+          <span class="badge badge-time" *ngIf="task.worktime && task.worktime !== '-'">
+            <i class="bi bi-clock"></i> {{ task.worktime }}
+          </span>
+        </div>
+        <h4 class="task-title">{{ task.slogans || ('TAREAS_CATALOG.NO_TITLE' | translate) }}</h4>
+        <p class="task-desc">{{ task.description | slice:0:100 }}{{ (task.description?.length || 0) > 100 ? '...' : '' }}</p>
+        <button class="btn-add-training" (click)="openAddToTraining($event, task)">
+          <i class="bi bi-plus-circle"></i>
+          {{ 'TAREAS_CATALOG.ADD_TO_TRAINING' | translate }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGINACIÓN -->
+  <div class="pagination-bar" *ngIf="totalPages > 1">
+    <button class="btn-page" [disabled]="currentPage === 0" (click)="prevPage()">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
+    <button class="btn-page" [disabled]="currentPage >= totalPages - 1" (click)="nextPage()">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+
+</div>
+
+<!-- ═══ PANEL DETALLE ════════════════════════════════════════════════════════ -->
+<div class="detail-backdrop" *ngIf="selectedTask" (click)="closeDetail()"></div>
+<div class="detail-panel" *ngIf="selectedTask">
+  <div class="detail-panel-inner" (click)="$event.stopPropagation()">
+    <div class="detail-header">
+      <h2>{{ selectedTask.slogans || ('TAREAS_CATALOG.NO_TITLE' | translate) }}</h2>
+      <button class="detail-close" (click)="closeDetail()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="detail-body">
+      <img class="detail-img" [src]="getImage(selectedTask)" alt="" />
+
+      <div class="detail-tags" *ngIf="selectedTask.estrategia || selectedTask.intencion">
+        <span class="badge badge-secondary" *ngIf="selectedTask.estrategia && selectedTask.estrategia !== '-'">{{ selectedTask.estrategia }}</span>
+        <span class="badge badge-primary" *ngIf="selectedTask.intencion && selectedTask.intencion !== '-'">{{ selectedTask.intencion }}</span>
+        <span class="badge badge-time" *ngIf="selectedTask.worktime && selectedTask.worktime !== '-'">
+          <i class="bi bi-clock"></i> {{ selectedTask.worktime }}
+        </span>
+      </div>
+
+      <div class="detail-section" *ngIf="selectedTask.description">
+        <label>{{ 'TAREAS_FAV.DESCRIPTION' | translate }}</label>
+        <p>{{ selectedTask.description }}</p>
+      </div>
+      <div class="detail-section" *ngIf="selectedTask.rules">
+        <label>{{ 'TAREAS_FAV.RULES' | translate }}</label>
+        <p>{{ selectedTask.rules }}</p>
+      </div>
+      <div class="detail-section" *ngIf="selectedTask.variants">
+        <label>{{ 'TAREAS_FAV.VARIANTS' | translate }}</label>
+        <p>{{ selectedTask.variants }}</p>
+      </div>
+      <div class="detail-row">
+        <div class="detail-section" *ngIf="selectedTask.worktime && selectedTask.worktime !== '-'">
+          <label>{{ 'TAREAS_FAV.WORKTIME' | translate }}</label>
+          <p>{{ selectedTask.worktime }}</p>
+        </div>
+        <div class="detail-section" *ngIf="selectedTask.space && selectedTask.space !== '-'">
+          <label>{{ 'TAREAS_FAV.SPACE' | translate }}</label>
+          <p>{{ selectedTask.space }}</p>
+        </div>
+        <div class="detail-section" *ngIf="selectedTask.material && selectedTask.material !== '-'">
+          <label>{{ 'TAREAS_FAV.MATERIAL' | translate }}</label>
+          <p>{{ selectedTask.material }}</p>
+        </div>
+      </div>
+      <div class="detail-section" *ngIf="selectedTask.video">
+        <label>{{ 'TAREAS_FAV.VIDEO' | translate }}</label>
+        <a [href]="selectedTask.video" target="_blank" rel="noopener" class="video-link">
+          <i class="bi bi-play-circle"></i> {{ selectedTask.video }}
+        </a>
+      </div>
+    </div>
+
+    <div class="detail-footer">
+      <button class="btn btn-outline-warning btn-sm" (click)="toggleFav($event, selectedTask)">
+        <i class="bi" [ngClass]="isFav(selectedTask) ? 'bi-star-fill' : 'bi-star'"></i>
+        {{ isFav(selectedTask) ? ('TAREAS_CATALOG.REMOVE_FAV' | translate) : ('TAREAS_CATALOG.ADD_FAV' | translate) }}
+      </button>
+      <button class="btn btn-success btn-sm" (click)="openAddToTraining($event, selectedTask)">
+        <i class="bi bi-plus-circle"></i>
+        {{ 'TAREAS_CATALOG.ADD_TO_TRAINING' | translate }}
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL SELECCIONAR ENTRENAMIENTO ══════════════════════════════════════ -->
+<div class="modal-backdrop" *ngIf="showTrainingModal" (click)="closeTrainingModal()"></div>
+<div class="training-modal" *ngIf="showTrainingModal">
+  <div class="training-modal-inner" (click)="$event.stopPropagation()">
+    <div class="training-modal-header">
+      <h4>{{ 'TAREAS_CATALOG.SELECT_TRAINING' | translate }}</h4>
+      <button class="detail-close" (click)="closeTrainingModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+    <p class="training-modal-task-name" *ngIf="selectedTask4Training">
+      {{ selectedTask4Training.slogans || ('TAREAS_CATALOG.NO_TITLE' | translate) }}
+    </p>
+
+    <div class="training-modal-empty" *ngIf="trainingSessions.length === 0">
+      <i class="bi bi-calendar-x"></i>
+      <p>{{ 'TAREAS_CATALOG.NO_TRAININGS' | translate }}</p>
+    </div>
+
+    <ul class="training-list" *ngIf="trainingSessions.length > 0">
+      <li *ngFor="let s of trainingSessions" class="training-list-item" (click)="addToTraining(s)">
+        <i class="bi bi-calendar-check training-icon"></i>
+        <div class="training-info">
+          <span class="training-date">{{ formatDate(s.daySession) }}</span>
+          <span class="training-objective" *ngIf="s.objectiveSession">{{ s.objectiveSession }}</span>
+        </div>
+        <i class="bi bi-plus-circle training-add-icon"></i>
+      </li>
+    </ul>
+  </div>
+</div>

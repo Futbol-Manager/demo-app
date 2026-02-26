@@ -1,10 +1,28 @@
 <app-publicidad></app-publicidad>
-<!-- BOTÓN VOLVER (SE MANTIENE IGUAL) -->
-<div class="back-container">
-  <button class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
-  </button>
+
+<!-- PAGE HEADER — Card premium (referencia: info-jugadores) -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <h2 class="table-title" *ngIf="datosCargados && categoryTeam != 27">{{ nombreEquipo }}</h2>
+
+  <div class="calendar-view-switcher" *ngIf="datosCargados && categoryTeam != 27">
+    <button type="button" class="view-btn" [class.active]="vistaCalendario === 'year'" (click)="irAVistaAnio()">
+      {{ 'CAL.TEXT_371' | translate }}
+    </button>
+    <button type="button" class="view-btn" [class.active]="vistaCalendario === 'month'" (click)="irAVistaMes()">
+      {{ 'CAL.TEXT_372' | translate }}
+    </button>
+    <button type="button" class="view-btn" [class.active]="vistaCalendario === 'week'" (click)="irAVistaSemana()">
+      {{ 'CAL.TEXT_373' | translate }}
+    </button>
+  </div>
+  <div class="header-spacer" *ngIf="!datosCargados || categoryTeam == 27"></div>
 </div>
 
 <div *ngIf="datosCargados">
@@ -19,51 +37,29 @@
 
     <div class="calendar-inner">
 
-      <!-- HEADER -->
-      <div class="calendar-header">
+      <!-- NAVEGACIÓN (prev/next + título del periodo) -->
+      <div class="calendar-header-nav calendar-header-nav-responsive">
+        <button class="nav-btn" (click)="vistaCalendario === 'year' ? anioAnterior() : mesAnterior()">
+          <i class="bi bi-chevron-left"></i>
+          <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'year'">{{ 'CAL.TEXT_376' | translate }}</span>
+          <span class="nav-btn-text nav-month-full" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_052' | translate }}</span>
+          <span class="nav-btn-text nav-month-brief" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_385' | translate }}</span>
+          <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'week'">{{ 'CAL.TEXT_374' | translate }}</span>
+        </button>
 
-        <div class="calendar-header-top">
-          <h2 class="team-name">{{ nombreEquipo }}</h2>
+        <div class="month-title">
+          <ng-container *ngIf="vistaCalendario === 'year'">{{ anioActual }}</ng-container>
+          <ng-container *ngIf="vistaCalendario === 'month'">{{ tituloMesAnio }}</ng-container>
+          <ng-container *ngIf="vistaCalendario === 'week'">{{ tituloSemana }}</ng-container>
         </div>
 
-        <!-- Selector de vista: Año | Mes | Semana -->
-        <div class="calendar-view-switcher">
-          <button type="button" class="view-btn" [class.active]="vistaCalendario === 'year'" (click)="irAVistaAnio()">
-            {{ 'CAL.TEXT_371' | translate }}
-          </button>
-          <button type="button" class="view-btn" [class.active]="vistaCalendario === 'month'" (click)="irAVistaMes()">
-            {{ 'CAL.TEXT_372' | translate }}
-          </button>
-          <button type="button" class="view-btn" [class.active]="vistaCalendario === 'week'" (click)="irAVistaSemana()">
-            {{ 'CAL.TEXT_373' | translate }}
-          </button>
-        </div>
-
-        <!-- Navegación según vista -->
-        <div class="calendar-header-nav calendar-header-nav-responsive">
-          <button class="nav-btn" (click)="vistaCalendario === 'year' ? anioAnterior() : mesAnterior()">
-            <i class="bi bi-chevron-left"></i>
-            <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'year'">{{ 'CAL.TEXT_376' | translate }}</span>
-            <span class="nav-btn-text nav-month-full" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_052' | translate }}</span>
-            <span class="nav-btn-text nav-month-brief" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_385' | translate }}</span>
-            <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'week'">{{ 'CAL.TEXT_374' | translate }}</span>
-          </button>
-
-          <div class="month-title">
-            <ng-container *ngIf="vistaCalendario === 'year'">{{ anioActual }}</ng-container>
-            <ng-container *ngIf="vistaCalendario === 'month'">{{ tituloMesAnio }}</ng-container>
-            <ng-container *ngIf="vistaCalendario === 'week'">{{ tituloSemana }}</ng-container>
-          </div>
-
-          <button class="nav-btn" (click)="vistaCalendario === 'year' ? anioSiguiente() : mesSiguiente()">
-            <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'year'">{{ 'CAL.TEXT_377' | translate }}</span>
-            <span class="nav-btn-text nav-month-full" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_053' | translate }}</span>
-            <span class="nav-btn-text nav-month-brief" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_386' | translate }}</span>
-            <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'week'">{{ 'CAL.TEXT_375' | translate }}</span>
-            <i class="bi bi-chevron-right"></i>
-          </button>
-        </div>
-
+        <button class="nav-btn" (click)="vistaCalendario === 'year' ? anioSiguiente() : mesSiguiente()">
+          <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'year'">{{ 'CAL.TEXT_377' | translate }}</span>
+          <span class="nav-btn-text nav-month-full" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_053' | translate }}</span>
+          <span class="nav-btn-text nav-month-brief" *ngIf="vistaCalendario === 'month'">{{ 'CAL.TEXT_386' | translate }}</span>
+          <span class="nav-btn-text nav-month-long" *ngIf="vistaCalendario === 'week'">{{ 'CAL.TEXT_375' | translate }}</span>
+          <i class="bi bi-chevron-right"></i>
+        </button>
       </div>
 
       <!-- ========== VISTA AÑO: grid 12 meses ========== -->
@@ -82,19 +78,30 @@
             {{ d === 0 ? ('CAL.TEXT_054' | translate) : d === 1 ? ('CAL.TEXT_055' | translate) : d === 2 ? ('CAL.TEXT_056' | translate) : d === 3 ? ('CAL.TEXT_057' | translate) : d === 4 ? ('CAL.TEXT_058' | translate) : d === 5 ? ('CAL.TEXT_059' | translate) : ('CAL.TEXT_060' | translate) }}
           </div>
           <div *ngFor="let dia of semanaActual; let i = index" class="calendar-cell week-cell"
-            [class.today]="isToday(dia.daysession)" (click)="abrirModal(dia.daysession)">
+            [class.today]="isToday(dia.daysession)"
+            [class.drag-over]="isDragTarget(dia)"
+            (click)="abrirModal(dia.daysession)"
+            (dragover)="onCellDragOver($event, dia)"
+            (dragleave)="onCellDragLeave()"
+            (drop)="onCellDrop($event, dia)">
             <div class="day-container">
               <span class="day-number">{{ dia.numero }}</span>
               <div class="activities">
-                <div *ngIf="puedeVerEntrenamiento(dia)" class="activity training">
-                  <i class="fa-solid fa-dumbbell"></i>
-                  <span class="activity-text">{{ 'CAL.TEXT_062' | translate }}</span>
-                  <span *ngIf="dia.startTime" class="training-time-inline">{{ dia.startTime }}<span *ngIf="dia.endTime"> - {{ dia.endTime }}</span></span>
+                <div *ngIf="puedeVerEntrenamiento(dia)" class="activity training"
+                  [attr.draggable]="canDragEvents ? 'true' : null"
+                  (dragstart)="onEventDragStart($event, dia, 'training')"
+                  (dragend)="onCellDragLeave(true)">
+                  <i class="fa-solid fa-dumbbell" draggable="false"></i>
+                  <span class="activity-text" draggable="false">{{ 'CAL.TEXT_062' | translate }}</span>
+                  <span *ngIf="dia.startTime" class="training-time-inline" draggable="false">{{ dia.startTime }}<span *ngIf="dia.endTime"> - {{ dia.endTime }}</span></span>
                 </div>
-                <div *ngIf="puedeVerPartido(dia)" class="activity match">
-                  <img *ngIf="dia.terreno === 'Local'" src="assets/iconos/home.svg" class="match-icon-lg">
-                  <img *ngIf="dia.terreno === 'Visitante'" src="assets/iconos/travel.svg" class="match-icon-lg">
-                  <span class="match-name">{{ dia.rivalName }}</span>
+                <div *ngIf="puedeVerPartido(dia)" class="activity match"
+                  [attr.draggable]="canDragEvents ? 'true' : null"
+                  (dragstart)="onEventDragStart($event, dia, 'match')"
+                  (dragend)="onCellDragLeave(true)">
+                  <img *ngIf="dia.terreno === 'Local'" src="assets/iconos/home.svg" class="match-icon-lg" draggable="false">
+                  <img *ngIf="dia.terreno === 'Visitante'" src="assets/iconos/travel.svg" class="match-icon-lg" draggable="false">
+                  <span class="match-name" draggable="false">{{ dia.rivalName }}</span>
                 </div>
               </div>
             </div>
@@ -124,23 +131,33 @@
                   <ng-container *ngFor="let dia of semana">
 
                     <td *ngIf="dia !== ''" class="calendar-cell" [class.today]="isToday(dia.daysession)"
-                      (click)="abrirModal(dia.daysession)">
+                      [class.drag-over]="isDragTarget(dia)"
+                      (click)="abrirModal(dia.daysession)"
+                      (dragover)="onCellDragOver($event, dia)"
+                      (dragleave)="onCellDragLeave()"
+                      (drop)="onCellDrop($event, dia)">
 
                       <div class="day-container">
                         <span class="day-number">{{ dia.numero }}</span>
 
                         <div class="activities">
 
-                          <div *ngIf="puedeVerEntrenamiento(dia)" class="activity training">
-                            <i class="fa-solid fa-dumbbell"></i>
-                            <span class="activity-text">{{ 'CAL.TEXT_062' | translate }}</span>
-                            <span *ngIf="dia.startTime" class="training-time-inline">{{ dia.startTime }}<span *ngIf="dia.endTime"> - {{ dia.endTime }}</span></span>
+                          <div *ngIf="puedeVerEntrenamiento(dia)" class="activity training"
+                            [attr.draggable]="canDragEvents ? 'true' : null"
+                            (dragstart)="onEventDragStart($event, dia, 'training')"
+                            (dragend)="onCellDragLeave(true)">
+                            <i class="fa-solid fa-dumbbell" draggable="false"></i>
+                            <span class="activity-text" draggable="false">{{ 'CAL.TEXT_062' | translate }}</span>
+                            <span *ngIf="dia.startTime" class="training-time-inline" draggable="false">{{ dia.startTime }}<span *ngIf="dia.endTime"> - {{ dia.endTime }}</span></span>
                           </div>
 
-                          <div *ngIf="puedeVerPartido(dia)" class="activity match">
-                            <img *ngIf="dia.terreno === 'Local'" src="assets/iconos/home.svg" class="match-icon-lg">
-                            <img *ngIf="dia.terreno === 'Visitante'" src="assets/iconos/travel.svg" class="match-icon-lg">
-                            <span class="activity-text match-name">{{ dia.rivalName }}</span>
+                          <div *ngIf="puedeVerPartido(dia)" class="activity match"
+                            [attr.draggable]="canDragEvents ? 'true' : null"
+                            (dragstart)="onEventDragStart($event, dia, 'match')"
+                            (dragend)="onCellDragLeave(true)">
+                            <img *ngIf="dia.terreno === 'Local'" src="assets/iconos/home.svg" class="match-icon-lg" draggable="false">
+                            <img *ngIf="dia.terreno === 'Visitante'" src="assets/iconos/travel.svg" class="match-icon-lg" draggable="false">
+                            <span class="activity-text match-name" draggable="false">{{ dia.rivalName }}</span>
                           </div>
 
                         </div>
@@ -2522,7 +2539,7 @@
 
 <!-- Modal Asistencia jugadores – Pro SaaS con overlay -->
 <div class="modal modal-asistencia-wrapper" tabindex="-1" role="dialog" [ngClass]="{'d-block': showModalAsistencia}">
-  <div class="modal-asistencia-backdrop" (click)="cerrarModalAsistencia()" aria-hidden="true"></div>
+  <div class="modal-asistencia-backdrop" (click)="cerrarModalAsistencia()" aria-hidden="true" appModalBackdrop></div>
   <div class="modal-dialog modal-dialog-centered modal-lg modal-asistencia-dialog" role="document">
     <div class="modal-content modal-asistencia-content">
       <div class="modal-asistencia-header">
@@ -2593,7 +2610,7 @@
 </div>
 
 <!-- Modal para ver los detalles de la tarea -->
-<div class="task-view-overlay" *ngIf="showModalTask" (click)="closeTaskModal()"></div>
+<div class="task-view-overlay" *ngIf="showModalTask" (click)="closeTaskModal()" appModalBackdrop></div>
 <div class="task-view-modal" *ngIf="showModalTask" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
 
   <!-- Header -->
@@ -2699,11 +2716,11 @@
 
 <!-- Modal para ver la convocatoria -->
 <!-- OVERLAY -->
-<div class="saas-overlay" *ngIf="mostrarModalConvocatoria" (click)="cerrarModalConvocatoria()">
+<div class="saas-overlay" *ngIf="mostrarModalConvocatoria" (click)="cerrarModalConvocatoria()" appModalBackdrop>
 </div>
 
 <!-- MODAL -->
-<div class="saas-modal" *ngIf="mostrarModalConvocatoria" role="dialog" aria-modal="true"
+<div class="saas-modal convocatoria-modal" *ngIf="mostrarModalConvocatoria" role="dialog" aria-modal="true"
   (click)="$event.stopPropagation()">
 
   <!-- HEADER FIFA PRO -->
@@ -2714,6 +2731,41 @@
     <button class="convocatoria-close" aria-label="Close" (click)="cerrarModalConvocatoria()">
       <span aria-hidden="true">&times;</span>
     </button>
+  </div>
+
+  <!-- BARRA RESUMEN -->
+  <div class="conv-summary-bar">
+    <div class="conv-summary-item conv-summary-item--green">
+      <i class="bi bi-person-fill-check"></i>
+      <span class="conv-summary-label">Titulares</span>
+      <span class="conv-summary-count">{{ jugadoresTitulares.length }}</span>
+    </div>
+    <div class="conv-summary-sep"></div>
+    <div class="conv-summary-item conv-summary-item--blue">
+      <i class="bi bi-person-fill"></i>
+      <span class="conv-summary-label">Suplentes</span>
+      <span class="conv-summary-count">{{ jugadoresSuplentes.length }}</span>
+    </div>
+    <div class="conv-summary-sep"></div>
+    <div class="conv-summary-item conv-summary-item--amber">
+      <i class="bi bi-bandaid-fill"></i>
+      <span class="conv-summary-label">Lesionados</span>
+      <span class="conv-summary-count">{{ jugadoresLesionados.length }}</span>
+    </div>
+    <div class="conv-summary-sep"></div>
+    <div class="conv-summary-item conv-summary-item--red">
+      <i class="bi bi-person-x-fill"></i>
+      <span class="conv-summary-label">No conv.</span>
+      <span class="conv-summary-count">{{ jugadoresNoConvocados.length }}</span>
+    </div>
+    <div class="conv-summary-sep"></div>
+    <div class="conv-summary-item conv-summary-item--total">
+      <i class="bi bi-people-fill"></i>
+      <span class="conv-summary-label">Total</span>
+      <span class="conv-summary-count">
+        {{ jugadoresTitulares.length + jugadoresSuplentes.length + jugadoresLesionados.length + jugadoresNoConvocados.length }}
+      </span>
+    </div>
   </div>
 
   <!-- BODY -->
@@ -2736,17 +2788,58 @@
       </div>
       <div class="pitch-wrapper convocatoria-pitch-wrapper">
 
-        <!-- CAMPO (solo esto se inclina) -->
+        <!-- CAMPO vertical – estilo tactical board -->
         <div class="pitch-3d">
 
-          <div class="slot" *ngFor="let slot of slotsFormacion" [style.left.%]="ajustarX(slot.x)"
-            [style.top.%]="ajustarY(slot.y)" (dragover)="allowDrop($event)" (drop)="onDropSlot($event, slot)"
+          <!-- SVG del campo horizontal (105m × 68m) – portero izquierda, ataque derecha -->
+          <svg class="pitch-svg" viewBox="0 0 105 68" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+            <!-- Fondo verde oscuro -->
+            <rect x="0" y="0" width="105" height="68" fill="#2e7d32"/>
+            <!-- Franjas verticales claras alternadas (cada ~8m) -->
+            <rect x="0"  y="0" width="8" height="68" fill="#388e3c"/>
+            <rect x="16" y="0" width="8" height="68" fill="#388e3c"/>
+            <rect x="32" y="0" width="8" height="68" fill="#388e3c"/>
+            <rect x="48" y="0" width="8" height="68" fill="#388e3c"/>
+            <rect x="64" y="0" width="8" height="68" fill="#388e3c"/>
+            <rect x="80" y="0" width="8" height="68" fill="#388e3c"/>
+            <rect x="96" y="0" width="9" height="68" fill="#388e3c"/>
+            <!-- Borde del campo -->
+            <rect x="0" y="0" width="105" height="68" fill="none" stroke="white" stroke-width="0.8"/>
+            <!-- Línea central (vertical) -->
+            <line x1="52.5" y1="0" x2="52.5" y2="68" stroke="white" stroke-width="0.8"/>
+            <!-- Círculo central -->
+            <circle cx="52.5" cy="34" r="9.15" fill="none" stroke="white" stroke-width="0.8"/>
+            <circle cx="52.5" cy="34" r="0.6" fill="white"/>
+            <!-- === PORTERÍA IZQUIERDA (defensa / portero) === -->
+            <rect x="0" y="13.84" width="16.5" height="40.32" fill="none" stroke="white" stroke-width="0.8"/>
+            <rect x="0" y="24.84" width="5.5"  height="18.32" fill="none" stroke="white" stroke-width="0.8"/>
+            <circle cx="11" cy="34" r="0.6" fill="white"/>
+            <path d="M 16.5 26.69 A 9.15 9.15 0 0 1 16.5 41.31" fill="none" stroke="white" stroke-width="0.8"/>
+            <rect x="-2.4" y="27.34" width="2.4" height="13.32" fill="rgba(255,255,255,0.15)" stroke="#ccc" stroke-width="0.7"/>
+            <!-- === PORTERÍA DERECHA (ataque) === -->
+            <rect x="88.5" y="13.84" width="16.5" height="40.32" fill="none" stroke="white" stroke-width="0.8"/>
+            <rect x="99.5" y="24.84" width="5.5"  height="18.32" fill="none" stroke="white" stroke-width="0.8"/>
+            <circle cx="94" cy="34" r="0.6" fill="white"/>
+            <path d="M 88.5 26.69 A 9.15 9.15 0 0 0 88.5 41.31" fill="none" stroke="white" stroke-width="0.8"/>
+            <rect x="105" y="27.34" width="2.4" height="13.32" fill="rgba(255,255,255,0.15)" stroke="#ccc" stroke-width="0.7"/>
+            <!-- Córners -->
+            <path d="M 2 0 A 2 2 0 0 1 0 2"       fill="none" stroke="white" stroke-width="0.8"/>
+            <path d="M 103 0 A 2 2 0 0 0 105 2"    fill="none" stroke="white" stroke-width="0.8"/>
+            <path d="M 0 66 A 2 2 0 0 1 2 68"      fill="none" stroke="white" stroke-width="0.8"/>
+            <path d="M 103 68 A 2 2 0 0 1 105 66"  fill="none" stroke="white" stroke-width="0.8"/>
+          </svg>
+
+          <!-- left% usa slot.y (profundidad, invertida: portero=izq, ataque=dcha)  -->
+          <!-- top%  usa slot.x (anchura, de arriba abajo)                          -->
+          <div class="slot" *ngFor="let slot of slotsFormacion" [style.left.%]="ajustarX(slot.y)"
+            [style.top.%]="ajustarY(slot.x)" (dragover)="allowDrop($event)" (drop)="onDropSlot($event, slot)"
             (touchend)="onTouchEndSlot(slot)">
 
             <div *ngIf="!slot.jugador" class="slot-circle">+</div>
 
             <div *ngIf="slot.jugador" class="player-chip broadcast" draggable="true"
-              (dragstart)="onDragStart($event, slot.jugador)" (touchstart)="onTouchStart($event, slot.jugador)">
+              (dragstart)="onDragStart($event, slot.jugador, slot)"
+              (touchstart)="onTouchStart($event, slot.jugador); touchFromSlot = slot">
 
               <!-- AVATAR -->
               <div class="player-avatar-wrapper">
@@ -2778,50 +2871,67 @@
     <div class="convocatoria-right">
 
       <!-- NO CONVOCADOS -->
-      <div class="card-section convocatoria-card">
-        <h6 class="card-title convocatoria-card-title">{{ 'CAL.TEXT_318' | translate }}</h6>
+      <div class="conv-section conv-section--red">
+        <div class="conv-section-header">
+          <span class="conv-section-dot conv-section-dot--red"></span>
+          <h6 class="conv-section-title">{{ 'CAL.TEXT_318' | translate }}</h6>
+          <span class="conv-section-count">{{ jugadoresNoConvocados.length }}</span>
+        </div>
         <div class="list-drop red" (drop)="onDrop2($event, 'no_convocado')" (dragover)="allowDrop($event)">
           <div *ngFor="let jugador of jugadoresNoConvocados" class="player-card" draggable="true"
             (dragstart)="onDragStart($event, jugador)" (touchstart)="onTouchStart($event, jugador)"
             (touchend)="onTouchEnd($event, 'no_convocado')">
-            <img class="player-avatar-lg" [src]="jugador.img || '/assets/avatar_default.png'" />
-            <span class="badge-pos por">
-              {{ jugador.posicion_x }}
-            </span>
-            <div class="player-name-vertical">
-              {{ jugador.nombre }}
-            </div>
             <i class="bi bi-x-circle-fill text-danger"></i>
+            <div class="player-card-avatar-wrap">
+              <img class="player-avatar-lg" [src]="jugador.img || '/assets/avatar_default.png'" />
+              <span class="player-card-dorsal">{{ jugador.dorsal || jugador.numero }}</span>
+            </div>
+            <span class="badge-pos {{ jugador.posicion_x | lowercase }}">{{ jugador.posicion_x }}</span>
+            <div class="player-name-vertical">{{ jugador.nombre }}</div>
           </div>
         </div>
       </div>
 
       <!-- SUPLENTES -->
-      <div class="card-section convocatoria-card">
-        <h6 class="card-title convocatoria-card-title">{{ 'CAL.TEXT_319' | translate }}</h6>
+      <div class="conv-section conv-section--blue">
+        <div class="conv-section-header">
+          <span class="conv-section-dot conv-section-dot--blue"></span>
+          <h6 class="conv-section-title">{{ 'CAL.TEXT_319' | translate }}</h6>
+          <span class="conv-section-count">{{ jugadoresSuplentes.length }}</span>
+        </div>
         <div class="list-drop blue" (drop)="onDrop2($event, 'suplente')" (dragover)="allowDrop($event)">
           <div *ngFor="let jugador of jugadoresSuplentes" class="player-card" draggable="true"
             (dragstart)="onDragStart($event, jugador)" (touchstart)="onTouchStart($event, jugador)"
             (touchend)="onTouchEnd($event, 'suplente')">
-            <img class="player-avatar-lg" [src]="jugador.img || '/assets/avatar_default.png'" />
-            <span class="badge-pos por">{{ jugador.posicion_x }}</span>
-            <div class="player-name-vertical">{{ jugador.nombre }}</div>
             <i class="bi bi-check-circle-fill text-success"></i>
+            <div class="player-card-avatar-wrap">
+              <img class="player-avatar-lg" [src]="jugador.img || '/assets/avatar_default.png'" />
+              <span class="player-card-dorsal">{{ jugador.dorsal || jugador.numero }}</span>
+            </div>
+            <span class="badge-pos {{ jugador.posicion_x | lowercase }}">{{ jugador.posicion_x }}</span>
+            <div class="player-name-vertical">{{ jugador.nombre }}</div>
           </div>
         </div>
       </div>
 
       <!-- LESIONADOS -->
-      <div class="card-section convocatoria-card">
-        <h6 class="card-title convocatoria-card-title">{{ 'CAL.TEXT_370' | translate }}</h6>
+      <div class="conv-section conv-section--amber">
+        <div class="conv-section-header">
+          <span class="conv-section-dot conv-section-dot--amber"></span>
+          <h6 class="conv-section-title">{{ 'CAL.TEXT_370' | translate }}</h6>
+          <span class="conv-section-count">{{ jugadoresLesionados.length }}</span>
+        </div>
         <div class="list-drop lesionados" (drop)="onDrop2($event, 'lesionado')" (dragover)="allowDrop($event)">
           <div *ngFor="let jugador of jugadoresLesionados" class="player-card" draggable="true"
             (dragstart)="onDragStart($event, jugador)" (touchstart)="onTouchStart($event, jugador)"
             (touchend)="onTouchEnd($event, 'lesionado')">
-            <img class="player-avatar-lg" [src]="jugador.img || '/assets/avatar_default.png'" />
+            <i class="bi bi-bandaid-fill text-warning"></i>
+            <div class="player-card-avatar-wrap">
+              <img class="player-avatar-lg" [src]="jugador.img || '/assets/avatar_default.png'" />
+              <span class="player-card-dorsal">{{ jugador.dorsal || jugador.numero }}</span>
+            </div>
             <span class="badge-pos lesionado">{{ jugador.posicion_x }}</span>
             <div class="player-name-vertical">{{ jugador.nombre }}</div>
-            <i class="bi bi-bandaid-fill text-warning"></i>
           </div>
         </div>
       </div>
@@ -2850,7 +2960,7 @@
 
 <!-- Modal Convocatoria (vista jugador) – Overlay + estilo FIFA PRO -->
 <div class="modal convocatoria-lista-modal-wrapper" tabindex="-1" role="dialog" [ngClass]="{'d-block': mostrarModalConvocatoriaLista}">
-  <div class="convocatoria-lista-backdrop" (click)="cerrarModalConvocatoriaLista()" aria-hidden="true"></div>
+  <div class="convocatoria-lista-backdrop" (click)="cerrarModalConvocatoriaLista()" aria-hidden="true" appModalBackdrop></div>
   <div class="modal-dialog modal-dialog-centered convocatoria-lista-dialog" role="document">
     <div class="modal-content convocatoria-lista-content">
       <div class="convocatoria-lista-header">
@@ -3131,7 +3241,7 @@
 </div>
 
 <!-- Modal de confirmación para eliminar entrenamiento -->
-<div class="confirm-overlay" *ngIf="showDeleteTrainingConfirm" (click)="cancelDeleteTraining()">
+<div class="confirm-overlay" *ngIf="showDeleteTrainingConfirm" (click)="cancelDeleteTraining()" appModalBackdrop>
   <div class="confirm-dialog" (click)="$event.stopPropagation()">
     <div class="confirm-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
     <h3>¿Eliminar entrenamiento?</h3>
@@ -3144,7 +3254,7 @@
 </div>
 
 <!-- Modal de confirmación para eliminar partido -->
-<div class="confirm-overlay" *ngIf="showDeleteMatchConfirm" (click)="cancelDeleteMatch()">
+<div class="confirm-overlay" *ngIf="showDeleteMatchConfirm" (click)="cancelDeleteMatch()" appModalBackdrop>
   <div class="confirm-dialog" (click)="$event.stopPropagation()">
     <div class="confirm-icon"><i class="bi bi-exclamation-triangle-fill"></i></div>
     <h3>¿Eliminar partido?</h3>
@@ -3179,7 +3289,7 @@
 </app-form-template-selector>
 
 <!-- ── Modal formulario del player ───────────────────────────────────── -->
-<div *ngIf="showPlayerFormModal" class="player-form-backdrop" (click)="$event.target === $event.currentTarget && closePlayerFormModal()">
+<div *ngIf="showPlayerFormModal" class="player-form-backdrop" (click)="$event.target === $event.currentTarget && closePlayerFormModal()" appModalBackdrop>
   <div class="player-form-modal">
 
     <div class="player-form-modal__header">

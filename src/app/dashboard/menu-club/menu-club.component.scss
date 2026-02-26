@@ -155,6 +155,18 @@
   background: url("/assets/images/erp-management.jpg") center / cover no-repeat;
 }
 
+.bg-staff {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+.bg-injuries {
+  background: url("/assets/images/lesiones.jpg") center / cover no-repeat;
+}
+
+.bg-coaches {
+  background: url("/assets/images/jugadores.jpg") center / cover no-repeat;
+}
+
 /* RESPONSIVE */
 @media (max-width: 576px) {
   .dashboard-card {

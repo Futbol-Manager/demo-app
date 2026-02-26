@@ -6,6 +6,121 @@
   --border-soft: #e6eaf0;
   --text-muted: #6b7c8f;
 }
+/* =========================================================
+   PAGE HEADER — Hero Gradient Band
+========================================================= */
+.page-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  min-height: 80px;
+  padding: 1.35rem 2rem;
+  margin-bottom: 1.75rem;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #002c40 0%, #0a4a6e 50%, #31b270 100%);
+  box-shadow:
+    0 14px 40px rgba(0, 44, 64, 0.32),
+    0 4px 12px rgba(10, 74, 110, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -40%; right: -4%;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(49, 178, 112, 0.32) 0%, transparent 60%);
+    pointer-events: none;
+    border-radius: 50%;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -50%; left: 5%;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(49, 178, 112, 0.18) 0%, transparent 65%);
+    pointer-events: none;
+    border-radius: 50%;
+  }
+}
+
+.back-container {
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.header-subtitle {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+  z-index: 1;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.22);
+}
+
+.header-spacer {
+  flex-shrink: 0;
+  width: 110px;
+  z-index: 1;
+}
+
+/* ===== BOTÓN VOLVER ===== */
+.btn-back-clean {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  color: #ffffff;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  backdrop-filter: blur(4px);
+  z-index: 1;
+
+  i { font-size: 1rem; }
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateX(-2px);
+  }
+
+  &:active { transform: translateX(0) scale(0.98); }
+}
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
 /* CONTENEDOR GENERAL */
 .table-actions-row {
   display: flex;
@@ -13,7 +128,6 @@
   justify-content: space-between;
   gap: 1rem;
   margin-bottom: 1rem;
-  margin-top: 20px;
   flex-wrap: nowrap;
 }
 
@@ -31,27 +145,6 @@
   margin-right: 20px;
   align-items: center;
   gap: 0.75rem;
-}
-
-/* ===== BOTÓN VOLVER ===== */
-.btn-back-clean {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.45rem 0.9rem;
-  border-radius: 8px;
-  background-color: rgba(15, 163, 232, 0.08);
-  color: #002c40;
-  border: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s ease, box-shadow 0.2s ease;
-}
-
-.btn-back-clean:hover {
-  background-color: rgba(0, 44, 64, 0.08);
-  transform: translateX(-2px);
 }
 
 /* ===== BOTONES DE ACCIÓN ===== */

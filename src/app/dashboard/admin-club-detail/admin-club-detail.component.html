@@ -723,7 +723,7 @@
 </div>
 
 <!-- Modal: Cambiar Plan App -->
-<div class="modal-overlay" *ngIf="showAppPlanModal" (click)="showAppPlanModal = false">
+<div class="modal-overlay" *ngIf="showAppPlanModal" (click)="showAppPlanModal = false" appModalBackdrop>
   <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
     <div class="modal-content shadow-lg">
       <div class="modal-header border-0 pb-0">
@@ -788,7 +788,7 @@
 </div>
 
 <!-- Modal: Cambiar Plan Vídeo -->
-<div class="modal-overlay" *ngIf="showVideoPlanModal" (click)="showVideoPlanModal = false">
+<div class="modal-overlay" *ngIf="showVideoPlanModal" (click)="showVideoPlanModal = false" appModalBackdrop>
   <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
     <div class="modal-content shadow-lg">
       <div class="modal-header border-0 pb-0">

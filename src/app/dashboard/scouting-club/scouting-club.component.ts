@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Location } from '@angular/common';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { LoginService } from 'src/app/core/services/login/login.service';
@@ -147,8 +148,11 @@ export class ScoutingClubComponent implements OnInit {
     private router: Router,
     private http: HttpClient,
     private videoService: VideoStorageService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private location: Location
   ) {}
+
+  goBack(): void { this.location.back(); }
 
   /**
    * Converts AI-generated text (markdown-like) into styled HTML.

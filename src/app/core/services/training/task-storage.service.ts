@@ -67,9 +67,25 @@ export class TaskStorageService {
 
     this.trainingService.getCoachTaskFavorites(userId).subscribe({
       next: (res: any) => {
-        const tasks: StoredTask[] = (res?.data || []).map((t: any) => this.mapBackendTask(t, 'training'));
-        this._favorites$.next(tasks);
-        this.save(FAVORITES_KEY, tasks);
+        const backendTasks: StoredTask[] = (res?.data || []).map((t: any) => this.mapBackendTask(t, 'training'));
+        const localList = this._favorites$.getValue();
+
+        // Los datos locales vienen directamente de tasks_shop (título y origen correctos).
+        // Los datos del backend vienen de la tabla tasks (pueden tener slogans="-" u origen incorrecto).
+        // Estrategia: LOCAL tiene prioridad; el backend solo aporta items no presentes localmente.
+        const merged: StoredTask[] = [...localList];
+        for (const backend of backendTasks) {
+          const existsLocally = localList.some(local =>
+            (local.taskId && local.taskId === backend.taskId) ||
+            (local.tasksShopId && local.tasksShopId === backend.tasksShopId)
+          );
+          if (!existsLocally) {
+            merged.push(backend);
+          }
+        }
+
+        this._favorites$.next(merged);
+        this.save(FAVORITES_KEY, merged);
       },
       error: () => {}
     });
@@ -103,10 +119,13 @@ export class TaskStorageService {
   }
 
   private mapBackendTask(t: any, origin: 'cloud' | 'training'): StoredTask {
+    // Si tiene tasksShopId es una tarea del catálogo (cloud), no de entrenamiento
+    const resolvedOrigin: 'cloud' | 'training' = t.tasksShopId ? 'cloud' : origin;
     return {
       localId: 'task_' + (t.taskId || this.uid()),
-      taskId: t.taskId,
-      origin,
+      taskId: t.taskId || undefined,
+      tasksShopId: t.tasksShopId || undefined,
+      origin: resolvedOrigin,
       slogans: t.slogans || '',
       description: t.description || '',
       rules: t.rules || '',

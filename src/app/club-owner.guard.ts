@@ -13,7 +13,10 @@ export class ClubOwnerGuard implements CanActivate {
       take(1),
       map((user: any) => {
         const profileId = user?.profileType?.profileId ?? -1;
+        // Club admin: acceso total
         if (profileId === 1) return true;
+        // Staff: acceso si tiene algún permiso asignado
+        if (profileId === 4 && (user?.staffPermissions?.length ?? 0) > 0) return true;
         this.router.navigate(['/dashboard/inicio']);
         return false;
       })

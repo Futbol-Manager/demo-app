@@ -12,10 +12,14 @@ import { environment } from 'src/environments/environment';
 import {
   Injury,
   InjuryDocument,
+  InjuryEvolutionNote,
+  InjuryNoteAttachment,
   InjuryNotificationConfig,
   BODY_ZONES_BASE,
   BODY_ZONES_PRO_EXTRA,
-  BodyZone
+  BodyZone,
+  getSuggestedStatus,
+  migrateStatus
 } from './injury.model';
 
 @Injectable({
@@ -96,12 +100,9 @@ export class InjuryService {
   // ═══════════════════════════════════════════════════════════════
 
   updateRtpPhase(injuryId: number, phase: number): Observable<any> {
-    const body: any = { rtpPhase: phase };
+    const body: any = { rtpPhase: phase, status: getSuggestedStatus(phase) };
     if (phase === 6) {
-      body.status = 'cerrada';
       body.dateActualReturn = new Date().toISOString().split('T')[0];
-    } else if (phase >= 1) {
-      body.status = 'recuperacion';
     }
     return this.http.put<any>(this.baseUrl + `${injuryId}/rtp`, body).pipe(
       map(response => response?.data || body),
@@ -123,26 +124,30 @@ export class InjuryService {
     );
   }
 
-  uploadDocument(injuryId: number, file: File, description: string, uploadedBy: string): Observable<InjuryDocument> {
+  uploadDocument(
+    injuryId: number,
+    file: File,
+    description: string,
+    uploadedBy: string,
+    documentCategory?: string
+  ): Observable<InjuryDocument> {
     const fileType: 'pdf' | 'image' | 'other' = file.type.includes('pdf') ? 'pdf'
       : file.type.startsWith('image/') ? 'image' : 'other';
 
-    const body = {
-      fileName: file.name,
-      fileType,
-      fileUrl: '',
-      fileSize: file.size,
-      uploadedBy,
-      description
-    };
+    const formData = new FormData();
+    formData.append('file', file, file.name);
+    formData.append('description', description || '');
+    formData.append('uploadedBy', uploadedBy || '');
+    if (documentCategory) formData.append('documentCategory', documentCategory);
 
-    return this.http.post<any>(this.baseUrl + `${injuryId}/documents`, body).pipe(
+    return this.http.post<any>(this.baseUrl + `${injuryId}/documents/upload`, formData).pipe(
       map(response => this.mapToDocument(response?.data)),
       catchError(() => of({
         id: Date.now(),
         injuryId,
         fileName: file.name,
         fileType,
+        documentCategory,
         fileUrl: URL.createObjectURL(file),
         fileSize: file.size,
         uploadedAt: new Date().toISOString(),
@@ -154,6 +159,41 @@ export class InjuryService {
 
   deleteDocument(injuryId: number, documentId: number): Observable<boolean> {
     return this.http.delete<any>(this.baseUrl + `${injuryId}/documents/${documentId}`).pipe(
+      map(() => true),
+      catchError(() => of(false))
+    );
+  }
+
+  // ═══════════════════════════════════════════════════════════════
+  // EVOLUTION NOTES
+  // ═══════════════════════════════════════════════════════════════
+
+  getEvolutionNotes(injuryId: number): Observable<InjuryEvolutionNote[]> {
+    return this.http.get<any>(this.baseUrl + `${injuryId}/notes`).pipe(
+      map(response => {
+        const notes = response?.data || [];
+        return notes.map((n: any) => this.mapToNote(n));
+      }),
+      catchError(() => of([]))
+    );
+  }
+
+  createEvolutionNote(injuryId: number, note: Partial<InjuryEvolutionNote>): Observable<InjuryEvolutionNote> {
+    return this.http.post<any>(this.baseUrl + `${injuryId}/notes`, note).pipe(
+      map(response => this.mapToNote(response?.data)),
+      catchError(() => of({ ...note, noteId: Date.now(), injuryId } as InjuryEvolutionNote))
+    );
+  }
+
+  updateEvolutionNote(noteId: number, changes: Partial<InjuryEvolutionNote>): Observable<InjuryEvolutionNote> {
+    return this.http.put<any>(this.baseUrl + `notes/${noteId}`, changes).pipe(
+      map(response => this.mapToNote(response?.data)),
+      catchError(() => of({ ...changes, noteId } as InjuryEvolutionNote))
+    );
+  }
+
+  deleteEvolutionNote(noteId: number): Observable<boolean> {
+    return this.http.delete<any>(this.baseUrl + `notes/${noteId}`).pipe(
       map(() => true),
       catchError(() => of(false))
     );
@@ -223,6 +263,9 @@ export class InjuryService {
       id: d.injuryId || d.id,
       playerId: d.playerId,
       playerName: d.playerName || '',
+      teamId: d.teamId,
+      teamName: d.teamName || '',
+      clubId: d.clubId,
       zone: d.zone || '',
       zoneLabel: d.zoneLabel || '',
       type: d.type || '',
@@ -231,11 +274,12 @@ export class InjuryService {
       dateInjury: d.dateInjury || '',
       dateReturn: d.dateReturn,
       dateActualReturn: d.dateActualReturn,
-      status: d.status || 'activa',
+      status: migrateStatus(d.status || 'baja'),
       mechanism: d.mechanism,
       treatment: d.treatment,
       notes: d.notes,
       rtpPhase: d.rtpPhase || 1,
+      rtpCategory: d.rtpCategory,
       createdBy: d.createdBy || '',
       documents: []
     };
@@ -247,6 +291,7 @@ export class InjuryService {
       injuryId: d.injuryId,
       fileName: d.fileName || '',
       fileType: d.fileType || 'other',
+      documentCategory: d.documentCategory,
       fileUrl: d.fileUrl || '',
       fileSize: d.fileSize || 0,
       uploadedAt: d.uploadedAt || '',
@@ -255,11 +300,29 @@ export class InjuryService {
     };
   }
 
+  private mapToNote(n: any): InjuryEvolutionNote {
+    return {
+      noteId: n.noteId || n.id,
+      injuryId: n.injuryId,
+      noteDate: n.noteDate || '',
+      content: n.content || '',
+      rtpPhaseAtTime: n.rtpPhaseAtTime,
+      statusAtTime: n.statusAtTime,
+      createdByName: n.createdByName || '',
+      createdAt: n.createdAt,
+      updatedAt: n.updatedAt,
+      attachments: n.attachments || []
+    };
+  }
+
   private buildFallbackInjury(injury: Partial<Injury>): Injury {
     return {
       id: Date.now(),
       playerId: injury.playerId || 0,
       playerName: injury.playerName || '',
+      teamId: injury.teamId,
+      teamName: injury.teamName,
+      clubId: injury.clubId,
       zone: injury.zone || '',
       zoneLabel: injury.zoneLabel || '',
       type: injury.type || '',
@@ -268,11 +331,12 @@ export class InjuryService {
       dateInjury: injury.dateInjury || new Date().toISOString().split('T')[0],
       dateReturn: injury.dateReturn,
       dateActualReturn: injury.dateActualReturn,
-      status: (injury.status as any) || 'activa',
+      status: migrateStatus((injury.status as any) || 'baja'),
       mechanism: injury.mechanism,
       treatment: injury.treatment,
       notes: injury.notes,
       rtpPhase: injury.rtpPhase || 1,
+      rtpCategory: injury.rtpCategory,
       createdBy: injury.createdBy || 'Entrenador',
       documents: []
     };

@@ -1,4 +1,4 @@
-<div class="modal-backdrop" (click)="!uploading && closed.emit()">
+<div class="modal-backdrop" (click)="!uploading && closed.emit()" appModalBackdrop>
   <div class="upload-modal" (click)="$event.stopPropagation()">
 
     <div class="modal-header">

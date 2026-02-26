@@ -1,114 +1,194 @@
-<div class="back-container">
+<div class="page-header">
   <button type="button" class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
   </button>
+
+  <div class="page-header-title">
+    <h2>
+      <i class="bi bi-shield-fill me-2"></i>{{ 'INFO_EQUIPO.TITLE' | translate }}
+    </h2>
+    <p class="header-subtitle">Configura los datos y la información general del equipo</p>
+  </div>
+
+  <div class="page-header-spacer"></div>
 </div>
 
 <app-publicidad></app-publicidad>
 
 <div class="info-equipo-page" [class.loaded]="datosCargados">
   <div class="info-equipo-card card-pro" *ngIf="datosCargados">
-    <header class="card-pro-header fifa-header">
-      <h1 class="card-pro-title">{{ 'INFO_EQUIPO.TITLE' | translate }}</h1>
-    </header>
 
-    <div class="card-pro-body">
-      <!-- Logo del equipo -->
-      <div class="logo-section">
-        <label class="section-label">{{ 'INFO_EQUIPO.LOGO' | translate }}</label>
-        <div class="logo-upload-wrap">
+    <div class="card-layout">
+
+      <!-- ═══════════════════════════════════════
+           SIDEBAR — Logo del equipo
+      ═══════════════════════════════════════ -->
+      <aside class="card-sidebar">
+        <div class="sidebar-inner">
+
+          <p class="sidebar-label">{{ 'INFO_EQUIPO.LOGO' | translate }}</p>
+
           <div class="logo-preview-wrap">
-            <img *ngIf="teamLogoUrl || logoPreview" [src]="teamLogoUrl || logoPreview" alt="Logo" class="logo-preview" />
+            <img *ngIf="teamLogoUrl || logoPreview"
+                 [src]="teamLogoUrl || logoPreview"
+                 alt="Logo equipo"
+                 class="logo-preview" />
             <div *ngIf="!teamLogoUrl && !logoPreview" class="logo-placeholder">
-              <i class="bi bi-image"></i>
+              <i class="bi bi-shield-fill"></i>
               <span>{{ 'INFO_EQUIPO.LOGO_UPLOAD' | translate }}</span>
             </div>
-            <div *ngIf="logoUploading" class="logo-loading"><span>Subiendo...</span></div>
+            <div *ngIf="logoUploading" class="logo-loading">
+              <div class="logo-spinner"></div>
+              <span>Subiendo...</span>
+            </div>
           </div>
+
           <div class="logo-actions" *ngIf="usuarioActual?.profileType?.profileId == 1">
-            <input type="file" id="teamLogoInput" accept="image/*" class="d-none" (change)="onLogoSelected($event)" #logoInput />
+            <input type="file" id="teamLogoInput" accept="image/*"
+                   class="d-none" (change)="onLogoSelected($event)" #logoInput />
             <button type="button" class="btn-logo" (click)="logoInput.click()">
               <i class="bi bi-upload"></i>
               {{ (teamLogoUrl || logoPreview) ? ('INFO_EQUIPO.LOGO_CHANGE' | translate) : ('INFO_EQUIPO.LOGO_UPLOAD' | translate) }}
             </button>
           </div>
-        </div>
-      </div>
 
-      <form [formGroup]="editarEquipoForm" (ngSubmit)="editarEquipo()">
-        <div class="form-row">
-          <div class="form-group half">
-            <label for="categoriaInput" class="form-label">{{ 'INFO_EQUIPO.CATEGORIA' | translate }}</label>
-            <input type="text" id="categoriaInput" class="form-control form-input-pro" formControlName="categoriaNombre"
-              (input)="onInputCategoria($event)" (blur)="ocultarDropdownConRetraso()"
-              (focus)="mostrarDropdown = true" autocomplete="off" placeholder="Escribe la categoría">
-            <ul *ngIf="mostrarDropdown" class="dropdown-list">
-              <li *ngFor="let cat of categoriasFiltradas" class="dropdown-item" (mousedown)="seleccionarCategoria(cat)">
-                {{ cat.categoryName }}
-              </li>
-              <li *ngIf="categoriaNombre.length > 3" class="dropdown-item create" (mousedown)="crearCategoria(categoriaNombre)">
-                {{ 'INFO_EQUIPO.CREAR_CATEGORIA' | translate:{ name: categoriaNombre } }}
-              </li>
-            </ul>
+          <div class="sidebar-info-pills">
+            <div class="sidebar-pill" *ngIf="editarEquipoForm.get('categoriaNombre')?.value">
+              <i class="bi bi-tag-fill"></i>
+              <span>{{ editarEquipoForm.get('categoriaNombre')?.value }}</span>
+            </div>
+            <div class="sidebar-pill" *ngIf="editarEquipoForm.get('levelLeague')?.value">
+              <i class="bi bi-bar-chart-fill"></i>
+              <span>{{ editarEquipoForm.get('levelLeague')?.value }}</span>
+            </div>
+            <div class="sidebar-pill" *ngIf="editarEquipoForm.get('name')?.value">
+              <i class="bi bi-shield-half"></i>
+              <span>{{ editarEquipoForm.get('name')?.value }}</span>
+            </div>
           </div>
-          <div class="form-group half">
-            <label for="nivelInput" class="form-label">{{ 'INFO_EQUIPO.NIVEL_LIGA' | translate }}</label>
-            <input type="text" id="nivelInput" class="form-control form-input-pro" formControlName="levelLeague"
-              (input)="onInputNivel($event)" (blur)="ocultarDropdownConRetrasoNivel()"
-              (focus)="mostrarDropdown2 = true" autocomplete="off" placeholder="Escribe el nivel">
-            <ul *ngIf="mostrarDropdown2" class="dropdown-list">
-              <li *ngFor="let n of nivelesVisiblesFiltradas" class="dropdown-item" (mousedown)="seleccionarNivel(n)">
-                {{ n.label }}
-              </li>
-              <li class="dropdown-item create" (mousedown)="crearNivel(categoriaNivel)">
-                {{ 'INFO_EQUIPO.SELECCIONAR_NIVEL' | translate:{ name: categoriaNivel } }}
-              </li>
-            </ul>
-          </div>
-        </div>
 
-        <div class="form-row">
-          <div class="form-group half">
-            <label for="nombreEquipo" class="form-label">{{ 'INFO_EQUIPO.LETRA' | translate }}</label>
-            <select class="form-control form-input-pro" id="nombreEquipo" formControlName="name">
-              <option *ngFor="let option of nameOptions" [value]="option.value">{{ option.label }}</option>
-            </select>
+        </div>
+      </aside>
+
+      <!-- ═══════════════════════════════════════
+           MAIN — Formulario
+      ═══════════════════════════════════════ -->
+      <div class="card-main">
+
+        <form [formGroup]="editarEquipoForm" (ngSubmit)="editarEquipo()">
+
+          <div class="form-section-header">
+            <span class="form-section-icon"><i class="bi bi-pencil-square"></i></span>
+            <span class="form-section-label">Datos del equipo</span>
           </div>
-          <div class="form-group half">
-            <label class="form-label">{{ 'INFO_EQUIPO.HORARIO' | translate }}</label>
-            <button type="button" class="btn-horario" (click)="openModalHorario()">
-              <i class="bi bi-clock"></i>
-              {{ 'INFO_EQUIPO.HORARIO_BTN' | translate }}
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label for="categoriaInput" class="form-label">{{ 'INFO_EQUIPO.CATEGORIA' | translate }}</label>
+              <input type="text" id="categoriaInput" class="form-control form-input-pro"
+                     formControlName="categoriaNombre"
+                     (input)="onInputCategoria($event)"
+                     (blur)="ocultarDropdownConRetraso()"
+                     (focus)="mostrarDropdown = true"
+                     autocomplete="off"
+                     placeholder="Escribe la categoría">
+              <ul *ngIf="mostrarDropdown" class="dropdown-list">
+                <li *ngFor="let cat of categoriasFiltradas" class="dropdown-item"
+                    (mousedown)="seleccionarCategoria(cat)">
+                  {{ cat.categoryName }}
+                </li>
+                <li *ngIf="categoriaNombre.length > 3" class="dropdown-item create"
+                    (mousedown)="crearCategoria(categoriaNombre)">
+                  {{ 'INFO_EQUIPO.CREAR_CATEGORIA' | translate:{ name: categoriaNombre } }}
+                </li>
+              </ul>
+            </div>
+            <div class="form-group half">
+              <label for="nivelInput" class="form-label">{{ 'INFO_EQUIPO.NIVEL_LIGA' | translate }}</label>
+              <input type="text" id="nivelInput" class="form-control form-input-pro"
+                     formControlName="levelLeague"
+                     (input)="onInputNivel($event)"
+                     (blur)="ocultarDropdownConRetrasoNivel()"
+                     (focus)="mostrarDropdown2 = true"
+                     autocomplete="off"
+                     placeholder="Escribe el nivel">
+              <ul *ngIf="mostrarDropdown2" class="dropdown-list">
+                <li *ngFor="let n of nivelesVisiblesFiltradas" class="dropdown-item"
+                    (mousedown)="seleccionarNivel(n)">
+                  {{ n.label }}
+                </li>
+                <li class="dropdown-item create"
+                    (mousedown)="crearNivel(categoriaNivel)">
+                  {{ 'INFO_EQUIPO.SELECCIONAR_NIVEL' | translate:{ name: categoriaNivel } }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label for="nombreEquipo" class="form-label">{{ 'INFO_EQUIPO.LETRA' | translate }}</label>
+              <select class="form-control form-input-pro" id="nombreEquipo" formControlName="name">
+                <option *ngFor="let option of nameOptions" [value]="option.value">{{ option.label }}</option>
+              </select>
+            </div>
+            <div class="form-group half">
+              <label class="form-label">{{ 'INFO_EQUIPO.HORARIO' | translate }}</label>
+              <button type="button" class="btn-horario" (click)="openModalHorario()">
+                <i class="bi bi-clock"></i>
+                {{ 'INFO_EQUIPO.HORARIO_BTN' | translate }}
+              </button>
+            </div>
+          </div>
+
+          <div class="form-section-header mt-form">
+            <span class="form-section-icon"><i class="bi bi-chat-left-text"></i></span>
+            <span class="form-section-label">Objetivos y opiniones</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label for="objetivoEquipo" class="form-label">{{ 'INFO_EQUIPO.OBJETIVO' | translate }}</label>
+              <textarea class="form-control form-input-pro form-textarea"
+                        rows="5" id="objetivoEquipo"
+                        formControlName="objectiveTeam"
+                        placeholder="Define el objetivo del equipo esta temporada..."></textarea>
+            </div>
+            <div class="form-group half">
+              <label for="opinionEquipo" class="form-label">{{ 'INFO_EQUIPO.OPINION' | translate }}</label>
+              <textarea class="form-control form-input-pro form-textarea"
+                        rows="5" id="opinionEquipo"
+                        formControlName="opinionTeam"
+                        placeholder="Opinión general sobre el equipo..."></textarea>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-save-pro">
+              <i class="bi bi-check-lg"></i>
+              {{ 'INFO_EQUIPO.GUARDAR' | translate }}
+            </button>
+            <button type="button" class="btn-delete-pro" (click)="confirmarEliminarEquipo()">
+              <i class="bi bi-trash3"></i>
+              {{ 'INFO_EQUIPO.ELIMINAR' | translate }}
             </button>
           </div>
-        </div>
 
-        <div class="form-row">
-          <div class="form-group half">
-            <label for="objetivoEquipo" class="form-label">{{ 'INFO_EQUIPO.OBJETIVO' | translate }}</label>
-            <textarea class="form-control form-input-pro" rows="4" id="objetivoEquipo" formControlName="objectiveTeam"></textarea>
-          </div>
-          <div class="form-group half">
-            <label for="opinionEquipo" class="form-label">{{ 'INFO_EQUIPO.OPINION' | translate }}</label>
-            <textarea class="form-control form-input-pro" rows="4" id="opinionEquipo" formControlName="opinionTeam"></textarea>
-          </div>
-        </div>
+        </form>
+      </div>
 
-        <div class="form-actions">
-          <button type="submit" class="btn-save-pro">{{ 'INFO_EQUIPO.GUARDAR' | translate }}</button>
-          <button type="button" class="btn-delete-pro" (click)="confirmarEliminarEquipo()">
-            {{ 'INFO_EQUIPO.ELIMINAR' | translate }}
-          </button>
-        </div>
-      </form>
     </div>
 
-    <hr class="divider" />
-
+    <!-- ═══════════════════════════════════════
+         STAFF DEL EQUIPO
+    ═══════════════════════════════════════ -->
     <div class="coaches-section">
       <div class="coaches-header">
-        <h2 class="section-title">Staff del equipo</h2>
+        <div class="coaches-header-left">
+          <i class="bi bi-people-fill coaches-icon"></i>
+          <h2 class="section-title">Staff del equipo</h2>
+        </div>
         <ng-container *ngIf="coaches.length < 4 && (team.userId == usuarioActual?.userId || usuarioActual?.profileType?.profileId == 1)">
           <button type="button" class="btn-invite" (click)="abrirModalInvitarEntenador()">
             <i class="bi bi-person-plus-fill"></i>
@@ -116,39 +196,52 @@
           </button>
         </ng-container>
       </div>
+
       <div class="coaches-grid">
         <div class="coach-card" *ngFor="let coach of coaches">
           <div class="coach-card-inner" *ngIf="coach.profile == 2 || coach.profile == 6 || coach.profile == 7">
             <div class="coach-avatar">
-              <img *ngIf="coach.picture" src="https://appsphairatech.com/images/user/{{ coach.picture }}" alt="" />
+              <img *ngIf="coach.picture"
+                   src="https://appsphairatech.com/images/user/{{ coach.picture }}"
+                   alt="" />
               <i *ngIf="!coach.picture" class="bi bi-person"></i>
             </div>
             <h5 class="coach-name">{{ coach.name }} {{ coach.surname }}</h5>
             <span class="coach-role-badge" [ngClass]="{
-              'badge-coach': coach.profile == 2,
+              'badge-coach':  coach.profile == 2,
               'badge-physio': coach.profile == 6,
-              'badge-nutri': coach.profile == 7
+              'badge-nutri':  coach.profile == 7
             }">
               {{ coach.profileName || (coach.profile == 2 ? 'Entrenador' : coach.profile == 6 ? 'Fisioterapeuta' : 'Nutricionista') }}
             </span>
-            <div class="coach-actions" *ngIf="(team.userId == usuarioActual?.userId && team.userId != coach.userId) || usuarioActual?.profileType?.profileId == 1">
-              <button type="button" class="btn-coach-delete" title="Eliminar" (click)="deleteCoach(coach.userId)">
+            <div class="coach-actions"
+                 *ngIf="(team.userId == usuarioActual?.userId && team.userId != coach.userId) || usuarioActual?.profileType?.profileId == 1">
+              <button type="button" class="btn-coach-delete" title="Eliminar"
+                      (click)="deleteCoach(coach.userId)">
                 <i class="bi bi-trash3"></i>
               </button>
             </div>
           </div>
         </div>
       </div>
+
     </div>
+
   </div>
 </div>
 
-<!-- Modal invitar entrenador -->
+<!-- ═══════════════════════════════════════
+     Modal invitar entrenador
+═══════════════════════════════════════ -->
 <div class="modal-backdrop" *ngIf="showModal" (click)="cerrarModal()"></div>
 <div class="modal-pro" *ngIf="showModal">
   <div class="modal-content-pro" (click)="$event.stopPropagation()">
     <div class="modal-header-pro">
-      <h5 class="modal-title">{{ 'INFO_EQUIPO.INVITAR_MODAL_TITLE' | translate }}</h5>
+      <div>
+        <h5 class="modal-title">
+          <i class="bi bi-person-plus-fill me-2"></i>{{ 'INFO_EQUIPO.INVITAR_MODAL_TITLE' | translate }}
+        </h5>
+      </div>
       <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModal()"></button>
     </div>
     <div class="modal-body">
@@ -166,12 +259,18 @@
   </div>
 </div>
 
-<!-- Modal horario -->
+<!-- ═══════════════════════════════════════
+     Modal horario
+═══════════════════════════════════════ -->
 <div class="modal-backdrop" *ngIf="showModalHorario" (click)="cerrarModalHorario()"></div>
 <div class="modal-pro" *ngIf="showModalHorario">
   <div class="modal-content-pro modal-horario" (click)="$event.stopPropagation()">
     <div class="modal-header-pro">
-      <h5 class="modal-title">{{ 'INFO_EQUIPO.HORARIO_MODAL_TITLE' | translate }}</h5>
+      <div>
+        <h5 class="modal-title">
+          <i class="bi bi-clock me-2"></i>{{ 'INFO_EQUIPO.HORARIO_MODAL_TITLE' | translate }}
+        </h5>
+      </div>
       <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModalHorario()"></button>
     </div>
     <div class="modal-body">
@@ -189,14 +288,16 @@
           <div class="time-field">
             <label [for]="dia.property + 'Inicio'" class="form-label">{{ 'INFO_EQUIPO.INICIO' | translate }}</label>
             <select class="form-control form-input-pro" [id]="dia.property + 'Inicio'"
-              [(ngModel)]="diasTeam[dia.property + 'Inicio']" (change)="changeHora()" [name]="dia.property + 'Inicio'">
+              [(ngModel)]="diasTeam[dia.property + 'Inicio']"
+              (change)="changeHora()" [name]="dia.property + 'Inicio'">
               <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
             </select>
           </div>
           <div class="time-field">
             <label [for]="dia.property + 'Fin'" class="form-label">{{ 'INFO_EQUIPO.FIN' | translate }}</label>
             <select class="form-control form-input-pro" [id]="dia.property + 'Fin'"
-              [(ngModel)]="diasTeam[dia.property + 'Fin']" (change)="changeHora()" [name]="dia.property + 'Fin'">
+              [(ngModel)]="diasTeam[dia.property + 'Fin']"
+              (change)="changeHora()" [name]="dia.property + 'Fin'">
               <option *ngFor="let time of timeOptions" [value]="time">{{ time }}</option>
             </select>
           </div>
@@ -209,7 +310,9 @@
   </div>
 </div>
 
-<!-- Modal confirmar eliminar equipo -->
+<!-- ═══════════════════════════════════════
+     Modal confirmar eliminar equipo
+═══════════════════════════════════════ -->
 <div class="modal-backdrop" *ngIf="showDeleteConfirm" (click)="cancelarEliminarEquipo()"></div>
 <div class="modal-pro modal-confirm" *ngIf="showDeleteConfirm" (click)="cancelarEliminarEquipo()">
   <div class="modal-content-pro modal-confirm-content" (click)="$event.stopPropagation()">

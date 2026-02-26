@@ -39,7 +39,7 @@
   <!-- ── REPORT CONTENT ── -->
   <div *ngIf="report && !isLoading && !isGenerating">
 
-    <!-- Header -->
+    <!-- Header (visible on screen, not printed inside pdf-content) -->
     <div class="report-header" [ngClass]="{ 'training': isTraining, 'match': !isTraining }">
       <div class="report-header-icon">
         <i class="bi" [ngClass]="isTraining ? 'bi-clipboard-data' : 'bi-trophy'"></i>
@@ -52,10 +52,18 @@
         </div>
       </div>
       <div class="report-actions">
+        <!-- Regenerate -->
         <button class="btn-action" (click)="regenerateReport()" [disabled]="isGenerating"
           title="{{ 'DEBRIEF.REPORT.REGENERATE' | translate }}">
           <i class="bi bi-arrow-clockwise" [ngClass]="{ 'spin': isGenerating }"></i>
         </button>
+        <!-- Download PDF -->
+        <button class="btn-action btn-action-pdf" (click)="downloadPdf()" [disabled]="isExporting"
+          title="{{ 'DEBRIEF.REPORT.DOWNLOAD_PDF' | translate }}">
+          <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf"></i></span>
+          <span *ngIf="isExporting" class="spinner-border spinner-border-sm"></span>
+        </button>
+        <!-- Share -->
         <button class="btn-action" (click)="shareReport()"
           title="{{ 'DEBRIEF.REPORT.SHARE' | translate }}">
           <i class="bi bi-share"></i>
@@ -63,70 +71,92 @@
       </div>
     </div>
 
-    <!-- Summary -->
-    <div class="summary-card" *ngIf="report.summary">
-      <div class="summary-header">
-        <i class="bi bi-stars"></i>
-        <h5>{{ 'DEBRIEF.REPORT.SUMMARY' | translate }}</h5>
-      </div>
-      <p class="summary-text">{{ report.summary }}</p>
-    </div>
+    <!-- ══ PDF CONTENT — element captured by html2canvas ══ -->
+    <div #reportContent class="pdf-content">
 
-    <!-- Sections -->
-    <div class="sections-list">
-      <div class="report-section" *ngFor="let section of report.sections; let i = index">
-        <div class="section-header">
-          <div class="section-icon">
-            <i class="bi" [ngClass]="getSectionIcon(section)"></i>
+      <!-- Summary -->
+      <div class="summary-card" *ngIf="report.summary">
+        <div class="summary-header">
+          <i class="bi bi-stars"></i>
+          <h5>{{ 'DEBRIEF.REPORT.SUMMARY' | translate }}</h5>
+        </div>
+        <p class="summary-text">{{ report.summary }}</p>
+      </div>
+
+      <!-- Sections -->
+      <div class="sections-list">
+        <div class="report-section" *ngFor="let section of report.sections; let i = index">
+          <div class="section-header">
+            <div class="section-icon">
+              <i class="bi" [ngClass]="getSectionIcon(section)"></i>
+            </div>
+            <h5>{{ section.titleKey | translate }}</h5>
+            <div class="section-rating" *ngIf="section.rating">
+              <i class="bi bi-star-fill" *ngFor="let s of getRatingStars(section.rating)"></i>
+              <i class="bi bi-star" *ngFor="let s of getEmptyStars(section.rating)"></i>
+              <span class="rating-value">{{ section.rating }}/5</span>
+            </div>
           </div>
-          <h5>{{ section.titleKey | translate }}</h5>
-          <div class="section-rating" *ngIf="section.rating">
-            <i class="bi bi-star-fill" *ngFor="let s of getRatingStars(section.rating)"></i>
-            <i class="bi bi-star" *ngFor="let s of getEmptyStars(section.rating)"></i>
-            <span class="rating-value">{{ section.rating }}/5</span>
+
+          <p class="section-content">{{ section.content }}</p>
+
+          <!-- Highlights -->
+          <div class="highlights" *ngIf="section.highlights && section.highlights.length > 0">
+            <div class="highlight-chip" *ngFor="let highlight of section.highlights">
+              <i class="bi bi-lightning-fill"></i>
+              {{ highlight }}
+            </div>
           </div>
         </div>
+      </div>
 
-        <p class="section-content">{{ section.content }}</p>
-
-        <!-- Highlights -->
-        <div class="highlights" *ngIf="section.highlights && section.highlights.length > 0">
-          <div class="highlight-chip" *ngFor="let highlight of section.highlights">
-            <i class="bi bi-lightning-fill"></i>
-            {{ highlight }}
-          </div>
+      <!-- Attendance Summary -->
+      <div class="attendance-summary" *ngIf="report.attendanceSummary">
+        <div class="summary-header">
+          <i class="bi bi-people"></i>
+          <h5>{{ 'DEBRIEF.REPORT.ATTENDANCE_SUMMARY' | translate }}</h5>
         </div>
+        <p class="summary-text">{{ report.attendanceSummary }}</p>
       </div>
-    </div>
 
-    <!-- Attendance Summary -->
-    <div class="attendance-summary" *ngIf="report.attendanceSummary">
-      <div class="summary-header">
-        <i class="bi bi-people"></i>
-        <h5>{{ 'DEBRIEF.REPORT.ATTENDANCE_SUMMARY' | translate }}</h5>
+      <!-- Recommendations -->
+      <div class="recommendations-card" *ngIf="report.recommendations && report.recommendations.length > 0">
+        <div class="recommendations-header">
+          <i class="bi bi-lightbulb"></i>
+          <h5>{{ 'DEBRIEF.REPORT.RECOMMENDATIONS' | translate }}</h5>
+        </div>
+        <ul class="recommendations-list">
+          <li *ngFor="let rec of report.recommendations">
+            <i class="bi bi-check-circle"></i>
+            <span>{{ rec }}</span>
+          </li>
+        </ul>
       </div>
-      <p class="summary-text">{{ report.attendanceSummary }}</p>
-    </div>
 
-    <!-- Recommendations -->
-    <div class="recommendations-card" *ngIf="report.recommendations && report.recommendations.length > 0">
-      <div class="recommendations-header">
-        <i class="bi bi-lightbulb"></i>
-        <h5>{{ 'DEBRIEF.REPORT.RECOMMENDATIONS' | translate }}</h5>
+      <!-- PDF watermark / branding (only shown in print capture) -->
+      <div class="pdf-branding-footer">
+        <span><i class="bi bi-shield-check"></i> Informe generado por Sphaira Tech IA</span>
+        <span>{{ report.generatedAt | date:'dd/MM/yyyy HH:mm' }}</span>
       </div>
-      <ul class="recommendations-list">
-        <li *ngFor="let rec of report.recommendations">
-          <i class="bi bi-check-circle"></i>
-          <span>{{ rec }}</span>
-        </li>
-      </ul>
-    </div>
 
-    <!-- Actions -->
-    <div class="report-footer">
+    </div>
+    <!-- /pdf-content -->
+
+    <!-- Screen-only footer -->
+    <div class="report-footer no-print">
       <button class="btn-history" (click)="goToHistory()">
         <i class="bi bi-clock-history"></i>
         {{ 'DEBRIEF.REPORT.VIEW_HISTORY' | translate }}
+      </button>
+      <button class="btn-download" (click)="downloadPdf()" [disabled]="isExporting">
+        <span *ngIf="!isExporting">
+          <i class="bi bi-file-earmark-pdf-fill"></i>
+          {{ 'DEBRIEF.REPORT.DOWNLOAD_PDF' | translate }}
+        </span>
+        <span *ngIf="isExporting">
+          <span class="spinner-border spinner-border-sm"></span>
+          {{ 'DEBRIEF.REPORT.EXPORTING' | translate }}
+        </span>
       </button>
     </div>
   </div>

@@ -231,6 +231,280 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   showDeleteCampaignConfirm = false;
   campaignToDelete: any = null;
 
+  // ── Follow-up config ──────────────────────────────────────────────────────
+  showFollowupConfigModal = false;
+  followupConfig = { enabled: false, delay_days_1: 4, delay_days_2: 8, max_followups: 1 };
+  followupStats: any = null;
+  isSavingFollowup = false;
+  followupConfigSaved = false;
+
+  // ── RRSS: Social posts ────────────────────────────────────────────────────
+  socialPosts: any[] = [];
+  socialLoading = false;
+  socialNetworkFilter = '';
+  socialStatusFilter = '';
+  socialNetworks = ['instagram', 'linkedin', 'twitter', 'facebook'];
+  socialContentTypes: string[] = [
+    'caso_exito', 'tip_gestion', 'pain_point', 'feature',
+    'pregunta', 'estadistica', 'cultura_club', 'comparacion',
+  ];
+  socialNetworkIcons: Record<string, string> = {
+    instagram: 'bi-instagram',
+    linkedin: 'bi-linkedin',
+    twitter: 'bi-twitter-x',
+    facebook: 'bi-facebook',
+  };
+  socialNetworkLabels: Record<string, string> = {
+    instagram: 'Instagram',
+    linkedin: 'LinkedIn',
+    twitter: 'X / Twitter',
+    facebook: 'Facebook',
+  };
+  socialContentTypeLabels: Record<string, string> = {
+    caso_exito: 'Caso de éxito',
+    tip_gestion: 'Consejo de gestión',
+    pain_point: 'Pain point del sector',
+    feature: 'Funcionalidad de Sphaira',
+    pregunta: 'Pregunta de engagement',
+    estadistica: 'Estadística impactante',
+    cultura_club: 'Cultura de club',
+    comparacion: 'Antes vs Después',
+  };
+
+  // Generador
+  showSocialGeneratorModal = false;
+  socialGenNetwork = 'instagram';
+  socialGenContentType = 'tip_gestion';
+  socialGenExtraContext = '';
+  socialGenTone = 'cercano';
+  socialGenObjective = 'demo_traffic';
+  socialGenAudience = 'todos';
+  socialGenFeature = 'ninguna';
+  isGeneratingSocial = false;
+  isOptimizingPrompt = false;
+
+  readonly socialGenTones = [
+    { value: 'cercano',    label: 'Cercano' },
+    { value: 'formal',     label: 'Formal' },
+    { value: 'inspirador', label: 'Inspirador' },
+    { value: 'urgente',    label: 'Urgente' },
+    { value: 'humor',      label: 'Con humor' },
+  ];
+  readonly socialGenObjectives = [
+    { value: 'demo_traffic', label: 'Llevar a la demo' },
+    { value: 'engagement',   label: 'Engagement / debate' },
+    { value: 'awareness',    label: 'Dar a conocer Sphaira' },
+    { value: 'captacion',    label: 'Captar leads' },
+  ];
+  readonly socialGenAudiences = [
+    { value: 'todos',          label: 'Toda la comunidad' },
+    { value: 'presidentes',    label: 'Presidentes / directivos' },
+    { value: 'entrenadores',   label: 'Entrenadores' },
+    { value: 'padres_familias',label: 'Padres y familias' },
+    { value: 'directivos',     label: 'Coordinadores deportivos' },
+  ];
+  readonly socialGenFeatures = [
+    { value: 'ninguna',        label: 'Sin funcionalidad específica' },
+    { value: 'equipos',        label: 'Gestión de equipos y asistencias' },
+    { value: 'cuotas',         label: 'Cobro automatizado de cuotas' },
+    { value: 'comunicacion',   label: 'Comunicación centralizada' },
+    { value: 'estadisticas',   label: 'Estadísticas de rendimiento' },
+    { value: 'entrenamientos', label: 'Planificación de entrenamientos con IA' },
+    { value: 'lesiones',       label: 'Gestión de lesiones (RTP)' },
+    { value: 'scouting',       label: 'Scouting y cantera' },
+    { value: 'presencia',      label: 'Presencia digital del club' },
+  ];
+
+  // ── Historial de posts publicados ─────────────────────────────────────────
+  socialHistory: any[] = [];
+  showHistoryPanel = false;
+  isLoadingHistory = false;
+
+  // ── Plan automático de contenido ──────────────────────────────────────────
+  showAutoPlanModal = false;
+  contentPlan: any[] = [];
+  isGeneratingPlan = false;
+  autoPlanNumPosts = 7;
+  autoPlanGeneratingIdx: number | null = null;
+
+  readonly networkColors: Record<string, string> = {
+    instagram: '#E1306C',
+    facebook:  '#1877F2',
+    linkedin:  '#0A66C2',
+    twitter:   '#000000',
+  };
+
+  // Editor de post
+  showSocialEditModal = false;
+  editingSocialPost: any = null;
+  editSocialText = '';
+  editSocialImagePrompt = '';
+  editSocialHashtags = '';
+  isSavingSocialPost = false;
+  isPublishingSocialPost = false;
+  publishResult: any = null;
+  // Preview de imagen
+  previewImageUrl: string | null = null;
+  isGeneratingImage = false;
+  imageGenError: string | null = null;
+  // Modelo de imagen seleccionado para generación
+  imageModels: {key: string, label: string}[] = [];
+  selectedImageModel = 'dalle3';
+  imageModelUsed = '';
+  isGeneratingImagePrompt = false;
+
+  // ── Guía de prompt por chips ──────────────────────────────────────────────
+  showPromptGuide = false;
+  activePromptChips: Set<string> = new Set();
+
+  promptChips: Record<string, { key: string; label: string; text: string }[]> = {
+    tipo: [
+      { key: 'infografia',  label: '📊 Infografía',          text: 'infografía con diseño gráfico flat' },
+      { key: 'foto',        label: '📸 Fotografía',           text: 'fotografía profesional cinematic' },
+      { key: 'mockup',      label: '📱 Mockup app',           text: 'mockup de pantalla de app en smartphone' },
+      { key: 'abstracto',   label: '✨ Abstracto / 3D',       text: 'diseño abstracto 3D moderno' },
+      { key: 'ilustracion', label: '🎨 Ilustración vectorial', text: 'ilustración vectorial flat design' },
+    ],
+    composicion: [
+      { key: 'dos-col',   label: '⬜⬜ Dos columnas',        text: 'dividida en dos columnas simétricas' },
+      { key: 'vertical',  label: '↕ Layout vertical',        text: 'composición vertical de arriba abajo' },
+      { key: 'centrado',  label: '◎ Elemento central',       text: 'elemento principal centrado con fondo' },
+      { key: 'comparativa', label: '⚖ Comparativa lado a lado', text: 'comparativa lado izquierdo vs lado derecho' },
+      { key: 'lista',     label: '≡ Lista con iconos',        text: 'lista vertical con iconos a la izquierda' },
+    ],
+    contenido: [
+      { key: 'pros-contras',  label: '✅❌ Pros y contras',      text: 'lado malo (sin Sphaira) vs lado bueno (con Sphaira)' },
+      { key: 'beneficios',    label: '🏆 Beneficios / ventajas', text: 'lista de beneficios y ventajas clave' },
+      { key: 'estadisticas',  label: '📈 Datos y estadísticas',  text: 'gráfico con números y estadísticas destacadas' },
+      { key: 'proceso',       label: '🔄 Pasos del proceso',     text: 'pasos del proceso numerados' },
+      { key: 'pantalla-app',  label: '🖥 Pantalla del dashboard', text: 'pantalla del dashboard de Sphaira visible' },
+      { key: 'personas',      label: '👥 Entrenador / director',  text: 'entrenador o director de club de fútbol' },
+    ],
+    estilo: [
+      { key: 'corporativo',  label: '💼 Profesional',     text: 'estilo profesional corporativo' },
+      { key: 'minimalista',  label: '◻ Minimalista',      text: 'minimalista, mucho espacio en blanco' },
+      { key: 'vibrante',     label: '🎯 Vibrante / bold',  text: 'colores vibrantes y contrastes fuertes' },
+      { key: 'oscuro',       label: '🌑 Dark mode',        text: 'dark mode, fondo oscuro navy predominante' },
+      { key: 'moderno',      label: '🚀 Tech / futurista', text: 'estilo tech futurista moderno' },
+    ],
+    texto: [
+      { key: 'titulos',    label: 'Títulos en la imagen',   text: 'con títulos grandes visibles en la imagen' },
+      { key: 'bullets',    label: 'Bullet points',          text: 'con bullet points de texto legible' },
+      { key: 'numeros',    label: 'Números / %',            text: 'con cifras y porcentajes destacados' },
+      { key: 'sin-texto',  label: 'Sin texto visible',      text: 'sin texto escrito en la imagen' },
+      { key: 'cta',        label: 'CTA / llamada a acción', text: 'con llamada a la acción visible' },
+    ],
+  };
+
+  isChipActive(chip: { key: string }): boolean {
+    return this.activePromptChips.has(chip.key);
+  }
+
+  togglePromptChip(chip: { key: string; text: string }): void {
+    if (this.activePromptChips.has(chip.key)) {
+      this.activePromptChips.delete(chip.key);
+    } else {
+      this.activePromptChips.add(chip.key);
+    }
+    this._rebuildPromptFromChips();
+  }
+
+  clearPromptChips(): void {
+    this.activePromptChips.clear();
+    this.editSocialImagePrompt = '';
+  }
+
+  applyChipsAndGenerate(): void {
+    this._rebuildPromptFromChips();
+    this.generateImagePrompt();
+  }
+
+  private _rebuildPromptFromChips(): void {
+    const parts: string[] = [];
+    for (const category of Object.values(this.promptChips)) {
+      for (const chip of category) {
+        if (this.activePromptChips.has(chip.key)) {
+          parts.push(chip.text);
+        }
+      }
+    }
+    if (parts.length > 0) {
+      this.editSocialImagePrompt = parts.join(', ');
+    }
+  }
+
+  // Tokens de RRSS
+  showSocialTokensModal = false;
+  socialTokens: Record<string, boolean> = {};
+  socialTokenValues: Record<string, string> = {};
+
+  // Claves de IA (Anthropic, Replicate)
+  aiKeys: Record<string, boolean> = {};
+  aiKeyValues: Record<string, string> = { cta_demo_url: 'https://demo.sphairatech.com' };
+  // Estado de guardado por clave: null | 'saving' | 'saved' | 'error'
+  keyStatus: Record<string, string | null> = {};
+  socialTokenKeys = [
+    { key: 'meta_access_token', label: 'Meta Access Token (Instagram + Facebook)', network: 'meta' },
+    { key: 'meta_ig_user_id', label: 'Instagram Business User ID', network: 'meta' },
+    { key: 'meta_fb_page_id', label: 'Facebook Page ID', network: 'meta' },
+    { key: 'linkedin_access_token', label: 'LinkedIn Access Token', network: 'linkedin' },
+    { key: 'linkedin_author_urn', label: 'LinkedIn Author URN (urn:li:person:XXX)', network: 'linkedin' },
+    { key: 'twitter_api_key', label: 'Twitter API Key', network: 'twitter' },
+    { key: 'twitter_api_secret', label: 'Twitter API Secret', network: 'twitter' },
+    { key: 'twitter_access_token', label: 'Twitter Access Token', network: 'twitter' },
+    { key: 'twitter_access_secret', label: 'Twitter Access Secret', network: 'twitter' },
+  ];
+
+  // ── Prospect DMs ──────────────────────────────────────────────────────────
+  showDMsModal = false;
+  dmsProspect: any = null;
+  prospectDMs: any[] = [];
+  isDMsLoading = false;
+  isGeneratingDMs = false;
+  copiedDMId: number | null = null;
+
+  // ── DM Templates ──────────────────────────────────────────────────────────
+  showDMTemplatesModal = false;
+  dmTemplates: any[] = [];
+  dmTemplatesLoading = false;
+  newTemplateName = '';
+  newTemplateNetwork = 'instagram';
+  newTemplateText = '';
+  isSavingTemplate = false;
+
+  // ── RRSS sub-tabs ─────────────────────────────────────────────────────────
+  socialSubTab: 'posts' | 'comments' | 'templates' = 'posts';
+
+  // ── Comment auto-reply ────────────────────────────────────────────────────
+  commentGuidelines = {
+    enabled: false,
+    tone: 'profesional y amigable',
+    topics_avoid: '',
+    signature: '',
+    custom_instructions: '',
+    model: 'gpt-4o-mini',
+  };
+  isLoadingGuidelines = false;
+  isSavingGuidelines = false;
+  guidelinesSaved = false;
+  webhookInfo: any = null;
+
+  commentLogs: any[] = [];
+  commentLogsLoading = false;
+  commentLogPlatformFilter = '';
+  commentLogStatusFilter = '';
+
+  replyingLogId: number | null = null;
+  replyText = '';
+  isSendingReply = false;
+
+  // ── Scheduled post ────────────────────────────────────────────────────────
+  scheduleDateTime = '';
+  isSchedulingPost = false;
+
+  // ── Engagement ────────────────────────────────────────────────────────────
+  isRecalculatingScores = false;
+
   // Settings
   settings: Record<string, string> = {
     model_email: 'gpt-4o',
@@ -277,6 +551,8 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.loadCampaigns();
     this.loadSettings();
+    this.loadSocialMeta();
+    this.loadCommentGuidelines();
   }
 
   ngOnDestroy(): void {
@@ -297,6 +573,7 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
     }
     if (tab === 'emails' && this.selectedCampaign) this.loadEmails();
     if (tab === 'library') this.loadLibrary();
+    if (tab === 'social') { this.socialSubTab = 'posts'; this.loadSocialPosts(); this.loadSocialHistory(); }
   }
 
   // ── Biblioteca global ──────────────────────────────────────────────────
@@ -1167,5 +1444,706 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
 
   get totalPages(): number {
     return Math.ceil(this.prospectsTotal / this.prospectsSize);
+  }
+
+  // ── Follow-up config ──────────────────────────────────────────────────────
+
+  openFollowupConfig(): void {
+    if (!this.selectedCampaign) return;
+    this.showFollowupConfigModal = true;
+    this.prospectService.getFollowupConfig(this.selectedCampaign.campaign_id).subscribe({
+      next: (cfg: any) => { this.followupConfig = { ...this.followupConfig, ...cfg }; },
+      error: () => {}
+    });
+    this.prospectService.getFollowupStats(this.selectedCampaign.campaign_id).subscribe({
+      next: (s: any) => { this.followupStats = s; },
+      error: () => {}
+    });
+  }
+
+  saveFollowupConfig(): void {
+    if (!this.selectedCampaign) return;
+    this.isSavingFollowup = true;
+    this.prospectService.updateFollowupConfig(this.selectedCampaign.campaign_id, this.followupConfig).subscribe({
+      next: () => {
+        this.isSavingFollowup = false;
+        this.followupConfigSaved = true;
+        setTimeout(() => { this.followupConfigSaved = false; }, 2500);
+      },
+      error: () => { this.isSavingFollowup = false; }
+    });
+  }
+
+  // ── Social posts ──────────────────────────────────────────────────────────
+
+  loadSocialPosts(): void {
+    this.socialLoading = true;
+    const net = this.socialNetworkFilter || undefined;
+    const st = this.socialStatusFilter || undefined;
+    this.prospectService.getSocialPosts(net, st).subscribe({
+      next: (posts: any[]) => { this.socialPosts = posts; this.socialLoading = false; },
+      error: () => { this.socialLoading = false; }
+    });
+  }
+
+  loadSocialMeta(): void {
+    this.prospectService.getSocialMeta().subscribe({
+      next: (meta: any) => { this.socialContentTypes = meta.content_types || []; },
+      error: () => {}
+    });
+  }
+
+  loadSocialHistory(): void {
+    this.isLoadingHistory = true;
+    this.prospectService.getSocialHistory(60).subscribe({
+      next: (posts: any[]) => {
+        this.socialHistory = posts;
+        this.isLoadingHistory = false;
+      },
+      error: () => { this.isLoadingHistory = false; }
+    });
+  }
+
+  openSocialGenerator(): void {
+    this.socialGenExtraContext = '';
+    this.socialGenTone = 'cercano';
+    this.socialGenObjective = 'demo_traffic';
+    this.socialGenAudience = 'todos';
+    this.socialGenFeature = 'ninguna';
+    this.showSocialGeneratorModal = true;
+  }
+
+  // ── Plan automático ──────────────────────────────────────────────────────
+
+  openAutoPlan(): void {
+    this.contentPlan = [];
+    this.showAutoPlanModal = true;
+    this.runAutoPlan();
+  }
+
+  runAutoPlan(): void {
+    this.isGeneratingPlan = true;
+    this.contentPlan = [];
+    this.prospectService.autoplanSocialContent(this.autoPlanNumPosts).subscribe({
+      next: (res) => {
+        this.isGeneratingPlan = false;
+        this.contentPlan = res.plan || [];
+      },
+      error: (err: any) => {
+        this.isGeneratingPlan = false;
+        alert(err?.error?.detail || 'Error generando el plan de contenido');
+      }
+    });
+  }
+
+  generateFromPlan(item: any, idx: number): void {
+    this.autoPlanGeneratingIdx = idx;
+    this.prospectService.generateSocialPost({
+      network:          item.network,
+      content_type:     item.content_type,
+      extra_context:    item.angle + (item.why ? ' — ' + item.why : ''),
+      campaign_id:      null,
+      tone:             item.tone || 'cercano',
+      objective:        'demo_traffic',
+      target_audience:  item.target_audience || 'todos',
+      specific_feature: item.suggested_feature || 'ninguna',
+    }).subscribe({
+      next: (post: any) => {
+        this.autoPlanGeneratingIdx = null;
+        // Marcar el item como generado
+        this.contentPlan[idx] = { ...item, _generated: true, _postId: post.post_id };
+        this.socialPosts = [post, ...this.socialPosts];
+        this.showAutoPlanModal = false;
+        this.openSocialEdit(post);
+      },
+      error: (err: any) => {
+        this.autoPlanGeneratingIdx = null;
+        alert(err?.error?.detail || 'Error generando el post');
+      }
+    });
+  }
+
+  generateAllPlan(): void {
+    if (!this.contentPlan.length) return;
+    const pending = this.contentPlan.filter((item: any) => !item._generated);
+    if (!pending.length) return;
+    if (!confirm(`¿Generar los ${pending.length} posts del plan? Esto puede tardar unos minutos.`)) return;
+
+    let idx = 0;
+    const generateNext = () => {
+      if (idx >= this.contentPlan.length) {
+        this.showAutoPlanModal = false;
+        this.loadSocialPosts();
+        return;
+      }
+      const item = this.contentPlan[idx];
+      if (item._generated) { idx++; generateNext(); return; }
+      this.autoPlanGeneratingIdx = idx;
+      this.prospectService.generateSocialPost({
+        network:          item.network,
+        content_type:     item.content_type,
+        extra_context:    item.angle + (item.why ? ' — ' + item.why : ''),
+        campaign_id:      null,
+        tone:             item.tone || 'cercano',
+        objective:        'demo_traffic',
+        target_audience:  item.target_audience || 'todos',
+        specific_feature: item.suggested_feature || 'ninguna',
+      }).subscribe({
+        next: (post: any) => {
+          this.contentPlan[idx] = { ...item, _generated: true, _postId: post.post_id };
+          idx++;
+          setTimeout(generateNext, 1200); // pausa para no saturar la API
+        },
+        error: () => { idx++; generateNext(); }
+      });
+    };
+    generateNext();
+  }
+
+  optimizePrompt(): void {
+    this.isOptimizingPrompt = true;
+    this.prospectService.optimizeSocialPrompt({
+      raw_context:     this.socialGenExtraContext,
+      network:         this.socialGenNetwork,
+      content_type:    this.socialGenContentType,
+      tone:            this.socialGenTone,
+      objective:       this.socialGenObjective,
+      target_audience: this.socialGenAudience,
+      specific_feature:this.socialGenFeature,
+    }).subscribe({
+      next: (res) => {
+        this.isOptimizingPrompt = false;
+        this.socialGenExtraContext = res.optimized_prompt;
+      },
+      error: (err: any) => {
+        this.isOptimizingPrompt = false;
+        alert(err?.error?.detail || 'Error optimizando el prompt');
+      }
+    });
+  }
+
+  generateSocialPost(): void {
+    this.isGeneratingSocial = true;
+    this.prospectService.generateSocialPost({
+      network:          this.socialGenNetwork,
+      content_type:     this.socialGenContentType,
+      extra_context:    this.socialGenExtraContext,
+      campaign_id:      null,
+      tone:             this.socialGenTone,
+      objective:        this.socialGenObjective,
+      target_audience:  this.socialGenAudience,
+      specific_feature: this.socialGenFeature,
+    }).subscribe({
+      next: (post: any) => {
+        this.isGeneratingSocial = false;
+        this.showSocialGeneratorModal = false;
+        this.socialPosts = [post, ...this.socialPosts];
+        this.openSocialEdit(post);
+      },
+      error: (err: any) => {
+        this.isGeneratingSocial = false;
+        alert(err?.error?.detail || 'Error generando el post');
+      }
+    });
+  }
+
+  openSocialEdit(post: any): void {
+    this.editingSocialPost = post;
+    this.editSocialText = post.text_content || '';
+    this.editSocialImagePrompt = post.image_prompt || '';
+    this.editSocialHashtags = post.hashtags || '';
+    this.publishResult = null;
+    const raw = post.image_url || null;
+    this.previewImageUrl = raw?.startsWith('/static/')
+      ? `http://localhost:8001${raw}`
+      : raw;
+    this.isGeneratingImage = false;
+    this.imageGenError = null;
+    this.imageModelUsed = '';
+    this.showSocialEditModal = true;
+    if (this.imageModels.length === 0) {
+      this.loadImageModels();
+    }
+  }
+
+  loadImageModels(): void {
+    this.prospectService.getImageModels().subscribe({
+      next: (data) => {
+        this.imageModels = data.models;
+        this.selectedImageModel = data.current || data.default || 'ideogram';
+      },
+      error: () => {
+        this.imageModels = [
+          { key: 'dalle3',      label: 'DALL-E 3 ⭐ (mejor texto legible, OpenAI)' },
+          { key: 'recraft',     label: 'Recraft v3 (diseño gráfico / ilustración)' },
+          { key: 'flux-pro',    label: 'Flux 1.1 Pro (fotorrealista)' },
+          { key: 'ideogram',    label: 'Ideogram v3 Turbo (infografías)' },
+          { key: 'imagen4',     label: 'Google Imagen 4 via Replicate (ultra realista)' },
+          { key: 'flux-schnell',label: 'Flux Schnell (rápido, económico)' },
+        ];
+        this.selectedImageModel = 'dalle3';
+      }
+    });
+  }
+
+  onImageModelChange(modelKey: string): void {
+    this.selectedImageModel = modelKey;
+    this.prospectService.setImageModel(modelKey).subscribe();
+  }
+
+  generatePostImage(): void {
+    if (!this.editingSocialPost || this.isGeneratingImage) return;
+    this.isGeneratingImage = true;
+    this.imageGenError = null;
+    this.imageModelUsed = '';
+    this.prospectService.generatePostImage(
+      this.editingSocialPost.post_id,
+      this.editSocialImagePrompt,
+      this.editingSocialPost.network,
+      this.editingSocialPost.content_type,
+      this.selectedImageModel,
+    ).subscribe({
+      next: (res) => {
+        this.isGeneratingImage = false;
+        this.imageModelUsed = res.model_used || this.selectedImageModel;
+        const rawUrl = res.image_url;
+        this.previewImageUrl = rawUrl?.startsWith('/static/')
+          ? `http://localhost:8001${rawUrl}`
+          : rawUrl;
+        this.editingSocialPost = { ...this.editingSocialPost, image_url: res.image_url };
+        const idx = this.socialPosts.findIndex(p => p.post_id === this.editingSocialPost.post_id);
+        if (idx >= 0) this.socialPosts[idx] = this.editingSocialPost;
+      },
+      error: (err) => {
+        this.isGeneratingImage = false;
+        if (err?.name === 'TimeoutError' || err?.message?.includes('Timeout')) {
+          this.imageGenError = `Tiempo de espera agotado. ${this.selectedImageModel} puede tardar hasta 60 seg. Inténtalo de nuevo.`;
+        } else if (err?.status === 0) {
+          this.imageGenError = 'No se pudo conectar con el servidor. Comprueba que el backend está corriendo.';
+        } else {
+          this.imageGenError = err?.error?.detail || err?.message || 'Error desconocido al generar la imagen.';
+        }
+      }
+    });
+  }
+
+  generateImagePrompt(): void {
+    if (!this.editingSocialPost || this.isGeneratingImagePrompt) return;
+    this.isGeneratingImagePrompt = true;
+    this.prospectService.generateImagePrompt(
+      this.editSocialText,
+      this.editingSocialPost.network,
+      this.editingSocialPost.content_type,
+      this.selectedImageModel,
+      this.editSocialImagePrompt,  // descripción que el usuario haya escrito ya
+    ).subscribe({
+      next: (res) => {
+        this.isGeneratingImagePrompt = false;
+        this.editSocialImagePrompt = res.image_prompt;
+      },
+      error: () => {
+        this.isGeneratingImagePrompt = false;
+      }
+    });
+  }
+
+  saveSocialPost(): void {
+    if (!this.editingSocialPost) return;
+    this.isSavingSocialPost = true;
+    this.prospectService.updateSocialPost(this.editingSocialPost.post_id, {
+      text_content: this.editSocialText,
+      image_prompt: this.editSocialImagePrompt,
+      hashtags: this.editSocialHashtags,
+    }).subscribe({
+      next: (updated: any) => {
+        this.isSavingSocialPost = false;
+        const idx = this.socialPosts.findIndex(p => p.post_id === updated.post_id);
+        if (idx >= 0) this.socialPosts[idx] = updated;
+        this.editingSocialPost = updated;
+      },
+      error: () => { this.isSavingSocialPost = false; }
+    });
+  }
+
+  approveSocialPost(post: any): void {
+    this.prospectService.approveSocialPost(post.post_id).subscribe({
+      next: (updated: any) => {
+        const idx = this.socialPosts.findIndex(p => p.post_id === updated.post_id);
+        if (idx >= 0) this.socialPosts[idx] = updated;
+        if (this.editingSocialPost?.post_id === updated.post_id) this.editingSocialPost = updated;
+      }
+    });
+  }
+
+  rejectSocialPost(post: any): void {
+    this.prospectService.rejectSocialPost(post.post_id).subscribe({
+      next: () => {
+        const idx = this.socialPosts.findIndex(p => p.post_id === post.post_id);
+        if (idx >= 0) this.socialPosts[idx] = { ...this.socialPosts[idx], status: 'REJECTED' };
+        if (this.editingSocialPost?.post_id === post.post_id) {
+          this.editingSocialPost = { ...this.editingSocialPost, status: 'REJECTED' };
+        }
+      }
+    });
+  }
+
+  publishSocialPost(): void {
+    if (!this.editingSocialPost || this.isPublishingSocialPost) return;
+    this.isPublishingSocialPost = true;
+    this.publishResult = null;
+    this.prospectService.publishSocialPost(this.editingSocialPost.post_id).subscribe({
+      next: (res: any) => {
+        this.isPublishingSocialPost = false;
+        this.publishResult = res;
+        const updated = res.post;
+        if (updated) {
+          const idx = this.socialPosts.findIndex(p => p.post_id === updated.post_id);
+          if (idx >= 0) this.socialPosts[idx] = updated;
+          this.editingSocialPost = updated;
+        }
+      },
+      error: (err: any) => {
+        this.isPublishingSocialPost = false;
+        this.publishResult = { ok: false, error: err?.error?.detail || 'Error' };
+      }
+    });
+  }
+
+  deleteSocialPost(post: any): void {
+    if (!confirm(`¿Borrar el post de ${post.network}? Esta acción no se puede deshacer.`)) return;
+    this.prospectService.deleteSocialPost(post.post_id).subscribe({
+      next: () => {
+        this.socialPosts = this.socialPosts.filter(p => p.post_id !== post.post_id);
+        if (this.editingSocialPost?.post_id === post.post_id) this.showSocialEditModal = false;
+      }
+    });
+  }
+
+  copyPostText(post: any): void {
+    navigator.clipboard?.writeText(post.text_content || '').catch(() => {});
+  }
+
+  socialStatusLabel(status: string): string {
+    const map: any = {
+      DRAFT: 'Borrador', APPROVED: 'Aprobado', SCHEDULED: 'Programado',
+      PUBLISHED: 'Publicado', REJECTED: 'Rechazado',
+    };
+    return map[status] || status;
+  }
+
+  socialStatusClass(status: string): string {
+    const map: any = {
+      DRAFT: 'badge-st-new', APPROVED: 'badge-st-enriched', PUBLISHED: 'badge-st-sent',
+      REJECTED: 'bg-danger', SCHEDULED: 'badge-st-analyzed',
+    };
+    return map[status] || 'bg-secondary';
+  }
+
+  // ── Social tokens ─────────────────────────────────────────────────────────
+
+  openSocialTokens(): void {
+    this.socialTokenValues = {};
+    this.aiKeyValues = { cta_demo_url: this.aiKeyValues['cta_demo_url'] || 'https://demo.sphairatech.com' };
+    this.showSocialTokensModal = true;
+    this.prospectService.getSocialTokens().subscribe({
+      next: (tokens: any) => { this.socialTokens = tokens; },
+      error: () => {}
+    });
+    this.prospectService.getAIKeys().subscribe({
+      next: (keys: any) => { this.aiKeys = keys; },
+      error: () => {}
+    });
+    // Cargar la CTA URL guardada
+    this.prospectService.getSettings().subscribe({
+      next: (s: any) => {
+        if (s['cta_demo_url']) this.aiKeyValues['cta_demo_url'] = s['cta_demo_url'];
+      },
+      error: () => {}
+    });
+  }
+
+  keyBtnClass(key: string, base = 'btn-outline-success'): string {
+    const s = this.keyStatus[key];
+    if (s === 'saved')  return 'btn-success';
+    if (s === 'error')  return 'btn-danger';
+    return base;
+  }
+
+  saveAIKey(key: string): void {
+    const val = this.aiKeyValues[key];
+    if (!val?.trim() || this.keyStatus[key] === 'saving') return;
+    this.keyStatus[key] = 'saving';
+    this.prospectService.updateSetting(key, val.trim()).subscribe({
+      next: () => {
+        if (key !== 'cta_demo_url') this.aiKeys[key] = true;
+        this.aiKeyValues[key] = key !== 'cta_demo_url' ? '' : val.trim();
+        this.keyStatus[key] = 'saved';
+        setTimeout(() => { this.keyStatus[key] = null; }, 2500);
+      },
+      error: () => {
+        this.keyStatus[key] = 'error';
+        setTimeout(() => { this.keyStatus[key] = null; }, 3000);
+      }
+    });
+  }
+
+  saveSocialToken(key: string): void {
+    const val = this.socialTokenValues[key];
+    if (!val?.trim() || this.keyStatus[key] === 'saving') return;
+    this.keyStatus[key] = 'saving';
+    this.prospectService.updateSocialToken(key, val.trim()).subscribe({
+      next: () => {
+        this.socialTokens[key] = true;
+        this.socialTokenValues[key] = '';
+        this.keyStatus[key] = 'saved';
+        setTimeout(() => { this.keyStatus[key] = null; }, 2500);
+      },
+      error: () => {
+        this.keyStatus[key] = 'error';
+        setTimeout(() => { this.keyStatus[key] = null; }, 3000);
+      }
+    });
+  }
+
+  // ── Prospect DMs ──────────────────────────────────────────────────────────
+
+  openDMsModal(prospect: any): void {
+    this.dmsProspect = prospect;
+    this.prospectDMs = [];
+    this.showDMsModal = true;
+    this.isDMsLoading = true;
+    this.prospectService.getProspectDMs(prospect.prospect_id).subscribe({
+      next: (dms: any[]) => { this.prospectDMs = dms; this.isDMsLoading = false; },
+      error: () => { this.isDMsLoading = false; }
+    });
+  }
+
+  generateDMs(): void {
+    if (!this.dmsProspect || this.isGeneratingDMs) return;
+    this.isGeneratingDMs = true;
+    this.prospectService.generateProspectDMs(this.dmsProspect.prospect_id).subscribe({
+      next: (res: any) => {
+        this.isGeneratingDMs = false;
+        this.prospectService.getProspectDMs(this.dmsProspect.prospect_id).subscribe({
+          next: (dms: any[]) => { this.prospectDMs = dms; }
+        });
+      },
+      error: (err: any) => {
+        this.isGeneratingDMs = false;
+        alert(err?.error?.detail || 'Error generando DMs');
+      }
+    });
+  }
+
+  copyDM(dm: any): void {
+    navigator.clipboard?.writeText(dm.dm_text || '').catch(() => {});
+    this.copiedDMId = dm.dm_id;
+    setTimeout(() => { this.copiedDMId = null; }, 2000);
+    if (dm.status === 'DRAFT') {
+      this.prospectService.updateDMStatus(this.dmsProspect.prospect_id, dm.dm_id, 'COPIED').subscribe({
+        next: () => {
+          const idx = this.prospectDMs.findIndex(d => d.dm_id === dm.dm_id);
+          if (idx >= 0) this.prospectDMs[idx] = { ...this.prospectDMs[idx], status: 'COPIED' };
+        }
+      });
+    }
+  }
+
+  markDMSent(dm: any): void {
+    this.prospectService.updateDMStatus(this.dmsProspect.prospect_id, dm.dm_id, 'SENT_MANUAL').subscribe({
+      next: () => {
+        const idx = this.prospectDMs.findIndex(d => d.dm_id === dm.dm_id);
+        if (idx >= 0) this.prospectDMs[idx] = { ...this.prospectDMs[idx], status: 'SENT_MANUAL' };
+      }
+    });
+  }
+
+  dmNetworkIcon(network: string): string {
+    return this.socialNetworkIcons[network] || 'bi-chat-dots';
+  }
+
+  dmStatusLabel(status: string): string {
+    const map: any = { DRAFT: 'Borrador', COPIED: 'Copiado', SENT_MANUAL: 'Enviado' };
+    return map[status] || status;
+  }
+
+  // ── DM Templates ──────────────────────────────────────────────────────────
+
+  openDMTemplatesModal(): void {
+    this.showDMTemplatesModal = true;
+    this.newTemplateName = '';
+    this.newTemplateText = '';
+    this.loadDMTemplates();
+  }
+
+  loadDMTemplates(): void {
+    this.dmTemplatesLoading = true;
+    this.prospectService.getDMTemplates().subscribe({
+      next: (t: any[]) => { this.dmTemplates = t; this.dmTemplatesLoading = false; },
+      error: () => { this.dmTemplatesLoading = false; },
+    });
+  }
+
+  saveDMTemplate(): void {
+    if (!this.newTemplateName.trim() || !this.newTemplateText.trim()) return;
+    this.isSavingTemplate = true;
+    this.prospectService.createDMTemplate(
+      this.newTemplateNetwork, this.newTemplateName.trim(), this.newTemplateText.trim()
+    ).subscribe({
+      next: () => {
+        this.isSavingTemplate = false;
+        this.newTemplateName = '';
+        this.newTemplateText = '';
+        this.loadDMTemplates();
+      },
+      error: () => { this.isSavingTemplate = false; },
+    });
+  }
+
+  deleteDMTemplate(t: any): void {
+    if (!confirm(`¿Eliminar la plantilla "${t.template_name}"?`)) return;
+    this.prospectService.deleteDMTemplate(t.template_id).subscribe({
+      next: () => { this.dmTemplates = this.dmTemplates.filter(x => x.template_id !== t.template_id); },
+    });
+  }
+
+  useTemplate(t: any): void {
+    if (!this.dmsProspect) return;
+    this.prospectService.useDMTemplate(t.template_id).subscribe();
+    navigator.clipboard?.writeText(t.template_text || '').catch(() => {});
+    this.copiedDMId = t.template_id;
+    setTimeout(() => { this.copiedDMId = null; }, 2000);
+  }
+
+  // ── Comment auto-reply ────────────────────────────────────────────────────
+
+  loadCommentGuidelines(): void {
+    this.isLoadingGuidelines = true;
+    this.prospectService.getCommentGuidelines().subscribe({
+      next: (cfg: any) => { this.commentGuidelines = { ...this.commentGuidelines, ...cfg }; this.isLoadingGuidelines = false; },
+      error: () => { this.isLoadingGuidelines = false; },
+    });
+    this.prospectService.getWebhookInfo().subscribe({
+      next: (info: any) => { this.webhookInfo = info; },
+      error: () => {},
+    });
+  }
+
+  saveCommentGuidelines(): void {
+    this.isSavingGuidelines = true;
+    this.prospectService.updateCommentGuidelines(this.commentGuidelines).subscribe({
+      next: (res: any) => {
+        this.isSavingGuidelines = false;
+        this.guidelinesSaved = true;
+        if (res.verify_token && this.webhookInfo) {
+          this.webhookInfo = { ...this.webhookInfo, verify_token: res.verify_token };
+        }
+        setTimeout(() => { this.guidelinesSaved = false; }, 2500);
+      },
+      error: () => { this.isSavingGuidelines = false; },
+    });
+  }
+
+  loadCommentLogs(): void {
+    this.commentLogsLoading = true;
+    this.prospectService.getCommentLogs(
+      this.commentLogPlatformFilter || undefined,
+      this.commentLogStatusFilter || undefined,
+    ).subscribe({
+      next: (logs: any[]) => { this.commentLogs = logs; this.commentLogsLoading = false; },
+      error: () => { this.commentLogsLoading = false; },
+    });
+  }
+
+  openReply(log: any): void {
+    this.replyingLogId = log.log_id;
+    this.replyText = log.suggested_reply || '';
+  }
+
+  sendReply(log: any): void {
+    if (!this.replyText.trim()) return;
+    this.isSendingReply = true;
+    this.prospectService.replyComment(log.log_id, this.replyText.trim()).subscribe({
+      next: () => {
+        this.isSendingReply = false;
+        this.replyingLogId = null;
+        const idx = this.commentLogs.findIndex(l => l.log_id === log.log_id);
+        if (idx >= 0) this.commentLogs[idx] = { ...this.commentLogs[idx], status: 'REPLIED', our_reply: this.replyText.trim() };
+      },
+      error: () => { this.isSendingReply = false; },
+    });
+  }
+
+  skipCommentLog(log: any): void {
+    this.prospectService.skipComment(log.log_id).subscribe({
+      next: () => {
+        const idx = this.commentLogs.findIndex(l => l.log_id === log.log_id);
+        if (idx >= 0) this.commentLogs[idx] = { ...this.commentLogs[idx], status: 'SKIPPED' };
+      },
+    });
+  }
+
+  commentStatusLabel(status: string): string {
+    const map: any = { PENDING: 'Pendiente', REPLIED: 'Respondido', SKIPPED: 'Ignorado', ERROR: 'Error' };
+    return map[status] || status;
+  }
+
+  commentStatusClass(status: string): string {
+    const map: any = { PENDING: 'badge-st-new', REPLIED: 'badge-st-sent', SKIPPED: 'bg-secondary', ERROR: 'bg-danger' };
+    return map[status] || 'bg-secondary';
+  }
+
+  copyWebhookToken(): void {
+    navigator.clipboard?.writeText(this.webhookInfo?.verify_token || '').catch(() => {});
+  }
+
+  copyWebhookUrl(): void {
+    navigator.clipboard?.writeText(this.webhookInfo?.webhook_url || '').catch(() => {});
+  }
+
+  // ── Scheduled posts ────────────────────────────────────────────────────────
+
+  schedulePost(): void {
+    if (!this.editingSocialPost || !this.scheduleDateTime) return;
+    this.isSchedulingPost = true;
+    this.prospectService.schedulePost(this.editingSocialPost.post_id, this.scheduleDateTime).subscribe({
+      next: (updated: any) => {
+        this.isSchedulingPost = false;
+        const idx = this.socialPosts.findIndex(p => p.post_id === updated.post_id);
+        if (idx >= 0) this.socialPosts[idx] = updated;
+        this.editingSocialPost = updated;
+        this.scheduleDateTime = '';
+      },
+      error: () => { this.isSchedulingPost = false; },
+    });
+  }
+
+  // ── Engagement scores ─────────────────────────────────────────────────────
+
+  recalculateScores(): void {
+    if (!this.selectedCampaign || this.isRecalculatingScores) return;
+    this.isRecalculatingScores = true;
+    this.prospectService.recalculateCampaignScores(this.selectedCampaign.campaign_id).subscribe({
+      next: () => {
+        setTimeout(() => {
+          this.isRecalculatingScores = false;
+          this.loadProspects();
+        }, 3000);
+      },
+      error: () => { this.isRecalculatingScores = false; },
+    });
+  }
+
+  engagementScoreClass(score: number): string {
+    if (score >= 70) return 'score-high';
+    if (score >= 35) return 'score-medium';
+    return 'score-low';
+  }
+
+  engagementScoreLabel(score: number): string {
+    if (score >= 70) return 'Caliente';
+    if (score >= 35) return 'Templado';
+    if (score > 0)   return 'Frío';
+    return '';
   }
 }

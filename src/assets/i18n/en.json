@@ -1450,6 +1450,7 @@
     "RANKING_RESULTS": "Standings and results",
     "GALLERY": "Gallery",
     "TEAM_INFO": "Team information",
+    "INJURIES": "Injuries",
     "VIDEO_ANALYSIS": "Video analysis",
     "ERP": "Management / ERP"
   },
@@ -2748,7 +2749,9 @@
       "SECTION_OBJECTIVES": "Objectives Achievement",
       "SECTION_ATTENDANCE": "Attendance Context",
       "SECTION_NOTES": "Notes & Observations",
-      "SECTION_HIGHLIGHTS": "Highlighted Players"
+      "SECTION_HIGHLIGHTS": "Highlighted Players",
+      "DOWNLOAD_PDF": "Download PDF",
+      "EXPORTING": "Exporting..."
     },
     "HISTORY": {
       "TITLE": "Analysis History",
@@ -2973,5 +2976,17 @@
     "GENERATING": "Generating...",
     "GENERATED": "AI-generated report",
     "COPY": "Copy"
+  },
+  "INJURY_STATUS": {
+    "BAJA":        "Medical leave",
+    "FISIOTERAPIA": "Physiotherapy",
+    "READAPTACION": "Rehabilitation",
+    "CONDICIONADO": "Conditionally available",
+    "ALTA":        "Medical clearance",
+    "TISSUE_MUSCULAR":    "Muscular",
+    "TISSUE_ARTICULAR":   "Articular",
+    "TISSUE_LIGAMENTOSO": "Ligamentous",
+    "TISSUE_TENDINOSO":   "Tendinous",
+    "TISSUE_OSEO":        "Osseous"
   }
 }

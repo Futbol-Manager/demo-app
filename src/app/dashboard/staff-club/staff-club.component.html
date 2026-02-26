@@ -1,0 +1,189 @@
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+  <div class="header-center">
+    <h2 class="table-title">Gestión de Staff</h2>
+    <p class="header-subtitle">Crea usuarios con acceso personalizado a los módulos del club.</p>
+  </div>
+  <div class="header-spacer"></div>
+</div>
+
+<div class="staff-container">
+
+  <!-- Barra de acción -->
+  <div class="staff-action-bar">
+    <button class="btn-create" (click)="openCreateModal()">
+      <i class="bi bi-plus-lg"></i>
+      Nuevo Staff
+    </button>
+  </div>
+
+  <!-- Loader -->
+  <div class="loading-wrap" *ngIf="loading">
+    <app-logo-spinner></app-logo-spinner>
+  </div>
+
+  <!-- Lista vacía -->
+  <div class="empty-state" *ngIf="!loading && staffList.length === 0">
+    <i class="bi bi-people"></i>
+    <p>Todavía no hay usuarios Staff. Pulsa <strong>Nuevo Staff</strong> para crear uno.</p>
+  </div>
+
+  <!-- Lista de usuarios -->
+  <div class="staff-grid" *ngIf="!loading && staffList.length > 0">
+    <div class="staff-card" [class.staff-card--disabled]="!user.enabled" *ngFor="let user of staffList">
+      <div class="staff-card-header">
+        <div class="staff-avatar" [class.avatar--disabled]="!user.enabled">
+          {{ (user.firstName || '?').charAt(0).toUpperCase() }}{{ (user.secondName || '').charAt(0).toUpperCase() }}
+        </div>
+        <div class="staff-info">
+          <span class="staff-name">{{ user.firstName }} {{ user.secondName }}</span>
+          <span class="staff-email">{{ user.mail }}</span>
+          <span class="staff-status" [class.status--active]="user.enabled" [class.status--inactive]="!user.enabled">
+            {{ user.enabled ? 'Activo' : 'Inhabilitado' }}
+          </span>
+        </div>
+        <div class="staff-actions">
+          <!-- Toggle habilitar/inhabilitar -->
+          <label class="toggle-enable" [title]="user.enabled ? 'Inhabilitar acceso' : 'Habilitar acceso'">
+            <input
+              type="checkbox"
+              [checked]="user.enabled"
+              [disabled]="togglingId === user.userId"
+              (change)="toggleEnabled(user)"
+            />
+            <span class="slider-enable"></span>
+          </label>
+          <button class="btn-icon btn-edit" title="Editar permisos" (click)="openEditModal(user)">
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button class="btn-icon btn-delete" title="Eliminar" (click)="deleteStaff(user)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+      <div class="staff-permissions">
+        <span
+          class="perm-chip"
+          [class.perm-active]="true"
+          *ngFor="let perm of user.permissions"
+        >
+          {{ permissionLabel(perm) }}
+        </span>
+        <span class="perm-chip perm-none" *ngIf="user.permissions.length === 0">
+          Sin permisos
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" *ngIf="showModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>{{ editingUser ? 'Editar permisos' : 'Nuevo usuario Staff' }}</h3>
+      <button class="btn-close-modal" (click)="closeModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-body">
+
+      <!-- Datos de usuario (solo en creación) -->
+      <ng-container *ngIf="!editingUser">
+        <div class="form-row">
+          <label>Nombre</label>
+          <input type="text" [(ngModel)]="form.firstName" placeholder="Nombre" />
+        </div>
+        <div class="form-row">
+          <label>Apellidos</label>
+          <input type="text" [(ngModel)]="form.secondName" placeholder="Apellidos" />
+        </div>
+        <div class="form-row">
+          <label>Email <span class="required">*</span></label>
+          <input type="email" [(ngModel)]="form.mail" placeholder="email@ejemplo.com" />
+        </div>
+        <div class="form-row">
+          <label>Contraseña <span class="required">*</span></label>
+          <div class="input-password-wrap">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              [(ngModel)]="form.password"
+              placeholder="Contraseña de acceso"
+            />
+            <button type="button" class="btn-toggle-pw" (click)="showPassword = !showPassword" tabindex="-1">
+              <i class="bi" [ngClass]="showPassword ? 'bi-eye-slash' : 'bi-eye'"></i>
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Permisos -->
+      <div class="permissions-section">
+        <p class="permissions-title">Módulos con acceso</p>
+
+        <!-- Grupos con sub-opciones (p.ej. Cuadro de mando) -->
+        <div class="perm-group" *ngFor="let group of PERMISSION_GROUPS">
+          <!-- Cabecera del grupo con toggle "seleccionar todo" -->
+          <div class="perm-group-header">
+            <div class="perm-group-label">
+              <i class="bi {{ group.groupIcon }}"></i>
+              {{ group.groupLabel }}
+            </div>
+            <label class="toggle-switch" [title]="isGroupAllChecked(group) ? 'Quitar todos' : 'Seleccionar todos'">
+              <input
+                type="checkbox"
+                [checked]="isGroupAllChecked(group)"
+                [indeterminate]="isGroupPartiallyChecked(group)"
+                (change)="toggleGroup(group)"
+              />
+              <span class="slider"></span>
+            </label>
+          </div>
+          <!-- Sub-opciones del grupo -->
+          <div class="perm-group-items">
+            <div class="permission-row perm-child" *ngFor="let item of group.children">
+              <label class="perm-label">
+                <i class="bi {{ item.icon }}"></i>
+                {{ item.label }}
+              </label>
+              <label class="toggle-switch">
+                <input type="checkbox" [(ngModel)]="form.permissionsMap![item.key]" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Items individuales (top-level) -->
+        <div class="permission-row perm-standalone" *ngFor="let item of PERMISSION_STANDALONE">
+          <label class="perm-label">
+            <i class="bi {{ item.icon }}"></i>
+            {{ item.label }}
+          </label>
+          <label class="toggle-switch">
+            <input type="checkbox" [(ngModel)]="form.permissionsMap![item.key]" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="msg-error" *ngIf="errorMsg">{{ errorMsg }}</div>
+      <div class="msg-success" *ngIf="successMsg">{{ successMsg }}</div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeModal()" [disabled]="saving">Cancelar</button>
+      <button class="btn-save" (click)="saveStaff()" [disabled]="saving">
+        <span *ngIf="!saving">{{ editingUser ? 'Guardar permisos' : 'Crear usuario' }}</span>
+        <span *ngIf="saving">Guardando…</span>
+      </button>
+    </div>
+  </div>
+</div>

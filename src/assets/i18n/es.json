@@ -1002,6 +1002,7 @@
     "NOTIFICATIONS": "Notificaciones",
     "CALENDAR": "Calendario",
     "TASKS": "Tareas",
+    "TASK_CATALOG": "Nube de Tareas",
     "PLAYERS": "Jugadores",
     "INFO_TEAM": "Info equipo",
     "STATS_TEAM": "Estadísticas equipo",
@@ -1592,6 +1593,8 @@
   "TAREAS": {
     "TITLE": "Tareas tácticas",
     "SUBTITLE": "Accede al panel de tácticas y tus tareas guardadas",
+    "NUBE": "Nube de tareas",
+    "NUBE_DESC": "Explora el catálogo y añade tareas a entrenamientos",
     "DIBUJAR": "Dibujar tareas",
     "DIBUJAR_DESC": "Abre el tablero táctico",
     "HISTORIAL": "Historial usadas",
@@ -1600,6 +1603,24 @@
     "FAVORITAS_DESC": "Tus tareas favoritas",
     "MIS_TAREAS": "Mis tareas",
     "MIS_TAREAS_DESC": "Gestiona tus tareas"
+  },
+  "TAREAS_CATALOG": {
+    "TITLE": "Nube de tareas",
+    "SUBTITLE": "Explora el catálogo de tareas y añádelas a tus entrenamientos",
+    "SEARCH_PLACEHOLDER": "Buscar por nombre o descripción...",
+    "ADVANCED_FILTERS": "Filtros avanzados",
+    "ALL_ESTRATEGIAS": "Todas las estrategias",
+    "ALL_INTENCIONES": "Todas las intenciones",
+    "CLEAR_FILTERS": "Limpiar filtros",
+    "RESULTS": "tarea(s) encontrada(s)",
+    "LOADING": "Cargando catálogo...",
+    "EMPTY": "No se encontraron tareas con los filtros actuales",
+    "NO_TITLE": "Sin título",
+    "ADD_FAV": "Añadir a favoritas",
+    "REMOVE_FAV": "Quitar de favoritas",
+    "ADD_TO_TRAINING": "Añadir a entrenamiento",
+    "SELECT_TRAINING": "¿A qué entrenamiento añadir?",
+    "NO_TRAININGS": "No hay entrenamientos próximos disponibles"
   },
   "TBOARD": {
     "TITLE": "Pizarra táctica",
@@ -2745,6 +2766,8 @@
     "OF": "de"
   },
   "EQUIPOS": {
+    "TITLE": "Mis Equipos",
+    "NO_TEAMS": "No hay equipos registrados para esta temporada",
     "LINK_COPIED": "¡Enlace copiado al portapapeles!",
     "LINK_COPY_ERROR": "No se pudo copiar el enlace. Intenta de nuevo.",
     "SUBSCRIPTION_REQUIRED_TITLE": "Suscripción requerida",

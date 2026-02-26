@@ -106,6 +106,29 @@ export class AiChatService {
   }
 
   /**
+   * Reescribe un campo de texto clínico con IA.
+   * Usa el endpoint /rewrite (ligero: sin contexto de club, sin herramientas, max 600 tokens).
+   * ~60-70% menos tokens que sendMessage() para este caso de uso.
+   */
+  rewriteText(userId: number, clubId: number | null, fieldType: string, text: string, context?: string): Observable<AiChatResponse> {
+    const body = { userId, clubId, fieldType, text, context: context ?? '' };
+    return this.http.post<AiChatResponse>(`${this.baseUrl}/rewrite`, body, { headers: this.getHeaders() }).pipe(
+      timeout(30000),
+      catchError(err => {
+        console.error('[AiChatService] rewriteText error:', err);
+        const isTimeout = err?.name === 'TimeoutError';
+        return of({
+          success: false,
+          error: isTimeout ? 'TIMEOUT' : 'NETWORK_ERROR',
+          message: isTimeout
+            ? 'La respuesta tardó demasiado. Inténtalo de nuevo.'
+            : 'Error de conexión. Inténtalo de nuevo.'
+        });
+      })
+    );
+  }
+
+  /**
    * Ejecuta acciones confirmadas por el usuario. NO consume crédito.
    */
   executeActions(actionToken: string): Observable<AiActionResult> {
@@ -202,6 +225,34 @@ export class AiChatService {
     return this.http.delete<any>(`${this.baseUrl}/history/${convId}`, { headers: this.getHeaders() }).pipe(
       timeout(10000),
       catchError(() => of({ success: false }))
+    );
+  }
+
+  /**
+   * Importa un calendario de liga desde un PDF.
+   * La IA extrae los partidos del equipo y los propone como acciones createMatch.
+   */
+  importCalendar(userId: number, clubId: number | null, teamId: number, teamName: string, pdfFile: File): Observable<AiChatResponse> {
+    const token = localStorage.getItem('token') || '';
+    const formData = new FormData();
+    formData.append('pdfFile', pdfFile, pdfFile.name);
+    formData.append('userId', userId.toString());
+    formData.append('teamId', teamId.toString());
+    formData.append('teamName', teamName);
+    if (clubId != null) formData.append('clubId', clubId.toString());
+
+    return this.http.post<AiChatResponse>(`${this.baseUrl}/import-calendar`, formData, {
+      headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` })
+    }).pipe(
+      timeout(60000),
+      catchError(err => {
+        console.error('[AiChatService] importCalendar error:', err);
+        return of({
+          success: false,
+          error: 'NETWORK_ERROR',
+          message: 'Error al procesar el PDF. Inténtalo de nuevo.'
+        });
+      })
     );
   }
 

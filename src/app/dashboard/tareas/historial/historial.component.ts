@@ -17,6 +17,26 @@ export class HistorialComponent implements OnInit, OnDestroy {
   teamId = 0;
   imageBaseUrl: string = environment.images + 'task-board/';
 
+  currentPage = 0;
+  readonly pageSize = 20;
+
+  get totalPages(): number {
+    return Math.ceil(this.historial.length / this.pageSize);
+  }
+
+  get pagedHistorial(): StoredTask[] {
+    return this.historial.slice(this.currentPage * this.pageSize, (this.currentPage + 1) * this.pageSize);
+  }
+
+  prevPage(): void { if (this.currentPage > 0) this.currentPage--; }
+  nextPage(): void { if (this.currentPage < this.totalPages - 1) this.currentPage++; }
+
+  formatDate(dateStr: string | undefined): string {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  }
+
   private sub!: Subscription;
 
   constructor(

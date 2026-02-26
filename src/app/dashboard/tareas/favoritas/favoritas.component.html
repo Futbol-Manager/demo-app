@@ -27,7 +27,7 @@
   <div class="task-grid" *ngIf="favoritas.length > 0">
     <div
       class="task-card"
-      *ngFor="let tarea of favoritas"
+      *ngFor="let tarea of pagedFavoritas"
       [class.active]="selectedTask?.localId === tarea.localId"
       (click)="openDetail(tarea)">
 
@@ -57,8 +57,19 @@
     </div>
   </div>
 
+  <!-- PAGINACIÓN -->
+  <div class="pagination-bar" *ngIf="totalPages > 1">
+    <button class="btn-page" [disabled]="currentPage === 0" (click)="prevPage()">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
+    <button class="btn-page" [disabled]="currentPage >= totalPages - 1" (click)="nextPage()">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+
   <!-- PANEL DETALLE -->
-  <div class="detail-backdrop" *ngIf="selectedTask" (click)="closeDetail()"></div>
+  <div class="detail-backdrop" *ngIf="selectedTask" (click)="closeDetail()" appModalBackdrop></div>
   <div class="detail-panel" *ngIf="selectedTask">
     <div class="detail-panel-inner" (click)="$event.stopPropagation()">
       <div class="detail-header">

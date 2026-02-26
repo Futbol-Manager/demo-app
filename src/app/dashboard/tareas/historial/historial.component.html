@@ -27,7 +27,7 @@
   <div class="task-grid" *ngIf="historial.length > 0">
     <div
       class="task-card"
-      *ngFor="let tarea of historial"
+      *ngFor="let tarea of pagedHistorial"
       [class.active]="selectedTask?.localId === tarea.localId"
       (click)="openDetail(tarea)">
 
@@ -59,12 +59,28 @@
           <span class="badge badge-primary" *ngIf="tarea.intencion">{{ tarea.intencion }}</span>
         </div>
         <p class="task-desc">{{ tarea.description | slice:0:80 }}{{ tarea.description.length > 80 ? '...' : '' }}</p>
+        <div class="task-used-date" *ngIf="tarea.lastUsedAt">
+          <i class="bi bi-calendar-check"></i>
+          {{ formatDate(tarea.lastUsedAt) }}
+          <span *ngIf="(tarea.usageCount || 0) > 1"> · {{ tarea.usageCount }} veces</span>
+        </div>
       </div>
     </div>
   </div>
 
+  <!-- PAGINACIÓN -->
+  <div class="pagination-bar" *ngIf="totalPages > 1">
+    <button class="btn-page" [disabled]="currentPage === 0" (click)="prevPage()">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
+    <button class="btn-page" [disabled]="currentPage >= totalPages - 1" (click)="nextPage()">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+
   <!-- PANEL DETALLE -->
-  <div class="detail-backdrop" *ngIf="selectedTask" (click)="closeDetail()"></div>
+  <div class="detail-backdrop" *ngIf="selectedTask" (click)="closeDetail()" appModalBackdrop></div>
   <div class="detail-panel" *ngIf="selectedTask">
     <div class="detail-panel-inner" (click)="$event.stopPropagation()">
       <div class="detail-header">

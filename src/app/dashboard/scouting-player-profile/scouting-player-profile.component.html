@@ -415,7 +415,7 @@
 <!-- ════════════════════════════════════════
      MODAL DE CONSENTIMIENTO LEGAL
      ════════════════════════════════════════ -->
-<div *ngIf="showConsentModal" class="sp-modal-overlay" (click)="showConsentModal = false">
+<div *ngIf="showConsentModal" class="sp-modal-overlay" (click)="showConsentModal = false" appModalBackdrop>
   <div class="sp-modal sp-modal--consent" (click)="$event.stopPropagation()">
 
     <button class="sp-modal-close" (click)="showConsentModal = false">

@@ -29,6 +29,7 @@ import { FavoritasComponent } from './tareas/favoritas/favoritas.component';
 import { HistorialComponent } from './tareas/historial/historial.component';
 import { MisTareasComponent } from './tareas/mis-tareas/mis-tareas.component';
 import { TacticalBoardComponent } from './tareas/tactical-board/tactical-board.component';
+import { TareasCatalogComponent } from './tareas/tareas-catalog/tareas-catalog.component';
 import { OpcionesjugadorComponent } from './opcionesjugador/opcionesjugador.component';
 import { HorariosequiposComponent } from './horariosequipos/horariosequipos.component';
 import { EntrenamientosCreadosComponent } from './entrenamientos-creados/entrenamientos-creados.component';
@@ -101,6 +102,7 @@ import { CanvasTaggerWindowComponent } from './video-analysis/canvas-tagger-wind
 import { ScreenCaptureWorkspaceComponent } from './video-analysis/screen-capture/screen-capture-workspace.component';
 import { ExternalVideoWorkspaceComponent } from './video-analysis/external-workspace/external-video-workspace.component';
 import { ErpDashboardComponent } from './erp/erp-dashboard/erp-dashboard.component';
+import { StaffClubComponent } from './staff-club/staff-club.component';
 import { ErpAccountsComponent } from './erp/erp-accounts/erp-accounts.component';
 import { ErpJournalEntriesComponent } from './erp/erp-journal-entries/erp-journal-entries.component';
 import { ErpSalesInvoicesComponent } from './erp/erp-sales-invoices/erp-sales-invoices.component';
@@ -151,6 +153,7 @@ const routes: Routes = [
       { path: 'tareas-favoritas/:teamId', component: FavoritasComponent },
       { path: 'tareas-historial/:teamId', component: HistorialComponent },
       { path: 'tareas-mis/:teamId', component: MisTareasComponent },
+      { path: 'tareas-catalog/:teamId', component: TareasCatalogComponent },
       { path: 'tactical-board/:teamId', component: TacticalBoardComponent },
       { path: 'cuadro-de-mandos/info-jugadores/:clubId', component: InfoJugadoresComponent, canActivate: [ClubOwnerGuard] },
       { path: 'cuadro-de-mandos/entrenamientos/:clubId', component: EntrenamientosCreadosComponent, canActivate: [ClubOwnerGuard] },
@@ -225,6 +228,7 @@ const routes: Routes = [
       { path: 'debrief/templates/:clubId', component: FormTemplatesComponent },
       { path: 'suscripcion-coach', component: SuscripcionCoachComponent },
       { path: 'coach-suscripcion-success', component: CoachSuscripcionSuccessComponent },
+      { path: 'staff-club', component: StaffClubComponent, canActivate: [ClubOwnerGuard] },
       { path: '**', redirectTo: 'inicio' },
     ],
   }

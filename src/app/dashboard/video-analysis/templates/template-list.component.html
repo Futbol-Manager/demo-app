@@ -91,7 +91,7 @@
 </div>
 
 <!-- Create Modal -->
-<div class="modal-overlay" *ngIf="showCreateModal" (click)="showCreateModal = false">
+<div class="modal-overlay" *ngIf="showCreateModal" (click)="showCreateModal = false" appModalBackdrop>
   <div class="modal-panel" (click)="$event.stopPropagation()">
     <div class="modal-header-custom">
       <h4><i class="bi bi-grid-3x3-gap me-2"></i>Nueva Plantilla</h4>

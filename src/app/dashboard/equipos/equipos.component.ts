@@ -958,6 +958,44 @@ export class EquiposComponent implements OnInit {
     });
   }
 
+  /**
+   * Devuelve la ruta del icono SVG según la categoría del equipo.
+   * El mapeo es por palabras clave en el nombre de la categoría (case-insensitive).
+   */
+  getTeamFullName(team: any): string {
+    return [team.category, team.levelLeague, team.name]
+      .filter(v => !!v)
+      .join(' ');
+  }
+
+  getCategoryIcon(category: string | null | undefined): string {
+    const cat = (category ?? '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    // Senior / profesional
+    if (/senior|sénior/.test(cat))           return 'assets/iconos/entrenador.svg';
+
+    // Juvenil
+    if (/juvenil|juvenile|junior/.test(cat)) return 'assets/iconos/jugador-de-futbol.svg';
+
+    // Cadete / Cadet / Infantil (S13, S14, S15, S16...)
+    if (/cadete|cadet|infantil/.test(cat))   return 'assets/iconos/jugador-de-futbol.svg';
+
+    // Alevín / Aleví
+    if (/alevin|alevi/.test(cat))            return 'assets/iconos/balon-de-futbol.svg';
+
+    // Benjamín / Benjamí
+    if (/benjamin|benjami/.test(cat))        return 'assets/iconos/balon-de-futbol.svg';
+
+    // Prebenjamín / Prebenjamí
+    if (/prebenjamin|prebenjami/.test(cat))  return 'assets/iconos/balon-de-futbol.svg';
+
+    // Debutante / Lúdica
+    if (/debutante|ludica|ludic/.test(cat))  return 'assets/iconos/balon-de-futbol.svg';
+
+    // Por defecto: escudo genérico
+    return 'assets/iconos/divisa.svg';
+  }
+
   dropTeam(event: CdkDragDrop<any[]>) {
     moveItemInArray(this.listTeam, event.previousIndex, event.currentIndex);
   }

@@ -135,7 +135,7 @@
   <div class="task-grid" *ngIf="misTareas.length > 0 && !showForm">
     <div
       class="task-card"
-      *ngFor="let tarea of misTareas"
+      *ngFor="let tarea of pagedMisTareas"
       [class.active]="selectedTask?.localId === tarea.localId"
       (click)="openDetail(tarea)">
 
@@ -173,10 +173,21 @@
     </div>
   </div>
 
+  <!-- PAGINACIÓN -->
+  <div class="pagination-bar" *ngIf="totalPages > 1 && !showForm">
+    <button class="btn-page" [disabled]="currentPage === 0" (click)="prevPage()">
+      <i class="bi bi-chevron-left"></i>
+    </button>
+    <span class="page-info">{{ currentPage + 1 }} / {{ totalPages }}</span>
+    <button class="btn-page" [disabled]="currentPage >= totalPages - 1" (click)="nextPage()">
+      <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+
   <!-- ════════════════════════════════════════════
        PANEL DETALLE
   ════════════════════════════════════════════ -->
-  <div class="detail-backdrop" *ngIf="selectedTask" (click)="closeDetail()"></div>
+  <div class="detail-backdrop" *ngIf="selectedTask" (click)="closeDetail()" appModalBackdrop></div>
   <div class="detail-panel" *ngIf="selectedTask">
     <div class="detail-panel-inner" (click)="$event.stopPropagation()">
       <div class="detail-header">
@@ -268,7 +279,7 @@
   <!-- ════════════════════════════════════════════
        DIÁLOGO CONFIRMAR ELIMINACIÓN
   ════════════════════════════════════════════ -->
-  <div class="detail-backdrop" *ngIf="showDeleteConfirm" (click)="cancelDelete()"></div>
+  <div class="detail-backdrop" *ngIf="showDeleteConfirm" (click)="cancelDelete()" appModalBackdrop></div>
   <div class="confirm-dialog" *ngIf="showDeleteConfirm">
     <div class="confirm-inner">
       <i class="bi bi-exclamation-triangle-fill confirm-icon"></i>

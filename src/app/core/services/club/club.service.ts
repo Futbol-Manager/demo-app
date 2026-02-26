@@ -1483,6 +1483,25 @@ export class ClubService {
     }
   }
 
+  getNotifConfig(clubId: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    if (!token) return EMPTY;
+    const headers = new HttpHeaders({ Authorization: `Bearer ${token}` });
+    const url = environment.apiUrl + `club/notification-config/${clubId}`;
+    return this.http.get<any>(url, { headers });
+  }
+
+  saveNotifConfig(dto: any): Observable<any> {
+    const token = localStorage.getItem('token');
+    if (!token) return EMPTY;
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    });
+    const url = environment.apiUrl + 'club/notification-config';
+    return this.http.post<any>(url, dto, { headers });
+  }
+
   getListPagosClub(clubId: number, temporada: string): Observable<Response> {
     // Obtén el token almacenado en localStorage
     const token: string | null = localStorage.getItem('token');

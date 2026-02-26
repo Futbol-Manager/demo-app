@@ -47,6 +47,7 @@ interface ConversationSummary {
 export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   @ViewChild('fabChatBody') fabChatBody!: ElementRef<HTMLDivElement>;
   @ViewChild('chatInput') chatInputRef!: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('pdfInput') pdfInputRef!: ElementRef<HTMLInputElement>;
 
   isOpen = false;
   isExpanded = false;
@@ -114,6 +115,12 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   isRecording = false;
   isVoiceSupported = false;
   private voiceTranscriptBase = '';  // Text before voice started
+
+  // PDF Calendar Import
+  selectedPdfFile: File | null = null;
+  pdfTeamName = '';
+  showPdfImportBar = false;
+  importingCalendar = false;
 
   private screenSuggestions: { [key: string]: SuggestionChip[] } = {
     // ── Cuadro de mando ──────────────────────────────────────────────────────
@@ -603,8 +610,8 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
   }
 
   private setInjurySuggestions(injuries: Injury[]): void {
-    const active = injuries.filter(i => i.status === 'activa');
-    const recovery = injuries.filter(i => i.status === 'recuperacion');
+    const active = injuries.filter(i => i.status === 'baja');
+    const recovery = injuries.filter(i => i.status !== 'baja' && i.status !== 'alta');
     const chips: SuggestionChip[] = [];
 
     // Jugadores con lesiones activas (máx. 2)
@@ -881,6 +888,104 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
           if (idx > -1) this.messages.splice(idx, 1);
           this.addAssistantMessage('Error de conexion. Intentalo de nuevo.');
           this.showSuggestions = true;
+          this.saveConversation();
+          this.focusChatInput();
+        }
+      });
+  }
+
+  /* ─── PDF Calendar Import ─────────────────────────────────── */
+
+  openPdfPicker(): void {
+    this.pdfInputRef?.nativeElement?.click();
+  }
+
+  onPdfSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    this.selectedPdfFile = file;
+    this.showPdfImportBar = true;
+    // Reset input so the same file can be re-selected if needed
+    input.value = '';
+  }
+
+  cancelPdfImport(): void {
+    this.selectedPdfFile = null;
+    this.pdfTeamName = '';
+    this.showPdfImportBar = false;
+  }
+
+  startCalendarImport(): void {
+    if (!this.selectedPdfFile || !this.pdfTeamName.trim() || this.importingCalendar) return;
+    if (!this.currentTeamId) {
+      this.addAssistantMessage('No se detectó el equipo actual. Abre el chat desde la sección de Calendario de un equipo concreto.');
+      return;
+    }
+    if (this.creditsAvailable <= 0) {
+      this.addAssistantMessage('No tienes créditos disponibles. Pulsa en "créditos" para comprar más.');
+      return;
+    }
+
+    const file = this.selectedPdfFile;
+    const teamName = this.pdfTeamName.trim();
+    this.cancelPdfImport();
+
+    this.messages.push({
+      id: ++this.msgIdCounter,
+      role: 'user',
+      text: `Importar calendario PDF: "${file.name}" para el equipo "${teamName}"`,
+      timestamp: new Date(),
+    });
+    this.shouldScroll = true;
+    this.showSuggestions = false;
+
+    const typingMsg: ChatMessage = {
+      id: ++this.msgIdCounter,
+      role: 'assistant',
+      text: '',
+      timestamp: new Date(),
+      isTyping: true,
+    };
+    this.messages.push(typingMsg);
+    this.importingCalendar = true;
+    this.isResponding = true;
+
+    this.aiChatService.importCalendar(this.userId, this.clubId, this.currentTeamId, teamName, file)
+      .pipe(finalize(() => {
+        this.importingCalendar = false;
+        this.isResponding = false;
+      }))
+      .subscribe({
+        next: (resp) => {
+          const idx = this.messages.indexOf(typingMsg);
+          if (idx > -1) this.messages.splice(idx, 1);
+
+          if (resp.success && resp.hasActions && resp.pendingActions && resp.pendingActions.length > 0) {
+            this.messages.push({
+              id: ++this.msgIdCounter,
+              role: 'assistant',
+              text: resp.response || '',
+              timestamp: new Date(),
+              isActionPreview: true,
+              pendingActions: resp.pendingActions,
+              actionToken: resp.actionToken,
+            });
+            if (resp.creditsRemaining !== undefined) this.creditsAvailable = resp.creditsRemaining;
+          } else if (resp.success && resp.response) {
+            this.addAssistantMessage(resp.response);
+            if (resp.creditsRemaining !== undefined) this.creditsAvailable = resp.creditsRemaining;
+          } else {
+            this.addAssistantMessage(resp.message || 'No se pudieron extraer partidos del PDF.');
+          }
+          this.shouldScroll = true;
+          this.saveConversation();
+          this.focusChatInput();
+        },
+        error: () => {
+          const idx = this.messages.indexOf(typingMsg);
+          if (idx > -1) this.messages.splice(idx, 1);
+          this.addAssistantMessage('Error al procesar el PDF. Inténtalo de nuevo.');
           this.saveConversation();
           this.focusChatInput();
         }

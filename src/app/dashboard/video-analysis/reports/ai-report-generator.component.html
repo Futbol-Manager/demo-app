@@ -66,10 +66,17 @@
     <!-- Generated report preview -->
     <div class="report-result" *ngIf="generatedReport">
       <div class="report-result-header">
-        <h6>Informe generado</h6>
-        <span class="report-date">{{ generatedReport.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        <div class="report-result-meta">
+          <h6>Informe generado</h6>
+          <span class="report-date">{{ generatedReport.createdAt | date:'dd/MM/yyyy HH:mm' }}</span>
+        </div>
+        <button class="btn-download-report" (click)="downloadPdf()" [disabled]="isExporting"
+          title="Descargar informe en PDF con branding Sphaira">
+          <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf-fill"></i> PDF</span>
+          <span *ngIf="isExporting" class="spinner-border spinner-border-sm"></span>
+        </button>
       </div>
-      <div class="report-content" [innerHTML]="generatedReport.reportHtml || generatedReport.content"></div>
+      <div #reportResult class="report-content" [innerHTML]="generatedReport.reportHtml || generatedReport.content"></div>
     </div>
   </div>
 </div>

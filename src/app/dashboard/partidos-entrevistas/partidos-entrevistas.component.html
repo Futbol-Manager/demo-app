@@ -1,43 +1,41 @@
 <app-publicidad></app-publicidad>
 
-<div class="btn-back-clean"  (click)="goBack()">
-  <i class="bi bi-arrow-left"></i>
-  <span>{{ 'COMMON.BACK' | translate }}</span>
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">Galería de Partidos</h2>
+    <p class="header-subtitle">Galería de fotos y vídeos de los partidos del equipo</p>
+  </div>
+
+  <div class="page-header-stats">
+    <div class="stat-pill">
+      <i class="bi bi-image"></i> {{ totalFotosGlobal }} fotos
+    </div>
+    <div class="stat-pill">
+      <i class="bi bi-play-circle"></i> {{ totalVideosGlobal }} vídeos
+    </div>
+    <div class="stat-pill">
+      <i class="bi bi-calendar-event"></i> {{ partidos.length }} partidos
+    </div>
+  </div>
 </div>
 
 <div class="gallery-page">
-  <!-- ════════ PAGE HEADER ════════ -->
-  <header class="page-header">
-    <div class="page-header-content">
-      <div class="page-header-icon">
-        <i class="bi bi-collection-play"></i>
-      </div>
-      <div>
-        <h1 class="page-title">Galería de Partidos</h1>
-        <p class="page-subtitle">Revive los mejores momentos de cada encuentro</p>
-      </div>
-    </div>
-    <div class="page-header-stats">
-      <div class="stat-pill">
-        <i class="bi bi-image"></i> {{ totalFotosGlobal }} fotos
-      </div>
-      <div class="stat-pill">
-        <i class="bi bi-play-circle"></i> {{ totalVideosGlobal }} vídeos
-      </div>
-      <div class="stat-pill">
-        <i class="bi bi-calendar-event"></i> {{ partidos.length }} partidos
-      </div>
-    </div>
-  </header>
-
   <!-- ════════ MATCH SELECTOR ════════ -->
   <section class="match-selector">
     <div class="section-label">
       <i class="bi bi-calendar-event"></i>
       <span>Selecciona un partido</span>
     </div>
-    <div class="match-carousel">
-      <button class="carousel-arrow" (click)="prev()" [disabled]="currentIndex === 0">
+    <div class="match-carousel" #carouselContainer>
+      <button class="carousel-arrow" *ngIf="showArrows" (click)="prev()" [disabled]="currentIndex === 0">
         <i class="bi bi-chevron-left"></i>
       </button>
 
@@ -74,12 +72,21 @@
         </div>
       </div>
 
-      <button class="carousel-arrow" (click)="next()"
-              [disabled]="currentIndex + 4 >= partidos.length">
+      <button class="carousel-arrow" *ngIf="showArrows" (click)="next()"
+              [disabled]="currentIndex + pageSize >= partidos.length">
         <i class="bi bi-chevron-right"></i>
       </button>
     </div>
   </section>
+
+  <!-- ════════ NO MATCH SELECTED ════════ -->
+  <div class="no-match-prompt" *ngIf="!showGalery && partidos.length > 0">
+    <div class="no-match-prompt-icon">
+      <i class="bi bi-collection-play-fill"></i>
+    </div>
+    <h3 class="no-match-prompt-title">Elige un partido</h3>
+    <p class="no-match-prompt-text">Selecciona un partido del carrusel para ver las fotos y vídeos del encuentro</p>
+  </div>
 
   <!-- ════════ GALLERY CONTENT ════════ -->
   <section class="gallery-content" *ngIf="showGalery">
@@ -300,7 +307,7 @@
 </div>
 
 <!-- ════════ URL MODAL ════════ -->
-<div *ngIf="showUrlModal" class="modal-overlay" (click)="closeUrlModal()">
+<div *ngIf="showUrlModal" class="modal-overlay" (click)="closeUrlModal()" appModalBackdrop>
   <div class="modal-panel" (click)="$event.stopPropagation()">
     <div class="modal-header-bar">
       <div class="modal-header-icon">
@@ -344,7 +351,7 @@
 </div>
 
 <!-- ════════ MODAL: CLUB SIN SUSCRIPCIÓN DE VÍDEOS ════════ -->
-<div *ngIf="showVideoPlansModal" class="modal-overlay modal-overlay--pro" (click)="showVideoPlansModal = false">
+<div *ngIf="showVideoPlansModal" class="modal-overlay modal-overlay--pro" (click)="showVideoPlansModal = false" appModalBackdrop>
   <div class="modal-pro" (click)="$event.stopPropagation()">
 
     <button class="modal-pro-close" (click)="showVideoPlansModal = false">

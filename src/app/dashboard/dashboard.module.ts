@@ -35,6 +35,7 @@ import { FavoritasComponent } from './tareas/favoritas/favoritas.component';
 import { HistorialComponent } from './tareas/historial/historial.component';
 import { MisTareasComponent } from './tareas/mis-tareas/mis-tareas.component';
 import { TacticalBoardComponent } from './tareas/tactical-board/tactical-board.component';
+import { TareasCatalogComponent } from './tareas/tareas-catalog/tareas-catalog.component';
 import { OpcionesjugadorComponent } from './opcionesjugador/opcionesjugador.component';
 import { HorariosequiposComponent } from './horariosequipos/horariosequipos.component';
 import { EntrenamientosCreadosComponent } from './entrenamientos-creados/entrenamientos-creados.component';
@@ -78,6 +79,7 @@ import { AsistenteIaCoachComponent } from './asistente-ia-coach/asistente-ia-coa
 import { AiFabComponent } from './ai-fab/ai-fab.component';
 import { LesionesComponent } from './lesiones/lesiones.component';
 import { LesionesEquipoComponent } from './lesiones/lesiones-equipo.component';
+import { BodyMapAnatomicalComponent } from './lesiones/body-map-anatomical.component';
 import { LesionesClubComponent } from './lesiones-club/lesiones-club.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { InfoEntrenadoresComponent } from './info-entrenadores/info-entrenadores.component';
@@ -156,6 +158,8 @@ import { ErpBudgetsComponent } from './erp/erp-budgets/erp-budgets.component';
 import { ErpReportsComponent } from './erp/erp-reports/erp-reports.component';
 import { ErpSetupComponent } from './erp/erp-setup/erp-setup.component';
 import { ErpAiConsentModalComponent } from './erp/erp-ai-consent-modal/erp-ai-consent-modal.component';
+import { StaffClubComponent } from './staff-club/staff-club.component';
+import { ModalBackdropDirective } from './shared/modal-backdrop.directive';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -195,6 +199,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HistorialComponent,
     MisTareasComponent,
     TacticalBoardComponent,
+    TareasCatalogComponent,
     OpcionesjugadorComponent,
     HorariosequiposComponent,
     EntrenamientosCreadosComponent,
@@ -236,6 +241,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     LesionesComponent,
     LesionesEquipoComponent,
     LesionesClubComponent,
+    BodyMapAnatomicalComponent,
     InfoEntrenadoresComponent,
     PerfilEntrenadorComponent,
     SessionPdfComponent,
@@ -312,6 +318,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     ErpReportsComponent,
     ErpSetupComponent,
     ErpAiConsentModalComponent,
+    StaffClubComponent,
+    ModalBackdropDirective,
   ],
   imports: [
     CommonModule,

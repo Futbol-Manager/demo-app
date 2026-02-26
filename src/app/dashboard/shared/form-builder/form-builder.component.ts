@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ClubService } from 'src/app/core/services/club/club.service';
+import { ToastrService } from 'ngx-toastr';
 import { FormTemplate, FormTemplateTipo } from 'src/app/core/services/form-template/form-template.model';
 
 export interface FormField {
@@ -62,7 +63,7 @@ export class FormBuilderComponent implements OnInit {
 
   newOptionText = '';
 
-  constructor(private clubService: ClubService) {}
+  constructor(private clubService: ClubService, private toastr: ToastrService) {}
 
   ngOnInit(): void {
     this.nombreTemplate = this.templateNombre || '';
@@ -171,7 +172,7 @@ export class FormBuilderComponent implements OnInit {
         this.saving = false;
         this.onSave.emit(this.fields);
       },
-      () => { this.saving = false; alert('Error al guardar los campos'); }
+      () => { this.saving = false; this.toastr.error('Error al guardar los campos'); }
     );
   }
 
