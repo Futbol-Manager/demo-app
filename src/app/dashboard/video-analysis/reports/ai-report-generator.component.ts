@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, Input, ElementRef, ViewChild } from '@angular/core';
+﻿import { Component, OnInit, OnDestroy, Input, ElementRef, ViewChild } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { VideoAnalysisService } from '../../../core/services/video-analysis/video-analysis.service';

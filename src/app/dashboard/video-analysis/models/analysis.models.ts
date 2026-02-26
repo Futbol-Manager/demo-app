@@ -1,4 +1,4 @@
-export interface AnalysisProject {
+﻿export interface AnalysisProject {
   id: number;
   clubId: number;
   teamId?: number;

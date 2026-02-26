@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+﻿import { Injectable } from '@angular/core';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { AnalysisEvent, AnalysisCategory, AnalysisDrawing, AnalysisTemplate, AnalysisTag } from '../models/analysis.models';
 

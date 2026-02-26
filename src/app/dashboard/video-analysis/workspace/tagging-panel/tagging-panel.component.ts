@@ -1,4 +1,4 @@
-import {
+﻿import {
   Component, OnInit, OnDestroy, Output, EventEmitter,
   HostListener, Input, NgZone
 } from '@angular/core';
