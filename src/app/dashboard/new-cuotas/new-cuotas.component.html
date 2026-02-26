@@ -49,6 +49,57 @@
 <!--<app-logo-spinner *ngIf="isLoading"></app-logo-spinner>  -->
 <div class="container mt-3">
 
+  <!-- ═══════════ SUMMARY CARDS ═══════════ -->
+  <div class="summary-cards mb-3" *ngIf="!isLoading">
+    <!-- Jugadores -->
+    <div class="sc-card sc-card--players">
+      <div class="sc-icon-wrap">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <div class="sc-body">
+        <span class="sc-label">Jugadores</span>
+        <span class="sc-value">{{ resumenTotalJugadores }}</span>
+      </div>
+    </div>
+
+    <!-- Total a pagar -->
+    <div class="sc-card sc-card--total">
+      <div class="sc-icon-wrap">
+        <i class="bi bi-receipt"></i>
+      </div>
+      <div class="sc-body">
+        <span class="sc-label">Total a cobrar</span>
+        <span class="sc-value">{{ resumenTotalAPagar | number:'1.2-2' }} €</span>
+      </div>
+    </div>
+
+    <!-- Pagado -->
+    <div class="sc-card sc-card--paid">
+      <div class="sc-icon-wrap">
+        <i class="bi bi-check-circle-fill"></i>
+      </div>
+      <div class="sc-body">
+        <span class="sc-label">Cobrado</span>
+        <span class="sc-value">{{ resumenTotalPagado | number:'1.2-2' }} €</span>
+        <div class="sc-progress-track">
+          <div class="sc-progress-bar" [style.width.%]="resumenPorcentajeCobrado"></div>
+        </div>
+        <span class="sc-pct">{{ resumenPorcentajeCobrado | number:'1.0-1' }}%</span>
+      </div>
+    </div>
+
+    <!-- Restante -->
+    <div class="sc-card sc-card--pending">
+      <div class="sc-icon-wrap">
+        <i class="bi bi-hourglass-split"></i>
+      </div>
+      <div class="sc-body">
+        <span class="sc-label">Pendiente</span>
+        <span class="sc-value">{{ resumenTotalRestante | number:'1.2-2' }} €</span>
+      </div>
+    </div>
+  </div>
+
   <!-- ═══════════ BARRA UNIFICADA DE FILTROS ═══════════ -->
   <div class="uf-bar mb-2">
 
@@ -934,11 +985,11 @@
         <div class="nc-steps">
           <div class="nc-step nc-step--done"><span>1</span><small>Info</small></div>
           <div class="nc-step-line"></div>
-          <div class="nc-step nc-step--done"><span>2</span><small>Importe</small></div>
+          <div class="nc-step nc-step--done"><span>2</span><small>Pago</small></div>
           <div class="nc-step-line"></div>
-          <div class="nc-step nc-step--done"><span>3</span><small>Equipos</small></div>
+          <div class="nc-step nc-step--done"><span>3</span><small>Importe</small></div>
           <div class="nc-step-line"></div>
-          <div class="nc-step nc-step--done"><span>4</span><small>Pago</small></div>
+          <div class="nc-step nc-step--done"><span>4</span><small>Equipos</small></div>
         </div>
 
         <button class="nc-close" aria-label="Cerrar" (click)="cerrarModalCuota()">
@@ -1007,193 +1058,12 @@
           </div>
 
           <!-- ────────────────────────────────────────────────
-               BLOQUE 2 · Importe y comisiones
-          ──────────────────────────────────────────────────── -->
-          <div class="nc-block">
-            <div class="nc-block-tag">
-              <span class="nc-tag-num">2</span>
-              <span class="nc-tag-label">Importe y comisiones</span>
-              <span class="nc-tag-live">
-                <span class="nc-live-dot"></span>En tiempo real
-              </span>
-            </div>
-
-            <div class="nc-block-body">
-              <div class="nc-amount-fee-layout">
-
-                <!-- Columna izquierda: importe -->
-                <div class="nc-amount-col">
-                  <div class="nc-amount-hero">
-                    <div class="nc-amount-wrap">
-                      <input type="number"
-                        class="form-control nc-amount-input"
-                        [(ngModel)]="nuevaCuota.importe"
-                        name="importe"
-                        placeholder="0"
-                        min="0"
-                        step="0.01">
-                      <span class="nc-amount-currency">€</span>
-                    </div>
-                    <span class="nc-amount-hint">Importe base que recibirá el club</span>
-                  </div>
-
-                  <!-- Tarjetas de comisión fijas -->
-                  <div class="nc-sphaira-card">
-                    <div class="nc-sphaira-icon">
-                      <i class="bi bi-star-fill"></i>
-                    </div>
-                    <div>
-                      <p class="nc-sphaira-name">Comisión Sphaira</p>
-                      <p class="nc-sphaira-amount">{{ (stripeFeePct * 100) | number:'1.0-1' }}%</p>
-                      <p class="nc-sphaira-note">Fija · no modificable</p>
-                    </div>
-                  </div>
-
-                  <div class="nc-sphaira-card nc-sphaira-card--stripe">
-                    <div class="nc-sphaira-icon nc-sphaira-icon--stripe">
-                      <i class="bi bi-credit-card-fill"></i>
-                    </div>
-                    <div>
-                      <p class="nc-sphaira-name">Comisión Stripe</p>
-                      <p class="nc-sphaira-amount">
-                        {{ (stripePct * 100) | number:'1.0-1' }}% + {{ stripeFeeFix | number:'1.2-2' }}€
-                      </p>
-                      <p class="nc-sphaira-note">Procesador · no modificable</p>
-                    </div>
-                  </div>
-
-                  <!-- Toggle comisión del club -->
-                  <label class="nc-fee-toggle"
-                    [class.nc-fee-toggle--on]="aplicarComisionClub">
-                    <input type="checkbox" class="d-none"
-                      id="comisionToggle"
-                      [(ngModel)]="aplicarComisionClub"
-                      name="aplicarComisionClub" />
-                    <div class="nc-fee-toggle-dot"></div>
-                    <div class="nc-fee-toggle-text">
-                      <strong>Comisión del club</strong>
-                      <span *ngIf="!aplicarComisionClub">Sin comisión adicional</span>
-                      <span *ngIf="aplicarComisionClub">{{ clubComisionPct }}% sobre el importe base</span>
-                    </div>
-                  </label>
-
-                  <div *ngIf="aplicarComisionClub" class="nc-slider-wrap">
-                    <div class="nc-slider-header">
-                      <span class="nc-slider-label">Porcentaje del club</span>
-                      <span class="nc-slider-value">{{ clubComisionPct }}%</span>
-                    </div>
-                    <input type="range"
-                      class="nc-slider"
-                      min="0" max="50" step="0.5"
-                      [(ngModel)]="clubComisionPct"
-                      name="clubComisionPct" />
-                    <div class="nc-slider-marks">
-                      <span>0%</span><span>25%</span><span>50%</span>
-                    </div>
-                  </div>
-                </div><!-- /nc-amount-col -->
-
-                <!-- Columna derecha: desglose en vivo -->
-                <div class="nc-fee-breakdown">
-                  <div class="nc-breakdown-header">
-                    <i class="bi bi-receipt me-1"></i>
-                    <span>Lo que paga el padre</span>
-                  </div>
-
-                  <div class="nc-breakdown-rows">
-                    <div class="nc-breakdown-row">
-                      <span>Cuota base</span>
-                      <span>{{ (nuevaCuota?.importe || 0) | number:'1.2-2' }}€</span>
-                    </div>
-                    <div *ngIf="aplicarComisionClub" class="nc-breakdown-row nc-breakdown-row--add">
-                      <span>
-                        <i class="bi bi-building me-1"></i>
-                        Club ({{ clubComisionPct }}%)
-                      </span>
-                      <span>+{{ calcularComisionClub() | number:'1.2-2' }}€</span>
-                    </div>
-                    <div class="nc-breakdown-row nc-breakdown-row--add">
-                      <span>
-                        <i class="bi bi-star-fill nc-star-icon me-1"></i>
-                        Sphaira ({{ (stripeFeePct * 100) | number:'1.0-1' }}%)
-                      </span>
-                      <span>+{{ calcularComisionSphaira() | number:'1.2-2' }}€</span>
-                    </div>
-                    <div class="nc-breakdown-row nc-breakdown-row--add">
-                      <span>
-                        <i class="bi bi-credit-card-fill me-1"></i>
-                        Stripe ({{ (stripePct * 100) | number:'1.0-1' }}% + {{ stripeFeeFix | number:'1.2-2' }}€)
-                      </span>
-                      <span>+{{ calcularComisionStripe() | number:'1.2-2' }}€</span>
-                    </div>
-                    <div class="nc-breakdown-total">
-                      <span>Total a pagar</span>
-                      <span>{{ calcularTotalPadre() | number:'1.2-2' }}€</span>
-                    </div>
-                  </div>
-
-                  <p class="nc-breakdown-note">
-                    <i class="bi bi-info-circle-fill me-1"></i>
-                    Los padres ven el importe total al realizar el pago.
-                  </p>
-                </div><!-- /nc-fee-breakdown -->
-
-              </div><!-- /nc-amount-fee-layout -->
-            </div>
-          </div>
-
-          <!-- ────────────────────────────────────────────────
-               BLOQUE 3 · Asignación de equipos
-          ──────────────────────────────────────────────────── -->
-          <div class="nc-block">
-            <div class="nc-block-tag">
-              <span class="nc-tag-num">3</span>
-              <span class="nc-tag-label">Asignación de equipos</span>
-              <span *ngIf="listTeamsSelecteds.length > 0" class="nc-tag-count">
-                {{ listTeamsSelecteds.length }} seleccionado{{ listTeamsSelecteds.length > 1 ? 's' : '' }}
-              </span>
-            </div>
-
-            <div class="nc-block-body">
-              <!-- Grid de chips inline -->
-              <div class="nc-teams-grid">
-                <!-- Chip "Todos" -->
-                <button type="button"
-                  class="nc-team-chip"
-                  [class.nc-team-chip--all]="true"
-                  [class.nc-team-chip--selected]="isAllSelected()"
-                  (click)="toggleSelectAll()">
-                  <i class="bi" [ngClass]="isAllSelected() ? 'bi-check-all' : 'bi-people-fill'"></i>
-                  Todos
-                </button>
-
-                <!-- Chip por equipo -->
-                <button type="button"
-                  class="nc-team-chip"
-                  *ngFor="let team of listTeams"
-                  [class.nc-team-chip--selected]="listTeamsSelecteds.includes(team.value)"
-                  (click)="toggleTeamSelection(team.value)">
-                  <i class="bi bi-shield-fill nc-team-shield"></i>
-                  {{ team.name }}
-                  <i *ngIf="listTeamsSelecteds.includes(team.value)"
-                    class="bi bi-check2 nc-team-check"></i>
-                </button>
-              </div>
-
-              <p *ngIf="listTeamsSelecteds.length === 0" class="nc-teams-empty">
-                <i class="bi bi-info-circle me-1"></i>
-                Selecciona al menos un equipo
-              </p>
-            </div>
-          </div>
-
-          <!-- ────────────────────────────────────────────────
-               BLOQUE 4 · Pago digital (Stripe)
+               BLOQUE 2 · Tipo de pago
           ──────────────────────────────────────────────────── -->
           <div class="nc-block nc-block--stripe">
             <div class="nc-block-tag">
-              <span class="nc-tag-num nc-tag-num--stripe">4</span>
-              <span class="nc-tag-label">Pago digital</span>
+              <span class="nc-tag-num nc-tag-num--stripe">2</span>
+              <span class="nc-tag-label">Tipo de pago</span>
               <span class="nc-stripe-badge" *ngIf="nuevaCuota.stripe !== 1">
                 <i class="bi bi-receipt me-1"></i>Pago puntual
               </span>
@@ -1241,7 +1111,7 @@
 
               </div>
 
-              <!-- Fecha límite · solo cuando Pago puntual, debajo de los cards -->
+              <!-- Fecha límite · solo cuando Pago puntual -->
               <div class="nc-fecha-limite-field" *ngIf="nuevaCuota.stripe !== 1">
                 <div class="nc-field mb-0">
                   <label class="nc-label">
@@ -1290,6 +1160,195 @@
               </div><!-- /nc-stripe-panel -->
 
             </div>
+          </div><!-- /bloque 2 -->
+
+          <!-- ────────────────────────────────────────────────
+               BLOQUE 3 · Importe y comisiones
+          ──────────────────────────────────────────────────── -->
+          <div class="nc-block">
+            <div class="nc-block-tag">
+              <span class="nc-tag-num">3</span>
+              <span class="nc-tag-label">Importe</span>
+              <span class="nc-tag-live" *ngIf="nuevaCuota.stripe === 1">
+                <span class="nc-live-dot"></span>En tiempo real
+              </span>
+            </div>
+
+            <div class="nc-block-body">
+
+              <!-- ── Siempre visible: campo del importe ── -->
+              <div class="nc-amount-hero">
+                <div class="nc-amount-wrap">
+                  <input type="number"
+                    class="form-control nc-amount-input"
+                    [(ngModel)]="nuevaCuota.importe"
+                    name="importe"
+                    placeholder="0"
+                    min="0"
+                    step="0.01">
+                  <span class="nc-amount-currency">€</span>
+                </div>
+                <span class="nc-amount-hint">
+                  {{ nuevaCuota.stripe === 1 ? 'Importe base que recibirá el club (sin comisiones)' : 'Importe que pagarán los padres' }}
+                </span>
+              </div>
+
+              <!-- ── Solo Sphaira Pay: comisiones + desglose ── -->
+              <ng-container *ngIf="nuevaCuota.stripe === 1">
+                <div class="nc-amount-fee-layout">
+
+                  <!-- Columna izquierda: tarjetas de comisión -->
+                  <div class="nc-amount-col">
+
+                    <div class="nc-sphaira-card">
+                      <div class="nc-sphaira-icon">
+                        <i class="bi bi-star-fill"></i>
+                      </div>
+                      <div>
+                        <p class="nc-sphaira-name">Comisión Sphaira</p>
+                        <p class="nc-sphaira-amount">{{ (stripeFeePct * 100) | number:'1.0-1' }}%</p>
+                        <p class="nc-sphaira-note">Fija · no modificable</p>
+                      </div>
+                    </div>
+
+                    <div class="nc-sphaira-card nc-sphaira-card--stripe">
+                      <div class="nc-sphaira-icon nc-sphaira-icon--stripe">
+                        <i class="bi bi-credit-card-fill"></i>
+                      </div>
+                      <div>
+                        <p class="nc-sphaira-name">Comisión Stripe</p>
+                        <p class="nc-sphaira-amount">
+                          {{ (stripePct * 100) | number:'1.0-1' }}% + {{ stripeFeeFix | number:'1.2-2' }}€
+                        </p>
+                        <p class="nc-sphaira-note">Procesador · no modificable</p>
+                      </div>
+                    </div>
+
+                    <!-- Toggle comisión del club -->
+                    <label class="nc-fee-toggle"
+                      [class.nc-fee-toggle--on]="aplicarComisionClub">
+                      <input type="checkbox" class="d-none"
+                        id="comisionToggle"
+                        [(ngModel)]="aplicarComisionClub"
+                        name="aplicarComisionClub" />
+                      <div class="nc-fee-toggle-dot"></div>
+                      <div class="nc-fee-toggle-text">
+                        <strong>Comisión del club</strong>
+                        <span *ngIf="!aplicarComisionClub">Sin comisión adicional</span>
+                        <span *ngIf="aplicarComisionClub">{{ clubComisionPct }}% sobre el importe base</span>
+                      </div>
+                    </label>
+
+                    <div *ngIf="aplicarComisionClub" class="nc-slider-wrap">
+                      <div class="nc-slider-header">
+                        <span class="nc-slider-label">Porcentaje del club</span>
+                        <span class="nc-slider-value">{{ clubComisionPct }}%</span>
+                      </div>
+                      <input type="range"
+                        class="nc-slider"
+                        min="0" max="50" step="0.5"
+                        [(ngModel)]="clubComisionPct"
+                        name="clubComisionPct" />
+                      <div class="nc-slider-marks">
+                        <span>0%</span><span>25%</span><span>50%</span>
+                      </div>
+                    </div>
+                  </div><!-- /nc-amount-col -->
+
+                  <!-- Columna derecha: desglose en vivo -->
+                  <div class="nc-fee-breakdown">
+                    <div class="nc-breakdown-header">
+                      <i class="bi bi-receipt me-1"></i>
+                      <span>Lo que paga el padre</span>
+                    </div>
+
+                    <div class="nc-breakdown-rows">
+                      <div class="nc-breakdown-row">
+                        <span>Cuota base</span>
+                        <span>{{ (nuevaCuota?.importe || 0) | number:'1.2-2' }}€</span>
+                      </div>
+                      <div *ngIf="aplicarComisionClub" class="nc-breakdown-row nc-breakdown-row--add">
+                        <span>
+                          <i class="bi bi-building me-1"></i>
+                          Club ({{ clubComisionPct }}%)
+                        </span>
+                        <span>+{{ calcularComisionClub() | number:'1.2-2' }}€</span>
+                      </div>
+                      <div class="nc-breakdown-row nc-breakdown-row--add">
+                        <span>
+                          <i class="bi bi-star-fill nc-star-icon me-1"></i>
+                          Sphaira ({{ (stripeFeePct * 100) | number:'1.0-1' }}%)
+                        </span>
+                        <span>+{{ calcularComisionSphaira() | number:'1.2-2' }}€</span>
+                      </div>
+                      <div class="nc-breakdown-row nc-breakdown-row--add">
+                        <span>
+                          <i class="bi bi-credit-card-fill me-1"></i>
+                          Stripe ({{ (stripePct * 100) | number:'1.0-1' }}% + {{ stripeFeeFix | number:'1.2-2' }}€)
+                        </span>
+                        <span>+{{ calcularComisionStripe() | number:'1.2-2' }}€</span>
+                      </div>
+                      <div class="nc-breakdown-total">
+                        <span>Total a pagar</span>
+                        <span>{{ calcularTotalPadre() | number:'1.2-2' }}€</span>
+                      </div>
+                    </div>
+
+                    <p class="nc-breakdown-note">
+                      <i class="bi bi-info-circle-fill me-1"></i>
+                      Los padres ven el importe total al realizar el pago.
+                    </p>
+                  </div><!-- /nc-fee-breakdown -->
+
+                </div><!-- /nc-amount-fee-layout -->
+              </ng-container>
+
+            </div>
+          </div><!-- /bloque 3 -->
+
+          <!-- ────────────────────────────────────────────────
+               BLOQUE 4 · Asignación de equipos
+          ──────────────────────────────────────────────────── -->
+          <div class="nc-block">
+            <div class="nc-block-tag">
+              <span class="nc-tag-num">4</span>
+              <span class="nc-tag-label">Asignación de equipos</span>
+              <span *ngIf="listTeamsSelecteds.length > 0" class="nc-tag-count">
+                {{ listTeamsSelecteds.length }} seleccionado{{ listTeamsSelecteds.length > 1 ? 's' : '' }}
+              </span>
+            </div>
+
+            <div class="nc-block-body">
+              <!-- Grid de chips inline -->
+              <div class="nc-teams-grid">
+                <!-- Chip "Todos" -->
+                <button type="button"
+                  class="nc-team-chip"
+                  [class.nc-team-chip--all]="true"
+                  [class.nc-team-chip--selected]="isAllSelected()"
+                  (click)="toggleSelectAll()">
+                  <i class="bi" [ngClass]="isAllSelected() ? 'bi-check-all' : 'bi-people-fill'"></i>
+                  Todos
+                </button>
+
+                <!-- Chip por equipo -->
+                <button type="button"
+                  class="nc-team-chip"
+                  *ngFor="let team of listTeams"
+                  [class.nc-team-chip--selected]="listTeamsSelecteds.includes(team.value)"
+                  (click)="toggleTeamSelection(team.value)">
+                  <i class="bi bi-shield-fill nc-team-shield"></i>
+                  {{ team.name }}
+                  <i *ngIf="listTeamsSelecteds.includes(team.value)"
+                    class="bi bi-check2 nc-team-check"></i>
+                </button>
+              </div>
+
+              <p *ngIf="listTeamsSelecteds.length === 0" class="nc-teams-empty">
+                <i class="bi bi-info-circle me-1"></i>
+                Selecciona al menos un equipo
+              </p>
+            </div>
           </div><!-- /bloque 4 -->
 
 
@@ -1302,8 +1361,14 @@
       <div class="nc-footer">
         <div class="nc-footer-summary">
           <div class="nc-footer-summary-inner" *ngIf="nuevaCuota?.importe">
-            <span class="nc-footer-label">Total estimado</span>
-            <span class="nc-footer-total">{{ calcularTotalPadre() | number:'1.2-2' }}€</span>
+            <span class="nc-footer-label">
+              {{ nuevaCuota.stripe === 1 ? 'Total estimado (con comisiones)' : 'Importe base' }}
+            </span>
+            <span class="nc-footer-total">
+              {{ nuevaCuota.stripe === 1
+                  ? (calcularTotalPadre() | number:'1.2-2')
+                  : (nuevaCuota.importe | number:'1.2-2') }}€
+            </span>
           </div>
           <span *ngIf="!nuevaCuota?.importe" class="nc-footer-empty-hint">
             Introduce el importe para ver el resumen
