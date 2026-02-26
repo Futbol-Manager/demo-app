@@ -26,6 +26,11 @@ export class SuscripcionClubComponent implements OnInit {
   // Active subscription
   subscription: ClubSubscription | null = null;
   showCancelConfirm = false;
+  editingClubCommission = false;
+  commissionDraft = 0;
+  savingClubCommission = false;
+  commissionEditError = '';
+  readonly maxClubCommissionPercent = 30;
 
   constructor(
     private router: Router,
@@ -88,23 +93,48 @@ export class SuscripcionClubComponent implements OnInit {
           startDate: result.plan.startDate,
           endDate: result.plan.endDate,
           stripeConnectAccountId: result.plan.stripeConnectAccountId,
+          stripeConnectOnboardingUrl: result.plan.stripeConnectOnboardingUrl,
+          stripeConnectStatus: result.plan.stripeConnectStatus || 'not_started',
           clubCommissionPercent: result.plan.clubCommissionPercent || 0
         };
+        this.commissionDraft = this.subscription.clubCommissionPercent || 0;
+        this.editingClubCommission = false;
+        this.commissionEditError = '';
       } else {
         this.subscription = null;
       }
       // Load available plans
       this.subscriptionService.getAvailablePlans().subscribe(plans => {
-        this.plans = plans;
+        this.plans = [...plans].sort((a, b) => this.getPlanOrder(a.id) - this.getPlanOrder(b.id));
         this.loading = false;
         this.datosCargados = true;
       });
     });
   }
 
+  private getPlanOrder(planType: ClubPlanType): number {
+    switch (planType) {
+      case 'gratuito':
+        return 0;
+      case 'familia':
+        return 1;
+      case 'club':
+        return 2;
+      default:
+        return 99;
+    }
+  }
+
   selectPlan(planType: ClubPlanType): void {
+    if (this.isPlanComingSoon(planType)) {
+      return;
+    }
     this.selectedPlan = planType;
     this.router.navigate(['/dashboard/suscripcion-club/wizard', planType]);
+  }
+
+  isPlanComingSoon(planType: ClubPlanType): boolean {
+    return planType !== 'gratuito';
   }
 
   getPlanIcon(planType: ClubPlanType): string {
@@ -171,6 +201,57 @@ export class SuscripcionClubComponent implements OnInit {
       // Show success feedback
       this.urlCopied = true;
       setTimeout(() => this.urlCopied = false, 3000);
+    });
+  }
+
+  openStripe(): void {
+    const accountId = this.subscription?.stripeConnectAccountId;
+    const url = accountId
+      ? `https://dashboard.stripe.com/${accountId}/dashboard`
+      : (this.subscription?.stripeConnectOnboardingUrl || 'https://dashboard.stripe.com');
+
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  startEditClubCommission(): void {
+    if (!this.subscription || this.subscription.planType !== 'gratuito') return;
+    this.commissionDraft = this.subscription.clubCommissionPercent ?? 0;
+    this.editingClubCommission = true;
+    this.commissionEditError = '';
+  }
+
+  cancelEditClubCommission(): void {
+    this.editingClubCommission = false;
+    this.commissionDraft = this.subscription?.clubCommissionPercent ?? 0;
+    this.commissionEditError = '';
+  }
+
+  saveClubCommission(): void {
+    if (!this.subscription || this.subscription.planType !== 'gratuito' || this.savingClubCommission) return;
+
+    const normalizedValue = Number(this.commissionDraft);
+    if (Number.isNaN(normalizedValue) || normalizedValue < 0 || normalizedValue > this.maxClubCommissionPercent) {
+      this.commissionEditError = `El porcentaje debe estar entre 0 y ${this.maxClubCommissionPercent}.`;
+      return;
+    }
+
+    this.savingClubCommission = true;
+    this.commissionEditError = '';
+
+    this.subscriptionService.saveGratuitoConfig(this.clubId, normalizedValue).subscribe(response => {
+      if (response?.success) {
+        if (this.subscription) {
+          this.subscription.clubCommissionPercent = normalizedValue;
+        }
+        this.commissionDraft = normalizedValue;
+        this.editingClubCommission = false;
+      } else {
+        this.commissionEditError = response?.error || 'No se pudo guardar la comisión.';
+      }
+      this.savingClubCommission = false;
+    }, () => {
+      this.commissionEditError = 'No se pudo guardar la comisión.';
+      this.savingClubCommission = false;
     });
   }
 

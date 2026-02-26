@@ -549,7 +549,10 @@ export class ClubSubscriptionService {
         map(response => ({
           success: response.status === 200,
           connected: response.data?.connected || false,
+          exists: response.data?.exists || false,
+          status: response.data?.status || 'not_started',
           accountId: response.data?.accountId || null,
+          stripeAccessUrl: response.data?.stripeAccessUrl || '',
           chargesEnabled: response.data?.chargesEnabled || false,
           payoutsEnabled: response.data?.payoutsEnabled || false,
           detailsSubmitted: response.data?.detailsSubmitted || false
@@ -573,6 +576,13 @@ export class ClubSubscriptionService {
         success: res.status === 200,
         accountId: res?.data?.accountId || '',
         onboardingUrl: res?.data?.url || '',
+        stripeAccessUrl: res?.data?.stripeAccessUrl || res?.data?.url || '',
+        status: res?.data?.status || 'not_started',
+        exists: res?.data?.exists || false,
+        connected: !!res?.data?.connected,
+        chargesEnabled: !!res?.data?.chargesEnabled,
+        payoutsEnabled: !!res?.data?.payoutsEnabled,
+        detailsSubmitted: !!res?.data?.detailsSubmitted,
         error: res?.error?.msg || null
       })),
       catchError(error => {
@@ -591,15 +601,39 @@ export class ClubSubscriptionService {
    * Obtiene la configuración de Stripe Connect de un club
    */
   getGratuitoConfig(clubId: number): Observable<any> {
-    // Por ahora devolvemos configuración por defecto ya que el endpoint no existe
-    return of({
-      success: true,
-      config: {
-        sphairaPercent: 3,
-        fixedFeePerTransaction: 0.25,
-        clubPercent: 0
-      }
-    });
+    return this.http.get<any>(`${this.apiUrl}club-plan/gratuito/config/${clubId}`)
+      .pipe(
+        map(response => ({
+          success: response.status === 200,
+          config: {
+            sphairaPercent: response?.data?.sphairaPercent ?? 3,
+            fixedFeePerTransaction: response?.data?.fixedFeePerTransaction ?? 0.25,
+            clubPercent: response?.data?.clubPercent ?? 0
+          }
+        })),
+        catchError(error => {
+          console.error('Error fetching gratuito config:', error);
+          return of({
+            success: false,
+            config: {
+              sphairaPercent: 3,
+              fixedFeePerTransaction: 0.25,
+              clubPercent: 0
+            }
+          });
+        })
+      );
+  }
+
+  saveGratuitoConfig(clubId: number, clubPercent: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}club-plan/gratuito/config/${clubId}`, { clubPercent })
+      .pipe(
+        map(response => ({ success: response.status === 200, data: response.data })),
+        catchError(error => {
+          console.error('Error saving gratuito config:', error);
+          return of({ success: false, error: error.message });
+        })
+      );
   }
 
   /**
@@ -620,22 +654,17 @@ export class ClubSubscriptionService {
    * Calcula comisiones para Plan Gratuito
    */
   calculateGratuitoCommissions(clubId: number, amount: number): Observable<any> {
-    // Calculamos localmente ya que el endpoint no existe
-    const sphairaPercent = 3;
-    const fixedFee = 0.25;
-    const clubPercent = 0;
-    
-    const sphairaFee = (amount * sphairaPercent / 100) + fixedFee;
-    const clubFee = amount * clubPercent / 100;
-    const totalFee = sphairaFee + clubFee;
-    
-    return of({
-      success: true,
-      sphairaFee: +sphairaFee.toFixed(2),
-      clubFee: +clubFee.toFixed(2),
-      totalFee: +totalFee.toFixed(2),
-      parentPays: +(amount + totalFee).toFixed(2)
-    });
+    return this.http.get<any>(`${this.apiUrl}club-plan/gratuito/calculate-commissions/${clubId}?amount=${amount}`)
+      .pipe(
+        map(response => ({
+          success: response.status === 200,
+          ...(response.data || {})
+        })),
+        catchError(error => {
+          console.error('Error calculating commissions:', error);
+          return of({ success: false, error: error.message });
+        })
+      );
   }
 
   /**
@@ -656,14 +685,9 @@ export class ClubSubscriptionService {
    * Obtiene el plan actual del club desde la tabla club_plan
    */
   getCurrentClubPlan(clubId: number): Observable<any> {
-    const token = localStorage.getItem('token');
-    console.log('Getting club plan for clubId:', clubId);
-    console.log('Token available:', !!token);
-    
     return this.http.get<any>(`${this.apiUrl}club-plan/${clubId}/current`)
       .pipe(
         map(response => {
-          console.log('Club plan response:', response);
           if (response.status === 200 && response.data) {
             return {
               success: true,
@@ -675,24 +699,18 @@ export class ClubSubscriptionService {
                 startDate: response.data.startDate,
                 endDate: response.data.endDate,
                 stripeConnectAccountId: response.data.stripeConnectAccountId,
-                clubCommissionPercent: response.data.clubCommissionPercent
+                stripeConnectOnboardingUrl: response.data.stripeConnectOnboardingUrl,
+                stripeConnectStatus: response.data.stripeConnectStatus,
+                clubCommissionPercent: response.data.clubCommissionPercent,
+                sphairaCommissionPercent: response.data.sphairaCommissionPercent,
+                sphairaFixedFee: response.data.sphairaFixedFee
               }
             };
           }
-          console.log('No plan data in response');
           return { success: false, plan: null };
         }),
         catchError(error => {
           console.error('Error getting current club plan:', error);
-          console.error('Error status:', error.status);
-          console.error('Error details:', error);
-          
-          // Si es 403, puede que no tenga permisos o el plan no existe
-          if (error.status === 403) {
-            console.warn('Access forbidden - user might not have access to this club or plan does not exist');
-            return of({ success: false, plan: null, error: 'Access forbidden' });
-          }
-          
           return of({ success: false, plan: null, error: error.message });
         })
       );

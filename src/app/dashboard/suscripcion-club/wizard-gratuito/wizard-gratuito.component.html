@@ -117,6 +117,20 @@
       </div>
       <h3>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_PENDING_TITLE' | translate }}</h3>
       <p>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_PENDING_DESC' | translate }}</p>
+      <button class="btn btn-stripe" (click)="openStripe()">
+        <i class="bi bi-box-arrow-up-right"></i>
+        Entrar a Stripe
+      </button>
+      <button class="btn btn-recheck" (click)="recheckStripeStatus()" [disabled]="recheckingStatus">
+        <span *ngIf="!recheckingStatus">
+          <i class="bi bi-arrow-clockwise"></i>
+          Volver a comprobar
+        </span>
+        <span *ngIf="recheckingStatus">
+          <div class="spinner-border spinner-border-sm" role="status"></div>
+          Comprobando...
+        </span>
+      </button>
     </div>
 
     <!-- Active -->
@@ -126,6 +140,10 @@
       </div>
       <h3>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_ACTIVE_TITLE' | translate }}</h3>
       <p>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_ACTIVE_DESC' | translate }}</p>
+      <button class="btn btn-stripe" (click)="openStripe()">
+        <i class="bi bi-box-arrow-up-right"></i>
+        Entrar a Stripe
+      </button>
     </div>
 
     <!-- Restricted -->
@@ -135,6 +153,20 @@
       </div>
       <h3>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_RESTRICTED_TITLE' | translate }}</h3>
       <p>{{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_RESTRICTED_DESC' | translate }}</p>
+      <button class="btn btn-stripe" (click)="openStripe()">
+        <i class="bi bi-box-arrow-up-right"></i>
+        Entrar a Stripe
+      </button>
+      <button class="btn btn-recheck" (click)="recheckStripeStatus()" [disabled]="recheckingStatus">
+        <span *ngIf="!recheckingStatus">
+          <i class="bi bi-arrow-clockwise"></i>
+          Volver a comprobar
+        </span>
+        <span *ngIf="recheckingStatus">
+          <div class="spinner-border spinner-border-sm" role="status"></div>
+          Comprobando...
+        </span>
+      </button>
       <button class="btn btn-stripe" (click)="initiateStripeConnect()">
         <i class="bi bi-arrow-repeat"></i>
         {{ 'CLUB_PLANS.WIZARD_FREE.CONNECT_RETRY' | translate }}
@@ -142,6 +174,25 @@
     </div>
 
     <!-- How it works -->
+    <div class="connect-health" *ngIf="connectStatus !== 'not_started'">
+      <div class="health-row">
+        <span class="health-label">Cuenta Stripe encontrada</span>
+        <strong [class.text-success]="stripeAccountExists" [class.text-danger]="!stripeAccountExists">
+          {{ stripeAccountExists ? 'Sí' : 'No' }}
+        </strong>
+      </div>
+      <div class="health-row">
+        <span class="health-label">Lista para usar</span>
+        <strong [class.text-success]="stripeReadyForUse" [class.text-warning]="!stripeReadyForUse">
+          {{ stripeReadyForUse ? 'Sí' : 'No' }}
+        </strong>
+      </div>
+      <div class="health-row" *ngIf="stripeNeedsActivation">
+        <span class="health-label">Acción</span>
+        <strong class="text-warning">Falta completar activación en Stripe</strong>
+      </div>
+    </div>
+
     <div class="how-it-works">
       <h4>{{ 'CLUB_PLANS.WIZARD_FREE.HOW_IT_WORKS' | translate }}</h4>
       <div class="how-step" *ngFor="let n of [1,2,3]">

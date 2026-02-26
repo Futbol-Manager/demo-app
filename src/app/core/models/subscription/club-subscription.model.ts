@@ -64,6 +64,7 @@ export interface ClubSubscription {
   totalAmount?: number;
   // Plan Gratuito specific
   stripeConnectAccountId?: string;
+  stripeConnectOnboardingUrl?: string;
   stripeConnectStatus?: StripeConnectStatus;
   clubCommissionPercent?: number;
   // Plan Familia specific

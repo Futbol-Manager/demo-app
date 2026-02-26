@@ -32,6 +32,12 @@ export class WizardGratuitoComponent implements OnInit {
   // Step 2: Stripe Connect
   connectStatus: 'not_started' | 'pending' | 'active' | 'restricted' = 'not_started';
   connectLoading = false;
+  recheckingStatus = false;
+  stripeAccessUrl = '';
+  stripeAccountId = '';
+  stripeAccountExists = false;
+  stripeReadyForUse = false;
+  stripeNeedsActivation = false;
 
   // Step 3: Commission Configuration
   commissionConfig: CommissionConfig | null = null;
@@ -161,15 +167,11 @@ export class WizardGratuitoComponent implements OnInit {
     if (this.clubId) {
       this.subscriptionService.checkGratuitoStatus(this.clubId).subscribe({
         next: (response) => {
-          if (response.success && response.connected) {
-            this.connectStatus = 'active';
-          } else {
-            this.connectStatus = 'not_started';
-          }
+          this.applyStripeStatusResponse(response);
         },
         error: (error) => {
           console.error('Error checking connect status:', error);
-          this.connectStatus = 'not_started';
+          this.applyStripeStatusResponse(null);
         }
       });
     }
@@ -184,13 +186,14 @@ export class WizardGratuitoComponent implements OnInit {
       next: (result) => {
         if (result.success) {
           // Cuenta creada exitosamente
-          this.connectStatus = 'active';
+          this.applyStripeStatusResponse(result);
           this.connectLoading = false;
-          
-          // Auto avanzar al siguiente paso después de 1.5 segundos
-          setTimeout(() => {
-            this.nextStep();
-          }, 1500);
+
+          if (this.connectStatus === 'active') {
+            setTimeout(() => {
+              this.nextStep();
+            }, 1500);
+          }
         } else {
           console.error('Error creando cuenta Stripe:', result.error);
           this.connectStatus = 'restricted';
@@ -203,6 +206,48 @@ export class WizardGratuitoComponent implements OnInit {
         this.connectLoading = false;
       }
     });
+  }
+
+  recheckStripeStatus(): void {
+    if (!this.clubId) return;
+
+    this.recheckingStatus = true;
+    this.subscriptionService.checkGratuitoStatus(this.clubId).subscribe({
+      next: (response) => {
+        this.applyStripeStatusResponse(response);
+        this.recheckingStatus = false;
+      },
+      error: (error) => {
+        console.error('Error rechecking Stripe status:', error);
+        this.recheckingStatus = false;
+      }
+    });
+  }
+
+  private applyStripeStatusResponse(response: any): void {
+    if (response?.success) {
+      this.connectStatus = (response.status || (response.connected ? 'active' : 'not_started'));
+      this.stripeAccessUrl = response.stripeAccessUrl || '';
+      this.stripeAccountId = response.accountId || '';
+      this.stripeAccountExists = !!response.exists || !!response.accountId;
+      this.stripeReadyForUse = !!response.connected;
+      this.stripeNeedsActivation = this.stripeAccountExists && !this.stripeReadyForUse;
+      return;
+    }
+
+    this.connectStatus = 'not_started';
+    this.stripeAccessUrl = '';
+    this.stripeAccountId = '';
+    this.stripeAccountExists = false;
+    this.stripeReadyForUse = false;
+    this.stripeNeedsActivation = false;
+  }
+
+  openStripe(): void {
+    const target = this.stripeAccountId
+      ? `https://dashboard.stripe.com/${this.stripeAccountId}/dashboard`
+      : (this.stripeAccessUrl || 'https://dashboard.stripe.com');
+    window.open(target, '_blank', 'noopener,noreferrer');
   }
 
   // ── Step 3: Commission Configuration ─────────────────
@@ -277,6 +322,14 @@ export class WizardGratuitoComponent implements OnInit {
   // ── Step 4: Confirmation ─────────────────────────────
   confirmSetup(): void {
     this.submitting = true;
+
+    this.subscriptionService.saveGratuitoConfig(this.clubId, this.clubCommissionPercent).subscribe({
+      next: () => this.confirmSetupAfterConfig(),
+      error: () => this.confirmSetupAfterConfig()
+    });
+  }
+
+  private confirmSetupAfterConfig(): void {
 
     // Para el plan gratuito, si el usuario llegó hasta aquí es porque ya completó
     // los pasos anteriores, incluyendo la creación de cuenta Stripe
