@@ -392,4 +392,51 @@ export class PostEditorModalComponent implements OnInit, OnChanges {
   imageModelLabel(key: string): string {
     return this.imageModels.find(m => m.key === key)?.label || key;
   }
+
+  // ── Adaptar para todas las redes ────────────────────────────────────────────
+  showAdaptPanel   = false;
+  isAdapting       = false;
+  adaptVersions:   { network: string; label: string; text: string; is_original?: boolean }[] = [];
+  adaptError       = '';
+
+  readonly NET_LABELS: Record<string, string> = {
+    twitter: 'Twitter / X', linkedin: 'LinkedIn',
+    instagram: 'Instagram',  facebook: 'Facebook',
+  };
+
+  adaptForNetworks(): void {
+    const sourceText = this.isThread
+      ? this.threadTweets.map(t => t.text).filter(Boolean).join('\n\n')
+      : this.textContent;
+
+    if (!sourceText.trim()) return;
+    this.isAdapting   = true;
+    this.adaptError   = '';
+    this.adaptVersions = [];
+    this.showAdaptPanel = true;
+
+    const allNets = ['twitter', 'linkedin', 'instagram', 'facebook'];
+    this.prospect.adaptForNetworks(sourceText, this.network, allNets).subscribe({
+      next: (res: any) => {
+        this.isAdapting   = false;
+        if (res.ok && res.versions) {
+          this.adaptVersions = res.versions.map((v: any) => ({
+            ...v,
+            label: this.NET_LABELS[v.network] || v.network,
+          }));
+        }
+      },
+      error: (err: any) => {
+        this.isAdapting = false;
+        this.adaptError = err?.error?.detail || 'Error al adaptar el contenido.';
+      },
+    });
+  }
+
+  useAdaptedVersion(version: { network: string; text: string }): void {
+    this.network     = version.network as Network;
+    this.textContent = version.text;
+    this.showAdaptPanel = false;
+    this.onNetworkChange();
+  }
 }

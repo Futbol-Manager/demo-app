@@ -338,3 +338,126 @@ $net-twitter:   #14171a;
   &.stripe-linkedin  { background: $net-linkedin;  width: 8px; border-radius: 2px; }
   &.stripe-twitter   { background: $net-twitter;   width: 8px; border-radius: 2px; }
 }
+
+// ── Toggle semana/mes ─────────────────────────────────────────────────────────
+.view-toggle {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Vista mensual
+// ─────────────────────────────────────────────────────────────────────────────
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.month-day-header {
+  background: #f8fafc;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #64748b;
+  padding: 0.45rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.month-cell {
+  min-height: 100px;
+  border-right: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 0.3rem 0.35rem;
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+
+  &:nth-child(7n) { border-right: none; }
+
+  &:hover { background: #f0f9ff; }
+
+  &.other-month {
+    background: #fafafa;
+    opacity: 0.65;
+  }
+
+  &.today {
+    background: #eff6ff;
+    .month-cell-date {
+      background: #2563eb;
+      color: #fff;
+    }
+  }
+}
+
+.month-cell-date {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  align-self: flex-end;
+}
+
+.month-cell-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  flex: 1;
+  overflow: hidden;
+}
+
+.month-post-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  font-size: 0.66rem;
+  font-weight: 500;
+  color: #fff;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  &.net-instagram { background: $net-instagram; }
+  &.net-facebook  { background: $net-facebook;  }
+  &.net-linkedin  { background: $net-linkedin;  }
+  &.net-twitter   { background: $net-twitter;   }
+
+  // Reduce opacity for non-published posts
+  &.status-chip-draft     { opacity: 0.65; }
+  &.status-chip-approved  { opacity: 0.85; }
+  &.status-chip-rejected  { opacity: 0.45; text-decoration: line-through; }
+}
+
+.month-chip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 90px;
+}
+
+.month-more-badge {
+  font-size: 0.65rem;
+  color: #6366f1;
+  font-weight: 700;
+  padding: 0.05rem 0.3rem;
+  background: #eef2ff;
+  border-radius: 10px;
+  align-self: flex-start;
+}

@@ -2,7 +2,8 @@
 
   <!-- Toolbar -->
   <div class="cal-toolbar">
-    <div class="cal-nav">
+    <!-- Navegación semana/mes -->
+    <div class="cal-nav" *ngIf="viewMode === 'week'">
       <button class="btn btn-sm btn-outline-secondary" (click)="prevWeek()">
         <i class="bi bi-chevron-left"></i>
       </button>
@@ -12,9 +13,32 @@
       </button>
       <span class="week-label">{{ weekLabel() }}</span>
     </div>
+    <div class="cal-nav" *ngIf="viewMode === 'month'">
+      <button class="btn btn-sm btn-outline-secondary" (click)="prevMonth()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <button class="btn btn-sm btn-outline-secondary" (click)="todayMonth()">Hoy</button>
+      <button class="btn btn-sm btn-outline-secondary" (click)="nextMonth()">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+      <span class="week-label">{{ monthLabel }}</span>
+    </div>
 
     <div class="cal-filters">
-      <select class="form-select form-select-sm" [(ngModel)]="networkFilter" (change)="load()">
+      <!-- Toggle semana / mes -->
+      <div class="view-toggle btn-group" role="group">
+        <button class="btn btn-sm" [class.btn-secondary]="viewMode === 'week'" [class.btn-outline-secondary]="viewMode !== 'week'"
+                (click)="viewMode !== 'week' ? switchToWeek() : null" title="Vista semanal">
+          <i class="bi bi-calendar-week"></i>
+        </button>
+        <button class="btn btn-sm" [class.btn-secondary]="viewMode === 'month'" [class.btn-outline-secondary]="viewMode !== 'month'"
+                (click)="viewMode !== 'month' ? switchToMonth() : null" title="Vista mensual">
+          <i class="bi bi-calendar-month"></i>
+        </button>
+      </div>
+
+      <select class="form-select form-select-sm" [(ngModel)]="networkFilter"
+              (change)="viewMode === 'week' ? load() : loadMonth()">
         <option value="">Todas las redes</option>
         <option value="instagram">Instagram</option>
         <option value="facebook">Facebook</option>
@@ -22,27 +46,29 @@
         <option value="twitter">Twitter/X</option>
       </select>
 
-      <div class="zoom-controls btn-group" role="group">
-        <button class="btn btn-sm btn-outline-secondary" (click)="zoomOut()" [disabled]="!canZoomOut" title="Reducir vista">
-          <i class="bi bi-dash-square"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-secondary zoom-label" disabled>
-          <i class="bi" [ngClass]="{
-            'bi-layout-three-columns': zoom === 'compact',
-            'bi-grid-3x3':            zoom === 'normal',
-            'bi-arrows-expand':       zoom === 'large'
-          }"></i>
-        </button>
-        <button class="btn btn-sm btn-outline-secondary" (click)="zoomIn()" [disabled]="!canZoomIn" title="Ampliar vista">
-          <i class="bi bi-plus-square"></i>
-        </button>
-      </div>
+      <ng-container *ngIf="viewMode === 'week'">
+        <div class="zoom-controls btn-group" role="group">
+          <button class="btn btn-sm btn-outline-secondary" (click)="zoomOut()" [disabled]="!canZoomOut" title="Reducir vista">
+            <i class="bi bi-dash-square"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-secondary zoom-label" disabled>
+            <i class="bi" [ngClass]="{
+              'bi-layout-three-columns': zoom === 'compact',
+              'bi-grid-3x3':            zoom === 'normal',
+              'bi-arrows-expand':       zoom === 'large'
+            }"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-secondary" (click)="zoomIn()" [disabled]="!canZoomIn" title="Ampliar vista">
+            <i class="bi bi-plus-square"></i>
+          </button>
+        </div>
 
-      <button class="btn btn-sm btn-primary" (click)="fillWeekWithAI()" [disabled]="fillLoading">
-        <span *ngIf="fillLoading" class="spinner-border spinner-border-sm me-1"></span>
-        <i class="bi bi-magic" *ngIf="!fillLoading"></i>
-        <span class="fill-label">Rellenar con IA</span>
-      </button>
+        <button class="btn btn-sm btn-primary" (click)="fillWeekWithAI()" [disabled]="fillLoading">
+          <span *ngIf="fillLoading" class="spinner-border spinner-border-sm me-1"></span>
+          <i class="bi bi-magic" *ngIf="!fillLoading"></i>
+          <span class="fill-label">Rellenar con IA</span>
+        </button>
+      </ng-container>
 
       <button class="btn btn-sm btn-monthly-plan" (click)="showMonthlyWizard = true" title="Generar plan de contenido para el mes">
         <i class="bi bi-calendar2-range"></i>
@@ -58,12 +84,64 @@
     (planDone)="onPlanDone($event)">
   </app-monthly-plan-wizard>
 
-  <div *ngIf="loading" class="text-center p-4">
+  <!-- ── VISTA MENSUAL ──────────────────────────────────────────────────────── -->
+  <ng-container *ngIf="viewMode === 'month'">
+    <div *ngIf="monthLoading" class="text-center p-4">
+      <div class="spinner-border text-primary"></div>
+    </div>
+
+    <div class="month-grid" *ngIf="!monthLoading">
+      <!-- Cabeceras días -->
+      <div class="month-day-header" *ngFor="let n of DAY_NAMES_SHORT">{{ n }}</div>
+
+      <!-- Semanas -->
+      <ng-container *ngFor="let week of monthGrid">
+        <div class="month-cell"
+             *ngFor="let day of week"
+             [class.other-month]="!isCurrentMonth(day)"
+             [class.today]="isToday(day)"
+             (click)="goToWeekOf(day)">
+          <span class="month-cell-date">{{ day.getDate() }}</span>
+          <div class="month-cell-posts">
+            <ng-container *ngFor="let post of getMonthDayPosts(day).slice(0, 3)">
+              <span class="month-post-chip"
+                    [ngClass]="'net-' + post.network + ' status-chip-' + post.status.toLowerCase()"
+                    [title]="post.network + ': ' + (post.text_content | slice:0:60)">
+                <i class="bi" [ngClass]="networkIcon(post.network)" style="font-size:0.6rem"></i>
+                <span class="month-chip-text">{{ post.text_content | slice:0:20 }}</span>
+              </span>
+            </ng-container>
+            <span class="month-more-badge"
+                  *ngIf="getMonthDayPosts(day).length > 3">
+              +{{ getMonthDayPosts(day).length - 3 }}
+            </span>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- Leyenda -->
+    <div class="cal-legend">
+      <span class="legend-section-label">Estado:</span>
+      <span class="legend-item"><span class="legend-chip status-draft"></span><span>Borrador</span></span>
+      <span class="legend-item"><span class="legend-chip status-approved"></span><span>Aprobado</span></span>
+      <span class="legend-item"><span class="legend-chip status-published"></span><span>Publicado</span></span>
+      <span class="legend-sep">|</span>
+      <span class="legend-section-label">Red:</span>
+      <span class="legend-item"><span class="legend-chip stripe-instagram"></span><span>Instagram</span></span>
+      <span class="legend-item"><span class="legend-chip stripe-facebook"></span><span>Facebook</span></span>
+      <span class="legend-item"><span class="legend-chip stripe-linkedin"></span><span>LinkedIn</span></span>
+      <span class="legend-item"><span class="legend-chip stripe-twitter"></span><span>Twitter/X</span></span>
+    </div>
+  </ng-container>
+
+  <!-- ── VISTA SEMANAL ─────────────────────────────────────────────────────── -->
+  <div *ngIf="viewMode === 'week' && loading" class="text-center p-4">
     <div class="spinner-border text-primary"></div>
   </div>
 
   <!-- Grid -->
-  <div class="cal-grid" *ngIf="!loading"
+  <div class="cal-grid" *ngIf="viewMode === 'week' && !loading"
        [class.zoom-compact]="zoom === 'compact'"
        [class.zoom-large]="zoom === 'large'"
        [class.is-dragging]="!!draggedPost">
@@ -113,8 +191,8 @@
     </ng-container>
   </div>
 
-  <!-- Leyenda -->
-  <div class="cal-legend">
+  <!-- Leyenda (vista semanal) -->
+  <div class="cal-legend" *ngIf="viewMode === 'week'">
     <span class="legend-section-label">Estado:</span>
     <span class="legend-item">
       <span class="legend-chip status-draft"></span>

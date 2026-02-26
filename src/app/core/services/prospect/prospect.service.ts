@@ -332,6 +332,16 @@ export class ProspectService {
     ).pipe(timeout(90_000));
   }
 
+  getPostMetrics(postId: number): Observable<any> {
+    return this.http.get<any>(`${this.base}social/posts/${postId}/metrics`);
+  }
+
+  adaptForNetworks(text: string, sourceNetwork: string, networks: string[]): Observable<any> {
+    return this.http.post<any>(`${this.base}social/adapt-for-networks`, {
+      text, source_network: sourceNetwork, networks,
+    }).pipe(timeout(120_000));
+  }
+
   generateMonthlyPlan(payload: {
     start_date:    string;
     end_date:      string;

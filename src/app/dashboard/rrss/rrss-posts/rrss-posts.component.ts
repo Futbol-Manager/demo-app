@@ -31,7 +31,24 @@ export class RrssPostsComponent implements OnInit {
   showEditorModal = false;
   editingPost: any = null;
 
+  // Métricas: post_id → datos
+  metrics: Record<number, any> = {};
+  loadingMetrics: Record<number, boolean> = {};
+
   constructor(private prospect: ProspectService) {}
+
+  loadMetrics(post: any): void {
+    if (post.network !== 'twitter' || !post.external_post_id) return;
+    if (this.metrics[post.post_id] || this.loadingMetrics[post.post_id]) return;
+    this.loadingMetrics[post.post_id] = true;
+    this.prospect.getPostMetrics(post.post_id).subscribe({
+      next: (res: any) => {
+        this.loadingMetrics[post.post_id] = false;
+        if (res.ok && res.metrics) this.metrics[post.post_id] = res.metrics;
+      },
+      error: () => { this.loadingMetrics[post.post_id] = false; },
+    });
+  }
 
   ngOnInit(): void {
     this.load();
@@ -62,7 +79,13 @@ export class RrssPostsComponent implements OnInit {
         return {
           network:   net,
           label:     NETWORK_LABELS[net] || net,
-          posts:     this.posts.filter(p => p.network === net),
+          posts:     this.posts
+            .filter(p => p.network === net)
+            .sort((a, b) => {
+              const da = a.scheduled_at ? new Date(a.scheduled_at).getTime() : Infinity;
+              const db = b.scheduled_at ? new Date(b.scheduled_at).getTime() : Infinity;
+              return da - db;
+            }),
           collapsed: existing ? existing.collapsed : false,
         };
       })

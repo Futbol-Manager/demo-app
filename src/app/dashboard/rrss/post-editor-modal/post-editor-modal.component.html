@@ -191,6 +191,48 @@
         </button>
       </div>
 
+      <!-- Botón Adaptar para todas las redes -->
+      <div class="adapt-btn-row">
+        <button class="btn btn-sm btn-adapt" (click)="adaptForNetworks()"
+          [disabled]="isAdapting || (!textContent.trim() && !isThread)">
+          <span *ngIf="isAdapting" class="spinner-border spinner-border-sm me-1"></span>
+          <i class="bi bi-arrows-fullscreen me-1" *ngIf="!isAdapting"></i>
+          {{ isAdapting ? 'Adaptando…' : 'Adaptar para todas las redes' }}
+        </button>
+        <button class="btn btn-xs btn-ghost" *ngIf="showAdaptPanel" (click)="showAdaptPanel = false" title="Cerrar panel">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+
+      <!-- Panel de versiones adaptadas -->
+      <div class="adapt-panel" *ngIf="showAdaptPanel">
+        <div class="adapt-loading" *ngIf="isAdapting">
+          <div class="spinner-border spinner-border-sm text-primary me-2"></div>
+          Generando versiones para cada red…
+        </div>
+        <div class="adapt-error" *ngIf="adaptError && !isAdapting">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ adaptError }}
+        </div>
+        <div class="adapt-versions" *ngIf="!isAdapting && adaptVersions.length > 0">
+          <div class="adapt-version-card" *ngFor="let v of adaptVersions">
+            <div class="adapt-version-header">
+              <span class="adapt-net-badge" [ngClass]="'net-' + v.network">
+                <i class="bi" [ngClass]="networkIcon(v.network)"></i>
+                {{ v.label }}
+              </span>
+              <span class="adapt-original-tag" *ngIf="v.is_original">Original</span>
+              <span class="adapt-chars">{{ v.text.length }} chars</span>
+              <button class="btn btn-xs btn-outline-primary ms-auto"
+                (click)="useAdaptedVersion(v)"
+                title="Usar esta versión y cambiar a esta red">
+                <i class="bi bi-check2 me-1"></i>Usar
+              </button>
+            </div>
+            <p class="adapt-version-text">{{ v.text | slice:0:200 }}{{ v.text.length > 200 ? '…' : '' }}</p>
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Columna derecha: imagen + preview -->

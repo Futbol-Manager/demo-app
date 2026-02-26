@@ -79,6 +79,35 @@ function toIsoLocal(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 }
 
+// ── Month-view helpers ──────────────────────────────────────────────────────
+
+const FULL_MONTH_NAMES_ES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+
+/** Returns all weeks (rows of 7 days) needed to display a month. */
+function monthGrid(year: number, month: number): Date[][] {
+  const first = new Date(year, month, 1);
+  // Align to Monday
+  const dow = first.getDay(); // 0=Sun
+  const startOffset = dow === 0 ? -6 : 1 - dow;
+  const gridStart = new Date(first);
+  gridStart.setDate(first.getDate() + startOffset);
+
+  const weeks: Date[][] = [];
+  let cur = new Date(gridStart);
+  while (weeks.length < 6) {
+    const week: Date[] = [];
+    for (let i = 0; i < 7; i++) {
+      week.push(new Date(cur));
+      cur.setDate(cur.getDate() + 1);
+    }
+    weeks.push(week);
+    // Stop when we've covered the whole month (at least 4 weeks, stop once we're past it)
+    if (weeks.length >= 4 && cur.getMonth() !== month) break;
+  }
+  return weeks;
+}
+
 @Component({
   selector: 'app-rrss-calendar',
   templateUrl: './rrss-calendar.component.html',
@@ -100,6 +129,95 @@ export class RrssCalendarComponent implements OnInit, OnDestroy {
   editorPresetScheduledAt: string | null = null;
 
   showMonthlyWizard = false;
+
+  // ── Vista mensual ────────────────────────────────────────────────────────
+  viewMode: 'week' | 'month' = 'week';
+  monthYear: number  = new Date().getFullYear();
+  monthMonth: number = new Date().getMonth(); // 0-indexed
+  monthGrid: Date[][] = [];
+  monthPosts: CalendarPost[] = [];
+  monthLoading = false;
+
+  readonly DAY_NAMES_SHORT = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+  readonly FULL_MONTH_NAMES = FULL_MONTH_NAMES_ES;
+
+  get monthLabel(): string {
+    return `${FULL_MONTH_NAMES_ES[this.monthMonth]} ${this.monthYear}`;
+  }
+
+  switchToMonth(): void {
+    this.viewMode   = 'month';
+    this.monthYear  = this.currentWeekStart.getFullYear();
+    this.monthMonth = this.currentWeekStart.getMonth();
+    this.buildMonthGrid();
+    this.loadMonth();
+  }
+
+  switchToWeek(): void {
+    this.viewMode = 'week';
+  }
+
+  buildMonthGrid(): void {
+    this.monthGrid = monthGrid(this.monthYear, this.monthMonth);
+  }
+
+  prevMonth(): void {
+    this.monthMonth--;
+    if (this.monthMonth < 0) { this.monthMonth = 11; this.monthYear--; }
+    this.buildMonthGrid();
+    this.loadMonth();
+  }
+
+  nextMonth(): void {
+    this.monthMonth++;
+    if (this.monthMonth > 11) { this.monthMonth = 0; this.monthYear++; }
+    this.buildMonthGrid();
+    this.loadMonth();
+  }
+
+  todayMonth(): void {
+    this.monthYear  = new Date().getFullYear();
+    this.monthMonth = new Date().getMonth();
+    this.buildMonthGrid();
+    this.loadMonth();
+  }
+
+  loadMonth(): void {
+    const first = new Date(this.monthYear, this.monthMonth, 1);
+    const last  = new Date(this.monthYear, this.monthMonth + 1, 0);
+    last.setHours(23, 59, 59, 0);
+    const start = toIsoLocal(first);
+    const end   = toIsoLocal(last);
+    this.monthLoading = true;
+    this.prospect.getCalendarPosts(start, end).subscribe({
+      next: posts => {
+        this.monthPosts  = posts.filter(p => !this.networkFilter || p.network === this.networkFilter);
+        this.monthLoading = false;
+      },
+      error: () => { this.monthLoading = false; },
+    });
+  }
+
+  /** Returns posts that fall on a specific calendar day (month view). */
+  getMonthDayPosts(day: Date): CalendarPost[] {
+    return this.monthPosts.filter(p => {
+      if (!p.scheduled_at) return false;
+      const d = new Date(p.scheduled_at);
+      return isSameDay(d, day);
+    });
+  }
+
+  isCurrentMonth(day: Date): boolean {
+    return day.getMonth() === this.monthMonth && day.getFullYear() === this.monthYear;
+  }
+
+  /** Jump to week view centered on the clicked day */
+  goToWeekOf(day: Date): void {
+    this.currentWeekStart = startOfISOWeek(day);
+    this.viewMode = 'week';
+    this.buildGrid();
+    this.load();
+  }
 
   zoom: ZoomLevel = 'normal';
   readonly zoomLevels: ZoomLevel[] = ['compact', 'normal', 'large'];

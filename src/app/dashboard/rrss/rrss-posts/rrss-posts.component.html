@@ -53,7 +53,8 @@
       </div>
 
       <div class="group-row" *ngIf="!group.collapsed">
-        <div class="post-card" *ngFor="let post of group.posts">
+        <div class="post-card" *ngFor="let post of group.posts"
+             (mouseenter)="post.status === 'PUBLISHED' ? loadMetrics(post) : null">
           <div class="post-card-top"></div>
           <div class="post-card-body">
             <div class="post-card-header">
@@ -73,6 +74,32 @@
 
             <div *ngIf="post.image_url" class="post-image">
               <img [src]="post.image_url" alt="Imagen">
+            </div>
+
+            <!-- Métricas Twitter -->
+            <div *ngIf="post.status === 'PUBLISHED' && post.network === 'twitter'" class="post-metrics">
+              <ng-container *ngIf="loadingMetrics[post.post_id]">
+                <div class="spinner-border spinner-border-sm text-secondary me-1"></div>
+                <span class="text-muted small">Cargando métricas…</span>
+              </ng-container>
+              <ng-container *ngIf="metrics[post.post_id] as m">
+                <span class="metric-item" title="Impresiones">
+                  <i class="bi bi-eye"></i> {{ m.impressions | number }}
+                </span>
+                <span class="metric-item" title="Likes">
+                  <i class="bi bi-heart"></i> {{ m.likes }}
+                </span>
+                <span class="metric-item" title="Retweets">
+                  <i class="bi bi-repeat"></i> {{ m.retweets }}
+                </span>
+                <span class="metric-item" title="Respuestas">
+                  <i class="bi bi-chat"></i> {{ m.replies }}
+                </span>
+                <button class="btn btn-xs btn-link ms-auto p-0" title="Actualizar métricas"
+                        (click)="metrics[post.post_id] = null; loadMetrics(post)">
+                  <i class="bi bi-arrow-clockwise"></i>
+                </button>
+              </ng-container>
             </div>
 
             <div class="post-actions">
