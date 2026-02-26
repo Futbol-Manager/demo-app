@@ -1,0 +1,133 @@
+// ── Design tokens ─────────────────────────────────────────────────────────────
+$primary:    #4f46e5;
+$primary-light: #e0e7ff;
+$surface:    #ffffff;
+$bg:         #f8fafc;
+$border:     #e2e8f0;
+$text:       #0f172a;
+$muted:      #64748b;
+
+// ── Shell ─────────────────────────────────────────────────────────────────────
+
+.rrss-shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: $bg;
+}
+
+// ── Header ────────────────────────────────────────────────────────────────────
+
+.rrss-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.75rem 0;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.rrss-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.rrss-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, $primary, #7c3aed);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.rrss-title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 0.1rem;
+  line-height: 1.2;
+}
+
+.rrss-subtitle {
+  font-size: 0.8rem;
+  color: $muted;
+  margin: 0;
+}
+
+.rrss-header-nets {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.net-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.85rem;
+  opacity: 0.85;
+  transition: opacity 0.15s, transform 0.15s;
+  cursor: default;
+
+  &:hover { opacity: 1; transform: scale(1.1); }
+}
+
+// ── Tabs ──────────────────────────────────────────────────────────────────────
+
+.rrss-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  padding: 0 1.75rem;
+  margin-top: 1rem;
+  border-bottom: 2px solid $border;
+  position: relative;
+}
+
+.rrss-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.65rem 1.1rem;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $muted;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+
+  i { font-size: 0.9rem; transition: color 0.2s; }
+
+  &:hover { color: $primary; }
+
+  &.active {
+    color: $primary;
+    border-bottom-color: $primary;
+    font-weight: 600;
+
+    i { color: $primary; }
+  }
+}
+
+// ── Tab content ───────────────────────────────────────────────────────────────
+
+.rrss-tab-content {
+  flex: 1;
+  overflow: auto;
+  padding: 1.25rem 1.75rem;
+  min-height: 0;
+}

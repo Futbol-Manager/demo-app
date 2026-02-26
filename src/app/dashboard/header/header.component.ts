@@ -541,6 +541,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.router.navigate(['/dashboard/admin-prospector']);
   }
 
+  goToRrss(): void {
+    this.router.navigate(['/dashboard/rrss']);
+  }
+
   ngAfterViewInit() {
     document
       .querySelectorAll('[data-bs-toggle="dropdown"]')

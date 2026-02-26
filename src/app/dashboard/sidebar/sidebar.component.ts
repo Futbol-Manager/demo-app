@@ -345,6 +345,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'charts', label: 'SIDEBAR.CHARTS', icon: 'bi-graph-up-arrow', route: '/dashboard/admin-charts' },
         { id: 'sugerencias', label: 'SIDEBAR.SUGGESTIONS', icon: 'bi-chat-dots', route: '/dashboard/admin-sugerencias' },
         { id: 'prospector', label: 'Prospector', icon: 'bi-bullseye', route: '/dashboard/admin-prospector' },
+        { id: 'rrss', label: 'Redes Sociales', icon: 'bi-calendar3', route: '/dashboard/rrss' },
       ];
       this.sections.push({ id: 'admin', title: 'SIDEBAR.SECTION_ADMIN', items: adminItems, visible: true });
     }

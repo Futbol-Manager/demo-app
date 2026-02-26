@@ -1293,3 +1293,35 @@
   .email-stats-bar { gap: 0.5rem; }
   .prompt-guide-label { min-width: 60px; font-size: 0.62rem; }
 }
+
+/* ===== RRSS REDIRECT BANNER ===== */
+.rrss-redirect-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+  background: linear-gradient(135deg, #f0f4ff, #e8e0ff);
+  border: 1px solid #c7d2fe;
+  border-radius: 14px;
+  padding: 2rem 2.5rem;
+  margin: 1rem 0;
+}
+
+.rrss-redirect-icon {
+  font-size: 3rem;
+  color: #4f46e5;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.rrss-redirect-body {
+  h5 {
+    font-weight: 700;
+    color: #1e1b4b;
+    margin-bottom: 0.5rem;
+  }
+  p {
+    color: #4338ca;
+    margin-bottom: 1rem;
+    max-width: 520px;
+  }
+}

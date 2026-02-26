@@ -1,0 +1,152 @@
+<div class="calendar-root">
+
+  <!-- Toolbar -->
+  <div class="cal-toolbar">
+    <div class="cal-nav">
+      <button class="btn btn-sm btn-outline-secondary" (click)="prevWeek()">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <button class="btn btn-sm btn-outline-secondary" (click)="goToday()">Hoy</button>
+      <button class="btn btn-sm btn-outline-secondary" (click)="nextWeek()">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+      <span class="week-label">{{ weekLabel() }}</span>
+    </div>
+
+    <div class="cal-filters">
+      <select class="form-select form-select-sm" [(ngModel)]="networkFilter" (change)="load()">
+        <option value="">Todas las redes</option>
+        <option value="instagram">Instagram</option>
+        <option value="facebook">Facebook</option>
+        <option value="linkedin">LinkedIn</option>
+        <option value="twitter">Twitter/X</option>
+      </select>
+
+      <div class="zoom-controls btn-group" role="group">
+        <button class="btn btn-sm btn-outline-secondary" (click)="zoomOut()" [disabled]="!canZoomOut" title="Reducir vista">
+          <i class="bi bi-dash-square"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-secondary zoom-label" disabled>
+          <i class="bi" [ngClass]="{
+            'bi-layout-three-columns': zoom === 'compact',
+            'bi-grid-3x3':            zoom === 'normal',
+            'bi-arrows-expand':       zoom === 'large'
+          }"></i>
+        </button>
+        <button class="btn btn-sm btn-outline-secondary" (click)="zoomIn()" [disabled]="!canZoomIn" title="Ampliar vista">
+          <i class="bi bi-plus-square"></i>
+        </button>
+      </div>
+
+      <button class="btn btn-sm btn-primary" (click)="fillWeekWithAI()" [disabled]="fillLoading">
+        <span *ngIf="fillLoading" class="spinner-border spinner-border-sm me-1"></span>
+        <i class="bi bi-magic" *ngIf="!fillLoading"></i>
+        <span class="fill-label">Rellenar con IA</span>
+      </button>
+
+      <button class="btn btn-sm btn-monthly-plan" (click)="showMonthlyWizard = true" title="Generar plan de contenido para el mes">
+        <i class="bi bi-calendar2-range"></i>
+        <span class="fill-label">Plan mensual</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Monthly plan wizard -->
+  <app-monthly-plan-wizard
+    *ngIf="showMonthlyWizard"
+    (closed)="showMonthlyWizard = false"
+    (planDone)="onPlanDone($event)">
+  </app-monthly-plan-wizard>
+
+  <div *ngIf="loading" class="text-center p-4">
+    <div class="spinner-border text-primary"></div>
+  </div>
+
+  <!-- Grid -->
+  <div class="cal-grid" *ngIf="!loading"
+       [class.zoom-compact]="zoom === 'compact'"
+       [class.zoom-large]="zoom === 'large'"
+       [class.is-dragging]="!!draggedPost">
+
+    <!-- Header -->
+    <div class="cal-corner"></div>
+    <div class="cal-day-header" *ngFor="let day of days; trackBy: trackByDay" [class.today]="isToday(day)">
+      {{ formatDay(day) | titlecase }}
+    </div>
+
+    <!-- Hour rows -->
+    <ng-container *ngFor="let hour of hours; trackBy: trackByHour">
+      <div class="cal-hour-label" [style.height.px]="cellHeight" [class.current-hour-label]="isCurrentHour(hour)">
+        {{ formatHour(hour) }}
+      </div>
+
+      <div class="cal-cell"
+           *ngFor="let day of days; trackBy: trackByDay"
+           [class.today]="isToday(day)"
+           [class.drag-over]="isDragOver(day, hour)"
+           [style.minHeight.px]="cellHeight"
+           (click)="openSlot(day, hour)"
+           (dragover)="onDragOver(day, hour, $event)"
+           (dragleave)="onDragLeave(day, hour, $event)"
+           (drop)="onDrop(day, hour, $event)">
+
+        <!-- Línea de hora actual -->
+        <div class="time-now-line" *ngIf="isCurrentHour(hour) && isToday(day)" [style.top.%]="nowMinutePct">
+          <span class="time-now-dot"></span>
+        </div>
+
+        <!-- Posts en esta celda -->
+        <div *ngFor="let post of getPostsForSlot(day, hour); trackBy: trackByPost"
+             [class]="postClass(post)"
+             [class.is-dragged]="draggedPost?.post_id === post.post_id"
+             draggable="true"
+             (dragstart)="onDragStart(post, $event)"
+             (dragend)="onDragEnd($event)"
+             (click)="openPost(post, $event)"
+             [title]="post.network + ' — ' + statusLabel(post.status) + ': ' + (post.text_content | slice:0:80)">
+          <span class="net-stripe" [ngClass]="'stripe-' + post.network"></span>
+          <i class="bi" [ngClass]="networkIcon(post.network)"></i>
+          <span class="thread-pip" *ngIf="post.is_thread" title="Hilo de tweets">🧵</span>
+          <span class="post-preview" *ngIf="!isCompact">{{ post.text_content | slice:0:35 }}…</span>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <!-- Leyenda -->
+  <div class="cal-legend">
+    <span class="legend-section-label">Estado:</span>
+    <span class="legend-item">
+      <span class="legend-chip status-draft"></span>
+      <span>Borrador</span>
+    </span>
+    <span class="legend-item">
+      <span class="legend-chip status-approved"></span>
+      <span>Aprobado</span>
+    </span>
+    <span class="legend-item">
+      <span class="legend-chip status-published"></span>
+      <span>Publicado</span>
+    </span>
+    <span class="legend-item">
+      <span class="legend-chip status-rejected"></span>
+      <span>Rechazado</span>
+    </span>
+    <span class="legend-sep">|</span>
+    <span class="legend-section-label">Red:</span>
+    <span class="legend-item"><span class="legend-chip stripe-instagram"></span><span>Instagram</span></span>
+    <span class="legend-item"><span class="legend-chip stripe-facebook"></span><span>Facebook</span></span>
+    <span class="legend-item"><span class="legend-chip stripe-linkedin"></span><span>LinkedIn</span></span>
+    <span class="legend-item"><span class="legend-chip stripe-twitter"></span><span>Twitter/X</span></span>
+  </div>
+</div>
+
+<!-- Editor modal -->
+<app-post-editor-modal
+  *ngIf="showEditorModal"
+  [post]="editorPost"
+  [presetNetwork]="editorPresetNetwork"
+  [presetScheduledAt]="editorPresetScheduledAt"
+  (saved)="onEditorSaved($event)"
+  (closed)="onEditorClosed()">
+</app-post-editor-modal>

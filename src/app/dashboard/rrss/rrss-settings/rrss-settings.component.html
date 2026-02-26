@@ -1,0 +1,335 @@
+<div class="settings-container">
+
+  <!-- ── Section header ──────────────────────────────────────────────────── -->
+  <div class="settings-header">
+    <h4><i class="bi bi-gear-fill me-2"></i>Configuración de Redes Sociales</h4>
+    <p class="text-muted">Gestiona modelos de IA, conexiones OAuth y claves de proveedor.</p>
+  </div>
+
+  <!-- ── Section tabs ─────────────────────────────────────────────────────── -->
+  <div class="section-tabs">
+    <button class="section-tab" [class.active]="activeSection === 'redes'" (click)="activeSection = 'redes'">
+      <i class="bi bi-sliders2"></i> Redes &amp; IA
+    </button>
+    <button class="section-tab" [class.active]="activeSection === 'conexiones'" (click)="activeSection = 'conexiones'">
+      <i class="bi bi-plug"></i> Conexiones
+    </button>
+    <button class="section-tab" [class.active]="activeSection === 'apikeys'" (click)="activeSection = 'apikeys'">
+      <i class="bi bi-key"></i> API Keys
+    </button>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       SECCIÓN 1: Redes & IA
+  ════════════════════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="activeSection === 'redes'">
+
+    <ul class="nav nav-pills network-tabs">
+      <li class="nav-item" *ngFor="let net of networks">
+        <button class="nav-link" [class.active]="activeNetwork === net" (click)="activeNetwork = net">
+          <i class="bi" [ngClass]="networkIcon(net)"></i>
+          {{ net | titlecase }}
+        </button>
+      </li>
+    </ul>
+
+    <div class="network-form" *ngFor="let net of networks" [hidden]="activeNetwork !== net">
+
+      <!-- ── Modelos de IA ────────────────────────────────────────────────── -->
+      <div class="ai-models-card">
+        <div class="ai-models-title">
+          <i class="bi bi-cpu"></i> Modelos de IA para esta red
+        </div>
+        <div class="ai-models-grid">
+          <div class="form-section">
+            <label class="form-label fw-semibold">
+              Modelo de texto
+              <span class="model-badge">
+                <i class="bi bi-chat-left-text"></i>
+                {{ textModelLabel(configs[net].text_ai_model) }}
+              </span>
+            </label>
+            <select class="form-select form-select-sm" [(ngModel)]="configs[net].text_ai_model">
+              <ng-container *ngFor="let group of textModelsByProvider">
+                <optgroup [label]="group.provider">
+                  <option *ngFor="let m of group.models" [value]="m.key">{{ m.label }}</option>
+                </optgroup>
+              </ng-container>
+              <ng-container *ngIf="textModels.length === 0">
+                <optgroup label="Anthropic">
+                  <option value="claude-sonnet-4-6">Claude Sonnet 4.6 ⭐ (recomendado)</option>
+                  <option value="claude-opus-4-5">Claude Opus 4.5 (máxima calidad)</option>
+                  <option value="claude-3-5-haiku-latest">Claude 3.5 Haiku (rápido)</option>
+                </optgroup>
+                <optgroup label="OpenAI">
+                  <option value="gpt-4.1">GPT-4.1</option>
+                  <option value="gpt-4.1-mini">GPT-4.1 Mini</option>
+                  <option value="gpt-4o">GPT-4o</option>
+                  <option value="gpt-4o-mini">GPT-4o Mini (económico)</option>
+                </optgroup>
+              </ng-container>
+            </select>
+          </div>
+
+          <!-- Imagen: solo para instagram / facebook -->
+          <div class="form-section" *ngIf="supportsImage(net)">
+            <label class="form-label fw-semibold">
+              Modelo de imagen
+              <span class="model-badge model-badge--image">
+                <i class="bi bi-image"></i>
+                {{ imageModelLabel(configs[net].image_ai_model) }}
+              </span>
+            </label>
+            <select class="form-select form-select-sm" [(ngModel)]="configs[net].image_ai_model">
+              <option *ngFor="let m of imageModels" [value]="m.key">{{ m.label }}</option>
+              <ng-container *ngIf="imageModels.length === 0">
+                <option value="dalle3">DALL-E 3 ⭐ (recomendado)</option>
+                <option value="flux-pro">Flux 1.1 Pro (fotorrealista)</option>
+                <option value="ideogram">Ideogram v3 (infografías)</option>
+                <option value="recraft">Recraft v3 (diseño gráfico)</option>
+                <option value="flux-schnell">Flux Schnell (rápido/barato)</option>
+              </ng-container>
+            </select>
+          </div>
+
+          <!-- Twitter/LinkedIn: mensaje informativo sobre imágenes -->
+          <div class="no-image-note" *ngIf="!supportsImage(net)">
+            <i class="bi bi-info-circle"></i>
+            {{ net === 'twitter' ? 'Twitter/X no genera imágenes automáticamente (el modelo de imagen no aplica).' :
+               'LinkedIn no genera imágenes automáticamente.' }}
+          </div>
+        </div>
+
+        <!-- Toggle incluir imagen -->
+        <div class="include-image-toggle" *ngIf="supportsImage(net)">
+          <label class="toggle-label">
+            <span class="toggle-text">
+              <i class="bi bi-image me-1"></i>
+              Generar imagen automáticamente al crear posts
+            </span>
+            <div class="toggle-switch" [class.on]="configs[net].include_image"
+              (click)="configs[net].include_image = configs[net].include_image ? 0 : 1">
+              <div class="toggle-thumb"></div>
+            </div>
+          </label>
+          <span class="toggle-hint" *ngIf="configs[net].include_image">
+            <i class="bi bi-check-circle-fill text-success"></i> Se generará imagen con <strong>{{ imageModelLabel(configs[net].image_ai_model) }}</strong>
+          </span>
+          <span class="toggle-hint toggle-hint--off" *ngIf="!configs[net].include_image">
+            <i class="bi bi-x-circle text-muted"></i> Solo texto, sin imagen generada
+          </span>
+        </div>
+      </div>
+
+      <!-- ── Contenido ────────────────────────────────────────────────────── -->
+      <div class="form-section">
+        <label class="form-label fw-semibold">Temas a tratar</label>
+        <div class="chips-input-row">
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="topicInputs[net]"
+            placeholder="Añadir tema..." (keydown)="onTopicInputKeydown($event, net)">
+          <button class="btn btn-sm btn-outline-primary" (click)="addTopic(net)">
+            <i class="bi bi-plus"></i>
+          </button>
+        </div>
+        <div class="preset-row">
+          <span class="text-muted small me-1">Sugerencias:</span>
+          <button class="btn btn-xs btn-outline-secondary" *ngFor="let p of presetTopics" (click)="addTopic(net, p)">
+            {{ p }}
+          </button>
+        </div>
+        <div class="chips-container">
+          <span class="chip" *ngFor="let t of getTopics(net)">
+            {{ t }}
+            <button class="chip-remove" (click)="removeTopic(net, t)">&times;</button>
+          </span>
+          <span class="text-muted small" *ngIf="getTopics(net).length === 0">Sin temas definidos</span>
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div class="form-section">
+          <label class="form-label fw-semibold">Tono</label>
+          <select class="form-select form-select-sm" [(ngModel)]="configs[net].tone">
+            <option *ngFor="let t of tones" [value]="t">{{ t | titlecase }}</option>
+          </select>
+        </div>
+        <div class="form-section">
+          <label class="form-label fw-semibold">Posts por día objetivo</label>
+          <input type="number" min="1" max="5" class="form-control form-control-sm"
+            [(ngModel)]="configs[net].post_frequency">
+        </div>
+      </div>
+
+      <div class="form-section">
+        <label class="form-label fw-semibold">Audiencia objetivo</label>
+        <textarea class="form-control form-control-sm" rows="3" [(ngModel)]="configs[net].audience"
+          placeholder="Describe el lector tipo de esta red..."></textarea>
+      </div>
+
+      <div class="form-section">
+        <label class="form-label fw-semibold">Hashtags fijos</label>
+        <div class="chips-input-row">
+          <input type="text" class="form-control form-control-sm" [(ngModel)]="hashtagInputs[net]"
+            placeholder="#hashtag..." (keydown)="onHashtagInputKeydown($event, net)">
+          <button class="btn btn-sm btn-outline-primary" (click)="addHashtag(net)">
+            <i class="bi bi-plus"></i>
+          </button>
+        </div>
+        <div class="chips-container">
+          <span class="chip chip-hashtag" *ngFor="let h of getHashtags(net)">
+            {{ h }}
+            <button class="chip-remove" (click)="removeHashtag(net, h)">&times;</button>
+          </span>
+          <span class="text-muted small" *ngIf="getHashtags(net).length === 0">Sin hashtags definidos</span>
+        </div>
+      </div>
+
+      <div class="form-section">
+        <label class="form-label fw-semibold">Directrices adicionales para la IA</label>
+        <textarea class="form-control form-control-sm" rows="4" [(ngModel)]="configs[net].extra_instructions"
+          placeholder="Instrucciones adicionales que se añadirán al prompt del LLM al generar posts..."></textarea>
+      </div>
+
+      <div class="save-row">
+        <button class="btn btn-primary" (click)="save(net)" [disabled]="saving">
+          <span *ngIf="saving" class="spinner-border spinner-border-sm me-1"></span>
+          <i class="bi bi-check2" *ngIf="!saving"></i>
+          Guardar configuración
+        </button>
+        <span class="text-success saved-msg" *ngIf="savedNetwork === net">
+          <i class="bi bi-check-circle-fill"></i> Guardado
+        </span>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       SECCIÓN 2: Conexiones OAuth
+  ════════════════════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="activeSection === 'conexiones'">
+    <div class="section-intro">
+      <i class="bi bi-plug-fill section-intro-icon" style="color:#4f46e5"></i>
+      <div>
+        <strong>Conexiones de redes sociales</strong>
+        <p>Introduce los tokens OAuth para que Sphaira pueda publicar automáticamente en cada red.</p>
+      </div>
+    </div>
+
+    <div class="connection-group" *ngFor="let conn of socialConnections">
+      <div class="conn-header">
+        <span class="conn-badge" [style.background]="conn.color + '1a'" [style.color]="conn.color">
+          <i class="bi" [ngClass]="conn.icon"></i>
+          {{ conn.label }}
+        </span>
+        <span class="conn-status connected" *ngIf="isConnected(conn)">
+          <i class="bi bi-check-circle-fill"></i> Conectado
+        </span>
+        <span class="conn-status disconnected" *ngIf="!isConnected(conn)">
+          <i class="bi bi-exclamation-circle"></i> Sin configurar
+        </span>
+      </div>
+
+      <div class="conn-fields">
+        <div class="conn-field" *ngFor="let field of conn.fields; trackBy: trackByKey">
+          <div class="conn-field-meta">
+            <span class="conn-field-label">{{ field.label }}</span>
+            <span class="conn-field-status ok" *ngIf="tokenStatus[field.key]">
+              <i class="bi bi-shield-fill-check"></i> Guardado
+            </span>
+          </div>
+          <p class="conn-field-hint">{{ field.hint }}</p>
+          <div class="conn-field-input">
+            <div class="input-with-eye">
+              <input
+                [type]="(field.isSecret && !showToken[field.key]) ? 'password' : 'text'"
+                class="form-control form-control-sm"
+                [(ngModel)]="tokenValues[field.key]"
+                [placeholder]="tokenStatus[field.key] ? '••••••••••••••••' : 'Pega aquí el valor...'"
+              >
+              <button *ngIf="field.isSecret" class="eye-btn" (click)="showToken[field.key] = !showToken[field.key]">
+                <i class="bi" [ngClass]="showToken[field.key] ? 'bi-eye-slash' : 'bi-eye'"></i>
+              </button>
+            </div>
+            <button class="btn btn-sm btn-primary" (click)="saveToken(field.key)"
+              [disabled]="!tokenValues[field.key] || savingToken[field.key]">
+              <span *ngIf="savingToken[field.key]" class="spinner-border spinner-border-sm"></span>
+              <i *ngIf="!savingToken[field.key]" class="bi bi-floppy"></i>
+              Guardar
+            </button>
+            <button class="btn btn-sm btn-outline-danger" *ngIf="tokenStatus[field.key]"
+              (click)="revokeToken(field.key)" title="Eliminar token">
+              <i class="bi bi-trash3"></i>
+            </button>
+          </div>
+          <span class="saved-inline" *ngIf="savedToken[field.key]">
+            <i class="bi bi-check-circle-fill"></i> Guardado correctamente
+          </span>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ════════════════════════════════════════════════════════════════════════
+       SECCIÓN 3: API Keys
+  ════════════════════════════════════════════════════════════════════════════ -->
+  <ng-container *ngIf="activeSection === 'apikeys'">
+    <div class="section-intro">
+      <i class="bi bi-key-fill section-intro-icon" style="color:#d97706"></i>
+      <div>
+        <strong>Claves de proveedores de IA</strong>
+        <p>Las claves se almacenan cifradas y solo se usan para generar contenido. Nunca se exponen en el frontend.</p>
+      </div>
+    </div>
+
+    <div class="apikey-card" *ngFor="let cfg of apiKeyConfigs; trackBy: trackByKey">
+      <div class="apikey-header">
+        <div class="apikey-provider-info">
+          <span class="apikey-icon"><i class="bi" [ngClass]="cfg.icon"></i></span>
+          <div>
+            <span class="apikey-label">{{ cfg.label }}</span>
+            <span class="apikey-provider-tag">{{ cfg.provider }}</span>
+          </div>
+        </div>
+        <div class="apikey-badges">
+          <span class="key-status ok" *ngIf="apiKeyStatus[cfg.key]">
+            <i class="bi bi-shield-lock-fill"></i> Configurada
+          </span>
+          <span class="key-status missing" *ngIf="!apiKeyStatus[cfg.key]">
+            <i class="bi bi-exclamation-triangle"></i> Sin configurar
+          </span>
+        </div>
+      </div>
+      <p class="apikey-hint">{{ cfg.hint }}</p>
+      <div class="conn-field-input">
+        <div class="input-with-eye">
+          <input
+            [type]="showApiKey[cfg.key] ? 'text' : 'password'"
+            class="form-control form-control-sm"
+            [(ngModel)]="apiKeyValues[cfg.key]"
+            [placeholder]="apiKeyStatus[cfg.key] ? '••••••••••••••••••••••••' : 'Pega aquí tu clave...'"
+          >
+          <button class="eye-btn" (click)="showApiKey[cfg.key] = !showApiKey[cfg.key]">
+            <i class="bi" [ngClass]="showApiKey[cfg.key] ? 'bi-eye-slash' : 'bi-eye'"></i>
+          </button>
+        </div>
+        <button class="btn btn-sm btn-primary" (click)="saveApiKey(cfg.key)"
+          [disabled]="!apiKeyValues[cfg.key] || savingApiKey[cfg.key]">
+          <span *ngIf="savingApiKey[cfg.key]" class="spinner-border spinner-border-sm"></span>
+          <i *ngIf="!savingApiKey[cfg.key]" class="bi bi-floppy"></i>
+          Guardar
+        </button>
+        <button class="btn btn-sm btn-outline-danger" *ngIf="apiKeyStatus[cfg.key]"
+          (click)="revokeApiKey(cfg.key)" title="Eliminar clave">
+          <i class="bi bi-trash3"></i>
+        </button>
+        <a [href]="cfg.docUrl" target="_blank" class="btn btn-sm btn-outline-secondary" title="Obtener clave">
+          <i class="bi bi-box-arrow-up-right"></i>
+        </a>
+      </div>
+      <span class="saved-inline" *ngIf="savedApiKey[cfg.key]">
+        <i class="bi bi-check-circle-fill"></i> Clave guardada correctamente
+      </span>
+    </div>
+  </ng-container>
+
+</div>

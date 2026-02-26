@@ -116,6 +116,13 @@ import { SuscripcionCoachComponent } from './suscripcion-coach/suscripcion-coach
 import { CoachSuscripcionSuccessComponent } from './coach-suscripcion-success/coach-suscripcion-success.component';
 import { AdminCoachesComponent } from './admin-coaches/admin-coaches.component';
 import { AdminProspectorComponent } from './admin-prospector/admin-prospector.component';
+import { RrssComponent } from './rrss/rrss.component';
+import { RrssCalendarComponent } from './rrss/rrss-calendar/rrss-calendar.component';
+import { RrssPostsComponent } from './rrss/rrss-posts/rrss-posts.component';
+import { RrssSettingsComponent } from './rrss/rrss-settings/rrss-settings.component';
+import { RrssCommentsComponent } from './rrss/rrss-comments/rrss-comments.component';
+import { PostEditorModalComponent } from './rrss/post-editor-modal/post-editor-modal.component';
+import { MonthlyPlanWizardComponent } from './rrss/monthly-plan-wizard/monthly-plan-wizard.component';
 import { TaskEditModalComponent } from './task-edit-modal/task-edit-modal.component';
 import { FormTemplateSelectorComponent } from './shared/form-template-selector/form-template-selector.component';
 import { FormTemplatesComponent } from './debrief/form-templates/form-templates.component';
@@ -276,6 +283,13 @@ export function HttpLoaderFactory(http: HttpClient) {
     CoachSuscripcionSuccessComponent,
     AdminCoachesComponent,
     AdminProspectorComponent,
+    RrssComponent,
+    RrssCalendarComponent,
+    RrssPostsComponent,
+    RrssSettingsComponent,
+    RrssCommentsComponent,
+    PostEditorModalComponent,
+    MonthlyPlanWizardComponent,
     TaskEditModalComponent,
     FormTemplateSelectorComponent,
     FormTemplatesComponent,

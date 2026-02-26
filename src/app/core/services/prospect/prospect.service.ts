@@ -256,6 +256,13 @@ export class ProspectService {
     return this.http.get<any[]>(`${this.base}social/posts`, { params });
   }
 
+  createSocialPost(data: {
+    network: string; content_type?: string; text_content?: string;
+    image_prompt?: string; scheduled_at?: string | null; status?: string;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.base}social/posts`, data);
+  }
+
   updateSocialPost(postId: number, data: any): Observable<any> {
     return this.http.put<any>(`${this.base}social/posts/${postId}`, data);
   }
@@ -301,6 +308,42 @@ export class ProspectService {
       image_model: imageModel,
       user_description: userDescription || '',
     }).pipe(timeout(30_000));
+  }
+
+  generateThread(postId: number, options: {
+    extra_context?: string;
+    num_tweets?: number;
+    tone?: string;
+    objective?: string;
+  }): Observable<{ ok: boolean; tweets: { text: string; image_url?: string }[]; post_id: number }> {
+    return this.http.post<any>(
+      `${this.base}social/posts/${postId}/generate-thread`, options
+    ).pipe(timeout(90_000));
+  }
+
+  generateThreadStandalone(options: {
+    extra_context?: string;
+    num_tweets?: number;
+    tone?: string;
+    objective?: string;
+  }): Observable<{ ok: boolean; tweets: { text: string; image_url?: string }[] }> {
+    return this.http.post<any>(
+      `${this.base}social/generate-thread`, options
+    ).pipe(timeout(90_000));
+  }
+
+  generateMonthlyPlan(payload: {
+    start_date:    string;
+    end_date:      string;
+    times?:        string[];
+    networks:      { network: string; posts_per_day: number; thread_ratio?: number }[];
+    content_mix?:  { features: number; stories: number; tips: number; data: number; cta: number };
+    tone?:         string;
+    extra_context?: string;
+  }): Observable<{ ok: boolean; created: number; post_ids: number[]; errors: string[] }> {
+    return this.http.post<any>(
+      `${this.base}social/generate-monthly-plan`, payload
+    ).pipe(timeout(300_000));
   }
 
   getSocialTokens(): Observable<Record<string, boolean>> {
@@ -392,5 +435,42 @@ export class ProspectService {
 
   schedulePost(postId: number, scheduledAt: string): Observable<any> {
     return this.http.put<any>(`${this.base}social/posts/${postId}/schedule`, { scheduled_at: scheduledAt });
+  }
+
+  // ── Network config (RRSS module) ──────────────────────────────────────────
+
+  getNetworkConfig(network: string): Observable<any> {
+    return this.http.get<any>(`${this.base}social/network-config/${network}`);
+  }
+
+  updateNetworkConfig(network: string, config: {
+    topics: string;
+    tone: string;
+    audience: string;
+    post_frequency: number;
+    default_hashtags: string;
+    extra_instructions: string;
+    text_ai_model: string;
+    image_ai_model: string;
+    include_image: number;
+  }): Observable<any> {
+    return this.http.put<any>(`${this.base}social/network-config/${network}`, config);
+  }
+
+  getAiModels(): Observable<{
+    text_models: { key: string; label: string; provider: string }[];
+    image_models: { key: string; label: string }[];
+    default_text_model: string;
+    default_image_model: string;
+  }> {
+    return this.http.get<any>(`${this.base}social/ai-models`);
+  }
+
+  getCalendarPosts(start: string, end: string): Observable<any[]> {
+    return this.http.get<any[]>(`${this.base}social/posts/calendar`, { params: { start, end } });
+  }
+
+  batchSchedulePosts(slots: { network: string; scheduled_at: string; content_type: string; generate_text: boolean }[]): Observable<any> {
+    return this.http.post<any>(`${this.base}social/posts/batch-schedule`, { slots });
   }
 }

@@ -1045,10 +1045,29 @@
   </div>
 
   <!-- ═══════════════════════════════════════════════════
-       TAB: CONTENIDO RRSS
+       TAB: CONTENIDO RRSS — movido al módulo dedicado
   ═══════════════════════════════════════════════════ -->
   <div *ngIf="activeTab === 'social'">
-    <!-- Header -->
+    <div class="rrss-redirect-banner">
+      <div class="rrss-redirect-icon">
+        <i class="bi bi-calendar3"></i>
+      </div>
+      <div class="rrss-redirect-body">
+        <h5>Gestión de Redes Sociales</h5>
+        <p>La gestión de contenido RRSS se ha movido a un módulo dedicado con calendario semanal,
+           configuración por red y auto-publicación programada.</p>
+        <a routerLink="/dashboard/rrss" class="btn btn-primary">
+          <i class="bi bi-arrow-right me-1"></i>
+          Ir al módulo de Redes Sociales
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TAB: CONTENIDO RRSS (LEGACY — oculto)
+  ═══════════════════════════════════════════════════ -->
+  <div *ngIf="false">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
       <div>
         <h5 class="fw-bold mb-0"><i class="bi bi-share me-2 text-success"></i>Estudio de Contenido RRSS</h5>
