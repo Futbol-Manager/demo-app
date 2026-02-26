@@ -393,16 +393,44 @@ export class PostEditorModalComponent implements OnInit, OnChanges {
     return this.imageModels.find(m => m.key === key)?.label || key;
   }
 
-  // ── Adaptar para todas las redes ────────────────────────────────────────────
+  // ── Adaptar para redes seleccionadas ────────────────────────────────────────
   showAdaptPanel   = false;
+  showAdaptConfig  = false;   // mostrar selector de redes antes de generar
   isAdapting       = false;
   adaptVersions:   { network: string; label: string; text: string; is_original?: boolean }[] = [];
   adaptError       = '';
+
+  readonly NET_OPTIONS: { key: string; label: string; icon: string }[] = [
+    { key: 'twitter',   label: 'Twitter / X', icon: 'bi-twitter-x'  },
+    { key: 'linkedin',  label: 'LinkedIn',     icon: 'bi-linkedin'   },
+    { key: 'instagram', label: 'Instagram',    icon: 'bi-instagram'  },
+    { key: 'facebook',  label: 'Facebook',     icon: 'bi-facebook'   },
+  ];
 
   readonly NET_LABELS: Record<string, string> = {
     twitter: 'Twitter / X', linkedin: 'LinkedIn',
     instagram: 'Instagram',  facebook: 'Facebook',
   };
+
+  // Redes marcadas por el usuario (excluye la red fuente por defecto)
+  adaptSelectedNets: Record<string, boolean> = {
+    twitter: true, linkedin: true, instagram: true, facebook: true,
+  };
+
+  get adaptTargetNets(): string[] {
+    return this.NET_OPTIONS
+      .filter(n => n.key !== this.network && this.adaptSelectedNets[n.key])
+      .map(n => n.key);
+  }
+
+  openAdaptConfig(): void {
+    // Desmarcar la red actual como destino
+    this.adaptSelectedNets[this.network] = false;
+    this.showAdaptConfig = true;
+    this.showAdaptPanel  = false;
+    this.adaptVersions   = [];
+    this.adaptError      = '';
+  }
 
   adaptForNetworks(): void {
     const sourceText = this.isThread
@@ -410,15 +438,24 @@ export class PostEditorModalComponent implements OnInit, OnChanges {
       : this.textContent;
 
     if (!sourceText.trim()) return;
-    this.isAdapting   = true;
-    this.adaptError   = '';
-    this.adaptVersions = [];
-    this.showAdaptPanel = true;
 
-    const allNets = ['twitter', 'linkedin', 'instagram', 'facebook'];
+    const targets = this.adaptTargetNets;
+    if (targets.length === 0) {
+      this.adaptError = 'Selecciona al menos una red destino.';
+      return;
+    }
+
+    this.isAdapting      = true;
+    this.adaptError      = '';
+    this.adaptVersions   = [];
+    this.showAdaptConfig = false;
+    this.showAdaptPanel  = true;
+
+    // Incluir la red actual como "original"
+    const allNets = [this.network, ...targets];
     this.prospect.adaptForNetworks(sourceText, this.network, allNets).subscribe({
       next: (res: any) => {
-        this.isAdapting   = false;
+        this.isAdapting = false;
         if (res.ok && res.versions) {
           this.adaptVersions = res.versions.map((v: any) => ({
             ...v,
@@ -436,7 +473,8 @@ export class PostEditorModalComponent implements OnInit, OnChanges {
   useAdaptedVersion(version: { network: string; text: string }): void {
     this.network     = version.network as Network;
     this.textContent = version.text;
-    this.showAdaptPanel = false;
+    this.showAdaptPanel  = false;
+    this.showAdaptConfig = false;
     this.onNetworkChange();
   }
 }

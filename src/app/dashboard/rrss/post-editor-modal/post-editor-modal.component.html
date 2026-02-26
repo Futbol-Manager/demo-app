@@ -191,24 +191,65 @@
         </button>
       </div>
 
-      <!-- Botón Adaptar para todas las redes -->
+      <!-- Botón Adaptar -->
       <div class="adapt-btn-row">
-        <button class="btn btn-sm btn-adapt" (click)="adaptForNetworks()"
+        <button class="btn btn-sm btn-adapt"
+          (click)="showAdaptConfig ? showAdaptConfig = false : openAdaptConfig()"
           [disabled]="isAdapting || (!textContent.trim() && !isThread)">
-          <span *ngIf="isAdapting" class="spinner-border spinner-border-sm me-1"></span>
-          <i class="bi bi-arrows-fullscreen me-1" *ngIf="!isAdapting"></i>
-          {{ isAdapting ? 'Adaptando…' : 'Adaptar para todas las redes' }}
+          <i class="bi bi-arrows-fullscreen me-1"></i>
+          Adaptar para otras redes
         </button>
-        <button class="btn btn-xs btn-ghost" *ngIf="showAdaptPanel" (click)="showAdaptPanel = false" title="Cerrar panel">
+        <button class="btn btn-xs btn-ghost"
+          *ngIf="showAdaptPanel && !isAdapting"
+          (click)="showAdaptPanel = false; showAdaptConfig = false"
+          title="Cerrar">
           <i class="bi bi-x"></i>
         </button>
       </div>
 
-      <!-- Panel de versiones adaptadas -->
+      <!-- Selector de redes destino -->
+      <div class="adapt-config-panel" *ngIf="showAdaptConfig && !isAdapting">
+        <p class="adapt-config-title">
+          <i class="bi bi-send me-1"></i>
+          ¿A qué redes adaptar el contenido?
+        </p>
+        <div class="adapt-net-picker">
+          <label class="adapt-net-option"
+            *ngFor="let n of NET_OPTIONS"
+            [class.disabled]="n.key === network"
+            [class.checked]="adaptSelectedNets[n.key] && n.key !== network">
+            <input type="checkbox"
+              [checked]="adaptSelectedNets[n.key] && n.key !== network"
+              [disabled]="n.key === network"
+              (change)="adaptSelectedNets[n.key] = !adaptSelectedNets[n.key]">
+            <span class="adapt-net-icon" [ngClass]="'net-' + n.key">
+              <i class="bi" [ngClass]="n.icon"></i>
+            </span>
+            <span class="adapt-net-lbl">{{ n.label }}</span>
+            <span class="adapt-source-tag" *ngIf="n.key === network">Origen</span>
+          </label>
+        </div>
+        <div class="adapt-config-error" *ngIf="adaptError">
+          <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ adaptError }}
+        </div>
+        <div class="adapt-config-footer">
+          <span class="adapt-config-hint">
+            <i class="bi bi-info-circle me-1"></i>
+            {{ adaptTargetNets.length }} red{{ adaptTargetNets.length !== 1 ? 'es' : '' }} seleccionada{{ adaptTargetNets.length !== 1 ? 's' : '' }}
+          </span>
+          <button class="btn btn-sm btn-adapt" (click)="adaptForNetworks()"
+            [disabled]="adaptTargetNets.length === 0">
+            <i class="bi bi-stars me-1"></i>
+            Generar versiones
+          </button>
+        </div>
+      </div>
+
+      <!-- Panel de versiones generadas -->
       <div class="adapt-panel" *ngIf="showAdaptPanel">
         <div class="adapt-loading" *ngIf="isAdapting">
           <div class="spinner-border spinner-border-sm text-primary me-2"></div>
-          Generando versiones para cada red…
+          Generando versiones con IA…
         </div>
         <div class="adapt-error" *ngIf="adaptError && !isAdapting">
           <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ adaptError }}
@@ -224,8 +265,8 @@
               <span class="adapt-chars">{{ v.text.length }} chars</span>
               <button class="btn btn-xs btn-outline-primary ms-auto"
                 (click)="useAdaptedVersion(v)"
-                title="Usar esta versión y cambiar a esta red">
-                <i class="bi bi-check2 me-1"></i>Usar
+                [title]="v.is_original ? 'Volver a este texto' : 'Usar esta versión (cambia la red activa)'">
+                <i class="bi bi-check2 me-1"></i>{{ v.is_original ? 'Restaurar' : 'Usar' }}
               </button>
             </div>
             <p class="adapt-version-text">{{ v.text | slice:0:200 }}{{ v.text.length > 200 ? '…' : '' }}</p>

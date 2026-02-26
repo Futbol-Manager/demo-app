@@ -1,16 +1,21 @@
-$col-count: 7;
+// ── Paleta Sphaira ────────────────────────────────────────────────────────────
+$sphaira-primary:  #6c63ff;
+$sphaira-accent:   #5a52e0;
+$sphaira-gradient: linear-gradient(135deg, #6c63ff, #5a52e0);
 
-// Status palette — single source of truth
+// Status
 $status-draft:     #94a3b8;
 $status-approved:  #4f46e5;
 $status-published: #16a34a;
 $status-rejected:  #dc2626;
 
-// Network palette
+// Network
 $net-instagram: #e1306c;
 $net-facebook:  #1877f2;
 $net-linkedin:  #0a66c2;
 $net-twitter:   #14171a;
+
+$col-count: 7;
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Root
@@ -19,8 +24,15 @@ $net-twitter:   #14171a;
 .calendar-root {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.75rem;
   height: 100%;
+}
+
+.cal-spinner-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -32,159 +44,300 @@ $net-twitter:   #14171a;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.6rem;
+  background: #fff;
+  border: 1px solid #e8eaf6;
+  border-radius: 14px;
+  padding: 0.6rem 1rem;
+  box-shadow: 0 1px 6px rgba(108, 99, 255, 0.06);
 }
 
+// Navegación
 .cal-nav {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.25rem;
 }
 
-.week-label {
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: #343a40;
-  margin-left: 0.4rem;
-  text-transform: capitalize;
-  white-space: nowrap;
-}
-
-.cal-filters {
-  display: flex;
+.nav-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  border-radius: 8px;
+  display: inline-flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  justify-content: center;
+  cursor: pointer;
+  color: #475569;
+  font-size: 0.78rem;
+  transition: all 0.15s;
 
-  .form-select { max-width: 150px; font-size: 0.8rem; }
-}
+  &:hover { background: #f0eeff; border-color: $sphaira-primary; color: $sphaira-primary; }
 
-.zoom-controls {
-  .zoom-label {
-    cursor: default !important;
-    pointer-events: none;
-    min-width: 30px;
-    padding: 0 0.3rem;
-    color: #6c757d;
-    font-size: 0.8rem;
+  &.today-btn {
+    width: auto;
+    padding: 0 0.6rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: $sphaira-primary;
+    border-color: #c7d2fe;
+    background: #f0eeff;
+
+    &:hover { background: $sphaira-primary; color: #fff; border-color: $sphaira-primary; }
   }
 }
 
-.fill-label {
-  @media (max-width: 600px) { display: none; }
+.period-label {
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: #1e293b;
+  margin-left: 0.5rem;
+  text-transform: capitalize;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
 }
 
-.btn-monthly-plan {
-  background: linear-gradient(135deg, #6c63ff, #5a52e0);
-  border: none;
-  color: #fff;
+// Controles derechos
+.cal-controls {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: .8rem;
-  font-weight: 600;
-  padding: 5px 12px;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+// ── Segmented toggle semana/mes ───────────────────────────────────────────────
+
+.view-seg {
+  display: flex;
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.view-seg-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.7rem;
   border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: all .2s;
-  &:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(108,99,255,.4); }
-  i { font-size: .9rem; }
+  transition: all 0.18s;
+  white-space: nowrap;
+
+  i { font-size: 0.82rem; }
+
+  span { @media (max-width: 580px) { display: none; } }
+
+  &:hover:not(.active) {
+    background: #e2e8f0;
+    color: #334155;
+  }
+
+  &.active {
+    background: $sphaira-gradient;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(108, 99, 255, 0.35);
+  }
+}
+
+// ── Filtro de red ─────────────────────────────────────────────────────────────
+
+.net-filter-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 0 0.5rem 0 0.6rem;
+
+  .net-filter-icon { color: #94a3b8; font-size: 0.78rem; flex-shrink: 0; }
+}
+
+.net-filter-select {
+  border: none;
+  background: transparent;
+  font-size: 0.78rem;
+  color: #374151;
+  padding: 0.28rem 0.2rem;
+  cursor: pointer;
+  max-width: 140px;
+  appearance: none;
+  outline: none;
+  font-weight: 500;
+}
+
+// ── Zoom ──────────────────────────────────────────────────────────────────────
+
+.zoom-seg {
+  display: flex;
+  gap: 2px;
+  background: #f1f5f9;
+  border-radius: 8px;
+  padding: 3px;
+}
+
+.zoom-btn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover:not(:disabled) { background: #e2e8f0; color: #334155; }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
+
+// ── Botones de acción ─────────────────────────────────────────────────────────
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.85rem;
+  border: none;
+  border-radius: 9px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+
+  .btn-label { @media (max-width: 680px) { display: none; } }
+
+  &:disabled { opacity: 0.55; cursor: not-allowed; }
+}
+
+.fill-btn {
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.28);
+  &:hover:not(:disabled) { box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4); transform: translateY(-1px); }
+}
+
+.plan-btn {
+  background: $sphaira-gradient;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(108, 99, 255, 0.28);
+  &:hover:not(:disabled) { box-shadow: 0 4px 14px rgba(108, 99, 255, 0.4); transform: translateY(-1px); }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Grid
+// Vista semanal — Grid
 // ─────────────────────────────────────────────────────────────────────────────
 
 .cal-grid {
   display: grid;
   grid-template-columns: 42px repeat(#{$col-count}, 1fr);
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
+  border: 1px solid #e8eaf6;
+  border-radius: 12px;
   overflow: hidden;
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  box-shadow: 0 1px 6px rgba(108, 99, 255, 0.04);
 
-  // Cursor global durante el drag
   &.is-dragging * { cursor: grabbing !important; }
 }
 
 .cal-corner {
-  background: #f8f9fa;
-  border-right: 1px solid #e9ecef;
-  border-bottom: 2px solid #dee2e6;
+  background: #f8fafc;
+  border-right: 1px solid #e8eaf6;
+  border-bottom: 2px solid #e0e7ff;
   position: sticky;
   top: 0;
   z-index: 3;
 }
 
 .cal-day-header {
-  background: #f8f9fa;
-  border-bottom: 2px solid #dee2e6;
-  border-right: 1px solid #e9ecef;
-  padding: 0.3rem 0.15rem;
+  background: linear-gradient(to bottom, #f8fafc, #f0f4ff);
+  border-bottom: 2px solid #e0e7ff;
+  border-right: 1px solid #e8eaf6;
+  padding: 0.45rem 0.2rem;
   text-align: center;
-  font-size: 0.72rem;
-  font-weight: 600;
-  color: #6c757d;
   position: sticky;
   top: 0;
   z-index: 2;
 
-  &.today { color: #4f46e5; font-weight: 800; }
+  .day-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  &.today .day-name {
+    color: $sphaira-primary;
+    font-weight: 800;
+  }
 }
 
 .cal-hour-label {
-  background: #f8f9fa;
-  border-right: 1px solid #e9ecef;
-  border-bottom: 1px solid #f1f3f5;
-  font-size: 0.65rem;
-  color: #adb5bd;
+  background: #fafafe;
+  border-right: 1px solid #e8eaf6;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.62rem;
+  color: #b0b8cc;
   text-align: right;
-  padding: 0.15rem 0.3rem 0;
-  vertical-align: top;
+  padding: 0.15rem 0.4rem 0;
   position: sticky;
   left: 0;
   z-index: 1;
   box-sizing: border-box;
+  font-weight: 500;
+
+  &.current-hour-label { color: #ef4444 !important; font-weight: 700; }
 }
 
 // ── Celda ─────────────────────────────────────────────────────────────────────
 
 .cal-cell {
-  border-right: 1px solid #e9ecef;
-  border-bottom: 1px solid #f1f3f5;
+  border-right: 1px solid #f0f4ff;
+  border-bottom: 1px solid #f0f4ff;
   padding: 0.15rem;
   cursor: pointer;
-  transition: background 0.1s;
+  transition: background 0.12s;
   display: flex;
   flex-direction: column;
-  gap: 0.15rem;
+  gap: 0.12rem;
   box-sizing: border-box;
   position: relative;
 
-  &:hover  { background: #f0f4ff; }
-  &.today  { background: #f5f3ff; }
+  &:hover  { background: #f5f3ff; }
 
-  // Drop target highlight
+  &.today  {
+    background: linear-gradient(to bottom, #f0eeff 0%, #faf9ff 100%);
+    &:hover { background: #ede9ff; }
+  }
+
   &.drag-over {
     background: #e0e7ff !important;
-    outline: 2px dashed #4f46e5;
+    outline: 2px dashed $sphaira-primary;
     outline-offset: -2px;
+    border-radius: 4px;
   }
 }
 
-// ── Línea de hora actual ──────────────────────────────────────────────────────
-
-.current-hour-label {
-  color: #ef4444 !important;
-  font-weight: 700;
-}
+// ── Línea hora actual ─────────────────────────────────────────────────────────
 
 .time-now-line {
   position: absolute;
-  left: 0;
-  right: 0;
+  left: 0; right: 0;
   height: 0;
   border-top: 2px solid #ef4444;
   z-index: 10;
@@ -193,20 +346,17 @@ $net-twitter:   #14171a;
 
 .time-now-dot {
   position: absolute;
-  left: -4px;
-  top: -4px;
-  width: 8px;
-  height: 8px;
+  left: -4px; top: -4px;
+  width: 8px; height: 8px;
   background: #ef4444;
   border-radius: 50%;
   display: block;
 }
 
 // ── Post blocks ───────────────────────────────────────────────────────────────
-// Color = STATUS (readability).  Network = left stripe.
 
 .post-block {
-  border-radius: 4px;
+  border-radius: 5px;
   padding: 0.15rem 0.3rem 0.15rem 0;
   font-size: 0.65rem;
   line-height: 1.2;
@@ -216,18 +366,24 @@ $net-twitter:   #14171a;
   gap: 0.2rem;
   color: #fff;
   position: relative;
-  overflow: hidden;
+  overflow: visible; // needed for tooltip
   user-select: none;
-  transition: opacity 0.15s, transform 0.1s;
+  transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
 
   &:active { cursor: grabbing; }
 
-  &.is-dragged {
-    opacity: 0.35;
-    transform: scale(0.97);
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.18);
+    z-index: 20;
   }
 
-  i { flex-shrink: 0; margin-left: 0.3rem; }
+  &.is-dragged {
+    opacity: 0.35;
+    transform: scale(0.96);
+  }
+
+  i { flex-shrink: 0; margin-left: 0.28rem; }
 
   .post-preview {
     flex: 1;
@@ -236,20 +392,21 @@ $net-twitter:   #14171a;
     white-space: nowrap;
   }
 
-  // ── Status → background color ─────────────────────────────────────────────
-  &.status-draft    { background: $status-draft; }
-  &.status-approved { background: $status-approved; }
-  &.status-published{ background: $status-published; }
-  &.status-rejected { background: $status-rejected; opacity: 0.55; text-decoration: line-through; }
+  .thread-pip { font-size: 0.65rem; flex-shrink: 0; }
 
-  // ── Network → left stripe color (via .net-stripe child) ──────────────────
+  // Status → background
+  &.status-draft     { background: $status-draft; }
+  &.status-approved  { background: $status-approved; }
+  &.status-published { background: $status-published; }
+  &.status-rejected  { background: $status-rejected; opacity: 0.5; text-decoration: line-through; }
+
+  // Network → left stripe
   .net-stripe {
     display: block;
     width: 4px;
     flex-shrink: 0;
     align-self: stretch;
     border-radius: 4px 0 0 4px;
-    margin-right: 0.1rem;
   }
 
   &.net-instagram .net-stripe { background: $net-instagram; }
@@ -258,30 +415,323 @@ $net-twitter:   #14171a;
   &.net-twitter   .net-stripe { background: $net-twitter;   }
 }
 
-// ── Variantes de zoom ─────────────────────────────────────────────────────────
+// ── Tooltip métricas (Twitter publicado) ─────────────────────────────────────
+
+.post-metrics-tooltip,
+.post-info-tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 0;
+  z-index: 999;
+  min-width: 220px;
+  max-width: 280px;
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.28);
+  pointer-events: auto;
+  animation: tooltip-in 0.14s ease;
+  border: 1px solid rgba(255,255,255,0.08);
+
+  // Arrow
+  &::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 14px;
+    border: 5px solid transparent;
+    border-top-color: #1e293b;
+  }
+}
+
+@keyframes tooltip-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.tooltip-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+
+  i { color: #94a3b8; }
+
+  .tooltip-time {
+    margin-left: auto;
+    font-size: 0.68rem;
+    font-weight: 400;
+    color: #64748b;
+  }
+}
+
+.tooltip-loading {
+  display: flex;
+  align-items: center;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  padding: 0.2rem 0;
+}
+
+.tooltip-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.3rem;
+  margin-bottom: 0.5rem;
+}
+
+.tooltip-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+  background: rgba(255,255,255,0.06);
+  border-radius: 6px;
+  padding: 0.35rem 0.2rem;
+
+  i {
+    font-size: 0.7rem;
+    color: #94a3b8;
+  }
+
+  .metric-val {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #f1f5f9;
+    line-height: 1;
+  }
+
+  .metric-lbl {
+    font-size: 0.6rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+}
+
+.tooltip-no-metrics {
+  font-size: 0.7rem;
+  color: #64748b;
+  padding: 0.2rem 0 0.4rem;
+}
+
+.tooltip-preview-text {
+  font-size: 0.68rem;
+  color: #64748b;
+  line-height: 1.4;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding-top: 0.4rem;
+  margin-top: 0.1rem;
+}
+
+// ── Tooltip info básico ───────────────────────────────────────────────────────
+
+.info-tooltip-header {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+
+  i { color: #94a3b8; font-size: 0.82rem; }
+}
+
+.info-status-badge {
+  margin-left: auto;
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 10px;
+
+  &.badge-draft     { background: rgba($status-draft, 0.3);     color: #cbd5e1; }
+  &.badge-approved  { background: rgba($status-approved, 0.3);  color: #a5b4fc; }
+  &.badge-published { background: rgba($status-published, 0.3); color: #86efac; }
+  &.badge-rejected  { background: rgba($status-rejected, 0.3);  color: #fca5a5; }
+}
+
+.info-tooltip-text {
+  font-size: 0.68rem;
+  color: #94a3b8;
+  line-height: 1.45;
+  margin: 0;
+}
+
+// ── Zoom compact / large ──────────────────────────────────────────────────────
 
 .zoom-compact {
   .post-block {
-    padding: 0.1rem 0.15rem 0.1rem 0;
+    padding: 0.08rem 0.15rem 0.08rem 0;
     font-size: 0.6rem;
     border-radius: 3px;
-    i { margin-left: 0.2rem; }
+    i { margin-left: 0.15rem; }
     .net-stripe { width: 3px; }
   }
-  .cal-day-header { font-size: 0.65rem; }
-  .cal-hour-label { font-size: 0.58rem; padding: 0.1rem 0.2rem 0; }
+  .cal-day-header .day-name { font-size: 0.65rem; }
+  .cal-hour-label { font-size: 0.58rem; padding: 0.08rem 0.2rem 0; }
 }
 
 .zoom-large {
   .post-block {
-    padding: 0.25rem 0.5rem 0.25rem 0;
+    padding: 0.3rem 0.5rem 0.3rem 0;
     font-size: 0.75rem;
     border-radius: 6px;
     gap: 0.3rem;
     .net-stripe { width: 5px; }
   }
-  .cal-day-header { font-size: 0.82rem; padding: 0.6rem 0.25rem; }
+  .cal-day-header { padding: 0.6rem 0.25rem; .day-name { font-size: 0.8rem; } }
   .cal-hour-label { font-size: 0.7rem; padding: 0.25rem 0.5rem 0; }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Vista mensual
+// ─────────────────────────────────────────────────────────────────────────────
+
+.month-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  border: 1px solid #e8eaf6;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(108, 99, 255, 0.05);
+  flex: 1;
+}
+
+.month-day-header {
+  background: linear-gradient(to bottom, #f0eeff, #f8f9ff);
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: $sphaira-primary;
+  padding: 0.55rem 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 2px solid #e0e7ff;
+}
+
+.month-cell {
+  min-height: 110px;
+  border-right: 1px solid #f0f4ff;
+  border-bottom: 1px solid #f0f4ff;
+  padding: 0.4rem 0.4rem 0.3rem;
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+
+  &:nth-child(7n + 8) { // day columns (offset by header)
+    border-right: none;
+  }
+
+  &:hover { background: #faf9ff; }
+
+  &.other-month {
+    background: #fafafa;
+    .month-cell-date { color: #c8cfe0; }
+    .month-post-chip { opacity: 0.45; }
+  }
+
+  &.today {
+    background: linear-gradient(135deg, #f0eeff 0%, #faf9ff 100%);
+    border-left: 3px solid $sphaira-primary;
+    padding-left: calc(0.4rem - 3px);
+
+    .month-cell-date {
+      background: $sphaira-gradient;
+      color: #fff;
+      box-shadow: 0 2px 8px rgba(108, 99, 255, 0.4);
+    }
+  }
+}
+
+.month-cell-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.1rem;
+}
+
+.month-cell-date {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #334155;
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.month-cell-count {
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: $sphaira-primary;
+  background: #eef2ff;
+  border-radius: 10px;
+  padding: 0.05rem 0.4rem;
+  line-height: 1.4;
+}
+
+.month-cell-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  flex: 1;
+  overflow: hidden;
+}
+
+.month-post-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: 5px;
+  padding: 0.12rem 0.4rem;
+  font-size: 0.64rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.95);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  transition: opacity 0.15s;
+
+  &.net-instagram { background: $net-instagram; }
+  &.net-facebook  { background: $net-facebook;  }
+  &.net-linkedin  { background: $net-linkedin;  }
+  &.net-twitter   { background: $net-twitter;   }
+
+  // Status opacity
+  &.chip-draft    { opacity: 0.6; }
+  &.chip-approved { opacity: 0.85; }
+  &.chip-rejected { opacity: 0.35; text-decoration: line-through; }
+
+  i { font-size: 0.58rem; flex-shrink: 0; }
+}
+
+.month-chip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100px;
+}
+
+.month-more {
+  font-size: 0.62rem;
+  color: $sphaira-primary;
+  font-weight: 700;
+  background: #eef2ff;
+  border-radius: 8px;
+  padding: 0.08rem 0.4rem;
+  align-self: flex-start;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -292,172 +742,71 @@ $net-twitter:   #14171a;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.4rem 0.8rem;
-  font-size: 0.75rem;
-  color: #6c757d;
-  padding: 0.4rem 0.6rem;
-  background: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
+  gap: 0.4rem 1.2rem;
+  font-size: 0.72rem;
+  color: #64748b;
+  padding: 0.55rem 1rem;
+  background: #f8fafc;
+  border: 1px solid #e8eaf6;
+  border-radius: 10px;
+}
+
+.legend-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .legend-section-label {
-  font-weight: 600;
-  color: #495057;
-  font-size: 0.72rem;
+  font-weight: 700;
+  color: #374151;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.legend-sep {
-  color: #dee2e6;
-  font-size: 0.9rem;
+.legend-divider {
+  width: 1px;
+  height: 16px;
+  background: #e2e8f0;
+  flex-shrink: 0;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   white-space: nowrap;
 }
 
 .legend-chip {
   display: inline-block;
-  width: 28px;
-  height: 10px;
+  width: 24px;
+  height: 8px;
   border-radius: 3px;
   flex-shrink: 0;
 
-  // Status chips
-  &.status-draft    { background: $status-draft; }
-  &.status-approved { background: $status-approved; }
-  &.status-published{ background: $status-published; }
-  &.status-rejected { background: $status-rejected; }
+  &.status-draft     { background: $status-draft; }
+  &.status-approved  { background: $status-approved; }
+  &.status-published { background: $status-published; }
+  &.status-rejected  { background: $status-rejected; }
 
-  // Network chips (narrow, like the stripe)
-  &.stripe-instagram { background: $net-instagram; width: 8px; border-radius: 2px; }
-  &.stripe-facebook  { background: $net-facebook;  width: 8px; border-radius: 2px; }
-  &.stripe-linkedin  { background: $net-linkedin;  width: 8px; border-radius: 2px; }
-  &.stripe-twitter   { background: $net-twitter;   width: 8px; border-radius: 2px; }
+  &.stripe-instagram { background: $net-instagram; width: 7px; height: 14px; border-radius: 2px; }
+  &.stripe-facebook  { background: $net-facebook;  width: 7px; height: 14px; border-radius: 2px; }
+  &.stripe-linkedin  { background: $net-linkedin;  width: 7px; height: 14px; border-radius: 2px; }
+  &.stripe-twitter   { background: $net-twitter;   width: 7px; height: 14px; border-radius: 2px; }
 }
 
-// ── Toggle semana/mes ─────────────────────────────────────────────────────────
-.view-toggle {
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Vista mensual
-// ─────────────────────────────────────────────────────────────────────────────
-
-.month-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #fff;
-}
-
-.month-day-header {
-  background: #f8fafc;
-  text-align: center;
-  font-size: 0.72rem;
-  font-weight: 700;
-  color: #64748b;
-  padding: 0.45rem 0;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-.month-cell {
-  min-height: 100px;
-  border-right: 1px solid #f1f5f9;
-  border-bottom: 1px solid #f1f5f9;
-  padding: 0.3rem 0.35rem;
-  cursor: pointer;
-  transition: background 0.12s;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-
-  &:nth-child(7n) { border-right: none; }
-
-  &:hover { background: #f0f9ff; }
-
-  &.other-month {
-    background: #fafafa;
-    opacity: 0.65;
-  }
-
-  &.today {
-    background: #eff6ff;
-    .month-cell-date {
-      background: #2563eb;
-      color: #fff;
-    }
-  }
-}
-
-.month-cell-date {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #374151;
-  width: 22px;
-  height: 22px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  flex-shrink: 0;
-  align-self: flex-end;
-}
-
-.month-cell-posts {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-  flex: 1;
-  overflow: hidden;
-}
-
-.month-post-chip {
+.legend-hint {
+  margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 0.2rem;
-  border-radius: 4px;
-  padding: 0.1rem 0.35rem;
-  font-size: 0.66rem;
-  font-weight: 500;
-  color: #fff;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  gap: 0.3rem;
+  font-size: 0.68rem;
+  color: #94a3b8;
+  font-style: italic;
+  i { font-size: 0.72rem; color: $sphaira-primary; }
 
-  &.net-instagram { background: $net-instagram; }
-  &.net-facebook  { background: $net-facebook;  }
-  &.net-linkedin  { background: $net-linkedin;  }
-  &.net-twitter   { background: $net-twitter;   }
-
-  // Reduce opacity for non-published posts
-  &.status-chip-draft     { opacity: 0.65; }
-  &.status-chip-approved  { opacity: 0.85; }
-  &.status-chip-rejected  { opacity: 0.45; text-decoration: line-through; }
-}
-
-.month-chip-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 90px;
-}
-
-.month-more-badge {
-  font-size: 0.65rem;
-  color: #6366f1;
-  font-weight: 700;
-  padding: 0.05rem 0.3rem;
-  background: #eef2ff;
-  border-radius: 10px;
-  align-self: flex-start;
+  @media (max-width: 700px) { display: none; }
 }

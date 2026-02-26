@@ -130,6 +130,35 @@ export class RrssCalendarComponent implements OnInit, OnDestroy {
 
   showMonthlyWizard = false;
 
+  // ── Métricas en tooltip del calendario ──────────────────────────────────
+  calMetrics: Record<number, any>     = {};
+  calMetricsLoading: Record<number, boolean> = {};
+  hoveredPostId: number | null = null;
+
+  loadCalMetrics(post: CalendarPost): void {
+    if (post.network !== 'twitter' || post.status !== 'PUBLISHED') return;
+    const extId = (post as any).external_post_id;
+    if (!extId) return;
+    if (this.calMetrics[post.post_id] || this.calMetricsLoading[post.post_id]) return;
+    this.calMetricsLoading[post.post_id] = true;
+    this.prospect.getPostMetrics(post.post_id).subscribe({
+      next: (res: any) => {
+        this.calMetricsLoading[post.post_id] = false;
+        if (res.ok && res.metrics) this.calMetrics[post.post_id] = res.metrics;
+      },
+      error: () => { this.calMetricsLoading[post.post_id] = false; },
+    });
+  }
+
+  onPostMouseEnter(post: CalendarPost): void {
+    this.hoveredPostId = post.post_id;
+    this.loadCalMetrics(post);
+  }
+
+  onPostMouseLeave(): void {
+    this.hoveredPostId = null;
+  }
+
   // ── Vista mensual ────────────────────────────────────────────────────────
   viewMode: 'week' | 'month' = 'week';
   monthYear: number  = new Date().getFullYear();

@@ -1,79 +1,85 @@
 <div class="calendar-root">
 
-  <!-- Toolbar -->
+  <!-- ══════════════════════════════════════════════════════ TOOLBAR -->
   <div class="cal-toolbar">
-    <!-- Navegación semana/mes -->
+
+    <!-- Navegación -->
     <div class="cal-nav" *ngIf="viewMode === 'week'">
-      <button class="btn btn-sm btn-outline-secondary" (click)="prevWeek()">
+      <button class="nav-btn" (click)="prevWeek()" title="Semana anterior">
         <i class="bi bi-chevron-left"></i>
       </button>
-      <button class="btn btn-sm btn-outline-secondary" (click)="goToday()">Hoy</button>
-      <button class="btn btn-sm btn-outline-secondary" (click)="nextWeek()">
+      <button class="nav-btn today-btn" (click)="goToday()">Hoy</button>
+      <button class="nav-btn" (click)="nextWeek()" title="Semana siguiente">
         <i class="bi bi-chevron-right"></i>
       </button>
-      <span class="week-label">{{ weekLabel() }}</span>
-    </div>
-    <div class="cal-nav" *ngIf="viewMode === 'month'">
-      <button class="btn btn-sm btn-outline-secondary" (click)="prevMonth()">
-        <i class="bi bi-chevron-left"></i>
-      </button>
-      <button class="btn btn-sm btn-outline-secondary" (click)="todayMonth()">Hoy</button>
-      <button class="btn btn-sm btn-outline-secondary" (click)="nextMonth()">
-        <i class="bi bi-chevron-right"></i>
-      </button>
-      <span class="week-label">{{ monthLabel }}</span>
+      <span class="period-label">{{ weekLabel() }}</span>
     </div>
 
-    <div class="cal-filters">
-      <!-- Toggle semana / mes -->
-      <div class="view-toggle btn-group" role="group">
-        <button class="btn btn-sm" [class.btn-secondary]="viewMode === 'week'" [class.btn-outline-secondary]="viewMode !== 'week'"
-                (click)="viewMode !== 'week' ? switchToWeek() : null" title="Vista semanal">
-          <i class="bi bi-calendar-week"></i>
+    <div class="cal-nav" *ngIf="viewMode === 'month'">
+      <button class="nav-btn" (click)="prevMonth()" title="Mes anterior">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <button class="nav-btn today-btn" (click)="todayMonth()">Hoy</button>
+      <button class="nav-btn" (click)="nextMonth()" title="Mes siguiente">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+      <span class="period-label">{{ monthLabel }}</span>
+    </div>
+
+    <!-- Controles derechos -->
+    <div class="cal-controls">
+
+      <!-- Segmented toggle semana/mes (estilo Sphaira) -->
+      <div class="view-seg">
+        <button class="view-seg-btn" [class.active]="viewMode === 'week'"
+                (click)="switchToWeek()" title="Vista semanal">
+          <i class="bi bi-calendar-week-fill"></i>
+          <span>Semana</span>
         </button>
-        <button class="btn btn-sm" [class.btn-secondary]="viewMode === 'month'" [class.btn-outline-secondary]="viewMode !== 'month'"
-                (click)="viewMode !== 'month' ? switchToMonth() : null" title="Vista mensual">
-          <i class="bi bi-calendar-month"></i>
+        <button class="view-seg-btn" [class.active]="viewMode === 'month'"
+                (click)="switchToMonth()" title="Vista mensual">
+          <i class="bi bi-calendar-month-fill"></i>
+          <span>Mes</span>
         </button>
       </div>
 
-      <select class="form-select form-select-sm" [(ngModel)]="networkFilter"
-              (change)="viewMode === 'week' ? load() : loadMonth()">
-        <option value="">Todas las redes</option>
-        <option value="instagram">Instagram</option>
-        <option value="facebook">Facebook</option>
-        <option value="linkedin">LinkedIn</option>
-        <option value="twitter">Twitter/X</option>
-      </select>
+      <!-- Filtro de red -->
+      <div class="net-filter-wrap">
+        <i class="bi bi-funnel net-filter-icon"></i>
+        <select class="net-filter-select" [(ngModel)]="networkFilter"
+                (change)="viewMode === 'week' ? load() : loadMonth()">
+          <option value="">Todas las redes</option>
+          <option value="instagram">Instagram</option>
+          <option value="facebook">Facebook</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="twitter">Twitter/X</option>
+        </select>
+      </div>
 
+      <!-- Zoom (solo semana) -->
       <ng-container *ngIf="viewMode === 'week'">
-        <div class="zoom-controls btn-group" role="group">
-          <button class="btn btn-sm btn-outline-secondary" (click)="zoomOut()" [disabled]="!canZoomOut" title="Reducir vista">
-            <i class="bi bi-dash-square"></i>
+        <div class="zoom-seg">
+          <button class="zoom-btn" (click)="zoomOut()" [disabled]="!canZoomOut" title="Compacto">
+            <i class="bi bi-arrows-collapse"></i>
           </button>
-          <button class="btn btn-sm btn-outline-secondary zoom-label" disabled>
-            <i class="bi" [ngClass]="{
-              'bi-layout-three-columns': zoom === 'compact',
-              'bi-grid-3x3':            zoom === 'normal',
-              'bi-arrows-expand':       zoom === 'large'
-            }"></i>
-          </button>
-          <button class="btn btn-sm btn-outline-secondary" (click)="zoomIn()" [disabled]="!canZoomIn" title="Ampliar vista">
-            <i class="bi bi-plus-square"></i>
+          <button class="zoom-btn" (click)="zoomIn()" [disabled]="!canZoomIn" title="Expandir">
+            <i class="bi bi-arrows-expand"></i>
           </button>
         </div>
 
-        <button class="btn btn-sm btn-primary" (click)="fillWeekWithAI()" [disabled]="fillLoading">
-          <span *ngIf="fillLoading" class="spinner-border spinner-border-sm me-1"></span>
+        <button class="action-btn fill-btn" (click)="fillWeekWithAI()" [disabled]="fillLoading">
+          <span *ngIf="fillLoading" class="spinner-border spinner-border-sm"></span>
           <i class="bi bi-magic" *ngIf="!fillLoading"></i>
-          <span class="fill-label">Rellenar con IA</span>
+          <span class="btn-label">Rellenar IA</span>
         </button>
       </ng-container>
 
-      <button class="btn btn-sm btn-monthly-plan" (click)="showMonthlyWizard = true" title="Generar plan de contenido para el mes">
+      <!-- Plan mensual -->
+      <button class="action-btn plan-btn" (click)="showMonthlyWizard = true" title="Generar plan mensual">
         <i class="bi bi-calendar2-range"></i>
-        <span class="fill-label">Plan mensual</span>
+        <span class="btn-label">Plan mensual</span>
       </button>
+
     </div>
   </div>
 
@@ -84,9 +90,9 @@
     (planDone)="onPlanDone($event)">
   </app-monthly-plan-wizard>
 
-  <!-- ── VISTA MENSUAL ──────────────────────────────────────────────────────── -->
+  <!-- ══════════════════════════════════════════════ VISTA MENSUAL -->
   <ng-container *ngIf="viewMode === 'month'">
-    <div *ngIf="monthLoading" class="text-center p-4">
+    <div *ngIf="monthLoading" class="cal-spinner-wrap">
       <div class="spinner-border text-primary"></div>
     </div>
 
@@ -100,61 +106,60 @@
              *ngFor="let day of week"
              [class.other-month]="!isCurrentMonth(day)"
              [class.today]="isToday(day)"
-             (click)="goToWeekOf(day)">
-          <span class="month-cell-date">{{ day.getDate() }}</span>
-          <div class="month-cell-posts">
-            <ng-container *ngFor="let post of getMonthDayPosts(day).slice(0, 3)">
-              <span class="month-post-chip"
-                    [ngClass]="'net-' + post.network + ' status-chip-' + post.status.toLowerCase()"
-                    [title]="post.network + ': ' + (post.text_content | slice:0:60)">
-                <i class="bi" [ngClass]="networkIcon(post.network)" style="font-size:0.6rem"></i>
-                <span class="month-chip-text">{{ post.text_content | slice:0:20 }}</span>
-              </span>
-            </ng-container>
-            <span class="month-more-badge"
-                  *ngIf="getMonthDayPosts(day).length > 3">
-              +{{ getMonthDayPosts(day).length - 3 }}
+             (click)="goToWeekOf(day)"
+             title="Ver semana del {{ day.getDate() }}">
+
+          <div class="month-cell-top">
+            <span class="month-cell-date">{{ day.getDate() }}</span>
+            <span class="month-cell-count" *ngIf="getMonthDayPosts(day).length > 0">
+              {{ getMonthDayPosts(day).length }}
             </span>
+          </div>
+
+          <div class="month-cell-posts">
+            <ng-container *ngFor="let post of getMonthDayPosts(day).slice(0, 4)">
+              <div class="month-post-chip"
+                   [ngClass]="'net-' + post.network"
+                   [class.chip-draft]="post.status === 'DRAFT'"
+                   [class.chip-approved]="post.status === 'APPROVED'"
+                   [class.chip-published]="post.status === 'PUBLISHED'"
+                   [class.chip-rejected]="post.status === 'REJECTED'"
+                   [title]="post.network + ' · ' + statusLabel(post.status) + ' — ' + (post.text_content | slice:0:80)">
+                <i class="bi" [ngClass]="networkIcon(post.network)"></i>
+                <span class="month-chip-text">{{ post.text_content | slice:0:22 }}</span>
+              </div>
+            </ng-container>
+            <div class="month-more" *ngIf="getMonthDayPosts(day).length > 4">
+              +{{ getMonthDayPosts(day).length - 4 }} más
+            </div>
           </div>
         </div>
       </ng-container>
     </div>
-
-    <!-- Leyenda -->
-    <div class="cal-legend">
-      <span class="legend-section-label">Estado:</span>
-      <span class="legend-item"><span class="legend-chip status-draft"></span><span>Borrador</span></span>
-      <span class="legend-item"><span class="legend-chip status-approved"></span><span>Aprobado</span></span>
-      <span class="legend-item"><span class="legend-chip status-published"></span><span>Publicado</span></span>
-      <span class="legend-sep">|</span>
-      <span class="legend-section-label">Red:</span>
-      <span class="legend-item"><span class="legend-chip stripe-instagram"></span><span>Instagram</span></span>
-      <span class="legend-item"><span class="legend-chip stripe-facebook"></span><span>Facebook</span></span>
-      <span class="legend-item"><span class="legend-chip stripe-linkedin"></span><span>LinkedIn</span></span>
-      <span class="legend-item"><span class="legend-chip stripe-twitter"></span><span>Twitter/X</span></span>
-    </div>
   </ng-container>
 
-  <!-- ── VISTA SEMANAL ─────────────────────────────────────────────────────── -->
-  <div *ngIf="viewMode === 'week' && loading" class="text-center p-4">
+  <!-- ══════════════════════════════════════════════ VISTA SEMANAL -->
+  <div *ngIf="viewMode === 'week' && loading" class="cal-spinner-wrap">
     <div class="spinner-border text-primary"></div>
   </div>
 
-  <!-- Grid -->
   <div class="cal-grid" *ngIf="viewMode === 'week' && !loading"
        [class.zoom-compact]="zoom === 'compact'"
        [class.zoom-large]="zoom === 'large'"
        [class.is-dragging]="!!draggedPost">
 
-    <!-- Header -->
+    <!-- Cabecera de días -->
     <div class="cal-corner"></div>
-    <div class="cal-day-header" *ngFor="let day of days; trackBy: trackByDay" [class.today]="isToday(day)">
-      {{ formatDay(day) | titlecase }}
+    <div class="cal-day-header" *ngFor="let day of days; trackBy: trackByDay"
+         [class.today]="isToday(day)">
+      <span class="day-name">{{ formatDay(day) | titlecase }}</span>
     </div>
 
-    <!-- Hour rows -->
+    <!-- Filas de horas -->
     <ng-container *ngFor="let hour of hours; trackBy: trackByHour">
-      <div class="cal-hour-label" [style.height.px]="cellHeight" [class.current-hour-label]="isCurrentHour(hour)">
+      <div class="cal-hour-label"
+           [style.height.px]="cellHeight"
+           [class.current-hour-label]="isCurrentHour(hour)">
         {{ formatHour(hour) }}
       </div>
 
@@ -168,55 +173,121 @@
            (dragleave)="onDragLeave(day, hour, $event)"
            (drop)="onDrop(day, hour, $event)">
 
-        <!-- Línea de hora actual -->
-        <div class="time-now-line" *ngIf="isCurrentHour(hour) && isToday(day)" [style.top.%]="nowMinutePct">
+        <!-- Línea hora actual -->
+        <div class="time-now-line"
+             *ngIf="isCurrentHour(hour) && isToday(day)"
+             [style.top.%]="nowMinutePct">
           <span class="time-now-dot"></span>
         </div>
 
-        <!-- Posts en esta celda -->
+        <!-- Posts -->
         <div *ngFor="let post of getPostsForSlot(day, hour); trackBy: trackByPost"
              [class]="postClass(post)"
              [class.is-dragged]="draggedPost?.post_id === post.post_id"
+             [class.show-tooltip]="hoveredPostId === post.post_id"
              draggable="true"
              (dragstart)="onDragStart(post, $event)"
              (dragend)="onDragEnd($event)"
              (click)="openPost(post, $event)"
-             [title]="post.network + ' — ' + statusLabel(post.status) + ': ' + (post.text_content | slice:0:80)">
+             (mouseenter)="onPostMouseEnter(post)"
+             (mouseleave)="onPostMouseLeave()">
+
           <span class="net-stripe" [ngClass]="'stripe-' + post.network"></span>
           <i class="bi" [ngClass]="networkIcon(post.network)"></i>
-          <span class="thread-pip" *ngIf="post.is_thread" title="Hilo de tweets">🧵</span>
-          <span class="post-preview" *ngIf="!isCompact">{{ post.text_content | slice:0:35 }}…</span>
+          <span class="thread-pip" *ngIf="post.is_thread" title="Hilo">🧵</span>
+          <span class="post-preview" *ngIf="!isCompact">{{ post.text_content | slice:0:38 }}</span>
+
+          <!-- Tooltip de métricas (Twitter publicado) -->
+          <div class="post-metrics-tooltip"
+               *ngIf="hoveredPostId === post.post_id && post.status === 'PUBLISHED' && post.network === 'twitter'"
+               (click)="$event.stopPropagation()">
+            <div class="tooltip-header">
+              <i class="bi bi-twitter-x"></i>
+              <span>Métricas</span>
+              <span class="tooltip-time" *ngIf="post.scheduled_at">
+                {{ post.scheduled_at | date:'dd MMM · HH:mm' }}
+              </span>
+            </div>
+            <div class="tooltip-loading" *ngIf="calMetricsLoading[post.post_id]">
+              <div class="spinner-border spinner-border-sm me-1"></div>
+              Cargando…
+            </div>
+            <ng-container *ngIf="calMetrics[post.post_id] as m">
+              <div class="tooltip-metrics">
+                <div class="tooltip-metric">
+                  <i class="bi bi-eye-fill"></i>
+                  <span class="metric-val">{{ m.impressions | number }}</span>
+                  <span class="metric-lbl">Imp.</span>
+                </div>
+                <div class="tooltip-metric">
+                  <i class="bi bi-heart-fill"></i>
+                  <span class="metric-val">{{ m.likes }}</span>
+                  <span class="metric-lbl">Likes</span>
+                </div>
+                <div class="tooltip-metric">
+                  <i class="bi bi-repeat"></i>
+                  <span class="metric-val">{{ m.retweets }}</span>
+                  <span class="metric-lbl">RT</span>
+                </div>
+                <div class="tooltip-metric">
+                  <i class="bi bi-chat-fill"></i>
+                  <span class="metric-val">{{ m.replies }}</span>
+                  <span class="metric-lbl">Resp.</span>
+                </div>
+              </div>
+            </ng-container>
+            <div class="tooltip-no-metrics"
+                 *ngIf="!calMetricsLoading[post.post_id] && !calMetrics[post.post_id]">
+              <i class="bi bi-info-circle me-1"></i>Sin métricas disponibles
+            </div>
+            <div class="tooltip-preview-text">
+              {{ post.text_content | slice:0:80 }}{{ (post.text_content || '').length > 80 ? '…' : '' }}
+            </div>
+          </div>
+
+          <!-- Tooltip info básico (no publicado o no Twitter) -->
+          <div class="post-info-tooltip"
+               *ngIf="hoveredPostId === post.post_id && !(post.status === 'PUBLISHED' && post.network === 'twitter')"
+               (click)="$event.stopPropagation()">
+            <div class="info-tooltip-header">
+              <i class="bi" [ngClass]="networkIcon(post.network)"></i>
+              <span>{{ post.network | titlecase }}</span>
+              <span class="info-status-badge" [ngClass]="'badge-' + post.status.toLowerCase()">
+                {{ statusLabel(post.status) }}
+              </span>
+            </div>
+            <p class="info-tooltip-text">
+              {{ post.text_content | slice:0:100 }}{{ (post.text_content || '').length > 100 ? '…' : '' }}
+            </p>
+          </div>
         </div>
       </div>
     </ng-container>
   </div>
 
-  <!-- Leyenda (vista semanal) -->
-  <div class="cal-legend" *ngIf="viewMode === 'week'">
-    <span class="legend-section-label">Estado:</span>
-    <span class="legend-item">
-      <span class="legend-chip status-draft"></span>
-      <span>Borrador</span>
-    </span>
-    <span class="legend-item">
-      <span class="legend-chip status-approved"></span>
-      <span>Aprobado</span>
-    </span>
-    <span class="legend-item">
-      <span class="legend-chip status-published"></span>
-      <span>Publicado</span>
-    </span>
-    <span class="legend-item">
-      <span class="legend-chip status-rejected"></span>
-      <span>Rechazado</span>
-    </span>
-    <span class="legend-sep">|</span>
-    <span class="legend-section-label">Red:</span>
-    <span class="legend-item"><span class="legend-chip stripe-instagram"></span><span>Instagram</span></span>
-    <span class="legend-item"><span class="legend-chip stripe-facebook"></span><span>Facebook</span></span>
-    <span class="legend-item"><span class="legend-chip stripe-linkedin"></span><span>LinkedIn</span></span>
-    <span class="legend-item"><span class="legend-chip stripe-twitter"></span><span>Twitter/X</span></span>
+  <!-- ══════════════════════════════════════════════════════ LEYENDA -->
+  <div class="cal-legend">
+    <div class="legend-group">
+      <span class="legend-section-label">Estado</span>
+      <span class="legend-item"><span class="legend-chip status-draft"></span>Borrador</span>
+      <span class="legend-item"><span class="legend-chip status-approved"></span>Aprobado</span>
+      <span class="legend-item"><span class="legend-chip status-published"></span>Publicado</span>
+      <span class="legend-item"><span class="legend-chip status-rejected"></span>Rechazado</span>
+    </div>
+    <div class="legend-divider"></div>
+    <div class="legend-group">
+      <span class="legend-section-label">Red</span>
+      <span class="legend-item"><span class="legend-chip stripe-instagram"></span>Instagram</span>
+      <span class="legend-item"><span class="legend-chip stripe-facebook"></span>Facebook</span>
+      <span class="legend-item"><span class="legend-chip stripe-linkedin"></span>LinkedIn</span>
+      <span class="legend-item"><span class="legend-chip stripe-twitter"></span>Twitter/X</span>
+    </div>
+    <div class="legend-hint" *ngIf="viewMode === 'week'">
+      <i class="bi bi-info-circle"></i>
+      Pasa el ratón sobre un post publicado de Twitter para ver métricas
+    </div>
   </div>
+
 </div>
 
 <!-- Editor modal -->
