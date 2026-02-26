@@ -186,27 +186,29 @@ $g-table-head: #002c40;
 }
 
 /* =========================================================
-   SECCIÓN TABLA
+   SECCIÓN TABLA — SaaS Light Design
 ========================================================= */
 .table-section {
   margin: 1.25rem 0;
   border-radius: 16px;
   overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
   box-shadow:
-    0 24px 64px rgba(0,0,0,0.45),
-    0 4px 20px rgba(0,0,0,0.25),
-    0 0 0 1px rgba(255,255,255,0.04);
+    0 1px 3px rgba(0,0,0,0.06),
+    0 4px 16px rgba(0,44,64,0.07),
+    0 12px 40px rgba(0,44,64,0.04);
 }
 
-/* ── CABECERA FIFA ────────────────────────────────────── */
+/* ── CABECERA ─────────────────────────────────────────── */
 .fifa-table-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.85rem 1.25rem;
-  background: #001829;
+  padding: 1rem 1.25rem;
+  background: #002c40;
   border-radius: 16px 16px 0 0;
-  border-bottom: 1px solid rgba(49,178,112,0.25);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
   gap: 1rem;
 }
 
@@ -220,11 +222,11 @@ $g-table-head: #002c40;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 10px;
   background: linear-gradient(135deg, $sp-green 0%, $sp-green-dark 100%);
-  box-shadow: 0 4px 12px rgba(49,178,112,0.4);
+  box-shadow: 0 3px 10px rgba(49,178,112,0.32);
   flex-shrink: 0;
 
   i {
@@ -236,12 +238,12 @@ $g-table-head: #002c40;
 .fifa-header-info {
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
 }
 
 .fifa-header-label {
-  font-size: 0.72rem;
-  font-weight: 700;
+  font-size: 0.68rem;
+  font-weight: 600;
   color: rgba(255,255,255,0.5);
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -257,14 +259,14 @@ $g-table-head: #002c40;
 .fifa-header-legend {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.25rem;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -276,9 +278,9 @@ $g-table-head: #002c40;
     display: inline-block;
   }
 
-  &.win   { color: rgba(74,222,128,0.8); .legend-dot { background: #4ade80; box-shadow: 0 0 6px rgba(74,222,128,0.5); } }
-  &.draw  { color: rgba(251,191,36,0.8); .legend-dot { background: #fbbf24; box-shadow: 0 0 6px rgba(251,191,36,0.5); } }
-  &.loss  { color: rgba(248,113,113,0.8); .legend-dot { background: #f87171; box-shadow: 0 0 6px rgba(248,113,113,0.5); } }
+  &.win  { color: rgba(74,222,128,0.88);  .legend-dot { background: #4ade80; box-shadow: 0 0 5px rgba(74,222,128,0.5); } }
+  &.draw { color: rgba(251,191,36,0.88); .legend-dot { background: #fbbf24; box-shadow: 0 0 5px rgba(251,191,36,0.5); } }
+  &.loss { color: rgba(248,113,113,0.88);.legend-dot { background: #f87171; box-shadow: 0 0 5px rgba(248,113,113,0.5); } }
 }
 
 /* ── WRAPPER TABLA ─────────────────────────────────────── */
@@ -287,42 +289,42 @@ $g-table-head: #002c40;
   border: none;
   overflow-x: auto;
   overflow-y: hidden;
-  background: #011c2e;
+  background: #ffffff;
 
   &::-webkit-scrollbar        { height: 5px; }
-  &::-webkit-scrollbar-track  { background: #011c2e; }
+  &::-webkit-scrollbar-track  { background: #f1f5f9; }
   &::-webkit-scrollbar-thumb  {
-    background: rgba(49,178,112,0.35);
+    background: #cbd5e1;
     border-radius: 3px;
-    &:hover { background: rgba(49,178,112,0.55); }
+    &:hover { background: #94a3b8; }
   }
 }
 
 
 /* =========================================================
-   TABLA PRINCIPAL — FIFA STYLE
+   TABLA PRINCIPAL — SaaS Light
 ========================================================= */
 .modern-table {
   border-collapse: separate;
   border-spacing: 0;
   width: 100%;
   margin: 0;
-  background: #011c2e;
+  background: #ffffff;
 }
 
 /* ── THEAD ─────────────────────────────────────────────── */
 .modern-table thead th {
-  font-size: 0.62rem;
+  font-size: 0.63rem;
   font-weight: 700;
-  background: #001422;
+  background: #002c40;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.45);
   border: none;
-  padding: 0.75rem 0.6rem;
+  padding: 0.8rem 0.6rem;
   text-align: center;
   white-space: nowrap;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
   position: relative;
 
   &:not(:last-child)::after {
@@ -330,14 +332,14 @@ $g-table-head: #002c40;
     position: absolute;
     right: 0; top: 22%;
     width: 1px; height: 56%;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.08);
   }
 }
 
 .modern-table thead th.col-rank {
   width: 52px;
   min-width: 52px;
-  padding: 0.75rem 0.5rem;
+  padding: 0.8rem 0.5rem;
 }
 
 .modern-table thead th.col-team {
@@ -355,9 +357,9 @@ $g-table-head: #002c40;
   min-width: 40px;
 }
 
-.modern-table thead th.col-win  { color: rgba(74,222,128,0.75); }
-.modern-table thead th.col-draw { color: rgba(251,191,36,0.75); }
-.modern-table thead th.col-loss { color: rgba(248,113,113,0.75); }
+.modern-table thead th.col-win  { color: rgba(74,222,128,0.85); }
+.modern-table thead th.col-draw { color: rgba(251,191,36,0.85); }
+.modern-table thead th.col-loss { color: rgba(248,113,113,0.85); }
 
 .modern-table thead th.col-form {
   min-width: 155px;
@@ -365,35 +367,35 @@ $g-table-head: #002c40;
 
 /* ── FILAS ─────────────────────────────────────────────── */
 .modern-table tbody tr {
-  background: transparent;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  transition: background 0.18s ease;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
   position: relative;
 
   &:hover {
-    background: rgba(255,255,255,0.04);
-    .team-name { color: $sp-green !important; }
+    background: #f8fafc;
+    .team-name { color: $sp-green-dark !important; }
   }
 
   &:last-child { border-bottom: none; }
 
   // Top 1 — dorado
   &.row-top1 {
-    box-shadow: inset 4px 0 0 #FFD700;
-    background: rgba(255,215,0,0.025);
-    &:hover { background: rgba(255,215,0,0.05); }
+    box-shadow: inset 4px 0 0 #F59E0B;
+    background: #fffbeb;
+    &:hover { background: #fef3c7; }
   }
   // Top 2 — plateado
   &.row-top2 {
-    box-shadow: inset 4px 0 0 #C0C0C0;
-    background: rgba(192,192,192,0.02);
-    &:hover { background: rgba(192,192,192,0.04); }
+    box-shadow: inset 4px 0 0 #94a3b8;
+    background: #f8fafc;
+    &:hover { background: #f1f5f9; }
   }
   // Top 3 — bronce
   &.row-top3 {
     box-shadow: inset 4px 0 0 #CD7F32;
-    background: rgba(205,127,50,0.02);
-    &:hover { background: rgba(205,127,50,0.04); }
+    background: #fdf8f3;
+    &:hover { background: #fef0e0; }
   }
 }
 
@@ -402,8 +404,8 @@ $g-table-head: #002c40;
   border: none;
   padding: 0.9rem 0.5rem;
   text-align: center;
-  font-size: 0.82rem;
-  color: rgba(255,255,255,0.75);
+  font-size: 0.84rem;
+  color: #334155;
   vertical-align: middle;
   font-variant-numeric: tabular-nums;
 
@@ -432,30 +434,30 @@ $g-table-head: #002c40;
   border-radius: 50%;
   font-size: 0.75rem;
   font-weight: 800;
-  background: rgba(255,255,255,0.07);
-  color: rgba(255,255,255,0.5);
+  background: #f1f5f9;
+  color: #64748b;
   letter-spacing: 0;
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid #e2e8f0;
 
   &.rank-gold {
     background: linear-gradient(145deg, #f5c518 0%, #e8a400 100%);
     color: #3d1f00;
     border: none;
-    box-shadow: 0 3px 12px rgba(245,197,24,0.55), 0 0 0 1px rgba(245,197,24,0.3);
+    box-shadow: 0 3px 12px rgba(245,197,24,0.45), 0 0 0 1px rgba(245,197,24,0.25);
   }
 
   &.rank-silver {
     background: linear-gradient(145deg, #b8c5cc 0%, #8c9ea8 100%);
     color: #1a2a32;
     border: none;
-    box-shadow: 0 3px 10px rgba(168,180,190,0.45), 0 0 0 1px rgba(168,180,190,0.25);
+    box-shadow: 0 3px 10px rgba(168,180,190,0.35), 0 0 0 1px rgba(168,180,190,0.2);
   }
 
   &.rank-bronze {
     background: linear-gradient(145deg, #e09e6a 0%, #a85f28 100%);
     color: #2a0e00;
     border: none;
-    box-shadow: 0 3px 10px rgba(205,127,71,0.45), 0 0 0 1px rgba(205,127,71,0.25);
+    box-shadow: 0 3px 10px rgba(205,127,71,0.35), 0 0 0 1px rgba(205,127,71,0.2);
   }
 }
 
@@ -474,18 +476,18 @@ $g-table-head: #002c40;
 }
 
 .team-avatar {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  background: linear-gradient(135deg, rgba(49,178,112,0.25) 0%, rgba(0,77,110,0.4) 100%);
-  border: 1.5px solid rgba(49,178,112,0.3);
+  background: linear-gradient(135deg, rgba(49,178,112,0.18) 0%, rgba(0,77,110,0.22) 100%);
+  border: 2px solid rgba(49,178,112,0.22);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   font-size: 0.8rem;
   font-weight: 800;
-  color: rgba(255,255,255,0.85);
+  color: $sp-green-dark;
   text-transform: uppercase;
 
   &::before {
@@ -504,7 +506,7 @@ $g-table-head: #002c40;
 .team-name {
   font-weight: 700;
   font-size: 0.9rem;
-  color: rgba(255,255,255,0.9);
+  color: #0f172a;
   cursor: pointer;
   text-decoration: none;
   transition: color 0.15s ease;
@@ -515,16 +517,16 @@ $g-table-head: #002c40;
   display: block;
   max-width: 100%;
 
-  &:hover { color: $sp-green; }
+  &:hover { color: $sp-green-dark; }
 }
 
 .division-badge {
   display: inline-flex;
   align-items: center;
-  height: 16px;
+  height: 17px;
   padding: 0 7px;
-  background: rgba(49,178,112,0.12);
-  color: rgba(49,178,112,0.85);
+  background: rgba(49,178,112,0.09);
+  color: $sp-green-dark;
   border: 1px solid rgba(49,178,112,0.22);
   border-radius: 8px;
   font-size: 0.58rem;
@@ -547,45 +549,46 @@ $g-table-head: #002c40;
   letter-spacing: -0.02em;
   color: #ffffff;
   background: linear-gradient(145deg, #31b270 0%, #1d8a52 100%);
-  box-shadow: 0 4px 16px rgba(49,178,112,0.4), 0 0 0 2px rgba(49,178,112,0.2);
+  box-shadow: 0 4px 14px rgba(49,178,112,0.35), 0 0 0 2px rgba(49,178,112,0.15);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 
   &:hover {
     transform: scale(1.1);
-    box-shadow: 0 6px 20px rgba(49,178,112,0.55);
+    box-shadow: 0 6px 20px rgba(49,178,112,0.5);
   }
 
   &.pts-high {
     background: linear-gradient(145deg, #31b270 0%, #1d8a52 100%);
-    box-shadow: 0 4px 18px rgba(49,178,112,0.5), 0 0 0 2px rgba(49,178,112,0.25);
+    box-shadow: 0 4px 16px rgba(49,178,112,0.42), 0 0 0 2px rgba(49,178,112,0.18);
   }
 
   &.pts-mid {
     background: linear-gradient(145deg, #e8a200 0%, #b57a00 100%);
-    box-shadow: 0 4px 18px rgba(232,162,0,0.4), 0 0 0 2px rgba(232,162,0,0.2);
+    box-shadow: 0 4px 16px rgba(232,162,0,0.38), 0 0 0 2px rgba(232,162,0,0.18);
   }
 
   &.pts-low {
-    background: linear-gradient(145deg, #374151 0%, #1f2937 100%);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.06);
-    color: rgba(255,255,255,0.6);
+    background: #f1f5f9;
+    border: 2px solid #e2e8f0;
+    box-shadow: none;
+    color: #94a3b8;
     font-size: 0.9rem;
   }
 }
 
 /* ── STATS NUMÉRICAS ────────────────────────────────────── */
-.stat-win  { color: #4ade80; font-weight: 700; }
-.stat-draw { color: #fbbf24; font-weight: 700; }
-.stat-loss { color: #f87171; font-weight: 700; }
+.stat-win  { color: #16a34a; font-weight: 700; }
+.stat-draw { color: #b45309; font-weight: 700; }
+.stat-loss { color: #dc2626; font-weight: 700; }
 
 /* ── DIFERENCIA DE GOLES ────────────────────────────────── */
 .dg-pill {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 36px;
+  min-width: 38px;
   height: 22px;
-  padding: 0 7px;
+  padding: 0 8px;
   border-radius: 6px;
   font-size: 0.75rem;
   font-weight: 700;
@@ -593,21 +596,21 @@ $g-table-head: #002c40;
 }
 
 .dg-positive .dg-pill {
-  background: rgba(74,222,128,0.12);
-  color: #4ade80;
-  border: 1px solid rgba(74,222,128,0.25);
+  background: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
 }
 
 .dg-negative .dg-pill {
-  background: rgba(248,113,113,0.12);
-  color: #f87171;
-  border: 1px solid rgba(248,113,113,0.25);
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
 }
 
 .col-dg:not(.dg-positive):not(.dg-negative) .dg-pill {
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.45);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: #f1f5f9;
+  color: #94a3b8;
+  border: 1px solid #e2e8f0;
 }
 
 /* =========================================================
@@ -639,24 +642,24 @@ $g-table-head: #002c40;
 
   &.win  {
     background: linear-gradient(145deg, #4ade80, #16a34a);
-    box-shadow: 0 3px 10px rgba(74,222,128,0.45);
+    box-shadow: 0 3px 8px rgba(74,222,128,0.4);
   }
 
   &.draw {
     background: linear-gradient(145deg, #fbbf24, #d97706);
     color: #1c0a00;
-    box-shadow: 0 3px 10px rgba(251,191,36,0.4);
+    box-shadow: 0 3px 8px rgba(251,191,36,0.35);
   }
 
   &.loss {
     background: linear-gradient(145deg, #f87171, #dc2626);
-    box-shadow: 0 3px 10px rgba(248,113,113,0.45);
+    box-shadow: 0 3px 8px rgba(248,113,113,0.4);
   }
 }
 
 .no-results-text {
   font-size: 1rem;
-  color: rgba(255,255,255,0.2);
+  color: #cbd5e1;
   font-weight: 500;
   letter-spacing: 0.05em;
 }
@@ -668,12 +671,12 @@ $g-table-head: #002c40;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 3rem 1rem;
-  color: rgba(255,255,255,0.3);
+  padding: 3.5rem 1rem;
+  color: #94a3b8;
   gap: 0.5rem;
 
-  i { opacity: 0.25; color: rgba(255,255,255,0.8); }
-  p { font-size: 0.9rem; margin: 0; }
+  i { opacity: 0.35; color: #94a3b8; font-size: 2.5rem; }
+  p { font-size: 0.9rem; margin: 0; color: #94a3b8; }
 }
 
 /* =========================================================
@@ -1274,65 +1277,90 @@ $g-table-head: #002c40;
     background: linear-gradient(135deg, #001f2e 0%, #003050 55%, #1d6940 100%);
   }
 
-  .table-scroll-wrap { border-color: rgba(255,255,255,0.06); }
+  // ── Tabla dark ──────────────────────────────────────────
+  .table-section {
+    background: #011c2e;
+    border-color: rgba(255,255,255,0.06);
+    box-shadow: 0 24px 64px rgba(0,0,0,0.45), 0 4px 20px rgba(0,0,0,0.25);
+  }
+
+  .fifa-table-header {
+    background: #001829;
+    border-bottom-color: rgba(49,178,112,0.22);
+  }
+
+  .table-scroll-wrap {
+    background: #011c2e;
+    &::-webkit-scrollbar-track  { background: #011c2e; }
+    &::-webkit-scrollbar-thumb  { background: rgba(49,178,112,0.35); }
+  }
 
   .skeleton-row {
     background: linear-gradient(90deg, var(--bg-surface) 25%, var(--bg-hover) 37%, var(--bg-surface) 63%);
     background-size: 400% 100%;
   }
 
+  .modern-table {
+    background: #011c2e;
+  }
+
   .modern-table thead th {
-    background: #002c40;
-    color: rgba(255,255,255,0.88);
-    border-bottom-color: rgba(49,178,112,0.32);
-  }
-
-  .modern-table tbody tr {
-    background: var(--bg-card);
-    border-bottom-color: rgba(255,255,255,0.04);
-
-    &:hover {
-      background: rgba(49,178,112,0.05);
-      box-shadow: inset 3px 0 0 $sp-green;
-    }
-
-    &.row-top1 { box-shadow: inset 3px 0 0 #f5a623; }
-    &.row-top2 { box-shadow: inset 3px 0 0 #a8b4be; }
-    &.row-top3 { box-shadow: inset 3px 0 0 #cd7f47; }
-    &.row-top1:hover { box-shadow: inset 3px 0 0 #f5a623; }
-    &.row-top2:hover { box-shadow: inset 3px 0 0 #a8b4be; }
-    &.row-top3:hover { box-shadow: inset 3px 0 0 #cd7f47; }
-  }
-
-  .modern-table tbody td {
-    color: var(--text-primary);
+    background: #001422;
+    border-bottom-color: rgba(255,255,255,0.06);
     &:not(:last-child)::after { background: rgba(255,255,255,0.05); }
   }
 
-  .team-cell .team-name {
-    color: #56c9f7;
-    border-color: rgba(86,201,247,0.28);
-    &:hover { color: #3dd68a; border-color: $sp-green; }
+  .modern-table tbody tr {
+    background: transparent;
+    border-bottom-color: rgba(255,255,255,0.04);
+
+    &:hover {
+      background: rgba(255,255,255,0.04);
+      .team-name { color: $sp-green !important; }
+    }
+
+    &.row-top1 { box-shadow: inset 4px 0 0 #FFD700; background: rgba(255,215,0,0.025); &:hover { background: rgba(255,215,0,0.05); } }
+    &.row-top2 { box-shadow: inset 4px 0 0 #C0C0C0; background: rgba(192,192,192,0.02); &:hover { background: rgba(192,192,192,0.04); } }
+    &.row-top3 { box-shadow: inset 4px 0 0 #CD7F32; background: rgba(205,127,50,0.02); &:hover { background: rgba(205,127,50,0.04); } }
   }
 
-  .division-badge {
-    background: rgba(255,255,255,0.07);
-    color: rgba(255,255,255,0.45);
-    border-color: rgba(255,255,255,0.1);
-  }
-
-  .no-results-text {
-    color: rgba(255,255,255,0.2);
-  }
-
-  .rank-badge:not(.rank-gold):not(.rank-silver):not(.rank-bronze) {
-    background: rgba(255,255,255,0.1);
+  .modern-table tbody td {
     color: rgba(255,255,255,0.75);
   }
 
-  .pts-pill { box-shadow: 0 2px 8px rgba(49,178,112,0.2); }
+  .team-name {
+    color: rgba(255,255,255,0.9);
+    &:hover { color: $sp-green; }
+  }
 
-  .stat-win  { color: $sp-green; }
+  .team-avatar {
+    background: linear-gradient(135deg, rgba(49,178,112,0.25) 0%, rgba(0,77,110,0.4) 100%);
+    border-color: rgba(49,178,112,0.3);
+    color: rgba(255,255,255,0.85);
+  }
+
+  .division-badge {
+    background: rgba(49,178,112,0.12);
+    color: rgba(49,178,112,0.85);
+    border-color: rgba(49,178,112,0.22);
+  }
+
+  .no-results-text { color: rgba(255,255,255,0.2); }
+
+  .rank-badge:not(.rank-gold):not(.rank-silver):not(.rank-bronze) {
+    background: rgba(255,255,255,0.07);
+    color: rgba(255,255,255,0.5);
+    border-color: rgba(255,255,255,0.1);
+  }
+
+  .pts-pill.pts-low {
+    background: linear-gradient(145deg, #374151 0%, #1f2937 100%);
+    border: none;
+    color: rgba(255,255,255,0.6);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 2px rgba(255,255,255,0.06);
+  }
+
+  .stat-win  { color: #4ade80; }
   .stat-draw { color: #fbbf24; }
   .stat-loss { color: #f87171; }
 
@@ -1350,7 +1378,7 @@ $g-table-head: #002c40;
 
   .col-dg:not(.dg-positive):not(.dg-negative) .dg-pill {
     background: rgba(255,255,255,0.06);
-    color: rgba(255,255,255,0.7);
+    color: rgba(255,255,255,0.45);
     border-color: rgba(255,255,255,0.1);
   }
 

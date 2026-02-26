@@ -82,9 +82,17 @@ export class ChargeSavedCardModalComponent implements OnChanges {
     }
 
     this.charging = true;
+
+    // Calcular el neto que debe recibir el club: base + comisión del club (si aplica).
+    // El backend aplica el gross-up de Stripe sobre este neto.
+    const base = parseFloat(this.selectedPago.importe) || 0;
+    const comisionClubPct = parseFloat(this.selectedPago.comisionClub) || 0;
+    const clubFee = Math.round(base * 100 * (comisionClubPct / 100)) / 100;
+    const netAmount = parseFloat((base + clubFee).toFixed(2));
+
     const body = {
       savedCardId: this.selectedCardId,
-      amount: this.selectedPago.importe,
+      amount: netAmount,
       clubId: this.clubId,
       accountId: this.accountId,
       pagoClubId: this.selectedPagoClubId,

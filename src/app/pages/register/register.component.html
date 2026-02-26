@@ -152,7 +152,7 @@
                 </div>
                 <div class="rg-field">
                   <label class="rg-label"><i class="bi bi-telephone me-1"></i>{{ 'REGISTER.COMMON.PHONE' | translate }}</label>
-                  <input class="rg-input" formControlName="mobile" type="number" [placeholder]="'REGISTER.COMMON.PHONE' | translate" />
+                  <input class="rg-input" formControlName="mobile" type="text" [placeholder]="'REGISTER.COMMON.PHONE' | translate" />
                 </div>
               </div>
 
@@ -301,7 +301,7 @@
                 <div class="rg-field">
                   <label class="rg-label"><i class="bi bi-telephone me-1"></i>{{ 'REGISTER.COMMON.PHONE' | translate }}</label>
                   <input class="rg-input" [class.rg-input--error]="isInvalidEntrenador('mobile')"
-                    formControlName="mobile" type="number" [placeholder]="'REGISTER.COMMON.PHONE' | translate" />
+                    formControlName="mobile" type="text" [placeholder]="'REGISTER.COMMON.PHONE' | translate" />
                   <small class="rg-error-text" *ngIf="isInvalidEntrenador('mobile')">
                     <i class="bi bi-exclamation-circle me-1"></i>{{ 'ERRORS.REQUIRED_PHONE' | translate }}
                   </small>

@@ -275,13 +275,21 @@
 
             <div class="cq-col-num">
               <span class="cq-label-mobile">Importe</span>
-              <span class="cq-amount">
+              <!-- Puntual: muestra solo el importe base. Sphaira Pay: importe total con comisiones. -->
+              <span class="cq-amount" *ngIf="!isSphaira(cuota)">
+                {{ parseFloatHelper(cuota.importe) }} €
+              </span>
+              <span class="cq-amount cq-amount--sphaira" *ngIf="isSphaira(cuota)"
+                    [title]="'Base: ' + cuota.importe + ' €'">
                 {{ calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0) }} €
               </span>
             </div>
             <div class="cq-col-num">
               <span class="cq-label-mobile">Pagado</span>
-              <span class="cq-amount cq-amount--paid">{{ cuota.pagado }} €</span>
+              <span class="cq-amount cq-amount--paid"
+                    [title]="(+cuota.pagado) > 0 ? 'Base registrada: ' + cuota.pagado + ' €' : ''">
+                {{ getPagadoVisible(cuota) }} €
+              </span>
             </div>
 
             <div class="cq-col-fecha">
@@ -443,13 +451,21 @@
 
             <div class="cq-col-num">
               <span class="cq-label-mobile">Importe</span>
-              <span class="cq-amount">
+              <!-- Puntual: muestra solo el importe base. Sphaira Pay: importe total con comisiones. -->
+              <span class="cq-amount" *ngIf="!isSphaira(cuota)">
+                {{ parseFloatHelper(cuota.importe) }} €
+              </span>
+              <span class="cq-amount cq-amount--sphaira" *ngIf="isSphaira(cuota)"
+                    [title]="'Base: ' + cuota.importe + ' €'">
                 {{ calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0) }} €
               </span>
             </div>
             <div class="cq-col-num">
               <span class="cq-label-mobile">Pagado</span>
-              <span class="cq-amount cq-amount--paid">{{ cuota.pagado }} €</span>
+              <span class="cq-amount cq-amount--paid"
+                    [title]="(+cuota.pagado) > 0 ? 'Base registrada: ' + cuota.pagado + ' €' : ''">
+                {{ getPagadoVisible(cuota) }} €
+              </span>
             </div>
             <div class="cq-col-fecha">
               <span class="cq-label-mobile">Vence</span>

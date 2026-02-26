@@ -220,6 +220,17 @@ export class CuotasComponent implements OnInit {
     return Math.max(imp - pag, 0).toFixed(2);
   }
 
+  /**
+   * Devuelve el importe real pagado por el padre:
+   * - Si hay pagado > 0: gross completo (base + club fee + Sphaira/Stripe fees)
+   * - Si no hay pago:    '0.00'
+   */
+  getPagadoVisible(cuota: any): string {
+    const pag = parseFloat(cuota.pagado) || 0;
+    if (pag <= 0) return '0.00';
+    return this.calcGrossAmount(cuota.importe, cuota.comisionClub ?? 0).toFixed(2);
+  }
+
   canSelectCuota(cuota: any): boolean {
     if (!cuota || cuota.desistido) return false;
     if (this.isSphaira(cuota)) return false;
@@ -1230,13 +1241,19 @@ export class CuotasComponent implements OnInit {
         if (!cuota.intervalo || !cuota.importe) {
           throw new Error('Esta cuota no tiene configuración de suscripción (intervalo/importe).');
         }
+        // El importe enviado a Stripe debe ser base + comisionClub para que el club reciba el neto correcto
+        const importeBase     = parseFloat(cuota.importe) || 0;
+        const comisionClubPct = Number(cuota.comisionClub ?? 0);
+        const clubFee         = +(importeBase * (comisionClubPct / 100)).toFixed(2);
+        const importeParaPlan = importeBase + clubFee;
+
         const planResp: any = await firstValueFrom(this.teamService.createSubscriptionPlan({
           pagoClubId:      cuota.pagoClubId,
           clubId:          this.clubId,
           accountId:       this.stripeId,
           titulo:          cuota.titulo || cuota.nombre,
           descripcion:     cuota.descripcion || undefined,
-          importe:         parseFloat(cuota.importe),
+          importe:         importeParaPlan,
           intervalo:       cuota.intervalo,
           intervaloCuenta: cuota.intervaloCuenta ?? 1,
           fechaInicio:     cuota.fechaInicio  || undefined,

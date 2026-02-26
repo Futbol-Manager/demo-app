@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { ClubSubscriptionService } from 'src/app/core/services/subscription/club-subscription.service';
 import { ClubSubscription, ClubPlan, ClubPlanType } from 'src/app/core/models/subscription/club-subscription.model';
@@ -14,6 +14,7 @@ import { Location } from '@angular/common';
 })
 export class SuscripcionClubComponent implements OnInit {
   loading = true;
+  datosCargados = false;
   currentUser: User | null = null;
   clubId = 0;
   profileId = 0;
@@ -25,9 +26,15 @@ export class SuscripcionClubComponent implements OnInit {
   // Active subscription
   subscription: ClubSubscription | null = null;
   showCancelConfirm = false;
+  editingClubCommission = false;
+  commissionDraft = 0;
+  savingClubCommission = false;
+  commissionEditError = '';
+  readonly maxClubCommissionPercent = 30;
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private location: Location,
     private translate: TranslateService,
     private subscriptionService: ClubSubscriptionService,
@@ -48,6 +55,20 @@ export class SuscripcionClubComponent implements OnInit {
 
         this.clubId = user.userId || 0;
         this.loadData();
+        
+        // Escuchar parámetros de consulta para detectar cuando se activa un plan
+        this.route.queryParams.subscribe(params => {
+          if (params['planActivated'] === 'true') {
+            console.log('Plan activated detected, reloading data...');
+            // Recargar los datos después de activar un plan
+            setTimeout(() => this.loadData(), 500);
+            // Limpiar el parámetro de la URL
+            this.router.navigate([], {
+              relativeTo: this.route,
+              queryParams: {}
+            });
+          }
+        });
       }
     });
   }
@@ -58,20 +79,62 @@ export class SuscripcionClubComponent implements OnInit {
 
   loadData(): void {
     this.loading = true;
-    // Load current subscription
-    this.subscriptionService.getCurrentSubscription(this.clubId).subscribe(sub => {
-      this.subscription = sub;
+    this.datosCargados = false;
+    // Load current subscription with clubId
+    this.subscriptionService.getCurrentClubPlan(this.clubId).subscribe(result => {
+      if (result.success && result.plan) {
+        // Mapear el plan actual al formato esperado por el componente
+        this.subscription = {
+          subscriptionId: result.plan.id,
+          clubId: result.plan.clubId,
+          planType: result.plan.planType,
+          status: result.plan.status,
+          period: 'monthly',
+          startDate: result.plan.startDate,
+          endDate: result.plan.endDate,
+          stripeConnectAccountId: result.plan.stripeConnectAccountId,
+          stripeConnectOnboardingUrl: result.plan.stripeConnectOnboardingUrl,
+          stripeConnectStatus: result.plan.stripeConnectStatus || 'not_started',
+          clubCommissionPercent: result.plan.clubCommissionPercent || 0
+        };
+        this.commissionDraft = this.subscription.clubCommissionPercent || 0;
+        this.editingClubCommission = false;
+        this.commissionEditError = '';
+      } else {
+        this.subscription = null;
+      }
       // Load available plans
       this.subscriptionService.getAvailablePlans().subscribe(plans => {
-        this.plans = plans;
+        this.plans = [...plans].sort((a, b) => this.getPlanOrder(a.id) - this.getPlanOrder(b.id));
         this.loading = false;
+        this.datosCargados = true;
       });
     });
   }
 
+  private getPlanOrder(planType: ClubPlanType): number {
+    switch (planType) {
+      case 'gratuito':
+        return 0;
+      case 'familia':
+        return 1;
+      case 'club':
+        return 2;
+      default:
+        return 99;
+    }
+  }
+
   selectPlan(planType: ClubPlanType): void {
+    if (this.isPlanComingSoon(planType)) {
+      return;
+    }
     this.selectedPlan = planType;
     this.router.navigate(['/dashboard/suscripcion-club/wizard', planType]);
+  }
+
+  isPlanComingSoon(planType: ClubPlanType): boolean {
+    return planType !== 'gratuito';
   }
 
   getPlanIcon(planType: ClubPlanType): string {
@@ -107,8 +170,8 @@ export class SuscripcionClubComponent implements OnInit {
   }
 
   cancelSubscription(): void {
-    if (this.subscription?.subscriptionId) {
-      this.subscriptionService.cancelSubscription(this.subscription.subscriptionId).subscribe(res => {
+    if (this.clubId) {
+      this.subscriptionService.cancelClubSubscription(this.clubId).subscribe(res => {
         if (res.success) {
           this.subscription = null;
           this.showCancelConfirm = false;
@@ -123,8 +186,9 @@ export class SuscripcionClubComponent implements OnInit {
 
   changePlan(): void {
     // Reset subscription to show plan selection
-    this.subscriptionService.setSubscription(null);
     this.subscription = null;
+    // Recargar los planes disponibles
+    this.loadData();
   }
 
   getParentRegistrationUrl(): string {
@@ -137,6 +201,57 @@ export class SuscripcionClubComponent implements OnInit {
       // Show success feedback
       this.urlCopied = true;
       setTimeout(() => this.urlCopied = false, 3000);
+    });
+  }
+
+  openStripe(): void {
+    const accountId = this.subscription?.stripeConnectAccountId;
+    const url = accountId
+      ? `https://dashboard.stripe.com/${accountId}/dashboard`
+      : (this.subscription?.stripeConnectOnboardingUrl || 'https://dashboard.stripe.com');
+
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  startEditClubCommission(): void {
+    if (!this.subscription || this.subscription.planType !== 'gratuito') return;
+    this.commissionDraft = this.subscription.clubCommissionPercent ?? 0;
+    this.editingClubCommission = true;
+    this.commissionEditError = '';
+  }
+
+  cancelEditClubCommission(): void {
+    this.editingClubCommission = false;
+    this.commissionDraft = this.subscription?.clubCommissionPercent ?? 0;
+    this.commissionEditError = '';
+  }
+
+  saveClubCommission(): void {
+    if (!this.subscription || this.subscription.planType !== 'gratuito' || this.savingClubCommission) return;
+
+    const normalizedValue = Number(this.commissionDraft);
+    if (Number.isNaN(normalizedValue) || normalizedValue < 0 || normalizedValue > this.maxClubCommissionPercent) {
+      this.commissionEditError = `El porcentaje debe estar entre 0 y ${this.maxClubCommissionPercent}.`;
+      return;
+    }
+
+    this.savingClubCommission = true;
+    this.commissionEditError = '';
+
+    this.subscriptionService.saveGratuitoConfig(this.clubId, normalizedValue).subscribe(response => {
+      if (response?.success) {
+        if (this.subscription) {
+          this.subscription.clubCommissionPercent = normalizedValue;
+        }
+        this.commissionDraft = normalizedValue;
+        this.editingClubCommission = false;
+      } else {
+        this.commissionEditError = response?.error || 'No se pudo guardar la comisión.';
+      }
+      this.savingClubCommission = false;
+    }, () => {
+      this.commissionEditError = 'No se pudo guardar la comisión.';
+      this.savingClubCommission = false;
     });
   }
 

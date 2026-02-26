@@ -38,6 +38,7 @@ export class ProfileComponent implements OnInit {
       firstName: ['', Validators.required],
       secondName: ['', Validators.required],
       mail: ['', Validators.required],
+      mobile: [''],
       birthdate: ['', Validators.required],
       genreType: ['', Validators.required],
     });
@@ -59,6 +60,7 @@ export class ProfileComponent implements OnInit {
         firstName: this.usuarioActual.firstName || '',
         secondName: this.usuarioActual.secondName || '',
         mail: this.usuarioActual.mail || '',
+        mobile: this.usuarioActual.mobile || '',
         birthdate: this.usuarioActual.birthdate || '',
         genreType: this.usuarioActual.idGenre || '',
       });
