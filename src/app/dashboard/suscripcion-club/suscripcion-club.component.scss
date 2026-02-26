@@ -39,6 +39,36 @@ $plan-free-accent-gradient: linear-gradient(135deg, #3BB271, #2e9b5e);
   i { font-size: 1.1rem; }
 }
 
+/* ═══════════ Initial Loader ═══════════ */
+.initial-loader {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.initial-loader__spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid rgba(59, 178, 113, 0.25);
+  border-top-color: $plan-club-accent;
+  animation: rotate-loader 0.75s linear infinite;
+}
+
+.initial-loader__text {
+  margin: 0;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+@keyframes rotate-loader {
+  to { transform: rotate(360deg); }
+}
+
 /* ═══════════ Skeleton ═══════════ */
 .skeleton-wrapper {
   display: grid;

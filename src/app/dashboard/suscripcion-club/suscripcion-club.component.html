@@ -6,7 +6,14 @@
   </button>
 </div>
 
-<!-- Skeleton -->
+<!-- Carga inicial simple y moderna -->
+<div class="initial-loader" *ngIf="!datosCargados">
+  <div class="initial-loader__spinner"></div>
+  <p class="initial-loader__text">Cargando suscripción...</p>
+</div>
+
+<!-- Skeleton (oculto temporalmente para evitar flash visual al entrar) -->
+<!--
 <div class="skeleton-wrapper" *ngIf="loading">
   <div class="skeleton-card" *ngFor="let i of [1,2,3]">
     <div class="skeleton-line skeleton-icon"></div>
@@ -16,9 +23,10 @@
     <div class="skeleton-line skeleton-btn"></div>
   </div>
 </div>
+-->
 
 <!-- ═══════════ ACTIVE SUBSCRIPTION VIEW ═══════════ -->
-<div class="subscription-active" *ngIf="!loading && subscription">
+<div class="subscription-active" *ngIf="datosCargados && subscription">
   <div class="sub-header-card">
     <div class="sub-header-info">
       <div class="sub-plan-icon" [ngClass]="getPlanColorClass(subscription.planType)">
@@ -89,7 +97,8 @@
     </div>
   </div>
 
-  <!-- Actions -->
+  <!-- Actions (temporalmente comentadas para reactivar más adelante) -->
+  <!--
   <div class="sub-actions">
     <button class="btn btn-outline-primary" (click)="changePlan()">
       <i class="bi bi-arrow-repeat"></i>
@@ -101,7 +110,6 @@
     </button>
   </div>
 
-  <!-- Cancel confirmation modal -->
   <div class="modal-overlay" *ngIf="showCancelConfirm" (click)="dismissCancel()">
     <div class="modal-card" (click)="$event.stopPropagation()">
       <div class="modal-card-header danger">
@@ -117,10 +125,11 @@
       </div>
     </div>
   </div>
+  -->
 </div>
 
 <!-- ═══════════ PLAN SELECTION ═══════════ -->
-<div class="plan-selection" *ngIf="!loading && !subscription">
+<div class="plan-selection" *ngIf="datosCargados && !subscription">
   <div class="plans-header">
     <h1>{{ 'CLUB_PLANS.SELECTION.TITLE' | translate }}</h1>
     <p>{{ 'CLUB_PLANS.SELECTION.SUBTITLE' | translate }}</p>

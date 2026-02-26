@@ -20,6 +20,8 @@ import {
   LockedFeature,
   ClubSubscriptionStatus,
   CurrencyInfo,
+  PlanPeriod,
+  StripeConnectStatus,
 } from '../../models/subscription/club-subscription.model';
 
 @Injectable({
@@ -169,20 +171,6 @@ export class ClubSubscriptionService {
     return of(plans).pipe(delay(300));
   }
 
-  // ─── Subscription State ─────────────────────────────────────
-  getCurrentSubscription(clubId: number): Observable<ClubSubscription | null> {
-    return this.http.get<any>(`${this.apiUrl}club-plan/${clubId}/current`).pipe(
-      map(res => {
-        if (res?.data) {
-          this.currentSubscription$.next(res.data);
-          return res.data;
-        }
-        return null;
-      }),
-      catchError(() => of(null))
-    );
-  }
-
   getSubscriptionObservable(): Observable<ClubSubscription | null> {
     return this.currentSubscription$.asObservable();
   }
@@ -321,6 +309,8 @@ export class ClubSubscriptionService {
     );
   }
 
+
+
   getStripeConnectStatus(clubId: number): Observable<StripeConnectOnboarding> {
     return this.http.get<any>(`${this.apiUrl}club-plan/gratuito/connect-status/${clubId}`).pipe(
       map(res => ({
@@ -375,13 +365,6 @@ export class ClubSubscriptionService {
   // ─── Activate Plans ────────────────────────────────────────
   activateFamiliaPlan(clubId: number, period: string): Observable<any> {
     return this.http.post<any>(`${this.apiUrl}club-plan/familia/activate`, { clubId, period }).pipe(
-      map(res => res?.data),
-      catchError(err => of(null))
-    );
-  }
-
-  activateGratuitoPlan(clubId: number): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}club-plan/gratuito/activate`, { clubId }).pipe(
       map(res => res?.data),
       catchError(err => of(null))
     );
@@ -452,6 +435,267 @@ export class ClubSubscriptionService {
       map(res => ({ success: !!res?.data })),
       catchError(() => of({ success: false }))
     );
+  }
+
+  // ── Nuevos métodos para sistema de suscripciones ─────────────
+  
+  /**
+   * Obtiene la suscripción activa de un club
+   * Método principal para verificar qué plan tiene activo
+   */
+  getCurrentSubscription(clubId: number): Observable<ClubSubscription | null> {
+    return this.http.get<any>(`${this.apiUrl}club-subscriptions/${clubId}/current`)
+      .pipe(
+        map(response => {
+          if (response.success && response.hasSubscription) {
+            return {
+              subscriptionId: response.subscriptionId,
+              clubId: clubId,
+              planType: response.planType.toLowerCase() as ClubPlanType,
+              status: response.status.toLowerCase() as ClubSubscriptionStatus,
+              period: response.period?.toLowerCase() as PlanPeriod,
+              startDate: response.startDate,
+              renewDate: response.renewDate,
+              endDate: response.endDate,
+              stripeSubscriptionId: response.stripeSubscriptionId,
+              stripeCustomerId: response.stripeCustomerId,
+              // Plan Club específico
+              playerCount: response.playerCount,
+              pricePerPlayer: response.pricePerPlayer,
+              totalAmount: response.totalAmount,
+              // Plan Gratuito específico
+              stripeConnectAccountId: response.stripeConnectAccountId,
+              stripeConnectStatus: response.stripeConnectStatus?.toLowerCase() as StripeConnectStatus,
+              clubCommissionPercent: response.clubCommissionPercent,
+              // Plan Familia específico
+              parentRegistrationUrl: response.parentRegistrationUrl,
+            } as ClubSubscription;
+          }
+          return null;
+        }),
+        catchError(error => {
+          console.error('Error fetching current subscription:', error);
+          return of(null);
+        })
+      );
+  }
+
+  /**
+   * Verifica si un club tiene acceso a una funcionalidad específica
+   */
+  hasFeatureAccess(clubId: number, feature: string): Observable<boolean> {
+    return this.http.get<any>(`${this.apiUrl}club-subscriptions/${clubId}/feature-access?feature=${feature}`)
+      .pipe(
+        map(response => response.success ? response.hasAccess : false),
+        catchError(() => of(false))
+      );
+  }
+
+  /**
+   * Cancela la suscripción de un club
+   */
+  cancelClubSubscription(clubId: number): Observable<{ success: boolean; message?: string }> {
+    return this.http.post<any>(`${this.apiUrl}club-subscriptions/${clubId}/cancel`, {})
+      .pipe(
+        map(response => ({ success: response.success, message: response.message })),
+        catchError(error => {
+          console.error('Error canceling subscription:', error);
+          return of({ success: false });
+        })
+      );
+  }
+
+  // ── Plan Gratuito métodos ─────────────────────────────────
+
+  /**
+   * Obtiene datos del club para autocompletar formulario del Plan Gratuito
+   * Por ahora devuelve null para usar los datos de fallback del componente
+   */
+  getClubDataForForm(clubId: number): Observable<any> {
+    // El endpoint no existe en el backend, devolver null para usar fallback
+    return of(null);
+  }
+
+  /**
+   * Inicia el proceso de onboarding de Stripe Connect para Plan Gratuito
+   */
+  startGratuitoOnboarding(clubId: number, clubData: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}club-plan/${clubId}/gratuito/start-onboarding`, clubData)
+      .pipe(
+        map(response => {
+          if (response.success) {
+            return {
+              success: true,
+              onboardingUrl: response.onboardingUrl,
+              stripeAccountId: response.stripeAccountId,
+              status: response.status
+            };
+          }
+          return { success: false, error: response.error };
+        }),
+        catchError(error => {
+          console.error('Error starting onboarding:', error);
+          return of({ success: false, error: error.message });
+        })
+      );
+  }
+
+  /**
+   * Verifica el estado de Stripe Connect para Plan Gratuito
+   */
+  checkGratuitoStatus(clubId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}club-plan/gratuito/connect-status/${clubId}`)
+      .pipe(
+        map(response => ({
+          success: response.status === 200,
+          connected: response.data?.connected || false,
+          accountId: response.data?.accountId || null,
+          chargesEnabled: response.data?.chargesEnabled || false,
+          payoutsEnabled: response.data?.payoutsEnabled || false,
+          detailsSubmitted: response.data?.detailsSubmitted || false
+        })),
+        catchError(error => {
+          console.error('Error checking gratuito status:', error);
+          return of({ success: false, connected: false, error: error.message });
+        })
+      );
+  }
+
+  /**
+   * Crea cuenta Stripe automáticamente para el club (Wizard)
+   */
+  createStripeAccount(clubId: number, email: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}club-plan/gratuito/connect/create-account`, {
+      clubId: clubId,
+      email: email
+    }).pipe(
+      map(res => ({
+        success: res.status === 200,
+        accountId: res?.data?.accountId || '',
+        onboardingUrl: res?.data?.url || '',
+        error: res?.error?.msg || null
+      })),
+      catchError(error => {
+        console.error('Error creating Stripe account:', error);
+        return of({
+          success: false,
+          accountId: '',
+          onboardingUrl: '',
+          error: error.message || 'Error creando cuenta Stripe'
+        });
+      })
+    );
+  }
+
+  /**
+   * Obtiene la configuración de Stripe Connect de un club
+   */
+  getGratuitoConfig(clubId: number): Observable<any> {
+    // Por ahora devolvemos configuración por defecto ya que el endpoint no existe
+    return of({
+      success: true,
+      config: {
+        sphairaPercent: 3,
+        fixedFeePerTransaction: 0.25,
+        clubPercent: 0
+      }
+    });
+  }
+
+  /**
+   * Genera nueva URL de onboarding si la anterior expiró
+   */
+  refreshGratuitoOnboarding(clubId: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}club-plan/gratuito/refresh-onboarding/${clubId}`, {})
+      .pipe(
+        map(response => response),
+        catchError(error => {
+          console.error('Error refreshing onboarding:', error);
+          return of({ success: false, error: error.message });
+        })
+      );
+  }
+
+  /**
+   * Calcula comisiones para Plan Gratuito
+   */
+  calculateGratuitoCommissions(clubId: number, amount: number): Observable<any> {
+    // Calculamos localmente ya que el endpoint no existe
+    const sphairaPercent = 3;
+    const fixedFee = 0.25;
+    const clubPercent = 0;
+    
+    const sphairaFee = (amount * sphairaPercent / 100) + fixedFee;
+    const clubFee = amount * clubPercent / 100;
+    const totalFee = sphairaFee + clubFee;
+    
+    return of({
+      success: true,
+      sphairaFee: +sphairaFee.toFixed(2),
+      clubFee: +clubFee.toFixed(2),
+      totalFee: +totalFee.toFixed(2),
+      parentPays: +(amount + totalFee).toFixed(2)
+    });
+  }
+
+  /**
+   * Activa el Plan Gratuito después de completar el onboarding de Stripe
+   */
+  activateGratuitoPlan(clubId: number): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}club-plan/gratuito/activate`, { clubId })
+      .pipe(
+        map(response => response),
+        catchError(error => {
+          console.error('Error activating gratuito plan:', error);
+          return of({ success: false, error: error.message });
+        })
+      );
+  }
+
+  /**
+   * Obtiene el plan actual del club desde la tabla club_plan
+   */
+  getCurrentClubPlan(clubId: number): Observable<any> {
+    const token = localStorage.getItem('token');
+    console.log('Getting club plan for clubId:', clubId);
+    console.log('Token available:', !!token);
+    
+    return this.http.get<any>(`${this.apiUrl}club-plan/${clubId}/current`)
+      .pipe(
+        map(response => {
+          console.log('Club plan response:', response);
+          if (response.status === 200 && response.data) {
+            return {
+              success: true,
+              plan: {
+                id: response.data.id,
+                clubId: response.data.clubId,
+                planType: response.data.planType,
+                status: response.data.status,
+                startDate: response.data.startDate,
+                endDate: response.data.endDate,
+                stripeConnectAccountId: response.data.stripeConnectAccountId,
+                clubCommissionPercent: response.data.clubCommissionPercent
+              }
+            };
+          }
+          console.log('No plan data in response');
+          return { success: false, plan: null };
+        }),
+        catchError(error => {
+          console.error('Error getting current club plan:', error);
+          console.error('Error status:', error.status);
+          console.error('Error details:', error);
+          
+          // Si es 403, puede que no tenga permisos o el plan no existe
+          if (error.status === 403) {
+            console.warn('Access forbidden - user might not have access to this club or plan does not exist');
+            return of({ success: false, plan: null, error: 'Access forbidden' });
+          }
+          
+          return of({ success: false, plan: null, error: error.message });
+        })
+      );
   }
 
   // ── Admin overrides (sin Stripe) ────────────────────────────────────────
