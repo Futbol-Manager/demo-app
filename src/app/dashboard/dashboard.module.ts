@@ -1,4 +1,4 @@
-﻿import { NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { MarkdownAiPipe } from './pipes/markdown.pipe';
 import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './dashboard.component';
@@ -167,6 +167,7 @@ import { ErpSetupComponent } from './erp/erp-setup/erp-setup.component';
 import { ErpAiConsentModalComponent } from './erp/erp-ai-consent-modal/erp-ai-consent-modal.component';
 import { StaffClubComponent } from './staff-club/staff-club.component';
 import { ModalBackdropDirective } from './shared/modal-backdrop.directive';
+import { PlanificadorSemanalIaComponent } from './planificador-semanal-ia/planificador-semanal-ia.component';
 
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -334,6 +335,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     ErpAiConsentModalComponent,
     StaffClubComponent,
     ModalBackdropDirective,
+    PlanificadorSemanalIaComponent,
   ],
   imports: [
     CommonModule,

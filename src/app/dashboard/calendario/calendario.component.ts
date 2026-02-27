@@ -110,6 +110,16 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   tituloMesAnio!: string;
   showModal = false;
   showModalEntrenamiento = false;
+  showPlanificadorIA = false;
+
+  abrirPlanificadorIA(): void {
+    this.showPlanificadorIA = true;
+  }
+
+  onCalendarioActualizadoPorIA(): void {
+    this.showPlanificadorIA = false;
+    this.getListaEntrenamientos();
+  }
   trainingSession: Training = new Training({});
   private initTrainingSession(): Training {
     return new Training({

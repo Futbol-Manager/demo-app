@@ -37,6 +37,14 @@
 
     <div class="calendar-inner">
 
+      <!-- BOTÓN PLANIFICADOR SEMANAL IA (solo visible en vista semana) -->
+      <div class="planner-ia-bar" *ngIf="vistaCalendario === 'week'">
+        <button type="button" class="btn-planner-ia" (click)="abrirPlanificadorIA()">
+          <i class="bi bi-stars"></i>
+          <span>{{ 'PLANNER.BTN_OPEN' | translate }}</span>
+        </button>
+      </div>
+
       <!-- NAVEGACIÓN (prev/next + título del periodo) -->
       <div class="calendar-header-nav calendar-header-nav-responsive">
         <button class="nav-btn" (click)="vistaCalendario === 'year' ? anioAnterior() : mesAnterior()">
@@ -179,6 +187,17 @@
     </div>
   </div>
 </div>
+
+<!-- ══ PLANIFICADOR SEMANAL IA (wizard modal) ══ -->
+<app-planificador-semanal-ia
+  *ngIf="showPlanificadorIA"
+  [teamId]="teamId"
+  [teamName]="nombreEquipo"
+  [clubId]="clubId"
+  [semanaActual]="semanaActual"
+  (cerrar)="showPlanificadorIA = false"
+  (calendarioActualizado)="onCalendarioActualizadoPorIA()">
+</app-planificador-semanal-ia>
 
 <div class="modal modal-saas d-block" *ngIf="showModal">
   <div class="modal-content">

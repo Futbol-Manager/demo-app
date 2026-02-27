@@ -1,3 +1,31 @@
+// ── Planificador Semanal IA ─────────────────────────────────
+.planner-ia-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.75rem;
+}
+
+.btn-planner-ia {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: linear-gradient(135deg, var(--sphaira-night, #002c40) 0%, #00465f 100%);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 0.45rem 1rem;
+  font-size: 0.83rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+  box-shadow: 0 2px 8px rgba(0, 44, 64, 0.25);
+
+  i { color: var(--sphaira-green, #31b270); font-size: 1rem; }
+  &:hover { opacity: 0.88; transform: translateY(-1px); }
+  &:active { transform: translateY(0); }
+}
+
+// ── Card (calendar base) ────────────────────────────────────
 .card {
   position: relative;
   display: flex;

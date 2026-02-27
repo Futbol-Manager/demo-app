@@ -1,0 +1,503 @@
+<!-- ═══════════════════════════════════════════════════
+     MODAL OVERLAY
+═══════════════════════════════════════════════════ -->
+<div class="planner-overlay" (click)="onCerrar()"></div>
+
+<div class="planner-modal">
+
+  <!-- CABECERA -->
+  <div class="planner-header">
+    <div class="planner-header-left">
+      <i class="bi bi-stars planner-icon"></i>
+      <div>
+        <h5 class="planner-title">{{ 'PLANNER.TITLE' | translate }}</h5>
+        <span class="planner-subtitle" *ngIf="currentStep <= totalSteps">
+          {{ 'PLANNER.STEP' | translate }} {{ currentStep }}/{{ totalSteps }}
+        </span>
+      </div>
+    </div>
+    <button class="btn-close-planner" (click)="onCerrar()" title="{{ 'COMMON.CLOSE' | translate }}">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <!-- PROGRESS BAR -->
+  <div class="planner-progress-bar" *ngIf="currentStep <= totalSteps">
+    <div class="planner-progress-fill" [style.width.%]="progressPercent"></div>
+  </div>
+
+  <!-- CUERPO DEL WIZARD -->
+  <div class="planner-body">
+
+    <!-- ══ STEP 1: Días de entrenamiento ══ -->
+    <div *ngIf="currentStep === 1" class="wizard-step">
+      <h6 class="step-title"><i class="bi bi-calendar3 me-2"></i>{{ 'PLANNER.S1_TITLE' | translate }}</h6>
+      <p class="step-desc">{{ 'PLANNER.S1_DESC' | translate }}</p>
+
+      <div class="day-grid">
+        <button *ngFor="let day of weekDays"
+          type="button"
+          class="day-btn"
+          [class.selected]="isTrainingDay(day.name)"
+          (click)="toggleTrainingDay(day.name)">
+          <span class="day-name">{{ day.name }}</span>
+        </button>
+      </div>
+
+      <div class="step-hint" *ngIf="selectedTrainingDays.length === 0">
+        <i class="bi bi-info-circle"></i> {{ 'PLANNER.S1_HINT' | translate }}
+      </div>
+    </div>
+
+    <!-- ══ STEP 2: Partido de la semana ══ -->
+    <div *ngIf="currentStep === 2" class="wizard-step">
+      <h6 class="step-title"><i class="bi bi-trophy me-2"></i>{{ 'PLANNER.S2_TITLE' | translate }}</h6>
+      <p class="step-desc">{{ 'PLANNER.S2_DESC' | translate }}</p>
+
+      <div class="toggle-group mb-3">
+        <label class="toggle-label">{{ 'PLANNER.S2_HAS_MATCH' | translate }}</label>
+        <div class="btn-group-toggle">
+          <button type="button" class="toggle-btn" [class.active]="!hasMatch" (click)="hasMatch = false">
+            {{ 'PLANNER.NO' | translate }}
+          </button>
+          <button type="button" class="toggle-btn" [class.active]="hasMatch" (click)="hasMatch = true">
+            {{ 'PLANNER.YES' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <ng-container *ngIf="hasMatch">
+        <div class="form-row">
+          <div class="form-group">
+            <label>{{ 'PLANNER.S2_MATCH_DAY' | translate }}</label>
+            <select class="form-select form-select-sm" [(ngModel)]="matchDay">
+              <option value="">— Selecciona —</option>
+              <option *ngFor="let day of weekDays" [value]="day.name">{{ day.label }}</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>{{ 'PLANNER.S2_MATCH_TIME' | translate }}</label>
+            <input type="time" class="form-control form-control-sm" [(ngModel)]="matchTime">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>{{ 'PLANNER.S2_LOCATION' | translate }}</label>
+            <div class="chip-group">
+              <button type="button" class="chip" [class.active]="matchLocation === 'Local'" (click)="matchLocation = 'Local'">
+                <i class="bi bi-house me-1"></i>Local
+              </button>
+              <button type="button" class="chip" [class.active]="matchLocation === 'Visitante'" (click)="matchLocation = 'Visitante'">
+                <i class="bi bi-airplane me-1"></i>Visitante
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>{{ 'PLANNER.S2_IMPORTANCE' | translate }}</label>
+            <div class="chip-group">
+              <button type="button" class="chip" *ngFor="let imp of ['Liga','Copa','Derby','Final','Otro']"
+                [class.active]="matchImportance === imp" (click)="matchImportance = imp">
+                {{ imp }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+
+    <!-- ══ STEP 3: Formato de sesiones ══ -->
+    <div *ngIf="currentStep === 3" class="wizard-step">
+      <h6 class="step-title"><i class="bi bi-stopwatch me-2"></i>{{ 'PLANNER.S3_TITLE' | translate }}</h6>
+      <p class="step-desc">{{ 'PLANNER.S3_DESC' | translate }}</p>
+
+      <div class="form-group mb-3">
+        <label>{{ 'PLANNER.S3_DURATION' | translate }}</label>
+        <div class="chip-group">
+          <button type="button" class="chip" *ngFor="let d of [60, 75, 90, 105, 120]"
+            [class.active]="sessionDuration === d" (click)="sessionDuration = d">
+            {{ d }}'
+          </button>
+        </div>
+      </div>
+
+      <div class="toggle-group mb-3">
+        <label class="toggle-label">{{ 'PLANNER.S3_DOUBLE' | translate }}</label>
+        <div class="btn-group-toggle">
+          <button type="button" class="toggle-btn" [class.active]="!hasDoubleSession" (click)="hasDoubleSession = false">
+            {{ 'PLANNER.NO' | translate }}
+          </button>
+          <button type="button" class="toggle-btn" [class.active]="hasDoubleSession" (click)="hasDoubleSession = true">
+            {{ 'PLANNER.YES' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group" *ngIf="hasDoubleSession">
+        <label>{{ 'PLANNER.S3_DOUBLE_DAY' | translate }}</label>
+        <select class="form-select form-select-sm" [(ngModel)]="doubleSessionDay">
+          <option value="">— Selecciona —</option>
+          <option *ngFor="let day of weekDays" [value]="day.name">{{ day.label }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ══ STEP 4: Plantilla y estado físico ══ -->
+    <div *ngIf="currentStep === 4" class="wizard-step">
+      <h6 class="step-title"><i class="bi bi-people me-2"></i>{{ 'PLANNER.S4_TITLE' | translate }}</h6>
+      <p class="step-desc">{{ 'PLANNER.S4_DESC' | translate }}</p>
+
+      <div class="form-group mb-4">
+        <label>{{ 'PLANNER.S4_PLAYERS' | translate }}: <strong>{{ playersAvailable }}</strong></label>
+        <input type="range" class="form-range" min="6" max="35" step="1" [(ngModel)]="playersAvailable">
+        <div class="range-labels">
+          <span>6</span><span>35</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'PLANNER.S4_FATIGUE' | translate }}</label>
+        <div class="fatigue-grid">
+          <button type="button" class="fatigue-btn"
+            *ngFor="let f of [
+              {key: 'BAJA', icon: 'bi-emoji-smile', label: 'Baja'},
+              {key: 'MEDIA', icon: 'bi-emoji-neutral', label: 'Media'},
+              {key: 'ALTA', icon: 'bi-emoji-frown', label: 'Alta'},
+              {key: 'MUY_ALTA', icon: 'bi-emoji-dizzy', label: 'Muy alta'}
+            ]"
+            [class.selected]="fatigue === f.key"
+            [attr.data-level]="f.key"
+            (click)="fatigue = f.key">
+            <i class="bi" [class]="f.icon"></i>
+            <span>{{ f.label }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STEP 5: Objetivos de la semana ══ -->
+    <div *ngIf="currentStep === 5" class="wizard-step">
+      <h6 class="step-title"><i class="bi bi-bullseye me-2"></i>{{ 'PLANNER.S5_TITLE' | translate }}</h6>
+      <p class="step-desc">{{ 'PLANNER.S5_DESC' | translate }}</p>
+
+      <div class="objectives-list">
+
+        <!-- Táctico -->
+        <div class="obj-item" [class.active]="objectivesMap['TACTICO']">
+          <div class="obj-header" (click)="objectivesMap['TACTICO'] = !objectivesMap['TACTICO']">
+            <div class="obj-check">
+              <i class="bi" [class.bi-check-square-fill]="objectivesMap['TACTICO']" [class.bi-square]="!objectivesMap['TACTICO']"></i>
+              <span>⚙️ Trabajo táctico</span>
+            </div>
+          </div>
+          <div class="obj-subs" *ngIf="objectivesMap['TACTICO']">
+            <label *ngFor="let s of [
+              {key: 'PRESION', label: 'Presión alta'},
+              {key: 'TRANSICIONES', label: 'Transiciones'},
+              {key: 'DEFENSA_ORGANIZADA', label: 'Defensa organizada'},
+              {key: 'JUEGO_POSICIONAL', label: 'Juego posicional'},
+              {key: 'SALIDA_BALON', label: 'Salida de balón'}
+            ]" class="sub-check">
+              <input type="checkbox" [(ngModel)]="tacticSubs[s.key]"> {{ s.label }}
+            </label>
+          </div>
+        </div>
+
+        <!-- Técnico -->
+        <div class="obj-item" [class.active]="objectivesMap['TECNICO']">
+          <div class="obj-header" (click)="objectivesMap['TECNICO'] = !objectivesMap['TECNICO']">
+            <div class="obj-check">
+              <i class="bi" [class.bi-check-square-fill]="objectivesMap['TECNICO']" [class.bi-square]="!objectivesMap['TECNICO']"></i>
+              <span>⚽ Trabajo técnico</span>
+            </div>
+          </div>
+          <div class="obj-subs" *ngIf="objectivesMap['TECNICO']">
+            <label *ngFor="let s of [
+              {key: 'PASE', label: 'Pase corto/largo'},
+              {key: 'REMATE', label: 'Remate a portería'},
+              {key: 'REGATE', label: 'Regate'},
+              {key: 'CONTROL', label: 'Control y primer toque'},
+              {key: 'PORTERIA', label: 'Portería / Paradas'}
+            ]" class="sub-check">
+              <input type="checkbox" [(ngModel)]="technicalSubs[s.key]"> {{ s.label }}
+            </label>
+          </div>
+        </div>
+
+        <!-- Físico -->
+        <div class="obj-item" [class.active]="objectivesMap['FISICO']">
+          <div class="obj-header" (click)="objectivesMap['FISICO'] = !objectivesMap['FISICO']">
+            <div class="obj-check">
+              <i class="bi" [class.bi-check-square-fill]="objectivesMap['FISICO']" [class.bi-square]="!objectivesMap['FISICO']"></i>
+              <span>💪 Trabajo físico</span>
+            </div>
+          </div>
+          <div class="obj-subs" *ngIf="objectivesMap['FISICO']">
+            <label *ngFor="let s of [
+              {key: 'VELOCIDAD', label: 'Velocidad'},
+              {key: 'RESISTENCIA', label: 'Resistencia aeróbica'},
+              {key: 'FUERZA', label: 'Fuerza'},
+              {key: 'AGILIDAD', label: 'Agilidad'},
+              {key: 'RECUPERACION', label: 'Recuperación activa'}
+            ]" class="sub-check">
+              <input type="checkbox" [(ngModel)]="physicalSubs[s.key]"> {{ s.label }}
+            </label>
+          </div>
+        </div>
+
+        <!-- Balón parado -->
+        <div class="obj-item" [class.active]="objectivesMap['BALON_PARADO']">
+          <div class="obj-header" (click)="objectivesMap['BALON_PARADO'] = !objectivesMap['BALON_PARADO']">
+            <div class="obj-check">
+              <i class="bi" [class.bi-check-square-fill]="objectivesMap['BALON_PARADO']" [class.bi-square]="!objectivesMap['BALON_PARADO']"></i>
+              <span>🎯 Balón parado (ABP)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Psicológico -->
+        <div class="obj-item" [class.active]="objectivesMap['PSICOLOGICO']">
+          <div class="obj-header" (click)="objectivesMap['PSICOLOGICO'] = !objectivesMap['PSICOLOGICO']">
+            <div class="obj-check">
+              <i class="bi" [class.bi-check-square-fill]="objectivesMap['PSICOLOGICO']" [class.bi-square]="!objectivesMap['PSICOLOGICO']"></i>
+              <span>🧠 Aspectos psicológicos</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rival -->
+        <div class="obj-item" [class.active]="objectivesMap['RIVAL']">
+          <div class="obj-header" (click)="objectivesMap['RIVAL'] = !objectivesMap['RIVAL']">
+            <div class="obj-check">
+              <i class="bi" [class.bi-check-square-fill]="objectivesMap['RIVAL']" [class.bi-square]="!objectivesMap['RIVAL']"></i>
+              <span>🔍 Preparación frente al rival</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="step-hint" *ngIf="selectedObjectives.length === 0">
+        <i class="bi bi-info-circle"></i> {{ 'PLANNER.S5_HINT' | translate }}
+      </div>
+    </div>
+
+    <!-- ══ STEP 6: Contexto de temporada ══ -->
+    <div *ngIf="currentStep === 6" class="wizard-step">
+      <h6 class="step-title"><i class="bi bi-calendar-event me-2"></i>{{ 'PLANNER.S6_TITLE' | translate }}</h6>
+      <p class="step-desc">{{ 'PLANNER.S6_DESC' | translate }}</p>
+
+      <div class="form-group mb-3">
+        <label>{{ 'PLANNER.S6_SEASON_MOMENT' | translate }}</label>
+        <div class="chip-group flex-wrap">
+          <button type="button" class="chip"
+            *ngFor="let m of [
+              {key: 'PRETEMPORADA', label: 'Pretemporada'},
+              {key: 'INICIO', label: 'Inicio temporada'},
+              {key: 'PLENA_COMPETICION', label: 'Plena competición'},
+              {key: 'PLAYOFFS', label: 'Playoffs / Copa'},
+              {key: 'FINAL_TEMPORADA', label: 'Final temporada'}
+            ]"
+            [class.active]="seasonMoment === m.key" (click)="seasonMoment = m.key">
+            {{ m.label }}
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group mb-3">
+        <label>{{ 'PLANNER.S6_LAST_RESULT' | translate }}</label>
+        <div class="chip-group">
+          <button type="button" class="chip result-chip"
+            *ngFor="let r of [
+              {key: 'VICTORIA', label: '🏆 Victoria'},
+              {key: 'EMPATE', label: '🤝 Empate'},
+              {key: 'DERROTA', label: '❌ Derrota'},
+              {key: 'SIN_PARTIDO', label: '— Sin partido'}
+            ]"
+            [class.active]="lastMatchResult === r.key" (click)="lastMatchResult = r.key">
+            {{ r.label }}
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>{{ 'PLANNER.S6_PREV_LOAD' | translate }}</label>
+        <div class="chip-group">
+          <button type="button" class="chip"
+            *ngFor="let l of [{key: 'BAJA', label: 'Baja'}, {key: 'MEDIA', label: 'Media'}, {key: 'ALTA', label: 'Alta'}]"
+            [class.active]="weeklyLoadHistory === l.key" (click)="weeklyLoadHistory = l.key">
+            {{ l.label }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STEP 7: Notas libres + Revisión ══ -->
+    <div *ngIf="currentStep === 7" class="wizard-step">
+      <h6 class="step-title"><i class="bi bi-journal-text me-2"></i>{{ 'PLANNER.S7_TITLE' | translate }}</h6>
+      <p class="step-desc">{{ 'PLANNER.S7_DESC' | translate }}</p>
+
+      <textarea class="form-control notes-area" rows="4"
+        [placeholder]="'PLANNER.S7_PLACEHOLDER' | translate"
+        [(ngModel)]="notes">
+      </textarea>
+
+      <!-- Resumen de todas las respuestas -->
+      <div class="review-card">
+        <h6 class="review-title">{{ 'PLANNER.REVIEW_TITLE' | translate }}</h6>
+        <div class="review-grid">
+          <div class="review-item">
+            <span class="review-key">Días entrenamiento</span>
+            <span class="review-val">{{ selectedTrainingDays.join(', ') || '—' }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-key">Partido</span>
+            <span class="review-val">
+              <ng-container *ngIf="hasMatch">{{ matchDay }} {{ matchTime }} ({{ matchLocation }}, {{ matchImportance }})</ng-container>
+              <ng-container *ngIf="!hasMatch">Sin partido</ng-container>
+            </span>
+          </div>
+          <div class="review-item">
+            <span class="review-key">Duración sesión</span>
+            <span class="review-val">{{ sessionDuration }}'</span>
+          </div>
+          <div class="review-item">
+            <span class="review-key">Jugadores disponibles</span>
+            <span class="review-val">{{ playersAvailable }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-key">Fatiga acumulada</span>
+            <span class="review-val">{{ fatigue }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-key">Objetivos</span>
+            <span class="review-val">{{ selectedObjectives.join(', ') || '—' }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-key">Momento temporada</span>
+            <span class="review-val">{{ seasonMoment }}</span>
+          </div>
+          <div class="review-item">
+            <span class="review-key">Último resultado</span>
+            <span class="review-val">{{ lastMatchResult }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ STEP 8: Plan generado → preview → confirmar → creación ══ -->
+    <div *ngIf="currentStep === 8" class="wizard-step step-result">
+
+      <!-- Error IA -->
+      <div *ngIf="errorMsg && !loading" class="error-state">
+        <i class="bi bi-exclamation-triangle-fill text-danger mb-2" style="font-size:2.2rem;"></i>
+        <p class="fw-semibold mb-1">Algo ha ido mal</p>
+        <p class="text-muted small mb-3">{{ errorMsg }}</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn btn-sm btn-outline-secondary" (click)="prev()">
+            <i class="bi bi-chevron-left me-1"></i>Volver al wizard
+          </button>
+          <button class="btn btn-sm btn-sphaira-green" (click)="generarPlan()">
+            <i class="bi bi-arrow-clockwise me-1"></i>Reintentar
+          </button>
+        </div>
+      </div>
+
+      <!-- Preview del plan (markdown) -->
+      <div *ngIf="planGenerado && !loading && !creando && !creacionCompletada" class="plan-result">
+        <div class="plan-actions-top">
+          <span class="plan-badge"><i class="bi bi-stars me-1"></i>Plan generado por IA</span>
+          <button class="btn btn-sm btn-outline-secondary" (click)="copyPlan()">
+            <i class="bi" [class.bi-clipboard]="!copied" [class.bi-clipboard-check]="copied"></i>
+            {{ copied ? 'Copiado' : 'Copiar' }}
+          </button>
+        </div>
+        <div class="plan-markdown" [innerHTML]="planGenerado | markdownAi"></div>
+
+        <!-- Bloque de confirmación -->
+        <div class="confirm-block">
+          <div class="confirm-info">
+            <i class="bi bi-info-circle-fill text-success me-2"></i>
+            <span>
+              La IA ha preparado <strong>{{ planSessions.length }} sesiones</strong> con sus ejercicios.
+              Revisa el plan y pulsa el botón para crearlos en el calendario.
+            </span>
+          </div>
+          <div class="confirm-error" *ngIf="creacionError">
+            <i class="bi bi-exclamation-triangle-fill text-danger me-2"></i>{{ creacionError }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Progreso de creación -->
+      <div *ngIf="creando" class="creation-progress">
+        <div class="spinner-border text-success mb-3" role="status"></div>
+        <p class="creation-msg">{{ creacionMensaje }}</p>
+        <div class="progress mb-2" style="height: 10px;">
+          <div class="progress-bar bg-success" [style.width.%]="creacionProgresoPercent"></div>
+        </div>
+        <small class="text-muted">{{ creacionProgreso }} de {{ creacionTotal }} sesiones completadas</small>
+      </div>
+
+      <!-- Éxito final -->
+      <div *ngIf="creacionCompletada && !creando" class="creation-success">
+        <i class="bi bi-check-circle-fill text-success"></i>
+        <h6>{{ creacionMensaje }}</h6>
+        <p class="text-muted">Los entrenamientos ya están en el calendario con todos sus ejercicios.</p>
+        <div class="d-flex gap-2 mt-3 justify-content-center">
+          <button class="btn btn-sm btn-outline-secondary" (click)="resetWizard()">
+            <i class="bi bi-arrow-counterclockwise me-1"></i>Nuevo plan
+          </button>
+          <button class="btn btn-sm btn-sphaira-green" (click)="onCerrar()">
+            <i class="bi bi-calendar3 me-1"></i>Ver calendario
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- LOADING OVERLAY (mientras la IA genera) -->
+  <div class="planner-loading-overlay" *ngIf="loading">
+    <div class="loading-content">
+      <div class="spinner-border text-success mb-3" role="status"></div>
+      <p class="loading-text">{{ 'PLANNER.GENERATING' | translate }}</p>
+      <small class="loading-sub">La IA está analizando tu semana y creando el plan personalizado...</small>
+    </div>
+  </div>
+
+  <!-- PIE: steps 1-7 -->
+  <div class="planner-footer" *ngIf="currentStep <= totalSteps && !loading">
+    <button class="btn btn-sm btn-outline-secondary" *ngIf="currentStep > 1" (click)="prev()">
+      <i class="bi bi-chevron-left me-1"></i>{{ 'PLANNER.PREV' | translate }}
+    </button>
+    <span *ngIf="currentStep === 1"></span>
+
+    <button class="btn btn-sm btn-sphaira-green"
+      *ngIf="currentStep < totalSteps"
+      [disabled]="!canGoNext()"
+      (click)="next()">
+      {{ 'PLANNER.NEXT' | translate }}<i class="bi bi-chevron-right ms-1"></i>
+    </button>
+
+    <button class="btn btn-sphaira-green fw-semibold"
+      *ngIf="currentStep === totalSteps"
+      (click)="generarPlan()">
+      <i class="bi bi-stars me-2"></i>{{ 'PLANNER.GENERATE' | translate }}
+    </button>
+  </div>
+
+  <!-- PIE: step 8 preview (antes de confirmar) -->
+  <div class="planner-footer"
+    *ngIf="currentStep === 8 && !loading && planGenerado && !creando && !creacionCompletada">
+    <button class="btn btn-sm btn-outline-secondary" (click)="resetWizard()">
+      <i class="bi bi-arrow-counterclockwise me-1"></i>{{ 'PLANNER.NEW_PLAN' | translate }}
+    </button>
+    <button class="btn btn-sphaira-green fw-semibold"
+      [disabled]="planSessions.length === 0"
+      (click)="confirmarYCrear()">
+      <i class="bi bi-calendar-plus me-2"></i>Crear estos entrenamientos
+    </button>
+  </div>
+
+</div>
