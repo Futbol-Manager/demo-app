@@ -14,24 +14,25 @@ import { User } from 'src/app/core/models/users/user.model';
   selector: 'app-lesiones-equipo',
   template: `
     <div class="lesiones-equipo-page">
-      <!-- Back button -->
-      <div class="back-container">
-        <button class="btn-back-clean" (click)="goBack()">
-          <i class="bi bi-arrow-left"></i>
-          <span>Volver</span>
-        </button>
+
+      <!-- ===== PAGE HEADER unificado ===== -->
+      <div class="page-header">
+        <div class="back-container">
+          <button class="btn-back-clean" (click)="goBack()">
+            <i class="bi bi-arrow-left"></i>
+            <span>Volver</span>
+          </button>
+        </div>
+        <div class="header-center">
+          <h2 class="table-title">
+            <i class="bi bi-heart-pulse me-2"></i>{{ soloJugador ? 'Mis Lesiones' : 'Lesiones del Equipo' }}
+          </h2>
+          <p class="header-subtitle">{{ soloJugador ? 'Historial de tus lesiones' : 'Gestiona las lesiones de todos los jugadores' }}</p>
+        </div>
+        <div class="page-header-spacer"></div>
       </div>
 
       <div class="container-fluid px-3 px-md-4">
-        <!-- Page header -->
-        <div class="lesiones-equipo-header">
-          <div class="lesiones-equipo-header-content">
-            <div>
-              <h2 class="lesiones-equipo-title"><i class="bi bi-heart-pulse me-2"></i>{{ soloJugador ? 'Mis lesiones' : 'Lesiones del Equipo' }}</h2>
-              <p class="lesiones-equipo-subtitle">{{ soloJugador ? 'Historial de tus lesiones' : 'Gestiona las lesiones de todos los jugadores' }}</p>
-            </div>
-          </div>
-        </div>
 
         <!-- Player selector: solo visible cuando no es vista "solo jugador" -->
         <div class="player-selector-card" *ngIf="!soloJugador">
@@ -49,13 +50,13 @@ import { User } from 'src/app/core/models/users/user.model';
           </div>
         </div>
 
-        <!-- Lesiones component for selected player -->
+        <!-- Lesiones component for selected player (embedded=true para no duplicar header) -->
         <div *ngIf="selectedPlayerId > 0" class="mt-3">
           <app-lesiones
             [playerId]="selectedPlayerId"
             [playerName]="selectedPlayerName"
             [teamId]="teamId"
-            [embedded]="false"
+            [embedded]="true"
             [readOnly]="soloJugador || ((usuarioActual?.profileType?.profileId ?? 0) >= 3 && (usuarioActual?.profileType?.profileId ?? 0) < 6)">
           </app-lesiones>
         </div>
@@ -76,51 +77,104 @@ import { User } from 'src/app/core/models/users/user.model';
       font-family: 'Archivo', sans-serif;
     }
 
-    .back-container {
-      padding: 0.75rem 1.25rem;
-    }
-
-    .btn-back-clean {
-      margin-left: 16px;
-      margin-top: 10px;
-      padding: 0.35rem 0.6rem;
-      display: inline-flex;
+    /* ── PAGE HEADER unificado (igual que partidos-entrevistas) ── */
+    .page-header {
+      position: relative;
+      display: flex;
       align-items: center;
-      gap: 0.4rem;
-      background-color: rgba(0, 44, 64, 0.08);
-      border: none;
-      border-radius: 8px;
-      color: #002c40;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-    }
-
-    .btn-back-clean i { font-size: 1.1rem; }
-    .btn-back-clean:hover {
-      background-color: rgba(0, 44, 64, 0.14);
-      transform: translateX(-2px);
-    }
-
-    .lesiones-equipo-header {
-      background: linear-gradient(135deg, #002c40 0%, #1f8f8a 100%);
-      border-radius: 16px;
-      padding: 1.5rem 2rem;
+      justify-content: space-between;
+      flex-wrap: nowrap;
+      gap: 1rem;
+      min-height: 72px;
+      padding: 1rem 1.5rem;
       margin-bottom: 1.25rem;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #002c40 0%, #004d6e 55%, #31b270 100%);
+      box-shadow: 0 8px 32px rgba(0,44,64,0.28), 0 2px 8px rgba(49,178,112,0.14);
+      overflow: hidden;
       color: #fff;
     }
 
-    .lesiones-equipo-title {
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin: 0;
+    .page-header::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+      pointer-events: none;
     }
 
-    .lesiones-equipo-subtitle {
-      font-size: 0.9rem;
-      opacity: 0.8;
-      margin: 0.25rem 0 0;
+    .page-header::before {
+      content: '';
+      position: absolute;
+      right: -40px; top: -40px;
+      width: 200px; height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(49,178,112,0.22) 0%, transparent 68%);
+      pointer-events: none;
+    }
+
+    .back-container {
+      flex-shrink: 0;
+      z-index: 1;
+    }
+
+    .btn-back-clean {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      margin: 0;
+      padding: 0.45rem 0.9rem;
+      background: rgba(255,255,255,0.13);
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s ease, transform 0.15s ease;
+      backdrop-filter: blur(4px);
+    }
+
+    .btn-back-clean i { font-size: 1rem; }
+    .btn-back-clean:hover { background: rgba(255,255,255,0.22); transform: translateX(-2px); }
+    .btn-back-clean:active { transform: translateX(0) scale(0.98); }
+
+    .header-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.2rem;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .table-title {
+      margin: 0;
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-align: center;
+      letter-spacing: -0.025em;
+      white-space: nowrap;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.22);
+    }
+
+    .header-subtitle {
+      margin: 0;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.72);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .page-header-spacer {
+      flex-shrink: 0;
+      min-width: 90px;
+      z-index: 1;
     }
 
     .player-selector-card {

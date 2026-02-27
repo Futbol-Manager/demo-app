@@ -83,13 +83,29 @@ export class LoginService {
     return this.http.post<any>(url, login);
   }
 
-  cerrarSesion(): void {
-    // Elimina el usuario y el token del localStorage al cerrar sesión
+  /**
+   * Cierra la sesión del usuario.
+   * @param byInactivity — true cuando el logout es automático por inactividad
+   */
+  cerrarSesion(byInactivity = false): void {
+    const token = localStorage.getItem('token');
+
+    // Emitir null ANTES de limpiar storage para que los guards reaccionen inmediatamente
+    this['usuarioAutenticado'].next(null);
+
+    // Invalidar el token en el servidor (fire-and-forget; no bloqueamos el logout local)
+    if (token) {
+      const url = environment.apiUrl + 'auth/logout';
+      this.http.post(url, {}, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).subscribe({ error: () => {} });
+    }
+
     localStorage.removeItem('usuario');
     localStorage.removeItem('token');
 
-    // Puedes redirigir a la página de inicio de sesión o a donde desees después de cerrar sesión
-    this.router.navigate(['/home']);
+    const route = byInactivity ? ['/login'] : ['/home'];
+    this.router.navigate(route, byInactivity ? { queryParams: { reason: 'inactivity' } } : {});
   }
 
   // Obtener el token almacenado en el localStorage

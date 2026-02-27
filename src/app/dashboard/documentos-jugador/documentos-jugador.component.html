@@ -1,34 +1,31 @@
 <app-publicidad></app-publicidad>
 
-<!-- BOTÓN VOLVER -->
-<div class="back-container">
-  <button class="btn-back-clean" type="button" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
-  </button>
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" type="button" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-file-earmark-pdf me-2"></i>Documentación
+    </h2>
+    <p class="header-subtitle">Documentos solicitados por tu club</p>
+  </div>
+
+  <div class="page-header-right">
+    <div class="header-search-box">
+      <i class="bi bi-search"></i>
+      <input type="text" placeholder="Buscar documento..." [(ngModel)]="searchDoc" />
+    </div>
+  </div>
 </div>
 
 <main class="docs-page">
   <div class="docs-container">
-
-    <!-- BANNER (estilo Lesiones / Galería) -->
-    <header class="docs-page-banner">
-      <div class="docs-banner-content">
-        <div class="docs-banner-left">
-          <h1 class="docs-page-title">
-            <i class="bi bi-file-earmark-pdf me-2"></i>
-            Documentación
-          </h1>
-          <p class="docs-page-subtitle">Documentos solicitados por tu club. Descarga, sube o completa según indique cada uno.</p>
-        </div>
-        <div class="docs-banner-right">
-          <div class="docs-search-box">
-            <i class="bi bi-search"></i>
-            <input type="text" placeholder="Buscar documento..." [(ngModel)]="searchDoc" />
-          </div>
-        </div>
-      </div>
-    </header>
 
     <!-- LISTA DE DOCUMENTOS (grid para ocupar más espacio) -->
     <section class="docs-list">

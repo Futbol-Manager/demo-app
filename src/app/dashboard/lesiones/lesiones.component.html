@@ -1,41 +1,50 @@
-<!-- ╔══════════════════════════════════════════════════════════════════╗ -->
-<!-- ║  SPHAIRA – Módulo de Lesiones                                   ║ -->
-<!-- ╚══════════════════════════════════════════════════════════════════╝ -->
-
-<!-- ─── STANDALONE HEADER ──── -->
+<app-publicidad></app-publicidad>
 <ng-container *ngIf="!embedded">
-  <div class="lesiones-standalone-header">
-    <div class="lesiones-header-content">
-      <div class="lesiones-header-left">
-        <h2 class="lesiones-page-title"><i class="bi bi-heart-pulse me-2"></i>Gestión de Lesiones</h2>
-        <p class="lesiones-page-subtitle" *ngIf="playerName">{{ playerName }}</p>
+  <div class="page-header">
+
+    <!-- IZQUIERDA: VOLVER -->
+    <div class="back-container">
+      <button class="btn-back-clean" type="button" (click)="goBack()">
+        <i class="bi bi-arrow-left"></i>
+        <span>{{ 'COMMON.BACK' | translate }}</span>
+      </button>
+    </div>
+
+    <!-- CENTRO: TÍTULO -->
+    <div class="header-center">
+      <h2 class="table-title">
+        <i class="bi bi-heart-pulse me-2"></i>Gestión de Lesiones
+      </h2>
+      <p class="header-subtitle" *ngIf="playerName">{{ playerName }}</p>
+    </div>
+
+    <!-- DERECHA: ACCIONES -->
+    <div class="page-header-actions">
+      <div class="mode-toggle-wrap">
+        <span class="mode-label" [class.active]="!isPro">Base</span>
+        <label class="mode-toggle">
+          <input type="checkbox" [checked]="isPro" (change)="toggleMode()">
+          <span class="mode-slider"></span>
+        </label>
+        <span class="mode-label" [class.active]="isPro">
+          <i class="bi bi-stars me-1"></i>Pro
+        </span>
       </div>
-      <div class="lesiones-header-right">
-        <div class="header-action-btns">
-          <button class="btn-header-action btn-export-pdf" title="Descargar informe PDF" (click)="exportInjuryReport()" [disabled]="isExporting">
-            <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf-fill"></i></span>
-            <span *ngIf="isExporting" class="spinner-border spinner-border-sm"></span>
-          </button>
-          <button class="btn-header-action" title="Imprimir / Exportar" (click)="printInjuryReport()" [disabled]="isExporting">
-            <i class="bi bi-printer"></i>
-          </button>
-          <button class="btn-header-action" title="Configurar notificaciones" (click)="toggleNotifySettings()" *ngIf="!readOnly">
-            <i class="bi bi-bell"></i>
-            <span class="notify-indicator" *ngIf="notificationConfig.autoNotify"></span>
-          </button>
-        </div>
-        <div class="mode-toggle-wrap">
-          <span class="mode-label" [class.active]="!isPro">Base</span>
-          <label class="mode-toggle">
-            <input type="checkbox" [checked]="isPro" (change)="toggleMode()">
-            <span class="mode-slider"></span>
-          </label>
-          <span class="mode-label" [class.active]="isPro">
-            <i class="bi bi-stars me-1"></i>Pro
-          </span>
-        </div>
+      <div class="header-action-btns">
+        <button class="btn-header-action btn-export-pdf" title="Descargar informe PDF" (click)="exportInjuryReport()" [disabled]="isExporting">
+          <span *ngIf="!isExporting"><i class="bi bi-file-earmark-pdf-fill"></i></span>
+          <span *ngIf="isExporting" class="spinner-border spinner-border-sm"></span>
+        </button>
+        <button class="btn-header-action" title="Imprimir / Exportar" (click)="printInjuryReport()" [disabled]="isExporting">
+          <i class="bi bi-printer"></i>
+        </button>
+        <button class="btn-header-action" title="Configurar notificaciones" (click)="toggleNotifySettings()" *ngIf="!readOnly">
+          <i class="bi bi-bell"></i>
+          <span class="notify-indicator" *ngIf="notificationConfig.autoNotify"></span>
+        </button>
       </div>
     </div>
+
   </div>
 </ng-container>
 

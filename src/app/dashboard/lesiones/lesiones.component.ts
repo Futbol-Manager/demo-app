@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, OnChanges, OnDestroy, SimpleChanges, ViewChild, ElementRef } from '@angular/core';
+import { Location } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { InjuryService } from 'src/app/core/services/injury/injury.service';
@@ -157,8 +158,13 @@ export class LesionesComponent implements OnInit, OnChanges, OnDestroy {
     private loginService: LoginService,
     private injuryService: InjuryService,
     private pdfExport: PdfExportService,
-    private aiChatService: AiChatService
+    private aiChatService: AiChatService,
+    private location: Location
   ) {}
+
+  goBack(): void {
+    this.location.back();
+  }
 
   ngOnInit(): void {
     this.subs.push(

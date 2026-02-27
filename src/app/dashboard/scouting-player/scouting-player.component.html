@@ -1,13 +1,34 @@
 <app-publicidad></app-publicidad>
-<div class="mis-estadisticas-page">
-  <!-- Botón volver -->
+
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
   <div class="back-container">
-    <button type="button" class="btn-back-premium" (click)="goBack()">
+    <button type="button" class="btn-back-clean" (click)="goBack()">
       <i class="bi bi-arrow-left"></i>
       <span>{{ 'COMMON.BACK' | translate }}</span>
     </button>
   </div>
 
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-person-badge me-2"></i>Perfil de Jugador
+    </h2>
+    <p class="header-subtitle" *ngIf="displayName">{{ displayName }}</p>
+  </div>
+
+  <div class="page-header-stats">
+    <div class="stat-pill" *ngIf="playerFromTeam?.posicion || scoutingPlayer?.posicionPrincipal">
+      <i class="bi bi-geo-alt-fill"></i>
+      {{ (playerFromTeam?.posicion || scoutingPlayer?.posicionPrincipal) }}
+    </div>
+    <div class="stat-pill" *ngIf="playerFromTeam?.piernaNatural || scoutingPlayer?.piernaNatural">
+      <i class="bi bi-lightning-fill"></i>
+      {{ (playerFromTeam?.piernaNatural || scoutingPlayer?.piernaNatural) }}
+    </div>
+  </div>
+</div>
+
+<div class="mis-estadisticas-page">
   <div class="mis-estadisticas-wrap" *ngIf="datosCargados">
     <!-- Hero: foto + nombre + radar -->
     <section class="premium-hero">

@@ -25,6 +25,9 @@ import { take } from 'rxjs';
   styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
+  /** URL a la que redirigir tras login exitoso (pasada desde HomeComponent o AuthGuard) */
+  @Input() returnUrl: string = '';
+
   loginForm: FormGroup;
   public hidePassword = true;
   verificarCuenta: boolean = false;
@@ -79,6 +82,19 @@ export class LoginComponent implements OnInit {
     });
   }
 
+  /** Redirige a returnUrl si existe, o a la ruta por defecto según el perfil */
+  private _navigateAfterLogin(profileId?: number, userId?: number): void {
+    if (this.returnUrl) {
+      this.router.navigateByUrl(this.returnUrl);
+      return;
+    }
+    if (profileId === 0 && userId !== 9) {
+      this.router.navigate(['/dashboard/inicio-federacion']);
+    } else {
+      this.router.navigate(['/dashboard/inicio']);
+    }
+  }
+
   loginGloouds() {
     this.loginService
       .loginGloouds(this.token)
@@ -86,8 +102,7 @@ export class LoginComponent implements OnInit {
       .subscribe(
         (res) => {
           if (res.data?.userDTO?.idValidation > 1) {
-            this.router.navigate(['/dashboard/inicio']);
-            //this.router.navigate(['/dashboard/inicio-deportes']);
+            this._navigateAfterLogin();
           }
         },
         (err) => {
@@ -113,11 +128,7 @@ export class LoginComponent implements OnInit {
             // ✅ Login correcto
             const profileId = res.data.userDTO.profileType.profileId;
             const userId    = res.data.userDTO.userId;
-            if (profileId === 0 && userId !== 9) {
-              this.router.navigate(['/dashboard/inicio-federacion']);
-            } else {
-              this.router.navigate(['/dashboard/inicio']);
-            }
+            this._navigateAfterLogin(profileId, userId);
 
             return;
           }

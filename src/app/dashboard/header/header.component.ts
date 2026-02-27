@@ -1,4 +1,4 @@
-﻿import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, Renderer2, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBarConfig } from '@angular/material/snack-bar';
@@ -26,6 +26,7 @@ import { Dropdown } from 'bootstrap';
 import { TranslateService } from '@ngx-translate/core';
 import { Response } from 'src/app/core/services/models/response.model';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { InactivityService } from 'src/app/core/services/inactivity/inactivity.service';
 
 /** Intervalo en ms para refrescar listado y contador de notificaciones */
 const NOTIFICATIONS_POLL_INTERVAL_MS = 45_000;
@@ -141,7 +142,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     private sugerenciaService: SugerenciaService,
     private aiChatService: AiChatService,
     private clubService: ClubService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    public inactivityService: InactivityService,
   ) {
     const lang = localStorage.getItem('lang');
     if (lang) {
@@ -154,6 +156,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.inactivityService.start();
     this.detectDevice();
     this.loginService.usuarioActual.subscribe((user: User | null) => {
       this.usuarioActual = user;
@@ -205,6 +208,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.inactivityService.stop();
     this.destroy$.next();
     this.destroy$.complete();
   }

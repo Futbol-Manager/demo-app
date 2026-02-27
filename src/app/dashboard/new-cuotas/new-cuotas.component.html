@@ -1,4 +1,5 @@
-<div class="page-actions">
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
 
   <!-- IZQUIERDA: VOLVER -->
   <div class="back-container">
@@ -8,41 +9,41 @@
     </button>
   </div>
 
-  <!-- CENTRO: ACCIONES -->
-  <div class="actions-group">
-    <button class="action-btn" (click)="openModalCuotas()">
+  <!-- CENTRO: TÍTULO -->
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-cash-stack me-2"></i>Gestión de Cuotas
+    </h2>
+    <p class="header-subtitle">Pagos, cobros y suscripciones del club</p>
+  </div>
+
+  <!-- DERECHA: ACCIONES -->
+  <div class="page-header-actions">
+    <button class="header-action-btn" (click)="openModalCuotas()" title="Configurar pagos">
       <i class="bi bi-currency-exchange"></i>
       <span>Pagos</span>
     </button>
-
-    <button class="action-btn" (click)="openModalStripe()">
+    <button class="header-action-btn" (click)="openModalStripe()" title="Conectar Stripe">
       <i class="bi bi-stripe"></i>
       <span>Stripe</span>
     </button>
-
-    <button class="action-btn" (click)="goHistorial()">
+    <button class="header-action-btn" (click)="goHistorial()" title="Ver historial">
       <i class="bi bi-table"></i>
       <span>Historial</span>
     </button>
-
-    <button class="action-btn" (click)="openModalAutoPayments()">
+    <button class="header-action-btn" (click)="openModalAutoPayments()" title="Sphaira Pay">
       <i class="bi bi-lightning-charge-fill"></i>
       <span>Sphaira Pay</span>
     </button>
-
-    <button class="action-btn" (click)="openModalBancoClub()">
+    <button class="header-action-btn" (click)="openModalBancoClub()" title="Cuenta bancaria">
       <i class="bi bi-bank2"></i>
       <span>Banco</span>
     </button>
-
-    <button class="action-btn" (click)="openModalNotifConfig()">
+    <button class="header-action-btn" (click)="openModalNotifConfig()" title="Notificaciones">
       <i class="bi bi-bell-fill"></i>
-      <span>Notificaciones</span>
+      <span>Notif.</span>
     </button>
   </div>
-
-  <!-- DERECHA: ESPACIADOR -->
-  <div></div>
 
 </div>
 

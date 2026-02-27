@@ -1,4 +1,4 @@
-﻿<!-- ══ TRIAL BANNER (coach standalone, trial activo) ══ -->
+<!-- ══ TRIAL BANNER (coach standalone, trial activo) ══ -->
 <div class="coach-trial-banner" *ngIf="profileId === 2 && !coachBelongsToClub && coachTrialActive">
   <div class="trial-banner-inner">
     <i class="bi bi-clock-history me-2"></i>
@@ -686,6 +686,33 @@
       </button>
     </div>
 
+  </div>
+</div>
+
+<!-- ══ OVERLAY DE SESIÓN POR INACTIVIDAD ══ -->
+<div class="session-timeout-overlay" *ngIf="inactivityService.sessionWarningVisible" role="dialog" aria-modal="true" aria-labelledby="session-warning-title">
+  <div class="session-timeout-card">
+    <div class="session-timeout-icon">
+      <i class="bi bi-shield-lock-fill"></i>
+    </div>
+    <h3 id="session-warning-title" class="session-timeout-title">Sesión a punto de expirar</h3>
+    <p class="session-timeout-message">
+      Por inactividad, tu sesión se cerrará automáticamente en
+    </p>
+    <div class="session-timeout-countdown">
+      <span class="session-timeout-seconds">{{ inactivityService.warningSecondsLeft }}</span>
+      <span class="session-timeout-label">segundos</span>
+    </div>
+    <div class="session-timeout-actions">
+      <button class="btn-session-continue" (click)="inactivityService.continueSession()">
+        <i class="bi bi-arrow-repeat me-2"></i>
+        Continuar sesión
+      </button>
+      <button class="btn-session-logout" (click)="logOut()">
+        <i class="bi bi-box-arrow-right me-2"></i>
+        Cerrar sesión ahora
+      </button>
+    </div>
   </div>
 </div>
 

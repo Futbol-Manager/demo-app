@@ -1,11 +1,22 @@
 <app-publicidad></app-publicidad>
 
-<!-- BOTÓN VOLVER -->
-<div class="back-container">
-  <button class="btn-back-clean" type="button" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
-  </button>
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" type="button" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
+  </div>
+
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-credit-card-2-front me-2"></i>Pagar cuotas
+    </h2>
+    <p class="header-subtitle" *ngIf="nameClub">{{ nameClub }}</p>
+  </div>
+
+  <div class="page-header-spacer"></div>
 </div>
 
 <!-- LOADING -->
@@ -18,19 +29,6 @@
 
 <main class="cuotas-page cuotas-page--loaded" *ngIf="datosCargados">
   <div class="cuotas-container">
-
-    <!-- BANNER -->
-    <header class="cuotas-page-banner">
-      <div class="cuotas-banner-content">
-        <div class="cuotas-banner-left">
-          <h1 class="cuotas-page-title">
-            <i class="bi bi-credit-card-2-front me-2"></i>
-            Pagar cuotas
-          </h1>
-          <p class="cuotas-page-subtitle">{{ nameClub }}</p>
-        </div>
-      </div>
-    </header>
 
     <!-- ESTADO FINANCIERO + ACCESO RÁPIDO -->
     <section class="cuotas-section cuotas-top-grid">
@@ -506,8 +504,8 @@
       </div>
     </section>
 
-    <!-- INFORMACIÓN DE PAGO POR TRANSFERENCIA -->
-    <section class="cuotas-section cuotas-transfer">
+    <!-- INFORMACIÓN DE PAGO POR TRANSFERENCIA — solo si el club tiene datos bancarios -->
+    <section class="cuotas-section cuotas-transfer" *ngIf="banco || asunto || contacto || bizum">
       <h2 class="section-title">
         <i class="bi bi-bank2"></i>
         Pago por transferencia

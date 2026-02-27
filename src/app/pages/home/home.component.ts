@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatSnackBar, MatSnackBarConfig} from '@angular/material/snack-bar';
-import {Router} from '@angular/router';
+import {ActivatedRoute, Router} from '@angular/router';
 import {RegisterService} from 'src/app/core/services/register/register.service';
 
 @Component({
@@ -13,9 +13,12 @@ import {RegisterService} from 'src/app/core/services/register/register.service';
 export class HomeComponent implements OnInit {
   screen: number = 1; // es 1 para el login, 2 para el registro y 3 para recordar contraseña
   rememberForm: FormGroup;
+  /** URL de retorno pasada desde la app móvil para redirigir tras login */
+  returnUrl: string = '';
 
   constructor(
     private router: Router,
+    private route: ActivatedRoute,
     private registerService: RegisterService,
     private snackBar: MatSnackBar,
   ) {
@@ -29,6 +32,9 @@ export class HomeComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.route.queryParamMap.subscribe(params => {
+      this.returnUrl = params.get('returnUrl') ?? '';
+    });
   }
 
   get loginLogoSrc(): string {

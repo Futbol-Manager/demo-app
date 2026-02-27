@@ -1,70 +1,62 @@
 /* =========================================================
-   PAGE HEADER — Hero Gradient Band
+   PAGE HEADER — Unificado (igual que partidos-entrevistas)
 ========================================================= */
-.page-actions {
+.page-header {
   position: relative;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
-  min-height: 80px;
-  padding: 1.1rem 2rem;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  gap: 1rem;
+  min-height: 76px;
+  padding: 1rem 1.5rem;
   margin: 0 0 1.75rem;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #002c40 0%, #0a4a6e 50%, #31b270 100%);
+  border-radius: 18px;
+  background: linear-gradient(135deg, #002c40 0%, #004d6e 55%, #31b270 100%);
   box-shadow:
-    0 14px 40px rgba(0, 44, 64, 0.32),
-    0 4px 12px rgba(10, 74, 110, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 8px 32px rgba(0, 44, 64, 0.28),
+    0 2px 8px rgba(49, 178, 112, 0.14);
   overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: -40%;
-    right: -4%;
-    width: 300px;
-    height: 300px;
-    background: radial-gradient(circle, rgba(49, 178, 112, 0.32) 0%, transparent 60%);
-    pointer-events: none;
-    border-radius: 50%;
-  }
+  color: white;
 
   &::after {
     content: '';
     position: absolute;
-    bottom: -50%;
-    left: 5%;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, rgba(49, 178, 112, 0.18) 0%, transparent 65%);
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
     pointer-events: none;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    right: -40px; top: -40px;
+    width: 220px; height: 220px;
     border-radius: 50%;
+    background: radial-gradient(circle, rgba(49,178,112,0.22) 0%, transparent 68%);
+    pointer-events: none;
   }
 }
 
-/* CONTENEDOR */
+/* BOTÓN VOLVER */
 .back-container {
-  padding: 0;
   flex-shrink: 0;
   z-index: 1;
 }
 
-/* BOTÓN VOLVER */
 .btn-back-clean {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
   margin: 0;
   padding: 0.45rem 0.9rem;
-
   background: rgba(255, 255, 255, 0.13);
   border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 10px;
-
   color: #ffffff;
   font-size: 0.84rem;
   font-weight: 600;
-
   cursor: pointer;
   transition: background 0.2s ease, transform 0.15s ease;
   backdrop-filter: blur(4px);
@@ -75,54 +67,103 @@
     background: rgba(255, 255, 255, 0.22);
     transform: translateX(-2px);
   }
-
   &:active { transform: translateX(0) scale(0.98); }
 }
 
-/* TITULOS */
-.section-title {
-  font-weight: 600;
-  margin-bottom: 1rem;
-}
-
-.actions-group {
-  justify-self: center;
-  display: flex;
-  gap: 8px;
-  z-index: 1;
-}
-
-.action-btn {
-  background: rgba(255, 255, 255, 0.10);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 12px;
-  color: #ffffff;
-
+/* TÍTULO CENTRADO */
+.header-center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 4px;
+  gap: 0.2rem;
+  pointer-events: none;
+  z-index: 1;
+}
 
-  width: 88px;
-  padding: 8px 0;
+.table-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #ffffff;
+  text-align: center;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.22);
+}
 
-  font-size: 0.72rem;
+.header-subtitle {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.72);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ACCIONES DEL HEADER (derecha) */
+.page-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.header-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.42rem 0.75rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: #ffffff;
+  font-size: 0.78rem;
   font-weight: 600;
-
   cursor: pointer;
   transition: background 0.2s ease, transform 0.15s ease;
   backdrop-filter: blur(4px);
-  z-index: 1;
+  white-space: nowrap;
 
-  i { font-size: 1.25rem; }
+  i { font-size: 0.95rem; }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.20);
-    transform: translateY(-2px);
+    background: rgba(255, 255, 255, 0.22);
+    transform: translateY(-1px);
   }
-
   &:active { transform: translateY(0) scale(0.97); }
+}
+
+/* ─── Responsive: colapsar texto de acciones en pantallas medianas ─── */
+@media (max-width: 1100px) {
+  .header-action-btn span { display: none; }
+  .header-action-btn { padding: 0.42rem 0.6rem; }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    flex-wrap: wrap;
+    min-height: auto;
+    padding: 0.85rem 1rem;
+  }
+  .header-center {
+    position: static;
+    transform: none;
+    order: -1;
+    width: 100%;
+    align-items: flex-start;
+    pointer-events: auto;
+  }
+  .table-title { font-size: 1.1rem; }
+  .page-header-actions { flex-wrap: wrap; }
+}
+
+/* TITULO (legacy) */
+.section-title {
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
 /* ===== SKELETON ROW ===== */
