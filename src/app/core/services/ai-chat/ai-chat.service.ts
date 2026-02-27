@@ -56,6 +56,63 @@ export interface AiUsageUser {
   totalCost: number;
 }
 
+export interface WeeklyPlannerTask {
+  description: string;
+  rules?: string;
+  worktime?: string;
+  space?: string;
+  material?: string;
+  work?: string;
+  intencion?: string;
+}
+
+export interface WeeklyPlannerSession {
+  dayName: string;
+  objectiveSession: string;
+  warmUp?: string;
+  addressSession?: string;
+  loadLevel?: string;
+  rpe?: number;
+  tasks?: WeeklyPlannerTask[];
+}
+
+export interface WeeklyPlannerResponse extends AiChatResponse {
+  sessions?: WeeklyPlannerSession[];
+}
+
+export interface WeeklyPlannerInput {
+  userId: number;
+  clubId: number | null;
+  teamId: number | null;
+  teamName?: string;
+  // Step 1
+  trainingDays: string[];
+  // Step 2
+  hasMatch: boolean;
+  matchDay?: string;
+  matchTime?: string;
+  matchLocation?: string;
+  matchImportance?: string;
+  // Step 3
+  sessionDurationMinutes: number;
+  hasDoubleSession: boolean;
+  doubleSessionDay?: string;
+  // Step 4
+  playersAvailable: number;
+  fatigue: string;
+  // Step 5
+  objectives: string[];
+  tacticSubobjectives?: string[];
+  technicalSubobjectives?: string[];
+  physicalSubobjectives?: string[];
+  // Step 6
+  seasonMoment?: string;
+  lastMatchResult?: string;
+  weeklyLoadHistory?: string;
+  // Step 7
+  notes?: string;
+}
+
 export interface AiGlobalUsage {
   totalMessages: number;
   totalCost: number;
@@ -225,6 +282,28 @@ export class AiChatService {
     return this.http.delete<any>(`${this.baseUrl}/history/${convId}`, { headers: this.getHeaders() }).pipe(
       timeout(10000),
       catchError(() => of({ success: false }))
+    );
+  }
+
+  /**
+   * Genera un plan de entrenamiento semanal con IA.
+   * Envía las respuestas del wizard al endpoint /rest/ai/weekly-planner.
+   * Consume créditos IA (modelo Gemini 2.5 Pro por defecto).
+   */
+  weeklyPlanner(payload: WeeklyPlannerInput): Observable<WeeklyPlannerResponse> {
+    return this.http.post<WeeklyPlannerResponse>(`${this.baseUrl}/weekly-planner`, payload, { headers: this.getHeaders() }).pipe(
+      timeout(210000),
+      catchError(err => {
+        console.error('[AiChatService] weeklyPlanner error:', err);
+        const isTimeout = err?.name === 'TimeoutError';
+        return of<WeeklyPlannerResponse>({
+          success: false,
+          error: isTimeout ? 'TIMEOUT' : 'NETWORK_ERROR',
+          message: isTimeout
+            ? 'La generación del plan tardó demasiado. Inténtalo de nuevo.'
+            : 'Error de conexión. Inténtalo de nuevo.'
+        });
+      })
     );
   }
 
