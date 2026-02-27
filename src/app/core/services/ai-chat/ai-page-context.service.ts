@@ -274,7 +274,7 @@ export class AiPageContextService {
 
   private buildTeamContext(teamsData: any[]): { contextText: string; codeToReal: Map<string, string> } {
     const codeToReal = new Map<string, string>();
-    const lines = ['Código | Partidos | Victorias | Empates | Derrotas | GF | GC | DG | Puntos'];
+    const lines = ['Código | Nombre equipo | Partidos | Victorias | Empates | Derrotas | GF | GC | DG | Puntos'];
 
     teamsData
       .filter(t => t.nameTeam && !t.nameTeam.includes('Sin equipo'))
@@ -289,7 +289,7 @@ export class AiPageContextService {
         }
         const code = `EQUIPO_STAT_${i + 1}`;
         codeToReal.set(code, team.nameTeam);
-        lines.push(`${code} | ${team.partidos?.length || 0} | ${vic} | ${emp} | ${der} | ${gf} | ${gc} | ${gf - gc} | ${pun}`);
+        lines.push(`${code} | ${team.nameTeam} | ${team.partidos?.length || 0} | ${vic} | ${emp} | ${der} | ${gf} | ${gc} | ${gf - gc} | ${pun}`);
       });
 
     return { contextText: lines.join('\n'), codeToReal };
@@ -489,7 +489,9 @@ export class AiPageContextService {
       const code = `JUGADOR_ROPA_${i + 1}`;
       codeToReal.set(code, playerName);
       const estado = ropa.estado === '1' ? 'Completo' : 'Incompleto';
-      lines.push(`${code} | ${getTeamCode(teamName)} | ${estado}`);
+      const teamCode = getTeamCode(teamName);
+      const teamDisplay = teamName ? `${teamCode} (${teamName})` : '-';
+      lines.push(`${code} | ${teamDisplay} | ${estado}`);
     });
 
     return { contextText: lines.join('\n'), codeToReal };
@@ -526,7 +528,9 @@ export class AiPageContextService {
       const code = `NOTIF_${i + 1}`;
       const fecha = notif.fechaCreate ? String(notif.fechaCreate).substring(0, 10) : '-';
       const asunto = String(notif.asunto || '-').substring(0, 50);
-      const destinatario = getTeamCode(notif.destinatario || '');
+      const destName = notif.destinatario || '';
+      const teamCode = getTeamCode(destName);
+      const destinatario = destName ? `${teamCode} (${destName})` : '-';
       lines.push(`${code} | ${fecha} | ${asunto} | ${destinatario}`);
     });
 
@@ -702,10 +706,12 @@ export class AiPageContextService {
       const totalPagado = parseFloat(p.totalPagado) || 0;
       const pendiente   = Math.max(0, totalAPagar - totalPagado);
       const estado      = pendiente <= 0.01 ? 'Al día' : 'Pendiente';
-      const equipoCodigo = getTeamCode(p.nameTeam);
+      const teamName    = p.nameTeam || '';
+      const teamCode    = getTeamCode(teamName);
+      const equipoDisplay = teamName ? `${teamCode} (${teamName})` : '-';
 
       lines.push(
-        `${code} | ${equipoCodigo} | ${totalAPagar.toFixed(2)} | ` +
+        `${code} | ${equipoDisplay} | ${totalAPagar.toFixed(2)} | ` +
         `${totalPagado.toFixed(2)} | ${pendiente.toFixed(2)} | ${estado}`
       );
     });
