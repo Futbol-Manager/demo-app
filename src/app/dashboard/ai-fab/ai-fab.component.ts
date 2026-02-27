@@ -721,6 +721,11 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     if (this.currentTeamId) {
       sessionStorage.setItem('ai_source_teamId', String(this.currentTeamId));
     }
+    // Sync conversation: pass current messages to the full-page assistant
+    const realMessages = this.messages.filter(m => !m.isTyping);
+    if (realMessages.length > 1) {
+      this.aiPageContextService.setFabSync(realMessages, this.currentConversationId);
+    }
     if (this.profileId === 2 || this.profileId === 6 || this.profileId === 7) {
       this.router.navigate(['/dashboard/asistente-ia-coach']);
     } else {
@@ -805,6 +810,36 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
         parts.push('[PAGOS Y CUOTAS DE JUGADORES - DATOS ANONIMIZADOS]\n' + contextText);
         codeToReal.forEach((v, k) => allCodes.set(k, v));
       }
+      if (this.backgroundStats.documentStats) {
+        const { contextText, codeToReal } = this.backgroundStats.documentStats;
+        parts.push('[DOCUMENTOS DEL CLUB - DATOS ANONIMIZADOS]\n' + contextText);
+        codeToReal.forEach((v, k) => allCodes.set(k, v));
+      }
+      if (this.backgroundStats.ropaStats) {
+        const { contextText, codeToReal } = this.backgroundStats.ropaStats;
+        parts.push('[EQUIPACIÓN DE JUGADORES - DATOS ANONIMIZADOS]\n' + contextText);
+        codeToReal.forEach((v, k) => allCodes.set(k, v));
+      }
+      if (this.backgroundStats.notifStats) {
+        const { contextText, codeToReal } = this.backgroundStats.notifStats;
+        parts.push('[NOTIFICACIONES ENVIADAS - DATOS ANONIMIZADOS]\n' + contextText);
+        codeToReal.forEach((v, k) => allCodes.set(k, v));
+      }
+      if (this.backgroundStats.mediaStats) {
+        const { contextText, codeToReal } = this.backgroundStats.mediaStats;
+        parts.push('[BIBLIOTECA DE VÍDEOS DEL CLUB]\n' + contextText);
+        codeToReal.forEach((v, k) => allCodes.set(k, v));
+      }
+      if (this.backgroundStats.scoutingStats) {
+        const { contextText, codeToReal } = this.backgroundStats.scoutingStats;
+        parts.push('[SCOUTING - JUGADORES OBSERVADOS - DATOS ANONIMIZADOS]\n' + contextText);
+        codeToReal.forEach((v, k) => allCodes.set(k, v));
+      }
+      if (this.backgroundStats.staffStats) {
+        const { contextText, codeToReal } = this.backgroundStats.staffStats;
+        parts.push('[STAFF / USUARIOS CON ACCESO AL DASHBOARD - DATOS ANONIMIZADOS]\n' + contextText);
+        codeToReal.forEach((v, k) => allCodes.set(k, v));
+      }
 
       if (parts.length > 0) {
         let anonymizedText = text;
@@ -818,9 +853,15 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
       }
     }
 
-    // Añadir contexto específico del equipo coach (partidos por tipo + clasificación)
+    // Añadir contexto completo del equipo coach (plantilla + lesiones + partidos + clasificación)
     if (this.coachTeamContext) {
       const coachParts: string[] = [];
+      if (this.coachTeamContext.playerStats) {
+        coachParts.push('[PLANTILLA DEL EQUIPO (jugadores, posiciones y dorsales)]\n' + this.coachTeamContext.playerStats);
+      }
+      if (this.coachTeamContext.injuryStats) {
+        coachParts.push('[LESIONES ACTUALES DEL EQUIPO]\n' + this.coachTeamContext.injuryStats);
+      }
       if (this.coachTeamContext.matchStats) {
         coachParts.push('[RESULTADOS Y ESTADÍSTICAS DE PARTIDOS DEL EQUIPO (Liga, Amistoso, Copa, etc.)]\n' + this.coachTeamContext.matchStats);
       }

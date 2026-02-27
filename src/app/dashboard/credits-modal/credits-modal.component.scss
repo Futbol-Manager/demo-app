@@ -390,7 +390,16 @@ $border-color: #e2e8f0;
   font-size: 0.65rem;
   color: $green-primary;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
+}
+
+.pack-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: $text-muted;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 6px;
 }
 
 .pack-credits {

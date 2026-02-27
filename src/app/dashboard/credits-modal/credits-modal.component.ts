@@ -2,6 +2,7 @@ import { Component, Input, Output, EventEmitter, OnInit, HostListener, ElementRe
 import { AiChatService, AiCreditsInfo } from 'src/app/core/services/ai-chat/ai-chat.service';
 
 interface CreditPack {
+  label: string;
   credits: number;
   price: number;
   popular?: boolean;
@@ -31,10 +32,10 @@ export class CreditsModalComponent implements OnInit {
   purchaseError = '';
 
   creditPacks: CreditPack[] = [
-    { credits: 50, price: 2.99 },
-    { credits: 150, price: 7.49, popular: true, savings: 'Ahorra 17%' },
-    { credits: 500, price: 19.99, savings: 'Ahorra 33%' },
-    { credits: 1000, price: 34.99, savings: 'Ahorra 42%' },
+    { label: 'Básico',    credits: 400,  price: 4.99  },
+    { label: 'Estándar',  credits: 1000, price: 9.99,  popular: true, savings: 'Ahorra 20%' },
+    { label: 'Pro',       credits: 2200, price: 19.99, savings: 'Ahorra 27%' },
+    { label: 'Elite',     credits: 5000, price: 39.99, savings: 'Ahorra 36%' },
   ];
 
   // Dragging

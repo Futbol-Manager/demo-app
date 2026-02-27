@@ -1,13 +1,18 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { ClubService } from '../club/club.service';
+import { VideoStorageService } from '../video-storage/video-storage.service';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
+import { environment } from 'src/environments/environment';
 
 export interface CoachTeamContext {
   teamId: number;
   matchStats: string;
   classification: string;
+  playerStats: string;
+  injuryStats: string;
 }
 
 export type PageContextType = 'estadisticas-equipos' | 'estadisticas-jugadores';
@@ -22,9 +27,15 @@ export interface PageContext {
 
 export interface BackgroundStatsContext {
   clubId: number;
-  teamStats: { contextText: string; codeToReal: Map<string, string> } | null;
-  playerStats: { contextText: string; codeToReal: Map<string, string> } | null;
-  paymentStats: { contextText: string; codeToReal: Map<string, string> } | null;
+  teamStats:     { contextText: string; codeToReal: Map<string, string> } | null;
+  playerStats:   { contextText: string; codeToReal: Map<string, string> } | null;
+  paymentStats:  { contextText: string; codeToReal: Map<string, string> } | null;
+  documentStats: { contextText: string; codeToReal: Map<string, string> } | null;
+  ropaStats:     { contextText: string; codeToReal: Map<string, string> } | null;
+  notifStats:    { contextText: string; codeToReal: Map<string, string> } | null;
+  mediaStats:    { contextText: string; codeToReal: Map<string, string> } | null;
+  scoutingStats: { contextText: string; codeToReal: Map<string, string> } | null;
+  staffStats:    { contextText: string; codeToReal: Map<string, string> } | null;
 }
 
 /**
@@ -41,12 +52,39 @@ export class AiPageContextService {
   private readonly backgroundStats$ = new BehaviorSubject<BackgroundStatsContext | null>(null);
   private readonly coachTeamContext$ = new BehaviorSubject<CoachTeamContext | null>(null);
 
+  /** Mensajes pendientes de sincronizar desde el FAB al asistente-ia de pantalla completa. */
+  private fabSyncMessages: { messages: any[]; conversationId: string | null } | null = null;
+
   /** Evita recargar si ya están los datos del mismo club en esta sesión */
   private loadedForClubId: number | null = null;
   /** Evita recargar si ya están los datos del mismo equipo de coach */
   private loadedForTeamId: number | null = null;
 
-  constructor(private clubService: ClubService) {}
+  private readonly PERMISSION_LABELS: { [key: string]: string } = {
+    DASHBOARD_PLAYERS:    'Estadísticas jugadores',
+    DASHBOARD_COACHES:    'Estadísticas entrenadores',
+    DASHBOARD_STATS_PLR:  'Estadísticas avanzadas jugadores',
+    DASHBOARD_STATS_TEAM: 'Estadísticas de equipos',
+    DASHBOARD_CALENDAR:   'Calendario',
+    DASHBOARD_INJURIES:   'Lesiones',
+    TEAMS:                'Equipos',
+    DOCUMENTS:            'Documentos',
+    PAYMENTS:             'Pagos',
+    CLOTHING:             'Equipación',
+    SPONSORS:             'Patrocinadores',
+    NOTIFICATIONS:        'Notificaciones',
+    VIDEO_LIBRARY:        'Biblioteca de vídeo',
+    SCOUTING:             'Scouting',
+    AI_ASSISTANT:         'Asistente IA',
+    VIDEO_ANALYSIS:       'Análisis de vídeo',
+    ERP:                  'Gestión financiera (ERP)',
+  };
+
+  constructor(
+    private clubService: ClubService,
+    private videoStorageService: VideoStorageService,
+    private http: HttpClient,
+  ) {}
 
   // ─── Contexto de página (al navegar a estadísticas) ──────────────────────
 
@@ -69,19 +107,36 @@ export class AiPageContextService {
   // ─── Estadísticas de fondo (cargadas al login) ───────────────────────────
 
   /**
-   * Carga en segundo plano las estadísticas de equipos y jugadores del club.
+   * Carga en segundo plano las estadísticas del club para el chatbot IA.
+   * Acepta userId opcional para cargar también el historial de notificaciones.
    * Solo realiza la llamada una vez por clubId en la sesión activa.
    */
-  preloadForClub(clubId: number): void {
+  preloadForClub(clubId: number, userId?: number): void {
     if (!clubId || this.loadedForClubId === clubId) return;
 
     const temporada = getCurrentSeasonString();
+    const effectiveUserId = userId || Number(localStorage.getItem('userIdClub')) || 0;
 
     forkJoin({
-      teams:   this.clubService.getListTeamsOfClubByStadistics(clubId).pipe(catchError(() => of(null))),
-      players: this.clubService.getListPlayersOfClubByStadistics(clubId).pipe(catchError(() => of(null))),
-      payments: this.clubService.getListPlayersPagosClub(clubId, temporada).pipe(catchError(() => of(null))),
-    }).subscribe(({ teams, players, payments }) => {
+      teams:     this.clubService.getListTeamsOfClubByStadistics(clubId).pipe(catchError(() => of(null))),
+      players:   this.clubService.getListPlayersOfClubByStadistics(clubId).pipe(catchError(() => of(null))),
+      payments:  this.clubService.getListPlayersPagosClub(clubId, temporada).pipe(catchError(() => of(null))),
+      docs:      this.clubService.getlistDocumentosByClub(clubId).pipe(catchError(() => of(null))),
+      docsCoach: this.clubService.getlistDocumentosEntrenadoresByClub(clubId).pipe(catchError(() => of(null))),
+      ropa:      this.clubService.getRopaJugadoresByClubForTemp(String(clubId), temporada).pipe(catchError(() => of(null))),
+      notifs:    effectiveUserId > 0
+                   ? this.clubService.getListCorreos(effectiveUserId).pipe(catchError(() => of(null)))
+                   : of(null),
+      media:     this.videoStorageService.listVideos(clubId).pipe(catchError(() => of(null))),
+      scouting:  this.http.get<any>(
+                   environment.apiUrl + `scouting/club/${clubId}/watchlist`,
+                   { headers: this.getAuthHeaders() }
+                 ).pipe(catchError(() => of(null))),
+      staff:     this.http.get<any>(
+                   environment.apiUrl + `club/staff/list/${clubId}`,
+                   { headers: this.getAuthHeaders() }
+                 ).pipe(catchError(() => of(null))),
+    }).subscribe(({ teams, players, payments, docs, docsCoach, ropa, notifs, media, scouting, staff }) => {
       const teamStats = teams?.data && Array.isArray(teams.data)
         ? this.buildTeamContext(teams.data)
         : null;
@@ -94,15 +149,59 @@ export class AiPageContextService {
         ? this.buildPaymentContext(payments.data)
         : null;
 
-      this.backgroundStats$.next({ clubId, teamStats, playerStats, paymentStats });
+      const documentStats = (docs?.data || docsCoach?.data)
+        ? this.buildDocumentContext(docs, docsCoach)
+        : null;
+
+      const ropaStats = this.buildRopaContext(ropa);
+
+      const notifStats = notifs
+        ? this.buildNotifContext(notifs)
+        : null;
+
+      const mediaStats = this.buildMediaContext(media);
+
+      const scoutingStats = this.buildScoutingContext(scouting);
+
+      const staffStats = this.buildStaffContext(staff);
+
+      this.backgroundStats$.next({
+        clubId, teamStats, playerStats, paymentStats,
+        documentStats, ropaStats, notifStats, mediaStats, scoutingStats, staffStats,
+      });
       this.loadedForClubId = clubId;
     });
+  }
+
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token') || '';
+    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
   }
 
   /** Fuerza una recarga (p.ej. al cambiar de temporada) */
   invalidateClubCache(): void {
     this.loadedForClubId = null;
     this.backgroundStats$.next(null);
+  }
+
+  // ─── Sincronización FAB ↔ Asistente pantalla completa ────────────────────
+
+  /**
+   * Guarda los mensajes actuales del FAB para que el asistente-ia de pantalla
+   * completa los recoja al abrirse, continuando la misma conversación.
+   */
+  setFabSync(messages: any[], conversationId: string | null): void {
+    this.fabSyncMessages = { messages, conversationId };
+  }
+
+  /**
+   * Lee y borra los mensajes pendientes del FAB (lectura única).
+   * Retorna null si no hay mensajes pendientes.
+   */
+  consumeFabSync(): { messages: any[]; conversationId: string | null } | null {
+    const data = this.fabSyncMessages;
+    this.fabSyncMessages = null;
+    return data;
   }
 
   getBackgroundStats(): Observable<BackgroundStatsContext | null> {
@@ -131,6 +230,14 @@ export class AiPageContextService {
     forkJoin({
       ...matchRequests,
       clasificacion: this.clubService.getTodo(teamId, 'current').pipe(catchError(() => of(null))),
+      players:       this.http.get<any>(
+                       environment.apiUrl + `user/getUserListByTeam/${teamId}`,
+                       { headers: this.getAuthHeaders() }
+                     ).pipe(catchError(() => of(null))),
+      injuries:      this.http.get<any>(
+                       environment.apiUrl + `injury/team/${teamId}`,
+                       { headers: this.getAuthHeaders() }
+                     ).pipe(catchError(() => of(null))),
     }).subscribe((results: any) => {
       const allMatches: any[] = [];
       tipos.forEach(tipo => {
@@ -140,10 +247,12 @@ export class AiPageContextService {
         }
       });
 
-      const matchStats = this.buildCoachMatchContext(allMatches);
+      const matchStats    = this.buildCoachMatchContext(allMatches);
       const classification = this.buildCoachClassificationContext(results['clasificacion']);
+      const playerStats   = this.buildCoachPlayersContext(results['players']);
+      const injuryStats   = this.buildCoachInjuryContext(results['injuries']);
 
-      this.coachTeamContext$.next({ teamId, matchStats, classification });
+      this.coachTeamContext$.next({ teamId, matchStats, classification, playerStats, injuryStats });
       this.loadedForTeamId = teamId;
     });
   }
@@ -188,14 +297,14 @@ export class AiPageContextService {
 
   private buildPlayerContext(playersData: any[]): { contextText: string; codeToReal: Map<string, string> } {
     const codeToReal = new Map<string, string>();
-    const lines = ['Código | Posición | Partidos | Goles | Asistencias | Min.Totales | T.Amarillas | T.Rojas'];
+    const lines = ['Código | Equipo | Posición | Partidos | Goles | Asistencias | Min.Totales | T.Amarillas | T.Rojas'];
 
     // Máximo 100 jugadores para no sobrecargar el contexto
     playersData.slice(0, 100).forEach((p, i) => {
       const code = `JUGADOR_STAT_${i + 1}`;
       codeToReal.set(code, p.nombre || `Jugador ${i + 1}`);
       lines.push(
-        `${code} | ${p.posicion || '-'} | ${p.partidosJugados || 0} | ` +
+        `${code} | ${p.nameTeam || '-'} | ${p.posicion || '-'} | ${p.partidosJugados || 0} | ` +
         `${p.goles || 0} | ${p.asistencias || 0} | ${p.minTotales || 0} | ` +
         `${p.tarAmarilla || 0} | ${p.tarRojas || 0}`
       );
@@ -289,6 +398,276 @@ export class AiPageContextService {
     });
 
     return rows.join('\n');
+  }
+
+  // ─── Builders para los nuevos módulos ───────────────────────────────────
+
+  private buildDocumentContext(
+    docsRes: any,
+    docsCoachRes: any,
+  ): { contextText: string; codeToReal: Map<string, string> } {
+    const codeToReal = new Map<string, string>();
+    const lines = ['Código | Tipo | Dirigido a | Requerido | Entregados/Total'];
+
+    const allDocs: Array<{
+      nombre: string; tipo: string; destinatario: string;
+      requiere: number; subidos: number; total: number;
+    }> = [];
+
+    if (docsRes?.data?.documentos && Array.isArray(docsRes.data.documentos)) {
+      const totalPadres = docsRes.data.totalPadres || 0;
+      const subMap = docsRes.data.subidosPorDocumento || {};
+      for (const doc of docsRes.data.documentos) {
+        allDocs.push({
+          nombre: doc.nombre || 'Documento',
+          tipo: doc.tipo || 'Personalizado',
+          destinatario: 'Jugadores/Padres',
+          requiere: doc.requiere || 0,
+          subidos: subMap[doc.docClubesId] || 0,
+          total: totalPadres,
+        });
+      }
+    }
+
+    if (docsCoachRes?.data?.documentos && Array.isArray(docsCoachRes.data.documentos)) {
+      const totalEntrenadores = docsCoachRes.data.totalEntrenadores || 0;
+      const subMap = docsCoachRes.data.subidosPorDocumento || {};
+      for (const doc of docsCoachRes.data.documentos) {
+        allDocs.push({
+          nombre: doc.nombre || 'Documento',
+          tipo: doc.tipo || 'Personalizado',
+          destinatario: 'Entrenadores',
+          requiere: doc.requiere || 0,
+          subidos: subMap[doc.docClubesId] || 0,
+          total: totalEntrenadores,
+        });
+      }
+    }
+
+    allDocs.forEach((doc, i) => {
+      const code = `DOC_${i + 1}`;
+      codeToReal.set(code, doc.nombre);
+      const requerido = doc.requiere > 0 ? 'Sí' : 'No';
+      const entrega = doc.total > 0
+        ? `${doc.subidos}/${doc.total} (${Math.round(doc.subidos / doc.total * 100)}%)`
+        : `${doc.subidos}`;
+      lines.push(`${code} | ${doc.tipo} | ${doc.destinatario} | ${requerido} | ${entrega}`);
+    });
+
+    return { contextText: lines.join('\n'), codeToReal };
+  }
+
+  private buildRopaContext(ropaRes: any): { contextText: string; codeToReal: Map<string, string> } {
+    const codeToReal = new Map<string, string>();
+    const lines = ['Código | Equipo | Estado equipación'];
+
+    const items: any[] = Array.isArray(ropaRes?.data) ? ropaRes.data
+      : Array.isArray(ropaRes) ? ropaRes : [];
+
+    if (items.length === 0) {
+      return { contextText: lines.join('\n'), codeToReal };
+    }
+
+    const teamCodeMap = new Map<string, string>();
+    let teamCounter = 0;
+    const getTeamCode = (teamName: string): string => {
+      if (!teamName) return '-';
+      if (!teamCodeMap.has(teamName)) {
+        teamCounter++;
+        const code = `EQUIPO_ROPA_${teamCounter}`;
+        teamCodeMap.set(teamName, code);
+        codeToReal.set(code, teamName);
+      }
+      return teamCodeMap.get(teamName)!;
+    };
+
+    items.slice(0, 150).forEach((ropa: any, i: number) => {
+      const playerName = ropa.player
+        ? `${ropa.player.nombre || ''} ${ropa.player.apellidos || ''}`.trim()
+        : `Jugador ${i + 1}`;
+      const teamName = ropa.team?.nombre || '';
+      const code = `JUGADOR_ROPA_${i + 1}`;
+      codeToReal.set(code, playerName);
+      const estado = ropa.estado === '1' ? 'Completo' : 'Incompleto';
+      lines.push(`${code} | ${getTeamCode(teamName)} | ${estado}`);
+    });
+
+    return { contextText: lines.join('\n'), codeToReal };
+  }
+
+  private buildNotifContext(notifRes: any): { contextText: string; codeToReal: Map<string, string> } {
+    const codeToReal = new Map<string, string>();
+    const enviados: any[] = Array.isArray(notifRes?.data?.enviados)
+      ? notifRes.data.enviados : [];
+
+    if (enviados.length === 0) {
+      return { contextText: 'Total notificaciones enviadas: 0', codeToReal };
+    }
+
+    const lines = [
+      `Total notificaciones enviadas: ${enviados.length}`,
+      'Código | Fecha | Asunto | Destinatario',
+    ];
+
+    const teamCodeMap = new Map<string, string>();
+    let teamCounter = 0;
+    const getTeamCode = (name: string): string => {
+      if (!name || !name.trim()) return '-';
+      if (!teamCodeMap.has(name)) {
+        teamCounter++;
+        const code = `EQUIPO_NOTIF_${teamCounter}`;
+        teamCodeMap.set(name, code);
+        codeToReal.set(code, name);
+      }
+      return teamCodeMap.get(name)!;
+    };
+
+    enviados.slice(0, 30).forEach((notif: any, i: number) => {
+      const code = `NOTIF_${i + 1}`;
+      const fecha = notif.fechaCreate ? String(notif.fechaCreate).substring(0, 10) : '-';
+      const asunto = String(notif.asunto || '-').substring(0, 50);
+      const destinatario = getTeamCode(notif.destinatario || '');
+      lines.push(`${code} | ${fecha} | ${asunto} | ${destinatario}`);
+    });
+
+    return { contextText: lines.join('\n'), codeToReal };
+  }
+
+  private buildMediaContext(mediaRes: any): { contextText: string; codeToReal: Map<string, string> } {
+    const codeToReal = new Map<string, string>();
+    const items: any[] = Array.isArray(mediaRes) ? mediaRes
+      : Array.isArray(mediaRes?.data) ? mediaRes.data : [];
+
+    if (items.length === 0) {
+      return { contextText: 'Total vídeos en biblioteca: 0', codeToReal };
+    }
+
+    const bySource: { [key: string]: number } = {};
+    for (const v of items) {
+      const src = v.sourceType || 'otro';
+      bySource[src] = (bySource[src] || 0) + 1;
+    }
+
+    const sourceText = Object.entries(bySource)
+      .map(([src, count]) => `${src}: ${count}`)
+      .join(', ');
+
+    return {
+      contextText: `Total vídeos en biblioteca: ${items.length}\nPor origen: ${sourceText}`,
+      codeToReal,
+    };
+  }
+
+  private buildScoutingContext(scoutingRes: any): { contextText: string; codeToReal: Map<string, string> } {
+    const codeToReal = new Map<string, string>();
+    const lines = ['Código | Posición | Edad | Estado pipeline | Val.media'];
+
+    const items: any[] = Array.isArray(scoutingRes) ? scoutingRes
+      : Array.isArray(scoutingRes?.data) ? scoutingRes.data : [];
+
+    if (items.length === 0) {
+      return { contextText: lines.join('\n'), codeToReal };
+    }
+
+    items.slice(0, 80).forEach((entry: any, i: number) => {
+      const wl = entry.watchlist || entry;
+      const profile = entry.scoutingProfile;
+      const evals: any[] = Array.isArray(entry.evaluations) ? entry.evaluations : [];
+
+      const code = `SCOUT_${i + 1}`;
+      const playerName = profile?.nombre
+        || wl.externalPlayerName
+        || `Jugador scouting ${i + 1}`;
+      codeToReal.set(code, playerName);
+
+      const posicion = profile?.posicionPrincipal || wl.externalPlayerPosition || '-';
+      const edad = profile?.edad ?? wl.externalPlayerAge ?? '-';
+      const estado = wl.status || '-';
+
+      let valMedia = '-';
+      if (evals.length > 0) {
+        const avg = evals.reduce((s: number, e: any) => s + (e.overallRating || 0), 0) / evals.length;
+        valMedia = avg.toFixed(1) + '/5';
+      }
+
+      lines.push(`${code} | ${posicion} | ${edad} | ${estado} | ${valMedia}`);
+    });
+
+    return { contextText: lines.join('\n'), codeToReal };
+  }
+
+  private buildStaffContext(staffRes: any): { contextText: string; codeToReal: Map<string, string> } {
+    const codeToReal = new Map<string, string>();
+    const lines = ['Código | Acceso a módulos | Activo'];
+
+    const items: any[] = Array.isArray(staffRes) ? staffRes
+      : Array.isArray(staffRes?.data) ? staffRes.data : [];
+
+    if (items.length === 0) {
+      return { contextText: lines.join('\n'), codeToReal };
+    }
+
+    items.forEach((user: any, i: number) => {
+      const code = `STAFF_${i + 1}`;
+      const fullName = `${user.firstName || ''} ${user.secondName || ''}`.trim()
+        || `Usuario staff ${i + 1}`;
+      codeToReal.set(code, fullName);
+
+      const perms: string[] = Array.isArray(user.permissions) ? user.permissions : [];
+      const permLabels = perms
+        .map((p: string) => this.PERMISSION_LABELS[p] || p)
+        .join(', ') || 'Sin módulos asignados';
+
+      const activo = user.enabled ? 'Sí' : 'No';
+      lines.push(`${code} | ${permLabels} | ${activo}`);
+    });
+
+    return { contextText: lines.join('\n'), codeToReal };
+  }
+
+  private buildCoachPlayersContext(playersRes: any): string {
+    const items: any[] = Array.isArray(playersRes?.data) ? playersRes.data
+      : Array.isArray(playersRes) ? playersRes : [];
+
+    if (items.length === 0) return '';
+
+    const lines = ['Código | Nombre | Posición | Dorsal | Estado'];
+    items.forEach((p: any, i: number) => {
+      const code  = `JUGADOR_${i + 1}`;
+      const nombre = `${p.nombre || p.firstName || ''} ${p.apellidos || p.secondName || ''}`.trim() || `Jugador ${i + 1}`;
+      const posicion = p.posicion || p.position || '-';
+      const dorsal   = p.dorsal ?? p.shirtNumber ?? '-';
+      const estado   = p.activo === false || p.enabled === false ? 'Baja' : 'Activo';
+      lines.push(`${code} (${nombre}) | ${posicion} | ${dorsal} | ${estado}`);
+    });
+
+    return lines.join('\n');
+  }
+
+  private buildCoachInjuryContext(injuriesRes: any): string {
+    const items: any[] = Array.isArray(injuriesRes?.data) ? injuriesRes.data
+      : Array.isArray(injuriesRes) ? injuriesRes : [];
+
+    if (items.length === 0) return 'Sin lesiones registradas.';
+
+    const SEVERITY: { [k: string]: string } = { leve: 'Leve', moderada: 'Moderada', grave: 'Grave', muy_grave: 'Muy grave' };
+    const STATUS: { [k: string]: string }   = {
+      baja: 'Baja', recuperacion: 'Recuperación', alta_condicionada: 'Alta condicionada', alta: 'Alta',
+    };
+
+    const lines = ['Jugador | Zona | Tipo | Gravedad | Estado | Baja desde | Vuelta estimada'];
+    items.forEach((inj: any) => {
+      const jugador  = inj.playerName || `Jugador ${inj.playerId}`;
+      const zona     = inj.zoneLabel || inj.zone || '-';
+      const tipo     = inj.type || '-';
+      const gravedad = SEVERITY[inj.severity] || inj.severity || '-';
+      const estado   = STATUS[inj.status] || inj.status || '-';
+      const desde    = inj.dateInjury ? String(inj.dateInjury).substring(0, 10) : '-';
+      const vuelta   = inj.dateReturn ? String(inj.dateReturn).substring(0, 10) : '-';
+      lines.push(`${jugador} | ${zona} | ${tipo} | ${gravedad} | ${estado} | ${desde} | ${vuelta}`);
+    });
+
+    return lines.join('\n');
   }
 
   private buildPaymentContext(playersData: any[]): { contextText: string; codeToReal: Map<string, string> } {
