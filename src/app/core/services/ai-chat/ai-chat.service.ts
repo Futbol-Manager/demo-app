@@ -63,6 +63,7 @@ export interface WeeklyPlannerTask {
   space?: string;
   material?: string;
   work?: string;
+  estrategia?: string;
   intencion?: string;
 }
 

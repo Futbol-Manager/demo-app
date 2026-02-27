@@ -580,3 +580,81 @@ body.dark .loading-text { color: #fff; }
   &:hover { background-color: #28a063; color: #fff; }
   &:disabled { opacity: 0.5; cursor: not-allowed; }
 }
+
+// ── Week Picker (Step 0) ──────────────────────
+.step-week-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.week-picker-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bs-light, #f8f9fa);
+  border-radius: 10px;
+  padding: 0.5rem 1rem;
+}
+
+.mes-picker-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--sphaira-night, #002c40);
+  text-transform: capitalize;
+}
+
+.nav-arrow {
+  background: none;
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 6px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--sphaira-night, #002c40);
+  transition: background 0.15s;
+
+  &:hover { background: var(--bs-border-color, #dee2e6); }
+}
+
+.week-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.week-card-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--bs-body-bg, #fff);
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: left;
+  font-size: 0.88rem;
+  color: var(--bs-body-color);
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+
+  i:first-child {
+    font-size: 1.1rem;
+    color: var(--sphaira-green, #31b270);
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    border-color: var(--sphaira-green, #31b270);
+    background: rgba(49, 178, 112, 0.06);
+    box-shadow: 0 2px 8px rgba(49, 178, 112, 0.15);
+    color: var(--sphaira-night, #002c40);
+  }
+}
+
+.week-card-label {
+  flex: 1;
+  font-weight: 500;
+}

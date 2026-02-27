@@ -214,6 +214,31 @@
             <!-- Agregar formulario para crear tareas -->
             <div *ngIf="showAddTaskForm">
               <form (submit)="crearTarea()">
+
+                <!-- Imagen / GIF -->
+                <div class="image-section mt-3">
+                  <div class="image-preview" *ngIf="currentImageUrlNuevaTarea">
+                    <img [src]="currentImageUrlNuevaTarea" alt="Imagen de la tarea" />
+                  </div>
+                  <div class="image-placeholder" *ngIf="!currentImageUrlNuevaTarea">
+                    <i class="bi bi-image"></i>
+                    <span>Sin imagen</span>
+                  </div>
+                  <div class="image-actions">
+                    <label class="upload-btn">
+                      <i class="bi bi-upload me-1"></i> Subir imagen / GIF
+                      <input type="file" accept="image/*" (change)="onFileSelectedNuevaTarea($event)" hidden />
+                    </label>
+                    <button type="button" class="board-btn" (click)="mostrarPizarraNuevaTarea = true">
+                      <i class="bi bi-vector-pen me-1"></i> Abrir Pizarra
+                    </button>
+                    <button type="button" class="delete-img-btn" *ngIf="currentImageUrlNuevaTarea"
+                      (click)="selectedFileNuevaTarea = null; previewUrlNuevaTarea = null; nuevaTarea.imagenBoard = ''">
+                      <i class="bi bi-trash me-1"></i> Borrar imagen
+                    </button>
+                  </div>
+                </div>
+
                 <div class="row text-center mt-3">
                   <div class="col-12 col-md-4 mt-3">
                     <input class="form-control custom-input" id="slogans" rows="5" [(ngModel)]="nuevaTarea.slogans"
@@ -297,6 +322,20 @@
                 </div>
               </form>
               <hr>
+            </div>
+
+            <!-- Overlay pizarra para nueva tarea -->
+            <div class="pizarra-overlay" *ngIf="mostrarPizarraNuevaTarea">
+              <div class="pizarra-container">
+                <app-tactical-board
+                  [taskMode]="true"
+                  [taskId]="0"
+                  [trainingId]="trainingId"
+                  [userId]="userId"
+                  (archivoGenerado)="onArchivoPizarraNuevaTareaGenerado($event)"
+                  (cerrar)="mostrarPizarraNuevaTarea = false">
+                </app-tactical-board>
+              </div>
             </div>
 
             <!-- Mostrar lista de tareas colapsada -->
