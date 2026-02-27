@@ -492,10 +492,16 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
       .slice(-10)
       .map(m => ({ role: m.role, text: m.isActionPreview ? '[Acción propuesta: ' + m.text + ']' : m.text }));
 
-    // Enriquecer el mensaje con el contexto del equipo (partidos + clasificación)
+    // Enriquecer el mensaje con el contexto completo del equipo
     let enrichedText = text;
     if (this.coachTeamContext) {
       const coachParts: string[] = [];
+      if (this.coachTeamContext.playerStats) {
+        coachParts.push('[PLANTILLA DEL EQUIPO (jugadores, posiciones y dorsales)]\n' + this.coachTeamContext.playerStats);
+      }
+      if (this.coachTeamContext.injuryStats) {
+        coachParts.push('[LESIONES ACTUALES DEL EQUIPO]\n' + this.coachTeamContext.injuryStats);
+      }
       if (this.coachTeamContext.matchStats) {
         coachParts.push('[RESULTADOS Y ESTADÍSTICAS DE PARTIDOS DEL EQUIPO (Liga, Amistoso, Copa, etc.)]\n' + this.coachTeamContext.matchStats);
       }

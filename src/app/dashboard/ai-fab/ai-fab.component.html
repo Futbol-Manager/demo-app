@@ -157,42 +157,8 @@
     </button>
   </div>
 
-  <!-- PDF IMPORT BAR -->
-  <div class="fab-pdf-bar" *ngIf="showPdfImportBar">
-    <div class="fab-pdf-bar-header">
-      <i class="bi bi-file-earmark-pdf-fill"></i>
-      <span class="fab-pdf-filename">{{ selectedPdfFile?.name }}</span>
-      <button class="fab-pdf-close" (click)="cancelPdfImport()" title="Cancelar">
-        <i class="bi bi-x"></i>
-      </button>
-    </div>
-    <div class="fab-pdf-bar-body">
-      <input
-        type="text"
-        class="fab-pdf-team-input"
-        [(ngModel)]="pdfTeamName"
-        placeholder="Nombre exacto del equipo en el PDF..."
-        (keydown.enter)="startCalendarImport()"
-        autofocus
-      />
-      <button class="fab-pdf-import-btn"
-              [disabled]="!pdfTeamName.trim() || importingCalendar"
-              (click)="startCalendarImport()">
-        <i class="bi bi-cloud-upload-fill"></i> Importar
-      </button>
-    </div>
-  </div>
-
   <!-- INPUT -->
   <div class="fab-input-bar">
-    <input #pdfInput type="file" accept=".pdf" style="display:none" (change)="onPdfSelected($event)">
-    <button *ngIf="!isResponding"
-            class="fab-pdf-btn"
-            (click)="openPdfPicker()"
-            title="Importar calendario desde PDF"
-            aria-label="Importar calendario PDF">
-      <i class="bi bi-file-earmark-pdf"></i>
-    </button>
     <textarea
       #chatInput
       class="fab-input fab-input-auto"

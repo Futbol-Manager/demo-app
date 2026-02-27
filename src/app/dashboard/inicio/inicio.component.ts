@@ -264,7 +264,7 @@ export class InicioComponent implements OnInit {
       this.clubId = Number(cachedClubId);
       this.clubLoading = false;
       if (this.clubId > 0) {
-        this.aiPageContext.preloadForClub(this.clubId);
+        this.aiPageContext.preloadForClub(this.clubId, this.userId);
       }
     }
   }
@@ -330,7 +330,7 @@ export class InicioComponent implements OnInit {
           sessionStorage.setItem(this.CLUB_ID_KEY, String(this.clubId));
 
           // Precargar estadísticas para el chatbot IA
-          this.aiPageContext.preloadForClub(this.clubId);
+          this.aiPageContext.preloadForClub(this.clubId, this.userId);
 
           this.verificarSuscripcion();
         },

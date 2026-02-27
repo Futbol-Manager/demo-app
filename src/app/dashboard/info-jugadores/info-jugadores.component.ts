@@ -1,6 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import { forkJoin } from 'rxjs';
 import { AiChatService } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { AiPageContextService } from 'src/app/core/services/ai-chat/ai-page-context.service';
 import { FormBuilder } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -132,7 +133,8 @@ export class InfoJugadoresComponent implements OnInit {
     private notification: NotificationService,
     private confirmation: ConfirmationService,
     private toastr: ToastrService,
-    private aiChatService: AiChatService) { }
+    private aiChatService: AiChatService,
+    private aiPageContext: AiPageContextService) { }
 
   ngOnInit(): void {
     this.loginService.usuarioActual.subscribe(user => {
@@ -932,16 +934,56 @@ export class InfoJugadoresComponent implements OnInit {
     setTimeout(() => this.scrollAiToBottom(), 100);
 
     const { contextText, codeToReal } = this.buildAnonymizedPlayersContext();
+    const bg = this.aiPageContext.getBackgroundStatsSnapshot();
+
+    const allCodes = new Map(codeToReal);
+    const parts: string[] = ['[LISTADO DE JUGADORES - DATOS ANONIMIZADOS]\n' + contextText];
+
+    if (bg?.teamStats) {
+      parts.push('[ESTADÍSTICAS DE EQUIPOS - DATOS ANONIMIZADOS]\n' + bg.teamStats.contextText);
+      bg.teamStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg?.playerStats) {
+      parts.push('[ESTADÍSTICAS DE JUGADORES (RENDIMIENTO) - DATOS ANONIMIZADOS]\n' + bg.playerStats.contextText);
+      bg.playerStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg?.paymentStats) {
+      parts.push('[PAGOS Y CUOTAS DE JUGADORES - DATOS ANONIMIZADOS]\n' + bg.paymentStats.contextText);
+      bg.paymentStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg?.documentStats) {
+      parts.push('[DOCUMENTOS DEL CLUB - DATOS ANONIMIZADOS]\n' + bg.documentStats.contextText);
+      bg.documentStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg?.ropaStats) {
+      parts.push('[EQUIPACIÓN DE JUGADORES - DATOS ANONIMIZADOS]\n' + bg.ropaStats.contextText);
+      bg.ropaStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg?.notifStats) {
+      parts.push('[NOTIFICACIONES ENVIADAS - DATOS ANONIMIZADOS]\n' + bg.notifStats.contextText);
+      bg.notifStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg?.mediaStats) {
+      parts.push('[BIBLIOTECA DE VÍDEOS DEL CLUB]\n' + bg.mediaStats.contextText);
+      bg.mediaStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg?.scoutingStats) {
+      parts.push('[SCOUTING - JUGADORES OBSERVADOS - DATOS ANONIMIZADOS]\n' + bg.scoutingStats.contextText);
+      bg.scoutingStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg?.staffStats) {
+      parts.push('[STAFF / USUARIOS CON ACCESO AL DASHBOARD - DATOS ANONIMIZADOS]\n' + bg.staffStats.contextText);
+      bg.staffStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
 
     let anonymizedMessage = userMessage;
-    codeToReal.forEach((real, code) => {
+    allCodes.forEach((real, code) => {
       anonymizedMessage = anonymizedMessage.replace(
         new RegExp(real.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), code
       );
     });
 
-    const enrichedMessage = anonymizedMessage
-      + '\n\n[LISTADO DE JUGADORES - DATOS ANONIMIZADOS]\n' + contextText;
+    const enrichedMessage = anonymizedMessage + '\n\n' + parts.join('\n\n');
 
     const history = this.aiMessages.slice(-6).map(m => ({ role: m.role, text: m.content }));
 
@@ -952,8 +994,7 @@ export class InfoJugadoresComponent implements OnInit {
         let response = resp.success
           ? (resp.response || 'Sin respuesta.')
           : (resp.message || 'Error al consultar la IA.');
-        // De-anonymize: longest codes first to avoid partial matches (JUGADOR_1 inside JUGADOR_10)
-        Array.from(codeToReal.entries())
+        Array.from(allCodes.entries())
           .sort((a, b) => b[0].length - a[0].length)
           .forEach(([code, real]) => { response = response.split(code).join(real); });
         this.aiMessages.push({ role: 'assistant', content: response });

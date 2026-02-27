@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { AiChatService, AiCreditsInfo, AiPendingAction } from 'src/app/core/services/ai-chat/ai-chat.service';
+import { AiPageContextService, BackgroundStatsContext } from 'src/app/core/services/ai-chat/ai-page-context.service';
 import { User } from 'src/app/core/models/users/user.model';
 import { VoiceRecognitionService } from 'src/app/core/services/voice-recognition/voice-recognition.service';
 
@@ -73,6 +74,8 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
   userId = 0;
   private clubId: number | null = null;
   private chatSub: Subscription | null = null;
+  private bgStatsSub: Subscription | null = null;
+  private backgroundStats: BackgroundStatsContext | null = null;
 
   // Voice recognition
   isRecording = false;
@@ -110,10 +113,23 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
     private location: Location,
     private translate: TranslateService,
     private aiChatService: AiChatService,
-    private voiceRecognition: VoiceRecognitionService
+    private voiceRecognition: VoiceRecognitionService,
+    private aiPageContext: AiPageContextService
   ) {}
 
   ngOnInit(): void {
+    // Comprueba si hay una conversación pendiente de sincronizar desde el FAB
+    const fabSync = this.aiPageContext.consumeFabSync();
+    const hasSyncedMessages = !!(fabSync && fabSync.messages && fabSync.messages.length > 1);
+    if (hasSyncedMessages) {
+      this.messages = fabSync!.messages.map(m => ({
+        ...m,
+        timestamp: m.timestamp instanceof Date ? m.timestamp : new Date(m.timestamp),
+      }));
+      this.currentConversationId = fabSync!.conversationId;
+      this.showSuggestions = false;
+    }
+
     this.loginService.usuarioActual.subscribe((user) => {
       this.usuarioActual = user;
       if (user) {
@@ -126,9 +142,15 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
     const storedClubId = localStorage.getItem('clubId');
     if (storedClubId) this.clubId = parseInt(storedClubId, 10);
 
-    this.addAssistantMessage(
-      '¡Hola! 👋 Soy el asistente de IA de tu club. Puedo ayudarte a consultar informacion sobre jugadores, equipos, estadisticas y mucho mas.\n\nPuedes escribirme o elegir una de las sugerencias de abajo. ¡Preguntame lo que necesites!'
-    );
+    this.bgStatsSub = this.aiPageContext.getBackgroundStats().subscribe(stats => {
+      this.backgroundStats = stats;
+    });
+
+    if (!hasSyncedMessages) {
+      this.addAssistantMessage(
+        '¡Hola! 👋 Soy el asistente de IA de tu club. Puedo ayudarte a consultar informacion sobre jugadores, equipos, estadisticas y mucho mas.\n\nPuedes escribirme o elegir una de las sugerencias de abajo. ¡Preguntame lo que necesites!'
+      );
+    }
 
     this.initVoiceRecognition();
   }
@@ -226,8 +248,10 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
       .slice(-10)
       .map(m => ({ role: m.role, text: m.isActionPreview ? '[Acción propuesta: ' + m.text + ']' : m.text }));
 
+    const { messageToSend, activeCodeToReal } = this.buildBackgroundEnrichedMessage(text);
+
     this.chatSub?.unsubscribe();
-    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, 'dashboard', text, 'users', null, history)
+    this.chatSub = this.aiChatService.sendMessage(this.userId, this.clubId, 'dashboard', messageToSend, 'users', null, history)
       .pipe(
         finalize(() => {
           this.isResponding = false;
@@ -239,10 +263,16 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
           if (idx > -1) this.messages.splice(idx, 1);
 
           if (resp.success && resp.hasActions && resp.pendingActions && resp.pendingActions.length > 0) {
+            let actionText = resp.response || '';
+            if (activeCodeToReal) {
+              Array.from(activeCodeToReal.entries())
+                .sort((a, b) => b[0].length - a[0].length)
+                .forEach(([code, real]) => { actionText = actionText.split(code).join(real); });
+            }
             this.messages.push({
               id: ++this.msgIdCounter,
               role: 'assistant',
-              text: resp.response || '',
+              text: actionText,
               timestamp: new Date(),
               isActionPreview: true,
               pendingActions: resp.pendingActions,
@@ -252,7 +282,13 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
               this.creditsAvailable = resp.creditsRemaining;
             }
           } else if (resp.success && resp.response) {
-            this.addAssistantMessage(resp.response);
+            let responseText = resp.response;
+            if (activeCodeToReal) {
+              Array.from(activeCodeToReal.entries())
+                .sort((a, b) => b[0].length - a[0].length)
+                .forEach(([code, real]) => { responseText = responseText.split(code).join(real); });
+            }
+            this.addAssistantMessage(responseText);
             if (resp.creditsRemaining !== undefined) {
               this.creditsAvailable = resp.creditsRemaining;
             }
@@ -351,6 +387,7 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
 
   ngOnDestroy(): void {
     this.chatSub?.unsubscribe();
+    this.bgStatsSub?.unsubscribe();
     this.voiceTranscriptSub?.unsubscribe();
     this.voiceListeningSub?.unsubscribe();
     this.voiceErrorSub?.unsubscribe();
@@ -410,6 +447,62 @@ export class AsistenteIaComponent implements OnInit, AfterViewChecked, OnDestroy
 
   formatTime(date: Date): string {
     return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  private buildBackgroundEnrichedMessage(text: string): { messageToSend: string; activeCodeToReal: Map<string, string> | null } {
+    const bg = this.backgroundStats;
+    if (!bg) return { messageToSend: text, activeCodeToReal: null };
+
+    const allCodes = new Map<string, string>();
+    const parts: string[] = [];
+
+    if (bg.teamStats) {
+      parts.push('[ESTADÍSTICAS DE EQUIPOS - DATOS ANONIMIZADOS]\n' + bg.teamStats.contextText);
+      bg.teamStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg.playerStats) {
+      parts.push('[ESTADÍSTICAS DE JUGADORES - DATOS ANONIMIZADOS]\n' + bg.playerStats.contextText);
+      bg.playerStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg.paymentStats) {
+      parts.push('[PAGOS Y CUOTAS DE JUGADORES - DATOS ANONIMIZADOS]\n' + bg.paymentStats.contextText);
+      bg.paymentStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg.documentStats) {
+      parts.push('[DOCUMENTOS DEL CLUB - DATOS ANONIMIZADOS]\n' + bg.documentStats.contextText);
+      bg.documentStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg.ropaStats) {
+      parts.push('[EQUIPACIÓN DE JUGADORES - DATOS ANONIMIZADOS]\n' + bg.ropaStats.contextText);
+      bg.ropaStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg.notifStats) {
+      parts.push('[NOTIFICACIONES ENVIADAS - DATOS ANONIMIZADOS]\n' + bg.notifStats.contextText);
+      bg.notifStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg.mediaStats) {
+      parts.push('[BIBLIOTECA DE VÍDEOS DEL CLUB]\n' + bg.mediaStats.contextText);
+      bg.mediaStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg.scoutingStats) {
+      parts.push('[SCOUTING - JUGADORES OBSERVADOS - DATOS ANONIMIZADOS]\n' + bg.scoutingStats.contextText);
+      bg.scoutingStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+    if (bg.staffStats) {
+      parts.push('[STAFF / USUARIOS CON ACCESO AL DASHBOARD - DATOS ANONIMIZADOS]\n' + bg.staffStats.contextText);
+      bg.staffStats.codeToReal.forEach((v, k) => allCodes.set(k, v));
+    }
+
+    if (parts.length === 0) return { messageToSend: text, activeCodeToReal: null };
+
+    let anonymizedText = text;
+    allCodes.forEach((real, code) => {
+      anonymizedText = anonymizedText.replace(
+        new RegExp(real.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'), code
+      );
+    });
+
+    return { messageToSend: anonymizedText + '\n\n' + parts.join('\n\n'), activeCodeToReal: allCodes };
   }
 
   goBack(): void {

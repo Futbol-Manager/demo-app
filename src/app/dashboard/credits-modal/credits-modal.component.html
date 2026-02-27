@@ -95,6 +95,7 @@
              (click)="!purchasing && purchasePack(pack)">
           <div class="pack-badge" *ngIf="pack.popular">Popular</div>
           <div class="pack-savings" *ngIf="pack.savings">{{ pack.savings }}</div>
+          <div class="pack-label">{{ pack.label }}</div>
           <div class="pack-credits">
             <i class="bi bi-coin"></i>
             <span>{{ pack.credits }}</span>
@@ -107,7 +108,7 @@
       <!-- INFO -->
       <div class="credits-info">
         <i class="bi bi-info-circle"></i>
-        <span>Cada consulta al asistente IA consume entre 1 y 5 créditos según la complejidad de la tarea. Los créditos no caducan.</span>
+        <span>Cada consulta consume entre 1 y 4 créditos según el volumen de la conversación. Los créditos no caducan.</span>
       </div>
     </ng-container>
   </div>
