@@ -795,6 +795,14 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
       const allCodes = new Map<string, string>();
       const parts: string[] = [];
 
+      if (this.backgroundStats.upcomingStats) {
+        parts.push('[PRÓXIMOS PARTIDOS PROGRAMADOS (todos los equipos del club)]\n' + this.backgroundStats.upcomingStats);
+      }
+      if (this.backgroundStats.rosterStats) {
+        const { contextText, codeToReal } = this.backgroundStats.rosterStats;
+        parts.push('[PLANTILLA COMPLETA DEL CLUB (todos los jugadores registrados por equipo) - DATOS ANONIMIZADOS]\n' + contextText);
+        codeToReal.forEach((v, k) => allCodes.set(k, v));
+      }
       if (this.backgroundStats.teamStats) {
         const { contextText, codeToReal } = this.backgroundStats.teamStats;
         parts.push('[ESTADÍSTICAS DE EQUIPOS - DATOS ANONIMIZADOS]\n' + contextText);
@@ -856,6 +864,9 @@ export class AiFabComponent implements OnInit, OnDestroy, AfterViewChecked {
     // Añadir contexto completo del equipo coach (plantilla + lesiones + partidos + clasificación)
     if (this.coachTeamContext) {
       const coachParts: string[] = [];
+      if (this.coachTeamContext.upcomingMatches) {
+        coachParts.push('[PRÓXIMOS PARTIDOS PROGRAMADOS]\n' + this.coachTeamContext.upcomingMatches);
+      }
       if (this.coachTeamContext.playerStats) {
         coachParts.push('[PLANTILLA DEL EQUIPO (jugadores, posiciones y dorsales)]\n' + this.coachTeamContext.playerStats);
       }
