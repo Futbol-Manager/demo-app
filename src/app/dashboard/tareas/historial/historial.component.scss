@@ -95,10 +95,15 @@
   border-color: var(--fifa-green);
 }
 
+.task-image {
+  aspect-ratio: 1050 / 680;
+  max-height: 160px;
+  overflow: hidden;
+}
 .task-image img {
   width: 100%;
-  height: 150px;
-  object-fit: cover;
+  height: 100%;
+  object-fit: contain;
   display: block;
 }
 

@@ -1196,11 +1196,49 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   }
 
   /* ────────────────── EXPORT ────────────────── */
+  /**
+   * Toda exportación (imagen PNG y GIF) se genera SIEMPRE en formato horizontal
+   * (proporción del campo 1050×680) para que al crear la tarea y subir la imagen
+   * se vea correctamente en listados y detalle.
+   */
+  /**
+   * Devuelve la imagen actual del tablero en formato horizontal (data URL), lista
+   * para subir como imagen de tarea. Usar al crear/guardar tarea desde la pizarra.
+   */
+  getHorizontalImageDataURL(pixelRatio: number = 2): string {
+    return this.getHorizontalExportDataURL(pixelRatio);
+  }
+
+  /**
+   * Exporta el contenido actual del tablero en formato horizontal (proporción campo)
+   * para previsualización y descarga consistente en todos los dispositivos.
+   */
+  private getHorizontalExportDataURL(pixelRatio: number): string {
+    const W = this.PITCH_W;
+    const H = this.PITCH_H;
+    const container = document.createElement('div');
+    container.style.position = 'absolute';
+    container.style.left = '-9999px';
+    container.style.top = '0';
+    document.body.appendChild(container);
+    const offStage = new Konva.Stage({ container, width: W, height: H });
+    [this.pitchLayer, this.drawLayer, this.markerLayer].forEach(layer => {
+      const clone = layer.clone();
+      clone.scale({ x: 1, y: 1 });
+      clone.position({ x: 0, y: 0 });
+      offStage.add(clone);
+    });
+    const dataURL = offStage.toDataURL({ pixelRatio });
+    offStage.destroy();
+    document.body.removeChild(container);
+    return dataURL;
+  }
+
   exportImage(): void {
     this.saveCurrentKeyframeState();
     this.deselectAll();
     setTimeout(() => {
-      const dataURL = this.stage.toDataURL({ pixelRatio: 2 });
+      const dataURL = this.getHorizontalExportDataURL(2);
       this.downloadFile(dataURL, 'tactical-board.png');
     }, 50);
   }
@@ -1236,23 +1274,26 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
         if (f === Math.floor(framesPerTransition / 2)) {
           this.restoreDrawLayer(toKf.drawings);
         }
-        frames.push(this.stage.toDataURL({ pixelRatio: 1 }));
+        frames.push(this.getHorizontalExportDataURL(1));
         this.exportProgress = Math.round(((ki * framesPerTransition + f) / totalFrames) * 80);
       }
     }
 
     this.restoreKeyframe(this.keyframes.length - 1);
     for (let i = 0; i < 10; i++) {
-      frames.push(this.stage.toDataURL({ pixelRatio: 1 }));
+      frames.push(this.getHorizontalExportDataURL(1));
     }
     this.exportProgress = 85;
 
+    /* Tamaño horizontal del campo (proporción 1050x680); escala reducida para GIF más liviano */
+    const gifW = 525;
+    const gifH = 340;
     try {
       const gifshot = (window as any).gifshot || await this.loadGifshot();
       gifshot.createGIF({
         images: frames,
-        gifWidth: this.stage.width(),
-        gifHeight: this.stage.height(),
+        gifWidth: gifW,
+        gifHeight: gifH,
         interval: 0.05, numFrames: frames.length,
         frameDuration: 1, sampleInterval: 10,
         progressCallback: (p: number) => {
