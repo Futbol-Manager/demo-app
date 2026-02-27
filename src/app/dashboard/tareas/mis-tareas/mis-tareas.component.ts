@@ -171,6 +171,26 @@ export class MisTareasComponent implements OnInit, OnDestroy {
       : 'https://appsphairatech.com/images/task-board/blank.png';
   }
 
+  /** Marca la imagen como vertical y aplica escala para rotarla a horizontal sin zoom. */
+  onTaskImageLoad(event: Event, task: StoredTask): void {
+    const img = event.target as HTMLImageElement;
+    const nw = img.naturalWidth;
+    const nh = img.naturalHeight;
+    if (!nw || !nh || nh <= nw) return;
+    const container = img.closest('.task-thumb, .detail-image-wrap') as HTMLElement;
+    if (!container) return;
+    const cw = container.offsetWidth;
+    const ch = container.offsetHeight;
+    if (!cw || !ch) return;
+    const scale = Math.min(cw / nh, ch / nw);
+    img.classList.add('img-vertical');
+    img.style.setProperty('--rotate-scale', String(scale));
+  }
+
+  onDetailImageLoad(event: Event): void {
+    if (this.selectedTask) this.onTaskImageLoad(event, this.selectedTask);
+  }
+
   parseExtraFields(raw: string | undefined): { name: string; value: string }[] {
     if (!raw) return [];
     try {
