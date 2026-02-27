@@ -37,8 +37,8 @@
 
     <div class="calendar-inner">
 
-      <!-- BOTÓN PLANIFICADOR SEMANAL IA (solo visible en vista semana) -->
-      <div class="planner-ia-bar" *ngIf="vistaCalendario === 'week'">
+      <!-- BOTÓN PLANIFICADOR SEMANAL IA (visible en vista mes y semana) -->
+      <div class="planner-ia-bar" *ngIf="vistaCalendario === 'week' || vistaCalendario === 'month'">
         <button type="button" class="btn-planner-ia" (click)="abrirPlanificadorIA()">
           <i class="bi bi-stars"></i>
           <span>{{ 'PLANNER.BTN_OPEN' | translate }}</span>
@@ -194,9 +194,10 @@
   [teamId]="teamId"
   [teamName]="nombreEquipo"
   [clubId]="clubId"
-  [semanaActual]="semanaActual"
+  [semanaActual]="vistaCalendario === 'week' ? semanaActual : []"
+  [mesParaPlanificar]="mesActual"
   (cerrar)="showPlanificadorIA = false"
-  (calendarioActualizado)="onCalendarioActualizadoPorIA()">
+  (calendarioActualizado)="onCalendarioActualizadoPorIA($event)">
 </app-planificador-semanal-ia>
 
 <div class="modal modal-saas d-block" *ngIf="showModal">
@@ -488,6 +489,31 @@
             <!-- FORM CREAR TAREA -->
             <div *ngIf="showAddTaskForm">
               <form (submit)="crearTarea()">
+
+                <!-- Imagen / GIF -->
+                <div class="image-section mt-3">
+                  <div class="image-preview" *ngIf="currentImageUrlNuevaTarea">
+                    <img [src]="currentImageUrlNuevaTarea" alt="Imagen de la tarea" />
+                  </div>
+                  <div class="image-placeholder" *ngIf="!currentImageUrlNuevaTarea">
+                    <i class="bi bi-image"></i>
+                    <span>Sin imagen</span>
+                  </div>
+                  <div class="image-actions">
+                    <label class="upload-btn">
+                      <i class="bi bi-upload me-1"></i> Subir imagen / GIF
+                      <input type="file" accept="image/*" (change)="onFileSelectedNuevaTarea($event)" hidden />
+                    </label>
+                    <button type="button" class="board-btn" (click)="mostrarPizarraNuevaTarea = true">
+                      <i class="bi bi-vector-pen me-1"></i> Abrir Pizarra
+                    </button>
+                    <button type="button" class="delete-img-btn" *ngIf="currentImageUrlNuevaTarea"
+                      (click)="selectedFileNuevaTarea = null; previewUrlNuevaTarea = null; nuevaTarea.imagenBoard = ''">
+                      <i class="bi bi-trash me-1"></i> Borrar imagen
+                    </button>
+                  </div>
+                </div>
+
                 <div class="row text-center mt-3">
                   <div class="col-12 col-md-4 mt-3">
                     <input class="form-control saas-input" id="slogans" rows="5" [(ngModel)]="nuevaTarea.slogans"
@@ -578,6 +604,21 @@
               </form>
               <hr>
             </div>
+
+            <!-- Overlay pizarra para nueva tarea -->
+            <div class="pizarra-overlay" *ngIf="mostrarPizarraNuevaTarea">
+              <div class="pizarra-container">
+                <app-tactical-board
+                  [taskMode]="true"
+                  [taskId]="0"
+                  [trainingId]="trainingId"
+                  [userId]="userId"
+                  (archivoGenerado)="onArchivoPizarraNuevaTareaGenerado($event)"
+                  (cerrar)="mostrarPizarraNuevaTarea = false">
+                </app-tactical-board>
+              </div>
+            </div>
+
             <!-- Mostrar lista de tareas colapsada -->
 
             <div class="task-grid" *ngIf="canShowTasks && trainingSession.tasks && trainingSession.tasks.length > 0">
@@ -585,11 +626,18 @@
               <article class="task-card" *ngFor="let tarea of trainingSession.tasks; let i = index">
 
                 <!-- Imagen -->
-                <div class="task-image">
+                <div class="task-image" [class.task-image--gif]="isGif(tarea.imagenBoard)">
                   <img
                     [src]="tarea.imagenBoard ? imageBaseUrlTask + tarea.imagenBoard : 'https://appsphairatech.com/images/task-board/blank.png'"
                     alt="{{ 'CAL.TEXT_038' | translate }}" loading="lazy"
                     onerror="this.src='https://appsphairatech.com/images/task-board/blank.png'" />
+                  <!-- Overlay CSS que "pausa" visualmente el GIF (blur+oscuro) hasta el hover -->
+                  <div class="gif-freeze-overlay" *ngIf="isGif(tarea.imagenBoard)"></div>
+                  <!-- Badge indicador de animación -->
+                  <div class="gif-badge" *ngIf="isGif(tarea.imagenBoard)">
+                    <i class="bi bi-play-circle-fill"></i>
+                    <span>Animación</span>
+                  </div>
                 </div>
 
                 <!-- Contenido -->
@@ -2715,9 +2763,6 @@
 
   <!-- Footer -->
   <div class="tvm-footer" *ngIf="usuarioActual!.profileType.profileId != 3">
-    <button class="tvm-btn tvm-btn-board" (click)="closeTaskModal(); router.navigate(['/dashboard/tactical-board', teamId])">
-      <i class="bi bi-vector-pen me-1"></i> Abrir Pizarra
-    </button>
     <button class="tvm-btn tvm-btn-print" (click)="printDiv(tareaSeleccionada)">
       <i class="bi bi-printer me-1"></i> Imprimir
     </button>

@@ -20,6 +20,44 @@
   align-items: center;
   gap: 1rem;
   margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.task-save-area {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.btn-save-task {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0.45rem 1rem;
+  border: none;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #00c853, #009624);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s;
+  &:hover:not(:disabled) { filter: brightness(1.1); }
+  &:disabled { opacity: 0.7; cursor: not-allowed; }
+}
+
+.task-save-success {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #00a344;
+}
+
+.task-save-error {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #dc3545;
 }
 
 .btn-back-clean {

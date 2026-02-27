@@ -2,12 +2,26 @@
 <div class="back-container">
   <button type="button" class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
+    <span>{{ taskMode ? 'Cerrar' : ('COMMON.BACK' | translate) }}</span>
   </button>
   <span class="board-title">
     <i class="bi bi-easel2"></i>
-    {{ 'TBOARD.TITLE' | translate }}
+    {{ taskMode ? 'Pizarra táctica' : ('TBOARD.TITLE' | translate) }}
   </span>
+
+  <!-- Botón guardar en tarea (solo en modo tarea) -->
+  <div class="task-save-area" *ngIf="taskMode">
+    <span class="task-save-success" *ngIf="saveTaskSuccess">
+      <i class="bi bi-check-circle-fill me-1"></i>Imagen guardada en la tarea
+    </span>
+    <span class="task-save-error" *ngIf="saveTaskError">
+      <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ saveTaskError }}
+    </span>
+    <button type="button" class="btn-save-task" (click)="guardarEnTarea()" [disabled]="savingTask">
+      <span *ngIf="!savingTask"><i class="bi bi-floppy me-1"></i>Guardar imagen en tarea</span>
+      <span *ngIf="savingTask"><span class="spinner-border spinner-border-sm me-1"></span>Guardando...</span>
+    </button>
+  </div>
 </div>
 
 <div class="board-wrapper">

@@ -34,8 +34,27 @@ export class TaskEditModalComponent implements OnChanges {
   previewUrl: string | null = null;
   imageBaseUrl: string = environment.images + 'task-board/';
 
-  estrategiaOptions: string[] = ['-', 'Posesión', 'Transición', 'Organización defensiva', 'Organización ofensiva', 'Balón parado'];
-  intencionOptions: string[] = ['-', 'Táctica', 'Técnica', 'Física', 'Psicológica'];
+  mostrarPizarra: boolean = false;
+
+  estrategiaOptions: string[] = [
+    '-',
+    'Acciones a Balón Parado', 'Acciones Combinadas', 'Circuito', 'Conservación',
+    'Juego Adaptado al Fútbol', 'Juego de Posición', 'Juego de Posición Específico',
+    'Oleadas', 'Partidos', 'Posesión', 'Rueda de Pases', 'Situaciones Reducidas',
+    'Trabajo de Líneas',
+  ];
+  intencionOptions: string[] = [
+    '-',
+    '1 vs 1', '2 vs 1', '2 vs 2', '3 vs 3', '4 vs 4', 'ABP Defensiva', 'ABP Ofensiva',
+    'Amplitud', 'Apoyos', 'Ataque Organizado', 'Ataque-Defensa', 'Cobertura', 'Conservar',
+    'Contraataque', 'Defensa Inicio de Juego', 'Defensa de Juego Directo', 'Defensa Organizada',
+    'Desmarques', 'Dividir', 'Evitar Progresión', 'Fase Defensiva', 'Fase Ofensiva', 'Fijar',
+    'Finalizar', 'Inicio de Juego', 'Juego Directo', 'Mantener', 'Marcaje', 'Orientar',
+    'Permuta', 'Presionar', 'Primer Atacante', 'Primer Defensor', 'Profundidad', 'Progresar',
+    'Proteger Portería', 'Recuperar', 'Reinicio de Juego', 'Replegar', 'Segundo Atacante',
+    'Segundo Defensor', 'Temporizar', 'Tercer Atacante', 'Tercer Defensor',
+    'Transición Defensiva', 'Transición Ofensiva', 'Transiciones',
+  ];
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['task'] && this.task) {
@@ -165,6 +184,21 @@ export class TaskEditModalComponent implements OnChanges {
     this.saving = false;
     this.savingLibrary = false;
     this.saved.emit(updated);
+  }
+
+  abrirPizarra(): void {
+    this.mostrarPizarra = true;
+  }
+
+  cerrarPizarraOverlay(event: MouseEvent): void {
+    this.mostrarPizarra = false;
+  }
+
+  onImagenPizarraGuardada(nombreImagen: string): void {
+    this.editTask.imagenBoard = nombreImagen;
+    this.previewUrl = null;
+    this.selectedFile = null;
+    this.mostrarPizarra = false;
   }
 
   close(): void {

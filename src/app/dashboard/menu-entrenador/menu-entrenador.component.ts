@@ -10,6 +10,7 @@ import { Location } from '@angular/common';
 import { AsistenciaTraining, Task, Training } from 'src/app/core/services/models/training.models';
 import { Response } from 'src/app/core/services/models/response.model';
 import { MatchPreparation } from 'src/app/core/services/models/match.model';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-menu-entrenador',
@@ -47,6 +48,11 @@ export class MenuEntrenadorComponent implements OnInit {
   taskList: any[] = [];
   viewShop: boolean = false;
   subirTarea = 0;
+
+  selectedFileNuevaTarea: File | null = null;
+  previewUrlNuevaTarea: string | null = null;
+  mostrarPizarraNuevaTarea: boolean = false;
+  imageBaseUrl: string = environment.images + 'task-board/';
 
   selectedCategory: string = '';
   selectedSubcategory: string = '';
@@ -321,6 +327,16 @@ export class MenuEntrenadorComponent implements OnInit {
 
   toggleChangeSubirTarea(actualValue: number) {
     const nuevoValor = actualValue === 0 ? 1 : 0;
+
+    const tieneImagen = !!(this.nuevaTarea.imagenBoard || this.selectedFileNuevaTarea || this.previewUrlNuevaTarea);
+    if (nuevoValor === 1 && !tieneImagen) {
+      alert('Para subir una tarea a la Nube de Tareas es obligatorio añadir una imagen o GIF.');
+      setTimeout(() => {
+        (document.getElementById('subirTarea') as HTMLInputElement).checked = false;
+      }, 0);
+      return;
+    }
+
     const confirmacion = confirm('AVISO: Al activar esta opción, su tarea de entrenamiento será pública y visible para otros entrenadores. ' +
       'Cualquier dato ingresado será accesible. No está permitido publicar información, datos o imágenes con derechos de autor sin el permiso del autor. ' +
       'Cualquier contenido que infrinja esta norma será eliminado. ¿Estás seguro?');
@@ -339,18 +355,50 @@ export class MenuEntrenadorComponent implements OnInit {
     this.toggleVisible = event.target.checked ? 1 : 0;
   }
 
+  get currentImageUrlNuevaTarea(): string {
+    if (this.previewUrlNuevaTarea) return this.previewUrlNuevaTarea;
+    if (this.nuevaTarea.imagenBoard) return this.imageBaseUrl + this.nuevaTarea.imagenBoard;
+    return '';
+  }
+
+  onFileSelectedNuevaTarea(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.selectedFileNuevaTarea = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => { this.previewUrlNuevaTarea = reader.result as string; };
+      reader.readAsDataURL(this.selectedFileNuevaTarea);
+    }
+  }
+
+  onArchivoPizarraNuevaTareaGenerado(file: File): void {
+    this.selectedFileNuevaTarea = file;
+    const reader = new FileReader();
+    reader.onload = () => { this.previewUrlNuevaTarea = reader.result as string; };
+    reader.readAsDataURL(file);
+    this.mostrarPizarraNuevaTarea = false;
+  }
+
   crearTarea(): void {
     this.nuevaTarea.work = '';
     // Llamada al servicio para crear el equipo
     this.trainingService.createUpdateTask(this.trainingId.toString(), this.nuevaTarea, this.subirTarea, this.userId).subscribe(
       (response) => {
-        // Agregar la nueva tarea a la lista de tareas del entrenamiento
-        this.trainingSession.tasks.push(response.data);
-        // Limpiar el formulario de nueva tarea
+        const tareaCreada = response.data;
+        this.trainingSession.tasks.push(tareaCreada);
+
+        if (this.selectedFileNuevaTarea && tareaCreada?.taskId) {
+          this.trainingService.createUpdateImgTask(0, tareaCreada.taskId, this.selectedFileNuevaTarea, this.userId).subscribe({
+            next: (imgResp: any) => {
+              if (imgResp?.data) { tareaCreada.imagenBoard = imgResp.data; }
+            }
+          });
+        }
+
         this.nuevaTarea = new Task();
-        // Ocultar el formulario de nueva tarea
+        this.selectedFileNuevaTarea = null;
+        this.previewUrlNuevaTarea = null;
         this.showAddTaskForm = false;
-        //dejamos limpio los combos work
         this.selectedCategory = '';
         this.selectedSubcategory = '';
         this.selectedOption = '';

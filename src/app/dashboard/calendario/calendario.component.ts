@@ -116,8 +116,12 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     this.showPlanificadorIA = true;
   }
 
-  onCalendarioActualizadoPorIA(): void {
+  onCalendarioActualizadoPorIA(targetDate?: Date | null): void {
     this.showPlanificadorIA = false;
+    // Navegar al mes donde se crearon los entrenamientos (puede ser diferente al mes visible)
+    if (targetDate) {
+      this.mesActual = new Date(targetDate.getFullYear(), targetDate.getMonth(), 1);
+    }
     this.getListaEntrenamientos();
   }
   trainingSession: Training = new Training({});
@@ -148,6 +152,10 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   nuevaTarea: Task = new Task();
   showAddTaskForm = false;
   trainingId!: number;
+
+  selectedFileNuevaTarea: File | null = null;
+  previewUrlNuevaTarea: string | null = null;
+  mostrarPizarraNuevaTarea: boolean = false;
   matchPreparationId!: number;
 
   showModalPartido: boolean = false;
@@ -1972,6 +1980,30 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     //this.toggleAddTaskForm();
   }
 
+  get currentImageUrlNuevaTarea(): string {
+    if (this.previewUrlNuevaTarea) return this.previewUrlNuevaTarea;
+    if (this.nuevaTarea.imagenBoard) return this.imageBaseUrlTask + this.nuevaTarea.imagenBoard;
+    return '';
+  }
+
+  onFileSelectedNuevaTarea(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      this.selectedFileNuevaTarea = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => { this.previewUrlNuevaTarea = reader.result as string; };
+      reader.readAsDataURL(this.selectedFileNuevaTarea);
+    }
+  }
+
+  onArchivoPizarraNuevaTareaGenerado(file: File): void {
+    this.selectedFileNuevaTarea = file;
+    const reader = new FileReader();
+    reader.onload = () => { this.previewUrlNuevaTarea = reader.result as string; };
+    reader.readAsDataURL(file);
+    this.mostrarPizarraNuevaTarea = false;
+  }
+
   crearTarea(): void {
     this.nuevaTarea.work = '';
     // Llamada al servicio para crear el equipo
@@ -1984,13 +2016,21 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       )
       .subscribe(
         (response) => {
-          // Agregar la nueva tarea a la lista de tareas del entrenamiento
-          this.trainingSession.tasks.push(response.data);
-          // Limpiar el formulario de nueva tarea
+          const tareaCreada = response.data;
+          this.trainingSession.tasks.push(tareaCreada);
+
+          if (this.selectedFileNuevaTarea && tareaCreada?.taskId) {
+            this.trainingService.createUpdateImgTask(0, tareaCreada.taskId, this.selectedFileNuevaTarea, this.userId).subscribe({
+              next: (imgResp: any) => {
+                if (imgResp?.data) { tareaCreada.imagenBoard = imgResp.data; }
+              }
+            });
+          }
+
           this.nuevaTarea = new Task();
-          // Ocultar el formulario de nueva tarea
+          this.selectedFileNuevaTarea = null;
+          this.previewUrlNuevaTarea = null;
           this.showAddTaskForm = false;
-          //dejamos limpio los combos work
           this.selectedCategory = '';
           this.selectedSubcategory = '';
           this.selectedOption = '';
@@ -2540,6 +2580,11 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   closeTaskModal(): void {
     this.showModalTask = false;
     this.parsedExtraFields = [];
+  }
+
+  /* ── GIF indicator ── */
+  isGif(filename: string | undefined): boolean {
+    return !!filename && filename.toLowerCase().endsWith('.gif');
   }
 
   parsedExtraFields: { name: string; value: string }[] = [];
@@ -3337,6 +3382,16 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   toggleChangeSubirTarea(actualValue: number) {
     const nuevoValor = actualValue === 0 ? 1 : 0;
+
+    const tieneImagen = !!(this.nuevaTarea.imagenBoard || this.selectedFileNuevaTarea || this.previewUrlNuevaTarea);
+    if (nuevoValor === 1 && !tieneImagen) {
+      alert('Para subir una tarea a la Nube de Tareas es obligatorio añadir una imagen o GIF.');
+      setTimeout(() => {
+        (document.getElementById('subirTarea') as HTMLInputElement).checked = false;
+      }, 0);
+      return;
+    }
+
     const confirmacion = confirm(this.translate.instant('CAL.TEXT_395'));
 
     if (confirmacion) {

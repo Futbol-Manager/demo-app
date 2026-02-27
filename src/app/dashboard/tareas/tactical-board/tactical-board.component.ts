@@ -1,11 +1,12 @@
 import {
   Component, OnInit, OnDestroy, AfterViewInit,
-  ViewChild, ElementRef, HostListener
+  ViewChild, ElementRef, HostListener, Input, Output, EventEmitter
 } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import Konva from 'konva';
 import { gsap } from 'gsap';
+import { TrainingService } from 'src/app/core/services/training/training.service';
 
 /* ──────────────── Interfaces ──────────────── */
 interface PlayerMarker {
@@ -42,6 +43,19 @@ type ToolType = 'select' | 'pencil' | 'line' | 'arrow' | 'rect' | 'ellipse' | 't
 export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @ViewChild('boardContainer', { static: false }) boardContainer!: ElementRef<HTMLDivElement>;
+
+  /** Modo tarea: la pizarra se abre embebida desde el editor de tarea */
+  @Input() taskMode: boolean = false;
+  @Input() taskId: number = 0;
+  @Input() trainingId: number = 0;
+  @Input() userId: number = 0;
+  @Output() imagenGuardada = new EventEmitter<string>();
+  @Output() archivoGenerado = new EventEmitter<File>();
+  @Output() cerrar = new EventEmitter<void>();
+
+  savingTask: boolean = false;
+  saveTaskError: string = '';
+  saveTaskSuccess: boolean = false;
 
   /* ── state ── */
   teamId = 0;
@@ -129,7 +143,8 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    public t: TranslateService
+    public t: TranslateService,
+    private trainingService: TrainingService
   ) {}
 
   /* ────────────────── Lifecycle ────────────────── */
@@ -1507,6 +1522,10 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
 
   /* ────────────────── NAVIGATION ────────────────── */
   goBack(): void {
+    if (this.taskMode) {
+      this.cerrar.emit();
+      return;
+    }
     if (this.hasUnsavedChanges) {
       this.showExitConfirm = true;
     } else {
@@ -1532,5 +1551,50 @@ export class TacticalBoardComponent implements OnInit, AfterViewInit, OnDestroy 
 
   private performExit(): void {
     this.router.navigate(['/dashboard/tareas', this.teamId]);
+  }
+
+  /* ────────────────── GUARDAR EN TAREA ────────────────── */
+  guardarEnTarea(): void {
+    if (!this.stage || this.savingTask) return;
+    this.savingTask = true;
+    this.saveTaskError = '';
+
+    const dataUrl = this.stage.toDataURL({ pixelRatio: 2, mimeType: 'image/png' });
+
+    fetch(dataUrl)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], `pizarra_tarea_${this.taskId || 'nueva'}.png`, { type: 'image/png' });
+
+        if (!this.taskId) {
+          this.savingTask = false;
+          this.saveTaskSuccess = true;
+          setTimeout(() => { this.saveTaskSuccess = false; }, 3000);
+          this.archivoGenerado.emit(file);
+          return;
+        }
+
+        this.trainingService.createUpdateImgTask(0, this.taskId, file, this.userId).subscribe({
+          next: (resp: any) => {
+            const nombre: string = resp?.data || '';
+            this.savingTask = false;
+            if (nombre) {
+              this.saveTaskSuccess = true;
+              setTimeout(() => { this.saveTaskSuccess = false; }, 3000);
+              this.imagenGuardada.emit(nombre);
+            } else {
+              this.saveTaskError = 'No se pudo guardar la imagen.';
+            }
+          },
+          error: () => {
+            this.savingTask = false;
+            this.saveTaskError = 'Error al subir la imagen a la tarea.';
+          }
+        });
+      })
+      .catch(() => {
+        this.savingTask = false;
+        this.saveTaskError = 'Error al exportar el canvas.';
+      });
   }
 }

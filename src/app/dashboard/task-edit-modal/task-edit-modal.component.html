@@ -20,10 +20,15 @@
         <i class="bi bi-image"></i>
         <span>Sin imagen</span>
       </div>
-      <label class="upload-btn">
-        <i class="bi bi-upload me-1"></i> Cambiar imagen
-        <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
-      </label>
+      <div class="image-actions">
+        <label class="upload-btn">
+          <i class="bi bi-upload me-1"></i> Cambiar imagen
+          <input type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+        </label>
+        <button type="button" class="board-btn" (click)="abrirPizarra()">
+          <i class="bi bi-vector-pen me-1"></i> Abrir Pizarra
+        </button>
+      </div>
     </div>
 
     <!-- Campos principales -->
@@ -142,5 +147,19 @@
         {{ savingLibrary ? 'Guardando en biblioteca...' : 'Guardando...' }}
       </span>
     </button>
+  </div>
+</div>
+
+<!-- Overlay pizarra táctica — FUERA del modal para evitar que transform: translate() rompa position:fixed -->
+<div class="pizarra-overlay" *ngIf="mostrarPizarra">
+  <div class="pizarra-container">
+    <app-tactical-board
+      [taskMode]="true"
+      [taskId]="editTask.taskId"
+      [trainingId]="trainingId"
+      [userId]="userId"
+      (imagenGuardada)="onImagenPizarraGuardada($event)"
+      (cerrar)="mostrarPizarra = false">
+    </app-tactical-board>
   </div>
 </div>

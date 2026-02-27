@@ -15,6 +15,25 @@ interface WizardDay {
   label: string;
 }
 
+const VALID_ESTRATEGIAS: string[] = [
+  'Acciones a Balón Parado', 'Acciones Combinadas', 'Circuito', 'Conservación',
+  'Juego Adaptado al Fútbol', 'Juego de Posición', 'Juego de Posición Específico',
+  'Oleadas', 'Partidos', 'Posesión', 'Rueda de Pases', 'Situaciones Reducidas',
+  'Trabajo de Líneas',
+];
+
+const VALID_INTENCIONES: string[] = [
+  '1 vs 1', '2 vs 1', '2 vs 2', '3 vs 3', '4 vs 4', 'ABP Defensiva', 'ABP Ofensiva',
+  'Amplitud', 'Apoyos', 'Ataque Organizado', 'Ataque-Defensa', 'Cobertura', 'Conservar',
+  'Contraataque', 'Defensa Inicio de Juego', 'Defensa de Juego Directo', 'Defensa Organizada',
+  'Desmarques', 'Dividir', 'Evitar Progresión', 'Fase Defensiva', 'Fase Ofensiva', 'Fijar',
+  'Finalizar', 'Inicio de Juego', 'Juego Directo', 'Mantener', 'Marcaje', 'Orientar',
+  'Permuta', 'Presionar', 'Primer Atacante', 'Primer Defensor', 'Profundidad', 'Progresar',
+  'Proteger Portería', 'Recuperar', 'Reinicio de Juego', 'Replegar', 'Segundo Atacante',
+  'Segundo Defensor', 'Temporizar', 'Tercer Atacante', 'Tercer Defensor',
+  'Transición Defensiva', 'Transición Ofensiva', 'Transiciones',
+];
+
 @Component({
   selector: 'app-planificador-semanal-ia',
   templateUrl: './planificador-semanal-ia.component.html',
@@ -26,11 +45,19 @@ export class PlanificadorSemanalIaComponent implements OnInit {
   @Input() teamName: string = '';
   @Input() clubId: number | null = null;
   @Input() semanaActual: any[] = [];
+  /** Mes que se mostraba al abrir el planificador (usado en la vista Mes) */
+  @Input() mesParaPlanificar: Date = new Date();
   @Output() cerrar = new EventEmitter<void>();
-  @Output() calendarioActualizado = new EventEmitter<void>();
+  /** Emite la fecha (lunes de la semana planificada) para que el calendario navegue al mes correcto. */
+  @Output() calendarioActualizado = new EventEmitter<Date | null>();
 
   currentStep = 1;
   totalSteps = 7;
+
+  // Week picker (Step 0 — solo cuando se abre desde vista Mes)
+  mesPickerDate: Date = new Date();
+  mesPickerLabel: string = '';
+  semanasDelMes: { label: string; days: WizardDay[] }[] = [];
 
   // Estados del flujo
   loading = false;
@@ -103,7 +130,73 @@ export class PlanificadorSemanalIaComponent implements OnInit {
     this.loginService.usuarioActual.subscribe(user => {
       if (user) this.userId = user.userId;
     });
-    this.buildWeekDays();
+    if (this.semanaActual && this.semanaActual.length > 0) {
+      // Abierto desde vista Semana: usar los días del calendario
+      this.buildWeekDays();
+      this.currentStep = 1;
+    } else {
+      // Abierto desde vista Mes: mostrar selector de semana primero
+      this.mesPickerDate = new Date(this.mesParaPlanificar);
+      this.buildSemanasParaMes();
+      this.currentStep = 0;
+    }
+  }
+
+  /** Genera la lista de semanas del mes para el step 0 (selector de semana). */
+  buildSemanasParaMes(): void {
+    const year  = this.mesPickerDate.getFullYear();
+    const month = this.mesPickerDate.getMonth();
+    this.mesPickerLabel = this.mesPickerDate.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+
+    const firstDay   = new Date(year, month, 1);
+    let dow = firstDay.getDay();
+    dow = dow === 0 ? 6 : dow - 1; // convertir a lun=0
+    const firstMonday = new Date(firstDay);
+    firstMonday.setDate(firstDay.getDate() - dow);
+
+    const lastDay = new Date(year, month + 1, 0);
+    const dayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    this.semanasDelMes = [];
+
+    let weekStart = new Date(firstMonday);
+    while (weekStart <= lastDay) {
+      const days: WizardDay[] = dayNames.map((name, i) => {
+        const d = new Date(weekStart);
+        d.setDate(weekStart.getDate() + i);
+        const dateStr = d.getFullYear() + '-'
+          + String(d.getMonth() + 1).padStart(2, '0') + '-'
+          + String(d.getDate()).padStart(2, '0');
+        return { name, date: dateStr, label: `${name} ${d.getDate()}` };
+      });
+      const endDate = new Date(weekStart);
+      endDate.setDate(weekStart.getDate() + 6);
+      const label =
+        weekStart.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' }) +
+        ' — ' +
+        endDate.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+      this.semanasDelMes.push({ label, days });
+      weekStart = new Date(weekStart);
+      weekStart.setDate(weekStart.getDate() + 7);
+    }
+  }
+
+  mesPickerAnterior(): void {
+    const d = new Date(this.mesPickerDate);
+    d.setMonth(d.getMonth() - 1);
+    this.mesPickerDate = d;
+    this.buildSemanasParaMes();
+  }
+
+  mesPickerSiguiente(): void {
+    const d = new Date(this.mesPickerDate);
+    d.setMonth(d.getMonth() + 1);
+    this.mesPickerDate = d;
+    this.buildSemanasParaMes();
+  }
+
+  seleccionarSemana(days: WizardDay[]): void {
+    this.weekDays = [...days];
+    this.currentStep = 1;
   }
 
   private buildWeekDays(): void {
@@ -127,9 +220,13 @@ export class PlanificadorSemanalIaComponent implements OnInit {
     }
   }
 
-  /** Devuelve la fecha ISO (YYYY-MM-DD) real del día a partir del nombre del día. */
+  /** Devuelve la fecha ISO (YYYY-MM-DD) real del día a partir del nombre del día.
+   *  Comparación insensible a mayúsculas y acentos para cubrir variaciones de la IA. */
   private getDateForDayName(dayName: string): string {
-    const found = this.weekDays.find(d => d.name === dayName);
+    const normalize = (s: string) =>
+      s.toLowerCase().trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const target = normalize(dayName);
+    const found = this.weekDays.find(d => normalize(d.name) === target);
     return found?.date ?? '';
   }
 
@@ -180,6 +277,9 @@ export class PlanificadorSemanalIaComponent implements OnInit {
       this.errorMsg = null;
       this.planGenerado = null;
       this.planSessions = [];
+    } else if (this.currentStep === 1 && this.semanaActual.length === 0) {
+      // Desde step 1 volver al selector de semana (step 0)
+      this.currentStep = 0;
     } else if (this.currentStep > 1) {
       this.currentStep--;
     }
@@ -259,19 +359,24 @@ export class PlanificadorSemanalIaComponent implements OnInit {
         this.creando = false;
         this.creacionCompletada = true;
         this.creacionMensaje = `¡${this.creacionTotal} entrenamientos creados con sus ejercicios!`;
-        this.calendarioActualizado.emit();
+        // Emitir la fecha del lunes de la semana planificada para que el calendario navegue al mes correcto
+        const targetDate = this.weekDays.length > 0 ? new Date(this.weekDays[0].date) : null;
+        this.calendarioActualizado.emit(targetDate);
         return;
       }
 
       const session = sessions[idx];
       this.creacionMensaje = `Creando sesión ${idx + 1}/${this.creacionTotal}: ${session.dayName}...`;
 
+      const trim = (s: string | undefined | null, max: number) =>
+        (s ?? '').substring(0, max);
+
       const training = new Training({
         trainingSessionId: 0,
         daySession: this.getDateForDayName(session.dayName),
-        objectiveSession: session.objectiveSession ?? '',
-        warmUp: session.warmUp ?? '',
-        addressSession: session.addressSession ?? '',
+        objectiveSession: trim(session.objectiveSession, 500),
+        warmUp:           trim(session.warmUp, 2000),
+        addressSession:   trim(session.addressSession, 250),
         visible: 1,
         infoVisible: 0,
         tasks: []
@@ -318,7 +423,8 @@ export class PlanificadorSemanalIaComponent implements OnInit {
     task.space       = t.space ?? '';
     task.material    = t.material ?? '';
     task.work        = t.work ?? 'TECNICO';
-    task.intencion   = t.intencion ?? '';
+    task.estrategia  = VALID_ESTRATEGIAS.includes(t.estrategia ?? '') ? (t.estrategia ?? '') : '';
+    task.intencion   = VALID_INTENCIONES.includes(t.intencion ?? '') ? (t.intencion ?? '') : '';
 
     this.trainingService.createUpdateTask(sessionId, task, 0, this.userId).subscribe({
       next:  () => this.crearTareas(sessionId, tasks, idx + 1, onComplete),
