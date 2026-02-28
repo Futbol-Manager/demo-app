@@ -62,10 +62,12 @@ export class VideoStorageService {
   /**
    * Sincroniza las carpetas de equipo del club (idempotente).
    * Crea una carpeta por cada equipo activo que no tenga carpeta ya.
+   * Si se pasa temporada, solo sincroniza equipos de esa temporada.
    * Devuelve la lista completa de carpetas actualizada.
    */
-  syncTeamFolders(clubId: number): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/${clubId}/sync-team-folders`, {}, { headers: this.getHeaders() });
+  syncTeamFolders(clubId: number, temporada?: string): Observable<any> {
+    const params = temporada ? `?temporada=${temporada}` : '';
+    return this.http.post<any>(`${this.baseUrl}/${clubId}/sync-team-folders${params}`, {}, { headers: this.getHeaders() });
   }
 
   addExternalLink(clubId: number, payload: {
@@ -75,8 +77,9 @@ export class VideoStorageService {
     return this.http.post<any>(`${this.baseUrl}/${clubId}/link`, payload, { headers: this.getHeaders() });
   }
 
-  getFolders(clubId: number): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/${clubId}/folders`, { headers: this.getHeaders() });
+  getFolders(clubId: number, temporada?: string): Observable<any> {
+    const params = temporada ? `?temporada=${temporada}` : '';
+    return this.http.get<any>(`${this.baseUrl}/${clubId}/folders${params}`, { headers: this.getHeaders() });
   }
 
   createFolder(clubId: number, name: string, color: string): Observable<any> {

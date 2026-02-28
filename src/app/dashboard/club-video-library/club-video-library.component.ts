@@ -1,4 +1,4 @@
-﻿import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { VideoStorageService } from 'src/app/core/services/video-storage/video-storage.service';
@@ -6,6 +6,7 @@ import { DriveService } from 'src/app/core/services/drive/drive.service';
 import { LocalVideoService } from 'src/app/dashboard/video-analysis/services/local-video.service';
 import { timeout } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
   selector: 'app-club-video-library',
@@ -52,6 +53,10 @@ export class ClubVideoLibraryComponent implements OnInit {
 
   syncingFolders = false; // sync manual
 
+  // ── Temporada ──────────────────────────────────────────────
+  seasons = getSeasons();
+  selectedTemporada = getCurrentSeasonString();
+
   // ── Google Drive ──────────────────────────────────────
   driveImporting = false;
   driveImportProgress = '';
@@ -90,6 +95,8 @@ export class ClubVideoLibraryComponent implements OnInit {
       || Number(sessionStorage.getItem('clubId'))
       || Number(localStorage.getItem('clubId'))
       || 0;
+    // Inicializar temporada desde localStorage (coherencia con el resto de la app)
+    this.selectedTemporada = localStorage.getItem('temporada') ?? getCurrentSeasonString();
     this.loadPlan();
     this.loadVideos();
     this.loadFolders();
@@ -114,7 +121,7 @@ export class ClubVideoLibraryComponent implements OnInit {
 
     this.syncingFolders = true;
     this.syncMessage = '';
-    this.videoService.syncTeamFolders(this.clubId).pipe(timeout(20000)).subscribe({
+    this.videoService.syncTeamFolders(this.clubId, this.selectedTemporada).pipe(timeout(20000)).subscribe({
       next: (res) => {
         this.folders = res?.data || [];
         this.syncingFolders = false;
@@ -190,10 +197,15 @@ export class ClubVideoLibraryComponent implements OnInit {
 
   loadFolders(): void {
     if (!this.clubId) return;
-    this.videoService.getFolders(this.clubId).pipe(timeout(12000)).subscribe({
+    this.videoService.getFolders(this.clubId, this.selectedTemporada).pipe(timeout(12000)).subscribe({
       next: (res) => { this.folders = res?.data || []; },
       error: () => {}
     });
+  }
+
+  onSeasonChange(): void {
+    this.selectFolder(null); // resetear carpeta activa al cambiar temporada
+    this.loadFolders();
   }
 
   // ── Enlace externo ────────────────────────────────────────
