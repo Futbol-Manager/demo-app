@@ -1,8 +1,22 @@
-<div class="back-container">
-  <div class="btn-back-clean" (click)="goBack()">
-    <i class="bi bi-arrow-left"></i>
-    <span>{{ 'COMMON.BACK' | translate }}</span>
+<app-publicidad></app-publicidad>
+
+<!-- ===== PAGE HEADER ===== -->
+<div class="page-header">
+  <div class="back-container">
+    <button class="btn-back-clean" type="button" (click)="goBack()">
+      <i class="bi bi-arrow-left"></i>
+      <span>{{ 'COMMON.BACK' | translate }}</span>
+    </button>
   </div>
+
+  <div class="header-center">
+    <h2 class="table-title">
+      <i class="bi bi-trophy me-2"></i>Clasificación y resultados
+    </h2>
+    <p class="header-subtitle">Seguimiento de la liga y resultados del equipo</p>
+  </div>
+
+  <div class="page-header-right"></div>
 </div>
 
 <!-- Overlay spinner Sphaira durante el refresh (sin borrar la tabla) -->
