@@ -47,6 +47,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   usuarioActual!: User | null;
   teamId!: number;
   showModal = false;
+  isEditing = false;
   showModalInvitar = false;
   mostrarModalInfoJugador = false;
   infoModalActiveTab = 'personal';
@@ -473,6 +474,16 @@ export class PlayerComponent implements OnInit, OnDestroy {
             this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
           }
         }
+
+        // Si se navegó con ?editPlayer=playerId (ej. desde opcionesjugador > Datos personales)
+        const editPlayerId = q['editPlayer'] != null && q['editPlayer'] !== '' ? +q['editPlayer'] : null;
+        if (editPlayerId != null) {
+          const pl = this.players.find(p => p.playerId === editPlayerId);
+          if (pl) {
+            this.editarJugador(pl.playerId);
+            this.router.navigate([], { relativeTo: this.route, queryParams: {}, replaceUrl: true });
+          }
+        }
       },
       (error) => {
         console.error('Error al cargar el listado de jugadores', error);
@@ -579,7 +590,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
   // Método para abrir el modal de creación de equipo
   abrirModalCrearJugador(): void {
     this.inicializePlayer();
-
+    this.isEditing = false;
     this.showPreview = false;
     this.selectedFile = null;
     this.imagePreviewUrl = null;
@@ -806,6 +817,7 @@ export class PlayerComponent implements OnInit, OnDestroy {
     this.promedioMentalidad();
     this.promedioTiro();
     this.promedioPortero();
+    this.isEditing = true;
     this.showPreview = false;
     this.formModalActiveTab = 'personal';
     this.showModal = true;

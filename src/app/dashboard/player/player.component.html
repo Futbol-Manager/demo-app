@@ -124,7 +124,7 @@
                                     </div>
 
                                     <div class="player-action-row">
-                                        <button class="fifa-pro-btn fifa-pro-btn-info" title="Ver info"
+                                        <button *ngIf="profileId !== 3" class="fifa-pro-btn fifa-pro-btn-info" title="Ver info"
                                             (click)="verInfoJugador(player)">
                                             <i class="bi bi-person-fill"></i>
                                         </button>
@@ -224,7 +224,7 @@
                                     <td>{{ getStatValue(player.portero) }}</td>
                                     <td class="player-table-actions-cell">
                                         <div class="player-table-actions">
-                                            <button class="fifa-pro-btn fifa-pro-btn-info" title="Ver info"
+                                            <button *ngIf="profileId !== 3" class="fifa-pro-btn fifa-pro-btn-info" title="Ver info"
                                                 (click)="verInfoJugador(player)">
                                                 <i class="bi bi-person-fill"></i>
                                             </button>
@@ -276,7 +276,7 @@
     <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
         <div class="modal-content modal-content-fifa">
             <div class="modal-header modal-header-fifa">
-                <h5 class="modal-title">Crea o edita un jugador</h5>
+                <h5 class="modal-title">{{ isEditing ? 'Editar Jugador' : 'Nuevo jugador' }}</h5>
                 <button type="button" class="btn-close btn-close-white" aria-label="Cerrar" (click)="cerrarModal()"></button>
             </div>
             <div class="modal-body modal-body-fifa">
