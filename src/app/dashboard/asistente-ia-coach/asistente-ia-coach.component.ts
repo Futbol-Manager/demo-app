@@ -496,6 +496,9 @@ export class AsistenteIaCoachComponent implements OnInit, AfterViewChecked, OnDe
     let enrichedText = text;
     if (this.coachTeamContext) {
       const coachParts: string[] = [];
+      if (this.coachTeamContext.upcomingMatches) {
+        coachParts.push('[PRÓXIMOS PARTIDOS PROGRAMADOS]\n' + this.coachTeamContext.upcomingMatches);
+      }
       if (this.coachTeamContext.playerStats) {
         coachParts.push('[PLANTILLA DEL EQUIPO (jugadores, posiciones y dorsales)]\n' + this.coachTeamContext.playerStats);
       }

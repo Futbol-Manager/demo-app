@@ -875,8 +875,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   playersConvo: any[] = [];
   horas: string[] = [];
-  /** Opciones para minutos (quedada y partido): 00, 15, 30, 45 */
-  minutosOpciones: string[] = ['00', '15', '30', '45'];
+  /** Opciones para minutos (quedada y partido): cada 5 minutos */
+  minutosOpciones: string[] = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
 
   showConvocados: any = [];
   showNoConvocados: any = [];

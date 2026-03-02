@@ -1,4 +1,4 @@
-﻿<div class="library-page">
+<div class="library-page">
 
   <!-- HEADER -->
   <div class="library-header">
@@ -86,6 +86,15 @@
           </button>
         </div>
       </div>
+
+      <!-- Selector de temporada -->
+      <div class="season-selector-row">
+        <i class="bi bi-calendar3 season-icon"></i>
+        <select class="season-select" [(ngModel)]="selectedTemporada" (ngModelChange)="onSeasonChange()" title="Temporada">
+          <option *ngFor="let s of seasons" [value]="s.value">{{ s.label }}</option>
+        </select>
+      </div>
+
       <div *ngIf="syncMessage" class="sync-message">{{ syncMessage }}</div>
 
       <!-- Formulario nueva carpeta -->
