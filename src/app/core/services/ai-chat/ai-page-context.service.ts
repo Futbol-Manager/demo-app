@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { BehaviorSubject, Observable, forkJoin, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, switchMap, map } from 'rxjs/operators';
 import { ClubService } from '../club/club.service';
 import { VideoStorageService } from '../video-storage/video-storage.service';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
@@ -13,6 +13,7 @@ export interface CoachTeamContext {
   classification: string;
   playerStats: string;
   injuryStats: string;
+  upcomingMatches: string;
 }
 
 export type PageContextType = 'estadisticas-equipos' | 'estadisticas-jugadores';
@@ -27,6 +28,8 @@ export interface PageContext {
 
 export interface BackgroundStatsContext {
   clubId: number;
+  upcomingStats: string | null;
+  rosterStats:   { contextText: string; codeToReal: Map<string, string> } | null;
   teamStats:     { contextText: string; codeToReal: Map<string, string> } | null;
   playerStats:   { contextText: string; codeToReal: Map<string, string> } | null;
   paymentStats:  { contextText: string; codeToReal: Map<string, string> } | null;
@@ -57,8 +60,13 @@ export class AiPageContextService {
 
   /** Evita recargar si ya están los datos del mismo club en esta sesión */
   private loadedForClubId: number | null = null;
+  private loadedForClubAt: number | null = null;
   /** Evita recargar si ya están los datos del mismo equipo de coach */
   private loadedForTeamId: number | null = null;
+  private loadedForTeamAt: number | null = null;
+
+  /** TTL en milisegundos para la caché de contexto (30 minutos) */
+  private readonly CACHE_TTL_MS = 30 * 60 * 1000;
 
   private readonly PERMISSION_LABELS: { [key: string]: string } = {
     DASHBOARD_PLAYERS:    'Estadísticas jugadores',
@@ -112,12 +120,17 @@ export class AiPageContextService {
    * Solo realiza la llamada una vez por clubId en la sesión activa.
    */
   preloadForClub(clubId: number, userId?: number): void {
-    if (!clubId || this.loadedForClubId === clubId) return;
+    const now = Date.now();
+    const cacheHit = this.loadedForClubId === clubId
+      && this.loadedForClubAt !== null
+      && (now - this.loadedForClubAt) < this.CACHE_TTL_MS;
+    if (!clubId || cacheHit) return;
 
     const temporada = getCurrentSeasonString();
     const effectiveUserId = userId || Number(localStorage.getItem('userIdClub')) || 0;
 
     forkJoin({
+      roster:    this.clubService.getListJugadoresByClubForTemp(clubId, temporada).pipe(catchError(() => of(null))),
       teams:     this.clubService.getListTeamsOfClubByStadistics(clubId).pipe(catchError(() => of(null))),
       players:   this.clubService.getListPlayersOfClubByStadistics(clubId).pipe(catchError(() => of(null))),
       payments:  this.clubService.getListPlayersPagosClub(clubId, temporada).pipe(catchError(() => of(null))),
@@ -136,7 +149,39 @@ export class AiPageContextService {
                    environment.apiUrl + `club/staff/list/${clubId}`,
                    { headers: this.getAuthHeaders() }
                  ).pipe(catchError(() => of(null))),
-    }).subscribe(({ teams, players, payments, docs, docsCoach, ropa, notifs, media, scouting, staff }) => {
+    }).pipe(
+      switchMap(phase1 => {
+        // Extract team IDs from roster to load upcoming matches per team
+        const rosterTeams: any[] = phase1.roster?.data?.teams || [];
+        const teamIds: number[] = rosterTeams
+          .filter((t: any) => t.teamId)
+          .map((t: any) => t.teamId as number);
+
+        if (teamIds.length === 0) {
+          return of({ ...phase1, upcomingByTeam: null });
+        }
+
+        const upcomingRequests: { [key: string]: Observable<any> } = {};
+        teamIds.forEach(id => {
+          upcomingRequests[`team_${id}`] = this.http.get<any>(
+            environment.apiUrl + `match/listmatchpreparationsbyteam/${id}`,
+            { headers: this.getAuthHeaders() }
+          ).pipe(catchError(() => of(null)));
+        });
+
+        return forkJoin(upcomingRequests).pipe(
+          map(upcomingByTeam => ({ ...phase1, upcomingByTeam }))
+        );
+      })
+    ).subscribe(({ roster, teams, players, payments, docs, docsCoach, ropa, notifs, media, scouting, staff, upcomingByTeam }) => {
+      const rosterStats = roster?.data?.teams && Array.isArray(roster.data.teams)
+        ? this.buildRosterContext(roster.data.teams)
+        : null;
+
+      const upcomingStats = upcomingByTeam
+        ? this.buildUpcomingMatchesContext(upcomingByTeam, roster?.data?.teams || [])
+        : null;
+
       const teamStats = teams?.data && Array.isArray(teams.data)
         ? this.buildTeamContext(teams.data)
         : null;
@@ -166,10 +211,11 @@ export class AiPageContextService {
       const staffStats = this.buildStaffContext(staff);
 
       this.backgroundStats$.next({
-        clubId, teamStats, playerStats, paymentStats,
+        clubId, upcomingStats, rosterStats, teamStats, playerStats, paymentStats,
         documentStats, ropaStats, notifStats, mediaStats, scoutingStats, staffStats,
       });
       this.loadedForClubId = clubId;
+      this.loadedForClubAt = Date.now();
     });
   }
 
@@ -181,6 +227,7 @@ export class AiPageContextService {
   /** Fuerza una recarga (p.ej. al cambiar de temporada) */
   invalidateClubCache(): void {
     this.loadedForClubId = null;
+    this.loadedForClubAt = null;
     this.backgroundStats$.next(null);
   }
 
@@ -219,7 +266,11 @@ export class AiPageContextService {
    * para el equipo del coach. Solo realiza la llamada una vez por teamId.
    */
   preloadForCoachTeam(teamId: number): void {
-    if (!teamId || this.loadedForTeamId === teamId) return;
+    const now = Date.now();
+    const cacheHit = this.loadedForTeamId === teamId
+      && this.loadedForTeamAt !== null
+      && (now - this.loadedForTeamAt) < this.CACHE_TTL_MS;
+    if (!teamId || cacheHit) return;
 
     const tipos = ['Liga', 'Copa', 'Amistoso', 'Torneo'];
     const matchRequests: { [key: string]: Observable<any> } = {};
@@ -238,6 +289,10 @@ export class AiPageContextService {
                        environment.apiUrl + `injury/team/${teamId}`,
                        { headers: this.getAuthHeaders() }
                      ).pipe(catchError(() => of(null))),
+      upcoming:      this.http.get<any>(
+                       environment.apiUrl + `match/listmatchpreparationsbyteam/${teamId}`,
+                       { headers: this.getAuthHeaders() }
+                     ).pipe(catchError(() => of(null))),
     }).subscribe((results: any) => {
       const allMatches: any[] = [];
       tipos.forEach(tipo => {
@@ -247,18 +302,21 @@ export class AiPageContextService {
         }
       });
 
-      const matchStats    = this.buildCoachMatchContext(allMatches);
+      const matchStats     = this.buildCoachMatchContext(allMatches);
       const classification = this.buildCoachClassificationContext(results['clasificacion']);
-      const playerStats   = this.buildCoachPlayersContext(results['players']);
-      const injuryStats   = this.buildCoachInjuryContext(results['injuries']);
+      const playerStats    = this.buildCoachPlayersContext(results['players']);
+      const injuryStats    = this.buildCoachInjuryContext(results['injuries']);
+      const upcomingMatches = this.buildCoachUpcomingContext(results['upcoming']);
 
-      this.coachTeamContext$.next({ teamId, matchStats, classification, playerStats, injuryStats });
+      this.coachTeamContext$.next({ teamId, matchStats, classification, playerStats, injuryStats, upcomingMatches });
       this.loadedForTeamId = teamId;
+      this.loadedForTeamAt = Date.now();
     });
   }
 
   invalidateCoachTeamCache(): void {
     this.loadedForTeamId = null;
+    this.loadedForTeamAt = null;
     this.coachTeamContext$.next(null);
   }
 
@@ -274,7 +332,7 @@ export class AiPageContextService {
 
   private buildTeamContext(teamsData: any[]): { contextText: string; codeToReal: Map<string, string> } {
     const codeToReal = new Map<string, string>();
-    const lines = ['Código | Partidos | Victorias | Empates | Derrotas | GF | GC | DG | Puntos'];
+    const lines = ['Código | Nombre equipo | Partidos | Victorias | Empates | Derrotas | GF | GC | DG | Puntos'];
 
     teamsData
       .filter(t => t.nameTeam && !t.nameTeam.includes('Sin equipo'))
@@ -289,7 +347,7 @@ export class AiPageContextService {
         }
         const code = `EQUIPO_STAT_${i + 1}`;
         codeToReal.set(code, team.nameTeam);
-        lines.push(`${code} | ${team.partidos?.length || 0} | ${vic} | ${emp} | ${der} | ${gf} | ${gc} | ${gf - gc} | ${pun}`);
+        lines.push(`${code} | ${team.nameTeam} | ${team.partidos?.length || 0} | ${vic} | ${emp} | ${der} | ${gf} | ${gc} | ${gf - gc} | ${pun}`);
       });
 
     return { contextText: lines.join('\n'), codeToReal };
@@ -301,8 +359,10 @@ export class AiPageContextService {
 
     // Máximo 100 jugadores para no sobrecargar el contexto
     playersData.slice(0, 100).forEach((p, i) => {
-      const code = `JUGADOR_STAT_${i + 1}`;
-      codeToReal.set(code, p.nombre || `Jugador ${i + 1}`);
+      const pid = p.playerId || p.userId || i + 1;
+      const code = `PLY_${pid}`;
+      const nombre = p.nombre || `Jugador ${i + 1}`;
+      codeToReal.set(code, nombre);
       lines.push(
         `${code} | ${p.nameTeam || '-'} | ${p.posicion || '-'} | ${p.partidosJugados || 0} | ` +
         `${p.goles || 0} | ${p.asistencias || 0} | ${p.minTotales || 0} | ` +
@@ -313,8 +373,104 @@ export class AiPageContextService {
     return { contextText: lines.join('\n'), codeToReal };
   }
 
+  private buildUpcomingMatchesContext(upcomingByTeam: { [key: string]: any }, rosterTeams: any[]): string {
+    const teamNameById = new Map<number, string>();
+    rosterTeams.forEach((t: any) => {
+      if (t.teamId) teamNameById.set(t.teamId, t.nameTeam || `Equipo ${t.teamId}`);
+    });
+
+    const lines: string[] = [];
+    let totalMatches = 0;
+
+    for (const key of Object.keys(upcomingByTeam)) {
+      const teamId = parseInt(key.replace('team_', ''), 10);
+      const res = upcomingByTeam[key];
+      const matches: any[] = Array.isArray(res?.data) ? res.data
+        : Array.isArray(res) ? res : [];
+
+      const future = matches.filter((m: any) => {
+        const date = m.matchDate || m.scheduledAt || '';
+        if (!date) return true;
+        return new Date(date) >= new Date();
+      });
+
+      if (future.length === 0) continue;
+
+      const teamName = teamNameById.get(teamId) || `Equipo ${teamId}`;
+      lines.push(`\n## ${teamName}`);
+      future.sort((a: any, b: any) => {
+        const da = a.matchDate || a.scheduledAt || '';
+        const db = b.matchDate || b.scheduledAt || '';
+        return da.localeCompare(db);
+      }).slice(0, 5).forEach((m: any) => {
+        const fecha   = m.matchDate || m.scheduledAt || 'Sin fecha';
+        const hora    = m.matchTime || m.hora || '';
+        const rival   = m.rivalName || m.rival || 'Rival desconocido';
+        const lugar   = m.terreno || m.local || '-';
+        const tipo    = m.tipoPartido || m.tipo || '';
+        const horaStr = hora ? ` ${hora}` : '';
+        const tipoStr = tipo ? ` [${tipo}]` : '';
+        lines.push(`  ${fecha}${horaStr} | vs ${rival} (${lugar})${tipoStr}`);
+        totalMatches++;
+      });
+    }
+
+    if (lines.length === 0) return 'No hay partidos programados próximamente.';
+    return `Total partidos próximos: ${totalMatches}` + lines.join('\n');
+  }
+
+  /**
+   * Genera un listado completo de la plantilla del club por equipo.
+   * Usa getListJugadoresByClubForTemp → todos los jugadores registrados,
+   * independientemente de si tienen estadísticas de partido.
+   */
+  private buildRosterContext(teamsData: any[]): { contextText: string; codeToReal: Map<string, string> } {
+    const codeToReal = new Map<string, string>();
+    const lines: string[] = [];
+
+    teamsData
+      .filter(t => t.nameTeam && !t.nameTeam.includes('Sin equipo'))
+      .forEach(team => {
+        const players: any[] = Array.isArray(team.players) ? team.players : [];
+        lines.push(`\n## ${team.nameTeam} (${players.length} jugadores)`);
+        if (players.length === 0) {
+          lines.push('  (Sin jugadores registrados)');
+          return;
+        }
+        lines.push('  Código | Posición | Dorsal');
+        players.forEach((p: any, i: number) => {
+          const pid = p.playerId || p.userId || p.id || i + 1;
+          const code = `PLY_${pid}`;
+          const nombre = `${p.nombre || ''} ${p.apellido || p.apellidos || ''}`.trim() || `Jugador ${i + 1}`;
+          codeToReal.set(code, nombre);
+          const posicion = p.posicion || p.posicionGlobal || '-';
+          const dorsal   = p.dorsal ?? p.numDorsal ?? '-';
+          lines.push(`  ${code} | ${posicion} | ${dorsal}`);
+        });
+      });
+
+    return { contextText: lines.join('\n'), codeToReal };
+  }
+
   private buildCoachMatchContext(matches: any[]): string {
     if (!matches || matches.length === 0) return '';
+
+    // Ordenar todos los partidos por fecha descendente (más reciente primero)
+    matches.sort((a, b) => {
+      const da = a.matchPreparation?.matchDate || a.matchDate || '';
+      const db = b.matchPreparation?.matchDate || b.matchDate || '';
+      return db.localeCompare(da);
+    });
+
+    // Identificar el último partido jugado
+    const lastMatch = matches[0];
+    const lmp = lastMatch?.matchPreparation;
+    const lastDateStr  = lmp?.matchDate || lastMatch?.matchDate || '?';
+    const lastRival    = lmp?.rivalName || '?';
+    const lastGF       = lastMatch?.golesAFavor ?? 0;
+    const lastGC       = lastMatch?.golesEnContra ?? 0;
+    const lastResult   = lastMatch?.resultado === 'V' ? 'Victoria'
+      : lastMatch?.resultado === 'E' ? 'Empate' : lastMatch?.resultado === 'D' ? 'Derrota' : '?';
 
     // Agrupar por tipo
     const byTipo: { [tipo: string]: any[] } = {};
@@ -374,7 +530,8 @@ export class AiPageContextService {
     const totalPts = totalWins * 3 + totalDraws;
     const forma = formaGlobal.slice(-5).join(' ');
 
-    const header = `TOTAL: ${totalPlayed}PJ | ${totalWins}V ${totalDraws}E ${totalLosses}D | ${totalGf}:${totalGc} (DG ${dgStr}) | ${totalPts}pts\nÚltima forma (5 últimos): ${forma}`;
+    const header = `ÚLTIMO PARTIDO: ${lastDateStr} vs ${lastRival} | ${lastGF}-${lastGC} | ${lastResult}\n`
+      + `TOTAL: ${totalPlayed}PJ | ${totalWins}V ${totalDraws}E ${totalLosses}D | ${totalGf}:${totalGc} (DG ${dgStr}) | ${totalPts}pts\nÚltima forma (5 últimos): ${forma}`;
     return header + '\n\n' + lines.join('\n');
   }
 
@@ -486,10 +643,13 @@ export class AiPageContextService {
         ? `${ropa.player.nombre || ''} ${ropa.player.apellidos || ''}`.trim()
         : `Jugador ${i + 1}`;
       const teamName = ropa.team?.nombre || '';
-      const code = `JUGADOR_ROPA_${i + 1}`;
+      const pid = ropa.player?.playerId || ropa.player?.userId || ropa.playerId || i + 1;
+      const code = `PLY_${pid}`;
       codeToReal.set(code, playerName);
       const estado = ropa.estado === '1' ? 'Completo' : 'Incompleto';
-      lines.push(`${code} | ${getTeamCode(teamName)} | ${estado}`);
+      const teamCode = getTeamCode(teamName);
+      const teamDisplay = teamName ? `${teamCode} (${teamName})` : '-';
+      lines.push(`${code} | ${teamDisplay} | ${estado}`);
     });
 
     return { contextText: lines.join('\n'), codeToReal };
@@ -526,7 +686,9 @@ export class AiPageContextService {
       const code = `NOTIF_${i + 1}`;
       const fecha = notif.fechaCreate ? String(notif.fechaCreate).substring(0, 10) : '-';
       const asunto = String(notif.asunto || '-').substring(0, 50);
-      const destinatario = getTeamCode(notif.destinatario || '');
+      const destName = notif.destinatario || '';
+      const teamCode = getTeamCode(destName);
+      const destinatario = destName ? `${teamCode} (${destName})` : '-';
       lines.push(`${code} | ${fecha} | ${asunto} | ${destinatario}`);
     });
 
@@ -625,6 +787,33 @@ export class AiPageContextService {
     return { contextText: lines.join('\n'), codeToReal };
   }
 
+  private buildCoachUpcomingContext(upcomingRes: any): string {
+    const matches: any[] = Array.isArray(upcomingRes?.data) ? upcomingRes.data
+      : Array.isArray(upcomingRes) ? upcomingRes : [];
+
+    const future = matches.filter((m: any) => {
+      const date = m.matchDate || m.scheduledAt || '';
+      return !date || new Date(date) >= new Date();
+    });
+
+    if (future.length === 0) return 'Sin partidos programados próximamente.';
+
+    const lines = ['Fecha | Hora | Rival | Lugar | Tipo'];
+    future
+      .sort((a: any, b: any) => (a.matchDate || '').localeCompare(b.matchDate || ''))
+      .slice(0, 10)
+      .forEach((m: any) => {
+        const fecha = m.matchDate || m.scheduledAt || '-';
+        const hora  = m.matchTime || m.hora || '-';
+        const rival = m.rivalName || m.rival || '?';
+        const lugar = m.terreno || m.local || '-';
+        const tipo  = m.tipoPartido || m.tipo || '-';
+        lines.push(`${fecha} | ${hora} | ${rival} | ${lugar} | ${tipo}`);
+      });
+
+    return lines.join('\n');
+  }
+
   private buildCoachPlayersContext(playersRes: any): string {
     const items: any[] = Array.isArray(playersRes?.data) ? playersRes.data
       : Array.isArray(playersRes) ? playersRes : [];
@@ -694,7 +883,8 @@ export class AiPageContextService {
     };
 
     unique.slice(0, 150).forEach((p, i) => {
-      const code = `PAGADOR_${i + 1}`;
+      const pid = p.playerId || i + 1;
+      const code = `PLY_${pid}`;
       const fullName = `${p.nombre || ''} ${p.apellido || ''}`.trim() || `Jugador ${i + 1}`;
       codeToReal.set(code, fullName);
 
@@ -702,10 +892,12 @@ export class AiPageContextService {
       const totalPagado = parseFloat(p.totalPagado) || 0;
       const pendiente   = Math.max(0, totalAPagar - totalPagado);
       const estado      = pendiente <= 0.01 ? 'Al día' : 'Pendiente';
-      const equipoCodigo = getTeamCode(p.nameTeam);
+      const teamName    = p.nameTeam || '';
+      const teamCode    = getTeamCode(teamName);
+      const equipoDisplay = teamName ? `${teamCode} (${teamName})` : '-';
 
       lines.push(
-        `${code} | ${equipoCodigo} | ${totalAPagar.toFixed(2)} | ` +
+        `${code} | ${equipoDisplay} | ${totalAPagar.toFixed(2)} | ` +
         `${totalPagado.toFixed(2)} | ${pendiente.toFixed(2)} | ${estado}`
       );
     });

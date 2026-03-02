@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ClipAnnotation, DrawingElement } from '../models/analysis.models';
+import { ClipAnnotation, DrawingElement, AnimatedDrawingOverlay } from '../models/analysis.models';
 
 /**
  * Cuts a local video file into an MP4 clip using FFmpeg.wasm.
@@ -145,6 +145,7 @@ export class ClipExportService {
     endMs: number,
     label: string,
     annotations: ClipAnnotation[],
+    animOverlays: AnimatedDrawingOverlay[] = [],
     onProgress?: (pct: number) => void,
     onStep?: (step: string) => void
   ): Promise<void> {
@@ -187,8 +188,8 @@ export class ClipExportService {
           allFiles.push(segName);
         }
 
-        // Pause frame — requires thumbnailDataUrl (canvas rendered with drawings)
-        if (ann.thumbnailDataUrl) {
+        // Pause frame — solo si tiene thumbnail Y duración > 0
+        if (ann.thumbnailDataUrl && ann.frameDurationMs > 0) {
           const pauseName = `pause_${ts}_${i}.mp4`;
           segments.push({ type: 'pause', pngData: ann.thumbnailDataUrl, durationMs: ann.frameDurationMs, name: pauseName });
           allFiles.push(pauseName);
@@ -214,18 +215,53 @@ export class ClipExportService {
 
         if (seg.type === 'video') {
           step(`Procesando segmento de vídeo ${i + 1}/${segments.length}…`);
-          const startSec = (seg.start / 1000).toFixed(3);
-          const durSec   = ((seg.end - seg.start) / 1000).toFixed(3);
+          const startSec  = (seg.start / 1000).toFixed(3);
+          const durSec    = ((seg.end - seg.start) / 1000).toFixed(3);
+          const segDurMs  = seg.end - seg.start;
 
-          await ff.exec([
-            '-ss', startSec,
-            '-i', inputName,
-            '-t', durSec,
-            '-c:v', 'libx264', '-preset', 'ultrafast', '-pix_fmt', 'yuv420p',
-            '-c:a', 'aac', '-ac', '2',
-            '-movflags', '+faststart',
-            seg.name
-          ]);
+          // Buscar overlays que se solapan con este segmento (tiempos absolutos)
+          const activeOverlays = animOverlays.filter(ov =>
+            ov.startMsAbs < seg.end && (ov.startMsAbs + ov.durationMs) > seg.start
+          );
+
+          if (!activeOverlays.length) {
+            // Sin overlays: extracción directa
+            await ff.exec([
+              '-ss', startSec,
+              '-i', inputName,
+              '-t', durSec,
+              '-c:v', 'libx264', '-preset', 'ultrafast', '-pix_fmt', 'yuv420p',
+              '-c:a', 'aac', '-ac', '2',
+              '-movflags', '+faststart',
+              seg.name
+            ]);
+          } else {
+            // Con overlays: extracción + composición canvas (garantiza alpha correcto)
+            step(`Compositing overlay en segmento ${i + 1}/${segments.length}…`);
+            const rawName = `raw_${ts}_${i}.mp4`;
+            allFiles.push(rawName);
+            await ff.exec([
+              '-ss', startSec,
+              '-i', inputName,
+              '-t', durSec,
+              '-c:v', 'libx264', '-preset', 'ultrafast', '-pix_fmt', 'yuv420p',
+              '-c:a', 'aac', '-ac', '2', '-ar', '48000',
+              '-movflags', '+faststart',
+              rawName
+            ]);
+
+            const rawData = await ff.readFile(rawName) as Uint8Array;
+            const ovInfos = activeOverlays.map(ov => ({
+              pngDataUrl: ov.pngDataUrl,
+              t0: Math.max(0, (ov.startMsAbs - seg.start) / 1000),
+              t1: Math.min(segDurMs / 1000, (ov.startMsAbs + ov.durationMs - seg.start) / 1000)
+            }));
+            const W = activeOverlays[0].width;
+            const H = activeOverlays[0].height;
+
+            const composited = await this.canvasCompositeOverlay(rawData, ovInfos, W, H, ff, ts, i, segDurMs);
+            await ff.writeFile(seg.name, composited);
+          }
         } else {
           step(`Renderizando frame anotado ${i + 1}/${segments.length}…`);
           const durSec = (seg.durationMs / 1000).toFixed(3);
@@ -236,14 +272,14 @@ export class ClipExportService {
           await ff.writeFile(pngName, pngData);
           allFiles.push(pngName);
 
-          // Encode freeze-frame video with silent audio
+          // Encode freeze-frame video with silent audio (48000 Hz para evitar desync)
           await ff.exec([
             '-loop', '1',
             '-i', pngName,
-            '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo',
+            '-f', 'lavfi', '-i', 'anullsrc=r=48000:cl=stereo',
             '-t', durSec,
             '-c:v', 'libx264', '-preset', 'ultrafast', '-pix_fmt', 'yuv420p',
-            '-c:a', 'aac', '-ac', '2',
+            '-c:a', 'aac', '-ac', '2', '-ar', '48000',
             '-shortest',
             '-movflags', '+faststart',
             seg.name
@@ -268,7 +304,8 @@ export class ClipExportService {
         '-f', 'concat',
         '-safe', '0',
         '-i', concatListName,
-        '-c', 'copy',
+        '-c:v', 'copy',
+        '-c:a', 'aac', '-ar', '48000', '-ac', '2',
         '-movflags', '+faststart',
         outputName
       ]);
@@ -322,7 +359,7 @@ export class ClipExportService {
       const c = clips[0];
       const ready = await this.prepareAnnotationThumbnails(file, c.annotations || []);
       return ready.length
-        ? this.exportClipWithAnnotations(file, c.startMs, c.endMs, label, ready, onProgress, onStep)
+        ? this.exportClipWithAnnotations(file, c.startMs, c.endMs, label, ready, [], onProgress, onStep)
         : this.exportClip(file, c.startMs, c.endMs, label, onProgress);
     }
 
@@ -607,14 +644,23 @@ export class ClipExportService {
         ctx.setLineDash([]);
         break;
 
-      case 'text':
-        ctx.font        = `bold ${el.fontSize || 20}px Arial, sans-serif`;
-        ctx.fillStyle   = el.color;
-        ctx.strokeStyle = el.color === '#ffffff' ? '#000' : '#fff';
-        ctx.lineWidth   = 2;
+      case 'text': {
+        // fontSizePct (% de H del canvas) garantiza el mismo tamaño visual
+        // en cualquier resolución. Fallback para anotaciones antiguas: estima
+        // a partir de fontSize CSS usando 720px como altura de referencia.
+        const scaledFont = el.fontSizePct != null
+          ? Math.round(el.fontSizePct * H / 100)
+          : Math.round((el.fontSize || 20) * H / 720);
+        ctx.font         = `bold ${Math.max(8, scaledFont)}px Arial, sans-serif`;
+        ctx.fillStyle    = el.color;
+        ctx.strokeStyle  = el.color === '#ffffff' ? '#000' : '#fff';
+        ctx.lineWidth    = Math.max(1, scaledFont * 0.04);
+        ctx.textBaseline = 'alphabetic';
+        ctx.textAlign    = 'left';
         ctx.strokeText(el.text || '', px(el.x!), py(el.y!));
         ctx.fillText(el.text || '', px(el.x!), py(el.y!));
         break;
+      }
 
       case 'spotlight': {
         const sx = px(el.x!), sy = py(el.y!), sr = px(el.radius || 10);
@@ -634,6 +680,98 @@ export class ClipExportService {
       }
     }
     ctx.restore();
+  }
+
+  /**
+   * Composita overlays PNG (con alfa) sobre un segmento MP4.
+   *
+   * Estrategia: FFmpeg extrae los frames como JPEG → Canvas composita solo los
+   * frames activos → FFmpeg recodifica → mux con audio original.
+   * Esto evita los problemas de alpha del filtro overlay y los race conditions
+   * del seek con HTMLVideoElement.
+   */
+  private async canvasCompositeOverlay(
+    rawData:      Uint8Array,
+    overlayInfos: Array<{ pngDataUrl: string; t0: number; t1: number }>,
+    W:            number,
+    H:            number,
+    ff:           any,
+    ts:           number,
+    idx:          number,
+    segDurMs:     number
+  ): Promise<Uint8Array> {
+
+    const pfx = `cmp_${ts}_${idx}`;
+
+    console.warn(`[CAE Composite ${idx}] start — overlays=${overlayInfos.length}, segDur=${segDurMs}ms`);
+    overlayInfos.forEach((ov, i) =>
+      console.warn(`  [CAE Composite ${idx}] ov[${i}]: t0=${ov.t0.toFixed(3)}s  t1=${ov.t1.toFixed(3)}s  pngLen=${ov.pngDataUrl.length}`)
+    );
+
+    // ── 1. Escribir segmento y PNGs en el FS de FFmpeg ────────────────────────
+    const srcName = `${pfx}_src.mp4`;
+    await ff.writeFile(srcName, rawData);
+
+    const ovNames: string[] = [];
+    for (let i = 0; i < overlayInfos.length; i++) {
+      const ovName = `${pfx}_ov${i}.png`;
+      await ff.writeFile(ovName, this.dataUrlToUint8Array(overlayInfos[i].pngDataUrl));
+      ovNames.push(ovName);
+    }
+
+    const outName    = `${pfx}_out.mp4`;
+    const allTmpFiles = [srcName, ...ovNames, outName];
+
+    try {
+      // ── 2. Construir filter_complex con overlay nativo de FFmpeg ─────────────
+      // Estrategia: convertir cada PNG a rgba para preservar alpha, luego encadenar overlays
+      const filterParts: string[] = [];
+      let prevLabel = '[0:v]';
+
+      for (let i = 0; i < overlayInfos.length; i++) {
+        const ov       = overlayInfos[i];
+        const ovLabel  = `[ov${i}]`;
+        const outLabel = i < overlayInfos.length - 1 ? `[v${i}]` : '[vout]';
+        const enable   = `between(t,${ov.t0.toFixed(3)},${ov.t1.toFixed(3)})`;
+
+        // Convertir PNG a rgba para asegurar canal alpha correcto
+        filterParts.push(`[${i + 1}:v]format=rgba${ovLabel}`);
+        // Aplicar overlay solo durante el intervalo activo
+        filterParts.push(`${prevLabel}${ovLabel}overlay=x=0:y=0:enable='${enable}'${outLabel}`);
+        prevLabel = outLabel;
+      }
+
+      const filterComplex = filterParts.join(';');
+      console.warn(`[CAE Composite ${idx}] filter_complex: ${filterComplex}`);
+
+      // ── 3. Inputs: vídeo + PNGs ───────────────────────────────────────────
+      const inputArgs: string[] = ['-i', srcName];
+      for (const ovName of ovNames) inputArgs.push('-i', ovName);
+
+      const ret = await ff.exec([
+        ...inputArgs,
+        '-filter_complex', filterComplex,
+        '-map', '[vout]',
+        '-map', '0:a',
+        '-c:v', 'libx264', '-preset', 'ultrafast', '-pix_fmt', 'yuv420p',
+        '-c:a', 'aac', '-ar', '48000', '-ac', '2',
+        '-movflags', '+faststart',
+        outName
+      ]);
+      console.warn(`[CAE Composite ${idx}] ffmpeg exit: ${ret}`);
+
+      const result = await ff.readFile(outName) as Uint8Array;
+      console.warn(`[CAE Composite ${idx}] resultado: ${result.byteLength} bytes`);
+      return result;
+
+    } catch (err) {
+      console.error(`[CAE Composite ${idx}] ERROR — devolviendo rawData sin overlay:`, err);
+      return rawData;
+    } finally {
+      for (const f of allTmpFiles) {
+        try { await ff.deleteFile(f); } catch { /* ignorar */ }
+      }
+    }
   }
 
   /** Converts a data URL (image/png or image/jpeg) to Uint8Array. */

@@ -258,7 +258,7 @@ export class RrssSettingsComponent implements OnInit {
   }
 
   loadConfig(network: Network): void {
-    this.prospect.getNetworkConfig(network).subscribe({
+    this.prospect.getNetworkConfigJava(network).subscribe({
       next: cfg => {
         this.configs[network] = {
           ...this.defaultConfig(network),
@@ -325,7 +325,7 @@ export class RrssSettingsComponent implements OnInit {
   save(network: Network): void {
     this.saving = true;
     const cfg = this.configs[network];
-    this.prospect.updateNetworkConfig(network, {
+    this.prospect.updateNetworkConfigJava(network, {
       topics:             cfg.topics,
       tone:               cfg.tone,
       audience:           cfg.audience,

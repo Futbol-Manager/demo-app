@@ -48,6 +48,8 @@ import { FormTemplateSelectorResult } from 'src/app/dashboard/shared/form-templa
 import { FormTemplate } from 'src/app/core/services/form-template/form-template.model';
 import { FormTemplateService } from 'src/app/core/services/form-template/form-template.service';
 import { finalize } from 'rxjs/operators';
+import { IndividualTrainingService } from 'src/app/core/services/individual-training/individual-training.service';
+import { ACTIVITY_COLORS } from 'src/app/core/services/individual-training/individual-training.model';
 
 declare var html2pdf: any;
 
@@ -139,6 +141,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   daySession!: string;
   listTraining: any[] = []; // Define una variable para almacenar el listado de equipos
   listMatchPreparation: any[] = [];
+  listIndividualEvents: { date: string; planId: number; planName: string; activityType: string }[] = [];
+  readonly indActivityColors = ACTIVITY_COLORS;
   today: Date = (() => {
     const d = new Date();
     d.setHours(12, 0, 0, 0);
@@ -162,7 +166,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
   match: MatchPreparation = new MatchPreparation({});
   selectedActivity: 'entrenamiento' | 'partido' | 'otra' | '' = '';
   selectedItem: {
-    type: 'entrenamiento' | 'partido' | 'otra' | null;
+    type: 'entrenamiento' | 'partido' | 'otra' | 'individual' | null;
     id: number | null;
   } = { type: null, id: null };
   mode:
@@ -171,7 +175,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     | 'view-partido'
     | 'create-entrenamiento'
     | 'create-partido'
-    | 'create-otra' = 'empty';
+    | 'create-otra'
+    | 'view-individual' = 'empty';
   /* ===== FLAGS DERIVADOS ===== */
   get isEmpty(): boolean {
     return this.mode === 'empty';
@@ -875,8 +880,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
   playersConvo: any[] = [];
   horas: string[] = [];
-  /** Opciones para minutos (quedada y partido): 00, 15, 30, 45 */
-  minutosOpciones: string[] = ['00', '15', '30', '45'];
+  /** Opciones para minutos (quedada y partido): cada 5 minutos */
+  minutosOpciones: string[] = ['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'];
 
   showConvocados: any = [];
   showNoConvocados: any = [];
@@ -919,6 +924,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     private ngZone: NgZone,
     private formTemplateService: FormTemplateService,
     private translate: TranslateService,
+    private individualTrainingSvc: IndividualTrainingService,
   ) { }
 
   ngOnInit(): void {
@@ -1039,6 +1045,10 @@ export class CalendarioComponent implements OnInit, OnDestroy {
           m => m.matchDate === daysession
         );
 
+        const individualSessions = this.listIndividualEvents.filter(
+          e => e.date === daysession
+        );
+
         this.calendario[i][j] = {
           numero: dia,
           daysession,
@@ -1053,7 +1063,9 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
           rivalName: match?.rivalName ?? null,
 
-          terreno: match?.terreno ?? null
+          terreno: match?.terreno ?? null,
+
+          individualSessions,
         };
 
         dia++;
@@ -1275,6 +1287,7 @@ export class CalendarioComponent implements OnInit, OnDestroy {
         String(d.getDate()).padStart(2, '0');
       const training = this.listTraining.find(t => t.daySession === daysession);
       const match = this.listMatchPreparation.find(m => m.matchDate === daysession);
+      const individualSessions = this.listIndividualEvents.filter(e => e.date === daysession);
       this.semanaActual.push({
         numero: d.getDate(),
         daysession,
@@ -1285,7 +1298,8 @@ export class CalendarioComponent implements OnInit, OnDestroy {
         matchPreparationId: match?.matchPreparationId ?? null,
         matchVisible: match?.visible ?? 0,
         rivalName: match?.rivalName ?? null,
-        terreno: match?.terreno ?? null
+        terreno: match?.terreno ?? null,
+        individualSessions,
       });
     }
     const domingo = new Date(lunes);
@@ -1456,12 +1470,13 @@ export class CalendarioComponent implements OnInit, OnDestroy {
 
     if (partidos.length > 0) {
       const m = partidos[0];
+      this.selectActivity('partido', m.matchPreparationId, m);
+      return;
+    }
 
-      this.selectActivity(
-        'partido',
-        m.matchPreparationId,
-        m
-      );
+    const indSessions = this.listIndividualEvents.filter(s => s.date === this.daySession);
+    if (indSessions.length > 0) {
+      this.selectActivity('individual', indSessions[0].planId, indSessions[0]);
     }
   }
 
@@ -1622,22 +1637,66 @@ export class CalendarioComponent implements OnInit, OnDestroy {
               );
             }
           }
-          // Siempre generar el calendario, aunque no haya pre-partidos
-          this.generarCalendarioV2(this.mesActual);
-          if (this.vistaCalendario === 'week') this.generarVistaSemana();
-          this.datosCargados = true;
-
-          // Auto-abrir evento si venimos del calendario del club con queryParams
-          this.autoOpenFromQueryParams();
+          // Siempre cargar sesiones individuales antes de generar el calendario
+          this.getIndividualTrainingEvents();
         },
         (error) => {
           console.error('Error al cargar pre-partidos, generando calendario sin ellos', error);
           this.listMatchPreparation = [];
-          this.generarCalendarioV2(this.mesActual);
-          if (this.vistaCalendario === 'week') this.generarVistaSemana();
-          this.datosCargados = true;
+          this.getIndividualTrainingEvents();
         },
       );
+  }
+
+  getIndividualTrainingEvents(): void {
+    this.individualTrainingSvc.getPlans({ teamId: this.teamId }).subscribe({
+      next: plans => {
+        this.listIndividualEvents = [];
+        for (const plan of plans) {
+          if (!plan.startDate) continue;
+          const days: any[] = (plan as any).days ?? [];
+          for (const day of days) {
+            if (day.restDay) continue;
+            const date = this.planDayToCalendarDate(plan.startDate as any, day.weekNumber, day.dayOfWeek);
+            this.listIndividualEvents.push({
+              date,
+              planId: plan.planId,
+              planName: plan.name,
+              activityType: day.activityType ?? 'CUSTOM',
+            });
+          }
+        }
+        this.generarCalendarioV2(this.mesActual);
+        if (this.vistaCalendario === 'week') this.generarVistaSemana();
+        this.datosCargados = true;
+        this.autoOpenFromQueryParams();
+      },
+      error: () => {
+        this.listIndividualEvents = [];
+        this.generarCalendarioV2(this.mesActual);
+        if (this.vistaCalendario === 'week') this.generarVistaSemana();
+        this.datosCargados = true;
+        this.autoOpenFromQueryParams();
+      }
+    });
+  }
+
+  getIndividualColor(activityType: string): string {
+    return this.indActivityColors[activityType as keyof typeof this.indActivityColors] ?? '#6f42c1';
+  }
+
+  private planDayToCalendarDate(startDate: string | Date, weekNumber: number, dayOfWeek: string): string {
+    const DAY_INDEX: Record<string, number> = {
+      LUNES: 0, MARTES: 1, MIERCOLES: 2, JUEVES: 3, VIERNES: 4, SABADO: 5, DOMINGO: 6
+    };
+    const raw = typeof startDate === 'string' ? startDate : (startDate as any).toString();
+    const datePart = raw.includes('T') ? raw.split('T')[0] : raw.substring(0, 10);
+    const start = new Date(datePart + 'T12:00:00');
+    const offset = (weekNumber - 1) * 7 + (DAY_INDEX[dayOfWeek] ?? 0);
+    const actual = new Date(start.getTime() + offset * 86400000);
+    return actual.getFullYear() + '-'
+      + String(actual.getMonth() + 1).padStart(2, '0') + '-'
+      + String(actual.getDate()).padStart(2, '0');
   }
 
   /**
@@ -3939,6 +3998,11 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       this.match = new MatchPreparation({});
     }
   }
+
+  goToIndividualTraining(): void {
+    this.showNewActivityMenu = false;
+    this.router.navigate(['/dashboard/individual-training']);
+  }
   onSelectPartido(match: MatchPreparation) {
     this.match = match;
     this.mode = 'view-partido';
@@ -3947,8 +4011,10 @@ export class CalendarioComponent implements OnInit, OnDestroy {
     this.trainingSession = training;
     this.mode = 'view-entrenamiento';
   }
+  selectedIndividualSession: { date: string; planId: number; planName: string; activityType: string } | null = null;
+
   selectActivity(
-    type: 'entrenamiento' | 'partido',
+    type: 'entrenamiento' | 'partido' | 'individual',
     id: number,
     data: any
   ): void {
@@ -3959,13 +4025,16 @@ export class CalendarioComponent implements OnInit, OnDestroy {
       this.mode = 'view-entrenamiento';
       this.trainingSession = data;
       this.openEntrenamiento(id, this.daySession);
-
     }
 
     if (type === 'partido') {
       this.mode = 'view-partido';
       this.openPartido(id, this.daySession);
+    }
 
+    if (type === 'individual') {
+      this.mode = 'view-individual';
+      this.selectedIndividualSession = data;
     }
   }
 

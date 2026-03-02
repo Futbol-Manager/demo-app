@@ -152,6 +152,33 @@
           [class.sent]="currentFolder === 'sent'"
           [class.active]="isActiveCorreo(correo)"
           (click)="openCorreo(correo)">
+          <!-- Avatar del remitente (inbox) o del usuario actual (outbox) -->
+          <span class="mail-avatar">
+            <ng-container *ngIf="currentFolder === 'inbox'; else sentAvatar">
+              <img *ngIf="correo.remitentePhotoUrl"
+                   [src]="imageBaseUrl + correo.remitentePhotoUrl"
+                   alt=""
+                   class="mail-avatar-img"
+                   (error)="correo.remitentePhotoUrl = null" />
+              <span *ngIf="!correo.remitentePhotoUrl"
+                    class="mail-avatar-initials"
+                    [style.background-color]="getInitialsBg(correo.remitente)">
+                {{ getInitials(correo.remitente) }}
+              </span>
+            </ng-container>
+            <ng-template #sentAvatar>
+              <img *ngIf="usuarioActual?.pictureUser"
+                   [src]="imageBaseUrl + usuarioActual!.pictureUser"
+                   alt=""
+                   class="mail-avatar-img"
+                   (error)="usuarioActual!.pictureUser = ''" />
+              <span *ngIf="!usuarioActual?.pictureUser"
+                    class="mail-avatar-initials"
+                    [style.background-color]="getInitialsBg(usuarioActual?.firstName || '')">
+                {{ getInitials((usuarioActual?.firstName || '') + ' ' + (usuarioActual?.secondName || '')) }}
+              </span>
+            </ng-template>
+          </span>
           <div class="mail-main">
             <span class="from">
               <span class="unread-dot" *ngIf="currentFolder === 'inbox' && correo.leido === 0"></span>

@@ -1177,6 +1177,15 @@ $g-header:    linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp
   font-weight: 600;
 }
 
+.list-item-act--individual {
+  border-left: 3px solid #6f42c1;
+  background: #f3f0ff;
+  color: #5a3494;
+
+  &:hover { background: #ede9fe; border-color: #6f42c1; }
+  &.active { background: linear-gradient(135deg, #ede9fe, #f3f0ff); border-color: #6f42c1; }
+}
+
 
 .new-activity-menu {
   position: absolute;
@@ -1245,6 +1254,18 @@ $g-header:    linear-gradient(135deg, #{$sp-navy} 0%, #{$sp-navy-mid} 55%, #{$sp
   background: #31b270;
   color: #eff6ff;
   border-left: 3px solid #31b270;
+}
+
+/* Sesión Individual */
+.activity.individual {
+  background: #f3f0ff;
+  color: #5a3494;
+  border-left: 3px solid #6f42c1;
+  cursor: pointer;
+
+  &:hover {
+    background: #ede9fe;
+  }
 }
 
 /* Iconos Local / Visitante (original pequeño) */
@@ -4405,6 +4426,12 @@ $pp-transition: border-color 0.2s ease, box-shadow 0.2s ease;
     border-left: 3px solid #31b270;
     font-weight: 600;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+
+  .activity.individual {
+    background: rgba(111, 66, 193, 0.18);
+    color: #d4b8ff;
+    font-weight: 600;
   }
 
   /* ---- SAAS LABEL ---- */

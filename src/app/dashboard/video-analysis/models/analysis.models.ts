@@ -1,4 +1,4 @@
-﻿export interface AnalysisProject {
+export interface AnalysisProject {
   id: number;
   clubId: number;
   teamId?: number;
@@ -169,9 +169,20 @@ export interface AnalysisReport {
 
 // ─── Clip Annotations ────────────────────────────────────────────────────────
 
-export type DrawingTool = 'select' | 'freeDraw' | 'circle' | 'arrow' | 'line' | 'dashedLine' | 'text' | 'spotlight';
+export type DrawingTool =
+  | 'select' | 'freeDraw' | 'circle' | 'arrow' | 'line' | 'dashedLine'
+  | 'text' | 'spotlight'
+  | 'playerLine'    // Círculos de jugadores conectados por líneas (táctica)
+  | 'curvedArrow'   // Flecha curva (trayectorias)
+  | 'filledZone'    // Zona sombreada semitransparente
+  | 'topSpotlight'; // Cono de luz de estadio desde arriba (base elipse + cono hacia arriba)
 
-export interface DrawingPoint { x: number; y: number; }
+export interface DrawingPoint {
+  x: number;
+  y: number;
+  /** Radio individual del círculo (playerLine). Si undefined, usa el radio por defecto del elemento */
+  r?: number;
+}
 
 export interface DrawingElement {
   type: DrawingTool;
@@ -181,12 +192,38 @@ export interface DrawingElement {
   y?: number;
   x2?: number;
   y2?: number;
+  /** Radio del círculo (circle, spotlight) O radio de los círculos en playerLine */
   radius?: number;
+  /** Punto de control para curvedArrow (% coords) */
+  cpx?: number;
+  cpy?: number;
+  /** Puntos: freeDraw usa DrawingPoint[], playerLine también */
   points?: DrawingPoint[];
   text?: string;
   color: string;
   strokeWidth: number;
   fontSize?: number;
+  /**
+   * Tamaño de fuente como porcentaje de la altura del canvas (0-100).
+   * Independiente de resolución: se usa para renderizar en editor y en export
+   * con el mismo tamaño visual. Si está presente tiene prioridad sobre fontSize.
+   */
+  fontSizePct?: number;
+  /** Opacidad del relleno (0-1) para filledZone */
+  fillOpacity?: number;
+  /** Rotación en grados (0-360, sentido horario) */
+  rotation?: number;
+  /**
+   * Ms relativos al inicio del clip en que el dibujo aparece durante la reproducción
+   * en vivo (sin pausar el vídeo). Si undefined, el elemento solo se muestra en el
+   * freeze-frame de su ClipAnnotation.
+   */
+  startMs?: number;
+  /**
+   * Cuánto tiempo (ms) permanece visible el dibujo durante la reproducción en vivo.
+   * Requiere que startMs esté definido.
+   */
+  animDurationMs?: number;
 }
 
 export interface ClipAnnotation {
@@ -200,6 +237,41 @@ export interface ClipAnnotation {
   sortOrder: number;
   /** Local only – not persisted. Snapshot of the video frame with drawings. */
   thumbnailDataUrl?: string;
+}
+
+// ─── Clip Captions (texto superpuesto mientras el vídeo se reproduce) ────────
+
+export type CaptionStyle = 'default' | 'highlight' | 'warning' | 'coach';
+
+export interface ClipCaption {
+  /** ID local (no persiste en backend en esta fase) */
+  id: string;
+  /** Texto de la nota/caption */
+  text: string;
+  /** Ms relativos al inicio del clip (event.startTimeMs) cuando aparece */
+  startMs: number;
+  /** Cuánto tiempo se muestra (ms). Por defecto 4000 */
+  durationMs: number;
+  /** Estilo visual */
+  style: CaptionStyle;
+}
+
+export const CAPTION_STYLE_CONFIG: Record<CaptionStyle, { label: string; color: string; icon: string }> = {
+  default:   { label: 'Normal',    color: '#ffffff', icon: 'bi-chat-text-fill' },
+  highlight: { label: 'Destacado', color: '#ffd700', icon: 'bi-star-fill' },
+  warning:   { label: 'Atención',  color: '#ff6b6b', icon: 'bi-exclamation-triangle-fill' },
+  coach:     { label: 'Táctica',   color: '#00d4ff', icon: 'bi-lightbulb-fill' },
+};
+
+// ─── Animated Drawing Overlay (para export service) ──────────────────────────
+
+/** PNG transparente de un dibujo animado + rango de tiempo absoluto en el vídeo */
+export interface AnimatedDrawingOverlay {
+  pngDataUrl:  string;   // data:image/png;base64,...
+  startMsAbs:  number;   // ms absolutos en el vídeo original
+  durationMs:  number;   // duración visible (ms)
+  width:       number;   // anchura del vídeo (px) — igual a la del PNG
+  height:      number;   // altura del vídeo (px) — igual a la del PNG
 }
 
 export type ProjectStatus = 'DRAFT' | 'IN_PROGRESS' | 'COMPLETED' | 'ARCHIVED';
