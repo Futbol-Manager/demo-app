@@ -1,6 +1,27 @@
 <div class="cae-overlay" (click)="$event.stopPropagation()">
   <div class="cae-modal">
 
+    <!-- ══ EXPORT LOADING OVERLAY ══════════════════════════════════════════════ -->
+    <div class="cae-export-loading" *ngIf="isDownloading">
+      <div class="cae-export-loading-card">
+        <div class="cae-export-spinner">
+          <svg viewBox="0 0 50 50" class="cae-export-circle">
+            <circle cx="25" cy="25" r="20" fill="none" stroke-width="4"/>
+          </svg>
+        </div>
+        <div class="cae-export-title">Generando MP4…</div>
+        <div class="cae-export-step" *ngIf="downloadStep">{{ downloadStep }}</div>
+        <div class="cae-export-bar-wrap">
+          <div class="cae-export-bar" [style.width.%]="downloadProgress"></div>
+        </div>
+        <div class="cae-export-pct">{{ downloadProgress }}%</div>
+        <div class="cae-export-note" *ngIf="downloadStep && downloadStep.includes('overlay')">
+          <i class="bi bi-info-circle me-1"></i>
+          El compositing de dibujos animados requiere algo más de tiempo
+        </div>
+      </div>
+    </div>
+
     <!-- ══════════════════════════════════════════════════════
          CLIP VIEW
     ══════════════════════════════════════════════════════ -->
@@ -59,6 +80,11 @@
                     [class.visible]="showingAnnotation"
                     (click)="togglePlay()"></canvas>
 
+            <!-- Animation overlay — dibujos en vivo sin pausar -->
+            <canvas #animCanvas class="cae-anim-overlay"
+                    [class.hidden]="showingAnnotation"
+                    style="pointer-events:none"></canvas>
+
             <!-- Annotation pause indicator -->
             <div class="cae-annotation-badge" *ngIf="showingAnnotation">
               <i class="bi bi-bookmark-fill me-1"></i>Frame anotado
@@ -72,22 +98,54 @@
                    [title]="formatMs(ann.frameTimeMs) + ' — ' + (ann.frameDurationMs / 1000) + 's'">
                 <i class="bi bi-bookmark-fill"></i>
               </div>
+              <!-- Marcadores de captions -->
+              <div class="cae-caption-pin"
+                   *ngFor="let c of captions"
+                   [style.left.%]="(c.startMs / clipDurationMs) * 100"
+                   [style.color]="captionCssColor(c.style)"
+                   [title]="c.text + ' (' + formatMs(c.startMs) + ')'"
+                   (click)="seekToCaption(c); $event.stopPropagation()">
+                <i class="bi" [ngClass]="captionIcon(c.style)"></i>
+              </div>
+            </div>
+
+            <!-- Caption overlay — aparece mientras el vídeo corre -->
+            <div class="cae-caption-overlay" *ngIf="activeCaptions.length > 0">
+              <div class="cae-caption-item"
+                   *ngFor="let c of activeCaptions"
+                   [class]="'cae-caption-item--' + c.style">
+                <i class="bi me-1" [ngClass]="captionIcon(c.style)"></i>
+                {{ c.text }}
+              </div>
             </div>
           </div>
 
           <!-- Controls -->
           <div class="cae-controls">
-            <button class="cae-ctrl-btn" (click)="stepBack()"  title="-5s"><i class="bi bi-skip-backward-fill"></i></button>
-            <button class="cae-ctrl-btn cae-play-btn" (click)="togglePlay()">
+            <button class="cae-ctrl-btn" (click)="stepBack()"  title="-5s  (Mayús+←)"><i class="bi bi-skip-backward-fill"></i></button>
+            <button class="cae-ctrl-btn" (click)="stepFrame(-1)" title="Fotograma anterior (←)"><i class="bi bi-caret-left-fill"></i></button>
+            <button class="cae-ctrl-btn cae-play-btn" (click)="togglePlay()" title="Play/Pausa (Espacio)">
               <i class="bi" [class.bi-play-fill]="!isPlaying" [class.bi-pause-fill]="isPlaying"></i>
             </button>
-            <button class="cae-ctrl-btn" (click)="stepForward()" title="+5s"><i class="bi bi-skip-forward-fill"></i></button>
+            <button class="cae-ctrl-btn" (click)="stepFrame(1)"  title="Fotograma siguiente (→)"><i class="bi bi-caret-right-fill"></i></button>
+            <button class="cae-ctrl-btn" (click)="stepForward()" title="+5s  (Mayús+→)"><i class="bi bi-skip-forward-fill"></i></button>
             <input type="range" class="cae-scrubber"
                    [min]="0" [max]="clipDurationMs" [value]="currentRelMs"
                    (input)="seekVideo($event)">
             <span class="cae-time-display">
               {{ formatMs(currentRelMs) }} / {{ formatMs(clipDurationMs) }}
             </span>
+          </div>
+
+          <!-- Speed control -->
+          <div class="cae-speed-row">
+            <span class="cae-speed-label">Velocidad:</span>
+            <button *ngFor="let r of SPEED_OPTIONS"
+                    class="cae-speed-btn"
+                    [class.active]="playbackRate === r"
+                    (click)="setSpeed(r)">
+              {{ r }}×
+            </button>
           </div>
 
           <!-- Annotate button -->
@@ -97,52 +155,181 @@
           </button>
         </div>
 
-        <!-- Right: annotations list -->
+        <!-- Right: annotations / captions panel -->
         <div class="cae-ann-col">
-          <div class="cae-ann-header">
-            <i class="bi bi-collection me-1"></i> Frames anotados
-            <span class="cae-ann-badge" *ngIf="annotations.length > 0">{{ annotations.length }}</span>
+          <!-- Tab toggle -->
+          <div class="cae-panel-tabs">
+            <button class="cae-panel-tab" [class.active]="!showCaptionPanel" (click)="showCaptionPanel = false">
+              <i class="bi bi-bookmark-fill me-1"></i>Frames
+              <span class="cae-ann-badge" *ngIf="annotations.length > 0">{{ annotations.length }}</span>
+            </button>
+            <button class="cae-panel-tab" [class.active]="showCaptionPanel" (click)="showCaptionPanel = true">
+              <i class="bi bi-chat-text-fill me-1"></i>Notas
+              <span class="cae-ann-badge cae-ann-badge--cap" *ngIf="captions.length > 0">{{ captions.length }}</span>
+            </button>
           </div>
 
-          <div class="cae-loading" *ngIf="isLoadingAnnotations">
-            <div class="spinner-border spinner-border-sm"></div>
-          </div>
+          <!-- ── Panel FRAMES ─────────────────────────────────────── -->
+          <ng-container *ngIf="!showCaptionPanel">
+            <div class="cae-loading" *ngIf="isLoadingAnnotations">
+              <div class="spinner-border spinner-border-sm"></div>
+            </div>
 
-          <div class="cae-ann-empty" *ngIf="!isLoadingAnnotations && annotations.length === 0">
-            <i class="bi bi-bookmark fs-3"></i>
-            <p>Sin frames anotados</p>
-            <small>Pausa el vídeo en el momento deseado y pulsa "Anotar frame actual"</small>
-          </div>
+            <div class="cae-ann-empty" *ngIf="!isLoadingAnnotations && annotations.length === 0">
+              <i class="bi bi-bookmark fs-3"></i>
+              <p>Sin frames anotados</p>
+              <small>Pausa el vídeo en el momento deseado y pulsa "Anotar frame actual"</small>
+            </div>
 
-          <div class="cae-ann-list">
-            <div class="cae-ann-item" *ngFor="let ann of annotations; trackBy: trackById">
-              <div class="cae-ann-thumb" *ngIf="ann.thumbnailDataUrl">
-                <img [src]="ann.thumbnailDataUrl" alt="frame">
+            <div class="cae-ann-list">
+              <div class="cae-ann-card" *ngFor="let ann of annotations; trackBy: trackById">
+                <div class="cae-ann-card-thumb" (click)="editAnnotation(ann)" title="Editar este frame">
+                  <img *ngIf="ann.thumbnailDataUrl" [src]="ann.thumbnailDataUrl" alt="frame">
+                  <div class="cae-ann-card-placeholder" *ngIf="!ann.thumbnailDataUrl">
+                    <i class="bi bi-image"></i>
+                  </div>
+                  <div class="cae-ann-card-edit-hint">
+                    <i class="bi bi-pencil"></i> Editar
+                  </div>
+                </div>
+                <div class="cae-ann-card-footer">
+                  <div class="cae-ann-card-meta">
+                    <span class="cae-ann-time">
+                      <i class="bi bi-clock me-1"></i>{{ formatMs(annotationRelMs(ann)) }}
+                    </span>
+                    <span class="cae-ann-dur">
+                      <i class="bi bi-pause-circle me-1"></i>{{ (ann.frameDurationMs / 1000).toFixed(1) }}s
+                    </span>
+                  <span class="cae-ann-layers" *ngIf="ann.drawingData?.length">
+                    <i class="bi bi-layers me-1"></i>{{ ann.drawingData.length }}
+                  </span>
+                  <span class="cae-ann-anim" *ngIf="annHasAnimatedDrawings(ann)"
+                        title="Contiene dibujos animados">
+                    <i class="bi bi-play-circle-fill"></i>
+                  </span>
+                  </div>
+                  <button class="cae-ann-btn cae-ann-btn-del" (click)="deleteAnnotation(ann, $event)" title="Eliminar">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
               </div>
-              <div class="cae-ann-thumb cae-ann-thumb-placeholder" *ngIf="!ann.thumbnailDataUrl">
-                <i class="bi bi-image"></i>
+            </div>
+          </ng-container>
+
+          <!-- ── Panel NOTAS (captions) ──────────────────────────── -->
+          <ng-container *ngIf="showCaptionPanel">
+
+            <!-- Botón añadir nota (posición actual del vídeo) -->
+            <button class="cae-cap-add-btn" (click)="openAddCaption()" *ngIf="!showAddCaption">
+              <i class="bi bi-plus-circle me-1"></i>
+              Añadir nota en {{ formatMs(currentRelMs) }}
+            </button>
+
+            <!-- Formulario inline para nueva nota -->
+            <div class="cae-cap-form" *ngIf="showAddCaption">
+              <textarea class="cae-cap-textarea"
+                        [(ngModel)]="newCaptionText"
+                        placeholder="Escribe la nota táctica..."
+                        rows="3"
+                        autofocus>
+              </textarea>
+
+              <!-- Fila de tiempo de inicio + duración -->
+              <div class="cae-cap-timing-row">
+                <div class="cae-cap-timing-field">
+                  <label class="cae-cap-timing-label">Aparece en</label>
+                  <div class="cae-cap-timing-input-wrap">
+                    <input type="number" class="cae-cap-timing-input"
+                           [(ngModel)]="newCaptionStartSec"
+                           min="0" [max]="clipDurationMs / 1000" step="0.5">
+                    <span class="cae-cap-timing-unit">s</span>
+                  </div>
+                </div>
+                <div class="cae-cap-timing-field">
+                  <label class="cae-cap-timing-label">Visible durante</label>
+                  <div class="cae-cap-timing-input-wrap">
+                    <input type="number" class="cae-cap-timing-input"
+                           [(ngModel)]="newCaptionDuration"
+                           min="1" max="60" step="0.5">
+                    <span class="cae-cap-timing-unit">s</span>
+                  </div>
+                </div>
               </div>
-              <div class="cae-ann-info">
-                <span class="cae-ann-time">
-                  <i class="bi bi-clock me-1"></i>{{ formatMs(annotationRelMs(ann)) }}
-                </span>
-                <span class="cae-ann-dur">
-                  <i class="bi bi-pause-circle me-1"></i>{{ (ann.frameDurationMs / 1000).toFixed(1) }}s pausa
-                </span>
-                <span class="cae-ann-layers" *ngIf="ann.drawingData?.length">
-                  <i class="bi bi-layers me-1"></i>{{ ann.drawingData.length }} elemento(s)
-                </span>
+
+              <div class="cae-cap-form-row">
+                <!-- Estilo -->
+                <div class="cae-cap-style-btns">
+                  <button *ngFor="let s of CAPTION_STYLES"
+                          class="cae-cap-style-btn"
+                          [class.active]="newCaptionStyle === s[0]"
+                          [style.color]="s[1].color"
+                          [title]="s[1].label"
+                          (click)="newCaptionStyle = s[0]">
+                    <i class="bi" [ngClass]="s[1].icon"></i>
+                  </button>
+                </div>
+                <!-- Presets de duración rápida -->
+                <div class="cae-cap-dur-row">
+                  <span class="cae-cap-dur-label">Rápido:</span>
+                  <button *ngFor="let d of [2, 4, 6, 10]"
+                          class="cae-cap-dur-btn"
+                          [class.active]="newCaptionDuration === d"
+                          (click)="newCaptionDuration = d">{{ d }}s</button>
+                </div>
               </div>
-              <div class="cae-ann-actions">
-                <button class="cae-ann-btn" (click)="editAnnotation(ann)" title="Editar">
-                  <i class="bi bi-pencil"></i>
-                </button>
-                <button class="cae-ann-btn cae-ann-btn-del" (click)="deleteAnnotation(ann, $event)" title="Eliminar">
-                  <i class="bi bi-trash3"></i>
+              <div class="cae-cap-form-actions">
+                <button class="cae-cap-cancel-btn" (click)="cancelAddCaption()">Cancelar</button>
+                <button class="cae-cap-confirm-btn" (click)="confirmAddCaption()"
+                        [disabled]="!newCaptionText.trim()">
+                  <i class="bi bi-check2 me-1"></i>Guardar nota
                 </button>
               </div>
             </div>
-          </div>
+
+            <!-- Lista de notas existentes -->
+            <div class="cae-cap-empty" *ngIf="captions.length === 0 && !showAddCaption">
+              <i class="bi bi-chat-text fs-3"></i>
+              <p>Sin notas</p>
+              <small>Añade textos que aparecerán mientras el vídeo se reproduce</small>
+            </div>
+
+            <div class="cae-cap-list">
+              <div class="cae-cap-card" *ngFor="let c of captions"
+                   [class]="'cae-cap-card--' + c.style">
+                <div class="cae-cap-card-header">
+                  <span class="cae-cap-card-time" (click)="seekToCaption(c)" title="Ir a este momento">
+                    <i class="bi" [ngClass]="captionIcon(c.style)" [style.color]="captionCssColor(c.style)"></i>
+                  </span>
+                  <!-- Tiempo editable -->
+                  <div class="cae-cap-card-timing">
+                    <div class="cae-cap-timing-input-wrap cae-cap-timing-input-wrap--sm">
+                      <input type="number" class="cae-cap-timing-input cae-cap-timing-input--sm"
+                             [value]="(c.startMs / 1000).toFixed(1)"
+                             (change)="updateCaptionStartMs(c, +$any($event.target).value)"
+                             min="0" [max]="clipDurationMs / 1000" step="0.5"
+                             title="Segundo de inicio">
+                      <span class="cae-cap-timing-unit">s</span>
+                    </div>
+                    <span class="cae-cap-timing-sep">·</span>
+                    <div class="cae-cap-timing-input-wrap cae-cap-timing-input-wrap--sm">
+                      <input type="number" class="cae-cap-timing-input cae-cap-timing-input--sm"
+                             [value]="(c.durationMs / 1000).toFixed(1)"
+                             (change)="updateCaptionDuration(c, +$any($event.target).value)"
+                             min="1" max="60" step="0.5"
+                             title="Duración en segundos">
+                      <span class="cae-cap-timing-unit">s</span>
+                    </div>
+                  </div>
+                  <button class="cae-ann-btn cae-ann-btn-del" (click)="deleteCaption(c.id)" title="Eliminar">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+                <div class="cae-cap-card-text"
+                     contenteditable="true"
+                     (blur)="updateCaptionText(c, $any($event.target).innerText)">{{ c.text }}</div>
+              </div>
+            </div>
+          </ng-container>
 
         </div>
       </div>
@@ -181,7 +368,7 @@
     ══════════════════════════════════════════════════════ -->
     <ng-container *ngIf="view === 'frame-editor'">
 
-      <!-- Header -->
+      <!-- Header — solo navegación, sin botones redundantes -->
       <div class="cae-header">
         <button class="cae-close-btn" (click)="cancelFrame()" title="Volver al clip">
           <i class="bi bi-arrow-left"></i>
@@ -191,101 +378,165 @@
           Editando frame en <strong>{{ formatMs(editingAnnotation?.frameTimeMs! - event.startTimeMs) }}</strong>
         </div>
         <div class="cae-header-right">
-          <button class="cae-undo-btn" (click)="undo()" [disabled]="!undoStack.length" title="Deshacer (Ctrl+Z)">
-            <i class="bi bi-arrow-counterclockwise"></i> Deshacer
-          </button>
-          <button class="cae-clear-btn" (click)="clearAll()" title="Limpiar todo">
-            <i class="bi bi-eraser"></i>
-          </button>
+          <span class="cae-ann-count" *ngIf="drawingElements.length > 0">
+            <i class="bi bi-layers me-1"></i>{{ drawingElements.length }} elemento(s)
+          </span>
         </div>
       </div>
 
       <div class="cae-editor-body">
 
-        <!-- Left: Toolbar -->
-        <div class="cae-toolbar">
-
-          <!-- Tools -->
-          <div class="cae-tool-group">
-            <span class="cae-tool-label">Herramienta</span>
-            <button *ngFor="let tool of TOOLS"
-                    class="cae-tool-btn"
-                    [class.active]="activeTool === tool"
-                    [title]="TOOL_LABELS[tool]"
-                    (click)="setTool(tool)">
-              <i class="bi" [ngClass]="TOOL_ICONS[tool]"></i>
-            </button>
-          </div>
-
-          <!-- Selection info -->
-          <div class="cae-tool-group cae-select-info" *ngIf="activeTool === 'select' && selectedElementId">
-            <span class="cae-tool-label">Elemento seleccionado</span>
-            <button class="cae-tool-btn cae-del-btn" (click)="deleteSelected()" title="Eliminar (Supr)">
-              <i class="bi bi-trash3"></i> Eliminar
-            </button>
-            <small class="cae-duration-hint">Arrastra para mover · Arrastra los handles para redimensionar</small>
-          </div>
-
-          <!-- Color palette -->
-          <div class="cae-tool-group">
-            <span class="cae-tool-label">Color</span>
-            <div class="cae-palette">
-              <button *ngFor="let c of PALETTE"
-                      class="cae-color-btn"
-                      [style.background]="c"
-                      [class.active]="activeColor === c"
-                      (click)="activeColor = c">
-              </button>
-              <input type="color" class="cae-color-custom" [(ngModel)]="activeColor"
-                     title="Color personalizado">
-            </div>
-          </div>
-
-          <!-- Stroke width -->
-          <div class="cae-tool-group" *ngIf="activeTool !== 'text'">
-            <span class="cae-tool-label">Grosor</span>
-            <div class="cae-stroke-btns">
-              <button *ngFor="let w of [2, 4, 6, 10]"
-                      class="cae-stroke-btn"
-                      [class.active]="strokeWidth === w"
-                      (click)="strokeWidth = w">
-                <span [style.height.px]="w" class="cae-stroke-preview"></span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Font size (text tool only) -->
-          <div class="cae-tool-group" *ngIf="activeTool === 'text'">
-            <span class="cae-tool-label">Tamaño texto</span>
-            <div class="cae-stroke-btns">
-              <button *ngFor="let s of [14, 20, 28, 40]"
-                      class="cae-stroke-btn"
-                      [class.active]="fontSize === s"
-                      (click)="fontSize = s">
-                <span style="font-size: 11px; font-weight: 600;">{{ s }}</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Duration -->
-          <div class="cae-tool-group cae-duration-group">
-            <span class="cae-tool-label">Duración pausa</span>
-            <div class="cae-duration-input-wrap">
-              <input type="number" class="cae-duration-input"
-                     [(ngModel)]="frameDurationSec" min="0.5" max="30" step="0.5">
-              <span class="cae-duration-unit">s</span>
-            </div>
-            <small class="cae-duration-hint">El clip aumentará {{ frameDurationSec }}s</small>
-          </div>
-
-        </div>
-
-        <!-- Canvas area -->
+        <!-- Canvas area (full size) con toolbar flotante dentro -->
         <div class="cae-canvas-wrap"
              [class.cursor-freeDraw]="activeTool === 'freeDraw'"
+             [class.cursor-playerLine]="activeTool === 'playerLine'"
              [class.cursor-text]="activeTool === 'text'"
              [class.cursor-select]="activeTool === 'select'"
-             [class.cursor-crosshair]="activeTool !== 'freeDraw' && activeTool !== 'text' && activeTool !== 'select'">
+             [class.cursor-crosshair]="activeTool !== 'freeDraw' && activeTool !== 'text' && activeTool !== 'select' && activeTool !== 'playerLine'">
+
+          <!-- ═══ Toolbar flotante — overlay sobre el canvas ═══ -->
+          <div class="cae-floating-bar"
+               [class.cae-floating-bar--v]="toolbarV"
+               [class.cae-floating-bar--dragging]="_tbDragging"
+               [style.left]="toolbarX !== null ? toolbarX + 'px' : '50%'"
+               [style.top.px]="toolbarY"
+               [style.transform]="toolbarX === null ? 'translateX(-50%)' : 'none'">
+
+            <!-- Handle de arrastre -->
+            <div class="cae-fbar-drag" (mousedown)="startToolbarDrag($event)" title="Arrastrar barra">
+              <i class="bi bi-grip-vertical"></i>
+            </div>
+
+            <!-- Grupos de herramientas -->
+            <ng-container *ngFor="let group of TOOL_GROUPS; let last = last">
+              <div class="cae-fbar-group">
+                <div class="cae-fbar-group-label">{{ group.label }}</div>
+                <div class="cae-fbar-group-btns">
+                  <button *ngFor="let tool of group.tools"
+                          class="cae-fbar-btn"
+                          [class.active]="activeTool === tool"
+                          [title]="TOOL_LABELS[tool]"
+                          (click)="setTool(tool)">
+                    <i class="bi" [ngClass]="TOOL_ICONS[tool]"></i>
+                    <span class="cae-fbar-btn-label">{{ TOOL_SHORT[tool] }}</span>
+                  </button>
+                </div>
+              </div>
+              <div class="cae-fbar-sep" *ngIf="!last"></div>
+            </ng-container>
+
+            <div class="cae-fbar-sep"></div>
+
+            <!-- Color -->
+            <div class="cae-fbar-group">
+              <div class="cae-fbar-group-label">Color</div>
+              <div class="cae-fbar-group-btns cae-fbar-palette">
+                <button *ngFor="let c of PALETTE"
+                        class="cae-fbar-color"
+                        [style.background]="c"
+                        [class.active]="activeColor === c"
+                        (click)="activeColor = c">
+                </button>
+                <input type="color" class="cae-fbar-color-input" [(ngModel)]="activeColor" title="Color personalizado">
+              </div>
+            </div>
+
+            <div class="cae-fbar-sep"></div>
+
+            <!-- Grosor / Tamaño -->
+            <div class="cae-fbar-group">
+              <div class="cae-fbar-group-label">{{ activeTool === 'text' ? 'Tamaño' : activeTool === 'playerLine' ? 'Radio' : 'Grosor' }}</div>
+              <div class="cae-fbar-group-btns">
+                <!-- Grosor línea -->
+                <ng-container *ngIf="activeTool !== 'text' && activeTool !== 'playerLine'">
+                  <button *ngFor="let w of [2, 4, 6, 10]"
+                          class="cae-fbar-stroke"
+                          [class.active]="strokeWidth === w"
+                          (click)="strokeWidth = w" [title]="w + 'px'">
+                    <span class="cae-fbar-stroke-line" [style.height.px]="w"></span>
+                  </button>
+                </ng-container>
+                <!-- Tamaño texto -->
+                <ng-container *ngIf="activeTool === 'text'">
+                  <button *ngFor="let s of [14, 20, 28, 40]"
+                          class="cae-fbar-stroke"
+                          [class.active]="fontSize === s"
+                          (click)="fontSize = s" [title]="s + 'px'">
+                    <span style="font-size: 10px; font-weight: 700; color: #c0cfe0;">{{ s }}</span>
+                  </button>
+                </ng-container>
+                <!-- Radio círculo jugador -->
+                <ng-container *ngIf="activeTool === 'playerLine'">
+                  <button *ngFor="let r of [3, 4, 5, 7]"
+                          class="cae-fbar-stroke"
+                          [class.active]="playerRadius === r"
+                          (click)="playerRadius = r" [title]="'Radio ' + r">
+                    <span class="cae-fbar-circle-prev" [style.width.px]="r * 3" [style.height.px]="r * 3"></span>
+                  </button>
+                </ng-container>
+              </div>
+            </div>
+
+            <div class="cae-fbar-sep"></div>
+
+            <!-- Pausa -->
+            <div class="cae-fbar-group">
+              <div class="cae-fbar-group-label">Pausa</div>
+              <div class="cae-fbar-group-btns cae-fbar-duration">
+                <input type="number" class="cae-fbar-dur-input"
+                       [(ngModel)]="frameDurationSec" min="0.5" max="30" step="0.5"
+                       title="Duración de la pausa (s)">
+                <span class="cae-fbar-hint">s</span>
+              </div>
+            </div>
+
+            <div class="cae-fbar-sep"></div>
+
+            <!-- Acciones -->
+            <div class="cae-fbar-group">
+              <div class="cae-fbar-group-label">Acciones</div>
+              <div class="cae-fbar-group-btns">
+                <button class="cae-fbar-btn" (click)="undo()" [disabled]="!undoStack.length" title="Deshacer (Ctrl+Z)">
+                  <i class="bi bi-arrow-counterclockwise"></i>
+                  <span class="cae-fbar-btn-label">Undo</span>
+                </button>
+                <button class="cae-fbar-btn cae-fbar-danger" (click)="clearAll()" title="Limpiar todo">
+                  <i class="bi bi-eraser-fill"></i>
+                  <span class="cae-fbar-btn-label">Limpiar</span>
+                </button>
+                <button class="cae-fbar-btn cae-fbar-orient" (click)="toggleToolbarOrientation()"
+                        [title]="toolbarV ? 'Cambiar a horizontal' : 'Cambiar a vertical'">
+                  <i class="bi" [ngClass]="toolbarV ? 'bi-layout-sidebar-reverse' : 'bi-layout-three-columns'"></i>
+                  <span class="cae-fbar-btn-label">{{ toolbarV ? 'Horiz.' : 'Vert.' }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Badge flotante de playerLine en progreso -->
+          <div class="cae-pl-badge" *ngIf="playerLineInProgress">
+            <i class="bi bi-people-fill"></i>
+            <span>{{ playerLineInProgress.points?.length }} jugador(es)</span>
+            <span class="cae-pl-badge-hint">Radio activo: {{ playerRadius }}</span>
+            <!-- Eliminar último (Backspace) -->
+            <button class="cae-pl-badge-btn cae-pl-badge-del"
+                    (click)="removeLastPlayerLinePoint()"
+                    [disabled]="!playerLineInProgress.points?.length"
+                    title="Eliminar último (Backspace)">
+              <i class="bi bi-arrow-counterclockwise"></i>
+            </button>
+            <!-- Confirmar (Enter) -->
+            <button class="cae-pl-badge-btn cae-pl-badge-ok"
+                    (click)="finalizePlayerLine()"
+                    [disabled]="(playerLineInProgress.points?.length ?? 0) < 2"
+                    title="Confirmar (Enter)">
+              <i class="bi bi-check2"></i>
+            </button>
+            <!-- Cancelar (Esc) -->
+            <button class="cae-pl-badge-btn" (click)="cancelPlayerLine()" title="Cancelar (Esc)">
+              <i class="bi bi-x"></i>
+            </button>
+          </div>
 
           <canvas #drawCanvas class="cae-draw-canvas"
                   (mousedown)="onCanvasDown($event)"
@@ -297,10 +548,10 @@
                   (touchend)="onCanvasUp($event)">
           </canvas>
 
-          <!-- Text input overlay -->
+          <!-- Text input overlay — posición calculada en px relativa al canvas (no al wrap) -->
           <div class="cae-text-input-overlay" *ngIf="showTextInput"
-               [style.left.%]="textCursorPct.x"
-               [style.top.%]="textCursorPct.y">
+               [style.left]="textInputLeft"
+               [style.top]="textInputTop">
             <input #textInputEl type="text" class="cae-text-input"
                    [(ngModel)]="textInputValue"
                    [style.color]="activeColor"
@@ -318,6 +569,60 @@
 
       <!-- Footer -->
       <div class="cae-footer">
+        <!-- Panel de timing (visible cuando hay elemento seleccionado) -->
+        <div class="cae-anim-panel" *ngIf="selectedElementId && activeTool === 'select'">
+          <div class="cae-anim-panel-row">
+            <i class="bi bi-clock me-1 text-muted"></i>
+            <span class="cae-anim-label">Animar en reproducción</span>
+            <button class="cae-anim-toggle"
+                    [class.active]="selectedElHasAnimation"
+                    (click)="toggleElementAnimation()"
+                    [title]="selectedElHasAnimation ? 'Desactivar animación' : 'Activar animación'">
+              <i class="bi" [ngClass]="selectedElHasAnimation ? 'bi-toggle-on' : 'bi-toggle-off'"></i>
+              {{ selectedElHasAnimation ? 'Activado' : 'Desactivado' }}
+            </button>
+          </div>
+
+          <div class="cae-anim-timing" *ngIf="selectedElHasAnimation">
+            <div class="cae-anim-field">
+              <label>Aparece en</label>
+              <div class="cae-anim-input-wrap">
+                <input type="number" class="cae-anim-input"
+                       [value]="((getSelectedEl()?.startMs ?? 0) / 1000).toFixed(1)"
+                       (change)="setElementStartMs(+$any($event.target).value * 1000)"
+                       min="0" [max]="clipDurationMs / 1000" step="0.1">
+                <span class="cae-anim-unit">s</span>
+              </div>
+            </div>
+            <div class="cae-anim-field">
+              <label>Visible durante</label>
+              <div class="cae-anim-input-wrap">
+                <input type="number" class="cae-anim-input"
+                       [value]="((getSelectedEl()?.animDurationMs ?? 3000) / 1000).toFixed(1)"
+                       (change)="setElementAnimDuration(+$any($event.target).value * 1000)"
+                       min="0.5" step="0.5">
+                <span class="cae-anim-unit">s</span>
+              </div>
+            </div>
+            <!-- Toggle: ¿pausar el vídeo en este frame? -->
+            <div class="cae-anim-pause-row" *ngIf="editingAnnotation">
+              <button class="cae-anim-toggle"
+                      [class.active]="annotationPauses"
+                      (click)="setAnnotationPauses(!annotationPauses)"
+                      title="Si está activo, el vídeo se pausa en este frame al exportar">
+                <i class="bi" [ngClass]="annotationPauses ? 'bi-pause-circle-fill' : 'bi-play-circle'"></i>
+                {{ annotationPauses ? 'Pausar vídeo: Sí' : 'Pausar vídeo: No' }}
+              </button>
+              <span class="cae-anim-hint ms-2">
+                <i class="bi bi-info-circle me-1"></i>
+                {{ annotationPauses
+                   ? 'El vídeo se pausa ' + (editingAnnotation.frameDurationMs / 1000).toFixed(1) + 's en este frame'
+                   : 'El vídeo continúa y el dibujo aparece como overlay' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
         <div class="cae-footer-actions">
           <button class="cae-btn-cancel" (click)="cancelFrame()">
             <i class="bi bi-x me-1"></i>Cancelar

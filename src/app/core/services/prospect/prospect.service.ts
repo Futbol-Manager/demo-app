@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { timeout } from 'rxjs/operators';
+import { map, timeout } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -10,8 +10,84 @@ import { environment } from 'src/environments/environment';
 export class ProspectService {
 
   private base = (environment as any).prospectorApiUrl || 'http://localhost:8001/api/';
+  private javaBase: string = (environment as any).apiUrl || 'http://localhost:8080/api/rest/';
 
   constructor(private http: HttpClient) { }
+
+  // ── Social posts CRUD → Java backend (MySQL compartida) ───────────────────
+
+  getSocialPostsJava(network?: string, status?: string, campaignId?: number): Observable<any[]> {
+    let params: any = {};
+    if (network) params['network'] = network;
+    if (status) params['status'] = status;
+    if (campaignId != null) params['campaign_id'] = campaignId;
+    return this.http.get<any>(`${this.javaBase}social/posts`, { params }).pipe(
+      map((r: any) => r?.data ?? r ?? [])
+    );
+  }
+
+  createSocialPostJava(data: {
+    network: string; content_type?: string; text_content?: string;
+    image_prompt?: string; image_url?: string; hashtags?: string;
+    scheduled_at?: string | null; status?: string;
+    is_thread?: number; thread_tweets?: string | null;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.javaBase}social/posts`, data).pipe(
+      map((r: any) => r?.data ?? r)
+    );
+  }
+
+  updateSocialPostJava(postId: number, data: any): Observable<any> {
+    return this.http.put<any>(`${this.javaBase}social/posts/${postId}`, data).pipe(
+      map((r: any) => r?.data ?? r)
+    );
+  }
+
+  deleteSocialPostJava(postId: number): Observable<any> {
+    return this.http.delete<any>(`${this.javaBase}social/posts/${postId}`).pipe(
+      map((r: any) => r?.data ?? r)
+    );
+  }
+
+  approveSocialPostJava(postId: number): Observable<any> {
+    return this.http.post<any>(`${this.javaBase}social/posts/${postId}/approve`, {}).pipe(
+      map((r: any) => r?.data ?? r)
+    );
+  }
+
+  rejectSocialPostJava(postId: number): Observable<any> {
+    return this.http.post<any>(`${this.javaBase}social/posts/${postId}/reject`, {}).pipe(
+      map((r: any) => r?.data ?? r)
+    );
+  }
+
+  schedulePostJava(postId: number, scheduledAt: string): Observable<any> {
+    return this.http.put<any>(`${this.javaBase}social/posts/${postId}/schedule`, { scheduled_at: scheduledAt }).pipe(
+      map((r: any) => r?.data ?? r)
+    );
+  }
+
+  getCalendarPostsJava(start: string, end: string): Observable<any[]> {
+    return this.http.get<any>(`${this.javaBase}social/posts/calendar`, { params: { start, end } }).pipe(
+      map((r: any) => r?.data ?? r ?? [])
+    );
+  }
+
+  getNetworkConfigJava(network: string): Observable<any> {
+    return this.http.get<any>(`${this.javaBase}social/network-config/${network}`).pipe(
+      map((r: any) => r?.data ?? r)
+    );
+  }
+
+  updateNetworkConfigJava(network: string, config: {
+    topics: string; tone: string; audience: string; post_frequency: number;
+    default_hashtags: string; extra_instructions: string;
+    text_ai_model: string; image_ai_model: string; include_image: number;
+  }): Observable<any> {
+    return this.http.put<any>(`${this.javaBase}social/network-config/${network}`, config).pipe(
+      map((r: any) => r?.data ?? r)
+    );
+  }
 
   getAIKeys(): Observable<Record<string, boolean>> {
     return this.http.get<Record<string, boolean>>(`${this.base}settings/ai-keys`);

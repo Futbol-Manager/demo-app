@@ -173,6 +173,25 @@ export class DrawingOverlayComponent implements OnInit, OnDestroy, AfterViewInit
 
   private drawPreview(endX: number, endY: number): void {
     const ctx = this.ctx;
+
+    if (this.currentTool === 'spotlight') {
+      // Combina todos los spotlights existentes + el nuevo que se está dibujando
+      // en una única capa oscura con todos los agujeros a la vez.
+      const previewShape: DrawingShape = {
+        type: 'spotlight',
+        points: [this.startX, this.startY, endX, endY],
+        color: this.currentColor,
+        lineWidth: this.currentLineWidth,
+        opacity: 1
+      };
+      const allSpotlights = [
+        ...this.shapes.filter(s => s.type === 'spotlight'),
+        previewShape
+      ];
+      this.drawAllSpotlights(ctx, allSpotlights);
+      return;
+    }
+
     ctx.save();
     ctx.globalAlpha = 0.6;
     ctx.strokeStyle = this.currentColor;
@@ -191,25 +210,34 @@ export class DrawingOverlayComponent implements OnInit, OnDestroy, AfterViewInit
     const canvas = this.canvasRef.nativeElement;
     this.ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    for (const shape of this.shapes) {
+    const spotlights = this.shapes.filter(s => s.type === 'spotlight');
+    const others     = this.shapes.filter(s => s.type !== 'spotlight');
+
+    // Dibuja formas normales (sin spotlight)
+    for (const shape of others) {
       this.ctx.save();
       this.ctx.globalAlpha = shape.opacity;
       this.ctx.strokeStyle = shape.color;
-      this.ctx.fillStyle = shape.color;
-      this.ctx.lineWidth = shape.lineWidth;
+      this.ctx.fillStyle   = shape.color;
+      this.ctx.lineWidth   = shape.lineWidth;
 
       if (shape.type === 'freehand') {
         this.drawFreehand(this.ctx, shape.points);
       } else if (shape.type === 'text') {
         this.ctx.font = `bold ${16 + shape.lineWidth * 2}px system-ui`;
         this.ctx.fillText(shape.text || '', shape.points[0], shape.points[1]);
-      } else if (shape.type === 'spotlight') {
-        this.drawSpotlight(this.ctx, shape.points[0], shape.points[1], shape.points[2], shape.points[3]);
       } else {
         this.drawShape(this.ctx, shape.type, shape.points[0], shape.points[1], shape.points[2], shape.points[3]);
       }
 
       this.ctx.restore();
+    }
+
+    // Dibuja TODOS los spotlights como una única capa compuesta.
+    // Si el usuario está dibujando un nuevo spotlight ahora mismo,
+    // drawPreview() se encargará de incluirlo junto con los existentes.
+    if (spotlights.length > 0 && !(this.isDrawing && this.currentTool === 'spotlight')) {
+      this.drawAllSpotlights(this.ctx, spotlights);
     }
   }
 
@@ -257,19 +285,32 @@ export class DrawingOverlayComponent implements OnInit, OnDestroy, AfterViewInit
     ctx.stroke();
   }
 
-  private drawSpotlight(ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number): void {
+  /**
+   * Dibuja UNA SOLA capa oscura sobre todo el canvas y abre un agujero
+   * por cada spotlight de la lista. Así varios focos comparten la misma
+   * capa de oscuridad y ninguno tapa al otro.
+   */
+  private drawAllSpotlights(ctx: CanvasRenderingContext2D, spotlights: DrawingShape[]): void {
     const canvas = this.canvasRef.nativeElement;
+    ctx.save();
+    ctx.globalAlpha = 1;
     ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
+
     ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    const cx = (x1 + x2) / 2;
-    const cy = (y1 + y2) / 2;
-    const rx = Math.abs(x2 - x1) / 2;
-    const ry = Math.abs(y2 - y1) / 2;
-    ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
-    ctx.fill();
+    for (const shape of spotlights) {
+      const cx = (shape.points[0] + shape.points[2]) / 2;
+      const cy = (shape.points[1] + shape.points[3]) / 2;
+      const rx = Math.abs(shape.points[2] - shape.points[0]) / 2;
+      const ry = Math.abs(shape.points[3] - shape.points[1]) / 2;
+      if (rx < 1 || ry < 1) continue;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
     ctx.globalCompositeOperation = 'source-over';
+    ctx.restore();
   }
 
   setTool(tool: string): void {

@@ -58,7 +58,7 @@ export class RrssPostsComponent implements OnInit {
     this.loading = true;
     const net = this.networkFilter || undefined;
     const st  = this.statusFilter  || undefined;
-    this.prospect.getSocialPosts(net, st).subscribe({
+    this.prospect.getSocialPostsJava(net, st).subscribe({
       next: posts => {
         this.posts = posts;
         this.buildGroups();
@@ -122,17 +122,17 @@ export class RrssPostsComponent implements OnInit {
   }
 
   approve(post: any): void {
-    this.prospect.approveSocialPost(post.post_id).subscribe({
+    this.prospect.approveSocialPostJava(post.post_id).subscribe({
       next: (updated: any) => {
-        const idx = this.posts.findIndex(p => p.post_id === updated.post_id);
-        if (idx >= 0) this.posts[idx] = updated;
+        const idx = this.posts.findIndex(p => p.post_id === (updated?.post_id ?? post.post_id));
+        if (idx >= 0) this.posts[idx] = updated ?? { ...this.posts[idx], status: 'APPROVED' };
         this.buildGroups();
       },
     });
   }
 
   reject(post: any): void {
-    this.prospect.rejectSocialPost(post.post_id).subscribe({
+    this.prospect.rejectSocialPostJava(post.post_id).subscribe({
       next: () => {
         const idx = this.posts.findIndex(p => p.post_id === post.post_id);
         if (idx >= 0) this.posts[idx] = { ...this.posts[idx], status: 'REJECTED' };
@@ -143,7 +143,7 @@ export class RrssPostsComponent implements OnInit {
 
   deletePost(post: any): void {
     if (!confirm(`¿Borrar el post de ${post.network}? Esta acción no se puede deshacer.`)) return;
-    this.prospect.deleteSocialPost(post.post_id).subscribe({
+    this.prospect.deleteSocialPostJava(post.post_id).subscribe({
       next: () => {
         this.posts = this.posts.filter(p => p.post_id !== post.post_id);
         if (this.editingPost?.post_id === post.post_id) this.showEditorModal = false;

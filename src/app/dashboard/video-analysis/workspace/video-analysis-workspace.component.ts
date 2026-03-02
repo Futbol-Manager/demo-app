@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -430,7 +430,9 @@ export class VideoAnalysisWorkspaceComponent implements OnInit, OnDestroy {
   saveProject(): void {
     this.analysisService.updateProjectStatus(this.projectId, 'IN_PROGRESS')
       .pipe(takeUntil(this.destroy$))
-      .subscribe();
+      .subscribe({
+        error: (err) => console.error('[VideoAnalysisWorkspace] saveProject error:', err)
+      });
     this.savedToast = true;
     clearTimeout(this.savedToastTimer);
     this.savedToastTimer = setTimeout(() => { this.savedToast = false; }, 2800);
@@ -502,6 +504,10 @@ export class VideoAnalysisWorkspaceComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.router.navigate(['/dashboard/video-analysis']);
+        },
+        error: (err) => {
+          console.error('[VideoAnalysisWorkspace] completeProject error:', err);
+          alert('Error al completar el análisis. Por favor, inténtalo de nuevo.');
         }
       });
   }

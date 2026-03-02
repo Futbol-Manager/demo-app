@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, OnDestroy, Output, EventEmitter, HostListener, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Output, EventEmitter, HostListener, Input } from '@angular/core';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PlayerStateService } from '../../services/player-state.service';
@@ -337,6 +337,7 @@ export class EventListComponent implements OnInit, OnDestroy {
             evt.endTimeMs,
             label,
             ready,
+            [],
             (pct)  => { this.downloadProgress = pct; },
             (step) => { this.downloadStep = step; }
           );
