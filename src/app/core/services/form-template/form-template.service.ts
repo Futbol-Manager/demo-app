@@ -58,6 +58,11 @@ export class FormTemplateService {
     return this.http.get(`${this.base}response/training/${tipo}/${entityId}/${coachId}`, { headers: this.headers() });
   }
 
+  /** Obtiene TODAS las respuestas para un logId dado, sin filtrar por coach */
+  getAllResponsesByTraining(tipo: string, trainingId: number): Observable<any> {
+    return this.http.get(`${this.base}responses/training/${tipo}/${trainingId}`, { headers: this.headers() });
+  }
+
   saveResponse(payload: {
     formTemplateId?: number | null;
     coachUserId: number;

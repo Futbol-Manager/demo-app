@@ -291,6 +291,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'galeria', label: 'SIDEBAR.GALLERY', icon: 'bi-images', route: `/dashboard/partidos-entrevistas/${this.teamId}/${this.playerId}` },
         { id: 'clasificacion', label: 'SIDEBAR.STANDINGS', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
         { id: 'patrocinadores', label: 'SIDEBAR.SPONSORS', icon: 'bi-collection', route: '/dashboard/patrocinadores/0' },
+        { id: 'individual-training', label: 'Entreno Individual', icon: 'bi-person-walking', route: '/dashboard/individual-training' },
         { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
       ];
       this.sections.push({ id: 'player', title: 'SIDEBAR.SECTION_PLAYER', items: playerItems, visible: true });

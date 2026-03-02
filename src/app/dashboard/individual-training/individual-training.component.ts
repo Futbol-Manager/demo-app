@@ -1,4 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil, forkJoin } from 'rxjs';
 import { IndividualTrainingService } from 'src/app/core/services/individual-training/individual-training.service';
@@ -22,6 +23,8 @@ import { PlayerService } from 'src/app/core/services/player/player.service';
 import { Player } from 'src/app/core/services/player/player.model';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
+import { FormTemplateService } from 'src/app/core/services/form-template/form-template.service';
+import { FormTemplate, FormTemplateCampo } from 'src/app/core/services/form-template/form-template.model';
 
 export interface DayConfig {
   enabled: boolean;
@@ -123,20 +126,87 @@ export class IndividualTrainingComponent implements OnInit, OnDestroy {
   resolvedTeamId = 0;
   private resolvedUserId = 0;
 
+  // ─── Player view ──────────────────────────────────────────────────────────
+  profileId = 0;
+  playerId  = 0;
+
+  playerPlans:        IndividualPlan[]    = [];
+  selectedPlayerPlan: IndividualPlan | null = null;
+  playerPlanDays:     IndividualPlanDay[] = [];
+  playerLogs:         TrainingLog[]       = [];
+  playerActiveTab: 'today' | 'schedule' | 'history' = 'today';
+
+  showLogForm = false;
+  savingLog   = false;
+  logForm = {
+    activityType:    'RUNNING' as ActivityType,
+    durationMinutes: 30,
+    durationSeconds: 0,
+    distanceKm:      0,
+    sets:            0,
+    reps:            0,
+    weightKg:        0,
+    perceivedEffort: 5,
+    notes:           '',
+    logDate:         new Date().toISOString().split('T')[0],
+    planDayId:       undefined as number | undefined,
+  };
+  currentLogPlanDay: IndividualPlanDay | null = null;
+
+  // ─── Form templates (PRE/POST) ────────────────────────────────────────────
+  preFormTemplates:  FormTemplate[] = [];
+  postFormTemplates: FormTemplate[] = [];
+  loadingFormTemplates = false;
+  assigningDayId: number | null = null;
+
+  // Player log form – templates cargados para el día actual
+  activePreTemplate:  FormTemplate | null = null;
+  activePostTemplate: FormTemplate | null = null;
+  preFormAnswers:  Record<string, string> = {};
+  postFormAnswers: Record<string, string> = {};
+  loadingTemplatesForLog = false;
+
+  // Coach compliance – respuestas de jugadores
+  expandedCompliancePlayerId: number | null = null;
+  playerFormResponses: { logId: number; logDate: string; tipo: 'pre' | 'post'; template: FormTemplate; answers: Record<string, string> }[] = [];
+  loadingPlayerResponses = false;
+  responsesModalOpen = false;
+  responsesModalPlayerName = '';
+
+  get isPlayerView(): boolean {
+    return this.profileId === 3 || this.profileId === 5;
+  }
+
   constructor(
     private svc: IndividualTrainingService,
     private playerSvc: PlayerService,
     private teamSvc: TeamService,
     private loginSvc: LoginService,
+    private route: ActivatedRoute,
+    private formTemplateSvc: FormTemplateService,
   ) {}
 
   ngOnInit(): void {
     this.initNewPlanSchedule();
-    // Take the first non-null emission (user is usually already in BehaviorSubject)
     this.loginSvc.usuarioActual.pipe(takeUntil(this.destroy$)).subscribe(user => {
       if (user && this.resolvedUserId === 0) {
-        this.resolvedUserId = user.userId ?? 0;
-        this.resolveTeamIdAndLoad();
+        this.resolvedUserId = user.userId    ?? 0;
+        this.profileId      = (user as any).profileType?.profileId ?? 0;
+        this.playerId       = (user as any).playerId ?? 0;
+
+        if (this.isPlayerView) {
+          // Leer query params: si vienen planId+date del calendario, cargar ese plan/día directamente
+          const params = this.route.snapshot.queryParams;
+          const planId = +params['planId'];
+          const date   = params['date'] as string | undefined;
+          if (planId) {
+            this.loadPlanByIdForPlayer(planId, date);
+          } else {
+            this.loadPlayerPlans();
+          }
+        } else {
+          this.resolveTeamIdAndLoad();
+        }
       }
     });
   }
@@ -270,13 +340,12 @@ export class IndividualTrainingComponent implements OnInit, OnDestroy {
   private reloadCompliance(): void {
     if (!this.selectedPlan) return;
     const planId = this.selectedPlan.planId;
-    forkJoin({
-      compliance: this.svc.getCompliance(planId),
-      assigned:   this.svc.getAssignedPlayers(planId),
-    }).pipe(takeUntil(this.destroy$)).subscribe({
-      next: ({ compliance, assigned }) => {
-        this.assignedPlayerIds = new Set(assigned.map((a: any) => a.playerId));
-        this.compliance = this.buildCompliance(compliance, assigned);
+    // No se sobreescribe assignedPlayerIds: se gestiona localmente en toggle/assign/remove.
+    // Solo se recargan las estadísticas de cumplimiento.
+    const currentAssigned = [...this.assignedPlayerIds].map(id => ({ playerId: id }));
+    this.svc.getCompliance(planId).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (compliance) => {
+        this.compliance = this.buildCompliance(compliance, currentAssigned);
       }
     });
   }
@@ -303,6 +372,18 @@ export class IndividualTrainingComponent implements OnInit, OnDestroy {
     this.selectedPlan = plan;
     this.activeTab = 'compliance';
     this.compliance = [];
+    this.expandedCompliancePlayerId = null;
+    this.playerFormResponses        = [];
+
+    // Si teamPlayers aún no se cargó (p.ej. primera visita), forzar carga ahora
+    if (!this.teamPlayers.length && this.resolvedTeamId) {
+      this.loadTeamPlayers();
+    }
+
+    // Cargar templates de formulario para el club
+    if (!this.preFormTemplates.length && !this.postFormTemplates.length) {
+      this.loadFormTemplates();
+    }
 
     forkJoin({
       days:       this.svc.getPlanDays(plan.planId),
@@ -311,10 +392,14 @@ export class IndividualTrainingComponent implements OnInit, OnDestroy {
       assigned:   this.svc.getAssignedPlayers(plan.planId),
     }).pipe(takeUntil(this.destroy$)).subscribe({
       next: ({ days, compliance, logs, assigned }) => {
-        this.planDays  = days;
-        this.logs      = logs;
-        this.assignedPlayerIds = new Set(assigned.map((a: any) => a.playerId));
-        this.compliance = this.buildCompliance(compliance, assigned);
+        this.planDays = days;
+        this.logs     = logs;
+        // Si getAssignedPlayers devuelve vacío, poblar desde compliance como fallback
+        const effectiveAssigned = assigned.length > 0
+          ? assigned
+          : compliance.map((c: any) => ({ playerId: c.playerId, playerName: c.playerName }));
+        this.assignedPlayerIds = new Set(effectiveAssigned.map((a: any) => a.playerId));
+        this.compliance = this.buildCompliance(compliance, effectiveAssigned);
       },
       error: err => console.error('[IndividualTraining] selectPlan', err)
     });
@@ -342,6 +427,133 @@ export class IndividualTrainingComponent implements OnInit, OnDestroy {
     this.logs             = [];
     this.assignedPlayerIds = new Set();
     this.activeTab        = 'compliance';
+    this.expandedCompliancePlayerId = null;
+    this.playerFormResponses        = [];
+  }
+
+  // ─── Form Templates (Coach) ───────────────────────────────────────────────
+
+  loadFormTemplates(): void {
+    const clubId = parseInt(sessionStorage.getItem('clubId') ?? localStorage.getItem('clubId') ?? '0', 10);
+    if (!clubId) return;
+    this.loadingFormTemplates = true;
+    forkJoin({
+      pre:  this.formTemplateSvc.getByClubAndTipo(clubId, 'pre-training'),
+      post: this.formTemplateSvc.getByClubAndTipo(clubId, 'post-training'),
+    }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: ({ pre, post }) => {
+        this.preFormTemplates  = pre?.data ?? pre ?? [];
+        this.postFormTemplates = post?.data ?? post ?? [];
+        this.loadingFormTemplates = false;
+      },
+      error: () => { this.loadingFormTemplates = false; }
+    });
+  }
+
+  assignFormToDay(day: IndividualPlanDay, tipo: 'pre' | 'post', templateId: number | null): void {
+    this.assigningDayId = day.planDayId;
+    const body = tipo === 'pre'
+      ? { preFormTemplateId:  templateId }
+      : { postFormTemplateId: templateId };
+    this.svc.updatePlanDay(day.planDayId, body).pipe(takeUntil(this.destroy$)).subscribe({
+      next: updated => {
+        if (updated) {
+          const idx = this.planDays.findIndex(d => d.planDayId === day.planDayId);
+          if (idx >= 0) this.planDays[idx] = { ...this.planDays[idx], ...body };
+        }
+        this.assigningDayId = null;
+      },
+      error: () => { this.assigningDayId = null; }
+    });
+  }
+
+  // ─── Compliance Responses (Coach) ─────────────────────────────────────────
+
+  openResponsesModal(playerId: number): void {
+    this.expandedCompliancePlayerId = playerId;
+    this.responsesModalPlayerName = this.getPlayerName(playerId);
+    this.playerFormResponses = [];
+    this.responsesModalOpen = true;
+    this.loadPlayerFormResponses(playerId);
+  }
+
+  closeResponsesModal(): void {
+    this.responsesModalOpen = false;
+    this.expandedCompliancePlayerId = null;
+    this.playerFormResponses = [];
+  }
+
+  /** @deprecated Use openResponsesModal */
+  toggleComplianceDetail(playerId: number): void {
+    this.openResponsesModal(playerId);
+  }
+
+  private loadPlayerFormResponses(playerId: number): void {
+    if (!this.selectedPlan) return;
+    this.loadingPlayerResponses = true;
+
+    const daysWithForms = this.planDays.filter(d => !d.restDay && (d.preFormTemplateId || d.postFormTemplateId));
+    if (!daysWithForms.length) { this.loadingPlayerResponses = false; return; }
+
+    // Usar logs ya cargados (todos los del plan). Primero intentar match exacto por playerId;
+    // si vacío, mostrar todos los logs del plan con formularios (fallback cuando userId ≠ playerId).
+    let logsWithForms = this.logs.filter(l =>
+      l.playerId === playerId && daysWithForms.some(d => d.planDayId === l.planDayId)
+    );
+    if (!logsWithForms.length) {
+      logsWithForms = this.logs.filter(l =>
+        daysWithForms.some(d => d.planDayId === l.planDayId)
+      );
+    }
+
+    if (!logsWithForms.length) { this.loadingPlayerResponses = false; return; }
+
+    const requests: { log: TrainingLog; tipo: 'pre' | 'post'; templateId: number }[] = [];
+    for (const log of logsWithForms) {
+      const day = daysWithForms.find(d => d.planDayId === log.planDayId);
+      if (day?.preFormTemplateId)  requests.push({ log, tipo: 'pre',  templateId: day.preFormTemplateId! });
+      if (day?.postFormTemplateId) requests.push({ log, tipo: 'post', templateId: day.postFormTemplateId! });
+    }
+
+    let pending = requests.length;
+    if (!pending) { this.loadingPlayerResponses = false; return; }
+
+    for (const req of requests) {
+      const tipo = req.tipo === 'pre' ? 'pre-training' : 'post-training';
+      forkJoin({
+        template: this.formTemplateSvc.getById(req.templateId),
+        // Endpoint sin coachId: devuelve TODAS las respuestas de esa sesión
+        response: this.formTemplateSvc.getAllResponsesByTraining(tipo, req.log.logId),
+      }).pipe(takeUntil(this.destroy$)).subscribe({
+        next: ({ template, response }) => {
+          const tpl = this.normalizeTemplate(template?.data ?? template);
+          const respList: any[] = response?.data ?? response ?? [];
+          if (tpl && respList.length) {
+            const answers: Record<string, string> = {};
+            for (const r of respList) {
+              // El backend devuelve r.respuestas como JSON string "[{campoId:'...',valor:'...'}]"
+              try {
+                const campoAnswers: { campoId: string; valor: string }[] =
+                  typeof r.respuestas === 'string' ? JSON.parse(r.respuestas) : (r.respuestas ?? []);
+                for (const ca of campoAnswers) {
+                  if (ca.campoId) answers[ca.campoId] = ca.valor ?? '';
+                }
+              } catch {}
+            }
+            this.playerFormResponses.push({
+              logId:   req.log.logId,
+              logDate: req.log.logDate,
+              tipo:    req.tipo,
+              template: tpl,
+              answers,
+            });
+          }
+          pending--;
+          if (pending === 0) this.loadingPlayerResponses = false;
+        },
+        error: () => { pending--; if (pending === 0) this.loadingPlayerResponses = false; }
+      });
+    }
   }
 
   createPlan(): void {
@@ -611,7 +823,282 @@ export class IndividualTrainingComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ─── Player view methods ──────────────────────────────────────────────────
+
+  /** Carga un plan específico por ID (cuando viene del calendario con planId en query params). */
+  loadPlanByIdForPlayer(planId: number, date?: string): void {
+    this.loading = true;
+    const effectivePlayerId = this.playerId || this.resolvedUserId;
+    forkJoin({
+      plan: this.svc.getPlanById(planId),
+      days: this.svc.getPlanDays(planId),
+      logs: this.svc.getLogs({ playerId: effectivePlayerId || undefined, planId }),
+    }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: ({ plan, days, logs }) => {
+        this.loading = false;
+        if (!plan) { this.loadPlayerPlans(); return; }
+        this.playerPlans        = [plan];
+        this.selectedPlayerPlan = plan;
+        this.playerPlanDays     = days;
+        this.playerLogs         = logs;
+
+        // Si viene con fecha concreta, abrir directamente el formulario para ese día
+        if (date) {
+          const d       = new Date(date + 'T12:00:00'); // forzar mediodía para evitar offset
+          const dayCode = this.toDayCode(d.getDay());
+          const start   = new Date((plan.startDate as string) + 'T00:00:00');
+          const diffDays = Math.floor((d.getTime() - start.getTime()) / 86400000);
+          const weekNum  = Math.max(1, Math.floor(diffDays / 7) + 1);
+          const planDay  = days.find(day => day.weekNumber === weekNum && day.dayOfWeek === dayCode && !day.restDay);
+          this.playerActiveTab = 'today';
+          if (planDay) {
+            this.openLogForm(planDay);
+            this.logForm.logDate = date;
+          }
+        }
+      },
+      error: () => { this.loading = false; this.loadPlayerPlans(); }
+    });
+  }
+
+  loadPlayerPlans(): void {
+    this.loading = true;
+    // Intentar por playerId; si falla o devuelve vacío, intentar por teamId del equipo del jugador
+    const cachedTeamId = parseInt(sessionStorage.getItem('it_lastTeamId') ?? '0', 10);
+    const params = this.playerId > 0
+      ? { playerId: this.playerId }
+      : cachedTeamId > 0 ? { teamId: cachedTeamId } : {};
+
+    this.svc.getPlans(params).pipe(takeUntil(this.destroy$)).subscribe({
+      next: plans => {
+        this.playerPlans = plans;
+        this.loading = false;
+        if (plans.length === 1) this.selectPlayerPlan(plans[0]);
+      },
+      error: () => {
+        // Último fallback: buscar por teamId
+        const teamId = parseInt(sessionStorage.getItem('it_lastTeamId') ?? '0', 10);
+        if (teamId > 0 && this.playerId > 0) {
+          this.svc.getPlans({ teamId }).pipe(takeUntil(this.destroy$)).subscribe({
+            next: plans => { this.playerPlans = plans; this.loading = false; },
+            error: () => { this.loading = false; }
+          });
+        } else {
+          this.loading = false;
+        }
+      }
+    });
+  }
+
+  selectPlayerPlan(plan: IndividualPlan): void {
+    this.selectedPlayerPlan = plan;
+    this.playerActiveTab    = 'today';
+    this.showLogForm        = false;
+    const effectivePlayerId = this.playerId || this.resolvedUserId;
+    forkJoin({
+      days: this.svc.getPlanDays(plan.planId),
+      logs: this.svc.getLogs({ playerId: effectivePlayerId || undefined, planId: plan.planId }),
+    }).pipe(takeUntil(this.destroy$)).subscribe({
+      next: ({ days, logs }) => {
+        this.playerPlanDays = days;
+        this.playerLogs     = logs;
+      }
+    });
+  }
+
+  clearPlayerPlan(): void {
+    this.selectedPlayerPlan = null;
+    this.playerPlanDays     = [];
+    this.playerLogs         = [];
+    this.showLogForm        = false;
+  }
+
+  getTodayActivity(): IndividualPlanDay | null {
+    if (!this.selectedPlayerPlan || !this.playerPlanDays.length) return null;
+    const today     = new Date();
+    const start     = new Date(this.selectedPlayerPlan.startDate);
+    const diffDays  = Math.floor((today.getTime() - start.getTime()) / 86400000);
+    const weekNum   = Math.floor(diffDays / 7) + 1;
+    const dayCode   = this.toDayCode(today.getDay());
+    return this.playerPlanDays.find(d => d.weekNumber === weekNum && d.dayOfWeek === dayCode && !d.restDay) ?? null;
+  }
+
+  private toDayCode(jsDay: number): string {
+    return ['DOMINGO','LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'][jsDay] ?? 'LUNES';
+  }
+
+  hasLoggedToday(): boolean {
+    const today = new Date().toISOString().split('T')[0];
+    return this.playerLogs.some(l => (l.logDate ?? '').startsWith(today));
+  }
+
+  hasLoggedDay(day: IndividualPlanDay): boolean {
+    return this.playerLogs.some(l => l.planDayId === day.planDayId);
+  }
+
+  playerCompliancePct(): number {
+    const activeDays = this.playerPlanDays.filter(d => !d.restDay).length;
+    if (!activeDays) return 0;
+    return Math.min(100, Math.round((this.playerLogs.filter(l => l.completed).length / activeDays) * 100));
+  }
+
+  currentPlanWeek(): number {
+    if (!this.selectedPlayerPlan) return 1;
+    const diffDays = Math.floor((Date.now() - new Date(this.selectedPlayerPlan.startDate).getTime()) / 86400000);
+    return Math.max(1, Math.floor(diffDays / 7) + 1);
+  }
+
+  getPlanWeeks(): number[] {
+    return [...new Set(this.playerPlanDays.map(d => d.weekNumber))].sort((a, b) => a - b);
+  }
+
+  getPlanDaysForWeek(week: number): IndividualPlanDay[] {
+    return this.playerPlanDays.filter(d => d.weekNumber === week);
+  }
+
+  openLogForm(planDay?: IndividualPlanDay | null): void {
+    this.logForm = {
+      activityType:    planDay?.activityType ?? 'RUNNING',
+      durationMinutes: planDay?.targetDurationMinutes ?? 30,
+      durationSeconds: 0,
+      distanceKm:      planDay?.targetDistanceKm ?? 0,
+      sets:            planDay?.targetSets ?? 0,
+      reps:            planDay?.targetReps ?? 0,
+      weightKg:        0,
+      perceivedEffort: 5,
+      notes:           '',
+      logDate:         new Date().toISOString().split('T')[0],
+      planDayId:       planDay?.planDayId,
+    };
+    this.currentLogPlanDay  = planDay ?? null;
+    this.activePreTemplate  = null;
+    this.activePostTemplate = null;
+    this.preFormAnswers     = {};
+    this.postFormAnswers    = {};
+
+    if (planDay?.preFormTemplateId || planDay?.postFormTemplateId) {
+      this.loadingTemplatesForLog = true;
+      const reqs: Record<string, any> = {};
+      if (planDay.preFormTemplateId)  reqs['pre']  = this.formTemplateSvc.getById(planDay.preFormTemplateId);
+      if (planDay.postFormTemplateId) reqs['post'] = this.formTemplateSvc.getById(planDay.postFormTemplateId);
+      forkJoin(reqs).pipe(takeUntil(this.destroy$)).subscribe({
+        next: (res: any) => {
+          if (res['pre'])  this.activePreTemplate  = this.normalizeTemplate(res['pre']?.data  ?? res['pre']);
+          if (res['post']) this.activePostTemplate = this.normalizeTemplate(res['post']?.data ?? res['post']);
+          this.initFormAnswers();
+          this.loadingTemplatesForLog = false;
+        },
+        error: () => { this.loadingTemplatesForLog = false; }
+      });
+    }
+
+    this.showLogForm = true;
+  }
+
+  /** Normaliza un FormTemplate: parsea `campos` si viene como JSON string */
+  private normalizeTemplate(tpl: any): FormTemplate | null {
+    if (!tpl) return null;
+    if (typeof tpl.campos === 'string') {
+      try { tpl = { ...tpl, campos: JSON.parse(tpl.campos) }; } catch { tpl = { ...tpl, campos: [] }; }
+    }
+    if (!Array.isArray(tpl.campos)) tpl = { ...tpl, campos: [] };
+    return tpl as FormTemplate;
+  }
+
+  private initFormAnswers(): void {
+    this.preFormAnswers  = {};
+    this.postFormAnswers = {};
+    const defaultFor = (tipo: string) => {
+      if (tipo === 'CHECKBOX') return 'false';
+      if (tipo === 'SCALE')   return '5';
+      if (tipo === 'RATING')  return '3';
+      return '';
+    };
+    for (const c of (this.activePreTemplate?.campos ?? [])) {
+      this.preFormAnswers[c.id]  = defaultFor(c.tipo);
+    }
+    for (const c of (this.activePostTemplate?.campos ?? [])) {
+      this.postFormAnswers[c.id] = defaultFor(c.tipo);
+    }
+  }
+
+  getFormCampoOpciones(campo: FormTemplateCampo): string[] {
+    return campo.opciones ?? [];
+  }
+
+  saveLog(): void {
+    if (!this.selectedPlayerPlan) return;
+    // Usar playerId del perfil; si no existe, usar el userId del login como fallback
+    const effectivePlayerId = this.playerId || this.resolvedUserId;
+    if (!effectivePlayerId) return;
+    this.savingLog = true;
+    const totalSec = (this.logForm.durationMinutes * 60) + (this.logForm.durationSeconds ?? 0);
+    const body: Partial<TrainingLog> = {
+      playerId:        effectivePlayerId,
+      planId:          this.selectedPlayerPlan.planId,
+      planDayId:       this.logForm.planDayId,
+      activityType:    this.logForm.activityType,
+      logDate:         this.logForm.logDate,
+      durationSeconds: totalSec || undefined,
+      distanceMeters:  this.logForm.distanceKm ? Math.round(this.logForm.distanceKm * 1000) : undefined,
+      sets:            this.logForm.sets  || undefined,
+      reps:            this.logForm.reps  || undefined,
+      weightKg:        this.logForm.weightKg || undefined,
+      perceivedEffort: this.logForm.perceivedEffort,
+      notes:           this.logForm.notes || undefined,
+      completed:       true,
+    };
+    this.svc.createLog(body).pipe(takeUntil(this.destroy$)).subscribe({
+      next: log => {
+        if (log) {
+          this.playerLogs = [log, ...this.playerLogs];
+          this.saveFormResponses(log.logId);
+          this.showLogForm = false;
+        }
+        this.savingLog = false;
+      },
+      error: () => { this.savingLog = false; }
+    });
+  }
+
+  private saveFormResponses(logId: number): void {
+    const teamId = this.resolvedTeamId || parseInt(sessionStorage.getItem('it_lastTeamId') ?? '0', 10);
+    const saveIfNeeded = (template: FormTemplate | null, answers: Record<string, string>, tipo: 'pre-training' | 'post-training') => {
+      if (!template) return;
+      // Guardar siempre que el template tenga campos, aunque no se hayan modificado
+      if (!(template.campos?.length)) return;
+      const respuestas = Object.entries(answers).map(([campoId, valor]) => ({ campoId, valor }));
+      this.formTemplateSvc.saveResponse({
+        formTemplateId:    template.formTemplateId,
+        coachUserId:       this.resolvedUserId,
+        teamId:            teamId || 0,
+        tipo,
+        trainingSessionId: logId,
+        respuestas:        JSON.stringify(respuestas),
+        isStandard:        0,
+      }).pipe(takeUntil(this.destroy$)).subscribe({
+        error: err => console.error('[IndividualTraining] saveFormResponses', err)
+      });
+    };
+    saveIfNeeded(this.activePreTemplate,  this.preFormAnswers,  'pre-training');
+    saveIfNeeded(this.activePostTemplate, this.postFormAnswers, 'post-training');
+  }
+
   // ─── Template helpers ─────────────────────────────────────────────────────
+
+  planDaysHaveForms(): boolean {
+    return this.planDays.some(d => d.preFormTemplateId || d.postFormTemplateId);
+  }
+
+  sortedCampos(campos: FormTemplateCampo[] | string | undefined): FormTemplateCampo[] {
+    let arr: FormTemplateCampo[] = [];
+    if (typeof campos === 'string') {
+      try { arr = JSON.parse(campos); } catch { arr = []; }
+    } else {
+      arr = campos ?? [];
+    }
+    return [...arr].sort((a, b) => (a.orden ?? 0) - (b.orden ?? 0));
+  }
 
   getComplianceClass(pct: number): string {
     if (pct >= 90) return 'text-success';
@@ -663,5 +1150,23 @@ export class IndividualTrainingComponent implements OnInit, OnDestroy {
     const n = (player.nombre ?? '').charAt(0).toUpperCase();
     const a = (player.apellido ?? '').charAt(0).toUpperCase();
     return n + a;
+  }
+
+  /** Devuelve el nombre completo de un jugador buscando primero en teamPlayers (que sí tiene nombres). */
+  getPlayerName(playerId: number): string {
+    const found = this.teamPlayers.find(p => p.playerId === playerId);
+    if (found) return `${found.nombre ?? ''} ${found.apellido ?? ''}`.trim();
+    return `Jugador #${playerId}`;
+  }
+
+  /** Iniciales de un jugador por ID, para el avatar en cumplimiento. */
+  getPlayerInitials(playerId: number): string {
+    const found = this.teamPlayers.find(p => p.playerId === playerId);
+    if (found) {
+      const n = (found.nombre ?? '').charAt(0).toUpperCase();
+      const a = (found.apellido ?? '').charAt(0).toUpperCase();
+      return n + a;
+    }
+    return '#';
   }
 }

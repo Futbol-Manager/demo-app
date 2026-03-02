@@ -58,6 +58,8 @@ export interface IndividualPlanDay {
   targetReps?:            number;
   description?:           string;
   videoUrl?:              string;
+  preFormTemplateId?:     number | null;
+  postFormTemplateId?:    number | null;
 }
 
 export interface TrainingLog {

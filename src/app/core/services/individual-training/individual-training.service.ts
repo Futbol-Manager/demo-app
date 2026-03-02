@@ -102,6 +102,13 @@ export class IndividualTrainingService {
     );
   }
 
+  updatePlanDay(dayId: number, body: Partial<IndividualPlanDay>): Observable<IndividualPlanDay | null> {
+    return this.http.put<any>(this.base + `plan/days/${dayId}`, body).pipe(
+      map(r => r?.data ?? r),
+      catchError(err => { console.error('[IndividualTrainingService] updatePlanDay', err); return of(null); })
+    );
+  }
+
   // ─── TRAINING LOGS ────────────────────────────────────────────
 
   getLogs(params: { playerId?: number; planId?: number; planDayId?: number } = {}): Observable<TrainingLog[]> {
@@ -112,6 +119,15 @@ export class IndividualTrainingService {
     return this.http.get<any>(this.base + 'log', { params: p }).pipe(
       map(r => r?.data ?? r ?? []),
       catchError(err => { console.error('[IndividualTrainingService] getLogs', err); return of([]); })
+    );
+  }
+
+  // ─── TRAINING LOGS (write) ────────────────────────────────────
+
+  createLog(body: Partial<TrainingLog>): Observable<TrainingLog | null> {
+    return this.http.post<any>(this.base + 'log', body).pipe(
+      map(r => r?.data ?? r),
+      catchError(err => { console.error('[IndividualTrainingService] createLog', err); return of(null); })
     );
   }
 

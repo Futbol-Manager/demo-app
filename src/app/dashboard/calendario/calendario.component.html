@@ -768,8 +768,9 @@
           </div>
 
           <div class="saas-action-bar d-flex flex-wrap gap-2 justify-content-center mb-3">
-            <button class="btn btn-primary-pro" (click)="router.navigate(['/dashboard/individual-training'])">
-              <i class="bi bi-arrow-right-circle me-1"></i> Ver plan completo
+            <button class="btn btn-primary-pro"
+                    (click)="router.navigate(['/dashboard/individual-training'], { queryParams: { planId: selectedIndividualSession!.planId, date: selectedIndividualSession!.date } })">
+              <i class="bi bi-arrow-right-circle me-1"></i> Ver sesión
             </button>
           </div>
 

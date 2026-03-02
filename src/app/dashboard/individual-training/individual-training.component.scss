@@ -871,3 +871,488 @@ $sphaira-border: #e5e7eb;
     font-size: 0.85rem;
   }
 }
+
+// ─── Player progress banner ────────────────────────────
+.it-player-progress-banner {
+  background: linear-gradient(135deg, $sphaira-dark, $sphaira-mid);
+  color: #fff;
+  padding: 1rem 1.25rem;
+  border-radius: 14px;
+  margin-bottom: 1.25rem;
+
+  &__left {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  &__label {
+    color: rgba(255,255,255,0.75);
+    font-size: 0.85rem;
+  }
+
+  &__pct {
+    font-size: 1.75rem;
+    font-weight: 700;
+  }
+
+  &__right {
+    margin-top: 0.25rem;
+    display: flex;
+    gap: 0.5rem;
+    color: rgba(255,255,255,0.65);
+  }
+}
+
+// ─── Today session card ────────────────────────────────
+.it-today-session {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  background: #fff;
+  border: 1px solid $sphaira-border;
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+
+  &__icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 14px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+  }
+
+  &__body {
+    flex: 1;
+  }
+
+  &__targets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+}
+
+.it-target-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: $sphaira-light;
+  border: 1px solid $sphaira-border;
+  border-radius: 20px;
+  padding: 0.2rem 0.75rem;
+  font-size: 0.8rem;
+  color: $sphaira-dark;
+  font-weight: 500;
+}
+
+// ─── Log form ──────────────────────────────────────────
+.it-log-form {
+  background: #fff;
+  border: 1px solid $sphaira-border;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1.25rem;
+    background: $sphaira-light;
+    border-bottom: 1px solid $sphaira-border;
+    font-weight: 600;
+    color: $sphaira-dark;
+  }
+
+  &__body {
+    padding: 1.25rem;
+  }
+
+  // Fila de campos de solo lectura (actividad + fecha)
+  &__readonly-row {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    padding: 0.75rem 1rem;
+    background: $sphaira-light;
+    border-radius: 10px;
+    border: 1px solid $sphaira-border;
+  }
+
+  &__readonly-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    .it-label {
+      font-size: 0.75rem;
+      margin-bottom: 0;
+      color: $sphaira-muted;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+  }
+}
+
+// Input con sufijo (km, kg) alineado en la misma línea
+.it-input-unit {
+  display: flex;
+  align-items: center;
+  gap: 0;
+
+  .it-input, input {
+    border-radius: 8px 0 0 8px !important;
+    border-right: none !important;
+  }
+
+  &__suffix {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 0.6rem;
+    height: 36px;
+    background: $sphaira-light;
+    border: 1px solid $sphaira-border;
+    border-left: none;
+    border-radius: 0 8px 8px 0;
+    font-size: 0.85rem;
+    color: $sphaira-muted;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+}
+
+// Input pequeño para el formulario
+.it-input--sm {
+  padding: 0.35rem 0.6rem !important;
+  font-size: 0.9rem !important;
+  height: 36px !important;
+}
+
+// ─── Day chip log button ───────────────────────────────
+.it-day-chip {
+  position: relative;
+
+  &--rest {
+    opacity: 0.55;
+  }
+
+  &--has-form {
+    border-left: 3px solid var(--chip-color, #0d6efd);
+  }
+
+  &__log-btn {
+    position: absolute;
+    top: 0.35rem;
+    right: 0.35rem;
+    background: none;
+    border: none;
+    color: var(--chip-color, #0d6efd);
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.9rem;
+    opacity: 0.7;
+    transition: opacity 0.15s;
+
+    &:hover { opacity: 1; }
+  }
+}
+
+// ─── Day form assign (coach) ──────────────────────────
+.it-day-form-assign {
+  margin-top: 0.6rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid rgba(0,0,0,.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.it-day-form-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.it-day-form-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-text-muted, #6c757d);
+  width: 2.4rem;
+  flex-shrink: 0;
+}
+
+.it-input--xs {
+  font-size: 0.78rem !important;
+  padding: 0.15rem 0.3rem !important;
+  height: 28px !important;
+  min-width: 0;
+  flex: 1;
+}
+
+// ─── Form sections (PRE / POST) in player log form ────
+.it-form-section {
+  border-radius: 0.5rem;
+  padding: 0.8rem 1rem;
+  margin-bottom: 0.25rem;
+
+  &--pre {
+    background: #e8f4fd;
+    border-left: 4px solid #0d6efd;
+  }
+
+  &--post {
+    background: #eafaf1;
+    border-left: 4px solid #198754;
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: 0.88rem;
+    margin-bottom: 0.75rem;
+    color: #333;
+  }
+}
+
+// ─── Compliance card actions + responses ──────────────
+.it-compliance-card {
+  &--expanded {
+    box-shadow: 0 0 0 2px var(--color-primary, #0d6efd);
+  }
+
+  &__actions {
+    margin-top: 0.4rem;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
+.it-btn--xs {
+  font-size: 0.72rem !important;
+  padding: 0.1rem 0.5rem !important;
+  height: auto !important;
+}
+
+// ─── MODAL RESPUESTAS ─────────────────────────────────────────────────────────
+.it-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  z-index: 1040;
+  animation: it-fade-in .15s ease;
+}
+
+.it-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+
+  &--open { display: flex; }
+
+  &__dialog {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 20px 60px rgba(0,0,0,.2);
+    width: 100%;
+    max-width: 660px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    animation: it-slide-up .2s ease;
+    overflow: hidden;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.1rem 1.4rem;
+    border-bottom: 1px solid #e9ecef;
+    flex-shrink: 0;
+  }
+
+  &__header-info {
+    display: flex;
+    align-items: center;
+  }
+
+  &__title {
+    font-size: 1rem;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 0.25rem 0.4rem;
+    border-radius: 0.4rem;
+    line-height: 1;
+    transition: background .15s;
+
+    &:hover { background: #f0f0f0; color: #212529; }
+  }
+
+  &__body {
+    overflow-y: auto;
+    padding: 1.4rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  &__loading,
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    color: #6c757d;
+    flex: 1;
+  }
+
+  &__footer {
+    padding: 0.9rem 1.4rem;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: flex-end;
+    flex-shrink: 0;
+  }
+}
+
+// ─── TARJETA DE RESPUESTA ──────────────────────────────────────────────────────
+.it-resp-card {
+  border: 1px solid #e9ecef;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  margin-bottom: 1rem;
+
+  &:last-child { margin-bottom: 0; }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.7rem 1rem;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  &__badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+
+    &--pre  { background: #0dcaf0; color: #fff; }
+    &--post { background: #198754; color: #fff; }
+  }
+
+  &__template {
+    font-weight: 600;
+    font-size: 0.9rem;
+    flex: 1;
+  }
+
+  &__date {
+    font-size: 0.8rem;
+    color: #6c757d;
+    white-space: nowrap;
+  }
+
+  &__fields {
+    padding: 0.5rem 0;
+  }
+}
+
+// ─── FILA CAMPO/VALOR ──────────────────────────────────────────────────────────
+.it-resp-field {
+  display: grid;
+  grid-template-columns: 10rem 1fr;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.55rem 1rem;
+  font-size: 0.88rem;
+  border-bottom: 1px solid #f0f0f0;
+
+  &:last-child { border-bottom: none; }
+
+  &__label {
+    color: #6c757d;
+    font-size: 0.83rem;
+    line-height: 1.4;
+    padding-top: 0.1rem;
+  }
+
+  &__value {
+    font-weight: 500;
+    line-height: 1.5;
+    word-break: break-word;
+
+    &--empty { color: #adb5bd; font-weight: 400; }
+  }
+
+  &__text-long {
+    display: block;
+    white-space: pre-wrap;
+    font-size: 0.88rem;
+    line-height: 1.6;
+  }
+}
+
+// ─── ESCALA VISUAL ─────────────────────────────────────────────────────────────
+.it-resp-scale {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  &__bar {
+    flex: 1;
+    max-width: 10rem;
+    height: 6px;
+    background: #e9ecef;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  &__fill {
+    display: block;
+    height: 100%;
+    background: var(--it-primary, #0d6efd);
+    border-radius: 999px;
+    transition: width .3s;
+  }
+}
+
+// ─── ESTRELLAS RATING ──────────────────────────────────────────────────────────
+.it-resp-stars {
+  display: flex;
+  gap: 0.15rem;
+  font-size: 1rem;
+}
+
+// ─── ANIMACIONES ──────────────────────────────────────────────────────────────
+@keyframes it-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes it-slide-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
