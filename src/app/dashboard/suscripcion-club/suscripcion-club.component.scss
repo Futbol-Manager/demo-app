@@ -477,6 +477,67 @@ $plan-free-accent-gradient: linear-gradient(135deg, #3BB271, #2e9b5e);
   }
 }
 
+.active-plan-info-card {
+  margin-top: 14px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px 20px;
+  border: 1px solid #e6edf7;
+  box-shadow: 0 6px 20px rgba(18, 38, 63, 0.06);
+}
+
+.active-plan-info-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+
+  h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1a202c;
+  }
+
+  p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 600;
+  }
+}
+
+.active-plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 16px;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.86rem;
+    color: #334155;
+
+    i.bi-check-circle-fill {
+      color: #10b981;
+    }
+
+    i.bi-x-circle {
+      color: #cbd5e1;
+    }
+
+    &.disabled {
+      color: #94a3b8;
+    }
+  }
+}
+
 .spin {
   display: inline-block;
   animation: spin 1s linear infinite;
@@ -729,5 +790,9 @@ $plan-free-accent-gradient: linear-gradient(135deg, #3BB271, #2e9b5e);
       justify-content: center;
       margin-left: 0;
     }
+  }
+
+  .active-plan-features {
+    grid-template-columns: 1fr;
   }
 }

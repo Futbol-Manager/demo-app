@@ -99,6 +99,20 @@
       Entrar a Stripe
     </button>
   </div>
+
+  <div class="active-plan-info-card" *ngIf="activePlanInfo as planInfo">
+    <div class="active-plan-info-header">
+      <h3>Qué incluye tu plan</h3>
+      <p>{{ planInfo.nameKey | translate }}</p>
+    </div>
+
+    <ul class="active-plan-features">
+      <li *ngFor="let feature of planInfo.features" [ngClass]="{ 'disabled': !feature.included }">
+        <i class="bi" [ngClass]="feature.included ? 'bi-check-circle-fill' : 'bi-x-circle'"></i>
+        {{ feature.key | translate }}
+      </li>
+    </ul>
+  </div>
 </div>
 
 <!-- ═══════════ PLAN SELECTION ═══════════ -->

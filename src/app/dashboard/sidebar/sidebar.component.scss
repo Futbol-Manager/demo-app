@@ -344,6 +344,27 @@ $ease-collapse: cubic-bezier(0.4,  0,    0.2,  1);   /* ease-out al colapsar    
 }
 
 /* ═══════════════════════════════════════════════════════
+   LOADING SPINNER
+   ═══════════════════════════════════════════════════════ */
+.sidebar-loading {
+  padding: 0 16px;
+  margin-top: 8px;
+  color: $sidebar-text;
+  
+  .spinner-border-sm {
+    width: 1rem;
+    height: 1rem;
+    border-width: 2px;
+  }
+  
+  .text-muted {
+    color: $sidebar-section-text !important;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
    RESPONSIVE — MÓVIL OCULTO
    ═══════════════════════════════════════════════════════ */
 @media (max-width: 768px) {
