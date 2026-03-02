@@ -49,8 +49,63 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   private searchDebounce: any = null;
   selectedProspect: any = null;
   showProspectModal = false;
+  crmTab: 'info' | 'edit' = 'info';
+  crmEdit: any = {};
+  isSavingCrm = false;
+  crmSaveOk = false;
   showDeleteProspectConfirm = false;
   prospectToDelete: any = null;
+
+  // Conversión a cliente
+  showConvertModal = false;
+  convertNote = '';
+  isConverting = false;
+
+  // Import CSV/Excel
+  showImportModal = false;
+  importFile: File | null = null;
+  importFilename = '';
+  importFileB64 = '';
+  importPreviewCols: string[] = [];
+  importMapping: Record<string, string | null> = {};
+  importSample: Record<string, string>[] = [];
+  importTotalRows = 0;
+  importStep: 'upload' | 'map' | 'done' = 'upload';
+  importResult: { inserted: number; duplicates: number; errors: string[]; total_processed: number } | null = null;
+  csvImportLoading = false;
+  importSkipDuplicates = true;
+
+  readonly CRM_FIELDS: { key: string; label: string; type: string }[] = [
+    { key: 'name',             label: 'Nombre del club',  type: 'text' },
+    { key: 'city',             label: 'Ciudad',           type: 'text' },
+    { key: 'province',         label: 'Provincia',        type: 'text' },
+    { key: 'community',        label: 'Comunidad',        type: 'text' },
+    { key: 'email',            label: 'Email',            type: 'email' },
+    { key: 'phone',            label: 'Teléfono',         type: 'text' },
+    { key: 'website',          label: 'Web',              type: 'url' },
+    { key: 'instagram',        label: 'Instagram',        type: 'url' },
+    { key: 'twitter',          label: 'Twitter / X',      type: 'url' },
+    { key: 'facebook',         label: 'Facebook',         type: 'url' },
+    { key: 'estimated_teams',  label: 'Nº equipos',       type: 'number' },
+  ];
+
+  readonly IMPORT_FIELD_OPTIONS: { value: string; label: string }[] = [
+    { value: '',                label: '— Ignorar —' },
+    { value: 'name',            label: 'Nombre' },
+    { value: 'email',           label: 'Email' },
+    { value: 'phone',           label: 'Teléfono' },
+    { value: 'website',         label: 'Web' },
+    { value: 'city',            label: 'Ciudad' },
+    { value: 'province',        label: 'Provincia' },
+    { value: 'community',       label: 'Comunidad' },
+    { value: 'instagram',       label: 'Instagram' },
+    { value: 'twitter',         label: 'Twitter/X' },
+    { value: 'facebook',        label: 'Facebook' },
+    { value: 'estimated_teams', label: 'Nº equipos' },
+    { value: 'has_youth_academy', label: 'Cantera (1/0)' },
+    { value: 'category',        label: 'Categoría' },
+    { value: 'notes',           label: 'Notas CRM' },
+  ];
 
   // Emails
   emails: any[] = [];
@@ -1302,8 +1357,155 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
   }
 
   openProspectDetail(p: any): void {
-    this.selectedProspect = p;
+    this.selectedProspect = { ...p };
+    this.crmTab = 'info';
+    this.crmEdit = { ...p };
+    this.crmSaveOk = false;
     this.showProspectModal = true;
+  }
+
+  saveCrmEdit(): void {
+    if (!this.selectedProspect) return;
+    this.isSavingCrm = true;
+    this.crmSaveOk = false;
+
+    // Solo enviamos los campos del formulario CRM + notes
+    const payload: any = {};
+    for (const f of this.CRM_FIELDS) {
+      payload[f.key] = this.crmEdit[f.key] ?? null;
+    }
+    payload['has_youth_academy'] = this.crmEdit['has_youth_academy'] ? 1 : 0;
+    payload['notes'] = this.crmEdit['notes'] ?? null;
+
+    this.prospectService.updateProspect(this.selectedProspect.prospect_id, payload).subscribe({
+      next: () => {
+        // Actualizar el objeto local para reflejar cambios en la vista
+        Object.assign(this.selectedProspect, payload);
+        // Actualizar también en la lista de prospects si estaba cargada
+        const idx = this.prospects.findIndex(p => p.prospect_id === this.selectedProspect.prospect_id);
+        if (idx >= 0) Object.assign(this.prospects[idx], payload);
+        this.isSavingCrm = false;
+        this.crmSaveOk = true;
+        setTimeout(() => this.crmSaveOk = false, 3000);
+      },
+      error: () => { this.isSavingCrm = false; }
+    });
+  }
+
+  // ── Conversión a cliente ─────────────────────────────────────────────────
+
+  openConvertModal(): void {
+    this.convertNote = '';
+    this.showConvertModal = true;
+  }
+
+  confirmConvert(): void {
+    if (!this.selectedProspect) return;
+    this.isConverting = true;
+    this.prospectService.convertToClient(
+      this.selectedProspect.prospect_id,
+      this.convertNote.trim() || undefined,
+    ).subscribe({
+      next: (res) => {
+        this.selectedProspect.status = 'CLIENT';
+        this.selectedProspect.converted_at = res.converted_at;
+        // Actualizar en la lista local
+        const idx = this.prospects.findIndex(p => p.prospect_id === this.selectedProspect.prospect_id);
+        if (idx >= 0) {
+          this.prospects[idx].status = 'CLIENT';
+          this.prospects[idx].converted_at = res.converted_at;
+        }
+        this.isConverting = false;
+        this.showConvertModal = false;
+        if (this.selectedCampaign) this.loadCampaignStats();
+      },
+      error: () => { this.isConverting = false; }
+    });
+  }
+
+  revertToProspect(): void {
+    if (!this.selectedProspect) return;
+    if (!confirm(`¿Revertir a "${this.selectedProspect.name}" a estado de prospecto? Se perderá la fecha de conversión.`)) return;
+    this.prospectService.revertToProspect(this.selectedProspect.prospect_id).subscribe({
+      next: (res) => {
+        this.selectedProspect.status = res.new_status;
+        this.selectedProspect.converted_at = null;
+        const idx = this.prospects.findIndex(p => p.prospect_id === this.selectedProspect.prospect_id);
+        if (idx >= 0) {
+          this.prospects[idx].status = res.new_status;
+          this.prospects[idx].converted_at = null;
+        }
+      }
+    });
+  }
+
+  // ── Import CSV/Excel ─────────────────────────────────────────────────────
+
+  openImportModal(): void {
+    this.showImportModal = true;
+    this.importStep = 'upload';
+    this.importFile = null;
+    this.importFilename = '';
+    this.importFileB64 = '';
+    this.importPreviewCols = [];
+    this.importMapping = {};
+    this.importSample = [];
+    this.importTotalRows = 0;
+    this.importResult = null;
+    this.csvImportLoading = false;
+  }
+
+  onImportFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input?.files?.[0];
+    if (!file) return;
+    this.importFile = file;
+    this.importFilename = file.name;
+  }
+
+  uploadImportFile(): void {
+    if (!this.importFile) return;
+    this.csvImportLoading = true;
+
+    // Leer como base64 para el paso de confirm
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      this.importFileB64 = dataUrl.split(',')[1] ?? '';
+    };
+    reader.readAsDataURL(this.importFile);
+
+    this.prospectService.importPreview(this.importFile).subscribe({
+      next: (res) => {
+        this.importPreviewCols = res.columns;
+        this.importMapping = { ...res.mapping };
+        this.importSample = res.sample;
+        this.importTotalRows = res.total_rows;
+        this.importStep = 'map';
+        this.csvImportLoading = false;
+      },
+      error: () => { this.csvImportLoading = false; }
+    });
+  }
+
+  confirmCsvImport(): void {
+    this.csvImportLoading = true;
+    this.prospectService.importConfirm({
+      campaign_id: this.selectedCampaign?.campaign_id ?? undefined,
+      mapping: this.importMapping,
+      file_b64: this.importFileB64,
+      filename: this.importFilename,
+      skip_duplicates: this.importSkipDuplicates,
+    }).subscribe({
+      next: (res) => {
+        this.importResult = res;
+        this.importStep = 'done';
+        this.csvImportLoading = false;
+        this.loadProspects();
+        if (this.selectedCampaign) this.loadCampaignStats();
+      },
+      error: () => { this.csvImportLoading = false; }
+    });
   }
 
   get filteredProspects(): any[] {
@@ -1429,6 +1631,7 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
       'NEW': 'Nuevo', 'ENRICHED': 'Enriquecido', 'ANALYZED': 'Analizado',
       'EMAIL_READY': 'Email listo', 'EMAIL_SENT': 'Enviado',
       'DRAFT': 'Borrador', 'RUNNING': 'En progreso', 'COMPLETED': 'Completado', 'FAILED': 'Error',
+      'CLIENT': '★ Cliente',
     };
     return map[status] || status;
   }
@@ -1438,6 +1641,7 @@ export class AdminProspectorComponent implements OnInit, OnDestroy {
       'NEW': 'badge-st-new', 'ENRICHED': 'badge-st-enriched', 'ANALYZED': 'badge-st-analyzed',
       'EMAIL_READY': 'badge-st-ready', 'EMAIL_SENT': 'badge-st-sent',
       'DRAFT': 'bg-secondary', 'RUNNING': 'badge-st-running', 'COMPLETED': 'badge-st-sent', 'FAILED': 'bg-danger',
+      'CLIENT': 'badge-st-client',
     };
     return map[status] || 'bg-secondary';
   }

@@ -1,4 +1,4 @@
-﻿<div class="back-container">
+<div class="back-container">
   <button class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i>
     <span>{{ 'COMMON.BACK' | translate }}</span>
@@ -315,6 +315,129 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- ── CLIENTES PROSPECTADOS ── -->
+    <div class="mb-4">
+      <div class="d-flex align-items-center justify-content-between mb-2 px-1">
+        <div class="d-flex align-items-center gap-2">
+          <button class="btn btn-sm d-flex align-items-center gap-2"
+                  [ngClass]="showProspectedClients ? 'btn-warning' : 'btn-outline-warning'"
+                  (click)="showProspectedClients = !showProspectedClients">
+            <i class="bi bi-trophy-fill"></i>
+            <span class="fw-semibold">Clientes prospectados</span>
+            <span class="badge rounded-pill" [ngClass]="showProspectedClients ? 'bg-white text-warning' : 'bg-warning text-white'">
+              {{ prospectedClientsTotal }}
+            </span>
+            <i class="bi" [ngClass]="showProspectedClients ? 'bi-chevron-up' : 'bi-chevron-down'"></i>
+          </button>
+          <span class="text-muted small" *ngIf="prospectedClientsTotal > 0 && !showProspectedClients">
+            Clubes convertidos desde el Prospector
+          </span>
+        </div>
+        <button class="btn btn-sm btn-outline-secondary" (click)="goToProspector()" title="Ir al Prospector">
+          <i class="bi bi-bullseye me-1"></i>Abrir Prospector
+        </button>
+      </div>
+
+      <div *ngIf="showProspectedClients" class="border rounded-3 overflow-hidden" style="border-color: #fde68a !important;">
+        <!-- Cabecera dorada -->
+        <div class="d-flex align-items-center justify-content-between px-3 py-2"
+             style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff;">
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-trophy-fill fs-5"></i>
+            <span class="fw-bold">Clientes conseguidos vía prospección</span>
+            <span class="badge bg-white text-warning fw-bold">{{ prospectedClientsTotal }}</span>
+          </div>
+          <div class="d-flex gap-2 align-items-center">
+            <input type="text" class="form-control form-control-sm"
+                   style="width:200px; background:rgba(255,255,255,0.2); border:1px solid rgba(255,255,255,0.4); color:#fff;"
+                   placeholder="Buscar cliente..."
+                   [(ngModel)]="clientsSearch"
+                   (input)="cargarClientesProspectados()">
+            <button class="btn btn-sm" style="background:rgba(255,255,255,0.2); color:#fff; border:1px solid rgba(255,255,255,0.4);"
+                    (click)="cargarClientesProspectados()">
+              <i class="bi bi-arrow-clockwise" [class.spin-icon]="isLoadingClients"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Tabla clientes prospectados -->
+        <div *ngIf="isLoadingClients" class="text-center py-4">
+          <div class="spinner-border text-warning" role="status" style="width:1.5rem;height:1.5rem;"></div>
+          <div class="small text-muted mt-1">Cargando...</div>
+        </div>
+
+        <div class="table-responsive" *ngIf="!isLoadingClients">
+          <table class="table align-middle mb-0" style="background:#fffbeb;">
+            <thead style="background:#fef3c7;">
+              <tr>
+                <th class="ps-3">Club</th>
+                <th>Provincia</th>
+                <th>Contacto</th>
+                <th>Redes</th>
+                <th class="text-center">Equipos</th>
+                <th>Convertido</th>
+                <th class="text-end pe-3">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let c of prospectedClients" class="client-prospect-row">
+                <td class="ps-3">
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="client-prospect-avatar">
+                      <i class="bi bi-trophy-fill text-warning"></i>
+                    </div>
+                    <div>
+                      <div class="fw-semibold">{{ c.name }}</div>
+                      <div class="small text-muted">{{ c.city || '—' }}</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="small">{{ c.province || '—' }}</td>
+                <td>
+                  <div *ngIf="c.email" class="small">
+                    <a [href]="'mailto:' + c.email" class="text-dark">{{ c.email }}</a>
+                  </div>
+                  <div *ngIf="c.phone" class="small text-muted">{{ c.phone }}</div>
+                  <span *ngIf="!c.email && !c.phone" class="text-muted small">—</span>
+                </td>
+                <td>
+                  <div class="d-flex gap-1">
+                    <a *ngIf="c.instagram" [href]="c.instagram" target="_blank" class="btn btn-xs-icon" title="Instagram">
+                      <i class="bi bi-instagram text-danger"></i>
+                    </a>
+                    <a *ngIf="c.website" [href]="c.website" target="_blank" class="btn btn-xs-icon" title="Web">
+                      <i class="bi bi-globe text-primary"></i>
+                    </a>
+                    <a *ngIf="c.twitter" [href]="c.twitter" target="_blank" class="btn btn-xs-icon" title="Twitter">
+                      <i class="bi bi-twitter-x"></i>
+                    </a>
+                  </div>
+                </td>
+                <td class="text-center">
+                  <span class="badge rounded-pill bg-light text-dark border">{{ c.estimated_teams || '—' }}</span>
+                </td>
+                <td>
+                  <span class="small text-muted">{{ c.converted_at | date:'dd/MM/yyyy' }}</span>
+                </td>
+                <td class="text-end pe-3">
+                  <button class="btn btn-sm btn-outline-warning" (click)="openClientDetail(c)" title="Ver ficha">
+                    <i class="bi bi-person-lines-fill"></i>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="prospectedClients.length === 0">
+                <td colspan="7" class="text-center py-4 text-muted">
+                  <i class="bi bi-trophy me-2"></i>
+                  Aún no has convertido ningún prospecto en cliente.
+                  <button class="btn btn-link btn-sm p-0 ms-1" (click)="goToProspector()">Ir al Prospector</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- TABLA DE CLUBES -->
@@ -651,4 +774,88 @@
 
         </div>
     </div>
+</div>
+
+<!-- ── Modal: Ficha de cliente prospectado ── -->
+<div class="modal" [ngClass]="{'d-block': showClientDetailModal}" tabindex="-1" style="background:rgba(0,0,0,.65);">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content" style="border-radius:12px; overflow:hidden;" *ngIf="selectedClient">
+      <div class="modal-header border-0"
+           style="background: linear-gradient(135deg, #f59e0b, #d97706); color:#fff;">
+        <div class="d-flex align-items-center gap-3">
+          <div style="width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;">
+            <i class="bi bi-trophy-fill fs-5"></i>
+          </div>
+          <div>
+            <h5 class="modal-title mb-0 fw-bold">{{ selectedClient.name }}</h5>
+            <div class="small opacity-90">
+              Cliente desde {{ selectedClient.converted_at | date:'dd/MM/yyyy' }} · {{ selectedClient.city }}, {{ selectedClient.province }}
+            </div>
+          </div>
+        </div>
+        <button class="btn-close btn-close-white" (click)="showClientDetailModal = false"></button>
+      </div>
+      <div class="modal-body p-4">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <h6 class="small fw-bold text-uppercase text-muted mb-2">Datos de contacto</h6>
+            <div class="d-flex flex-column gap-2">
+              <div *ngIf="selectedClient.email">
+                <i class="bi bi-envelope text-muted me-2"></i>
+                <a [href]="'mailto:' + selectedClient.email">{{ selectedClient.email }}</a>
+              </div>
+              <div *ngIf="selectedClient.phone">
+                <i class="bi bi-telephone text-muted me-2"></i>
+                <a [href]="'tel:' + selectedClient.phone">{{ selectedClient.phone }}</a>
+              </div>
+              <div *ngIf="selectedClient.website">
+                <i class="bi bi-globe text-muted me-2"></i>
+                <a [href]="selectedClient.website" target="_blank">{{ selectedClient.website }}</a>
+              </div>
+              <div *ngIf="!selectedClient.email && !selectedClient.phone && !selectedClient.website" class="text-muted small">Sin datos de contacto</div>
+            </div>
+            <h6 class="small fw-bold text-uppercase text-muted mt-3 mb-2">Redes sociales</h6>
+            <div class="d-flex gap-2 flex-wrap">
+              <a *ngIf="selectedClient.instagram" [href]="selectedClient.instagram" target="_blank" class="btn btn-sm btn-outline-danger">
+                <i class="bi bi-instagram me-1"></i>Instagram
+              </a>
+              <a *ngIf="selectedClient.twitter" [href]="selectedClient.twitter" target="_blank" class="btn btn-sm btn-outline-dark">
+                <i class="bi bi-twitter-x me-1"></i>Twitter
+              </a>
+              <a *ngIf="selectedClient.facebook" [href]="selectedClient.facebook" target="_blank" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-facebook me-1"></i>Facebook
+              </a>
+              <span *ngIf="!selectedClient.instagram && !selectedClient.twitter && !selectedClient.facebook" class="text-muted small">Sin redes detectadas</span>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h6 class="small fw-bold text-uppercase text-muted mb-2">Estructura</h6>
+            <div class="d-flex gap-3 flex-wrap mb-3">
+              <div class="text-center p-2 rounded-2 border" style="min-width:80px;">
+                <div class="fw-bold fs-5">{{ selectedClient.estimated_teams || '—' }}</div>
+                <div class="small text-muted">Equipos</div>
+              </div>
+              <div class="text-center p-2 rounded-2 border" style="min-width:80px;">
+                <span class="badge" [ngClass]="selectedClient.has_youth_academy ? 'bg-success' : 'bg-secondary'">
+                  {{ selectedClient.has_youth_academy ? 'Con cantera' : 'Sin cantera' }}
+                </span>
+              </div>
+            </div>
+            <h6 class="small fw-bold text-uppercase text-muted mb-2">Notas CRM</h6>
+            <div *ngIf="selectedClient.notes"
+                 style="background:#fffbeb;border-left:3px solid #f59e0b;border-radius:6px;padding:0.6rem 0.8rem;font-size:0.85rem;white-space:pre-wrap;">
+              {{ selectedClient.notes }}
+            </div>
+            <div *ngIf="!selectedClient.notes" class="text-muted small">Sin notas</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer border-0" style="background:#fef3c7;">
+        <button class="btn btn-sm btn-outline-secondary" (click)="goToProspector()">
+          <i class="bi bi-bullseye me-1"></i>Ver en Prospector
+        </button>
+        <button class="btn btn-sm btn-warning fw-semibold ms-auto" (click)="showClientDetailModal = false">Cerrar</button>
+      </div>
+    </div>
+  </div>
 </div>

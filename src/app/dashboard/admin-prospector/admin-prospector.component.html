@@ -1,4 +1,4 @@
-﻿<!-- Back button -->
+<!-- Back button -->
 <div class="back-container">
   <button class="btn-back-clean" (click)="goBack()">
     <i class="bi bi-arrow-left"></i> Volver
@@ -791,7 +791,10 @@
                 <i class="bi bi-arrow-clockwise"></i>
               </button>
               <button class="btn btn-sm btn-outline-success" (click)="openImportFromLibrary()">
-                <i class="bi bi-box-arrow-in-down me-1"></i>Importar
+                <i class="bi bi-box-arrow-in-down me-1"></i>Importar biblioteca
+              </button>
+              <button class="btn btn-sm btn-outline-primary" (click)="openImportModal()" title="Importar desde CSV o Excel">
+                <i class="bi bi-file-earmark-spreadsheet me-1"></i>CSV / Excel
               </button>
               <button class="btn btn-sm btn-refresh" (click)="openAddClubModal()">
                 <i class="bi bi-plus-lg"></i>Añadir
@@ -2922,115 +2925,306 @@
 </div>
 
 <!-- Detalle de prospect -->
-<div class="modal" [ngClass]="{'d-block': showProspectModal}" tabindex="-1" style="background:rgba(0,0,0,.6);">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content" *ngIf="selectedProspect">
-      <div class="modal-header">
-        <div>
-          <h5 class="modal-title mb-0"><i class="bi bi-building me-2"></i>{{ selectedProspect.name }}</h5>
-          <div class="small opacity-75">{{ selectedProspect.city }}, {{ selectedProspect.province }}</div>
-        </div>
-        <button type="button" class="btn-close" (click)="showProspectModal = false"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row g-4">
-          <!-- Datos -->
-          <div class="col-md-5">
-            <h6 class="fw-bold mb-2">Datos de contacto</h6>
-            <div class="detail-row"><i class="bi bi-envelope"></i><span>{{ selectedProspect.email || '—' }}</span></div>
-            <div class="detail-row"><i class="bi bi-telephone"></i><span>{{ selectedProspect.phone || '—' }}</span></div>
-            <div class="detail-row">
-              <i class="bi bi-globe"></i>
-              <a *ngIf="selectedProspect.website" [href]="selectedProspect.website" target="_blank" class="small text-truncate">{{ selectedProspect.website }}</a>
-              <span *ngIf="!selectedProspect.website" class="text-muted">—</span>
-            </div>
-            <h6 class="fw-bold mt-3 mb-2">Redes sociales</h6>
-            <div class="detail-row">
-              <i class="bi bi-instagram"></i>
-              <span [class.text-muted]="!selectedProspect.instagram">{{ selectedProspect.instagram || 'No encontrado' }}</span>
-            </div>
-            <div class="detail-row">
-              <i class="bi bi-twitter-x"></i>
-              <span [class.text-muted]="!selectedProspect.twitter">{{ selectedProspect.twitter || 'No encontrado' }}</span>
-            </div>
-            <div class="detail-row">
-              <i class="bi bi-facebook"></i>
-              <span [class.text-muted]="!selectedProspect.facebook">{{ selectedProspect.facebook || 'No encontrado' }}</span>
-            </div>
-            <h6 class="fw-bold mt-3 mb-2">Estructura</h6>
-            <div class="detail-row"><i class="bi bi-people"></i><span>~{{ selectedProspect.estimated_teams || '?' }} equipos</span></div>
-            <div class="detail-row">
-              <i class="bi bi-mortarboard"></i>
-              <span>{{ selectedProspect.has_youth_academy ? 'Tiene cantera' : 'Sin cantera detectada' }}</span>
-            </div>
-            <div class="detail-row mt-1">
-              <i class="bi bi-wifi"></i>
-              <span class="badge digit-badge" [ngClass]="digitalizationLevel(selectedProspect).cssClass">
-                Digitalización {{ digitalizationLevel(selectedProspect).label }}
-              </span>
+<!-- ── Modal CRM: Ficha completa del club ── -->
+<div class="modal" [ngClass]="{'d-block': showProspectModal}" tabindex="-1" style="background:rgba(0,0,0,.65);">
+  <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <div class="modal-content" *ngIf="selectedProspect" style="border-radius:12px; overflow:hidden;">
+
+      <!-- Header -->
+      <div class="modal-header border-0 pb-0" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); color:#fff;">
+        <div class="d-flex align-items-center gap-3 flex-grow-1">
+          <div class="crm-avatar">
+            <i class="bi bi-building fs-4"></i>
+          </div>
+          <div>
+            <h5 class="modal-title mb-0 fw-bold">{{ selectedProspect.name }}</h5>
+            <div class="small opacity-75 mt-1">
+              <i class="bi bi-geo-alt me-1"></i>{{ selectedProspect.city || '—' }}, {{ selectedProspect.province || '—' }}
+              <span class="ms-2 badge" [ngClass]="statusBadgeClass(selectedProspect.status)">{{ statusLabel(selectedProspect.status) }}</span>
             </div>
           </div>
-          <!-- Pain points -->
-          <div class="col-md-7">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <h6 class="fw-bold mb-0">Análisis de necesidades</h6>
-              <span class="badge rounded-pill pain-score-badge" [style.background]="painScoreColor(selectedProspect.pain_score)" style="color:#fff;">
-                Pain score: {{ selectedProspect.pain_score || 0 }}/10
-              </span>
-            </div>
-            <div *ngIf="selectedProspect.pain_points?.length">
-              <div *ngFor="let pp of selectedProspect.pain_points" class="pain-item mb-2">
-                <div class="d-flex justify-content-between align-items-start">
-                  <strong class="small">{{ pp.id }}</strong>
-                  <span class="badge rounded-pill ms-2" [style.background]="painScoreColor(pp.severity)" style="color:#fff; font-size:0.7rem;">
-                    {{ pp.severity }}/10
-                  </span>
+        </div>
+        <button type="button" class="btn-close btn-close-white" (click)="showProspectModal = false"></button>
+      </div>
+
+      <!-- Tabs nav -->
+      <div class="border-bottom" style="background:#f8f9fa;">
+        <ul class="nav nav-tabs border-0 ps-3 pt-1">
+          <li class="nav-item">
+            <button class="nav-link" [ngClass]="{'active fw-semibold': crmTab === 'info'}" (click)="crmTab = 'info'">
+              <i class="bi bi-person-lines-fill me-1"></i>Ficha
+            </button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link" [ngClass]="{'active fw-semibold': crmTab === 'edit'}" (click)="crmTab = 'edit'">
+              <i class="bi bi-pencil-square me-1"></i>Editar datos
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      <div class="modal-body p-0">
+
+        <!-- ── TAB: FICHA (INFO) ── -->
+        <div *ngIf="crmTab === 'info'" class="p-4">
+          <div class="row g-4">
+
+            <!-- Columna izquierda: datos de contacto -->
+            <div class="col-lg-5">
+              <div class="crm-section-card">
+                <div class="crm-section-title"><i class="bi bi-person-rolodex me-2 text-primary"></i>Contacto</div>
+                <div class="crm-field-row">
+                  <i class="bi bi-envelope text-muted"></i>
+                  <div>
+                    <div class="crm-field-label">Email</div>
+                    <a *ngIf="selectedProspect.email" [href]="'mailto:' + selectedProspect.email" class="crm-field-value link-dark">{{ selectedProspect.email }}</a>
+                    <span *ngIf="!selectedProspect.email" class="crm-field-empty">Sin email</span>
+                  </div>
                 </div>
-                <div class="small text-muted mt-1">{{ pp.evidence }}</div>
+                <div class="crm-field-row">
+                  <i class="bi bi-telephone text-muted"></i>
+                  <div>
+                    <div class="crm-field-label">Teléfono</div>
+                    <a *ngIf="selectedProspect.phone" [href]="'tel:' + selectedProspect.phone" class="crm-field-value link-dark">{{ selectedProspect.phone }}</a>
+                    <span *ngIf="!selectedProspect.phone" class="crm-field-empty">Sin teléfono</span>
+                  </div>
+                </div>
+                <div class="crm-field-row">
+                  <i class="bi bi-globe text-muted"></i>
+                  <div>
+                    <div class="crm-field-label">Web</div>
+                    <a *ngIf="selectedProspect.website" [href]="selectedProspect.website" target="_blank" class="crm-field-value text-truncate d-block" style="max-width:220px;">{{ selectedProspect.website }}</a>
+                    <span *ngIf="!selectedProspect.website" class="crm-field-empty">Sin web</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="crm-section-card mt-3">
+                <div class="crm-section-title"><i class="bi bi-share me-2 text-warning"></i>Redes sociales</div>
+                <div class="crm-field-row">
+                  <i class="bi bi-instagram text-muted"></i>
+                  <div>
+                    <div class="crm-field-label">Instagram</div>
+                    <a *ngIf="selectedProspect.instagram" [href]="selectedProspect.instagram" target="_blank" class="crm-field-value">{{ selectedProspect.instagram }}</a>
+                    <span *ngIf="!selectedProspect.instagram" class="crm-field-empty">—</span>
+                  </div>
+                </div>
+                <div class="crm-field-row">
+                  <i class="bi bi-twitter-x text-muted"></i>
+                  <div>
+                    <div class="crm-field-label">Twitter / X</div>
+                    <a *ngIf="selectedProspect.twitter" [href]="selectedProspect.twitter" target="_blank" class="crm-field-value">{{ selectedProspect.twitter }}</a>
+                    <span *ngIf="!selectedProspect.twitter" class="crm-field-empty">—</span>
+                  </div>
+                </div>
+                <div class="crm-field-row">
+                  <i class="bi bi-facebook text-muted"></i>
+                  <div>
+                    <div class="crm-field-label">Facebook</div>
+                    <a *ngIf="selectedProspect.facebook" [href]="selectedProspect.facebook" target="_blank" class="crm-field-value">{{ selectedProspect.facebook }}</a>
+                    <span *ngIf="!selectedProspect.facebook" class="crm-field-empty">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="crm-section-card mt-3">
+                <div class="crm-section-title"><i class="bi bi-diagram-3 me-2 text-success"></i>Estructura</div>
+                <div class="crm-field-row">
+                  <i class="bi bi-people text-muted"></i>
+                  <div>
+                    <div class="crm-field-label">Equipos estimados</div>
+                    <span class="crm-field-value">{{ selectedProspect.estimated_teams || '—' }}</span>
+                  </div>
+                </div>
+                <div class="crm-field-row">
+                  <i class="bi bi-mortarboard text-muted"></i>
+                  <div>
+                    <div class="crm-field-label">Cantera</div>
+                    <span class="badge" [ngClass]="selectedProspect.has_youth_academy ? 'bg-success' : 'bg-secondary'">
+                      {{ selectedProspect.has_youth_academy ? 'Sí tiene cantera' : 'No detectada' }}
+                    </span>
+                  </div>
+                </div>
+                <div class="crm-field-row">
+                  <i class="bi bi-wifi text-muted"></i>
+                  <div>
+                    <div class="crm-field-label">Digitalización</div>
+                    <span class="badge digit-badge" [ngClass]="digitalizationLevel(selectedProspect).cssClass">
+                      {{ digitalizationLevel(selectedProspect).label }}
+                    </span>
+                  </div>
+                </div>
+                <div class="crm-field-row" *ngIf="selectedProspect.digital_score">
+                  <i class="bi bi-bar-chart text-muted"></i>
+                  <div>
+                    <div class="crm-field-label">Digital score</div>
+                    <span class="crm-field-value">{{ selectedProspect.digital_score }}/10</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notas CRM -->
+              <div class="crm-section-card mt-3">
+                <div class="crm-section-title"><i class="bi bi-sticky me-2 text-warning"></i>Notas</div>
+                <div *ngIf="selectedProspect.notes" class="crm-notes-display">{{ selectedProspect.notes }}</div>
+                <div *ngIf="!selectedProspect.notes" class="crm-field-empty">
+                  Sin notas. <button class="btn btn-link btn-sm p-0" (click)="crmTab = 'edit'">Añadir nota</button>
+                </div>
               </div>
             </div>
-            <div *ngIf="!selectedProspect.pain_points?.length" class="text-muted small fst-italic">
-              <i class="bi bi-info-circle me-1"></i>Este club aún no ha sido analizado. Ejecuta el paso 3 (Analizar con IA) del pipeline.
+
+            <!-- Columna derecha: análisis IA + acción email -->
+            <div class="col-lg-7">
+              <div class="crm-section-card">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div class="crm-section-title mb-0"><i class="bi bi-fire me-2 text-danger"></i>Análisis de necesidades</div>
+                  <span class="badge rounded-pill pain-score-badge" [style.background]="painScoreColor(selectedProspect.pain_score)" style="color:#fff; font-size:0.8rem; padding:5px 10px;">
+                    Pain score: {{ selectedProspect.pain_score || 0 }}/10
+                  </span>
+                </div>
+                <div *ngIf="selectedProspect.pain_points?.length">
+                  <div *ngFor="let pp of selectedProspect.pain_points" class="pain-item mb-2">
+                    <div class="d-flex justify-content-between align-items-start">
+                      <strong class="small">{{ pp.id }}</strong>
+                      <span class="badge rounded-pill ms-2" [style.background]="painScoreColor(pp.severity)" style="color:#fff; font-size:0.7rem;">{{ pp.severity }}/10</span>
+                    </div>
+                    <div class="small text-muted mt-1">{{ pp.evidence }}</div>
+                  </div>
+                </div>
+                <div *ngIf="!selectedProspect.pain_points?.length" class="text-muted small fst-italic">
+                  <i class="bi bi-info-circle me-1"></i>Sin analizar. Ejecuta el paso 3 del pipeline.
+                </div>
+              </div>
+
+              <!-- Generar email -->
+              <div class="crm-section-card mt-3" *ngIf="selectedCampaign">
+                <div class="crm-section-title"><i class="bi bi-robot me-2 text-success"></i>Generar email con IA</div>
+                <div class="d-flex gap-2 mt-2">
+                  <input type="text" class="form-control form-control-sm"
+                         [(ngModel)]="manualInstruction"
+                         placeholder="Instrucción opcional: tono, foco, dato concreto..."
+                         [disabled]="isGeneratingEmail">
+                  <button class="btn btn-success btn-sm text-nowrap"
+                          (click)="generateEmailForProspect(selectedProspect, manualInstruction || undefined)"
+                          [disabled]="isGeneratingEmail">
+                    <span *ngIf="!isGeneratingEmail"><i class="bi bi-robot me-1"></i>Generar</span>
+                    <span *ngIf="isGeneratingEmail"><i class="bi bi-hourglass-split spin-icon me-1"></i>Generando...</span>
+                  </button>
+                </div>
+                <div class="text-muted mt-1" style="font-size:0.74rem;">
+                  <span *ngIf="!selectedProspect.pain_points?.length">
+                    <i class="bi bi-info-circle me-1"></i>Sin análisis IA previo — email con datos básicos.
+                  </span>
+                  <span *ngIf="selectedProspect.pain_points?.length">
+                    <i class="bi bi-check-circle text-success me-1"></i>Con pain points analizados — email personalizado.
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer flex-column align-items-stretch gap-2 pt-2" *ngIf="selectedCampaign">
-        <!-- Instrucción adicional (opcional) -->
-        <div class="generate-instruction-area">
-          <label class="form-label small fw-semibold mb-1">
-            <i class="bi bi-chat-left-text me-1 text-success"></i>Instrucción para la IA
-            <span class="text-muted fw-normal">(opcional)</span>
-          </label>
-          <div class="d-flex gap-2">
-            <input type="text" class="form-control form-control-sm"
-                   [(ngModel)]="manualInstruction"
-                   placeholder="Ej: enfócate en la gestión de pagos, menciona la cantera, tono más formal..."
-                   [disabled]="isGeneratingEmail">
-            <button class="btn btn-success btn-sm text-nowrap"
-                    (click)="generateEmailForProspect(selectedProspect, manualInstruction || undefined)"
-                    [disabled]="isGeneratingEmail">
-              <span *ngIf="!isGeneratingEmail"><i class="bi bi-robot me-1"></i>Generar email con IA</span>
-              <span *ngIf="isGeneratingEmail"><i class="bi bi-hourglass-split spin-icon me-1"></i>Generando...</span>
+
+        <!-- ── TAB: EDITAR ── -->
+        <div *ngIf="crmTab === 'edit'" class="p-4">
+          <div class="row g-3">
+            <ng-container *ngFor="let f of CRM_FIELDS">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold mb-1">{{ f.label }}</label>
+                <input [type]="f.type" class="form-control form-control-sm"
+                       [(ngModel)]="crmEdit[f.key]"
+                       [placeholder]="f.label">
+              </div>
+            </ng-container>
+
+            <!-- Cantera toggle -->
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold mb-1">Cantera</label>
+              <div class="form-check form-switch mt-1">
+                <input class="form-check-input" type="checkbox" role="switch"
+                       [(ngModel)]="crmEdit['has_youth_academy']">
+                <label class="form-check-label small">Tiene cantera / academia</label>
+              </div>
+            </div>
+
+            <!-- Notas CRM -->
+            <div class="col-12 mt-2">
+              <label class="form-label small fw-semibold mb-1">
+                <i class="bi bi-sticky me-1 text-warning"></i>Notas internas (CRM)
+              </label>
+              <textarea class="form-control form-control-sm" rows="4"
+                        [(ngModel)]="crmEdit['notes']"
+                        placeholder="Apuntes sobre este club: conversaciones, interés, próximos pasos..."></textarea>
+            </div>
+          </div>
+
+          <!-- Guardado -->
+          <div class="d-flex align-items-center gap-3 mt-4">
+            <button class="btn btn-success btn-sm" (click)="saveCrmEdit()" [disabled]="isSavingCrm">
+              <span *ngIf="!isSavingCrm"><i class="bi bi-floppy me-1"></i>Guardar cambios</span>
+              <span *ngIf="isSavingCrm"><i class="bi bi-hourglass-split spin-icon me-1"></i>Guardando...</span>
+            </button>
+            <div *ngIf="crmSaveOk" class="text-success small fw-semibold">
+              <i class="bi bi-check-circle me-1"></i>Guardado correctamente
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /modal-body -->
+
+      <div class="modal-footer border-0 py-2 px-4 d-flex justify-content-between align-items-center" style="background:#f8f9fa;">
+        <div class="d-flex gap-2">
+          <!-- Botón convertir en cliente -->
+          <button *ngIf="selectedProspect?.status !== 'CLIENT'"
+                  class="btn btn-success btn-sm fw-semibold"
+                  (click)="openConvertModal()">
+            <i class="bi bi-trophy me-1"></i>Convertir en cliente
+          </button>
+          <!-- Badge + revertir si ya es cliente -->
+          <div *ngIf="selectedProspect?.status === 'CLIENT'" class="d-flex align-items-center gap-2">
+            <span class="badge badge-st-client px-3 py-2">
+              <i class="bi bi-trophy-fill me-1"></i>Cliente desde {{ selectedProspect?.converted_at | date:'dd/MM/yyyy' }}
+            </span>
+            <button class="btn btn-outline-secondary btn-sm" (click)="revertToProspect()" title="Deshacer conversión">
+              <i class="bi bi-arrow-counterclockwise"></i>
             </button>
           </div>
-          <div class="text-muted" style="font-size: 0.74rem; margin-top: 3px;">
-            <span *ngIf="!selectedProspect.pain_points?.length">
-              <i class="bi bi-info-circle me-1"></i>Este club no ha pasado por el análisis IA — se generará el email con los datos disponibles.
-            </span>
-            <span *ngIf="selectedProspect.pain_points?.length">
-              <i class="bi bi-check-circle text-success me-1"></i>El club tiene pain points analizados — el email será más preciso.
-            </span>
-          </div>
         </div>
-        <div class="d-flex justify-content-between align-items-center">
-          <span class="badge" [ngClass]="statusBadgeClass(selectedProspect.status)">{{ statusLabel(selectedProspect.status) }}</span>
-          <button class="btn btn-secondary btn-sm" (click)="showProspectModal = false">Cerrar</button>
+        <button class="btn btn-outline-secondary btn-sm" (click)="showProspectModal = false">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal: Confirmar conversión a cliente ── -->
+<div class="modal" [ngClass]="{'d-block': showConvertModal}" tabindex="-1" style="background:rgba(0,0,0,.65); z-index:1060;">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:480px;">
+    <div class="modal-content" style="border-radius:12px;">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-trophy-fill text-warning me-2"></i>Convertir en cliente
+        </h5>
+        <button class="btn-close" (click)="showConvertModal = false"></button>
+      </div>
+      <div class="modal-body pt-2" *ngIf="selectedProspect">
+        <p class="text-muted small mb-3">
+          Vas a marcar a <strong>{{ selectedProspect.name }}</strong> como cliente de Sphaira.
+          Quedará destacado en el panel de clientes con la fecha de conversión.
+        </p>
+        <div class="mb-3">
+          <label class="form-label small fw-semibold mb-1">
+            <i class="bi bi-sticky me-1 text-warning"></i>Nota de conversión <span class="text-muted fw-normal">(opcional)</span>
+          </label>
+          <textarea class="form-control form-control-sm" rows="3"
+                    [(ngModel)]="convertNote"
+                    placeholder="Ej: Firmaron contrato anual, contacto: Juan Martínez, plan Club..."></textarea>
         </div>
       </div>
-      <div class="modal-footer" *ngIf="!selectedCampaign">
-        <span class="badge me-auto" [ngClass]="statusBadgeClass(selectedProspect.status)">{{ statusLabel(selectedProspect.status) }}</span>
-        <button class="btn btn-secondary" (click)="showProspectModal = false">Cerrar</button>
+      <div class="modal-footer border-0 pt-0">
+        <button class="btn btn-outline-secondary btn-sm" (click)="showConvertModal = false">Cancelar</button>
+        <button class="btn btn-success btn-sm fw-semibold" (click)="confirmConvert()" [disabled]="isConverting">
+          <span *ngIf="!isConverting"><i class="bi bi-trophy me-1"></i>Confirmar conversión</span>
+          <span *ngIf="isConverting"><i class="bi bi-hourglass-split spin-icon me-1"></i>Guardando...</span>
+        </button>
       </div>
     </div>
   </div>
@@ -3509,6 +3703,156 @@
           </span>
           <span *ngIf="isConfirmingImport"><i class="bi bi-hourglass-split spin-icon me-1"></i> Importando...</span>
         </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── Modal: Importar CSV / Excel ── -->
+<div class="modal" [ngClass]="{'d-block': showImportModal}" tabindex="-1" style="background:rgba(0,0,0,.65);">
+  <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <div class="modal-content" style="border-radius:12px;">
+
+      <div class="modal-header border-0">
+        <h5 class="modal-title fw-bold">
+          <i class="bi bi-file-earmark-spreadsheet me-2 text-primary"></i>Importar clubes desde CSV o Excel
+        </h5>
+        <button class="btn-close" (click)="showImportModal = false"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <!-- Paso 1: Subir fichero -->
+        <div *ngIf="importStep === 'upload'">
+          <p class="text-muted small mb-3">
+            Sube tu base de datos de clubes en formato <strong>CSV</strong> o <strong>Excel (.xlsx)</strong>.
+            El sistema detectará automáticamente las columnas y sugerirá el mapeo.
+          </p>
+          <div class="text-center p-5 rounded-3 mb-3"
+               style="border: 2px dashed #ced4da; cursor:pointer; transition: border-color .2s;"
+               (click)="importFileInput.click()">
+            <i class="bi bi-cloud-upload fs-1 text-muted d-block mb-2"></i>
+            <div class="fw-semibold">{{ importFilename || 'Haz clic para seleccionar archivo' }}</div>
+            <div class="text-muted small mt-1">CSV, XLSX, XLS — máx. 10 MB</div>
+            <input #importFileInput type="file" accept=".csv,.xlsx,.xls,.ods" class="d-none"
+                   (change)="onImportFileChange($event)">
+          </div>
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="skipDuplicatesCsv"
+                   [(ngModel)]="importSkipDuplicates">
+            <label class="form-check-label small" for="skipDuplicatesCsv">
+              Omitir clubes duplicados (mismo nombre + provincia)
+            </label>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="btn btn-primary" (click)="uploadImportFile()"
+                    [disabled]="!importFile || csvImportLoading">
+              <span *ngIf="!csvImportLoading"><i class="bi bi-arrow-right me-1"></i>Analizar archivo</span>
+              <span *ngIf="csvImportLoading"><i class="bi bi-hourglass-split spin-icon me-1"></i>Analizando...</span>
+            </button>
+            <button class="btn btn-outline-secondary" (click)="showImportModal = false">Cancelar</button>
+          </div>
+        </div>
+
+        <!-- Paso 2: Mapeo de columnas -->
+        <div *ngIf="importStep === 'map'">
+          <div class="alert alert-success small mb-3">
+            <i class="bi bi-check-circle me-1"></i>
+            <strong>{{ importTotalRows }} filas</strong> y <strong>{{ importPreviewCols.length }} columnas</strong> detectadas.
+            Asigna cada columna a su campo correspondiente:
+          </div>
+          <div class="table-responsive mb-3">
+            <table class="table table-sm align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th style="width:32%">Columna en tu archivo</th>
+                  <th style="width:30%">Mapear a campo</th>
+                  <th>Muestra de datos</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let col of importPreviewCols">
+                  <td class="fw-semibold small">{{ col }}</td>
+                  <td>
+                    <select class="form-select form-select-sm" [(ngModel)]="importMapping[col]">
+                      <option *ngFor="let opt of IMPORT_FIELD_OPTIONS" [value]="opt.value">{{ opt.label }}</option>
+                    </select>
+                  </td>
+                  <td class="text-muted small">
+                    <span *ngFor="let row of importSample; let last = last">{{ row[col] || '' }}<span *ngIf="!last && row[col]">; </span></span>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Preview primeras filas -->
+          <details class="mb-3">
+            <summary class="small fw-semibold text-muted" style="cursor:pointer;">
+              <i class="bi bi-eye me-1"></i>Ver primeras filas de muestra
+            </summary>
+            <div class="table-responsive mt-2">
+              <table class="table table-sm table-bordered">
+                <thead class="table-light">
+                  <tr><th *ngFor="let col of importPreviewCols" class="small">{{ col }}</th></tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of importSample">
+                    <td *ngFor="let col of importPreviewCols" class="small text-truncate" style="max-width:130px;">{{ row[col] || '—' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+
+          <div class="d-flex gap-2">
+            <button class="btn btn-success" (click)="confirmCsvImport()" [disabled]="csvImportLoading">
+              <span *ngIf="!csvImportLoading"><i class="bi bi-cloud-download me-1"></i>Importar {{ importTotalRows }} clubes</span>
+              <span *ngIf="csvImportLoading"><i class="bi bi-hourglass-split spin-icon me-1"></i>Importando...</span>
+            </button>
+            <button class="btn btn-outline-secondary" (click)="importStep = 'upload'">
+              <i class="bi bi-arrow-left me-1"></i>Volver
+            </button>
+          </div>
+        </div>
+
+        <!-- Paso 3: Resultado -->
+        <div *ngIf="importStep === 'done' && importResult">
+          <div class="row g-3 mb-4">
+            <div class="col-4">
+              <div class="text-center p-3 rounded-3 bg-success bg-opacity-10 border border-success border-opacity-25">
+                <div class="fs-2 fw-bold text-success">{{ importResult.inserted }}</div>
+                <div class="small text-muted">Clubes importados</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="text-center p-3 rounded-3 bg-warning bg-opacity-10 border border-warning border-opacity-25">
+                <div class="fs-2 fw-bold text-warning">{{ importResult.duplicates }}</div>
+                <div class="small text-muted">Duplicados omitidos</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="text-center p-3 rounded-3 bg-danger bg-opacity-10 border border-danger border-opacity-25">
+                <div class="fs-2 fw-bold text-danger">{{ importResult.errors.length }}</div>
+                <div class="small text-muted">Errores</div>
+              </div>
+            </div>
+          </div>
+          <div class="alert alert-success" *ngIf="importResult.inserted > 0">
+            <i class="bi bi-check-circle-fill me-1"></i>
+            Se importaron <strong>{{ importResult.inserted }} clubes</strong> correctamente en la biblioteca global.
+            <span *ngIf="selectedCampaign">Puedes añadirlos a la campaña "<strong>{{ selectedCampaign.name }}</strong>" desde la pestaña de Clubes.</span>
+          </div>
+          <div *ngIf="importResult.errors.length > 0" class="alert alert-warning small">
+            <strong><i class="bi bi-exclamation-triangle me-1"></i>Filas con error:</strong>
+            <ul class="mb-0 mt-1">
+              <li *ngFor="let err of importResult.errors">{{ err }}</li>
+            </ul>
+          </div>
+          <button class="btn btn-outline-secondary btn-sm" (click)="showImportModal = false">Cerrar</button>
+        </div>
+
       </div>
     </div>
   </div>

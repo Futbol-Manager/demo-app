@@ -133,6 +133,7 @@
 .badge-st-ready { background: rgba(234,179,8,0.15); color: #854d0e; border: 1px solid rgba(234,179,8,0.3); }
 .badge-st-sent { background: rgba(49,178,112,0.12); color: #1a7a4a; border: 1px solid rgba(49,178,112,0.3); }
 .badge-st-running { background: rgba(253,126,20,0.12); color: #c56000; border: 1px solid rgba(253,126,20,0.3); }
+.badge-st-client { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; border: none; font-weight: 700; }
 
 /* ===== PIPELINE ===== */
 .job-progress-banner {
@@ -1324,4 +1325,83 @@
     margin-bottom: 1rem;
     max-width: 520px;
   }
+}
+
+/* ===== CRM PROFILE MODAL ===== */
+.crm-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: #fff;
+}
+
+.crm-section-card {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,.04);
+}
+
+.crm-section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6c757d;
+  margin-bottom: 0.75rem;
+}
+
+.crm-field-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid #f1f3f5;
+  &:last-child { border-bottom: none; }
+
+  > i {
+    font-size: 0.95rem;
+    margin-top: 1px;
+    flex-shrink: 0;
+    width: 18px;
+  }
+}
+
+.crm-field-label {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  margin-bottom: 1px;
+}
+
+.crm-field-value {
+  font-size: 0.85rem;
+  color: #1f2937;
+  word-break: break-all;
+}
+
+.crm-field-empty {
+  font-size: 0.82rem;
+  color: #bbb;
+  font-style: italic;
+}
+
+.crm-notes-display {
+  font-size: 0.85rem;
+  color: #374151;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+  background: #fffbeb;
+  border-radius: 6px;
+  padding: 0.6rem 0.75rem;
+  border-left: 3px solid #f59e0b;
 }

@@ -157,7 +157,13 @@ export class ProspectService {
     return this.http.get<any>(`${this.base}prospects/${id}`);
   }
 
-  updateProspect(id: number, data: any): Observable<any> {
+  updateProspect(id: number, data: Partial<{
+    name: string; city: string; province: string; community: string;
+    email: string; phone: string; website: string;
+    instagram: string; twitter: string; facebook: string;
+    estimated_teams: number; has_youth_academy: number;
+    category: string; status: string; ab_group: string; notes: string;
+  }>): Observable<any> {
     return this.http.put<any>(`${this.base}prospects/${id}`, data);
   }
 
@@ -165,8 +171,48 @@ export class ProspectService {
     return this.http.delete<any>(`${this.base}prospects/${id}`);
   }
 
+  convertToClient(id: number, notes?: string, clubId?: number): Observable<any> {
+    return this.http.post<any>(`${this.base}prospects/${id}/convert-to-client`, {
+      notes: notes ?? null,
+      club_id: clubId ?? null,
+    });
+  }
+
+  revertToProspect(id: number): Observable<any> {
+    return this.http.post<any>(`${this.base}prospects/${id}/revert-to-prospect`, {});
+  }
+
+  getClients(search = '', page = 0, size = 50): Observable<{ total: number; items: any[] }> {
+    const params: any = { page, size };
+    if (search) params.search = search;
+    return this.http.get<{ total: number; items: any[] }>(`${this.base}prospects/clients`, { params });
+  }
+
   bulkDeleteProspects(ids: number[]): Observable<any> {
     return this.http.post<any>(`${this.base}prospects/bulk-delete`, { prospect_ids: ids });
+  }
+
+  // ── Importación CSV/Excel ────────────────────────────────────────────────
+
+  importPreview(file: File): Observable<{
+    columns: string[];
+    mapping: Record<string, string | null>;
+    sample: Record<string, string>[];
+    total_rows: number;
+  }> {
+    const form = new FormData();
+    form.append('file', file);
+    return this.http.post<any>(`${this.base}prospects/import/preview`, form);
+  }
+
+  importConfirm(payload: {
+    campaign_id?: number;
+    mapping: Record<string, string | null>;
+    file_b64: string;
+    filename: string;
+    skip_duplicates?: boolean;
+  }): Observable<{ ok: boolean; inserted: number; duplicates: number; errors: string[]; total_processed: number }> {
+    return this.http.post<any>(`${this.base}prospects/import/confirm`, payload);
   }
 
   // Emails

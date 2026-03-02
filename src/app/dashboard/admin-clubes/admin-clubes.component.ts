@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { TeamService } from 'src/app/core/services/team/team.service';
 import { CrmService } from 'src/app/core/services/crm/crm.service';
+import { ProspectService } from 'src/app/core/services/prospect/prospect.service';
 import { Response } from 'src/app/core/services/models/response.model';
 import { Location } from '@angular/common';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
@@ -68,9 +69,20 @@ export class AdminClubesComponent implements OnInit {
   editDateValue: string = '';
   option = 0;
 
+  // Clientes prospectados
+  showProspectedClients = false;
+  prospectedClients: any[] = [];
+  prospectedClientsTotal = 0;
+  isLoadingClients = false;
+  clientsSearch = '';
+  clientsPage = 0;
+  selectedClient: any = null;
+  showClientDetailModal = false;
+
   constructor(
     private teamService: TeamService,
     private crmService: CrmService,
+    private prospectService: ProspectService,
     private http: HttpClient,
     private router: Router,
     private route: ActivatedRoute,
@@ -82,6 +94,28 @@ export class AdminClubesComponent implements OnInit {
     this.cargarKPIs();
     this.cargarCrmResumen();
     this.cargarClubPlans();
+    this.cargarClientesProspectados();
+  }
+
+  cargarClientesProspectados(): void {
+    this.isLoadingClients = true;
+    this.prospectService.getClients(this.clientsSearch, this.clientsPage).subscribe({
+      next: (res) => {
+        this.prospectedClients = res.items || [];
+        this.prospectedClientsTotal = res.total || 0;
+        this.isLoadingClients = false;
+      },
+      error: () => { this.isLoadingClients = false; }
+    });
+  }
+
+  openClientDetail(client: any): void {
+    this.selectedClient = client;
+    this.showClientDetailModal = true;
+  }
+
+  goToProspector(): void {
+    this.router.navigate(['/dashboard/admin-prospector']);
   }
 
   goBack(): void {

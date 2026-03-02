@@ -757,3 +757,31 @@
   padding: 4px 10px;
   border-radius: 20px;
 }
+
+/* ── Clientes prospectados ── */
+.client-prospect-row {
+  background: #fffbeb;
+  &:hover { background: #fef3c7; }
+  transition: background 0.15s;
+}
+
+.client-prospect-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.btn-xs-icon {
+  padding: 2px 5px;
+  font-size: 0.8rem;
+  border: none;
+  background: none;
+  line-height: 1;
+  &:hover { opacity: 0.7; }
+}
