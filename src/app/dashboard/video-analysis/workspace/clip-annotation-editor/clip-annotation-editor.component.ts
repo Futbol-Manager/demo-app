@@ -10,7 +10,8 @@ import { VideoAnalysisService } from '../../../../core/services/video-analysis/v
 import { ClipExportService } from '../../services/clip-export.service';
 import { ScreenCaptureService } from '../../services/screen-capture.service';
 import {
-  AnalysisEvent, ClipAnnotation, DrawingElement, DrawingTool, DrawingPoint
+  AnalysisEvent, ClipAnnotation, DrawingElement, DrawingTool, DrawingPoint,
+  ClipCaption, CaptionStyle, CAPTION_STYLE_CONFIG, AnimatedDrawingOverlay
 } from '../../models/analysis.models';
 
 declare var YT: any;
@@ -56,6 +57,7 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
   @ViewChild('drawCanvas')       drawCanvasRef!:       ElementRef<HTMLCanvasElement>;
   @ViewChild('thumbCanvas')      thumbCanvasRef!:      ElementRef<HTMLCanvasElement>;
   @ViewChild('annotationCanvas') annotationCanvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('animCanvas')       animCanvasRef!:       ElementRef<HTMLCanvasElement>;
 
   private destroy$ = new Subject<void>();
 
@@ -107,26 +109,42 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
   textCursorPct: DrawingPoint = { x: 0, y: 0 };
 
   readonly TOOL_ICONS: Record<DrawingTool, string> = {
-    select:     'bi-cursor',
-    freeDraw:   'bi-pencil',
-    circle:     'bi-circle',
-    arrow:      'bi-arrow-up-right',
-    line:       'bi-slash-lg',
-    dashedLine: 'bi-dash',
-    text:       'bi-fonts',
-    spotlight:  'bi-brightness-high'
+    select:       'bi-cursor',
+    freeDraw:     'bi-pencil',
+    circle:       'bi-circle',
+    arrow:        'bi-arrow-up-right',
+    line:         'bi-slash-lg',
+    dashedLine:   'bi-dash',
+    text:         'bi-fonts',
+    spotlight:    'bi-brightness-high',
+    playerLine:   'bi-people-fill',
+    curvedArrow:  'bi-arrow-return-right',
+    filledZone:   'bi-square-fill',
+    topSpotlight: 'bi-triangle-fill'
   };
 
   readonly TOOL_LABELS: Record<DrawingTool, string> = {
-    select:     'Seleccionar',
-    freeDraw:   'Trazo libre',
-    circle:     'Círculo',
-    arrow:      'Flecha',
-    line:       'Línea',
-    dashedLine: 'Línea discontinua',
-    text:       'Texto',
-    spotlight:  'Foco'
+    select:       'Seleccionar  (V)',
+    freeDraw:     'Trazo libre  (P)',
+    circle:       'Círculo  (C)',
+    arrow:        'Flecha  (A)',
+    line:         'Línea  (L)',
+    dashedLine:   'Línea discontinua  (D)',
+    text:         'Texto  (T)',
+    spotlight:    'Foco  (F)',
+    playerLine:   'Línea de jugadores  (J)',
+    curvedArrow:  'Flecha curva  (Q)',
+    filledZone:   'Zona sombreada  (Z)',
+    topSpotlight: 'Cono de luz (foco de estadio)'
   };
+
+  readonly TOOL_GROUPS: { label: string; tools: DrawingTool[] }[] = [
+    { label: 'Selección',  tools: ['select'] },
+    { label: 'Dibujo',    tools: ['freeDraw', 'line', 'dashedLine', 'arrow', 'curvedArrow'] },
+    { label: 'Formas',    tools: ['circle', 'filledZone', 'spotlight', 'topSpotlight'] },
+    { label: 'Táctica',   tools: ['playerLine'] },
+    { label: 'Texto',     tools: ['text'] },
+  ];
 
   readonly PALETTE = [
     '#ff3333', '#ff9900', '#ffee00', '#33cc33',
@@ -134,13 +152,79 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
   ];
 
   readonly TOOLS: DrawingTool[] = [
-    'select', 'freeDraw', 'circle', 'arrow', 'line', 'dashedLine', 'text', 'spotlight'
+    'select', 'freeDraw', 'circle', 'arrow', 'line', 'dashedLine',
+    'text', 'spotlight', 'playerLine', 'curvedArrow', 'filledZone', 'topSpotlight'
   ];
+
+  /** Etiquetas ultra-cortas visibles bajo cada icono de herramienta */
+  readonly TOOL_SHORT: Record<DrawingTool, string> = {
+    select:       'Sel.',
+    freeDraw:     'Libre',
+    circle:       'Circ.',
+    arrow:        'Flecha',
+    line:         'Línea',
+    dashedLine:   'Disct.',
+    text:         'Texto',
+    spotlight:    'Foco',
+    playerLine:   'Jugad.',
+    curvedArrow:  'Curva',
+    filledZone:   'Zona',
+    topSpotlight: 'Cono'
+  };
+
+  /** Índice de la herramienta activa según TOOLS (para atajos 1-9) */
+  private readonly SHORTCUT_TOOLS: DrawingTool[] = [
+    'select', 'freeDraw', 'circle', 'arrow', 'line', 'dashedLine',
+    'text', 'spotlight', 'playerLine'
+  ];
+
+  // ── Player line tool state ────────────────────────────────────────────────
+  /** Elemento playerLine que se está construyendo punto a punto */
+  playerLineInProgress: DrawingElement | null = null;
+  /** Posición actual del ratón mientras se dibuja una playerLine (para preview) */
+  playerLinePreviewPos: DrawingPoint | null = null;
+  /** Radio de los círculos de jugador en % (relativo al ancho del canvas) */
+  playerRadius = 4;
+
+  // ── Curved arrow in-progress ──────────────────────────────────────────────
+  /** Punto de control de la flecha curva: se establece al soltar el ratón (2.º click) */
+  private curvedArrowPhase: 0 | 1 | 2 = 0;
+
+  // ── Playback speed ────────────────────────────────────────────────────────
+  playbackRate = 1;
+  readonly SPEED_OPTIONS = [0.25, 0.5, 1, 2];
+
+  // ── Toolbar flotante: posición y orientación ─────────────────────────────
+  /** Posición X en px dentro del cae-canvas-wrap (null = centrar con CSS) */
+  toolbarX: number | null = null;
+  /** Posición Y en px dentro del cae-canvas-wrap */
+  toolbarY = 10;
+  /** true = orientación vertical, false = horizontal */
+  toolbarV = false;
+  _tbDragging  = false;
+  private _tbDragSX    = 0;  // clientX inicial del drag
+  private _tbDragSY    = 0;  // clientY inicial del drag
+  private _tbDragIX    = 0;  // toolbarX al inicio del drag
+  private _tbDragIY    = 0;  // toolbarY al inicio del drag
 
   // ── Download state ────────────────────────────────────────────────────────
   isDownloading = false;
   downloadProgress = 0;
   downloadStep = '';
+
+  // ── Captions (notas de texto sobre el vídeo en reproducción) ─────────────
+  readonly CAPTION_STYLES = Object.entries(CAPTION_STYLE_CONFIG) as [CaptionStyle, typeof CAPTION_STYLE_CONFIG[CaptionStyle]][];
+  captions: ClipCaption[] = [];
+  /** Captions visibles en el instante actual del vídeo */
+  activeCaptions: ClipCaption[] = [];
+  /** Panel de captions visible en la columna derecha */
+  showCaptionPanel = false;
+  /** Formulario inline para añadir nueva caption */
+  showAddCaption   = false;
+  newCaptionText     = '';
+  newCaptionStyle: CaptionStyle = 'default';
+  newCaptionDuration = 4;    // segundos
+  newCaptionStartSec = 0;    // segundos — se inicializa al abrir el formulario
 
   // ── YouTube mini-player ───────────────────────────────────────────────────
   private ytMiniPlayer: any = null;
@@ -157,6 +241,7 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
   ngOnInit(): void {
     this.clipDurationMs = this.event.endTimeMs - this.event.startTimeMs;
     this.loadAnnotations();
+    this.loadCaptions();
 
     if (!this.youtubeId && this.videoFile) {
       this._rawVideoUrl = URL.createObjectURL(this.videoFile);
@@ -238,9 +323,140 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
     this.rafId = requestAnimationFrame(update);
   }
 
+  // ── Toolbar drag ─────────────────────────────────────────────────────────
+
+  startToolbarDrag(e: MouseEvent): void {
+    e.preventDefault();
+    e.stopPropagation();
+    // Si aún no se ha arrastrado, calculamos la posición actual del toolbar
+    // leyendo su boundingRect relativa al canvas-wrap
+    if (this.toolbarX === null) {
+      const wrap = this.drawCanvasRef?.nativeElement?.parentElement as HTMLElement | null;
+      const bar  = (e.currentTarget as HTMLElement).closest('.cae-floating-bar') as HTMLElement | null;
+      if (wrap && bar) {
+        const wr = wrap.getBoundingClientRect();
+        const br = bar.getBoundingClientRect();
+        this.toolbarX = br.left - wr.left;
+        this.toolbarY = br.top  - wr.top;
+      }
+    }
+    this._tbDragging = true;
+    this._tbDragSX   = e.clientX;
+    this._tbDragSY   = e.clientY;
+    this._tbDragIX   = this.toolbarX ?? 10;
+    this._tbDragIY   = this.toolbarY;
+  }
+
+  @HostListener('document:mousemove', ['$event'])
+  onDocumentMouseMove(e: MouseEvent): void {
+    if (!this._tbDragging) return;
+    const wrap = this.drawCanvasRef?.nativeElement?.parentElement as HTMLElement | null;
+    const maxX = wrap ? wrap.offsetWidth  - 60 : window.innerWidth;
+    const maxY = wrap ? wrap.offsetHeight - 40 : window.innerHeight;
+    this.toolbarX = Math.max(0, Math.min(maxX, this._tbDragIX + (e.clientX - this._tbDragSX)));
+    this.toolbarY = Math.max(0, Math.min(maxY, this._tbDragIY + (e.clientY - this._tbDragSY)));
+  }
+
+  @HostListener('document:mouseup')
+  onDocumentMouseUp(): void {
+    this._tbDragging = false;
+  }
+
+  toggleToolbarOrientation(): void {
+    this.toolbarV = !this.toolbarV;
+    // Reajustamos la posición para que no salga del canvas
+    const wrap = this.drawCanvasRef?.nativeElement?.parentElement as HTMLElement | null;
+    if (wrap && this.toolbarX !== null) {
+      this.toolbarX = Math.min(this.toolbarX, wrap.offsetWidth  - 60);
+      this.toolbarY = Math.min(this.toolbarY, wrap.offsetHeight - 60);
+    }
+  }
+
+  // ── Keyboard shortcuts ────────────────────────────────────────────────────
+
+  @HostListener('document:keydown', ['$event'])
+  onKeyDown(e: KeyboardEvent): void {
+    // No disparar si el foco está en un input/textarea
+    const tag = (e.target as HTMLElement).tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+
+    // ── Clip view ──
+    if (this.view === 'clip') {
+      if (e.code === 'Space') { e.preventDefault(); this.togglePlay(); }
+      if (e.code === 'ArrowLeft')  this.stepFrame(-1);
+      if (e.code === 'ArrowRight') this.stepFrame(1);
+      return;
+    }
+
+    // ── Frame editor view ──
+    if (e.code === 'Escape') {
+      if (this.playerLineInProgress) { this.cancelPlayerLine(); return; }
+      if (this.showTextInput) { this.showTextInput = false; return; }
+    }
+    if (e.code === 'Enter') {
+      if (this.playerLineInProgress) { e.preventDefault(); this.finalizePlayerLine(); return; }
+    }
+    if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ') { e.preventDefault(); this.undo(); return; }
+    if (e.code === 'Delete' || e.code === 'Backspace') {
+      // Si hay playerLine en progreso, Backspace elimina el último punto
+      if (e.code === 'Backspace' && this.playerLineInProgress) {
+        this.removeLastPlayerLinePoint();
+        e.preventDefault();
+        return;
+      }
+      this.deleteSelected();
+      return;
+    }
+
+    // Mover elemento seleccionado con flechas
+    if (this.selectedElementId) {
+      const D = 0.5;
+      if (e.code === 'ArrowLeft')  { e.preventDefault(); this.nudgeSelected(-D, 0); return; }
+      if (e.code === 'ArrowRight') { e.preventDefault(); this.nudgeSelected(D, 0);  return; }
+      if (e.code === 'ArrowUp')    { e.preventDefault(); this.nudgeSelected(0, -D); return; }
+      if (e.code === 'ArrowDown')  { e.preventDefault(); this.nudgeSelected(0, D);  return; }
+    }
+
+    // Atajos 1-9 para herramientas
+    const num = parseInt(e.key, 10);
+    if (num >= 1 && num <= this.SHORTCUT_TOOLS.length) {
+      this.setTool(this.SHORTCUT_TOOLS[num - 1]);
+      return;
+    }
+
+    // Atajos de letra
+    const shortcutMap: Record<string, DrawingTool> = {
+      v: 'select', p: 'freeDraw', c: 'circle', a: 'arrow',
+      l: 'line', d: 'dashedLine', t: 'text', f: 'spotlight',
+      j: 'playerLine', q: 'curvedArrow', z: 'filledZone'
+    };
+    if (!e.ctrlKey && !e.metaKey) {
+      const tool = shortcutMap[e.key.toLowerCase()];
+      if (tool) { this.setTool(tool); }
+    }
+  }
+
+  /** Mueve el elemento seleccionado dx/dy en % */
+  private nudgeSelected(dx: number, dy: number): void {
+    if (!this.selectedElementId) return;
+    this.undoStack.push(this.cloneElements());
+    this.drawingElements = this.drawingElements.map(el => {
+      if (el.id !== this.selectedElementId) return el;
+      const r = this.cloneEl(el);
+      if (r.x  !== undefined) r.x  += dx;
+      if (r.y  !== undefined) r.y  += dy;
+      if (r.x2 !== undefined) r.x2 += dx;
+      if (r.y2 !== undefined) r.y2 += dy;
+      if (r.points) r.points = r.points.map(p => ({ x: p.x + dx, y: p.y + dy }));
+      return r;
+    });
+    this.redrawCanvas();
+  }
+
   // ── Tool switching ─────────────────────────────────────────────────────────
 
   setTool(tool: DrawingTool): void {
+    if (this.playerLineInProgress) this.cancelPlayerLine();
     this.activeTool = tool;
     if (tool !== 'select') {
       this.selectedElementId = null;
@@ -277,6 +493,12 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
 
     this.currentRelMs = Math.max(0, absMs - this.event.startTimeMs);
 
+    // Actualizar captions activas (sin pausar el vídeo)
+    this.computeActiveCaptions();
+
+    // Renderizar dibujos animados activos
+    if (!this.showingAnnotation) this.renderAnimatedDrawings();
+
     // Check if we just passed any annotation frame
     const sorted = [...this.annotations].sort((a, b) => a.frameTimeMs - b.frameTimeMs);
     for (const ann of sorted) {
@@ -307,10 +529,19 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
     ctx.clearRect(0, 0, W, H);
     ctx.drawImage(video, 0, 0, W, H);
 
+    // En thumbnails y exports el canvas ocupa 100% del tamaño visual → escala 1
+    // (el canvas se exporta a su resolución interna, texto debe quedar proporcional)
+    this._fontPxScale = 1;
+
     // Render all drawing elements on top
-    for (const el of (ann.drawingData || [])) {
-      this.renderElement(ctx, el, W, H);
+    const drawingData = ann.drawingData || [];
+    const darkEls = drawingData.filter(el => el.type === 'spotlight' || el.type === 'playerLine');
+    for (const el of drawingData) {
+      if (el.type !== 'spotlight' && el.type !== 'playerLine') {
+        this.renderElement(ctx, el, W, H);
+      }
     }
+    if (darkEls.length > 0) this.renderDarkLayer(ctx, darkEls, W, H);
 
     this.showingAnnotation = true;
 
@@ -366,6 +597,31 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
+  /** Avanza o retrocede 1 fotograma (~1/30 s) */
+  stepFrame(dir: 1 | -1): void {
+    const frameSec = 1 / 30;
+    if (this.youtubeId && this.ytMiniPlayer && this.ytMiniReady) {
+      const t = this.ytMiniPlayer.getCurrentTime?.() || 0;
+      this.ytMiniPlayer.seekTo(Math.max(this.event.startTimeMs / 1000,
+        Math.min(this.event.endTimeMs / 1000, t + dir * frameSec)), true);
+      return;
+    }
+    if (!this.videoEl) return;
+    this.videoEl.pause();
+    this.isPlaying = false;
+    this.cancelAnnotationOverlay();
+    const newT = Math.max(this.event.startTimeMs / 1000,
+      Math.min(this.event.endTimeMs / 1000, this.videoEl.currentTime + dir * frameSec));
+    this.videoEl.currentTime = newT;
+  }
+
+  /** Cambia la velocidad de reproducción */
+  setSpeed(rate: number): void {
+    this.playbackRate = rate;
+    if (this.videoEl) this.videoEl.playbackRate = rate;
+    if (this.ytMiniPlayer?.setPlaybackRate) this.ytMiniPlayer.setPlaybackRate(rate);
+  }
+
   seekVideo(e: Event): void {
     const relMs = +(e.target as HTMLInputElement).value;
     this.cancelAnnotationOverlay();
@@ -387,6 +643,19 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
+  stepForward(): void {
+    this.cancelAnnotationOverlay();
+    if (this.youtubeId && this.ytMiniPlayer && this.ytMiniReady) {
+      const t = Math.min(this.event.endTimeMs / 1000, (this.ytMiniPlayer.getCurrentTime?.() || 0) + 5);
+      this.ytMiniPlayer.seekTo(t, true);
+      return;
+    }
+    if (this.videoEl) {
+      this.videoEl.currentTime = Math.min(this.event.endTimeMs / 1000, this.videoEl.currentTime + 5);
+      this.currentRelMs = Math.min(this.clipDurationMs, this.currentRelMs + 5000);
+    }
+  }
+
   stepBack(): void {
     this.cancelAnnotationOverlay();
     if (this.youtubeId && this.ytMiniPlayer && this.ytMiniReady) {
@@ -394,19 +663,10 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
       this.ytMiniPlayer.seekTo(t, true);
       return;
     }
-    this.shownAnnotations.clear();
-    if (this.videoEl) this.videoEl.currentTime =
-      Math.max(this.event.startTimeMs / 1000, this.videoEl.currentTime - 5);
-  }
-
-  stepForward(): void {
-    if (this.youtubeId && this.ytMiniPlayer && this.ytMiniReady) {
-      const t = Math.min(this.event.endTimeMs / 1000, (this.ytMiniPlayer.getCurrentTime?.() || 0) + 5);
-      this.ytMiniPlayer.seekTo(t, true);
-      return;
+    if (this.videoEl) {
+      this.videoEl.currentTime = Math.max(this.event.startTimeMs / 1000, this.videoEl.currentTime - 5);
+      this.currentRelMs = Math.max(0, this.currentRelMs - 5000);
     }
-    if (this.videoEl) this.videoEl.currentTime =
-      Math.min(this.event.endTimeMs / 1000, this.videoEl.currentTime + 5);
   }
 
   formatMs(ms: number): string {
@@ -526,7 +786,10 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
     if (existing) {
       this.editingAnnotation = { ...existing };
       this.drawingElements   = existing.drawingData ? [...existing.drawingData] : [];
-      this.frameDurationSec  = Math.round(existing.frameDurationMs / 1000) || 3;
+      // Preservar 0 (sin pausa) — el || 3 anterior lo machacaba convirtiendo 0 en 3
+      this.frameDurationSec  = existing.frameDurationMs > 0
+        ? (Math.round(existing.frameDurationMs / 1000) || 1)
+        : 0;
     } else {
       this.editingAnnotation = {
         eventId: this.event.id, frameTimeMs,
@@ -557,6 +820,262 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
     this.analysisService.deleteClipAnnotation(ann.id)
       .pipe(takeUntil(this.destroy$))
       .subscribe({ next: () => { this.annotations = this.annotations.filter(a => a.id !== ann.id); } });
+  }
+
+  // ── Captions ─────────────────────────────────────────────────────────────
+
+  private captionsKey(): string {
+    return `cae_captions_${this.event.id}`;
+  }
+
+  private loadCaptions(): void {
+    try {
+      const raw = localStorage.getItem(this.captionsKey());
+      this.captions = raw ? JSON.parse(raw) : [];
+    } catch { this.captions = []; }
+  }
+
+  private saveCaptions(): void {
+    localStorage.setItem(this.captionsKey(), JSON.stringify(this.captions));
+  }
+
+  computeActiveCaptions(): void {
+    const t = this.currentRelMs;
+    this.activeCaptions = this.captions.filter(
+      c => t >= c.startMs && t < c.startMs + c.durationMs
+    );
+  }
+
+  openAddCaption(): void {
+    this.newCaptionStartSec = Math.round(this.currentRelMs / 100) / 10; // redondear a 1 decimal
+    this.showAddCaption = true;
+  }
+
+  confirmAddCaption(): void {
+    if (!this.newCaptionText.trim()) return;
+    const startMs  = Math.max(0, Math.min(this.clipDurationMs, Math.round(this.newCaptionStartSec * 1000)));
+    const caption: ClipCaption = {
+      id:         Math.random().toString(36).slice(2),
+      text:       this.newCaptionText.trim(),
+      startMs,
+      durationMs: this.newCaptionDuration * 1000,
+      style:      this.newCaptionStyle
+    };
+    this.captions = [...this.captions, caption].sort((a, b) => a.startMs - b.startMs);
+    this.saveCaptions();
+    this.newCaptionText = '';
+    this.showAddCaption = false;
+    this.computeActiveCaptions();
+  }
+
+  cancelAddCaption(): void {
+    this.newCaptionText = '';
+    this.showAddCaption = false;
+  }
+
+  updateCaptionStartMs(caption: ClipCaption, sec: number): void {
+    caption.startMs = Math.max(0, Math.min(this.clipDurationMs, Math.round(sec * 1000)));
+    this.captions = [...this.captions].sort((a, b) => a.startMs - b.startMs);
+    this.saveCaptions();
+    this.computeActiveCaptions();
+  }
+
+  updateCaptionDuration(caption: ClipCaption, sec: number): void {
+    caption.durationMs = Math.max(1000, Math.round(sec * 1000));
+    this.saveCaptions();
+    this.computeActiveCaptions();
+  }
+
+  updateCaptionText(caption: ClipCaption, text: string): void {
+    caption.text = text;
+    this.saveCaptions();
+  }
+
+  deleteCaption(id: string): void {
+    this.captions = this.captions.filter(c => c.id !== id);
+    this.saveCaptions();
+    this.computeActiveCaptions();
+  }
+
+  seekToCaption(caption: ClipCaption): void {
+    const absMs = this.event.startTimeMs + caption.startMs;
+    this.shownAnnotations.clear();
+    if (this.youtubeId && this.ytMiniPlayer && this.ytMiniReady) {
+      this.ytMiniPlayer.seekTo(absMs / 1000, true);
+    } else if (this.videoEl) {
+      this.videoEl.currentTime = absMs / 1000;
+    }
+    this.currentRelMs = caption.startMs;
+    this.computeActiveCaptions();
+  }
+
+  captionCssColor(style: CaptionStyle): string {
+    return CAPTION_STYLE_CONFIG[style]?.color ?? '#ffffff';
+  }
+
+  captionIcon(style: CaptionStyle): string {
+    return CAPTION_STYLE_CONFIG[style]?.icon ?? 'bi-chat-text-fill';
+  }
+
+  // ── Animated drawings (dibujos sobre vídeo en reproducción) ─────────────
+
+  /** Dibujos animados activos en este instante (renderizados en animCanvas) */
+  private _activeAnimEls: DrawingElement[] = [];
+
+  /** Todos los drawings con startMs de todas las anotaciones */
+  private get _allAnimatedEls(): DrawingElement[] {
+    const els: DrawingElement[] = [];
+    for (const ann of this.annotations) {
+      for (const el of ann.drawingData || []) {
+        if (el.startMs != null) els.push(el);
+      }
+    }
+    return els;
+  }
+
+  /** Elemento seleccionado tiene animación configurada */
+  get selectedElHasAnimation(): boolean {
+    return this.getSelectedEl()?.startMs != null;
+  }
+
+  getSelectedEl(): DrawingElement | undefined {
+    return this.drawingElements.find(e => e.id === this.selectedElementId);
+  }
+
+  annHasAnimatedDrawings(ann: ClipAnnotation): boolean {
+    return (ann.drawingData || []).some(e => e.startMs != null);
+  }
+
+  /** Activa/desactiva la animación del elemento seleccionado */
+  toggleElementAnimation(): void {
+    const el = this.getSelectedEl();
+    if (!el) return;
+    this.undoStack.push(this.cloneElements());
+    if (el.startMs != null) {
+      // Desactivar: quitar timing
+      delete el.startMs;
+      delete el.animDurationMs;
+    } else {
+      // Activar: usar el tiempo del frame actual como startMs por defecto
+      const frameRelMs = (this.editingAnnotation?.frameTimeMs ?? this.event.startTimeMs) - this.event.startTimeMs;
+      el.startMs        = Math.max(0, frameRelMs);
+      el.animDurationMs = 3000;
+    }
+    this.redrawCanvas();
+  }
+
+  setElementStartMs(ms: number): void {
+    const el = this.getSelectedEl();
+    if (!el) return;
+    el.startMs = Math.max(0, Math.min(ms, this.clipDurationMs - (el.animDurationMs ?? 1000)));
+    this.redrawCanvas();
+  }
+
+  setElementAnimDuration(ms: number): void {
+    const el = this.getSelectedEl();
+    if (!el) return;
+    el.animDurationMs = Math.max(500, ms);
+    this.redrawCanvas();
+  }
+
+  /** Si la anotación activa tiene pausa (frameDurationSec > 0) */
+  get annotationPauses(): boolean {
+    return this.frameDurationSec > 0;
+  }
+
+  /**
+   * Activa/desactiva la pausa del vídeo en el frame de la anotación activa.
+   * IMPORTANTE: actualiza frameDurationSec porque saveFrame() lo usa directamente
+   * para escribir frameDurationMs (editingAnnotation es una copia, no la referencia real).
+   */
+  setAnnotationPauses(pause: boolean): void {
+    if (!this.editingAnnotation) return;
+    this.frameDurationSec = pause ? Math.max(1, this.frameDurationSec) : 0;
+    this.editingAnnotation.frameDurationMs = this.frameDurationSec * 1000;
+  }
+
+  renderAnimatedDrawings(): void {
+    const canvas = this.animCanvasRef?.nativeElement;
+    const video  = this.videoEl;
+    if (!canvas) return;
+
+    const active = this._allAnimatedEls.filter(
+      el => el.startMs! <= this.currentRelMs && this.currentRelMs < el.startMs! + (el.animDurationMs ?? 3000)
+    );
+
+    if (active.length === 0 && this._activeAnimEls.length === 0) return; // nada que hacer
+    this._activeAnimEls = active;
+
+    // Dimensionar canvas al tamaño del vídeo
+    const W = video?.videoWidth  || canvas.width  || 1280;
+    const H = video?.videoHeight || canvas.height || 720;
+    if (canvas.width !== W || canvas.height !== H) {
+      canvas.width  = W;
+      canvas.height = H;
+    }
+
+    const ctx = canvas.getContext('2d')!;
+    ctx.clearRect(0, 0, W, H);
+
+    if (active.length === 0) return;
+
+    // Usar _fontPxScale = 1 porque este canvas se muestra a su resolución interna
+    const savedScale = this._fontPxScale;
+    this._fontPxScale = 1;
+
+    const darkEls = active.filter(el => el.type === 'spotlight' || el.type === 'playerLine');
+    for (const el of active) {
+      if (el.type !== 'spotlight' && el.type !== 'playerLine') {
+        this.renderElement(ctx, el, W, H);
+      }
+    }
+    if (darkEls.length > 0) this.renderDarkLayer(ctx, darkEls, W, H);
+
+    this._fontPxScale = savedScale;
+  }
+
+  /**
+   * Para cada DrawingElement con startMs, renderiza un PNG transparente
+   * a la resolución nativa del vídeo y devuelve el overlay con timing absoluto.
+   * El PNG puede contener transparencia: se usa como overlay en el MP4 exportado.
+   */
+  async prepareAnimatedOverlays(): Promise<AnimatedDrawingOverlay[]> {
+    const video = this.videoEl;
+    const W = video?.videoWidth  || 1280;
+    const H = video?.videoHeight || 720;
+    const overlays: AnimatedDrawingOverlay[] = [];
+
+    const savedScale = this._fontPxScale;
+    this._fontPxScale = 1; // renderizar a resolución interna del vídeo
+
+    for (const ann of this.annotations) {
+      for (const el of ann.drawingData || []) {
+        if (el.startMs == null) continue;
+
+        const canvas = document.createElement('canvas');
+        canvas.width  = W;
+        canvas.height = H;
+        const ctx = canvas.getContext('2d')!;
+        ctx.clearRect(0, 0, W, H); // fondo transparente
+
+        if (el.type === 'spotlight' || el.type === 'playerLine') {
+          this.renderDarkLayer(ctx, [el], W, H);
+        } else {
+          this.renderElement(ctx, el, W, H);
+        }
+
+        overlays.push({
+          pngDataUrl:  canvas.toDataURL('image/png'),
+          startMsAbs:  el.startMs + this.event.startTimeMs,
+          durationMs:  el.animDurationMs ?? 3000,
+          width:       W,
+          height:      H
+        });
+      }
+    }
+
+    this._fontPxScale = savedScale;
+    return overlays;
   }
 
   // ── Drawing canvas ────────────────────────────────────────────────────────
@@ -633,6 +1152,51 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
       return;
     }
 
+    // ── TOP SPOTLIGHT: un solo clic coloca el cono ───────────────────────
+    if (this.activeTool === 'topSpotlight') {
+      this.undoStack.push(this.cloneElements());
+      const r  = this.playerRadius * 2.5;            // base radius proporcional
+      const h  = Math.min(pos.y, r * 4);             // altura del cono hacia arriba
+      const el = this.newEl('topSpotlight', {
+        x:      pos.x,
+        y:      pos.y,
+        radius: r,
+        y2:     Math.max(0, pos.y - h)               // punta del cono (arriba)
+      });
+      this.drawingElements = [...this.drawingElements, el];
+      this.redrawCanvas();
+      return;
+    }
+
+    // ── PLAYER LINE: añadir punto en cada click ───────────────────────────
+    if (this.activeTool === 'playerLine') {
+      if (!this.playerLineInProgress) {
+        this.undoStack.push(this.cloneElements());
+        this.playerLineInProgress = this.newEl('playerLine', {
+          points: [{ ...pos, r: this.playerRadius }],
+          radius: this.playerRadius
+        });
+      } else {
+        // Cada punto guarda su propio radio (perspectiva)
+        this.playerLineInProgress.points!.push({ ...pos, r: this.playerRadius });
+      }
+      this.redrawCanvas();
+      return;
+    }
+
+    // ── CURVED ARROW: 1.º click = inicio, mouse move = extremo, 2.º click = punto de control
+    if (this.activeTool === 'curvedArrow') {
+      if (this.curvedArrowPhase === 0) {
+        this.isDrawing  = true;
+        this.mouseStart = pos;
+        this.currentElement = this.newEl('curvedArrow', { x: pos.x, y: pos.y, x2: pos.x, y2: pos.y, cpx: pos.x, cpy: pos.y });
+        this.curvedArrowPhase = 1;
+      } else if (this.curvedArrowPhase === 1) {
+        // Finaliza la flecha curva en el release del ratón (ver onCanvasUp)
+      }
+      return;
+    }
+
     this.isDrawing  = true;
     this.mouseStart = pos;
 
@@ -640,6 +1204,8 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
       this.currentElement = this.newEl('freeDraw', { points: [pos] });
     } else if (this.activeTool === 'circle' || this.activeTool === 'spotlight') {
       this.currentElement = this.newEl(this.activeTool, { x: pos.x, y: pos.y, radius: 0 });
+    } else if (this.activeTool === 'filledZone') {
+      this.currentElement = this.newEl('filledZone', { x: pos.x, y: pos.y, x2: pos.x, y2: pos.y, fillOpacity: 0.35 });
     } else {
       this.currentElement = this.newEl(this.activeTool, { x: pos.x, y: pos.y, x2: pos.x, y2: pos.y });
     }
@@ -660,11 +1226,25 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
       return;
     }
 
+    // Player line preview
+    if (this.activeTool === 'playerLine' && this.playerLineInProgress) {
+      this.playerLinePreviewPos = pos;
+      this.redrawCanvas();
+      return;
+    }
+
     // Draw drag
     if (!this.isDrawing || !this.currentElement) return;
 
     if (this.activeTool === 'freeDraw') {
       this.currentElement.points!.push(pos);
+    } else if (this.activeTool === 'curvedArrow' && this.curvedArrowPhase === 1) {
+      // Actualiza el extremo de la flecha curva mientras se arrastra
+      this.currentElement!.x2 = pos.x;
+      this.currentElement!.y2 = pos.y;
+      // El punto de control sigue al centro por defecto
+      this.currentElement!.cpx = (this.currentElement!.x! + pos.x) / 2;
+      this.currentElement!.cpy = (this.currentElement!.y! + pos.y) / 2 - 10;
     } else if (this.activeTool === 'circle' || this.activeTool === 'spotlight') {
       const dx = pos.x - this.mouseStart.x;
       const dy = pos.y - this.mouseStart.y;
@@ -682,6 +1262,24 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
     // Select drag end
     if (this.activeTool === 'select') {
       this.dragState = null;
+      this.redrawCanvas();
+      return;
+    }
+
+    // Player line: puntos se añaden en Down, no en Up
+    if (this.activeTool === 'playerLine') return;
+
+    // Curved arrow: al soltar se guarda el extremo y se finaliza
+    if (this.activeTool === 'curvedArrow' && this.curvedArrowPhase === 1 && this.currentElement) {
+      const dx = (this.currentElement.x2! - this.currentElement.x!);
+      const dy = (this.currentElement.y2! - this.currentElement.y!);
+      if (Math.sqrt(dx * dx + dy * dy) >= 1) {
+        this.undoStack.push(this.cloneElements());
+        this.drawingElements.push(this.currentElement);
+      }
+      this.currentElement = null;
+      this.curvedArrowPhase = 0;
+      this.isDrawing = false;
       this.redrawCanvas();
       return;
     }
@@ -704,12 +1302,43 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
     this.redrawCanvas();
   }
 
+  /**
+   * Convierte las coordenadas canvas% del texto a píxeles dentro del cae-canvas-wrap,
+   * de modo que el overlay aparece exactamente encima del punto donde el usuario hizo clic.
+   * Ajusta verticalmente para que la baseline coincida (restando ~fontSize CSS px).
+   */
+  get textInputLeft(): string {
+    const canvas = this.drawCanvasRef?.nativeElement as HTMLCanvasElement;
+    if (!canvas) return this.textCursorPct.x + '%';
+    const cRect = canvas.getBoundingClientRect();
+    const wRect = canvas.parentElement?.getBoundingClientRect();
+    if (!wRect) return this.textCursorPct.x + '%';
+    const leftPx = (cRect.left - wRect.left) + (this.textCursorPct.x / 100) * cRect.width;
+    return leftPx + 'px';
+  }
+
+  get textInputTop(): string {
+    const canvas = this.drawCanvasRef?.nativeElement as HTMLCanvasElement;
+    if (!canvas) return this.textCursorPct.y + '%';
+    const cRect = canvas.getBoundingClientRect();
+    const wRect = canvas.parentElement?.getBoundingClientRect();
+    if (!wRect) return this.textCursorPct.y + '%';
+    // La baseline en canvas está en click_y. El texto se dibuja hacia ARRIBA desde la baseline.
+    // El overlay tiene el texto empezando desde arriba: restamos fontSize para alinear.
+    const topPx = (cRect.top - wRect.top) + (this.textCursorPct.y / 100) * cRect.height - this.fontSize;
+    return topPx + 'px';
+  }
+
   confirmText(): void {
     if (!this.textInputValue.trim()) { this.showTextInput = false; return; }
+    const canvas = this.drawCanvasRef?.nativeElement as HTMLCanvasElement;
+    // Guardar el tamaño en % de la altura del canvas para renderizado independiente de resolución
+    const clientH     = canvas?.clientHeight || 400;
+    const fontSizePct = (this.fontSize / clientH) * 100;
     this.undoStack.push(this.cloneElements());
     this.drawingElements.push(this.newEl('text', {
       x: this.textCursorPct.x, y: this.textCursorPct.y,
-      text: this.textInputValue.trim(), fontSize: this.fontSize
+      text: this.textInputValue.trim(), fontSize: this.fontSize, fontSizePct
     }));
     this.textInputValue = '';
     this.showTextInput  = false;
@@ -738,30 +1367,94 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
     this.redrawCanvas();
   }
 
+  /** Confirma la línea de jugadores en progreso (mínimo 2 puntos) */
+  finalizePlayerLine(): void {
+    if (!this.playerLineInProgress) return;
+    if ((this.playerLineInProgress.points?.length ?? 0) >= 2) {
+      this.drawingElements.push(this.playerLineInProgress);
+    } else {
+      this.undoStack.pop(); // revierte el undo guardado al inicio
+    }
+    this.playerLineInProgress = null;
+    this.playerLinePreviewPos = null;
+    this.redrawCanvas();
+  }
+
+  /** Cancela la línea de jugadores en progreso */
+  cancelPlayerLine(): void {
+    if (this.playerLineInProgress) {
+      this.undoStack.pop();
+    }
+    this.playerLineInProgress = null;
+    this.playerLinePreviewPos = null;
+    this.redrawCanvas();
+  }
+
+  /** Elimina el último punto de la línea de jugadores en progreso (Backspace) */
+  removeLastPlayerLinePoint(): void {
+    if (!this.playerLineInProgress?.points?.length) return;
+    this.playerLineInProgress.points = this.playerLineInProgress.points.slice(0, -1);
+    if (this.playerLineInProgress.points.length === 0) {
+      // Si no quedan puntos, cancelar
+      this.cancelPlayerLine();
+    } else {
+      this.redrawCanvas();
+    }
+  }
+
   // ── Selection helpers ─────────────────────────────────────────────────────
 
   private hitTestEl(el: DrawingElement, pos: DrawingPoint): boolean {
+    // Si el elemento está rotado, desrotamos la posición del mouse antes del hit test
+    const rotation = (el.rotation || 0);
+    let testPos = pos;
+    if (rotation !== 0) {
+      const bounds = this.getElementBoundsInPct(el);
+      const angle  = -rotation * Math.PI / 180; // inverso
+      testPos = this.rotatePt(pos.x, pos.y, bounds.cx, bounds.cy, angle);
+    }
     const T = 2.5;
     switch (el.type) {
       case 'circle':
       case 'spotlight': {
-        const dx = pos.x - el.x!;
-        const dy = pos.y - el.y!;
+        const dx = testPos.x - el.x!;
+        const dy = testPos.y - el.y!;
         return Math.sqrt(dx * dx + dy * dy) <= (el.radius || 0) + T;
       }
       case 'arrow':
+      case 'curvedArrow':
       case 'line':
       case 'dashedLine':
-        return this.distToSegmentPct(pos, { x: el.x!, y: el.y! }, { x: el.x2!, y: el.y2! }) < T;
+        return this.distToSegmentPct(testPos, { x: el.x!, y: el.y! }, { x: el.x2!, y: el.y2! }) < T;
+      case 'filledZone': {
+        const x1 = Math.min(el.x!, el.x2!), x2 = Math.max(el.x!, el.x2!);
+        const y1 = Math.min(el.y!, el.y2!), y2 = Math.max(el.y!, el.y2!);
+        return testPos.x >= x1 && testPos.x <= x2 && testPos.y >= y1 && testPos.y <= y2;
+      }
+      case 'playerLine': {
+        if (!el.points?.length) return false;
+        return el.points.some(p => this.distPct(testPos, p) <= (el.radius || 4) + T);
+      }
       case 'freeDraw': {
         if (!el.points?.length) return false;
         const bbox = this.getBBox(el);
-        return pos.x >= bbox.x1 - T && pos.x <= bbox.x2 + T &&
-               pos.y >= bbox.y1 - T && pos.y <= bbox.y2 + T;
+        return testPos.x >= bbox.x1 - T && testPos.x <= bbox.x2 + T &&
+               testPos.y >= bbox.y1 - T && testPos.y <= bbox.y2 + T;
+      }
+      case 'topSpotlight': {
+        const r    = el.radius || 5;
+        const tipY = el.y2 !== undefined ? el.y2 : (el.y! - r * 4);
+        const yBot = el.y!, yTop = tipY;
+        if (testPos.y < Math.min(yTop, yBot) - T || testPos.y > Math.max(yTop, yBot) + T) return false;
+        const height = Math.abs(yBot - yTop) || 1;
+        // El cono va de punta (arriba) a base ancha (abajo)
+        const frac     = (testPos.y - yTop) / (yBot - yTop);
+        const halfW    = r * Math.max(0, frac);
+        return Math.abs(testPos.x - el.x!) <= halfW + T;
       }
       case 'text': {
-        const dx = pos.x - (el.x || 0);
-        const dy = pos.y - (el.y || 0);
+        const dx = testPos.x - (el.x || 0);
+        const dy = testPos.y - (el.y || 0);
         return Math.abs(dx) < 12 && dy < 2 && dy > -8;
       }
     }
@@ -770,31 +1463,70 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
 
   /** Returns handle positions in canvas-% for the given element. */
   private getHandlesPct(el: DrawingElement): Array<DrawingPoint & { idx: number }> {
+    const angle  = ((el.rotation || 0) * Math.PI) / 180;
+    const bounds = this.getElementBoundsInPct(el);
+    const { cx, cy } = bounds;
+    // Rota un punto alrededor del centro del elemento para los handles
+    const rot = (px: number, py: number) => this.rotatePt(px, py, cx, cy, angle);
+
+    // Handle de rotación (por encima): idx = 100
+    const rotHandle = { ...rot(cx, bounds.y1 - 8), idx: 100 };
+
+    // 4 corners de escala: TL=101, TR=102, BL=103, BR=104
+    const corners = [
+      { ...rot(bounds.x1, bounds.y1), idx: 101 },
+      { ...rot(bounds.x2, bounds.y1), idx: 102 },
+      { ...rot(bounds.x1, bounds.y2), idx: 103 },
+      { ...rot(bounds.x2, bounds.y2), idx: 104 },
+    ];
+
+    // Handles específicos por tipo (para edición de forma)
+    let typeHandles: Array<DrawingPoint & { idx: number }> = [];
     switch (el.type) {
       case 'circle':
       case 'spotlight':
-        return [
-          { x: el.x!, y: el.y!, idx: 0 },
-          { x: el.x! + (el.radius || 0), y: el.y!, idx: 1 }
+        // centro + borde (resize radio)
+        typeHandles = [
+          { ...rot(el.x!, el.y!), idx: 0 },
+          { ...rot(el.x! + (el.radius || 0), el.y!), idx: 1 }
         ];
-      case 'arrow':
-      case 'line':
-      case 'dashedLine':
-        return [
-          { x: el.x!, y: el.y!, idx: 0 },
-          { x: el.x2!, y: el.y2!, idx: 1 }
+        break;
+      case 'arrow': case 'curvedArrow': case 'line': case 'dashedLine':
+        typeHandles = [
+          { ...rot(el.x!, el.y!), idx: 0 },
+          { ...rot(el.x2!, el.y2!), idx: 1 }
         ];
-      case 'freeDraw': {
-        const b = this.getBBox(el);
-        return [
-          { x: b.cx, y: b.cy, idx: 0 },
-          { x: b.x2, y: b.y2, idx: 1 }
+        break;
+      case 'playerLine': {
+        const pts = el.points || [];
+        // Handles de centro (mover): idx = i
+        const centers = pts.map((p, i) => ({ x: p.x, y: p.y, idx: i }));
+        // Handles de borde (resize radio): idx = pts.length + i
+        const edges = pts.map((p, i) => ({
+          x: p.x + (p.r ?? el.radius ?? this.playerRadius),
+          y: p.y,
+          idx: pts.length + i
+        }));
+        return [...centers, ...edges];
+      }
+      case 'topSpotlight': {
+        const r    = el.radius || 5;
+        const tipY = el.y2 !== undefined ? el.y2 : (el.y! - r * 4);
+        typeHandles = [
+          { ...rot(el.x!, el.y!), idx: 0 },           // base center (mover)
+          { ...rot(el.x! + r, el.y!), idx: 1 },        // borde derecho (radio)
+          { ...rot(el.x!, tipY),      idx: 2 }          // punta del cono (altura)
         ];
+        break;
       }
       case 'text':
-        return [{ x: el.x!, y: el.y!, idx: 0 }];
+        typeHandles = [{ ...rot(el.x!, el.y!), idx: 0 }];
+        break;
+      default:
+        break;
     }
-    return [];
+
+    return [rotHandle, ...corners, ...typeHandles];
   }
 
   private applyDrag(orig: DrawingElement, mode: 'move' | 'handle', handleIdx: number,
@@ -810,6 +1542,59 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
       if (r.y2 !== undefined) r.y2 += dy;
       if (r.points) r.points = r.points.map(p => ({ x: p.x + dx, y: p.y + dy }));
     } else {
+      // ── Handle universal: rotación (idx 100) ──────────────────────────────
+      if (handleIdx === 100) {
+        const bounds = this.getElementBoundsInPct(orig);
+        const angle1 = Math.atan2(startPct.y - bounds.cy, startPct.x - bounds.cx);
+        const angle2 = Math.atan2(currPct.y - bounds.cy, currPct.x - bounds.cx);
+        const delta  = (angle2 - angle1) * (180 / Math.PI);
+        r.rotation = ((orig.rotation || 0) + delta + 360) % 360;
+        return r;
+      }
+
+      // ── Handles de escala (idx 101-104): escalar respecto al corner opuesto ─
+      if (handleIdx >= 101 && handleIdx <= 104) {
+        const bounds = this.getElementBoundsInPct(orig);
+        // Corner opuesto al que se arrastra
+        const oppMap: Record<number, { ox: number; oy: number }> = {
+          101: { ox: bounds.x2, oy: bounds.y2 }, // TL → opp = BR
+          102: { ox: bounds.x1, oy: bounds.y2 }, // TR → opp = BL
+          103: { ox: bounds.x2, oy: bounds.y1 }, // BL → opp = TR
+          104: { ox: bounds.x1, oy: bounds.y1 }, // BR → opp = TL
+        };
+        const opp = oppMap[handleIdx];
+        const origW = Math.abs(bounds.x2 - bounds.x1) || 1;
+        const origH = Math.abs(bounds.y2 - bounds.y1) || 1;
+        const newW  = Math.abs(currPct.x - opp.ox);
+        const newH  = Math.abs(currPct.y - opp.oy);
+        const sx    = newW / origW;
+        const sy    = newH / origH;
+        const scale = (v: number, origin: number, s: number) => origin + (v - origin) * s;
+
+        // Texto: escalar fontSizePct (y fontSize como fallback)
+        if (r.type === 'text') {
+          const uniformScale = (sx + sy) / 2;
+          // fontSizePct tiene prioridad — escalar siempre ambos para mantener consistencia
+          if (r.fontSizePct != null) {
+            r.fontSizePct = Math.max(0.2, r.fontSizePct * uniformScale);
+          }
+          r.fontSize = Math.max(6, Math.round((r.fontSize || 20) * uniformScale));
+          // Mantener la posición del corner opuesto fija desplazando el ancla (x,y)
+          if (r.x !== undefined) r.x = scale(r.x, opp.ox, sx);
+          if (r.y !== undefined) r.y = scale(r.y, opp.oy, sy);
+          return r;
+        }
+
+        // Resto de elementos: escalar coordenadas
+        if (r.x  !== undefined) r.x  = scale(r.x,  opp.ox, sx);
+        if (r.y  !== undefined) r.y  = scale(r.y,  opp.oy, sy);
+        if (r.x2 !== undefined) r.x2 = scale(r.x2, opp.ox, sx);
+        if (r.y2 !== undefined) r.y2 = scale(r.y2, opp.oy, sy);
+        if (r.radius !== undefined) r.radius = Math.max(0.5, r.radius * ((sx + sy) / 2));
+        if (r.points) r.points = r.points.map(p => ({ x: scale(p.x, opp.ox, sx), y: scale(p.y, opp.oy, sy) }));
+        return r;
+      }
+
       switch (orig.type) {
         case 'circle':
         case 'spotlight':
@@ -821,10 +1606,48 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
           }
           break;
         case 'arrow':
+        case 'curvedArrow':
         case 'line':
         case 'dashedLine':
+        case 'filledZone':
           if (handleIdx === 0) { r.x  = (r.x  || 0) + dx; r.y  = (r.y  || 0) + dy; }
           else                 { r.x2 = (r.x2 || 0) + dx; r.y2 = (r.y2 || 0) + dy; }
+          break;
+        case 'playerLine': {
+          const nPts = r.points?.length || 0;
+          if (handleIdx < nPts) {
+            // Mover círculo individual (mantener su radio propio)
+            r.points = r.points!.map((p, i) =>
+              i === handleIdx ? { ...p, x: p.x + dx, y: p.y + dy } : p
+            );
+          } else {
+            // Redimensionar radio del círculo individual (handle de borde)
+            const ptIdx = handleIdx - nPts;
+            if (r.points && ptIdx < r.points.length) {
+              const pt = r.points[ptIdx];
+              const newRadius = Math.max(1, this.distPct(currPct, { x: pt.x, y: pt.y }));
+              r.points = r.points.map((p, i) =>
+                i === ptIdx ? { ...p, r: newRadius } : p
+              );
+            }
+          }
+          break;
+        }
+        case 'topSpotlight':
+          if (handleIdx === 0) {
+            // Mover base + mantener offset relativo de la punta
+            const tipY0  = orig.y2 !== undefined ? orig.y2 : (orig.y! - (orig.radius || 5) * 4);
+            const offset = tipY0 - orig.y!;
+            r.x  = (r.x  || 0) + dx;
+            r.y  = (r.y  || 0) + dy;
+            r.y2 = r.y! + offset;
+          } else if (handleIdx === 1) {
+            // Cambiar radio de la base
+            r.radius = Math.max(1, Math.abs(currPct.x - (r.x || 0)));
+          } else if (handleIdx === 2) {
+            // Mover la punta (ajustar altura del cono)
+            r.y2 = currPct.y;
+          }
           break;
         case 'freeDraw': {
           const b0 = this.getBBox(orig);
@@ -846,6 +1669,83 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
       }
     }
     return r;
+  }
+
+  /** Bounding box de un elemento en espacio % (sin rotación) */
+  private getElementBoundsInPct(el: DrawingElement): { cx: number; cy: number; x1: number; y1: number; x2: number; y2: number } {
+    switch (el.type) {
+      case 'circle':
+      case 'spotlight': {
+        const r = el.radius || 0;
+        return { cx: el.x!, cy: el.y!, x1: el.x! - r, y1: el.y! - r, x2: el.x! + r, y2: el.y! + r };
+      }
+      case 'arrow': case 'curvedArrow': case 'line': case 'dashedLine': case 'filledZone': {
+        const x1 = Math.min(el.x!, el.x2!), x2 = Math.max(el.x!, el.x2!);
+        const y1 = Math.min(el.y!, el.y2!), y2 = Math.max(el.y!, el.y2!);
+        return { cx: (x1 + x2) / 2, cy: (y1 + y2) / 2, x1, y1, x2, y2 };
+      }
+      case 'freeDraw': case 'playerLine': {
+        const b = this.getBBox(el);
+        return { cx: b.cx, cy: b.cy, x1: b.x1, y1: b.y1, x2: b.x2, y2: b.y2 };
+      }
+      case 'topSpotlight': {
+        const r    = el.radius || 5;
+        const tipY = el.y2 !== undefined ? el.y2 : (el.y! - r * 4);
+        const y1   = Math.min(tipY, el.y!);
+        const y2   = Math.max(tipY, el.y!);
+        return { cx: el.x!, cy: (y1 + y2) / 2, x1: el.x! - r, y1, x2: el.x! + r, y2 };
+      }
+      case 'text': {
+        const canvasEl  = this.drawCanvasRef?.nativeElement as HTMLCanvasElement | undefined;
+        const canvasW   = canvasEl?.width  || 1920;
+        const canvasH   = canvasEl?.height || 1080;
+        // Tamaño de fuente en píxeles internos del canvas
+        const fontPxCanvas = el.fontSizePct != null
+          ? el.fontSizePct * canvasH / 100
+          : (el.fontSize || 20) * this._fontPxScale;
+        // Convertir a % del sistema de coordenadas de almacenamiento
+        const fontH_pct = fontPxCanvas / canvasH * 100;
+        const charW_pct = fontPxCanvas * 0.58 / canvasW * 100;
+        const wPct      = Math.min(85, charW_pct * (el.text?.length || 5));
+        return {
+          cx: el.x! + wPct / 2,
+          cy: el.y! - fontH_pct / 2,
+          x1: el.x!,
+          y1: el.y! - fontH_pct,
+          x2: el.x! + wPct,
+          y2: el.y! + fontH_pct * 0.15,
+        };
+      }
+      default:
+        return { cx: 0, cy: 0, x1: 0, y1: 0, x2: 0, y2: 0 };
+    }
+  }
+
+  /**
+   * Rota un punto (px, py) alrededor del centro (cx, cy) por `angle` radianes.
+   * Trabaja en espacio mixto (%,%), pero la escala x/y puede diferir en píxeles.
+   * Para los handles visuales aplicamos la corrección de aspecto (ar = W/H).
+   */
+  private rotatePt(px: number, py: number, cx: number, cy: number, angle: number, ar = 1): DrawingPoint {
+    const dx = (px - cx) * ar, dy = py - cy;
+    return {
+      x: cx + (dx * Math.cos(angle) - dy * Math.sin(angle)) / ar,
+      y: cy + (dx * Math.sin(angle) + dy * Math.cos(angle))
+    };
+  }
+
+  /** Convierte un color hex (#rrggbb o #rgb) a rgba(r,g,b,alpha) para gradientes */
+  private hexToRgba(color: string, alpha: number): string {
+    if (color.startsWith('#')) {
+      let h = color.slice(1);
+      if (h.length === 3) h = h.split('').map(c => c + c).join('');
+      const r = parseInt(h.substring(0, 2), 16);
+      const g = parseInt(h.substring(2, 4), 16);
+      const b = parseInt(h.substring(4, 6), 16);
+      if (!isNaN(r)) return `rgba(${r},${g},${b},${alpha})`;
+    }
+    // fallback para rgb()
+    return color.replace(/rgb\(/, 'rgba(').replace(')', `,${alpha})`);
   }
 
   private distPct(a: DrawingPoint, b: DrawingPoint): number {
@@ -873,17 +1773,61 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
 
   // ── Canvas rendering ──────────────────────────────────────────────────────
 
+  /**
+   * Factor de escala para fontSize: convierte px CSS (como se muestra en el input)
+   * a px del canvas interno, de forma que el texto se vea del mismo tamaño visual.
+   * Se recalcula en cada redraw porque el canvas puede redimensionarse.
+   */
+  private _fontPxScale = 1;
+
   private redrawCanvas(): void {
     const canvas = this.drawCanvasRef?.nativeElement;
     if (!canvas || !this.bgImage) return;
     const ctx = canvas.getContext('2d')!;
     const W = canvas.width, H = canvas.height;
 
+    // Actualizar escala: canvas interno vs tamaño de display real
+    const displayH = canvas.clientHeight || H;
+    this._fontPxScale = displayH > 0 ? H / displayH : 1;
+
     ctx.clearRect(0, 0, W, H);
     ctx.drawImage(this.bgImage, 0, 0, W, H);
 
-    const all = [...this.drawingElements, ...(this.currentElement ? [this.currentElement] : [])];
-    for (const el of all) this.renderElement(ctx, el, W, H);
+    // Incluir: elementos guardados + elemento en curso + playerLine en progreso
+    const committed = this.drawingElements;
+    const inProgress = this.currentElement ? [this.currentElement] : [];
+    const playerLineEl = this.playerLineInProgress ? [this.playerLineInProgress] : [];
+    const all = [...committed, ...inProgress, ...playerLineEl];
+
+    // Elementos que requieren capa oscura compartida: spotlight + playerLine
+    const darkLayerEls = all.filter(el => el.type === 'spotlight' || el.type === 'playerLine');
+    // El resto se dibuja directamente
+    for (const el of all) {
+      if (el.type !== 'spotlight' && el.type !== 'playerLine') {
+        this.renderElement(ctx, el, W, H);
+      }
+    }
+
+    // Capa oscura única con todos los agujeros (spotlights + jugadores del playerLine)
+    if (darkLayerEls.length > 0) {
+      this.renderDarkLayer(ctx, darkLayerEls, W, H);
+    }
+
+    // Preview de playerLine: línea discontinua hasta la posición actual del ratón
+    if (this.playerLineInProgress && this.playerLinePreviewPos && this.playerLineInProgress.points!.length > 0) {
+      const pts0 = this.playerLineInProgress.points!;
+      const lastPt = pts0[pts0.length - 1];
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = this.playerLineInProgress.color;
+      ctx.lineWidth = 2;
+      ctx.globalAlpha = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(lastPt.x * W / 100, lastPt.y * H / 100);
+      ctx.lineTo(this.playerLinePreviewPos.x * W / 100, this.playerLinePreviewPos.y * H / 100);
+      ctx.stroke();
+      ctx.restore();
+    }
 
     // Selection handles
     if (this.selectedElementId && this.activeTool === 'select') {
@@ -892,54 +1836,169 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
     }
   }
 
+  /**
+   * Renderiza UNA SOLA capa oscura compartida con agujeros para:
+   *  - spotlight: círculo grande con agujero
+   *  - playerLine: círculos de jugador en cada punto + líneas de conexión encima
+   * Usa canvas offscreen para no borrar la imagen de fondo del canvas principal.
+   */
+  private renderDarkLayer(ctx: CanvasRenderingContext2D, els: DrawingElement[], W: number, H: number): void {
+    const px = (p: number) => p * W / 100;
+    const py = (p: number) => p * H / 100;
+
+    const offscreen = document.createElement('canvas');
+    offscreen.width  = W;
+    offscreen.height = H;
+    const off = offscreen.getContext('2d')!;
+
+    off.fillStyle = 'rgba(0,0,0,0.65)';
+    off.fillRect(0, 0, W, H);
+
+    off.globalCompositeOperation = 'destination-out';
+
+    for (const el of els) {
+      if (el.type === 'spotlight') {
+        const sx = px(el.x!), sy = py(el.y!), sr = px(el.radius || 10);
+        off.beginPath();
+        off.arc(sx, sy, sr, 0, 2 * Math.PI);
+        off.fill();
+      } else if (el.type === 'playerLine' && el.points?.length) {
+        for (const p of el.points) {
+          const pr = px(p.r ?? el.radius ?? this.playerRadius);
+          off.beginPath();
+          off.arc(px(p.x), py(p.y), pr, 0, 2 * Math.PI);
+          off.fill();
+        }
+      }
+    }
+
+    off.globalCompositeOperation = 'source-over';
+    ctx.drawImage(offscreen, 0, 0);
+
+    // Bordes y líneas de conexión encima de la capa oscura
+    ctx.save();
+    for (const el of els) {
+      ctx.strokeStyle = el.color;
+      ctx.lineWidth   = el.strokeWidth + 1;
+
+      if (el.type === 'spotlight') {
+        const sx = px(el.x!), sy = py(el.y!), sr = px(el.radius || 10);
+        ctx.beginPath();
+        ctx.arc(sx, sy, sr, 0, 2 * Math.PI);
+        ctx.stroke();
+      } else if (el.type === 'playerLine' && el.points?.length) {
+        const pts = el.points;
+
+        // Líneas de conexión entre jugadores
+        ctx.lineWidth = el.strokeWidth;
+        ctx.beginPath();
+        ctx.moveTo(px(pts[0].x), py(pts[0].y));
+        for (let i = 1; i < pts.length; i++) {
+          ctx.lineTo(px(pts[i].x), py(pts[i].y));
+        }
+        ctx.stroke();
+
+        // Bordes de los círculos de jugador (radio individual)
+        ctx.lineWidth = el.strokeWidth + 1;
+        for (const p of pts) {
+          const pr = px(p.r ?? el.radius ?? this.playerRadius);
+          ctx.beginPath();
+          ctx.arc(px(p.x), py(p.y), pr, 0, 2 * Math.PI);
+          ctx.stroke();
+        }
+      }
+    }
+    ctx.restore();
+  }
+
   private renderSelectionHandles(ctx: CanvasRenderingContext2D, el: DrawingElement, W: number, H: number): void {
     const px = (p: number) => p * W / 100;
     const py = (p: number) => p * H / 100;
-    const HR = 6; // handle radius px
+    const HR = 6;
+    const RAD_HR = 8; // radio del handle de rotación
+    const angle = ((el.rotation || 0) * Math.PI) / 180;
+    const bounds = this.getElementBoundsInPct(el);
+    const cxPx = px(bounds.cx), cyPx = py(bounds.cy);
+    const ar = W / H; // aspect ratio para corregir la rotación en espacio %
 
     ctx.save();
+    ctx.translate(cxPx, cyPx);
+    ctx.rotate(angle);
+    ctx.translate(-cxPx, -cyPx);
+
+    // ── Bounding box punteado ──────────────────────────────────────────────
     ctx.setLineDash([5, 3]);
     ctx.strokeStyle = '#00d4ff';
     ctx.lineWidth = 1.5;
 
-    // Dashed selection outline per type
-    switch (el.type) {
-      case 'circle':
-      case 'spotlight':
-        ctx.beginPath();
-        ctx.arc(px(el.x!), py(el.y!), px(el.radius || 0) + 4, 0, 2 * Math.PI);
-        ctx.stroke();
-        break;
-      case 'arrow':
-      case 'line':
-      case 'dashedLine':
-        ctx.beginPath();
-        ctx.moveTo(px(el.x!), py(el.y!));
-        ctx.lineTo(px(el.x2!), py(el.y2!));
-        ctx.stroke();
-        break;
-      case 'freeDraw': {
-        const b = this.getBBox(el);
-        ctx.strokeRect(px(b.x1) - 4, py(b.y1) - 4, px(b.x2) - px(b.x1) + 8, py(b.y2) - py(b.y1) + 8);
-        break;
-      }
-      case 'text': {
-        const fSize = (el.fontSize || 20);
-        ctx.strokeRect(px(el.x!) - 4, py(el.y!) - fSize - 2, 120, fSize + 8);
-        break;
-      }
+    if (el.type === 'circle' || el.type === 'spotlight') {
+      ctx.beginPath();
+      ctx.arc(px(el.x!), py(el.y!), px(el.radius || 0) + 5, 0, 2 * Math.PI);
+      ctx.stroke();
+    } else if (el.type === 'playerLine') {
+      // para playerLine no hay bbox estándar, solo los handles individuales
+    } else {
+      const bx1 = px(bounds.x1) - 5, by1 = py(bounds.y1) - 5;
+      const bw  = px(bounds.x2) - px(bounds.x1) + 10;
+      const bh  = py(bounds.y2) - py(bounds.y1) + 10;
+      ctx.strokeRect(bx1, by1, bw, bh);
     }
     ctx.setLineDash([]);
 
-    // Handles (solid circles)
-    for (const h of this.getHandlesPct(el)) {
+    // ── Handle de rotación (por encima del bbox) ───────────────────────────
+    if (el.type !== 'playerLine') {
+      const rhY = py(bounds.y1) - 28;
       ctx.beginPath();
-      ctx.arc(px(h.x), py(h.y), HR, 0, 2 * Math.PI);
-      ctx.fillStyle = '#ffffff';
-      ctx.fill();
+      ctx.moveTo(cxPx, py(bounds.y1) - 5);
+      ctx.lineTo(cxPx, rhY);
       ctx.strokeStyle = '#00d4ff';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 1.5;
       ctx.stroke();
+
+      // Círculo dorado = handle de rotación
+      ctx.beginPath();
+      ctx.arc(cxPx, rhY, RAD_HR, 0, 2 * Math.PI);
+      ctx.fillStyle = '#ffd700';
+      ctx.fill();
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    // ── Handles de escala/movimiento (blancos) ────────────────────────────
+    const handles = this.getHandlesPct(el);
+    const nPts    = el.type === 'playerLine' ? (el.points?.length || 0) : 0;
+
+    for (const h of handles) {
+      if (h.idx === 100) continue; // rotación ya dibujado
+      const hpx = px(h.x), hpy = py(h.y);
+
+      if (el.type === 'playerLine' && h.idx >= nPts) {
+        // Handle de resize de círculo jugador → pequeño círculo naranja
+        ctx.beginPath();
+        ctx.arc(hpx, hpy, 4, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ff9f43';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      } else if (h.idx >= 101) {
+        // Corners universales de escala → cuadrados blancos
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#00d4ff';
+        ctx.lineWidth = 2;
+        ctx.fillRect(hpx - HR, hpy - HR, HR * 2, HR * 2);
+        ctx.strokeRect(hpx - HR, hpy - HR, HR * 2, HR * 2);
+      } else {
+        // Handle de centro (mover) → círculo blanco
+        ctx.beginPath();
+        ctx.arc(hpx, hpy, HR, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.strokeStyle = '#00d4ff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
     }
     ctx.restore();
   }
@@ -952,6 +2011,16 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
     ctx.lineCap     = 'round';
     ctx.lineJoin    = 'round';
     ctx.setLineDash([]);
+
+    // Aplicar rotación alrededor del centro del elemento
+    if (el.rotation && el.rotation !== 0) {
+      const bounds = this.getElementBoundsInPct(el);
+      const cxPx = bounds.cx * W / 100;
+      const cyPx = bounds.cy * H / 100;
+      ctx.translate(cxPx, cyPx);
+      ctx.rotate(el.rotation * Math.PI / 180);
+      ctx.translate(-cxPx, -cyPx);
+    }
 
     const px = (p: number) => p * W / 100;
     const py = (p: number) => p * H / 100;
@@ -992,33 +2061,122 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
         ctx.setLineDash([]);
         break;
 
-      case 'text':
-        ctx.font = `bold ${el.fontSize || 20}px Arial, sans-serif`;
-        ctx.fillStyle  = el.color;
-        ctx.strokeStyle = el.color === '#ffffff' ? '#000' : '#fff';
-        ctx.lineWidth  = 2;
+      case 'text': {
+        // fontSizePct (% de H) tiene prioridad — garantiza tamaño consistente
+        // independientemente de la resolución del canvas. Fallback: CSS px × scale.
+        const scaledFont = el.fontSizePct != null
+          ? Math.round(el.fontSizePct * H / 100)
+          : Math.round((el.fontSize || 20) * this._fontPxScale);
+        ctx.font        = `bold ${scaledFont}px Arial, sans-serif`;
+        ctx.fillStyle   = el.color;
+        ctx.strokeStyle = el.color === '#ffffff' ? '#000000' : '#ffffff';
+        ctx.lineWidth   = Math.max(1, scaledFont * 0.04);
+        ctx.textBaseline = 'alphabetic';
+        ctx.textAlign    = 'left';
         ctx.strokeText(el.text || '', px(el.x!), py(el.y!));
         ctx.fillText(el.text || '', px(el.x!), py(el.y!));
         break;
+      }
 
-      case 'spotlight': {
-        const sx = px(el.x!), sy = py(el.y!), sr = px(el.radius || 10);
-        ctx.save();
-        // Draw dark overlay with a transparent hole over the circle using evenodd.
-        // This correctly darkens everything OUTSIDE the circle while leaving
-        // the inside bright (showing the video frame underneath).
-        ctx.fillStyle = 'rgba(0,0,0,0.65)';
+      case 'spotlight':
+      case 'playerLine':
+        // Gestionados por renderDarkLayer() en redrawCanvas().
+        break;
+
+      case 'curvedArrow': {
+        const cpx = px(el.cpx ?? (el.x! + el.x2!) / 2);
+        const cpy = py(el.cpy ?? (el.y! + el.y2!) / 2 - 10);
+        const x1 = px(el.x!), y1 = py(el.y!), x2 = px(el.x2!), y2 = py(el.y2!);
         ctx.beginPath();
-        ctx.rect(0, 0, W, H);                              // outer rect (clockwise)
-        ctx.arc(sx, sy, sr, 0, 2 * Math.PI, true);         // circle hole (counter-clockwise)
-        ctx.fill('evenodd');
-        // Border ring
-        ctx.strokeStyle = el.color;
-        ctx.lineWidth   = el.strokeWidth + 1;
-        ctx.beginPath();
-        ctx.arc(sx, sy, sr, 0, 2 * Math.PI);
+        ctx.moveTo(x1, y1);
+        ctx.quadraticCurveTo(cpx, cpy, x2, y2);
         ctx.stroke();
-        ctx.restore();
+        // Cabeza de flecha en el extremo
+        const dx = x2 - cpx, dy = y2 - cpy;
+        const angle = Math.atan2(dy, dx);
+        const hl = Math.max(12, el.strokeWidth * 4);
+        ctx.beginPath();
+        ctx.moveTo(x2, y2);
+        ctx.lineTo(x2 - hl * Math.cos(angle - Math.PI / 6), y2 - hl * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(x2 - hl * Math.cos(angle + Math.PI / 6), y2 - hl * Math.sin(angle + Math.PI / 6));
+        ctx.closePath(); ctx.fill();
+        break;
+      }
+
+      case 'filledZone': {
+        const x1 = px(Math.min(el.x!, el.x2!));
+        const y1 = py(Math.min(el.y!, el.y2!));
+        const rw = px(Math.abs(el.x2! - el.x!));
+        const rh = py(Math.abs(el.y2! - el.y!));
+        ctx.globalAlpha = el.fillOpacity ?? 0.35;
+        ctx.fillStyle = el.color;
+        ctx.fillRect(x1, y1, rw, rh);
+        ctx.globalAlpha = 1;
+        ctx.strokeRect(x1, y1, rw, rh);
+        break;
+      }
+
+      case 'topSpotlight': {
+        // Cono de luz de estadio: punta arriba, base elipse abajo
+        const bx   = px(el.x!);
+        const by   = py(el.y!);
+        const rx   = px(el.radius || 5);              // radio horizontal de la base
+        const ry   = rx * 0.28;                       // radio vertical (elipse plana, perspectiva)
+        const tipY = el.y2 !== undefined
+          ? py(el.y2)
+          : by - rx * 4;                              // punta del cono
+
+        // ── Relleno del cono (gradiente transparente arriba → color abajo) ──
+        const grad = ctx.createLinearGradient(bx, tipY, bx, by);
+        grad.addColorStop(0,    'transparent');
+        grad.addColorStop(0.55, this.hexToRgba(el.color, 0.12));
+        grad.addColorStop(1,    this.hexToRgba(el.color, 0.38));
+
+        ctx.beginPath();
+        ctx.moveTo(bx, tipY);                         // punta
+        ctx.lineTo(bx - rx, by);                      // borde izquierdo de la base
+        // Arco inferior de la elipse (de izq. a der. pasando por la parte baja)
+        ctx.ellipse(bx, by, rx, ry, 0, Math.PI, 0, false);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // ── Líneas laterales del cono (semitransparentes) ──────────────────
+        ctx.globalAlpha = 0.55;
+        ctx.lineWidth   = Math.max(1, el.strokeWidth);
+        ctx.setLineDash([5, 4]);
+        ctx.strokeStyle = el.color;
+        ctx.beginPath();
+        ctx.moveTo(bx, tipY);
+        ctx.lineTo(bx - rx, by);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(bx, tipY);
+        ctx.lineTo(bx + rx, by);
+        ctx.stroke();
+
+        // ── Elipse de la base (más opaca = zona iluminada en el suelo) ─────
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 0.9;
+        ctx.lineWidth   = el.strokeWidth;
+        ctx.beginPath();
+        ctx.ellipse(bx, by, rx, ry, 0, 0, 2 * Math.PI);
+        ctx.stroke();
+
+        // Relleno semiopaco de la elipse base
+        ctx.globalAlpha = 0.3;
+        ctx.fillStyle   = el.color;
+        ctx.fill();
+
+        // ── Brillo central (estrella pequeña en la base) ───────────────────
+        ctx.globalAlpha = 0.6;
+        const starR = rx * 0.15;
+        ctx.beginPath();
+        ctx.arc(bx, by, starR, 0, 2 * Math.PI);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+
+        ctx.globalAlpha = 1;
         break;
       }
     }
@@ -1107,13 +2265,23 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
 
     const label = `${this.event.categoryName || 'clip'}_${this.msToHms(this.event.startTimeMs).replace(/:/g, '-')}`;
 
+    console.warn(`[CAE Download] START — youtubeId=${this.youtubeId}, videoFile=${!!this.videoFile}, annotations=${this.annotations.length}`);
+
     try {
       if (this.youtubeId) {
         // ── YouTube: grabación de pantalla del mini-player ──
         await this.downloadYouTubeClip(label);
       } else if (this.videoFile) {
         // ── Local: FFmpeg ──
-        if (!this.annotations.length) {
+        // Preparar dibujos animados como PNG overlay (independiente de si hay freeze frames)
+        this.downloadStep = 'Preparando dibujos animados…';
+        const animOverlays = await this.prepareAnimatedOverlays();
+        console.warn(`[CAE Download] animOverlays: ${animOverlays.length}`,
+          animOverlays.map(o => ({ startMsAbs: o.startMsAbs, durationMs: o.durationMs, W: o.width, H: o.height })));
+        console.warn(`[CAE Download] annotations: ${this.annotations.length}`,
+          this.annotations.map(a => ({ frameTimeMs: a.frameTimeMs, drawingData: a.drawingData?.map(d => ({ id: d.id, type: d.type, startMs: d.startMs })) })));
+
+        if (!this.annotations.length && !animOverlays.length) {
           this.downloadStep = 'Exportando…';
           await this.clipExport.exportClip(
             this.videoFile,
@@ -1131,6 +2299,7 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
             this.event.endTimeMs,
             label,
             ready,
+            animOverlays,
             (pct)  => { this.downloadProgress = pct; },
             (step) => { this.downloadStep = step; }
           );
@@ -1237,22 +2406,4 @@ export class ClipAnnotationEditorComponent implements OnInit, AfterViewInit, OnD
 
   // ── Keyboard shortcuts ────────────────────────────────────────────────────
 
-  @HostListener('document:keydown', ['$event'])
-  onKeyDown(e: KeyboardEvent): void {
-    if (this.view === 'frame-editor') {
-      if (e.ctrlKey && e.key === 'z') { e.preventDefault(); this.undo(); }
-      if (e.key === 'Escape') {
-        if (this.selectedElementId) { this.selectedElementId = null; this.redrawCanvas(); }
-        else { this.cancelFrame(); }
-      }
-      if ((e.key === 'Delete' || e.key === 'Backspace') && this.selectedElementId) {
-        e.preventDefault();
-        this.deleteSelected();
-      }
-      if (e.key === 'Enter' && this.showTextInput) { this.confirmText(); }
-    } else {
-      if (e.key === ' ') { e.preventDefault(); this.togglePlay(); }
-      if (e.key === 'Escape') { this.close(); }
-    }
-  }
 }

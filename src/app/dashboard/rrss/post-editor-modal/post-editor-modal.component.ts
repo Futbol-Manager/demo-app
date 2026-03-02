@@ -150,11 +150,10 @@ export class PostEditorModalComponent implements OnInit, OnChanges {
   }
 
   loadNetworkConfig(): void {
-    this.prospect.getNetworkConfig(this.network).subscribe({
+    this.prospect.getNetworkConfigJava(this.network).subscribe({
       next: cfg => {
         this.networkConfig = cfg;
         try { this.networkTopics = JSON.parse(cfg.topics) || []; } catch { this.networkTopics = []; }
-        // Respetar preferencia guardada de imagen si existe
         if (cfg.include_image !== undefined && cfg.include_image !== null) {
           this.includeImage = !!cfg.include_image;
         }
@@ -375,9 +374,9 @@ export class PostEditorModalComponent implements OnInit, OnChanges {
     };
 
     if (this.post?.post_id) {
-      this.prospect.updateSocialPost(this.post.post_id, payload).subscribe({ next: onSuccess, error: onError });
+      this.prospect.updateSocialPostJava(this.post.post_id, payload).subscribe({ next: onSuccess, error: onError });
     } else {
-      this.prospect.createSocialPost(payload).subscribe({ next: onSuccess, error: onError });
+      this.prospect.createSocialPostJava(payload).subscribe({ next: onSuccess, error: onError });
     }
   }
 

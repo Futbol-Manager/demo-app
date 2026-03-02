@@ -78,17 +78,13 @@ export class TrackingService implements OnDestroy {
     if (this.sessionId !== null) {
       const token = localStorage.getItem('token');
       if (token) {
-        this.http.post<Response>(
+        const endPayload = JSON.stringify({ sessionId: this.sessionId });
+        navigator.sendBeacon(
           environment.apiUrl + 'tracking/end',
-          { sessionId: this.sessionId },
-          { headers: this.getAuthHeaders() }
-        ).subscribe({
-          next: () => { this.sessionId = null; },
-          error: () => { this.sessionId = null; }
-        });
-      } else {
-        this.sessionId = null;
+          new Blob([endPayload], { type: 'application/json' })
+        );
       }
+      this.sessionId = null;
     }
   }
 

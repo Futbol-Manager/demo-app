@@ -111,6 +111,14 @@
                   <img *ngIf="dia.terreno === 'Visitante'" src="assets/iconos/travel.svg" class="match-icon-lg" draggable="false">
                   <span class="match-name" draggable="false">{{ dia.rivalName }}</span>
                 </div>
+                <ng-container *ngFor="let s of dia.individualSessions">
+                  <div class="activity individual"
+                       [style.border-left-color]="getIndividualColor(s.activityType)"
+                       (click)="$event.stopPropagation(); router.navigate(['/dashboard/individual-training'])">
+                    <i class="bi bi-person-walking" draggable="false"></i>
+                    <span class="activity-text" draggable="false">{{ s.planName }}</span>
+                  </div>
+                </ng-container>
               </div>
             </div>
           </div>
@@ -167,6 +175,15 @@
                             <img *ngIf="dia.terreno === 'Visitante'" src="assets/iconos/travel.svg" class="match-icon-lg" draggable="false">
                             <span class="activity-text match-name" draggable="false">{{ dia.rivalName }}</span>
                           </div>
+
+                          <ng-container *ngFor="let s of dia.individualSessions">
+                            <div class="activity individual"
+                                 [style.border-left-color]="getIndividualColor(s.activityType)"
+                                 (click)="$event.stopPropagation(); router.navigate(['/dashboard/individual-training'])">
+                              <i class="bi bi-person-walking" draggable="false"></i>
+                              <span class="activity-text" draggable="false">{{ s.planName }}</span>
+                            </div>
+                          </ng-container>
 
                         </div>
 
@@ -241,6 +258,16 @@
             </div>
           </ng-container>
 
+          <!-- SESIONES INDIVIDUALES -->
+          <ng-container *ngFor="let s of listIndividualEvents">
+            <div *ngIf="s.date === daySession" class="list-item-act list-item-act--individual"
+              [class.active]="selectedItem?.type === 'individual' && selectedItem?.id === s.planId"
+              [style.border-left-color]="getIndividualColor(s.activityType)"
+              (click)="selectActivity('individual', s.planId, s)">
+              <i class="bi bi-person-walking"></i> {{ s.planName }}
+            </div>
+          </ng-container>
+
         </div>
 
         <!-- FOOTER FIJO -->
@@ -254,6 +281,9 @@
               {{ 'CAL.TEXT_062' | translate }}</button>
             <button (click)="selectNewActivity('partido')"><i class="fa-solid fa-futbol"></i> {{ 'CAL.TEXT_066' | translate }}</button>
             <button (click)="selectNewActivity('otra')"><i class="fa-regular fa-square-plus"></i> {{ 'CAL.TEXT_387' | translate }}</button>
+            <button (click)="goToIndividualTraining()" style="border-top: 1px solid #e5e7eb; color: #6f42c1;">
+              <i class="bi bi-person-walking"></i> Sesión Individual
+            </button>
           </div>
         </div>
 
@@ -725,6 +755,53 @@
         </div>
 
         <!-- Contenido mostrado basado en la selección -->
+        <!-- ============================= -->
+        <!-- SESIÓN INDIVIDUAL (VIEW)    -->
+        <!-- ============================= -->
+        <div *ngIf="mode === 'view-individual' && selectedIndividualSession" class="content-scroll">
+          <div class="form-header text-center">
+            <h4>
+              <i class="bi bi-person-walking me-2" [style.color]="getIndividualColor(selectedIndividualSession!.activityType)"></i>
+              Sesión Individual
+            </h4>
+            <p class="text-muted small mb-0">{{ daySession | date:'dd/MM/yyyy' }}</p>
+          </div>
+
+          <div class="saas-action-bar d-flex flex-wrap gap-2 justify-content-center mb-3">
+            <button class="btn btn-primary-pro"
+                    (click)="router.navigate(['/dashboard/individual-training'], { queryParams: { planId: selectedIndividualSession!.planId, date: selectedIndividualSession!.date } })">
+              <i class="bi bi-arrow-right-circle me-1"></i> Ver sesión
+            </button>
+          </div>
+
+          <div class="settings-section">
+            <div class="setting-row">
+              <div class="setting-label">Plan</div>
+              <div class="setting-value fw-semibold">{{ selectedIndividualSession!.planName }}</div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-label">Actividad</div>
+              <div class="setting-value">
+                <span class="badge rounded-pill"
+                      [style.background]="getIndividualColor(selectedIndividualSession!.activityType)"
+                      style="color:#fff; font-size:0.8rem; padding:0.3rem 0.7rem;">
+                  <i class="bi bi-person-walking me-1"></i>
+                  {{ selectedIndividualSession!.activityType }}
+                </span>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div class="setting-label">Fecha</div>
+              <div class="setting-value">{{ selectedIndividualSession!.date }}</div>
+            </div>
+          </div>
+
+          <p class="text-muted small text-center mt-3">
+            <i class="bi bi-info-circle me-1"></i>
+            Los jugadores registran sus sesiones desde la app Sphaira Player.
+          </p>
+        </div>
+
         <!-- ============================= -->
         <!-- PARTIDO (CREATE + VIEW) -->
         <!-- ============================= -->

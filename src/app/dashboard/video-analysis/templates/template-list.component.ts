@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -94,7 +94,11 @@ export class TemplateListComponent implements OnInit, OnDestroy {
     this.analysisService.duplicateTemplate(template.id, this.clubId, this.userId)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: () => this.loadTemplates()
+        next: () => this.loadTemplates(),
+        error: (err) => {
+          const msg = err?.error?.error?.msg || err?.error?.message || `Error ${err?.status || ''}`;
+          alert(`No se pudo duplicar la plantilla: ${msg}`);
+        }
       });
   }
 

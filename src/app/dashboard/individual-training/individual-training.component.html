@@ -1,0 +1,1173 @@
+<div class="it-page">
+
+  <!-- ═══════════ VISTA JUGADOR ═══════════ -->
+  <ng-container *ngIf="isPlayerView">
+
+    <div class="it-hero">
+      <div class="it-hero__info">
+        <div class="it-hero__icon"><i class="bi bi-person-walking"></i></div>
+        <div>
+          <h1 class="it-hero__title">Mis Entrenamientos</h1>
+          <p class="it-hero__subtitle">Planes asignados por tu entrenador</p>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="it-loading">
+      <div class="spinner-border text-primary"></div>
+      <p>Cargando planes...</p>
+    </div>
+
+    <ng-container *ngIf="!loading">
+
+      <!-- Sin planes -->
+      <div *ngIf="!playerPlans.length" class="it-empty it-empty--full">
+        <i class="bi bi-calendar-x fs-1 text-muted"></i>
+        <h5 class="mt-3">Sin planes activos</h5>
+        <p class="text-muted">Tu entrenador aún no te ha asignado ningún plan de entrenamiento.</p>
+      </div>
+
+      <!-- Lista de planes (si hay varios y no hay ninguno seleccionado) -->
+      <div *ngIf="playerPlans.length && !selectedPlayerPlan" class="it-plans-grid">
+        <div *ngFor="let plan of playerPlans" class="it-plan-card" (click)="selectPlayerPlan(plan)">
+          <div class="it-plan-card__top">
+            <span class="it-status-badge" [ngClass]="statusBadgeClass(plan.status)">{{ statusLabel(plan.status) }}</span>
+          </div>
+          <div class="it-plan-card__season"><i class="bi bi-sun"></i> {{ seasonLabels[plan.seasonMoment] }}</div>
+          <h5 class="it-plan-card__name">{{ plan.name }}</h5>
+          <p *ngIf="plan.description" class="it-plan-card__desc">{{ plan.description }}</p>
+          <div class="it-plan-card__meta">
+            <span><i class="bi bi-calendar3"></i> {{ plan.startDate }} – {{ plan.endDate }}</span>
+          </div>
+          <div class="it-plan-card__footer"><i class="bi bi-chevron-right"></i></div>
+        </div>
+      </div>
+
+      <!-- Detalle del plan (vista jugador) -->
+      <div *ngIf="selectedPlayerPlan">
+
+        <!-- Encabezado -->
+        <div class="it-plan-header">
+          <button class="it-back-btn" (click)="clearPlayerPlan()"><i class="bi bi-arrow-left"></i></button>
+          <div class="it-plan-header__title">
+            <h2>{{ selectedPlayerPlan.name }}</h2>
+            <span class="it-status-badge" [ngClass]="statusBadgeClass(selectedPlayerPlan.status)">{{ statusLabel(selectedPlayerPlan.status) }}</span>
+          </div>
+        </div>
+
+        <!-- Banner de progreso -->
+        <div class="it-player-progress-banner">
+          <div class="it-player-progress-banner__left">
+            <span class="it-player-progress-banner__label">Mi progreso</span>
+            <span class="it-player-progress-banner__pct" [class.text-success]="playerCompliancePct() >= 80"
+                  [class.text-warning]="playerCompliancePct() >= 50 && playerCompliancePct() < 80"
+                  [class.text-danger]="playerCompliancePct() < 50">
+              {{ playerCompliancePct() }}%
+            </span>
+          </div>
+          <div class="it-player-progress-banner__right">
+            <span class="text-muted small">{{ playerLogs.length }} sesiones registradas</span>
+            <span class="text-muted small"> · Semana {{ currentPlanWeek() }}</span>
+          </div>
+          <div class="it-progress-bar mt-2">
+            <div class="it-progress-bar__fill"
+                 [class.bg-success]="playerCompliancePct() >= 80"
+                 [class.bg-warning]="playerCompliancePct() >= 50 && playerCompliancePct() < 80"
+                 [class.bg-danger]="playerCompliancePct() < 50"
+                 [style.width.%]="playerCompliancePct()"></div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="it-tabs">
+          <button class="it-tab" [class.it-tab--active]="playerActiveTab === 'today'" (click)="playerActiveTab = 'today'">
+            <i class="bi bi-sun"></i> Hoy
+          </button>
+          <button class="it-tab" [class.it-tab--active]="playerActiveTab === 'schedule'" (click)="playerActiveTab = 'schedule'">
+            <i class="bi bi-calendar-week"></i> Planificación
+          </button>
+          <button class="it-tab" [class.it-tab--active]="playerActiveTab === 'history'" (click)="playerActiveTab = 'history'">
+            <i class="bi bi-list-check"></i> Historial
+            <span *ngIf="playerLogs.length" class="it-tab-badge">{{ playerLogs.length }}</span>
+          </button>
+        </div>
+
+        <!-- ─── TAB HOY ─── -->
+        <div *ngIf="playerActiveTab === 'today'" class="it-tab-content">
+          <ng-container *ngIf="getTodayActivity() as todayDay; else noActivityToday">
+
+            <!-- Sesión planificada para hoy -->
+            <div class="it-today-session">
+              <div class="it-today-session__icon" [style.background]="activityColors[todayDay.activityType]">
+                <i class="bi fs-2" [class]="activityIcons[todayDay.activityType]"></i>
+              </div>
+              <div class="it-today-session__body">
+                <h5 class="mb-1">Sesión de hoy</h5>
+                <p class="fw-semibold text-primary mb-2">{{ activityLabels[todayDay.activityType] }}</p>
+                <div class="it-today-session__targets">
+                  <span *ngIf="todayDay.targetDurationMinutes" class="it-target-chip">
+                    <i class="bi bi-clock"></i> {{ todayDay.targetDurationMinutes }} min
+                  </span>
+                  <span *ngIf="todayDay.targetDistanceKm" class="it-target-chip">
+                    <i class="bi bi-geo-alt"></i> {{ todayDay.targetDistanceKm }} km
+                  </span>
+                  <span *ngIf="todayDay.targetSets && todayDay.targetReps" class="it-target-chip">
+                    <i class="bi bi-repeat"></i> {{ todayDay.targetSets }}×{{ todayDay.targetReps }}
+                  </span>
+                </div>
+                <p *ngIf="todayDay.description" class="text-muted small mt-2 mb-0">{{ todayDay.description }}</p>
+              </div>
+            </div>
+
+            <!-- Ya registró hoy -->
+            <div *ngIf="hasLoggedToday()" class="it-alert it-alert--success mt-3">
+              <i class="bi bi-check-circle-fill me-2"></i>
+              ¡Ya has registrado tu sesión de hoy! Buen trabajo.
+            </div>
+
+            <!-- Botón registrar -->
+            <button *ngIf="!hasLoggedToday() && !showLogForm"
+                    class="it-btn it-btn--primary w-100 mt-3"
+                    (click)="openLogForm(todayDay)">
+              <i class="bi bi-plus-circle me-1"></i> Registrar sesión de hoy
+            </button>
+
+          </ng-container>
+
+          <ng-template #noActivityToday>
+            <div class="it-empty">
+              <i class="bi bi-moon-stars fs-1 text-muted"></i>
+              <p class="mt-2 text-muted">Hoy no tienes entrenamiento planificado. ¡Descansa bien!</p>
+              <button class="it-btn it-btn--ghost mt-2" (click)="openLogForm()">
+                <i class="bi bi-plus-circle me-1"></i> Registrar igualmente
+              </button>
+            </div>
+          </ng-template>
+
+          <!-- ─── FORMULARIO DE REGISTRO ─── -->
+          <div *ngIf="showLogForm" class="it-log-form mt-3">
+            <div class="it-log-form__header">
+              <strong><i class="bi bi-pencil-square me-1"></i> Registrar sesión</strong>
+              <button class="it-btn-icon" (click)="showLogForm = false"><i class="bi bi-x-lg"></i></button>
+            </div>
+            <div class="it-log-form__body">
+
+              <!-- Cargando templates -->
+              <div *ngIf="loadingTemplatesForLog" class="text-center py-2 text-muted small">
+                <span class="spinner-border spinner-border-sm me-1"></span> Cargando formulario...
+              </div>
+
+              <!-- ─ Formulario PRE-Entrenamiento ─ -->
+              <ng-container *ngIf="activePreTemplate && !loadingTemplatesForLog">
+                <div class="it-form-section it-form-section--pre">
+                  <div class="it-form-section__title">
+                    <i class="bi bi-clipboard-check me-1"></i> PRE-Entrenamiento · {{ activePreTemplate.nombre }}
+                  </div>
+                  <div *ngFor="let campo of sortedCampos(activePreTemplate.campos)" class="mb-3">
+                    <label class="it-label">
+                      {{ campo.etiqueta }}
+                      <span *ngIf="campo.obligatorio" class="text-danger">*</span>
+                    </label>
+                    <!-- TEXT_SHORT / NUMBER -->
+                    <input *ngIf="campo.tipo === 'TEXT_SHORT' || campo.tipo === 'NUMBER'"
+                           [type]="campo.tipo === 'NUMBER' ? 'number' : 'text'"
+                           class="it-input" [(ngModel)]="preFormAnswers[campo.id]">
+                    <!-- TEXT_LONG -->
+                    <textarea *ngIf="campo.tipo === 'TEXT_LONG'" class="it-textarea" rows="2"
+                              [(ngModel)]="preFormAnswers[campo.id]"></textarea>
+                    <!-- CHECKBOX -->
+                    <div *ngIf="campo.tipo === 'CHECKBOX'" class="form-check mt-1">
+                      <input class="form-check-input" type="checkbox" [id]="'pre_cb_'+campo.id"
+                             [checked]="preFormAnswers[campo.id] === 'true'"
+                             (change)="preFormAnswers[campo.id] = $any($event.target).checked ? 'true' : 'false'">
+                      <label class="form-check-label" [for]="'pre_cb_'+campo.id">Sí</label>
+                    </div>
+                    <!-- SELECT -->
+                    <select *ngIf="campo.tipo === 'SELECT'" class="it-input"
+                            [(ngModel)]="preFormAnswers[campo.id]">
+                      <option value="">Seleccionar...</option>
+                      <option *ngFor="let op of getFormCampoOpciones(campo)" [value]="op">{{ op }}</option>
+                    </select>
+                    <!-- RATING -->
+                    <div *ngIf="campo.tipo === 'RATING'" class="d-flex gap-1 mt-1">
+                      <button *ngFor="let star of [1,2,3,4,5]" type="button"
+                              class="it-btn-icon"
+                              [class.text-warning]="+(preFormAnswers[campo.id] ?? 0) >= star"
+                              (click)="preFormAnswers[campo.id] = ''+star">
+                        <i class="bi bi-star-fill"></i>
+                      </button>
+                    </div>
+                    <!-- SCALE -->
+                    <div *ngIf="campo.tipo === 'SCALE'">
+                      <input type="range" class="form-range" min="1" max="10" step="1"
+                             [(ngModel)]="preFormAnswers[campo.id]">
+                      <div class="d-flex justify-content-between">
+                        <small class="text-muted">1</small>
+                        <small class="fw-semibold">{{ preFormAnswers[campo.id] || 5 }}/10</small>
+                        <small class="text-muted">10</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <hr class="my-3">
+              </ng-container>
+
+              <!-- Actividad (solo lectura) + Fecha (solo lectura) -->
+              <div class="it-log-form__readonly-row mb-3">
+                <div class="it-log-form__readonly-item">
+                  <span class="it-label">Actividad</span>
+                  <span class="it-activity-badge" [style.background]="activityColors[logForm.activityType]">
+                    <i class="bi" [class]="activityIcons[logForm.activityType]"></i>
+                    {{ activityLabels[logForm.activityType] }}
+                  </span>
+                </div>
+                <div class="it-log-form__readonly-item">
+                  <span class="it-label">Fecha</span>
+                  <span class="fw-semibold text-primary">{{ logForm.logDate | date:'dd/MM/yyyy' }}</span>
+                </div>
+              </div>
+
+              <!-- Duración + Distancia/Series + RPE en una sola fila -->
+              <div class="row g-3 mb-3 align-items-end">
+
+                <!-- Duración -->
+                <div class="col-auto">
+                  <label class="it-label">Duración</label>
+                  <div class="d-flex gap-1 align-items-center">
+                    <input type="number" class="it-input it-input--sm" [(ngModel)]="logForm.durationMinutes"
+                           min="0" placeholder="min" style="width:64px">
+                    <span class="text-muted fw-bold">:</span>
+                    <input type="number" class="it-input it-input--sm" [(ngModel)]="logForm.durationSeconds"
+                           min="0" max="59" placeholder="seg" style="width:64px">
+                    <span class="text-muted small">min : seg</span>
+                  </div>
+                </div>
+
+                <!-- Distancia (running/cycling/swimming) -->
+                <div class="col-auto" *ngIf="isDistanceActivity(logForm.activityType)">
+                  <label class="it-label">Distancia</label>
+                  <div class="it-input-unit">
+                    <input type="number" class="it-input it-input--sm" [(ngModel)]="logForm.distanceKm"
+                           min="0" step="0.1" style="width:90px">
+                    <span class="it-input-unit__suffix">km</span>
+                  </div>
+                </div>
+
+                <!-- Series / Reps (gym/hiit) -->
+                <ng-container *ngIf="isSetActivity(logForm.activityType)">
+                  <div class="col-auto">
+                    <label class="it-label">Series</label>
+                    <input type="number" class="it-input it-input--sm" [(ngModel)]="logForm.sets" min="0" style="width:72px">
+                  </div>
+                  <div class="col-auto">
+                    <label class="it-label">Reps</label>
+                    <input type="number" class="it-input it-input--sm" [(ngModel)]="logForm.reps" min="0" style="width:72px">
+                  </div>
+                  <div class="col-auto">
+                    <label class="it-label">Peso</label>
+                    <div class="it-input-unit">
+                      <input type="number" class="it-input it-input--sm" [(ngModel)]="logForm.weightKg" min="0" step="0.5" style="width:72px">
+                      <span class="it-input-unit__suffix">kg</span>
+                    </div>
+                  </div>
+                </ng-container>
+
+                <!-- RPE -->
+                <div class="col-12 col-sm">
+                  <label class="it-label">Esfuerzo percibido — <strong>{{ logForm.perceivedEffort }}/10</strong></label>
+                  <input type="range" class="form-range" [(ngModel)]="logForm.perceivedEffort" min="1" max="10" step="1">
+                  <div class="d-flex justify-content-between mt-n1">
+                    <small class="text-muted">Muy fácil</small>
+                    <small class="text-muted">Máximo</small>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Notas -->
+              <div class="mb-3">
+                <label class="it-label">Notas para el entrenador <span class="text-muted">(opcional)</span></label>
+                <textarea class="it-textarea" rows="2" [(ngModel)]="logForm.notes"
+                          placeholder="¿Cómo te has sentido? ¿Alguna molestia? ¿Completaste todo?"></textarea>
+              </div>
+
+              <!-- ─ Formulario POST-Entrenamiento ─ -->
+              <ng-container *ngIf="activePostTemplate && !loadingTemplatesForLog">
+                <hr class="my-3">
+                <div class="it-form-section it-form-section--post">
+                  <div class="it-form-section__title">
+                    <i class="bi bi-clipboard-data me-1"></i> POST-Entrenamiento · {{ activePostTemplate.nombre }}
+                  </div>
+                  <div *ngFor="let campo of sortedCampos(activePostTemplate.campos)" class="mb-3">
+                    <label class="it-label">
+                      {{ campo.etiqueta }}
+                      <span *ngIf="campo.obligatorio" class="text-danger">*</span>
+                    </label>
+                    <input *ngIf="campo.tipo === 'TEXT_SHORT' || campo.tipo === 'NUMBER'"
+                           [type]="campo.tipo === 'NUMBER' ? 'number' : 'text'"
+                           class="it-input" [(ngModel)]="postFormAnswers[campo.id]">
+                    <textarea *ngIf="campo.tipo === 'TEXT_LONG'" class="it-textarea" rows="2"
+                              [(ngModel)]="postFormAnswers[campo.id]"></textarea>
+                    <div *ngIf="campo.tipo === 'CHECKBOX'" class="form-check mt-1">
+                      <input class="form-check-input" type="checkbox" [id]="'post_cb_'+campo.id"
+                             [checked]="postFormAnswers[campo.id] === 'true'"
+                             (change)="postFormAnswers[campo.id] = $any($event.target).checked ? 'true' : 'false'">
+                      <label class="form-check-label" [for]="'post_cb_'+campo.id">Sí</label>
+                    </div>
+                    <select *ngIf="campo.tipo === 'SELECT'" class="it-input"
+                            [(ngModel)]="postFormAnswers[campo.id]">
+                      <option value="">Seleccionar...</option>
+                      <option *ngFor="let op of getFormCampoOpciones(campo)" [value]="op">{{ op }}</option>
+                    </select>
+                    <div *ngIf="campo.tipo === 'RATING'" class="d-flex gap-1 mt-1">
+                      <button *ngFor="let star of [1,2,3,4,5]" type="button"
+                              class="it-btn-icon"
+                              [class.text-warning]="+(postFormAnswers[campo.id] ?? 0) >= star"
+                              (click)="postFormAnswers[campo.id] = ''+star">
+                        <i class="bi bi-star-fill"></i>
+                      </button>
+                    </div>
+                    <div *ngIf="campo.tipo === 'SCALE'">
+                      <input type="range" class="form-range" min="1" max="10" step="1"
+                             [(ngModel)]="postFormAnswers[campo.id]">
+                      <div class="d-flex justify-content-between">
+                        <small class="text-muted">1</small>
+                        <small class="fw-semibold">{{ postFormAnswers[campo.id] || 5 }}/10</small>
+                        <small class="text-muted">10</small>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+
+              <!-- Acciones -->
+              <div class="d-flex gap-2 mt-3">
+                <button class="it-btn it-btn--primary" [disabled]="savingLog" (click)="saveLog()">
+                  <span *ngIf="savingLog" class="spinner-border spinner-border-sm me-1"></span>
+                  <i *ngIf="!savingLog" class="bi bi-cloud-arrow-up me-1"></i>
+                  {{ savingLog ? 'Guardando...' : 'Enviar al entrenador' }}
+                </button>
+                <button class="it-btn it-btn--ghost" (click)="showLogForm = false">Cancelar</button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── TAB PLANIFICACIÓN ─── -->
+        <div *ngIf="playerActiveTab === 'schedule'" class="it-tab-content">
+          <div *ngIf="!playerPlanDays.length" class="it-empty">
+            <i class="bi bi-calendar-week"></i>
+            <p>El plan no tiene días configurados todavía.</p>
+          </div>
+          <div *ngFor="let week of getPlanWeeks()" class="it-plan-week">
+            <div class="it-week-title">
+              Semana {{ week }}
+              <span *ngIf="week === currentPlanWeek()" class="badge bg-primary ms-2 fw-normal">Esta semana</span>
+            </div>
+            <div class="it-day-grid">
+              <div *ngFor="let day of getPlanDaysForWeek(week)" class="it-day-chip"
+                   [style.--chip-color]="activityColors[day.activityType]"
+                   [class.it-day-chip--rest]="day.restDay">
+                <strong>{{ dayLabels[day.dayOfWeek] ?? day.dayOfWeek }}</strong>
+                <span *ngIf="day.restDay" class="text-muted small">Descanso</span>
+                <span *ngIf="!day.restDay" class="small">
+                  {{ activityLabels[day.activityType] }}
+                  <span *ngIf="day.targetDurationMinutes" class="text-muted"> · {{ day.targetDurationMinutes }}min</span>
+                  <span *ngIf="day.targetDistanceKm" class="text-muted"> · {{ day.targetDistanceKm }}km</span>
+                </span>
+                <span *ngIf="!day.restDay && day.description" class="it-day-chip__desc small">{{ day.description }}</span>
+                <button *ngIf="!day.restDay && !hasLoggedDay(day)" class="it-day-chip__log-btn"
+                        (click)="openLogForm(day); playerActiveTab = 'today'"
+                        title="Registrar esta sesión">
+                  <i class="bi bi-plus-circle"></i>
+                </button>
+                <span *ngIf="!day.restDay && hasLoggedDay(day)" class="it-day-chip__log-btn text-success" title="Sesión ya registrada">
+                  <i class="bi bi-check-circle-fill"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── TAB HISTORIAL ─── -->
+        <div *ngIf="playerActiveTab === 'history'" class="it-tab-content">
+          <div *ngIf="!playerLogs.length" class="it-empty">
+            <i class="bi bi-list-check"></i>
+            <p>Aún no has registrado ninguna sesión.</p>
+            <button class="it-btn it-btn--primary mt-2" (click)="playerActiveTab = 'today'">
+              <i class="bi bi-plus-circle me-1"></i> Registrar sesión
+            </button>
+          </div>
+          <div *ngIf="playerLogs.length" class="table-responsive">
+            <table class="it-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Actividad</th>
+                  <th>Duración</th>
+                  <th>Distancia</th>
+                  <th>Esfuerzo</th>
+                  <th>Notas</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let log of playerLogs">
+                  <td class="text-muted small">{{ log.logDate }}</td>
+                  <td>
+                    <span class="it-activity-badge" [style.background]="activityColors[log.activityType]">
+                      <i class="bi" [class]="activityIcons[log.activityType]"></i>
+                      {{ activityLabels[log.activityType] }}
+                    </span>
+                  </td>
+                  <td>{{ durationFormatted(log.durationSeconds) }}</td>
+                  <td>{{ log.distanceMeters ? ((log.distanceMeters / 1000) | number:'1.1-2') + ' km' : '—' }}</td>
+                  <td>
+                    <span *ngIf="log.perceivedEffort" class="it-rpe-badge">{{ log.perceivedEffort }}/10</span>
+                    <span *ngIf="!log.perceivedEffort" class="text-muted">—</span>
+                  </td>
+                  <td class="text-muted small">{{ log.notes || '—' }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </ng-container>
+  </ng-container>
+  <!-- ═══════════ FIN VISTA JUGADOR ═══════════ -->
+
+  <!-- ═══════════════════ HEADER ═══════════════════ -->
+  <div class="it-hero" *ngIf="!isPlayerView">
+    <div class="it-hero__info">
+      <div class="it-hero__icon"><i class="bi bi-person-walking"></i></div>
+      <div>
+        <h1 class="it-hero__title">Entrenamiento Individual</h1>
+        <p class="it-hero__subtitle">Planes de pretemporada y trabajo autónomo para tus jugadores</p>
+      </div>
+    </div>
+    <div class="it-hero__actions" *ngIf="!selectedPlan">
+      <button class="it-btn it-btn--ai" (click)="showAiForm = !showAiForm; showCreateForm = false">
+        <i class="bi bi-magic"></i> Generar con IA
+      </button>
+      <button class="it-btn it-btn--primary" (click)="showCreateForm = !showCreateForm; showAiForm = false">
+        <i class="bi bi-plus-lg"></i> Nuevo plan
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ VISTA ENTRENADOR ═══════════════════ -->
+  <ng-container *ngIf="!isPlayerView">
+
+  <!-- Team selector (only when user manages multiple teams) -->
+  <div *ngIf="availableTeams.length > 1" class="it-team-selector mb-3">
+    <span class="it-team-selector__label"><i class="bi bi-shield-fill me-1"></i>Equipo:</span>
+    <div class="it-team-selector__tabs">
+      <button *ngFor="let t of availableTeams"
+              class="it-team-tab"
+              [class.it-team-tab--active]="resolvedTeamId === t.teamId"
+              (click)="switchTeam(t.teamId)">
+        {{ t.nombre ?? t.name ?? ('Equipo ' + t.teamId) }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="it-loading">
+    <div class="spinner-border text-primary"></div>
+    <p>Cargando planes...</p>
+  </div>
+
+  <!-- ═══════════════════ AI GENERATOR ═══════════════════ -->
+  <div *ngIf="showAiForm && !selectedPlan" class="it-panel it-panel--ai">
+    <div class="it-panel__header it-panel__header--ai">
+      <i class="bi bi-stars fs-5"></i>
+      <strong>Generador IA de planes</strong>
+      <span class="it-panel__header-sub">La IA diseñará un plan personalizado según tus parámetros</span>
+      <button class="it-btn-icon ms-auto" (click)="showAiForm = false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="it-panel__body">
+      <div class="row g-3">
+
+        <!-- Momento + semanas + duración + nivel -->
+        <div class="col-sm-6 col-lg-3">
+          <label class="it-label">Momento de temporada</label>
+          <select class="it-select" [(ngModel)]="aiInput.seasonMoment">
+            <option *ngFor="let s of seasonMoments" [value]="s">{{ seasonLabels[s] }}</option>
+          </select>
+        </div>
+        <div class="col-sm-6 col-lg-2">
+          <label class="it-label">Semanas</label>
+          <select class="it-select" [(ngModel)]="aiInput.durationWeeks">
+            <option *ngFor="let w of [1,2,3,4,6,8,10,12]" [value]="w">{{ w }} sem.</option>
+          </select>
+        </div>
+        <div class="col-sm-6 col-lg-2">
+          <label class="it-label">Sesión (min)</label>
+          <select class="it-select" [(ngModel)]="aiInput.sessionDurationMinutes">
+            <option *ngFor="let m of [30,45,60,75,90]" [value]="m">{{ m }} min</option>
+          </select>
+        </div>
+        <div class="col-sm-6 col-lg-2">
+          <label class="it-label">Nivel físico</label>
+          <select class="it-select" [(ngModel)]="aiInput.fitnessLevel">
+            <option value="BAJO">Bajo</option>
+            <option value="MEDIO">Medio</option>
+            <option value="ALTO">Alto</option>
+          </select>
+        </div>
+
+        <!-- Días -->
+        <div class="col-12">
+          <label class="it-label">Días de entrenamiento</label>
+          <div class="it-tag-group">
+            <span *ngFor="let d of daysOfWeek" class="it-tag"
+                  [class.it-tag--on]="isAiDaySelected(d)"
+                  (click)="toggleAiDay(d)">{{ dayLabels[d] }}</span>
+          </div>
+        </div>
+
+        <!-- Objetivos -->
+        <div class="col-12">
+          <label class="it-label">Objetivos físicos</label>
+          <div class="it-tag-group">
+            <span *ngFor="let obj of physicalObjectives" class="it-tag it-tag--obj"
+                  [class.it-tag--on]="isAiObjectiveSelected(obj)"
+                  (click)="toggleAiObjective(obj)">{{ obj }}</span>
+          </div>
+        </div>
+
+        <!-- Actividades -->
+        <div class="col-12">
+          <label class="it-label">Actividades disponibles</label>
+          <div class="it-tag-group">
+            <span *ngFor="let act of activityOptions" class="it-tag"
+                  [class.it-tag--on]="isAiActivitySelected(act)"
+                  [style.--tag-color]="activityColors[act]"
+                  (click)="toggleAiActivity(act)">
+              <i class="bi" [class]="activityIcons[act]"></i> {{ activityLabels[act] }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Notas -->
+        <div class="col-12">
+          <label class="it-label">Notas adicionales (lesiones, condiciones especiales…)</label>
+          <textarea class="it-textarea" rows="2" [(ngModel)]="aiInput.notes" placeholder="Opcional"></textarea>
+        </div>
+
+        <!-- Error -->
+        <div class="col-12" *ngIf="aiError">
+          <div class="it-alert it-alert--danger">{{ aiError }}</div>
+        </div>
+
+        <!-- Actions -->
+        <div class="col-12 d-flex gap-2">
+          <button class="it-btn it-btn--ai" [disabled]="aiGenerating" (click)="generateWithAi()">
+            <span *ngIf="aiGenerating" class="spinner-border spinner-border-sm"></span>
+            <i *ngIf="!aiGenerating" class="bi bi-magic"></i>
+            {{ aiGenerating ? 'Generando...' : 'Generar plan' }}
+          </button>
+          <button class="it-btn it-btn--ghost" (click)="showAiForm = false">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- AI Result Preview -->
+      <div *ngIf="aiGeneratedPlan" class="it-ai-result mt-4">
+        <div class="it-ai-result__header">
+          <i class="bi bi-check-circle-fill text-success"></i>
+          <div>
+            <strong>{{ aiGeneratedPlan.planName }}</strong>
+            <p class="text-muted small mb-0">{{ aiGeneratedPlan.description }}</p>
+          </div>
+        </div>
+
+        <div *ngFor="let week of (aiGeneratedPlan.weeks ?? [])" class="mb-3">
+          <h6 class="it-week-title">
+            Semana {{ week.weekNumber }}
+            <span *ngIf="week.objective" class="text-muted fw-normal">— {{ week.objective }}</span>
+          </h6>
+          <div class="it-day-grid">
+            <div *ngFor="let day of (week.days ?? [])" class="it-day-chip"
+                 [style.--chip-color]="getActivityColor(day.activityType)">
+              <strong>{{ dayLabels[day.dayOfWeek] ?? day.dayOfWeek }}</strong>
+              <span *ngIf="day.restDay" class="text-muted">Descanso</span>
+              <span *ngIf="!day.restDay">
+                {{ getActivityLabel(day.activityType) }}
+                <span *ngIf="day.targetDurationMinutes"> · {{ day.targetDurationMinutes }}min</span>
+                <span *ngIf="day.targetDistanceKm"> · {{ day.targetDistanceKm }}km</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <button class="it-btn it-btn--primary" [disabled]="savingPlan" (click)="saveAiPlan()">
+          <span *ngIf="savingPlan" class="spinner-border spinner-border-sm"></span>
+          <i *ngIf="!savingPlan" class="bi bi-cloud-arrow-up"></i>
+          {{ savingPlan ? 'Guardando...' : 'Guardar este plan' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ CREATE PLAN FORM ═══════════════════ -->
+  <div *ngIf="showCreateForm && !selectedPlan" class="it-panel">
+    <div class="it-panel__header">
+      <i class="bi bi-calendar-plus"></i>
+      <strong>Nuevo plan individual</strong>
+      <button class="it-btn-icon ms-auto" (click)="showCreateForm = false"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div class="it-panel__body">
+      <!-- Basic info -->
+      <div class="it-section-label">Información general</div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-6">
+          <label class="it-label">Nombre del plan *</label>
+          <input type="text" class="it-input" [(ngModel)]="newPlan.name" placeholder="Ej: Pretemporada Verano 2026">
+        </div>
+        <div class="col-md-3">
+          <label class="it-label">Fecha inicio</label>
+          <input type="date" class="it-input" [(ngModel)]="newPlan.startDate" (change)="onPlanDateChange()">
+        </div>
+        <div class="col-md-3">
+          <label class="it-label">Fecha fin</label>
+          <input type="date" class="it-input" [(ngModel)]="newPlan.endDate" (change)="onPlanDateChange()">
+        </div>
+        <div class="col-md-4">
+          <label class="it-label">Momento temporada</label>
+          <select class="it-select" [(ngModel)]="newPlan.seasonMoment">
+            <option *ngFor="let s of seasonMoments" [value]="s">{{ seasonLabels[s] }}</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="it-label">Estado inicial</label>
+          <select class="it-select" [(ngModel)]="newPlan.status">
+            <option value="BORRADOR">Borrador</option>
+            <option value="ACTIVO">Activo</option>
+          </select>
+        </div>
+        <div class="col-12">
+          <label class="it-label">Descripción (opcional)</label>
+          <textarea class="it-textarea" rows="2" [(ngModel)]="newPlan.description" placeholder="Describe el objetivo del plan"></textarea>
+        </div>
+      </div>
+
+      <!-- Weekly Schedule Editor -->
+      <div class="it-section-label">Planificación semanal</div>
+      <p class="text-muted small mb-3">
+        <i class="bi bi-info-circle me-1"></i>
+        Configura qué hace el jugador cada día. Las semanas se calculan automáticamente de las fechas.
+        Puedes activar solo los días que tengan actividad.
+      </p>
+
+      <!-- Week tabs -->
+      <div class="it-week-tabs">
+        <button *ngFor="let w of getWeekNumbers()"
+                class="it-week-tab"
+                [class.it-week-tab--active]="newPlanActiveWeek === w"
+                (click)="newPlanActiveWeek = w">
+          Semana {{ w }}
+        </button>
+      </div>
+
+      <!-- Days for active week -->
+      <div class="it-schedule-grid">
+        <div *ngFor="let day of daysOfWeek" class="it-schedule-row"
+             [class.it-schedule-row--active]="getDayConfig(newPlanActiveWeek, day).enabled">
+          <!-- Enable toggle -->
+          <div class="it-schedule-toggle">
+            <label class="it-switch">
+              <input type="checkbox"
+                     [checked]="getDayConfig(newPlanActiveWeek, day).enabled"
+                     (change)="setDayEnabled(newPlanActiveWeek, day, $any($event.target).checked)">
+              <span class="it-switch__slider"></span>
+            </label>
+            <span class="it-schedule-dayname">{{ dayLabels[day] }}</span>
+          </div>
+
+          <!-- Config (shown when enabled) -->
+          <ng-container *ngIf="getDayConfig(newPlanActiveWeek, day).enabled">
+            <!-- Activity type chips -->
+            <div class="it-schedule-activities">
+              <button *ngFor="let act of activityOptions"
+                      class="it-activity-chip"
+                      [class.it-activity-chip--active]="getDayConfig(newPlanActiveWeek, day).activityType === act"
+                      [style.--chip-color]="activityColors[act]"
+                      (click)="setDayActivity(newPlanActiveWeek, day, act)"
+                      title="{{ activityLabels[act] }}">
+                <i class="bi" [class]="activityIcons[act]"></i>
+                <span>{{ activityLabels[act] }}</span>
+              </button>
+            </div>
+
+            <!-- Duration -->
+            <div class="it-schedule-fields">
+              <div class="it-field-mini">
+                <label>Duración</label>
+                <div class="input-group input-group-sm">
+                  <input type="number" class="form-control form-control-sm"
+                         [(ngModel)]="newPlanSchedule[newPlanActiveWeek][day].durationMinutes"
+                         min="5" max="240">
+                  <span class="input-group-text">min</span>
+                </div>
+              </div>
+              <div class="it-field-mini" *ngIf="isDistanceActivity(getDayConfig(newPlanActiveWeek, day).activityType)">
+                <label>Distancia</label>
+                <div class="input-group input-group-sm">
+                  <input type="number" class="form-control form-control-sm" step="0.1"
+                         [(ngModel)]="newPlanSchedule[newPlanActiveWeek][day].distanceKm"
+                         min="0">
+                  <span class="input-group-text">km</span>
+                </div>
+              </div>
+              <div class="it-field-mini" *ngIf="isSetActivity(getDayConfig(newPlanActiveWeek, day).activityType)">
+                <label>Series</label>
+                <input type="number" class="form-control form-control-sm"
+                       [(ngModel)]="newPlanSchedule[newPlanActiveWeek][day].sets" min="0">
+              </div>
+              <div class="it-field-mini" *ngIf="isSetActivity(getDayConfig(newPlanActiveWeek, day).activityType)">
+                <label>Reps</label>
+                <input type="number" class="form-control form-control-sm"
+                       [(ngModel)]="newPlanSchedule[newPlanActiveWeek][day].reps" min="0">
+              </div>
+              <div class="it-field-desc">
+                <label>Nota</label>
+                <input type="text" class="form-control form-control-sm"
+                       [(ngModel)]="newPlanSchedule[newPlanActiveWeek][day].description"
+                       placeholder="Opcional">
+              </div>
+            </div>
+          </ng-container>
+
+          <!-- Rest label -->
+          <span *ngIf="!getDayConfig(newPlanActiveWeek, day).enabled" class="it-rest-label">
+            <i class="bi bi-moon"></i> Descanso
+          </span>
+        </div>
+      </div>
+
+      <!-- Form actions -->
+      <div class="d-flex gap-2 mt-4">
+        <button class="it-btn it-btn--primary" [disabled]="!newPlan.name || savingPlan" (click)="createPlan()">
+          <span *ngIf="savingPlan" class="spinner-border spinner-border-sm"></span>
+          <i *ngIf="!savingPlan" class="bi bi-cloud-arrow-up"></i>
+          {{ savingPlan ? 'Guardando...' : 'Crear plan' }}
+        </button>
+        <button class="it-btn it-btn--ghost" (click)="showCreateForm = false">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
+  <ng-container *ngIf="!loading">
+
+    <!-- ─── PLAN DETAIL ─── -->
+    <div *ngIf="selectedPlan">
+
+      <!-- Breadcrumb / title -->
+      <div class="it-plan-header">
+        <button class="it-back-btn" (click)="clearSelection()">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <div class="it-plan-header__title">
+          <h2>{{ selectedPlan.name }}</h2>
+          <span class="it-status-badge" [ngClass]="statusBadgeClass(selectedPlan.status)">
+            {{ statusLabel(selectedPlan.status) }}
+          </span>
+        </div>
+        <div class="ms-auto d-flex gap-2">
+          <button class="it-btn it-btn--sm it-btn--success" *ngIf="selectedPlan.status !== 'ACTIVO'"
+                  (click)="activatePlan(selectedPlan)">
+            <i class="bi bi-play-fill"></i> Activar
+          </button>
+          <button class="it-btn it-btn--sm it-btn--danger-ghost" (click)="deletePlan(selectedPlan)">
+            <i class="bi bi-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="it-tabs">
+        <button class="it-tab" [class.it-tab--active]="activeTab === 'compliance'" (click)="activeTab = 'compliance'">
+          <i class="bi bi-bar-chart-line"></i> Cumplimiento
+        </button>
+        <button class="it-tab" [class.it-tab--active]="activeTab === 'players'" (click)="activeTab = 'players'">
+          <i class="bi bi-people"></i> Jugadores
+          <span class="it-tab-badge">{{ assignedPlayerIds.size }}</span>
+        </button>
+        <button class="it-tab" [class.it-tab--active]="activeTab === 'logs'" (click)="activeTab = 'logs'">
+          <i class="bi bi-list-check"></i> Sesiones
+        </button>
+        <button class="it-tab" [class.it-tab--active]="activeTab === 'plans'" (click)="activeTab = 'plans'">
+          <i class="bi bi-calendar-week"></i> Planificación
+        </button>
+      </div>
+
+      <!-- ─── COMPLIANCE TAB ─── -->
+      <div *ngIf="activeTab === 'compliance'" class="it-tab-content">
+        <div *ngIf="!compliance.length && !assignedPlayerIds.size" class="it-empty">
+          <i class="bi bi-bar-chart-line"></i>
+          <p>Sin jugadores asignados. Ve a la pestaña <strong>Jugadores</strong> para añadir.</p>
+        </div>
+        <div *ngIf="!compliance.length && assignedPlayerIds.size > 0" class="text-center py-4">
+          <div class="spinner-border spinner-border-sm text-primary mb-2"></div>
+          <p class="text-muted small">Cargando cumplimiento...</p>
+        </div>
+        <div class="it-compliance-grid" *ngIf="compliance.length">
+          <div *ngFor="let c of compliance" class="it-compliance-card"
+               [class.it-compliance-card--expanded]="expandedCompliancePlayerId === c.playerId">
+            <div class="it-compliance-card__avatar">
+              {{ getPlayerInitials(c.playerId) }}
+            </div>
+            <div class="it-compliance-card__info">
+              <strong>{{ getPlayerName(c.playerId) }}</strong>
+              <span class="it-compliance-card__sub">{{ c.completedDays }} / {{ c.totalDays }} sesiones</span>
+            </div>
+            <div class="it-compliance-card__pct" [class]="getComplianceClass(c.compliancePct)">
+              {{ c.compliancePct | number:'1.0-0' }}%
+            </div>
+            <div class="it-progress-bar">
+              <div class="it-progress-bar__fill" [class]="getComplianceBarClass(c.compliancePct)"
+                   [style.width.%]="c.compliancePct"></div>
+            </div>
+            <div class="it-compliance-card__km">
+              <i class="bi bi-geo-alt"></i> {{ totalKmForPlayer(c.playerId) | number:'1.0-1' }} km
+            </div>
+            <!-- Botón respuestas (solo si hay formularios asignados) -->
+            <div class="it-compliance-card__actions" *ngIf="planDaysHaveForms()">
+              <button class="it-btn it-btn--xs it-btn--outline"
+                      (click)="openResponsesModal(c.playerId)">
+                <i class="bi bi-chat-square-text me-1"></i> Ver respuestas
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ─── PLAYERS TAB ─── -->
+      <div *ngIf="activeTab === 'players'" class="it-tab-content">
+        <div class="it-players-header">
+          <div>
+            <h5 class="mb-0">Jugadores del equipo</h5>
+            <p class="text-muted small mb-0">Pincha en un jugador para asignarlo o quitarlo del plan</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button class="it-btn it-btn--sm it-btn--outline"
+                    [disabled]="bulkLoading"
+                    (click)="assignAllPlayers()">
+              <span *ngIf="bulkLoading" class="spinner-border spinner-border-sm"></span>
+              <i *ngIf="!bulkLoading" class="bi bi-person-check"></i>
+              Todos
+            </button>
+            <button class="it-btn it-btn--sm it-btn--outline-danger"
+                    [disabled]="bulkLoading"
+                    (click)="removeAllPlayers()">
+              <span *ngIf="bulkLoading" class="spinner-border spinner-border-sm"></span>
+              <i *ngIf="!bulkLoading" class="bi bi-person-x"></i>
+              Ninguno
+            </button>
+          </div>
+        </div>
+
+        <div *ngIf="loadingPlayers" class="text-center py-4">
+          <div class="spinner-border spinner-border-sm text-primary"></div>
+        </div>
+
+        <div *ngIf="!loadingPlayers && !teamPlayers.length" class="it-empty">
+          <i class="bi bi-people"></i>
+          <p>No hay jugadores disponibles en el equipo.</p>
+        </div>
+
+        <div class="it-players-grid" *ngIf="!loadingPlayers && teamPlayers.length">
+          <button *ngFor="let p of teamPlayers"
+                  class="it-player-chip"
+                  [class.it-player-chip--assigned]="isPlayerAssigned(p.playerId)"
+                  [disabled]="togglingPlayerId === p.playerId"
+                  (click)="togglePlayerAssignment(p)">
+            <div class="it-player-chip__avatar">
+              {{ playerInitials(p) }}
+            </div>
+            <div class="it-player-chip__info">
+              <span class="it-player-chip__name">{{ p.nombre }} {{ p.apellido }}</span>
+              <span class="it-player-chip__pos">{{ p.posicion }}</span>
+            </div>
+            <div class="it-player-chip__check">
+              <span *ngIf="togglingPlayerId === p.playerId" class="spinner-border spinner-border-sm"></span>
+              <i *ngIf="togglingPlayerId !== p.playerId && isPlayerAssigned(p.playerId)" class="bi bi-check-circle-fill"></i>
+              <i *ngIf="togglingPlayerId !== p.playerId && !isPlayerAssigned(p.playerId)" class="bi bi-circle"></i>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- ─── LOGS TAB ─── -->
+      <div *ngIf="activeTab === 'logs'" class="it-tab-content">
+        <div *ngIf="!logs.length" class="it-empty">
+          <i class="bi bi-list-check"></i>
+          <p>Aún no hay sesiones registradas por los jugadores.</p>
+        </div>
+        <div class="table-responsive" *ngIf="logs.length">
+          <table class="it-table">
+            <thead>
+              <tr>
+                <th>Jugador</th>
+                <th>Actividad</th>
+                <th>Fecha</th>
+                <th>Duración</th>
+                <th>Distancia</th>
+                <th>RPE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let log of logs">
+                <td class="fw-medium">{{ getPlayerName(log.playerId) }}</td>
+                <td>
+                  <span class="it-activity-badge" [style.background]="activityColors[log.activityType]">
+                    <i class="bi" [class]="activityIcons[log.activityType]"></i>
+                    {{ activityLabels[log.activityType] }}
+                  </span>
+                </td>
+                <td class="text-muted">{{ log.logDate }}</td>
+                <td>{{ durationFormatted(log.durationSeconds) }}</td>
+                <td>{{ log.distanceMeters ? ((log.distanceMeters / 1000) | number:'1.1-2') + ' km' : '—' }}</td>
+                <td>
+                  <span *ngIf="log.perceivedEffort" class="it-rpe-badge">{{ log.perceivedEffort }}/10</span>
+                  <span *ngIf="!log.perceivedEffort" class="text-muted">—</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ─── PLAN DAYS TAB ─── -->
+      <div *ngIf="activeTab === 'plans'" class="it-tab-content">
+        <div *ngIf="!planDays.length" class="it-empty">
+          <i class="bi bi-calendar-week"></i>
+          <p>El plan no tiene días configurados.</p>
+        </div>
+        <div *ngFor="let week of getWeeks(planDays)" class="it-plan-week">
+          <div class="it-week-title">Semana {{ week }}</div>
+          <div class="it-day-grid">
+            <div *ngFor="let day of getDaysForWeek(week)" class="it-day-chip"
+                 [class.it-day-chip--has-form]="day.preFormTemplateId || day.postFormTemplateId"
+                 [style.--chip-color]="activityColors[day.activityType]">
+              <strong>{{ dayLabels[day.dayOfWeek] ?? day.dayOfWeek }}</strong>
+              <span *ngIf="day.restDay" class="text-muted small">Descanso</span>
+              <span *ngIf="!day.restDay" class="small">
+                {{ activityLabels[day.activityType] }}
+                <span *ngIf="day.targetDurationMinutes" class="text-muted"> · {{ day.targetDurationMinutes }}min</span>
+                <span *ngIf="day.targetDistanceKm" class="text-muted"> · {{ day.targetDistanceKm }}km</span>
+              </span>
+              <span *ngIf="day.description" class="it-day-chip__desc">{{ day.description }}</span>
+
+              <!-- Formularios PRE/POST (solo días activos) -->
+              <ng-container *ngIf="!day.restDay">
+                <div class="it-day-form-assign" (click)="$event.stopPropagation()">
+                  <div class="it-day-form-row">
+                    <span class="it-day-form-label">PRE</span>
+                    <select class="it-input it-input--xs"
+                            [ngModel]="day.preFormTemplateId"
+                            [disabled]="assigningDayId === day.planDayId"
+                            (ngModelChange)="assignFormToDay(day, 'pre', $event || null)">
+                      <option [ngValue]="null">Sin formulario</option>
+                      <option *ngFor="let t of preFormTemplates" [ngValue]="t.formTemplateId">{{ t.nombre }}</option>
+                    </select>
+                  </div>
+                  <div class="it-day-form-row">
+                    <span class="it-day-form-label">POST</span>
+                    <select class="it-input it-input--xs"
+                            [ngModel]="day.postFormTemplateId"
+                            [disabled]="assigningDayId === day.planDayId"
+                            (ngModelChange)="assignFormToDay(day, 'post', $event || null)">
+                      <option [ngValue]="null">Sin formulario</option>
+                      <option *ngFor="let t of postFormTemplates" [ngValue]="t.formTemplateId">{{ t.nombre }}</option>
+                    </select>
+                  </div>
+                  <span *ngIf="assigningDayId === day.planDayId"
+                        class="spinner-border spinner-border-sm text-primary ms-1"></span>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ─── PLANS LIST ─── -->
+    <div *ngIf="!selectedPlan && !showCreateForm && !showAiForm">
+
+      <div *ngIf="!plans.length" class="it-empty it-empty--full">
+        <i class="bi bi-calendar-plus"></i>
+        <h5>Sin planes creados</h5>
+        <p>Crea un plan manualmente o usa la IA para generarlo automáticamente.</p>
+        <div class="d-flex gap-2 justify-content-center mt-2">
+          <button class="it-btn it-btn--ai" (click)="showAiForm = true">
+            <i class="bi bi-magic"></i> Generar con IA
+          </button>
+          <button class="it-btn it-btn--primary" (click)="showCreateForm = true">
+            <i class="bi bi-plus-lg"></i> Nuevo plan
+          </button>
+        </div>
+      </div>
+
+      <div class="it-plans-grid" *ngIf="plans.length">
+        <div *ngFor="let plan of plans" class="it-plan-card" (click)="selectPlan(plan)">
+          <div class="it-plan-card__top">
+            <span class="it-status-badge" [ngClass]="statusBadgeClass(plan.status)">
+              {{ statusLabel(plan.status) }}
+            </span>
+            <div class="dropdown ms-auto" (click)="$event.stopPropagation()">
+              <button class="it-btn-icon" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-three-dots-vertical"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  <a class="dropdown-item text-success" *ngIf="plan.status !== 'ACTIVO'"
+                     (click)="activatePlan(plan)">
+                    <i class="bi bi-play-fill me-2"></i>Activar
+                  </a>
+                </li>
+                <li><a class="dropdown-item text-danger" (click)="deletePlan(plan)">
+                  <i class="bi bi-trash me-2"></i>Eliminar
+                </a></li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="it-plan-card__season">
+            <i class="bi bi-sun"></i> {{ seasonLabels[plan.seasonMoment] }}
+          </div>
+          <h5 class="it-plan-card__name">{{ plan.name }}</h5>
+
+          <div class="it-plan-card__meta">
+            <span><i class="bi bi-calendar3"></i> {{ plan.startDate }} – {{ plan.endDate }}</span>
+          </div>
+
+          <p *ngIf="plan.description" class="it-plan-card__desc">{{ plan.description }}</p>
+
+          <div class="it-plan-card__footer">
+            <i class="bi bi-chevron-right"></i>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </ng-container>
+
+  </ng-container>
+  <!-- ═══════════════════ FIN VISTA ENTRENADOR ═══════════════════ -->
+
+</div>
+
+<!-- ═══════ MODAL RESPUESTAS FORMULARIO ═══════ -->
+<div class="it-modal-backdrop" *ngIf="responsesModalOpen" (click)="closeResponsesModal()"></div>
+<div class="it-modal" [class.it-modal--open]="responsesModalOpen" role="dialog" aria-modal="true">
+  <div class="it-modal__dialog" (click)="$event.stopPropagation()">
+
+    <!-- Cabecera -->
+    <div class="it-modal__header">
+      <div class="it-modal__header-info">
+        <i class="bi bi-chat-square-text me-2 text-primary"></i>
+        <span class="it-modal__title">Respuestas de <strong>{{ responsesModalPlayerName }}</strong></span>
+      </div>
+      <button class="it-modal__close" (click)="closeResponsesModal()" aria-label="Cerrar">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Cuerpo -->
+    <div class="it-modal__body">
+
+      <!-- Cargando -->
+      <div *ngIf="loadingPlayerResponses" class="it-modal__loading">
+        <span class="spinner-border text-primary"></span>
+        <p class="mt-3 text-muted">Cargando respuestas...</p>
+      </div>
+
+      <!-- Sin respuestas -->
+      <div *ngIf="!loadingPlayerResponses && !playerFormResponses.length" class="it-modal__empty">
+        <i class="bi bi-inbox fs-1 text-muted"></i>
+        <p class="mt-2 text-muted">Este jugador aún no ha respondido ningún formulario.</p>
+      </div>
+
+      <!-- Lista de respuestas -->
+      <div *ngIf="!loadingPlayerResponses && playerFormResponses.length">
+
+        <!-- Agrupar visualmente por sesión (logId) -->
+        <div *ngFor="let resp of playerFormResponses" class="it-resp-card">
+
+          <!-- Cabecera del bloque -->
+          <div class="it-resp-card__header">
+            <span class="it-resp-card__badge"
+                  [class.it-resp-card__badge--pre]="resp.tipo === 'pre'"
+                  [class.it-resp-card__badge--post]="resp.tipo === 'post'">
+              {{ resp.tipo === 'pre' ? 'PRE' : 'POST' }}
+            </span>
+            <span class="it-resp-card__template">{{ resp.template?.nombre }}</span>
+            <span class="it-resp-card__date">
+              <i class="bi bi-calendar3 me-1"></i>{{ resp.logDate }}
+            </span>
+          </div>
+
+          <!-- Campos -->
+          <div class="it-resp-card__fields">
+            <div *ngFor="let campo of sortedCampos(resp.template?.campos)" class="it-resp-field">
+              <span class="it-resp-field__label">{{ campo.etiqueta }}</span>
+              <span class="it-resp-field__value"
+                    [class.it-resp-field__value--empty]="!resp.answers[campo.id] || resp.answers[campo.id] === 'false'">
+                <ng-container [ngSwitch]="campo.tipo">
+                  <!-- Checkbox -->
+                  <ng-container *ngSwitchCase="'CHECKBOX'">
+                    <i class="bi" [class.bi-check-circle-fill]="resp.answers[campo.id] === 'true'"
+                                  [class.bi-circle]="resp.answers[campo.id] !== 'true'"
+                                  [class.text-success]="resp.answers[campo.id] === 'true'"
+                                  [class.text-muted]="resp.answers[campo.id] !== 'true'"></i>
+                    {{ resp.answers[campo.id] === 'true' ? 'Sí' : 'No' }}
+                  </ng-container>
+                  <!-- SCALE con barra visual -->
+                  <ng-container *ngSwitchCase="'SCALE'">
+                    <span class="it-resp-scale">
+                      <span class="it-resp-scale__bar">
+                        <span class="it-resp-scale__fill"
+                              [style.width.%]="(+resp.answers[campo.id] / 10) * 100"></span>
+                      </span>
+                      <strong>{{ resp.answers[campo.id] || '—' }}/10</strong>
+                    </span>
+                  </ng-container>
+                  <!-- RATING con estrellitas -->
+                  <ng-container *ngSwitchCase="'RATING'">
+                    <span class="it-resp-stars">
+                      <i *ngFor="let s of [1,2,3,4,5]" class="bi"
+                         [class.bi-star-fill]="s <= +resp.answers[campo.id]"
+                         [class.bi-star]="s > +resp.answers[campo.id]"
+                         [class.text-warning]="s <= +resp.answers[campo.id]"
+                         [class.text-muted]="s > +resp.answers[campo.id]"></i>
+                    </span>
+                  </ng-container>
+                  <!-- TEXT_LONG - área amplia -->
+                  <ng-container *ngSwitchCase="'TEXT_LONG'">
+                    <span class="it-resp-field__text-long">{{ resp.answers[campo.id] || '—' }}</span>
+                  </ng-container>
+                  <!-- Resto -->
+                  <ng-container *ngSwitchDefault>
+                    {{ resp.answers[campo.id] || '—' }}
+                  </ng-container>
+                </ng-container>
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Pie -->
+    <div class="it-modal__footer">
+      <button class="it-btn it-btn--outline" (click)="closeResponsesModal()">Cerrar</button>
+    </div>
+
+  </div>
+</div>

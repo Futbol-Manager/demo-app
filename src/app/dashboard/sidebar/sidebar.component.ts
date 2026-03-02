@@ -1,4 +1,4 @@
-﻿import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { filter, take } from 'rxjs/operators';
@@ -193,6 +193,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
     const teamMatch = url.match(/\/(menu-entrenador|menu-fisio|menu-club|calendario|jugadores|estadisticas_equipo|estadisticas_jugadores|informacion_equipo|tareas|tareas-catalog|tareas-favoritas|tareas-historial|tareas-mis|partidos-entrevistas|clasificacion-resultados|lesiones|tactical-board|debrief)\/(\d+)/);
     if (teamMatch) {
       this.teamId = +teamMatch[2];
+      // Persist last known teamId so teamless routes (e.g. individual-training) can read it
+      if (this.teamId > 0) {
+        sessionStorage.setItem('it_lastTeamId', String(this.teamId));
+      }
     }
 
     const playerMatch = url.match(/\/(opcionesjugador|calendario|partidos-entrevistas|cuotas|documentos-jugador|perfil-entrenador)\/\d+\/(\d+)/);
@@ -257,6 +261,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
         { id: 'debrief', label: 'SIDEBAR.DEBRIEF', icon: 'bi-clipboard-pulse', route: `/dashboard/debrief/history/${this.teamId}` },
         { id: 'video-analysis', label: 'SIDEBAR.VIDEO_ANALYSIS', icon: 'bi-camera-reels', route: '/dashboard/video-analysis' },
+        { id: 'individual-training', label: 'Entreno Individual', icon: 'bi-person-walking', route: '/dashboard/individual-training' },
         { id: 'perfil', label: 'SIDEBAR.MY_PROFILE', icon: 'bi-person-badge', route: `/dashboard/perfil-entrenador/${this.teamId}/${this.playerId}` },
       ];
       this.sections.push({ id: 'coach', title: 'SIDEBAR.SECTION_COACH', items: coachItems, visible: true });
@@ -286,6 +291,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'galeria', label: 'SIDEBAR.GALLERY', icon: 'bi-images', route: `/dashboard/partidos-entrevistas/${this.teamId}/${this.playerId}` },
         { id: 'clasificacion', label: 'SIDEBAR.STANDINGS', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },
         { id: 'patrocinadores', label: 'SIDEBAR.SPONSORS', icon: 'bi-collection', route: '/dashboard/patrocinadores/0' },
+        { id: 'individual-training', label: 'Entreno Individual', icon: 'bi-person-walking', route: '/dashboard/individual-training' },
         { id: 'notificaciones', label: 'SIDEBAR.NOTIFICATIONS', icon: 'bi-bell', route: `/dashboard/notificaciones/${this.clubId}` },
       ];
       this.sections.push({ id: 'player', title: 'SIDEBAR.SECTION_PLAYER', items: playerItems, visible: true });
@@ -299,6 +305,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
         { id: 'lesiones', label: 'Lesiones', icon: 'bi-heart-pulse', route: `/dashboard/lesiones/${this.teamId}` },
         { id: 'jugadores', label: 'Jugadores', icon: 'bi-people', route: `/dashboard/jugadores/${this.teamId}` },
         { id: 'calendario', label: 'Calendario', icon: 'bi-calendar-event', route: `/dashboard/calendario/${this.teamId}/0` },
+        { id: 'individual-training', label: 'Entreno Individual', icon: 'bi-person-walking', route: '/dashboard/individual-training' },
         { id: 'stats-jugadores', label: 'Estadísticas jugadores', icon: 'bi-graph-up', route: `/dashboard/estadisticas_jugadores/${this.teamId}` },
         { id: 'stats-equipo', label: 'Estadísticas equipo', icon: 'bi-bar-chart-line', route: `/dashboard/estadisticas_equipo/${this.teamId}` },
         { id: 'clasificacion', label: 'Clasificación', icon: 'bi-trophy', route: `/dashboard/clasificacion-resultados/${this.teamId}` },

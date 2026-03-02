@@ -1,4 +1,4 @@
-﻿import { NgModule } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard.component';
@@ -114,6 +114,7 @@ import { ErpSuppliersComponent } from './erp/erp-suppliers/erp-suppliers.compone
 import { ErpBudgetsComponent } from './erp/erp-budgets/erp-budgets.component';
 import { ErpReportsComponent } from './erp/erp-reports/erp-reports.component';
 import { ErpSetupComponent } from './erp/erp-setup/erp-setup.component';
+import { IndividualTrainingComponent } from './individual-training/individual-training.component';
 
 const routes: Routes = [
   {
@@ -231,6 +232,7 @@ const routes: Routes = [
       { path: 'suscripcion-coach', component: SuscripcionCoachComponent },
       { path: 'coach-suscripcion-success', component: CoachSuscripcionSuccessComponent },
       { path: 'staff-club', component: StaffClubComponent, canActivate: [ClubOwnerGuard] },
+      { path: 'individual-training', component: IndividualTrainingComponent },
       { path: '**', redirectTo: 'inicio' },
     ],
   }

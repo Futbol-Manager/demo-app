@@ -218,7 +218,7 @@ export class RrssCalendarComponent implements OnInit, OnDestroy {
     const start = toIsoLocal(first);
     const end   = toIsoLocal(last);
     this.monthLoading = true;
-    this.prospect.getCalendarPosts(start, end).subscribe({
+    this.prospect.getCalendarPostsJava(start, end).subscribe({
       next: posts => {
         this.monthPosts  = posts.filter(p => !this.networkFilter || p.network === this.networkFilter);
         this.monthLoading = false;
@@ -344,7 +344,7 @@ export class RrssCalendarComponent implements OnInit, OnDestroy {
       ];
     }
 
-    this.prospect.updateSocialPost(post.post_id, { scheduled_at: newScheduledAt })
+    this.prospect.updateSocialPostJava(post.post_id, { scheduled_at: newScheduledAt })
       .subscribe({ error: () => this.load() }); // revert on error
   }
 
@@ -375,7 +375,7 @@ export class RrssCalendarComponent implements OnInit, OnDestroy {
     endDay.setHours(23, 59, 59, 0);
     const end = toIsoLocal(endDay);
 
-    this.prospect.getCalendarPosts(start, end).subscribe({
+    this.prospect.getCalendarPostsJava(start, end).subscribe({
       next: posts => {
         this.posts = posts.filter(p =>
           !this.networkFilter || p.network === this.networkFilter
