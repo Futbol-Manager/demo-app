@@ -24,11 +24,6 @@
       </div>
     </div>
 
-    <!-- DEBUG: Mostrar información de renderizado -->
-    <div *ngIf="!isEffectivelyCollapsed" class="bg-danger text-white p-1 small mb-2">
-      DEBUG: {{ sections.length }} secciones | Plan: {{ clubPlanType }} | Loading: {{ isLoadingSubscription }}
-    </div>
-
     <div *ngFor="let section of sections; trackBy: trackBySection" class="sidebar-section" [class.d-none]="!section.visible">
 
       <span class="sidebar-section-title" *ngIf="!isEffectivelyCollapsed">{{ section.title | translate }}</span>

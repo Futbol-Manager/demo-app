@@ -4,6 +4,7 @@ import { ClubService } from 'src/app/core/services/club/club.service';
 import { NotificationService } from 'src/app/core/services/notification/notification.service';
 import { LoginService } from 'src/app/core/services/login/login.service';
 import { Response } from 'src/app/core/services/models/response.model';
+import { ClubPlanType } from 'src/app/core/models/subscription/club-subscription.model';
 import { getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 /* =========================
@@ -94,6 +95,9 @@ export class CuadroComponent implements OnInit, OnDestroy {
   ========================= */
 
   private staffPermissions: string[] = [];
+  private profileId = 0;
+  private clubPlanType: ClubPlanType | null = null;
+  private readonly CLUB_PLAN_TYPE_KEY = 'clubPlanType';
 
   constructor(
     private router: Router,
@@ -117,6 +121,8 @@ export class CuadroComponent implements OnInit, OnDestroy {
   ========================= */
 
   ngOnInit(): void {
+    this.loadAccessContext();
+
     this.route.params.subscribe((params) => {
       this.clubId = +params['clubId'];
     });
@@ -367,6 +373,11 @@ export class CuadroComponent implements OnInit, OnDestroy {
   ========================= */
 
   irAPantalla(id: number): void {
+    if (this.isClubFreePlan() && this.isRestrictedDashboardOption(id)) {
+      this.router.navigate(['/dashboard/suscripcion-club']);
+      return;
+    }
+
     switch (id) {
       case 0:
         this.router.navigate(['/dashboard/inicio']);
@@ -439,5 +450,44 @@ export class CuadroComponent implements OnInit, OnDestroy {
         console.warn('Ruta no definida para el id:', id);
         break;
     }
+  }
+
+  onRestrictedDashboardCardClick(): void {
+    if (this.isClubFreePlan()) {
+      this.router.navigate(['/dashboard/suscripcion-club']);
+    }
+  }
+
+  showSubscriptionUpgradeCta(): boolean {
+    return this.isClubFreePlan();
+  }
+
+  irASuscripcionClub(): void {
+    this.router.navigate(['/dashboard/suscripcion-club']);
+  }
+
+  private loadAccessContext(): void {
+    const user: any = this.loginService['usuarioAutenticado']?.getValue?.();
+    this.profileId = user?.profileType?.profileId ?? -1;
+
+    const cachedPlan = localStorage.getItem(this.CLUB_PLAN_TYPE_KEY) as ClubPlanType | null;
+    this.clubPlanType = cachedPlan;
+  }
+
+  private isClubFreePlan(): boolean {
+    if (this.profileId !== 1) return false;
+    if (this.clubPlanType === 'gratuito') return true;
+
+    const cachedPlan = localStorage.getItem(this.CLUB_PLAN_TYPE_KEY) as ClubPlanType | null;
+    if (cachedPlan === 'gratuito') {
+      this.clubPlanType = cachedPlan;
+      return true;
+    }
+
+    return false;
+  }
+
+  private isRestrictedDashboardOption(id: number): boolean {
+    return [7, 8, 10, 11].includes(id);
   }
 }
