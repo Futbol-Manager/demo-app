@@ -22,6 +22,7 @@ export class SuscripcionClubComponent implements OnInit {
   // Plan selection
   plans: ClubPlan[] = [];
   selectedPlan: ClubPlanType | null = null;
+  activePlanInfo: ClubPlan | null = null;
 
   // Active subscription
   subscription: ClubSubscription | null = null;
@@ -102,14 +103,25 @@ export class SuscripcionClubComponent implements OnInit {
         this.commissionEditError = '';
       } else {
         this.subscription = null;
+        this.activePlanInfo = null;
       }
       // Load available plans
       this.subscriptionService.getAvailablePlans().subscribe(plans => {
         this.plans = [...plans].sort((a, b) => this.getPlanOrder(a.id) - this.getPlanOrder(b.id));
+        this.syncActivePlanInfo();
         this.loading = false;
         this.datosCargados = true;
       });
     });
+  }
+
+  private syncActivePlanInfo(): void {
+    if (!this.subscription) {
+      this.activePlanInfo = null;
+      return;
+    }
+
+    this.activePlanInfo = this.plans.find(plan => plan.id === this.subscription?.planType) || null;
   }
 
   private getPlanOrder(planType: ClubPlanType): number {
@@ -187,6 +199,7 @@ export class SuscripcionClubComponent implements OnInit {
   changePlan(): void {
     // Reset subscription to show plan selection
     this.subscription = null;
+    this.activePlanInfo = null;
     // Recargar los planes disponibles
     this.loadData();
   }

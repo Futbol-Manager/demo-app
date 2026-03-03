@@ -9,6 +9,8 @@ import { User } from 'src/app/core/models/users/user.model';
 import { Response } from 'src/app/core/services/models/response.model';
 import { PlayerService } from 'src/app/core/services/player/player.service';
 import { AiPageContextService } from 'src/app/core/services/ai-chat/ai-page-context.service';
+import { ClubSubscriptionService } from 'src/app/core/services/subscription/club-subscription.service';
+import { ClubPlanType } from 'src/app/core/models/subscription/club-subscription.model';
 import { getSeasons, getCurrentSeasonString } from 'src/app/core/utils/season.utils';
 
 @Component({
@@ -34,6 +36,7 @@ export class InicioComponent implements OnInit {
   profileId = 0;
   clubId = 0;
   staffPermissions: string[] = [];
+  clubPlanType: ClubPlanType | null = null;
 
   get hasStaffDashboard(): boolean {
     return this.staffPermissions.some(p => p.startsWith('DASHBOARD_'));
@@ -72,6 +75,7 @@ export class InicioComponent implements OnInit {
   // =========================
   private readonly CLUB_OK_KEY = 'clubOkResolved';
   private readonly CLUB_ID_KEY = 'clubId';
+  private readonly CLUB_PLAN_TYPE_KEY = 'clubPlanType';
 
   constructor(
     private loginService: LoginService,
@@ -79,6 +83,7 @@ export class InicioComponent implements OnInit {
     private router: Router,
     private playerservice: PlayerService,
     private aiPageContext: AiPageContextService,
+    private clubSubscriptionService: ClubSubscriptionService,
   ) { }
 
   // =========================
@@ -176,6 +181,31 @@ export class InicioComponent implements OnInit {
       }
     }
 
+    if (this.profileId === 1 && this.clubPlanType === null) {
+      const cachedPlan = localStorage.getItem(this.CLUB_PLAN_TYPE_KEY) as ClubPlanType | null;
+      if (cachedPlan) {
+        this.clubPlanType = cachedPlan;
+      } else {
+        this.cargarPlanSuscripcion();
+      }
+    }
+
+    // Control de acceso para plan gratuito
+    if (this.profileId === 1 && this.clubPlanType === 'gratuito') {
+      const allowedIds = [3, 6, 7, 9, 11]; // Cuadro mandos, Documentos, Pagos, Equipos, Asistente IA
+      if (!allowedIds.includes(id)) {
+        console.log('[INICIO DEBUG] Access denied for plan gratuito, id:', id, '- redirecting to subscriptions');
+        this.router.navigate(['/dashboard/suscripcion-club']);
+        return;
+      }
+    }
+
+    if (this.profileId === 1 && this.clubPlanType === null) {
+      console.log('[INICIO DEBUG] clubPlanType is null, redirecting to subscriptions by safety rule');
+      this.router.navigate(['/dashboard/suscripcion-club']);
+      return;
+    }
+
     switch (id) {
       case 2:
         this.router.navigate(['/dashboard/ropa', this.clubId]);
@@ -258,6 +288,11 @@ export class InicioComponent implements OnInit {
   private inicializarDesdeCache(): void {
     const cachedClubOk = sessionStorage.getItem(this.CLUB_OK_KEY);
     const cachedClubId = sessionStorage.getItem(this.CLUB_ID_KEY);
+    const cachedClubPlanType = localStorage.getItem(this.CLUB_PLAN_TYPE_KEY) as ClubPlanType | null;
+
+    if (cachedClubPlanType) {
+      this.clubPlanType = cachedClubPlanType;
+    }
 
     if (cachedClubOk !== null && cachedClubId !== null) {
       this.clubOk = cachedClubOk === 'true';
@@ -294,6 +329,7 @@ export class InicioComponent implements OnInit {
         if (this.profileId === 1) {
           if (this.clubId > 0) {
             this.verificarSuscripcion();
+            this.cargarPlanSuscripcion();
           } else {
             this.cargarClubId();
           }
@@ -333,6 +369,7 @@ export class InicioComponent implements OnInit {
           this.aiPageContext.preloadForClub(this.clubId, this.userId);
 
           this.verificarSuscripcion();
+          this.cargarPlanSuscripcion();
         },
         error: () => {
           this.clubLoading = false;
@@ -365,6 +402,45 @@ export class InicioComponent implements OnInit {
         },
       });
   }
+
+  private cargarPlanSuscripcion(): void {
+    if (this.profileId !== 1 || this.clubId <= 0) {
+      this.clubPlanType = null;
+      localStorage.removeItem(this.CLUB_PLAN_TYPE_KEY);
+      return;
+    }
+
+    console.log('[INICIO DEBUG] Loading club subscription plan for clubId:', this.clubId);
+
+    // TEMPORAL: Simular plan gratuito para pruebas
+    // Reemplazar con la llamada real al servicio cuando esté listo
+    this.clubPlanType = 'gratuito';
+    localStorage.setItem(this.CLUB_PLAN_TYPE_KEY, this.clubPlanType);
+    console.log('[INICIO DEBUG] Set clubPlanType to:', this.clubPlanType);
+
+    /*
+    this.clubSubscriptionService.getCurrentClubPlan(this.clubId).pipe(take(1)).subscribe({
+      next: (result: any) => {
+        console.log('[INICIO DEBUG] Subscription API response:', result);
+        this.clubPlanType = (result?.success && result?.plan?.planType)
+          ? result.plan.planType as ClubPlanType
+          : null;
+        if (this.clubPlanType) {
+          localStorage.setItem(this.CLUB_PLAN_TYPE_KEY, this.clubPlanType);
+        } else {
+          localStorage.removeItem(this.CLUB_PLAN_TYPE_KEY);
+        }
+        console.log('[INICIO DEBUG] Set clubPlanType to:', this.clubPlanType);
+      },
+      error: (err) => {
+        console.log('[INICIO DEBUG] Subscription API error:', err);
+        this.clubPlanType = null;
+        localStorage.removeItem(this.CLUB_PLAN_TYPE_KEY);
+      }
+    });
+    */
+  }
+
   navegarAOpcionesJugador(teamId: number, playerId: number): void {
     this.router.navigate(['/dashboard/opcionesjugador', teamId, playerId]);
   }

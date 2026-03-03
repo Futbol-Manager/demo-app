@@ -14,12 +14,22 @@
 
   <!-- Nav content -->
   <nav class="sidebar-nav">
-    <div *ngFor="let section of sections" class="sidebar-section" [class.d-none]="!section.visible">
+    <!-- Loading spinner para suscripción de club -->
+    <div *ngIf="profileId === 1 && isLoadingSubscription" class="sidebar-loading">
+      <div class="d-flex align-items-center justify-content-center py-3">
+        <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <span *ngIf="!isEffectivelyCollapsed" class="small text-muted">Leyendo suscripción...</span>
+      </div>
+    </div>
+
+    <div *ngFor="let section of sections; trackBy: trackBySection" class="sidebar-section" [class.d-none]="!section.visible">
 
       <span class="sidebar-section-title" *ngIf="!isEffectivelyCollapsed">{{ section.title | translate }}</span>
       <div class="sidebar-section-divider" *ngIf="isEffectivelyCollapsed"></div>
 
-      <a *ngFor="let item of section.items"
+      <a *ngFor="let item of section.items; trackBy: trackByItem"
          class="sidebar-item"
          [class.sidebar-item--active]="isActive(item)"
          (click)="navigate(item)"
